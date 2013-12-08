@@ -9,15 +9,14 @@
  *
  *
  * @filesource  execTreeMenu.inc.php
- * @package   TestLink
- * @author    Francisco Mancardi
+ * @package     TestLink
+ * @author      Francisco Mancardi
  * @copyright   2013, TestLink community 
- * @link    http://www.teamst.org/index.php
- * @uses    config.inc.php
+ * @link        http://testlink.sourceforge.net/ 
+ * @uses        config.inc.php
  *
  * @internal revisions
- * @since 1.9.6
- * 20130226 - franciscom - TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
+ * @since 1.9.10
  */
 
 /**
@@ -34,11 +33,7 @@
 function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                   $tplan_name,$objFilters,$objOptions) 
 {
-
-  //Echo '<h1>' . __FUNCTION__ . '</h1>';    
-  // die();
   $chronos[] = microtime(true);
-
 
   $treeMenu = new stdClass(); 
   $treeMenu->rootnode = null;
@@ -51,13 +46,10 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
   $any_exec_status = null;
   $tplan_tcases = null;
   $tck_map = null;
-    $idx=0;
-    $testCaseQty=0;
-    $testCaseSet=null;
+  $idx=0;
+  $testCaseQty=0;
+  $testCaseSet=null;
    
-   
-    //New dBug($objFilters);
-    
   $keyword_id = 0;
   $keywordsFilterType = 'Or';
   if (property_exists($objFilters, 'filter_keywords') && !is_null($objFilters->filter_keywords)) 
@@ -68,11 +60,9 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
   
 
   list($filters,$options,
-     $show_testsuite_contents,
+       $show_testsuite_contents,
        $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
   
-    //New dBug($filters);
-
   $tplan_mgr = new testplan($dbHandler);
   $tproject_mgr = new testproject($dbHandler);
   $tcase_node_type = $tplan_mgr->tree_manager->node_descr_id['testcase'];
@@ -108,35 +98,14 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $my['filters']['exclude_branches'] = $objFilters->filter_toplevel_testsuite;
   }
 
-    // TICKET 5229: Filtering by the value of custom fields is not working on test execution
-    if (isset($objFilters->filter_custom_fields) && is_array($objFilters->filter_custom_fields))
-    {
-        $my['filters']['filter_custom_fields'] = $objFilters->filter_custom_fields;
-    }
+  if (isset($objFilters->filter_custom_fields) && is_array($objFilters->filter_custom_fields))
+  {
+    $my['filters']['filter_custom_fields'] = $objFilters->filter_custom_fields;
+  }
     
-  // Take Time
-  //$chronos[] = microtime(true);
-  //$tnow = end($chronos);$tprev = prev($chronos);
-    
-  //New dBug($my);
+   
   // Document why this is needed, please  
-    $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
-  //Echo 'BEFORE';
-  
-  //echo 'AF';
-  //New dBug($test_spec);
-  
-  
-  // Take Time
-  //$chronos[] = microtime(true);
-  //$tnow = end($chronos);
-  //$tprev = prev($chronos);
-  //$t_elapsed = number_format( $tnow - $tprev, 4);
-  //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (getSkeleton()):' . $t_elapsed .'<br>';
-  //reset($chronos);  
-  // die('DYING LINE' . __LINE__);
-
-     
+  $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
   $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
   $test_spec['id'] = $tproject_id;
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];
@@ -144,7 +113,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
   $map_node_tccount = array();
   
   $tplan_tcases = null;
-    $apply_other_filters=true;
+  $apply_other_filters=true;
 
 
   if($test_spec)
@@ -163,12 +132,9 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
       // WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
       // THIS YET.
       //
-      //New dBug($filters, array('label' => __FUNCTION__));
-      
       
       if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($tplan_id,$filters,$options)) )
       {
-        //New dBug($sql2do);
         $kmethod = "fetchRowsIntoMap";
         if( is_array($sql2do) )
         {       
@@ -191,14 +157,6 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
         $tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
         
       }
-                  
-      // Take Time
-      //$chronos[] = microtime(true);
-      //$tnow = end($chronos);
-      //$tprev = prev($chronos);
-      //$t_elapsed = number_format( $tnow - $tprev, 4);
-      //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER getLinkedForTree()</b>):' . $t_elapsed .'<br>';
-      //reset($chronos);  
     }   
 
     
@@ -207,41 +165,20 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
       $tplan_tcases = array();
       $apply_other_filters=false;
     }
-    // Take time
-    //$chronos[] = microtime(true);
-    //$tnow = end($chronos);
-    //$tprev = prev($chronos);
-    //$t_elapsed = number_format( $tnow - $tprev, 4);
-    //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>FROM get_subtree()</b>):' . $t_elapsed .'<br>';
-    //reset($chronos);  
 
     // OK, now we need to work on status filters
-    // New dBug($objFilters);
-    // New dBug($objOptions);
     // if "any" was selected as filtering status, don't filter by status
     $targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
-    
-    //New dBug($targetExecStatus);
-    
     if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
     {
-      // die('GO ON OTHER FILTERS');
-      //echo '<h1> BEFORE applyStatusFilters() </h1>';
-      //New dBug($tplan_tcases);
       applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);       
-
-      //echo '<h1> *** After *** applyStatusFilters() </h1>';
-      //New dBug($tplan_tcases);
-      
-      
     }
     
-    // TICKET 5229: Filtering by the value of custom fields is not working on test execution
     if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
-        {
-            $test_spec['childNodes'] = filter_by_cf_values($dbHandler, $test_spec['childNodes'],
-                                                           $my['filters']['filter_custom_fields'],$hash_descr_id);
-        }
+    {
+      $test_spec['childNodes'] = filter_by_cf_values($dbHandler, $test_spec['childNodes'],
+                                                     $my['filters']['filter_custom_fields'],$hash_descr_id);
+    }
 
     // Take time
     //$chronos[] = microtime(true);
@@ -249,24 +186,12 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     //$tprev = prev($chronos);
     //$t_elapsed = number_format( $tnow - $tprev, 4);
     //reset($chronos);  
-
-    // New dBug($tplan_tcases);
-    
-    
-      $pnFilters = null;    
+ 
     // ATTENTION: sometimes we use $my['options'], other $options
     $pnOptions = array('hideTestCases' => $options['hideTestCases'], 'viewType' => 'executionTree');
+    $pnFilters = null;    
     $testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
                                              $tplan_tcases,$pnFilters,$pnOptions);
-
-    // Take time
-    // $chronos[] = microtime(true);
-    // $tnow = end($chronos);
-    // $tprev = prev($chronos);
-    // $t_elapsed = number_format( $tnow - $tprev, 4);
-    // echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER prepareExecTreeNode()</b>):' . $t_elapsed .'<br>';
-    // reset($chronos); 
-
 
     foreach($testcase_counters as $key => $value)
     {
@@ -278,9 +203,8 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                      $options['hideTestCases'],
                                      $useCounters,$useColors,
                                      $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-  }  // if($test_spec)
-  
-    
+  }
+
   $treeMenu->rootnode=new stdClass();
   $treeMenu->rootnode->name=$test_spec['text'];
   $treeMenu->rootnode->id=$test_spec['id'];
@@ -311,9 +235,6 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 /*
  *
  *
- * @internal revisions
- * @since 1.9.4
- *
  */
 function initExecTree($filtersObj,$optionsObj)
 {
@@ -325,11 +246,10 @@ function initExecTree($filtersObj,$optionsObj)
   $build2filter_assignments = is_null($buildFiltersPanel) ? $buildSettingsPanel : $buildFiltersPanel;
 
   $keymap = array('tcase_id' => 'filter_tc_id', 'assigned_to' => 'filter_assigned_user',
-          'platform_id' => 'setting_platform', 'exec_type' => 'filter_execution_type',
-          'urgencyImportance' => 'filter_priority', 'tcase_name' => 'filter_testcase_name',
-          'cf_hash' => 'filter_custom_fields', 'build_id' => array('setting_build','build_id'));
+                  'platform_id' => 'setting_platform', 'exec_type' => 'filter_execution_type',
+                  'urgencyImportance' => 'filter_priority', 'tcase_name' => 'filter_testcase_name',
+                  'cf_hash' => 'filter_custom_fields', 'build_id' => array('setting_build','build_id'));
   
-  // TICKET 4905: Test Case Tester Assignment - filters dont work properly for 'Assigned to' Field
   if( property_exists($optionsObj,'buildIDKeyMap') && !is_null($filtersObj->filter_result_build) )
   {
     $keymap['build_id'] = $optionsObj->buildIDKeyMap;
@@ -354,16 +274,14 @@ function initExecTree($filtersObj,$optionsObj)
     }
     else
     {
-      //Echo '\$key:' . $key . '<br>';
       $filters[$key] = isset($filtersObj->$prop) ? $filtersObj->$prop : null; 
     } 
   }
 
-  //New dBug($filters);
 
   $filters['keyword_id'] = 0;
   $filters['keyword_filter_type'] = 'Or';
-  if (property_exists($filtersObj, 'filter_keywords') && !is_null($filtersObj->filter_keywords)) 
+  if ( !is_null($filtersObj) && property_exists($filtersObj, 'filter_keywords') && !is_null($filtersObj->filter_keywords)) 
   {
     $filters['keyword_id'] = $filtersObj->filter_keywords;
     $filters['keyword_filter_type'] = $filtersObj->filter_keywords_filter_type;
@@ -374,7 +292,7 @@ function initExecTree($filtersObj,$optionsObj)
                                     $optionsObj->hideTestCases : false;
 
   $options['include_unassigned'] = isset($filtersObj->filter_assigned_user_include_unassigned) ?
-                               $filtersObj->filter_assigned_user_include_unassigned : false;
+                                         $filtersObj->filter_assigned_user_include_unassigned : false;
 
   // useful when using tree on set urgent test cases
   $options['allow_empty_build'] = isset($optionsObj->allow_empty_build) ?
@@ -406,15 +324,13 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
   
   static $status_descr_list;
   static $debugMsg;
-    static $my;
+  static $my;
   static $resultsCfg;
 
-    $tpNode = null;
+  $tpNode = null;
   if (!$debugMsg)
   {
-    // New dBug($tplan_tcases);
-    
-        $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
+    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
 
     $resultsCfg = config_get('results');
     $status_descr_list = array_keys($resultsCfg['status_code']);
@@ -531,16 +447,14 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
 }
 
 
-
+/**
+ *
+ */
 function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusCfg)
 {
   $fm = config_get('execution_filter_methods');
   $methods = $fm['status_code'];
 
-  //New dBug($fm,array('label' => __METHOD__));
-  //New dBug($methods,array('label' => __METHOD__));
-  
-  
   $ffn = array($methods['any_build'] => 'filterStatusSetAtLeastOneOfActiveBuilds',
              $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
              $methods['specific_build'] => 'filter_by_status_for_build',
@@ -562,7 +476,6 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
 
   if( ($filter_done = !is_null($f_method) ) )
   {
-    //echo '<h1>FILTER METHOD:' . $f_method . '::' .  $ffn[$f_method] . '</h1>';
     $logMsg = 'FILTER METHOD:' . $f_method . '::' .  $ffn[$f_method];
     tLog($logMsg,'DEBUG');
     
@@ -585,18 +498,14 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
 
 
 /*
- *
+ * Provides Test suites and test cases
  * @used-by Assign Test Execution Feature
  *
- * @internal revisions:
- * 20121015 - asimon - TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
+ * @internal revisions
  */
 function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                       $tplan_name,$objFilters,$objOptions) 
 {
-
-  //echo '<h1>' . __FUNCTION__ . '</h1>';
-
   $debugMsg = ' - Method: ' . __FUNCTION__;
   $chronos[] = $tstart = microtime(true);
 
@@ -611,7 +520,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   $tplan_tcases = null;
 
   list($filters,$options,
-     $show_testsuite_contents,
+       $show_testsuite_contents,
        $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
   
   $tplan_mgr = new testplan($dbHandler);
@@ -624,22 +533,22 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
   
   $nt2exclude = array('testplan' => 'exclude_me',
-                    'requirement_spec'=> 'exclude_me',
-                    'requirement'=> 'exclude_me');
+                      'requirement_spec'=> 'exclude_me',
+                      'requirement'=> 'exclude_me');
   
   $nt2exclude_children = array('testcase' => 'exclude_my_children',
-                             'requirement_spec'=> 'exclude_my_children');
+                               'requirement_spec'=> 'exclude_my_children');
   
-    // remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
-    // 
-    // IMPORTANT:
-    // using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
-    // makes the magic of ignoring test cases not linked to test plan.
-    // This unexpected bonus can be useful on export test plan as XML.
-    //
-    $my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
-                         'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id),
-                         'hideTestCases' => $options['hideTestCases']);
+  // remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
+  // 
+  // IMPORTANT:
+  // using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
+  // makes the magic of ignoring test cases not linked to test plan.
+  // This unexpected bonus can be useful on export test plan as XML.
+  //
+  $my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
+                       'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id),
+                       'hideTestCases' => $options['hideTestCases']);
                          
   $my['filters'] = array('exclude_node_types' => $nt2exclude,
                          'exclude_children_of' => $nt2exclude_children);
@@ -649,29 +558,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     $my['filters']['exclude_branches'] = $objFilters->filter_toplevel_testsuite;
   }
 
-    // TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
-    if (isset($objFilters->filter_custom_fields) && is_array($objFilters->filter_custom_fields))
-    {
-        $my['filters']['filter_custom_fields'] = $objFilters->filter_custom_fields;
-    }
+  if (isset($objFilters->filter_custom_fields) && is_array($objFilters->filter_custom_fields))
+  {
+    $my['filters']['filter_custom_fields'] = $objFilters->filter_custom_fields;
+  }
 
-  // Take Time
-  //$chronos[] = microtime(true);
-  //$tnow = end($chronos);
-  //$tprev = prev($chronos);
-    
-    $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
-
-  
-  // Take Time
-  // $chronos[] = microtime(true);
-  // $tnow = end($chronos);
-  // $tprev = prev($chronos);
-  // $t_elapsed = number_format( $tnow - $tprev, 4);
-  // echo '<br> ' . __FUNCTION__ . '::' . __LINE__ . ' Elapsed (sec) (getSkeleton()):' . $t_elapsed .'<br>';
-  // reset($chronos); 
-
-     
+ 
+  $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
   $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
   $test_spec['id'] = $tproject_id;
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];
@@ -679,7 +572,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   $map_node_tccount = array();
   
   $tplan_tcases = null;
-    $apply_other_filters=true;
+  $apply_other_filters=true;
 
 
   if($test_spec)
@@ -698,9 +591,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
       // WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
       // THIS YET.
       //
-      //New dBug($filters, array('label' => __FUNCTION__));
-      //Echo $objOptions->getTreeMethod;
-      //Die();
       if( !is_null($sql2do = $tplan_mgr->{$objOptions->getTreeMethod}($tplan_id,$filters,$options)) )
       {
         $doPinBall = false;
@@ -744,14 +634,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
         } 
         $setTestCaseStatus = $tplan_tcases;
       }
-                  
-      // Take Time
-      // $chronos[] = microtime(true);
-      // $tnow = end($chronos);
-      // $tprev = prev($chronos);
-      // $t_elapsed = number_format( $tnow - $tprev, 4);
-      // echo '<br> ' . __FUNCTION__ . " Elapsed (sec) (<b>AFTER glinkedMethod()</b>):" . $t_elapsed .'<br>';
-      // reset($chronos); 
     }   
 
     
@@ -760,62 +642,27 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
       $tplan_tcases = array();
       $apply_other_filters=false;
     }
-    // Take time
-    //$chronos[] = microtime(true);
-    //$tnow = end($chronos);
-    //$tprev = prev($chronos);
-    //$t_elapsed = number_format( $tnow - $tprev, 4);
-    //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>FROM get_subtree()</b>):' . $t_elapsed .'<br>';
-    //reset($chronos);  
 
     // OK, now we need to work on status filters
-    //New dBug($objFilters);
-    //New dBug($objOptions);
     // if "any" was selected as filtering status, don't filter by status
     $targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
     if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
     {
-      // die('GO ON OTHER FILTERS');
-      //echo '<h1> BEFORE applyStatusFilters() </h1>';
-      //New dBug($tplan_tcases);
       applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);
     }
 
-        // TICKET 5284: Filtering by the value of custom fields is not working on tester assignment
-        if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
-        {
-            $test_spec['childNodes'] = filter_by_cf_values($dbHandler, $test_spec['childNodes'],
-                                       $my['filters']['filter_custom_fields'],$hash_descr_id);
-        }
+    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
+    {
+      $test_spec['childNodes'] = filter_by_cf_values($dbHandler, $test_spec['childNodes'],
+                                                     $my['filters']['filter_custom_fields'],$hash_descr_id);
+    }
 
-    // Take time
-    //$chronos[] = microtime(true);
-    //$tnow = end($chronos);
-    //$tprev = prev($chronos);
-    //$t_elapsed = number_format( $tnow - $tprev, 4);
-    //reset($chronos);  
-    
+   
     // here we have LOT OF CONFUSION, sometimes we use $my['options'] other $options
-      $pnFilters = null;    
-      
-      
+    $pnFilters = null;    
     $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 'viewType' => 'executionTree');
-    
-    
-    
-    //New dBug($pnOptions);
     $testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
-                                           $tplan_tcases,$pnFilters,$pnOptions);
-
-    //New dBug($test_spec);
-    
-    // Take time
-    // $chronos[] = microtime(true);
-    // $tnow = end($chronos);$tprev = prev($chronos);
-    // $t_elapsed = number_format( $tnow - $tprev, 4);
-    // echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER prepareExecTreeNode()</b>):' . $t_elapsed .'<br>';
-    // reset($chronos); 
-
+                                             $tplan_tcases,$pnFilters,$pnOptions);
 
     foreach($testcase_counters as $key => $value)
     {
@@ -824,14 +671,9 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   
     $keys = array_keys($tplan_tcases);
     $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
-                                   $hash_id_descr,1,$menuUrl,false,$useCounters,$useColors,
-                                   $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-    //$chronos[] = microtime(true);
-    //$tnow = end($chronos);$tprev = prev($chronos);
-    //$t_elapsed = number_format( $tnow - $tprev, 4);
-    //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>AFTER renderExecTreeNode()</b>):' . $t_elapsed .'<br>';
-    //reset($chronos);  
-    
+                                     $hash_id_descr,1,$menuUrl,$my['options']['hideTestCases'],
+                                     $useCounters,$useColors,
+                                     $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
   }  // if($test_spec)
   
     
@@ -858,15 +700,5 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   }  
   
   $treeMenu->menustring = $menustring;
-
-      //$chronos[] = microtime(true);
-      //$tnow = end($chronos);
-      //reset($chronos);  
-      //$t_elapsed = number_format( $tnow - $tstart, 4);
-      //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (<b>BEFORE RETURN()</b>):' . $t_elapsed .'<br>';
-      //reset($chronos);  
-  
   return array($treeMenu, $keys);
 }
-
-?>

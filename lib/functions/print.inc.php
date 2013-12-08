@@ -14,7 +14,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  *
  */ 
 
@@ -591,6 +591,7 @@ function renderHTMLHeader($title,$base_href,$doc_type,$jsSet=null)
     case DOC_TEST_SPEC:
     case DOC_TEST_PLAN_DESIGN:
     case DOC_TEST_PLAN_EXECUTION:
+    case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
     case SINGLE_TESTCASE:
     default:
       $cssFile .= $docCfg->css_template;
@@ -666,16 +667,24 @@ function renderFirstPage($doc_info)
   // Report Minimal Description
   // Test Project Name
   // Test Plan Name
+  // Build Name (if applicable)
   // Test Suite Name (if applicable)
   //
   $output .= '<div class="doc_title">' . '<p>' . $doc_info->type_name . '</p>' . "</div>\n";
   $output .= '<div class="doc_title" style="text-align:left;margin: auto;">' . '<p>' . 
              lang_get('testproject') . ": " . $doc_info->tproject_name;
 
-  if($doc_info->type == DOC_TEST_PLAN_DESIGN || $doc_info->type == DOC_TEST_PLAN_EXECUTION)
+  if($doc_info->type == DOC_TEST_PLAN_DESIGN || $doc_info->type == DOC_TEST_PLAN_EXECUTION || 
+     $doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD)
   {
     $output .= '<br>' . lang_get('testplan') . ": " . $doc_info->testplan_name;
   }  
+
+  if($doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD)
+  {
+    $output .= '<br>' . lang_get('build') . ": " . $doc_info->build_name;
+  }  
+
 
   if($doc_info->content_range == 'testsuite')
   {
@@ -733,7 +742,7 @@ function renderSimpleChapter($title, $content, $addToStyle=null)
 function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
                                        $tocPrefix,$tcCnt,$level,$user_id,
                                        $tplan_id = 0,$tcPrefix = null,
-                                       $tprojectID = 0, $platform_id = 0)
+                                       $tprojectID = 0, $platform_id = 0,$build_id = 0)
 {
   static $tree_mgr;
   static $map_id_descr;
@@ -760,8 +769,14 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
     break;
 
     case 'testcase':
-      $code .= renderTestCaseForPrinting($db, $node, $options, $level,
-                                         $tplan_id, $tcPrefix, $tprojectID, $platform_id);
+      // $code .= renderTestCaseForPrinting($db, $node, $options, $level,
+      //                                   $tplan_id, $tcPrefix, $tprojectID, $platform_id);
+
+      $code .= renderTestCaseForPrinting($db, $node, $options, 
+                                         array('level' => $level, 'prefix' => $tcPrefix,
+                                               'tplan_id' => $tplan_id,  'tproject_id' => $tprojectID, 
+                                               'platform_id' => $platform_id, 'build_id' => $build_id));
+
     break;
   }
   
@@ -786,7 +801,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
       }
       $code .= renderTestSpecTreeForPrinting($db, $current, $item_type, $options,
                                              $tocPrefix, $tsCnt, $level+1, $user_id,
-                                             $tplan_id, $tcPrefix, $tprojectID, $platform_id);
+                                             $tplan_id, $tcPrefix, $tprojectID, $platform_id,$build_id);
     }
   }
   
@@ -847,8 +862,7 @@ function gendocGetUserName(&$db, $userId)
  *
  * @internal revisions
  */
-function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 0,
-                                   $prefix = null, $tprojectID = 0, $platform_id = 0)
+function renderTestCaseForPrinting(&$db, &$node, &$options, $context)
 {
   
   static $req_mgr;
@@ -874,6 +888,13 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 
   $id = $node['id'];
 
+  $level = $context['level'];
+  $prefix = isset($context['prefix']) ? $context['prefix'] : null;
+  $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
+  $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
+  $platform_id = isset($context['platform_id']) ? $context['platform_id'] : 0;
+  $build_id = isset($context['build_id']) ? $context['build_id'] : 0;
+
   // init static elements
   if (!$tables)
   {
@@ -897,8 +918,6 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
 
     $force['displayVersion'] = isset($options['displayVersion']) ? $options['displayVersion'] : false;
     $force['displayLastEdit'] = isset($options['displayLastEdit']) ? $options['displayLastEdit'] : false;
-    
-    
      
     $its = null;
     $tproject_mgr = new testproject($db);
@@ -936,7 +955,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   // should be removed and replaced by existing functions.
   // ----- BUGID 3451 and related ---------------------------------------
   
-    $cfields = array('specScope' => null, 'execScope' => null);
+  $cfields = array('specScope' => null, 'execScope' => null);
 
   // get custom fields that has specification scope
   if ($options['cfields'])
@@ -969,7 +988,6 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
   
   if ($bGetExecutions)
   {
-    
     $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
            " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
            " B.name AS build_name,E.execution_duration " .
@@ -977,10 +995,13 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $level, $tplan_id = 
            " WHERE E.build_id= B.id " . 
            " AND E.tcversion_id = {$versionID} " .
            " AND E.testplan_id = {$tplan_id} " .
-           " AND E.platform_id = {$platform_id} " .
-           " ORDER BY execution_id DESC";
+           " AND E.platform_id = {$platform_id} ";
+    if($build_id > 0)
+    {
+      $sql .= " AND E.build_id = {$build_id} ";
+    }       
+    $sql .= " ORDER BY execution_id DESC";
     $exec_info = $db->get_recordset($sql,null,1);
-    
     if( !is_null($exec_info) && $options['build_cfields'])
     {
       if( !isset($buildCfields[$exec_info[0]['build_id']]) )
@@ -1248,7 +1269,8 @@ function renderTOC(&$options)
   $options['toc_numbers'][1] = 0;
   if ($options['toc'])
   {
-    $options['tocCode'] = '<h1 class="general" style="page-break-before: always">' . lang_get('title_toc').'</h1><div class="toc">';
+    $options['tocCode'] = '<h1 class="general" style="page-break-before: always">' . 
+                          lang_get('title_toc').'</h1><div class="toc">';
     $code .= "{{INSERT_TOC}}";
   }
 
@@ -1329,14 +1351,15 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
   @internal revisions:
 */
 function renderTestPlanForPrinting(&$db, &$node, $item_type, &$options, $tocPrefix,
-                                   $tcCnt, $level, $user_id, $tplan_id, $tprojectID, $platform_id)
+                                   $tcCnt, $level, $user_id, $tplan_id, $tprojectID, 
+                                   $platform_id,$build_id)
 
 {
   $tProjectMgr = new testproject($db);
   $tcPrefix = $tProjectMgr->getTestCasePrefix($tprojectID);
   $code =  renderTestSpecTreeForPrinting($db, $node, $item_type, $options,
                                          $tocPrefix, $tcCnt, $level, $user_id,
-                                         $tplan_id, $tcPrefix, $tprojectID, $platform_id);
+                                         $tplan_id, $tcPrefix, $tprojectID, $platform_id,$build_id);
   return $code;
 }
 
@@ -1462,12 +1485,12 @@ function initRenderTestCaseCfg(&$tcaseMgr)
     
     foreach($config['results']['code_status'] as $key => $value)
     {
-        $config['status_labels'][$key] = 
+      $config['status_labels'][$key] = 
           "check your \$tlCfg->results['status_label'] configuration ";
-        if( isset($config['results']['status_label'][$value]) )
-        {
-            $config['status_labels'][$key] = lang_get($config['results']['status_label'][$value]);
-        }    
+      if( isset($config['results']['status_label'][$value]) )
+      {
+        $config['status_labels'][$key] = lang_get($config['results']['status_label'][$value]);
+      }    
     }
 
     $labelsKeys=array('last_exec_result', 'title_execution_notes', 'none', 'reqs','author', 'summary',
@@ -1486,10 +1509,9 @@ function initRenderTestCaseCfg(&$tcaseMgr)
     }
     
     $config['importance'] = array(HIGH => $labels['high_importance'],
-                    MEDIUM => $labels['medium_importance'],
-                    LOW => $labels['low_importance']);
+                                  MEDIUM => $labels['medium_importance'],
+                                  LOW => $labels['low_importance']);
 
-    // TICKET 5288 - print priority when printing test plan
     $config['priority'] = array(HIGH => $labels['high_priority'],
                                 MEDIUM => $labels['medium_priority'],
                                 LOW => $labels['low_priority']);
@@ -1614,6 +1636,3 @@ function renderTestPlanItem($info)
                               $info->testplan_scope, 'page-break-before: avoid;');
   return $out;
 }
-
-
-?>

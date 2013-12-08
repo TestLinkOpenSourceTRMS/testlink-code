@@ -49,8 +49,13 @@ $text2print = '';
 $text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],
 								SINGLE_TESTCASE,array('gui/javascript/testlink_library.js'));
 
-$text2print .= renderTestCaseForPrinting($db,$node,$printingOptions, 
-										 $level,$tplanID,$prefix,$args->tproject_id);
+// $text2print .= renderTestCaseForPrinting($db,$node,$printingOptions, 
+//										 $level,$tplanID,$prefix,$args->tproject_id);
+
+// 20131208
+$text2print .= renderTestCaseForPrinting($db,$node,$printingOptions,,
+										 array('level' => $level,'tplan_id' => $tplanID,
+										 	   'tproject_id' => $args->tproject_id,'prefix' => $prefix));
 
 echo $text2print;
 

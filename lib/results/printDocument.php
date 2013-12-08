@@ -38,6 +38,7 @@ $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options'
 $treeForPlatform[0] = &$subtree;
 $doc_info->title = $doc_info->tproject_name;
 
+
 switch ($doc_info->type)
 {
   case DOC_REQ_SPEC:
@@ -82,8 +83,17 @@ switch ($doc_info->type)
     $printingOptions['metrics'] = true; // FORCE
   
   case DOC_TEST_PLAN_EXECUTION:
+  case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
     $tplan_mgr = new testplan($db);
     $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+
+    if($args->build_id > 0)
+    {
+      $xx = $tplan_mgr->get_builds($args->tplan_id,null,null,array('buildID' => $args->build_id));
+      $doc_info->build_name = htmlspecialchars($xx[$args->build_id]['name']);
+    }  
+
+
     $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
     $doc_info->testplan_scope = $tplan_info['notes'];
     $doc_info->title = $doc_info->testplan_name;
@@ -98,12 +108,6 @@ switch ($doc_info->type)
     $treeForPlatform = array();
       
     $filters = null;
-//    if( isset($printingOptions['assigned_to_me']) && $printingOptions['assigned_to_me'] )
-//    {
-//      $filters['assignedTo'] = $args->user_id;
-//      $filters['filter_assigned_user'] = true;
-//    }  
-
     switch($doc_info->content_range)
     {
       case 'testproject':
@@ -153,6 +157,7 @@ if ($treeForPlatform)
       $printingOptions['metrics'] = true; // FORCED
 
     case DOC_TEST_PLAN_EXECUTION:
+    case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
       $docText .= renderTestProjectItem($doc_info);
       $docText .= renderTestPlanItem($doc_info);
       $cfieldFormatting=array('table_css_style' => 'class="cf"');
@@ -187,6 +192,7 @@ if ($treeForPlatform)
       
         case DOC_TEST_PLAN_DESIGN:
         case DOC_TEST_PLAN_EXECUTION:
+        case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
           $tocPrefix++;
           if ($showPlatforms)
           {
@@ -195,10 +201,9 @@ if ($treeForPlatform)
           }
           $docText .= renderTestPlanForPrinting($db, $tree2work, $doc_info->content_range, 
                                                 $printingOptions, $tocPrefix, 0, 1, $args->user_id,
-                                                $args->tplan_id, $args->tproject_id, $platform_id);
+                                                $args->tplan_id, $args->tproject_id, 
+                                                $platform_id,$args->build_id);
 
-          
-          // if (($doc_info->type == DOC_TEST_PLAN_EXECUTION) && ($printingOptions['metrics']))
           if( $printingOptions['metrics'] )
           {
             $docText .= buildTestPlanMetrics($doc_data->statistics,$platform_id);
@@ -238,9 +243,10 @@ function init_args(&$dbHandler)
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                    "tproject_id" => array(tlInputParameter::INT_N), 
                    "tplan_id" => array(tlInputParameter::INT_N),  
+                   "build_id" => array(tlInputParameter::INT_N),  
                    "docTestPlanId" => array(tlInputParameter::INT_N),  
                    "id" => array(tlInputParameter::INT_N),
-                   "type" => array(tlInputParameter::STRING_N,0,15),
+                   "type" => array(tlInputParameter::STRING_N,0,20),
                    "format" => array(tlInputParameter::INT_N),
                    "level" => array(tlInputParameter::STRING_N,0,32));
 
@@ -377,7 +383,9 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
                                                         'requirement_spec'=> 'exclude my children'));     
 
   $lblKey  = array(DOC_TEST_SPEC => 'title_test_spec', DOC_TEST_PLAN_DESIGN => 'report_test_plan_design',
-                   DOC_TEST_PLAN_EXECUTION => 'report_test_plan_execution', DOC_REQ_SPEC => 'req_spec');
+                   DOC_TEST_PLAN_EXECUTION => 'report_test_plan_execution', 
+                   DOC_TEST_PLAN_EXECUTION_ON_BUILD => 'report_test_plan_execution_on_build', 
+                   DOC_REQ_SPEC => 'req_spec');
 
 
   $doc->content_range = $argsObj->level;
@@ -385,6 +393,7 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
   $doc->type_name = lang_get($lblKey[$doc->type]);
   $doc->author = '';
   $doc->title = '';
+
    
   switch ($doc->type)
   {
@@ -393,8 +402,9 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
       break;
     
     case DOC_TEST_PLAN_EXECUTION: 
+    case DOC_TEST_PLAN_EXECUTION_ON_BUILD: 
       $my['options']['order_cfg'] = array("type" =>'exec_order',                      
-                        "tplan_id" => $argsObj->tplan_id);
+                                          "tplan_id" => $argsObj->tplan_id);
       $my['options']['prepareNode'] = array('viewType' => 'executionTree');                        
       break;
       
@@ -420,8 +430,7 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
   $doc->tproject_name = htmlspecialchars($dummy['name']);
   $doc->tproject_scope = $dummy['notes'];
 
-    // TICKET 5288 - print importance/priority when printing test specification/plan
-    $doc->test_priority_enabled = $dummy['opt']->testPriorityEnabled;
+  $doc->test_priority_enabled = $dummy['opt']->testPriorityEnabled;
 
   return array($doc,$my);
 }
@@ -545,13 +554,8 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
  */ 
 function buildContentForTestPlan(&$dbHandler,$itemsTree,$tplanID,$platformIDSet,$decode,&$tplanMgr,$pnFilters=null)
 {
-  // displayMemUsage('BEFORE LOOP ON PLATFORMS');
   $linkedBy = array();
-  // $pnFilters = $filters;
-
-  // 'filter_assigned_user'
   $contentByPlatform = array();
-
 
   // due to Platforms we need to use 'viewType' => 'executionTree',
   // if not we get ALWAYS the same set of test cases linked to test plan
@@ -575,9 +579,6 @@ function buildContentForTestPlan(&$dbHandler,$itemsTree,$tplanID,$platformIDSet,
     }
   
     $dummy4reference = null;
-
-    // new dBug($tree2work);
-
     prepareNode($dbHandler,$tree2work,$decode,$dummy4reference,$dummy4reference,
                 $linkedBy[$platform_id],$pnFilters,$pnOptions);
   
@@ -585,6 +586,7 @@ function buildContentForTestPlan(&$dbHandler,$itemsTree,$tplanID,$platformIDSet,
   }
   return $contentByPlatform;
 }
+
 
 /**
  *

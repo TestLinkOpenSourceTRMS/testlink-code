@@ -2068,7 +2068,7 @@ $TLS_doc_opt_guide = 'Modify options for required structure of document. ' .
                      'element to generate a document content.';
 $TLS_tr_td_show_as = "Show as";
 $TLS_check_uncheck_all_options = "check / uncheck all";
-
+$TLS_test_report_on_build = "Test Report on Build";
 
 
 // ----- gui/templates/tcReorder.tpl -----
@@ -2909,6 +2909,7 @@ $TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
 $TLS_link_report_test = "Test result matrix";
 $TLS_link_report_test_plan = "Test Plan Report";
 $TLS_link_report_test_report = "Test Report";
+$TLS_link_report_test_report_on_build = "Test Report on build";
 $TLS_link_report_total_bugs = "Bugs per Test Case";
 $TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
 $TLS_link_report_reqs_with_cf = "Requirements with Custom Fields info";
@@ -3701,6 +3702,7 @@ $TLS_testCaseStatus_final = 'Final';
 // printDocument.php
 $TLS_report_test_plan_design = 'Test Plan Design Report';	
 $TLS_report_test_plan_execution = 'Test Plan Execution Report';	
+$TLS_report_test_plan_execution_on_build = 'Test Plan Execution Report (on specific build)';	
 $TLS_execution_time_metrics = 'Execution time metrics';	
 
 

@@ -148,12 +148,6 @@ function STS(id)
 {
   var _FUNCTION_NAME_='STS';
   var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
-
-  // alert(_FUNCTION_NAME_ + " " +menuUrl);
-  // alert(_FUNCTION_NAME_ + " " +id);
-  // alert(_FUNCTION_NAME_ + " " +args);
-
-  // alert(_FUNCTION_NAME_ + " " +action_url);
   parent.workframe.location = action_url;
 }
 
@@ -190,7 +184,6 @@ function EP(id)
   var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" +
                    "&level=testproject&id="+id+args+"&"+pParams;
 
-  //alert(_FUNCTION_NAME_ + " " +action_url);
   parent.workframe.location = action_url;
 }
 
@@ -510,18 +503,28 @@ function tree_getPrintPreferences()
       params.push(v);
     } 
   }
+
   var f = document.getElementById('format');
   if(f)
   {
     params.push("format="+f.value);
   }
-  params = params.join('&');
+
+  var bx = document.getElementById('build_id');
+  if(bx)
+  {
+    params.push("build_id="+bx.value);
+  }
+
+  params = params.join('&');  // from array to string
 
   return params;
 }
 
 
-// TODO understand where is used - 20090715 - franciscom
+/**
+ * @used-by tree_getPrintPreferences
+ */
 function tree_getCheckBox(id)
 {
   var cb = document.getElementById('cb'+id);
@@ -532,9 +535,9 @@ function tree_getCheckBox(id)
   return null;
 }
 
-// @internal revisions
-// @since 1.9.5
-// 20121115 - franciscom - interface changes
+/**
+ *
+ */
 function open_bug_add_window(tproject_id,tcversion_id,exec_id,user_action)
 {
   link2launch = "lib/execute/bugAdd.php?user_action=" + user_action + "&tcversion_id="+tcversion_id +

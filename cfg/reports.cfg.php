@@ -4,12 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	reports.cfg.php
- * @author Martin Havlat
+ * @author 		Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.10
  *
  * 
  */
@@ -18,6 +18,7 @@
 define('DOC_TEST_SPEC', 'testspec');
 define('DOC_TEST_PLAN_DESIGN', 'testplan');
 define('DOC_TEST_PLAN_EXECUTION', 'testreport');
+define('DOC_TEST_PLAN_EXECUTION_ON_BUILD', 'testreport_onbuild');
 define('DOC_REQ_SPEC', 'reqspec');
 define('SINGLE_TESTCASE', 'testcase');
 define('SINGLE_REQ', 'requirement');
@@ -85,6 +86,15 @@ $tlCfg->reports_list['test_report'] = array(
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION,
 	'enabled' => 'all',
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_report',
+	'format' => 'format_html,format_odt,format_msword'
+);
+
+// 20131208
+$tlCfg->reports_list['test_report_on_build'] = array( 
+	'title' => 'link_report_test_report_on_build',
+	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
+	'enabled' => 'all',
+	// 'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
 	'format' => 'format_html,format_odt,format_msword'
 );
 

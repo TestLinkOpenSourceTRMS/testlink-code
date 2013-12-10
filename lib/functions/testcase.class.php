@@ -10,7 +10,7 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  *
  */
 
@@ -1542,7 +1542,7 @@ class testcase extends tlObjectWithAttachments
         if (isset($my['options']['copy_also']['requirement_assignments']) && 
             $my['options']['copy_also']['requirement_assignments'])
         {
-          $this->copyReqAssignmentTo($id,$newTCObj['id'],$my['mappings']['requirements']);
+          $this->copyReqAssignmentTo($id,$newTCObj['id'],$my['mappings']['requirements'],$ix->authorID);
         }
         
          $this->copy_attachments($id,$newTCObj['id']);
@@ -3687,12 +3687,12 @@ class testcase extends tlObjectWithAttachments
    * copyReqAssignmentTo
    * copy requirement assignments for $from test case id to $to test case id 
    *
-     * mappings is only useful when source_id and target_id do not belong to same Test Project.
+   * mappings is only useful when source_id and target_id do not belong to same Test Project.
    * Because keywords are defined INSIDE a Test Project, ID will be different for same keyword
    * in a different Test Project.
    *
    */
-  function copyReqAssignmentTo($from,$to,$mappings)
+  function copyReqAssignmentTo($from,$to,$mappings,$userID)
   {
     static $req_mgr;
     if( is_null($req_mgr) )
@@ -3715,7 +3715,7 @@ class testcase extends tlObjectWithAttachments
           $items[$idx]=$itemSet[$idx]['id'];
         }
       }
-      $req_mgr->assign_to_tcase($items,$to); 
+      $req_mgr->assign_to_tcase($items,$to,$userID); 
     } 
   }
   
@@ -3725,36 +3725,35 @@ class testcase extends tlObjectWithAttachments
    */
   private function getShowViewerActions($mode)
   {
-      // fine grain control of operations
-      $viewerActions= new stdClass();
-      $viewerActions->edit='no';
-      $viewerActions->delete_testcase='no';
-      $viewerActions->delete_version='no';
-      $viewerActions->deactivate='no';
-      $viewerActions->create_new_version='no';
-      $viewerActions->export='no';
-      $viewerActions->move='no';
-      $viewerActions->copy='no';
-      $viewerActions->add2tplan='no';
+    // fine grain control of operations
+    $viewerActions= new stdClass();
+    $viewerActions->edit='no';
+    $viewerActions->delete_testcase='no';
+    $viewerActions->delete_version='no';
+    $viewerActions->deactivate='no';
+    $viewerActions->create_new_version='no';
+    $viewerActions->export='no';
+    $viewerActions->move='no';
+    $viewerActions->copy='no';
+    $viewerActions->add2tplan='no';
   
-      switch ($mode) 
-      {
-          case 'editOnExec':
-              $viewerActions->edit='yes';
-              // 20100530 - franciscom - $viewerActions->create_new_version='yes';    
-          break;
+    switch ($mode) 
+    {
+      case 'editOnExec':
+        $viewerActions->edit='yes';
+      break;
   
-          case 'editDisabled':
-          break;
+      case 'editDisabled':
+      break;
   
-          default:
-          foreach($viewerActions as $key => $value)
-          {
-              $viewerActions->$key='yes';        
-          }
-          break;
-      }
-      return $viewerActions;     
+      default:
+        foreach($viewerActions as $key => $value)
+        {
+          $viewerActions->$key='yes';        
+        }
+      break;
+    }
+    return $viewerActions;     
   }
   
   /**

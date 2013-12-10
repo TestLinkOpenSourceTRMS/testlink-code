@@ -398,8 +398,6 @@ function getDocBookTableAsHtmlString($docTable,$parseCfg)
 /**
  * Imports data from DocBook XML
  *
- * 20081103 - sisajr
- *
  * @return array of map
  *
  */
@@ -409,13 +407,13 @@ function importReqDataFromDocBook($fileName)
   $docbookCfg = $req_cfg->importDocBook;
   $xmlReqs = null;
   $xmlData = null;
-    $field_size=config_get('field_size');  
+  $field_size=config_get('field_size');  
   
   $simpleXMLObj = simplexml_load_file($fileName);
-  $num_elem = count($simpleXMLObj->sect1);
+  $num_elem = count($simpleXMLObj->{$docbookCfg->requirement});
 
   $idx=0; 
-  foreach($simpleXMLObj->sect1 as $xmlReq)
+  foreach($simpleXMLObj->{$docbookCfg->requirement} as $xmlReq)
   {
     // get all child elements of this requirement
     $title = "";
@@ -476,7 +474,7 @@ function importReqDataFromDocBook($fileName)
     $xmlData[$idx]['title'] = preg_replace("/^[^a-zA-Z_0-9]*/","",$xmlData[$idx]['title']);
       
     // get Doc ID
-      //
+    //
     // this will create Doc ID as words ended with number
     // Example: Req BL 20 Business Logic
     // Doc ID: Req BL 20
@@ -503,7 +501,6 @@ function importReqDataFromDocBook($fileName)
       $xmlData[$idx]['docid'] = $matches[0] . " " . $counter[$index];
     }
 
-    // 20100919 - to refactor in future
     $xmlData[$idx]['node_order'] = $idx;
     $xmlData[$idx]['expected_coverage'] = 0;
     $xmlData[$idx]['type'] = TL_REQ_TYPE_FEATURE;

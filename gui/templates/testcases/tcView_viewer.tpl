@@ -27,45 +27,45 @@ viewer for test case in test specification
 {$addInfoDivStyle='style="padding: 5px 3px 4px 10px;"'}
 
 
-{assign var="module" value='lib/testcases/'}
-{assign var="tcase_id" value=$args_testcase.testcase_id}
-{assign var="tcversion_id" value=$args_testcase.id}
-{assign var="showMode" value=$gui->show_mode} 
+{$module='lib/testcases/'}
+{$tcase_id=$args_testcase.testcase_id}
+{$tcversion_id=$args_testcase.id}
+{$showMode=$gui->show_mode} 
 
 {* Used on several operations to implement goback *}
-{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
+{$tcViewAction="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
              
-{assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
-{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
+{$hrefReqSpecMgmt="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
+{$hrefReqSpecMgmt="$basehref$hrefReqSpecMgmt"}
 
-{assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
+{$hrefReqMgmt="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
+{$hrefReqMgmt="$basehref$hrefReqMgmt"}
 
-{assign var="url_args" value="tcAssign2Tplan.php?tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{assign var="hrefAddTc2Tplan"  value="$basehref$module$url_args"}
-
-
-{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{assign var="goBackAction" value="$basehref$tcViewAction"}
-{assign var="goBackActionURLencoded" value=$goBackAction|escape:'url'}
-{assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
-{assign var="hrefEditStep"  value="$basehref$module$url_args"}
+{$url_args="tcAssign2Tplan.php?tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{$hrefAddTc2Tplan="$basehref$module$url_args"}
 
 
-{assign var="tcExportAction" value="lib/testcases/tcExport.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
-{assign var="exportTestCaseAction" value="$basehref$tcExportAction"}
-
-{assign var="printTestCaseAction" value="lib/testcases/tcPrint.php?show_mode=$showMode"}
-
-{assign var="execFeatureAction" value="lib/general/frmWorkArea.php?feature=executeTest"}
-
+{$url_args="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{$goBackAction="$basehref$tcViewAction"}
+{$goBackActionURLencoded=$goBackAction|escape:'url'}
+{$url_args="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
+{$hrefEditStep="$basehref$module$url_args"}
 
 
-{assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
-{assign var="updater_userinfo" value=""}
+{$tcExportAction="lib/testcases/tcExport.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
+{$exportTestCaseAction="$basehref$tcExportAction"}
+
+{$printTestCaseAction="lib/testcases/tcPrint.php?show_mode=$showMode"}
+
+{$execFeatureAction="lib/general/frmWorkArea.php?feature=executeTest"}
+
+
+
+{$author_userinfo=$args_users[$args_testcase.author_id]}
+{$updater_userinfo=""}
 
 {if $args_testcase.updater_id != ''}
-  {assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
+  {$updater_userinfo=$args_users[$args_testcase.updater_id]}
 {/if}
 
 {if $args_show_title == "yes"}
@@ -193,13 +193,13 @@ viewer for test case in test specification
     {* --------------------------------------------------------------------------------------- *}
     {if $active_status_op_enabled eq 1 && $args_can_do->deactivate=='yes'}
           {if $args_testcase.active eq 0}
-              {assign var="act_deact_btn" value="activate_this_tcversion"}
-              {assign var="act_deact_value" value="activate_this_tcversion"}
-              {assign var="version_title_class" value="inactivate_version"}
+              {$act_deact_btn="activate_this_tcversion"}
+              {$act_deact_value="activate_this_tcversion"}
+              {$version_title_class="inactivate_version"}
           {else}
-              {assign var="act_deact_btn" value="deactivate_this_tcversion"}
-              {assign var="act_deact_value" value="deactivate_this_tcversion"}
-              {assign var="version_title_class" value="activate_version"}
+              {$act_deact_btn="deactivate_this_tcversion"}
+              {$act_deact_value="deactivate_this_tcversion"}
+              {$version_title_class="activate_version"}
           {/if}
           <input type="submit" name="{$act_deact_btn}"
                              value="{lang_get s=$act_deact_value}" />

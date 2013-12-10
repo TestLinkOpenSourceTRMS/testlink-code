@@ -28,21 +28,21 @@ $args = init_args();
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr,$req_mgr);
 switch($args->doAction)
 {
-    case 'uploadFile':
-      $dummy = doExecuteImport($gui->fileName,$args,$req_spec_mgr,$req_mgr);
-      $gui->items = $dummy->items;        
-      $gui->file_check = $dummy->file_check;
-      $gui->userFeedback = (array)$dummy->userFeedback;
-      if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) 
-      {
-        $gui->importResult = lang_get('import_syntax_error');
-      } 
-      else 
-      {
-        $gui->importResult = lang_get('import_done');
-      }
-      $gui->refreshTree = $args->refreshTree && $gui->file_check['status_ok'];  
-    break;
+  case 'uploadFile':
+    $dummy = doExecuteImport($gui->fileName,$args,$req_spec_mgr,$req_mgr);
+    $gui->items = $dummy->items;        
+    $gui->file_check = $dummy->file_check;
+    $gui->userFeedback = (array)$dummy->userFeedback;
+    if(array_key_exists("syntaxError", $gui->userFeedback) && count($gui->userFeedback['syntaxError']) > 0) 
+    {
+      $gui->importResult = lang_get('import_syntax_error');
+    } 
+    else 
+    {
+      $gui->importResult = lang_get('import_done');
+    }
+    $gui->refreshTree = $args->refreshTree && $gui->file_check['status_ok'];  
+  break;
 }
 
    
@@ -81,7 +81,7 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
   { 
     if (move_uploaded_file($source, $fileName))
     {
-      if( strcasecmp($argsObj->importType,'XML') == 0 )
+      if( $argsObj->importType == 'XML' )
       {
         $retval->file_check['status_ok']=!(($xml=simplexml_load_file_wrapper($fileName)) === FALSE);
       }
@@ -93,8 +93,7 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
   } 
   // ----------------------------------------------------------------------------------------------
   
-  // If there is no req_spec in XML, and req_spec_id 
-  // from context is null, we must raise an error, to avoid ghots requirements in DB
+  /*
   if($retval->file_check['status_ok']) 
   {
     $isReqSpec = property_exists($xml,'req_spec');
@@ -103,18 +102,29 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
       $retval->file_check = array('status_ok' => FALSE, 'msg' => lang_get('please_create_req_spec_first'));
     }
   }
-  
+  */
+
   if($retval->file_check['status_ok'])
   {
     if($argsObj->importType == 'XML')
     {
+      // If there is no req_spec in XML, and req_spec_id 
+      // from context is null, we must raise an error, to avoid ghots requirements in DB
+      $isReqSpec = property_exists($xml,'req_spec');
+      if(!$isReqSpec && $argsObj->req_spec_id <= 0) 
+      {
+        $retval->file_check = array('status_ok' => FALSE, 'msg' => lang_get('please_create_req_spec_first'));
+      }
+      else
+      {  
         $retval->items = doReqImportFromXML($reqSpecMgr,$reqMgr,$xml,$context,$opts);
+      }  
     }
     else
     {
-        $dummy = doReqImportOther($reqMgr,$fileName,$context,$opts);
-        $retval->items = $dummy['items'];
-        $retval->userFeedback = $dummy['userFeedback'];
+      $dummy = doReqImportOther($reqMgr,$fileName,$context,$opts);
+      $retval->items = $dummy['items'];
+      $retval->userFeedback = $dummy['userFeedback'];
     }
     unlink($fileName);
     $retval->msg = lang_get('req_import_finished');
@@ -312,16 +322,13 @@ function doReqImportOther(&$reqMgr,$fileName,$importContext,$importOptions)
   if( !is_null($impSet) )
   { 
     $reqSet = $impSet['info'];
-    // new dBug($reqSet);
-    // die();
-    
     if( ($loop2do=count($reqSet)) )
     {
       for($kdx=0; $kdx < $loop2do; $kdx++)
       {   
         $dummy = $reqMgr->createFromMap($reqSet[$kdx],$importContext->tproject_id,
-                        $importContext->req_spec_id,
-                        $importContext->user_id,null,$importOptions);
+                                        $importContext->req_spec_id,
+                                        $importContext->user_id,null,$importOptions);
         $items = array_merge($items,$dummy);
       }
     }

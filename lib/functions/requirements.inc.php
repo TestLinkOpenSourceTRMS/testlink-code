@@ -500,6 +500,10 @@ function importReqDataFromDocBook($fileName)
       $counter[$index]++;
       $xmlData[$idx]['docid'] = $matches[0] . " " . $counter[$index];
     }
+    else
+    {
+      $xmlData[$idx]['docid'] = uniqid('REQ-');
+    }  
 
     $xmlData[$idx]['node_order'] = $idx;
     $xmlData[$idx]['expected_coverage'] = 0;

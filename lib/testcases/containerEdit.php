@@ -402,7 +402,8 @@ function init_args(&$dbHandler,$optionTransferCfg)
     $args->assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
 
-    $keys2loop=array('testsuiteID' => null, 'containerID' => null,'objectID' => null, 'copyKeywords' => 0);
+    $keys2loop=array('testsuiteID' => null, 'containerID' => null,'objectID' => null, 
+                     'copyKeywords' => 0,'copyRequirementAssignments' => 0);
     foreach($keys2loop as $key => $value)
     {
       $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
@@ -862,17 +863,14 @@ function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj
     $copyOpt = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
                      'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
                      'stepAsGhost' => $argsObj->stepAsGhost);
-    $copyOpt['copy_also'] = array('keyword_assignments' => $argsObj->copyKeywords);
+    $copyOpt['copy_also'] = array('keyword_assignments' => $argsObj->copyKeywords,
+                                  'requirement_assignments' => $argsObj->copyRequirementAssignments);
 
     $copy_op =array();
     foreach($argsObj->tcaseSet as $key => $tcaseid)
     {
       $copy_op[$tcaseid] = $tcaseMgr->copy_to($tcaseid, $argsObj->containerID, $argsObj->userID, $copyOpt);
     }
-    // new dBug($copy_op);
-
-    // we are not providing too much feedback !!!
-
     $guiObj = new stdClass();
     $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
     $guiObj->id = $argsObj->objectID;

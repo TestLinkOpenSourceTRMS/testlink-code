@@ -6,11 +6,11 @@ Purpose:
         to copy or move.
 
 @internal revisions
-@since 1.9.9
+@since 1.9.10
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
-             check_uncheck_all_checkboxes,warning,execution_history,design,
+             check_uncheck_all_checkboxes,warning,execution_history,design,copy_requirement_assignments,
              choose_target,copy_keywords,btn_move,btn_cp,summary,btn_copy_ghost_zone'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
@@ -80,6 +80,11 @@ function check_action_precondition(container_id,action,msg)
   			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
   			{$labels.copy_keywords}
   		</p>
+      <p>
+        <input type="checkbox" name="copyRequirementAssignments" id='copyRequirementAssignments' 
+               checked="checked" value="1">
+        {$labels.copy_requirement_assignments}
+      </p>
     {/if}
 
 		{* need to do JS checks*}
@@ -90,7 +95,7 @@ function check_action_precondition(container_id,action,msg)
           <tr>
           {if !$testCasesTableView}  
           <th class="clickable_icon">
-			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			         <img src="{$tlImages.toggle_all}"
 			              onclick='cs_all_checkbox_in_div("move_copy_checkboxes","tcaseSet_","add_value_memory");'
                     title="{$labels.check_uncheck_all_checkboxes}" />
 			    </th>
@@ -107,10 +112,10 @@ function check_action_precondition(container_id,action,msg)
                 </td>
               {/if}
                 <td>
-                    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
+                    <img class="clickable" src="{$tlImages.history_small}"
                          onclick="javascript:openExecHistoryWindow({$tcinfo.tcid});"
                          title="{$labels.execution_history}" />
-                    <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
+                    <img class="clickable" src="{$tlImages.edit_icon}"
                          onclick="javascript:openTCaseWindow({$tcinfo.tcid});"
                          title="{$labels.design}" />
                     {$tcprefix|escape}{$tcinfo.tcexternalid|escape}{$gsmarty_gui->title_separator_1}{$tcinfo.tcname|escape}
@@ -142,10 +147,8 @@ function check_action_precondition(container_id,action,msg)
 {/if}
 
 </div>
-{* 20100314 - franciscom *}
 {if $refreshTree}
-   	{include file="inc_refreshTreeWithFilters.tpl"}
-	{*include file="inc_refreshTree.tpl"*}
+ 	{include file="inc_refreshTreeWithFilters.tpl"}
 {/if}
 </body>
 </html>

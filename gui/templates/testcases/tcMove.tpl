@@ -1,11 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcMove.tpl,v 1.9 2010/05/01 19:34:52 franciscom Exp $
+@tcMove.tpl
 Purpose: smarty template - move/copy test case
 
-rev: 20090401 - franciscom - BUGID 2316 - copy options
-     20080104 - franciscom - added radio to choose position
-                             on destination (top/bottom) container.
 *}
 {include file="inc_head.tpl"}
 

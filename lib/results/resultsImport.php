@@ -6,12 +6,12 @@
  * Results import from XML file
  * 
  * @filesource  resultsImport.php
- * @package   TestLink
- * @author    Kevin Levy
+ * @package     TestLink
+ * @author      Kevin Levy
  * @copyright   2010,2012 TestLink community 
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.10
  *
  **/
 
@@ -437,14 +437,17 @@ function saveImportedResultData(&$db,$resultData,$context)
           $tester_id=$context->userID;
         }
 
+        $addExecDuration = (strlen($tcase_exec['execution_duration']) > 0 && is_numeric($tcase_exec['execution_duration']));
         $sql = " /* $debugMsg */ " .
                " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
-               " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type)" .
+               " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type" .
+               ($addExecDuration ? ',execution_duration':'') . ")" .
                " VALUES ({$context->buildID}, {$tester_id},'{$result_code}',{$context->tplanID}, ".
                " {$tcversion_id},{$execution_ts},'{$notes}', {$version}, " . 
-               " {$context->platformID}, {$tcase_exec['execution_type']})";
-              $db->exec_query($sql); 
+               " {$context->platformID}, {$tcase_exec['execution_type']}" .
+               ($addExecDuration ? ",{$tcase_exec['execution_duration']}" : '') . ")";
 
+        $db->exec_query($sql); 
         if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
         { 
           $execution_id = $db->insert_id($tables['executions']);
@@ -534,7 +537,8 @@ function importExecutionFromXML(&$xmlTCExec)
   $execInfo['notes'] = (string) trim($xmlTCExec->notes);
   $execInfo['timestamp'] = (string) trim($xmlTCExec->timestamp);
   $execInfo['tester'] = (string) trim($xmlTCExec->tester);
-  $execInfo['execution_type'] = intval((int) trim($xmlTCExec->execution_type)); //BUGID 3543
+  $execInfo['execution_type'] = intval((int) trim($xmlTCExec->execution_type));
+  $execInfo['execution_duration'] = trim($xmlTCExec->execution_duration);
 
 
   $bugQty = count($xmlTCExec->bug_id);

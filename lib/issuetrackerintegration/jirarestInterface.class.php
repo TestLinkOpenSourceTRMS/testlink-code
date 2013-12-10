@@ -299,8 +299,15 @@ class jirarestInterface extends issueTrackerInterface
       $ret = array('status_ok' => false, 'id' => null, 'msg' => 'ko');
       if(!is_null($op))
       {  
-        $ret = array('status_ok' => true, 'id' => $op->key, 
-                     'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['fields']['project']['key']));
+        if(isset($op->errors))
+        {
+          $ret['msg'] = $op->errors;
+        }
+        else
+        {        
+          $ret = array('status_ok' => true, 'id' => $op->key, 
+                       'msg' => sprintf(lang_get('jira_bug_created'),$summary,$issue['fields']['project']['key']));
+        }  
       }
     }
     catch (Exception $e)

@@ -60,7 +60,7 @@ $aa_tfp = array(
      'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
      'executeTest' => 'lib/execute/execNavigator.php',
      'showMetrics' => 'lib/results/resultsNavigator.php',
-     'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php'
+     'reqSpecMgmt' => array('lib/requirements/reqSpecListTree.php','lib/project/project_req_spec_mgmt.php?id=')
 );
 
 $full_screen = array('newest_tcversions' => 1);

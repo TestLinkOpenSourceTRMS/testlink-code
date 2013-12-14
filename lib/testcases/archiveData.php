@@ -150,21 +150,21 @@ function init_args(&$dbHandler)
     
   switch($args->feature)
   {
-      case 'testsuite':
-          $_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
-      break;
+    case 'testsuite':
+      $_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
+    break;
      
-      case 'testcase':
-        $viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
-        $viewerCfg['disable_edit'] = 0;
-        $viewerCfg['refreshTree'] = 0;
+    case 'testcase':
+      $viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
+      $viewerCfg['disable_edit'] = 0;
+      $viewerCfg['refreshTree'] = 0;
             
-        $args->id = is_null($args->id) ? 0 : $args->id;
-        if( is_null($args->tcaseTestProject) && $args->id > 0 )
-        {
-          $args->tcaseTestProject = $tprojectMgr->getByChildID($args->id);
-        }
-      break;
+      $args->id = is_null($args->id) ? 0 : $args->id;
+      if( is_null($args->tcaseTestProject) && $args->id > 0 )
+      {
+        $args->tcaseTestProject = $tprojectMgr->getByChildID($args->id);
+      }
+    break;
   }
 
   if(is_null($args->tcaseTestProject))
@@ -187,7 +187,6 @@ function init_args(&$dbHandler)
 function initializeEnv($dbHandler)
 {
   $args = init_args($dbHandler);
-
   $gui = new stdClass();
 
   $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
@@ -209,7 +208,6 @@ function initializeEnv($dbHandler)
   $lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
   $gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 
-
   // has sense only when we work on test case
   $gui->platforms = null;
   $gui->tableColspan = 5;
@@ -225,10 +223,12 @@ function initializeEnv($dbHandler)
 }
 
 
-
+/**
+ *
+ *
+ */
 function systemWideTestCaseSearch(&$dbHandler,&$argsObj,$glue)
 {
-
   // Attention: 
   // this algorithm has potential flaw (IMHO) because we can find the glue character
   // in situation where it's role is not this.
@@ -264,6 +264,9 @@ function systemWideTestCaseSearch(&$dbHandler,&$argsObj,$glue)
   }
 }
 
+/**
+ *
+ */
 function getSettingFromFormNameSpace($mode,$setting)
 {
   $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;

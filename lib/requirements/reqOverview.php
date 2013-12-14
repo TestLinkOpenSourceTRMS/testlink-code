@@ -5,41 +5,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Andreas Simon
- * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.37.2.2 2010/11/19 16:47:47 asimon83 Exp $
+ * @package   	TestLink
+ * @author    	Andreas Simon
+ * @copyright 	2010,2013 TestLink community
+ * @filesource 	reqOverview.php
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
- * See BUGID 3227 for a more detailed description of this feature.
+ * See TICKET 3227 for a more detailed description of this feature.
  * 
- * rev:
- *
- * 20111027 - Julian - Added requirement revision to version column
- * 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
- * 20101116 - Julian - Added Author to Created column and Modifier to Last modified column
- * 20101020 - Julian - BUGID 3915 - added columns for creation and modification timestamp
- * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
- *                     table state independent from localization
- * 20100921 - asimon - added datetime formatting and calendar week for date custom fields
- * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
- * 20100823 - Julian - table now uses a unique table id per test project
- * 20100822 - asimon - removal of magic numbers for default table sorting
- * 20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
- * 20100816 - Julian - added default sorting and grouping
- * 20100730 - asimon - added table ID (0) to constructor of ext table
- *                     (required by changes to ext table class to avoid warnings in log)
- * 20100629 - asimon - added display of is_open/frozen attribute,
- *                     solved problem with broken ext js table by linebreaks in textarea-cfields
- * 20100508 - franciscom - use of $req_cfg->status_labels
- * 20100325 - asimon - added html comments with padded numbers/strings for easier and
- *                     corrent sorting to columns title/version/coverage/relations
- * 20100323 - asimon - show columns for relations and coverage only if these features are enabled.
- *                     added number of requirement relations to table.
- * 20100312 - asimon - replaced "100%"-value (in case where req has no coverage) by N/A-string
- * 20100311 - asimon - fixed a little bug (only notice) when no cfields are defined
- * 20100310 - asimon - refactoring as requested
- * 20100309 - asimon - initial commit
  * 		
  */
 
@@ -198,7 +171,6 @@ if(count($gui->reqIDs) > 0) {
 			}
 			
 			
-			// BUGID 2877 -  Custom Fields linked to Req versions
 			// get custom field values for this req version
 			$linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
 

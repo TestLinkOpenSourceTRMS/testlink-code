@@ -20,26 +20,25 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($args);
 
-// echo __FILE__;
-// new class for filter controling/handling
 $control = new tlRequirementFilterControl($db);
 $control->build_tree_menu($gui);
 
 $smarty = new TLSmarty();
-
 $smarty->assign('gui', $gui);
 $smarty->assign('control', $control);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
+/**
+ *
+ */
 function init_args()
 {
-    $args = new stdClass();
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
-    $args->basehref = $_SESSION['basehref'];
+  $args = new stdClass();
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
+  $args->basehref = $_SESSION['basehref'];
     
-    return $args;
+  return $args;
 }
 
 /*
@@ -57,18 +56,20 @@ function init_args()
 */
 function initializeGui($argsObj)
 {
-    $gui = new stdClass();
-    $gui->tree_title = lang_get('title_navigator'). ' - ' . lang_get('title_req_spec');
+  $gui = new stdClass();
+  $gui->tree_title = lang_get('title_navigator'). ' - ' . lang_get('title_req_spec');
   
-    $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
-    $gui->req_manager_url = "lib/requirements/reqView.php";
-    $gui->basehref = $argsObj->basehref;
+  $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
+  $gui->req_manager_url = "lib/requirements/reqView.php";
+  $gui->basehref = $argsObj->basehref;
     
-    return $gui;  
+  return $gui;  
 }
 
+/**
+ *
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_view_req');
 }
-?>

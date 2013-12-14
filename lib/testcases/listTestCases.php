@@ -17,14 +17,11 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
-// new class for filter controlling/handling
 $control = new tlTestCaseFilterControl($db, 'edit_mode');
-
 $gui = initializeGui($db, $control);
 $control->build_tree_menu($gui);
 
 $smarty = new TLSmarty();
-
 $smarty->assign('gui', $gui);
 $smarty->assign('control', $control);
 $smarty->assign('args', $control->get_argument_string());
@@ -59,4 +56,3 @@ function initializeGui(&$dbHandler, &$control)
 	$gui->menuUrl = $feature_path[$gui->feature];
 	return $gui;
 }
-?>

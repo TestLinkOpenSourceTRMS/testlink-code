@@ -4,7 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  frmWorkArea.php
- * @author Martin Havlat
+ * @author      Martin Havlat
+ * 
+ * @internal revisions
+ * @since 1.9.10
  *
  *
 **/
@@ -31,8 +34,14 @@ $args = init_args();
 //
 $req_cfg = config_get('req_cfg');
 
+// 20131214
+// more info here
+// array(0) => left pane
+// array(1) => right pane
 $aa_tfp = array( 
-     'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
+     'editTc' => array('lib/testcases/listTestCases.php?feature=edit_tc',
+                       'lib/testcases/archiveData.php?edit=testproject&id='),
+
      'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
      'searchTc' => 'lib/testcases/tcSearchForm.php',
 
@@ -75,12 +84,12 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
   if( isset($_SESSION['testplanID']) )
   {
     $open = ($showFeature == 'executeTest') ? true : null;
-      validateBuildAvailability($db,$_SESSION['testplanID'],
-          $_SESSION['testplanName'], $_SESSION['testprojectName'], $open);
+    validateBuildAvailability($db,$_SESSION['testplanID'],$_SESSION['testplanName'],
+                              $_SESSION['testprojectName'], $open);
   }
-    else
+  else
   {
-      redirect('../plan/planView.php');
+    redirect('../plan/planView.php');
     exit();
   }   
 }
@@ -91,17 +100,34 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
 /// </enhancement>
 $smarty = new TLSmarty();
 
+// try to add context in order to avoid using global coupling via $_SESSION
+// this will be useful to open different test projects on different browser TAB
+if( is_array($aa_tfp[$showFeature]) )
+{
+  $leftPane = $aa_tfp[$showFeature][0];
+  $rightPane = $aa_tfp[$showFeature][1] . intval($_SESSION['testprojectID']);
+} 
+else
+{
+  $leftPane = $aa_tfp[$showFeature];
+  $rightPane = 'lib/general/staticPage.php?key=' . $showFeature;
+} 
+
+if( intval($args->tproject_id) > 0 || intval($args->tproject_id) > 0)
+{  
+  $leftPane .= (strpos($leftPane,"?") === false) ? "?" : "&";
+  $leftPane .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
+}
 
 if(isset($full_screen[$showFeature]))
 {
-  redirect($aa_tfp[$showFeature]);
+  redirect($leftPane);
 }
 else
 {
-
   $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
-  $smarty->assign('treeframe', $aa_tfp[$showFeature]);
-  $smarty->assign('workframe', 'lib/general/staticPage.php?key='.$showFeature);
+  $smarty->assign('treeframe', $leftPane);
+  $smarty->assign('workframe', $rightPane);
   $smarty->display('frmInner.tpl');
 }
 
@@ -110,11 +136,11 @@ else
  *  validate that some build exists (for Test Plan related features).
  *  If no valid build is found give feedback to user and exit.
  *
- *  @author Martin Havlat
- *  20101013 - asimon - new parameter $open: if execution is wanted, check for open builds
- *  20060809 - franciscom - check if user can create builds,
- *                          then put a link on the message page
- *                          to create link feature
+ *  check if user can create builds, then put a link on the message page
+ *  to create link feature
+ *
+ *
+ *  $open: if execution is wanted, check for open builds
  *
  **/
 function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
@@ -134,10 +160,10 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
       $link_to_op = "lib/plan/buildEdit.php?do_action=create";
       $hint_text = lang_get('create_a_build');
     }  
-      else
-      {
-        $message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
-      }
+    else
+    {
+      $message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
+    }
       
     // show info and exit
     $smarty = new TLSmarty;
@@ -149,10 +175,17 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
   }
 }
 
+/**
+ *
+ */
 function init_args()
 {
-  $iParams = array("feature" => array(tlInputParameter::STRING_N));
+  $_REQUEST=strings_stripSlashes($_REQUEST);
   $args = new stdClass();
-  $pParams = G_PARAMS($iParams,$args);
+  $iParams = array("feature" => array(tlInputParameter::STRING_N),
+                   "tproject_id" => array(tlInputParameter::INT_N),
+                   "tplan_id" => array(tlInputParameter::INT_N));
+  R_PARAMS($iParams,$args);
+
   return $args;
 }

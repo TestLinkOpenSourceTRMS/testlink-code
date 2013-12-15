@@ -1,5 +1,5 @@
 ===============================================================
-         TestLink 1.9.9 (Prague Bugfix 9) - Read me
+         TestLink 1.9.10 (Prague Bugfix 10) - Read me
 ===============================================================
 
 Contents
@@ -12,9 +12,10 @@ Contents
 7. Bug Reports and Feedback
 8. Supporting our work
 9. Regarding forum usage www.teamst.org
-10. Changes regarding 1.9.6,1.9.7,1.9.8
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9
 11. Testlink & FreeTest
 12. Security
+13. JIRA DB interface changes
 
 1. Introduction
 ===============================================================
@@ -391,3 +392,12 @@ http://www.freetest.net.br
 ===============================================================
 
 We want to thanks xistence (xistence@0x90.nl) for his tests.
+
+13. JIRA DB interface changes
+===============================================================
+TICKET 6028: Integration with Jira 6.1 broken. - Due to JIRA schema changes
+Contibution by adnkoks
+You need to change you xml configuration on TestLink, to add a new MANDATORY
+property <jiraversion></jiraversion>
+Without this property TestLink WILL CRASH => this is a desired behaviour
+

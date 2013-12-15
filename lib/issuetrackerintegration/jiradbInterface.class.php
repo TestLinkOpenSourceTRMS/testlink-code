@@ -6,15 +6,14 @@
  * @since 1.9.6
  *
  * @internal revision
- * @since 1.9.8
- * 20130805 - franciscom - canCreateViaAPI()
+ * @since 1.9.10
+ * 
 **/
 class jiradbInterface extends issueTrackerInterface
 {
   var $defaultResolvedStatus;
   var $dbSchema;
   var $support;
-
 
   /**
    * Construct and connect to BTS.
@@ -33,9 +32,11 @@ class jiradbInterface extends issueTrackerInterface
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);
 
+    // Tables used
     $this->dbSchema = new stdClass();
     $this->dbSchema->issues = 'jiraissue';
     $this->dbSchema->status = 'issuestatus';
+    $this->dbSchema->project = 'project';
         
 
     $this->getStatuses();
@@ -44,10 +45,30 @@ class jiradbInterface extends issueTrackerInterface
       $this->setStatusCfg();
     }
 
+    if( !property_exists($this->cfg, 'jiraversion') )
+    {
+      throw new Exception("jiraversion is MANDATORY - Unable to continue");
+    }
+    else
+    {
+      $this->completeCfg();
+    }  
+
     $this->defaultResolvedStatus = $this->support->initDefaultResolvedStatus($this->statusDomain);
     $this->setResolvedStatusCfg();
     
   }
+
+  /**
+   *
+   */
+  function completeCfg()
+  {
+    // when working with simpleXML objects is better to use intermediate variables
+    $pieces = explode('.',(string)$this->cfg->jiraversion);
+    $this->cfg->majorVersionNumber = (int)$pieces[0];
+  }
+
 
   
   /**
@@ -60,15 +81,32 @@ class jiradbInterface extends issueTrackerInterface
     {
       return false;
     }
-    
+
     // ATTENTION:
     // Field names on Jira tables seems to be sometimes on CAPITALS
+    // TICKET 6028: Integration with Jira 6.1 broken. - Due to JIRA schema changes
+    if(intval($this->cfg->majorVersionNumber) >= 6)
+    {  
+      $dummy = explode("-",$issueID);
+      $addFields = ",ISSUES.project, ISSUES.issuenum, PROJECT.originalkey, PROJECT.id ";
+      $addJoin = " JOIN {$this->dbSchema->project} PROJECT ON ISSUES.project = PROJECT.id ";
+      $where = " WHERE ISSUES.issuenum='{$this->dbConnection->prepare_string($dummy[1])}' " .
+               " AND PROJECT.originalkey='{$this->dbConnection->prepare_string($dummy[0])}'";
+    }
+    else
+    {
+      $addFields = ",ISSUES.pkey ";
+      $addJoin = '';
+      $where = " WHERE ISSUES.pkey='{$this->dbConnection->prepare_string($issueID)}'";
+    } 
+
     $sql = "/* $debugMsg */ " .
-           " SELECT ISSUES.ID AS id,ISSUES.pkey, ISSUES.summary, ISSUES.issuestatus AS status_code, " .
-           " ST.pname AS status_verbose " .
+           " SELECT ISSUES.ID AS id, ISSUES.summary,ISSUES.issuestatus AS status_code, " .
+           " ST.pname AS status_verbose " . $addFields .
            " FROM {$this->dbSchema->issues} ISSUES " .
-           " JOIN {$this->dbSchema->status} ST ON ST.ID = ISSUES.issuestatus" .
-           " WHERE ISSUES.pkey='{$this->dbConnection->prepare_string($issueID)}'";
+           " JOIN {$this->dbSchema->status} ST ON ST.ID = ISSUES.issuestatus " .
+           $addJoin . $where;
+
     try
     {
       $rs = $this->dbConnection->fetchRowsIntoMap($sql,'id');
@@ -99,11 +137,17 @@ class jiradbInterface extends issueTrackerInterface
     return $issue;  
   }
 
+  /**
+   *
+   */
   function getMyInterface()
   {
     return $this->cfg->interfacePHP;
   }
 
+  /**
+   *
+   */
   function getStatuses()
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -157,6 +201,7 @@ class jiradbInterface extends issueTrackerInterface
     
     $template = "<!-- Template " . __CLASS__ . " -->\n" .
                 "<issuetracker>\n" .
+                "<jiraversion>MANDATORY</jiraversion>\n" .
                 "<dbhost>DATABASE SERVER NAME</dbhost>\n" .
                 "<dbname>DATABASE NAME</dbname>\n" .
                 "<dbtype>mysql</dbtype>\n" .

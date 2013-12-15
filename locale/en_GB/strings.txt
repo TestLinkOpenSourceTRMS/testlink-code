@@ -1700,6 +1700,7 @@ $TLS_keyword_assignment_empty_tsuite = "There are no Test Cases in this Test Sui
 $TLS_menu_assign_kw_to_tc = "Assign to Test Cases";
 $TLS_menu_manage_keywords = "Keyword Management";
 $TLS_title_keywords = "Keywords";
+$TLS_keyword_assignment = "Keyword Assignment";
 
 
 

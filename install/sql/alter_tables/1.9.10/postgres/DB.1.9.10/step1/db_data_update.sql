@@ -2,7 +2,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * SQL script 
+ * SQL script
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
  * @filesource	db_data_update.sql

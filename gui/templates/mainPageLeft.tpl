@@ -4,7 +4,7 @@
  Purpose: smarty template - main page / site map                 
                                                                  
  @internal revisions
- @since 1.9.7
+ @since 1.9.10
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,system_config,
@@ -19,132 +19,121 @@
                           href_print_req, title_documentation,href_issuetracker_management,
                           href_reqmgrsystem_management'}
 
-{assign var="menuLayout" value=$tlCfg->gui->layoutMainPageLeft}
-{assign var="display_left_block_1" value=false}
-{assign var="display_left_block_2" value=false}
-{assign var="display_left_block_3" value=false}
-{assign var="display_left_block_4" value=false}
-{assign var="display_left_block_5" value=true}
+{$menuLayout=$tlCfg->gui->layoutMainPageLeft}
+{$display_left_block_1=false}
+{$display_left_block_2=false}
+{$display_left_block_3=false}
+{$display_left_block_4=false}
+{$display_left_block_5=true}
 
 {if $gui->testprojectID && 
       ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
        $gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
-    {assign var="display_left_block_1" value=true}
+    {$display_left_block_1=true}
 
     <script  type="text/javascript">
-    {literal}
     function display_left_block_1()
     {
         var p1 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_product_mgmt}'{literal},
+                                title: '{$labels.title_product_mgmt}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'testproject_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.testProject}'{literal},
+                                renderTo: 'menu_left_block_{$menuLayout.testProject}',
                                 width:'100%'
                                 });
      }
-    {/literal}
     </script>
 {/if}
 
 
 {if $gui->testprojectID && 
    ($gui->grants.cfield_management == "yes" || $gui->grants.issuetracker_management || $gui->grants.issuetracker_view)}
-   {assign var="display_left_block_2" value=true}
+   {$display_left_block_2=true}
 
     <script  type="text/javascript">
-    {literal}
     function display_left_block_2()
     {
-        var p1 = new Ext.Panel({
-                                title: {/literal}'{$labels.system_config}'{literal},
-                                collapsible:false,
-                                collapsed: false,
-                                draggable: false,
-                                contentEl: 'system_topics',
-                                baseCls: 'x-tl-panel',
-                                bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_2'{literal},
-                                width:'100%'
-                                });
+      var p1 = new Ext.Panel({
+                              title: '{$labels.system_config}',
+                              collapsible:false,
+                              collapsed: false,
+                              draggable: false,
+                              contentEl: 'system_topics',
+                              baseCls: 'x-tl-panel',
+                              bodyStyle: "background:#c8dce8;padding:3px;",
+                              renderTo: 'menu_left_block_2',
+                              width:'100%'
+                             });
      }
-    {/literal}
     </script>
 {/if}
 
 
 
 {if $gui->testprojectID && $opt_requirements == TRUE && ($gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes")}
-    {assign var="display_left_block_3" value=true}
+    {$display_left_block_3=true}
 
     <script type="text/javascript">
-    {literal}
     function display_left_block_3()
     {
         var p3 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_requirements}'{literal},
+                                title: '{$labels.title_requirements}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'requirements_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.requirements}'{literal},
+                                renderTo: 'menu_left_block_{$menuLayout.requirements}',
                                 width:'100%'
                                 });
      }
-    {/literal}
     </script>
 {/if}
 
 {if $gui->testprojectID && $gui->grants.view_tc == "yes"}
-    {assign var="display_left_block_4" value=true}
+    {$display_left_block_4=true}
 
     <script type="text/javascript">
-    {literal}
     function display_left_block_4()
     {
         var p4 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_test_spec}'{literal},
+                                title: '{$labels.title_test_spec}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'testspecification_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.testSpecification}'{literal},
+                                renderTo: 'menu_left_block_{$menuLayout.testSpecification}',
                                 width:'100%'
                                 });
      }
-    {/literal}
-    </script>
+   </script>
 {/if}
 
-    <script type="text/javascript">
-    {literal}
-    function display_left_block_5()
-    {
-        var p5 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_documentation}'{literal},
-                                collapsible:false,
-                                collapsed: false,
-                                draggable: false,
-                                contentEl: 'testlink_application',
-                                baseCls: 'x-tl-panel',
-                                bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.general}'{literal},
-                                width:'100%'
-                                });
-  }
-    {/literal}
-    </script>
+<script type="text/javascript">
+function display_left_block_5()
+{
+  var p5 = new Ext.Panel({
+                          title: '{$labels.title_documentation}',
+                          collapsible:false,
+                          collapsed: false,
+                          draggable: false,
+                          contentEl: 'testlink_application',
+                          baseCls: 'x-tl-panel',
+                          bodyStyle: "background:#c8dce8;padding:3px;",
+                          renderTo: 'menu_left_block_{$menuLayout.general}',
+                          width:'100%'
+                          });
+}
+</script>
 
 <div class="vertical_menu" style="float: left">
-  {* ---------------------------------------------------------------------------------------- *}
   <div id='menu_left_block_2'></div><br />
   <div id='menu_left_block_1'></div><br />
   <div id="menu_left_block_3"></div><br />
@@ -155,57 +144,52 @@
     <div id='testproject_topics'>
     {if $gui->grants.project_edit == "yes"}
       <img src="{$tlImages.bullet}" />
-        <a href="lib/project/projectView.php">{$labels.href_tproject_management}</a>
+      <a href="lib/project/projectView.php">{$labels.href_tproject_management}</a>
+      <br />
     {/if}
     
     {if $gui->grants.tproject_user_role_assignment == "yes"}
-        <br />
       <img src="{$tlImages.bullet}" />
-        <a href="lib/usermanagement/usersAssign.php?featureType=testproject&amp;featureID={$gui->testprojectID}">{$labels.href_assign_user_roles}</a>
+      <a href="lib/usermanagement/usersAssign.php?featureType=testproject&amp;featureID={$gui->testprojectID}">{$labels.href_assign_user_roles}</a>
+      <br />
     {/if}
 
-      {if $gui->grants.cfield_management == "yes"}
-          <br />
-           <img src="{$tlImages.bullet}" />
-            <a href="lib/cfields/cfieldsTprojectAssign.php">{$labels.href_cfields_tproject_assign}</a>
-      {/if}
-    
-    {* --- keywords management ---  *}
-    {if $gui->grants.keywords_view == "yes"}
+    {if $gui->grants.cfield_management == "yes"}
+      <img src="{$tlImages.bullet}" />
+      <a href="lib/cfields/cfieldsTprojectAssign.php">{$labels.href_cfields_tproject_assign}</a>
       <br />
-        <img src="{$tlImages.bullet}" />
-          <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
+    {/if}
+    
+    {if $gui->grants.keywords_view == "yes"}
+      <img src="{$tlImages.bullet}" />
+      <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
+      <br />
     {/if} {* view_keys_rights *}
     
-     {* --- platforms management ---  *}
     {if $gui->grants.platform_management == "yes"}
-      <br />
-        <img src="{$tlImages.bullet}" />
+      <img src="{$tlImages.bullet}" />
       <a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>
+      <br />
     {/if}
 
-     {* --- inventory view ---  *}
     {if $gui->grants.project_inventory_view}
-      <br />
-        <img src="{$tlImages.bullet}" />
+      <img src="{$tlImages.bullet}" />
       <a href="lib/inventory/inventoryView.php">{$labels.href_inventory}</a>
     {/if}
     </div>
   {/if}
-  {* ---------------------------------------------------------------------------------------- *}
-
 
   {* ------------------------------------------------- *}
   {if $display_left_block_2}
     <div id='system_topics'>
     {if $gui->grants.cfield_management == "yes"}
-          <img src="{$tlImages.bullet}" />
-            <a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
-   {/if}
-    
-   {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
+      <img src="{$tlImages.bullet}" />
+      <a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
       <br />
-        <img src="{$tlImages.bullet}" />
+    {/if}
+     
+    {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
+      <img src="{$tlImages.bullet}" />
       <a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
     {/if}
     </div>
@@ -227,18 +211,17 @@
         <a href="{$gui->launcher}?feature=searchReq">{$labels.href_search_req}</a><br/>
         <img src="{$tlImages.bullet}" />
         <a href="{$gui->launcher}?feature=searchReqSpec">{$labels.href_search_req_spec}</a>
-        
-       {/if}
+      <br />
+     {/if}
        
     {if $gui->grants.reqs_edit == "yes"}
+      <img src="{$tlImages.bullet}" />
+      <a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
       <br />
-      <img src="{$tlImages.bullet}" />
-           <a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
 
-            <br />
       <img src="{$tlImages.bullet}" />
-            <a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
-       {/if}
+      <a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
+    {/if}
     </div>
   {/if}
   {* ---------------------------------------------------------------------------------------- *}
@@ -261,7 +244,6 @@
           <a href="{$gui->launcher}?feature=searchTc">{$labels.href_search_tc}</a>
       {/if}    
       
-    {* --- keywords management ---  *}
     {if $gui->grants.keywords_view == "yes"}
       {if $gui->grants.keywords_edit == "yes"}
           <br />
@@ -298,6 +280,4 @@
       </select>
     </form>
     </div>
-
-
 </div>

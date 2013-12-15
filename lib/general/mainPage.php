@@ -14,10 +14,6 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
- * @since 1.9.7
- * 20130504 - franciscom - TICKET 5690: TestLink Desktop / Main page semplification - 
- *                                      User and role management removed
- * 20130317 - franciscom - transform config options into rights
  *
  **/
 
@@ -25,7 +21,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 if(function_exists('memory_get_usage') && function_exists('memory_get_peak_usage'))
 {
-    tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
+  tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
 }
 
 testlinkInitPage($db,TRUE);
@@ -82,20 +78,20 @@ if($testplanID > 0)
 	$loop2do=count($arrPlans);
 	for($idx=0; $idx < $loop2do; $idx++)
 	{
-    	if( $arrPlans[$idx]['id'] == $testplanID )
-    	{
-        	$found = 1;
-        	$index = $idx;
-        	$break;
-        }
+  	if( $arrPlans[$idx]['id'] == $testplanID )
+  	{
+     	$found = 1;
+     	$index = $idx;
+     	$break;
     }
-    if( $found == 0 )
-    {
-      // update test plan id
-		  $testplanID = $arrPlans[0]['id'];
-		  setSessionTestPlan($arrPlans[0]);     	
-    } 
-    $arrPlans[$index]['selected']=1;
+  }
+  if( $found == 0 )
+  {
+    // update test plan id
+    $testplanID = $arrPlans[0]['id'];
+	  setSessionTestPlan($arrPlans[0]);     	
+  } 
+  $arrPlans[$index]['selected']=1;
 }
 
 $gui->testplanRole = null;
@@ -106,7 +102,10 @@ if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
 }
 
 $rights2check = array('testplan_execute','testplan_create_build','testplan_metrics','testplan_planning',
-                      'testplan_user_role_assignment','mgt_testplan_create','cfield_view', 'cfield_management');
+                      'testplan_user_role_assignment','mgt_testplan_create','cfield_view', 'cfield_management',
+                      'testplan_milestone_overview','exec_testcases_assigned_to_me',
+                      'testplan_add_remove_platforms','testplan_update_linked_testcase_versions',
+                      'testplan_set_urgent_testcases','testplan_show_testcases_newest_versions');
 
 foreach($rights2check as $key => $the_right)
 {

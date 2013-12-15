@@ -387,7 +387,6 @@ CREATE TABLE /*prefix*/testcase_keywords (
   PRIMARY KEY  (`testcase_id`,`keyword_id`)
 ) DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE /*prefix*/tcversions (
   `id` int(10) unsigned NOT NULL,
   `tc_external_id` int(10) unsigned NULL,

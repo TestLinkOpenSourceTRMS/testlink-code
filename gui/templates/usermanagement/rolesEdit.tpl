@@ -4,17 +4,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create/edit user role
 
 @internal revisions
-@since 1.9.7
+@since 1.9.10
 20130317 - franciscom - config options transformed in rights
 *}
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
-{include file="inc_del_onclick.tpl"}
-{include file="inc_jsCheckboxes.tpl"}
-
-{literal}
-<script type="text/javascript">
-{/literal}
 {lang_get var="labels"
           s='btn_save,warning,warning_modify_role,warning_empty_role_name,th_rights,
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
@@ -23,12 +16,17 @@ Purpose: smarty template - create/edit user role
              th_platform_rights,demo_update_role_disabled,th_issuetracker_rights,
              th_reqmgrsystem_rights,th_execution_rights,
              th_rolename,th_tp_rights,btn_cancel'}
-             
+
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
+{include file="inc_del_onclick.tpl"}
+{include file="inc_jsCheckboxes.tpl"}
+
+<script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_modify_role = "{$labels.warning_modify_role|escape:'javascript'}";
 var warning_empty_role_name = "{$labels.warning_empty_role_name|escape:'javascript'}";
 var warning_error_role_no_rights = "{$labels.error_role_no_rights|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.rolename.value))
@@ -47,12 +45,11 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
@@ -185,10 +182,10 @@ function validateForm(f)
 
   </table>
   
-  {assign var="submitEnabled" value="1"}
+  {$submitEnabled="1"}
   {if $tlCfg->demoMode}
     {if $gui->operation == 'doUpdate'}
-      {assign var="submitEnabled" value="0"}
+      {$submitEnabled="0"}
     {/if}  
   {/if}
   

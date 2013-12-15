@@ -2482,6 +2482,17 @@ $TLS_right_exec_delete = "Delete Execution";
 $TLS_right_testplan_unlink_executed_testcases = "Unlink Executed Test Cases";
 $TLS_right_testproject_delete_executed_testcases = "Delete Executed Test Cases";
 $TLS_right_testproject_edit_executed_testcases = "Edit Executed Test Cases";
+$TLS_right_testplan_milestone_overview = 'Milestone Overview';
+$TLS_right_exec_testcases_assigned_to_me = 'Show Test Cases Assigned to me';
+$TLS_right_testproject_metrics_dashboard = 'Test Project Metrics Dashboard';
+$TLS_right_testplan_add_remove_platforms = 'Add/Remove Platforms';
+$TLS_right_testplan_update_linked_testcase_versions = 'Update Linked Test Case Versions';
+$TLS_right_testplan_set_urgent_testcases = 'Set Urgent Test Cases';
+$TLS_right_testplan_show_testcases_newest_versions = 'Show Test Cases Newest Versions';
+
+
+
+
 
 
 // ----- lib/functions/testproject.class.php -----

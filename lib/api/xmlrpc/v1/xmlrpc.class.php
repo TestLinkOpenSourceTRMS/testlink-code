@@ -20,7 +20,7 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.9
+ * @since 1.9.10
  *
  */
 
@@ -5809,7 +5809,7 @@ protected function createAttachmentTempFile()
       if($status_ok)
       {
         $fv = null;
-        $fv['updater_id'] = $updaterID;
+        // $fv['updater_id'] = $updaterID;  // Audit Trial Information (partial)
         foreach($updKeys as $k2s => $field2update)
         {
           if(isset($this->args[$k2s]))
@@ -5817,12 +5817,11 @@ protected function createAttachmentTempFile()
             $fv[(is_null($field2update) ? $k2s : $field2update)] = $this->args[$k2s];
           }
         }
-        $debug_info = array('sql' => $sql, 'fv' => $fv);
+        // $debug_info = array('sql' => $sql, 'fv' => $fv);
         
         if(!is_null($fv))
         {
           $sql = $this->tcaseMgr->updateSimpleFields($tcversion_id,$fv);
-          $debug_info = array('sql' => $sql, 'fv' => $fv);
         }
       }
     }
@@ -5839,7 +5838,10 @@ protected function createAttachmentTempFile()
 
     if($status_ok)
     {
-      $this->args['debug'] = $debug_info;
+      // $this->args['debug'] = $debug_info;
+      // missing
+      // update updater and modification time stamp
+      $this->tcaseMgr->updateChangeAuditTrial($tcversion_id,$updaterID);
       return $this->args;
     }
     else

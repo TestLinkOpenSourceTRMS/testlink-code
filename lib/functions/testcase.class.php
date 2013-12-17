@@ -11,7 +11,7 @@
  *
  * @internal revisions
  * @since 1.9.10
- *
+ * 
  */
 
 /** related functionality */
@@ -6288,5 +6288,16 @@ class testcase extends tlObjectWithAttachments
     return $this->attachmentTableName;
   }
 
+  /**
+   *
+   */
+  function updateChangeAuditTrial($tcversion_id,$user_id)
+  {
+    $sql = " UPDATE {$this->tables['tcversions']} " .
+           " SET updater_id=" . $this->db->prepare_int($user_id) . ", " .
+           " modification_ts = " . $this->db->db_now() .
+           " WHERE id = " . $this->db->prepare_int(intval($tcversion_id));         
+    $this->db->exec_query($sql);       
+  }
 
 }  

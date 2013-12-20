@@ -5007,22 +5007,22 @@ protected function createAttachmentTempFile()
           $dummy['tcversion_id'] = $dummy['id'];
           $item[0] = $dummy;
         }
-        else
-        {
-          $item = current($item);
-        }
       }
-      
+
       if( is_null($item) )
       {
         $status_ok = false;
         $msg = sprintf(VERSION_NOT_VALID_STR,$version);
         $this->errors[] = new IXR_Error(VERSION_NOT_VALID,$msg);
       }
+
       if( $status_ok)
       {
-        $tcversion_id = $item[0]['tcversion_id'];
+        $item = current($item);
+        $tcversion_id = $item['tcversion_id'];
         $resultInfo['tcversion_id'] = $tcversion_id;
+
+
         $step_id = 0;
         $stepSet = null;
         $action = isset($this->args,self::$actionParamName) ? $this->args[self::$actionParamName] : 'create';
@@ -5039,7 +5039,6 @@ protected function createAttachmentTempFile()
 
         $resultInfo['stepSet'] = $stepSet;
         $resultInfo['stepNumberIDSet'] = $stepNumberIDSet;
-        
         
         foreach($this->args[self::$stepsParamName] as $si)
         {
@@ -5066,8 +5065,6 @@ protected function createAttachmentTempFile()
               $op = $stepExists ? 'skip' : $action; 
             break;
           }
-
-          // echo 'OP:::' . $op;
           $resultInfo['feedback'][] = array('operation' => $op, 'step_number' => $si['step_number']);
           switch($op)
           {

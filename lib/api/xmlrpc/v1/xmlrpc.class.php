@@ -106,7 +106,9 @@ class TestlinkXMLRPCServer extends IXR_Server
    * PLEASE define in DICTIONARY ORDER
    * @static
     */
+
   public static $actionOnDuplicatedNameParamName = "actiononduplicatedname";
+  public static $actionParamName = "action";
   public static $activeParamName = "active";
   public static $assignedToParamName = "assignedto";
   public static $automatedParamName = "automated";

@@ -5842,7 +5842,7 @@ protected function createAttachmentTempFile()
       // missing
       // update updater and modification time stamp
       $this->tcaseMgr->updateChangeAuditTrial($tcversion_id,$updaterID);
-      return $this->args;
+      return array('status_ok' => true, 'msg' => 'ok', 'operation' => __FUNCTION__);
     }
     else
     {

@@ -1500,7 +1500,7 @@ class testsuite extends tlObjectWithAttachments
   function getFileUploadRelativeURL($id)
   {
     // I've to use testsuiteID because this is how is name on containerEdit.php
-    $url = "lib/testcases/containerEdit.php?doAction=fileUpload&testsuiteID=" . intval($id);
+    $url = "lib/testcases/containerEdit.php?containerType=testsuite&doAction=fileUpload&testsuiteID=" . intval($id);
     return $url;
   }
 
@@ -1510,7 +1510,7 @@ class testsuite extends tlObjectWithAttachments
   function getDeleteAttachmentRelativeURL($id)
   {
     // I've to use testsuiteID because this is how is name on containerEdit.php
-    $url = "lib/testcases/containerEdit.php?doAction=deleteFile&testsuiteID=" . intval($id) .
+    $url = "lib/testcases/containerEdit.php?containerType=testsuite&doAction=deleteFile&testsuiteID=" . intval($id) .
            "&file_id=" ; 
     return $url;
   }

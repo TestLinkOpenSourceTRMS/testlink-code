@@ -10,7 +10,7 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  * 
  **/
 
@@ -777,6 +777,11 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
   $gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
   $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
    
+  // attachments management on page
+  $gui->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($id);
+  $gui->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($id);
+  $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
+  $gui->fileUploadMsg = '';
   
   $exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
   $gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
@@ -3305,6 +3310,28 @@ function getPublicAttr($id)
     return $xml;
   }
 
+
+  /**
+   *
+   * @used-by containerEdit.php
+   */
+  function getFileUploadRelativeURL($id)
+  {
+    // I've to use testsuiteID because this is how is name on containerEdit.php
+    $url = "lib/testcases/containerEdit.php?containerType=testproject&doAction=fileUpload&tprojectID=" . intval($id);
+    return $url;
+  }
+
+  /**
+   * @used-by containerEdit.php
+   */
+  function getDeleteAttachmentRelativeURL($id)
+  {
+    // I've to use testsuiteID because this is how is name on containerEdit.php
+    $url = "lib/testcases/containerEdit.php?containerType=testproject&doAction=deleteFile&tprojectID=" . intval($id) .
+           "&file_id=" ; 
+    return $url;
+  }
 
 
 

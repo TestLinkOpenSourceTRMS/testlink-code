@@ -270,7 +270,9 @@ class tlTestPlanMetrics extends testplan
    * but we are not going to display results with BUILD and PLATFORM,
    * but ONLY with BUILD indication. 
    *
-   *
+   *  opt => array('getOnlyAssigned' => false, 'tprojectID' => 0, 
+   *               'getPlatformSet' => false, 'processClosedBuilds' => true);
+   *  filters => array('buildSet' => null);
    */
   function getExecCountersByBuildExecStatus($id, $filters=null, $opt=null)
   {

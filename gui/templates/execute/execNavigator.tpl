@@ -40,10 +40,13 @@ Ext.onReady(function() {
         }
       }]
     });
-    var filtersPanel = new Ext.ux.CollapsiblePanel({
+  
+  var filtersPanel = new Ext.ux.CollapsiblePanel({
       id: 'tl_exec_settings',
       applyTo: 'filter_panel'
     });
+
+  EXDS(); // Load on right pane EXecution DaShboard
 });
 
 /**

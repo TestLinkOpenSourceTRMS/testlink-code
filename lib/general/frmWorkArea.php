@@ -58,7 +58,7 @@ $aa_tfp = array(
      'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
      'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
      'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
-     'executeTest' => 'lib/execute/execNavigator.php',
+     'executeTest' => array('lib/execute/execNavigator.php', 'lib/execute/execDashboard.php?id='),
      'showMetrics' => 'lib/results/resultsNavigator.php',
      'reqSpecMgmt' => array('lib/requirements/reqSpecListTree.php','lib/project/project_req_spec_mgmt.php?id=')
 );
@@ -105,7 +105,11 @@ $smarty = new TLSmarty();
 if( is_array($aa_tfp[$showFeature]) )
 {
   $leftPane = $aa_tfp[$showFeature][0];
-  $rightPane = $aa_tfp[$showFeature][1] . intval($_SESSION['testprojectID']);
+  $rightPane = $aa_tfp[$showFeature][1];
+  if( strpos($rightPane,"?") !== false )
+  {
+    $rightPane .= intval($_SESSION['testprojectID']);
+  }  
 } 
 else
 {
@@ -117,6 +121,11 @@ if( intval($args->tproject_id) > 0 || intval($args->tproject_id) > 0)
 {  
   $leftPane .= (strpos($leftPane,"?") === false) ? "?" : "&";
   $leftPane .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
+
+  // for execDashboard is OK, need to understand if will be ok for other features
+  // or is going to create issues.
+  $rightPane .= (strpos($rightPane,"?") === false) ? "?" : "&";
+  $rightPane .= "tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
 }
 
 if(isset($full_screen[$showFeature]))

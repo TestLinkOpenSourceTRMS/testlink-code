@@ -24,10 +24,8 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // @internal revisions
-// @since 1.9.4
-// 20111123 - franciscom - TICKET 4814: bug deletion may fails if bugID string contains special characters 
-// 20111105 - franciscom - TICKET 4796: Test Case reuse - Quick & Dirty Approach 
-// 20111007 - franciscom - TICKET 4766: Requirements Report - Display Revision and Version
+// @since 1.9.10
+
 
 /*
   function: focusInputField
@@ -162,9 +160,19 @@ function STS(id)
 */
 function SP()
 {
-    var action_url = fRoot+menuUrl;
-    parent.workframe.location = action_url;
+  var action_url = fRoot+menuUrl;
+  parent.workframe.location = action_url;
 }
+
+/**
+ *  EXecution DaShboard (EXDS)
+ */
+function EXDS()
+{
+  var action_url = fRoot+'lib/execute/execDashboard.php';
+  parent.workframe.location = action_url;
+}
+
 
 /*
   function: EP

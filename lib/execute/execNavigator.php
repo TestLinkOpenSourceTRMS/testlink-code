@@ -11,8 +11,6 @@
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- *
  *
  **/
 
@@ -27,31 +25,15 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $chronos[] = $tstart = microtime(true);
-//echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
-//reset($chronos);	
-
 $control = new tlTestCaseFilterControl($db, 'execution_mode');
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
 
-//$chronos[] = microtime(true);
-//$tnow = end($chronos);
-//$tprev = prev($chronos);
-//echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::AFTER build_tree_menu()' . $tnow;
-//$t_elapsed = number_format( $tnow - $tprev, 4);
-//echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
-//reset($chronos);	
-//$t_elapsed = number_format( $tnow - $tstart, 4);
-//echo '<br> ' . basename(__FILE__) . ' FROM START Elapsed (sec):' . $t_elapsed;
-
-
 $smarty = new TLSmarty();
-
 $smarty->assign('gui',$gui);
 $smarty->assign('control', $control);
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args', $gui->args);
-
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

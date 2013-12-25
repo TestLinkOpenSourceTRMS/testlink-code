@@ -22,16 +22,15 @@
 /**
  * @param $dbHandler
  * @param $menuUrl
- * @param $tproject_id
- * @param $tproject_name
- * @param $tplan_id
- * @param $tplan_name
+ * @param array $context => keys tproject_id,tproject_name,tplan_id,tplan_name
  * @param $objFilters
  * @param $objOptions
  * @return array
  */
-function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
-                  $tplan_name,$objFilters,$objOptions) 
+
+// $tproject_id,$tproject_name,$tplan_id,                  $tplan_name,
+
+function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions) 
 {
   $chronos[] = microtime(true);
 
@@ -39,11 +38,9 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
   $treeMenu->rootnode = null;
   $treeMenu->menustring = '';
   $resultsCfg = config_get('results');
-  $showTestCaseID = config_get('treemenu_show_testcase_id');
   $glueChar=config_get('testcase_cfg')->glue_character;
   
   $menustring = null;
-  $any_exec_status = null;
   $tplan_tcases = null;
   $tck_map = null;
   $idx=0;
@@ -58,11 +55,23 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $keywordsFilterType = $objFilters->filter_keywords_filter_type;
   }
   
-
+  $renderTreeNodeOpt = array();
+  $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
   list($filters,$options,
-       $show_testsuite_contents,
-       $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
-  
+       $renderTreeNodeOpt['showTestSuiteContents'],
+       $renderTreeNodeOpt['useCounters'],
+       $renderTreeNodeOpt['useColors'],$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
+
+  if( property_exists($objOptions, 'actionJS'))
+  {
+    if(isset($objOptions->actionJS['testproject']))
+    {
+      $renderTreeNodeOpt['actionJS']['testproject'] = $objOptions->actionJS['testproject'];
+    }  
+  }  
+
+
+
   $tplan_mgr = new testplan($dbHandler);
   $tproject_mgr = new testproject($dbHandler);
   $tcase_node_type = $tplan_mgr->tree_manager->node_descr_id['testcase'];
@@ -70,29 +79,25 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
   $hash_descr_id = $tplan_mgr->tree_manager->get_available_node_types();
   $hash_id_descr = array_flip($hash_descr_id);      
   
-  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
+  $tcase_prefix = $tproject_mgr->getTestCasePrefix($context['tproject_id']) . $glueChar;
   
-  $nt2exclude = array('testplan' => 'exclude_me',
-                    'requirement_spec'=> 'exclude_me',
-                    'requirement'=> 'exclude_me');
-  
-  $nt2exclude_children = array('testcase' => 'exclude_my_children',
-                             'requirement_spec'=> 'exclude_my_children');
-  
-    // remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
-    // 
-    // IMPORTANT:
-    // using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
-    // makes the magic of ignoring test cases not linked to test plan.
-    // This unexpected bonus can be useful on export test plan as XML.
-    //
-    $my['options']=array('recursive' => true, 
-               'remove_empty_nodes_of_type' => $tplan_mgr->tree_manager->node_descr_id['testsuite'],
-                         'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id));
-  $my['filters'] = array('exclude_node_types' => $nt2exclude,
-                         'exclude_children_of' => $nt2exclude_children);
-  
-  // BUGID 3301 - added for filtering by toplevel testsuite
+  // remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
+  // 
+  // IMPORTANT:
+  // using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
+  // makes the magic of ignoring test cases not linked to test plan.
+  // This unexpected bonus can be useful on export test plan as XML.
+  //
+  $my['options']=array('recursive' => true, 
+                       'remove_empty_nodes_of_type' => $tplan_mgr->tree_manager->node_descr_id['testsuite'],
+                       'order_cfg' => array("type" =>'exec_order',"tplan_id" => $context['tplan_id']));
+
+  $my['filters'] = array('exclude_node_types' => array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me',
+                                                       'requirement'=> 'exclude_me'),
+                         'exclude_children_of' => array('testcase' => 'exclude_my_children',
+                                                        'requirement_spec'=> 'exclude_my_children') );
+
+  // added for filtering by toplevel testsuite
   if (isset($objFilters->filter_toplevel_testsuite) && is_array($objFilters->filter_toplevel_testsuite)) 
   {
     $my['filters']['exclude_branches'] = $objFilters->filter_toplevel_testsuite;
@@ -105,9 +110,10 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     
    
   // Document why this is needed, please  
-  $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
-  $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
-  $test_spec['id'] = $tproject_id;
+  $test_spec = $tplan_mgr->getSkeleton($context['tplan_id'],$context['tproject_id'],$my['filters'],$my['options']);
+
+  $test_spec['name'] = $context['tproject_name'] . " / " . $context['tplan_name'];  // To be discussed
+  $test_spec['id'] = $context['tproject_id'];
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];
   $test_spec['node_type'] = 'testproject';
   $map_node_tccount = array();
@@ -133,7 +139,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
       // THIS YET.
       //
       
-      if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($tplan_id,$filters,$options)) )
+      if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options)) )
       {
         $kmethod = "fetchRowsIntoMap";
         if( is_array($sql2do) )
@@ -171,7 +177,7 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $targetExecStatus = (array)(isset($objFilters->filter_result_result) ? $objFilters->filter_result_result : null);
     if( !is_null($targetExecStatus) && (!in_array($resultsCfg['status_code']['all'], $targetExecStatus)) ) 
     {
-      applyStatusFilters($tplan_id,$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);       
+      applyStatusFilters($context['tplan_id'],$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);       
     }
     
     if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
@@ -199,10 +205,12 @@ function execTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     }
   
     $keys = array_keys($tplan_tcases);
-    $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,1,$menuUrl,
-                                     $options['hideTestCases'],
-                                     $useCounters,$useColors,
-                                     $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
+    $renderTreeNodeOpt['hideTestCases'] = $options['hideTestCases'];
+    $renderTreeNodeOpt['tc_action_enabled'] = 1;
+    $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,
+                                     $renderTreeNodeOpt);
+
+
   }
 
   $treeMenu->rootnode=new stdClass();
@@ -317,7 +325,9 @@ function initExecTree($filtersObj,$optionsObj)
 
 
 
-
+/**
+ *
+ */
 function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = null,
                $filters=null, $options=null)
 {
@@ -513,16 +523,24 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   $treeMenu->rootnode = null;
   $treeMenu->menustring = '';
   
+
   $resultsCfg = config_get('results');
-  $showTestCaseID = config_get('treemenu_show_testcase_id');
   $glueChar=config_get('testcase_cfg')->glue_character;
   $menustring = null;
   $tplan_tcases = null;
 
-  list($filters,$options,
-       $show_testsuite_contents,
-       $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
+  $renderTreeNodeOpt = null;
+  $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
+  //list($filters,$options,
+  //     $show_testsuite_contents,
+  //     $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
   
+  list($filters,$options,
+       $renderTreeNodeOpt['showTestSuiteContents'],
+       $renderTreeNodeOpt['useCounters'],
+       $renderTreeNodeOpt['useColors'],$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
+
+
   $tplan_mgr = new testplan($dbHandler);
   $tproject_mgr = new testproject($dbHandler);
   $tree_manager = $tplan_mgr->tree_manager;
@@ -670,10 +688,11 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     }
   
     $keys = array_keys($tplan_tcases);
-    $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
-                                     $hash_id_descr,1,$menuUrl,$my['options']['hideTestCases'],
-                                     $useCounters,$useColors,
-                                     $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
+    $renderTreeNodeOpt['hideTestCases'] = $my['options']['hideTestCases'];
+    $renderTreeNodeOpt['tc_action_enabled'] = 1;
+    $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,
+                                     $renderTreeNodeOpt);
+
   }  // if($test_spec)
   
     

@@ -13,14 +13,9 @@
  * @uses        config.inc.php
  *
  * @internal revisions
- * @since 1.9.9
- * 20131019 - franciscom - generateTestSpecTree() return type changed
-                           generateTestSpecTreeNew() return type changed
- *
+ * @since 1.9.10
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
-
-
 require_once("execTreeMenu.inc.php");
 
 /**
@@ -33,11 +28,9 @@ require_once("execTreeMenu.inc.php");
 */
 function filterString($str)
 {
+  // avoid escaped characters in trees
   $str = str_replace(array("\n","\r"), array("",""), $str);
-  // BUGID 4470 - avoid escaped characters in trees
-  // $str = addslashes($str);
   $str = htmlspecialchars($str, ENT_QUOTES);  
-  
   return $str;
 }
 
@@ -755,9 +748,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * @return datatype description
  * 
  */
-function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
-                            $tc_action_enabled,$linkto,$hideTestCases,$useCounters,$useColors,
-                            $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
+function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$testCasePrefix,$opt)
 {
   static $resultsCfg;
   static $l18n; 
@@ -771,10 +762,10 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
   { 
     $doColouringOn['testcase'] = 1;
     $doColouringOn['counters'] = 1;
-    if( !is_null($useColors) )
+    if( !is_null($opt['useColors']) )
     {
-      $doColouringOn['testcase'] = $useColors->testcases;
-      $doColouringOn['counters'] = $useColors->counters;
+      $doColouringOn['testcase'] = $opt['useColors']->testcases;
+      $doColouringOn['counters'] = $opt['useColors']->counters;
     }
 
     $resultsCfg = config_get('results');
@@ -788,10 +779,17 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
       // here we use ONLY key
       $cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $key . '"') : ''; 
     }
-    $pf['testproject'] = $hideTestCases ? 'TPLAN_PTP' : 'SP';
-    $pf['testsuite'] = $hideTestCases ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
-    
+    $pf['testsuite'] = $opt['hideTestCases'] ? 'TPLAN_PTS' : ($opt['showTestSuiteContents'] ? 'STS' : null); 
+
+    // 20131225 - Merry Xmas
+    $pf['testproject'] = $opt['hideTestCases'] ? 'TPLAN_PTP' : 'SP';
+    if( isset($opt['actionJS']) && isset($opt['actionJS']['testproject']) )
+    {
+      $pf['testproject'] = $opt['actionJS']['testproject'];
+    }  
   }
+
+
   $name = filterString($node['name']);
 
   // custom Property that will be accessed by EXT-JS using node.attributes
@@ -803,11 +801,12 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
     case 'testproject':
     case 'testsuite':
       $node['leaf'] = false;
-      $versionID = 0;
-      $pfn = $pf[$node_type];
+      // $versionID = 0;
+      $pfn = !is_null($pf[$node_type]) ? $pf[$node_type] . "({$node['id']})" : null;
+
       $testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0; 
       $node['text'] = $name ." (" . $testcase_count . ")";
-      if($useCounters)
+      if($opt['useCounters'])
       {
         $node['text'] .= create_counters_info($node,$doColouringOn['counters']);
       }
@@ -815,14 +814,14 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
       
     case 'testcase':
       $node['leaf'] = true;
-      $pfn = $tc_action_enabled ? 'ST' :null;
-      $versionID = $node['tcversion_id'];
+      // $versionID = $node['tcversion_id'];
+      $pfn = $opt['tc_action_enabled'] ? "ST({$node['id']},{$node['tcversion_id']})" :null;
 
       $status_code = $tcase_node[$node['id']]['exec_status'];
       $node['text'] = "<span {$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
-              '" alt="' . $l18n[$status_code] . '">';
+                      '" alt="' . $l18n[$status_code] . '">';
       
-      if($showTestCaseID)
+      if($opt['showTestCaseID'])
       {
         $node['text'] .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
       } 
@@ -830,13 +829,13 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
     break;
 
     default:
-      $pfn = "ST";
+      $pfn = "ST({$node['id']})";
     break;
   }
   
   $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
-  $node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
-
+  // $node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
+  $node['href'] = is_null($pfn)? '' : "javascript:{$pfn}";
   
   // ----------------------------------------------------------------------------------------------
   if( isset($tcase_node[$node['id']]) )
@@ -845,9 +844,9 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
   }
   if (isset($node['childNodes']) && $node['childNodes'])
   {
-      // need to work always original object in order to change it's values using reference .
-      // Can not assign anymore to intermediate variables.
-        $nodes_qty = sizeof($node['childNodes']);
+    // need to work always original object in order to change it's values using reference .
+    // Can not assign anymore to intermediate variables.
+    $nodes_qty = sizeof($node['childNodes']);
     for($idx = 0;$idx <$nodes_qty ;$idx++)
     {
       if(is_null($node['childNodes'][$idx]))
@@ -855,10 +854,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
         continue;
       }
       $menustring .= renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
-                                        $hash_id_descr,
-                                        $tc_action_enabled,$linkto,$hideTestCases,
-                                        $useCounters,$useColors,$showTestCaseID,
-                                        $testCasePrefix,$showTestSuiteContents);
+                                        $hash_id_descr,$linkto,$testCasePrefix,$opt);
     }
   }
   return $menustring;
@@ -909,93 +905,6 @@ function create_counters_info(&$node,$useColors)
 }
 
 
-/**
- * VERY IMPORTANT: node must be passed BY REFERENCE
- * 
- */
-function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action_enabled,
-                                        $bForPrinting,$useCounters=1,$useColors=null,
-                                        $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
-{
-  static $resultsCfg;
-  static $l18n; 
-  static $pf; 
-  static $doColouringOn;
-  static $cssClasses;
-  
-  if(!$resultsCfg)
-  { 
-    $doColouringOn['testcase'] = 1;
-    $doColouringOn['counters'] = 1;
-    if( !is_null($useColors) )
-    {
-      $doColouringOn['testcase'] = $useColors->testcases;
-      $doColouringOn['counters'] = $useColors->counters;
-    }
-
-    $resultsCfg = config_get('results');
-    $status_descr_code = $resultsCfg['status_code'];
-    
-    //var_dump($resultsCfg);
-    //die();
-    
-    foreach($resultsCfg['status_label'] as $key => $value)
-    {
-      $l18n[$status_descr_code[$key]] = lang_get($value);
-      $cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $value . '"') : ''; 
-    }
-    
-    $pf['testproject'] = $bForPrinting ? 'TPLAN_PTP' : 'SP';
-    $pf['testsuite'] = $bForPrinting ? 'TPLAN_PTS' : ($showTestSuiteContents ? 'STS' : null); 
-    
-  }
-  
-  $name = filterString($node['name']);
-
-  // custom Property that will be accessed by EXT-JS using node.attributes
-  $node['testlink_node_name'] = $name;
-  $node['testlink_node_type'] = $node_type;
-
-  switch($node_type)
-  {
-    case 'testproject':
-    case 'testsuite':
-      $node['leaf'] = false;
-      $versionID = 0;
-      $pfn = $pf[$node_type];
-      $testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0; 
-      $node['text'] = $name ." (" . $testcase_count . ")";
-      if($useCounters)
-      {
-        $node['text'] .= create_counters_info($node,$doColouringOn['counters']);
-      }
-    break;
-      
-    case 'testcase':
-      $node['leaf'] = true;
-      $pfn = $tc_action_enabled ? 'ST' :null;
-      $versionID = $node['tcversion_id'];
-
-      $status_code = $tcase_node[$node['id']]['exec_status'];
-      $node['text'] = "<span {$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
-              '" alt="' . $l18n[$status_code] . '">';
-      
-      if($showTestCaseID)
-      {
-        $node['text'] .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
-      } 
-      $node['text'] .= "{$name}</span>";
-    break;
-
-    default:
-      $pfn = "ST";
-    break;
-  }
-  
-  // $node['text'] = $label;
-  $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
-  $node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
-}
 
 
 /**
@@ -1013,9 +922,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
  * 
  * @return array $tcase_tree filtered tree structure
  * 
- * @internal revisions:
- * 20120913 - asimon - TICKET 5186: Filtering by the value of custom fields on test specification is not working
- * 20100702 - did some changes to logic in here and added a fix for array indexes
+ * @internal revisions
  */
 function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
 {

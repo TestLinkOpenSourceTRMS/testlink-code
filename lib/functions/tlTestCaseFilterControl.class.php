@@ -34,11 +34,8 @@
  *    --> assign requirements
  *
  * @internal revisions
- * @since 1.9.8
- * 20130526 - franciscom - init_filter_custom_fields() moved to tlFilterControl class
- *                         new method   protected function getCustomFields()
- *                         some changes in visibility => IMHO is better if we use protected
-*/
+ * @since 1.9.10
+ */
 
 /*
  * --------------------------------------------------------
@@ -1051,16 +1048,20 @@ class tlTestCaseFilterControl extends tlFilterControl {
         $opt_etree->useColours->testcases = $exec_cfg->enable_tree_testcases_colouring;
         $opt_etree->useColours->counters =  $exec_cfg->enable_tree_counters_colouring;
         $opt_etree->testcases_colouring_by_selected_build = $exec_cfg->testcases_colouring_by_selected_build; 
-        
+        if($this->mode == 'execution_mode')
+        {
+          $opt_etree->actionJS['testproject'] = 'EXDS';
+        }  
+                
       
         //$chronos[] = $tstart = microtime(true);
         //echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
         //reset($chronos);  
         list($tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
-                                                        $this->args->testproject_id,
-                                                        $this->args->testproject_name,
-                                                        $this->args->testplan_id,
-                                                        $this->args->testplan_name,
+                                                        array('tproject_id' => $this->args->testproject_id,
+                                                              'tproject_name' => $this->args->testproject_name,
+                                                              'tplan_id' => $this->args->testplan_id,
+                                                              'tplan_name' => $this->args->testplan_name),
                                                         $filters,$opt_etree);
         
         //$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);

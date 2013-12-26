@@ -6,11 +6,11 @@ Author : franciscom
 
 Rev: 
 *}	
-      {assign var="ResultsStatusCode" value=$tlCfg->results.status_code}
+      {$ResultsStatusCode=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
-        {assign var="radio_id_prefix" value="bulk_status"}
+        {$radio_id_prefix = "bulk_status"}
       {else}
-        {assign var="radio_id_prefix" value="status"}
+        {$radio_id_prefix = "status"}
       {/if}
 
   		<table class="invisible">

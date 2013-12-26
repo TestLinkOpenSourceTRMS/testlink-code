@@ -11,7 +11,7 @@ Contents
 6. TestLink Team 
 7. Bug Reports and Feedback
 8. Supporting our work
-9. Regarding forum usage www.teamst.org
+9. Regarding forum usage www.testlink.org
 10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9
 11. Testlink & FreeTest
 12. Security
@@ -74,7 +74,7 @@ If you are going to have test plans with more that 100 test cases, it will be CR
 to increase this value in order to avoid issues (CRASH or MALFUNCTIONS) when adding
 test cases to test plan.
 See:
-http://www.teamst.org/forum/viewtopic.php?f=11&t=7124&p=17284&sid=e3552aca223ac1f6b3676812aa02f04c#p17284
+http://forum.testlink.org/viewtopic.php?f=11&t=7124&p=17284&sid=e3552aca223ac1f6b3676812aa02f04c#p17284
 http://mantis.testlink.org/view.php?id=5372
 
 
@@ -145,7 +145,7 @@ You should also need to configure write access for logging, upload and template 
 
 *** FCKEDITOR UPLOAD ****
 Give a look to:
-http://www.teamst.org/forum/viewtopic.php?f=22&t=7098&sid=f4012a67d921cf5a2322c52fc38f21d6
+http://forum.testlink.org/viewtopic.php?f=22&t=7098&sid=f4012a67d921cf5a2322c52fc38f21d6
 
 
 
@@ -347,7 +347,7 @@ if you find TestLinl useful, think about a donation to support our work.
 contact testlink.forum@gmail.com
 
 
-9. Regarding forum usage forum.testlink.org
+9. Regarding forum usage www.testlink.org
 ===============================================================
 
 PLEASE: read this short hints before you write a topic:

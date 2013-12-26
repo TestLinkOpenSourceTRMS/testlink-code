@@ -102,6 +102,7 @@ $TLS_ghost = 'ghost';
 $TLS_show_ghost_string = 'Show ghost string';
 $TLS_goto_testspec = 'Open test case specification';
 $TLS_help = "Help";
+$TLS_hint_list_of_bugs = 'BUGX,BUGY,BUGZ';
 $TLS_hour = "Hour";
 $TLS_import = "Import";
 $TLS_importViaAPI = "Import via API (%s)";
@@ -789,7 +790,7 @@ $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Filters & Settings";
 $TLS_test_status_all_status = $TLS_test_status_all;
 $TLS_block_filter_not_run_latest_exec='Result: not run,  can not be used in combination with on:latest execution';
-
+$TLS_bugs_on_context = 'Bugs on Exec. Context';
 
 // ----- gui/templates/mainPage.tpl -----
 $TLS_th_my_perc_completed = "My completed [%]";

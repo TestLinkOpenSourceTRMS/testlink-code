@@ -876,8 +876,8 @@ class testplan extends tlObjectWithAttachments
 
   /**
    * 
-    * 
-    */
+   * 
+   */
   function helper_keywords_sql($filter,$options=null)
   {
     
@@ -906,6 +906,7 @@ class testplan extends tlObjectWithAttachments
       $sql['join'] = " JOIN {$this->tables['testcase_keywords']} TK ON TK.testcase_id = NH_TCV.parent_id ";
     }
 
+    // mmm, here there is missing documentation
     $ret = is_null($options) ? $sql : array($sql['join'],$sql['filter']);
     return $ret;
   }
@@ -986,8 +987,8 @@ class testplan extends tlObjectWithAttachments
 
   /**
    * 
-    * 
-    */
+   * 
+   */
   function helper_exec_status_filter($filter,$lastExecSql)
   {
     $notRunFilter = null;  
@@ -1022,7 +1023,34 @@ class testplan extends tlObjectWithAttachments
     }
     return array($execFilter,$notRunFilter);    
   }
-  // ############################################################################################à
+
+  /**
+   * 
+   * 
+   */
+  function helper_bugs_sql($filter)
+  {
+    $sql = array('filter' => '', 'join' => '');
+    $dummy = explode(',',$filter);
+    $items = null;
+    foreach($dummy as $v)
+    {
+      $x = trim($v);
+      if($x != '')
+      {
+        $items[] = $x;
+      }  
+    }  
+    if(!is_null($items))
+    {
+      $sql['filter'] = " AND EB.bug_id IN ('" . implode("','",$items) . "')";            
+      $sql['join'] = " JOIN {$this->tables['execution_bugs']} EB ON EB.execution_id = E.id ";
+    }  
+    return array($sql['join'],$sql['filter']);
+  }
+
+
+
 
 /*
   function: get_linked_and_newest_tcversions
@@ -5933,7 +5961,7 @@ class testplan extends tlObjectWithAttachments
     $safe['tplan_id'] = intval($id);
     $my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
   
-    if(  $my['filters']['build_id'] <= 0 )
+    if( $my['filters']['build_id'] <= 0 )
     {
       // CRASH IMMEDIATELY
       throw new Exception( $debugMsg . " Can NOT WORK with \$my['filters']['build_id'] <= 0");
@@ -5955,46 +5983,53 @@ class testplan extends tlObjectWithAttachments
     $sqlLEBBP = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
                 " MAX(EE.id) AS id " .
                 " FROM {$this->tables['executions']} EE " . 
-                 " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
+                " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
                 " AND EE.build_id = " . intval($my['filters']['build_id']) .
                 $platform4EE .
                 " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
 
 
 
-    // adding tcversion on output can be useful for Filter on Custom Field values,
-    // because we are saving values at TCVERSION LEVEL
-    //  
-    $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" .
-                        " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
-                        // $fullEIDClause .
-                        " TCV.tc_external_id AS external_id, " .
-                        " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
-                        
-                        " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
-                        " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
-                        " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
-                        " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
-                        $my['join']['ua'] .
-                        $my['join']['keywords'] .
-                        " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
-              
-                        " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
-                        " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
-                        " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-                        " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-                        " AND LEBBP.platform_id = TPTCV.platform_id " .
-                        " AND LEBBP.testplan_id = " . $safe['tplan_id'] .
-                        " LEFT OUTER JOIN {$this->tables['executions']} E " .
-                        " ON  E.tcversion_id = TPTCV.tcversion_id " .
-                        " AND E.testplan_id = TPTCV.testplan_id " .
-                        " AND E.platform_id = TPTCV.platform_id " .
-                        " AND E.build_id = " . $my['filters']['build_id'] .
+    // When there is request to filter by BUG ID, because till now (@20131216) BUGS are linked
+    // only to EXECUTED test case versions, the not_run piece of union is USELESS
 
-                        " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
-                        $my['where']['not_run'] .
-                        " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-                        " AND E.id IS NULL AND LEBBP.id IS NULL";
+    $union['not_run'] = null;            
+    if(!isset($my['filters']['bug_id']))
+    {
+      // adding tcversion on output can be useful for Filter on Custom Field values,
+      // because we are saving values at TCVERSION LEVEL
+      //  
+      $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" .
+                          " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
+                          // $fullEIDClause .
+                          " TCV.tc_external_id AS external_id, " .
+                          " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
+                          
+                          " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+                          " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+                          " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+                          " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+                          $my['join']['ua'] .
+                          $my['join']['keywords'] .
+                          " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
+                
+                          " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+                          " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
+                          " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+                          " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+                          " AND LEBBP.platform_id = TPTCV.platform_id " .
+                          " AND LEBBP.testplan_id = " . $safe['tplan_id'] .
+                          " LEFT OUTER JOIN {$this->tables['executions']} E " .
+                          " ON  E.tcversion_id = TPTCV.tcversion_id " .
+                          " AND E.testplan_id = TPTCV.testplan_id " .
+                          " AND E.platform_id = TPTCV.platform_id " .
+                          " AND E.build_id = " . $my['filters']['build_id'] .
+
+                          " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+                          $my['where']['not_run'] .
+                          " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+                          " AND E.id IS NULL AND LEBBP.id IS NULL";
+    }         
 
 
     $union['exec'] = "/* {$debugMsg} sqlUnion - executions */" . 
@@ -6010,7 +6045,7 @@ class testplan extends tlObjectWithAttachments
                      $my['join']['ua'] .
                      $my['join']['keywords'] .
                      " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
-                      
+                     
                      " JOIN ({$sqlLEBBP}) AS LEBBP " .
                      " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
                      " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
@@ -6023,10 +6058,12 @@ class testplan extends tlObjectWithAttachments
                      " AND E.platform_id = TPTCV.platform_id " .
                      " AND E.build_id = " . $my['filters']['build_id'] .
 
+                     $my['join']['bugs'] .  // need to be here because uses join with E table alias
+
                      " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
                      $my['where']['where'];
 
-    return $union;
+    return (is_null($union['not_run']) ? $union['exec'] : $union);
   }
 
 
@@ -6034,12 +6071,10 @@ class testplan extends tlObjectWithAttachments
    *
    * @used-by getLinkedForExecTree(),getLinkedForTesterAssignmentTree(), getLinkedTCVersionsSQL()
    *            
+   * filters => 'tcase_id','keyword_id','assigned_to','exec_status','build_id', 'cf_hash',
+   *            'urgencyImportance', 'tsuites_id','platform_id', 'exec_type','tcase_name'
    *
    * @internal revisions
-   * @since 1.9.7
-   * 20130318 - franciscom - TICKET 5572: Filter by Platforms - Wrong test case state count in test plan execution
-   * 20130318 - franciscom - TICKET 5566: "Assigned to" does not work in "test execution" page
-   * 20130306 - franciscom - filter on exec status when setted to NOT RUN was wrong
    */
   function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg)
   {
@@ -6048,6 +6083,7 @@ class testplan extends tlObjectWithAttachments
 
     $ic['join'] = array();
     $ic['join']['ua'] = '';
+    $ic['join']['bugs'] = '';
 
     $ic['where'] = array();
     $ic['where']['where'] = '';
@@ -6195,7 +6231,17 @@ class testplan extends tlObjectWithAttachments
     }
 
 
+    // bug_id => will be a list to create an IN() clause
+    if( isset($ic['filters']['bug_id']) && !is_null($ic['filters']['bug_id']) )
+    {    
+      list($ic['join']['bugs'],$ic['where']['bugs']) = $this->helper_bugs_sql($ic['filters']['bug_id']);
+      $ic['where']['where'] .= $ic['where']['bugs'];
+    }
+    
+
+
     // do always
+
 
                       
     return $ic;                       
@@ -6344,7 +6390,10 @@ class testplan extends tlObjectWithAttachments
   }
 
 
-
+  /**
+   *
+   *
+   */
   function getLinkInfo($id,$tcase_id,$platform_id=null,$opt=null)
   {
     $debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;

@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.12.2.2 2010/11/22 09:16:00 asimon83 Exp $
+ * @filesource  inc_filter_panel.tpl
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -13,7 +13,7 @@
  * @author Andreas Simon
  * @internal revisions
  *
- * @since 1.9.9
+ * @since 1.9.10
  *}
 
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
@@ -22,10 +22,10 @@
                         filter_owner,TestPlan,test_plan,caption_nav_filters,
                         platform, include_unassigned_testcases, filter_active_inactive,
                         btn_remove_all_tester_assignments, execution_type, 
-                        do_auto_update, testsuite, btn_reset_filters,
+                        do_auto_update, testsuite, btn_reset_filters,hint_list_of_bugs,
                         btn_bulk_update_to_latest_version, priority, tc_title,
                         custom_field, search_type_like, importance,
-                        document_id, req_expected_coverage, title,
+                        document_id, req_expected_coverage, title,bugs_on_context,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,
                         btn_export_testplan_tree,btn_export_testplan_tree_for_results'}
 
@@ -45,11 +45,11 @@
 
 {$platformID=0}
 {if $control->draw_tc_unassign_button}
-	<input type="button" 
-	       name="removen_all_tester_assignments"
-	       value="{$labels.btn_remove_all_tester_assignments}"
-	       onclick="javascript:delete_testers_from_build({$control->settings.setting_build.selected});"
-	/>
+  <input type="button" 
+         name="removen_all_tester_assignments"
+         value="{$labels.btn_remove_all_tester_assignments}"
+         onclick="javascript:delete_testers_from_build({$control->settings.setting_build.selected});"
+  />
 {/if}
 
 {if $control->draw_bulk_update_button}
@@ -77,162 +77,162 @@
 </style>
 
 {if $control->display_settings}
-	<div id="settings_panel" style="overflow: visible;">
-		<div class="x-panel-header x-unselectable" style="overflow: visible;">
-			{$labels.caption_nav_settings}
-		</div>
+  <div id="settings_panel" style="overflow: visible;">
+    <div class="x-panel-header x-unselectable" style="overflow: visible;">
+      {$labels.caption_nav_settings}
+    </div>
 
-		<div id="settings" class="x-panel-body" style="padding-top: 3px;overflow: visible;">
-			<input type='hidden' id="tpn_view_settings" name="tpn_view_status"  value="0" />
+    <div id="settings" class="x-panel-body" style="padding-top: 3px;overflow: visible;">
+      <input type='hidden' id="tpn_view_settings" name="tpn_view_status"  value="0" />
 
-			<table class="smallGrey" style="width:98%;overflow: visible;">
+      <table class="smallGrey" style="width:98%;overflow: visible;">
 
-			{if $control->settings.setting_testplan}
-				<tr>
-					<td>{$labels.test_plan}</td>
-					<td>
-						<select class="chosen-select" name="setting_testplan" onchange="this.form.submit()">
-						{html_options options=$control->settings.setting_testplan.items
-						              selected=$control->settings.setting_testplan.selected}
-						</select>
-					</td>
-				</tr>
-			{/if}
+      {if $control->settings.setting_testplan}
+        <tr>
+          <td>{$labels.test_plan}</td>
+          <td>
+            <select class="chosen-select" name="setting_testplan" onchange="this.form.submit()">
+            {html_options options=$control->settings.setting_testplan.items
+                          selected=$control->settings.setting_testplan.selected}
+            </select>
+          </td>
+        </tr>
+      {/if}
 
-			{if $control->settings.setting_platform}
-			  {assign var="platformID" value=$control->settings.setting_platform.selected}
-				<tr>
-					<td>{$labels.platform}</td>
-					<td>
-						<select name="setting_platform" class="chosen-select" onchange="this.form.submit()">
-						{html_options options=$control->settings.setting_platform.items
-						              selected=$control->settings.setting_platform.selected}
-						</select>
-					</td>
-				</tr>
-			{/if}
+      {if $control->settings.setting_platform}
+        {assign var="platformID" value=$control->settings.setting_platform.selected}
+        <tr>
+          <td>{$labels.platform}</td>
+          <td>
+            <select name="setting_platform" class="chosen-select" onchange="this.form.submit()">
+            {html_options options=$control->settings.setting_platform.items
+                          selected=$control->settings.setting_platform.selected}
+            </select>
+          </td>
+        </tr>
+      {/if}
 
-			{if $control->settings.setting_build}
-				<tr>
-					<td>{$control->settings.setting_build.label}</td>
-					<td>
-						<select name="setting_build" class="chosen-select" onchange="this.form.submit()">
-						{html_options options=$control->settings.setting_build.items
-						              selected=$control->settings.setting_build.selected}
-						</select>
-					</td>
-				</tr>
-			{/if}
+      {if $control->settings.setting_build}
+        <tr>
+          <td>{$control->settings.setting_build.label}</td>
+          <td>
+            <select name="setting_build" class="chosen-select" onchange="this.form.submit()">
+            {html_options options=$control->settings.setting_build.items
+                          selected=$control->settings.setting_build.selected}
+            </select>
+          </td>
+        </tr>
+      {/if}
 
-			{if $control->settings.setting_refresh_tree_on_action}
-				<tr>
-		   			<td>{$labels.do_auto_update}</td>
-		  			<td>
-		  			   <input type="hidden" 
-		  			          id="hidden_setting_refresh_tree_on_action"
-		  			          name="hidden_setting_refresh_tree_on_action" 
-		  			          value="{$control->settings.setting_refresh_tree_on_action.hidden_setting_refresh_tree_on_action}" />
+      {if $control->settings.setting_refresh_tree_on_action}
+        <tr>
+            <td>{$labels.do_auto_update}</td>
+            <td>
+               <input type="hidden" 
+                      id="hidden_setting_refresh_tree_on_action"
+                      name="hidden_setting_refresh_tree_on_action" 
+                      value="{$control->settings.setting_refresh_tree_on_action.hidden_setting_refresh_tree_on_action}" />
 
-		  			   <input type="checkbox"
-		  			           id="cbsetting_refresh_tree_on_action"
-		  			           name="setting_refresh_tree_on_action"
-		  			           {if $control->settings.setting_refresh_tree_on_action.selected} checked {/if}
-		  			           style="font-size: 90%;" onclick="this.form.submit()"/>
-		  			</td>
-		  		</tr>
-			{/if}
-
-			{if $control->draw_export_testplan_button}
-				<tr>
-		   			<td colspan="2">
-	          <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"
-         	         onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
-         	                                                 '{$control->settings.setting_testplan.selected}','{$platformID}',
-         	                                                 '{$control->settings.setting_build.selected}','tree');" />
-
-	          <input type="button" id="doTestPlanExport4Results" name="doTestPlanExport4Results" 
-	                 value="{$labels.btn_export_testplan_tree_for_results}"
-         	         onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
-         	                                                 '{$control->settings.setting_testplan.selected}',
-         	                                                 '{$platformID}',
-         	                                                 '{$control->settings.setting_build.selected}','4results');" />
+               <input type="checkbox"
+                       id="cbsetting_refresh_tree_on_action"
+                       name="setting_refresh_tree_on_action"
+                       {if $control->settings.setting_refresh_tree_on_action.selected} checked {/if}
+                       style="font-size: 90%;" onclick="this.form.submit()"/>
             </td>
-		  		</tr>
-			{/if}
-			</table>
-		</div> {* settings *}
-	</div> {* settings_panel *}
+          </tr>
+      {/if}
 
-	<script>
-	$( document ).ready(function() {
-	$(".chosen-select").chosen({ width: "85%" });
-	});
-	</script>
+      {if $control->draw_export_testplan_button}
+        <tr>
+            <td colspan="2">
+            <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"
+                   onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
+                                                           '{$control->settings.setting_testplan.selected}','{$platformID}',
+                                                           '{$control->settings.setting_build.selected}','tree');" />
+
+            <input type="button" id="doTestPlanExport4Results" name="doTestPlanExport4Results" 
+                   value="{$labels.btn_export_testplan_tree_for_results}"
+                   onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
+                                                           '{$control->settings.setting_testplan.selected}',
+                                                           '{$platformID}',
+                                                           '{$control->settings.setting_build.selected}','4results');" />
+            </td>
+          </tr>
+      {/if}
+      </table>
+    </div> {* settings *}
+  </div> {* settings_panel *}
+
+  <script>
+  $( document ).ready(function() {
+  $(".chosen-select").chosen({ width: "85%" });
+  });
+  </script>
 
 {/if} {* display settings *}
 
 {if $control->display_filters}
 
-	<div id="filter_panel">
-		<div class="x-panel-header x-unselectable">
-			{$labels.caption_nav_filters}
-		</div>
+  <div id="filter_panel">
+    <div class="x-panel-header x-unselectable">
+      {$labels.caption_nav_filters}
+    </div>
 
-	<div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
-		
-		<table class="smallGrey" style="width:98%;">
+  <div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
+    
+    <table class="smallGrey" style="width:98%;">
 
-		{if $control->filters.filter_tc_id}
-			<tr>
-				<td>{$labels.th_tcid}</td>
-				<td><input type="text" name="filter_tc_id"
-				                       size="{#TC_ID_SIZE#}"
-				                       maxlength="{#TC_ID_MAXLEN#}"
-				                       value="{$control->filters.filter_tc_id.selected}" />
-				</td>
-			</tr>
-		{/if}
+    {if $control->filters.filter_tc_id}
+      <tr>
+        <td>{$labels.th_tcid}</td>
+        <td><input type="text" name="filter_tc_id"
+                               size="{#TC_ID_SIZE#}"
+                               maxlength="{#TC_ID_MAXLEN#}"
+                               value="{$control->filters.filter_tc_id.selected}" />
+        </td>
+      </tr>
+    {/if}
 
-		{if $control->filters.filter_testcase_name}
-			<tr>
-				<td>{$labels.tc_title}</td>
-				<td><input type="text" name="filter_testcase_name"
-				                       size="{#TC_TITLE_SIZE#}"
-				                       maxlength="{#TC_TITLE_MAXLEN#}"
-				                       value="{$control->filters.filter_testcase_name.selected}" />
-				</td>
-			</tr>
-		{/if}
+    {if $control->filters.filter_testcase_name}
+      <tr>
+        <td>{$labels.tc_title}</td>
+        <td><input type="text" name="filter_testcase_name"
+                               size="{#TC_TITLE_SIZE#}"
+                               maxlength="{#TC_TITLE_MAXLEN#}"
+                               value="{$control->filters.filter_testcase_name.selected}" />
+        </td>
+      </tr>
+    {/if}
 
-		{if $control->filters.filter_toplevel_testsuite}
-			<tr>
-	    		<td>{$labels.testsuite}</td>
-	    		<td>
-	    			<select name="filter_toplevel_testsuite">
-	    				{html_options options=$control->filters.filter_toplevel_testsuite.items
-	    				              selected=$control->filters.filter_toplevel_testsuite.selected}
-	    			</select>
-	    		</td>
-	    	</tr>
-    	{/if}
+    {if $control->filters.filter_toplevel_testsuite}
+      <tr>
+          <td>{$labels.testsuite}</td>
+          <td>
+            <select name="filter_toplevel_testsuite">
+              {html_options options=$control->filters.filter_toplevel_testsuite.items
+                            selected=$control->filters.filter_toplevel_testsuite.selected}
+            </select>
+          </td>
+        </tr>
+      {/if}
 
-		{if $control->filters.filter_keywords}
-			<tr>
-				<td>{$labels.keyword}</td>
-				<td><select name="filter_keywords[]"
-				            title="{$labels.keywords_filter_help}"
-				            multiple="multiple"
-				            size="{$control->filters.filter_keywords.size}">
-				    {html_options options=$control->filters.filter_keywords.items
-				                  selected=$control->filters.filter_keywords.selected}
-					</select>
+    {if $control->filters.filter_keywords}
+      <tr>
+        <td>{$labels.keyword}</td>
+        <td><select name="filter_keywords[]"
+                    title="{$labels.keywords_filter_help}"
+                    multiple="multiple"
+                    size="{$control->filters.filter_keywords.size}">
+            {html_options options=$control->filters.filter_keywords.items
+                          selected=$control->filters.filter_keywords.selected}
+          </select>
 
-			{html_radios name='filter_keywords_filter_type'
-	                   options=$control->filters.filter_keywords.filter_keywords_filter_type.items
-	                   selected=$control->filters.filter_keywords.filter_keywords_filter_type.selected}
-				</td>
-			</tr>
-		{/if}
+      {html_radios name='filter_keywords_filter_type'
+                     options=$control->filters.filter_keywords.filter_keywords_filter_type.items
+                     selected=$control->filters.filter_keywords.filter_keywords_filter_type.selected}
+        </td>
+      </tr>
+    {/if}
 
         {* TICKET 4353: added filter for active/inactive test cases *}
         {if isset($control->filters.filter_active_inactive) && $control->filters.filter_active_inactive}
@@ -262,380 +262,392 @@
             </tr>
         {/if}
             
-		{if $control->filters.filter_priority}
-			<tr>
-				<td>{$labels.priority}</td>
-				<td>
-					<select name="filter_priority">
-					{* add "any" option to smarty global variable for priority *}
-					<option value="">{$control->option_strings.any}</option>
-					{html_options options=$gsmarty_option_importance
+    {if $control->filters.filter_priority}
+      <tr>
+        <td>{$labels.priority}</td>
+        <td>
+          <select name="filter_priority">
+          {* add "any" option to smarty global variable for priority *}
+          <option value="">{$control->option_strings.any}</option>
+          {html_options options=$gsmarty_option_importance
                                   selected=$control->filters.filter_priority.selected}
-					</select>
-				</td>
-			</tr>
-		{/if}
+          </select>
+        </td>
+      </tr>
+    {/if}
 
-		{if $control->filters.filter_execution_type}
-			<tr>
-				<td>{$labels.execution_type}</td>
-	  			<td>
-				<select name="filter_execution_type">
-					{html_options options=$control->filters.filter_execution_type.items
-					              selected=$control->filters.filter_execution_type.selected}
-	    	  </select>
-				</td>
-			</tr>
-		{/if}
+    {if $control->filters.filter_execution_type}
+      <tr>
+        <td>{$labels.execution_type}</td>
+          <td>
+        <select name="filter_execution_type">
+          {html_options options=$control->filters.filter_execution_type.items
+                        selected=$control->filters.filter_execution_type.selected}
+          </select>
+        </td>
+      </tr>
+    {/if}
 
-		{if $control->filters.filter_assigned_user}
-		<tr>
-			<td>{$labels.filter_owner}</td>
-			<td>
+    {if $control->filters.filter_assigned_user}
+    <tr>
+      <td>{$labels.filter_owner}</td>
+      <td>
 
-			{if $control->advanced_filter_mode}
-				<select name="filter_assigned_user[]"
-				        id="filter_assigned_user"
-				        multiple="multiple"
-				        size="{$control->filter_item_quantity}" >
-				{html_options options=$control->filters.filter_assigned_user.items
-				              selected=$control->filters.filter_assigned_user.selected}
-				</select>
-		    {else}
-				<select name="filter_assigned_user" 
-				        id="filter_assigned_user"
-				        onchange="javascript: triggerAssignedBox('filter_assigned_user',
-	                                                             'filter_assigned_user_include_unassigned',
-	                                                             '{$control->option_strings.any}',
-	                                                             '{$control->option_strings.none}',
-	                                                             '{$control->option_strings.somebody}');">
-				{html_options options=$control->filters.filter_assigned_user.items
+      {if $control->advanced_filter_mode}
+        <select name="filter_assigned_user[]"
+                id="filter_assigned_user"
+                multiple="multiple"
+                size="{$control->filter_item_quantity}" >
+        {html_options options=$control->filters.filter_assigned_user.items
+                      selected=$control->filters.filter_assigned_user.selected}
+        </select>
+        {else}
+        <select name="filter_assigned_user" 
+                id="filter_assigned_user"
+                onchange="javascript: triggerAssignedBox('filter_assigned_user',
+                                                               'filter_assigned_user_include_unassigned',
+                                                               '{$control->option_strings.any}',
+                                                               '{$control->option_strings.none}',
+                                                               '{$control->option_strings.somebody}');">
+        {html_options options=$control->filters.filter_assigned_user.items
                               selected=$control->filters.filter_assigned_user.selected}
-				</select>
+        </select>
 
-				<br/>
-				
-				<input type="checkbox"
-				       id="filter_assigned_user_include_unassigned"
-				       name="filter_assigned_user_include_unassigned"
-	  		           value="1"
-	  		           {if $control->filters.filter_assigned_user.filter_assigned_user_include_unassigned}
-	  		           		checked="checked"
-	  		           {/if}
-	  		    />
-				{$labels.include_unassigned_testcases}
-			{/if}
+        <br/>
+        <br />
+        <input type="checkbox"
+               id="filter_assigned_user_include_unassigned"
+               name="filter_assigned_user_include_unassigned"
+                   value="1"
+                   {if $control->filters.filter_assigned_user.filter_assigned_user_include_unassigned}
+                      checked="checked"
+                   {/if}
+            />
+        {$labels.include_unassigned_testcases}
+      {/if}
 
- 			</td>
-		</tr>
-    	{/if}
+      </td>
+    </tr>
+      {/if}
+
+    {* 20131226 *}
+    {if $control->filters.filter_bugs}
+      <tr>
+        <td>{$labels.bugs_on_context}</td>
+        <td><input type="text" name="filter_bugs" size="{#BUGS_FILTER_SIZE#}"
+                               maxlength="{#BUGS_FILTER_MAXLEN#}"
+                               placeholder="{$labels.hint_list_of_bugs}"
+                               value="{$control->filters.filter_bugs.selected}" />
+        </td>
+      </tr>
+    {/if}
+    
+
+    {* custom fields are placed here *}
+
+    {if $control->filters.filter_custom_fields && !$control->filters.filter_custom_fields.collapsed}
+      <tr><td>&nbsp;</td></tr>
+      {$control->filters.filter_custom_fields.items}
+    {/if}
 
 
-		{* custom fields are placed here *}
+  {* result filtering parts *}
+  {if $control->filters.filter_result}
 
-		{if $control->filters.filter_custom_fields && !$control->filters.filter_custom_fields.collapsed}
-			<tr><td>&nbsp;</td></tr>
-			{$control->filters.filter_custom_fields.items}
-		{/if}
+    <tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
 
+        <tr>
+        <td>{$labels.filter_result}</td>
+        <td>
+        <select id="filter_result_result" 
+        {if $control->advanced_filter_mode}
+              name="filter_result_result[]" multiple="multiple"
+                size="{$control->filter_item_quantity}">
+        {else}
+              name="filter_result_result">
+        {/if}
+        {html_options options=$control->filters.filter_result.filter_result_result.items
+                      selected=$control->filters.filter_result.filter_result_result.selected}
+        </select>
+        </td>
+      </tr>
 
-	{* result filtering parts *}
-	{if $control->filters.filter_result}
+      <tr>
+        <td>{$labels.filter_on}</td>
+        <td>
+            <select name="filter_result_method" id="filter_result_method"
+                    onchange="javascript: triggerBuildChooser('filter_result_build_row',
+                                                            'filter_result_method',
+                  {$control->configuration->filter_methods.status_code.specific_build});">
+          {html_options options=$control->filters.filter_result.filter_result_method.items
+                        selected=$control->filters.filter_result.filter_result_method.selected}
+            </select>
+        </td>
+      </tr>
 
-		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
+      <tr id="filter_result_build_row">
+        <td>{$labels.build}</td>
+        <td><select id="filter_result_build" name="filter_result_build">
+          {html_options options=$control->filters.filter_result.filter_result_build.items
+                        selected=$control->filters.filter_result.filter_result_build.selected}
+          </select>
+        </td>
+      </tr>
 
-	   		<tr>
-				<td>{$labels.filter_result}</td>
-				<td>
-				<select id="filter_result_result" 
-				{if $control->advanced_filter_mode}
-				  		name="filter_result_result[]" multiple="multiple"
-				  	    size="{$control->filter_item_quantity}">
-				{else}
-				  		name="filter_result_result">
-				{/if}
-				{html_options options=$control->filters.filter_result.filter_result_result.items
-				              selected=$control->filters.filter_result.filter_result_result.selected}
-				</select>
-				</td>
-			</tr>
+  {/if}
 
-			<tr>
-				<td>{$labels.filter_on}</td>
-				<td>
-				  	<select name="filter_result_method" id="filter_result_method"
-				  		      onchange="javascript: triggerBuildChooser('filter_result_build_row',
-						                                                'filter_result_method',
-						      {$control->configuration->filter_methods.status_code.specific_build});">
-					{html_options options=$control->filters.filter_result.filter_result_method.items
-					              selected=$control->filters.filter_result.filter_result_method.selected}
-				  	</select>
-				</td>
-			</tr>
+    </table>
 
-			<tr id="filter_result_build_row">
-				<td>{$labels.build}</td>
-				<td><select id="filter_result_build" name="filter_result_build">
-					{html_options options=$control->filters.filter_result.filter_result_build.items
-					              selected=$control->filters.filter_result.filter_result_build.selected}
-					</select>
-				</td>
-			</tr>
+    <div>
+      <input type="submit"
+             value="{$labels.btn_apply_filter}"
+             id="doUpdateTree"
+             name="doUpdateTree"
+             style="font-size: 90%;" />
 
-	{/if}
+      <input type="submit"
+             value="{$labels.btn_reset_filters}"
+             id="doResetTree"
+             name="btn_reset_filters"
+             style="font-size: 90%;" />
+      
+      {if $control->filters.filter_custom_fields}
+      <input type="submit"
+             value="{$control->filters.filter_custom_fields.btn_label}"
+             id="doToggleCF"
+             name="btn_toggle_cf"
+             style="font-size: 90%;" />
+      {/if}
+      
+      {if $control->filter_mode_choice_enabled}
+      
+        {if $control->advanced_filter_mode}
+          <input type="hidden" name="btn_advanced_filters" value="1" />
+        {/if}
+      
+        <input type="submit" id="toggleFilterMode"  name="{$control->filter_mode_button_name}"
+             value="{$control->filter_mode_button_label}"
+             style="font-size: 90%;"  />
+          {/if}
+          
+    </div>
 
-		</table>
+  </div> {* filters *}
 
-		<div>
-			<input type="submit"
-			       value="{$labels.btn_apply_filter}"
-			       id="doUpdateTree"
-			       name="doUpdateTree"
-			       style="font-size: 90%;" />
-
-			<input type="submit"
-			       value="{$labels.btn_reset_filters}"
-			       id="doResetTree"
-			       name="btn_reset_filters"
-			       style="font-size: 90%;" />
-			
-			{if $control->filters.filter_custom_fields}
-			<input type="submit"
-			       value="{$control->filters.filter_custom_fields.btn_label}"
-			       id="doToggleCF"
-			       name="btn_toggle_cf"
-			       style="font-size: 90%;" />
-			{/if}
-			
-			{if $control->filter_mode_choice_enabled}
-			
-				{if $control->advanced_filter_mode}
-					<input type="hidden" name="btn_advanced_filters" value="1" />
-				{/if}
-			
-				<input type="submit" id="toggleFilterMode"  name="{$control->filter_mode_button_name}"
-				     value="{$control->filter_mode_button_label}"
-				     style="font-size: 90%;"  />
-      		{/if}
-      		
-		</div>
-
-	</div> {* filters *}
-
-	</div> {* filter_panel *}
+  </div> {* filter_panel *}
 
 {/if} {* show filters *}
 
 {* here the requirement part starts *}
 
 {if $control->display_req_settings}
-	<div id="settings_panel">
-		<div class="x-panel-header x-unselectable">
-			{$labels.caption_nav_settings}
-		</div>
+  <div id="settings_panel">
+    <div class="x-panel-header x-unselectable">
+      {$labels.caption_nav_settings}
+    </div>
 
-		<div id="settings" class="x-panel-body exec_additional_info" "style="padding-top: 3px;">
-			<input type='hidden' id="tpn_view_settings" name="tpn_view_status"  value="0" />
+    <div id="settings" class="x-panel-body exec_additional_info" "style="padding-top: 3px;">
+      <input type='hidden' id="tpn_view_settings" name="tpn_view_status"  value="0" />
 
-			<table class="smallGrey" style="width:98%;">
+      <table class="smallGrey" style="width:98%;">
 
-			{if $control->settings.setting_refresh_tree_on_action}
-				<tr>
-		   			<td>{$labels.do_auto_update}</td>
-		  			<td>
-		  			   <input type="hidden" 
-		  			          id="hidden_setting_refresh_tree_on_action"
-		  			          name="hidden_setting_refresh_tree_on_action" 
-		  			          value="{$control->settings.setting_refresh_tree_on_action.hidden_setting_refresh_tree_on_action}" />
+      {if $control->settings.setting_refresh_tree_on_action}
+        <tr>
+            <td>{$labels.do_auto_update}</td>
+            <td>
+               <input type="hidden" 
+                      id="hidden_setting_refresh_tree_on_action"
+                      name="hidden_setting_refresh_tree_on_action" 
+                      value="{$control->settings.setting_refresh_tree_on_action.hidden_setting_refresh_tree_on_action}" />
 
-		  			   <input type="checkbox"
-		  			           id="cbsetting_refresh_tree_on_action"
-		  			           name="setting_refresh_tree_on_action"
-		  			           {if $control->settings.setting_refresh_tree_on_action.selected} checked {/if}
-		  			           style="font-size: 90%;" onclick="this.form.submit();" />
-		  			</td>
-		  		</tr>
-			{/if}
+               <input type="checkbox"
+                       id="cbsetting_refresh_tree_on_action"
+                       name="setting_refresh_tree_on_action"
+                       {if $control->settings.setting_refresh_tree_on_action.selected} checked {/if}
+                       style="font-size: 90%;" onclick="this.form.submit();" />
+            </td>
+          </tr>
+      {/if}
 
-			</table>
-		</div> {* settings *}
-	</div> {* settings_panel *}
+      </table>
+    </div> {* settings *}
+  </div> {* settings_panel *}
 {/if} {* display req settings *}
 
 {if $control->display_req_filters}
 
-	<div id="filter_panel">
-	<div class="x-panel-header x-unselectable">
-		{$labels.caption_nav_filters}
-	</div>
+  <div id="filter_panel">
+  <div class="x-panel-header x-unselectable">
+    {$labels.caption_nav_filters}
+  </div>
 
-	<div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
+  <div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
 
-	<table class="smallGrey" style="width:98%;">
+  <table class="smallGrey" style="width:98%;">
 
-	{if $control->filters.filter_doc_id}
-		<tr>
-			<td>{$labels.document_id}</td>
-			<td><input type="text" name="filter_doc_id"
-			                       size="{#REQ_DOCID_SIZE#}"
-			                       maxlength="{#REQ_DOCID_MAXLEN#}"
-			                       value="{$control->filters.filter_doc_id.selected}" />
-			</td>
-		</tr>
-	{/if}
+  {if $control->filters.filter_doc_id}
+    <tr>
+      <td>{$labels.document_id}</td>
+      <td><input type="text" name="filter_doc_id"
+                             size="{#REQ_DOCID_SIZE#}"
+                             maxlength="{#REQ_DOCID_MAXLEN#}"
+                             value="{$control->filters.filter_doc_id.selected}" />
+      </td>
+    </tr>
+  {/if}
 
-	{if $control->filters.filter_title}
-		<tr>
-			<td>{$labels.title}</td>
-			<td><input type="text" name="filter_title"
-			                       size="{#REQ_NAME_SIZE#}"
-			                       maxlength="{#REQ_NAME_MAXLEN#}"
-			                       value="{$control->filters.filter_title.selected}" />
-			</td>
-		</tr>
-	{/if}
-	
-	{if $control->filters.filter_status}
-		<tr>
-			<td>{$labels.status}</td>
-			<td>
-				{if $control->advanced_filter_mode}
-					<select id="filter_status" 
-					        name="filter_status[]"
-					        multiple="multiple"
-					        size="{$control->filter_item_quantity}" >
-				{else}
-					<select id="filter_status" name="filter_status">
-				{/if}
-					{html_options options=$control->filters.filter_status.items
-					              selected=$control->filters.filter_status.selected}
-					</select>
-			    
-			</td>
-		</tr>
-	{/if}
-	
-	{if $control->filters.filter_type}
-		<tr>
-			<td>{$labels.req_type}</td>
-			<td>
-				{if $control->advanced_filter_mode}
-					<select id="filter_type" 
-					        name="filter_type[]"
-					        multiple="multiple"
-					        size="{$control->filter_item_quantity}" >
-				{else}
-					<select id="filter_type" name="filter_type">
-				{/if}
-					{html_options options=$control->filters.filter_type.items
-					              selected=$control->filters.filter_type.selected}
-					</select>
-			</td>
-		</tr>
-	{/if}
+  {if $control->filters.filter_title}
+    <tr>
+      <td>{$labels.title}</td>
+      <td><input type="text" name="filter_title"
+                             size="{#REQ_NAME_SIZE#}"
+                             maxlength="{#REQ_NAME_MAXLEN#}"
+                             value="{$control->filters.filter_title.selected}" />
+      </td>
+    </tr>
+  {/if}
+  
+  {if $control->filters.filter_status}
+    <tr>
+      <td>{$labels.status}</td>
+      <td>
+        {if $control->advanced_filter_mode}
+          <select id="filter_status" 
+                  name="filter_status[]"
+                  multiple="multiple"
+                  size="{$control->filter_item_quantity}" >
+        {else}
+          <select id="filter_status" name="filter_status">
+        {/if}
+          {html_options options=$control->filters.filter_status.items
+                        selected=$control->filters.filter_status.selected}
+          </select>
+          
+      </td>
+    </tr>
+  {/if}
+  
+  {if $control->filters.filter_type}
+    <tr>
+      <td>{$labels.req_type}</td>
+      <td>
+        {if $control->advanced_filter_mode}
+          <select id="filter_type" 
+                  name="filter_type[]"
+                  multiple="multiple"
+                  size="{$control->filter_item_quantity}" >
+        {else}
+          <select id="filter_type" name="filter_type">
+        {/if}
+          {html_options options=$control->filters.filter_type.items
+                        selected=$control->filters.filter_type.selected}
+          </select>
+      </td>
+    </tr>
+  {/if}
 
-	{if $control->filters.filter_spec_type}
-		<tr>
-			<td>{$labels.req_spec_type}</td>
-			<td>
-				{if $control->advanced_filter_mode}
-					<select id="filter_spec_type" 
-					        name="filter_spec_type[]"
-					        multiple="multiple"
-					        size="{$control->filter_item_quantity}" >
-				{else}
-					<select id="filter_spec_type" name="filter_spec_type">
-				{/if}
-					{html_options options=$control->filters.filter_spec_type.items
-					              selected=$control->filters.filter_spec_type.selected}
-					</select>
-			</td>
-		</tr>
-	{/if}
+  {if $control->filters.filter_spec_type}
+    <tr>
+      <td>{$labels.req_spec_type}</td>
+      <td>
+        {if $control->advanced_filter_mode}
+          <select id="filter_spec_type" 
+                  name="filter_spec_type[]"
+                  multiple="multiple"
+                  size="{$control->filter_item_quantity}" >
+        {else}
+          <select id="filter_spec_type" name="filter_spec_type">
+        {/if}
+          {html_options options=$control->filters.filter_spec_type.items
+                        selected=$control->filters.filter_spec_type.selected}
+          </select>
+      </td>
+    </tr>
+  {/if}
 
-	{if $control->filters.filter_coverage}
-		<tr>
-			<td>{$labels.req_expected_coverage}</td>
-			<td><input type="text" name="filter_coverage"
-			                       size="{#COVERAGE_SIZE#}"
-			                       maxlength="{#COVERAGE_MAXLEN#}"
-			                       value="{$control->filters.filter_coverage.selected}" />
-			</td>
-		</tr>
-	{/if}
-	
-	{if $control->filters.filter_relation}
-		<tr>
-			<td>{$labels.has_relation_type}</td>
-			<td>
-				{if $control->advanced_filter_mode}
-					<select id="filter_relation" 
-					        name="filter_relation[]"
-					        multiple="multiple"
-					        size="{$control->filter_item_quantity}" >
-				{else}
-					<select id="filter_relation" name="filter_relation">
-				{/if}
-					{html_options options=$control->filters.filter_relation.items
-					              selected=$control->filters.filter_relation.selected}
-					</select>
-			</td>
-		</tr>
-	{/if}
-	
-	{if $control->filters.filter_tc_id}
-		<tr>
-			<td>{$labels.th_tcid}</td>
-			<td><input type="text" name="filter_tc_id"
-			                       size="{#TC_ID_SIZE#}"
-			                       maxlength="{#TC_ID_MAXLEN#}"
-			                       value="{$control->filters.filter_tc_id.selected}" />
-			</td>
-		</tr>
-	{/if}
-	
-	{if $control->filters.filter_custom_fields && !$control->filters.filter_custom_fields.collapsed}
-		<tr><td>&nbsp;</td></tr>
-		{$control->filters.filter_custom_fields.items}
-	{/if}
-	
-	</table>
-	
-	<div>
-		<input type="submit"
-		       value="{$labels.btn_apply_filter}"
-		       id="doUpdateTree"
-		       name="doUpdateTree"
-		       style="font-size: 90%;" />
+  {if $control->filters.filter_coverage}
+    <tr>
+      <td>{$labels.req_expected_coverage}</td>
+      <td><input type="text" name="filter_coverage"
+                             size="{#COVERAGE_SIZE#}"
+                             maxlength="{#COVERAGE_MAXLEN#}"
+                             value="{$control->filters.filter_coverage.selected}" />
+      </td>
+    </tr>
+  {/if}
+  
+  {if $control->filters.filter_relation}
+    <tr>
+      <td>{$labels.has_relation_type}</td>
+      <td>
+        {if $control->advanced_filter_mode}
+          <select id="filter_relation" 
+                  name="filter_relation[]"
+                  multiple="multiple"
+                  size="{$control->filter_item_quantity}" >
+        {else}
+          <select id="filter_relation" name="filter_relation">
+        {/if}
+          {html_options options=$control->filters.filter_relation.items
+                        selected=$control->filters.filter_relation.selected}
+          </select>
+      </td>
+    </tr>
+  {/if}
+  
+  {if $control->filters.filter_tc_id}
+    <tr>
+      <td>{$labels.th_tcid}</td>
+      <td><input type="text" name="filter_tc_id"
+                             size="{#TC_ID_SIZE#}"
+                             maxlength="{#TC_ID_MAXLEN#}"
+                             value="{$control->filters.filter_tc_id.selected}" />
+      </td>
+    </tr>
+  {/if}
+  
+  {if $control->filters.filter_custom_fields && !$control->filters.filter_custom_fields.collapsed}
+    <tr><td>&nbsp;</td></tr>
+    {$control->filters.filter_custom_fields.items}
+  {/if}
+  
+  </table>
+  
+  <div>
+    <input type="submit"
+           value="{$labels.btn_apply_filter}"
+           id="doUpdateTree"
+           name="doUpdateTree"
+           style="font-size: 90%;" />
 
-		<input type="submit"
-		       value="{$labels.btn_reset_filters}"
-		       id="doResetTree"
-		       name="btn_reset_filters"
-		       style="font-size: 90%;" />
-		
-		{if $control->filters.filter_custom_fields}
-			<input type="submit"
-			       value="{$control->filters.filter_custom_fields.btn_label}"
-			       id="doToggleCF"
-			       name="btn_toggle_cf"
-			       style="font-size: 90%;" />
-		{/if}
-		
-		{if $control->filter_mode_choice_enabled}
-			
-			{if $control->advanced_filter_mode}
-				<input type="hidden" name="btn_advanced_filters" value="1" />
-			{/if}
-			
-			<input type="submit" id="toggleFilterMode"  name="{$control->filter_mode_button_name}"
-			     value="{$control->filter_mode_button_label}"
-			     style="font-size: 90%;"  />
-      	{/if}
+    <input type="submit"
+           value="{$labels.btn_reset_filters}"
+           id="doResetTree"
+           name="btn_reset_filters"
+           style="font-size: 90%;" />
+    
+    {if $control->filters.filter_custom_fields}
+      <input type="submit"
+             value="{$control->filters.filter_custom_fields.btn_label}"
+             id="doToggleCF"
+             name="btn_toggle_cf"
+             style="font-size: 90%;" />
+    {/if}
+    
+    {if $control->filter_mode_choice_enabled}
+      
+      {if $control->advanced_filter_mode}
+        <input type="hidden" name="btn_advanced_filters" value="1" />
+      {/if}
+      
+      <input type="submit" id="toggleFilterMode"  name="{$control->filter_mode_button_name}"
+           value="{$control->filter_mode_button_label}"
+           style="font-size: 90%;"  />
+        {/if}
 
-	</div>
-	
-	</div> {* filters *}
-	</div> {* filter_panel *}
+  </div>
+  
+  </div> {* filters *}
+  </div> {* filter_panel *}
 {/if} {* show requirement filters *}
 </form>

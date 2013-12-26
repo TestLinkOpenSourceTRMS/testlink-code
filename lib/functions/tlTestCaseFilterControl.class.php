@@ -202,7 +202,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
   /* MAGIC NUMBERS are related to field size
    * filter_tc_id: 0,30 arbitrary
-   *
+   * filter_bugs: 240 = 60 x 4 (60 bug_id size on execution_bugs table) 
    */
   private $all_filters = array('filter_tc_id' => array("POST", tlInputParameter::STRING_N,0,30),
                                'filter_testcase_name' => array("POST", tlInputParameter::STRING_N,0,100),
@@ -214,7 +214,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                'filter_execution_type' => array("POST", tlInputParameter::INT_N),
                                'filter_assigned_user' => array("POST", tlInputParameter::ARRAY_INT),
                                'filter_custom_fields' => array("POST", tlInputParameter::ARRAY_STRING_N),
-                               'filter_result' => null); // result: no info here, divided into more parts
+                               'filter_result' => null,
+                               'filter_bugs' => array("POST", tlInputParameter::STRING_N,0,240)); 
+
+                               // result: no info here, divided into more parts
 
   /**
    * This array is used as an additional security measure. It maps all available
@@ -243,7 +246,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                                                  'filter_execution_type',
                                                                  'filter_assigned_user',
                                                                  'filter_custom_fields',
-                                                                 'filter_result'),
+                                                                 'filter_result',
+                                                                 'filter_bugs'),
                                        'plan_mode' => array('filter_tc_id',
                                                             'filter_testcase_name',
                                                             'filter_toplevel_testsuite',
@@ -573,9 +577,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // iterate through all filters and activate the needed ones
     $this->display_filters = false;
 
+    // new dBug($this->all_filters);
+
     foreach ($this->all_filters as $name => $info) 
     {
       $init_method = "init_$name";
+      // echo $init_method . '<br>';
+      // echo $name . '<br>';
+
       if (in_array($name, $this->mode_filter_mapping[$this->mode]) &&
         method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED &&
         $this->configuration->show_filters == ENABLED) 
@@ -697,7 +706,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * @author Andreas Simon
    * @param int $token_validity_duration data older than given timespan will be deleted
    */
-  public function delete_old_session_data($token_validity_duration = 0) {
+  public function delete_old_session_data($token_validity_duration = 0) 
+  {
+ 
     // TODO this duration could maybe also be configured in config/const.inc.php
     
     // how long shall the data remain in session before it will be deleted?
@@ -710,6 +721,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       foreach ($_SESSION[$this->mode] as $token => $data) {
         if ($data['timestamp'] < (time() - $token_validity_duration)) {
           // too old, delete!
+          // echo 'delete_old_session_data'; die();
           unset($_SESSION[$this->mode][$token]);
         }
       }
@@ -818,6 +830,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
                    '&filter_result_method=' . $this->active_filters['filter_result_method'] .
                    '&filter_result_build=' .  $this->active_filters['filter_result_build'];
       }
+
+      // 20131226
+      if( !is_null($this->active_filters['filter_bugs']))
+      {
+        $string .= '&' . http_build_query( array('filter_bugs' => $this->active_filters['filter_bugs']));  
+        echo $string;
+      }  
+
     }
     
     return $string;
@@ -853,11 +873,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
     {
       $this->testproject_mgr = new testproject($this->db);
     }
-    
     $tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
     switch ($this->mode) 
     {
-      
       case 'plan_mode':
         // No lazy loading here.
         $opt_etree = $this->treeOpt[$this->mode];
@@ -952,6 +970,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                           $this->args->testproject_name,
                                           $gui->menuUrl, $filters, $options);
           
+          new dBug($forrest);
           $this->set_testcases_to_show($forrest['leaves']);
           $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
@@ -1038,8 +1057,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // since the user should usually never see the whole tree here.
         $filters->hide_testcases = false;
         $filters->show_testsuite_contents = $this->configuration->exec_cfg->show_testsuite_contents;
-    
-    
+
         $exec_cfg = &$this->configuration->exec_cfg;
         $opt_etree = new stdClass();
         $opt_etree->useCounters = $exec_cfg->enable_tree_testcase_counters;
@@ -1508,42 +1526,42 @@ class tlTestCaseFilterControl extends tlFilterControl {
   }
     
 
-    /**
-     *
-     * This is a special case of filter: the menu items don't get initialized here,
-     * they are available as a global smarty variable. So the only thing to be managed
-     * here is the selection by user.
-     */
-    private function init_filter_importance() 
+  /**
+   *
+   * This is a special case of filter: the menu items don't get initialized here,
+   * they are available as a global smarty variable. So the only thing to be managed
+   * here is the selection by user.
+   */
+  private function init_filter_importance() 
+  {
+    // show this filter only if test priority management is enabled
+    $key = 'filter_importance';
+    $this->active_filters[$key] = null;
+    $this->filters[$key] = false;
+
+    if (!$this->testproject_mgr) 
     {
-        // show this filter only if test priority management is enabled
-        $key = 'filter_importance';
-        $this->active_filters[$key] = null;
-        $this->filters[$key] = false;
-
-        if (!$this->testproject_mgr) 
-        {
-            $this->testproject_mgr = new testproject($this->db);
-        }
-        $tp_info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
-        $enabled = $tp_info['opt']->testPriorityEnabled;
-
-        if ($enabled) 
-        {
-          $selection = $this->args->{$key};
-          if (!$selection || $this->args->reset_filters) 
-          {
-            $selection = null;
-          } 
-          else 
-          {
-            $this->do_filtering = true;
-          }
-
-          $this->filters[$key] = array('selected' => $selection);
-          $this->active_filters[$key] = $selection;
-        }
+      $this->testproject_mgr = new testproject($this->db);
     }
+    $tp_info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
+    $enabled = $tp_info['opt']->testPriorityEnabled;
+
+    if ($enabled) 
+    {
+      $selection = $this->args->{$key};
+      if (!$selection || $this->args->reset_filters) 
+      {
+        $selection = null;
+      } 
+      else 
+      {
+        $this->do_filtering = true;
+      }
+
+      $this->filters[$key] = array('selected' => $selection);
+      $this->active_filters[$key] = $selection;
+    }
+  }
   
 
   /**
@@ -1585,7 +1603,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }   
   } // end of method
 
-  private function init_filter_execution_type() {
+  /**
+   *
+   */
+  private function init_filter_execution_type() 
+  {
     if (!$this->tc_mgr) {
       $this->tc_mgr = new testcase($this->db);
     }
@@ -1808,7 +1830,28 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
   } // end of method
   
-  
+  /**
+   *
+   */  
+  private function init_filter_bugs() 
+  {
+    $key = str_replace('init_','',__FUNCTION__);
+    $selection = $this->args->{$key};
+    
+    if (!$selection || $this->args->reset_filters) 
+    {
+      $selection = null;
+    } 
+    else 
+    {
+      $this->do_filtering = true;
+    }
+    
+    $this->filters[$key] = array('selected' => $selection);
+    $this->active_filters[$key] = $selection;
+  } 
+
+
   
   /**
    *

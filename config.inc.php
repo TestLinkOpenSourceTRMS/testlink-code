@@ -1197,6 +1197,7 @@ $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_execution_type = ENAB
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_assigned_user = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_result = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->execution_mode->filter_bugs = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->advanced_filter_mode_choice = ENABLED;
 
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_tc_id = ENABLED;

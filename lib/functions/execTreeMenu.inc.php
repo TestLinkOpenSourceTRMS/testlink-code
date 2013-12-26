@@ -138,7 +138,6 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       // WE NEED TO ADD FILTERING on CUSTOM FIELD VALUES, WE HAVE NOT REFACTORED
       // THIS YET.
       //
-      
       if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options)) )
       {
         $kmethod = "fetchRowsIntoMap";
@@ -161,7 +160,6 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
           $sql2run = $sql2do;
         }
         $tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
-        
       }
     }   
 
@@ -256,7 +254,8 @@ function initExecTree($filtersObj,$optionsObj)
   $keymap = array('tcase_id' => 'filter_tc_id', 'assigned_to' => 'filter_assigned_user',
                   'platform_id' => 'setting_platform', 'exec_type' => 'filter_execution_type',
                   'urgencyImportance' => 'filter_priority', 'tcase_name' => 'filter_testcase_name',
-                  'cf_hash' => 'filter_custom_fields', 'build_id' => array('setting_build','build_id'));
+                  'cf_hash' => 'filter_custom_fields', 'build_id' => array('setting_build','build_id'),
+                  'bug_id' => 'filter_bugs');
   
   if( property_exists($optionsObj,'buildIDKeyMap') && !is_null($filtersObj->filter_result_build) )
   {

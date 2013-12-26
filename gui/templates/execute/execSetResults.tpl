@@ -244,6 +244,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   <input type="hidden" id="save_button_clicked"  name="save_button_clicked" value="0" />
   <input type="hidden" id="do_delete"  name="do_delete" value="0" />
   <input type="hidden" id="exec_to_delete"  name="exec_to_delete" value="0" />
+  <input type="hidden" id="form_token"  name="form_token" value="{$gui->treeFormToken}" />
+  <input type="hidden" id="refresh_tree"  name="refresh_tree" value="{$gui->refreshTree}" />
 
   {* -------------------------------------------------------------------------------- *}
   {* Test Plan notes show/hide management                                             *}
@@ -431,11 +433,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		{/if}
 		<p>
 	{/if}
-    {include file="execute/inc_exec_show_tc_exec.tpl"}
-    {if isset($gui->refreshTree) && $gui->refreshTree}
-	    {include file="inc_refreshTreeWithFilters.tpl"}
-    {/if}
+  
+  {include file="execute/inc_exec_show_tc_exec.tpl"}
+  {if isset($gui->refreshTree) && $gui->refreshTree}
+    {include file="inc_refreshTreeWithFilters.tpl"}
   {/if}
+{/if}
   
 </form>
 </div>

@@ -25,6 +25,7 @@ var code_not_run = '{$gui->not_run}';
 
 treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
             loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+
 Ext.onReady(function() {
   Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
@@ -46,7 +47,14 @@ Ext.onReady(function() {
       applyTo: 'filter_panel'
     });
 
-  EXDS(); // Load on right pane EXecution DaShboard
+  // CRITIC - this has to be done NOT ALLWAY but according operation
+  // Example: after a Test Execution is WRONG
+  // Basically this has to be done ONLY if submit has been done on LEFT PANE TREE
+  // Need to understand if I can know this
+  //
+  {if $gui->loadExecDashboard}
+    EXDS(); // Load on right pane EXecution DaShboard
+  {/if}  
 });
 
 /**

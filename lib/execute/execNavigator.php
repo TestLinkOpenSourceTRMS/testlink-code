@@ -44,7 +44,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function initializeGui(&$control) 
 {
 	$gui = new stdClass();
-	
+
+	// This logic is managed from execSetResults.php
+	$gui->loadExecDashboard = true;
+	if( isset($_SESSION['loadExecDashboard'][$control->form_token]) )
+	{
+	  $gui->loadExecDashboard = false;	
+	  unset($_SESSION['loadExecDashboard'][$control->form_token]);		  
+	}  
+
 	$gui->menuUrl = 'lib/execute/execSetResults.php';
 	$gui->args = $control->get_argument_string();
 	$gui->src_workframe = $control->args->basehref . $gui->menuUrl .
@@ -59,7 +67,5 @@ function initializeGui(&$control)
 	$dummy = config_get('execution_filter_methods');
 	$gui->lastest_exec_method = $dummy['status_code']['latest_execution'];
 
-	//new dBug($gui);
 	return $gui;
 }
-?>

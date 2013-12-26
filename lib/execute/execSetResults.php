@@ -318,7 +318,6 @@ else
 
   // To silence smarty errors
   //  future must be initialized in a right way
-  // var_dump($gui);
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
@@ -334,14 +333,11 @@ else
   returns: 
   
   @internal revisions
-  @since 1.9.4
-  20110820 - franciscom - TICKET 4714  
 */
 function init_args(&$dbHandler,$cfgObj)
 {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
-
 
   // Settings and Filters that we put on session to create some 
   // sort of persistent scope, because we have had issues when passing this info
@@ -349,10 +345,22 @@ function init_args(&$dbHandler,$cfgObj)
   //
   // we get info about build_id, platform_id, etc ...
   getSettingsAndFilters($args);
-
   manageCookies($args,$cfgObj);
- 
 
+  // need to comunicate with left frame, will do via $_SESSION and form_token 
+  if( ($args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0) > 0 )
+  {
+    // do not understand why this do not works OK
+    // $_SESSION[$args->treeFormToken]['loadExecDashboard'] = false;
+    $_SESSION['loadExecDashboard'][$args->treeFormToken] = false;
+  }  
+
+
+  if(is_null($args->refreshTree))
+  {
+    $args->refreshTree = isset($_REQUEST['refresh_tree']) ? intval($_REQUEST['refresh_tree']) : 0;  
+  }  
+  
   $args->tc_id = null;
   $args->tsuite_id = null;
   $args->user = $_SESSION['currentUser'];
@@ -1067,6 +1075,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->tproject_id=$argsObj->tproject_id;
     $gui->build_id = $argsObj->build_id;
     $gui->platform_id = $argsObj->platform_id;
+    $gui->loadExecDashboard = false;
+    $gui->treeFormToken = $argsObj->treeFormToken;
     
     $gui->execStatusValues=null;
     $gui->can_use_bulk_op=0;
@@ -1241,14 +1251,10 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 */
 function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 {      
-  // echo __FUNCTION__;  new dBug($tcase_id); new dBug($tcversion_id);
   $options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
-
-
   $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
                                              $argsObj->build_id,$argsObj->platform_id,$options);
     
-
   if( !is_null($last_exec) )
   {
     $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
@@ -1721,18 +1727,12 @@ function getSettingsAndFilters(&$argsObj)
     $argsObj->keywordsFilterType = $sf['filter_keywords_filter_type'];
   }
 
-
-
-
-
   $argsObj->refreshTree = isset($sf['setting_refresh_tree_on_action']) ? 
-                          $sf['setting_refresh_tree_on_action'] : 0;
-
+                                $sf['setting_refresh_tree_on_action'] : null;
+                                  
   // Checkbox
   $tgk = 'filter_assigned_user_include_unassigned';
   $argsObj->include_unassigned = isset($sf[$tgk]) && ($sf[$tgk] != 0 ? 1 : 0);
-
-
 }
 
 

@@ -244,11 +244,13 @@ function display_left_block_5()
           <a href="{$gui->launcher}?feature=searchTc">{$labels.href_search_tc}</a>
       {/if}    
       
-    {if $gui->grants.keywords_view == "yes"}
-      {if $gui->grants.keywords_edit == "yes"}
-          <br />
-        <img src="{$tlImages.bullet}" />
-          <a href="{$gui->launcher}?feature=keywordsAssign">{$labels.href_keywords_assign}</a>
+    {if $gui->hasKeywords}  
+      {if $gui->grants.keywords_view == "yes"}
+        {if $gui->grants.keywords_edit == "yes"}
+            <br />
+          <img src="{$tlImages.bullet}" />
+            <a href="{$gui->launcher}?feature=keywordsAssign">{$labels.href_keywords_assign}</a>
+        {/if}
       {/if}
     {/if}
       

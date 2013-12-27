@@ -1186,12 +1186,26 @@ function setPublicStatus($id,$status)
   protected function getKeywordIDsFor($testproject_id)
   {
     $query = " SELECT id FROM {$this->tables['keywords']}  " .
-         " WHERE testproject_id = {$testproject_id}" .
-         " ORDER BY keyword ASC";
+             " WHERE testproject_id = {$testproject_id}" .
+             " ORDER BY keyword ASC";
     $keywordIDs = $this->db->fetchColumnsIntoArray($query,'id');
-
     return $keywordIDs;
   }
+
+  /**
+   * 
+   *
+   */
+  function hasKeywords($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* {$debugMsg} */ SELECT COUNT(0) AS QTY FROM {$this->tables['keywords']}  " .
+           " WHERE testproject_id = " . intval($id);
+    $rs = $this->db->get_recordset($sql);
+
+    return ((is_null($rs) || $rs[0]['QTY'] == 0) ? false : true);
+  }
+
 
   /**
    * Exports the given keywords to a XML file
@@ -1513,23 +1527,21 @@ function setPublicStatus($id,$status)
    *         modification_ts
    *
    * @author Martin Havlat
-   * @internal rev: 
-   * 20100911 - amitkhullar - BUGID 3764
-   * 20090506 - francisco.mancardi@gruppotesi.com - Requirements Refactoring
+   * @internal revisions 
    *       
    **/
   public function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-      $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                    "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                    "RSPEC.modification_ts,NH.name AS title";
+    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+                "RSPEC.modification_ts,NH.name AS title";
     
-      $fields = is_null($fields) ? $fields2get : implode(',',$fields);
-      $sql = "  /* $debugMsg */ SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
-              " {$this->tables['nodes_hierarchy']} NH , {$this->tables['requirements']} REQ " .
-                " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id AND REQ.srs_id = RSPEC.id" ;
+    $fields = is_null($fields) ? $fields2get : implode(',',$fields);
+    $sql = "  /* $debugMsg */ SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
+           " {$this->tables['nodes_hierarchy']} NH , {$this->tables['requirements']} REQ " .
+           " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id AND REQ.srs_id = RSPEC.id" ;
            
     if (!is_null($id))
       {

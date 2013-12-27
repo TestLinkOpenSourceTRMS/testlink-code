@@ -14,6 +14,7 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
+ * @since 1.9.10
  *
  **/
 
@@ -53,6 +54,12 @@ if($gui->grants['view_tc'])
 { 
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
 }
+
+$gui->hasKeywords = false;
+if($gui->hasTestCases)
+{
+  $gui->hasKeywords = $tproject_mgr->hasKeywords($testprojectID);
+}  
 
 
 // ----- Test Plan Section --------------------------------------------------------------
@@ -163,7 +170,9 @@ function getUserDocumentation()
   return $documents;
 }
 
-
+/**
+ *
+ */
 function getGrants($dbHandler,$user,$forceToNo=false)
 {
   // User has test project rights
@@ -218,5 +227,3 @@ function getGrants($dbHandler,$user,$forceToNo=false)
 
   return $grants;  
 }
-
-?>

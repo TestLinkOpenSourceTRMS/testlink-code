@@ -53,7 +53,7 @@ $text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],
 //										 $level,$tplanID,$prefix,$args->tproject_id);
 
 // 20131208
-$text2print .= renderTestCaseForPrinting($db,$node,$printingOptions,,
+$text2print .= renderTestCaseForPrinting($db,$node,$printingOptions,
 										 array('level' => $level,'tplan_id' => $tplanID,
 										 	   'tproject_id' => $args->tproject_id,'prefix' => $prefix));
 

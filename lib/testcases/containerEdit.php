@@ -91,7 +91,7 @@ foreach ($a_actions as $the_key => $the_val)
   
     $action = $the_key;
     $get_c_data = $the_val;
-    // $level = 'testsuite';
+    $level = is_null($level) ? 'testsuite' : $level;
     break;
   }
 }
@@ -106,8 +106,7 @@ if($init_opt_transfer)
 }
 
 // create  web editor objects
-list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateKey)=initWebEditors($a_keys,$level,$editorCfg);
-
+list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateKey) = initWebEditors($a_keys,$level,$editorCfg);
 if($get_c_data)
 {
   $name_ok = 1;
@@ -403,8 +402,6 @@ function init_args(&$dbHandler,$optionTransferCfg)
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  // new dBug($_REQUEST);
-
   $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->tprojectName = $_SESSION['testprojectName'];
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
@@ -420,7 +417,6 @@ function init_args(&$dbHandler,$optionTransferCfg)
   {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
-
 
   $args->tsuite_name = isset($_REQUEST['testsuiteName']) ? $_REQUEST['testsuiteName'] : null;
   $args->bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
@@ -666,22 +662,22 @@ returns:
 */
 function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 {
-    $msg = 'ok';
-    $ret = $tsuiteMgr->update($argsObj->testsuiteID,$container['container_name'],$container['details']);
-    if($ret['status_ok'])
+  $msg = 'ok';
+  $ret = $tsuiteMgr->update($argsObj->testsuiteID,$container['container_name'],$container['details']);
+  if($ret['status_ok'])
+  {
+    $tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
+    if(trim($argsObj->assigned_keyword_list) != "")
     {
-        $tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
-        if(trim($argsObj->assigned_keyword_list) != "")
-        {
-            $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
-        }
-        writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
+      $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
     }
-    else
-    {
-        $msg = $ret['msg'];
-    }
-    return $msg;
+    writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
+  }
+  else
+  {
+    $msg = $ret['msg'];
+  }
+  return $msg;
 }
 
 /*

@@ -18,7 +18,7 @@
  *     System try to get Test Project analising user provided data (test case identification)
  *
  *  @internal revision
- *  @since 1.9.8
+ *  @since 1.9.10
  */
 
 require_once('../../config.inc.php');
@@ -109,6 +109,7 @@ function init_args(&$dbHandler)
   $args->requirementsEnabled = 0;
   $args->testPriorityEnabled = 0;
   $args->tcasePrefix = trim($args->tcasePrefix);
+  $args->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 
 
 
@@ -199,6 +200,7 @@ function initializeEnv($dbHandler)
       $gui->$right = $grants->$right;
   }
   
+  $gui->form_token = $args->form_token;
   $gui->tproject_id = $args->tproject_id;
   $gui->page_title = lang_get('container_title_' . $args->feature);
   $gui->requirementsEnabled = $args->requirementsEnabled; 

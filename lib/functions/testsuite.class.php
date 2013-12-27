@@ -470,7 +470,7 @@ class testsuite extends tlObjectWithAttachments
     $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
     $gui->id = $id;
     $gui->page_title = lang_get('testsuite');
-    $gui->level = 'testsuite';
+    $gui->level = $gui->containerType = 'testsuite';
     
     $smarty->assign('gui',$gui);
     $smarty->display($template_dir . 'containerView.tpl');
@@ -500,15 +500,10 @@ class testsuite extends tlObjectWithAttachments
                             
     returns: -
   
-    rev :
-         20090801 - franciscom - added $userInput
-         20080105 - franciscom - added $userTemplateCfg
-         20071202 - franciscom - interface changes -> template_dir
   */
   function viewer_edit_new(&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action, $parent_id, 
                            $id=null, $messages=null, $userTemplateKey=null, $userInput=null)
   {
-  
     $internalMsg = array('result_msg' => null,  'user_feedback' => null);
     $the_data = null;
     $name = '';
@@ -517,18 +512,16 @@ class testsuite extends tlObjectWithAttachments
     {
       $internalMsg = array_merge($internalMsg, $messages);
     }
+ 
     $useUserInput = is_null($userInput) ? 0 : 1;
-    
-      $cf_smarty=-2; // MAGIC must be explained
-      
-      $pnode_info=$this->tree_manager->get_node_hierarchy_info($parent_id);
-      $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
-      $parent_info['name']=$pnode_info['name'];
+    $cf_smarty=-2; // MAGIC must be explained
+    $pnode_info=$this->tree_manager->get_node_hierarchy_info($parent_id);
+    $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
+    $parent_info['name']=$pnode_info['name'];
     
   
-    $a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
-            'new_testsuite'  => 'containerNew.tpl',
-            'add_testsuite'  => 'containerNew.tpl');
+    $a_tpl = array('edit_testsuite' => 'containerEdit.tpl','new_testsuite'  => 'containerNew.tpl',
+                   'add_testsuite'  => 'containerNew.tpl');
     
     $the_tpl = $a_tpl[$action];
     $smarty->assign('sqlResult', $internalMsg['result_msg']);
@@ -548,23 +541,21 @@ class testsuite extends tlObjectWithAttachments
         $the_data = $this->get_by_id($id);
         $name=$the_data['name'];
         $smarty->assign('containerID',$id); 
-        } 
-        $webEditorData = $the_data;
+      } 
+      $webEditorData = $the_data;
     }
     
-      // Custom fields - 20101012
-      $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id,'design','',$userInput);
+    $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id,'design','',$userInput);
     
     // webeditor
-    // 20090503 - now templates will be also used after 'add_testsuite', when
+    // templates will be also used after 'add_testsuite', when
     // presenting a new test suite with all other fields empty.
-      if( !$useUserInput )
-        {
+    if( !$useUserInput )
+    {
       if( ($action == 'new_testsuite' || $action == 'add_testsuite') && !is_null($userTemplateKey) )
       {
-         // need to understand if need to use templates
-         $webEditorData=$this->_initializeWebEditors($webEditorHtmlNames,$userTemplateKey);
-         
+        // need to understand if need to use templates
+        $webEditorData=$this->_initializeWebEditors($webEditorHtmlNames,$userTemplateKey);
       } 
     }
     
@@ -578,7 +569,7 @@ class testsuite extends tlObjectWithAttachments
       $smarty->assign($key, $of->CreateHTML());
     }
     
-      $smarty->assign('cf',$cf_smarty); 
+    $smarty->assign('cf',$cf_smarty); 
     $smarty->assign('parent_info', $parent_info);
     $smarty->assign('level', 'testsuite');
     $smarty->assign('name',$name);
@@ -715,12 +706,11 @@ class testsuite extends tlObjectWithAttachments
   */
   function get_subtree($id,$recursive_mode=false)
   {
-      $my['options']=array('recursive' => $recursive_mode);
+    $my['options'] = array('recursive' => $recursive_mode);
     $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
-                             'exclude_children_of' => $this->nt2exclude_children);
-    
+                           'exclude_children_of' => $this->nt2exclude_children);
     $subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
-      return $subtree;
+    return $subtree;
   }
   
   
@@ -1072,7 +1062,7 @@ class testsuite extends tlObjectWithAttachments
     $doRecursion = isset($optExport['RECURSIVE']) ? $optExport['RECURSIVE'] : 0;
     if($doRecursion)
     {
-        $cfXML = null;
+      $cfXML = null;
       $kwXML = null;
       $tsuiteData = $this->get_by_id($container_id);
       if( isset($optExport['KEYWORDS']) && $optExport['KEYWORDS'])
@@ -1084,21 +1074,21 @@ class testsuite extends tlObjectWithAttachments
         } 
       }
       if (isset($optExport['CFIELDS']) && $optExport['CFIELDS'])
-        {
-            $cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
+      {
+        $cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
         if( count($cfMap) > 0 )
-          {
-              $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
-          } 
-        }
-          $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
-                   "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
-                 "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}";
+        {
+          $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
+        } 
+      }
+      $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
+               "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
+               "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}";
     }
     else
     {
       $xmlTC = "<testcases>";
-      }
+    }
     
     $test_spec = $this->get_subtree($container_id,self::USE_RECURSIVE_MODE);
     
@@ -1117,9 +1107,9 @@ class testsuite extends tlObjectWithAttachments
           }
           else if ($nTable == 'testcases')
           {
-              if( is_null($tcase_mgr) )
-              {
-                $tcase_mgr = new testcase($this->db);
+            if( is_null($tcase_mgr) )
+            {
+              $tcase_mgr = new testcase($this->db);
             }
             $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
                                                           $tproject_id,true,$optExport);

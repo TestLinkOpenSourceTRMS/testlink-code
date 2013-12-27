@@ -26,7 +26,12 @@ View test specification containers
 {$importTestCasesAction="$basehref$tcImportAction"}
 {$tcExportAction="lib/testcases/tcExport.php?containerID=$container_id"}
 {$exportTestCasesAction="$basehref$tcExportAction"}
-{$tsuiteExportAction="$basehref$tcExportAction&amp;useRecursion=1"}
+
+{$ft=''}
+{if isset($gui->form_token)}
+  {$ft=$gui->form_token}
+{/if}
+{$tsuiteExportAction="$basehref$tcExportAction&amp;useRecursion=1&amp;form_token=$ft"}
 
 {$tcMantisXMLAction="lib/testcases/tcCreateFromIssueMantisXML.php?containerID=$container_id"}
 {$createTCFromIssueMantisXMLAction="$basehref$tcMantisXMLAction"}
@@ -75,14 +80,11 @@ function jsCallDeleteFile(btn, text, o_id)
   <form method="post" action="lib/testcases/containerEdit.php">
     <input type="hidden" name="doAction" id="doAction" value="" />
     <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
-    
     <input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
-
     <input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
              title="{$labels.btn_reorder_testsuites_alpha}" />
 
-    <input type="button" onclick="location='{$importToTProjectAction}'"
-                             value="{$labels.btn_import_testsuite}" />
+    <input type="button" onclick="location='{$importToTProjectAction}'"  value="{$labels.btn_import_testsuite}" />
 
     {if $gui->canDoExport}
     <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
@@ -131,6 +133,8 @@ function jsCallDeleteFile(btn, text, o_id)
     <form method="post" action="lib/testcases/containerEdit.php">
       <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
       <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
+      <input type="hidden" name="containerType" value="{$gui->containerType}" />
+
       <input type="submit" name="edit_testsuite" value="{$labels.btn_edit_testsuite}"
              title="{$labels.alt_edit_testsuite}" />
       <input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"

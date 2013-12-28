@@ -26,23 +26,6 @@ $attachmentRepository = tlAttachmentRepository::create($db);
 list($args,$tplan_mgr) = init_args($db,$cfg);
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr);
 
-/*
-$metricsMgr = new tlTestPlanMetrics($db);
-if( intval($gui->platform_id) == 0)
-{
-  $xx=$metricsMgr->getExecCountersByBuildExecStatus($args->tplan_id, 
-                                                    array('buildSet' => array($gui->build_id)),
-                                                    array('getPlatformSet' => true));
-}
-else
-{
-  $yy=$metricsMgr->getExecCountersByBuildExecStatus($args->tplan_id, 
-                                                    array('buildSet' => array($gui->build_id)));
-  //,
-  //                                                  array('getPlatformSet' => true));
-
-}
-*/
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -80,7 +63,7 @@ function init_args(&$dbHandler,$cfgObj)
     $args->tproject_id = $dm['parent_id']; 
   }
 
-  if(is_null($args->build_id))
+  if(is_null($args->build_id) || ($args->build_id == 0) )
   {
     // Go for the build
     // this info can be present in session, then we will try different ways
@@ -95,7 +78,7 @@ function init_args(&$dbHandler,$cfgObj)
     }  
   }  
 
-  if(is_null($args->platform_id))
+  if(is_null($args->platform_id) || ($args->platform_id <= 0) )
   {
     // Go for the platform (if any exists)
     // this info can be present in session, then we will try different ways
@@ -107,7 +90,7 @@ function init_args(&$dbHandler,$cfgObj)
     {
       $key = $args->tplan_id . '_stored_setting_platform';
       $args->platform_id = isset($_SESSION[$key]) ? intval($_SESSION[$key]) : null;
-      if( is_null($args->platform_id) )
+      if( is_null($args->platform_id) || ($args->platform_id <= 0) )
       {
         $args->platform_id = $itemSet[0]['id'];
       }  
@@ -189,6 +172,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+  $gui->form_token = $argsObj->form_token;
   $gui->remoteExecFeedback = $gui->user_feedback = '';
   $gui->tplan_id=$argsObj->tplan_id;
   $gui->tproject_id=$argsObj->tproject_id;
@@ -248,9 +232,9 @@ function getContextFromGlobalScope(&$argsObj)
   $settings = array('build_id' => 'setting_build', 'platform_id' => 'setting_platform');
   $isNumeric = array('build_id' => 0, 'platform_id' => 0);
 
-  $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-  $sf = isset($_SESSION['execution_mode']) && isset($_SESSION['execution_mode'][$form_token]) ? 
-        $_SESSION['execution_mode'][$form_token] : null;
+  $argsObj->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+  $sf = isset($_SESSION['execution_mode']) && isset($_SESSION['execution_mode'][$argsObj->form_token]) ? 
+        $_SESSION['execution_mode'][$argsObj->form_token] : null;
 
   if(is_null($sf))
   {
@@ -275,4 +259,5 @@ function getContextFromGlobalScope(&$argsObj)
       $argsObj->$key = intval($argsObj->$key);              
     }  
   }
+
 }

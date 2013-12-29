@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2013, TestLink community
- * @link       http://www.teamst.org/index.php
+ * @link       http://testlink.sourceforge.net/
  * 
  *
  * This class extends tlFilterPanel for the specific use with test case tree.
@@ -39,7 +39,7 @@
 
 /*
  * --------------------------------------------------------
- * An important note on BUGID 3516 (request-URL too large):
+ * An important note on request-URL too large (BUGID 3516)
  * --------------------------------------------------------
  * 
  * That problem has been solved by attaching some data (the set of active filters, settings and
@@ -349,7 +349,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $this->initTreeOptions($this->mode);
     
     // delete any filter settings that may be left from previous calls in session
-    $this->delete_own_session_data();
+    // Session data has been designed to provide an unidirectional channel
+    // between the left pane where tree lives and right pane.
+    // That's why delete each time our OWN session data. 
+    $this->delete_own_session_data();  
     $this->delete_old_session_data();
     
     $this->save_session_data();
@@ -576,15 +579,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     // iterate through all filters and activate the needed ones
     $this->display_filters = false;
-
-    // new dBug($this->all_filters);
-
     foreach ($this->all_filters as $name => $info) 
     {
       $init_method = "init_$name";
-      // echo $init_method . '<br>';
-      // echo $name . '<br>';
-
       if (in_array($name, $this->mode_filter_mapping[$this->mode]) &&
         method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED &&
         $this->configuration->show_filters == ENABLED) 
@@ -720,9 +717,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     if (isset($_SESSION[$this->mode]) && is_array($_SESSION[$this->mode])) {
       foreach ($_SESSION[$this->mode] as $token => $data) {
         if ($data['timestamp'] < (time() - $token_validity_duration)) {
-          // too old, delete!
-          // echo 'delete_old_session_data'; die();
-          unset($_SESSION[$this->mode][$token]);
+          unset($_SESSION[$this->mode][$token]);  // too old, delete!
         }
       }
     }
@@ -835,7 +830,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
       if( !is_null($this->active_filters['filter_bugs']))
       {
         $string .= '&' . http_build_query( array('filter_bugs' => $this->active_filters['filter_bugs']));  
-        echo $string;
       }  
 
     }
@@ -874,6 +868,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->testproject_mgr = new testproject($this->db);
     }
     $tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
+
     switch ($this->mode) 
     {
       case 'plan_mode':
@@ -970,7 +965,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                           $this->args->testproject_name,
                                           $gui->menuUrl, $filters, $options);
           
-          new dBug($forrest);
           $this->set_testcases_to_show($forrest['leaves']);
           $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
@@ -1070,11 +1064,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         {
           $opt_etree->actionJS['testproject'] = 'EXDS';
         }  
-                
-      
-        //$chronos[] = $tstart = microtime(true);
-        //echo '<br>' . basename(__FILE__) . '::' . __LINE__ . '::Start!!!' . current($chronos);
-        //reset($chronos);  
+
         list($tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
                                                         array('tproject_id' => $this->args->testproject_id,
                                                               'tproject_name' => $this->args->testproject_name,
@@ -1082,10 +1072,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                                               'tplan_name' => $this->args->testplan_name),
                                                         $filters,$opt_etree);
         
-        //$chronos[] = microtime(true); $tnow = end($chronos); $tprev = prev($chronos);
-        //$t_elapsed = number_format( $tnow - $tprev, 4);
-        //echo '<br> ' . basename(__FILE__) . ' Elapsed (sec):' . $t_elapsed;
-
         $this->set_testcases_to_show($testcases_to_show);
         
         $root_node = $tree_menu->rootnode;
@@ -1263,9 +1249,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
   /**
    * 
-   * 
-   * 20120825 - franciscom - TICKET 5176: Possibility to filter by Platform
-   *               according mode we need to add [Any] option
+   * Possibility to filter by Platform:
+   * according mode we need to add [Any] option
    *
    */
   private function init_setting_platform() 
@@ -1274,48 +1259,49 @@ class tlTestCaseFilterControl extends tlFilterControl {
     {
       $this->platform_mgr = new tlPlatform($this->db);
     }
-    $key = 'setting_platform';
 
-    $this->settings[$key] = array('items' => null, 'selected' => $this->args->{$key});
     $testplan_id = $this->settings['setting_testplan']['selected'];
-
-    $checkSelected = true;
+    $session_key = $testplan_id . '_stored_setting_platform';
+    $session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
+    $key = 'setting_platform';
     $platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
-    $this->settings[$key]['items'] = $platformSet;
+
+    if( is_null($platformSet) )
+    {
+      // Brute force bye, bye !! >>--->
+      $this->settings[$key] = false;
+      $_SESSION[$session_key] = null;
+      return;
+    }  
+
+    // Ok, there are platforms, go ahead
+    $this->settings[$key] = array('items' => null, 'selected' => -1);
+    if( is_null($this->args->$key) )
+    {
+      $this->args->$key = intval($session_selection);  
+    }  
+   
     switch($this->mode)
     {
       case 'plan_mode':
-        if( !is_null($platformSet) )
-        {
-          $this->settings[$key]['items'] = array(0 => $this->option_strings['any']);
-          $this->settings[$key]['items'] += $platformSet;
-          $checkSelected = false;
-        }
+        $this->settings[$key]['items'] = array(0 => $this->option_strings['any']);
+        $this->settings[$key]['items'] += $platformSet;
+      break;
+
+      case 'execution_mode':
+        $this->settings[$key]['items'] = $platformSet;
+      break;
+
+      default:
+        throw new Exception(__METHOD__ . "Mode:" . $this->mode . 'Do not know what to do', 1);
       break;
     }
     
-    // BUGID 3726
-    $session_key = $testplan_id . '_stored_setting_platform';
-    $session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
-    
-    // if no platform has been selected when entering the feature the first time set it
-    // according to preselected value on gui
-    // TICKET 
-    $this->args->{$key} = !is_null($this->args->{$key}) ? $this->args->{$key} : $session_selection;
-    if( $checkSelected && !$this->settings[$key]['selected']) 
+    $this->settings[$key]['selected'] = $this->args->$key;
+    if($this->args->$key <= 0)
     {
-      $this->settings[$key]['selected'] = $session_selection;
-    }
-
-    if (!isset($this->settings[$key]['items']) || !is_array($this->settings[$key]['items'])) {
-      $this->settings[$key] = false;
-    } 
-    else if (isset($this->settings[$key]['items']) && is_array($this->settings[$key]['items']) && 
-           is_null($this->settings[$key]['selected'])) 
-      {
-      // platforms exist, but none has been selected yet, so select first one
       $this->settings[$key]['selected'] = key($this->settings[$key]['items']);
-    }
+    }  
     $_SESSION[$session_key] = $this->settings[$key]['selected'];
   } // end of method
 

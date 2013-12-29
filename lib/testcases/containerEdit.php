@@ -278,8 +278,8 @@ switch($action)
   case 'reorder_testproject_testsuites_alpha':
     reorderTestSuitesDictionary($args,$tree_mgr,$args->tprojectID);
     $gui = initializeGui($tproject_mgr,$args->tprojectID,$args,$l18n);
-    $guiObj->refreshTree = true;
-    $tproject_mgr->show($smarty,$guiObj,$template_dir,$args->tprojectID,null,null);
+    $gui->refreshTree = true;
+    $tproject_mgr->show($smarty,$gui,$template_dir,$args->tprojectID,null,null);
   break;
 
   default:

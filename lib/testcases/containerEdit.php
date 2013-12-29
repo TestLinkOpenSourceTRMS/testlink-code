@@ -272,7 +272,7 @@ switch($action)
     reorderTestSuitesDictionary($args,$tree_mgr,$args->testsuiteID);
     $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
     $gui->refreshTree = true;
-    $tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
+    $tsuite_mgr->show($smarty,$gui,$template_dir,$args->testsuiteID,null,null);
   break;
 
   case 'reorder_testproject_testsuites_alpha':

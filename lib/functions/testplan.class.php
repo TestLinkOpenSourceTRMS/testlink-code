@@ -113,7 +113,7 @@ class testplan extends tlObjectWithAttachments
     */
   function get_import_file_types()
   {
-      return $this->import_file_types;
+    return $this->import_file_types;
   }
 
   /**
@@ -513,11 +513,10 @@ class testplan extends tlObjectWithAttachments
   function get_all()
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ " .
-           " SELECT testplans.*, NH.name " .
-         " FROM {$this->tables['testplans']} testplans, " .
-         " {$this->tables['nodes_hierarchy']} NH " .
-         " WHERE testplans.id=NH.id";
+    $sql = "/* $debugMsg */ " . " SELECT testplans.*, NH.name " .
+           " FROM {$this->tables['testplans']} testplans, " .
+           " {$this->tables['nodes_hierarchy']} NH " .
+           " WHERE testplans.id=NH.id";
     $recordset = $this->db->get_recordset($sql);
     return $recordset;
   }
@@ -1052,86 +1051,81 @@ class testplan extends tlObjectWithAttachments
 
 
 
-/*
-  function: get_linked_and_newest_tcversions
-            returns for every test case in a test plan
-            the tc version linked and the newest available version
+  /*
+    function: get_linked_and_newest_tcversions
+              returns for every test case in a test plan
+              the tc version linked and the newest available version
 
-  args: id: testplan id
-        [tcase_id]: default null => all testcases linked to testplan
+    args: id: testplan id
+          [tcase_id]: default null => all testcases linked to testplan
 
-  returns: map key: testcase internal id
-           values: map with following keys:
+    returns: map key: testcase internal id
+             values: map with following keys:
 
-            [name]
-            [tc_id] (internal id)
-            [tcversion_id]
-            [newest_tcversion_id]
-            [tc_external_id]
-            [version] (for humans)
-            [newest_version] (for humans)
+              [name]
+              [tc_id] (internal id)
+              [tcversion_id]
+              [newest_tcversion_id]
+              [tc_external_id]
+              [version] (for humans)
+              [newest_version] (for humans)
 
-  rev:
-      20080614 - franciscom - fixed bug on SQL generated while
-                              adding tc_external_id on results.
-      20080126 - franciscom - added tc_external_id on results
-*/
+  */
   function get_linked_and_newest_tcversions($id,$tcase_id=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    
+      
     $tc_id_filter = " ";
     if (!is_null($tcase_id) )
     {
       if( is_array($tcase_id) )
       {
-        // ??? implement as in ?
+          // ??? implement as in ?
       }
       else if ($tcase_id > 0 )
       {
         $tc_id_filter = " AND NHA.parent_id = {$tcase_id} ";
       }
     }
-    
-    // 20080614 - franciscom
+      
     // Peter Rooms found bug due to wrong SQL, accepted by MySQL but not by PostGres
     // Missing column in GROUP BY Clause
-    
+      
     $sql = " /* $debugMsg */ SELECT MAX(NHB.id) AS newest_tcversion_id, " .
-         " NHA.parent_id AS tc_id, NHC.name, T.tcversion_id AS tcversion_id," .
-         " TCVA.tc_external_id AS tc_external_id, TCVA.version AS version " .
-         " FROM {$this->tables['nodes_hierarchy']} NHA " .
+           " NHA.parent_id AS tc_id, NHC.name, T.tcversion_id AS tcversion_id," .
+           " TCVA.tc_external_id AS tc_external_id, TCVA.version AS version " .
+           " FROM {$this->tables['nodes_hierarchy']} NHA " .
+        
+           // NHA - will contain ONLY nodes of type testcase_version that are LINKED to test plan
+           " JOIN {$this->tables['testplan_tcversions']} T ON NHA.id = T.tcversion_id " . 
+        
+           // Get testcase_version data for LINKED VERSIONS
+           " JOIN {$this->tables['tcversions']} TCVA ON TCVA.id = T.tcversion_id" .
+        
+           // Work on Sibblings - Start
+           // NHB - Needed to get ALL testcase_version sibblings nodes
+           " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.parent_id = NHA.parent_id " .
+        
+           // Want only ACTIVE Sibblings
+           " JOIN {$this->tables['tcversions']} TCVB ON TCVB.id = NHB.id AND TCVB.active=1 " . 
+           // Work on Sibblings - STOP 
+        
+           // NHC will contain - nodes of type TESTCASE (parent of testcase versions we are working on)
+           // we use NHC to get testcase NAME ( testcase version nodes have EMPTY NAME)
+           " JOIN {$this->tables['nodes_hierarchy']} NHC ON NHC.id = NHA.parent_id " .
+        
+           // Want to get only testcase version with id (NHB.id) greater than linked one (NHA.id)
+           " WHERE T.testplan_id={$id} AND NHB.id > NHA.id" . $tc_id_filter .
+           " GROUP BY NHA.parent_id, NHC.name, T.tcversion_id, TCVA.tc_external_id, TCVA.version  ";
       
-      // NHA - will contain ONLY nodes of type testcase_version that are LINKED to test plan
-      " JOIN {$this->tables['testplan_tcversions']} T ON NHA.id = T.tcversion_id " . 
-      
-      // Get testcase_version data for LINKED VERSIONS
-      " JOIN {$this->tables['tcversions']} TCVA ON TCVA.id = T.tcversion_id" .
-      
-      // Work on Sibblings - Start
-      // NHB - Needed to get ALL testcase_version sibblings nodes
-      " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.parent_id = NHA.parent_id " .
-      
-      // Want only ACTIVE Sibblings
-      " JOIN {$this->tables['tcversions']} TCVB ON TCVB.id = NHB.id AND TCVB.active=1 " . 
-      // Work on Sibblings - STOP 
-      
-      // NHC will contain - nodes of type TESTCASE (parent of testcase versions we are working on)
-      // we use NHC to get testcase NAME ( testcase version nodes have EMPTY NAME)
-      " JOIN {$this->tables['nodes_hierarchy']} NHC ON NHC.id = NHA.parent_id " .
-      
-      // Want to get only testcase version with id (NHB.id) greater than linked one (NHA.id)
-      " WHERE T.testplan_id={$id} AND NHB.id > NHA.id" . $tc_id_filter .
-      " GROUP BY NHA.parent_id, NHC.name, T.tcversion_id, TCVA.tc_external_id, TCVA.version  ";
-    
     // BUGID 4682 - phidotnet - Newest version is smaller than Linked version
     $sql2 = " SELECT SUBQ.name, SUBQ.newest_tcversion_id, SUBQ.tc_id, " .
-          " SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .
-          " TCV.version AS newest_version " .
-          " FROM {$this->tables['tcversions']} TCV, ( $sql ) AS SUBQ " .
-          " WHERE SUBQ.newest_tcversion_id = TCV.id AND SUBQ.version < TCV.version " .
-          " ORDER BY SUBQ.tc_id ";
-    
+            " SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .
+            " TCV.version AS newest_version " .
+            " FROM {$this->tables['tcversions']} TCV, ( $sql ) AS SUBQ " .
+            " WHERE SUBQ.newest_tcversion_id = TCV.id AND SUBQ.version < TCV.version " .
+            " ORDER BY SUBQ.tc_id ";
+      
     return $this->db->fetchRowsIntoMap($sql2,'tc_id');
   }
 
@@ -2267,7 +2261,6 @@ class testplan extends tlObjectWithAttachments
   
     rev :
   */
-  //@TODO: schlundus, this is only a special case of get_build_by_name, so it should be refactored
   function get_build_id_by_name($tplan_id,$build_name)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2343,7 +2336,6 @@ class testplan extends tlObjectWithAttachments
     returns: hash
   
     rev :
-          20061231 - franciscom - added $parent_id
   */
   function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null)
   {
@@ -2376,7 +2368,6 @@ class testplan extends tlObjectWithAttachments
     returns: hash
   
     rev :
-          20061231 - franciscom - added $parent_id
   */
   function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null)
   {
@@ -2658,13 +2649,6 @@ class testplan extends tlObjectWithAttachments
     returns: sum of CF values for all testcases linked to testplan
   
     rev: 
-         20110112 - franciscom - we missed refactoring of this method when have changed
-                        how CF values at design time are linked to test cases.
-                        Before 1.9 linked to Test Case ID
-                        After 1.9 linked to Test case VERSION ID
-                        
-                        Another think to consider is:
-                        After platform addition we need to consider all platforms
                         
   */
   function get_estimated_execution_time($id,$itemSet=null,$platformID=null)
@@ -3180,8 +3164,8 @@ class testplan extends tlObjectWithAttachments
    * @param integer $id Build ID
    * @param array $buildSet build set to check
    * @return array $new_set set of builds which match the search criterium
-   * @internal revisions:
-   *    20101215 - asimon - BUGID 4023: correct filtering also with platforms
+   * @internal revisions
+   * 20101215 - asimon - BUGID 4023: correct filtering also with platforms
    */
   function get_not_run_for_any_build($id, $buildSet, $platformid=NULL) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -3383,102 +3367,11 @@ class testplan extends tlObjectWithAttachments
   }
 
 
-    /**
-     * get detailed information of test case versions linke to test plan an NOT executed
-     * gives detaile for each platform and build combination
-     *
-     * @deprecated 1.9
-     *
-   * @param id: test plan id
-   * @param filters: optional, map with following keys
-   *                 build_id: contains a build id (just one) to be filtered
-   *                 platform_id: contains a platform id (just one) to be filtered
-   *
-   * @param options: optional map with following keys
-   *                 group_by_platform_tcversion: true -> in this way we will get one record
-   *                                              for each platform no matter on how many builds
-   *                                              test case version has not been executed.
-   *                                              when this option is set, filters are ignored
-   * @return map: 
-    */
-  public function getNotExecutedLinkedTCVersionsDetailed($id,$filters=null,$options=null)
-  {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $executions_join = "";
 
-        $my['filters'] = array('build_id' => 0,'platform_id' => null);
-    $my['filters'] = array_merge($my['filters'], (array)$filters);
-
-        $my['options'] = array('group_by_platform_tcversion' => false);
-    $my['options'] = array_merge($my['options'], (array)$options);
-
-    $sqlFilter = "";
-        foreach($my['filters'] as $key => $value)
-        {
-          if( !is_null($value) && $value > 0)
-          {
-            $sqlFilter .= " AND {$key} = {$value} "; 
-          }  
-        } 
-        
-        if($my['options']['group_by_platform_tcversion'])
-        {
-      $build_fields = " ";
-            $build_join = " ";
-      $executions_join = " E.tcversion_id=TPTCV.tcversion_id " .
-                         " AND E.testplan_id = TPTCV.testplan_id " .
-                         " AND E.platform_id = TPTCV.platform_id ";
-        $sqlFilter = "";
-        }
-        else
-        {
-      $build_fields = " B.id AS build_id, B.name AS build_name, " .
-                      " B.release_date AS build_release_date, " .
-                      " B.closed_on_date AS build_closed_on_date,";
-            $build_join = " JOIN {$this->tables['builds']} B ON  B.testplan_id=TPTCV.testplan_id " ;
-      $executions_join = " E.build_id=B.id AND E.tcversion_id=TPTCV.tcversion_id " .
-                         " AND E.testplan_id = TPTCV.testplan_id " .
-                         " AND E.platform_id = TPTCV.platform_id ";
-        }
-
-    $sql = "/* {$debugMsg} */ ";
-    $sql .= "SELECT COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status, " .
-            $build_fields .
-            " PLAT.name AS platform_name," . 
-            " NODE_TCASE.parent_id AS testsuite_id, NODE_TCASE.name AS name, NODE_TCASE.id AS tc_id," .
-            " NODE_TCASE.node_order," .
-            " TPTCV.id AS feature_id, TPTCV.testplan_id, TPTCV.tcversion_id, " .
-            " TPTCV.node_order AS exec_node_order, TPTCV.author_id AS linked_by," .
-            " TPTCV.creation_ts AS link_creation_ts, TPTCV.platform_id, " . 
-          " TCV.version AS version, TCV.active, TCV.summary, " .
-          " TCV.tc_external_id AS external_id, TCV.execution_type," .
-        " COALESCE(UA.user_id,0) AS assigned_to, " .
-        " (urgency * importance) AS priority " .
-        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
-        $build_join .
-        " /* get test case version info */ " .
-        " JOIN {$this->tables['tcversions']} TCV ON TCV.id=TPTCV.tcversion_id " .
-        " /* get test case name */ " .
-        " JOIN {$this->tables['nodes_hierarchy']} NODE_TCV ON NODE_TCV.id=TPTCV.tcversion_id " .
-        " JOIN {$this->tables['nodes_hierarchy']} NODE_TCASE ON NODE_TCASE.id=NODE_TCV.parent_id " .
-        " /* get platform name */ " .
-        " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON " .
-        " PLAT.id=TPTCV.platform_id " .
-        " /* get assigned user id */ " .
-        " LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = TPTCV.id " .
-        " LEFT OUTER JOIN {$this->tables['executions']} E ON " .
-        $executions_join .
-        " WHERE TPTCV.testplan_id={$id} {$sqlFilter} AND E.status IS NULL " .
-        " ORDER BY testsuite_id, node_order";
-
-        $result = $this->db->get_recordset($sql);
-     return $result;
-  }
-
-    /**
-   * DocBlock with nested lists
-    *
-    */
+ /**
+  * 
+  *
+  */
   public function getStatusForReports()
   {
     // This will be used to create dynamically counters if user add new status

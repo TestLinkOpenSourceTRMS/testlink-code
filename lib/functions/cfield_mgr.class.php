@@ -5,17 +5,13 @@
  *
  * @package 	  TestLink
  * @author 		  franciscom
- * @copyright 	2005-2009, TestLink community
+ * @copyright 	2005-2013, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
  * @filesource  cfield_mgr.class.php
- * @link 		    http://www.teamst.org/index.php
+ * @link 		    http://testlink.sourceforge.net
  *
  * @internal revisions
- * @since 1.9.9
- * 20131012 - franciscom - new method html_inputs() 
- *                         for better integration on GUI (with more work on smarty)
- *                            
- * 20130926 - franciscom - TICKET 5937: (Required) Custom Fields become mandatory in Filters Section
+ * @since 1.9.10
  *
 **/
 
@@ -1195,29 +1191,29 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function get_available_item_type($id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	  	$sql="/* $debugMsg */ SELECT CFNT.field_id,CFNT.node_type_id ".
+	  $sql = "/* $debugMsg */ SELECT CFNT.field_id,CFNT.node_type_id ".
 	  	     " FROM {$this->tables['cfield_node_types']} CFNT, " .
 	  	     "      {$this->tables['nodes_types']} NT " .
 	  	     " WHERE NT.id=CFNT.node_type_id " .
 	  	     " CFNt.field_id={$id} ";
 
-    	return($this->db->fetchRowsIntoMap($sql,'field_id'));
+    return($this->db->fetchRowsIntoMap($sql,'field_id'));
 	}
 
 
 	/*
 	 *
 	 *	keys	name	-> trim will be applied
-     *			label	-> trim will be applied
-     *	   		type	-> intval() wil be applied
-     *	   		possible_values
-     *	   		show_on_design	-> trasformation on 1/0 using intval() [*]
-     *	   		enable_on_design	-> [*]
-     *	   		show_on_execute	-> [*]
-     *	   		enable_on_execute	-> [*]
-     *	   		show_on_testplan_design	-> [*]
-     *	   		enable_on_testplan_design	-> [*]
-     *
+   *			  label	-> trim will be applied
+   *	   		type	-> intval() wil be applied
+   *	   		possible_values
+   *	   		show_on_design	-> trasformation on 1/0 using intval() [*]
+   *	   		enable_on_design	-> [*]
+   *	   		show_on_execute	-> [*]
+   *	   		enable_on_execute	-> [*]
+   *	   		show_on_testplan_design	-> [*]
+   *	   		enable_on_testplan_design	-> [*]
+   *
 	 */
 	function sanitize($cf)
 	{
@@ -1238,15 +1234,15 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	    $safe['possible_values'] = $this->db->prepare_string($cf['possible_values']);
 
 		$onezero = array('show_on_design','enable_on_design','show_on_testplan_design',
-						 'enable_on_testplan_design','show_on_execution','enable_on_execution');
+						         'enable_on_testplan_design','show_on_execution','enable_on_execution');
 	
 		foreach($onezero as $key)
-	    {
-	    	$safe[$key] = intval($cf[$key]) > 0 ? 1 : 0;
-	    }
+	  {
+	  	$safe[$key] = intval($cf[$key]) > 0 ? 1 : 0;
+	  }
 
-	    $safe['type'] = intval($cf['type']);
-		
+	  $safe['type'] = intval((int)$cf['type']);
+    $safe['node_type_id'] = intval((int)$cf['node_type_id']);
 		return $safe;
 	}	
 	
@@ -1270,10 +1266,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
     rev: 
     @internal revision
-    20110205 - franciscom - improve management of 1/0 values to manage missing values
-    						using on import.
-    						
-
   */
 	function create($cf)
   {
@@ -1291,8 +1283,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
       $safecf['enable_on_design'] = 1;
       $safecf['enable_on_execution'] = 0;
     }  
-
-
 		
 	  $sql="/* $debugMsg */ INSERT INTO {$this->object_table} " .
 	       " (name,label,type,possible_values, " .

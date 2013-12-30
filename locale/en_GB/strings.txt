@@ -1334,8 +1334,8 @@ $TLS_alt_attachment_mgmt = "attachments";
 $TLS_alt_notes = "Notes";
 $TLS_assigned_to = "Assigned to";
 $TLS_attachment_mgmt = "attachments";
-$TLS_btn_history_off = "Show only last execution";
-$TLS_btn_history_off_any_build = "Show only last execution (any Build)";
+$TLS_btn_history_off = "Show lastest execution";
+$TLS_btn_history_off_any_build = "Show lastest execution (analize all Builds)";
 $TLS_btn_history_on = "Show complete execution history";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
@@ -1363,14 +1363,14 @@ $TLS_execution_type_auto = "Automated";
 $TLS_has_no_assignment = "No tester assigned";
 $TLS_img_title_bug_mgmt = "Bug management";
 $TLS_img_title_delete_execution = "Delete execution";
-$TLS_import_xml_results = "Import XML Results";
+$TLS_import_xml_results = "Import Results (XML)";
 $TLS_issue_tracker_integration_problems = "Attention Please: <br>" .
                       "Something is preventing connection to Bug Tracking System,<br>" .
                       "and is going to create performance issues.<br>" .
                       "Please contact your TestLink Administrator";
 
-$TLS_just_last_execution_for_this_build = "Last execution for build";
-$TLS_last_execution = "Last execution";
+$TLS_just_last_execution_for_this_build = "Latest execution for build";
+$TLS_last_execution = "Latest execution";
 $TLS_no_data_available = "No data available";
 $TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
 $TLS_or_unassigned_test_cases = " Or without tester assignment";
@@ -1813,11 +1813,11 @@ $TLS_info_resultsTC_report = "This report shows the last test case execution res
                              "<br /><b>Example:</b><br />Test Case has been executed in this order: " .
                              "<br />Build 1.0 - Passed; Build 1.0 - Failed<br />-> Last Result  for Build 1.0 " .
                              "is Failed because second execution overrides older results.<br /><br />" .
-                             "\"[Last Build]\" and \"Last execution\" column show data according " .
+                             "\"[Last Build]\" and \"Latest execution\" column show data according " .
                              "to this <b>example:</b><br />Test Case has been executed in this order:<br />" .
                              "Build 1.0 - Passed; Build 1.0 - Failed; Build 2.0 - Blocked; " .
                              "Build 1.0 - Passed<br>-> [Last Build] : Blocked because Build 2.0 is " .
-                             "the last build created for which a result has been set.<br />-> \"Last Execution\" : " .
+                             "the last build created for which a result has been set.<br />-> \"Latest Execution\" : " .
                              "Passed because Build 1.0 has been executed at last.<br /><br />The shown ".
                              "priority is calculated based on the importance of the currently linked test case ".
                              "version.";
@@ -1837,11 +1837,11 @@ $TLS_info_only_with_tester_assignment = "Attention: This report considers ONLY t
 
 $TLS_info_failed_tc_report = "This report shows all test cases for each build " .
                              "and each platform (if used for this test plan), " .
-                             "whose last execution result is \"failed\".";
+                             "whose latest execution result is \"failed\".";
 
 $TLS_info_blocked_tc_report = "This report shows all test cases for each build " .
                               "and each platform (if used for this test plan), " .
-                              "whose last execution result is \"blocked\".";
+                              "whose latest execution result is \"blocked\".";
 
 $TLS_info_notrun_tc_report = "This report shows all test cases that have not been executed " .
                              "for any build within this test plan";
@@ -1900,7 +1900,7 @@ $TLS_info_report_milestones_no_prio = "This Report shows milestones defined for 
 $TLS_info_res_by_kw = "This report shows results for each keyword. If a test case has multiple " .
                       "keywords assigned it will be count for each assigned keyword.";
 $TLS_info_gen_test_rep = "<b>General Information</b><br />" .
-                         "All reports only consider last execution of each test case.<br />" .
+                         "All reports only consider latest execution of each test case.<br />" .
                          "You can sort tables by clicking the column header.";
 
 

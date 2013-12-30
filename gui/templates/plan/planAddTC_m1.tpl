@@ -3,24 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource planAddTC_m1.tpl
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
-@since 1.9.4
-20121019 - asimon - TICKET 5294: it is not possible to remove an inactive tc version from a testplan with platforms
-20111012 - franciscom - TICKET 3939: Add warning message when removing EXECUTED test cases from a test plan
-20110823 - franciscom - TICKET 4715: can_remove_executed doesn't work when Platforms are used
-20110706 - Julian - BUGID 4652 - add link to test execution history
-
-@since 1.9.3
-20110415 - Julian - BUGID 2985 - added importance column
-20101215 - Julian - changed tc summary tooltip configuration
-20101028 - asimon - avoided a warning on event log
-20100721 - asimon - BUGID 3406: added build selector to assign users to chosen build 
-                                on addition of testcases to testplan
-20100227 - franciscom - changed logic to hide diwv with buttons when test suite has not test cases
-20100225 - eloff - changes custom fields to span all 8 columns
-20100129 - franciscom - drawSavePlatformsButton logic moved to planAddTC.php
-20100122 - eloff - BUGID 3078 - check drawSavePlatformsButton first
-20100122 - eloff - BUGID 3084 - fixes alignment of columns
-20100121 - eloff - BUGID 3078 - moved buttons to top
+@since 1.9.10
 *}
 {lang_get var="labels" 
           s='note_keyword_filter, check_uncheck_all_for_remove,
@@ -34,22 +17,17 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
              warning_remove_executed'}
 
 {* prefix for checkbox named , ADD and ReMove *}   
-{assign var="add_cb" value="achecked_tc"} 
-{assign var="rm_cb" value="remove_checked_tc"}
+{$add_cb="achecked_tc"} 
+{$rm_cb="remove_checked_tc"}
 
 {config_load file="input_dimensions.conf" section="planAddTC"}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
 
-{* BUGID 0002937 *}
 {include file="inc_ext_js.tpl"}
-{literal}
 <script type="text/javascript">
-{/literal}
 <!--
 js_warning_remove_executed = '{$labels.warning_remove_executed}';
-
-{literal}
 js_remove_executed_counter = 0;
 
 function updateRemoveExecCounter(oid)
@@ -84,7 +62,7 @@ function tTip(tcID,vID)
 	new Ext.ToolTip({
         target: 'tooltip-'+tcID,
         width: 500,
-        autoLoad: {url: fUrl+tcID+'&tcversion_id='+vID},
+        autoLoad: { url: fUrl+tcID+'&tcversion_id='+vID },
         dismissDelay: 0,
         trackMouse: true
     });
@@ -95,35 +73,29 @@ function showTT(e)
 	alert(e);
 }
 
-// BUGID 2985: variables to store importance informations for test cases
+// variables to store importance informations for test cases
 js_option_importance = new Array();
-{/literal}
 {foreach key=key item=item from=$gsmarty_option_importance}
 	js_option_importance[{$key}] = "{$item}";
 {/foreach}
-{literal}
 
 js_tcase_importance = new Array();
 
-// BUGID 2985: function to update test case importance when selecting a different test case version
+// Update test case importance when selecting a different test case version
 function updateImportance(tcID,importanceOptions,importance) {
 	document.getElementById("importance_"+tcID).firstChild.nodeValue = importanceOptions[importance];
 }
 
 Ext.onReady(function(){ 
-{/literal}
 {foreach from=$gui->items key=idx item=info}
   {foreach from=$info.testcases key=tcidx item=tcversionInfo}
-   {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
+   {$tcversionLinked=$tcversionInfo.linked_version_id}
 	   tTip({$tcidx},{$tcversionLinked});
   {/foreach}  
 {/foreach}
-{literal}
 });
 //-->
 </script>
-{/literal}
-
 </head>
 <body class="fixedheader">
 <form name="addTcForm" id="addTcForm" method="post" 
@@ -138,7 +110,7 @@ Ext.onReady(function(){
 	  	  {include file="inc_update.tpl" result=$sqlResult}
         
 	  	  	
-		{* BUGID 3406 - user assignments per build --------------------------------------------- *}
+		{* user assignments per build *}
 		{* show this only if a build exists to which we can assign users *}
 		{if $gui->build.count}
 		
@@ -213,11 +185,11 @@ Ext.onReady(function(){
        
     {* ======================================== *}
     {* Loop over Test Suites to draw test cases *}
-  	{assign var="item_number" value=0}
+  	{$item_number=0}
   	{foreach name="tSuiteLoop" from=$gui->items item=ts}
-  		{assign var="item_number" value=$item_number+1}
-  		{assign var="ts_id" value=$ts.testsuite.id}
-  		{assign var="div_id" value="div_$ts_id"}
+  		{$item_number=$item_number+1}
+  		{$ts_id=$ts.testsuite.id}
+  		{$div_id="div_$ts_id"}
   	  {strip}
   	  
   	  {* Title and clickable images to control toogle *}
@@ -237,7 +209,7 @@ Ext.onReady(function(){
             <tr style="background-color:blue;font-weight:bold;color:white">
   			     <td width="5" align="center">
                 {if $gui->full_control}
-  			          <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+  			          <img class="clickable" src="{$tlImages.toggle_all}"
   			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}","add_value_{$ts_id}");'
                        title="{$labels.check_uncheck_all_checkboxes}" />
       			    {else}
@@ -259,39 +231,38 @@ Ext.onReady(function(){
              {if $ts.linked_testcase_qty gt 0}
   				      <td>&nbsp;</td>
   				      <td>
-  				      <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/disconnect.png" 
+  				      <img class="clickable" src="{$tlImage.disconnect}" 
                      onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_for_remove}" />
   				      </td>
   				      <td align="center">
-  				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/date.png"  
-  				           title="{$labels.added_on_date}" />
+    				      <img src="{$tlImages.date}" title="{$labels.added_on_date}" />
   				      </td>
              {/if}
             </tr>   
             
   			    {foreach name="tCaseLoop" from=$ts.testcases item=tcase}
-      			  {assign var='is_active' value=0}
-              	{assign var='linked_version_id' value=$tcase.linked_version_id}
-              {assign var='tcID' value=$tcase.id}
+      			  {$is_active=0}
+              	{$linked_version_id=$tcase.linked_version_id}
+              {$tcID=$tcase.id}
   				    {if $linked_version_id != 0}
                 {if $tcase.tcversions_active_status[$linked_version_id] eq 1}             
-                    {assign var='is_active' value=1}
+                    {$is_active=1}
                 {/if}
               {else}
                 {if $tcase.tcversions_qty != 0}
-                	{assign var='is_active' value=1}
+                	{$is_active=1}
                 {/if}
               {/if}      
               
               {* ---------------------------------------------------------------------------------------- *}
               {if $is_active || $linked_version_id != 0}  
      				    {if $gui->full_control || $linked_version_id != 0}
-     					    {assign var="drawPlatformChecks" value=0}
+     					    {$drawPlatformChecks=0}
                   {if $gui->usePlatforms}
                     {* Feature id is indexed by platform id then 0 => has no platform assigned *}
                     {if !isset($tcase.feature_id[0])}
-                      {assign var="drawPlatformChecks" value=1}
+                      {$drawPlatformChecks=1}
                     {/if}
                   {/if}
      				  
@@ -334,6 +305,7 @@ Ext.onReady(function(){
 							     onclick="javascript:openTCaseWindow({$tcase.id});"
 							     title="{$labels.design}" />
 							<span id="tooltip-{$tcID}">
+                <img src="{$tlImages.summary_small}">&nbsp;
 								{$gui->testCasePrefix|escape}{$tcase.external_id}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
 							</span>
       			        </td>

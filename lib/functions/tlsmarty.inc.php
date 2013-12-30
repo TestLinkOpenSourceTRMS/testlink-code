@@ -14,7 +14,7 @@
  * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.10
  *
  */
 
@@ -334,6 +334,7 @@ class TLSmarty extends Smarty
                    'activity' => TL_THEME_IMG_DIR . 'information.png',
                    'add' => TL_THEME_IMG_DIR . 'add.png',
                    'api_info' => TL_THEME_IMG_DIR . 'brick.png',
+                   'bug' => TL_THEME_IMG_DIR . 'bug.png',
                    'bug_link_tl_to_bts' => TL_THEME_IMG_DIR . 'bug_link_famfamfam.png',
                    'bug_create_into_bts' => TL_THEME_IMG_DIR . 'bug_add_famfamfam.png',
                    'bug_link_tl_to_bts_disabled' => TL_THEME_IMG_DIR . 'bug_link_disabled_famfamfam.png',
@@ -345,6 +346,7 @@ class TLSmarty extends Smarty
                    'check_ok' => TL_THEME_IMG_DIR . 'lightbulb.png',
                    'check_ko' => TL_THEME_IMG_DIR . 'link_error.png',
                    'create_copy' => TL_THEME_IMG_DIR . 'application_double.png',
+                   'date' => TL_THEME_IMG_DIR . 'date.png',
                    'delete' => TL_THEME_IMG_DIR . 'trash.png',
                    'demo_mode' => TL_THEME_IMG_DIR . 'emoticon_tongue.png',
                    'delete_disabled' => TL_THEME_IMG_DIR . 'trash_greyed.png',
@@ -369,20 +371,26 @@ class TLSmarty extends Smarty
                    'info' => TL_THEME_IMG_DIR . 'question.gif',
                    'insert_step' => TL_THEME_IMG_DIR . 'insert_step.png',
                    'item_link' => TL_THEME_IMG_DIR . 'folder_link.png',
+                   'lock' => TL_THEME_IMG_DIR . 'lock.png',
                    'log_message' => TL_THEME_IMG_DIR . 'history.png',
                    'log_message_small' => TL_THEME_IMG_DIR . 'history_small.png',
                    'magnifier' => TL_THEME_IMG_DIR . 'magnifier.png',
+                   'note_edit' => TL_THEME_IMG_DIR . 'note_edit.png',
+                   'note_edit_greyed' => TL_THEME_IMG_DIR . 'note_edit_greyed.png',
                    'on' => TL_THEME_IMG_DIR . 'lightbulb.png',
                    'off' => TL_THEME_IMG_DIR . 'lightbulb_off.png',
                    'public' => TL_THEME_IMG_DIR . 'door_open.png',
                    'private' => TL_THEME_IMG_DIR . 'door.png',
                    'reorder' => TL_THEME_IMG_DIR . 'arrow_switch.png',
                    'resequence' => TL_THEME_IMG_DIR . 'control_equalizer.png',
+                   'summary_small' => TL_THEME_IMG_DIR . 'information_small.png',
                    'sort' => TL_THEME_IMG_DIR . 'sort_hint.png',
                    'testcase_execution_type_automatic' => TL_THEME_IMG_DIR . 'bullet_wrench.png',
                    'testcase_execution_type_manual' => TL_THEME_IMG_DIR . 'user.png',
                    'toggle_all' => TL_THEME_IMG_DIR .'toggle_all.gif',
                    'user' => TL_THEME_IMG_DIR . 'user.png',
+                   'upload' => TL_THEME_IMG_DIR . 'upload_16.png',
+                   'upload_greyed' => TL_THEME_IMG_DIR . 'upload_16_greyed.png',
                    'warning' => TL_THEME_IMG_DIR . 'error_triangle.png',
                    'wrench' => TL_THEME_IMG_DIR . 'wrench.png');
                      

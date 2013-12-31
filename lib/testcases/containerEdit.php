@@ -477,65 +477,64 @@ false -> do not refresh
 */
 function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,$level)
 {
-    $feedback_msg = '';
-    $system_message = '';
-    $testcase_cfg = config_get('testcase_cfg');
-    $can_delete = 1;
 
-    if($argsObj->bSure)
+  $feedback_msg = '';
+  $system_message = '';
+  $testcase_cfg = config_get('testcase_cfg');
+  $can_delete = 1;
+
+  if($argsObj->bSure)
+  {
+    $tsuite = $tsuiteMgr->get_by_id($argsObj->objectID);
+    $tsuiteMgr->delete_deep($argsObj->objectID);
+    $tsuiteMgr->deleteKeywords($argsObj->objectID);
+    $smartyObj->assign('objectName', $tsuite['name']);
+    $doRefreshTree = true;
+    $feedback_msg = 'ok';
+    $smartyObj->assign('user_feedback',lang_get('testsuite_successfully_deleted'));
+  }
+  else
+  {
+    $doRefreshTree = false;
+
+    // Get test cases present in this testsuite and all children
+    $testcases = $tsuiteMgr->get_testcases_deep($argsObj->testsuiteID);
+    $map_msg['warning'] = null;
+    $map_msg['link_msg'] = null;
+    $map_msg['delete_msg'] = null;
+
+    if(is_null($testcases) || count($testcases) == 0)
     {
-        $tsuite = $tsuiteMgr->get_by_id($argsObj->objectID);
-        $tsuiteMgr->delete_deep($argsObj->objectID);
-        $tsuiteMgr->deleteKeywords($argsObj->objectID);
-        $smartyObj->assign('objectName', $tsuite['name']);
-        $doRefreshTree = true;
-        $feedback_msg = 'ok';
-        $smartyObj->assign('user_feedback',lang_get('testsuite_successfully_deleted'));
+      $can_delete = 1;
     }
     else
     {
-        $doRefreshTree = false;
-
-        // Get test cases present in this testsuite and all children
-        $testcases = $tsuiteMgr->get_testcases_deep($argsObj->testsuiteID);
-
-        $map_msg['warning'] = null;
-        $map_msg['link_msg'] = null;
-        $map_msg['delete_msg'] = null;
-
-        if(is_null($testcases) || count($testcases) == 0)
-        {
-            $can_delete = 1;
-        }
-        else
-        {
-            $map_msg = build_del_testsuite_warning_msg($treeMgr,$tcaseMgr,$testcases,$argsObj->testsuiteID);
-            if( in_array('linked_and_executed', (array)$map_msg['link_msg']) )
-            {
-                $can_delete = $argsObj->grants->delete_executed_testcases;
-            }
-        }
-
-        $system_message = '';
-        if(!$can_delete && !$argsObj->grants->delete_executed_testcases)
-        {
-            $system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
-        }
-
-        // prepare to show the delete confirmation page
-        $smartyObj->assign('can_delete',$can_delete);
-        $smartyObj->assign('objectID',$argsObj->testsuiteID);
-        $smartyObj->assign('objectName', $argsObj->tsuite_name);
-        $smartyObj->assign('delete_msg',$map_msg['delete_msg']);
-        $smartyObj->assign('warning', $map_msg['warning']);
-        $smartyObj->assign('link_msg', $map_msg['link_msg']);
-
+      $map_msg = build_del_testsuite_warning_msg($treeMgr,$tcaseMgr,$testcases,$argsObj->testsuiteID);
+      if( in_array('linked_and_executed', (array)$map_msg['link_msg']) )
+      {
+        $can_delete = $argsObj->grants->delete_executed_testcases;
+      }
     }
-    $smartyObj->assign('system_message', $system_message);
-    $smartyObj->assign('page_title', lang_get('delete') . " " . lang_get('container_title_' . $level));
-    $smartyObj->assign('sqlResult',$feedback_msg);
 
-    return $doRefreshTree;
+    $system_message = '';
+    if(!$can_delete && !$argsObj->grants->delete_executed_testcases)
+    {
+      $system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
+    }
+
+    // prepare to show the delete confirmation page
+    $smartyObj->assign('can_delete',$can_delete);
+    $smartyObj->assign('objectID',$argsObj->testsuiteID);
+    $smartyObj->assign('objectName', $argsObj->tsuite_name);
+    $smartyObj->assign('delete_msg',$map_msg['delete_msg']);
+    $smartyObj->assign('warning', $map_msg['warning']);
+    $smartyObj->assign('link_msg', $map_msg['link_msg']);
+  }
+  $smartyObj->assign('system_message', $system_message);
+  $smartyObj->assign('page_title', lang_get('delete') . " " . lang_get('container_title_' . $level));
+  $smartyObj->assign('sqlResult',$feedback_msg);
+
+  return $doRefreshTree;
 }
 
 /*

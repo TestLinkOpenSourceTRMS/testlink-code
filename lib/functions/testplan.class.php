@@ -3909,25 +3909,22 @@ class testplan extends tlObjectWithAttachments
   function getSkeleton($id,$tprojectID,$filters=null,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-  
     $items = array();
-  
-      $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
-                             'remove_empty_branches' => false);
+    $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
+                           'remove_empty_branches' => false);
                    
-     $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
-                            'exclude_children_of' => $this->nt2exclude_children,
-                            'exclude_branches' => null,
-                            'testcase_name' => null,'testcase_id' => null,
-                            'execution_type' => null, 
-                            'platform_id' => null,
-                            'additionalWhereClause' => null);      
+    $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
+                           'exclude_children_of' => $this->nt2exclude_children,
+                           'exclude_branches' => null,
+                           'testcase_name' => null,'testcase_id' => null,
+                           'execution_type' => null, 'platform_id' => null,
+                           'additionalWhereClause' => null);      
    
     $my['filters'] = array_merge($my['filters'], (array)$filters);
     $my['options'] = array_merge($my['options'], (array)$options);
    
-      if( $my['options']['exclude_testcases'] )
-      {
+    if( $my['options']['exclude_testcases'] )
+    {
       $my['filters']['exclude_node_types']['testcase']='exclude me';
     }
     
@@ -3937,9 +3934,8 @@ class testplan extends tlObjectWithAttachments
     // If we have choose any type of filter, we need to force remove empty test suites
     //
     if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
-      !is_null($my['filters']['execution_type']) || !is_null($my['filters']['exclude_branches']) ||
-      !is_null($my['filters']['platform_id']) ||
-      $my['options']['remove_empty_branches'] )
+        !is_null($my['filters']['execution_type']) || !is_null($my['filters']['exclude_branches']) ||
+        !is_null($my['filters']['platform_id']) || $my['options']['remove_empty_branches'] )
     {
       $my['options']['remove_empty_nodes_of_type'] = 'testsuite';
     }
@@ -4028,23 +4024,23 @@ class testplan extends tlObjectWithAttachments
   
       // Create invariant sql sentences
       $staticSql[0] = " /* $debugMsg - Get ONLY TestSuites */ " .
-               " SELECT NHTS.node_order AS spec_order," . 
-                  " NHTS.node_order AS node_order, NHTS.id, NHTS.parent_id," . 
-                  " NHTS.name, NHTS.node_type_id, 0 AS tcversion_id " .
-                  " FROM {$this->tables['nodes_hierarchy']} NHTS" .
-                  " WHERE NHTS.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
-                  " AND NHTS.parent_id = ";
+                      " SELECT NHTS.node_order AS spec_order," . 
+                      " NHTS.node_order AS node_order, NHTS.id, NHTS.parent_id," . 
+                      " NHTS.name, NHTS.node_type_id, 0 AS tcversion_id " .
+                      " FROM {$this->tables['nodes_hierarchy']} NHTS" .
+                      " WHERE NHTS.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
+                      " AND NHTS.parent_id = ";
                
       $staticSql[1] =  " /* $debugMsg - Get ONLY Test Cases with version linked to (testplan,platform) */ " .
-                  " SELECT NHTC.node_order AS spec_order, " .
-                  "        TPTCV.node_order AS node_order, NHTC.id, NHTC.parent_id, " .
-                  "        NHTC.name, NHTC.node_type_id, TPTCV.tcversion_id " .
-                  " FROM {$this->tables['nodes_hierarchy']} NHTC " .
-               " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
-                  " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id " .
-                  " WHERE NHTC.node_type_id = {$this->tree_manager->node_descr_id['testcase']} " .
-                  " AND TPTCV.testplan_id = " . intval($tplan_id) . " {$platformFilter} " .
-                  " AND NHTC.parent_id = ";  
+                       " SELECT NHTC.node_order AS spec_order, " .
+                       "        TPTCV.node_order AS node_order, NHTC.id, NHTC.parent_id, " .
+                       "        NHTC.name, NHTC.node_type_id, TPTCV.tcversion_id " .
+                       " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+                       " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+                       " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id " .
+                       " WHERE NHTC.node_type_id = {$this->tree_manager->node_descr_id['testcase']} " .
+                       " AND TPTCV.testplan_id = " . intval($tplan_id) . " {$platformFilter} " .
+                       " AND NHTC.parent_id = ";  
     
     } // End init static area
     

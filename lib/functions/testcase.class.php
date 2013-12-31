@@ -2641,30 +2641,60 @@ class testcase extends tlObjectWithAttachments
     function: get_keywords_map
   
     args: id: testcase id
-          [order_by_clause]: default: '' -> no order choosen
-                             must be an string with complete clause, i.e.
-                             'ORDER BY keyword'
-  
+          opt: 'orderByClause' => '' -> no order choosen
+                                  must be an string with complete clause, 
+                                  i.e. 'ORDER BY keyword'
+
+               'output' => null => array[keyword_id] = keyword 
+                           'kwfull' => 
+                              array[keyword_id] = array('keyword_id' => value,
+                                                        'keyword' => value,
+                                                        'notes' => value)
   
     returns: map with keywords information
-             key: keyword id
-             value: map with following keys.
-  
+               
   
   */
-  function get_keywords_map($id,$order_by_clause='')
+  function get_keywords_map($id,$opt=null)
   {
-    $sql = "SELECT keyword_id,keywords.keyword
-            FROM {$this->tables['testcase_keywords']} testcase_keywords, {$this->tables['keywords']} keywords
-            WHERE keyword_id = keywords.id ";
+    $my['opt'] = array('orderByClause' => '', 'output' => null);
+    $my['opt'] = array_merge($my['opt'], (array)$opt);
+
+
+    switch($my['opt']['output'])
+    {
+      case 'kwfull':
+        $sql = "SELECT keyword_id,keywords.keyword,keywords.notes";
+      break;
+
+      default:
+        $sql = "SELECT keyword_id,keywords.keyword";
+      break;
+    }
+    $sql .= " FROM {$this->tables['testcase_keywords']} testcase_keywords, " .
+            " {$this->tables['keywords']} keywords WHERE keyword_id = keywords.id ";
+
     if (is_array($id))
+    {  
       $sql .= " AND testcase_id IN (".implode(",",$id).") ";
+    }
     else
+    {  
       $sql .= " AND testcase_id = {$id} ";
+    }
+    $sql .= $my['opt']['orderByClause'];
   
-    $sql .= $order_by_clause;
+    switch($my['opt']['output'])
+    {
+      case 'kwfull':
+        $map_keywords = $this->db->fetchRowsIntoMap($sql,'keyword_id');
+      break;
+
+      default:
+        $map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+      break;
+    }
   
-    $map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
     return $map_keywords;
   }
   

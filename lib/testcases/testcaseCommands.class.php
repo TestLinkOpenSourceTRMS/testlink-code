@@ -268,17 +268,17 @@ class testcaseCommands
   */
   function edit(&$argsObj,&$otCfg,$oWebEditorKeys)
   {
-      $guiObj = $this->initGuiBean($argsObj);
-      $otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
-      keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
-      $tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
-      foreach($oWebEditorKeys as $key)
-       {
-         $guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
-         $argsObj->$key = $guiObj->$key;
-      }
+    $guiObj = $this->initGuiBean($argsObj);
+    $otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id,array('orderByClause' =>" ORDER BY keyword ASC "));
+    keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
+    $tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
+    foreach($oWebEditorKeys as $key)
+    {
+      $guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
+      $argsObj->$key = $guiObj->$key;
+    }
      
-      $cf_smarty = null;
+    $cf_smarty = null;
     $cfPlaces = $this->tcaseMgr->buildCFLocationMap();
     foreach($cfPlaces as $locationKey => $locationFilter)
     { 

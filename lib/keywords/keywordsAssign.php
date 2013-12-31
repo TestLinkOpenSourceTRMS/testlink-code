@@ -99,7 +99,8 @@ else if($args->edit == 'testcase')
 		$doRecall = !is_null($args->keywordArray);	
 	}
 	$opt_cfg->to->lbl = lang_get('assigned_kword');
-	$opt_cfg->to->map = $doRecall ? $tcase_mgr->get_keywords_map($args->id," ORDER BY keyword ASC ") : null;
+	$opt_cfg->to->map = $doRecall ? $tcase_mgr->get_keywords_map($args->id,
+		                              array('orderByClause' =>" ORDER BY keyword ASC ")) : null;
 }
 
 keywords_opt_transf_cfg($opt_cfg, $args->keywordList);

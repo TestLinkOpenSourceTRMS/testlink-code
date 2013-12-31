@@ -9,14 +9,14 @@
  *   
  * @package   TestLink
  * @author    Martin Havlat
- * @copyright 2005-2012, TestLink community 
+ * @copyright 2005-2013, TestLink community 
  * @version   reports.class.php
- * @link      http://www.teamst.org/index.php
+ * @link      http://testlink.sourceforge.net/
  * @uses      config.inc.php
  * @uses      common.php
  *
  * @internal revisions
- * @since 1.9.5
+ * @since 1.9.10
  *
  **/
 
@@ -95,7 +95,7 @@ class tlReports extends tlObjectWithDB
           $items[$xdx] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl,
                                'directLink' => '');
 
-          if(trim($reportItem['directLink']) != '')
+          if(isset($reportItem['directLink']) && trim($reportItem['directLink']) != '')
           {                     
             if($apiKeyIsValid)
             {

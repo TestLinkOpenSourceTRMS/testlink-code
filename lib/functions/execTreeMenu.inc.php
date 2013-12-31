@@ -62,6 +62,8 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
        $renderTreeNodeOpt['useCounters'],
        $renderTreeNodeOpt['useColors'],$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
 
+  $renderTreeNodeOpt['showTestCaseExecStatus'] = $options['showTestCaseExecStatus'];
+
   if( property_exists($objOptions, 'actionJS'))
   {
     if(isset($objOptions->actionJS['testproject']))
@@ -140,6 +142,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       //
       if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options)) )
       {
+        //new dBug($sql2do);
         $kmethod = "fetchRowsIntoMap";
         if( is_array($sql2do) )
         {       
@@ -160,6 +163,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
           $sql2run = $sql2do;
         }
         $tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
+        // new dBug($tplan_tcases);
       }
     }   
 
@@ -317,6 +321,9 @@ function initExecTree($filtersObj,$optionsObj)
   $colorBySelectedBuild = isset($optionsObj->testcases_colouring_by_selected_build) ? 
                           $optionsObj->testcases_colouring_by_selected_build : null;
 
+  $options['tc_action_enabled'] = isset($optionsObj->tc_action_enabled) ?  $optionsObj->tc_action_enabled : true;
+  $options['showTestCaseExecStatus'] = isset($optionsObj->showTestCaseExecStatus) ?  $optionsObj->showTestCaseExecStatus : true;
+  // $options['nodeHelpText'] = isset($optionsObj->nodeHelpText) ?  $optionsObj->nodeHelpText : '';
 
   return array($filters,$options,$show_testsuite_contents,$useCounters,$useColors,$colorBySelectedBuild);
 
@@ -530,15 +537,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 
   $renderTreeNodeOpt = null;
   $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
-  //list($filters,$options,
-  //     $show_testsuite_contents,
-  //     $useCounters,$useColors,$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
-  
+
+  new dBug($objOptions);
+
   list($filters,$options,
        $renderTreeNodeOpt['showTestSuiteContents'],
        $renderTreeNodeOpt['useCounters'],
        $renderTreeNodeOpt['useColors'],$colorBySelectedBuild) = initExecTree($objFilters,$objOptions);
-
 
   $tplan_mgr = new testplan($dbHandler);
   $tproject_mgr = new testproject($dbHandler);
@@ -565,7 +570,9 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   //
   $my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
                        'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id),
-                       'hideTestCases' => $options['hideTestCases']);
+                       'hideTestCases' => $options['hideTestCases'],'tc_action_enabled' => $options['tc_action_enabled'],
+                       // 'nodeHelpText' => $options['nodeHelpText'], 
+                       'showTestCaseExecStatus' => $options['showTestCaseExecStatus']);
                          
   $my['filters'] = array('exclude_node_types' => $nt2exclude,
                          'exclude_children_of' => $nt2exclude_children);
@@ -579,6 +586,28 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   {
     $my['filters']['filter_custom_fields'] = $objFilters->filter_custom_fields;
   }
+
+  if( property_exists($objOptions, 'actionJS') )
+  {
+    foreach(array('testproject','testsuite','testcase') as $nk)
+    {  
+      if(isset($objOptions->actionJS[$nk]))
+      {
+        $renderTreeNodeOpt['actionJS'][$nk] = $objOptions->actionJS[$nk];
+      }
+    }  
+  }  
+
+  if( property_exists($objOptions, 'nodeHelpText') )
+  {
+    foreach(array('testproject','testsuite','testcase') as $nk)
+    {  
+      if(isset($objOptions->nodeHelpText[$nk]))
+      {
+        $renderTreeNodeOpt['nodeHelpText'][$nk] = $objOptions->nodeHelpText[$nk];
+      }
+    }  
+  }  
 
  
   $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
@@ -688,7 +717,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   
     $keys = array_keys($tplan_tcases);
     $renderTreeNodeOpt['hideTestCases'] = $my['options']['hideTestCases'];
-    $renderTreeNodeOpt['tc_action_enabled'] = 1;
+    // $renderTreeNodeOpt['tc_action_enabled'] = 1;
+    $renderTreeNodeOpt['tc_action_enabled'] = isset($my['options']['tc_action_enabled']) ? 
+                                              $my['options']['tc_action_enabled'] : 1;
+
+    // $renderTreeNodeOpt['nodeHelpText'] = $my['options']['nodeHelpText']; 
+    $renderTreeNodeOpt['showTestCaseExecStatus'] = $my['options']['showTestCaseExecStatus']; 
+
     $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,
                                      $renderTreeNodeOpt);
 

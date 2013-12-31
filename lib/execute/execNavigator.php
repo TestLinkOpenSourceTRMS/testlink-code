@@ -26,6 +26,7 @@ $templateCfg = templateConfiguration();
 
 $chronos[] = $tstart = microtime(true);
 $control = new tlTestCaseFilterControl($db, 'execution_mode');
+$control->formAction = '';
 
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);

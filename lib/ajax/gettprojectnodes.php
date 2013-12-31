@@ -24,12 +24,14 @@
 *   
 *
 * @internal revisions
-* @since 1.9.7
+* @since 1.9.10
 *
 */
 require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
+
+// file_put_contents('/tmp/REQ.txt',serialize($_REQUEST));
 
 $root_node = isset($_REQUEST['root_node']) ? intval($_REQUEST['root_node']): null;
 $node = isset($_REQUEST['node']) ? intval($_REQUEST['node']) : $root_node;
@@ -39,13 +41,18 @@ $show_tcases = isset($_REQUEST['show_tcases']) ? intval($_REQUEST['show_tcases']
 $tcprefix = isset($_REQUEST['tcprefix']) ? $_REQUEST['tcprefix'] : '';
 $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 
-// for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
-$nodes = display_children($db,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
-// file_put_contents('/tmp/gettp.txt',serialize($nodes));
+$helpText = array();
+$helpText['testproject'] = isset($_REQUEST['tprojectHelp']) ? $_REQUEST['tprojectHelp'] : '';
+$helpText['testsuite'] = isset($_REQUEST['tsuiteHelp']) ? $_REQUEST['tsuiteHelp'] : '';
+$nodes = display_children($db,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation,$helpText);
 echo json_encode($nodes);
 
+/**
+ *
+ *
+ */
 function display_children($dbHandler,$root_node,$parent,$filter_node,
-                          $tcprefix,$show_tcases = 1,$operation = 'manage') 
+                          $tcprefix,$show_tcases = 1,$operation = 'manage',$helpText=array()) 
 {             
   static $showTestCaseID;
     
@@ -153,9 +160,20 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
       {
         $path['text'] .= " ({$tcase_qty})";   
       }
+
+      switch($row['node_type'])
+      {
+        case 'testproject':
+        case 'testsuite':
+          if( isset($helpText[$row['node_type']]) )
+          {
+            $path['text'] = '<span title="' . $helpText[$row['node_type']] . '">' . $path['text'] . '</span>';
+          }  
+        break;
+      }
+
       $nodes[] = $path;                                                                        
     }
   }
   return $nodes;                                                                             
-}                                                                                               
-?>
+}

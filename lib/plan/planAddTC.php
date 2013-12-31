@@ -8,10 +8,10 @@
  * @package     TestLink
  * @filesource  planAddTC.php
  * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @link        http://testlink.sourceforge.net/
  * 
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.10
  **/
 
 require_once('../../config.inc.php');
@@ -31,14 +31,19 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
-$gui->build = init_build_selector($tplan_mgr, $args);
+/*
+$skel = $tplan_mgr->getSkeleton($args->tplan_id,$args->tproject_id,null,
+                                array('remove_empty_branches' => true,'recursive' => true));
+new dBug($skel);
+die();
+*/
 
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
 {
-    $keywordsFilter = new stdClass();
-    $keywordsFilter->items = $args->keyword_id;
-    $keywordsFilter->type = $gui->keywordsFilterType->selected;
+  $keywordsFilter = new stdClass();
+  $keywordsFilter->items = $args->keyword_id;
+  $keywordsFilter->type = $gui->keywordsFilterType->selected;
 }
 
 $do_display = 0;
@@ -49,14 +54,16 @@ switch($args->item_level)
   break;
   
   case 'testproject':
-    show_instructions('planAddTC');
+    // show_instructions('planAddTC');
+    // exit();
+    redirect($_SESSION['basehref'] . "lib/results/printDocOptions.php?activity=$args->activity");
     exit();
   break;
 }
 
 switch($args->doAction)
 {
-    case 'doAddRemove':
+  case 'doAddRemove':
     // Remember:  checkboxes exist only if are checked
     $gui->itemQty = count($args->testcases2add);
       
@@ -151,18 +158,18 @@ switch($args->doAction)
       break;
   
     case 'doReorder':
-    doReorder($args,$tplan_mgr);
-    $do_display = 1;
+      doReorder($args,$tplan_mgr);
+      $do_display = 1;
     break;
 
     case 'doSavePlatforms':
-    doSavePlatforms($args,$tplan_mgr);
-    $do_display = 1;
+      doSavePlatforms($args,$tplan_mgr);
+      $do_display = 1;
     break;
 
     case 'doSaveCustomFields':
-    doSaveCustomFields($args,$_REQUEST,$tplan_mgr,$tcase_mgr);
-    $do_display = 1;
+      doSaveCustomFields($args,$_REQUEST,$tplan_mgr,$tcase_mgr);
+      $do_display = 1;
     break;
   
     default:
@@ -325,11 +332,20 @@ function init_args()
 
   // For more information about the data accessed in session here, see the comment
   // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
-  $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+  $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $mode = 'plan_add_mode';
-  $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
+  $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? 
+                  $_SESSION[$mode][$args->treeFormToken] : null;
 
-    // to be able to pass filters to functions present on specview.php
+  // need to comunicate with left frame, will do via $_SESSION and form_token 
+  if( $args->treeFormToken > 0 && ($args->item_level == 'testsuite' || $args->item_level == 'testcase'))
+  {
+    // do not understand why this do not works OK
+    $_SESSION['loadRightPaneAddTC'][$args->treeFormToken] = false;
+  }  
+
+
+  // to be able to pass filters to functions present on specview.php
   $args->control_panel = $session_data;
   
   $getFromSession = !is_null($session_data);
@@ -362,6 +378,7 @@ function init_args()
   }
   
   $args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
+  $args->activity = isset($_REQUEST['activity']) ? $_REQUEST['activity'] : '';
   return $args;
 }
 
@@ -443,52 +460,51 @@ function doReorder(&$argsObj,&$tplanMgr)
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
   
-    $tcase_cfg = config_get('testcase_cfg');
-    $title_separator = config_get('gui_title_separator_1');
+  $tcase_cfg = config_get('testcase_cfg');
+  $title_separator = config_get('gui_title_separator_1');
 
-    $gui = new stdClass();
-    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-    $gui->testCasePrefix .= $tcase_cfg->glue_character;
+  $gui = new stdClass();
+  $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
+  $gui->testCasePrefix .= $tcase_cfg->glue_character;
 
-    $gui->can_remove_executed_testcases = $argsObj->user->hasRight($dbHandler,
-                                                                   "testplan_unlink_executed_testcases",
-                                                                   $argsObj->tproject_id,$argsObj->tplan_id);
+  $gui->can_remove_executed_testcases = $argsObj->user->hasRight($dbHandler,
+                                                                 "testplan_unlink_executed_testcases",
+                                                                 $argsObj->tproject_id,$argsObj->tplan_id);
 
-    $tprojectInfo = $tcaseMgr->tproject_mgr->get_by_id($argsObj->tproject_id);
-    $gui->priorityEnabled = $tprojectInfo['opt']->testPriorityEnabled;
+  $tprojectInfo = $tcaseMgr->tproject_mgr->get_by_id($argsObj->tproject_id);
+  $gui->priorityEnabled = $tprojectInfo['opt']->testPriorityEnabled;
 
-    $gui->keywordsFilterType = $argsObj->keywordsFilterType;
-
-    $gui->keywords_filter = '';
-    $gui->has_tc = 0;
-    $gui->items = null;
-    $gui->has_linked_items = false;
+  $gui->keywordsFilterType = $argsObj->keywordsFilterType;
+  $gui->keywords_filter = '';
+  $gui->has_tc = 0;
+  $gui->items = null;
+  $gui->has_linked_items = false;
     
-    $gui->keywordsFilterType = new stdClass();
-    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
-    $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+  $gui->keywordsFilterType = new stdClass();
+  $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
+  $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
 
-    // full_control, controls the operations planAddTC_m1.tpl will allow
-    // 1 => add/remove
-    // 0 => just remove
-    $gui->full_control = 1;
+  // full_control, controls the operations planAddTC_m1.tpl will allow
+  // 1 => add/remove
+  // 0 => just remove
+  $gui->full_control = 1;
 
-    $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
-    $gui->testPlanName = $tplan_info['name'];
-    $gui->pageTitle = lang_get('test_plan') . $title_separator . $gui->testPlanName;
-    $gui->refreshTree = $argsObj->refreshTree;
+  $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
+  $gui->testPlanName = $tplan_info['name'];
+  $gui->pageTitle = lang_get('test_plan') . $title_separator . $gui->testPlanName;
+  $gui->refreshTree = $argsObj->refreshTree;
 
-    $tproject_mgr = new testproject($dbHandler);
-    $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
+  $tproject_mgr = new testproject($dbHandler);
+  $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
 
-    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id, $tproject_info);
-    $gui->testerID = $argsObj->testerID;
-    $gui->send_mail = $argsObj->send_mail;
-    $gui->send_mail_checked = '';
-    if($gui->send_mail)
-    {
-      $gui->send_mail_checked = ' checked="checked" ';
-    }
+  $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id, $tproject_info);
+  $gui->testerID = $argsObj->testerID;
+  $gui->send_mail = $argsObj->send_mail;
+  $gui->send_mail_checked = '';
+  if($gui->send_mail)
+  {
+    $gui->send_mail_checked = ' checked="checked" ';
+  }
 
   $platform_mgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
   $gui->platforms = $platform_mgr->getLinkedToTestplan($argsObj->tplan_id);
@@ -516,7 +532,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
   {
     $gui->warning_msg->executed = lang_get('has_been_executed');
   }
-    return $gui;
+
+  $gui->build = init_build_selector($tplanMgr, $argsObj);
+
+  return $gui;
 }
 
 

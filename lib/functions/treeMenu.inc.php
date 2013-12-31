@@ -52,9 +52,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
+  new dBug($options);
+
+
   $my = array();
   
-    // TICKET 4353: added active/inactive filter
+  // TICKET 4353: added active/inactive filter
   $my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
                          'tc_action_enabled' => 1, 'viewType' => 'testSpecTree',
                          'ignore_inactive_testcases' => null,
@@ -67,6 +70,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
                          'testplan' => null, 'filter_tc_id' => null);
 
   $my['options'] = array_merge($my['options'], (array)$options);
+  $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
+
   $my['filters'] = array_merge($my['filters'], (array)$filters);
   
   if( $my['options']['viewType'] == 'testSpecTree' )
@@ -162,11 +167,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
       $test_spec[$key] = $testcase_counters[$key];
     }
     
-    
-    $showTestCaseID = config_get('treemenu_show_testcase_id');
-    $tc2show = renderTreeNode(1,$test_spec,$hash_id_descr,
-                              $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
-                              $my['options']['forPrinting'],$showTestCaseID);
+    $tc2show = renderTreeNode(1,$test_spec,$hash_id_descr,$linkto,$tcase_prefix,$my['options']);
   }
 
   $menustring ='';
@@ -226,7 +227,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $treeMenu->menustring = $menustring; 
 
   $tc2show = !is_null($tc2show) ? explode(",",trim($tc2show,",")) : null;
-  return array('menu' => $treeMenu, 'leaves' => $tc2show);
+  return array('menu' => $treeMenu, 'leaves' => $tc2show, 'tree' => $test_spec);
 }
 
 
@@ -646,9 +647,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
  *
  * @internal revisions
  */
-function renderTreeNode($level,&$node,$hash_id_descr,
-                        $tc_action_enabled,$linkto,$testCasePrefix,
-                        $bForPrinting=0,$showTestCaseID)
+function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$opt)
 {
 
   static $f2call;
@@ -662,9 +661,15 @@ function renderTreeNode($level,&$node,$hash_id_descr,
   // with BIG amount of testcases (> 5000) impact on performance was high.
   if(!$f2call)
   {
-    $f2call['testproject'] = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
-    $f2call['testsuite'] = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
-    $f2call['testcase'] = $tc_action_enabled ? 'ET' : 'void';
+    $f2call['testproject'] = 'EP';
+    $f2call['testsuite'] = 'ETS';
+    if( isset($opt['forPrinting']) && $opt['forPrinting'] )
+    {
+      $f2call['testproject'] = 'TPROJECT_PTP';
+      $f2call['testsuite'] = 'TPROJECT_PTS';
+    }  
+
+    $f2call['testcase'] = $opt['tc_action_enabled'] ? 'ET' : 'void';
 
     // Design allow JUST ONE forbidden, probably other measures
     // like a leaf (test case) can not have other leaf as parent
@@ -694,11 +699,16 @@ function renderTreeNode($level,&$node,$hash_id_descr,
     case 'testproject':
     case 'testsuite':
       $node['text'] =  $node['testlink_node_name'] . " (" . $testcase_count . ")";
+      if(isset($opt['nodeHelpText'][$node['testlink_node_type']]))
+      {
+        $node['text'] = '<span title="' . $opt['nodeHelpText'][$node['testlink_node_type']] . '">' . 
+                        $node['text'] . '</span>';
+      }  
     break;
       
     case 'testcase':
       $node['text'] = "";
-      if($showTestCaseID)
+      if($opt['showTestCaseID'])
       {
         $node['text'] .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
       } 
@@ -726,8 +736,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,
         continue;
       }
       $testCasesIDList .= renderTreeNode($level+1,$node['childNodes'][$idx],$hash_id_descr,
-                                    $tc_action_enabled,$linkto,$testCasePrefix,
-                                    $bForPrinting,$showTestCaseID);
+                                         $linkto,$testCasePrefix,$opt);
     }
   }
 
@@ -743,7 +752,6 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * @param array &$node reference to recursive map
  * @param array &$tcases_map reference to map that contains info about testcase exec status
  *              when node is of testcase type.
- * @param boolean $hideTestCases 1 -> hide testcase
  * 
  * @return datatype description
  * 
@@ -779,17 +787,29 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
       // here we use ONLY key
       $cssClasses[$status_descr_code[$key]] = $doColouringOn['testcase'] ? ('class="light_' . $key . '"') : ''; 
     }
+    
+    // Very BAD CHOICE => SIDE EFFECT
     $pf['testsuite'] = $opt['hideTestCases'] ? 'TPLAN_PTS' : ($opt['showTestSuiteContents'] ? 'STS' : null); 
-
-    // 20131225 - Merry Xmas
     $pf['testproject'] = $opt['hideTestCases'] ? 'TPLAN_PTP' : 'SP';
-    if( isset($opt['actionJS']) && isset($opt['actionJS']['testproject']) )
+
+    if( isset($opt['actionJS']) )
     {
-      $pf['testproject'] = $opt['actionJS']['testproject'];
+      if( isset($opt['actionJS']['testproject']) )
+      {  
+        $pf['testproject'] = $opt['actionJS']['testproject'];
+      }
+
+      if( isset($opt['actionJS']['testsuite']) )
+      {  
+        $pf['testsuite'] = $opt['actionJS']['testsuite'];
+      }
     }  
+
+    // manage defaults
+    $opt['showTestCaseExecStatus'] = isset($opt['showTestCaseExecStatus']) ? $opt['showTestCaseExecStatus'] : true;
+    $opt['nodeHelpText'] = isset($opt['nodeHelpText']) ? $opt['nodeHelpText'] : array();
+
   }
-
-
   $name = filterString($node['name']);
 
   // custom Property that will be accessed by EXT-JS using node.attributes
@@ -810,6 +830,11 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
       {
         $node['text'] .= create_counters_info($node,$doColouringOn['counters']);
       }
+
+      if( isset($opt['nodeHelpText'][$node_type]) )
+      {
+        $node['text'] = '<span title="' . $opt['nodeHelpText'][$node_type] . '">' . $node['text'] . '</span>';
+      }  
     break;
       
     case 'testcase':
@@ -818,9 +843,14 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
       $pfn = $opt['tc_action_enabled'] ? "ST({$node['id']},{$node['tcversion_id']})" :null;
 
       $status_code = $tcase_node[$node['id']]['exec_status'];
-      $node['text'] = "<span {$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
-                      '" alt="' . $l18n[$status_code] . '">';
-      
+      $node['text'] = "<span ";
+
+      if($opt['showTestCaseExecStatus'])
+      {
+        $node['text'] .= "{$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
+                         '" alt="' . $l18n[$status_code] . '">';
+      }
+
       if($opt['showTestCaseID'])
       {
         $node['text'] .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
@@ -1187,8 +1217,6 @@ function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
  */
 function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 {
-  //New dBug($filters, array('label' => __METHOD__));
-  
   $safe_platform = intval($filters->setting_platform);
   $safe_build = intval($filters->filter_result_build);
   if( $safe_platform > 0)
@@ -1434,9 +1462,6 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
   $filtered_map = get_filtered_req_map($db, $testproject_id, $testproject_mgr,
                                        $my['filters'], $my['options']);
   
-
-  new dbug($filtered_map);
-
   $level = 1;
   $req_spec = prepare_reqspec_treenode($db, $level, $req_spec, $filtered_map, $map_id_nodetype,
                                        $map_nodetype_id, $my['filters'], $my['options']);
@@ -1939,8 +1964,11 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   $my['filters'] = array('keywords' => null, 'testplan' => null);
 
   $my['options'] = array_merge($my['options'], (array)$options);
+  $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
+
   $my['filters'] = array_merge($my['filters'], (array)$filters);
-  
+
+
   $treeMenu = new stdClass(); 
   $treeMenu->rootnode = null;
   $treeMenu->menustring = '';
@@ -1958,8 +1986,8 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   $status_code_descr=$resultsCfg['code_status'];
   
   $decoding_hash=array('node_id_descr' => $hash_id_descr,
-                     'status_descr_code' =>  $status_descr_code,
-                     'status_code_descr' =>  $status_code_descr);
+                       'status_descr_code' =>  $status_descr_code,
+                       'status_code_descr' =>  $status_code_descr);
   
 
   $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
@@ -1994,10 +2022,6 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
     $testcase_counters = prepareTestSpecNode($db, $tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,
                                              $pnFilters,$pnOptions);
 
-    //$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
-    //$t_elapsed = number_format( $tnow - $tprev, 4);
-    //echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (get_subtree()):' . $t_elapsed .'<br>';
-    //reset($chronos);  
 
     if( is_null($test_spec) )
     {
@@ -2011,10 +2035,7 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
       $test_spec[$key] = $testcase_counters[$key];
     }
 
-    $showTestCaseID = config_get('treemenu_show_testcase_id');
-    $tc2show = renderTreeNode(1,$test_spec,$hash_id_descr,
-                              $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
-                              $my['options']['forPrinting'],$showTestCaseID);
+    $tc2show = renderTreeNode(1,$test_spec,$hash_id_descr,$linkto,$tcase_prefix,$my['options']);
   }
   
   $menustring ='';
@@ -2076,7 +2097,7 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   $treeMenu->menustring = $menustring; 
 
   $tc2show = !is_null($tc2show) ? explode(",",trim($tc2show,",")) : null;
-  return array('menu' => $treeMenu, 'leaves' => $tc2show);
+  return array('menu' => $treeMenu, 'leaves' => $tc2show, 'tree' => $test_spec);
 }
 
 
@@ -2171,12 +2192,11 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
       }
     }
     
-    // new dBug($tcFilterByKeywords);
     
     // Critic for logic that prune empty branches
-        // TICKET 4353: added active/inactive filter
+    // TICKET 4353: added active/inactive filter
     $filtersApplied = $doFilterOn['keywords'] || $my['options']['ignoreInactiveTestCases'] || 
-                          $my['options']['ignoreActiveTestCases'];
+                      $my['options']['ignoreActiveTestCases'];
   }
     
   $tcase_counters['testcase_count'] = 0;
@@ -2231,13 +2251,9 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
   // ================================================================================
   if( !is_null($node) && isset($node['childNodes']) && is_array($node['childNodes']) )
   {
-    // new dBug($node);
-    
     // node has to be a Test Suite ?
     $childNodes = &$node['childNodes'];
     $childNodesQty = count($childNodes);
-    
-    // new dBug($childNodes);
     
     //$pos2unset = array();
     for($idx = 0;$idx < $childNodesQty ;$idx++)

@@ -19,7 +19,7 @@
  * will be simpler).
  * 
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  *
 **/
 require_once('../../config.inc.php');
@@ -475,28 +475,30 @@ function init_args(&$dbHandler,$cfgObj)
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {
-    if( isset($hash_REQUEST[$btn_on_name]) )
-    {
-        $history_on = true;
-    }
-    elseif(isset($_REQUEST[$btn_off_name]))
-    {
-        $history_on = false;
-    }
-    elseif (isset($_REQUEST[$hidden_on_name]))
-    {
-        $history_on = $_REQUEST[$hidden_on_name];
-    }
-    elseif (isset($_SESSION[$hidden_on_name]))
-    {
-        $history_on = $_SESSION[$hidden_on_name];
-    }
-    else
-    {
-        $history_on = $exec_cfg->history_on;
-    }
-    return $history_on ? true : false;
+  if( isset($hash_REQUEST[$btn_on_name]) )
+  {
+    $history_on = true;
+  }
+  elseif(isset($_REQUEST[$btn_off_name]))
+  {
+    $history_on = false;
+  }
+  elseif (isset($_REQUEST[$hidden_on_name]))
+  {
+    $history_on = $_REQUEST[$hidden_on_name];
+  }
+  elseif (isset($_SESSION[$hidden_on_name]))
+  {
+    $history_on = $_SESSION[$hidden_on_name];
+  }
+  else
+  {
+    $history_on = $exec_cfg->history_on;
+  }
+
+  return $history_on ? true : false;
 }
+
 /*
   function: get_ts_name_details
 
@@ -1131,8 +1133,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     }
     // ------------------------------------------------------------------
 
-    $the_builds = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
-    $gui->build_name = isset($the_builds[$argsObj->build_id]) ? $the_builds[$argsObj->build_id] : '';
+    $dummy = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
+    $gui->build_name = isset($dummy[$argsObj->build_id]) ? $dummy[$argsObj->build_id] : '';
+    $gui->build_div_title = lang_get('build') . ' ' . $gui->build_name;
 
 
     $gui->exec_mode = initializeExecMode($dbHandler,$cfgObj->exec_cfg,
@@ -1142,6 +1145,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 
     $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testplan_notes = $rs['notes'];
+    $gui->testplan_div_title = lang_get('test_plan') . ' ' . $rs['name'];
 
     // Important note: 
     // custom fields for test plan can be edited ONLY on design, that's reason why we are using 
@@ -1166,7 +1170,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     { 
       $gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
     }
+    $gui->platform_div_title = lang_get('platform') . ' ' . $gui->platform_info['name'];
     
+
     $gui->issueTrackerIntegrationOn = $gui->tlCanCreateIssue = false;
     
     $gui->node_id = $argsObj->id;
@@ -1234,6 +1240,9 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
                                                                          'nodes_hierarchy',true,1);
 
 
+  // keywords ?
+  $guiObj->kw = $tcaseMgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
+
   return array($tcase_id,$tcversion_id);
 }
 
@@ -1290,40 +1299,41 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
     if($guiObj->history_on)
     {
       $execContext = array('tplan_id' => $argsObj->tplan_id, 'platform_id' => $argsObj->platform_id, 
-                 'build_id' => $argsObj->build_id);
+                           'build_id' => $argsObj->build_id);
 
-        if($cfgObj->exec_cfg->show_history_all_builds )
-        {
-          $execContext['build_id'] = null;
-        }  
-        if($cfgObj->exec_cfg->show_history_all_platforms )
-        {
-          $execContext['platform_id'] = null;
-        }  
-        $options = array('exec_id_order' => $cfgObj->exec_cfg->history_order);
+      if($cfgObj->exec_cfg->show_history_all_builds )
+      {
+        $execContext['build_id'] = null;
+      }  
+      if($cfgObj->exec_cfg->show_history_all_platforms )
+      {
+        $execContext['platform_id'] = null;
+      }  
+      
+      $options = array('exec_id_order' => $cfgObj->exec_cfg->history_order);
         
-        // 20120614 - franciscom - need to undertand if tcversion_id is needed
-        // in order to refactor getExecutionSet
-        //
-        // $other_execs = $tcaseMgr->get_executions($tcase_id,$tcversion_id,$argsObj->tplan_id,
-        //                                          $filters['build_id'],$filters['platform_id'],$options);
-        $other_execs = $tcaseMgr->getExecutionSet($tcase_id,$tcversion_id,$execContext,$options);
+      // 20120614 - franciscom - need to undertand if tcversion_id is needed
+      // in order to refactor getExecutionSet
+      //
+      // $other_execs = $tcaseMgr->get_executions($tcase_id,$tcversion_id,$argsObj->tplan_id,
+      //                                          $filters['build_id'],$filters['platform_id'],$options);
+      $other_execs = $tcaseMgr->getExecutionSet($tcase_id,$tcversion_id,$execContext,$options);
     }    
     else
     {
-        // Warning!!!:
-        // we can't use the data we have got with previous call to get_last_execution()
-        // because if user have asked to save results last execution data may be has changed
-        $aux_map = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
-                                                 $argsObj->build_id,$argsObj->platform_id);
-        if(!is_null($aux_map))
+      // Warning!!!:
+      // we can't use the data we have got with previous call to get_last_execution()
+      // because if user have asked to save results last execution data may be has changed
+      $aux_map = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
+                                               $argsObj->build_id,$argsObj->platform_id);
+      if(!is_null($aux_map))
+      {
+        $other_execs = array();
+        foreach($aux_map as $key => $value )
         {
-            $other_execs = array();
-            foreach($aux_map as $key => $value )
-            {
-               $other_execs[$key] = array($value);
-            }
+          $other_execs[$key] = array($value);
         }
+      }
     }
     return $other_execs;
 }
@@ -1691,8 +1701,8 @@ function getSettingsAndFilters(&$argsObj)
   $settings = array('build_id' => 'setting_build', 'platform_id' => 'setting_platform');
 
   $key2null = array_merge($filters,$settings);
-  
-  $isNumeric = array('build_id' => 0, 'platform_id' => 0);
+  $isNumeric = array('build_id' => 0, 'platform_id' => -1);
+
   foreach($key2null as $key => $sfKey)
   {
     $argsObj->$key = isset($sf[$sfKey]) ? $sf[$sfKey] : null;
@@ -1784,5 +1794,3 @@ function manageCookies(&$argsObj,$cfgObj)
     }
   }
 }  
-
-?>

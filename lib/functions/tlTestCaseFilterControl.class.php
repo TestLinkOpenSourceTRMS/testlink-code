@@ -905,7 +905,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
           break;
           
         }
-        
         list($tree_menu, $testcases_to_show) = testPlanTree($this->db,$gui->menuUrl,
                                                             $this->args->testproject_id,
                                                             $this->args->testproject_name,
@@ -983,6 +982,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
           $root_node->href = "javascript:EP({$this->args->testproject_id})";
           $root_node->id = $this->args->testproject_id;
           $root_node->name = $this->args->testproject_name . " ($tcase_qty)";
+          $root_node->wrapOpen = $root_node->wrapClose = '';
           $root_node->testlink_node_type='testproject';
         }
       break;
@@ -996,7 +996,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // usage of wrong values in $this->args->xyz for cookiePrefix instead of correct 
         // values in $filters->setting_xyz
         $cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
-        
+
         if ($this->do_filtering)
         {
           // TICKET 4496: added active/inactive filter
@@ -1022,6 +1022,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
       
+          $options['nodeHelpText']['testproject'] = lang_get('right_pane_test_plan_tree'); 
+          $options['nodeHelpText']['testsuite'] = lang_get('display_tsuite_contents');
+
           $forrest = generateTestSpecTree($this->db,
                                           $this->args->testproject_id,
                                           $this->args->testproject_name,
@@ -1034,12 +1037,17 @@ class tlTestCaseFilterControl extends tlFilterControl {
         else 
         {
           $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                              "root_node={$this->args->testproject_id}&show_tcases=0";
-        
+                    "root_node={$this->args->testproject_id}&show_tcases=0" .
+                    "&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
+
           $root_node = new stdClass();
           $root_node->href = "javascript:EP({$this->args->testproject_id})";
           $root_node->id = $this->args->testproject_id;
           $root_node->name = $this->args->testproject_name;
+
+          $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
+          $root_node->wrapClose = '</span>';
+
           $root_node->testlink_node_type = 'testproject';
         }
       break;

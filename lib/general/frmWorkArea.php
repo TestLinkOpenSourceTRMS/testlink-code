@@ -51,7 +51,8 @@ $aa_tfp = array(
      'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
      'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
-     'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
+     'planAddTC'    => array('lib/plan/planAddTCNavigator.php?loadRightPaneAddTC=0',
+                             'lib/results/printDocOptions.php?activity=addTC'),
      'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
      'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
      'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
@@ -106,7 +107,8 @@ if( is_array($aa_tfp[$showFeature]) )
 {
   $leftPane = $aa_tfp[$showFeature][0];
   $rightPane = $aa_tfp[$showFeature][1];
-  if( strpos($rightPane,"?") !== false )
+  // if( strpos($rightPane,"?") !== false )
+  if($rightPane[strlen($rightPane)-1] == '=')
   {
     $rightPane .= intval($_SESSION['testprojectID']);
   }  

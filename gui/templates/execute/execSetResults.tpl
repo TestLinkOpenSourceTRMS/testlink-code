@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-@since 1.9.9
+@since 1.9.10
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -211,10 +211,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{if $gui->platform_info.name != ""}
 	  {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_info.name|escape}
 	{/if}
-	{include file="inc_help.tpl" helptopic="hlp_executeMain" show_help_icon=true}
 </h1>
-<h1 class="title">
-	{if $gui->ownerDisplayName != ""}
+
+{if $gui->ownerDisplayName != ""}
+  <h1 class="title">
     {$labels.only_test_cases_assigned_to}{$title_sep}
 	  {foreach from=$gui->ownerDisplayName item=assignedUser}
 	    {$assignedUser|escape}
@@ -222,9 +222,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	  {if $gui->include_unassigned}
 	    <br />{$labels.or_unassigned_test_cases}
 	  {/if}
-	{/if}
-</h1>
-
+  </h1>
+{/if}
 
 <div id="main_content" class="workBack">
 	{if $gui->user_feedback != ''}
@@ -247,14 +246,33 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   <input type="hidden" id="form_token"  name="form_token" value="{$gui->treeFormToken}" />
   <input type="hidden" id="refresh_tree"  name="refresh_tree" value="{$gui->refreshTree}" />
 
+  {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
+    <div class="groupBtn">
+      <input type="hidden" id="history_on" name="history_on" value="{$gui->history_on}" />
+
+      <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
+      <input type="submit" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"
+             value="{lang_get s=$gui->history_status_btn_name}" />
+      <input type="button" id="pop_up_import_button" name="import_xml_button"
+             value="{$labels.import_xml_results}"
+             onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
+                                                   {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
+          
+      {if $tlCfg->exec_cfg->enable_test_automation}
+        <input type="submit" id="execute_cases" name="execute_cases"
+                 value="{$labels.execute_and_save_results}"/>
+      {/if}
+    </div>
+  {/if}
+
+
   {* -------------------------------------------------------------------------------- *}
   {* Test Plan notes show/hide management                                             *}
   {* -------------------------------------------------------------------------------- *}
   {$div_id='tplan_notes'}
   {$memstatus_id=$tplan_notes_view_memory_id}
-
   {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$labels.test_plan_notes
+           show_hide_container_title=$gui->testplan_div_title
            show_hide_container_id=$div_id
            show_hide_container_draw=false
            show_hide_container_class='exec_additional_info'
@@ -274,7 +292,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {$memstatus_id=$platform_notes_view_memory_id}
 
     {include file="inc_show_hide_mgmt.tpl"
-             show_hide_container_title=$labels.platform_description
+             show_hide_container_title=$gui->platform_div_title
              show_hide_container_id=$div_id
              show_hide_container_view_status_id=$memstatus_id
              show_hide_container_draw=true
@@ -289,7 +307,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {$div_id='build_notes'}
   {$memstatus_id=$build_notes_view_memory_id}
   {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$labels.builds_notes
+           show_hide_container_title=$gui->build_div_title
            show_hide_container_id=$div_id
            show_hide_container_view_status_id=$memstatus_id
            show_hide_container_draw=false
@@ -299,6 +317,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {$gui->build_notes}
     {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
   </div>
+
 
   {* -------------------------------------------------------------------------------- *}
   {if $gui->map_last_exec eq ""}
@@ -333,30 +352,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
             </div>
         {/if}
     	{/if}
-
-
-      {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
-          <hr />
-          <div class="groupBtn">
-    	    	  <input type="button" name="print" id="print" value="{$labels.btn_print}"
-    	    	         onclick="javascript:window.print();" />
-    	    	  <input type="submit" id="toggle_history_on_off"
-    	    	         name="{$gui->history_status_btn_name}"
-    	    	         value="{lang_get s=$gui->history_status_btn_name}" />
-    	    	  <input type="button" id="pop_up_import_button" name="import_xml_button"
-    	    	         value="{$labels.import_xml_results}"
-    	    	         onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
-    	    	                                                {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
-          
-		          {if $tlCfg->exec_cfg->enable_test_automation}
-		          <input type="submit" id="execute_cases" name="execute_cases"
-		                 value="{$labels.execute_and_save_results}"/>
-		          {/if}
-    	    	  <input type="hidden" id="history_on"
-    	    	         name="history_on" value="{$gui->history_on}" />
-          </div>
-      {/if}
-      <hr />
 	{/if}
 
   {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
@@ -369,8 +364,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 
       {if $tlCfg->exec_cfg->enable_test_automation}
-        <input type="submit" id="execute_cases" name="execute_cases"
-                     value="{$labels.execute_and_save_results}"/>
+        <input type="submit" id="execute_cases" name="execute_cases" value="{$labels.execute_and_save_results}"/>
       {/if}
 
  	    <table class="mainTable-x" width="100%">

@@ -231,7 +231,7 @@ Ext.onReady(function(){
              {if $ts.linked_testcase_qty gt 0}
   				      <td>&nbsp;</td>
   				      <td>
-  				      <img class="clickable" src="{$tlImage.disconnect}" 
+  				      <img class="clickable" src="{$tlImages.disconnect}" 
                      onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_for_remove}" />
   				      </td>

@@ -33,11 +33,13 @@
 
 {* TICKET 5251: only use validateForm() to validate result filter when result filter is actually enabled *}
 <form method="post" id="filter_panel_form" name="filter_panel_form"
+
+      {if $control->formAction} action="{$control->formAction}" {/if}
+
       {if $control->filters.filter_result}
         onsubmit="return validateForm(this);document.getElementById('filter_result_method').disabled=false;"
       {/if}
         >
-
 {* hidden input with token to manage transfer of data between left and right frame *}
 {if isset($control->form_token)}
   <input type="hidden" name="form_token" value="{$control->form_token}">

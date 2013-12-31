@@ -47,7 +47,7 @@ Ext.onReady(function() {
       applyTo: 'filter_panel'
     });
 
-  // CRITIC - this has to be done NOT ALLWAY but according operation
+  // CRITIC - this has to be done NOT ALWAYS but according operation
   // Example: after a Test Execution is WRONG
   // Basically this has to be done ONLY if submit has been done on LEFT PANE TREE
   // Need to understand if I can know this

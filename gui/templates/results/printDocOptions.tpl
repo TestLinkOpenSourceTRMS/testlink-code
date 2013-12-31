@@ -1,6 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource printDocOptions.tpl
+@internal revisions
+@since 1.9.10
 *}
 {lang_get var="labels"
           s='doc_opt_title,doc_opt_guide,tr_td_show_as,check_uncheck_all_options,build,builds'}
@@ -13,7 +15,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <script type="text/javascript">
   /* space after { and before } to signal to smarty that is JS => do not process */
   treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
-               loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
   </script>
   <script type="text/javascript">
   treeCfg.root_name = '{$gui->ajaxTree->root_node->name|escape:'javascript'}';
@@ -25,7 +27,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <script type="text/javascript" src='gui/javascript/execTree.js'></script>
 
 {else}
-
   <script type="text/javascript">
   treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                loader:"", enableDD:false, dragDropBackEndUrl:'' };
@@ -53,9 +54,11 @@ $(".chosen-select").chosen({ width: "100%" });
 </head>
 
 <body>
-<h1 class="title">{$gui->mainTitle}{include file="inc_help.tpl" helptopic="hlp_generateDocOptions" show_help_icon=true}</h1>
+<h1 class="title">{$gui->mainTitle} 
+                  {if $gui->showHelpIcon}{include file="inc_help.tpl" helptopic="hlp_generateDocOptions" show_help_icon=true}{/if}
+                </h1>
 
-<div style="margin: 10px;">
+<div style="margin: 10px; {if !$gui->showOptions}display:none;{/if}" >
 <form method="GET" id="printDocOptions" name="printDocOptions"
       action="lib/results/printDocument.php?type={$gui->doc_type}">
 

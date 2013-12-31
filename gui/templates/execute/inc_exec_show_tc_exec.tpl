@@ -2,40 +2,40 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
 @internal revisions
-@since 1.9.8
+@since 1.9.10
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
+    {* IMPORTANT:
+       Here we use version_number, which is related to tcversion_id SPECIFICATION.
+       When we need to display executed version number, we use tcversion_number
+    *}
+    {$version_number=$tc_exec.version}
     {$tc_id=$tc_exec.testcase_id}
 	  {$tcversion_id=$tc_exec.id}
-	  {* IMPORTANT:
-	               Here we use version_number, which is related to tcversion_id SPECIFICATION.
-	               When we need to display executed version number, we use tcversion_number
-	  *}
-	  {$version_number=$tc_exec.version}
-	  
+    {$div_id="tsdetails_$tc_id"}
+    {$memstatus_id="tsdetails_view_status_$tc_id"}
+    {$can_delete_exec=0}
+    {$can_edit_exec_notes=$gui->grants->edit_exec_notes}
+    {$can_manage_attachments=$gsmarty_attachments->enabled}
+    {if $tc_exec.can_be_executed}
+      {if $gui->grants->delete_execution}
+        {$can_delete_exec=1}
+      {/if}
+    {else}
+      {$can_edit_exec_notes=0}
+      {$can_manage_attachments=0}
+    {/if}
+
+ 
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
 		<input type='hidden' name='version_number[{$tcversion_id}]' value='{$version_number}' />
+    {* ------------------------------------------------------------------------------------ *}
 
     {* ------------------------------------------------------------------------------------ *}
     {lang_get s='th_testsuite' var='container_title'}
-    {$div_id="tsdetails_$tc_id"}
-    {$memstatus_id="tsdetails_view_status_$tc_id"}
     {$ts_name=$tsuite_info[$tc_id].tsuite_name}
     {$container_title="$container_title$title_sep$ts_name"}
-
-	{$can_delete_exec=0}
-	{$can_edit_exec_notes=$gui->grants->edit_exec_notes}
-	{$can_manage_attachments=$gsmarty_attachments->enabled}
-	{if $tc_exec.can_be_executed}
-		{if $gui->grants->delete_execution}
-			{$can_delete_exec=1}
-		{/if}
-	{else}
-		{$can_edit_exec_notes=0}
-		{$can_manage_attachments=0}
-	{/if}
-
     {include file="inc_show_hide_mgmt.tpl"
              show_hide_container_title=$container_title
              show_hide_container_id=$div_id
@@ -69,28 +69,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	    {/if}
 	    <br />
     </div>
-
-
-		<div class="exec_tc_title">
-		{if $gui->grants->edit_testcase}
-			<a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
-			<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png"  title="{$labels.show_tcase_spec}">
-			</a>
-		{/if}
-		
-    {$labels.title_test_case}&nbsp;{$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}
-		<br />
-		    {$tc_exec.name|escape}<br />
-		    {if $tc_exec.assigned_user == ''}
-		      {$labels.has_no_assignment}
-		    {else}
-          {$labels.assigned_to}{$title_sep}{$tc_exec.assigned_user|escape}
-        {/if}
-    </div>
-
+    {* ------------------------------------------------------------------------------------ *}
+  <br />  
   {$drawNotRun=0}
  	{if $cfg->exec_cfg->show_last_exec_any_build}
-  
    	{$abs_last_exec=$gui->map_last_exec_any_build.$tcversion_id}
  		{$my_build_name=$abs_last_exec.build_name|escape}
  		{$show_current_build=1}
@@ -101,11 +83,20 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
    		{$drawNotRun=1}
  		{/if}
   {/if}
+  {if $gui->history_on}
+    {$my_build_name=$gui->build_name|escape}
+  {/if}
   {$exec_build_title="$build_title $title_sep $my_build_name"}
 
 
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
+      {if $gui->issueTrackerIntegrationOn}
+        <a style="font-weight:normal" target="_blank" href="{$gui->createIssueURL}">
+          <img src="{$tlImages.bug}" title="{$gui->accessToIssueTracker|escape}"> 
+        </a>
+      {/if}
+
   		{if $gui->history_on}
   		    {$labels.execution_history} {$title_sep_type3}
   		    {if !$cfg->exec_cfg->show_history_all_builds}
@@ -114,20 +105,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   		{else}
   			  {$labels.last_execution}
   			  {if $show_current_build} {$labels.exec_any_build} {/if}
-  			  {$title_sep_type3} {$exec_build_title}
+  			  {* {$title_sep_type3} {$exec_build_title} *}
   		{/if}
   		</div>
 
-    {* NUEVO *}
-		{if $gui->issueTrackerIntegrationOn}
-		  <p/>
-			<a style="font-weight:normal" target="_blank" href="{$gui->createIssueURL}">
-			{$gui->accessToIssueTracker|escape}</a>
-		{/if}
 
 		{* The very last execution for any build of this test plan *}
 		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on == 0}
-           {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
+      {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
 			    {$status_code=$abs_last_exec.status}
      			<div class="{$tlCfg->results.code_status.$status_code}">
      			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
@@ -138,8 +123,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   				  {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
   				{else}
   				  {$deletedTester=$abs_last_exec.tester_id}
-            	  {$deletedUserString=$labels.deleted_user|replace:"%s":$deletedTester}
-            	  {$deletedUserString}
+         	  {$deletedUserString=$labels.deleted_user|replace:"%s":$deletedTester}
+         	  {$deletedUserString}
   				{/if}  
      			
      			{$title_sep_type3}
@@ -155,7 +140,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	 {if $drawNotRun }
 	 	<div class="not_run">{$labels.test_status_not_run}</div>
     	{$labels.tc_not_tested_yet}
-   	
 	 {/if}
      
      
@@ -218,12 +202,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			  <td>
           {* Check also that Build is Open *}
   			  {if $can_edit_exec_notes && $tc_old_exec.build_is_open}
-  		      <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
+  		      <img src="{$tlImages.note_edit}" style="vertical-align:middle" 
   		           title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
   		           {$tc_old_exec.execution_id},{$tc_old_exec.id},{$gui->tplan_id},{$gui->tproject_id});">
   		      {else}
   		         {if $can_edit_exec_notes}
-  		            <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit_greyed.png" 
+  		            <img src="{$tlImages.note_edit_greyed}" 
   		                 style="vertical-align:middle" title="{$labels.closed_build}">
   		         {/if}
  			  {/if}
@@ -231,7 +215,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   			  </td>
 				  {if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
   				<td>{if !$tc_old_exec.build_is_open}
-  				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">{/if}
+  				    <img src="{$tlImages.lock}" title="{$labels.closed_build}">{/if}
   				    {$tc_old_exec.build_name|escape}
   				</td>
   				{/if}
@@ -271,14 +255,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           	   ($attachment_model->show_upload_column && $gui->history_on == 1 && 
           	    $tc_old_exec.build_is_open && $can_manage_attachments)}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
+      			    <img src="{$tlImages.upload}" title="{$labels.alt_attachment_mgmt}"
       			         alt="{$labels.alt_attachment_mgmt}"
       			         style="border:none" /></a>
               </td>
 			  {else}
 			  	{if $attachment_model->show_upload_column && $can_manage_attachments}
 					<td align="center">
-						<img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16_greyed.png" title="{$labels.closed_build}">
+						<img src="{$tlImages.upload_greyed}" title="{$labels.closed_build}">
 					</td>
 				{/if}
   	      	  {/if}
@@ -411,9 +395,27 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   </div>
 
   <br />
+    <div class="exec_tc_title">
+    {if $gui->grants->edit_testcase}
+      <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
+      <img src="{$tlImages.note_edit}"  title="{$labels.show_tcase_spec}">
+      </a>
+    {/if}
+    
+    {$labels.title_test_case}&nbsp;{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version} :: {$tc_exec.name|escape}
+    <br />
+        {if $tc_exec.assigned_user == ''}
+          <img src="{$tlImages.warning}" style="border:none" />&nbsp;{$labels.has_no_assignment}
+        {else}
+          <img src="{$tlImages.user}" style="border:none" />&nbsp;
+          {$labels.assigned_to}{$title_sep}{$tc_exec.assigned_user|escape}
+        {/if}
+    </div>
+
+
   {* ----------------------------------------------------------------------------------- *}
   <div>
-    {include file="execute/inc_exec_test_spec.tpl"
+    {include file="execute/inc_exec_test_spec_req.tpl"
              args_tc_exec=$tc_exec
              args_labels=$labels
              args_enable_custom_field=$enable_custom_fields
@@ -422,8 +424,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_testplan_design_time_cf=$gui->testplan_design_time_cfields
              args_execution_types=$gui->execution_types
              args_tcAttachments=$gui->tcAttachments
-	           args_req_details=$gui->req_details
-	           args_cfg=$cfg}
+             args_req_details=$gui->req_details
+             args_cfg=$cfg}
 
     {if $tc_exec.can_be_executed}
       {include file="execute/inc_exec_controls.tpl"
@@ -432,12 +434,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                args_tcversion_id=$tcversion_id
                args_webeditor=$gui->exec_notes_editors[$tc_id]
                args_labels=$labels}
-	  {/if}
- 	  {if $tc_exec.active eq 0}
- 	   <h1 class="title"><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
- 	  {/if}
-	<hr />
-	</div>
+    {/if}
+    {if $tc_exec.active eq 0}
+     <h1 class="title"><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
+    {/if}
+  <hr />
+  </div>
   {* ----------------------------------------------------------------------------------- *}
 
 	{/foreach}

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_result_tproject_tplan.tpl,v 1.3 2008/11/09 16:25:05 franciscom Exp $ 
+@filesource inc_result_tproject_tplan.tpl
 
 *}
 <table>
@@ -19,7 +19,7 @@ $Id: inc_result_tproject_tplan.tpl,v 1.3 2008/11/09 16:25:05 franciscom Exp $
 	</tr>
   {/if}
 
-  {if $arg_build_set != ''}
+  {if (isset($arg_build_set) && $arg_build_set != '') }
 	{foreach key=idx item=name from=$arg_build_set}
 	<tr>
 		{if $idx == 0}

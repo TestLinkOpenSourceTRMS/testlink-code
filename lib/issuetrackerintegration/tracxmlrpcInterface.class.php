@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * @filesource  tracxmlrpcInterface.class.php
- * @author Francisco Mancardi
+ * @author      Francisco Mancardi
  *
  * @internal info
  * http://www.hossainkhan.info/content/trac-xml-rpc-api-reference
@@ -23,7 +23,7 @@
  *  
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
 **/
 
 // use phpxmlrpc because support HTTPS, while incutio NO.
@@ -47,6 +47,13 @@ class tracxmlrpcInterface extends issueTrackerInterface
   {
     $this->interfaceViaDB = false;
     $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+    
+    $this->defaultResolvedStatus = array();
+    $this->defaultResolvedStatus[] = array('code' => 'r', 'verbose' => 'resolved');
+    $this->defaultResolvedStatus[] = array('code' => 'v', 'verbose' => 'verified');
+    $this->defaultResolvedStatus[] = array('code' => 'c', 'verbose' => 'closed');
+    
+    $this->setResolvedStatusCfg();
     
     $this->setCfg($config);
     $this->completeCfg();
@@ -176,7 +183,7 @@ class tracxmlrpcInterface extends issueTrackerInterface
     // type     | defect
     //  
     
-        $resp = $this->sendCmd('ticket.get', $issueID);
+    $resp = $this->sendCmd('ticket.get', $issueID);
     if( $resp == false )
     {
       $issue = null;
@@ -185,12 +192,12 @@ class tracxmlrpcInterface extends issueTrackerInterface
     {
       $attrib = $resp[self::TICKET_GET_ATTRIBUTES_IDX];
       $issue = new stdClass();
-        $issue->IDHTMLString = "<b>{$issueID} : </b>";
+      $issue->IDHTMLString = "<b>{$issueID} : </b>";
       $issue->statusCode = 0;
       $issue->statusVerbose = $attrib['status'];
       $issue->statusHTMLString = "[$issue->statusVerbose] ";
       $issue->summary = $issue->summaryHTMLString = $attrib['summary'];
-    
+      $issue->isResolved = isset($this->resolvedStatus->byName[$issue->statusVerbose]);
     }
     return $issue;
   }

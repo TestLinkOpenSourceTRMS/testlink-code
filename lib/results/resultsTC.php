@@ -63,7 +63,9 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
     $gui->filterApplied = true;
     $gui->buildListForExcel = implode(',',$buildIDSet); 
   }  
-  $last_build = end($buildIDSet);
+  $lastestBuild = new stdClass();
+  $lastestBuild->id = end($buildIDSet);
+  $lastestBuild->name = $gui->buildInfoSet[$lastestBuild->id]['name'];
 
   $tpl = $templateCfg->default_template;
 
@@ -189,7 +191,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
         
           $buildExecStatus[] = $r4build;
 
-          if($gui->matrixCfg->buildColumns['showStatusLastExecuted'] && $last_build == $buildID)
+          if($gui->matrixCfg->buildColumns['showStatusLastExecuted'] && $lastestBuild->id == $buildID)
           {
             $execOnLastBuild = $r4build;  
           }              
@@ -235,11 +237,11 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   switch($args->format)
   {
     case FORMAT_XLS:
-      createSpreadsheet($gui,$args,$buildIDSet,$last_build);
+      createSpreadsheet($gui,$args,$buildIDSet);
     break;  
 
     default:
-     $gui->tableSet[] =  buildMatrix($gui, $args, $buildIDSet, $last_build);
+     $gui->tableSet[] =  buildMatrix($gui, $args, $buildIDSet, $lastestBuild);
     break;
   } 
 }  
@@ -357,7 +359,7 @@ function checkRights(&$db,&$user,$context = null)
  * return tlExtTable
  *
  */
-function buildMatrix(&$guiObj,&$argsObj,$buildIDSet,$latestBuildID)
+function buildMatrix(&$guiObj,&$argsObj,$buildIDSet,$latestBuild)
 {
   $columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
                    array('title_key' => 'title_test_case_title', 'width' => 150));
@@ -391,7 +393,7 @@ function buildMatrix(&$guiObj,&$argsObj,$buildIDSet,$latestBuildID)
 
   if( $guiObj->matrixCfg->buildColumns['showStatusLastExecuted'] )
   {
-    $buildSet[] = array('name' => $lbl['result_on_last_build'] . ' ' . $buildSet[$latestBuildID]['name']);
+    $buildSet[] = array('name' => $lbl['result_on_last_build'] . ' ' . $latestBuild->name);
   }
   
   foreach($buildSet as $build) 
@@ -534,7 +536,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
  *
  *
  */
-function createSpreadsheet($gui,$args,$buildIDSet,$latestBuildID)
+function createSpreadsheet($gui,$args,$buildIDSet)
 {
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
                            'result_on_last_build' => null, 'title_test_case_title' => null,

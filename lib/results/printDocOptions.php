@@ -25,10 +25,8 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 $gui = initializeGui($db,$args);
 $rightPaneAction = 'lib/results/printDocument.php';
-
-// generate tree
-$tree = null;
 $additionalArgs = '';
+
 switch($args->doc_type) 
 {
   case DOC_TEST_SPEC:
@@ -89,8 +87,8 @@ switch($args->doc_type)
     list($treeContents, $testcases_to_show) = testPlanTree($db,$rightPaneAction,$args->tproject_id,
                                                            $args->tproject_name,$args->tplan_id,
                                                            $testplan_name,$filters,$opt_etree);
-    // $tree = $treeContents->menustring;
     $gui->ajaxTree = new stdClass();
+    $gui->ajaxTree->cookiePrefix = "{$args->doc_type}_tplan_id_{$args->tplan_id}_";
     $gui->ajaxTree->loadFromChildren = true;
     $gui->ajaxTree->root_node = $treeContents->rootnode;
     $gui->ajaxTree->children = trim($treeContents->menustring);
@@ -99,10 +97,6 @@ switch($args->doc_type)
       $gui->ajaxTree->children = '{}';  // generate valid JSON
       $gui->ajaxTree->root_node->href = '';
     }  
-
-    // improved cookie prefix for test plan report and test report
-    $report = $args->doc_type == "testplan" ? "test_plan_report" : "test_report";
-    $gui->ajaxTree->cookiePrefix .= "{$report}_tplan_id_{$args->tplan_id}_";
   break;
 
   default:

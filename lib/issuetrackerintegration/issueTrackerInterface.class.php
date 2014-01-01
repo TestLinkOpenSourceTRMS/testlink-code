@@ -354,7 +354,10 @@ abstract class issueTrackerInterface
     {
       foreach($my['opt']['raw'] as $attr)
       {
-        $ret->$attr = $issue->$attr;
+      	if(property_exists($issue, $attr))
+      	{
+          $ret->$attr = $issue->$attr;
+      	}
       }  
     }
     return $ret;

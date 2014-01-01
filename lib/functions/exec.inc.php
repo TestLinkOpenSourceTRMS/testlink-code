@@ -212,12 +212,14 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
         $bug_list[$elem['bug_id']]['link_to_bts'] = $dummy->link;
         $bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
         $bug_list[$elem['bug_id']]['isResolved'] = $dummy->isResolved;
-        // $bug_list[$elem['bug_id']] = array_merge($bug_list[$elem['bug_id']],(array)$dummy);        
         if($addAttr)
         {
           foreach($raw as $kj)
           {
-            $bug_list[$elem['bug_id']][$kj] = $dummy->$kj;
+          	if( property_exists($dummy,$kj) )
+          	{
+              $bug_list[$elem['bug_id']][$kj] = $dummy->$kj;
+          	}
           } 
         }       
         unset($dummy);

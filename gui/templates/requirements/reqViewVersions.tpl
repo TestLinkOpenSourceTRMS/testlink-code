@@ -5,7 +5,7 @@ Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 @internal revisions
-@since 1.9.8
+@since 1.9.10
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg"}
@@ -43,13 +43,10 @@ var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id|escape:'javascript'}';
 var log_box_title = "{$labels.commit_title|escape:'javascript'}";
 var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
 
-{literal}
 Ext.onReady(function(){ 
-{/literal}
 {foreach from=$gui->log_target key=idx item=item_id}
   tip4log({$item_id});
 {/foreach}
-{literal}
 });
 
 
@@ -178,12 +175,11 @@ function tip4log(itemID)
   new Ext.ToolTip({
         target: 'tooltip-'+itemID,
         width: 500,
-        autoLoad:{url: fUrl+itemID},
+        autoLoad:{ url: fUrl+itemID },
         dismissDelay: 0,
         trackMouse: true
     });
 }
-{/literal}
 
 /**
  * Be Carefull this TRUST on existence of $gui->delAttachmentURL
@@ -469,16 +465,12 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   
         {* ---------------------------------------------------------------- *}
         {* Force the div of every old version to show closed as first state *}
-        {literal}
         <script type="text/javascript">
-        {/literal}
-            viewElement(document.getElementById('vers_{$vid}'),false);
-            {foreach from=$gui->other_versions[idx] item=my_req}
-              viewElement(document.getElementById('v_{$vid}_{$my_req.version}'),false);
-            {/foreach}
-        {literal}
+        viewElement(document.getElementById('vers_{$vid}'),false);
+        {foreach from=$gui->other_versions[idx] item=my_req}
+          viewElement(document.getElementById('v_{$vid}_{$my_req.version}'),false);
+        {/foreach}
         </script>
-        {/literal}
         {* ---------------------------------------------------------------- *}
     {/if}
     <br>
@@ -491,7 +483,6 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {/if}
 {/if}
 
-{* TICKET 4536: Tree is not refreshed after editing Requirement *}
 {if isset($gui->refreshTree) && $gui->refreshTree}
   {include file="inc_refreshTreeWithFilters.tpl"}
 {/if}

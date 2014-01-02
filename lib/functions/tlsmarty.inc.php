@@ -345,6 +345,7 @@ class TLSmarty extends Smarty
                    'clear' => TL_THEME_IMG_DIR . 'trash.png',
                    'check_ok' => TL_THEME_IMG_DIR . 'lightbulb.png',
                    'check_ko' => TL_THEME_IMG_DIR . 'link_error.png',
+                   'cog'  => TL_THEME_IMG_DIR . 'cog.png',
                    'create_copy' => TL_THEME_IMG_DIR . 'application_double.png',
                    'date' => TL_THEME_IMG_DIR . 'date.png',
                    'delete' => TL_THEME_IMG_DIR . 'trash.png',

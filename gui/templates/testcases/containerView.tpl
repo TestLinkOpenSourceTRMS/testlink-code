@@ -14,7 +14,7 @@ View test specification containers
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
              btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,btn_testcases_table_view,
              btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
-             btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,
+             btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,actions,
              btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
              btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
              testsuite_operations, testcase_operations,btn_create_from_issue_xml'}
@@ -61,7 +61,6 @@ function jsCallDeleteFile(btn, text, o_id)
 
 <body>
 <h1 class="title">{$gui->page_title}{$tlCfg->gui_title_separator_1}{$gui->container_data.name|escape}</h1>
-
 <div class="workBack">
 {include file="inc_update.tpl" result=$gui->sqlResult item=$gui->level
          name=$gui->moddedItem.name refresh=$gui->refreshTree user_feedback=$gui->user_feedback}
@@ -75,22 +74,26 @@ function jsCallDeleteFile(btn, text, o_id)
   {if $gui->modify_tc_rights == 'yes'}
     {$bDownloadOnly=false}
 
-  <fieldset class="groupBtn">
-  <h2>{$labels.testsuite_operations}</h2>
-  <form method="post" action="lib/testcases/containerEdit.php">
-    <input type="hidden" name="doAction" id="doAction" value="" />
-    <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
-    <input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
-    <input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
-             title="{$labels.btn_reorder_testsuites_alpha}" />
+  <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tproject_control_panel');"
+       title="{$labels.actions}" />
+  <div id="tproject_control_panel" style="display:none;">
+    <fieldset class="groupBtn">
+    <h2>{$labels.testsuite_operations}</h2>
+    <form method="post" action="lib/testcases/containerEdit.php">
+      <input type="hidden" name="doAction" id="doAction" value="" />
+      <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+      <input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
+      <input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
+               title="{$labels.btn_reorder_testsuites_alpha}" />
 
-    <input type="button" onclick="location='{$importToTProjectAction}'"  value="{$labels.btn_import_testsuite}" />
+      <input type="button" onclick="location='{$importToTProjectAction}'"  value="{$labels.btn_import_testsuite}" />
 
-    {if $gui->canDoExport}
-    <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
-    {/if}
-  </form>
-  </fieldset>
+      {if $gui->canDoExport}
+      <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
+      {/if}
+    </form>
+    </fieldset>
+  </div>
   {/if}
 
   <table class="simple" >
@@ -119,68 +122,67 @@ function jsCallDeleteFile(btn, text, o_id)
 {elseif $gui->level == 'testsuite'}
 
   {if $gui->modify_tc_rights == 'yes' || $gui->sqlResult neq ''}
-    <fieldset class="groupBtn">
+    <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tsuite_control_panel');"
+         title="{$labels.actions}" />
+    <div id="tsuite_control_panel" style="display:none;">
+      <fieldset class="groupBtn">
+        <h2>{$labels.testsuite_operations}</h2>
+        <span style="float: left; margin-right: 5px;">
+        <form method="post" action="lib/testcases/containerEdit.php">
+          <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+          <input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
+        </form>
+        </span>
 
-    <h2>{$labels.testsuite_operations}</h2>
-    {* Add a new testsuite children for this parent *}
-    <span style="float: left; margin-right: 5px;">
-    <form method="post" action="lib/testcases/containerEdit.php">
-      <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
-      <input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
-    </form>
-    </span>
+        <form method="post" action="lib/testcases/containerEdit.php">
+          <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
+          <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
+          <input type="hidden" name="containerType" value="{$gui->containerType}" />
 
-    <form method="post" action="lib/testcases/containerEdit.php">
-      <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
-      <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
-      <input type="hidden" name="containerType" value="{$gui->containerType}" />
+          <input type="submit" name="edit_testsuite" value="{$labels.btn_edit_testsuite}"
+                 title="{$labels.alt_edit_testsuite}" />
+          <input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"
+                 title="{$labels.alt_move_cp_testsuite}" />
+          <input type="submit" name="delete_testsuite" value="{$labels.btn_del_testsuite}"
+                 title="{$labels.alt_del_testsuite}" />
+            <input type="submit" name="reorder_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
+               title="{$labels.btn_reorder_testsuites_alpha}" />
+          
+          <input type="submit" name="testcases_table_view" value="{$labels.btn_testcases_table_view}"
+                 title="{$labels.btn_testcases_table_view}" />
 
-      <input type="submit" name="edit_testsuite" value="{$labels.btn_edit_testsuite}"
-             title="{$labels.alt_edit_testsuite}" />
-      <input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"
-             title="{$labels.alt_move_cp_testsuite}" />
-      <input type="submit" name="delete_testsuite" value="{$labels.btn_del_testsuite}"
-             title="{$labels.alt_del_testsuite}" />
-        <input type="submit" name="reorder_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
-           title="{$labels.btn_reorder_testsuites_alpha}" />
-      
-      <input type="submit" name="testcases_table_view" value="{$labels.btn_testcases_table_view}"
-             title="{$labels.btn_testcases_table_view}" />
-
-
-
-      <input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
-      <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />
-
-    </form>
+          <input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
+          <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />
+        </form>
       </fieldset>
 
-    {* ----- Work with test cases ----------------------------------------------- *}
-    <fieldset class="groupBtn">
-    <h2>{$labels.testcase_operations}</h2>
-    <form method="post" action="lib/testcases/tcEdit.php">
-      <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
-      <input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
-    </form>
+      {* ----- Work with test cases ----------------------------------------------- *}
+      <fieldset class="groupBtn">
+        <h2>{$labels.testcase_operations}</h2>
+        <form method="post" action="lib/testcases/tcEdit.php">
+          <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+          <input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
+        </form>
 
-    <form method="post" action="lib/testcases/containerEdit.php">
-      <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
-      <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
-      <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"
-             title="{$labels.alt_move_cp_testcases}" />
-      <input type="submit" name="delete_testcases" value="{$labels.btn_delete_testcases}"
-             title="{$labels.btn_delete_testcases}" />
-      <input type="submit" name="reorder_testcases" value="{$gui->btn_reorder_testcases}"
-             title="{$gui->btn_reorder_testcases}" />
-    </form>
+        <form method="post" action="lib/testcases/containerEdit.php">
+          <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
+          <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
+          <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"
+                 title="{$labels.alt_move_cp_testcases}" />
+          <input type="submit" name="delete_testcases" value="{$labels.btn_delete_testcases}"
+                 title="{$labels.btn_delete_testcases}" />
+          <input type="submit" name="reorder_testcases" value="{$gui->btn_reorder_testcases}"
+                 title="{$gui->btn_reorder_testcases}" />
+        </form>
 
-    <form method="post" action="lib/testcases/tcEdit.php">
-      <input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />
-      <input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />
-      <input type="button" onclick="location='{$createTCFromIssueMantisXMLAction}'" value="{$labels.btn_create_from_issue_xml}" />
-    </form>
+        <form method="post" action="lib/testcases/tcEdit.php">
+          <input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />
+          <input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />
+          <input type="button" onclick="location='{$createTCFromIssueMantisXMLAction}'" value="{$labels.btn_create_from_issue_xml}" />
+        </form>
+      </fieldset>
 
-    </fieldset>
+    </div>  
   {/if}
   
   {* ----- show Test Suite data --------------------------------------------- *}

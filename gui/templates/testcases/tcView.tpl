@@ -8,7 +8,7 @@ Purpose: smarty template - view test case in test specification
 
 {config_load file="input_dimensions.conf"}
 {lang_get var='labels' 
-          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count'}
+          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count,actions'}
 
 {* Configure Actions *}
 {$showMode=$gui->show_mode}
@@ -76,6 +76,9 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
       {/foreach}
       {* <br /> *}
     {/if}
+    <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel','inline');"
+         title="{$labels.actions}" />
+
     {if $gui->show_title == 'no'}
       {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
     {/if}

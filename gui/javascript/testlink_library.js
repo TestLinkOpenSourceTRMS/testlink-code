@@ -1586,7 +1586,7 @@ function openTCW(tcase_external_id,version_number)
 }
 
 
-function toogleShowHide(oid)
+function toogleShowHide(oid,display_type)
 {
   var obj = document.getElementById(oid);
   
@@ -1597,7 +1597,14 @@ function toogleShowHide(oid)
   
   if(obj.style.display == 'none')
   {
-    obj.style.display = '';
+    if(display_type != undefined)
+    {
+      obj.style.display = display_type;
+    } 
+    else
+    {
+      obj.style.display = '';
+    } 
   }
   else
   {

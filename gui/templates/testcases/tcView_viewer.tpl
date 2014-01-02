@@ -79,7 +79,6 @@ viewer for test case in test specification
 {/if}
 
 
-<div style="display: inline;" class="groupBtn">
   
 {$warning_edit_msg=""}
 {$warning_delete_msg=""}
@@ -122,6 +121,7 @@ viewer for test case in test specification
     
   {/if}
 
+<div style="display: none;" class="groupBtn" id="tcView_viewer_tcase_control_panel">
     <form style="display: inline;" id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
@@ -233,9 +233,9 @@ viewer for test case in test specification
     <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
            value="{$tcView_viewer_labels.btn_show_exec_history}" />
   </span>
+  <br/><br/>
 
   </div> {* class="groupBtn" *}
-<br/><br/>
 
 
 

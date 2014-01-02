@@ -415,7 +415,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   {* ----------------------------------------------------------------------------------- *}
   <div>
-    {include file="execute/inc_exec_test_spec_req.tpl"
+    {include file="execute/inc_exec_test_spec.tpl"
              args_tc_exec=$tc_exec
              args_labels=$labels
              args_enable_custom_field=$enable_custom_fields

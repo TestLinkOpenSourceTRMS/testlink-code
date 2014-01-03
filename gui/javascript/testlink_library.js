@@ -211,7 +211,7 @@ function ETS(id)
   var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
                  "&edit=testsuite&level=testsuite&containerType=testsuite&id="+id+args+"&"+pParams;
 
-  alert(_FUNCTION_NAME_ + " " +action_url);
+  // alert(_FUNCTION_NAME_ + " " +action_url);
   parent.workframe.location = action_url;
 
 }

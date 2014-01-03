@@ -12,7 +12,7 @@ Purpose: view a requirement specification
 
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,
               title_last_mod,title_created,no_records_found,revision,
-              commit_title,please_add_revision_log"}
+              commit_title,please_add_revision_log,actions"}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -71,15 +71,20 @@ var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id
 var log_box_title = "{$labels.commit_title|escape:'javascript'}";
 var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
 
-{literal}
+
 Ext.onReady(function(){ 
-{/literal}
 tip4log({$gui->req_spec.revision_id});
-{literal}
 });
   
   
 /**
+ * when user put mouse over history icon, ajax call is done 
+ * to get history.
+ * ATTENTION:
+ * seems that this get is done ONLY firts time, this means
+ * that if other feature update the log, here user will be
+ * continue to see the old data.
+ * IMHO is not elegant, but is not a big issue.
  * 
  * @since 1.9.4
  */
@@ -89,7 +94,7 @@ function tip4log(itemID)
   new Ext.ToolTip({
           target: 'tooltip-'+itemID,
           width: 500,
-          autoLoad:{url: fUrl+itemID},
+          autoLoad:{ url: fUrl+itemID },
           dismissDelay: 0,
           trackMouse: true
       });
@@ -123,8 +128,6 @@ function ask4log(fid,tid)
   },this,true);    
   return false;    
 } 
-{/literal}
-
 
 /**
  * Be Carefull this TRUST on existence of $gui->delAttachmentURL
@@ -141,9 +144,6 @@ function jsCallDeleteFile(btn, text, o_id)
 
 var pF_freeze_req_spec = freeze_req_spec;
 </script>
-
-
-
 </head>
 
 <body {$body_onload} onUnload="storeWindowSize('ReqSpecPopup')" >
@@ -158,11 +158,14 @@ var pF_freeze_req_spec = freeze_req_spec;
 </h1>
 
 <div class="workBack">
-   {if isset($gui->direct_link)}
-   <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
-   {/if}
+  {if isset($gui->direct_link)}
+    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
+  {/if}
 {if $gui->req_spec.id}
+<img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('control_panel');"
+     title="{$labels.actions}" />
 {include file="requirements/$buttons_template" args_reqspec_id=$reqSpecID}
+
 <table class="simple">
   <tr>
     <th>{$gui->main_descr|escape}</th>

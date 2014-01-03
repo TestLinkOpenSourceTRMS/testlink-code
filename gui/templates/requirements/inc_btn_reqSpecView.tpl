@@ -15,7 +15,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <!--- inc_btn_reqSpecView.tpl -->
-<div class="groupBtn">
+<div class="groupBtn" id="control_panel" style="display: none;">
   <form style="display: inline;" 
     id="req_spec" name="req_spec" action="{$req_module}reqSpecEdit.php" method="post">
     <fieldset class="groupBtn">

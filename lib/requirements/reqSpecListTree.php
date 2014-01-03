@@ -1,14 +1,16 @@
 <?php
 /** 
-* 	TestLink Open Source Project - http://testlink.sourceforge.net/
-* 
-* 	@filesource reqSpecListTree.php
-* 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
-* 
-* 	Tree menu with requirement specifications.
-*
-*   @internal revisions
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * 
+ * @filesource reqSpecListTree.php
+ * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
+ * 
+ * Tree menu with requirement specifications.
+ *
+ * @internal revisions
+ * @since 1.9.10
+ *
+ */
 
 require_once('../../config.inc.php');
 require_once("common.php");
@@ -22,6 +24,7 @@ $gui = initializeGui($args);
 
 $control = new tlRequirementFilterControl($db);
 $control->build_tree_menu($gui);
+$control->formAction = '';
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);

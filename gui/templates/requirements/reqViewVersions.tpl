@@ -225,7 +225,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 {$this_template_dir=$smarty.template|dirname}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
-<h1 class="title">{$gui->main_descr|escape}{if isset($gui->show_match_count)} - {$labels.match_count}: {$gui->match_count}{/if}
+<h1 class="title">{$gui->main_descr|escape}{if isset($gui->show_match_count) && $gui->show_match_count} - {$labels.match_count}: {$gui->match_count}{/if}
   {include file="inc_help.tpl" helptopic="hlp_req_view" show_help_icon=true}
 </h1>
 {if !isset($refresh_tree) }

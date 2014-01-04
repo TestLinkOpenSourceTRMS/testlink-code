@@ -26,7 +26,7 @@ Purpose: view requirement with version management
              relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req,
              no_records_found,other_versions,version,title_test_case,match_count,warning,
              revision_log_title,please_add_revision_log,commit_title,current_direct_link,
-             specific_direct_link,req_does_not_exist'}
+             specific_direct_link,req_does_not_exist,actions'}
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -260,6 +260,9 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
         {$path_part|escape} /
       {/foreach}
   {/if}
+  <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('control_panel','inline');"
+       title="{$labels.actions}" />
+
     {if !$gui->show_title }
       {$gui->current_version[idx][0].req_doc_id|escape}:{$gui->current_version[idx][0].title|escape}</h2>
     {/if}

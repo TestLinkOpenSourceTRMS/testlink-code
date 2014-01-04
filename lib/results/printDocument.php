@@ -333,9 +333,10 @@ function initPrintOpt(&$UIhash,&$docInfo)
                  'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
                  'req_linked_tcs' => 0,'req_coverage' => 0,'displayVersion' => 0);
   
+  $lightOn = isset($UIhash['allOptionsOn']);
   foreach($pOpt as $opt => $val)
   {
-    $pOpt[$opt] = (isset($UIhash[$opt]) && ($UIhash[$opt] == 'y'));
+    $pOpt[$opt] = $lightOn || (isset($UIhash[$opt]) && ($UIhash[$opt] == 'y'));
   }          
   $pOpt['docType'] = $docInfo->type;
   $pOpt['tocCode'] = ''; // to avoid warning because of undefined index

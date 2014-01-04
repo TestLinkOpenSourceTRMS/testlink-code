@@ -255,9 +255,11 @@ function display_left_block_5()
     {/if}
       
      {if $gui->grants.modify_tc eq "yes"}
+        {* 
         <br />
         <img src="{$tlImages.bullet}" />
         <a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
+        *}
         <br />
         <img src="{$tlImages.bullet}" />
         <a href="lib/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&tproject_id={$gui->testprojectID}">{$labels.link_report_test_cases_created_per_user}</a>

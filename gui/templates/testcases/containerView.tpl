@@ -14,10 +14,10 @@ View test specification containers
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
              btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,btn_testcases_table_view,
              btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
-             btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,actions,
+             btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,actions,btn_gen_test_spec,
              btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
              btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
-             testsuite_operations, testcase_operations,btn_create_from_issue_xml'}
+             testsuite_operations, testcase_operations,btn_create_from_issue_xml,btn_gen_test_suite_spec'}
 
 {$container_id=$gui->container_data.id}
 {$tcImportAction="lib/testcases/tcImport.php?containerID=$container_id"}
@@ -26,6 +26,13 @@ View test specification containers
 {$importTestCasesAction="$basehref$tcImportAction"}
 {$tcExportAction="lib/testcases/tcExport.php?containerID=$container_id"}
 {$exportTestCasesAction="$basehref$tcExportAction"}
+
+{$testSpecFullDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=0&id=$container_id"}
+{$testSpecFullDocAction="$basehref$testSpecFullDocAction"}
+
+{$testSuiteDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=0&id=$container_id"}
+{$testSuiteDocAction="$basehref$testSuiteDocAction"}
+
 
 {$ft=''}
 {if isset($gui->form_token)}
@@ -91,6 +98,8 @@ function jsCallDeleteFile(btn, text, o_id)
       {if $gui->canDoExport}
       <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
       {/if}
+
+      <input type="button" onclick="location='{$testSpecFullDocAction}'" value="{$labels.btn_gen_test_spec}" />
     </form>
     </fieldset>
   </div>
@@ -153,6 +162,8 @@ function jsCallDeleteFile(btn, text, o_id)
 
           <input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
           <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />
+          <input type="button" onclick="location='{$testSuiteDocAction}'" value="{$labels.btn_gen_test_suite_spec}" />
+
         </form>
       </fieldset>
 

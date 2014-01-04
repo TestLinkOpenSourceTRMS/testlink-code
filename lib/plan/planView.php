@@ -20,8 +20,6 @@ $gui = initializeGui($db,$args);
 if($args->tproject_id)
 {
   $tproject_mgr = new testproject($db);
-
-  // TICKET 5465: Inactive test plan are not displayed on Test management
   $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
                                                      array('output' =>'mapfull', 'active' => null));
   $gui->drawPlatformQtyColumn = false;
@@ -36,9 +34,11 @@ if($args->tproject_id)
 
     $tplanSet = array_keys($gui->tplans);
     $dummy = $tplan_mgr->count_testcases($tplanSet,null,array('output' => 'groupByTestPlan'));
+    $buildQty = $tplan_mgr->get_builds($tplanSet,null,null,array('getCount' => true));
     foreach($tplanSet as $idk)
     {
-      $gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? $dummy[$idk]['qty'] : 0;
+      $gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? intval($dummy[$idk]['qty']) : 0;
+      $gui->tplans[$idk]['build_qty'] = isset($buildQty[$idk]['build_qty']) ? intval($buildQty[$idk]['build_qty']) : 0;
       if( $gui->drawPlatformQtyColumn )
       {
         $plat = $tplan_mgr->getPlatforms($idk);

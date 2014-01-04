@@ -2256,9 +2256,12 @@ $TLS_alt_active_testplan = "Active testplan";
 $TLS_warning_delete_testplan = "<p>You are going to delete: %s </p><p>Are you sure?</p>";
 $TLS_export_testplan_links = "Export links to test cases and platforms";
 $TLS_import_testplan_links = "Import links to test cases and platforms";
-$TLS_testcase_qty = 'Test Case Qty';
-$TLS_platform_qty = 'Platform Qty';
-
+$TLS_testcase_qty = 'Test Case #';
+$TLS_platform_qty = 'Platform #';
+$TLS_build_qty = 'Build #';
+$TLS_testcase_number_help = 'Number of linked Test Cases';
+$TLS_platform_number_help = 'Number of linked Platforms';
+$TLS_build_number_help = 'Number of Builds';
 
 // ----- gui/templates/mainPage_left.tpl -----
 $TLS_href_assign_user_roles = "Assign User Roles";

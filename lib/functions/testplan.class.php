@@ -2031,20 +2031,24 @@ class testplan extends tlObjectWithAttachments
           id: test plan id.
           [active]: default:null -> all, 1 -> active, 0 -> inactive BUILDS
           [open]: default:null -> all, 1 -> open  , 0 -> closed/completed BUILDS
-  
-    returns: map, where elements are ordered by build name, using variant of nasort php function.
-             key: build id
-             value: map with following keys
-                    id: build id
-                    name: build name
-                    notes: build notes
-                    active: build active status
-                    is_open: build open status
-                    testplan_id
-                    release_date
-  
+          [opt]
+
+    returns: opt['getCount'] == false
+               map, where elements are ordered by build name, using variant of nasort php function.
+               key: build id
+               value: map with following keys
+                      id: build id
+                      name: build name
+                      notes: build notes
+                      active: build active status
+                      is_open: build open status
+                      testplan_id
+                      release_date
+
+             opt['getCount'] == true
+               map key: test plan id
+                   values: map with following key testplan_id, build_qty 
     rev :
-    20101101 - franciscom - added closed_on_date
   */
   function get_builds($id,$active=null,$open=null,$opt=null)
   {
@@ -2052,21 +2056,39 @@ class testplan extends tlObjectWithAttachments
 
     $my['opt'] = array('fields' => 
                        'id,testplan_id, name, notes, active, is_open,release_date,closed_on_date',
-                       'orderBy' => "  ORDER BY name ASC",
-                       'buildID' => null);
+                       'orderBy' => "  ORDER BY name ASC", 'getCount' => false, 'buildID' => null);
 
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     // REST API DEBUG echo json_encode(array($debugMsg,$my['opt']));
 
-    $sql = " /* $debugMsg */ " . 
-         " SELECT {$my['opt']['fields']} " .
-         " FROM {$this->tables['builds']} WHERE testplan_id = {$id} " ;
-    
-    if( !is_null($my['opt']['buildID']) )
+    if( $my['opt']['getCount'] )
     {
-      $sql .= " AND id=" . intval($my['opt']['buildID']) . " ";
-    }
+      $my['opt']['orderBy'] = null;
+
+      $accessField = 'testplan_id';     
+      $groupBy = " GROUP BY testplan_id ";
+      $itemSet = (array)$id;
+
+      $sql = " /* $debugMsg */ " . 
+           " SELECT testplan_id, count(0) AS build_qty " .
+           " FROM {$this->tables['builds']} " .
+           " WHERE testplan_id IN ('" . implode("','", $itemSet) . "') "; 
+    }  
+    else
+    {
+      $accessField = 'id';     
+      $groupBy = '';
+      $sql = " /* $debugMsg */ " . 
+             " SELECT {$my['opt']['fields']} " .
+             " FROM {$this->tables['builds']} WHERE testplan_id = {$id} " ;
+      
+      if( !is_null($my['opt']['buildID']) )
+      {
+        $sql .= " AND id=" . intval($my['opt']['buildID']) . " ";
+      }
+    }  
+
 
     if( !is_null($active) )
     {
@@ -2077,10 +2099,10 @@ class testplan extends tlObjectWithAttachments
       $sql .= " AND is_open=" . intval($open) . " ";
     }
     
+    $sql .= $groupBy;
     $sql .= ($doOrderBy = !is_null($my['opt']['orderBy'])) ? $my['opt']['orderBy'] : '';
     
-    $rs = $this->db->fetchRowsIntoMap($sql,'id');
-
+    $rs = $this->db->fetchRowsIntoMap($sql,$accessField);
     if( !is_null($rs) && $doOrderBy)
     {
       // 20130428
@@ -2178,7 +2200,9 @@ class testplan extends tlObjectWithAttachments
      return $this->db->fetchOneValue($sql);
   }
 
-  
+  /**
+   *
+   */
   function _natsort_builds($builds_map)
   {
     // BUGID - sort in natural order (see natsort in PHP manual)

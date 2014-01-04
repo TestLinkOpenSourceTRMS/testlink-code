@@ -165,7 +165,7 @@ function jsCallDeleteFile(btn, text, o_id)
           </td>
       </tr>
 
-      {if $gui->api_key != ''}
+      {if isset($gui->api_key) && $gui->api_key != ''}
       <tr>
         <th style="background:none;">{$labels.api_key}</th>
         <td>{$gui->api_key}</td>

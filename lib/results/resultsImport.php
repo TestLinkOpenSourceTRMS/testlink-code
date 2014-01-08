@@ -23,32 +23,9 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
+
 $args = init_args($db);
 $gui = new stdClass();
-
-// CRITIC:
-// All this logics is done to extract from referer important parameters
-// like: build id, etc.
-// Is not very clear why we have choose to use this logic, but when doing the filter refactoring
-// changes on key names (from build_id -> setting_build, and others), broken the code.
-//
-// On 20100821 I've (franciscom) choose a different approach:
-// changing the javascript function openImportResult() in test_automation.js.
-// Then I will remove this logic.
-// 
-// $ref=$_SERVER['HTTP_REFERER'];
-// $url_array=preg_split('/[?=&]/',$ref);
-// $key2extract = array('build_id' => 'buildID','platform_id' => 'platformID', 'tplan_id' => 'tplanID');
-// foreach($key2extract as $accessKey => $memberKey)
-// {
-//  if( in_array($accessKey,$url_array) ) 
-//  {
-//    $dummyIndex = array_search($accessKey,$url_array) + 1;
-//    $args->$memberKey=$url_array[$dummyIndex];
-//  }
-// 
-// }
-
 $gui->import_title=lang_get('title_results_import_to');
 $gui->buildID=$args->buildID;
 $gui->platformID=$args->platformID;

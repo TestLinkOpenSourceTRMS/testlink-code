@@ -19,11 +19,12 @@
   returns: A pop-up window which facilitates XML import
 
 */
-function openImportResult(windows_title,tproject_id,tplan_id,build_id,platform_id) {
-  args = "tprojectID=" + tproject_id + "&tplanID=" + tplan_id + "&buildID=" + build_id + "&platformID=" + platform_id;
-	wref = window.open(fRoot+"lib/results/resultsImport.php?"+args,
+function openImportResult(windows_title,tproject_id,tplan_id,build_id,platform_id) 
+{
+  var wargs = "tprojectID=" + tproject_id + "&tplanID=" + tplan_id + "&buildID=" + build_id + "&platformID=" + platform_id;
+  var wref = window.open(fRoot+"lib/results/resultsImport.php?"+wargs,
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
-	wref.focus();
+  wref.focus();
 }
 
 /**

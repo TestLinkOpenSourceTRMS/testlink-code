@@ -63,11 +63,11 @@ function show_help(text)
     var mywindows = window.document;
   }
 
-  myElement = mywindows.getElementById("tlhelp");
+  var myElement = mywindows.getElementById("tlhelp");
   if(myElement == null)
   {
     
-      var mybody = mywindows.getElementsByTagName("body").item(0);
+    var mybody = mywindows.getElementsByTagName("body").item(0);
     var newdiv = mywindows.createElement('div');
     newdiv.setAttribute('id', 'tlhelp');
     newdiv.setAttribute('onclick', 'javascript: close_help()');
@@ -146,6 +146,7 @@ function STS(id)
 {
   var _FUNCTION_NAME_='STS';
   var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+  // alert(args);
   parent.workframe.location = action_url;
 }
 

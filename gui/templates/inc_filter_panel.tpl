@@ -24,7 +24,7 @@
                         btn_remove_all_tester_assignments, execution_type, 
                         do_auto_update, testsuite, btn_reset_filters,hint_list_of_bugs,
                         btn_bulk_update_to_latest_version, priority, tc_title,
-                        custom_field, search_type_like, importance,
+                        custom_field, search_type_like, importance,import_xml_results,
                         document_id, req_expected_coverage, title,bugs_on_context,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,
                         btn_export_testplan_tree,btn_export_testplan_tree_for_results'}
@@ -144,22 +144,35 @@
           </tr>
       {/if}
 
-      {if $control->draw_export_testplan_button}
+      {if $control->draw_export_testplan_button || $control->draw_import_xml_results_button}
         <tr>
-            <td colspan="2">
-            <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"
+          <td>&nbsp;</td><td>&nbsp;</td>
+        </tr>>      
+        <tr>
+          <td>&nbsp;</td>
+          <td>
+            {if $control->draw_export_testplan_button}
+            <image src="{$tlImages.export}" title="{$labels.btn_export_testplan_tree}"
                    onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
                                                            '{$control->settings.setting_testplan.selected}','{$platformID}',
                                                            '{$control->settings.setting_build.selected}','tree');" />
-
-            <input type="button" id="doTestPlanExport4Results" name="doTestPlanExport4Results" 
-                   value="{$labels.btn_export_testplan_tree_for_results}"
+            &nbsp;                                               
+            <image src="{$tlImages.export_for_results_import}" title="{$labels.btn_export_testplan_tree_for_results}"
                    onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
                                                            '{$control->settings.setting_testplan.selected}',
                                                            '{$platformID}',
                                                            '{$control->settings.setting_build.selected}','4results');" />
-            </td>
-          </tr>
+
+            &nbsp;                                               
+            {/if}
+            {if $control->draw_import_xml_results_button}
+            <image src="{$tlImages.import_results}" title="{$labels.import_xml_results}"
+                   onclick="javascript: openImportResult('import_xml_results',{$session.testprojectID},
+                                                           {$control->settings.setting_testplan.selected},
+                                                           {$control->settings.setting_build.selected},{$platformID});" />
+            {/if}
+          </td>
+        </tr>
       {/if}
       </table>
     </div> {* settings *}

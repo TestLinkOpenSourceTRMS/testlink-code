@@ -90,6 +90,12 @@ abstract class tlFilterControl extends tlObjectWithDB
    */
   public $draw_export_testplan_button = false;  // BUGID 3270 - Export Test Plan in XML Format
     
+
+  /**
+   * @var bool
+   */
+  public $draw_import_xml_results_button = false;
+
   /**
    * will hold the localized string options (any/none/somebody/...)
    * @var array

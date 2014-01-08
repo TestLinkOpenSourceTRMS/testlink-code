@@ -1592,6 +1592,23 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // seems to be useless => 'cf_hash' => $argsObj->filter_cfields,
     // need to review $tplanMgr->getLinkedForExecTree
     //
+    
+    /*
+    $nt = $tplanMgr->tree_manager->get_available_node_types();
+    $setOfTestSuites = $tplanMgr->tree_manager->get_subtree_list($argsObj->tsuite_id,$nt['testsuite']);
+
+    if( !is_null($setOfTestSuites) && $setOfTestSuites != '')
+    {
+      $setOfTestSuites = explode(',',$argsObj->tsuite_id .',' . $setOfTestSuites); 
+      
+    }  
+    else
+    {
+      $setOfTestSuites = (array)$argsObj->tsuite_id; 
+    }  
+    */
+
+    // $setOfTestSuites = (array)$argsObj->tsuite_id; 
     $bulk_filters = array('keyword_id' => $argsObj->keyword_id,'assigned_to' => $argsObj->filter_assigned_to, 
                           'exec_status' => $argsObj->filter_status,
                           'tsuites_id' => $argsObj->tsuite_id,
@@ -1599,7 +1616,8 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
                           'exec_type' => $argsObj->execution_type,
                           'urgencyImportance' => $argsObj->priority);
 
-      
+    // var_dump($setOfTestSuites);
+
     // CRITIC / IMPORTANT 
     // With BULK Operation enabled, we prefer to display Test cases tha are ONLY DIRECT CHILDREN
     // of test suite id => we do not do deep walk.

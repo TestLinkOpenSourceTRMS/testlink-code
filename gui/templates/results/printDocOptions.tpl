@@ -45,8 +45,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {if $gui->buildInfoSet != ''}
 <script>
-$( document ).ready(function() {
-$(".chosen-select").chosen({ width: "100%" });
+jQuery( document ).ready(function() {
+jQuery(".chosen-select").chosen({ width: "100%" });
 });
 </script>
 {/if}

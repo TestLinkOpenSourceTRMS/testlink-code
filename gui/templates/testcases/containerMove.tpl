@@ -13,8 +13,8 @@ Purpose: smarty template - form for move/copy container in test specification
 
 {include file="inc_head.tpl" openHead="yes"}
 <script type="text/javascript">
-$( document ).ready(function() {
-$(".chosen-select").chosen({ width: "50%", search_contains: true });
+jQuery( document ).ready(function() {
+jQuery(".chosen-select").chosen({ width: "50%", search_contains: true });
 });
 </script>
 

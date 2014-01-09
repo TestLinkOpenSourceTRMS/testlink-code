@@ -20,8 +20,8 @@ Purpose:
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-$( document ).ready(function() {
-$(".chosen-select").chosen({ width: "50%", search_contains: true });
+jQuery( document ).ready(function() {
+jQuery(".chosen-select").chosen({ width: "50%", search_contains: true });
 });
 
 

@@ -179,8 +179,8 @@
   </div> {* settings_panel *}
 
   <script>
-  $( document ).ready(function() {
-  $(".chosen-select").chosen({ width: "85%" });
+  jQuery( document ).ready(function() {
+  jQuery(".chosen-select").chosen({ width: "85%" });
   });
   </script>
 

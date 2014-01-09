@@ -14,8 +14,8 @@ GUI to ask user for filters, due to excesive amount of data
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
 <script>
-$( document ).ready(function() {
-$(".chosen-select").chosen({ width: "100%" });
+jQuery( document ).ready(function() {
+jQuery(".chosen-select").chosen({ width: "100%" });
 });
 </script>
 </head>

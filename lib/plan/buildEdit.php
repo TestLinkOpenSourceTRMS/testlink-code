@@ -6,7 +6,7 @@
  * @filesource  buildEdit.php
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  *
  */
 require('../../config.inc.php');
@@ -39,8 +39,13 @@ $gui->main_descr = lang_get('title_build_2') . config_get('gui_title_separator_2
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args->notes);
 
-// $gui->cfields = $build_mgr->html_table_of_custom_field_inputs($args->build_id,$args->testprojectID,'design','',$_REQUEST);
 $gui->cfields = $build_mgr->html_custom_field_inputs($args->build_id,$args->testprojectID,'design','',$_REQUEST);
+
+$op = new stdClass();
+$op->operation_descr = '';
+$op->user_feedback = '';
+$op->buttonCfg = '';
+$op->status_ok = 1;
 
 switch($args->do_action)
 {
@@ -70,6 +75,23 @@ switch($args->do_action)
     $of->Value = $op->notes;
     $templateCfg->template = $op->template;
   break;
+
+  case 'setActive':
+    $build_mgr->setActive($args->build_id);
+  break;
+
+  case 'setInactive':
+    $build_mgr->setInactive($args->build_id);
+  break;
+
+  case 'open':
+    $build_mgr->setOpen($args->build_id);
+  break;
+
+  case 'close':
+    $build_mgr->setClosed($args->build_id);
+  break;
+
 }
 
 $dummy = null;
@@ -80,6 +102,7 @@ $gui->closed_on_date = $args->closed_on_date;
 $gui->operation_descr = $op->operation_descr;
 $gui->user_feedback = $op->user_feedback;
 $gui->buttonCfg = $op->buttonCfg;
+
 $gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 $gui->editorType = $editorCfg['type'];
 
@@ -258,35 +281,38 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
       case "do_create":
       case "do_delete":
       case "do_update":
-            $doRender = true;
+      case "setActive":
+      case "setInactive":
+      case "open":
+      case "close":
+        $doRender = true;
         $tpl = is_null($templateCfg->template) ? 'buildView.tpl' : $templateCfg->template;
-        break;
+      break;
 
       case "edit":
       case "create":
-          $doRender = true;
+        $doRender = true;
         $tpl = is_null($templateCfg->template) ? $templateCfg->default_template : $templateCfg->template;
-        break;
+      break;
     }
 
     if($doRender)
     {
-        $enable_copy = ($argsObj->do_action == 'create' || $argsObj->do_action == 'do_create') ? 1 : 0;
       
       // Attention this is affected by changes in templates
       $guiObj->buildSet=$tplanMgr->get_builds($argsObj->tplan_id);
+
+      $guiObj->enable_copy = ($argsObj->do_action == 'create' || $argsObj->do_action == 'do_create') ? 1 : 0;
+      $guiObj->notes = $owebeditor->CreateHTML();
+      $guiObj->source_build = init_source_build_selector($tplanMgr, $argsObj);
+
       $guiObj->tplan_name=$argsObj->tplan_name;
       $guiObj->build_id = $argsObj->build_id;
       $guiObj->build_name = $argsObj->build_name;
       $guiObj->is_active = $argsObj->is_active;
       $guiObj->is_open = $argsObj->is_open;
-      $guiObj->notes = $owebeditor->CreateHTML();
-      $guiObj->enable_copy = $enable_copy;
-      
-      // BUGID 3406
-      $html_menu = init_source_build_selector($tplanMgr, $argsObj);
-      $guiObj->source_build = $html_menu;
       $guiObj->copy_tester_assignments = $argsObj->copy_tester_assignments;
+
       
       $smartyObj->assign('gui',$guiObj);
       $smartyObj->display($templateCfg->template_dir . $tpl);

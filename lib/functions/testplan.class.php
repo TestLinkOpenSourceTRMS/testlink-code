@@ -9,8 +9,8 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://testlink.sourceforge.net/
  *
  *
  * @internal revisions
@@ -26,9 +26,6 @@ require_once( dirname(__FILE__) . '/attachments.inc.php' );
 /**
  * class to coordinate and manage Test Plans
  * @package   TestLink
- * @todo havlatm: create class testplanEdit (as extension of testplan class) and 
- *    move here create,edit,delete,copy related stuff
- * @TODO franciscom - absolutely disagree with suggested approach, see no value - 20090611
  */
 class testplan extends tlObjectWithAttachments
 {
@@ -2297,12 +2294,8 @@ class testplan extends tlObjectWithAttachments
     $sql .= " AND UPPER(builds.name)=";
     $sql .= "'" . $this->db->prepare_string($build_name) . "'";    
     
-    //$result = $this->db->exec_query($sql);
-    
     $recordset = $this->db->get_recordset($sql);
-    $BuildID = 0;
-    if ($recordset)
-      $BuildID = intval($recordset[0]['id']);
+    $BuildID = $recordset ? intval($recordset[0]['id']) : 0;
     
     return $BuildID;  
   }
@@ -2329,10 +2322,10 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = " /* $debugMsg */ INSERT INTO {$this->tables['builds']} (testplan_id,name,notes,active,is_open) " .
-      " VALUES ('". $tplan_id . "','" .
-      $this->db->prepare_string($name) . "','" .
-      $this->db->prepare_string($notes) . "'," .
-      "{$active},{$open})";
+           " VALUES ('". $tplan_id . "','" .
+           $this->db->prepare_string($name) . "','" .
+           $this->db->prepare_string($notes) . "'," .
+           "{$active},{$open})";
     
     $new_build_id = 0;
     $result = $this->db->exec_query($sql);
@@ -6947,6 +6940,60 @@ class build_mgr extends tlObject
     $this->db = &$db;
     $this->cfield_mgr = new cfield_mgr($this->db);
   }
+
+
+  /**
+   *
+   */
+  function setZeroOneAttr($id,$attr,$zeroOne)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $sql = "/* $debugMsg */ " . 
+           "UPDATE {$this->tables['builds']} SET {$attr}=" . ($zeroOne ? 1 : 0) . " WHERE id=" . intval($id);
+    $this->db->exec_query($sql); 
+  }
+
+
+  /**
+   *
+   */
+  function setActive($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $this->setZeroOneAttr($id,'active',1);
+  }
+
+  /**
+   *
+   */
+  function setInactive($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $this->setZeroOneAttr($id,'active',0);
+  }
+
+  /**
+   *
+   */
+  function setOpen($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $this->setZeroOneAttr($id,'is_open',1);
+    $this->setClosedOnDate($id,null);
+  }
+
+  /**
+   *
+   */
+  function setClosed($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $this->setZeroOneAttr($id,'is_open',0);
+    $timestamp = explode(' ',trim($this->db->db_now(),"'"));
+    $this->setClosedOnDate($id,$timestamp[0]);
+  }
+
 
 
   /*

@@ -375,6 +375,7 @@ class TLSmarty extends Smarty
                    'insert_step' => TL_THEME_IMG_DIR . 'insert_step.png',
                    'item_link' => TL_THEME_IMG_DIR . 'folder_link.png',
                    'lock' => TL_THEME_IMG_DIR . 'lock.png',
+                   'lock_open' => TL_THEME_IMG_DIR . 'lock_open.png',
                    'log_message' => TL_THEME_IMG_DIR . 'history.png',
                    'log_message_small' => TL_THEME_IMG_DIR . 'history_small.png',
                    'magnifier' => TL_THEME_IMG_DIR . 'magnifier.png',

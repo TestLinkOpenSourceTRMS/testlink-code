@@ -32,6 +32,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   var $attachmentTableName;
   var $field_size;
   var $req_mgr;
+  var $relationsCfg;
 
   /*
     contructor
@@ -57,6 +58,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     $this->object_table=$this->tables['req_specs'];
 
     $this->field_size = config_get('field_size');
+
+    $this->relationsCfg = new stdClass();
+    $this->relationsCfg->interProjectLinking = config_get('req_cfg')->relations->interproject_linking;
   }
 
 	/*
@@ -951,7 +955,6 @@ function getReqTree($id)
  * Developed using exportTestSuiteDataToXML() as model
  *
  * @internal revision
- * 20110806 - franciscom - added REVISION
  */
 function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 {
@@ -960,43 +963,67 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	$optionsForExport=array('RECURSIVE' => true);
 	foreach($optionsForExport as $key => $value)
 	{
-	    $optionsForExport[$key]=isset($optExport[$key]) ? $optExport[$key] : $value;      
+    $optionsForExport[$key]=isset($optExport[$key]) ? $optExport[$key] : $value;      
 	}
 	
+  $relXmlData = '';
+  $relationsCache = array();
+
 	$cfXML=null;
 	$xmlData = null;
 	if($optionsForExport['RECURSIVE'])
 	{
-	  	$cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
+  	$cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
 		$containerData = $this->get_by_id($id);
-	  	$xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']) . '" ' .
-	  	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" ' . ' >' .
-	  	           "\n<revision><![CDATA[{$containerData['revision']}]]></revision>\n" .
-	               "\n<type><![CDATA[{$containerData['type']}]]></type>\n" .
-	               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
-	               "\n<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
-	               "<scope>\n<![CDATA[{$containerData['scope']}]]>\n</scope>\n{$cfXML}";
+  	$xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']) . '" ' .
+  	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" ' . ' >' .
+  	           "\n<revision><![CDATA[{$containerData['revision']}]]></revision>\n" .
+               "\n<type><![CDATA[{$containerData['type']}]]></type>\n" .
+               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
+               "\n<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
+               "<scope>\n<![CDATA[{$containerData['scope']}]]>\n</scope>\n{$cfXML}";
 	}
  
 	$req_spec = $this->getReqTree($id);
 	$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
 	if( !is_null($childNodes) )
 	{
-	    $loop_qty=sizeof($childNodes); 
-	    for($idx = 0;$idx < $loop_qty;$idx++)
+    $loop_qty=sizeof($childNodes); 
+    for($idx = 0;$idx < $loop_qty;$idx++)
+    {
+	    $cNode = $childNodes[$idx];
+	    $nTable = $cNode['node_table'];
+	    if($optionsForExport['RECURSIVE'] && $cNode['node_table'] == 'req_specs')
 	    {
-	    	$cNode = $childNodes[$idx];
-	    	$nTable = $cNode['node_table'];
-	    	if($optionsForExport['RECURSIVE'] && $cNode['node_table'] == 'req_specs')
-	    	{
-	    		$xmlData .= $this->exportReqSpecToXML($cNode['id'],$tproject_id,$optionsForExport);
-	    	}
-	    	else if ($cNode['node_table'] == 'requirements')
-	    	{
-          $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id);
-	    	}
+	    	$xmlData .= $this->exportReqSpecToXML($cNode['id'],$tproject_id,$optionsForExport);
 	    }
+	    else if ($cNode['node_table'] == 'requirements')
+	    {
+        $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id);
+
+        $relations = $this->req_mgr->get_relations($cNode['id']);
+        if( !is_null($relations['relations']) && count($relations['relations']) > 0 )
+        {
+          foreach($relations['relations'] as $key => $rel) 
+          {
+            // If we have already found this relation, skip it.
+            if ( !in_array($rel['id'], $relationsCache) ) 
+            {
+              // otherwise export it to XML.
+              $testproject_id = $this->relationsCfg->interProjectLinking ? $tproject_id : null;
+              $relXmlData .= $this->req_mgr->exportRelationToXML($rel,$tproject_id,
+                                                                       $this->relationsCfg->interProjectLinking);
+              $relationsCache[] = $rel['id'];
+            }
+          }
+        }
+	    }
+    }
+
+    // after we scanned all relations and exported all relations to xml, let's output it to the XML buffer
+    $xmlData .= $relXmlData;
 	}    
+
 	if ($optionsForExport['RECURSIVE'])
 	{
 		$xmlData .= "</req_spec>";
@@ -1102,6 +1129,21 @@ function xmlToMapReqSpec($xml_item,$level=0)
             }    
         }    
     }        
+
+    if( property_exists($xml_item,'relation') )               
+    {
+        $loop3do=count($xml_item->relation);
+        for($idx=0; $idx <= $loop3do; $idx++)
+        {
+            $rel=$this->req_mgr->convertRelationXmlToRelationMap($xml_item->relation[$idx]);
+            if(!is_null($rel))
+            { 
+                $fdx=count($mapped)-1;
+                $mapped[$fdx]['relations'][]=$rel;
+            }    
+        } 
+    } 
+
     if( property_exists($xml_item,'req_spec') )	              
     {
         $loop2do=count($xml_item->req_spec);
@@ -1495,6 +1537,15 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
           $user_feedback = array_merge($user_feedback,$dummy);
         } 
       }  // if($create_req)   
+
+      $relationsMap = $items[$idx]['relations'];
+      $numberOfRelations = count($relationsMap);
+      for($jdx=0; $jdx < $numberOfRelations; $jdx++)
+      {
+        $rel = $relationsMap[$jdx];
+        $dummy = $this->req_mgr->createRelationFromMap($rel, $tproject_id, $author_id);
+        $user_feedback = array_merge($user_feedback,$dummy); 
+      } 
     } // if($result['status_ok'])
   }    
   return $user_feedback;

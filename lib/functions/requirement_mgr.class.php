@@ -6,7 +6,7 @@
  * @package     TestLink
  * @filesource  requirement_mgr.class.php
  * @author      Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright   2007-2013, TestLink community 
+ * @copyright   2007-2014, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
@@ -41,6 +41,8 @@ class requirement_mgr extends tlObjectWithAttachments
   var $fieldSize;
   var $reqCfg;
   var $internal_links;
+  var $relationsCfg;
+
   
   
   const AUTOMATIC_ID=0;
@@ -65,19 +67,21 @@ class requirement_mgr extends tlObjectWithAttachments
     $this->cfield_mgr=new cfield_mgr($this->db);
     $this->tree_mgr =  new tree($this->db);
     
-        $this->attachmentTableName = 'requirements';
+    $this->attachmentTableName = 'requirements';
     tlObjectWithAttachments::__construct($this->db,$this->attachmentTableName);
 
     $this->node_types_descr_id= $this->tree_mgr->get_available_node_types();
     $this->node_types_id_descr=array_flip($this->node_types_descr_id);
     $this->my_node_type=$this->node_types_descr_id['requirement'];
-      $this->object_table=$this->tables['requirements'];
-
+    $this->object_table=$this->tables['requirements'];
 
     $this->fieldSize = config_get('field_size');
     $this->reqCfg = config_get('req_cfg');
-    $this->internal_links = config_get('internal_links');
+
+    $this->relationsCfg = new stdClass();
+    $this->relationsCfg->interProjectLinking = $this->reqCfg->relations->interproject_linking;
     
+    $this->internal_links = config_get('internal_links');
   }
 
   /*
@@ -1772,62 +1776,62 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    scope
   */
   function getByDocID($doc_id,$tproject_id=null,$parent_id=null, $options = null)
-    {
+  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-      $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 
-                              'case' => 'sensitive', 'output' => 'standard');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array('check_criteria' => '=', 'access_key' => 'id', 
+                           'case' => 'sensitive', 'output' => 'standard');
+    $my['options'] = array_merge($my['options'], (array)$options);
       
          
-      $output=null;
-      $the_doc_id = $this->db->prepare_string(trim($doc_id));
-      switch($my['options']['check_criteria'])
-      {
-        case '=':
-        default:
-          $check_criteria = " = '{$the_doc_id}' ";
-        break;
+    $output=null;
+    $the_doc_id = $this->db->prepare_string(trim($doc_id));
+    switch($my['options']['check_criteria'])
+    {
+      case '=':
+      default:
+        $check_criteria = " = '{$the_doc_id}' ";
+      break;
         
-        case 'like':
-          $check_criteria = " LIKE '{$the_doc_id}%' ";
-        break;
-      }
+      case 'like':
+        $check_criteria = " LIKE '{$the_doc_id}%' ";
+      break;
+    }
       
     $sql = " /* $debugMsg */ SELECT ";
     switch($my['options']['output'])
     {
       case 'standard':
          $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
-                  " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
-        break;
+                 " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
+      break;
                   
       case 'minimun':
          $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id";
-        break;
-      
+      break;
     }
-    $sql .= " FROM {$this->object_table} REQ " .
-             " /* Get Req info from NH */ " .
-             " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
-             " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
-             " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-        " WHERE REQ.req_doc_id {$check_criteria} ";
-      
-      if( !is_null($tproject_id) )
-      {
-        $sql .= " AND REQ_SPEC.testproject_id={$tproject_id}";
-      }
-      
-      if( !is_null($parent_id) )
-      {
-        $sql .= " AND REQ.srs_id={$parent_id}";
-      }
 
-      $output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+    $sql .= " FROM {$this->object_table} REQ " .
+            " /* Get Req info from NH */ " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+            " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+            " WHERE REQ.req_doc_id {$check_criteria} ";
       
-      return $output;
+    if( !is_null($tproject_id) )
+    {
+      $sql .= " AND REQ_SPEC.testproject_id={$tproject_id}";
     }
+      
+    if( !is_null($parent_id) )
+    {
+      $sql .= " AND REQ.srs_id={$parent_id}";
+    }
+
+    $out = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+      
+    return $out;
+  }
 
   /**
    * Copy a requirement to a new requirement specification
@@ -2196,7 +2200,9 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $info = null;
     $tproject_mgr = new testproject($this->db);
     $all_reqs = $tproject_mgr->get_all_requirement_ids($tproj_id);
-    if(count($all_reqs) > 0) {
+    
+    if(count($all_reqs) > 0) 
+    {
       //only use maximum value of all reqs array
       $last_req = max($all_reqs);
       $last_req = $this->get_by_id($last_req);
@@ -2292,31 +2298,33 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $relations['relations'] = array();
 
     $tproject_mgr = new testproject($this->db);
-    $interproject_linking = config_get('req_cfg')->relations->interproject_linking;
 
     $sql = " $debugMsg SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " . 
-         " FROM {$this->tables['req_relations']} " .
-         " WHERE source_id=$id OR destination_id=$id " .
-         " ORDER BY id ASC ";
+           " FROM {$this->tables['req_relations']} " .
+           " WHERE source_id=$id OR destination_id=$id " .
+           " ORDER BY id ASC ";
    
-      $relations['relations']= $this->db->get_recordset($sql);  
-      
-      if( !is_null($relations['relations']) && count($relations['relations']) > 0 )
-      {
-        $labels = $this->get_all_relation_labels();
+    $relations['relations']= $this->db->get_recordset($sql);  
+    if( !is_null($relations['relations']) && count($relations['relations']) > 0 )
+    {
+      $labels = $this->get_all_relation_labels();
       $label_keys = array_keys($labels);
-        foreach($relations['relations'] as $key => $rel) {
+      foreach($relations['relations'] as $key => $rel) 
+      {
           
-          // is this relation type is configured?
-          if( ($relTypeAllowed = in_array($rel['relation_type'],$label_keys)) ) 
-          { 
+        // is this relation type is configured?
+        if( ($relTypeAllowed = in_array($rel['relation_type'],$label_keys)) ) 
+        { 
             $relations['relations'][$key]['source_localized'] = $labels[$rel['relation_type']]['source'];
             $relations['relations'][$key]['destination_localized'] = $labels[$rel['relation_type']]['destination'];
             
-            if ($id == $rel['source_id']) {
+            if ($id == $rel['source_id']) 
+            {
               $type_localized = 'source_localized';
               $other_key = 'destination_id';
-            } else {
+            } 
+            else 
+            {
               $type_localized = 'destination_localized';
               $other_key = 'source_id';
             }
@@ -2325,8 +2333,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
                       
             // only add it, if either interproject linking is on or if it is in the same project
             $relTypeAllowed = false;
-            if ($interproject_linking || ($other_req[0]['testproject_id'] == $relations['req']['testproject_id'])) {
-            
+            if ($this->relationsCfg->interProjectLinking || ($other_req[0]['testproject_id'] == $relations['req']['testproject_id'])) 
+            {
               $relTypeAllowed = true;
               $relations['relations'][$key]['related_req'] = $other_req[0];
               $other_tproject = $tproject_mgr->get_by_id($other_req[0]['testproject_id']);
@@ -3188,5 +3196,283 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   }
 
 
+
+  /**
+   * exportRequirementRelationToXML
+   * 
+   * Function to export a requirement relation to XML.
+   *
+   * @param  int $relation relation data array
+   * @param  string $troject_id
+   * @param  bool $check_for_req_project (for interproject_linking output)
+   *
+   * @return  string with XML code
+   * 
+   * @internal revisions
+   * 20110314 - kinow - Created function.
+   *
+   */
+  function exportRelationToXML( $relation, $tproject_id = null, $check_for_req_project = false)
+  {
+    $xmlStr = '';
+    $source_docid = null; $destination_docid = null;
+    $source_project = null; $destination_project = null;
+
+    if ( ! is_null( $relation ) ) 
+    {
+      // FRL : interproject linking support
+      $tproject_mgr = new testproject($this->db);
+      $reqs = $this->get_by_id($relation['source_id'],requirement_mgr::LATEST_VERSION);
+      if ( ! is_null ( $reqs ) && count($reqs) > 0 )
+      {
+        $source_docid = $reqs[0]['req_doc_id'];
+        if ($check_for_req_project)
+        {
+          $tproject = $tproject_mgr->get_by_id($reqs[0]['testproject_id']);
+          if ($tproject['id'] != $tproject_id)
+          {
+            $source_project = $tproject['name'];
+          }
+        }
+      }
+  
+      $reqs = $this->get_by_id($relation['destination_id'],requirement_mgr::LATEST_VERSION);
+      if ( ! is_null ( $reqs ) && count($reqs) > 0 )
+      {
+        $destination_docid = $reqs[0]['req_doc_id'];
+        if ($check_for_req_project)
+        {
+          $tproject = $tproject_mgr->get_by_id($reqs[0]['testproject_id']);
+          if ($tproject['id'] != $tproject_id)
+          {
+            $destination_project = $tproject['name'];
+          }
+        }
+
+      }
+  
+      if ( !is_null($source_docid) && !is_null($destination_docid) )
+      {
+        $relation['source_doc_id'] = $source_docid;
+        $relation['destination_doc_id'] = $destination_docid;
+            
+        $info = array("||SOURCE||" => "source_doc_id","||DESTINATION||" => "destination_doc_id",
+                      "||TYPE||" => "relation_type");
+
+        $elemTpl = "\t" .   "<relation>" . "\n\t\t" . "<source>||SOURCE||</source>" ;
+        if (!is_null($source_project))
+        {
+          $elemTpl .= "\n\t\t" . "<source_project>||SRC_PROJECT||</source_project>";
+          $relation['source_project'] = $source_project;
+          $info["||SRC_PROJECT||"] = "source_project";
+        }
+
+        $elemTpl .= "\n\t\t" . "<destination>||DESTINATION||</destination>";
+        if (!is_null($destination_project))
+        {
+          $elemTpl .= "\n\t\t" . "<destination_project>||DST_PROJECT||</destination_project>";
+          $relation['destination_project'] = $destination_project;
+          $info["||DST_PROJECT||"] = "destination_project";
+        }
+        $elemTpl .=  "\n\t\t" . "<type>||TYPE||</type>" . "\n\t" . "</relation>" . "\n";
+                   
+        $relations[] = $relation;
+        $xmlStr = exportDataToXML($relations,"{{XMLCODE}}",$elemTpl,$info,true);              
+      }
+    }
+  
+    return $xmlStr;
+  }
+  
+  /**
+   * Converts a XML relation into a Map that represents relation.
+   * 
+   * The XML should be in the following format: 
+   * 
+   * <relation>
+   *  <source>doc_id</source>
+   *     <source_project>prj</source_project>
+   *     <destination>doc2_id</destination>
+   *     <destination_project>prj2</destination_project>
+   *     <type>0</type>
+   * </relation>
+   * 
+   * And here is an example of an output map of this function.
+   * 
+   * [
+   *  'source_doc_id' => 'doc_id', 
+   *  'destination_doc_id' => 'doc2_id', 
+   *  'type'=> 0, 
+   *  'source_id' => 100, 
+   *  'destination_id' => 101
+   * ]
+   * 
+   * The source_id and the destination_id are set here to null but are used in 
+   * other parts of the system. When you add a relation to the database you 
+   * have to provide the source_id and destination_id.
+   * 
+   * @internal revisions
+   * 20120110 - frl - add project info if interproject_linking is set
+   * 20110314 - kinow - Created function.
+   */
+  function convertRelationXmlToRelationMap($xml_item)
+  {
+    // Attention: following PHP Manual SimpleXML documentation, Please remember to cast
+    //            before using data from $xml,
+    if( is_null($xml_item) )
+    {
+      return null;      
+    }
+          
+    $dummy=array();
+    foreach($xml_item->attributes() as $key => $value)
+    {
+       $dummy[$key] = (string)$value;  // See PHP Manual SimpleXML documentation.
+    }    
+    
+    $dummy['source_doc_id'] = (string)$xml_item->source;
+    $dummy['destination_doc_id'] = (string)$xml_item->destination;
+    $dummy['type'] = (string)$xml_item->type;
+    $dummy['source_id'] = null;
+    $dummy['destination_id'] = null;
+    // FRL :  interproject linking support
+    $dummy['source_tproject'] = property_exists($xml_item,'source_project') ? (string)$xml_item->source_project : null;
+    $dummy['destination_tproject'] = property_exists($xml_item,'destination_project') ? (string)$xml_item->destination_project : null;
+
+    return $dummy;
+  }
+
+  /**
+   * This function receives a relation XML node, converts it into a map and 
+   * then adds this relation to database if it doesn't exist yet.
+   *
+   * @internal revisions
+   * 20110314 - kinow - Created function.
+   */
+  function createRelationFromXML($xml,$tproject_id,$author_id)
+  {
+    $relationAsMap = $this->convertRelationXmlToRelationMap($xml);
+    $user_feedback = $this->createRelationFromMap($relationAsMap, $tproject_id, $author_id);
+    return $user_feedback;
+  }
+
+  /**
+   * Adds a relation into database. Before adding it checks whether it 
+   * exists or not. If it exists than the relation is not added, otherwise 
+   * it is.
+   *
+   * Map structure
+   * source_doc_id => doc_id
+   * destination_doc_id => doc_id
+   * type => 10
+   * source_id => 0
+   * destination_id = 0
+   *
+   * @internal revisions
+   * 20110314 - kinow - Created function.
+   */
+  function createRelationFromMap($rel, $tproject_id, $authorId)
+  {
+    $status_ok = true;
+
+    // get internal source id / destination id
+    $options = array('access_key' => 'req_doc_id', 'output' =>'minimun');
+    $reqs = null;
+    $source_doc_id = $rel['source_doc_id'];
+
+    // FRL : interproject linking support (look for req in defined project and req must be found 
+    // in current project if interproject_linking is not set)
+    $reqs = $this->getByDocIDInProject($source_doc_id, $rel['source_tproject'], $tproject_id, null, $options);
+    $source = ( ! is_null($reqs) ) ? $reqs[$source_doc_id] : null;
+    if( !is_null($source)  && ($this->relationsCfg->interProjectLinking || $source['testproject_id'] == $tproject_id) )
+    {
+      $rel['source_id'] =  $source['id'];
+    } 
+        
+    $destination_doc_id = $rel['destination_doc_id'];
+    $reqs = $this->getByDocIDInProject($destination_doc_id, $rel['destination_tproject'], $tproject_id, null, $options);
+    $destination = ( ! is_null($reqs) ) ? $reqs[$destination_doc_id] : null;
+    if( !is_null($destination) && 
+        ($this->relationsCfg->interProjectLinking || $destination['testproject_id'] == $tproject_id) )
+    {
+      $rel['destination_id'] =  $destination['id'];
+    } 
+
+    // 2 - check if relation is valid
+    $source_id    = $rel['source_id'];
+    $destination_id   = $rel['destination_id'];
+    $source_doc_id  .=  (is_null($rel['source_tproject']) ? '' : (' [' . $rel['source_tproject'] . ']'));
+    $destination_doc_id .=  (is_null($rel['destination_tproject']) ? '' : (' [' . $rel['destination_tproject'] . ']'));
+    $rel_types_desc  =  config_get('req_cfg')->rel_type_description;
+
+    // check if given type is a valid one for rel_type_description defined in config
+    $type_desc = array_key_exists(intval($rel['type']), $rel_types_desc) ? $rel_types_desc[intval($rel['type'])] : null;
+    $user_feedback = array('doc_id' => $source_doc_id . ' - ' . $destination_doc_id,
+                           'title' => lang_get('relation_type') . ' : ' . (is_null($type_desc) ? $rel['type'] : $type_desc));
+
+    if ( is_null($source_id ) )
+    {
+      $user_feedback['import_status'] = lang_get('rel_add_error_src_id') ." [".$source_doc_id."].";
+    }
+    else if ( is_null($destination_id ) ) 
+    {
+      $user_feedback['import_status'] = lang_get('rel_add_error_dest_id') ." [".$destination_doc_id."].";
+    }
+    else if ($source_id == $destination_id) 
+    {
+      $user_feedback['import_status'] = lang_get('rel_add_error_self');
+    }
+    else if  ( ($source['testproject_id'] != $tproject_id)  &&  ($destination['testproject_id'] != $tproject_id) )
+    {
+      $user_feedback['import_status'] = lang_get('rel_add_not_in_project');
+    }
+    else if (is_null($type_desc)) 
+    {
+      $user_feedback['import_status'] = lang_get('rel_add_invalid_type');
+    }
+    else if ($this->check_if_relation_exists($source_id, $destination_id, $rel['type'])) 
+    {
+      $user_feedback['import_status'] = sprintf(lang_get('rel_add_error_exists_already'), $type_desc);
+    }
+    else // all checks are ok => create it
+    {
+      $this->add_relation($source_id, $destination_id, $rel['type'], $authorId);
+      $user_feedback['import_status'] = lang_get('new_rel_add_success');
+    }
+    
+    return array ($user_feedback);
+  }
+
+  /**
+   * This function retrieves a requirement by doc_id with a specifed project 
+   * @param string $doc_id
+   * @param string $req_project name of req's project 
+   * @param string $tproject_id  used only if  $req_project is null
+   * @param string $parent_id
+   * @param array $options (same as original $options getByDocID method)
+   *
+   * @internal revisions
+   * 20110314 - kinow - Created function.
+   */
+  function getByDocIDInProject($doc_id, $req_project=null, $tproject_id=null,$parent_id=null, $options = null)
+    {
+    $reqs = null;
+    if ( !is_null($req_project) )
+    {
+      $tproject_mgr = new testproject($this->db);
+      $info=$tproject_mgr->get_by_name($req_project);
+      if ( !is_null($info) ) // is project found ?
+      {
+        $tproject_id =  $info[0]['id'];
+        $reqs = $this->getByDocID($doc_id, $tproject_id, $parent_id, $options);
+      }
+      //else  $req =  null; // project not found => no req
+    }
+    else
+    {
+      $reqs = $this->getByDocID($doc_id, $tproject_id, $parent_id,  $options);
+    }
+    return $reqs;
+  }
   
 } // class end

@@ -6554,8 +6554,7 @@ class testplan extends tlObjectWithAttachments
    * @used-by testplan::getLTCVNewGeneration()
    * 
    * @internal revisions
-   * @since 1.9.8
-   * 20130713 - franciscom - added importance management on output recordset
+   * @since 1.9.10
    */
   function getLinkedTCVersionsSQL($id,$filters=null,$options=null)
   {
@@ -6669,6 +6668,7 @@ class testplan extends tlObjectWithAttachments
                          " ON  E.tcversion_id = TPTCV.tcversion_id " .
                          " AND E.testplan_id = TPTCV.testplan_id " .
                          " AND E.platform_id = TPTCV.platform_id " .
+                         " AND E.id = LEX.id " .  // TICKET 6159
                          $buildClause['exec_join'] .
 
                          " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
@@ -6696,6 +6696,7 @@ class testplan extends tlObjectWithAttachments
                      " ON  E.tcversion_id = TPTCV.tcversion_id " .
                      " AND E.testplan_id = TPTCV.testplan_id " .
                      " AND E.platform_id = TPTCV.platform_id " .
+                     " AND E.id = LEX.id " .  // TICKET 6159
                      $buildClause['exec_join'] .
                          
                       " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .

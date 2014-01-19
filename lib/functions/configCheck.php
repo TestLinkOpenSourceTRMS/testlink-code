@@ -614,7 +614,7 @@ function checkPhpExtensions(&$errCounter)
   }      
   }  
   $checks[] = array('extension' => $extid,
-          'msg' => array('feedback' => 'MSSQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );    
+                    'msg' => array('feedback' => 'MSSQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );    
   // ---------------------------------------------------------------------------------------------------------
 
   
@@ -635,16 +635,16 @@ function checkPhpExtensions(&$errCounter)
   $out='';
   foreach($checks as $test)
   {
-      $out .= sprintf($msg_support,$test['msg']['feedback']);
-      if( extension_loaded($test['extension']) )
-      {
-          $msg=$test['msg']['ok'];
-      }
-      else
-      {
-          $msg=sprintf($td_failed,$test['msg']['feedback'],$test['msg']['ko']);  
-      }
-      $out .= $msg;
+    $out .= sprintf($msg_support,$test['msg']['feedback']);
+    if( extension_loaded($test['extension']) )
+    {
+      $msg=$test['msg']['ok'];
+    }
+    else
+    {
+      $msg=sprintf($td_failed,$test['msg']['feedback'],$test['msg']['ko']);  
+    }
+    $out .= $msg;
   }
 
   return ($out);
@@ -663,17 +663,21 @@ function check_session(&$errCounter)
   $out = "<tr><td>Checking if sessions are properly configured</td>";
 
   if( !isset($_SESSION) )
+  {  
     session_start();
+  }
 
   if( $_SESSION['session_test'] != 1 ) 
   {
-      $color = 'success';
-      $msg = 'OK';
-  } else {
-      $color = 'error';
-      $msg = 'Failed!';
-        $errCounter++;
-    }
+    $color = 'success';
+    $msg = 'OK';
+  } 
+  else 
+  {
+    $color = 'error';
+    $msg = 'Failed!';
+    $errCounter++;
+  }
 
   $out .= "<td><span class='tab-$color'>$msg</span></td></tr>\n";
   return ($out);
@@ -722,7 +726,7 @@ function check_timeout(&$errCounter)
  */
 function checkDbType(&$errCounter, $type)
 {
-    $out = '<tr><td>Database type</td>';
+  $out = '<tr><td>Database type</td>';
 
   switch ($type)
   {
@@ -730,12 +734,13 @@ function checkDbType(&$errCounter, $type)
       case 'mssql':
       case 'postgres':
         $out .= '<td><span class="tab-success">'.$type.'</span></td></tr>';
-        break;
+      break;
         
       default:
         $out .= '<td><span class="tab-warning">Unsupported type: '.$type.
-          '. MySQL,Postgres and MsSql 2000 are supported DB types. Of course' .
-          ' you can use also other ones without migration support.</span></td></tr>';
+                '. MySQL,Postgres and MsSql 2000 are supported DB types. Of course' .
+                ' you can use also other ones without migration support.</span></td></tr>';
+      break;
   }
   
   return $out;
@@ -762,13 +767,6 @@ function checkServerOs()
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
  */
- /* Revision
-      - havlatm: converted to table format, error passed via argument, 
-        disabled unused "not tested version"
-        - added argument to point to info
-        - added warning regarding possible problems between MySQL and PHP 
-          on windows systems due to MySQL password algorithm.
- */
 function checkPhpVersion(&$errCounter)
 {
   // 5.2 is required because json is used in ext-js component
@@ -784,9 +782,9 @@ function checkPhpVersion(&$errCounter)
 
   if($php_ver_comp < 0) 
   {
-    $final_msg .= "<td><span class='tab-error'>Failed!</span> - You are running on PHP " . 
-          $my_version . ", and TestLink requires PHP " . $min_version . ' or greater. ' .
-          'This is fatal problem. You must upgrade it.</td>';
+    $final_msg .= "<td><span class='tab-error'>Failed!</span> - You are running on PHP " . $my_version .
+                  ", and TestLink requires PHP " . $min_version . ' or greater. ' .
+                  'This is fatal problem. You must upgrade it.</td>';
     $errCounter += 1;
   } 
   else 
@@ -821,67 +819,67 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
   {
     if(file_exists($checked_file)) 
     {
-        if (is_writable($checked_file))
+      if (is_writable($checked_file))
+      {
+        $out .= "<td><span class='tab-success'>OK (writable)</span></td></tr>\n"; 
+      }
+      else
+      {
+        if ($isCritical)
         {
-          $out .= "<td><span class='tab-success'>OK (writable)</span></td></tr>\n"; 
+          $out .= "<td><span class='tab-error'>Failed! Please fix the file " .
+          $checked_file . " permissions and reload the page.</span></td></tr>"; 
+          $errCounter += 1;
         }
         else
         {
-         if ($isCritical)
-         {
-           $out .= "<td><span class='tab-error'>Failed! Please fix the file " .
-               $checked_file . " permissions and reload the page.</span></td></tr>"; 
-          $errCounter += 1;
-         }
-         else
-         {
            $out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
-               $checked_file . " permissions.</span></td></tr>"; 
-         }      
-        }
-      } 
+           $checked_file . " permissions.</span></td></tr>"; 
+        }      
+      }
+    } 
     else 
     {
-        if (is_writable($checked_path))
+      if (is_writable($checked_path))
+      {
+        $out .= "<td><span class='tab-success'>OK</span></td></tr>\n"; 
+      }
+      else
+      {
+        if ($isCritical)
         {
-          $out .= "<td><span class='tab-success'>OK</span></td></tr>\n"; 
+          $out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
+          $checked_path . " permissions and reload the page.</span></td></tr>"; 
+          $errCounter += 1;
         }
         else
         {
-         if ($isCritical)
-         {
-           $out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
-               $checked_path . " permissions and reload the page.</span></td></tr>"; 
-          $errCounter += 1;
-         }
-         else
-         {
-           $out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
-               $checked_path . " permissions.</span></td></tr>"; 
-         }      
-        }
+          $out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
+          $checked_path . " permissions.</span></td></tr>"; 
+        }      
+      }
     }
   }
   else
   {
     if(file_exists($checked_file)) 
     {
-        if (!is_writable($checked_file))
-        {
-          $out .= "<td><span class='tab-success'>OK (read only)</span></td></tr>\n"; 
-        }
-        else
-        {
-         $out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>"; 
-        }
-      } 
+      if (!is_writable($checked_file))
+      {
+        $out .= "<td><span class='tab-success'>OK (read only)</span></td></tr>\n"; 
+      }
+      else
+      {
+        $out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>"; 
+      }
+    } 
     else 
     {
       if ($isCritical)
       {
         $out .= "<td><span class='tab-error'>Failed! The file is not on place.</span></td></tr>"; 
         $errCounter += 1;
-       }
+      }
       else
       {
         $out .= "<td><span class='tab-warning'>The file is not on place.</span></td></tr>"; 
@@ -972,10 +970,15 @@ function reportCheckingBrowser(&$errCounter)
 
   echo '<p>'.$browser.'</p>';
   echo '<tr><td>Browser supported</td>';
+  
   if (strpos($browser, 'firefox') === false || strpos($browser, 'msie')  === false)
+  {  
     echo "<td><span class='tab-success'>OK</span></td></tr>";
+  }
   else
+  {  
     echo "<td><span class='tab-error'>Unsupported: {$_SERVER['HTTP_USER_AGENT']}</span></td></tr>";
+  }
 
   echo '<tr><td>Javascript availability</td><td>' .
       '<script type="text/javascript">document.write(\''.
@@ -1011,15 +1014,15 @@ function reportCheckingSystem(&$errCounter)
 function reportCheckingDatabase(&$errCounter, $type = null)
 {
   if (checkInstallStatus())
+  {  
     $type = DB_TYPE;
-     
+  }
+
   if (!is_null($type))
   {
     echo '<h2>Database checking</h2><table class="common" style="width: 100%;">';
     echo checkDbType($errCounter, $type);
-//    echo checkDbConnection($errCounter);
     echo "</table>\n";
-    
   }
 
 }

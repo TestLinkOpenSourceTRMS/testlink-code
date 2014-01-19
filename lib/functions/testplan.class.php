@@ -1546,7 +1546,8 @@ class testplan extends tlObjectWithAttachments
           $sql="/* $debugMsg */ SELECT * FROM {$this->tables['nodes_hierarchy']} WHERE id={$tcversion_id} ";
           $rs2=$this->db->get_recordset($sql);
           // Ticket 4696 - if tcversion_type is set to latest -> update linked version
-          if ($my['options']['tcversion_type'] == 'latest') {
+          if ($my['options']['tcversion_type'] == 'latest') 
+          {
             $last_version_info = $tcase_mgr->get_last_version_info($rs2[0]['parent_id']);
             $tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
           }
@@ -4715,44 +4716,44 @@ class testplan extends tlObjectWithAttachments
     list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
                                  array('ignorePlatform' => true));
 
-        // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
-        // The filtering for "not run" status was simply not implemented for the case 
-        // of not using platforms. Maybe that part was forgotten when refactoring the filters.
-        // I adopted logic from helperGetHitsSameStatusOnPlatform() to get this working.
-        $flippedStatusSet = array_flip($statusSet);  // (code => idx)
-        $get = array('notRun' => isset($flippedStatusSet[$this->notRunStatusCode]), 'otherStatus' => false);
-        $hits = array('notRun' => array(), 'otherStatus' => array());
+    // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
+    // The filtering for "not run" status was simply not implemented for the case 
+    // of not using platforms. Maybe that part was forgotten when refactoring the filters.
+    // I adopted logic from helperGetHitsSameStatusOnPlatform() to get this working.
+    $flippedStatusSet = array_flip($statusSet);  // (code => idx)
+    $get = array('notRun' => isset($flippedStatusSet[$this->notRunStatusCode]), 'otherStatus' => false);
+    $hits = array('notRun' => array(), 'otherStatus' => array());
 
-        if($get['notRun'])
-        {
-            $notRunSQL = " /* $debugMsg */ " .
-                " /* COUNT() is needed as parameter for HAVING clause */ " .
-                " SELECT COUNT(0) AS COUNTER, NHTCV.parent_id AS tcase_id" .
-                " FROM {$this->tables['testplan_tcversions']} TPTCV " .
-                " JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
-                $buildsCfg['statusClause'] .
+    if($get['notRun'])
+    {
+      $notRunSQL = " /* $debugMsg */ " .
+                   " /* COUNT() is needed as parameter for HAVING clause */ " .
+                   " SELECT COUNT(0) AS COUNTER, NHTCV.parent_id AS tcase_id" .
+                   " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+                   " JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
+                   $buildsCfg['statusClause'] .
 
-                " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON " .
-                " NHTCV.id = TPTCV.tcversion_id " .
+                   " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON " .
+                   " NHTCV.id = TPTCV.tcversion_id " .
 
-                " LEFT OUTER JOIN {$this->tables['executions']} E ON " .
-                " E.testplan_id = TPTCV.testplan_id " .
-                " AND E.build_id = B.id " .
-                " AND E.tcversion_id = TPTCV.tcversion_id " .
+                   " LEFT OUTER JOIN {$this->tables['executions']} E ON " .
+                   " E.testplan_id = TPTCV.testplan_id " .
+                   " AND E.build_id = B.id " .
+                   " AND E.tcversion_id = TPTCV.tcversion_id " .
 
-                " WHERE TPTCV.testplan_id = " . $safe_id['tplan']  .
-                " AND E.status IS NULL " .
-                " GROUP BY tcase_id " .
-                " HAVING COUNT(0) = " . intval($buildsCfg['count']) ;
+                   " WHERE TPTCV.testplan_id = " . $safe_id['tplan']  .
+                   " AND E.status IS NULL " .
+                   " GROUP BY tcase_id " .
+                   " HAVING COUNT(0) = " . intval($buildsCfg['count']) ;
 
-            $hits['notRun'] = $this->db->fetchRowsIntoMap($notRunSQL,'tcase_id');
+      $hits['notRun'] = $this->db->fetchRowsIntoMap($notRunSQL,'tcase_id');
 
-            unset($statusSet[$flippedStatusSet[$this->notRunStatusCode]]);
-        }
+      unset($statusSet[$flippedStatusSet[$this->notRunStatusCode]]);
+    }
         
-        $get['otherStatus'] = count($statusSet) > 0;
-        if($get['otherStatus'])
-        {
+    $get['otherStatus'] = count($statusSet) > 0;
+    if($get['otherStatus'])
+    {
             $statusInClause = implode("','",$statusSet);
             
             // ATTENTION:
@@ -4802,26 +4803,26 @@ class testplan extends tlObjectWithAttachments
             $hits['otherStatus'] = $this->db->fetchRowsIntoMap($otherStatusSQL,'tcase_id');
         }
         
-        // build results record set
-        $hitsFoundOn = array();
-        $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
-        $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
+    // build results record set
+    $hitsFoundOn = array();
+    $hitsFoundOn['notRun'] = count($hits['notRun']) > 0;
+    $hitsFoundOn['otherStatus'] = count($hits['otherStatus']) > 0;
 
-        if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'])
-        {
-            $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
-        }
-        else if($hitsFoundOn['notRun'])
-        {
-            $items = array_keys($hits['notRun']);
-        }
-        else if($hitsFoundOn['otherStatus'])
-        {
-            $items = array_keys($hits['otherStatus']);
-        }
+    if($hitsFoundOn['notRun'] && $hitsFoundOn['otherStatus'])
+    {
+      $items = array_merge(array_keys($hits['notRun']), array_keys($hits['otherStatus']));
+    }
+    else if($hitsFoundOn['notRun'])
+    {
+      $items = array_keys($hits['notRun']);
+    }
+    else if($hitsFoundOn['otherStatus'])
+    {
+      $items = array_keys($hits['otherStatus']);
+    }
 
         
-        return is_null($items) ? $items : array_flip($items);
+    return is_null($items) ? $items : array_flip($items);
   } 
 
 
@@ -6705,6 +6706,11 @@ class testplan extends tlObjectWithAttachments
     return $union;
   }
 
+
+  /**
+   *
+   *
+   */
   function getPublicAttr($id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -6717,6 +6723,10 @@ class testplan extends tlObjectWithAttachments
 
 
 
+  /**
+   *
+   *
+   */
   function getBuildByCriteria($id, $criteria, $filters=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -6750,6 +6760,10 @@ class testplan extends tlObjectWithAttachments
   }
 
 
+  /**
+   *
+   *
+   */
   function writeExecution($ex)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;

@@ -1198,12 +1198,13 @@ function setPublicStatus($id,$status)
    */
   function hasKeywords($id)
   {
+    // seems that postgres PHP driver do not manage well UPPERCASE  in AS CLAUSE
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* {$debugMsg} */ SELECT COUNT(0) AS QTY FROM {$this->tables['keywords']}  " .
+    $sql = "/* {$debugMsg} */ SELECT COUNT(0) AS qty FROM {$this->tables['keywords']}  " .
            " WHERE testproject_id = " . intval($id);
     $rs = $this->db->get_recordset($sql);
 
-    return ((is_null($rs) || $rs[0]['QTY'] == 0) ? false : true);
+    return ((is_null($rs) || $rs[0]['qty'] == 0) ? false : true);
   }
 
 

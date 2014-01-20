@@ -6553,7 +6553,22 @@ class testplan extends tlObjectWithAttachments
   /**
    * 
    * @used-by testplan::getLTCVNewGeneration()
+   * @use     initGetLinkedForTree()
+   *
+   * @parameter map filters
+   *            keys:
+   *            'tcase_id','keyword_id','assigned_to','exec_status','build_id', 'cf_hash',
+   *            'urgencyImportance', 'tsuites_id','platform_id', 'exec_type','tcase_name'
+   *            filters defaults values are setted on initGetLinkedForTree()
+   *
+   * @parameter map options
+   *            some defaults are managed here
+   *
+   *            defaults for keys: 'hideTestCases','include_unassigned','allow_empty_build'
+   *            are setted on initGetLinkedForTree().
    * 
+   *
+   *
    * @internal revisions
    * @since 1.9.10
    */

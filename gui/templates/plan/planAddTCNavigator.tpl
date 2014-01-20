@@ -43,7 +43,6 @@ Scope: show test specification tree for Test Plan related features
     });
 
     {if $gui->loadRightPaneAddTC}  
-      alert('oo');
       EP();
     {/if}
 
@@ -100,7 +99,7 @@ function pre_submit()
 <div style="margin: 3px;">
 
 {if $gui->loadRightPaneAddTC}
-  MOLIII  
+  {* MOLIII *}  
 {/if}
 
 {include file='inc_filter_panel.tpl'}

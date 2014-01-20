@@ -666,7 +666,7 @@ function get_coverage($id,$context=null)
   if(is_null($context))
   {
     $sql = "/* $debugMsg - Static Coverage */ " . 
-           " SELECT NH_TC.id,NH_TC.name,TCV.tc_external_id,U.login,RC.creation_ts" .
+           " SELECT DISTINCT NH_TC.id,NH_TC.name,TCV.tc_external_id,U.login,RC.creation_ts" .
            $common['join'] . 
            " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = RC.author_id " .
            $common['where'];

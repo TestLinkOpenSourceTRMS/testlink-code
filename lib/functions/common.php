@@ -278,7 +278,7 @@ function initTopMenu(&$db)
   if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
   {
     $idx = 1; 
-      foreach ($guiTopMenu as $element)
+    foreach ($guiTopMenu as $element)
     {
       // check if Test Plan is available
       if ((!isset($element['condition'])) || ($element['condition'] == '') ||
@@ -289,11 +289,31 @@ function initTopMenu(&$db)
             $_SESSION['testprojectOptions']->requirementsEnabled))
       {
         // (is_null($element['right']) => no right needed => display always
-        if (is_null($element['right']) || has_rights($db,$element['right']) == "yes")
+
+        $addItem = is_null($element['right']);
+        if(!$addItem)
+        {
+          if( is_array($element['right']))
+          {
+            foreach($element['right'] as $rg)
+            {
+              if( $addItem = (has_rights($db,$rg) == "yes") )
+              {
+                break;
+              }   
+            }  
+          } 
+          else
+          {
+            $addItem = (has_rights($db,$element['right']) == "yes");   
+          } 
+        } 
+
+        if( $addItem )
         {
           $_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
-            "target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-              "tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> | ";
+          "target='{$element['target']}' accesskey='{$element['shortcut']}'" .
+          "tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> | ";
         }
       }
     }
@@ -312,9 +332,7 @@ function initTopMenu(&$db)
  * @param array $hash_user_sel input data for the page ($_REQUEST)
  * 
  * @uses initMenu() 
- * @internal Revisions:
- *  20091111 - havlatm - menu generation added, name changed (from upd_session_tplan_tproject)
- *  20090726 - franciscom - getAccessibleTestPlans() now is method on user class
+ * @internal revisions
  **/
 function initProject(&$db,$hash_user_sel)
 {

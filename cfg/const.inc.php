@@ -812,13 +812,8 @@ $tlCfg->gui->custom_fields->time_format = 'H:i:s';
  * Review types - user can define type for his review comment (disabled by default)
  * @since TestLink version 2.0 
  **/
-$tlCfg->review_types = array(1 => 'undefined',
-                           2 => 'typo', 
-                           3 => 'recommendation', 
-                           4 => 'question', 
-                           5 => 'unclear', 
-                           6 => 'major problem'
-);
+$tlCfg->review_types = array(1 => 'undefined',2 => 'typo',3 => 'recommendation', 
+                             4 => 'question',5 => 'unclear',6 => 'major problem');
 
 /**
  * Top Menu definition
@@ -826,70 +821,46 @@ $tlCfg->review_types = array(1 => 'undefined',
  * structure
  * - label: label to display, will be localized
  * - url: resource to access when users click on menu item
- * - right: user right need to display menu item.
- *        null => no right check needed
+ * - right: user right need to display menu item. (can be an array)
+ *          null => no right check needed
  * - condition: specific condition = ['','TestPlanAvailable','ReqMgmtEnabled']
  * - shortcut: keyboard HTML shortcut
  * - target: window/frame name (mainframe in the most of cases)
  * 
  * @since TestLink version 1.9 
  */
-$tlCfg->guiTopMenu[1] = array(
-    'label' => 'home',
-    'url' => 'index.php',
-    'right' => null,
-    'condition'=>'',
-    'shortcut'=>'h',
-    'target'=>'_parent'
-);
-$tlCfg->guiTopMenu[2] = array(
-    'label' => 'title_requirements',
-    'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
-    'right' => 'mgt_view_req',
-    'condition'=>'ReqMgmtEnabled',
-    'shortcut'=>'r',
-    'target'=>'mainframe'
-); 
-$tlCfg->guiTopMenu[3] = array(
-    'label' => 'title_specification',
-    'url' => 'lib/general/frmWorkArea.php?feature=editTc',
-    'right' => 'mgt_view_tc',
-    'condition'=>'',
-    'shortcut'=>'t',
-    'target'=>'mainframe'
-); 
-$tlCfg->guiTopMenu[4] = array(
-    'label' => 'title_execute',
-    'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
-    'right' => 'testplan_execute',
-    'condition'=>'TestPlanAvailable',
-    'shortcut'=>'e',
-    'target'=>'mainframe'
-); 
-$tlCfg->guiTopMenu[5] = array(
-    'label' => 'title_results',
-    'url' => 'lib/general/frmWorkArea.php?feature=showMetrics',
-    'right' => 'testplan_metrics',
-    'condition'=>'TestPlanAvailable',
-    'shortcut'=>'r',
-    'target'=>'mainframe'
-); 
-$tlCfg->guiTopMenu[6] = array(
-    'label' => 'title_admin',
-    'url' => 'lib/usermanagement/usersView.php',
-    'right' => 'mgt_users',
-    'condition'=>'',
-    'shortcut'=>'u',
-    'target'=>'mainframe'
-); 
-$tlCfg->guiTopMenu[7] = array(
-    'label' => 'title_events',
-    'url' => 'lib/events/eventviewer.php',
-    'right' => 'events_mgt',
-    'condition'=>'',
-    'shortcut'=>'v',
-    'target'=>'mainframe'
-); 
+$tlCfg->guiTopMenu[1] = array('label' => 'home','url' => 'index.php','right' => null,
+                              'condition'=>'','shortcut'=>'h','target'=>'_parent');
+
+$tlCfg->guiTopMenu[2] = array('label' => 'title_requirements',
+                              'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
+                              'right' => 'mgt_view_req','condition'=>'ReqMgmtEnabled',
+                              'shortcut'=>'r','target'=>'mainframe'); 
+
+$tlCfg->guiTopMenu[3] = array('label' => 'title_specification',
+                              'url' => 'lib/general/frmWorkArea.php?feature=editTc',
+                              'right' => 'mgt_view_tc','condition'=>'',
+                              'shortcut'=>'t','target'=>'mainframe'); 
+
+$tlCfg->guiTopMenu[4] = array('label' => 'title_execute',
+                              'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
+                              'right' => 'testplan_execute','condition'=>'TestPlanAvailable',
+                              'shortcut'=>'e','target'=>'mainframe'); 
+
+$tlCfg->guiTopMenu[5] = array('label' => 'title_results',
+                              'url' => 'lib/general/frmWorkArea.php?feature=showMetrics',
+                              'right' => 'testplan_metrics','condition'=>'TestPlanAvailable',
+                              'shortcut'=>'r','target'=>'mainframe'); 
+
+$tlCfg->guiTopMenu[6] = array('label' => 'title_admin',
+                              'url' => 'lib/usermanagement/usersView.php',
+                              'right' => 'mgt_users','condition'=>'',
+                              'shortcut'=>'u','target'=>'mainframe'); 
+
+$tlCfg->guiTopMenu[7] = array('label' => 'title_events',
+                              'url' => 'lib/events/eventviewer.php',
+                              'right' => array('events_mgt', 'mgt_view_events'),'condition'=>'',
+                              'shortcut'=>'v','target'=>'mainframe'); 
 
 
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',  'docs/tl-file-formats.pdf');

@@ -5897,7 +5897,8 @@ class testplan extends tlObjectWithAttachments
 
     // When there is request to filter by BUG ID, because till now (@20131216) BUGS are linked
     // only to EXECUTED test case versions, the not_run piece of union is USELESS
-    $union['not_run'] = null;            
+    $union['not_run'] = null;        
+
     if(!isset($my['filters']['bug_id']))
     {
       // adding tcversion on output can be useful for Filter on Custom Field values,
@@ -6120,13 +6121,15 @@ class testplan extends tlObjectWithAttachments
     // Custom fields on testplan_design ONLY => AFFECTS run and NOT RUN.
     if( isset($ic['filters']['cf_hash']) && !is_null($ic['filters']['cf_hash']) )
     {    
-      $ic['join']['cf'] = " JOIN {$this->tables['cfield_testplan_design_values']} CFTPD " .
-                          " ON CFTPD.link_id = TPTCV.id ";
-
       $ic['where']['cf'] = ''; 
 
       list($ic['filters']['cf_hash'],$cf_sql) = $this->helperTestPlanDesignCustomFields($ic['filters']['cf_hash']);
-      $ic['where']['cf'] .= " AND ({$cf_sql}) ";
+      if(strlen(trim($cf_sql)) > 0)
+      {
+        $ic['where']['cf'] .= " AND ({$cf_sql}) ";
+        $ic['join']['cf'] = " JOIN {$this->tables['cfield_testplan_design_values']} CFTPD " .
+                            " ON CFTPD.link_id = TPTCV.id ";
+      }  
       $ic['where']['where'] .= $ic['where']['cf'];
     }
 

@@ -223,6 +223,7 @@ if(!is_null($linked_tcversions))
     {
       $tcase_id = array_intersect($tcase_id, $args->testcases_to_show);
     }  
+
     $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     $gui->map_last_exec_any_build = null;
     $gui->other_execs=null;
@@ -1655,9 +1656,27 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
       $ltcv = $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id');
       if(!is_null($tex))
       {
+        // We need to create:
+        // one set for Custom fields that apply to DESIGN
+        // one set for Custom fields that apply to TESTPLAN DESIGN
+
         if(!is_null($argsObj->filter_cfields))
         {
-          $tex = $tplanMgr->filterByOnDesignCustomFields($tex,$argsObj->filter_cfields);  
+          $tk = array_keys($argsObj->filter_cfields);
+          $cf = null;  
+          // foreach( array('design','testplan_design') as $l4)
+          foreach( array('design') as $l4)
+          {
+            $cf[$l4] = $tplanMgr->cfield_mgr->getByIDAndEnableOn($tk,array($l4 => true));
+          }  
+          if(isset($cf['design']) && !is_null($cf['design']))
+          {
+            foreach($cf['design'] as $yy => $xc)
+            {
+              $az[$yy] = $argsObj->filter_cfields[$yy];
+            }  
+            $tex = $tplanMgr->filterByOnDesignCustomFields($tex,$az);  
+          }  
         }  
 
         foreach($tex as $xkey => $xvalue)
@@ -1672,7 +1691,10 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
 }
 
 
-
+/**
+ *
+ *
+ */
 function initWebEditors(&$guiObj,$cfgObj,$baseHREF)
 {
   if( $guiObj->can_use_bulk_op )

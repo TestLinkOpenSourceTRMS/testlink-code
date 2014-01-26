@@ -217,7 +217,7 @@ Ext.onReady(function(){
   		    	    {/if}
   			     </td>
   
-                 {if $gui->usePlatforms} <td>{$labels.th_platform}</td> {/if}
+             {if $gui->usePlatforms} <td>{$labels.th_platform}</td> {/if}
   			     <td>{$labels.th_test_case}</td>
   			     <td>{$labels.version}</td>
   			     {if $gui->priorityEnabled} <td>{$labels.importance}</td> {/if}
@@ -333,17 +333,17 @@ Ext.onReady(function(){
       			              {* $linked_version_id *}
       			              {if $linked_version_id != 0} 
       			                    {* set importance to importance of linked test case version *}
-      			                    {assign var=importance value=$tcase.importance.$linked_version_id}
+      			                    {$importance=$tcase.importance.$linked_version_id}
       			              {else}
       			                    {* if no test case version is linked -> set to importance 
       			                       of the first option from select box. only way to get first
       			                       element of an array is this loop afaik *}
       			                    {foreach name="oneLoop" from=$tcase.importance key=key item=item}
       			                    	{if $smarty.foreach.oneLoop.first}
-      			                    		{assign var=firstElement value=$key}
+      			                    		{$firstElement=$key}
       			                    	{/if}
       			                    {/foreach}
-      			                    {assign var=importance value=$tcase.importance.$firstElement}
+      			                    {$importance=$tcase.importance.$firstElement}
       			              {/if}
       			              {$gsmarty_option_importance.$importance}
       			        </td>
@@ -367,18 +367,18 @@ Ext.onReady(function(){
             			  <td>&nbsp;</td>
             			  
             			  <td>
-            			    {assign var="show_remove_check" value=0}
-            			    {assign var="executed" value=0}
-         				    {if $tcase.executed[0] == 'yes'}
-            			    	{assign var="executed" value=1}
+            			    {$show_remove_check=0}
+            			    {$executed=0}
+         				      {if $tcase.executed[0] == 'yes'}
+            			    	{$executed=1}
             			    {/if}
             			    
             			  	{if $linked_version_id}
-            			  		{assign var="show_remove_check" value=1}
+            			  		{$show_remove_check=1}
          				        {if $tcase.executed[0] == 'yes'}
-         				          	{assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
-            			  	  	{/if}      
-                   			{/if} 
+         				          {$show_remove_check=$gui->can_remove_executed_testcases}
+            			  	  {/if}      
+                   		{/if} 
             	   			{if $show_remove_check}
             					<input type='checkbox' name='{$rm_cb}[{$tcID}][0]' id='{$rm_cb}{$tcID}[0]' 
             					       value='{$linked_version_id}' 
@@ -405,9 +405,10 @@ Ext.onReady(function(){
                 </tr>
                 {* This piece will be used ONLY when platforms are not used or not assigned yet *}
   			        {if isset($tcase.custom_fields[0])}
-        			    <input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
+        			    <input type='hidden' name='linked_with_cf[{$tcase.feature_id[0]}]' value='{$tcase.feature_id[0]}' />
                   <tr><td colspan="9">{$tcase.custom_fields[0]}</td></tr>
                 {/if}
+                
               {/if}
               
               
@@ -432,18 +433,18 @@ Ext.onReady(function(){
   				          <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
   				          {if $gui->priorityEnabled} <td>&nbsp;</td> {/if}
 
-                          {* TICKET 5294: it is not possible to remove an inactive tc version from a testplan with platforms *}
+                    {* TICKET 5294: it is not possible to remove an inactive tc version from a testplan with platforms *}
   				          {*if $is_active == 1 && isset($tcase.feature_id[$platform.id])*}
                           {if isset($tcase.feature_id[$platform.id])}
   	      			      <td>&nbsp;</td>
   	   				        <td>
   	      			    	{* added isset() on next section to avoid warning on event log *}
-							{* TICKET 4715: can_remove_executed doesn't work when Platforms are used *}	
-            			    {assign var="show_remove_check" value=0}
+							        {* TICKET 4715: can_remove_executed doesn't work when Platforms are used *}	
+            			    {$show_remove_check=0}
             			  	{if $linked_version_id}
-            			  		{assign var="show_remove_check" value=1}
+            			  		{$show_remove_check=1}
          				        {if isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}
-         				          	{assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
+         				          	{$show_remove_check=$gui->can_remove_executed_testcases}
             			  	  	{/if}      
                    			{/if} 
             	   			{if $show_remove_check}

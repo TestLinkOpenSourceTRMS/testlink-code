@@ -1347,8 +1347,7 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
   returns: 
 
 */
-function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$testSet,
-                          &$treeMgr,&$tcaseMgr,&$docRepository)
+function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$testSet,&$treeMgr,&$tcaseMgr,&$docRepository)
 {
   $locationFilters = $tcaseMgr->buildCFLocationMap();
   $cf_filters = array('show_on_execution' => 1);
@@ -1495,7 +1494,7 @@ function launchRemoteExec(&$dbHandler,&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseM
 
 
 /**
- * @use testplan->filterByCustomFields
+ * @use testplan->filterByOnDesignCustomFields
  *
  */
 function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identity=null)
@@ -1626,6 +1625,7 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
     // in order to allow use how he / she wants to work.
     //
     $filters = array_merge($basic_filters,$bulk_filters);
+
     if( !is_null($sql2do = $tplanMgr->getLinkedForExecTree($argsObj->tplan_id,$filters,$options)) )
     {
       if( is_array($sql2do) )
@@ -1657,7 +1657,7 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
       {
         if(!is_null($argsObj->filter_cfields))
         {
-          $tex = $tplanMgr->filterByCustomFields($tex,$argsObj->filter_cfields);  
+          $tex = $tplanMgr->filterByOnDesignCustomFields($tex,$argsObj->filter_cfields);  
         }  
 
         foreach($tex as $xkey => $xvalue)
@@ -1668,7 +1668,6 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
       }
     }
   }
-             
   return array($ltcv,$itemSet);         
 }
 

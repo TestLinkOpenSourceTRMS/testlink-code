@@ -330,7 +330,7 @@ abstract class tlFilterControl extends tlObjectWithDB
   /**
    *
    */
-  protected function init_filter_custom_fields() 
+  protected function init_filter_custom_fields($application_areas=null) 
   {
     $key = 'filter_custom_fields';
     $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
@@ -342,7 +342,7 @@ abstract class tlFilterControl extends tlObjectWithDB
     $_SESSION['cf_filter_collapsed'] = $collapsed;  
     $btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
     
-    $cfields = $this->getCustomFields();
+    $cfields = $this->getCustomFields($application_areas);
     $cf_prefix = $this->cfield_mgr->name_prefix;
 
     $cf_html_code = "";

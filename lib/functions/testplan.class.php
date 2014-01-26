@@ -447,9 +447,6 @@ class testplan extends tlObjectWithAttachments
     $my['opt'] = array('output' => 'full','active' => null, 'testPlanFields' => '');
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-    
-    // new dBug($my['opt']);
-
     $safe_id = intval($id);
     switch($my['opt']['output'])
     {
@@ -1183,9 +1180,8 @@ class testplan extends tlObjectWithAttachments
     $where_clause = " ( {$where_clause} ) ";
     
     // First get the executions id if any exist
-    $sql=" SELECT id AS execution_id " .
-       " FROM {$this->tables['executions']} " .
-       " WHERE testplan_id = {$id} AND ${where_clause}";
+    $sql = " SELECT id AS execution_id FROM {$this->tables['executions']} " .
+           " WHERE testplan_id = {$id} AND ${where_clause}";
     $exec_ids = $this->db->fetchRowsIntoMap($sql,'execution_id');
     
     if( !is_null($exec_ids) and count($exec_ids) > 0 )
@@ -2107,8 +2103,6 @@ class testplan extends tlObjectWithAttachments
       // I would like to understand why the ORDER BY clause is not enough 
       $rs = $this->_natsort_builds($rs);
     }
-    // new dBug($sql);
-    // die();
     
     return $rs;
   }
@@ -2545,7 +2539,9 @@ class testplan extends tlObjectWithAttachments
 
 
   /*
-    function: filterByCustomFields
+    function: filterByOnDesignCustomFields
+              Filter on values of custom fields that are managed 
+              ON DESIGN Area (i.e. when creating Test Specification).
   
     @used by getLinkedItems() in file execSetResults.php
     
@@ -2560,7 +2556,7 @@ class testplan extends tlObjectWithAttachments
     @internal revisions
     
   */
-  function filterByCustomFields($tp_tcs, $cf_hash)  
+  function filterByOnDesignCustomFields($tp_tcs, $cf_hash)  
   {
     $new_tp_tcs = null;
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2633,6 +2629,9 @@ class testplan extends tlObjectWithAttachments
         $rows = $this->db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
       
         // if there exist as many rows as custom fields to be filtered by => tc does meet the criteria
+        // TO CHECK - 20140126 - Give a look to treeMenu.inc.php - filter_by_cf_values()  
+        // to understand if both logics are coerent.
+        //
         $doIt = (count($rows) == $cf_qty);
       }  
       if( $doIt ) 
@@ -5896,10 +5895,8 @@ class testplan extends tlObjectWithAttachments
                 " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
 
 
-
     // When there is request to filter by BUG ID, because till now (@20131216) BUGS are linked
     // only to EXECUTED test case versions, the not_run piece of union is USELESS
-
     $union['not_run'] = null;            
     if(!isset($my['filters']['bug_id']))
     {
@@ -5918,6 +5915,7 @@ class testplan extends tlObjectWithAttachments
                           " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
                           $my['join']['ua'] .
                           $my['join']['keywords'] .
+                          $my['join']['cf'] .
                           " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
                 
                           " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
@@ -5951,6 +5949,7 @@ class testplan extends tlObjectWithAttachments
                      " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
                      $my['join']['ua'] .
                      $my['join']['keywords'] .
+                     $my['join']['cf'] .
                      " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
                      
                      " JOIN ({$sqlLEBBP}) AS LEBBP " .
@@ -5981,6 +5980,14 @@ class testplan extends tlObjectWithAttachments
    * filters => 'tcase_id','keyword_id','assigned_to','exec_status','build_id', 'cf_hash',
    *            'urgencyImportance', 'tsuites_id','platform_id', 'exec_type','tcase_name'
    *
+   *
+   *            CRITIC: cf_hash can contains Custom Fields that are applicable to DESIGN and
+   *                    TESTPLAN_DESIGN.
+   *                    Here we are generating SQL that will be used ON TESTPLAN related tables
+   *                    NOT ON TEST SPEC related tables.
+   *                    Due to this we are going to consider while building the query ONLY
+   *                    CF for TESTPLAN DESING
+   *
    * @internal revisions
    */
   function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg)
@@ -5991,11 +5998,13 @@ class testplan extends tlObjectWithAttachments
     $ic['join'] = array();
     $ic['join']['ua'] = '';
     $ic['join']['bugs'] = '';
+    $ic['join']['cf'] = '';
 
     $ic['where'] = array();
     $ic['where']['where'] = '';
     $ic['where']['platforms'] = '';
     $ic['where']['not_run'] = '';
+    $ic['where']['cf'] = '';
 
     $ic['green_light'] = true;
     $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
@@ -6108,6 +6117,21 @@ class testplan extends tlObjectWithAttachments
     }
                                
 
+    // Custom fields on testplan_design ONLY => AFFECTS run and NOT RUN.
+    if( isset($ic['filters']['cf_hash']) && !is_null($ic['filters']['cf_hash']) )
+    {    
+      $ic['join']['cf'] = " JOIN {$this->tables['cfield_testplan_design_values']} CFTPD " .
+                          " ON CFTPD.link_id = TPTCV.id ";
+
+      $ic['where']['cf'] = ''; 
+
+      list($ic['filters']['cf_hash'],$cf_sql) = $this->helperTestPlanDesignCustomFields($ic['filters']['cf_hash']);
+      $ic['where']['cf'] .= " AND ({$cf_sql}) ";
+      $ic['where']['where'] .= $ic['where']['cf'];
+    }
+
+
+
     // I've made the choice to create the not_run key, to manage the not_run part
     // of UNION on getLinkedForExecTree().
     //
@@ -6119,7 +6143,12 @@ class testplan extends tlObjectWithAttachments
     // TICKET 5572: Filter by Platforms - Wrong test case state count in test plan execution
     $ic['where']['not_run'] = $ic['where']['where'];
 
+
+    // ****************************************************************************
+    // CRITIC - CRITIC - CRITIC 
     // Position on code flow is CRITIC
+    // CRITIC - CRITIC - CRITIC 
+    // ****************************************************************************
     if (!is_null($ic['filters']['exec_status']))
     {
       // $ic['where']['not_run'] = $ic['where']['where'];
@@ -6138,21 +6167,105 @@ class testplan extends tlObjectWithAttachments
     }
 
 
+    // BUG ID HAS NO EFFECT ON NOT RUN (at least @20140126)
     // bug_id => will be a list to create an IN() clause
     if( isset($ic['filters']['bug_id']) && !is_null($ic['filters']['bug_id']) )
     {    
       list($ic['join']['bugs'],$ic['where']['bugs']) = $this->helper_bugs_sql($ic['filters']['bug_id']);
       $ic['where']['where'] .= $ic['where']['bugs'];
     }
-    
 
-
-    // do always
-
-
-                      
     return $ic;                       
   }                              
+
+
+  /**
+   *
+   */
+  function helperTestPlanDesignCustomFields($cfSet)
+  {
+    $type_domain = $this->cfield_mgr->get_available_types();
+    $ret = null;
+    $cf_type = null;
+    foreach($cfSet as $id => $val)
+    {
+      $xx = $this->cfield_mgr->get_by_id($id);
+      if( $xx[$id]['enable_on_testplan_design'] )
+      {
+        $ret[$id] = $val;
+        $cf_type[$id] = $type_domain[$xx[$id]['type']];
+      }  
+    }  
+    
+
+    $cf_sql = ''; 
+    if( !is_null($ret) )
+    {  
+      $countmain = 1;
+      foreach( $ret as $cf_id => $cf_value) 
+      {
+        if ( $countmain != 1 ) 
+        {
+          $cf_sql .= " AND ";
+        }
+
+        if (is_array($cf_value)) 
+        {
+          $count = 1;
+          switch($cf_type[$cf_id])
+          {
+            case 'multiselection list':
+              // 
+              if( count($cf_value) > 1)
+              {
+                $combo = implode('|',$cf_value);
+                $cf_sql .= "( CFTPD.value = '{$combo}' AND CFTPD.field_id = {$cf_id} )";
+              }  
+              else
+              {
+                // close set, open set, is sandwiched, is alone
+                //$cf_sql .= "( (CFTPD.value LIKE '%|{$cf_value[0]}' AND CFTPD.field_id = {$cf_id}) OR " .
+                //           "  (CFTPD.value LIKE '{$cf_value[0]}|%' AND CFTPD.field_id = {$cf_id}) OR " .
+                //           "  (CFTPD.value LIKE '%|{$cf_value[0]}|%' AND CFTPD.field_id = {$cf_id}) OR " .
+                //           "  (CFTPD.value = '{$cf_value[0]}' AND CFTPD.field_id = {$cf_id}) )";
+
+                $cf_sql .= "( CFTPD.field_id = {$cf_id} AND " .
+                           "  (CFTPD.value LIKE '%|{$cf_value[0]}' OR " .
+                           "   CFTPD.value LIKE '{$cf_value[0]}|%' OR " .
+                           "   CFTPD.value LIKE '%|{$cf_value[0]}|%' OR " .
+                           "   CFTPD.value = '{$cf_value[0]}') )";
+              }              
+            break; 
+
+            default:
+              foreach ($cf_value as $value) 
+              {
+                if ($count > 1) 
+                {
+                  $cf_sql .= " AND ";
+                }
+
+                // When ARRAY NO LIKE but EQUAL
+                // Need to document what type of CF are managed as ARRAY
+                $cf_sql .= "( CFTPD.value = '{$value}' AND CFTPD.field_id = {$cf_id} )";
+                $count++;
+              }
+            break;             
+          }
+
+        } 
+        else 
+        {
+          $cf_sql .= " ( CFTPD.value LIKE '%{$cf_value}%' AND CFTPD.field_id = {$cf_id} ) ";
+        }
+        $countmain++;
+      }  
+    }
+     
+    return array($ret,$cf_sql);    
+  }
+
+
 
 
 
@@ -7633,4 +7746,3 @@ class milestone_mgr extends tlObject
 
 
 } // end class milestone_mgr
-?>

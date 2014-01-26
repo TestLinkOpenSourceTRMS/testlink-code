@@ -576,20 +576,30 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->active_filters[$filtername] = null;
     }
     
-
+   
     // iterate through all filters and activate the needed ones
     $this->display_filters = false;
     foreach ($this->all_filters as $name => $info) 
     {
       $init_method = "init_$name";
-      if (in_array($name, $this->mode_filter_mapping[$this->mode]) &&
-        method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED &&
-        $this->configuration->show_filters == ENABLED) 
+      if( $this->configuration->show_filters == ENABLED && 
+          property_exists($this->configuration, $name) && $this->configuration->{$name} == ENABLED &&
+          in_array($name, $this->mode_filter_mapping[$this->mode]) &&  method_exists($this, $init_method) ) 
       {
-        $this->$init_method();
+        switch($name)
+        {
+          case 'filter_custom_fields':
+            $params = $this->mode == 'execution_mode' ? array('design' => true, 'testplan_design' => true) : null;
+          break;
+
+          default:
+            $params=null;
+          break;
+        }
 
         // there is at least one filter item to display => switch panel on
         $this->display_filters = true;
+        $this->$init_method($params);
       } 
       else 
       {
@@ -1864,14 +1874,28 @@ class tlTestCaseFilterControl extends tlFilterControl {
   /**
    *
    */ 
-  protected function getCustomFields()
+  protected function getCustomFields($application_area=null)
   {
     if (!$this->cfield_mgr) 
     {
       $this->cfield_mgr = new cfield_mgr($this->db);
     }
-    $cfields = $this->cfield_mgr->get_linked_cfields_at_design($this->args->testproject_id, 1, null, 'testcase');
-    return $cfields;
+    $scope = array('design' => true,'execution' => false, 'testplan_design' => false);
+    $scope = array_merge($scope,(array)$application_area);
+
+    $cfields = array('design' => null,'execution' => null, 'testplan_design' => null);
+    if($scope['design'])
+    {
+      $cfields['design'] = $this->cfield_mgr->get_linked_cfields_at_design($this->args->testproject_id, 1, null, 'testcase');
+    }  
+
+    if($scope['testplan_design'])
+    {
+      $cfields['testplan_design'] = $this->cfield_mgr->get_linked_cfields_at_testplan_design($this->args->testproject_id,1,'testcase');
+    }  
+
+    $cf = (array)$cfields['design'] + (array)$cfields['testplan_design'];
+    return count($cf) > 0 ? $cf : null;
   }
 
 }

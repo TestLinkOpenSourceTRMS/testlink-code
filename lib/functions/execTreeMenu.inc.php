@@ -121,6 +121,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $map_node_tccount = array();
   
   $tplan_tcases = null;
+  $linkedTestCasesSet = null;
 
   if($test_spec)
   {
@@ -172,19 +173,24 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       {
         applyStatusFilters($context['tplan_id'],$tplan_tcases,$objFilters,$tplan_mgr,$resultsCfg['status_code']);       
       }
-      
+
       if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes']))
       {
-        $test_spec['childNodes'] = filter_by_cf_values($dbHandler, $test_spec['childNodes'],
-                                                       $my['filters']['filter_custom_fields'],$hash_descr_id);
+        // need to separate cf 4 design that cf 4 testplan_design.
+        // Here we ONLY use cf 4 design
+        $cfx = cfForDesign($dbHandler,$my['filters']['filter_custom_fields']);
+        if( !is_null($cfx) )
+        {
+          $test_spec['childNodes'] = filter_by_cf_values($dbHandler,$test_spec['childNodes'],$cfx,$hash_descr_id);
+        }  
       }
 
 
       // ATTENTION: sometimes we use $my['options'], other $options
       $pnOptions = array('hideTestCases' => $options['hideTestCases'], 'viewType' => 'executionTree');
       $pnFilters = null;    
-      $testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
-                                               $tplan_tcases,$pnFilters,$pnOptions);
+      $testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,$tplan_tcases,
+                                               $pnFilters,$pnOptions);
 
       foreach($testcase_counters as $key => $value)
       {
@@ -205,8 +211,13 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
 
     $renderTreeNodeOpt['hideTestCases'] = $options['hideTestCases'];
     $renderTreeNodeOpt['tc_action_enabled'] = 1;
+
+    // CRITIC: renderExecTreeNode() WILL MODIFY $tplan_tcases, can empty it completely
+    $linkedTestCasesSet = array_keys((array)$tplan_tcases);
+
     $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,
-                                       $renderTreeNodeOpt);
+                                     $renderTreeNodeOpt);
+
   }
 
   $treeMenu->rootnode=new stdClass();
@@ -232,7 +243,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   }  
   
   $treeMenu->menustring = $menustring;
-  return array($treeMenu, array_keys((array)$tplan_tcases));
+  return array($treeMenu, $linkedTestCasesSet);
 }
 
 
@@ -317,10 +328,8 @@ function initExecTree($filtersObj,$optionsObj)
 
   $options['tc_action_enabled'] = isset($optionsObj->tc_action_enabled) ?  $optionsObj->tc_action_enabled : true;
   $options['showTestCaseExecStatus'] = isset($optionsObj->showTestCaseExecStatus) ?  $optionsObj->showTestCaseExecStatus : true;
-  // $options['nodeHelpText'] = isset($optionsObj->nodeHelpText) ?  $optionsObj->nodeHelpText : '';
 
   return array($filters,$options,$show_testsuite_contents,$useCounters,$useColors,$colorBySelectedBuild);
-
 }
 
 
@@ -469,7 +478,7 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
       // 
       if( !is_null($tplan_tcases) && !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
       {
-        echo 'nullfying-';
+        // echo 'nullfying-';
         $node = null;
       }
     }
@@ -596,7 +605,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   $my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
                        'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id),
                        'hideTestCases' => $options['hideTestCases'],'tc_action_enabled' => $options['tc_action_enabled'],
-                       // 'nodeHelpText' => $options['nodeHelpText'], 
                        'showTestCaseExecStatus' => $options['showTestCaseExecStatus']);
                          
   $my['filters'] = array('exclude_node_types' => $nt2exclude,
@@ -785,4 +793,27 @@ function helperInitCounters()
   $items[] = 'testcase_count';
   $cc = array_fill_keys($items, 0);
   return $cc;
+}
+
+/**
+ *
+ */
+function cfForDesign(&$dbHandler,$cfSet)
+{
+  static $mgr;
+  if(!$mgr)
+  {
+    $mgr = new cfield_mgr($dbHandler);
+  }  
+
+  $ret = null;
+  foreach($cfSet as $id => $val)
+  {
+    $xx = $mgr->get_by_id($id);
+    if( $xx[$id]['enable_on_design'] )
+    {
+      $ret[$id] = $val;
+    }  
+  }  
+  return $ret;
 }

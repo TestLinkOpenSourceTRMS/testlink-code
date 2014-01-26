@@ -1171,11 +1171,12 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function get_by_id($id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	  	$sql="/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
+    $sql = "/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
 	  	     " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
 	  	     " WHERE CF.id=CFNT.field_id " .
-	  	     " AND   CF.id={$id} ";
-    	return($this->db->fetchRowsIntoMap($sql,'id'));
+           " AND CF.id IN (" . implode(',',(array)$id) . ")";
+	  	     // " AND CF.id={$id} ";
+    return($this->db->fetchRowsIntoMap($sql,'id'));
 	}
 
   /*
@@ -2379,6 +2380,7 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
          " AND   CFTP.active=1     " .
          " AND   CF.enable_on_testplan_design={$enabled} " .
          $order_by_clause;
+
     $map = $this->db->$fetchMethod($sql,$access_key);
     return $map;
   }
@@ -2765,43 +2767,71 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 }
 
 
-/**
- * 
- *
- */
-function html_inputs($cfields_map,$name_suffix='',$input_values=null)
-{
-  $inputSet = '';
-  $getOpt = array('name_suffix' => $name_suffix);
-
-  if(!is_null($cfields_map))
+  /**
+   * 
+   *
+   */
+  function html_inputs($cfields_map,$name_suffix='',$input_values=null)
   {
-    $cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
-    $NO_WARNING_IF_MISSING=true;
-    foreach($cf_map as $cf_id => $cf_info)
+    $inputSet = '';
+    $getOpt = array('name_suffix' => $name_suffix);
+
+    if(!is_null($cfields_map))
     {
-      $label=str_replace(TL_LOCALIZE_TAG,'',
-                         lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
+      $cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
+      $NO_WARNING_IF_MISSING=true;
+      foreach($cf_map as $cf_id => $cf_info)
+      {
+        $label=str_replace(TL_LOCALIZE_TAG,'',
+                           lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
 
-      // IMPORTANT NOTICE
-      // assigning an ID with this format is CRITIC to Javascript logic used
-      // to validate input data filled by user according to CF type
-      // extract input html id
-      // Want to give an html id to <td> used as labelHolder, to use it in Javascript
-      // logic to validate CF content
-      $cf_html_string = $this->string_custom_field_input($cf_info,$getOpt);
-      
-      $dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-      $label_id = str_replace('id="', 'id="label_', $dummy[0]);
+        // IMPORTANT NOTICE
+        // assigning an ID with this format is CRITIC to Javascript logic used
+        // to validate input data filled by user according to CF type
+        // extract input html id
+        // Want to give an html id to <td> used as labelHolder, to use it in Javascript
+        // logic to validate CF content
+        $cf_html_string = $this->string_custom_field_input($cf_info,$getOpt);
+        
+        $dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+        $label_id = str_replace('id="', 'id="label_', $dummy[0]);
 
-      $inputSet[] = array('label' => htmlspecialchars($label) ,
-                          'label_id' => $label_id,
-                          'input' => $this->string_custom_field_input($cf_info,$getOpt));
+        $inputSet[] = array('label' => htmlspecialchars($label) ,
+                            'label_id' => $label_id,
+                            'input' => $this->string_custom_field_input($cf_info,$getOpt));
+      }
     }
+    return $inputSet;
   }
-  return $inputSet;
-}
+
+  /**
+   *
+   *
+   */
+  function getByIDAndEnableOn($id,$enableOn=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
+           " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
+           " WHERE CF.id=CFNT.field_id " .
+           " AND CF.id IN (" . implode(',',(array)$id) . ")";
+
+    if(!is_null($enableOn) && is_array($enableOn))
+    {
+      foreach($this->application_areas as $key)
+      {
+        if(isset($enableOn[$key]) && $enableOn[$key])
+        {
+          $sql .= " AND CF.enable_on_{$key}=1 ";
+        }  
+      }  
+    } 
+
+    return($this->db->fetchRowsIntoMap($sql,'id'));
+  }
 
 
+
+    
 } // end class

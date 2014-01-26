@@ -864,14 +864,14 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
   }
   
   $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
-  // $node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
   $node['href'] = is_null($pfn)? '' : "javascript:{$pfn}";
   
   // ----------------------------------------------------------------------------------------------
   if( isset($tcase_node[$node['id']]) )
   {
-    unset($tcase_node[$node['id']]);
+    unset($tcase_node[$node['id']]);   // dam it NO COMMENT!
   }
+
   if (isset($node['childNodes']) && $node['childNodes'])
   {
     // need to work always original object in order to change it's values using reference .
@@ -1004,31 +1004,26 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
       $passed = false;
             
       //BUGID 2877 - Custom Fields linked to TC versions
-            // TICKET 5186: added "DISTINCT" to SQL clause, detailed explanation follows at the end of function
-            // Note: SQL statement has been adopted to filter by latest active tc version.
-            // That is a better solution for the explained problem than using the distinct keyword.
-
-            $latest_active_version_sql = " /* get latest active TC version ID */ " .
-                                         " SELECT MAX(TCVX.id) AS max_tcv_id, NHTCX.parent_id AS tc_id " .
-                                         " FROM {$tables['tcversions']} TCVX " .
-                                         " JOIN {$tables['nodes_hierarchy']} NHTCX " .
-                                         " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
-                                         " WHERE NHTCX.parent_id = {$node['id']} " .
-                                         " GROUP BY NHTCX.parent_id, TCVX.tc_external_id ";
+      // TICKET 5186: added "DISTINCT" to SQL clause, detailed explanation follows at the end of function
+      // Note: SQL statement has been adopted to filter by latest active tc version.
+      // That is a better solution for the explained problem than using the distinct keyword.
+      $latest_active_version_sql = " /* get latest active TC version ID */ " .
+                                   " SELECT MAX(TCVX.id) AS max_tcv_id, NHTCX.parent_id AS tc_id " .
+                                   " FROM {$tables['tcversions']} TCVX " .
+                                   " JOIN {$tables['nodes_hierarchy']} NHTCX " .
+                                   " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
+                                   " WHERE NHTCX.parent_id = {$node['id']} " .
+                                   " GROUP BY NHTCX.parent_id, TCVX.tc_external_id ";
             
-            $sql = " /* $debugMsg */ SELECT CFD.value " .
-                   " FROM {$tables['cfield_design_values']} CFD, {$tables['nodes_hierarchy']} NH " .
-                   " JOIN ( $latest_active_version_sql ) LAVSQL ON NH.id = LAVSQL.max_tcv_id " .
-                   " WHERE CFD.node_id = NH.id ";
+      $sql = " /* $debugMsg */ SELECT CFD.value " .
+             " FROM {$tables['cfield_design_values']} CFD, {$tables['nodes_hierarchy']} NH " .
+             " JOIN ( $latest_active_version_sql ) LAVSQL ON NH.id = LAVSQL.max_tcv_id " .
+             " WHERE CFD.node_id = NH.id ";
 
-            //$sql = " /* $debugMsg */ SELECT DISTINCT CFD.value FROM {$tables['cfield_design_values']} CFD," .
-      //     " {$tables['nodes_hierarchy']} NH" .
-      //     " WHERE CFD.node_id = NH.id" .
-      //     " AND NH.parent_id = {$node['id']} ";
-      // AND value in ('" . implode("' , '",$cf_hash) . "')";
-            //BUGID 3995 Custom Field Filters not working properly since the cf_hash is array 
-            if (isset($cf_hash)) 
-            { 
+      // IMPORTANT DEV NOTES
+      // Query uses OR, but final processing makes that CF LOGIC work in AND MODE as expected
+      if (isset($cf_hash)) 
+      { 
                 $countmain = 1;
                 $cf_sql = '';
                 foreach ($cf_hash as $cf_id => $cf_value) 
@@ -1061,29 +1056,32 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
                 $sql .=  " AND ({$cf_sql}) ";
             }
 
+      //echo $sql;      
+      
       $rows = $db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
+      
       //if there exist as many rows as custom fields to be filtered by
       //the tc does meet the criteria
             
-            /* NOTE by asimon: This assumption was wrong! If there are multiple versions of a TC,
-             * then the row number here can be larger than the number of custom fields with the correct value.
-             * 
-             * Example: 
-             * Custom field "color" has possible values "red", "blue", "green", default empty.
-             * Custom field "status" has possible values "draft", "ready", "needs review", "needs rework", default empty.
-             * TC Version 1: cfield "color" has value "red", cfield "status" has no value yet.
-             * TC Version 2: cfield "color" has value "red", cfield "status" has no value yet.
-             * TC Version 3: cfield "color" and value "red", cfield "status" has value "ready".
-             * TC Version 4: cfield "color" has value "red", cfield "status" has value "ready".
-             * 
-             * Filter by color GREEN and status READY, then $rows looks like this: Array ( [0] => red, [1] => red )
-             * => count($rows) returns 2, which matches the number of custom fields we want to filter by.
-             * So TC lands in the result set instead of being filtered out.
-             * That is wrong, because TC matches only one of the fields we were filtering by!
-             * 
-             * Because of this I extended the SQL statement above with the DISTINCT keyword,
-             * so that each custom field only is contained ONCE in the result set.
-             */
+      /* NOTE by asimon: This assumption was wrong! If there are multiple versions of a TC,
+       * then the row number here can be larger than the number of custom fields with the correct value.
+       * 
+       * Example: 
+       * Custom field "color" has possible values "red", "blue", "green", default empty.
+       * Custom field "status" has possible values "draft", "ready", "needs review", "needs rework", default empty.
+       * TC Version 1: cfield "color" has value "red", cfield "status" has no value yet.
+       * TC Version 2: cfield "color" has value "red", cfield "status" has no value yet.
+       * TC Version 3: cfield "color" and value "red", cfield "status" has value "ready".
+       * TC Version 4: cfield "color" has value "red", cfield "status" has value "ready".
+       * 
+       * Filter by color GREEN and status READY, then $rows looks like this: Array ( [0] => red, [1] => red )
+       * => count($rows) returns 2, which matches the number of custom fields we want to filter by.
+       * So TC lands in the result set instead of being filtered out.
+       * That is wrong, because TC matches only one of the fields we were filtering by!
+       * 
+       * Because of this I extended the SQL statement above with the DISTINCT keyword,
+       * so that each custom field only is contained ONCE in the result set.
+       */
             
       $passed = (count($rows) == count($cf_hash)) ? true : false;
       // now delete node if no match was found

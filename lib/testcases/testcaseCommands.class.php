@@ -8,12 +8,12 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://testlink.sourceforge.net/
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  **/
 
 class testcaseCommands
@@ -375,7 +375,6 @@ class testcaseCommands
    * 
    *
    * @internal revisions
-   * 20110529 - franciscom - TICKET 4322  
    */
   function delete(&$argsObj,$request)
   {
@@ -385,9 +384,8 @@ class testcaseCommands
 
     $guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id,null, 
                                                                 array('addExecIndicator' => true));
-
     $guiObj->delete_enabled = 1;
-    if( $guiObj->exec_status_quo['executed'] && !$cfg->can_delete_executed )
+    if( $guiObj->exec_status_quo['executed'] && !$this->grants->testproject_delete_executed_testcases )
     {
       $guiObj->delete_message = lang_get('system_blocks_delete_executed_tc_when');
       $guiObj->delete_enabled = 0;

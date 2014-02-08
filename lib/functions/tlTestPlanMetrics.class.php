@@ -6,15 +6,14 @@
  * @filesource  tlTestPlanMetrics.class.php
  * @package     TestLink
  * @author      Kevin Levy, franciscom
- * @copyright   2004-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2004-2014, TestLink community 
+ * @link        http://testlink.sourceforge.net/
  * @uses        config.inc.php 
  * @uses        common.php 
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  *
- * 20130909 - franciscom - TICKET 5902: Uncaught exception when doing a Metric Dashboard when no releases are active or open
  **/
 
 
@@ -960,9 +959,13 @@ class tlTestPlanMetrics extends testplan
     // 20130107 - Think I've got the issue:
     // was the missing clause     
     // " AND UA.feature_id = TPTCV.id AND UA.build_id = LEBBP.build_id " .
+    //
+    // 20140128 - do not understand why I've added DISTINT.
+    //            without it I can add also get exec times
     $sqlUnionBU  =  "/* {$debugMsg} */" . 
-                    " SELECT DISTINCT UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
-                    " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+                    " SELECT /* DISTINCT */ UA.user_id, UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " .
+                    " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " .
+                    " COALESCE(E.execution_duration,0) AS execution_duration " .
                     " FROM {$this->tables['testplan_tcversions']} TPTCV " .
                     " JOIN {$this->tables['user_assignments']} UA " .
                     " ON UA.feature_id = TPTCV.id " .
@@ -988,7 +991,7 @@ class tlTestPlanMetrics extends testplan
                     " AND UA.build_id IN ({$builds->inClause}) " ;
   
     $sql =  " /* {$debugMsg} */" .
-            " SELECT user_id, build_id,status, count(0) AS exec_qty " .
+            " SELECT user_id, build_id,status, count(0) AS exec_qty, SUM(execution_duration) AS total_time" .
             " FROM ($sqlUnionBU) AS SQBU " .
             " GROUP BY user_id,build_id,status ";
            
@@ -1010,15 +1013,16 @@ class tlTestPlanMetrics extends testplan
             if(!isset($elem[$itemID][$code]))
             {
               $elem[$itemID][$code] = array('build_id' => $topLevelItemID, 'user_id' => $itemID,
-                              'status' => $code, 'exec_qty' => 0);      
+                                            'status' => $code, 'exec_qty' => 0, 'total_time' => 0);      
             }                           
 
             if( !isset($totals[$topLevelItemID][$itemID]) )
             {
               $totals[$topLevelItemID][$itemID] = array('build_id' => $topLevelItemID, 
-                                     'user_id' => $itemID, 'qty' => 0);
+                                                        'user_id' => $itemID, 'qty' => 0,'total_time' => 0);
             }
             $totals[$topLevelItemID][$itemID]['qty'] += $elem[$itemID][$code]['exec_qty'];
+            $totals[$topLevelItemID][$itemID]['total_time'] += $elem[$itemID][$code]['total_time'];
           }
         }
       }
@@ -1076,6 +1080,8 @@ class tlTestPlanMetrics extends testplan
           }  
           $progress = ($progress / $out[$topItemID][$itemID]['total']) * 100;
           $out[$topItemID][$itemID]['progress'] = number_format($progress,1); 
+          $out[$topItemID][$itemID]['total_time'] = 
+              number_format($metrics['total'][$topItemID][$itemID]['total_time'],2); 
         }
       }
     }
@@ -1975,7 +1981,6 @@ class tlTestPlanMetrics extends testplan
             $builds->whereAddExec;
               
                                    
-        //new dBug($sql);                           
     switch($my['opt']['output'])
     {
       case 'array':
@@ -2031,7 +2036,6 @@ class tlTestPlanMetrics extends testplan
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
 
-    // new dBug($builds);
     
     // particular options
     $my['opt'] = array_merge(array('output' => 'map'),$my['opt']);    
@@ -2081,7 +2085,6 @@ class tlTestPlanMetrics extends testplan
         " AND E.id IS NULL " .
         " AND B.id IN ({$builds->inClause}) "; 
 
-    // new dBug($sql);
       
     switch($my['opt']['output'])
     {
@@ -2173,7 +2176,6 @@ class tlTestPlanMetrics extends testplan
     $sqlc .= " GROUP BY A_NHTCV.parent_id, A_TPTCV.platform_id " .                      
              " HAVING count(0) = " . intval($buildsCfg['count']) ; 
     
-    // new dBug($sqlc);
     
     $sql =  "/* {$debugMsg} Not Run */" . 
         " SELECT $add2select NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
@@ -2221,12 +2223,10 @@ class tlTestPlanMetrics extends testplan
         // 20130106 - TICKET 5451 - added CONDITION ON NR.platform_id
         " AND B.id IN ({$builds->inClause}) AND TPTCV.platform_id = NR.platform_id "; 
 
-    // new dBug($sql);
     switch($my['opt']['output'])
     {
       case 'array':
         $dummy = $this->db->get_recordset($sql);  
-                    
       break;
 
       case 'map':
@@ -2301,11 +2301,7 @@ class tlTestPlanMetrics extends testplan
                " AND E.$field IN (" . implode(',',(array)$my['filters'][$check]) . ')';  
     }
     
-    new dbug($my);
-    new dbug($ejoin);
-    die(__LINE__ . __FILE__);
-    
-    
+  
     
     $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" .
               " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
@@ -2400,7 +2396,6 @@ class tlTestPlanMetrics extends testplan
 
     $ic['filters'] = array_merge($ic['filters'],(array)$filtersCfg);
 
-    new dBug($filtersCfg);
     
     // ---------------------------------------------------------------------------------------------
     $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .

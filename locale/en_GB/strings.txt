@@ -1868,6 +1868,7 @@ $TLS_progress = "Progress [%]";
 $TLS_executions_without_assignment = "Unassigned executions";
 $TLS_no_testers_per_build = "There are no tester assignments to OPEN builds in this testplan.";
 
+$TLS_total_time_hhmmss = "Total time (hh:mm:ss)";
 
 
 // ----- gui/templates/resultsGeneral.tpl -----
@@ -3729,5 +3730,21 @@ $TLS_execution_time_metrics = 'Execution time metrics';
 $TLS_gen_test_plan_design_report = 'Generate Test Plan Design Report';
 $TLS_right_pane_test_plan_tree = "Click to display Test Plan Tree (on right pane)";
 $TLS_display_tsuite_contents = "Click to display Test Suite Contents (on right pane)";
+
+
+// JetMinds Export (jme)
+$TLS_xls_jmexport_testproject = 'Test Project';
+$TLS_xls_jmexport_testplan = 'Test Plan';
+$TLS_xls_jmexport_created = 'Created';
+$TLS_xls_jmexport_author = 'Author';
+$TLS_xls_jmexport_tester = 'Tester';
+$TLS_xls_jmexport_testcase = 'Test Case';
+$TLS_xls_jmexport_testobjectives = 'Test Objectives';
+$TLS_xls_jmexport_preconditions = 'Preconditions';
+$TLS_xls_jmexport_steps = 'Steps';
+$TLS_xls_jmexport_expected_result = 'Expected Result';
+$TLS_xls_jmexport_result = 'Result';
+$TLS_xls_jmexport_result_comment = 'Result comment';
+$TLS_link_report_test_plan_results_csv = 'Test Plan results (XLSX)';
 // ----- END ------------------------------------------------------------------
 ?>

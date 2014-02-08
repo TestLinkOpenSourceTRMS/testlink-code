@@ -6,12 +6,12 @@
  * @filesource	resultsByTesterPerBuild.php
  * @package     TestLink
  * @author      Andreas Simon
- * @copyright   2010 - 2013 TestLink community
+ * @copyright   2010 - 2014 TestLink community
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions
- * @since 1.9.10
+ * @since  1.9.10
  *
  */
 
@@ -47,7 +47,6 @@ $metrics = $metricsMgr->getStatusTotalsByBuildUAForRender($args->tplan_id,
                                                           array('processClosedBuilds' => $args->show_closed_builds));
 $matrix = $metrics->info;
 
-
 // Here need to work, because all queries consider ONLY ACTIVE STATUS
 $option = $args->show_closed_builds ? null : testplan::GET_OPEN_BUILD;
 $build_set = $metricsMgr->get_builds($args->tplan_id, testplan::GET_ACTIVE_BUILD, $option);
@@ -59,6 +58,8 @@ foreach($matrix as $build_id => $build_execution_map)
 {
   $build_statistics[$build_id]['total'] = 0;
   $build_statistics[$build_id]['executed'] = 0;
+  $build_statistics[$build_id]['total_time'] = 0;
+
   foreach ($build_execution_map as $user_id => $statistics) 
   {
     // total assigned test cases
@@ -67,24 +68,35 @@ foreach($matrix as $build_id => $build_execution_map)
     // total executed testcases
     $executed = $statistics['total'] - $statistics['not_run']['count']; 
     $build_statistics[$build_id]['executed'] += $executed;
+
+    $build_statistics[$build_id]['total_time'] += $statistics['total_time'];
   }
+
   // build progress
   $build_statistics[$build_id]['progress'] = round($build_statistics[$build_id]['executed'] / 
                                                    $build_statistics[$build_id]['total'] * 100,2);
+
+  // We have to fill this if we want time at BUILD LEVEL
+  $build_statistics[$build_id]['total_time'] = minutes2HHMMSS($build_statistics[$build_id]['total_time']);
 }
 
 // build the content of the table
 $rows = array();
 
+$lblx = array('progress_absolute' => lang_get('progress_absolute'),
+              'total_time_hhmmss' => lang_get('total_time_hhmmss') );
+
 foreach ($matrix as $build_id => $build_execution_map) 
 {
+
+  $first_row = $build_set[$build_id]['name'] . " - " . 
+               $lblx['progress_absolute'] . " {$build_statistics[$build_id]['progress']}%" ." - " .
+               $lblx['total_time_hhmmss'].  " {$build_statistics[$build_id]['total_time']}";
+
   foreach ($build_execution_map as $user_id => $statistics) 
   {
     $current_row = array();
-    
-    // add build name to row including Progress
-    $current_row[] = $build_set[$build_id]['name'] . " - " . lang_get('progress_absolute') . 
-                     " {$build_statistics[$build_id]['progress']}%";
+    $current_row[] = $first_row;
     
     // add username and link it to tcAssignedToUser.php
     // $username = $names[$user_id]['login'];
@@ -103,6 +115,8 @@ foreach ($matrix as $build_id => $build_execution_map)
     }
     
     $current_row[] = $statistics['progress'];
+
+    $current_row[] = minutes2HHMMSS($statistics['total_time']);
     
     // add this row to the others
     $rows[] = $current_row;
@@ -236,27 +250,60 @@ function getTableHeader($statusCfg)
 	$resultsCfg = config_get('results');	
 
 	$colCfg = array();	
-	$colCfg[] = array('title_key' => 'build', 'width' => 50, 'type' => 'text', 'sortType' => 'asText',
-		               'filter' => 'string');
-	$colCfg[] = array('title_key' => 'user', 'width' => 50, 'type' => 'text', 'sortType' => 'asText',
-		               'filter' => 'string');
-	$colCfg[] = array('title_key' => 'th_tc_assigned', 'width' => 50, 'sortType' => 'asFloat',
-	                   'filter' => 'numeric');
+	$colCfg[] = array('title_key' => 'build', 'width' => 50, 
+                    'type' => 'text', 'sortType' => 'asText','filter' => 'string');
+	$colCfg[] = array('title_key' => 'user', 'width' => 50, 
+                    'type' => 'text', 'sortType' => 'asText','filter' => 'string');
+	$colCfg[] = array('title_key' => 'th_tc_assigned', 
+                    'width' => 50, 'sortType' => 'asFloat','filter' => 'numeric');
 
 	foreach ($statusCfg as $status => $code) 
 	{
 		$label = $resultsCfg['status_label'][$status];
-		$colCfg[] = array('title_key' => $label, 'width' => 20, 'sortType' => 'asInt',
-		                   'filter' => 'numeric');
+		$colCfg[] = array('title_key' => $label, 'width' => 20, 'sortType' => 'asInt','filter' => 'numeric');
 		$colCfg[] = array('title' => lang_get($label).' '.lang_get('in_percent'),
-		                   'col_id' => 'id_'.$label.'_percent', 'width' => 30, 
-		                   'type' => 'float', 'sortType' => 'asFloat', 'filter' => 'numeric');
+		                  'col_id' => 'id_'.$label.'_percent', 'width' => 30, 
+		                  'type' => 'float', 'sortType' => 'asFloat', 'filter' => 'numeric');
 	}
 	
-	$colCfg[] = array('title_key' => 'progress', 'width' => 30, 'type' => 'float',
-	                   'sortType' => 'asFloat', 'filter' => 'numeric');
+	$colCfg[] = array('title_key' => 'progress', 'width' => 30, 
+                    'type' => 'float','sortType' => 'asFloat', 'filter' => 'numeric');
+
+  $colCfg[] = array('title' => lang_get('total_time_hhmmss'), 'width' => 30, 
+                    'type' => 'text','sortType' => 'asText', 'filter' => 'string');
+
 	return $colCfg;	                   
 }
+
+/**
+ *
+ * ATTENTION:
+ * because minutes can be a decimal (i.e 131.95) if I use standard operations i can get
+ * wrong results
+ *
+ * 
+ */
+function minutes2HHMMSS($minutes) 
+{
+  // Attention:
+  // $min2sec = $minutes * 60;
+  // doing echo provide expected result, but when using to do more math op
+  // result was wrong, 1 second loss.
+  // Example with 131.95 as input
+  // $min2sec = sprintf('%d',($minutes * 60));
+  $min2sec = bcmul($minutes, 60);
+
+  // From here number will not have decimal => will return to normal operators.
+  // do not know perfomance impacts related to BC* functions
+  $hh = floor($min2sec/3600);
+  $mmss = ($min2sec%3600);
+
+  $mm = floor($mmss/60); 
+  $ss = $mmss%60;
+
+  return sprintf('%02d:%02d:%02d', $hh, $mm, $ss);
+}
+
 
 
 
@@ -275,4 +322,5 @@ function checkRights(&$db,&$user,$context = null)
   $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
   return $check;
 }
-?>
+
+

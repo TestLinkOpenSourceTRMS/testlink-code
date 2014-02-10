@@ -31,8 +31,8 @@ ALTER TABLE /*prefix*/tcversions ADD COLUMN "estimated_exec_duration" numeric(6,
 ALTER TABLE /*prefix*/executions ADD COLUMN "execution_duration" numeric(6,2) NULL;
 
 
-ALTER TABLE /*prefix*/executions ADD COLUMN "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id);
-ALTER TABLE /*prefix*/executions ADD COLUMN "creation_ts" TIMESTAMP NOT NULL DEFAULT now();
-ALTER TABLE /*prefix*/executions ADD COLUMN "review_requester_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id);
-ALTER TABLE /*prefix*/executions ADD COLUMN "review_request_ts" TIMESTAMP NULL DEFAULT NULL;
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id);
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN "creation_ts" TIMESTAMP NOT NULL DEFAULT now();
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN "review_requester_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id);
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN "review_request_ts" TIMESTAMP NULL DEFAULT NULL;
 /* ----- END ----- */

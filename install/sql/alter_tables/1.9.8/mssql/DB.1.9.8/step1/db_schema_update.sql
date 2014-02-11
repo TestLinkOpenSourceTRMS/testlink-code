@@ -35,4 +35,9 @@ ALTER TABLE /*prefix*/executions ADD execution_duration NULL decimal(6,2);
 
 /* cfield_testprojects */
 ALTER TABLE /*prefix*/cfield_testprojects  ADD required tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required DEFAULT ((0));
+
+ALTER TABLE /*prefix*/req_coverage ADD author_id int NULL DEFAULT NULL;
+ALTER TABLE /*prefix*/req_coverage ADD datetime NOT NULL CONSTRAINT /*prefix*/DF_req_coverage_creation_ts DEFAULT (getdate());
+ALTER TABLE /*prefix*/req_coverage ADD review_requester_id int NULL DEFAULT NULL;
+ALTER TABLE /*prefix*/req_coverage ADD review_request_ts datetime NULL DEFAULT NULL;
 /* ----- END ----- */

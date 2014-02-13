@@ -7,11 +7,11 @@
  *
  * @filesource  tcImport.php
  * @package     TestLink
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://testlink.sourceforge.net/ 
  * 
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  *
  */
 require('../../config.inc.php');
@@ -198,6 +198,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   static $getVersionOpt;
   static $userObj;
   static $tcasePrefix;
+  static $glueChar;
 
   if (!$tcData)
   {
@@ -220,7 +221,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $req_mgr = new requirement_mgr($db);
     $userObj = new tlUser();
 
-    $k2l = array('already_exists_updated','original_name','testcase_name_too_long',
+    $k2l = array('already_exists_updated','original_name','testcase_name_too_long','already_exists_not_updated',
                  'start_warning','end_warning','testlink_warning','hit_with_same_external_ID');
     foreach($k2l as $k)
     {
@@ -255,6 +256,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
     $getVersionOpt = array('output' => 'minimun');
     $tcasePrefix = $tproject_mgr->getTestCasePrefix($tproject_id);
+    $glueChar = config_get('testcase_cfg')->glue_character;
   }
   
   $resultMap = array();
@@ -352,8 +354,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       if( !is_null($info) )
       {
         $tcase_qty = count($info);
-       switch($tcase_qty)
-       {
+        switch($tcase_qty)
+        {
            case 1:
              $doCreate=false;
              $tcase_id = key($info); 
@@ -365,7 +367,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 
              $ret['id'] = $tcase_id;
              $ret['tcversion_id'] = $tcversion_id;
-             $resultMap[] = array($name,$messages['already_exists_updated']);
+             if( $ret['status_ok'] )
+             { 
+               $resultMap[] = array($name,$messages['already_exists_updated']);
+             }
+             else
+             {
+               $resultMap[] = array($name, sprintf($messages['already_exists_not_updated'], 
+                                                   $tcasePrefix . $glueChar . $externalid,
+                                                   $tcasePrefix . $glueChar . $ret['hit_on']['tc_external_id']));
+            } 
            break;
            
            case 0:
@@ -377,7 +388,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
            break;
        }
      }
-   }
+    }
     
     if( $doCreate )
     {           
@@ -404,14 +415,15 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     {     
         $createOptions = array('check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
                                'action_on_duplicate_name' => $duplicatedLogic['actionOnHit'],
-                               'external_id' => $externalid);
+                               'external_id' => $externalid, 'importLogic' => $duplicatedLogic);
 
         if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
                                       $personID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
                                       $exec_type,$importance,$createOptions))
         {
-            $resultMap[] = array($name,$ret['msg']);
+          $resultMap[] = array($name,$ret['msg']);
         }  
+        // die();
     }
       
     // Custom Fields Management
@@ -594,8 +606,6 @@ function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$tcversionId,$cfValu
        }
     }  
     
-    new dBug($cf2insert);
-    new dBug($tcversionId);
     $tcaseMgr->cfield_mgr->design_values_to_db($cf2insert,$tcversionId,null,'simple');
     return $resultMsg;
 }

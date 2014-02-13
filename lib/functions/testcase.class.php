@@ -203,7 +203,12 @@ class testcase extends tlObjectWithAttachments
     $options = array('check_duplicate_name' => self::CHECK_DUPLICATE_NAME, 
                      'action_on_duplicate_name' => 'block',
                      'estimatedExecDuration' => $item->estimatedExecDuration,
-                     'status' => $item->status);
+                     'status' => $item->status, 'importLogic' => null);
+
+    if(property_exists($item, 'importLogic'))
+    {
+      $options['importLogic'] = $item->importLogic;
+    }  
 
     $ret = $this->create($item->testSuiteID,$item->name,$item->summary,$item->preconditions,
                          $item->steps,$item->authorID,'',$item->order,self::AUTOMATIC_ID,
@@ -225,12 +230,13 @@ class testcase extends tlObjectWithAttachments
 
     $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
                             'action_on_duplicate_name' => 'generate_new',
-                            'estimatedExecDuration' => null,
-                            'status' => null);
+                            'estimatedExecDuration' => null,'status' => null,
+                            'importLogic' => null);
 
     $my['options'] = array_merge($my['options'], (array)$options);
     
     $ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,$my['options']);
+
 
     $ix = new stdClass();
 
@@ -273,7 +279,12 @@ class testcase extends tlObjectWithAttachments
 
       $op = $this->createVersion($ix);
 
-
+      if($ret['update_name'])
+      {
+        $sql = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
+               $this->db->prepare_string($name) . "' WHERE id= " . intval($ret['id']);
+        $this->db->exec_query($sql);       
+      }  
 
       $ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
       $ret['tcversion_id'] = $op['status_ok'] ? $op['id'] : -1;
@@ -302,8 +313,6 @@ class testcase extends tlObjectWithAttachments
          $ret['new_name']
          
   rev: 
-  @since 1.9.4 
-  20120819 - franciscom - 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
   
   */
   function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
@@ -316,21 +325,139 @@ class testcase extends tlObjectWithAttachments
 
     $getOptions = array();
     $ret = array('id' => -1,'external_id' => 0, 'status_ok' => 1,'msg' => 'ok', 
-                 'new_name' => '', 'version_number' => 1, 'has_duplicate' => false);
+                 'new_name' => '', 'version_number' => 1, 'has_duplicate' => false,
+                 'external_id_already_exists' => false, 'update_name' => false);
 
     $my['options'] = array('check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
                            'action_on_duplicate_name' => 'generate_new',
-                           'external_id' => null); 
+                           'external_id' => null, 'importLogic' => null); 
                               
     $my['options'] = array_merge($my['options'], (array)$options);
        
     $doCreate=true;
+    $forceGenerateExternalID = false;
+
+    $algo_cfg = config_get('testcase_cfg')->duplicated_name_algorithm;
+    $getDupOptions['check_criteria'] = ($algo_cfg->type == 'counterSuffix') ? 'like' : '='; 
+    $getDupOptions['access_key'] = ($algo_cfg->type == 'counterSuffix') ? 'name' : 'id'; 
+
+
+
+    // If external ID has been provided, check if exists.
+    // If answer is yes, then 
+    // 1. collect current info
+    // 2. if $my['options']['check_duplicate_name'] is create new version
+    //    change to BLOCK
+    //
+    if( !is_null($my['options']['importLogic']) )
+    {
+      $doQuickReturn = false;
+      switch($my['options']['importLogic']['hitCriteria'])
+      {
+        case 'externalID':
+          if( ($sf = intval($my['options']['external_id'])) > 0 )
+          {
+            // check if already exists a test case with this external id
+            $info = $this->get_by_external($sf, $parent_id);
+            if( !is_null($info))
+            {
+              if( count($info) > 1)
+              {
+                // abort
+                throw new Exception("More than one test case with same external ID");
+              }
+              
+              $doQuickReturn = true;
+              $ret['id'] = key($info);
+              $ret['external_id'] = $sf;
+              $ret['version_number'] = -1;
+              $ret['external_id_already_exists'] = true;
+            }  
+          }  
+
+          switch($my['options']['importLogic']['actionOnHit']) 
+          {
+            case 'create_new_version':
+              if($doQuickReturn)
+              {  
+                // I this situation we will need to also update test case name, if user
+                // has provided one on import file.
+                // Then we need to check that new name will not conflict with an existing one
+                $doCreate = false;
+                if( strcmp($info['name'],$name) != 0)
+                {
+                  $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);  
+                  if( is_null($itemSet) )
+                  {
+                    $ret['name'] = $name;
+                    $ret['update_name'] = true;
+                  }  
+                }  
+                return $ret;
+              }
+            break;
+
+            case 'generate_new':
+              // on GUI => create a new test case with a different title
+              // IMPORTANT:
+              // if name provided on import file does not hit an existent one
+              // then I'm going to use it, instead of generating a NEW NAME
+              $forceGenerateExternalID = true; 
+              /*
+              $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions); 
+              if( is_null($itemSet) )
+              {
+                $ret['name'] = $name;
+                $ret['update_name'] = true;
+              } 
+              */ 
+            break;
+          }
+
+          /*
+          if( $my['options']['importLogic']['actionOnHit'] == 'create_new_version')
+          {
+            if( ($sf = intval($my['options']['external_id'])) > 0 )
+            {
+              $info = $this->get_by_external($sf, $parent_id);
+              if( !is_null($info))
+              {
+                if( count($info) > 1)
+                {
+                  // abort
+                  throw new Exception("More than one test case with same external ID");
+                }  
+
+                $doCreate = false;
+                $ret['id'] = key($info);
+                $ret['external_id'] = $sf;
+                $ret['version_number'] = -1;
+                $ret['external_id_already_exists'] = true;
+
+                // I this situation we will need to also update test case name.
+                // Then we need to check that new name will not conflict with an existing one
+                if( strcmp($info['name'],$name) != 0)
+                {
+                  $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);  
+                  if( is_null($itemSet) )
+                  {
+                    $ret['name'] = $name;
+                    $ret['update_name'] = true;
+                  }  
+                }  
+                return $ret;
+              }  
+            }  
+          }
+          */
+        break;    
+      }
+    }  
+
+
     if ($my['options']['check_duplicate_name'])
     {
-      $algo_cfg = config_get('testcase_cfg')->duplicated_name_algorithm;
-      $getOptions['check_criteria'] = ($algo_cfg->type == 'counterSuffix') ? 'like' : '='; 
-      $getOptions['access_key'] = ($algo_cfg->type == 'counterSuffix') ? 'name' : 'id'; 
-      $itemSet = $this->getDuplicatesByName($name,$parent_id,$getOptions);  
+      $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);  
           
       if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
       {
@@ -425,7 +552,7 @@ class testcase extends tlObjectWithAttachments
       }
     }
   
-    // 20120822 - think we have potencial issue, becuase we never check if
+    // 20120822 - think we have potencial issue, because we never check if
     // duplicated EXTERNAL ID exists.
     // Right now there is no time to try a fix  
     if( $ret['status_ok'] && $doCreate)
@@ -440,15 +567,16 @@ class testcase extends tlObjectWithAttachments
       $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
       $ret['id'] = $tcase_id;
       
-      // TICKET 5159: importing duplicate test suites
-      // TICKET 4937: Test Cases EXTERNAL ID is Auto genarated, no matter is provided on XML
-      if( is_null($my['options']['external_id']) )
+      if( $forceGenerateExternalID || is_null($my['options']['external_id']) )
       {
         $ret['external_id'] = $this->tproject_mgr->generateTestCaseNumber($tproject_id);
       }  
       else
       {
+        // this need more work and checks (20140209)  
         $ret['external_id'] = $my['options']['external_id'];
+
+        // CRITIC: setTestCaseCounter() will update only if new provided value > current value
         $this->tproject_mgr->setTestCaseCounter($tproject_id,$my['options']['external_id']);
       }  
       
@@ -558,7 +686,7 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-      $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id');
+      $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 'id2exclude' => null);
       $my['options'] = array_merge($my['options'], (array)$options);
       
       $target = $this->db->prepare_string($name);
@@ -583,13 +711,18 @@ class testcase extends tlObjectWithAttachments
          " AND TCV.id=NHB.id " .
          " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
          " AND NHA.parent_id={$parent_id} {$check_criteria}";
+
+    if( !is_null($my['options']['id2exclude']) )
+    {
+      $sql .= " AND NHA.id <> " . intval($my['options']['id2exclude']);
+    }  
   
     $rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-      if( is_null($rs) || count($rs) == 0 )
-      {
-          $rs=null;   
-      }
-      return $rs;
+    if( is_null($rs) || count($rs) == 0 )
+    {
+      $rs=null;   
+    }
+    return $rs;
   }
   
   
@@ -846,6 +979,7 @@ class testcase extends tlObjectWithAttachments
   {
     $ret['status_ok'] = 1;
     $ret['msg'] = '';
+    $ret['reason'] = '';
 
     $attrib = array('status' => null, 'estimatedExecDuration' => null);
     $attrib = array_merge($attrib,(array)$attr);
@@ -854,12 +988,36 @@ class testcase extends tlObjectWithAttachments
     tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
     
     // Check if new name will be create a duplicate testcase under same parent
-    $checkDuplicates = config_get('check_names_for_duplicates');
-    if ($checkDuplicates)
+    if( ($checkDuplicates = config_get('check_names_for_duplicates')) )
     {   
-      $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
+      // $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
+      
+      // new dBug($check);
+      // get my parent
+      $mi = $this->tree_manager->get_node_hierarchy_info($id);
+      $itemSet = $this->getDuplicatesByName($name,$mi['parent_id'],array('id2exclude' => $id));  
+      // new dBug($itemSet);
+
+      /*
       $ret['status_ok'] = !$check['status']; 
       $ret['msg'] = $check['msg']; 
+      $ret['reason'] = $ret['status_ok'] ? '' : 'already_exists';
+      */
+      if(!is_null($itemSet))
+      {
+        $ret['status_ok'] = false; 
+        $ret['msg'] = sprintf(lang_get('name_already_exists'),$name); 
+        $ret['reason'] = 'already_exists';
+        $ret['hit_on'] = current($itemSet);
+      }  
+
+
+      if( $ret['status_ok'] == false )
+      {
+        // get more info for feedback
+
+      }  
+      // new dBug($ret);
     }    
   
     if($ret['status_ok'])

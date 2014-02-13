@@ -7,7 +7,7 @@
  * @package     TestLink
  * @author      franciscom
  * @copyright   2005-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
  * @since 1.9.10

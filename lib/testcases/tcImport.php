@@ -278,7 +278,14 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $internalid = $tc['internalid'];
     $preconditions = $tc['preconditions'];
     $exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
-    $importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;    
+    $importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;   
+
+    $attr = null;
+    if(isset($tc['estimated_exec_duration']) && !is_null($tc['estimated_exec_duration']))
+    {
+      $attr['estimatedExecDuration'] = trim($tc['estimated_exec_duration']);
+      $attr['estimatedExecDuration'] = $attr['estimatedExecDuration']=='' ? null : floatval($attr['estimatedExecDuration']);
+    }  
 
     $externalid = $tc['externalid'];
     if( intval($externalid) <= 0 )
@@ -363,7 +370,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
              $tcversion_id = $last_version['id'];
              $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
                                        $preconditions,$steps,$personID,$kwIDs,
-                                       $node_order,$exec_type,$importance);
+                                       $node_order,$exec_type,$importance,$attr);
 
              $ret['id'] = $tcase_id;
              $ret['tcversion_id'] = $tcversion_id;
@@ -422,6 +429,10 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                                       $exec_type,$importance,$createOptions))
         {
           $resultMap[] = array($name,$ret['msg']);
+          if($ret['status_ok'])
+          {
+            $tcase_mgr->setEstimatedExecDuration($ret['tcversion_id'],$attr['estimatedExecDuration']);
+          }  
         }  
         // die();
     }
@@ -738,16 +749,16 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 
   // TICKET 4963: Test case / Tes suite XML format, new element to set author
   $tcXML['elements'] = array('string' => array("summary" => null,"preconditions" => null,
-                         "author_login" => null),
-                               'integer' => array("node_order" => null,"externalid" => null,
-                                           "execution_type" => null ,"importance" => null));
+                                               "author_login" => null,"estimated_exec_duration" => null),
+                             'integer' => array("node_order" => null,"externalid" => null,
+                                                "execution_type" => null ,"importance" => null));
   $tcXML['attributes'] = array('string' => array("name" => 'trim'), 
                                'integer' =>array('internalid' => null));
 
   for($idx = 0; $idx < $loops2do; $idx++)
   {
-        $dummy = getItemsFromSimpleXMLObj(array($xmlTCs[$idx]),$tcXML);
-        $tc = $dummy[0]; 
+    $dummy = getItemsFromSimpleXMLObj(array($xmlTCs[$idx]),$tcXML);
+    $tc = $dummy[0]; 
         
     if ($tc)
     {
@@ -815,7 +826,7 @@ function getStepsFromSimpleXMLObj($simpleXMLItems)
 
 function getCustomFieldsFromSimpleXMLObj($simpleXMLItems)
 {
-    $itemStructure['elements'] = array('string' => array("name" => 'trim',"value" => 'trim'));
+  $itemStructure['elements'] = array('string' => array("name" => 'trim',"value" => 'trim'));
   $items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
   return $items;
 
@@ -823,16 +834,16 @@ function getCustomFieldsFromSimpleXMLObj($simpleXMLItems)
 
 function getRequirementsFromSimpleXMLObj($simpleXMLItems)
 {
-    $itemStructure['elements'] = array('string' => array("req_spec_title" => 'trim',
-                               "doc_id" => 'trim' ,"title" => 'trim' ));
+  $itemStructure['elements'] = array('string' => array("req_spec_title" => 'trim',
+                                                       "doc_id" => 'trim' ,"title" => 'trim' ));
   $items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
   return $items;
 }
 
 function getKeywordsFromSimpleXMLObj($simpleXMLItems)
 {
-    $itemStructure['elements'] = array('string' => array("notes" => null));
-    $itemStructure['attributes'] = array('string' => array("name" => 'trim'));
+  $itemStructure['elements'] = array('string' => array("notes" => null));
+  $itemStructure['attributes'] = array('string' => array("name" => 'trim'));
   $items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
   return $items;
 }

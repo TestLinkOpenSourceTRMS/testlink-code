@@ -43,7 +43,6 @@ function simplexml_load_file_wrapper($filename)
  */
 function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
-  // echo __FUNCTION__; echo 'items <br>'; new dBug($items);
   if (!$items)
   {
     return;
@@ -58,8 +57,6 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
     
     // REMEMBER YOU NEED TO USE XMP TO DEBUG
     // echo '$xmlElemCode'; echo "<xmp>$xmlElemCode)</xmp>";
-    // echo '$elemInfo'; new dBug($elemInfo);
-    
     foreach($elemInfo as $subject => $replacement)
     {
       $fm = substr($subject,0,2);
@@ -75,15 +72,8 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
         break;
       }
       
-      // echo 'what to search => $subject:' . $subject . '<br>';
-      // echo 'replace with:' . $content . '<br>';
-      // echo '$replacement key:' . $replacement . '<br>';
-      // echo "BEFORE Replace: <xmp>$xmlElemCode</xmp>";
-
       $howMany = 0;
       $xmlElemCode = str_replace($subject,$content,$xmlElemCode,$howMany);
-      // echo "How many?: $howMany<br>";
-      // echo "After Replace: <xmp>$xmlElemCode</xmp>";
     }
     $xmlCode .= $xmlElemCode;
   }
@@ -133,37 +123,32 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
  */
 function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
 {
-  // new dBug(__FUNCTION__);
-  // new dBug($simpleXMLItems);
-  // new dBug($itemStructure);
-
   $items = null;
   if($simpleXMLItems)
   {
-      $items_counter=0;
-      $loop_qty = count($simpleXMLItems);
+    $items_counter=0;
+    $loop_qty = count($simpleXMLItems);
 
-        // new dBug($loop_qty);
-      for($idx=0; $idx < $loop_qty; $idx++)
-      {
-        // echo "DEBUG - " . __FUNCTION__ . " \$idx:$idx<br>";
+    // new dBug($loop_qty);
+    for($idx=0; $idx < $loop_qty; $idx++)
+    {
+      // echo "DEBUG - " . __FUNCTION__ . " \$idx:$idx<br>";
       foreach($itemStructure['elements'] as $castType => $keyValues)
-        {
-          // new dBug($castType); new dBug($keyValues); 
+      {
         foreach($keyValues as $key => $fn2apply)
+        {
+          $dummy[$key] = null;
+          if( property_exists($simpleXMLItems[$idx],$key) )
           {
-            $dummy[$key] = null;
-            if( property_exists($simpleXMLItems[$idx],$key) )
+            $dummy[$key] = $simpleXMLItems[$idx]->$key;
+            settype($dummy[$key],$castType);
+            if(!is_null($fn2apply))
             {
-              $dummy[$key] = $simpleXMLItems[$idx]->$key;
-                settype($dummy[$key],$castType);
-                if(!is_null($fn2apply))
-                {
-                  $dummy[$key] = $fn2apply($dummy[$key]);
-                }   
-              }
+              $dummy[$key] = $fn2apply($dummy[$key]);
+            }   
           }
-        } 
+        }
+      } 
 
       if( isset($itemStructure['attributes']) && !is_null($itemStructure['attributes']) )
       {
@@ -186,7 +171,7 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
       }
       $items[$items_counter++] = $dummy;
       }
-    } 
+    }
+
   return $items;
 }
-?>

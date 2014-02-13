@@ -3364,6 +3364,7 @@ class testcase extends tlObjectWithAttachments
                 "\t<preconditions><![CDATA[||PRECONDITIONS||]]></preconditions>\n" .
                 "\t<execution_type><![CDATA[||EXECUTIONTYPE||]]></execution_type>\n" .
                 "\t<importance><![CDATA[||IMPORTANCE||]]></importance>\n" .
+                "\t<estimated_exec_duration>||ESTIMATED_EXEC_DURATION||</estimated_exec_duration>\n" .
                 "||STEPS||\n" .
                 "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
   
@@ -3383,6 +3384,7 @@ class testcase extends tlObjectWithAttachments
                     "||PRECONDITIONS||" => "preconditions",
                     "||EXECUTIONTYPE||" => "execution_type",
                     "||IMPORTANCE||" => "importance",
+                    "||ESTIMATED_EXEC_DURATION||" => "estimated_exec_duration",
                     "||STEPS||" => "xmlsteps",
                     "||KEYWORDS||" => "xmlkeywords",
                     "||CUSTOMFIELDS||" => "xmlcustomfields",

@@ -567,17 +567,32 @@ class testcase extends tlObjectWithAttachments
       $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
       $ret['id'] = $tcase_id;
       
+      $generateExtID = false;
       if( $forceGenerateExternalID || is_null($my['options']['external_id']) )
       {
-        $ret['external_id'] = $this->tproject_mgr->generateTestCaseNumber($tproject_id);
+        $generateExtID = true;
       }  
       else
       {
-        // this need more work and checks (20140209)  
-        $ret['external_id'] = $my['options']['external_id'];
+        // this need more work and checks (20140209) 
+        $sf = intval($my['options']['external_id']); 
+        if( is_null($this->get_by_external($sf, $parent_id)) )
+        {
+          $ret['external_id'] = $sf;
 
-        // CRITIC: setTestCaseCounter() will update only if new provided value > current value
-        $this->tproject_mgr->setTestCaseCounter($tproject_id,$my['options']['external_id']);
+          // CRITIC: setTestCaseCounter() will update only if new provided value > current value
+          $this->tproject_mgr->setTestCaseCounter($tproject_id,$ret['external_id']);
+
+        } 
+        else
+        {
+          $generateExtID = true;
+        }  
+
+      }  
+      if( $generateExtID )
+      {
+        $ret['external_id'] = $this->tproject_mgr->generateTestCaseNumber($tproject_id);
       }  
       
       if( !$ret['has_duplicate'] && ($originalNameLen > $name_max_len) )

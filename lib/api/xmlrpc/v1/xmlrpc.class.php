@@ -2972,10 +2972,10 @@ public function getTestCasesForTestPlan($args)
     *  we can assign multiple requirements.
     *  Requirements can belong to different Requirement Spec
     *         
-  *  @param struct $args
-  *  @param string $args["devKey"]
-  *  @param int $args["testcaseexternalid"]
-  *  @param int $args["testprojectid"] 
+    *  @param struct $args
+    *  @param string $args["devKey"]
+    *  @param int $args["testcaseexternalid"]
+    *  @param int $args["testprojectid"] 
     *  @param string $args["requirements"] 
     *                array(array('req_spec' => 1,'requirements' => array(2,4)),
     *                array('req_spec' => 3,'requirements' => array(22,42))
@@ -3022,7 +3022,7 @@ public function getTestCasesForTestPlan($args)
       {
         foreach($item['requirements'] as $req_id)
         {
-          $this->reqMgr->assign_to_tcase($req_id,$tcase_id);
+          $this->reqMgr->assign_to_tcase($req_id,$tcase_id,$this->userID);
         }          
       }
       $resultInfo[] = array("operation" => $operation,
@@ -3778,28 +3778,28 @@ public function getTestCase($args)
    *         [message]  => optional message for error message string
    * @access public
    */  
-   public function deleteExecution($args)
-   {    
+  public function deleteExecution($args)
+  {    
     $resultInfo = array();
-        $operation=__FUNCTION__;
-      $msg_prefix="({$operation}) - ";
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
     $execCfg = config_get('exec_cfg');
 
     $this->_setArgs($args);              
     $resultInfo[0]["status"] = false;
     
-        $checkFunctions = array('authenticate','checkExecutionID');       
-        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+    $checkFunctions = array('authenticate','checkExecutionID');       
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
   
-      // Important userHasRight sets error object
-      //
-        $status_ok = ($status_ok && $this->userHasRight("testplan_execute"));  
+    // Important userHasRight sets error object
+    //
+    $status_ok = ($status_ok && $this->userHasRight("testplan_execute"));  
     if($status_ok)
     {      
       if( $execCfg->can_delete_execution )  
       {
         $this->tcaseMgr->deleteExecution($args[self::$executionIDParamName]);      
-            $resultInfo[0]["status"] = true;
+        $resultInfo[0]["status"] = true;
         $resultInfo[0]["id"] = $args[self::$executionIDParamName];  
         $resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
         $resultInfo[0]["operation"] = $operation;
@@ -3807,8 +3807,8 @@ public function getTestCase($args)
       else
       {
         $status_ok = false;
-            $this->errors[] = new IXR_Error(CFG_DELETE_EXEC_DISABLED, 
-                                            CFG_DELETE_EXEC_DISABLED_STR);
+        $this->errors[] = new IXR_Error(CFG_DELETE_EXEC_DISABLED, 
+                                        CFG_DELETE_EXEC_DISABLED_STR);
       }
     }
 

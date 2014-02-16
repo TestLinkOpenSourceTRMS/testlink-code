@@ -631,7 +631,7 @@ class testcase extends tlObjectWithAttachments
                  $this->db->prepare_int($item->authorID) . "," . $this->db->db_now() . 
                  ", {$item->executionType},{$item->importance} ";
 
-
+            
     if( !is_null($item->status) )
     {
       $wf = intval($item->status);
@@ -652,6 +652,7 @@ class testcase extends tlObjectWithAttachments
     $sql .= " )" . $sqlValues . " )";
 
 
+  
     $result = $this->db->exec_query($sql);
 
     $ret['msg']='ok';
@@ -3538,6 +3539,7 @@ class testcase extends tlObjectWithAttachments
                 "\t<execution_type><![CDATA[||EXECUTIONTYPE||]]></execution_type>\n" .
                 "\t<importance><![CDATA[||IMPORTANCE||]]></importance>\n" .
                 "\t<estimated_exec_duration>||ESTIMATED_EXEC_DURATION||</estimated_exec_duration>\n" .
+                "\t<status>||STATUS||</status>\n" .
                 "||STEPS||\n" .
                 "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
   
@@ -3558,6 +3560,7 @@ class testcase extends tlObjectWithAttachments
                     "||EXECUTIONTYPE||" => "execution_type",
                     "||IMPORTANCE||" => "importance",
                     "||ESTIMATED_EXEC_DURATION||" => "estimated_exec_duration",
+                    "||STATUS||" => "status",
                     "||STEPS||" => "xmlsteps",
                     "||KEYWORDS||" => "xmlkeywords",
                     "||CUSTOMFIELDS||" => "xmlcustomfields",

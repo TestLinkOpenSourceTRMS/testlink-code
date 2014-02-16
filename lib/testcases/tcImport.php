@@ -208,7 +208,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   // $tprojectHas = array('customFields' => false, 'reqSpec' => false);
   $hasCustomFieldsInfo = false;
   $hasRequirements = false;
-    
+
   if(is_null($messages))
   {
     $feedbackMsg = array();
@@ -285,6 +285,11 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     {
       $attr['estimatedExecDuration'] = trim($tc['estimated_exec_duration']);
       $attr['estimatedExecDuration'] = $attr['estimatedExecDuration']=='' ? null : floatval($attr['estimatedExecDuration']);
+    }  
+
+    if(isset($tc['status']))
+    {
+      $attr['status'] = trim($tc['status']);
     }  
 
     $externalid = $tc['externalid'];
@@ -424,17 +429,21 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                                'action_on_duplicate_name' => $duplicatedLogic['actionOnHit'],
                                'external_id' => $externalid, 'importLogic' => $duplicatedLogic);
 
+        if(!is_null($attr) )
+        {
+          $createOptions += $attr;
+        }  
+
         if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
                                       $personID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
                                       $exec_type,$importance,$createOptions))
         {
           $resultMap[] = array($name,$ret['msg']);
-          if($ret['status_ok'])
-          {
-            $tcase_mgr->setEstimatedExecDuration($ret['tcversion_id'],$attr['estimatedExecDuration']);
-          }  
+          // if($ret['status_ok'])
+          //{
+          //  $tcase_mgr->setEstimatedExecDuration($ret['tcversion_id'],$attr['estimatedExecDuration']);
+          //}  
         }  
-        // die();
     }
       
     // Custom Fields Management
@@ -729,7 +738,6 @@ function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id
  * 
  *
  * @internal revisions
- * 20100317 - added internalid - BUGID 3236
  */
 function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 {
@@ -750,7 +758,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
   // TICKET 4963: Test case / Tes suite XML format, new element to set author
   $tcXML['elements'] = array('string' => array("summary" => null,"preconditions" => null,
                                                "author_login" => null,"estimated_exec_duration" => null),
-                             'integer' => array("node_order" => null,"externalid" => null,
+                             'integer' => array("node_order" => null,"externalid" => null,"status" => null,
                                                 "execution_type" => null ,"importance" => null));
   $tcXML['attributes'] = array('string' => array("name" => 'trim'), 
                                'integer' =>array('internalid' => null));

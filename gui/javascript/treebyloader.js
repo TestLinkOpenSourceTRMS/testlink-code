@@ -344,12 +344,12 @@ Ext.onReady(function(){
     var oldNextSibling = null;
 
     // shorthand
-    var Tree = Ext.tree;
+    var TreeWidget = Ext.tree;
     
     // added config option copyOrMove, can be used (RW) with this access path
     // .initialConfig.copyOrMove
     //
-    tree = new Tree.TreePanel({
+    tree = new TreeWidget.TreePanel({
         el:treeCfg.tree_div_id,
         useArrows:true,
         autoScroll:true,
@@ -358,13 +358,13 @@ Ext.onReady(function(){
         enableDD:treeCfg.enableDD,
         containerScroll: true,
         copyOrMove: 'move', 
-        loader: new Tree.TreeLoader({
+        loader: new TreeWidget.TreeLoader({
             dataUrl:treeCfg.loader
         })
     });
 
     // set the root node
-    var root = new Tree.AsyncTreeNode({
+    var root = new TreeWidget.AsyncTreeNode({
         text: treeCfg.root_name,
         draggable:false,
         id:treeCfg.root_id,

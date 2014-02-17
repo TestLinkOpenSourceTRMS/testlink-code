@@ -138,6 +138,8 @@ class redminerestInterface extends issueTrackerInterface
    **/
   function connect()
   {
+    $processCatch = false;
+
     try
     {
   	  // CRITIC NOTICE for developers
@@ -274,8 +276,8 @@ class redminerestInterface extends issueTrackerInterface
   {
     if(($status_ok = $this->checkBugIDSyntax($issueID)))
     {
-        $issue = $this->getIssue($issueID);
-        $status_ok = is_object($issue) && !is_null($issue);
+      $issue = $this->getIssue($issueID);
+      $status_ok = is_object($issue) && !is_null($issue);
     }
     return $status_ok;
   }

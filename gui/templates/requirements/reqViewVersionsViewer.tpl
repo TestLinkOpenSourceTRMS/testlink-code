@@ -183,6 +183,7 @@ viewer for requirement
         <span>
         <input type="image"  class="clickable" src="{$tlImages.disconnect_small}" 
                title="{$labels.removeLinkToTestCase}" onClick="tcaseIdentity.value={$args_req_coverage[row].id}">
+        &nbsp;&nbsp;       
         <img class="clickable" src="{$tlImages.history_small}"
              onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
              title="{$labels.execution_history}" />

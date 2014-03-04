@@ -4,12 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 viewer for requirement
 
 @internal revisions
-@since 1.9.4
-20110817 - franciscom - TICKET 4702: Requirement View - display log message
-
-@since 1.9.3
-20110308 - asimon - BUGID 4273: printing of single requirement
-20101127 - franciscom - BUGID 4056: Requirement Revisioning
+@since 1.9.10
 *}
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
@@ -28,7 +23,8 @@ viewer for requirement
     {/if}
 	  <h2>{$labels.title_test_case} {$args_req.title|escape} </h2>
 {/if}
-{assign var="warning_edit_msg" value=""}
+
+{$warning_edit_msg=""}
 
 {* Option to print single requirement *}
 <div>

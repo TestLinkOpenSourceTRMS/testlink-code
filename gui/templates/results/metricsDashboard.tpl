@@ -1,15 +1,16 @@
 {* 
- Testlink Open Source Project - http://testlink.sourceforge.net/ 
- @filesource  metricsDashboard.tpl
- Purpose: smarty template - main page / site map                 
+Testlink Open Source Project - http://testlink.sourceforge.net/ 
+@filesource  metricsDashboard.tpl
+@internal revisions
+@since 1.9.10                
 *}
 {lang_get var="labels"
           s="generated_by_TestLink_on,testproject,test_plan,platform,show_only_active,
              info_metrics_dashboard,test_plan_progress,project_progress, info_metrics_dashboard_progress"}
+
 {include file="inc_head.tpl" openHead='yes'}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -19,10 +20,10 @@
   {$matrix->renderHeadSection()}
 {/foreach}
 
-{assign var="tplan_metric" value="$gui->tplan_metrics"}
+{$tplan_metric=$gui->tplan_metrics}
 <script type="text/javascript">
 Ext.onReady(function() {ldelim}
-	{foreach key="key" item="value" from="$gui->project_metrics"}
+	{foreach key="key" item="value" from=$gui->project_metrics}
     new Ext.ProgressBar({ldelim}
         text:'&nbsp;&nbsp;{lang_get s=$value.label_key}: {$value.value}% [{$tplan_metric.total.$key}/{$tplan_metric.total.active}]',
         width:'400',
@@ -51,11 +52,7 @@ Ext.onReady(function() {ldelim}
 <input type="checkbox" name="show_only_active" value="show_only_active"
        {if $gui->show_only_active} checked="checked" {/if}
        onclick="this.form.submit();" /> {$labels.show_only_active}
-<input type="hidden"
-       name="show_only_active_hidden"
-       value="{$gui->show_only_active}" />
-
-
+<input type="hidden"  name="show_only_active_hidden"  value="{$gui->show_only_active}" />
 
 </form></p><br/>
 
@@ -75,7 +72,7 @@ Ext.onReady(function() {ldelim}
 	<h2>{$labels.test_plan_progress}</h2>
 	<br />
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var="tableID" value="table_$idx"}
+		{$tableID="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	<br />

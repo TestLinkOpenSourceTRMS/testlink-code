@@ -186,10 +186,11 @@
 			<img src="{$tlImages.bullet}" />
 			<a href="{$gui->launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
 			<br />
-      {if $gui->grants.exec_testcases_assigned_to_me == "yes"}
+      {* do not understand this check => will remove *}        
+      {* {if $gui->grants.exec_testcases_assigned_to_me == "yes"} *}
   			<img src="{$tlImages.bullet}" />
   			<a href="{$gui->url.metrics_dashboard}">{$labels.href_metrics_dashboard}</a>
-      {/if} 
+      {* {/if} *}
 		{/if} 
     </div>
 	{/if}

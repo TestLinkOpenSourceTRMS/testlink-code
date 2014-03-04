@@ -1216,21 +1216,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
   private function init_setting_testplan() 
   {
 
-    if (is_null($this->testplan_mgr)) {
+    if (is_null($this->testplan_mgr)) 
+    {
       $this->testplan_mgr = new testplan($this->db);
     }
     
     $key = 'setting_testplan';
     $testplans = $this->user->getAccessibleTestPlans($this->db, $this->args->testproject_id);
-
-    if (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] != $this->args->{$key}) {
+    if (isset($_SESSION['testplanID']) && $_SESSION['testplanID'] != $this->args->{$key}) 
+    {
       // testplan was changed, we need to reset all filters
       // --> they were chosen for another testplan, not this one!
       $this->args->reset_filters = true;
 
       // check if user is allowed to set chosen testplan before changing
-      foreach ($testplans as $plan) {
-        if ($plan['id'] == $this->args->{$key}) {
+      foreach ($testplans as $plan) 
+      {
+        if ($plan['id'] == $this->args->{$key}) 
+        {
           setSessionTestPlan($plan);
         }
       }
@@ -1243,18 +1246,23 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $this->args->{$key} = $info['id'];
     $this->settings[$key]['selected'] = $info['id'];
 
+    // Final filtering based on mode:
     // Now get all selectable testplans for the user to display.
-    // For execution, don't take testplans into selection which have no (active/open) builds!
-    // For plan add mode, add every plan no matter if he has builds or not.
+    // For execution: 
+    // For assign test case execution feature:
+    //     don't take testplans into selection which have no (active/open) builds!
+    //
+    // For plan add mode: 
+    //     add every plan no matter if he has builds or not.
+
     foreach ($testplans as $plan) 
     {
-      // List also test plans without builds for "plan_mode"
-      $add_plan = $this->mode == 'plan_add_mode' || $this->mode == 'plan_mode';
-      if (!$add_plan) 
+      $add_plan = $this->mode == 'plan_add_mode' || 
+                 ( $this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment' ) ;
+
+      if(!$add_plan) 
       {
-        $builds = $this->testplan_mgr->get_builds($plan['id'],
-                                                  testplan::GET_ACTIVE_BUILD,
-                                                  testplan::GET_OPEN_BUILD);
+        $builds = $this->testplan_mgr->get_builds($plan['id'],testplan::GET_ACTIVE_BUILD,testplan::GET_OPEN_BUILD);
         $add_plan =  (is_array($builds) && count($builds));
       }
       
@@ -1263,7 +1271,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         $this->settings[$key]['items'][$plan['id']] = $plan['name'];
       }
     }
-  } // end of method
+  }
 
   /**
    * 

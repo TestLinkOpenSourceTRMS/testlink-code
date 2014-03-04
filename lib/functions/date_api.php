@@ -5,15 +5,15 @@
  * 
  * Date API
  *
- * @package   TestLink
- * @author    franciscom; Piece copied form Mantis and adapted to TestLink needs
+ * @package     TestLink
+ * @author      franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
- * @copyright   2005-2013, TestLink community 
+ * @copyright   2005-2014, TestLink community 
  * @filesource  date_api.php
- * @link    http://www.teamst.org/
+ * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.8 
+ * @since 1.9.10
  *       
  */
  
@@ -126,7 +126,18 @@ function create_date_selection_set($p_name, $p_format, $p_date=0, $options=null)
   $m = $t_date[1];
   $d = $t_date[2];
   $y = $t_date[0];
-  $time = mktime(0, 0, 0, $m, $d, $y);
+
+  // PHP on 32bit systems, when passing mktime(0,0,0,-1,-1,-1) returns false.
+  // PHP on 64bit systems it returns a long negative value which causes the error.
+  if( $m < 0 || $d < 0 || $y < 0 )
+  {
+    $time = 0;
+  }
+  else
+  {  
+    $time = mktime(0, 0, 0, $m, $d, $y);
+  }
+  
   $formatted_date = $time != 0 ? strftime($date_format, $time) : '';
   
   $str_out .= '<input type="text" name="' . $p_name.'_input" size="10" id="' . $p_name.'_input" ' .

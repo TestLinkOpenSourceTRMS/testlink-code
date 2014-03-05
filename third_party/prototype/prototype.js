@@ -4,7 +4,11 @@
  *  Prototype is freely distributable under the terms of an MIT-style license.
  *  For details, see the Prototype web site: http://www.prototypejs.org/
  *
- *--------------------------------------------------------------------------*/
+ *  20140305 - francisco.mancardi@gmail.com
+ *  TICKET 6229: Error "Stack overflow in line: 7" (prototype.js and ext-js compatibility issue)
+ *               Affects IE 8 
+ *               (TIMER = pollDoScroll.defer(0.001);)
+ *---------------------------------------------------------------------------------------------*/
 
 var Prototype = {
 
@@ -6784,7 +6788,7 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
     try {
       document.documentElement.doScroll('left');
     } catch (e) {
-      TIMER = pollDoScroll.defer();
+      TIMER = pollDoScroll.defer(0.001);
       return;
     }
 

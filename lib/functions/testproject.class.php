@@ -2219,12 +2219,12 @@ function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
           fixed bug when there are no children
 
 */
-function get_first_level_test_suites($tproject_id,$mode='simple')
+function get_first_level_test_suites($tproject_id,$mode='simple',$opt=null)
 {
   $fl=$this->tree_manager->get_children($tproject_id,
                                         array( 'testcase', 'exclude_me',
                                                'testplan' => 'exclude_me',
-                                               'requirement_spec' => 'exclude_me' ));
+                                               'requirement_spec' => 'exclude_me' ),$opt);
   switch ($mode)
   {
     case 'simple':

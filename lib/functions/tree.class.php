@@ -599,35 +599,43 @@ class tree extends tlObject
             
              
   */
-  function get_children($id,$exclude_node_types=null) 
+  function get_children($id,$exclude_node_types=null,$opt=null) 
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-      $sql = "/* $debugMsg */ " .
-             " SELECT id,name,parent_id,node_type_id,node_order FROM {$this->object_table} " .
-             " WHERE parent_id = {$id} ORDER BY node_order,id";
+    $my['opt'] = array('accessKey' => null);
+    $my['opt'] = array_merge($my['opt'], (array)$opt);
+  
+    $sql = "/* $debugMsg */ " .
+           " SELECT id,name,parent_id,node_type_id,node_order FROM {$this->object_table} " .
+           " WHERE parent_id = {$id} ORDER BY node_order,id";
       
-      $node_list=array();  
-      $result = $this->db->exec_query($sql);
+    $node_list=array();  
+    $result = $this->db->exec_query($sql);
       
-      if( $this->db->num_rows($result) == 0 )
+    if( $this->db->num_rows($result) == 0 )
+    {
+      return(null);   
+    }
+      
+    $xdx = 0;  
+    while ( $row = $this->db->fetch_array($result) )
+    {
+      if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
       {
-        return(null);   
+        // $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+        $node_table = $this->node_tables_by['id'][$row['node_type_id']];
+
+
+        $ak = is_null($my['opt']['accessKey']) ? $xdx : $row[$my['opt']['accessKey']];
+        $node_list[$ak] = array('id' => $row['id'], 'parent_id' => $row['parent_id'],
+                                'node_type_id' => $row['node_type_id'],
+                                'node_order' => $row['node_order'],
+                                'node_table' => $node_table,'name' => $row['name']);
+        $xdx++;      
       }
-      
-      while ( $row = $this->db->fetch_array($result) )
-      {
-          if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
-          {
-            // $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-            $node_table = $this->node_tables_by['id'][$row['node_type_id']];
-            $node_list[] = array('id' => $row['id'], 'parent_id' => $row['parent_id'],
-                                 'node_type_id' => $row['node_type_id'],
-                                 'node_order' => $row['node_order'],
-                                 'node_table' => $node_table,'name' => $row['name']);
-        }
-      }
-      return ($node_list);
+    }
+    return $node_list;
   }
   
    
@@ -1224,7 +1232,6 @@ class tree extends tlObject
       }
       else
       {
-        //new dBug($items);
         foreach((array)$items as $item_id)
         {
           $stairway2heaven[$item_id] = $this->get_path($item_id,$goto_root,$path_format);

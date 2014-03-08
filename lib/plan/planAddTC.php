@@ -28,15 +28,8 @@ $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+$args = init_args($tproject_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
-
-/*
-$skel = $tplan_mgr->getSkeleton($args->tplan_id,$args->tproject_id,null,
-                                array('remove_empty_branches' => true,'recursive' => true));
-new dBug($skel);
-die();
-*/
 
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
@@ -253,6 +246,7 @@ if($do_display)
                    'cfields' => $args->control_panel['filter_custom_fields'],
                    'tcase_name' => $args->control_panel['filter_testcase_name']);
 
+
   $out = gen_spec_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$tsuite_data['name'],
                        $tplan_linked_tcversions,null,$filters,$opt);
   
@@ -301,7 +295,7 @@ if($do_display)
   returns: object with some REQUEST and SESSION values as members
 
 */
-function init_args()
+function init_args(&$tproject_mgr)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -348,7 +342,12 @@ function init_args()
   // to be able to pass filters to functions present on specview.php
   $args->control_panel = $session_data;
   
+ 
+
+
+
   $getFromSession = !is_null($session_data);
+
   $booleankeys = array('refreshTree' => 'setting_refresh_tree_on_action','importance' => 'filter_importance',
                        'executionType' => 'filter_execution_type');
 
@@ -357,6 +356,30 @@ function init_args()
     $args->$key = ($getFromSession && isset($session_data[$value])) ? $session_data[$value] : 0;
   }            
   $args->importance = ($args->importance > 0) ? $args->importance : null;
+
+
+  // Filter Top level testsuite is implemented in an strange way:
+  // contains WHAT TO REMOVE
+  $args->topLevelTestSuite = 0;
+  if( $getFromSession && isset($session_data['filter_toplevel_testsuite']) 
+                      && count($session_data['filter_toplevel_testsuite']) > 0)
+  {
+    // get all
+    $first_level_suites = $tproject_mgr->get_first_level_test_suites($args->tproject_id,
+                                                                     'simple',array('accessKey' => 'id'));
+
+  
+    // remove unneeded
+    $hit = array_diff_key($first_level_suites, $session_data['filter_toplevel_testsuite']);
+    $args->topLevelTestSuite = intval(key($hit));
+  }  
+  
+  // This has effect when 'show full (on right pane)' button is used
+  if($args->tproject_id == $args->object_id && $args->topLevelTestSuite > 0)
+  {
+    $args->object_id = $args->topLevelTestSuite;
+  }  
+
 
 
   $args->keyword_id = 0;
@@ -379,6 +402,7 @@ function init_args()
   
   $args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
   $args->activity = isset($_REQUEST['activity']) ? $_REQUEST['activity'] : '';
+
   return $args;
 }
 

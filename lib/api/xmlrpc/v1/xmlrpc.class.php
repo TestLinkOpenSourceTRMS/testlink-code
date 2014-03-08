@@ -376,10 +376,10 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @return boolean
    * @access protected
    */
-    protected function userHasRight($rightToCheck)
-    {
-        $status_ok = true;
-        $tprojectid = $this->args[self::$testProjectIDParamName];
+  protected function userHasRight($rightToCheck)
+  {
+    $status_ok = true;
+    $tprojectid = $this->args[self::$testProjectIDParamName];
     $tplanid = isset($this->args[self::$testPlanIDParamName]) ? $this->args[self::$testPlanIDParamName] : null;
 
 
@@ -390,14 +390,18 @@ class TestlinkXMLRPCServer extends IXR_Server
       $tprojectid = $dummy['tproject_id'];
     }
 
-      if(!$this->user->hasRight($this->dbObj,$rightToCheck,$tprojectid, $tplanid))
-      {
+    // return array($tprojectid,$tplanid);
+    // return $this->user->hasRight($this->dbObj,$rightToCheck,$tprojectid, $tplanid,true);
+    // return array($rightToCheck,$tprojectid, $tplanid,true);
+
+    if(!$this->user->hasRight($this->dbObj,$rightToCheck,$tprojectid, $tplanid,tlUser::CHECK_PUBLIC_PRIVATE_ATTR))
+    {
         $status_ok = false;
         $msg = sprintf(INSUFFICIENT_RIGHTS_STR,$rightToCheck,intval($tprojectid), $tplanid);
         $this->errors[] = new IXR_Error(INSUFFICIENT_RIGHTS, $msg);
-      }
-      return $status_ok;
     }
+    return $status_ok;
+  }
 
   /**
    * Helper method to see if the testcasename provided is valid 
@@ -1230,7 +1234,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity');
 
       $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && 
-                 $this->_checkTCIDAndTPIDValid(null,$msg_prefix) &&
+                 $this->_checkTCIDAndTPIDValid(null,$msg_prefix) && 
                  $this->userHasRight("mgt_view_tc");       
 
       $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],

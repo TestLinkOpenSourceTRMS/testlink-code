@@ -130,10 +130,11 @@ class tlUser extends tlDBObject
   //detail leveles
   const TLOBJ_O_GET_DETAIL_ROLES = 1;
 
-    const SKIP_CHECK_AT_TESTPROJECT_LEVEL = -1;
-    const SKIP_CHECK_AT_TESTPLAN_LEVEL = -1;
+  const SKIP_CHECK_AT_TESTPROJECT_LEVEL = -1;
+  const SKIP_CHECK_AT_TESTPLAN_LEVEL = -1;
 
-  
+  const CHECK_PUBLIC_PRIVATE_ATTR = true;
+
   /**
    * Constructor, creates the user object
    * 

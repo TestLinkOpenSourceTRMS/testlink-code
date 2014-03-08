@@ -225,14 +225,14 @@ function lang_load( $p_lang ) {
 
   $t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
-  if (file_exists($lang_resource_path))
+  if (file_exists($lang_resource_path) && is_readable($lang_resource_path))
   {
     require($lang_resource_path);
   }
   else
   {
     require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt');
-    }
+  }
     
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
   if (file_exists($lang_resource_path))

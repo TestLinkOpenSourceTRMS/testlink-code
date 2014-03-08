@@ -233,11 +233,11 @@ class TLSmarty extends Smarty
     $this->assign('refresh', 'no');
     $this->assign('result', null);
     
-    $this->assign('optLocale',config_get('locales'));
+    // $this->assign('optLocale',config_get('locales'));
     
     $this->assign('gsmarty_href_keywordsView',
-    			  ' "lib/keywords/keywordsView.php" ' . ' target="mainframe" class="bold" ' .
-    			  ' title="' . lang_get('menu_manage_keywords') . '"');
+    			        ' "lib/keywords/keywordsView.php" ' . ' target="mainframe" class="bold" ' .
+    			        ' title="' . lang_get('menu_manage_keywords') . '"');
     
     $this->assign('gsmarty_html_select_date_field_order',
                   $tlCfg->locales_html_select_date_field_order[$my_locale]);

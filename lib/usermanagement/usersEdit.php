@@ -352,6 +352,7 @@ function initializeGui()
 
   $guiObj->auth_method_opt = array_flip($guiObj->auth_method_opt);
 
+  $guiObj->optLocale = config_get('locales');
   return $guiObj;  
 }
 

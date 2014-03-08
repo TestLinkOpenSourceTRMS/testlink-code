@@ -86,7 +86,11 @@ if (null == $user->userApiKey)
   $user->userApiKey = TLS('none');
 }
 
+$gui = new stdClass();
+$gui->optLocale = config_get('locales');
+
 $smarty = new TLSmarty();
+$smarty->assign('gui',$gui);
 $smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('user',$user);
 $smarty->assign('api_ui_show',$user);
@@ -96,22 +100,24 @@ $smarty->assign('user_feedback', $op->user_feedback);
 $smarty->assign('update_title_bar',$update_title_bar);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
+/**
+ *
+ */
 function init_args()
 {
   $iParams = array("firstName" => array("POST",tlInputParameter::STRING_N,0,30),
-               "lastName" => array("REQUEST",tlInputParameter::STRING_N,0,30),
-               "emailAddress" => array("REQUEST",tlInputParameter::STRING_N,0,100),
-               "locale" => array("POST",tlInputParameter::STRING_N,0,10),
-               "oldpassword" => array("POST",tlInputParameter::STRING_N,0,32),
-               "newpassword" => array("POST",tlInputParameter::STRING_N,0,32),
-               "doAction" => array("POST",tlInputParameter::STRING_N,0,15,null,'checkDoAction'), 
+                   "lastName" => array("REQUEST",tlInputParameter::STRING_N,0,30),
+                   "emailAddress" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+                   "locale" => array("POST",tlInputParameter::STRING_N,0,10),
+                   "oldpassword" => array("POST",tlInputParameter::STRING_N,0,32),
+                   "newpassword" => array("POST",tlInputParameter::STRING_N,0,32),
+                   "doAction" => array("POST",tlInputParameter::STRING_N,0,15,null,'checkDoAction'), 
                    "userinfo_token" => array(tlInputParameter::STRING_N, 0, 255));
 
   $pParams = I_PARAMS($iParams);
   
   $args = new stdClass();
-    $args->user = new stdClass();
+  $args->user = new stdClass();
   $args->user->firstName = $pParams["firstName"];
   $args->user->lastName = $pParams["lastName"];
   $args->user->emailAddress = $pParams["emailAddress"];
@@ -123,7 +129,7 @@ function init_args()
 
   $args->userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
         
-    return $args;
+  return $args;
 }
 
 /*

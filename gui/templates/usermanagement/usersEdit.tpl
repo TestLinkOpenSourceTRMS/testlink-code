@@ -3,9 +3,7 @@ Testlink: smarty template -
 @filesource usersEdit.tpl
 
 @internal revisions
-@since 1.9.9
-20131013 - franciscom - TICKET 5972: User Authentication Methods - Allow configuration at user level
-
+@since 1.9.10
 *}
 
 {config_load file="input_dimensions.conf" section='login'}
@@ -269,7 +267,7 @@ function managePasswordInputs(oid,targetSetOID)
         {/if}
 
         <select name="locale">
-        {html_options options=$optLocale selected=$selected_locale}
+        {html_options options=$gui->optLocale selected=$selected_locale}
         </select>
       </td>
     </tr>

@@ -20,11 +20,11 @@ $method="addTestCaseToTestPlan";
 $unitTestDescription="Test - {$method} - Test Plan WITHOUT Platforms";
 
 $args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectid"]=1;
-$args["testcaseexternalid"]='API-1';
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["testprojectid"] = 521; //188;
+$args["testcaseexternalid"]='SPP-3';
 $args["version"]=1;
-$args["testplanid"]=3;
+$args["testplanid"]=522;
 
 
 $debug=true;
@@ -37,12 +37,11 @@ $answer = runTest($client,$method,$args);
 $unitTestDescription="Test - {$method} - Test Plan WITH Platforms";
 
 $args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectid"]=1;
-$args["testcaseexternalid"]='P1-10'; // P1-6,4
-$args["version"]=2;
-$args["testplanid"]=207;
-$args["platformid"]=5;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["testprojectid"] = 521; // 188;
+$args["testcaseexternalid"]='SPP-1';
+$args["version"]=1;
+$args["testplanid"]=523;
 
 $debug=true;
 $client = new IXR_Client($server_url);
@@ -61,5 +60,3 @@ $answer = runTest($client,$method,$args,2);
 // [ID: 214 ] Italian chars é à ò		 ITA			
 // [ID: 1 ] P1	  sasas	 P1			
 // [ID: 206 ] PROJECT_FOR_U1
-
-?>

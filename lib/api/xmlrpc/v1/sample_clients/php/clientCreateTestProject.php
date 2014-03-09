@@ -21,7 +21,7 @@ $test_num = 0;
 // ------------------------------------------------------------------------------------
 $test_num++;
 $unitTestDescription="Test {$test_num} - {$method}() ::: ";
-$prefix = 'AXECX';
+$prefix = 'GU-AXECX';
 
 $args=array();
 $args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;

@@ -21,30 +21,32 @@ $method='getLastExecutionResult';
 // --------------------------------------------------------------------
 $unitTestDescription="Test - {$method} - NO BUILD NO PLATFORM Filters";
 
+/*
 $args=array();
-$args["devKey"]='DEV_KEY';
+$args["devKey"]='eb6fa75e125944e68739514937d63659';
 // $args["testplanid"]=335;
 // $args["testplanid"]=1635;
 // $args["testcaseexternalid"]='API-2';
 // $args["testcaseid"]='1631';
 
 // $args["testplanid"]=3;
-$args["testplanid"]=3;
-$args["testcaseexternalid"]='PJH-1';
+$args["testplanid"]=190;
+$args["testcaseexternalid"]='AF-76';
 
 $debug=true;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+*/
 // --------------------------------------------------------------------
 
 // --------------------------------------------------------------------
 $args=array();
-$args["devKey"]='DEV_KEY';
-$args["testplanid"]=3;
-$args["testcaseexternalid"]='PJH-1';
-$args["buildid"]=4;
+$args["devKey"]='eb6fa75e125944e68739514937d63659';
+$args["testplanid"]=189;
+$args["testcaseexternalid"]='AF-1';
+// $args["buildid"]=4;
 $unitTestDescription="Test - {$method} - ONLY BUILD ID Filter => " . $args["buildid"];
 
 $debug=true;
@@ -52,6 +54,7 @@ echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+die();
 // --------------------------------------------------------------------
 
 // --------------------------------------------------------------------

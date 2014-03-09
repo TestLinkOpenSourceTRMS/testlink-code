@@ -3,14 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: clientCreateTestProject.php,v $
+ * @filesource	clientCreateTestProject.php
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/10/23 09:44:59 $ by $Author: franciscom $
+ * @version 
  * @Author: francisco.mancardi@gmail.com
  *
  * @internal revisions
- * now more parameters on interface
  * 
  */
 require_once 'util.php';
@@ -57,7 +55,7 @@ foreach($args["options"] as $key => $value)
 }
 $dummy .= "] ";
 
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseprefix"] = $prefix . $test_num;
 $args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 $args["active"] = 0;
@@ -89,7 +87,7 @@ foreach($args["options"] as $key => $value)
 }
 $dummy .= "] ";
 
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseprefix"] = $prefix . $test_num;
 $args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 $args["active"] = 0;
@@ -123,7 +121,7 @@ foreach($args["options"] as $key => $value)
 $dummy .= "] ";
 
 
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseprefix"] = $prefix . $test_num;
 $args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 $args["active"] = 0;
@@ -158,7 +156,7 @@ foreach($args["options"] as $key => $value)
 $dummy .= "] ";
 
 
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseprefix"] = $prefix . $test_num;
 $args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 $args["active"] = 0;
@@ -193,7 +191,7 @@ foreach($args["options"] as $key => $value)
 $dummy .= "] ";
 
 
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseprefix"] = $prefix . $test_num;
 $args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 $args["active"] = 1;
@@ -228,7 +226,7 @@ foreach($args["options"] as $key => $value)
 $dummy .= "] ";
 
 
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseprefix"] = $prefix . $test_num;
 $args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 $args["active"] = 1;
@@ -245,5 +243,3 @@ $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
 // ------------------------------------------------------------------------------------
-
-?>

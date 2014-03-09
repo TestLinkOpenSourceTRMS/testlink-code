@@ -48,14 +48,16 @@ require_once("APIErrors.php");
  */
 class TestlinkXMLRPCServer extends IXR_Server
 {
-    public static $version = "1.0";
+  public static $version = "1.0";
  
     
-    const   OFF=false;
-    const   ON=true;
-    const   BUILD_GUESS_DEFAULT_MODE=OFF;
-    const   SET_ERROR=true;
-    
+  const   OFF=false;
+  const   ON=true;
+  const   BUILD_GUESS_DEFAULT_MODE=OFF;
+  const   SET_ERROR=true;
+  const   CHECK_PUBLIC_PRIVATE_ATTR=true;
+  
+
   /**
    * The DB object used throughout the class
    * 
@@ -376,7 +378,7 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @return boolean
    * @access protected
    */
-  protected function userHasRight($rightToCheck)
+  protected function userHasRight($rightToCheck,$checkPublicPrivateAttr=false)
   {
     $status_ok = true;
     $tprojectid = $this->args[self::$testProjectIDParamName];
@@ -394,7 +396,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     // return $this->user->hasRight($this->dbObj,$rightToCheck,$tprojectid, $tplanid,true);
     // return array($rightToCheck,$tprojectid, $tplanid,true);
 
-    if(!$this->user->hasRight($this->dbObj,$rightToCheck,$tprojectid, $tplanid,tlUser::CHECK_PUBLIC_PRIVATE_ATTR))
+    if(!$this->user->hasRight($this->dbObj,$rightToCheck,$tprojectid, $tplanid,$checkPublicPrivateAttr))
     {
         $status_ok = false;
         $msg = sprintf(INSUFFICIENT_RIGHTS_STR,$rightToCheck,intval($tprojectid), $tplanid);
@@ -1235,7 +1237,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
       $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && 
                  $this->_checkTCIDAndTPIDValid(null,$msg_prefix) && 
-                 $this->userHasRight("mgt_view_tc");       
+                 $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);       
 
       $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
                            'platform_id' => null,'build_id' => null);
@@ -1425,11 +1427,11 @@ class TestlinkXMLRPCServer extends IXR_Server
    */    
   public function createBuild($args)
   {
-      $operation = __FUNCTION__;
-        $messagePrefix="({$operation}) - ";
+    $operation = __FUNCTION__;
+    $messagePrefix="({$operation}) - ";
     $resultInfo = array();
     $resultInfo[0]["status"] = true;
-      $resultInfo[0]["operation"] = $operation;
+    $resultInfo[0]["operation"] = $operation;
     $insertID = '';
     $returnMessage = GENERAL_SUCCESS_STR;
 
@@ -1437,7 +1439,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
     // check the tpid
     if($this->_checkCreateBuildRequest($messagePrefix) && 
-       $this->userHasRight("testplan_create_build"))
+       $this->userHasRight("testplan_create_build",self::CHECK_PUBLIC_PRIVATE_ATTR))
     {
       $testPlanID = $this->args[self::$testPlanIDParamName];
       $buildName = $this->args[self::$buildNameParamName];          
@@ -1765,7 +1767,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         $details=$this->args[$key2search];  
     }
       
-    if($status_ok && $this->userHasRight("mgt_view_tc"))
+    if($status_ok && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR))
     {    
       $testSuiteID = $this->args[self::$testSuiteIDParamName];
             $tsuiteMgr = new testsuite($this->dbObj);
@@ -1811,7 +1813,8 @@ class TestlinkXMLRPCServer extends IXR_Server
         $result = null;
       
         $checkFunctions = array('authenticate','checkTestCaseName');       
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");       
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+                     $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);       
       
         if( $status_ok )
         {      
@@ -1903,7 +1906,8 @@ class TestlinkXMLRPCServer extends IXR_Server
       $keywordSet='';
       $this->_setArgs($args);
         $checkFunctions = array('authenticate','checkTestProjectID','checkTestSuiteID','checkTestCaseName');
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+                     $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
 
         if( $status_ok )
         {
@@ -2079,7 +2083,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     }
 
     $tester_id = null;
-    if($status_ok && $this->userHasRight("testplan_execute"))
+    if($status_ok && $this->userHasRight("testplan_execute",self::CHECK_PUBLIC_PRIVATE_ATTR))
     { 
       if( $this->_isParamPresent(self::$userParamName) )
       {
@@ -2092,7 +2096,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       }
     }
 
-    if($status_ok && $this->userHasRight("testplan_execute"))
+    if($status_ok && $this->userHasRight("testplan_execute",self::CHECK_PUBLIC_PRIVATE_ATTR))
     { 
       $executionID = 0;  
       $resultInfo[0]["operation"] = $operation;
@@ -2277,7 +2281,8 @@ public function getTestCasesForTestPlan($args)
            
   $optMutualExclusive=array(self::$keywordIDParamName => null,self::$keywordNameParamName => null);   
   $this->_setArgs($args);
-  if(!($this->_checkGetTestCasesForTestPlanRequest($msg_prefix) && $this->userHasRight("mgt_view_tc")) )
+  if(!($this->_checkGetTestCasesForTestPlanRequest($msg_prefix) && 
+       $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR)) )
   {
       return $this->errors;
   }
@@ -2406,7 +2411,7 @@ public function getTestCasesForTestPlan($args)
       }           
     }
         
-    if($status_ok && $this->userHasRight("mgt_view_tc"))
+    if($status_ok && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR))
     {
       $details='value';
       if( $this->_isParamPresent(self::$detailsParamName) )
@@ -2711,7 +2716,8 @@ public function getTestCasesForTestPlan($args)
     $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
                             'checkTestCaseIdentity','checkTestPlanID');
     
-    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix) && $this->userHasRight("testplan_planning");       
+    $status_ok = $this->_runChecks($checkFunctions,$messagePrefix) && 
+                 $this->userHasRight("testplan_planning",self::CHECK_PUBLIC_PRIVATE_ATTR);       
     
     // Test Plan belongs to test project ?
     if( $status_ok )
@@ -3241,7 +3247,8 @@ public function getTestCaseAttachments($args)
   $this->_setArgs($args);
   $attachments=null;
   $checkFunctions = array('authenticate','checkTestCaseIdentity');       
-  $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+  $status_ok = $this->_runChecks($checkFunctions) && 
+               $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
   
   if($status_ok)
   {    
@@ -3291,14 +3298,15 @@ public function getTestCaseAttachments($args)
    *   
    * @return mixed $resultInfo
    */
-    public function createTestSuite($args)
+  public function createTestSuite($args)
   {
-      $result=array();
-      $this->_setArgs($args);
-      $operation=__FUNCTION__;
-        $msg_prefix="({$operation}) - ";
-        $checkFunctions = array('authenticate','checkTestSuiteName','checkTestProjectID');
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+    $result=array();
+    $this->_setArgs($args);
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $checkFunctions = array('authenticate','checkTestSuiteName','checkTestProjectID');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+                 $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
       
         if( $status_ok )
         {
@@ -3521,7 +3529,8 @@ public function getTestCase($args)
   $this->_setArgs($args);
     
   $checkFunctions = array('authenticate','checkTestCaseIdentity');       
-  $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");       
+  $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+               $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);       
   $version_id=testcase::LATEST_VERSION;
   $version_number=-1;
 
@@ -3594,7 +3603,7 @@ public function getTestCase($args)
       $status_ok = false;    
         $msg_prefix="(" . __FUNCTION__ . ") - ";
 
-      if($this->authenticate() && $this->userHasRight("mgt_modify_product"))
+      if($this->authenticate() && $this->userHasRight("mgt_modify_product",self::CHECK_PUBLIC_PRIVATE_ATTR))
       {
             $keys2check = array(self::$testPlanNameParamName,
                                 self::$testProjectNameParamName);
@@ -3797,7 +3806,7 @@ public function getTestCase($args)
   
     // Important userHasRight sets error object
     //
-    $status_ok = ($status_ok && $this->userHasRight("testplan_execute"));  
+    $status_ok = ($status_ok && $this->userHasRight("testplan_execute",self::CHECK_PUBLIC_PRIVATE_ATTR));  
     if($status_ok)
     {      
       if( $execCfg->can_delete_execution )  
@@ -4049,7 +4058,7 @@ public function getTestCase($args)
             $details=$this->args[$key2search];
         }
 
-        if($status_ok && $this->userHasRight("mgt_view_tc"))
+        if($status_ok && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR))
         { 
             $testSuiteID = $this->args[self::$testSuiteIDParamName];
             $tsuiteMgr = new testsuite($this->dbObj);
@@ -4080,7 +4089,7 @@ public function getTestCase($args)
   
       $this->_setArgs($args);
       $status_ok = $this->_runChecks(array('authenticate','checkTestSuiteID'),$msg_prefix) && 
-                   $this->userHasRight("mgt_view_tc");
+                   $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
       if( $status_ok )
       {
           $testSuiteID = $this->args[self::$testSuiteIDParamName];
@@ -4163,7 +4172,8 @@ public function getTestCase($args)
 
     // Checks are done in order
     $checkFunctions = array('authenticate','checkTestPlanID');
-    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+                 $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
 
     if( $status_ok )
     {
@@ -4304,11 +4314,11 @@ public function uploadTestProjectAttachment($args)
   
   $args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
   $args[self::$foreignKeyIdParamName] = $args[self::$testProjectIDParamName];
-    $this->_setArgs($args);
+  $this->_setArgs($args);
     
   $checkFunctions = array('authenticate', 'checkTestProjectID');
-    $statusOk = $this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
-    $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
+  $statusOk = $this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
+  $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
   return $ret;
 }
 
@@ -4336,11 +4346,11 @@ public function uploadTestSuiteAttachment($args)
   $msg_prefix = "(" .__FUNCTION__ . ") - ";
   $args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
   $args[self::$foreignKeyIdParamName] = $args[self::$testSuiteIDParamName];
-    $this->_setArgs($args);
+  $this->_setArgs($args);
   
   $checkFunctions = array('authenticate', 'checkTestSuiteID');
-    $statusOk = $this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
-    $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
+  $statusOk = $this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
+  $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
   return $ret;
 }
 
@@ -4370,11 +4380,11 @@ public function uploadTestCaseAttachment($args)
   
   $args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
   $args[self::$foreignKeyIdParamName] = $args[self::$testCaseIDParamName];
-    $this->_setArgs($args);
+  $this->_setArgs($args);
   $checkFunctions = array('authenticate', 'checkTestCaseID');
 
-    $statusOk = $this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");
-    $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
+  $statusOk = $this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
+  $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
   return $ret;
 }
 
@@ -4741,7 +4751,7 @@ protected function createAttachmentTempFile()
         $checkFunctions = array('authenticate','checkTestProjectID','checkCustomField','checkCustomFieldScope');
         $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
 
-        if($status_ok && $this->userHasRight("mgt_view_tc"))
+        if($status_ok && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR))
         {
             $cf_name = $this->args[self::$customFieldNameParamName];
             $tproject_id = $this->args[self::$testProjectIDParamName];
@@ -4975,7 +4985,8 @@ protected function createAttachmentTempFile()
       
     $this->_setArgs($args);
     $checkFunctions = array('authenticate','checkTestCaseIdentity');
-    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+                 $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
 
     if( $status_ok )
     {
@@ -5137,7 +5148,8 @@ protected function createAttachmentTempFile()
       
     $this->_setArgs($args);
     $checkFunctions = array('authenticate','checkTestCaseIdentity');
-    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+                 $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
 
     if( $status_ok )
     {
@@ -5403,7 +5415,7 @@ protected function createAttachmentTempFile()
     $status_ok = false;    
     $msg_prefix="(" . __FUNCTION__ . ") - ";
 
-    if($this->authenticate() && $this->userHasRight("mgt_modify_product"))
+    if($this->authenticate() && $this->userHasRight("mgt_modify_product",self::CHECK_PUBLIC_PRIVATE_ATTR))
     {
       $status_ok = true;
       $keys2check = array(self::$platformNameParamName, self::$testProjectNameParamName);

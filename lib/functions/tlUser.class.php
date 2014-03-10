@@ -774,12 +774,8 @@ class tlUser extends tlDBObject
     global $g_propRights_global;
     global $g_propRights_product;
     
-    $userGlobalRights = (array)$this->globalRole->rights;
-    $globalRights = array();
-    foreach($userGlobalRights as $right)
-    {
-      $globalRights[] = $right->name;
-    }
+    // var_dump($this->tprojectRoles);
+
     
     if (!is_null($tplanID))
     {
@@ -791,7 +787,6 @@ class tlUser extends tlDBObject
     }
     
     
-    $userTestPlanRoles = $this->tplanRoles;
     if (!is_null($tprojectID))
     {
       $testprojectID = $tprojectID;
@@ -804,31 +799,62 @@ class tlUser extends tlDBObject
     $accessPublic = null;
     if($getAccess)
     {
-      $mgr = new testproject($db);
-      $accessPublic['tproject'] = $mgr->getPublicAttr($testprojectID);
-      unset($mgr);
-      $mgr = new testplan($db);
-      $accessPublic['tplan'] = $mgr->getPublicAttr($testPlanID);
-      unset($mgr);
+      if($testprojectID > 0)
+      {
+        $mgr = new testproject($db);
+        $accessPublic['tproject'] = $mgr->getPublicAttr($testprojectID);
+        unset($mgr);
+      }  
+
+      if($testPlanID > 0)
+      {
+        $mgr = new testplan($db);
+        $accessPublic['tplan'] = $mgr->getPublicAttr($testPlanID);
+        unset($mgr);
+      }
+    }
+    
+    $userGlobalRights = (array)$this->globalRole->rights;
+    $globalRights = array();
+    foreach($userGlobalRights as $right)
+    {
+      $globalRights[] = $right->name;
     }
     $allRights = $globalRights;
-      
     $userTestProjectRoles = $this->tprojectRoles;
-    /* if $testprojectID == -1 we dont check rights at test project level! */
+    $userTestPlanRoles = $this->tplanRoles;
+    
     if (isset($userTestProjectRoles[$testprojectID]))
     {
       $userTestProjectRights = (array)$userTestProjectRoles[$testprojectID]->rights;
-      $testProjectRights = array();
-      foreach($userTestProjectRights as $right)
-      {
-        $testProjectRights[] = $right->name;
-      }
-        
 
-      //subtract global rights    
-      $testProjectRights = array_diff($testProjectRights,array_keys($g_propRights_global));
-      propagateRights($globalRights,$g_propRights_global,$testProjectRights);
-      $allRights = $testProjectRights;
+      // Special situation => just one right
+      $doMoreAnalysis = true;
+      if( count($userTestProjectRights) == 1)
+      {
+        $doMoreAnalysis = !is_null($userTestProjectRights[0]->dbID);
+      }  
+
+      $allRights = null;
+      if( $doMoreAnalysis )
+      {
+        //echo 'do more';
+        $testProjectRights = array();
+        foreach($userTestProjectRights as $right)
+        {
+          $testProjectRights[] = $right->name;
+        }
+
+        // subtract global rights    
+        $testProjectRights = array_diff($testProjectRights,array_keys($g_propRights_global));
+        propagateRights($globalRights,$g_propRights_global,$testProjectRights);
+        $allRights = $testProjectRights;
+      }  
+      else
+      {
+        return false;
+      }  
+
     }
     else
     {
@@ -848,6 +874,7 @@ class tlUser extends tlDBObject
         {
           $testPlanRights[] = $right->name;
         }
+        
         //subtract test projects rights    
         $testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
         

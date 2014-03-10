@@ -20,9 +20,8 @@ $method='getTestCaseIDByName';
 $test_num=1;
 $unitTestDescription="Test {$test_num} - {$method}";
 $args=array();
-$args["devKey"]=DEV_KEY;
-$args["testcasename"]=
-'TEST CASE NAME IS LONGER THAT ALLOWED SIZE - 100 CHARACTERS - The quick brown fox jumps over the X % lazydog (bye bye dog)';
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["testcasename"]='KOMODO';
 
 $additionalInfo='- Test Case Name is longer that allowed';
 
@@ -41,7 +40,7 @@ $test_num=2;
 $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseexternalid"]='API-2';
 $args["version"]=1;
 $additionalInfo='';
@@ -60,7 +59,7 @@ $test_num=2;
 $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testcaseid"]='1667';
 $args["version"]=1;
 $additionalInfo='';
@@ -74,6 +73,3 @@ $client->debug=$debug;
 
 runTest($client,$method,$args);
 // ---------------------------------------------------------------------------------
-
- 	
-?>

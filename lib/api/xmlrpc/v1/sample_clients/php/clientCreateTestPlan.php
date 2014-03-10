@@ -20,8 +20,9 @@ $unitTestDescription="Test - {$method}";
 $idx=1;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testprojectname"]='API Methods Test Project 2';
+$args["testprojectname"]='API Methods Test Project AXECX1';
 $args["testplanname"]="TPLAN BY API";
 $args["notes"]="test plan created using XML-RPC-API";
 
@@ -33,7 +34,7 @@ $idx++;
 
 // --------------------------------------------------------------------------
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testprojectname"]='TPROJECT1';
 $args["testplanname"]="TPLAN BY API";
 $args["notes"]="test plan created using XML-RPC-API";
@@ -46,7 +47,7 @@ $idx++;
 
 // --------------------------------------------------------------------------
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testprojectname"]='TPROJECT1';
 $args["testplanname"]="TPLAN BY API-2";
 $args["notes"]="test plan 2 created using XML-RPC-API";
@@ -58,5 +59,3 @@ $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args,$idx);
 $idx++;
-
-?>

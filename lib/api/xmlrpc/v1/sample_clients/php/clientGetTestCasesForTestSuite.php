@@ -21,9 +21,9 @@ $test_num=1;
 $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectid"]=1;
-$args["testsuiteid"]=186;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["testprojectid"]=122222;
+$args["testsuiteid"]=191;
 $args["deep"]=true;
 $args["details"]='full';
 
@@ -44,8 +44,8 @@ $test_num++;
 $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectid"]=1;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["testprojectid"]=12222;
 $args["testsuiteid"]=186;
 $args["deep"]=false;
 $args["details"]='simple';
@@ -57,4 +57,3 @@ echo $unitTestDescription;
 echo $additionalInfo;
 
 runTest($client,$method,$args);
-?>

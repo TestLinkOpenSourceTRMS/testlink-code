@@ -17,7 +17,7 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $tplan_id = intval($_REQUEST['id']); //96315;
 $args=array();
-$args["devKey"]='524993143f974f97903f5565a783594b';
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testplanid"]=$tplan_id;
 // $args["executiontype"]=2;
 $additionalInfo='';
@@ -36,7 +36,7 @@ $answer = runTest($client,$method,$args,$test_num);
 $test_num++;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testplanid"]=$tplan_id;
 $args["getstepsinfo"]=false;
 $args["details"]='simple';
@@ -56,7 +56,7 @@ $answer = runTest($client,$method,$args,$test_num);
 $test_num++;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testplanid"]=$tplan_id;
 $args["getstepsinfo"]=false;
 $args["details"]='full';
@@ -76,7 +76,7 @@ $answer = runTest($client,$method,$args,$test_num);
 $test_num++;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testplanid"]=$tplan_id;
 $args["getstepsinfo"]=false;
 $args["details"]='summary';
@@ -96,7 +96,7 @@ $answer = runTest($client,$method,$args,$test_num);
 $test_num++;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testplanid"]=$tplan_id;
 $args["keywords"]='Key Feature';
 $additionalInfo='Filter by Keyword name - JUST ONE KEYWORD';
@@ -115,7 +115,7 @@ $answer = runTest($client,$method,$args,$test_num);
 $test_num++;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testplanid"]=$tplan_id;
 $args["keywords"]='Key Feature,Must have,Obsolete,Performance,System wide,Usability';
 $additionalInfo='Filter by Keyword name - Multiple Keywords - ONLY OR Search';
@@ -135,7 +135,7 @@ $answer = runTest($client,$method,$args,$test_num);
 $test_num++;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testplanid"]=$tplan_id;
 $args["getstepsinfo"]=false;
 
@@ -155,7 +155,7 @@ $answer = runTest($client,$method,$args,$test_num);
 $test_num++;
 
 $args=array();
-$args["devKey"]=DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
 $args["testplanid"]=$tplan_id;
 $args["getstepsinfo"]=true;
 
@@ -170,8 +170,3 @@ $client->debug=$debug;
 
 $answer = runTest($client,$method,$args,$test_num);
 // ---------------------------------------------------------------------------------
-
-
-
-
-?>

@@ -3151,10 +3151,10 @@ public function getTestCaseAttachments($args)
  /**
    * Gets list of keywords for a given Test case
    *
-   * @param $tproject_id the testprojectID the $testcase_id belongs
-   * @param $testcase_id
+   * @param $tproject_id the testprojectI the $testcase_id belongs
+   * @param $testcase_id the testcaseId
    *
-   * @return map indexed by bug_id
+   * @return array with key "Keyword"
    *
    * @access public
    */
@@ -3175,7 +3175,6 @@ public function getTestCaseAttachments($args)
   			" WHERE testcase_id =  {$testcase_id} AND keyword_id = id AND testproject_id ={$testProjectID} ";
   
   		$rs = $this->dbObj->get_recordset($sql);
-  		//$rs = $this->dbObj->fetchRowsIntoMap($sql,'bug_id');
   		return $rs;
   	}
   	 else

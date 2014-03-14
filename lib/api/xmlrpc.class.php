@@ -3148,6 +3148,41 @@ public function getTestCaseAttachments($args)
   return $status_ok ? $attachments : $this->errors;
 }
 
+ /**
+   * Gets list of keywords for a given Test case
+   *
+   * @param $tproject_id the testprojectID the $testcase_id belongs
+   * @param $testcase_id
+   *
+   * @return map indexed by bug_id
+   *
+   * @access public
+   */
+  public function getTestCaseKeywords($args)
+  {
+  	$msg_prefix="(" .__FUNCTION__ . ") - ";
+  	
+  	$this->_setArgs($args);
+  	$checkFunctions = array('authenticate','checkTestProjectID');
+  	$status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
+  	
+  	if($status_ok)
+  	{
+  		$testProjectID = $this->args[self::$testProjectIDParamName];
+  		$testcase_id = $this->args[self::$testCaseIDParamName];
+  		
+  		$sql = " SELECT keyword FROM {$this->tables['keywords']}, {$this->tables['testcase_keywords']} " .
+  			" WHERE testcase_id =  {$testcase_id} AND keyword_id = id AND testproject_id ={$testProjectID} ";
+  
+  		$rs = $this->dbObj->get_recordset($sql);
+  		//$rs = $this->dbObj->fetchRowsIntoMap($sql,'bug_id');
+  		return $rs;
+  	}
+  	 else
+  	{
+  		return $this->errors;
+  	}
+  }
 
     /**
 	 * create a test suite
@@ -5137,6 +5172,7 @@ protected function createAttachmentTempFile()
 	    						'tl.getRequirementCustomFieldDesignValue' => 'this:getRequirementCustomFieldDesignValue',
                                 'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
                                 'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
+                                'tl.getTestCaseKeywords' => 'this:getTestCaseKeywords',
 	                            'tl.getTestCase' => 'this:getTestCase',
                                 'tl.getFullPath' => 'this:getFullPath',
                                 'tl.getTestSuiteByID' => 'this:getTestSuiteByID',

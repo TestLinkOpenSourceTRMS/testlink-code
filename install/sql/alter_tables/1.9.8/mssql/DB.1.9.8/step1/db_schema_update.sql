@@ -40,4 +40,20 @@ ALTER TABLE /*prefix*/req_coverage ADD author_id int NULL DEFAULT NULL;
 ALTER TABLE /*prefix*/req_coverage ADD datetime NOT NULL CONSTRAINT /*prefix*/DF_req_coverage_creation_ts DEFAULT (getdate());
 ALTER TABLE /*prefix*/req_coverage ADD review_requester_id int NULL DEFAULT NULL;
 ALTER TABLE /*prefix*/req_coverage ADD review_request_ts datetime NULL DEFAULT NULL;
+
+SET IDENTITY_INSERT /*prefix*/rights ON
+insert into /*prefix*/rights (id,description) values (35,'exec_edit_notes');
+insert into /*prefix*/rights (id,description) values (36,'exec_delete');
+insert into /*prefix*/rights (id,description) values (37,'testplan_unlink_executed_testcases');
+insert into /*prefix*/rights (id,description) values (38,'testproject_delete_executed_testcases');
+insert into /*prefix*/rights (id,description) values (39,'testproject_edit_executed_testcases');
+SET IDENTITY_INSERT /*prefix*/rights OFF
+
+
+insert into /*prefix*/role_rights (role_id,right_id) values (8,35);
+insert into /*prefix*/role_rights (role_id,right_id) values (8,36);
+insert into /*prefix*/role_rights (role_id,right_id) values (8,37);
+insert into /*prefix*/role_rights (role_id,right_id) values (8,38);
+insert into /*prefix*/role_rights (role_id,right_id) values (8,39);
+
 /* ----- END ----- */

@@ -35,4 +35,17 @@ ALTER TABLE /*prefix*/req_coverage ADD COLUMN "author_id" BIGINT NULL DEFAULT NU
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN "creation_ts" TIMESTAMP NOT NULL DEFAULT now();
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN "review_requester_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id);
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN "review_request_ts" TIMESTAMP NULL DEFAULT NULL;
+
+
+insert into /*prefix*/rights (id,description) values (35,'exec_edit_notes');
+insert into /*prefix*/rights (id,description) values (36,'exec_delete');
+insert into /*prefix*/rights (id,description) values (37,'testplan_unlink_executed_testcases');
+insert into /*prefix*/rights (id,description) values (38,'testproject_delete_executed_testcases');
+insert into /*prefix*/rights (id,description) values (39,'testproject_edit_executed_testcases');
+
+insert into /*prefix*/role_rights (role_id,right_id) values (8,35);
+insert into /*prefix*/role_rights (role_id,right_id) values (8,36);
+insert into /*prefix*/role_rights (role_id,right_id) values (8,37);
+insert into /*prefix*/role_rights (role_id,right_id) values (8,38);
+insert into /*prefix*/role_rights (role_id,right_id) values (8,39);
 /* ----- END ----- */

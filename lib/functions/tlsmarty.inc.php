@@ -357,6 +357,7 @@ class TLSmarty extends Smarty
                    'duplicate' => TL_THEME_IMG_DIR . 'application_double.png',
                    'edit' => TL_THEME_IMG_DIR . 'icon_edit.png',
                    'edit_icon' => TL_THEME_IMG_DIR . 'edit_icon.png',
+                   'eye' => TL_THEME_IMG_DIR . 'eye.png',
                    'export' => TL_THEME_IMG_DIR . 'export.png',
                    'export_import' => TL_THEME_IMG_DIR . 'export_import.png',
                    'execute' => TL_THEME_IMG_DIR . 'lightning.png',

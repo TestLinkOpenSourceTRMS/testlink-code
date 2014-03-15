@@ -212,7 +212,7 @@ function ETS(id)
   var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
                  "&edit=testsuite&level=testsuite&containerType=testsuite&id="+id+args+"&"+pParams;
 
-  // alert(_FUNCTION_NAME_ + " " +action_url);
+  alert(_FUNCTION_NAME_ + " " +action_url);
   parent.workframe.location = action_url;
 
 }
@@ -1586,7 +1586,9 @@ function openTCW(tcase_external_id,version_number)
   window.open(fRoot+feature_url,__FUNCTION__,windowCfg);
 }
 
-
+/**
+ *
+ */
 function toogleShowHide(oid,display_type)
 {
   var obj = document.getElementById(oid);
@@ -1613,3 +1615,28 @@ function toogleShowHide(oid,display_type)
   }
 }
 
+/**
+ *
+ */
+function getImageURL(file_id)
+{
+
+  return '<img src="lib/attachments/attachmentdownload.php?id=' + file_id + '"/>';
+}
+
+
+/**
+ *
+ */
+function toogleImageURL(img_container_oid,file_id)
+{
+  var ox = document.getElementById(img_container_oid);
+  if(ox.innerHTML != '')
+  {
+    return '';
+  } 
+  else
+  {
+    return '<img src="lib/attachments/attachmentdownload.php?id=' + file_id + '"/>';
+  } 
+}

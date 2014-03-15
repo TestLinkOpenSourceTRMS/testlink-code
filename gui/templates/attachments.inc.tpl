@@ -1,6 +1,10 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.25.4.1 2010/12/09 14:04:44 mx-julian Exp $
+@filesource attachments.inc. tpl
+
+@internal revisions
+@since 1.9.10
+
 Generic attachment management
 
 Input:
@@ -21,7 +25,7 @@ $gsmarty_attachments
 
 {lang_get var='labels'
           s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,attachment_title,
-             local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,max_size_file_upload'}
+             display_inline,local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,max_size_file_upload'}
 
 {lang_get s='warning_delete_attachment' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -61,16 +65,24 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 
       <tr>
       <td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
-      {$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
+      {$my_link}</a> 
+      {if $info.is_image} 
+        <img src="{$tlImages.eye}" style="border:none" title="{$labels.display_inline}" 
+             onclick="c4i = document.getElementById('inline_img_container_{$info.id}');
+             c4i.innerHTML=toogleImageURL('inline_img_container_{$info.id}',{$info.id});"/>
+
+      {/if}
+      - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
         {if !$attach_downloadOnly}
         <a href="javascript:delete_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
                                           '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',jsCallDeleteFile);">
           <img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
                                  title="{lang_get s='alt_delete_attachment'}"
-                                 src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" /></a>
+                                 src="{$tlImages.delete}" /></a>
         {/if}
       </td>
     </tr>
+    <tr><td id="inline_img_container_{$info.id}" style="vertical-align:middle;"></td></tr>  {* to display images inline on user request *}
   {/foreach}
 </table>
 

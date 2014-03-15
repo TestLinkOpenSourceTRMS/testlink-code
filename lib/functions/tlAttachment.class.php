@@ -56,6 +56,8 @@ class tlAttachment extends tlDBObject
 	 */
 	protected $fSize;
 
+	protected $isImage;
+
 	/**
 	 * @var string $destFPath the path to file within the repository
 	 */
@@ -109,6 +111,7 @@ class tlAttachment extends tlDBObject
 		$this->fContents = NULL;
 		$this->description = NULL;
 		$this->dateAdded = NULL;
+		$this->isImage = NULL;
 		
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 		{
@@ -199,6 +202,8 @@ class tlAttachment extends tlDBObject
 		$this->fName = $fName; 
 		$this->destFPath = trim($destFPath); 
 		$this->fContents = $fContents;
+		$this->isImage = !(strpos($this->fType,'image/') === FALSE);
+
 
 		//for FS-repository, the path to the repository itself is cut off, so the path is
 		//					relative to the repository itself
@@ -235,7 +240,9 @@ class tlAttachment extends tlDBObject
 			$this->fkTableName = $info['fk_table'];
 			$this->fName = $info['file_name'];
 			$this->destFPath = $info['file_path'];
-			$this->fType = $info['file_type'];
+			$this->fType = trim($info['file_type']);
+			$this->isImage = !(strpos($this->fType,'image/') === FALSE);
+
 			$this->fSize = $info['file_size'];
 			$this->dbID =  $info['id'];
 			$this->description = $info['description'];
@@ -257,7 +264,7 @@ class tlAttachment extends tlDBObject
 		return array("id" => $this->dbID,"title" => $this->title,
 			         "description" => $this->description,
 			         "file_name" => $this->fName, "file_type" => $this->fType,
-			         "file_size" => $this->fSize,
+			         "file_size" => $this->fSize, "is_image" => $this->isImage,
 			         "date_added" => $this->dateAdded,
 			         "compression_type" => $this->compressionType,
 			         "file_path" => $this->destFPath,

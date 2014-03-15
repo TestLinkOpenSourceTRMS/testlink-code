@@ -33,7 +33,8 @@ if ($args->id)
 				header('Pragma: no-cache');
 			header('Content-Type: '.$attachmentInfo['file_type']);
 			header('Content-Length: '.$attachmentInfo['file_size']);
-			header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
+			// header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
+			header("Content-Disposition: inline; filename=\"{$attachmentInfo['file_name']}\"");
 			header("Content-Description: Download Data");
 			echo $content;
 			exit();

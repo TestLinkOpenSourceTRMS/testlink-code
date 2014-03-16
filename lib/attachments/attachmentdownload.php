@@ -17,31 +17,36 @@ require_once('../functions/attachments.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $args = init_args();
+
 if ($args->id)
 {
-	$attachmentRepository = tlAttachmentRepository::create($db);
-	$attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
-	if ($attachmentInfo && checkAttachmentID($db,$args->id,$attachmentInfo))
-	{
-		$content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
-		if ($content != "")
-		{
-			@ob_end_clean();
-			header('Pragma: public');
-			header("Cache-Control: ");
-			if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"])))
-				header('Pragma: no-cache');
-			header('Content-Type: '.$attachmentInfo['file_type']);
-			header('Content-Length: '.$attachmentInfo['file_size']);
-			// header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
-			header("Content-Disposition: inline; filename=\"{$attachmentInfo['file_name']}\"");
-			header("Content-Description: Download Data");
-			echo $content;
-			exit();
-		}
-	}
+  $attachmentRepository = tlAttachmentRepository::create($db);
+  $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
+  // if ($attachmentInfo)
+  if ($attachmentInfo && ($args->skipCheck || checkAttachmentID($db,$args->id,$attachmentInfo)) )
+  {
+    $content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
+    if ($content != "")
+    {
+      @ob_end_clean();
+      header('Pragma: public');
+      header("Cache-Control: ");
+      if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"])))
+      { 
+        header('Pragma: no-cache');
+      }
+      header('Content-Type: '.$attachmentInfo['file_type']);
+      header('Content-Length: '.$attachmentInfo['file_size']);
+      // header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
+      header("Content-Disposition: inline; filename=\"{$attachmentInfo['file_name']}\"");
+      header("Content-Description: Download Data");
+      echo $content;
+      exit();
+    }
+  }
 }
 $smarty = new TLSmarty();
+$smarty->assign('gui',$args);
 $smarty->display('attachment404.tpl');
 
 /**
@@ -49,14 +54,11 @@ $smarty->display('attachment404.tpl');
  */
 function init_args()
 {
-	//the id (attachments.id) of the attachment to be downloaded
-	$iParams = array(
-		"id" => array(tlInputParameter::INT_N),
-	);
-	$args = new stdClass();
-	G_PARAMS($iParams,$args);
-	
-	return $args;
+  //the id (attachments.id) of the attachment to be downloaded
+  $iParams = array("id" => array(tlInputParameter::INT_N),'skipCheck' => array(tlInputParameter::INT_N));
+  $args = new stdClass();
+  G_PARAMS($iParams,$args);
+  return $args;
 }
 
 /**
@@ -66,6 +68,5 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	return (config_get("attachments")->enabled);
+  return (config_get("attachments")->enabled);
 }
-?>

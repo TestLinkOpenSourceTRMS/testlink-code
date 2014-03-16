@@ -6,7 +6,7 @@
 <body>
 <h1 class="title">{lang_get s='title_downloading_attachment'}</h1>
 <p class='info'>
-	{lang_get s='error_attachment_not_found'}
+	{lang_get s='error_attachment_not_found'} {$gui->id}
 </p>
 
 <div class="workBack">

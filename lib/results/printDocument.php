@@ -185,7 +185,7 @@ if ($treeForPlatform)
         
         case DOC_TEST_SPEC:
           $docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
-          $docText .= renderTestSpecTreeForPrinting($db, $tree2work, $doc_info->content_range,
+          $docText .= renderTestSpecTreeForPrinting($db, $_SESSION['basehref'], $tree2work, $doc_info->content_range,
                                                     $printingOptions, null, 0, 1, $args->user_id,0,null,
                                                     $args->tproject_id,$platform_id);
         break;
@@ -199,7 +199,7 @@ if ($treeForPlatform)
             $printingOptions['showPlatformNotes'] = true;
             $docText .= renderPlatformHeading($tocPrefix,$platforms[$platform_id],$printingOptions);
           }
-          $docText .= renderTestPlanForPrinting($db, $tree2work, $doc_info->content_range, 
+          $docText .= renderTestPlanForPrinting($db, $_SESSION['basehref'],$tree2work, $doc_info->content_range, 
                                                 $printingOptions, $tocPrefix, 0, 1, $args->user_id,
                                                 $args->tplan_id, $args->tproject_id, 
                                                 $platform_id,$args->build_id);

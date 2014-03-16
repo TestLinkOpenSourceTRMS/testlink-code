@@ -739,7 +739,7 @@ function renderSimpleChapter($title, $content, $addToStyle=null)
   returns:
 
 */
-function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
+function renderTestSpecTreeForPrinting(&$db,$base_href,&$node,$item_type,&$options,
                                        $tocPrefix,$tcCnt,$level,$user_id,
                                        $tplan_id = 0,$tcPrefix = null,
                                        $tprojectID = 0, $platform_id = 0,$build_id = 0)
@@ -765,14 +765,14 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
     case 'testsuite':
       $tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $tcCnt;
       $code .= renderTestSuiteNodeForPrinting($db,$node,$options,
-                                              $tocPrefix,$level,$tplan_id,$tprojectID);
+                                              $tocPrefix,$level,$tplan_id,$tprojectID,$base_href);
     break;
 
     case 'testcase':
       // $code .= renderTestCaseForPrinting($db, $node, $options, $level,
       //                                   $tplan_id, $tcPrefix, $tprojectID, $platform_id);
 
-      $code .= renderTestCaseForPrinting($db, $node, $options, 
+      $code .= renderTestCaseForPrinting($db, $base_href, $node, $options, 
                                          array('level' => $level, 'prefix' => $tcPrefix,
                                                'tplan_id' => $tplan_id,  'tproject_id' => $tprojectID, 
                                                'platform_id' => $platform_id, 'build_id' => $build_id));
@@ -799,7 +799,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$options,
       {
           $tsCnt++;
       }
-      $code .= renderTestSpecTreeForPrinting($db, $current, $item_type, $options,
+      $code .= renderTestSpecTreeForPrinting($db, $base_href,$current, $item_type, $options,
                                              $tocPrefix, $tsCnt, $level+1, $user_id,
                                              $tplan_id, $tcPrefix, $tprojectID, $platform_id,$build_id);
     }
@@ -862,7 +862,7 @@ function gendocGetUserName(&$db, $userId)
  *
  * @internal revisions
  */
-function renderTestCaseForPrinting(&$db, &$node, &$options, $context)
+function renderTestCaseForPrinting(&$db, $base_href,&$node, &$options, $context)
 {
   
   static $req_mgr;
@@ -1253,6 +1253,36 @@ function renderTestCaseForPrinting(&$db, &$node, &$options, $context)
     }
     $code .= "</td></tr>\n";
   }
+
+
+  // Attachments
+  $attachSet =  (array)$tc_mgr->getAttachmentInfos($id);
+  if (count($attachSet) > 0)
+  {
+    $code .= "<tr><td><span class=\"label\">" .
+             $labels['attached_files'] . "</span></td><td><ul>";
+    foreach($attachSet as $item)
+    {
+      $fname = "";
+      if ($item['title'])
+      {
+        $fname .=  htmlspecialchars($item['title']) . " : ";
+      }
+      $fname .= htmlspecialchars($item['file_name']);
+      $code .= "<li>$fname</li>";
+
+      if($item['is_image'])
+      {
+        $code .= '<li>' . '<img src="' . $base_href . 
+                 'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
+      }  
+    }
+    $code .="</ul></td></tr>";
+  }
+
+
+
+
   $code .= "</table>\n</div>\n";
   return $code;
 }
@@ -1284,7 +1314,7 @@ function renderTOC(&$options)
   returns:
   
 */
-function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,$tplan_id,$tproject_id)
+function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,$tplan_id,$tproject_id,$base_href)
 {
   static $tsuite_mgr;
   $labels = array('test_suite' => lang_get('test_suite'),'details' => lang_get('details'));
@@ -1324,6 +1354,34 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
       $code .= '<div>'.$tInfo['details']. '</div>';
     }
      
+    $attachSet =  (array)$tsuite_mgr->getAttachmentInfos($node['id']);
+    if (count($attachSet) > 0)
+    {
+      $code .= "<table>";
+      $code .= "<tr><td><span class=\"label\">" .
+               $labels['attached_files'] . "</span></td><td><ul>";
+      foreach($attachSet as $item)
+      {
+        $fname = "";
+        if ($item['title'])
+        {
+          $fname .=  htmlspecialchars($item['title']) . " : ";
+        }
+        $fname .= htmlspecialchars($item['file_name']);
+        $code .= "<li>$fname</li>";
+
+        if($item['is_image'])
+        {
+          $code .= '<li>' . '<img src="' . $base_href . 
+                   'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
+
+        }  
+      }
+      $code .="</ul></td></tr>";
+      $code .= "</table>";
+    }
+
+
     // get Custom fields    
     // Attention: for test suites custom fields can not be edited during execution,
     //            then we need to get just custom fields with scope  'design'
@@ -1350,14 +1408,14 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
   
   @internal revisions:
 */
-function renderTestPlanForPrinting(&$db, &$node, $item_type, &$options, $tocPrefix,
+function renderTestPlanForPrinting(&$db, $base_href,&$node, $item_type, &$options, $tocPrefix,
                                    $tcCnt, $level, $user_id, $tplan_id, $tprojectID, 
                                    $platform_id,$build_id)
 
 {
   $tProjectMgr = new testproject($db);
   $tcPrefix = $tProjectMgr->getTestCasePrefix($tprojectID);
-  $code =  renderTestSpecTreeForPrinting($db, $node, $item_type, $options,
+  $code =  renderTestSpecTreeForPrinting($db, $base_href,$node, $item_type, $options,
                                          $tocPrefix, $tcCnt, $level, $user_id,
                                          $tplan_id, $tcPrefix, $tprojectID, $platform_id,$build_id);
   return $code;

@@ -5,8 +5,8 @@
  *
  * @filesource  firstLogin.php
  * @package     TestLink
- * @copyright   2004-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2004-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  * @internal revisions
  * @since 1.9.9
@@ -68,7 +68,9 @@ if($args->doEditUser)
 
 $smarty = new TLSmarty();
 $gui = $args;
-$gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
+
+// we get info about THE DEFAULT AUTHENTICATION METHOD
+$gui->external_password_mgmt = tlUser::isPasswordMgtExternal(); 
 $gui->message = $message;
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->default_template);

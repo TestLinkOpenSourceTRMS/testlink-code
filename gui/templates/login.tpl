@@ -10,7 +10,6 @@ smarty template - login page
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
-{literal}
 <script type="text/javascript">
 window.onload=function()
 {
@@ -20,8 +19,6 @@ window.onload=function()
   focusInputField('login');
 }
 </script>
-{/literal}
-
 </head>
 <body>
 

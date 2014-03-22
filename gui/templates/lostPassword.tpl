@@ -1,10 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: lostPassword.tpl,v 1.2 2009/04/21 09:29:42 franciscom Exp $ 
+@filesource lostPassword.tpl
 Purpose: lost password page 
 
-rev :
-     20070401 - added rounding GUI
 *}
 
 {lang_get var="labels" s="password_reset,login_name,btn_send,
@@ -13,23 +11,20 @@ rev :
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 <script type="text/javascript">
-	{literal}
-	window.onload=function(){
+window.onload=function(){
  		Nifty("div#login_div","big");
  		Nifty("div.messages","normal");
- 		// set focus on login text box
 		focusInputField('login');
-	}
-	{/literal}
+}
 </script>
 
 </head>
 
 <body>
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
-{include file="inc_login_title.tpl"}
 
 <div class="forms" id="login_div">
+  {include file="inc_login_title.tpl"}
 	{if $gui->external_password_mgmt eq 0}
     <p class="title">{$labels.password_reset}</p>
 
@@ -43,12 +38,17 @@ rev :
     </form>
     
 	{else}
-     <p>{$labels.password_mgmt_is_external}</p>
+
+    <p>{if $gui->password_mgmt_feedback == ''}
+          {$labels.password_mgmt_is_external}
+       {else}
+          {$gui->password_mgmt_feedback|escape}
+       {/if}   
+    </p>
 	{/if}
 
     <hr />
 	<p><a href="login.php">{$labels.link_back_to_login}</a></p>
-
 </div>
 </body>
 </html>

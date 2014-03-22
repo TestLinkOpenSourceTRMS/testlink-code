@@ -6,13 +6,12 @@
  * Allows editing a user
  *
  * @package     TestLink
- * @copyright   2005-2012, TestLink community
- * @filesource  usersEdit.php,v 1.41.2.2 2011/01/10 15:38:59 asimon83 Exp $
- * @link        http://www.teamst.org/index.php
+ * @copyright   2005-2014, TestLink community
+ * @filesource  usersEdit.php
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.9
- * 20131013 - franciscom - TICKET 5972: User Authentication Methods - Allow configuration at user level
+ * @since 1.9.10
  *
  */
 require_once('../../config.inc.php');
@@ -94,10 +93,11 @@ unset($roles[TL_ROLES_UNDEFINED]);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 
+
 $smarty->assign('highlight',$highlight);
 $smarty->assign('operation',$gui->op->operation);
 $smarty->assign('user_feedback',$gui->op->user_feedback);
-$smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
+$smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal($user->authentication));
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 $smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
 $smarty->assign('optRights',$roles);

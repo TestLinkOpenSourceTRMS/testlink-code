@@ -5,12 +5,12 @@
  * 
  * @filesource  tlUser.class.php
  * @package     TestLink
- * @copyright   2007-2012, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.9
- * 20131013 - franciscom - TICKET 5972: User Authentication Methods - Allow configuration at user level
+ * @since 1.9.10
+ * 20140322 - franciscom - TICKET 6258: User cannot login after change Authentication method from LDAP to DB
  */
  
 /**
@@ -196,10 +196,15 @@ class tlUser extends tlDBObject
    * 
    * @return boolean return true if password management is external, else false
    */
-  static public function isPasswordMgtExternal()
+  static public function isPasswordMgtExternal($method2check=null)
   {
-    $authCfg = config_get('authentication');
-    switch($authCfg['method'])
+    $target = $method2check;
+    if( is_null($target) || $target=='')
+    {
+      $authCfg = config_get('authentication');
+      $target = $authCfg['method'];
+    }  
+    switch($target)
     {
       case 'LDAP':
         return true;
@@ -526,9 +531,9 @@ class tlUser extends tlDBObject
    * @param $pwd the password to encrypt
    * @return string the encrypted password
    */
-  protected function encryptPassword($pwd)
+  protected function encryptPassword($pwd,$authentication=null)
   {
-    if (self::isPasswordMgtExternal())
+    if (self::isPasswordMgtExternal($authentication))
     {  
       return self::S_PWDMGTEXTERNAL;
     }  
@@ -541,9 +546,9 @@ class tlUser extends tlDBObject
    * @param string $pwd the new password
    * @return integer return tl::OK is the password is stored, else errorcode
    */
-  public function setPassword($pwd)
+  public function setPassword($pwd,$authentication=null)
   {
-    if (self::isPasswordMgtExternal())
+    if (self::isPasswordMgtExternal($authentication))
     {
       return self::S_PWDMGTEXTERNAL;
     }
@@ -552,7 +557,7 @@ class tlUser extends tlDBObject
     {
       return self::E_PWDEMPTY;
     }
-    $this->password = $this->encryptPassword($pwd);
+    $this->password = $this->encryptPassword($pwd,$authentication);
     return tl::OK;
   }
   
@@ -574,15 +579,22 @@ class tlUser extends tlDBObject
    */
   public function comparePassword($pwd)
   {
-    if (self::isPasswordMgtExternal())
+    if (self::isPasswordMgtExternal($this->authentication))
+    {  
       return self::S_PWDMGTEXTERNAL;
+    }
 
-    if ($this->getPassword($pwd) == $this->encryptPassword($pwd))
+    if ($this->getPassword($pwd) == $this->encryptPassword($pwd,$this->authentication))
+    {  
       return tl::OK;
+    }
     return self::E_PWDDONTMATCH;    
   }
 
   
+  /**
+   * 
+   */
   public function checkDetails(&$db)
   {
     $this->firstName = trim($this->firstName);

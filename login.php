@@ -6,12 +6,13 @@
  * Login page with configuratin checking and authorization
  *
  * @filesource  login.php
- * @package   TestLink
- * @author    Martin Havlat
- * @copyright   2006,2013 TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      Martin Havlat
+ * @copyright   2006,2014 TestLink community 
+ * @link        http://www.testlink.org
  * 
  * @internal revisions
+ * @since 1.9.10
  *              
  **/
 
@@ -129,8 +130,8 @@ function init_gui(&$db,$args)
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
   $gui->securityNotes = getSecurityNotes($db);
-  $gui->external_password_mgmt = ('LDAP' == $gui->authCfg['method']) ? 1 : 0;
-  $gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1 : 0;
+  $gui->external_password_mgmt = false;
+  $gui->login_disabled = (('LDAP' == $gui->authCfg['method']) && !checkForLDAPExtension()) ? 1 : 0;
 
   switch($args->note)
   {

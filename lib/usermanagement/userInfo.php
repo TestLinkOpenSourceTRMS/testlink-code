@@ -6,14 +6,14 @@
  * Displays the users' information and allows users to change their passwords and user info.
  *
  * @filesource  userInfo.php
- * @package   TestLink
- * @author    -
- * @copyright   2007-2012, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      -
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.10
  * 
  */
 require_once('../../config.inc.php');
@@ -91,7 +91,7 @@ $gui->optLocale = config_get('locales');
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-$smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
+$smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal($user->authentication));
 $smarty->assign('user',$user);
 $smarty->assign('api_ui_show',$user);
 $smarty->assign('mgt_view_events',$user->hasRight($db,"mgt_view_events"));
@@ -151,7 +151,7 @@ function changePassword(&$dbHandler,&$argsObj,&$userMgr)
   $op->auditMsg = '';
   if ($op->status == tl::OK)
   {
-    $userMgr->setPassword($argsObj->newpassword);
+    $userMgr->setPassword($argsObj->newpassword,$userMgr->authentication);
     $userMgr->writePasswordToDB($dbHandler);
     $op->user_feedback = lang_get('result_password_changed');
     $op->auditMsg = "audit_user_pwd_saved";
@@ -159,7 +159,10 @@ function changePassword(&$dbHandler,&$argsObj,&$userMgr)
   return $op;
 }
 
-
+/**
+ *
+ *
+ */ 
 function generateAPIKey(&$argsObj,&$user)
 {
   $op = new stdClass();

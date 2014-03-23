@@ -516,11 +516,13 @@ class tlUser extends tlDBObject
    * 
    * @return string the display nmae
    */
-  public function getDisplayName()
+  public function getDisplayName($format=null)
   {
     $keys = array('%first%','%last%','%login%','%email%');
     $values = array($this->firstName, $this->lastName,$this->login,$this->emailAddress);
-    $displayName = trim(str_replace($keys,$values,$this->usernameFormat));
+    
+    $fmt = is_null($format) ? $this->usernameFormat : $format;
+    $displayName = trim(str_replace($keys,$values,$fmt));
 
     return $displayName;
   }

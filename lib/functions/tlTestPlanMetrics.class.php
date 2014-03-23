@@ -1432,9 +1432,16 @@ class tlTestPlanMetrics extends testplan
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+    $my = array();
+    $my['opt'] = array('getExecutionNotes' => false, 'getTester' => false,
+                       'getExecutionTimestamp' => false);
+
+    $my['opt'] = array_merge($my['opt'], (array)$opt);
+
+
     // displayMemUsage($debugMsg);
     $safe_id = intval($id);
-    list($my,$builds,$sqlStm,$union) = $this->helperBuildSQLTestSuiteExecCounters($id, $filters, $opt);
+    list($my,$builds,$sqlStm,$union) = $this->helperBuildSQLTestSuiteExecCounters($id, $filters, $my['opt']);
     // displayMemUsage('AFTER helperBuildSQLTestSuiteExecCounters()');
     
     $sql =  " /* {$debugMsg} UNION WITH ALL CLAUSE */ " .
@@ -1809,9 +1816,33 @@ class tlTestPlanMetrics extends testplan
   function helperBuildSQLTestSuiteExecCounters($id, $filters=null, $opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $my['opt'] = array('getExecutionNotes' => false, 'getTester' => false,
+                       'getExecutionTimestamp' => false);
+
+    $my['opt'] = array_merge($my['opt'], (array)$opt);
+
+
     list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
 
     $safe_id = intval($id);  
+
+
+    // Additional Execution fields
+    $moreExecFields = '';
+    if($my['opt']['getExecutionNotes'])
+    {
+      $moreExecFields .= "E.notes AS execution_notes,";
+    }  
+    if($my['opt']['getTester'])
+    {
+      $moreExecFields .= "E.tester_id,";
+    } 
+    if($my['opt']['getExecutionTimestamp'])
+    {
+      $moreExecFields .= "E.execution_ts,";
+    } 
+
   
     // Latest Executions By Build Platform (LEBBP)
     $sqlLEBBP = $sqlStm['LEBBP'];
@@ -1820,7 +1851,7 @@ class tlTestPlanMetrics extends testplan
               " SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
               " TPTCV.tcversion_id,TPTCV.platform_id," .
               " E.build_id,E.tcversion_number AS version,TCV.tc_external_id AS external_id, " .
-              " E.id AS executions_id, E.status AS status, " .
+              " E.id AS executions_id, E.status AS status, " . $moreExecFields .
               " (TPTCV.urgency * TCV.importance) AS urg_imp " .
               " FROM {$this->tables['testplan_tcversions']} TPTCV " .
   
@@ -1862,7 +1893,7 @@ class tlTestPlanMetrics extends testplan
               " TPTCV.tcversion_id, TPTCV.platform_id," .
               " BU.id AS build_id,TCV.version,TCV.tc_external_id AS external_id, " .
               " COALESCE(E.id,-1) AS executions_id, " .
-              " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " .
+              " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " . $moreExecFields . 
               " (TPTCV.urgency * TCV.importance) AS urg_imp " .
               " FROM {$this->tables['testplan_tcversions']} TPTCV " .
   

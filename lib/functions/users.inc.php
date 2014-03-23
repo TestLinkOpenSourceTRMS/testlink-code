@@ -6,26 +6,16 @@
  * Functions for usermanagement
  * 
  * @filesource  users.inc.php
- * @package   TestLink
- * @author    Martin Havlat
- * @copyright   2006-2012, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      Martin Havlat
+ * @copyright   2006-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.4
- * 20111127 - franciscom - getAllUsersRoles() changes to use new config option demoSpecialUsers 
  *
  */
-
-/** core functions */
 require_once("common.php");
 
-//$authCfg = config_get('authentication');
-//if( 'LDAP' == $authCfg['method'] )
-//{
-//  /** support for LDAP authentication */
-//  require_once("ldap_api.php");
-// }
 
 /**
  * set session data after modification or authorization
@@ -103,9 +93,9 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
   returns: map
 
   rev :
-       20071228 - franciscom - added active_filter
 */
-function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter = null,$users = null)
+function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, 
+                                $active_filter = null,$users = null, $opt=null)
 {
   $users_map = null;
   if (!$users)
@@ -117,24 +107,7 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
     }
     $users = tlUser::getAll($db,$sqlWhere,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
   }
-  
-  //$the_users = $users;
-  
-  // if ($users)
-  // {
-  //  if(!is_null($active_filter))
-  //  {
-  //    $the_users = array();
-  //    foreach($users as $id => $user)
-  //    {
-  //      if($user->isActive == $active_filter)
-  //      {
-  //        $the_users[$id] = $users[$id];
-  //      } 
-  //    }
-  //  }
-  // }
-  return buildUserMap($users,!is_null($additional_users),$additional_users);
+  return buildUserMap($users,!is_null($additional_users),$additional_users,$opt);
 }
 
 /*
@@ -152,8 +125,11 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
   returns: map ready to be used on a HTML select input.
 
 */
-function buildUserMap($users,$add_options = false, $additional_options=null)
+function buildUserMap($users,$add_options = false, $additional_options=null, $opt=null)
 {
+  $my['opt'] = array('userDisplayFormat' => null);
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+
   $usersMap = null;
   $inactivePrefix = lang_get('tag_for_inactive_users');
   if ($users)
@@ -169,23 +145,15 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
     $userSet = array_keys($users);
     $loops2do = count($userSet);
     
-    // foreach($users as $id => $user)
-    // {
-    //  $usersMap[$id] = $user->getDisplayName();
-    //  if($user->isActive == 0)
-    //  {
-    //      $usersMap[$id] = $inactivePrefix . ' ' . $usersMap[$id];
-    //  } 
-    // }
-        for( $idx=0; $idx < $loops2do ; $idx++)
-        {
-          $userID = $userSet[$idx];
-      $usersMap[$userID] = $users[$userID]->getDisplayName();
+    for( $idx=0; $idx < $loops2do ; $idx++)
+    {
+      $userID = $userSet[$idx];
+      $usersMap[$userID] = $users[$userID]->getDisplayName($my['opt']['userDisplayFormat']);
       if($users[$userID]->isActive == 0)
       {
-          $usersMap[$userID] = $inactivePrefix . ' ' . $usersMap[$userID];
+        $usersMap[$userID] = $inactivePrefix . ' ' . $usersMap[$userID];
       } 
-        }
+    }
   }
   return $usersMap;
 }
@@ -227,12 +195,11 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
         {
           $msgBody = lang_get('your_password_is') . "\n\n" . $newPassword . "\n\n" . lang_get('contact_admin');
           $mail_op = @email_send(config_get('from_email'), 
-                         $user->emailAddress,lang_get('mail_passwd_subject'),$msgBody);
+                                 $user->emailAddress,lang_get('mail_passwd_subject'),$msgBody);
         }
         if ($mail_op->status_ok || ($passwordSendMethod == 'display_on_screen') )
         {
-          $retval['status'] = $user->writePasswordToDB($db); // BUGID 3396
-          $retval['msg'] = 'ok';
+          $retval['status'] = $user->writePasswordToDB($db);
         }
         else
         {
@@ -324,7 +291,7 @@ function getUserErrorMessage($code)
 */
 function getAllUsersRoles(&$db,$order_by = null)
 {
-    $tables = tlObject::getDBTables(array('users','roles'));
+  $tables = tlObject::getDBTables(array('users','roles'));
     
   $sql = "SELECT users.id FROM {$tables['users']} users " .
          " LEFT OUTER JOIN {$tables['roles']} roles ON users.role_id = roles.id ";
@@ -364,48 +331,47 @@ function getAllUsersRoles(&$db,$order_by = null)
  * 
  * @return array TBD  
  * @internal revisions
- * 20101023 - franciscom - BUGID 3931: Assign test case to test project fails for 
- *               PRIVATE TEST PROJECT (tested with admin user)
  */
 function getTestersForHtmlOptions(&$db,$tplanID,$tproject,$users = null, 
                                   $additional_testers = null,$activeStatus = 'active')
 {
   $orOperand = false;
-    $activeTarget = 1;
-    switch ($activeStatus)
-    {
-        case 'any':
-            $orOperand = true;
-        break;
+  $activeTarget = 1;
+  switch ($activeStatus)
+  {
+    case 'any':
+      $orOperand = true;
+    break;
         
-        case 'inactive':
-            $activeTarget = 0;
-      break;
+    case 'inactive':
+      $activeTarget = 0;
+    break;
         
-        case 'active':
-        default:
-      break;
-    }
+    case 'active':
+      default:
+    break;
+  }
 
-    $users_roles = get_tplan_effective_role($db,$tplanID,$tproject,null,$users);
+  $users_roles = get_tplan_effective_role($db,$tplanID,$tproject,null,$users);
 
-    $userFilter = array();
-    foreach($users_roles as $keyUserID => $roleInfo)
+  $userFilter = array();
+  foreach($users_roles as $keyUserID => $roleInfo)
+  {
+    if( is_object($roleInfo['effective_role']) )
     {
-      // BUGID 3931: Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user)
-      if( is_object($roleInfo['effective_role']) )
-      {
-          if( $roleInfo['effective_role']->hasRight('testplan_execute') && 
+      if( $roleInfo['effective_role']->hasRight('testplan_execute') && 
               ($orOperand || $roleInfo['user']->isActive == $activeTarget) )
-          {
-              
-               $userFilter[$keyUserID] = $roleInfo['user'];
-          }
-        }   
-    }
+      {
+        $userFilter[$keyUserID] = $roleInfo['user'];
+      }
+    }   
+  }
   return buildUserMap($userFilter,true,$additional_testers);
 }
 
+/**
+ *
+ */
 function initialize_tabsmenu()
 {
   $hl = new stdClass();
@@ -439,45 +405,43 @@ function initialize_tabsmenu()
 */
 function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=null)
 {
-    $answers = new stdClass();
-    $grants = new stdClass();
-    $grants->user_mgmt = $userObj->hasRight($dbHandler,"mgt_users");
-    $grants->role_mgmt = $userObj->hasRight($dbHandler,"role_management");
+  $answers = new stdClass();
+  $grants = new stdClass();
+  $grants->user_mgmt = $userObj->hasRight($dbHandler,"mgt_users");
+  $grants->role_mgmt = $userObj->hasRight($dbHandler,"role_management");
 
-    // in order to assign DEFAULT role to user, due to current implementation
-    // you need to access all user data => we request you can do mgt_users.
-    // A question arise:
-    // how user_role_assignment right has to be understood ?
-    // how it is used ? where ?
-    // $grants->user_role_assignment = $userObj->hasRight($dbHandler,"user_role_assignment");
+  // in order to assign DEFAULT role to user, due to current implementation
+  // you need to access all user data => we request you can do mgt_users.
+  // A question arise:
+  // how user_role_assignment right has to be understood ?
+  // how it is used ? where ?
+  // $grants->user_role_assignment = $userObj->hasRight($dbHandler,"user_role_assignment");
 
-    $grants->tproject_user_role_assignment = "no";
-    $grants->tplan_user_role_assignment = "no";
+  $grants->tproject_user_role_assignment = "no";
+  $grants->tplan_user_role_assignment = "no";
     
-    if($grants->user_mgmt == 'yes')
-    {
-        $grants->tplan_user_role_assignment = 'yes';
-        $grants->tproject_user_role_assignment = 'yes';  
+  if($grants->user_mgmt == 'yes')
+  {
+    $grants->tplan_user_role_assignment = 'yes';
+    $grants->tproject_user_role_assignment = 'yes';  
+  }
+  else
+  {
+    $grants->tplan_user_role_assignment = $userObj->hasRight($dbHandler,"testplan_user_role_assignment",
+                                                             $tprojectID,$tplanID);
+        
+        
+    $answers->user_role_assignment = $userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
+    $answers->testproject_user_role_assignment=$userObj->hasRight($dbHandler,"testproject_user_role_assignment",$tprojectID,-1);
+    if($answers->user_role_assignment == "yes" || $answers->testproject_user_role_assignment == "yes")
+    {    
+      $grants->tproject_user_role_assignment = "yes";
     }
-    else
-    {
-        
-        $grants->tplan_user_role_assignment = $userObj->hasRight($dbHandler,"testplan_user_role_assignment",
-                                                                 $tprojectID,$tplanID);
-        
-        
-        $answers->user_role_assignment = $userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
-        $answers->testproject_user_role_assignment=$userObj->hasRight($dbHandler,"testproject_user_role_assignment",$tprojectID,-1);
-        if($answers->user_role_assignment == "yes" || $answers->testproject_user_role_assignment == "yes")
-        {    
-            $grants->tproject_user_role_assignment = "yes";
-        }
-    }    
-    foreach($grants as $key => $value)
-    {
-        $grants->$key = $value == "yes" ? "yes" : "no";       
-    }
+  }    
+  foreach($grants as $key => $value)
+  {
+    $grants->$key = $value == "yes" ? "yes" : "no";       
+  }
     
-    return $grants;
+  return $grants;
 }
-?>

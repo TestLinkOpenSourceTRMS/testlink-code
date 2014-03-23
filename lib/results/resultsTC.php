@@ -69,8 +69,16 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
 
   $tpl = $templateCfg->default_template;
 
-  $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,array('buildSet' => $buildIDSet));
+  $opt = null;
+  if($args->format == FORMAT_XLS)
+  {
+    $opt = array('getExecutionNotes' => true, 'getTester' => true,
+                 'getExecutionTimestamp' => true);
+  }
+
+  $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,array('buildSet' => $buildIDSet), $opt);
   $metrics = $execStatus['metrics'];
+
   $latestExecution = $execStatus['latestExec']; //displayMemUsage('Before UNSET');
   unset($execStatus); // displayMemUsage('AFTER UNSET');
 
@@ -86,150 +94,168 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
 
   if( !is_null($metrics) )
   {
-  // invariant pieces  => avoid wasting time on loops
-  $dlink = '<a href="' . str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . 
-           urlencode($tproject_info['prefix']) . '&item=testcase&id=';  
+    $userSet = getUsersForHtmlOptions($db,null,null,null,null,array('userDisplayFormat' => '%first% %last%'));
 
-  $hist_img_tag = '<img title="' . $labels['history'] . '"' . ' src="' . $gui->img->history . '" /></a> ';
-  $edit_img_tag = '<img title="' . $labels['design'] . '"' . ' src="' . $gui->img->edit . '" /></a> ';
+    // invariant pieces  => avoid wasting time on loops
+    $dlink = '<a href="' . str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . 
+             urlencode($tproject_info['prefix']) . '&item=testcase&id=';  
+
+    $hist_img_tag = '<img title="' . $labels['history'] . '"' . ' src="' . $gui->img->history . '" /></a> ';
+    $edit_img_tag = '<img title="' . $labels['design'] . '"' . ' src="' . $gui->img->edit . '" /></a> ';
  
-  $tsuiteSet = array_keys($metrics);
-  foreach($tsuiteSet as $tsuiteID)
-  {
-    $tcaseSet = array_keys($metrics[$tsuiteID]);
-    foreach($tcaseSet as $tcaseID)
+    $tsuiteSet = array_keys($metrics);
+    foreach($tsuiteSet as $tsuiteID)
     {
-      $platformSet = array_keys($metrics[$tsuiteID][$tcaseID]);
-      foreach($platformSet as $platformID)
+      $tcaseSet = array_keys($metrics[$tsuiteID]);
+      foreach($tcaseSet as $tcaseID)
       {
-        $rf = &$metrics[$tsuiteID][$tcaseID][$platformID];
-        $rows = null;
-
-        // some info does not change on different executions
-        $build2loop = array_keys($rf);
-        $top = current($build2loop);
-        $external_id = $testCasePrefix . $rf[$top]['external_id'];
-        $rows[$cols['tsuite']] = $rf[$top]['suiteName'];
-      
-        // build HTML Links to test case
-        switch($args->format)
+        $platformSet = array_keys($metrics[$tsuiteID][$tcaseID]);
+        foreach($platformSet as $platformID)
         {
-          case FORMAT_XLS:
-            $rows[$cols['link']] = "{$external_id}:{$rf[$top]['name']}";
-          break;
-          
-          default:
-            $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",ENT_QUOTES);
-            if($args->format == FORMAT_HTML)
-            {
-              $rows[$cols['link']] = "<!-- " . sprintf("%010d", $rf[$top]['external_id']) . " -->";
-              if($args->addOpAccess)
-              {  
-                $rows[$cols['link']] .= "<a href=\"javascript:openExecHistoryWindow({$tcaseID});\">" .
-                                        $hist_img_tag .
-                                        "<a href=\"javascript:openTCEditWindow({$tcaseID});\">" .
-                                        $edit_img_tag; 
-              }                       
-              $rows[$cols['link']] .= $name;
-            }
-            else
-            {
-              $rows[$cols['link']] = $dlink . urlencode($external_id) . '">' . "{$name}</a> ";
-            }
-          break;
-        }
+          $rf = &$metrics[$tsuiteID][$tcaseID][$platformID];
+          $rows = null;
 
-        if ($show_platforms)
-        {
-          $rows[$cols['platform']] = $gui->platforms[$platformID];
-        }
-
-        if($gui->options->testPriorityEnabled) 
-        {
-          
+          // some info does not change on different executions
+          $build2loop = array_keys($rf);
+          $top = current($build2loop);
+          $external_id = $testCasePrefix . $rf[$top]['external_id'];
+          $rows[$cols['tsuite']] = $rf[$top]['suiteName'];
+        
+          // build HTML Links to test case
           switch($args->format)
           {
             case FORMAT_XLS:
-              $rows[$cols['priority']] = $cfg['priority'][$rf[$top]['priority_level']];
+              $rows[$cols['link']] = "{$external_id}:{$rf[$top]['name']}";
             break;
             
             default:
-              // is better to use code to do reorder instead of localized string ???
-              $rows[$cols['priority']] = $rf[$top]['priority_level'];
+              $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",ENT_QUOTES);
+              if($args->format == FORMAT_HTML)
+              {
+                $rows[$cols['link']] = "<!-- " . sprintf("%010d", $rf[$top]['external_id']) . " -->";
+                if($args->addOpAccess)
+                {  
+                  $rows[$cols['link']] .= "<a href=\"javascript:openExecHistoryWindow({$tcaseID});\">" .
+                                          $hist_img_tag .
+                                          "<a href=\"javascript:openTCEditWindow({$tcaseID});\">" .
+                                          $edit_img_tag; 
+                }                       
+                $rows[$cols['link']] .= $name;
+              }
+              else
+              {
+                $rows[$cols['link']] = $dlink . urlencode($external_id) . '">' . "{$name}</a> ";
+              }
             break;
-          }  
-        }
-
-        // Now loop on result on each build, but following order
-        $buildExecStatus = null;  
-        $execOnLastBuild = null;
-        foreach($buildIDSet as $buildID)
-        {
-          if( $args->format == FORMAT_XLS)
-          {
-            $r4build = $labels[$rf[$buildID]['status']] .
-                       sprintf($labels['versionTag'],$rf[$buildID]['version']);
           }
-          else
-          {
-            $r4build['text'] = "";
 
-            if ($args->format == FORMAT_HTML && $args->addOpAccess) 
+          if ($show_platforms)
+          {
+            $rows[$cols['platform']] = $gui->platforms[$platformID];
+          }
+
+          if($gui->options->testPriorityEnabled) 
+          {
+            
+            switch($args->format)
             {
-              $r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
-                                "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
-                                "{$args->tplan_id}, {$platformID});\">" .
-                                 "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
+              case FORMAT_XLS:
+                $rows[$cols['priority']] = $cfg['priority'][$rf[$top]['priority_level']];
+              break;
+              
+              default:
+                // is better to use code to do reorder instead of localized string ???
+                $rows[$cols['priority']] = $rf[$top]['priority_level'];
+              break;
+            }  
+          }
+
+          // Now loop on result on each build, but following order
+          $buildExecStatus = null;  
+          $execOnLastBuild = null;
+          foreach($buildIDSet as $buildID)
+          {
+            // new dBug($rf);
+            if( $args->format == FORMAT_XLS)
+            {
+              $r4build = $labels[$rf[$buildID]['status']] .
+                         sprintf($labels['versionTag'],$rf[$buildID]['version']);
+
+              $tester = '';           
+              if(isset($userSet,$rf[$buildID]['tester_id']))
+              {
+                $tester = $userSet[$rf[$buildID]['tester_id']];
+              }
+
+              $bella = array($r4build,$rf[$buildID]['execution_ts'],$tester,$rf[$buildID]['execution_notes']);            
+              $buildExecStatus = array_merge((array)$buildExecStatus, $bella);
             }
+            else
+            {
+              $r4build['text'] = "";
 
-            $r4build['text'] .= $labels[$rf[$buildID]['status']] .
-                                sprintf($labels['versionTag'],$rf[$buildID]['version']);
-  
-            $r4build['value'] = $rf[$buildID]['status'];
-            $r4build['cssClass'] = $gui->map_status_css[$rf[$buildID]['status']];
+              if ($args->format == FORMAT_HTML && $args->addOpAccess) 
+              {
+                $r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
+                                  "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
+                                  "{$args->tplan_id}, {$platformID});\">" .
+                                   "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
+              }
+
+              $r4build['text'] .= $labels[$rf[$buildID]['status']] .
+                                  sprintf($labels['versionTag'],$rf[$buildID]['version']);
+    
+              $r4build['value'] = $rf[$buildID]['status'];
+              $r4build['cssClass'] = $gui->map_status_css[$rf[$buildID]['status']];
+              $buildExecStatus[] = $r4build;
+            }
+          
+            if($gui->matrixCfg->buildColumns['showStatusLastExecuted'] && $lastestBuild->id == $buildID)
+            {
+              $execOnLastBuild = $r4build;  
+            }              
+
+            // why we do special reasoning on NOT RUN ???
+            if( ($latestExecution[$platformID][$tcaseID]['status'] == $cfg['results']['status_code']['not_run']) ||
+                ( ($latestExecution[$platformID][$tcaseID]['build_id'] == $buildID) &&                             
+                  ($latestExecution[$platformID][$tcaseID]['id'] == $rf[$buildID]['executions_id']) ) 
+              )                  
+            {
+              $lexec = $r4build;
+            }
           }
-        
-          $buildExecStatus[] = $r4build;
 
-          if($gui->matrixCfg->buildColumns['showStatusLastExecuted'] && $lastestBuild->id == $buildID)
+          // Ok, now the specials
+          // If configured, add column with Exec result on Latest Created Build
+          if ($gui->matrixCfg->buildColumns['showStatusLastExecuted'])
           {
-            $execOnLastBuild = $r4build;  
-          }              
-
-          // why we do special reasoning on NOT RUN ???
-          if( ($latestExecution[$platformID][$tcaseID]['status'] == $cfg['results']['status_code']['not_run']) ||
-              ( ($latestExecution[$platformID][$tcaseID]['build_id'] == $buildID) &&                             
-                ($latestExecution[$platformID][$tcaseID]['id'] == $rf[$buildID]['executions_id']) ) 
-            )                  
-          {
-            $lexec = $r4build;
+              $buildExecStatus[] = $execOnLastBuild;
           }
-        }
+          if ($gui->matrixCfg->buildColumns['latestBuildOnLeft']) 
+          {
+            $buildExecStatus = array_reverse($buildExecStatus);
+          }
 
-        // Ok, now the specials
-        // If configured, add column with Exec result on Latest Created Build
-        if ($gui->matrixCfg->buildColumns['showStatusLastExecuted'])
-        {
-            $buildExecStatus[] = $execOnLastBuild;
-        }
-        if ($gui->matrixCfg->buildColumns['latestBuildOnLeft']) 
-        {
-          $buildExecStatus = array_reverse($buildExecStatus);
-        }
-        $rows = array_merge($rows, $buildExecStatus);
+          // new dBug($rows);
+          // new dBug($buildExecStatus);
+          
+          $rows = array_merge($rows, $buildExecStatus);
+          
+          // Always righmost column will display lastest execution result
+          $rows[] = $lexec;
+         
+          $gui->matrix[] = $rows;
+
+          // new dBug($gui->matrix);
+
+          unset($r4build);
+          unset($rows);
+          unset($buildExecStatus);
+        } // $platformSet
         
-        // Always righmost column will display lastest execution result
-        $rows[] = $lexec;
-       
-        $gui->matrix[] = $rows;
-        unset($r4build);
-        unset($rows);
-        unset($buildExecStatus);
-      } // $platformSet
-      
-    }  // $tcaseSet
+      }  // $tcaseSet
   
-  } // $tsuiteSet
+    } // $tsuiteSet
   }  
   unset($metrics);
   unset($latestExecution);
@@ -237,10 +263,14 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   switch($args->format)
   {
     case FORMAT_XLS:
+      // new dBug($gui->matrix);      die();
       createSpreadsheet($gui,$args,$buildIDSet);
     break;  
 
     default:
+      // new dBug($gui->matrix);
+      // die();
+
      $gui->tableSet[] =  buildMatrix($gui, $args, $buildIDSet, $lastestBuild);
     break;
   } 
@@ -539,7 +569,8 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
 function createSpreadsheet($gui,$args,$buildIDSet)
 {
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
-                           'result_on_last_build' => null, 'title_test_case_title' => null,
+                           'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
+                           'notes' => null, 'date_time_run' => null,
                            'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
                            'result_on_last_build' => null,'last_execution' => null));
 
@@ -603,7 +634,11 @@ function createSpreadsheet($gui,$args,$buildIDSet)
   $gui->filterFeedback = null;
   foreach($buildIDSet as $iix)
   {
-    $dataHeader[] = $gui->buildInfoSet[$iix]['name'];
+    $dataHeader[] = $lbl['build'] . ' ' . $gui->buildInfoSet[$iix]['name'];
+    $dataHeader[] = $lbl['date_time_run'];
+    $dataHeader[] = $lbl['test_exec_by'];
+    $dataHeader[] = $lbl['notes'];
+
     if($gui->filterApplied)
     {
       $gui->filterFeedback[] = $gui->buildInfoSet[$iix]['name'];

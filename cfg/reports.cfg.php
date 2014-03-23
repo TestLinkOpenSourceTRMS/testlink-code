@@ -89,7 +89,6 @@ $tlCfg->reports_list['test_report'] = array(
 	'format' => 'format_html,format_odt,format_msword'
 );
 
-// 20131208
 $tlCfg->reports_list['test_report_on_build'] = array( 
 	'title' => 'link_report_test_report_on_build',
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
@@ -223,11 +222,12 @@ $tlCfg->reports_list['free_tcases'] = array(
 );
 
 
+
+
+// Add custom configuration
 clearstatcache();
 $f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';
 if ( file_exists($f2inc) )
 {
   require_once($f2inc);
 }
-// -------------------------------------------------------------------
-?>

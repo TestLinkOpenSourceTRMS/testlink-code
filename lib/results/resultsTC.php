@@ -73,7 +73,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   if($args->format == FORMAT_XLS)
   {
     $opt = array('getExecutionNotes' => true, 'getTester' => true,
-                 'getExecutionTimestamp' => true);
+                 'getExecutionTimestamp' => true, 'getExecutionDuration' => true);
   }
 
   $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,array('buildSet' => $buildIDSet), $opt);
@@ -187,7 +187,8 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
                 $tester = $userSet[$rf[$buildID]['tester_id']];
               }
 
-              $bella = array($r4build,$rf[$buildID]['execution_ts'],$tester,$rf[$buildID]['execution_notes']);            
+              $bella = array($r4build,$rf[$buildID]['execution_ts'],$tester,
+                             $rf[$buildID]['execution_notes'],$rf[$buildID]['execution_duration']);            
               $buildExecStatus = array_merge((array)$buildExecStatus, $bella);
             }
             else
@@ -570,7 +571,7 @@ function createSpreadsheet($gui,$args,$buildIDSet)
 {
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
                            'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
-                           'notes' => null, 'date_time_run' => null,
+                           'notes' => null, 'date_time_run' => null, 'execution_duration' => null,
                            'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
                            'result_on_last_build' => null,'last_execution' => null));
 
@@ -612,7 +613,13 @@ function createSpreadsheet($gui,$args,$buildIDSet)
   //                  IMHO has no sense work without priority
   // 
   // Exec result on Build 1
+  // Date
+  // Tester
+  // Notes
+  // Duration
+  //
   // Exec result on Build 2
+  // ...
   // ...
   // Exec result on Build N
   // Exec result on ON LATEST CREATED Build
@@ -638,6 +645,7 @@ function createSpreadsheet($gui,$args,$buildIDSet)
     $dataHeader[] = $lbl['date_time_run'];
     $dataHeader[] = $lbl['test_exec_by'];
     $dataHeader[] = $lbl['notes'];
+    $dataHeader[] = $lbl['execution_duration'];
 
     if($gui->filterApplied)
     {
@@ -645,13 +653,7 @@ function createSpreadsheet($gui,$args,$buildIDSet)
     }
   }  
 
-  /*
-  foreach($gui->buildInfoSet as $key => $value)
-  {
-    $dataHeader[] = $value['name'];
-  }
-  */
-  
+
   // Now the magic
   if( $gui->matrixCfg->buildColumns['showStatusLastExecuted'] )
   {  

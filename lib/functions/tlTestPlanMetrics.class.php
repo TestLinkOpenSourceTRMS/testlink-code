@@ -1434,7 +1434,7 @@ class tlTestPlanMetrics extends testplan
 
     $my = array();
     $my['opt'] = array('getExecutionNotes' => false, 'getTester' => false,
-                       'getExecutionTimestamp' => false);
+                       'getExecutionTimestamp' => false, 'getExecutionDuration' => false);
 
     $my['opt'] = array_merge($my['opt'], (array)$opt);
 
@@ -1818,8 +1818,7 @@ class tlTestPlanMetrics extends testplan
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $my['opt'] = array('getExecutionNotes' => false, 'getTester' => false,
-                       'getExecutionTimestamp' => false);
-
+                       'getExecutionTimestamp' => false, 'getExecutionDuration' => false);
     $my['opt'] = array_merge($my['opt'], (array)$opt);
 
 
@@ -1843,6 +1842,10 @@ class tlTestPlanMetrics extends testplan
       $moreExecFields .= "E.execution_ts,";
     } 
 
+    if($my['opt']['getExecutionDuration'])
+    {
+      $moreExecFields .= "E.execution_duration,";
+    } 
   
     // Latest Executions By Build Platform (LEBBP)
     $sqlLEBBP = $sqlStm['LEBBP'];

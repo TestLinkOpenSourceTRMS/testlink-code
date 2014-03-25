@@ -385,9 +385,9 @@ class tlPlatform extends tlObjectWithDB
       $msg = "Class: " . __CLASS__ . " - " . "Method: " . __FUNCTION__ ;
       $msg .= " Empty name ";
       throw new Exception($msg);
-      }
-        return $safeName;
     }
+    return $safeName;
+  }
 
 
   /**

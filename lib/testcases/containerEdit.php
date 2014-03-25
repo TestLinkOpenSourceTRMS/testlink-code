@@ -6,8 +6,8 @@
  * @filesource  containerEdit.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2013, TestLink community
- * @link        http://www.teamst.org/index.php
+ * @copyright   2005-2014, TestLink community
+ * @link        http://www.testlink.org
  *
  * @internal revisions
  * @since 1.9.10
@@ -1121,17 +1121,17 @@ function reorderTestCasesByCriteria($argsObj,&$tsuiteMgr,&$treeMgr,$sortCriteria
  */
 function reorderTestCasesDictionary($argsObj,&$tsuiteMgr,&$treeMgr)
 {
-    $tcaseSet = (array)$tsuiteMgr->get_children_testcases($argsObj->testsuiteID,'simple');
-    if( ($loop2do = count($tcaseSet)) > 0 )
+  $tcaseSet = (array)$tsuiteMgr->get_children_testcases($argsObj->testsuiteID,'simple');
+  if( ($loop2do = count($tcaseSet)) > 0 )
+  {
+    for($idx=0; $idx < $loop2do; $idx++)
     {
-        for($idx=0; $idx < $loop2do; $idx++)
-        {
-            $a2sort[$tcaseSet[$idx]['id']] = $tcaseSet[$idx]['name'];
-        }
-        natsort($a2sort);
-        $a2sort = array_keys($a2sort);
-        $treeMgr->change_order_bulk($a2sort);
+      $a2sort[$tcaseSet[$idx]['id']] = strtolower($tcaseSet[$idx]['name']);
     }
+    natsort($a2sort);
+    $a2sort = array_keys($a2sort);
+    $treeMgr->change_order_bulk($a2sort);
+  }
 }
 
 
@@ -1169,7 +1169,7 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
   {
     for($idx=0; $idx < $loop2do; $idx++)
     {
-      $a2sort[$itemSet[$idx]['id']] = $itemSet[$idx]['name'];
+      $a2sort[$itemSet[$idx]['id']] = strtolower($itemSet[$idx]['name']);
     }
     natsort($a2sort);
     $a2sort = array_keys($a2sort);

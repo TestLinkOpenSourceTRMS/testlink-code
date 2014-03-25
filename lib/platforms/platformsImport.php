@@ -108,22 +108,29 @@ function doImport(&$dbHandler,$testproject_id)
       $file_check['show_results'] = 1;
       $platform_mgr = new tlPlatform($dbHandler,$testproject_id);
       $platformsOnSystem = $platform_mgr->getAllAsMap('name','rows');
-            
+      
       foreach($xml as $platform)
       {
-       	// Check if platform with this name already exists on test Project
-       	// if answer is yes => update fields
-       	$name = trim($platform->name);
-       	if(isset($platformsOnSystem[$name]))
-       	{
-       		$import_msg['ok'][] = sprintf(lang_get('platform_updated'),$platform->name);
-          $platform_mgr->update($platformsOnSystem[$name]['id'],$name,$platform->notes);
-       	}
-       	else
-       	{
-       		$import_msg['ok'][] = sprintf(lang_get('platform_imported'),$platform->name);
-          $platform_mgr->create($name,$platform->notes);
-       	}
+        if(property_exists($platform, 'name'))
+        {  
+         	// Check if platform with this name already exists on test Project
+         	// if answer is yes => update fields
+         	$name = trim($platform->name);
+         	if(isset($platformsOnSystem[$name]))
+         	{
+         		$import_msg['ok'][] = sprintf(lang_get('platform_updated'),$platform->name);
+            $platform_mgr->update($platformsOnSystem[$name]['id'],$name,$platform->notes);
+         	}
+         	else
+         	{
+         		$import_msg['ok'][] = sprintf(lang_get('platform_imported'),$platform->name);
+            $platform_mgr->create($name,$platform->notes);
+         	}
+        }
+        else
+        {
+          $import_msg['ok'][] = lang_get('bad_line_skipped');
+        }  
       }      
     }
     else

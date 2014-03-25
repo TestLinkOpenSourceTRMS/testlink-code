@@ -41,6 +41,7 @@ $TLS_api_key = 'API Key';
 $TLS_builds = 'Builds';
 $TLS_active_builds = 'Active Builds';
 $TLS_all_active_builds = '[All Active Builds]';
+$TLS_bad_line_skipped = 'Line has been skipped (unable to import it)';
 
 
 

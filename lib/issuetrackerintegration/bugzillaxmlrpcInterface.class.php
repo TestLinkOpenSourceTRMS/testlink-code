@@ -7,8 +7,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.8
- * 20130805 - franciscom - canCreateViaAPI()
+ * @since 1.9.10
  * 
 **/
 require_once('Zend/Loader/Autoloader.php');
@@ -16,8 +15,8 @@ Zend_Loader_Autoloader::getInstance();
 
 class bugzillaxmlrpcInterface extends issueTrackerInterface
 {
-    private $APIClient;
-    private $issueDefaults;
+  private $APIClient;
+  private $issueDefaults;
 
   /**
    * Construct and connect to BTS.
@@ -30,7 +29,11 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     $this->interfaceViaDB = false;
     $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
     
-    $this->setCfg($config);
+    if( !$this->setCfg($config) )
+    {
+      return false;
+    } 
+
     $this->completeCfg();
     $this->connect();
     $this->guiCfg = array('use_decoration' => true); // add [] on summary
@@ -100,7 +103,7 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
    **/
   function checkBugIDSyntax($issueID)
   {
-      return $this->checkBugIDSyntaxNumeric($issueID);
+    return $this->checkBugIDSyntaxNumeric($issueID);
   }
 
   /**
@@ -227,26 +230,26 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
         return $str;
 	}
 
-    /**
+  /**
 	 * @param string issueID
-     *
-     * @return bool true if issue exists on BTS
-     **/
-    function checkBugIDExistence($issueID)
+   *
+   * @return bool true if issue exists on BTS
+   **/
+  function checkBugIDExistence($issueID)
+  {
+    if(($status_ok = $this->checkBugIDSyntax($issueID)))
     {
-        if(($status_ok = $this->checkBugIDSyntax($issueID)))
-        {
-            $issue = $this->getIssue($issueID);
-            $status_ok = is_object($issue) && !is_null($issue);
-        }
-        return $status_ok;
+      $issue = $this->getIssue($issueID);
+      $status_ok = is_object($issue) && !is_null($issue);
     }
+    return $status_ok;
+  }
 
 
-    /**
-     * 
-     *
-     **/
+  /**
+   * 
+   *
+   **/
 	function createAPIClient()
 	{
 		// echo __METHOD__ .'<br>';

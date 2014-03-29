@@ -38,6 +38,10 @@ class jiradbInterface extends issueTrackerInterface
     $this->dbSchema->status = 'issuestatus';
     $this->dbSchema->project = 'project';
         
+    if( $this->setCfg($config) )
+    {
+      return false;
+    }  
 
     $this->getStatuses();
     if( property_exists($this->cfg, 'statuscfg') )
@@ -47,12 +51,16 @@ class jiradbInterface extends issueTrackerInterface
 
     if( !property_exists($this->cfg, 'jiraversion') )
     {
-      throw new Exception("jiraversion is MANDATORY - Unable to continue");
+      // throw new Exception("jiraversion is MANDATORY - Unable to continue");
+      $msg = " - jiraversion is MANDATORY - Unable to continue";
+      tLog(__METHOD__ . $msg, 'ERROR');  
+      return false;
     }
     else
     {
       $this->completeCfg();
     }  
+
 
     $this->defaultResolvedStatus = $this->support->initDefaultResolvedStatus($this->statusDomain);
     $this->setResolvedStatusCfg();

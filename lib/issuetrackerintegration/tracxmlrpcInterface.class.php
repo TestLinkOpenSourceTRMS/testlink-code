@@ -31,7 +31,7 @@ require_once(TL_ABS_PATH . 'third_party/phpxmlrpc/lib/xmlrpc.inc');
 
 class tracxmlrpcInterface extends issueTrackerInterface
 {
-    private $APIClient;
+  private $APIClient;
 
   // this info has been get from ticket.get documentation
   const TICKET_GET_ID_IDX = 0;
@@ -55,7 +55,11 @@ class tracxmlrpcInterface extends issueTrackerInterface
     
     $this->setResolvedStatusCfg();
     
-    $this->setCfg($config);
+    if( !$this->setCfg($config) )
+    {
+      return false;
+    }  
+    
     $this->completeCfg();
     $this->connect();
     $this->guiCfg = array('use_decoration' => true); // add [] on summary
@@ -91,10 +95,10 @@ class tracxmlrpcInterface extends issueTrackerInterface
   }
 
   /**
-     * useful for testing 
-     *
-     *
-     **/
+   * useful for testing 
+   *
+   *
+   **/
   function getAPIClient()
   {
     return $this->APIClient;
@@ -112,12 +116,12 @@ class tracxmlrpcInterface extends issueTrackerInterface
     return $this->checkBugIDSyntaxNumeric($issueID);
   }
 
-    /**
-     * establishes connection to the bugtracking system
-     *
-     * @return bool 
-     *
-     **/
+  /**
+   * establishes connection to the bugtracking system
+   *
+   * @return bool 
+   *
+   **/
   function connect()
   {
     // echo __METHOD__ . '<br><br>';
@@ -156,10 +160,10 @@ class tracxmlrpcInterface extends issueTrackerInterface
   }
 
 
-    /**
-     * 
-     *
-     **/
+  /**
+   * 
+   *
+   **/
   public function getIssue($issueID)
   {
     // array ticket.get(int id) Fetch a ticket. 

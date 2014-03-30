@@ -26,8 +26,9 @@ class redminerestInterface extends issueTrackerInterface
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config)
+	function __construct($type,$config,$name)
 	{
+    $this->name = $name;
 		$this->interfaceViaDB = false;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
@@ -35,7 +36,11 @@ class redminerestInterface extends issueTrackerInterface
     $this->defaultResolvedStatus[] = array('code' => 3, 'verbose' => 'resolved');
     $this->defaultResolvedStatus[] = array('code' => 5, 'verbose' => 'closed');
 		
-	  $this->setCfg($config);
+	  if( !$this->setCfg($config) )
+    {
+      return false;
+    }  
+    
 		$this->completeCfg();
 		$this->setResolvedStatusCfg();
 	  $this->connect();

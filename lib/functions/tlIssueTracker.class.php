@@ -666,8 +666,6 @@ class tlIssueTracker extends tlObject
   {
     $xx = $this->getByID($its);
     $class2create = $xx['implementation'];
-    new dBug($xx);
-    die();
     $its = new $class2create($xx['type'],$xx['cfg'],$xx['name']);
     return $its->isConnected();
   }

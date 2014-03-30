@@ -25,8 +25,9 @@ class jirarestInterface extends issueTrackerInterface
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config)
+	function __construct($type,$config,$name)
 	{
+    $this->name = $name;
 		$this->interfaceViaDB = false;
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);

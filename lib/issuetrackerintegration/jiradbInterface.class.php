@@ -21,10 +21,16 @@ class jiradbInterface extends issueTrackerInterface
    * @param str $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
-  function __construct($type,$config)
+  function __construct($type,$config,$name)
   {
     // connect() to DATABASE is done here
-    parent::__construct($type,$config);  
+    parent::__construct($type,$config,$name);  
+
+    if( !$this->isConnected() )
+    {
+      return false;
+    }  
+
 
     $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
     $this->interfaceViaDB = true;
@@ -38,10 +44,6 @@ class jiradbInterface extends issueTrackerInterface
     $this->dbSchema->status = 'issuestatus';
     $this->dbSchema->project = 'project';
         
-    if( $this->setCfg($config) )
-    {
-      return false;
-    }  
 
     $this->getStatuses();
     if( property_exists($this->cfg, 'statuscfg') )
@@ -52,7 +54,7 @@ class jiradbInterface extends issueTrackerInterface
     if( !property_exists($this->cfg, 'jiraversion') )
     {
       // throw new Exception("jiraversion is MANDATORY - Unable to continue");
-      $msg = " - jiraversion is MANDATORY - Unable to continue";
+      $msg = " - Issuetracker $this->name - jiraversion is MANDATORY - Unable to continue";
       tLog(__METHOD__ . $msg, 'ERROR');  
       return false;
     }

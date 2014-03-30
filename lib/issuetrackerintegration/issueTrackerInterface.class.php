@@ -33,6 +33,8 @@ abstract class issueTrackerInterface
   // members to store the bugtracking information.
   // Values are set in the actual subclasses
   var $cfg = null;  // simpleXML object
+  var $name = null;
+
   var $tlCharSet = null;
   
   // private vars don't touch
@@ -51,10 +53,12 @@ abstract class issueTrackerInterface
    *
    * @param str $type (see tlIssueTracker.class.php $systems property)
    **/
-  function __construct($type,$config)
+  function __construct($type,$config,$name)
   {
     $this->tlCharSet = config_get('charset');
     $this->guiCfg = array('use_decoration' => true); // add [] on summary and statusHTMLString
+    $this->name = $name;
+
     if( $this->setCfg($config) )
     {
       // useful only for integration via DB
@@ -99,7 +103,7 @@ abstract class issueTrackerInterface
     if(strlen(trim($xmlString)) == 0)
     {
       // Bye,Bye
-      $msg = " XML Configuration seems to be empty - please check";
+      $msg = " - Issue tracker:$this->name - XML Configuration seems to be empty - please check";
       tLog(__METHOD__ . $msg, 'ERROR');  
       return false;
     }

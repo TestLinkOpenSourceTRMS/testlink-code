@@ -43,9 +43,16 @@ class tracxmlrpcInterface extends issueTrackerInterface
    * @param str $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
-  function __construct($type,$config)
+  function __construct($type,$config,$name)
   {
+    $this->name = $name;
     $this->interfaceViaDB = false;
+    
+    if( !$this->setCfg($config) )
+    {
+      return false;
+    }  
+
     $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
     
     $this->defaultResolvedStatus = array();
@@ -54,12 +61,6 @@ class tracxmlrpcInterface extends issueTrackerInterface
     $this->defaultResolvedStatus[] = array('code' => 'c', 'verbose' => 'closed');
     
     $this->setResolvedStatusCfg();
-    
-    if( !$this->setCfg($config) )
-    {
-      return false;
-    }  
-    
     $this->completeCfg();
     $this->connect();
     $this->guiCfg = array('use_decoration' => true); // add [] on summary

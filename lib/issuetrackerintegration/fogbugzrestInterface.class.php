@@ -28,11 +28,16 @@ class fogbugzrestInterface extends issueTrackerInterface
    * @param str $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
-  function __construct($type,$config)
+  function __construct($type,$config,$name)
   {
+    $this->name = $name;
     $this->interfaceViaDB = false;
     $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
-    $this->setCfg($config);
+
+    if( !$this->setCfg($config) )
+    {
+      return false;
+    }  
     $this->completeCfg();
     $this->connect();
   }

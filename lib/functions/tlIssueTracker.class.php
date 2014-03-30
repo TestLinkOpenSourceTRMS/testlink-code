@@ -324,7 +324,7 @@ class tlIssueTracker extends tlObject
   function getByName($name, $options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      return $this->getByAttr(array('key' => 'name', 'value' => $name),$options);
+    return $this->getByAttr(array('key' => 'name', 'value' => $name),$options);
   }
 
 
@@ -355,12 +355,12 @@ class tlIssueTracker extends tlObject
     switch($attr['key'])
     {
       case 'id':
-           $where = " WHERE id = " . intval($attr['value']);
+        $where = " WHERE id = " . intval($attr['value']);
       break;
   
       case 'name':
       default:
-           $where = " WHERE name = '" . $this->db->prepare_string($attr['value']) . "'";
+        $where = " WHERE name = '" . $this->db->prepare_string($attr['value']) . "'";
       break;
     }
      
@@ -666,7 +666,9 @@ class tlIssueTracker extends tlObject
   {
     $xx = $this->getByID($its);
     $class2create = $xx['implementation'];
-    $its = new $class2create($xx['type'],$xx['cfg']);
+    new dBug($xx);
+    die();
+    $its = new $class2create($xx['type'],$xx['cfg'],$xx['name']);
     return $its->isConnected();
   }
 

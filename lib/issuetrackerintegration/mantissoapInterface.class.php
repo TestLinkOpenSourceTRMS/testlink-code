@@ -36,8 +36,9 @@ class mantissoapInterface extends issueTrackerInterface
    * @param str $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
-  function __construct($type,$config)
+  function __construct($type,$config,$name)
   {
+    $this->name = $name;
     $this->interfaceViaDB = false;
     $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
     

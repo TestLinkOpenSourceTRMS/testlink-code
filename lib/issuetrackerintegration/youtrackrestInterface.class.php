@@ -19,7 +19,7 @@
  *    provided very useful simple curl php usage examples
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.10
  * 
 **/
 require_once(TL_ABS_PATH . "/third_party/youtrackclient/src/youtrackclient.php");
@@ -37,8 +37,9 @@ class youtrackrestInterface extends issueTrackerInterface
    *
    * @param str $type (see tlIssueTracker.class.php $systems property)
    **/
-  function __construct($type,$config)
+  function __construct($type,$config,$name)
   {
+    $this->name = $name;
     $this->interfaceViaDB = false;
     $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
     $this->connected = false;

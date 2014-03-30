@@ -31,11 +31,15 @@ class mantisdbInterface extends issueTrackerInterface
    * @param str $type (see tlIssueTracker.class.php $systems property)
    * @param xml $cfg
    **/
-  function __construct($type,$config)
+  function __construct($type,$config,$name)
   {
     
-    parent::__construct($type,$config);
-    
+    parent::__construct($type,$config,$name);
+    if( !$this->isConnected() )
+    {
+      return false;
+    } 
+
     $this->interfaceViaDB = true;
     $this->defaultResolvedStatus = array();
     $this->defaultResolvedStatus[] = array('code' => 80, 'verbose' => 'resolved');

@@ -17,9 +17,9 @@ class fogbugzdbInterface extends issueTrackerInterface
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config)
+	function __construct($type,$config,$name)
 	{
-	    parent::__construct($type,$config);
+	    parent::__construct($type,$config,$name);
 
 		$this->interfaceViaDB = true;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);

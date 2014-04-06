@@ -37,6 +37,9 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
   
   $my['options'] = array('doSessionExistsCheck' => true); 
   $my['options'] = array_merge($my['options'], (array)$options);
+
+  $doLogin = false;
+
   if (!is_null($pwd) && !is_null($login))
   {
     $user = new tlUser();
@@ -51,40 +54,73 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
         $result = array('status' => tl::ERROR, 'msg' => null);
       }
       
-      if ($password_check->status_ok && $user->isActive)
+      $doLogin = $password_check->status_ok && $user->isActive;
+      if( !$doLogin )
       {
-        // Need to do set COOKIE following Mantis model
-        $auth_cookie_name = config_get('auth_cookie');
-        $expireOnBrowserClose=false;
-        setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');      
-
-        // Disallow two sessions within one browser
-        if ($my['options']['doSessionExistsCheck'] && 
-            isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
-        {
-            $result['msg'] = lang_get('login_msg_session_exists1') . 
-                             ' <a style="color:white;" href="logout.php">' . 
-                           lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
-        }
-        else
-        { 
-          // Setting user's session information
-          $_SESSION['currentUser'] = $user;
-          $_SESSION['lastActivity'] = time();
-          
-          $g_tlLogger->endTransaction();
-          $g_tlLogger->startTransaction();
-          setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, 
-                         $user->locale,null);
-          
-          $result['status'] = tl::OK;
-        }
-      }
-      else
-      {
-        logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",
-                $user->dbID,"users");
+        logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
       } 
+    }
+    else
+    {
+      $authCfg = config_get('authentication');
+      if( $authCfg['ldap_automatic_user_creation'] )
+      {
+        $user->authentication = 'LDAP';  // force for auth_does_password_match
+        $check = auth_does_password_match($user,$pwd);
+
+        if( $check->status_ok )
+        {
+          $user = new tlUser(); 
+          $user->login = $login;
+          $user->authentication = 'LDAP';
+          $user->isActive = true;
+          $user->setPassword($pwd);  // write password on DB anyway
+
+          $user->emailAddress = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_email_field']));
+          $user->firstName = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_firstname_field']));
+          $user->lastName = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_surname_field']));
+
+          $user->firstName = (is_null($user->firstName) || strlen($user->firstName) == 0) ? $login : $user->firstName;
+          $user->lastName = (is_null($user->lastName) || strlen($user->lastName) == 0) ? $login : $user->lastName;
+
+
+          $doLogin = ($user->writeToDB($db) == tl::OK);
+        }  
+      }  
+    }  
+  }
+
+  if( $doLogin )
+  {
+    // After some tests (I'm very tired), seems that re-reading is best option
+    $user = new tlUser();
+    $user->login = $login;
+    $user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN);
+
+    // Need to do set COOKIE following Mantis model
+    $auth_cookie_name = config_get('auth_cookie');
+    $expireOnBrowserClose=false;
+    setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');      
+
+    // Disallow two sessions within one browser
+    if ($my['options']['doSessionExistsCheck'] && 
+        isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
+    {
+      $result['msg'] = lang_get('login_msg_session_exists1') . 
+                       ' <a style="color:white;" href="logout.php">' . 
+                       lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+    }
+    else
+    { 
+      // Setting user's session information
+      $_SESSION['currentUser'] = $user;
+      $_SESSION['lastActivity'] = time();
+          
+      $g_tlLogger->endTransaction();
+      $g_tlLogger->startTransaction();
+      setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress,$user->locale,null);
+          
+      $result['status'] = tl::OK;
     }
   }
   return $result;
@@ -208,4 +244,3 @@ function auth_does_password_match(&$userObj,$cleartext_password)
 
   return $ret;
 }
-?>

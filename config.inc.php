@@ -18,13 +18,12 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2013, TestLink community
- * @link        http://www.teamst.org/index.php
+ * @copyright   2005-2014, TestLink community
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  *
- * 20131013 - franciscom - TICKET 5972: User Authentication Methods - Allow configuration at user level
  *
  **/
 
@@ -318,9 +317,17 @@ $tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Ac
 // Follows Mantisbt idea.
 // True if user does not exist on DB, but can be get from LDAP, 
 // the user will be created AUTOMATICALLY with default user role.
-// Create user with data get (name,surname,email) from LDAP
+// Create user with following data from LDAP
+// mail
+// name
+// surname
 $tlCfg->authentication['ldap_automatic_user_creation'] = false;
-$tlCfg->authentication['ldap_realname_field'] = '';
+
+// Configure following fields in custom_config.inc.php according your configuration
+$tlCfg->authentication['ldap_email_field'] = 'mail';
+$tlCfg->authentication['ldap_firstname_field'] = 'givenname';
+$tlCfg->authentication['ldap_surname_field'] = 'sn';
+
 
 
 

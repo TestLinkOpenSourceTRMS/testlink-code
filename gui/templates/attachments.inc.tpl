@@ -31,6 +31,21 @@ $gsmarty_attachments
 {lang_get s='delete' var="del_msgbox_title"}
 
 <script type="text/javascript">
+function checkFileSize()
+{
+  if (typeof FileReader !== "undefined") {
+    var bytes = document.getElementById('uploadedFile').files[0].size;
+    if( bytes > {$gui->import_limit} )
+    {
+      var msg = "{$labels.max_size_file_upload}: {$gui->import_limit} Bytes < " + bytes + ' Bytes';
+      alert(msg);
+      return false;
+    }   
+  }
+  return true;
+}  
+
+
 var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 {if isset($attach_loadOnCancelURL)}
   var attachment_reloadOnCancelURL = '{$attach_loadOnCancelURL}';
@@ -88,11 +103,12 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 
 {if $attach_show_upload_btn && !$attach_downloadOnly}
 <div  style="text-align:left;margin:3px;background:#CDE;padding: 3px 3px 3px 3px;border-style: groove;border-width: thin;">
-  <form action="{$gui->fileUploadURL}" method="post" enctype="multipart/form-data" id="aForm">
+  <form action="{$gui->fileUploadURL}" method="post" enctype="multipart/form-data" id="aForm" 
+        onsubmit="javascript:return checkFileSize();">
     <label for="uploadedFile" class="labelHolder">{$labels.local_file} </label>
     <img class="clickable" src="{$tlImages.activity}" title="{$labels.max_size_file_upload}: {$gui->import_limit} Bytes)">
       <input type="hidden" name="MAX_FILE_SIZE" value="{$gui->import_limit}" /> {* restrict file size *}
-      <input type="file" name="uploadedFile" id=name="uploadedFile" size="{#UPLOAD_FILENAME_SIZE#}" />
+      <input type="file" name="uploadedFile" id="uploadedFile" size="{#UPLOAD_FILENAME_SIZE#}" />
       &nbsp;&nbsp;&nbsp;&nbsp;
       <span class="labelHolder">{$labels.attachment_title}:</span>
       <input type="text" id="fileTitle" name="fileTitle" maxlength="{#ATTACHMENT_TITLE_MAXLEN#}" 

@@ -1217,7 +1217,7 @@ class tlUser extends tlDBObject
     {
       // better die because this method is used in a do/while
       // that can create infinite loop
-      die();  
+      die(__METHOD__);  
     }
     $status = ($rs['hits'] == 0);
     return $status;
@@ -1275,15 +1275,15 @@ class tlUser extends tlDBObject
     if( $status )
     {
       # look up cookie in the database to see if it is valid
-      $sql =   "SELECT COUNT(0) AS hits FROM $this->object_table " .
-          "WHERE cookie_string = '" . $db->prepare_string($p_cookie_string) . "'" ;
+      $sql =  "SELECT COUNT(0) AS hits FROM $this->object_table " .
+              "WHERE cookie_string = '" . $db->prepare_string($p_cookie_string) . "'" ;
       $rs = $db->fetchFirstRow($sql);
         
       if( !is_array($rs) )
       {
         // better die because this method is used in a do/while
         // that can create infinite loop
-        die();  
+        die(__METHOD__);  
       }
       $status = ($rs['hits'] == 1);
     }

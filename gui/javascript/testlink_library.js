@@ -272,6 +272,57 @@ function TPROJECT_PRS(id)
   var pParams = tree_getPrintPreferences();
   parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=reqspec&id="+id+args+"&"+pParams;
 }
+/*
+function: Edit Rec Spec or launch print
+
+args :
+
+returns:
+
+rev :
+*/
+function ERS(id)
+{
+// get checkboxes status
+	var _FUNCTION_NAME_="ERS";
+	var pParams = tree_getPrintPreferences();
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=reqspeccoverage&level=reqspec&id="+id+args+"&"+pParams;
+
+	// alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+
+}
+
+/*
+function: Edit Rec or launch print
+
+args :
+
+returns:
+
+rev :
+*/
+function ER(id)
+{
+// get checkboxes status
+	var _FUNCTION_NAME_="ER";
+	var pParams = tree_getPrintPreferences();
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=reqcoverage&level=requirement&id="+id+args+"&"+pParams;
+
+	// alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+
+}
+
+/* Generate doc: a selected Test Suite from Test Specification */
+function TPROJECT_PRS(id)
+{
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testsuite&id="+id+args+"&"+pParams;
+}
+
 
 
 /*

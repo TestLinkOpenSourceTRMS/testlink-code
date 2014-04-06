@@ -542,6 +542,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->settings['setting_platform'] = false;
     }
   
+	if ($this->mode == 'plan_add_mode')
+    {
+    	$this->init_setting_testsgroupedby();
+    }
+  
     // TICKET 5176: Possibility to filter by Platform - changes in 'plan_mode'  
     //if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
     //{
@@ -1006,7 +1011,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // usage of wrong values in $this->args->xyz for cookiePrefix instead of correct 
         // values in $filters->setting_xyz
         $cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
-
+		$key = 'setting_testsgroupedby';
+        $mode = $this->args->$key;
         if ($this->do_filtering)
         {
           // TICKET 4496: added active/inactive filter
@@ -1035,31 +1041,55 @@ class tlTestCaseFilterControl extends tlFilterControl {
           $options['nodeHelpText']['testproject'] = lang_get('right_pane_test_plan_tree'); 
           $options['nodeHelpText']['testsuite'] = lang_get('display_tsuite_contents');
 
-          $forrest = generateTestSpecTree($this->db,
-                                          $this->args->testproject_id,
-                                          $this->args->testproject_name,
-                                          $gui->menuUrl,$filters,$options);
-          
+		  if ($mode == 'mode_req_coverage'){
+			$forrest = generateTestReqCoverageTree($this->db,
+												  $this->args->testproject_id,
+												  $this->args->testproject_name,
+												  $gui->menuUrl,$filters,$options);
+          }
+          elseif ($mode == 'mode_test_suite')
+          {
+			$forrest = generateTestSpecTree($this->db,
+											$this->args->testproject_id,
+											$this->args->testproject_name,
+											$gui->menuUrl,$filters,$options);
+		  }
           $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
           $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
         else 
         {
-          $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                    "root_node={$this->args->testproject_id}&show_tcases=0" .
-                    "&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
+			if ($mode == 'mode_test_suite')
+			{
+			 $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+						"root_node={$this->args->testproject_id}&show_tcases=0" .
+						"&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
 
-          $root_node = new stdClass();
-          $root_node->href = "javascript:EP({$this->args->testproject_id})";
-          $root_node->id = $this->args->testproject_id;
-          $root_node->name = $this->args->testproject_name;
+			  $root_node = new stdClass();
+			  $root_node->href = "javascript:EP({$this->args->testproject_id})";
+			  $root_node->id = $this->args->testproject_id;
+			  $root_node->name = $this->args->testproject_name;
 
-          $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
-          $root_node->wrapClose = '</span>';
+			  $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
+			  $root_node->wrapClose = '</span>';
 
-          $root_node->testlink_node_type = 'testproject';
-        }
+			  $root_node->testlink_node_type = 'testproject';
+			}
+			elseif($mode == 'mode_req_coverage')
+			{
+				$loader = $this->args->basehref . 'lib/ajax/getreqcoveragenodes.php?' .
+						"root_node={$this->args->testproject_id}";
+				$req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
+	            $root_node = new stdClass();
+				$root_node->href = "javascript:EP({$this->args->testproject_id})";
+				$root_node->id = $this->args->testproject_id;
+				$root_node->name = $this->args->testproject_name. " ($req_qty)";
+			  //$root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . //'">';
+			  //$root_node->wrapClose = '</span>';
+			  $root_node->testlink_node_type = 'testproject';
+			}
+		}
       break;
       
       case 'execution_mode':
@@ -1331,6 +1361,20 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $_SESSION[$session_key] = $this->settings[$key]['selected'];
   } // end of method
 
+  private function init_setting_testsgroupedby()
+  {
+  
+  	$key = 'setting_testsgroupedby';
+  	
+  	// now load info from session
+  	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
+  	$this->args->testsgroupedby_mode = $mode;
+  	$this->args->{$key} = $mode;
+  	$this->settings[$key]['selected'] = $mode;
+  	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
+  	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
+  } // end of method
+  
   /**
    * 
    * 

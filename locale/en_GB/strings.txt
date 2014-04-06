@@ -129,6 +129,10 @@ $TLS_navigator_tc_exec_assignment = "Execution assignment";
 $TLS_navigator_test_urgency = "Test Case urgency assignment";
 $TLS_navigator_update_linked_tcversions = "Update Linked Test Case Versions";
 
+$TLS_tests_grouped_by = "Tests Grouped By";
+$TLS_mode_test_suite = "Test Suite";
+$TLS_mode_req_coverage = "Req. Coverage";
+
 $TLS_needed = "Needed";
 $TLS_not_aplicable = "N/A";
 $TLS_notes = "Notes";

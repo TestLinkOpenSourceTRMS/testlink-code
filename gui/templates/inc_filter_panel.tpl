@@ -16,7 +16,7 @@
  * @since 1.9.10
  *}
 
-{lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
+{lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,tests_grouped_by,
                         build,filter_tcID,filter_on,filter_result,
                         btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
                         filter_owner,TestPlan,test_plan,caption_nav_filters,
@@ -101,6 +101,19 @@
         </tr>
       {/if}
 
+		{if $control->settings.setting_testsgroupedby}
+			<tr>
+				<td>{$labels.tests_grouped_by}</td>
+				<td>				
+					<select class="chosen-select" name="setting_testsgroupedby" onchange="this.form.submit()">
+					{html_options options=$control->settings.setting_testsgroupedby.items
+								  selected=$control->settings.setting_testsgroupedby.selected}
+					</select>
+				</td>
+			</tr>
+      {/if}
+
+      
       {if $control->settings.setting_platform}
         {assign var="platformID" value=$control->settings.setting_platform.selected}
         <tr>

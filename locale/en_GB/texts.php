@@ -423,6 +423,7 @@ $TLS_htmltext['planAddTC'] 			= "<h2>Purpose:</h2>
 
 <h2>To add or remove Test cases:</h2>
 <ol>
+	<li>Select how you want to order the testcases ('Test Grouped By' Field).</li>
 	<li>Click on a test suite to see all of its test suites and all of its test cases.</li>
 	<li>When you are done click the 'Add / Remove Test Cases' button to add or remove the test cases.
 		Note: Is not possible to add the same test case multiple times.</li>

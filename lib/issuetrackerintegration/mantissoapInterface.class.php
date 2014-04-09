@@ -7,8 +7,7 @@
  * @since 1.9.4
  *
  * @internal revisions
- * @since 1.9.8
- * 20130805 - franciscom - canCreateViaAPI()
+ * @since 1.9.10
 **/
 class mantissoapInterface extends issueTrackerInterface
 {
@@ -23,7 +22,6 @@ class mantissoapInterface extends issueTrackerInterface
   
   
   private $soapOpt = array("connection_timeout" => 1, 'exceptions' => 1);
-  // private $guiCfg = array();
   
   var $defaultResolvedStatus;
 
@@ -117,6 +115,10 @@ class mantissoapInterface extends issueTrackerInterface
       // If we do following call WITHOUT (string) CAST, SoapClient() fails
       // complaining '... wsdl has to be an STRING or null ...'
       $res['client'] = new SoapClient((string)$this->cfg->uriwsdl,$this->soapOpt);
+
+      // debug trying to use proxy (20140409)
+      // $res['client'] = new SoapClient('/tmp/mantisconnect.php.wsdl',$this->soapOpt);
+
       $res['connected'] = true;
       $res['msg'] = 'iupi!!!';
     }
@@ -403,8 +405,9 @@ class mantissoapInterface extends issueTrackerInterface
       // check category
       $nameCode = $client->mc_project_get_categories($safe->username,$safe->password,$mpid);
       $codeName = array_flip($nameCode);
-      $target = (property_exists($this->cfg,'category')) ? (string)$this->cfg->category : null;
-      $issue['category'] = (is_null($target) || !isset($nameCode[$target])) ? current($nameCode) : $target;
+
+      $categoryName = (property_exists($this->cfg,'category')) ? (string)$this->cfg->category : null;
+      $issue['category'] = (is_null($categoryName) || !isset($codeName[$categoryName])) ? current($nameCode) : $categoryName;
       $ret['id'] = $client->mc_issue_add($safe->username,$safe->password,$issue);
       $ret['status_ok'] = true;
       $ret['msg'] = sprintf(lang_get('mantis_bug_created'), $safeSummary,$safe->project);

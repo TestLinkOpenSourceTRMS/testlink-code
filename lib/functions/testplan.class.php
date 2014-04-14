@@ -3695,14 +3695,15 @@ class testplan extends tlObjectWithAttachments
     $xml_template = "\n\t" . 
             "<testproject>" . 
                 "\t\t" . "<name><![CDATA[||TESTPROJECTNAME||]]></name>" .
-                "\t\t" . "<internal_id><![CDATA[||TESTPROJECTID||]]></internal_id>" .
+                 "\t\t" . "<prefix><![CDATA[||TESTPROJECTPREFIX||]]></prefix>" .
+				 "\t\t" . "<internal_id><![CDATA[||TESTPROJECTID||]]></internal_id>" .
                 "\n\t" . "</testproject>";
               
     $xml_root = "{{XMLCODE}}";          
     $xml_mapping = null;
-    $xml_mapping = array("||TESTPROJECTNAME||" => "name", "||TESTPROJECTID||" => 'id');
+    $xml_mapping = array("||TESTPROJECTNAME||" => "name","||TESTPROJECTPREFIX||" => "prefix", "||TESTPROJECTID||" => 'id');
     $mm = array();
-    $mm[$context['tproject_id']] = array('name' => $tproject_info['name'], 'id' => $context['tproject_id']);
+    $mm[$context['tproject_id']] = array('name' => $tproject_info['name'],'prefix' => $tproject_info['prefix'], 'id' => $context['tproject_id']);
     $item_info['testproject'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
                                ('noXMLHeader'=='noXMLHeader'));
     // -----------------------------------------------------------------------------------------------------

@@ -379,10 +379,12 @@ function init_args(&$dbHandler,$statusCode)
                    "tplan_id" => array(tlInputParameter::INT_N),
                    "format" => array(tlInputParameter::INT_N),
                    "type" => array(tlInputParameter::STRING_N,0,1));
+
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
-
+  $args->addOpAccess = true;
+  
   if( !is_null($args->apikey) )
   {
     $cerbero = new stdClass();

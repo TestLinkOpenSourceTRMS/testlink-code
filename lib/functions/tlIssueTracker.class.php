@@ -647,7 +647,7 @@ class tlIssueTracker extends tlObject
       {
         $itd = $this->getByID($issueT['issuetracker_id']);
         $iname = $itd['implementation'];
-        $its = new $iname($itd['implementation'],$itd['cfg']);
+        $its = new $iname($itd['implementation'],$itd['cfg'],$itd['name']);
       }
       return  $its;
     }

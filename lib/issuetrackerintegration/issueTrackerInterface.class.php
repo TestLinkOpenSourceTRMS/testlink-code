@@ -45,7 +45,7 @@ abstract class issueTrackerInterface
   var $resolvedStatus;
   
   var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
-  private $guiCfg = array();
+  var $guiCfg = array();
   
   /**
    * Construct and connect to BTS.

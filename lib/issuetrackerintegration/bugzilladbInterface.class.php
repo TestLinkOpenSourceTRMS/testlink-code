@@ -7,8 +7,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.4
- * 20120324 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 1.9.10
 **/
 
 class bugzilladbInterface extends issueTrackerInterface
@@ -59,6 +58,8 @@ class bugzilladbInterface extends issueTrackerInterface
     if( !is_null($rs) ) 
     {
       $issue = new stdClass();
+
+      $issue->id = $id;
       $issue->IDHTMLString = "<b>{$id} : </b>";
       $issue->statusCode = $issue->statusVerbose = $rs[$id]['status']; 
       $issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
@@ -124,9 +125,9 @@ class bugzilladbInterface extends issueTrackerInterface
      * @author francisco.mancardi@gmail.com>
      **/
   function getMyInterface()
-    {
+  {
     return $this->cfg->interfacePHP;
-    }
+  }
 
 
     /**
@@ -134,22 +135,21 @@ class bugzilladbInterface extends issueTrackerInterface
      * @author francisco.mancardi@gmail.com>
      **/
   public static function getCfgTemplate()
-    {
+  {
     
     $template = "<!-- Template " . __CLASS__ . " -->\n" .
-          "<issuetracker>\n" .
-          "<dbhost>DATABASE SERVER NAME</dbhost>\n" .
-          "<dbname>DATABASE NAME</dbname>\n" .
-          "<dbschema>DATABASE NAME</dbschema>\n" .
-          "<dbtype>mysql</dbtype>\n" .
-          "<dbuser>USER</dbuser>\n" .
-          "<dbpassword>PASSWORD</dbpassword>\n" .
-          "<uricreate>http://[bugzillaserver]/bugzilla/</uricreate>\n" .
-          "<uriview>http://[bugzillaserver]/bugzilla/show_bug.cgi?id=</uriview>\n" .
-          "</issuetracker>\n";
+                "<issuetracker>\n" .
+                "<dbhost>DATABASE SERVER NAME</dbhost>\n" .
+                "<dbname>DATABASE NAME</dbname>\n" .
+                "<dbschema>DATABASE NAME</dbschema>\n" .
+                "<dbtype>mysql</dbtype>\n" .
+                "<dbuser>USER</dbuser>\n" .
+                "<dbpassword>PASSWORD</dbpassword>\n" .
+                "<uricreate>http://[bugzillaserver]/bugzilla/</uricreate>\n" .
+                "<uriview>http://[bugzillaserver]/bugzilla/show_bug.cgi?id=</uriview>\n" .
+                "</issuetracker>\n";
     return $template;
-    }
+  }
 
 
 }
-?>

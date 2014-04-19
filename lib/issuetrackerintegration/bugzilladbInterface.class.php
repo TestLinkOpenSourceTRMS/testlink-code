@@ -59,7 +59,9 @@ class bugzilladbInterface extends issueTrackerInterface
     {
       $issue = new stdClass();
 
-      $issue->id = $id;
+      $issue->id = $id;                      // useful on spreadsheet export
+      $issue->summary = $rs[$id]['summary']; // useful on spreadsheet export
+      
       $issue->IDHTMLString = "<b>{$id} : </b>";
       $issue->statusCode = $issue->statusVerbose = $rs[$id]['status']; 
       $issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose);
@@ -68,7 +70,7 @@ class bugzilladbInterface extends issueTrackerInterface
   
       $issue->summaryHTMLString = $rs[$id]['summary'];
       $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
-
+      
       
     }
     return $issue;  

@@ -145,6 +145,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 
   public static $guessParamName = "guess";
   public static $getStepsInfoParamName = "getstepsinfo";
+  public static $getKeywordsParamName = "getkeywords";
+  
   public static $importanceParamName = "importance";
   public static $internalIDParamName = "internalid";
   public static $keywordIDParamName = "keywordid";
@@ -1750,6 +1752,7 @@ class TestlinkXMLRPCServer extends IXR_Server
    *                                use full if you want to get 
    *                                summary,steps & expected_results
    *
+   * @param boolean $args["getkeywords"] - optional (default false)
    * @return mixed $resultInfo
    *
    *
@@ -1789,7 +1792,14 @@ class TestlinkXMLRPCServer extends IXR_Server
       {
         $pfn = 'get_children_testcases';
       }
-      return $tsuiteMgr->$pfn($testSuiteID,$details);
+
+      $opt = null;
+      if( isset($this->args[self::$getKeywordsParamName]) && $this->args[self::$getKeywordsParamName])
+      {
+        $opt = array('getKeywords' => true);
+      }  
+
+      return $tsuiteMgr->$pfn($testSuiteID,$details,$opt);
     }
     else
     {

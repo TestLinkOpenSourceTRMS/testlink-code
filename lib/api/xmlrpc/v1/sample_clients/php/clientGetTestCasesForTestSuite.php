@@ -21,11 +21,12 @@ $test_num=1;
 $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
-$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
-$args["testprojectid"]=122222;
-$args["testsuiteid"]=191;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : '21232f297a57a5a743894a0e4a801fc3';
+$args["testprojectid"]=792;
+$args["testsuiteid"]=793;  //801;
 $args["deep"]=true;
 $args["details"]='full';
+$args["getkeywords"]=true;
 
 $additionalInfo=' Parameter deep = ' . $args["deep"];
 

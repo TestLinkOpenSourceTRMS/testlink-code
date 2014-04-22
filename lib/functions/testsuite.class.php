@@ -746,10 +746,14 @@ class testsuite extends tlObjectWithAttachments
     returns: array
   
   */
-  function get_testcases_deep($id, $details = 'simple')
+  function get_testcases_deep($id, $details = 'simple', $options=null)
   {
     $tcase_mgr = new testcase($this->db);
     $testcases = null;
+
+    $opt = array('getKeywords' => false);
+    $opt = array_merge($opt,(array)$options);
+
     $subtree = $this->get_subtree($id);
     $only_id=($details=='only_id') ? true : false;                    
     $doit=!is_null($subtree);
@@ -782,23 +786,31 @@ class testsuite extends tlObjectWithAttachments
       $doit = count($testcases) > 0;
     }
     
-      if($doit && $details=='full')
-      {
-          $parentNodes=$this->tree_manager->get_node_hierarchy_info($parentSet);
+    if($doit && $details=='full')
+    {
+      $parentNodes=$this->tree_manager->get_node_hierarchy_info($parentSet);
       
-          $rs=array();
-          foreach($testcases as $idx => $value)
-          {
-            // 20110806 - franciscom - TICKET 4692
-        $item=$tcase_mgr->get_last_version_info($value['id'],
-                            array('output' => full, 'get_steps' => true));
+      $rs=array();
+      foreach($testcases as $idx => $value)
+      {
+        $item=$tcase_mgr->get_last_version_info($value['id'],array('output' => full, 'get_steps' => true));
         $item['tcversion_id']=$item['id'];
-              $tsuite['tsuite_name']=$parentNodes[$value['parent_id']]['name'];
-              unset($item['id']);
-              $rs[]=$value+$item+$tsuite;   
-          }
-          $testcases=$rs;
+        $tsuite['tsuite_name']=$parentNodes[$value['parent_id']]['name'];
+
+        if( $opt['getKeywords'] )
+        {
+          $kw = $tcase_mgr->getKeywords($value['id']);
+          if( !is_null($kw) )
+          {
+            $item['keywords'] = $kw;
+          }  
+        }  
+
+        unset($item['id']);
+        $rs[]=$value+$item+$tsuite;   
       }
+      $testcases=$rs;
+    }
     return $testcases; 
   }
   
@@ -808,12 +820,17 @@ class testsuite extends tlObjectWithAttachments
    * get only test cases with parent=testsuite without doing a deep search
    *
    */
-  function get_children_testcases($id, $details = 'simple')
+  function get_children_testcases($id, $details = 'simple', $options=null)
   {
-      $testcases=null;
-      $only_id=($details=='only_id') ? true : false;                    
-      $subtree=$this->tree_manager->get_children($id,array('testsuite' => 'exclude_me'));
+    $testcases=null;
+    $only_id=($details=='only_id') ? true : false;                    
+    $subtree=$this->tree_manager->get_children($id,array('testsuite' => 'exclude_me'));
     $doit=!is_null($subtree);
+    
+    $opt = array('getKeywords' => false);
+    $opt = array_merge($opt,(array)$options);
+
+
     if($doit)
     {
       $tsuite=$this->get_by_id($id);
@@ -833,23 +850,30 @@ class testsuite extends tlObjectWithAttachments
       $doit = count($testcases) > 0;
     }
       
-      if($doit && $details=='full')
+    if($doit && $details=='full')
+    {
+      $rs=array();
+      $tcase_mgr = new testcase($this->db);
+      foreach($testcases as $idx => $value)
       {
-          $rs=array();
-          $tcase_mgr = new testcase($this->db);
-          foreach($testcases as $idx => $value)
-          {
-            // 20110806 - franciscom - TICKET 4692
-        $item=$tcase_mgr->get_last_version_info($value['id'],
-                            array('output' => full, 'get_steps' => true));
+        $item=$tcase_mgr->get_last_version_info($value['id'],array('output' => full, 'get_steps' => true));
         $item['tcversion_id']=$item['id'];
         $parent['tsuite_name']=$tsuiteName;
+
+        if( $opt['getKeywords'] )
+        {
+          $kw = $tcase_mgr->getKeywords($value['id']);
+          if( !is_null($kw) )
+          {
+            $item['keywords'] = $kw;
+          }  
+        }  
         unset($item['id']);
         $rs[]=$value+$item+$tsuite;   
-          }
-          $testcases=$rs;
       }
-      return $testcases; 
+      $testcases=$rs;
+    }
+    return $testcases; 
   }  
   
   

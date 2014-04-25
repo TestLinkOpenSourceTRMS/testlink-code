@@ -462,17 +462,6 @@ CREATE UNIQUE INDEX /*prefix*/req_specs_uidx1 ON /*prefix*/req_specs ("doc_id","
 CREATE INDEX /*prefix*/req_specs_testproject_id ON /*prefix*/req_specs ("testproject_id");
 
 --
--- Table structure for table "req_suites" - NEW - 
---
-CREATE TABLE /*prefix*/req_suites(  
-  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "details" TEXT NULL DEFAULT NULL,
-  PRIMARY KEY ("id")
-); 
-
-
-
---
 -- Table structure for table "requirements"
 --
 CREATE TABLE /*prefix*/requirements (  

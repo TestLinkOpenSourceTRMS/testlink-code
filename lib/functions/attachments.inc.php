@@ -6,13 +6,13 @@
  * functions related to attachments
  *
  * @package     TestLink
- * @filesource  attachments.inc.php,v 1.20 2009/12/28 08:52:59 franciscom Exp $
- * @copyright   2007-2013, TestLink community 
+ * @filesource  attachments.inc.php
+ * @copyright   2007-2014, TestLink community 
  * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.10
  **/
 
 /** core functions */
@@ -152,15 +152,25 @@ function fileUploadManagement(&$dbHandler,$id,$title,$table)
 /**
  *
  */
-function deleteAttachment(&$dbHandler,$fileID)
+function deleteAttachment(&$dbHandler,$fileID,$checkOnSession=true)
 {
   $repo = tlAttachmentRepository::create($dbHandler);
   $info = $repo->getAttachmentInfo($fileID);
-  if($info && checkAttachmentID($dbHandler,$fileID,$info))
+  if( $info )
   {
-    if($repo->deleteAttachment($fileID,$info))
+    $doIt = true;
+    if( $checkOnSession )
     {
-      logAuditEvent(TLS("audit_attachment_deleted",$info['title']),"DELETE",$fileID,"attachments");
-    } 
+      $doIt = checkAttachmentID($dbHandler,$fileID,$info);
+    }
+
+    if( $doIt )
+    {  
+      if($repo->deleteAttachment($fileID,$info))
+      {
+        logAuditEvent(TLS("audit_attachment_deleted",$info['title']),"DELETE",$fileID,"attachments");
+      } 
+    }
   }
 }
+

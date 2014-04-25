@@ -662,3 +662,13 @@ CREATE TABLE /*prefix*/testproject_reqmgrsystem
   PRIMARY KEY (`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE /*prefix*/text_templates (
+  id int(10) unsigned NOT NULL,
+  type smallint(5) unsigned NOT NULL,
+  title varchar(100) NOT NULL,
+  template_data text,
+  author_id int(10) unsigned default NULL,
+  creation_ts datetime NOT NULL default '1900-00-00 01:00:00',
+  is_public tinyint(1) NOT NULL default '0',
+  UNIQUE KEY idx_text_templates (type,title)
+) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';

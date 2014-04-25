@@ -15,20 +15,27 @@ $site = array(array('url' => 'http://192.168.1.74','apiKey' => 'e6f1cbed74695283
 			  array('url' => 'http://tl.m.redmine.org', 'project_id' => 'tl-rest',
               'apiKey' => 'b956de40bf8baf6af7344b759cd9471832f33922'),
         array('url' => 'http://127.0.0.1:8085/redmine', 'project_id' => 'fedora-20',
+              'apiKey' => '630e3a09b365757458c4039257f7ee57e87cec5d'),
+        array('url' => 'https://127.0.0.1:8443/redmine', 'project_id' => 'fedora-20',
               'apiKey' => '630e3a09b365757458c4039257f7ee57e87cec5d'));
 
 // e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8
 // curl -v -H "Content-Type: application/xml" -X POST --data "@issue.xml" -H "X-Redmine-API-Key: e6f1cbed7469528389554cffcb0e5aa4e0fa0bc8" http://192.168.1.2/issues.xml
 
-$targetSite = 2;
+$targetSite = 3;
 $red = new redmine($site[$targetSite]['url'],$site[$targetSite]['apiKey']);
+
+echo 'Target Installation:' . $site[$targetSite]['url'] . '<br>';
+
 //var_dump($red);
 
 
 $issueObj = $red->getProjects();
 //var_dump($issueObj);
 
-$issueObj = $red->getIssue(1);
+$issueNumber = 10;
+echo 'Getting ISSUE #' . $issueNumber . '<br>';
+$issueObj = $red->getIssue($issueNumber);
 
 //var_dump($issueObj);
 
@@ -40,7 +47,7 @@ echo '</pre>';
 
 
 $xml = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');  
-$xml->addChild('subject', htmlentities('TEST SUBJECT - rand:' . rand()));
+$xml->addChild('subject', htmlentities($site[$targetSite]['url'] . ' - TEST SUBJECT - rand:' . rand()));
 
 // $xml->addChild('subject',
 // '/PG-TestProject-TR/TS100/QA-1:TC-A - Executed ON (ISO FORMAT): 2014-02-17 11:34:56Execution ID: 3 Tester: admin Test Plan: sdsd Build: sds Executed ON (ISO FORMAT): 2014-02-17 11:34:56 Execution Status: failed fedora-201');

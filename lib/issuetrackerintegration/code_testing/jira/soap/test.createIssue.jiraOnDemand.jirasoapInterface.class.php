@@ -32,7 +32,7 @@ $cfg =  "<issuetracker>\n" .
 		"</issuetracker>\n";
 
 echo '<hr><br>';
-echo "<b>Testing  BST Integration - jirasoapInterface </b>";
+echo "<b>Testing  BST Integration - jirasoapInterface 'Do Androids Dream of Electric Sheep?' </b>";
 echo '<hr><br>';
 echo "Configuration settings<br>";
 echo "<pre><xmp>" . $cfg . "</xmp></pre>";

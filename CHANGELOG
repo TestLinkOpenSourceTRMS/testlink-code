@@ -6,6 +6,82 @@ http://www.testlink.org
 https://twitter.com/TLOpenSource
 
 
+TestLink - 1.9.10 (2014 Q1 - bug fixing) (Released  on 2014-04-25)
+===========================================================================
+[69 tickets]
+
+- 0006061: [Requirements Import - Mantis XML format] Create Req. from Mantis Issue XML export (fman) - resolved.
+- 0006100: [Roles] Divide & Conquer - rights with more granularity (fman) - resolved.
+- 0005055: [API - XMLRPC] Error attaching file via XMLRPC API (kinow) - resolved.
+- 0006213: [API - XMLRPC] Test plan access rights not checked on API - XMLRPC (fman) - resolved.
+- 0006307: [API - XMLRPC] XML-RPC API getTestCasesForTestSuite() - add option to return also test case keywords (fman) - resolved.
+- 0006257: [Bug Tracking System - Bugzilla Integration] Junk values of Bugzilla ID and Bugzilla key in Exported Spreadsheet on Failed Test Case Report (fman) - resolved.
+- 0006303: [Custom fields] Facility for linking the Custom field to Builds only (fman) - resolved.
+- 0006253: [Reports] Display Attached Images on reports when displayed like HTML online (fman) - resolved.
+- 0005031: [New Feature] Automatically create user account at the first time of login if the account just exists on LDAP (fman) - resolved.
+- 0006261: [Test Specification] Test suite 'Sort alphabetically' is not working properly (fman) - resolved.
+- 0006258: [User Authentication Methods] User cannot login after change Authentication method from LDAP to DB (fman) - resolved.
+- 0006110: [Test Execute] Replace help on right pane with exec summary regarding Test plan, Build, Platform (fman) - resolved.
+- 0006250: [Users and Rights] Cannot set new rights after upgrade to 1.9.8 (fman) - resolved.
+- 0006236: [Test Plan - Add/Remove Test Cases] Option to display whole test specification (filtered) on right pane (fman) - resolved.
+- 0006215: [Custom fields] Custom DATE fields in 64bit OS systems show 30/10/-2 by default instead of being empty (fman) - resolved.
+- 0006216: [Test Plan - Assign Test Case Execution] Crash when changing from TestPlan with Builds to TestPlan with NO Builds in the "Assign Test Case Execution" Window (fman) - resolved.
+- 0006218: [Reports] Report Metrics Dashboard - Test Project Progress Section is always empty (fman) - resolved.
+- 0006223: [Metrics Dashboard] Metrics dashboard doesn't show up (fman) - resolved.
+- 0006204: [Test Specification Import] Import Estimated exec. duration from XML (fman) - resolved.
+- 0006174: [Reports] Requirements based Report - No execute content display when clicking "exec_icon.png" icon (fman) - resolved.
+- 0006197: [Database MS-SQL] 1.9.8 Upgrade - req_coverage table (fman) - resolved.
+- 0006175: [Reports] Add "Execution time" to "Results by Tester per Build" report (fman) - resolved.
+- 0006185: [API - XMLRPC] reportTCResults() - new parameter 'user' (user login) (fman) - resolved.
+- 0006137: [Test Plan Management] Test plan list view - display quantity of builds (fman) - resolved.
+- 0006179: [Test Execute] Cannot remove already executed test case (demo.testlink.org) (fman) - resolved.
+- 0006173: [Test Plan - Add/Remove Test Cases] E_NOTICE Array to string conversion - in /development/gitorious/testlink/gui/templates_c/ce37385d2519d69075b04c94daed876d1c2677c (fman) - resolved.
+- 0006166: [Users and Rights] Adding "Event viewer (read only access)" to a Role won't show the Events link (fman) - resolved.
+- 0006164: [Requirement to Test Case Assignment] One requirement link same test case duplicated if the test case has more then one version. (fman) - resolved.
+- 0006159: [API - XMLRPC] getTestCasesForTestPlan returns confusing exec_status [POSTGRESQL] (fman) - resolved.
+- 0006006: [Export/Import] Requirement relations are not exported and cannot be imported (fman) - resolved.
+- 0003560: [Export/Import] Requirements Export does not Export Requirement Relations (kinow) - resolved.
+- 0006149: [Build Management] Build View - possibility to set active/inactive, open/close on quick way (fman) - resolved.
+- 0006144: [Third party components] jquery and prototype third party packages CONFLICT (fman) - resolved.
+- 0006138: [Test Specification] Test Specification - Add buttons to Generate Test Spec Document on Test Project and Test suite (fman) - resolved.
+- 0006136: [GUI] Requirement Specification - Icon to show/hide actions for REQUIREMENTS (fman) - resolved.
+- 0006135: [GUI] Requirement Specification - Icon to show/hide actions Req. Spec (fman) - resolved.
+- 0006128: [GUI] Test Specification - Icon to show/hide actions on Test Project and Test Suites (fman) - resolved.
+- 0006129: [GUI] Test Specification - Icon to show/hide actions on Test Case (fman) - resolved.
+- 0006127: [Test Execute] unable to execute test case with linked requirement using TL1.9.9 hotfix package - file inc_exec_test_spec_req.tpl missing (fman) - resolved.
+- 0006125: [Reports] Warning about arg_build_set being undefined when exporting to Excel (fman) - resolved.
+- 0006124: [Localization] Updated some missing localization strings for Dutch (fman) - resolved.
+- 0006126: [Bug Tracking System - TRAC Integration] Warning about unknown property "id" (fman) - resolved.
+- 0006121: [Bug Tracking System - TRAC Integration] isResolved property not set for TRAC (fman) - resolved.
+- 0006123: [Reports - Test report matrix] Showing test results gives invalid index warning in events (fman) - resolved.
+- 0006112: [Test Execute - Filters] Filter by "bug" when execute tests (fman) - resolved.
+- 0006109: [API - XMLRPC] createTestCaseSteps with action 'update' does not change existing steps (fman) - resolved.
+- 0006102: [API - XMLRPC] updateTestCase returns debug informations (fman) - resolved.
+- 0006101: [API - XMLRPC] updateTestCase does not set modification timestamp (fman) - resolved.
+- 0006099: [GUI] Keyword Assignment feature - cleanup GUI (fman) - resolved.
+- 0006028: [Bug Tracking System - JIRA Integration] Integration with Jira 6.1 broken. - Due to JIRA schema changes (fman) - resolved.
+- 0006098: [GUI] Access to REQUIREMENTS specification feature from desktop - right pane will present ACTIONS instead of help (fman) - resolved.
+- 0006097: [GUI] Access to test specification feature from desktop - right pane will present test project data instead of help (fman) - resolved.
+- 0006082: [Requirements Import - TL XML format] Import req from DocBook to testlink ignore of $tlCfg->req_cfg->importDocBook->requirement var (fman) - resolved.
+- 0006085: [Test Specification - Move/Copy Test Cases] Move/Copy Test Cases Feature ON TEST SUITE - do not offer chance to choose [Copy Requirement Assignments] (fman) - resolved.
+- 0006087: [Contribution Maintained BY USER] Import RESULTS - import test EXECUTION duration through xml files (fman) - resolved.
+- 0006084: [Test Specification - Move/Copy Test Cases] Cannot copy a testcase with (attached) linked requirements (fman) - resolved.
+- 0006083: [Reports] Test Plan Execution report on SPECIFIC BUILD (fman) - resolved.
+- 0006060: [Test Plan Management] Test Plan attachment management refactoring (fman) - resolved.
+- 0006076: [API - XMLRPC] addPlatformToTestPlan creates invalid platform links (fman) - resolved.
+- 0006056: [Test Execute] Execute with tree refresh, refresh also right pane removing exec data from user view (fman) - resolved.
+- 0006066: [User Interface General] Testlink "Home" link on login screen incorrect (fman) - resolved.
+- 0006049: [Test Specification] Test Suite attachment management refactoring (fman) - resolved.
+- 0006059: [Requirement Management] Requirement - attachment management refactoring (fman) - resolved.
+- 0006054: [Requirement Management] Req. Specification attachment management refactoring (fman) - resolved.
+- 0006051: [Export/Import] Extension of file exported is php instead of xml, when you export Platforms (fman) - resolved.
+- 0006259: [Reports - Test report matrix] Test report matrix - Spreadsheet output - display more info that on HTML output (fman) - closed.
+- 0006108: [API - XMLRPC] createTestCaseSteps creates steps without test case references (fman) - closed.
+- 0006086: [Test Execute - 'Save and move to next'] "Save an move to next" doesn't work (fman) - closed.
+- 0006057: [Bug Tracking System - JIRA Integration] Jira integration via SOAP is broken due to changes in jirasoapInterface.class.php (not true just debug message printed) (fman) - closed.
+
+
+
 TestLink - 1.9.9 (2013 Q4 - bug fixing) (Scheduled For Release 2013-11-16)
 ==========================================================================
 [64 tickets]

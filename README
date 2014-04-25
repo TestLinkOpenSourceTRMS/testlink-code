@@ -144,6 +144,7 @@ http://mantis.testlink.org/view.php?id=4906
 You should also need to configure write access for logging, upload and template directories.
 
 *** FCKEDITOR UPLOAD ****
+ATTENTION We now use CKEDITOR
 Give a look to:
 http://forum.testlink.org/viewtopic.php?f=22&t=7098&sid=f4012a67d921cf5a2322c52fc38f21d6
 
@@ -230,7 +231,8 @@ You have always have to migrate one by one to each version that is newer that yo
 Extreme example Migration from 1.7.4
 
 1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
-1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 1.9.8 => 1.9.9
+1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 
+1.9.8 => 1.9.9 => 1.9.10
 
 You have to read carefully README and instructions provided by installer.
 Sometimes version changes do not require actions on DB structure or data. 
@@ -359,7 +361,7 @@ PLEASE: read this short hints before you write a topic:
 :!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
-10. Changes regarding 1.9.6,1.9.7,1.9.8      
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9      
 ===============================================================
 
 1.9.9

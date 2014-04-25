@@ -782,16 +782,6 @@ CREATE TABLE /*prefix*/cfield_build_design_values(
 CREATE INDEX /*prefix*/IX_cfield_build_design_values ON /*prefix*/cfield_build_design_values ("node_id");
 
 
-
-CREATE TABLE /*prefix*/closure
-(
-  "ancestor" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "descendant" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "distance" INTEGER NOT NULL DEFAULT '0',
-  PRIMARY KEY (ancestor, descendant)
-);
-
-
 --
 -- TICKET 4914: Create View - tcversions_last_active
 --
@@ -819,7 +809,4 @@ CREATE OR REPLACE VIEW /*prefix*/tcases_active AS
 	FROM /*prefix*/nodes_hierarchy nhtcv
 	JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
 	WHERE tcv.active = 1
-);
-
-
-				
+);				

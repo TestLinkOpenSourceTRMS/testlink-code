@@ -54,7 +54,7 @@ reportCheckingPermissions($errors,$inst_type);
 	<br />Please correct the error<?php echo $errors > 1 ? "s" : "" ; ?>, 
 	and try again (reload page). If you need help figuring out how to fix the 
 	problem<?php echo $errors > 1 ? "s" : "" ; ?>, please read Installation manual and
-	visit <a href="http://www.teamst.org" target="_blank">TestLink Forums [click here]</a>.
+	visit <a href="http://www.testlink.org" target="_blank">TestLink Forums [click here]</a>.
 	</p>
 </div>
 <?php

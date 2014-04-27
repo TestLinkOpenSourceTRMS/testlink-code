@@ -182,7 +182,7 @@ echo '<p>Error counter = '.$errors.'</p>';
 
 
 <div id="footer">
-	<p><a href="http://www.teamst.org" target="_blank" tabindex="99">TestLink</a> System check is finished. </p>
+	<p><a href="http://www.testlink.org" target="_blank" tabindex="99">TestLink</a> System check is finished. </p>
 </div>
 
 </div>

@@ -15,7 +15,7 @@
  *
  * @internal revisions
  * 
- * @since 1.9.10
+ * @since 1.9.11
  **/
 
 /** related functionality */
@@ -3566,10 +3566,10 @@ class testplan extends tlObjectWithAttachments
     // each UPPER CASE word in this map is a KEY, that MUST HAVE AN OCCURENCE on $elemTpl
     //
     $xml_template = "\n\t" . 
-            "<platform>" . 
-                "\t\t" . "<name><![CDATA[||PLATFORMNAME||]]></name>" .
-                "\t\t" . "<internal_id><![CDATA[||PLATFORMID||]]></internal_id>" .
-                "\n\t" . "</platform>";
+                    "<platform>" . 
+                    "\t\t" . "<name><![CDATA[||PLATFORMNAME||]]></name>" .
+                    "\t\t" . "<internal_id><![CDATA[||PLATFORMID||]]></internal_id>" .
+                    "\n\t" . "</platform>";
               
     $xml_mapping = null;
     $xml_mapping = array("||PLATFORMNAME||" => "platform_name", "||PLATFORMID||" => 'id');
@@ -3589,17 +3589,17 @@ class testplan extends tlObjectWithAttachments
     // Linked test cases
     $xml_root = "\n<executables>{{XMLCODE}}\n</executables>";
     $xml_template = "\n\t" . 
-            "<link>" . "\n" .
-            "\t\t" . "<platform>" . "\n" . 
-            "\t\t\t" . "<name><![CDATA[||PLATFORMNAME||]]></name>" . "\n" .
-            "\t\t" . "</platform>" . "\n" . 
-            "\t\t" . "<testcase>" . "\n" . 
-                  "\t\t\t" . "<name><![CDATA[||NAME||]]></name>\n" .
-                  "\t\t\t" . "<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
-                  "\t\t\t" . "<version><![CDATA[||VERSION||]]></version>\n" .
-                  "\t\t\t" . "<execution_order><![CDATA[||EXECUTION_ORDER||]]></execution_order>\n" .
-            "\t\t" . "</testcase>" . "\n" . 
-            "</link>" . "\n" .
+                    "<link>" . "\n" .
+                    "\t\t" . "<platform>" . "\n" . 
+                    "\t\t\t" . "<name><![CDATA[||PLATFORMNAME||]]></name>" . "\n" .
+                    "\t\t" . "</platform>" . "\n" . 
+                    "\t\t" . "<testcase>" . "\n" . 
+                    "\t\t\t" . "<name><![CDATA[||NAME||]]></name>\n" .
+                    "\t\t\t" . "<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
+                    "\t\t\t" . "<version><![CDATA[||VERSION||]]></version>\n" .
+                    "\t\t\t" . "<execution_order><![CDATA[||EXECUTION_ORDER||]]></execution_order>\n" .
+                    "\t\t" . "</testcase>" . "\n" . 
+                    "</link>" . "\n" .
 
     $xml_mapping = null;
     $xml_mapping = array("||PLATFORMNAME||" => "platform_name","||EXTERNALID||" => "external_id",              
@@ -3695,16 +3695,17 @@ class testplan extends tlObjectWithAttachments
     $xml_template = "\n\t" . 
             "<testproject>" . 
                 "\t\t" . "<name><![CDATA[||TESTPROJECTNAME||]]></name>" .
+                "\t\t" . "<prefix><![CDATA[||TESTPROJECTPREFIX||]]></prefix>" .
                 "\t\t" . "<internal_id><![CDATA[||TESTPROJECTID||]]></internal_id>" .
                 "\n\t" . "</testproject>";
               
     $xml_root = "{{XMLCODE}}";          
     $xml_mapping = null;
-    $xml_mapping = array("||TESTPROJECTNAME||" => "name", "||TESTPROJECTID||" => 'id');
+    $xml_mapping = array("||TESTPROJECTNAME||" => "name", "||TESTPROJECTPREFIX||" => "prefix","||TESTPROJECTID||" => 'id');
     $mm = array();
-    $mm[$context['tproject_id']] = array('name' => $tproject_info['name'], 'id' => $context['tproject_id']);
-    $item_info['testproject'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
-                               ('noXMLHeader'=='noXMLHeader'));
+    $mm[$context['tproject_id']] = array('name' => $tproject_info['name'],'prefix' => $tproject_info['prefix'],
+                                         'id' => $context['tproject_id']);
+    $item_info['testproject'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
     // -----------------------------------------------------------------------------------------------------
     
     // -----------------------------------------------------------------------------------------------------

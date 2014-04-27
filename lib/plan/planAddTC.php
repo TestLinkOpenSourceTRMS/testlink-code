@@ -114,8 +114,6 @@ if($do_display)
   $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
     
   // see development documentation on [INSTALL DIR]/docs/development/planAddTC.php.txt
-
-  // TICKET 5807: Unable to filter by Importance
   $tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr,array('addImportance' => true));
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter

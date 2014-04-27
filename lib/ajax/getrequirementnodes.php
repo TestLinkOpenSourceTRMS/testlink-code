@@ -28,16 +28,20 @@ $filter_node=isset($_REQUEST['filter_node']) ? intval($_REQUEST['filter_node']) 
 
 $show_children=isset($_REQUEST['show_children']) ? intval($_REQUEST['show_children']) : 1;
 $operation=isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
+$mode=isset($_REQUEST['mode']) ? $_REQUEST['mode'] : 'reqspec';
 
-// for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));
-$nodes = display_children($db,$root_node,$node,$filter_node,$show_children,$operation);
+// for debug - 
+// file_put_contents('/tmp/getrequirementnodes.txt', serialize($_REQUEST),FILE_APPEND);
+// file_put_contents('/tmp/getrequirementnodes.txt', 'BEFORE CALL mode:' . $mode,FILE_APPEND);
+
+$nodes = display_children($db,$root_node,$node,$filter_node,$show_children,$operation,$mode);
 echo json_encode($nodes);
 
 /*
 
 */
 function display_children($dbHandler,$root_node,$parent,$filter_node,
-                          $show_children=ON,$operation='manage') 
+                          $show_children=ON,$operation='manage',$mode='reqspec') 
 {             
   $tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy','node_types','req_specs'));
 	$cfg = config_get('req_cfg');
@@ -48,18 +52,34 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	{
 		$forbidden_parent['requirement_spec'] = 'none';
 	} 
-    
+  
+  $fn = array();
+  $fn['print']['reqspec'] = array('testproject' => 'TPROJECT_PTP_RS',
+                                  'requirement_spec' =>'TPROJECT_PRS', 'requirement' => 'openLinkedReqWindow');
+
+
+  $fn['manage']['reqspec'] = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
+                                   'requirement_spec' =>'REQ_SPEC_MGMT', 'requirement' => 'REQ_MGMT');
+
+  $fn['print']['addtc'] = array('testproject' => 'TPROJECT_PTP',
+                                  'requirement_spec' =>'TPROJECT_PRS', 'requirement' => 'TPROJECT_PRS');
+
+
+  $fn['manage']['addtc'] = array('testproject' => 'EP','requirement_spec' =>'ERS', 'requirement' => 'ER');
+
+
+  file_put_contents('/tmp/getrequirementnodes.txt', 'mode:' . $mode,FILE_APPEND);
+  file_put_contents('/tmp/getrequirementnodes.txt', 'operation:' . $operation,FILE_APPEND);
+
   switch($operation)
   {
     case 'print':
-      $js_function=array('testproject' => 'TPROJECT_PTP_RS',
-                         'requirement_spec' =>'TPROJECT_PRS', 'requirement' => 'openLinkedReqWindow');
+    case 'manage':
+      $js_function=$fn[$operation][$mode];
     break;
         
-    case 'manage':
     default:
-      $js_function = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
-                           'requirement_spec' =>'REQ_SPEC_MGMT', 'requirement' => 'REQ_MGMT');
+      $js_function=$fn['manage'][$mode];
     break;  
   }
     

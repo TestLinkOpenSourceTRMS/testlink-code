@@ -305,8 +305,8 @@ $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
 // filter => "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
 // attributess => array( $t_ldap_uid_field, 'dn' );
 // 
-// This can be used to manage situation like explained on post:
-// ActiveDirectory + users in AD group (http://www.teamst.org)
+// This can be used to manage situation like explained on post on forum:
+// ActiveDirectory + users in AD group
 // 
 $tlCfg->authentication['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
 $tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
@@ -542,8 +542,6 @@ $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 
  * Bug in webkit: https://bugs.webkit.org/show_bug.cgi?id=19418
  */
 
-// franciscom -
-// BUGID 0003275 + post on forum: // http://www.teamst.org/phpBB2/viewtopic.php?t=3075
 // seems that with config options that will be used on javascript via smarty template variables
 // we are having problems using FALSE/TRUE => use 0/1 (or our CONSTANT DISABLED/ENABLED)
 $tlCfg->gui->checkNotSaved = ENABLED;

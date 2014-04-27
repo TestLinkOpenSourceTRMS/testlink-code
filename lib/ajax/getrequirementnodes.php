@@ -1,26 +1,22 @@
 <?php
 /** 
-* 	TestLink Open Source Project - http://testlink.sourceforge.net/
-* 
-* 	@version 	$Id: getrequirementnodes.php,v 1.15.2.1 2011/01/13 16:10:36 asimon83 Exp $
-* 	@author 	Francisco Mancardi
-* 
-*   **** IMPORTANT *****   
-*   Created using Ext JS example code
-*
-* 	Is the tree loader, will be called via AJAX.
-*   Ext JS automatically will pass $_REQUEST['node']   
-*   Other arguments will be added by TL php code that needs the tree.
-*   
-*   This tree is used to navigate Test Project, and is used in following feature:
-*
-*   - Create test suites, test cases on test project
-*   - Assign keywords to test cases
-*   - Assign requirements to test cases
-*
-*	@internal revision
-*        
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * 
+ * @filesource getrequirementnodes.php
+ * @author 	  Francisco Mancardi
+ * 
+ * **** IMPORTANT *****   
+ * Created using Ext JS example code
+ *
+ * Is the tree loader, will be called via AJAX.
+ * Ext JS automatically will pass $_REQUEST['node']   
+ * Other arguments will be added by TL php code that needs the tree.
+ *   
+ * This tree is used to navigate ...
+ *
+ * @internal revision
+ *        
+ */
 require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);

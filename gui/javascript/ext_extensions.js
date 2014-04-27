@@ -2,12 +2,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Erik Eloff
- * @copyright 2009,2012 TestLink community
- * @filesource ext_extensions.js
- * @link http://www.teamst.org
- * @since 1.9
+ * @package     TestLink
+ * @author      Erik Eloff
+ * @copyright   2009,2014 TestLink community
+ * @filesource  ext_extensions.js
+ * @link        http://www.testlink.org
+ * @since       1.9
  *
  *
  * Extensions and customizations to Ext-js classes.

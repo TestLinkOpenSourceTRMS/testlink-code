@@ -2,12 +2,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Francisco Mancardi
- * @copyright 2009, TestLink community
- * @version CVS: $Id: tcase_utils.js,v 1.2 2010/10/10 13:34:14 franciscom Exp $
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
- * @link http://www.teamst.org
+ * @package    TestLink
+ * @author     Francisco Mancardi
+ * @copyright  2009,2014 TestLink community
+ * @filesource tcase_utils.js
+ * @link       http://www.testlink.org
  *
  *
  * Utilities for certain test case actions / operations
@@ -17,8 +16,6 @@
  * @global variables:
  *  fRoot  -> url to TestLink installation home
  *
- * @internal revisions:
- * 20101010 - franciscom - creation
  **/
 
 /**

@@ -4,10 +4,10 @@
  *
  * @package     TestLink
  * @author      Erik Eloff
- * @copyright   2010,2013 TestLink community
+ * @copyright   2010,2014 TestLink community
  * @filesource  checkmodified.js
- * @link http://www.teamst.org
- * @since 1.9
+ * @link        http://www.testlink.org
+ * @since       1.9
  *
  * Functions for warning the user of unsaved content in an FCKeditor or CKeditor.
  *

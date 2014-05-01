@@ -9,12 +9,12 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2013, TestLink community 
- * @link 		    http://www.teamst.org/index.php
+ * @copyright 	2005-2014, TestLink community 
+ * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  *
  */
 
@@ -343,6 +343,7 @@ class TLSmarty extends Smarty
                    'calendar' => TL_THEME_IMG_DIR . 'calendar.gif',
                    'checked' => TL_THEME_IMG_DIR . 'apply_f2_16.png',
                    'clear' => TL_THEME_IMG_DIR . 'trash.png',
+                   'clear_notes' => TL_THEME_IMG_DIR . 'font_delete.png',
                    'check_ok' => TL_THEME_IMG_DIR . 'lightbulb.png',
                    'check_ko' => TL_THEME_IMG_DIR . 'link_error.png',
                    'cog'  => TL_THEME_IMG_DIR . 'cog.png',

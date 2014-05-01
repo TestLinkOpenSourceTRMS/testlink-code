@@ -24,7 +24,7 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // @internal revisions
-// @since 1.9.10
+// @since 1.9.11
 
 
 /*
@@ -501,7 +501,7 @@ function tree_getPrintPreferences()
                 'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
                 'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
                 'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 
-                'headerNumbering','displayVersion','build_cfields'];
+                'headerNumbering','displayVersion','build_cfields','step_exec_notes','step_exec_status'];
 
   for (var idx= 0;idx < fields.length;idx++)
   {

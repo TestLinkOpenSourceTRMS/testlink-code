@@ -6,18 +6,15 @@
  *
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2013, TestLink community
+ * @copyright  2006-2014, TestLink community
  * @filesource tlRequirementFilterControl.class.php
- * @link       http://www.teamst.org/index.php
+ * @link       http://www.testlink.org/
  *
  * Extends tlFilterPanel for the specific use with requirement tree.
  * It holds logic to be used at GUI level to manage a common set of settings and filters for requirements.
  * 
  * @internal revisions
- * @since 1.9.8
- * 20130526 - franciscom - init_filter_custom_fields() moved to tlFilterControl class
- *                         new method   protected function getCustomFields()
- *                         some changes in visibility => IMHO is better if we use protected
+ * @since 1.9.11
  */
 
 /**
@@ -243,7 +240,8 @@ class tlRequirementFilterControl extends tlFilterControl
     
     // when we use filtering, the tree will be statically built,
     // otherwise it will be lazy loaded
-    if ($this->do_filtering) {
+    if ($this->do_filtering) 
+    {
       $options = array('for_printing' => NOT_FOR_PRINTING,'exclude_branches' => null);
         
       $tree_menu = generate_reqspec_tree($this->db, $this->testproject_mgr,
@@ -254,12 +252,12 @@ class tlRequirementFilterControl extends tlFilterControl
       $root_node = $tree_menu->rootnode;
       $root_node->name .= " ({$root_node->total_req_count})";
       $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-
-            // BUGID 3718: disable drag&drop if tree has been filtered
-            $drag_and_drop->enabled = false;
-    } else {
-      $loader = $gui->basehref . 'lib/ajax/getrequirementnodes.php?' .
-                               "root_node={$this->args->testproject_id}";
+      $drag_and_drop->enabled = false;
+    } 
+    else 
+    {
+      $loader = $gui->basehref . 'lib/ajax/getrequirementnodes.php?mode=reqspec&' .
+                                 "root_node={$this->args->testproject_id}";
       
       $req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
     

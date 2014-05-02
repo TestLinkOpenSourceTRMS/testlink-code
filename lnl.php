@@ -76,12 +76,12 @@ switch($args->light)
   			$what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
       break;
   
-      case 'list_tc_failed':
-      case 'list_tc_blocked':
-      case 'list_tc_norun':
-        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
-  			$what2launch = $cfg['url'] ."&apikey=$args->apikey{$param}";
-      break;
+      // case 'list_tc_failed':
+      // case 'list_tc_blocked':
+      // case 'list_tc_not_run':
+      //  $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+  		//	$what2launch = $cfg['url'] ."&apikey=$args->apikey{$param}";
+      // break;
       
       case 'results_matrix';
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
@@ -100,8 +100,18 @@ switch($args->light)
       
       
       default:
-        echo 'ABORTING - UNKNOWN TYPE:' . $args->type;
-        die(); 
+        $needle = 'list_tc_';
+        $nl = strlen($needle);
+        if(strpos($key,$needle) !== FALSE)
+        {
+          $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+          $what2launch = $cfg['url'] ."&apikey=$args->apikey{$param}";
+        }  
+        else
+        {
+          echo 'ABORTING - UNKNOWN TYPE:' . $args->type;
+          die(); 
+        }  
       break;
     }  
   

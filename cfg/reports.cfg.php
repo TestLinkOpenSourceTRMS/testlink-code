@@ -9,7 +9,7 @@
  * SCOPE: Definition of report/metrics menu 
  * 
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  *
  * 
  */
@@ -148,13 +148,26 @@ $tlCfg->reports_list['list_tc_blocked'] = array(
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_blocked',
 	'format' => 'format_html,format_ods,format_mail_html'
 );
-$tlCfg->reports_list['list_tc_norun'] = array( 
+$tlCfg->reports_list['list_tc_not_run'] = array( 
 	'title' => 'link_report_not_run',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['not_run'],
 	'enabled' => 'all', 
-	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_norun',
-	'format' => 'format_html,format_ods,format_mail_html'
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_not_run',
+	'format' => 'format_html,format_ods,format_mail_html',
+	'misc' => array('bugs_not_linked' => false)
 );
+
+// Example
+// $tlCfg->reports_list['list_tc_passed'] = array( 
+//	'title' => 'link_report_passed',
+//	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['passed'],
+//	'enabled' => 'all', 
+//	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_passed',
+//	'format' => 'format_html,format_ods,format_mail_html',
+//	'misc' => array('bugs_not_linked' => false)
+// );
+
+
 
 // not will be available on 1.9.4   
 // $tlCfg->reports_list['list_tc_notrunanyplatform'] = array(

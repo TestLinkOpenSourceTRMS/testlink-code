@@ -101,18 +101,12 @@ else
 {
   $gui->notRunReport = false;
   $gui->info_msg = lang_get('info_' . $resultsCfg['code_status'][$args->type] .'_tc_report');
-
-  /*
-  $metrics = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,
-                                                array('output' => 'array', 'getOnlyAssigned' => true));
-  */
   $metrics = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,
                                                 array('output' => 'mapByExecID', 'getOnlyAssigned' => true));
 
   $notesAccessKey = 'execution_notes';
   $userAccessKey='tester_id';
 
-  $gui->bugs_msg = $labels['th_bugs_not_linked'];
 }
 
 $cfOnExec = $cfSet = null;
@@ -423,34 +417,63 @@ function init_args(&$dbHandler,$statusCode)
  */
 function initializeGui($statusCode,&$argsObj,&$tplanMgr)
 {
-    $guiObj = new stdClass();
-    $guiObj->tproject_id = $argsObj->tproject_id; 
-    $guiObj->tplan_id = $argsObj->tplan_id; 
-    $guiObj->apikey = $argsObj->apikey;
+  $guiObj = new stdClass();
+  $guiObj->tproject_id = $argsObj->tproject_id; 
+  $guiObj->tplan_id = $argsObj->tplan_id; 
+  $guiObj->apikey = $argsObj->apikey;
 
-    // Count for the Failed Issues whose bugs have to be raised/not linked. 
-    $guiObj->without_bugs_counter = 0; 
-    $guiObj->dataSet = null;
-    $guiObj->title = null;
-    $guiObj->type = $argsObj->type;
-    $guiObj->warning_msg = '';
+  // Count for the Failed Issues whose bugs have to be raised/not linked. 
+  $guiObj->without_bugs_counter = 0; 
+  $guiObj->dataSet = null;
+  $guiObj->title = null;
+  $guiObj->type = $argsObj->type;
+  $guiObj->warning_msg = '';
 
-    // Humm this may be can be configured ???
-    foreach(array('failed','blocked','not_run') as $verbose_status)
+
+  // Implementation based on convention, will use only keys starting with 'list_tc_'
+  // see reports.cfg.php
+  $reportCfg = config_get('reports_list');
+
+  $needle = 'list_tc_';
+  $nl = strlen($needle);
+  foreach( $reportCfg as $key => $val )
+  {
+    $checkIt = false;
+    if( $checkIt = (strpos($key,$needle) !== FALSE) )
     {
-        if($argsObj->type == $statusCode[$verbose_status])
+      // now get the verbose status
+      // list_tc_[verbose_status], example list_tc_not_run
+      $verbose_status = substr($key, $nl);
+
+      // if( $verbose_status != 'not_run' || $verbose_status != 'passed' )
+      $guiObj->bugs_msg = $labels['th_bugs_not_linked'];
+      if( isset($reportCfg[$key]['misc']) )
+      {
+        if( isset($reportCfg[$key]['misc']['bugs_not_linked']) &&  
+            $reportCfg[$key]['misc']['bugs_not_linked'] == false ) 
         {
-            $guiObj->title = lang_get('list_of_' . $verbose_status);
-            break;
+          $guiObj->bugs_msg = '';
         }  
-    }
-    if(is_null($guiObj->title))
-    {
-      tlog('wrong value of GET type');
-      exit();
+      }  
     }
 
-    
+    if( $checkIt )
+    {  
+      if($argsObj->type == $statusCode[$verbose_status])
+      {
+        $guiObj->title = lang_get('list_of_' . $verbose_status);
+        break;
+      }  
+    }
+  }    
+
+  if(is_null($guiObj->title))
+  {
+    tlog('wrong value of GET type');
+    exit();
+  }
+
+ 
   // needed to decode
   $getOpt = array('outputFormat' => 'map');
   $guiObj->platformSet = $tplanMgr->getPlatforms($argsObj->tplan_id,$getOpt);

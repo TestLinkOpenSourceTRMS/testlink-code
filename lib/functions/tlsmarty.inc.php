@@ -391,6 +391,7 @@ class TLSmarty extends Smarty
                    'resequence' => TL_THEME_IMG_DIR . 'control_equalizer.png',
                    'summary_small' => TL_THEME_IMG_DIR . 'information_small.png',
                    'sort' => TL_THEME_IMG_DIR . 'sort_hint.png',
+                   'steps' => TL_THEME_IMG_DIR . 'bricks.png',
                    'testcase_execution_type_automatic' => TL_THEME_IMG_DIR . 'bullet_wrench.png',
                    'testcase_execution_type_manual' => TL_THEME_IMG_DIR . 'user.png',
                    'toggle_all' => TL_THEME_IMG_DIR .'toggle_all.gif',

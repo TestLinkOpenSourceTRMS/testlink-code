@@ -842,15 +842,19 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
       // $versionID = $node['tcversion_id'];
       $pfn = $opt['tc_action_enabled'] ? "ST({$node['id']},{$node['tcversion_id']})" :null;
 
-      $status_code = $tcase_node[$node['id']]['exec_status'];
       $node['text'] = "<span ";
-
-      if($opt['showTestCaseExecStatus'])
+      if( isset($tcase_node[$node['id']]) )
       {
-        $node['text'] .= "{$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
-                         '" alt="' . $l18n[$status_code] . '">';
-      }
+        if($opt['showTestCaseExecStatus'])
+        {
+          $status_code = $tcase_node[$node['id']]['exec_status'];
+          $node['text'] .= "{$cssClasses[$status_code]} " . '  title="' .  $l18n[$status_code] . 
+                           '" alt="' . $l18n[$status_code] . '">';
+        }
+      }  
 
+    
+    
       if($opt['showTestCaseID'])
       {
         $node['text'] .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";

@@ -169,8 +169,12 @@ if ($treeForPlatform)
     break;        
   }
 
+
+  $actionContext = (array)$args;
   foreach ($treeForPlatform as $platform_id => $tree2work)            
   {
+    $actionContext['platform_id'] = $platform_id;
+
     if(isset($tree2work['childNodes']) && sizeof($tree2work['childNodes']) > 0)
     {
       $tree2work['name'] = $args->tproject_name;
@@ -193,17 +197,23 @@ if ($treeForPlatform)
         case DOC_TEST_PLAN_DESIGN:
         case DOC_TEST_PLAN_EXECUTION:
         case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
+
           $tocPrefix++;
+          $env = new stdClass();
+          $env->base_href = $_SESSION['basehref'];
+          $env->item_type = $doc_info->content_range;
+          $env->tocPrefix = $tocPrefix;
+          $env->user_id = $args->user_id;
+          $env->testCounter = 1;
+
           if ($showPlatforms)
           {
             $printingOptions['showPlatformNotes'] = true;
             $docText .= renderPlatformHeading($tocPrefix,$platforms[$platform_id],$printingOptions);
           }
-          $docText .= renderTestPlanForPrinting($db, $_SESSION['basehref'],$tree2work, $doc_info->content_range, 
-                                                $printingOptions, $tocPrefix, 0, 1, $args->user_id,
-                                                $args->tplan_id, $args->tproject_id, 
-                                                $platform_id,$args->build_id);
 
+          $actionContext['level'] = 0;
+          $docText .= renderTestPlanForPrinting($db,$tree2work,$printingOptions,$env,$actionContext);
           if( $printingOptions['metrics'] )
           {
             $docText .= buildTestPlanMetrics($doc_data->statistics,$platform_id);

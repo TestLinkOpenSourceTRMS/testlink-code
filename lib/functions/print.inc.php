@@ -1408,16 +1408,25 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
   
   @internal revisions:
 */
+/*
 function renderTestPlanForPrinting(&$db, $base_href,&$node, $item_type, &$options, $tocPrefix,
                                    $tcCnt, $level, $user_id, $tplan_id, $tprojectID, 
                                    $platform_id,$build_id)
 
+
+*/
+function renderTestPlanForPrinting(&$db,&$node,&$options,$env,$context)
+
 {
   $tProjectMgr = new testproject($db);
-  $tcPrefix = $tProjectMgr->getTestCasePrefix($tprojectID);
-  $code =  renderTestSpecTreeForPrinting($db, $base_href,$node, $item_type, $options,
-                                         $tocPrefix, $tcCnt, $level, $user_id,
-                                         $tplan_id, $tcPrefix, $tprojectID, $platform_id,$build_id);
+  $tcPrefix = $tProjectMgr->getTestCasePrefix($context['tproject_id']);
+
+
+  $code =  renderTestSpecTreeForPrinting($db, $env->base_href,$node, $env->item_type, $options,
+                                         $env->tocPrefix, $env->testCounter, $context['level'], 
+                                         $env->user_id,
+                                         $context['tplan_id'], $tcPrefix, 
+                                         $context['tprojectID'], $context['platform_id'],$context['build_id']);
   return $code;
 }
 

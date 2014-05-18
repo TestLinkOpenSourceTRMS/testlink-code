@@ -738,14 +738,26 @@ function renderSimpleChapter($title, $content, $addToStyle=null)
   args :
   returns:
 
+
+env->base_href
+env->item_type
+env->tocPrefix
+env->testCounter
+env->user_id
+
+context['tproject_id']
+context['tplan_id']
+context['platform_id']
+context['build_id']
+context['level']
+context['prefix']
+
 */
-function renderTestSpecTreeForPrinting(&$db,$base_href,&$node,$item_type,&$options,
-                                       $tocPrefix,$tcCnt,$level,$user_id,
-                                       $tplan_id = 0,$tcPrefix = null,
-                                       $tprojectID = 0, $platform_id = 0,$build_id = 0)
+
+function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context)
 {
   static $tree_mgr;
-  static $map_id_descr;
+  static $id_descr;
   static $tplan_mgr;
   $code = null;
    
@@ -753,30 +765,30 @@ function renderTestSpecTreeForPrinting(&$db,$base_href,&$node,$item_type,&$optio
   { 
     $tplan_mgr = new testplan($db);
     $tree_mgr = new tree($db);
-    $map_id_descr = $tree_mgr->node_types;
+    $id_descr = $tree_mgr->node_types;
+
+    $k2i = array('tproject_id' => 0, 'tplan_id' => 0, 'platform_id' => 0,  'build_id' => 0, 'prefix' => null);
+    $context = array_merge($k2i,$context);
   }
   
-  $verbose_node_type = $map_id_descr[intval($node['node_type_id'])];
-  switch($verbose_node_type)
+  $node_type = $id_descr[intval($node['node_type_id'])];
+  switch($node_type)
   {
     case 'testproject':
     break;
 
     case 'testsuite':
-      $tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $tcCnt;
+      $env->tocPrefix .= (!is_null($env->tocPrefix) ? "." : '') . $env->testCounter;
+
       $code .= renderTestSuiteNodeForPrinting($db,$node,$options,
-                                              $tocPrefix,$level,$tplan_id,$tprojectID,$base_href);
+                                              $env->tocPrefix,
+                                              $context['level'],
+                                              $context['tplan_id'],$context['tproject_id'],
+                                              $env->base_href);
     break;
 
     case 'testcase':
-      // $code .= renderTestCaseForPrinting($db, $node, $options, $level,
-      //                                   $tplan_id, $tcPrefix, $tprojectID, $platform_id);
-
-      $code .= renderTestCaseForPrinting($db, $base_href, $node, $options, 
-                                         array('level' => $level, 'prefix' => $tcPrefix,
-                                               'tplan_id' => $tplan_id,  'tproject_id' => $tprojectID, 
-                                               'platform_id' => $platform_id, 'build_id' => $build_id));
-
+      $code .= renderTestCaseForPrinting($db, $env->base_href, $node, $options, $context); 
     break;
   }
   
@@ -784,33 +796,28 @@ function renderTestSpecTreeForPrinting(&$db,$base_href,&$node,$item_type,&$optio
   {
     
     $childNodes = $node['childNodes'];
-    $tsCnt = 0;
+    $env->testCounter = 0;
     $children_qty = sizeof($childNodes);
-    for($i = 0;$i < $children_qty ;$i++)
+    for($idx = 0;$idx < $children_qty ;$idx++)
     {
-      $current = $childNodes[$i];
+      $current = $childNodes[$idx];
       if(is_null($current))
       {
         continue;
       }
             
-      if (isset($current['node_type_id']) && 
-          $map_id_descr[$current['node_type_id']] == 'testsuite')
+      if (isset($current['node_type_id']) && $id_descr[$current['node_type_id']] == 'testsuite')
       {
-          $tsCnt++;
+        $env->testCounter++;
       }
-      $code .= renderTestSpecTreeForPrinting($db, $base_href,$current, $item_type, $options,
-                                             $tocPrefix, $tsCnt, $level+1, $user_id,
-                                             $tplan_id, $tcPrefix, $tprojectID, $platform_id,$build_id);
+      $context['level']++;
+      $code .= renderTestSpecTreeForPrinting($db,$current,$options,$env,$context);
     }
   }
   
-  if ($verbose_node_type == 'testproject')
+  if ($node_type == 'testproject' && $options['toc'])
   {
-    if ($options['toc'])
-    {
-      $code = str_replace("{{INSERT_TOC}}",$options['tocCode'],$code);
-    }
+    $code = str_replace("{{INSERT_TOC}}",$options['tocCode'],$code);
   }
 
   return $code;
@@ -1419,14 +1426,8 @@ function renderTestPlanForPrinting(&$db,&$node,&$options,$env,$context)
 
 {
   $tProjectMgr = new testproject($db);
-  $tcPrefix = $tProjectMgr->getTestCasePrefix($context['tproject_id']);
-
-
-  $code =  renderTestSpecTreeForPrinting($db, $env->base_href,$node, $env->item_type, $options,
-                                         $env->tocPrefix, $env->testCounter, $context['level'], 
-                                         $env->user_id,
-                                         $context['tplan_id'], $tcPrefix, 
-                                         $context['tprojectID'], $context['platform_id'],$context['build_id']);
+  $context['prefix'] = $tProjectMgr->getTestCasePrefix($context['tproject_id']);
+  $code =  renderTestSpecTreeForPrinting($db,$node,$options,$env,$context);
   return $code;
 }
 

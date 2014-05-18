@@ -779,12 +779,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context)
 
     case 'testsuite':
       $env->tocPrefix .= (!is_null($env->tocPrefix) ? "." : '') . $env->testCounter;
-
-      $code .= renderTestSuiteNodeForPrinting($db,$node,$options,
-                                              $env->tocPrefix,
-                                              $context['level'],
-                                              $context['tplan_id'],$context['tproject_id'],
-                                              $env->base_href);
+      $code .= renderTestSuiteNodeForPrinting($db,$node,$env,$options,$context);
     break;
 
     case 'testcase':
@@ -1321,28 +1316,39 @@ function renderTOC(&$options)
   returns:
   
 */
-function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,$tplan_id,$tproject_id,$base_href)
+function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context)
 {
+
   static $tsuite_mgr;
-  $labels = array('test_suite' => lang_get('test_suite'),'details' => lang_get('details'));
-  
+  static $labels;
+  static $title_separator;
+  static $cfieldFormatting;
+
+  if(!is_null($labels))
+  {
+    $labels = array('test_suite' => lang_get('test_suite'),'details' => lang_get('details'));
+    $title_separator = config_get('gui_title_separator_1');
+    $cfieldFormatting = array('table_css_style' => 'class="cf"');
+  }  
+
   $code = null;
   $name = isset($node['name']) ? htmlspecialchars($node['name']) : '';
-  $title_separator = config_get('gui_title_separator_1');
   $cfields = array('design' => '');
-  $cfieldFormatting=array('table_css_style' => 'class="cf"');
     
-  $docHeadingNumbering = $options['headerNumbering'] ? "$tocPrefix. " : '';
+  $docHeadingNumbering = $options['headerNumbering'] ? ($env->tocPrefix . ".") : '';
     
   if ($options['toc'])
   {
-    $spacing = ($level == 2 && $tocPrefix != 1) ? "<br>" : "";
-    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
-                           '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . 
+  
+    $spacing = ($context['level'] == 2 && $env->tocPrefix != 1) ? "<br>" : "";
+    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$context['level']).'px;">' .
+                           '<a href="#' . prefixToHTMLID($env->tocPrefix) . '">' . $docHeadingNumbering . 
                            $name . "</a></p></b>\n";
-    $code .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
+    $code .= "<a name='". prefixToHTMLID($context['prefix']) . "'></a>\n";
+  
   }
-  $docHeadingLevel = $level - 1; //we would like to have html top heading H1 - H6
+
+  $docHeadingLevel = ($context['level']-1); //we would like to have html top heading H1 - H6
   $docHeadingLevel = ($docHeadingLevel > 6) ? 6 : $docHeadingLevel;
   $code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering . $labels['test_suite'] .
            $title_separator . $name . "</h{$docHeadingLevel}>\n";
@@ -1365,8 +1371,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
     if (count($attachSet) > 0)
     {
       $code .= "<table>";
-      $code .= "<tr><td><span class=\"label\">" .
-               $labels['attached_files'] . "</span></td><td><ul>";
+      $code .= "<tr><td><span class=\"label\">" . $labels['attached_files'] . "</span></td><td><ul>";
       foreach($attachSet as $item)
       {
         $fname = "";
@@ -1379,9 +1384,8 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
 
         if($item['is_image'])
         {
-          $code .= '<li>' . '<img src="' . $base_href . 
+          $code .= '<li>' . '<img src="' . $env->base_href . 
                    'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
-
         }  
       }
       $code .="</ul></td></tr>";
@@ -1395,7 +1399,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
     foreach($cfields as $key => $value)
     {
       $cfields[$key] = $tsuite_mgr->html_table_of_custom_field_values($node['id'],$key,null,
-                                                                      $tproject_id,$cfieldFormatting);
+                                                                      $context['tproject_id'],$cfieldFormatting);
       if($cfields[$key] != "")
       {
         $add_br = true;
@@ -1405,6 +1409,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$options,$tocPrefix,$level,
   }
   return $code;
 }
+
 
 
 

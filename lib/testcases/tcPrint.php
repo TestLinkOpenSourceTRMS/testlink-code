@@ -49,7 +49,11 @@ $text2print = '';
 $text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],
 								SINGLE_TESTCASE,array('gui/javascript/testlink_library.js'));
 
-$text2print .= renderTestCaseForPrinting($db,$_SESSION['basehref'],$node,$printingOptions,
+
+$env = new stdClass();
+$env->base_href = $_SESSION['basehref'];
+$env->reportType = $printingOptions['docType'];
+$text2print .= renderTestCaseForPrinting($db,$node,$printingOptions,$env,
 										 array('level' => $level,'tplan_id' => $tplanID,
 										 	   'tproject_id' => $args->tproject_id,'prefix' => $prefix));
 

@@ -9,12 +9,12 @@
  *
  * @package   TestLink
  * @author    Martin Havlat <havlat@users.sourceforge.net>
- * @copyright 2007-2013, TestLink community 
+ * @copyright 2007-2014, TestLink community 
  * @uses      printDocument.php
  *
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  *
  */ 
 
@@ -783,7 +783,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context)
     break;
 
     case 'testcase':
-      $code .= renderTestCaseForPrinting($db, $env->base_href, $node, $options, $context); 
+      $code .= renderTestCaseForPrinting($db,$node,$options,$env,$context); 
     break;
   }
   
@@ -864,12 +864,13 @@ function gendocGetUserName(&$db, $userId)
  *
  * @internal revisions
  */
-function renderTestCaseForPrinting(&$db, $base_href,&$node, &$options, $context)
+function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
 {
   
   static $req_mgr;
   static $tc_mgr;
   static $build_mgr;
+  static $tplan_mgr;
   static $tplan_urgency;
   static $labels;
   static $tcase_prefix;
@@ -889,7 +890,6 @@ function renderTestCaseForPrinting(&$db, $base_href,&$node, &$options, $context)
   $tcase_pieces = null;
 
   $id = $node['id'];
-
   $level = $context['level'];
   $prefix = isset($context['prefix']) ? $context['prefix'] : null;
   $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
@@ -904,6 +904,7 @@ function renderTestCaseForPrinting(&$db, $base_href,&$node, &$options, $context)
     $tc_mgr = new testcase($db);
     $tplan_urgency = new testPlanUrgency($db);
     $build_mgr = new build_mgr($db);
+    $tplan_mgr = new testplan($db);
 
 
     list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
@@ -937,44 +938,6 @@ function renderTestCaseForPrinting(&$db, $base_href,&$node, &$options, $context)
   $cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
   $cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 'value_css_style' => $cspan );
 
-  $versionID = isset($node['tcversion_id']) ? intval($node['tcversion_id']) : testcase::LATEST_VERSION;
-  $tcInfo = $tc_mgr->get_by_id($id,$versionID,null,array('renderGhost' => true));
-    
-  if ($tcInfo)
-  {
-      $tcInfo = $tcInfo[0];
-  }
-  $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
-  $name = htmlspecialchars($node['name']);
-
-  // ----- BUGID 3451 and related ---------------------------------------
-  // asimon: I finally found the real problem here:
-  // $versionID was used in the following "dirty" SQL statement, but was still set to "-1" 
-  //(the value to load all tc versions) instead of a real testcase version ID.
-  $versionID = $tcInfo['id'];
-  
-  // This still does not change the fact that this marked SQL statement below
-  // should be removed and replaced by existing functions.
-  // ----- BUGID 3451 and related ---------------------------------------
-  
-  $cfields = array('specScope' => null, 'execScope' => null);
-
-  // get custom fields that has specification scope
-  if ($options['cfields'])
-  {
-    if (!$locationFilters)
-    {
-      $locationFilters = $tc_mgr->buildCFLocationMap();
-    }  
-  
-    foreach($locationFilters as $fkey => $fvalue)
-    { 
-      // Custom Field values at Test Case VERSION Level
-      $cfields['specScope'][$fkey] = 
-          $tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
-                                                         $tprojectID,$cfieldFormatting,$tcInfo['id']);             
-    }           
-  }
 
   /** 
    * @TODO THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
@@ -982,47 +945,134 @@ function renderTestCaseForPrinting(&$db, $base_href,&$node, &$options, $context)
    * Need to get CF with execution scope
    */
   $exec_info = null;
-  $bGetExecutions = false;
-  if ($options["docType"] != DOC_TEST_SPEC)
+  $getExecutions = false;
+
+  /*
+  if ($options["docType"] != DOC_TEST_SPEC && $options["docType"] != SINGLE_TESTCASE)
   {
-    $bGetExecutions = ($options['cfields'] || $options['passfail']);
+    $getExecutions = ($options['cfields'] || $options['passfail']);
   }
-  
-  if ($bGetExecutions)
+  */
+
+  $getByID['filters'] = null;
+  switch($options["docType"])
   {
+    case DOC_TEST_SPEC:
+      $getByID['tcversion_id'] = testcase::LATEST_VERSION;
+    break;
+
+    case SINGLE_TESTCASE:
+     $getByID['tcversion_id'] = $node['tcversion_id'];
+    break;
+
+    default:
+     $getByID['tcversion_id'] = $node['tcversion_id'];
+     $getExecutions = ($options['cfields'] || $options['passfail']);
+    break;
+  }
+
+  if ($getExecutions)
+  {
+    // Thanks to Evelyn from Cortado, have found a very old issue never reported.
+    // 1. create TC-1A VERSION 1
+    // 2. add to test plan and execute FAILED ON BUILD 1
+    // 3. Request Test Report (Test Plan EXECUTION REPORT).
+    //    You will get spec for VERSION 1 and result for VERSION 1 - OK cool!
+    // 4. create VERSION 2
+    // 5. update linked Test Case Versions
+    // 6. do nothing more than repeat step 3
+    //    without this fix you will get
+    //    You will get spec for VERSION 2 and result for VERSION 1 - Hmmm
+    //    and in addition is not clear that execution was on VERSION 1 . No GOOD!!
+    //
+    // HOW has been fixed ?
+    // Getting info about THE CURRENT LINKED test case version and looking for
+    // exec info for this.
+    // 
+    // ATTENTION: THIS IS OK ONLY WHEN BUILD ID is not provided
+    //
+    //
+    // Get Linked test case version
+    $linkedItem = $tplan_mgr->getLinkInfo($tplan_id,$id,$platform_id);
+
     $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
            " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
            " B.name AS build_name,E.execution_duration " .
            " FROM {$tables['executions']} E, {$tables['builds']} B" .
-           " WHERE E.build_id= B.id " . 
-           " AND E.tcversion_id = {$versionID} " .
-           " AND E.testplan_id = {$tplan_id} " .
-           " AND E.platform_id = {$platform_id} ";
+           " WHERE E.build_id = B.id " . 
+           " AND E.testplan_id = " . intval($tplan_id) .
+           " AND E.platform_id = " . intval($platform_id) .
+           " AND E.tcversion_id = " . intval($linkedItem[0]['tcversion_id']);
+      
     if($build_id > 0)
     {
-      $sql .= " AND E.build_id = {$build_id} ";
+      $sql .= " AND E.build_id = " . intval($build_id);
+    }
+    else
+    {
+      // We are looking for LATEST EXECUTION of CURRENT LINKED test case version
+      $sql .= " AND E.tcversion_number=" . intval($linkedItem[0]['version']);
     }       
     $sql .= " ORDER BY execution_id DESC";
     $exec_info = $db->get_recordset($sql,null,1);
-    if( !is_null($exec_info) && $options['build_cfields'])
+
+
+    $getByID['tcversion_id'] = $linkedItem[0]['tcversion_id'];
+    $getByID['filters'] = null;
+    if( !is_null($exec_info) )
     {
-      if( !isset($buildCfields[$exec_info[0]['build_id']]) )
+      // 
+      $getByID['tcversion_id'] = null;
+      $getByID['filters'] = array('version_number' => $exec_info[0]['tcversion_number']);
+
+      if( $options['build_cfields'] )
       {
-        $buildCfields[$exec_info[0]['build_id']] = 
-          $build_mgr->html_table_of_custom_field_values($exec_info[0]['build_id'],$tprojectID);
+        if( !isset($buildCfields[$exec_info[0]['build_id']]) )
+        {
+          $buildCfields[$exec_info[0]['build_id']] = 
+            $build_mgr->html_table_of_custom_field_values($exec_info[0]['build_id'],$tprojectID);
+        }
       }  
     }  
   }
 
-  // Added condition for the display on/off of the custom fields on test cases.
-  if ($options['cfields'] && !is_null($exec_info))
+  $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],array('renderGhost' => true));
+  if ($tcInfo)
   {
-    $execution_id = $exec_info[0]['execution_id'];
-    $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
-                                                                       $execution_id, $tplan_id,
-                                                                       $tprojectID,$cfieldFormatting);
+    $tcInfo = $tcInfo[0];
   }
-    
+  $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
+  $name = htmlspecialchars($node['name']);
+  $versionID = $tcInfo['id'];
+
+  $cfields = array('specScope' => null, 'execScope' => null);
+  if ($options['cfields'])
+  {
+    if (!$locationFilters)
+    {
+      $locationFilters = $tc_mgr->buildCFLocationMap();
+    }  
+  
+    // Get custom fields that has specification scope
+    // Custom Field values at Test Case VERSION Level
+    foreach($locationFilters as $fkey => $fvalue)
+    { 
+      $cfields['specScope'][$fkey] = 
+          $tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
+                                                         $tprojectID,$cfieldFormatting,$tcInfo['id']);             
+    }           
+
+    if (!is_null($exec_info))
+    {
+      $execution_id = $exec_info[0]['execution_id'];
+      $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
+                                                                         $execution_id, $tplan_id,
+                                                                         $tprojectID,$cfieldFormatting);
+    }  
+  }
+
+
+   
   if ($options['toc'])
   {
     // EXTERNAL ID added
@@ -1044,7 +1094,22 @@ function renderTestCaseForPrinting(&$db, $base_href,&$node, &$options, $context)
             htmlspecialchars($external_id) . ": " . $name;
 
   // add test case version 
-  $version_number = isset($node['version']) ? $node['version'] : $tcInfo['version'];
+  switch($env->reportType)
+  {
+    case DOC_TEST_PLAN_DESIGN:
+      $version_number = $node['version'];
+    break;
+    
+    case DOC_TEST_PLAN_EXECUTION:
+    case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
+      $version_number = $tcInfo['version'];
+    break;
+
+    default:
+      $version_number = $tcInfo['version'];
+    break;
+  }
+
   if($cfg['doc']->tc_version_enabled || $force['displayVersion'] )
   {
     $code .= '&nbsp;<span style="font-size: 80%;">' . $cfg['gui']->role_separator_open . 
@@ -1275,7 +1340,7 @@ function renderTestCaseForPrinting(&$db, $base_href,&$node, &$options, $context)
 
       if($item['is_image'])
       {
-        $code .= '<li>' . '<img src="' . $base_href . 
+        $code .= '<li>' . '<img src="' . $env->base_href . 
                  'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
       }  
     }

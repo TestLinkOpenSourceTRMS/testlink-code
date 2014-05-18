@@ -189,9 +189,23 @@ if ($treeForPlatform)
         
         case DOC_TEST_SPEC:
           $docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
+
+          $env = new stdClass();
+          $env->base_href = $_SESSION['basehref'];
+          $env->item_type = $doc_info->content_range;
+          $env->tocPrefix = 0;
+          $env->testCounter = 1;
+          $env->user_id = $args->user_id;
+          $env->reportType = $doc_info->type;
+          
+          $actionContext['level'] = 0;
+          $docText .= renderTestSpecTreeForPrinting($db,$tree2work,$printingOptions,$env,$actionContext);
+
+          /*
           $docText .= renderTestSpecTreeForPrinting($db, $_SESSION['basehref'], $tree2work, $doc_info->content_range,
                                                     $printingOptions, null, 0, 1, $args->user_id,0,null,
                                                     $args->tproject_id,$platform_id);
+          */
         break;
       
         case DOC_TEST_PLAN_DESIGN:
@@ -205,6 +219,7 @@ if ($treeForPlatform)
           $env->tocPrefix = $tocPrefix;
           $env->user_id = $args->user_id;
           $env->testCounter = 1;
+          $env->reportType = $doc_info->type;
 
           if ($showPlatforms)
           {

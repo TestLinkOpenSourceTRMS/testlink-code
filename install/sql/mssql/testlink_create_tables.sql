@@ -248,6 +248,24 @@ CREATE NONCLUSTERED INDEX /*prefix*/executions_IX1 ON  /*prefix*/executions
 ) ON [PRIMARY];
 
 
+--
+-- Table structure for table "execution_tcsteps"
+--
+CREATE TABLE /*prefix*/execution_tcsteps (
+   execution_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_execution_id DEFAULT ((0)),  
+   tcstep_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_tcstep_id DEFAULT ((0)),
+   notes nvarchar(max)   NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_notes DEFAULT (NULL),
+   status char(1)  NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_status DEFAULT (NULL),
+  CONSTRAINT /*prefix*/PK_executions PRIMARY KEY CLUSTERED 
+  ( 
+  execution_id,tcstep_id ASC
+  ) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+
+
+
+
+
 CREATE TABLE /*prefix*/risk_assignments (
   id int IDENTITY(1,1) NOT NULL,
   testplan_id int NOT NULL CONSTRAINT /*prefix*/DF_risk_assignments_testplan_id DEFAULT ((0)),

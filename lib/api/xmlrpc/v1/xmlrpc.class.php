@@ -1071,14 +1071,14 @@ class TestlinkXMLRPCServer extends IXR_Server
   protected function _checkCreateBuildRequest($messagePrefix='')
   {    
       
-        $checkFunctions = array('authenticate','checkTestPlanID');
-        $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
-        if($status_ok)
-        {
-            $status_ok=$this->_isParamPresent(self::$buildNameParamName,$messagePrefix,self::SET_ERROR);            
-        }       
+    $checkFunctions = array('authenticate','checkTestPlanID');
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
+    if($status_ok)
+    {
+      $status_ok=$this->_isParamPresent(self::$buildNameParamName,$messagePrefix,self::SET_ERROR);            
+    }       
         
-      return $status_ok;
+    return $status_ok;
   }  
   
   /**
@@ -3934,37 +3934,37 @@ public function getTestCase($args)
    */    
     protected function checkPlatformIdentity($tplanID,$platformInfo=null,$messagePrefix='')
     {
-        $status=true;
-        $platformID=0;
-        $myErrors=array();
+      $status=true;
+      $platformID=0;
+      $myErrors=array();
 
-        $name_exists = $this->_isParamPresent(self::$platformNameParamName,$messagePrefix);
-        $id_exists = $this->_isParamPresent(self::$platformIDParamName,$messagePrefix);
-        $status = $name_exists | $id_exists;
-        // for debug - file_put_contents('c:\checkPlatformIdentity.txt', $status ? 1:0);                            
+      $name_exists = $this->_isParamPresent(self::$platformNameParamName,$messagePrefix);
+      $id_exists = $this->_isParamPresent(self::$platformIDParamName,$messagePrefix);
+      $status = $name_exists | $id_exists;
+      // for debug - file_put_contents('c:\checkPlatformIdentity.txt', $status ? 1:0);                            
 
-        if(!$status)
-        {
-          $pname = self::$platformNameParamName . ' OR ' . self::$platformIDParamName; 
-          $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
-          $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
-    }        
+      if(!$status)
+      {
+        $pname = self::$platformNameParamName . ' OR ' . self::$platformIDParamName; 
+        $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+      }        
         
         if($status)
         {
           // get test plan name is useful for error messages
-           $tplanInfo = $this->tplanMgr->get_by_id($tplanID);
-           if(is_null($platformInfo))
-           {
+          $tplanInfo = $this->tplanMgr->get_by_id($tplanID);
+          if(is_null($platformInfo))
+          {
              $platformInfo = $this->tplanMgr->getPlatforms($tplanID,array('outputFormat' => 'map'));  
-           }
+          }
 
-            if(is_null($platformInfo))
-            {
+          if(is_null($platformInfo))
+          {
             $status = false;
-           $msg = sprintf($messagePrefix . TESTPLAN_HAS_NO_PLATFORMS_STR,$tplanInfo['name']);
-           $this->errors[] = new IXR_Error(TESTPLAN_HAS_NO_PLATFORMS, $msg);
-            }
+            $msg = sprintf($messagePrefix . TESTPLAN_HAS_NO_PLATFORMS_STR,$tplanInfo['name']);
+            $this->errors[] = new IXR_Error(TESTPLAN_HAS_NO_PLATFORMS, $msg);
+          }
             
         }
          
@@ -4001,7 +4001,7 @@ public function getTestCase($args)
         {
           if($name_exists)
           { 
-              $dummy = array_flip($platformInfo);
+            $dummy = array_flip($platformInfo);
             $this->args[self::$platformIDParamName] = $dummy[$this->args[self::$platformNameParamName]];
           }
         }
@@ -5936,6 +5936,103 @@ protected function createAttachmentTempFile()
   }
 
 
+  /**
+    * @param struct $args
+    * @param string $args["devKey"]
+    * @param int $args["testplanid"]
+    * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
+    * @param int $args["buildid"]
+    * @param int $args["buildname"]
+    * @param int $args["platformid"] optional
+    * @param int $args["platformname"] optional
+    * @param string $args["user'] - login name => tester
+    *
+    */
+  public function assignTestCaseExecutionTask($args)
+  {
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $status_ok=true;
+    $this->_setArgs($args);
+    $resultInfo=array();
+
+    // Checks are done in order
+    $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity');
+
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+    // Check if requested test case is linke dto test plan
+    // if answer is yes, get link info, in order to be able to check if 
+    // we need also platform info
+    if( $status_ok )
+    {
+      $tplan_id = $this->args[self::$testPlanIDParamName];
+      $tcase_id = $this->args[self::$testCaseIDParamName];
+      $filters = array('exec_status' => "ALL", 'active_status' => "ALL",
+                       'tplan_id' => $tplan_id, 'platform_id' => null);
+      
+      $info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters);
+
+      // more than 1 item => we have platforms
+      // access key => tcversion_id, tplan_id, platform_id
+      $link = current($info);
+      $link = $link[$tplan_id]; 
+      $hits = count($link);
+      $check_platform = (count($hits) > 1) || !isset($link[0]);
+    }
+
+    if( $status_ok && $check_platform )
+    {
+      // this means that platform is MANDATORY
+      if( !$this->_isParamPresent(self::$platformIDParamName,$msg_prefix) && 
+          !$this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
+      {
+        $status_ok = false;
+        $pname = self::$platformNameParamName . ' OR ' . self::$platformIDParamName; 
+        $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+      }  
+      else
+      {
+        // get platform_id and check it
+        if( ($status_ok = $this->checkPlatformIdentity($tplan_id)) )
+        {
+          $platform_id = $this->args[self::$platformIDParamName];
+          $platform_info = $this->tplanMgr->getPlatforms($tplan_id,array('outputFormat' => 'mapAccessByID', 
+                                                                         'outputDetails' => 'name'));
+
+          $status_ok = $this->_checkTCIDAndTPIDValid($platform_info,$msg_prefix);
+        }  
+      }  
+    }
+
+    // return $status_ok;
+                 
+    $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
+                         'platform_id' => null,'build_id' => null);
+
+    if( $status_ok )
+    {
+      if($this->_isBuildIDPresent() || $this->_isBuildNamePresent())
+      {
+        if( ($status_ok =  $this->checkBuildID($msg_prefix)) )
+        {
+            $execContext['build_id'] = $this->args[self::$buildIDParamName];  
+        }  
+      } 
+      else
+      {
+        // build is mandatory
+        $status_ok = false;
+      }  
+    }
+    
+    return $status_ok ? $resultInfo : $this->errors;
+  }
+
+  /**
+   *
+   */
   function initMethodYellowPages()
   {
     $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
@@ -5994,6 +6091,7 @@ protected function createAttachmentTempFile()
                             'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',
                             'tl.updateTestCase' => 'this:updateTestCase',
                             'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
+                            'tl.assignTestCaseExecutionTask' => 'this:assignTestCaseExecutionTask',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

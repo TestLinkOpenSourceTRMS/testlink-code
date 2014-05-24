@@ -45,7 +45,7 @@ $TLS_bad_line_skipped = 'Line has been skipped (unable to import it)';
 
 
 
-
+$TLS_exec_result = 'Result';
 $TLS_inactive_click_to_change = 'Inactive (click to set active)';
 
 $TLS_default_auth_method = "Default";
@@ -133,6 +133,10 @@ $TLS_needed = "Needed";
 $TLS_not_aplicable = "N/A";
 $TLS_notes = "Notes";
 $TLS_latest_exec_notes = "Notes (latest exec)";
+$TLS_step_exec_notes = "Execution notes";
+$TLS_step_exec_status = "Execution Status";
+
+
 
 $TLS_nobody = "Nobody";
 $TLS_not_imported = "Not imported";
@@ -212,6 +216,8 @@ $TLS_container = "container";
 $TLS_platform = "Platform";
 $TLS_show_calender = "Show Calender";
 $TLS_clear_date = "Clear Date";
+$TLS_clear_all_notes = "Clear all notes";
+
 $TLS_unfreeze = "Unfreeze";
 $TLS_unable_to_render_ghost = '*** UNABLE TO RENDER *** ';
 
@@ -1340,6 +1346,7 @@ $TLS_other_versions = 'Other versions';
 $TLS_match_count = "Number of matches";
 
 // ----- gui/templates/execSetResults.tpl -----
+$TLS_access_test_steps_exec = "Test steps exec (print view)";
 $TLS_alt_attachment_mgmt = "attachments";
 $TLS_alt_notes = "Notes";
 $TLS_assigned_to = "Assigned to";
@@ -2744,9 +2751,12 @@ $TLS_opt_show_tplan_txt = "Test Plan description";
 $TLS_opt_show_tc_body = "Test Case Scenario";
 $TLS_opt_show_tc_summary   = "Test Case Summary";
 $TLS_opt_show_tc_author = "Test Case Author";
-$TLS_opt_show_tc_notes   = "Test Case Notes";
-$TLS_opt_show_tc_reqs = "Test Case related Requirements";
-$TLS_opt_show_tc_keys = "Test Case keywords";
+$TLS_opt_show_tc_notes   = "Execution Notes";
+$TLS_opt_show_tcstep_exec_notes   = "Step Execution Notes";
+$TLS_opt_show_tcstep_exec_status = "Step Execution Results";
+
+$TLS_opt_show_tc_reqs = "Test Case Related Requirements";
+$TLS_opt_show_tc_keys = "Test Case Keywords";
 $TLS_opt_show_cfields  = "Test Case Custom Fields";
 $TLS_opt_show_passfail = "Test results";
 $TLS_opt_show_metrics = "Metrics";

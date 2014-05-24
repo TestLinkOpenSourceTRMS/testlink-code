@@ -6,11 +6,11 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2005-2014, TestLink community 
+ * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  * 
  */
 
@@ -93,6 +93,7 @@ class testcase extends tlObjectWithAttachments
 
     $this->cfg = new stdClass();
     $this->cfg->testcase = config_get('testcase_cfg');
+    $this->cfg->execution = config_get('exec_cfg');  // CORTADO
     
     // ATTENTION:
     // second argument is used to set $this->attachmentTableName,property that this calls
@@ -3256,7 +3257,7 @@ class testcase extends tlObjectWithAttachments
     //               1 -> get last execution on EACH BUILD.
     //                    GROUP BY must be done BY tcversion_id,build_id
     //   
-    $localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0, 'getSteps' => 1);
+    $localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0, 'getSteps' => 1, 'getStepsExecInfo' => 0);
     if(!is_null($options) && is_array($options))
     {
       $localOptions=array_merge($localOptions,$options);    
@@ -3389,10 +3390,33 @@ class testcase extends tlObjectWithAttachments
     // Multiple Test Case Steps Feature
     if( !is_null($recordset) && $localOptions['getSteps'] )
     {
+      $exec_cfg = 
+      $xx = null;
+      if($localOptions['getStepsExecInfo'] && $this->cfg->execution->steps_exec_notes_default == 'latest')
+      {
+        $tg = current($recordset);
+        $xx = $this->getStepsExecInfo($tg['execution_id']);  
+      }  
+
       $itemSet = array_keys($recordset);
       foreach( $itemSet as $sdx)
       {
         $step_set = $this->get_steps($recordset[$sdx]['id']);
+        if($localOptions['getStepsExecInfo'])
+        {
+          if(!is_null($step_set))
+          {  
+            $key_set = array_keys($step_set);
+            foreach($key_set as $kyx)
+            {
+              $step_set[$kyx]['execution_notes'] = '';
+              if( isset($xx[$step_set[$kyx]['id']]) )
+              {
+                $step_set[$kyx]['execution_notes'] = $xx[$step_set[$kyx]['id']]['notes'];
+              }  
+            }
+          }  
+        }  
         $recordset[$sdx]['steps'] = $step_set;
       } 
 
@@ -6506,6 +6530,20 @@ class testcase extends tlObjectWithAttachments
            " modification_ts = " . $this->db->db_now() .
            " WHERE id = " . $this->db->prepare_int(intval($tcversion_id));         
     $this->db->exec_query($sql);       
+  }
+
+  /**
+   *
+   */
+  function getStepsExecInfo($execution_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* {$debugMsg} */ " . 
+           " SELECT execution_id,tcstep_id,notes,status FROM {$this->tables['execution_tcsteps']} " .
+           " WHERE execution_id = " . intval($execution_id);
+
+    $rs = $this->db->fetchRowsIntoMap($sql,'tcstep_id');       
+    return $rs;     
   }
 
 }  

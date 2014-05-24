@@ -5,11 +5,11 @@
  *
  * @filesource  object.class.php
  * @package   TestLink
- * @copyright   2007-2012, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link    http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.11
  **/
  
 /** 
@@ -229,6 +229,7 @@ abstract class tlObject implements iSerialization
                     'db_version' => DB_TABLE_PREFIX . 'db_version',
                     'events' => DB_TABLE_PREFIX . 'events',
                     'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
+                    'execution_tcsteps' => DB_TABLE_PREFIX . 'execution_tcsteps',
                     'executions' => DB_TABLE_PREFIX . 'executions',
                     'inventory' => DB_TABLE_PREFIX . 'inventory',
                     'issuetrackers' => DB_TABLE_PREFIX . 'issuetrackers',

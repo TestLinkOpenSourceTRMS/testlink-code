@@ -9,7 +9,7 @@
  *
  * @package   TestLink
  * @author    Martin Havlat <havlat@users.sourceforge.net>
- * @copyright 2007-2014, TestLink community 
+ * @copyright 2007-2013, TestLink community 
  * @uses      printDocument.php
  *
  *
@@ -882,6 +882,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
   static $bugInterfaceOn = false;
   static $its;
   static $buildCfields;  
+  static $statusL10N;
 
 
   $code = null;
@@ -907,7 +908,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
     $tplan_mgr = new testplan($db);
 
 
-    list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
+    list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr,$options);
 
     if(!is_null($prefix))
     {
@@ -933,6 +934,14 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
       unset($it_mgr);
     }  
 
+    $statusL10N = null;         
+    foreach($cfg['results']['code_status'] as $vc => $vstat)
+    {
+      if(isset($cfg['results']['status_label_for_exec_ui'][$vstat]))
+      {
+        $statusL10N[$vc] = lang_get($cfg['results']['status_label_for_exec_ui'][$vstat]);  
+      }  
+    }
   }
 
   $cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
@@ -946,15 +955,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
    */
   $exec_info = null;
   $getExecutions = false;
-
-  /*
-  if ($options["docType"] != DOC_TEST_SPEC && $options["docType"] != SINGLE_TESTCASE)
-  {
-    $getExecutions = ($options['cfields'] || $options['passfail']);
-  }
-  */
-
   $getByID['filters'] = null;
+
   switch($options["docType"])
   {
     case DOC_TEST_SPEC:
@@ -963,11 +965,14 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
 
     case SINGLE_TESTCASE:
      $getByID['tcversion_id'] = $node['tcversion_id'];
+     $getExecutions = ($options['cfields'] || $options['passfail'] || $options['notes'] ||
+                       $options['step_exec_notes'] || $options['step_exec_status']);
     break;
 
     default:
      $getByID['tcversion_id'] = $node['tcversion_id'];
-     $getExecutions = ($options['cfields'] || $options['passfail']);
+     $getExecutions = ($options['cfields'] || $options['passfail'] || $options['notes'] ||
+                       $options['step_exec_notes'] || $options['step_exec_status']);
     break;
   }
 
@@ -1161,6 +1166,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
   if ($options['body'])
   {
     $tcase_pieces[] = 'preconditions';
+  }
+
+  if( $options['body'] || $options['step_exec_notes'] || $options['step_exec_status'] )
+  {
     $tcase_pieces[] = 'steps';
   }
     
@@ -1180,16 +1189,44 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
           $code .= '<tr>' .
                    '<td><span class="label">' . $labels['step_number'] .':</span></td>' .
                    '<td><span class="label">' . $labels['step_actions'] .':</span></td>' .
-                   '<td><span class="label">' . $labels['expected_results'] .':</span></td></tr>';
-               
+                   '<td><span class="label">' . $labels['expected_results'] .':</span></td>';
+
+          if( $options['step_exec_notes'] || $options['step_exec_status'] )
+          {
+            $sxni = $tc_mgr->getStepsExecInfo($exec_info[0]['execution_id']);
+
+            if( $options['step_exec_notes'] )
+            {
+              $code .= '<td><span class="label">' . $labels['step_exec_notes'] .':</span></td>';
+            }       
+
+            if( $options['step_exec_status'] )
+            {
+              $code .= '<td><span class="label">' . $labels['step_exec_status'] .':</span></td>';
+            }          
+          }  
+
+          $code .= '</tr>';     
+
           $loop2do = count($tcInfo[$key]);
           for($ydx=0 ; $ydx < $loop2do; $ydx++)
           {
             $code .= '<tr>' .
                      '<td width="5">' .  $tcInfo[$key][$ydx]['step_number'] . '</td>' .
                      '<td>' .  $tcInfo[$key][$ydx]['actions'] . '</td>' .
-                     '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>' .
-                     '</tr>';
+                     '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>';
+
+            if( $options['step_exec_notes'] )
+            {
+              $code .= '<td>' . $sxni[$tcInfo[$key][$ydx]['id']]['notes'] . '</td>';
+            }
+
+            if( $options['step_exec_status'] )
+            {
+              $code .= '<td>' . $statusL10N[$sxni[$tcInfo[$key][$ydx]['id']]['status']] . '</td>';
+            }
+
+            $code .= '</tr>';
           }
         }
       }
@@ -1609,17 +1646,26 @@ function buildTestPlanMetrics($statistics,$platform_id = 0)
  * @internal revisions:
  * 20121017 - asimon - TICKET 5288 - print priority when printing test plan
  */
-
-function initRenderTestCaseCfg(&$tcaseMgr)
+function initRenderTestCaseCfg(&$tcaseMgr,$options)
 {
   $config = null;
   $config['firstColWidth'] = '20%';
-  $config['tableColspan'] = 3;
   $config['doc'] = config_get('document_generator');
   $config['gui'] = config_get('gui');
   $config['testcase'] = config_get('testcase_cfg');
   $config['results'] = config_get('results');
 
+  // Cortado
+  $config['tableColspan'] = 4;
+  if( (isset($options['step_exec_notes']) &&  $options['step_exec_notes']) )
+  {
+    $config['tableColspan']++;
+  } 
+  if( (isset($options['step_exec_status']) &&  $options['step_exec_status']) )
+  {
+    $config['tableColspan']++;
+  } 
+ 
     
     foreach($config['results']['code_status'] as $key => $value)
     {
@@ -1636,7 +1682,7 @@ function initRenderTestCaseCfg(&$tcaseMgr)
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance',
-                      'estimated_execution_duration',
+                      'estimated_execution_duration','step_exec_notes','step_exec_status',
                       'high_importance','medium_importance','low_importance','execution_duration',
                       'priority', 'high_priority','medium_priority','low_priority');
                       
@@ -1766,6 +1812,9 @@ function renderTestProjectItem($info)
   return $out;
 }
 
+/**
+ *
+ */
 function renderTestPlanItem($info)
 {
   $lbl = init_labels(array('testplan' => null, 'scope' => null));
@@ -1773,4 +1822,102 @@ function renderTestPlanItem($info)
   $out .= renderSimpleChapter($lbl['testplan'] . ': ' . htmlspecialchars($info->testplan_name),
                               $info->testplan_scope, 'page-break-before: avoid;');
   return $out;
+}
+
+
+
+/**
+ *
+ */
+function renderExecutionForPrinting(&$dbHandler, $baseHref, $id)
+{
+  $out =  '';
+
+  // $id = $node['id'];
+  // $level = $context['level'];
+  // $prefix = isset($context['prefix']) ? $context['prefix'] : null;
+  // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
+  // $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
+  // $platform_id = isset($context['platform_id']) ? $context['platform_id'] : 0;
+  // $build_id = isset($context['build_id']) ? $context['build_id'] : 0;
+
+  $tables = tlDBObject::getDBTables(array('executions','builds'));
+
+  $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
+         " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
+         " E.platform_id,E.execution_duration, " .
+         " B.name AS build_name, B.id AS build_id " .
+         " FROM {$tables['executions']} E " .
+         " JOIN {$tables['builds']} B  ON B.id = E.build_id " .
+         " WHERE E.id = " . intval($id); 
+
+  $exec_info = $dbHandler->get_recordset($sql);
+  if( !is_null($exec_info) )
+  {
+    $exec_info = $exec_info[0];
+
+
+    $context['exec_id'] = intval($id);
+
+    $context['tplan_id'] = $exec_info['testplan_id'];
+    $context['platform_id'] = $exec_info['platform_id'];
+    $context['build_id'] = $exec_info['build_id'];
+    $context['level'] = '??'; // ???
+
+    $tprojectMgr = new testproject($dbHandler);
+    $node = $tprojectMgr->tree_manager->get_node_hierarchy_info($context['tplan_id']);
+    $context['prefix'] = $tprojectMgr->getTestCasePrefix($node['parent_id']);
+    $context['tproject_id'] = $node['parent_id'];
+    unset($tprojectMgr);
+
+    // IMPORTANT DEVELOPMENT NOTICE
+    // Remember that on executions table we have following fields
+    //
+    // testplan_id 
+    // tcversion_id 
+    // tcversion_number 
+    //  
+    // a. (testplan_id ,tcversion_id) ARE LINK To testplan_tcversions table
+    // b. if user creates a new version of a LINKED AND EXECUTED test case
+    //    when he/she updates test plan, ONLY tcversion_id is updated,
+    //    while tcversion_number HAS ALWAYS the VERSION HUMAN READABLE NUMBER
+    //    of executed version.
+    //
+    // Then if you want to access specification of executed test case version
+    // you need to proceed this way
+    // 1. with tcversion_id => get test case id
+    // 2. using test case id AND tcversion_number you access the data.
+    // 
+    // Why is important to remember this?
+    // Because here we need to get data for renderTestCaseForPrinting
+    //
+    // The Cinematic Orchestra: To build a home Incubus: Wish you were here Mau Mau: La ola
+    $tcaseMgr = new testcase($dbHandler);
+    $node = $tcaseMgr->tree_manager->get_node_hierarchy_info($exec_info['tcversion_id']);
+
+    // get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null)
+    $tcase = $tcaseMgr->get_by_id($node['parent_id'],null,array('version_number' => $exec_info['tcversion_number']));
+
+
+    $renderOptions = array('toc' => 0,'body' => 1,'summary' => 1, 'header' => 0,'headerNumbering' => 0,
+                           'passfail' => 1, 'author' => 1, 'notes' => 1, 'requirement' => 1, 'keyword' => 1, 
+                           'cfields' => 1, 'displayVersion' => 1, 'displayDates' => 1, 
+                           'docType' => SINGLE_TESTCASE, 'importance' => 1,
+                           'step_exec_notes' => 1, 'step_exec_status' => 1);
+
+    // need to change keys
+    $tcase = $tcase[0];
+    $tcase['tcversion_id'] = $tcase['id'];
+    $tcase['id'] = $node['parent_id'];
+
+    // $out .= renderTestCaseForPrinting($dbHandler, $baseHref, $tcase, $renderOptions, $context);
+    // $out .= renderTestCaseForPrinting($db,$node,$options,$env,$context); 
+    $env = new stdClass();
+    $env->base_href = $baseHref;
+    $env->reportType = $renderOptions['docType'];
+    $out .= renderTestCaseForPrinting($dbHandler,$tcase,$renderOptions,$env,$context); 
+
+  }  
+  return $out;
+
 }

@@ -8,12 +8,12 @@
  *
  * @filesource  printDocument.php
  * @author      Martin Havlat
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  *
  */
 require_once('../../config.inc.php');
@@ -343,7 +343,7 @@ function init_args(&$dbHandler)
 
 
 /** 
- * 
+ * @uses init_checkboxes() - printDocOptions.php 
  * 
  **/
 function initPrintOpt(&$UIhash,&$docInfo)
@@ -356,7 +356,8 @@ function initPrintOpt(&$UIhash,&$docInfo)
                  'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
                  'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
                  'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
-                 'req_linked_tcs' => 0,'req_coverage' => 0,'displayVersion' => 0);
+                 'req_linked_tcs' => 0,'req_coverage' => 0,'displayVersion' => 0,
+                 'step_exec_notes' => 0, 'step_exec_status' => 0);
   
   $lightOn = isset($UIhash['allOptionsOn']);
   foreach($pOpt as $opt => $val)

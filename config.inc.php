@@ -22,7 +22,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  *
  *
  **/
@@ -733,6 +733,17 @@ $tlCfg->exec_cfg->user_filter_default='none';
 // 'vertical'   ->  steps on one row, results in the row bellow
 $tlCfg->exec_cfg->steps_results_layout = 'horizontal';
 
+// true => on single test case execution feature, notes and result
+//         can be provided for each step
+// false => pre 1.9.10 behaviour
+// 
+$tlCfg->exec_cfg->steps_exec = true;
+
+// When textarea is displayed to allow user to write execution notes
+// at step level, choose what to display:
+// 'empty'
+// 'latest' => latest execution notes.
+$tlCfg->exec_cfg->steps_exec_notes_default = 'empty';
 
 // Parameters to show notes/details when entering test execution feature
 // EXPAND: show expanded/open

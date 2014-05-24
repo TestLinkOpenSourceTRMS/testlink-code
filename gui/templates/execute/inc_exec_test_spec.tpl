@@ -6,6 +6,10 @@ Author : franciscom
 
 *}  
     {$tableColspan="4"}
+    {if $tlCfg->exec_cfg->steps_exec}
+      {$tableColspan="6"}
+    {/if}
+    
     {$getReqAction="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
     {$testcase_id=$args_tc_exec.testcase_id}
     {$tcversion_id=$args_tc_exec.id}
@@ -40,6 +44,7 @@ Author : franciscom
                layout=$args_cfg->exec_cfg->steps_results_layout
                edit_enabled=false
                ghost_control=false
+               add_exec_info=$tlCfg->exec_cfg->steps_exec
                steps=$args_tc_exec.steps}
     {/if}
 

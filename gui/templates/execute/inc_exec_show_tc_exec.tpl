@@ -2,7 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
 @internal revisions
-@since 1.9.10
+@since 1.9.11
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -10,6 +10,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        Here we use version_number, which is related to tcversion_id SPECIFICATION.
        When we need to display executed version number, we use tcversion_number
     *}
+    {$printExecutionAction="lib/execute/execPrint.php"}
+
     {$version_number=$tc_exec.version}
     {$tc_id=$tc_exec.testcase_id}
 	  {$tcversion_id=$tc_exec.id}
@@ -147,7 +149,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {* -------------------------------------------------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
       {$my_colspan=$attachment_model->num_cols}
-      
+
+      {* CORTADO *}
+      {if $tlCfg->exec_cfg->steps_exec}
+        {$my_colspan=$my_colspan+1}
+      {/if}
+
       {if $gui->history_on == 0 && $show_current_build}
    		   <div class="exec_history_title">
   			    {$labels.last_execution} {$labels.exec_current_build}
@@ -190,9 +197,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           {$my_colspan=$my_colspan+1}
         {/if}
 
-        <th style="text-align:left">{$labels.run_mode}</th>
-        {$my_colspan=$my_colspan+2}
-			 </tr>
+       <th style="text-align:left">{$labels.run_mode}</th>
+
+       <th style="text-align:left">&nbsp;</th>
+
+       {$my_colspan=$my_colspan+2}
+  		 </tr>
 
 			{* ----------------------------------------------------------------------------------- *}
 			{foreach item=tc_old_exec from=$gui->other_execs.$tcversion_id}
@@ -313,6 +323,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        		  {/if}
           </td>
 
+          {* CORTADO *}
+          {if $tlCfg->exec_cfg->steps_exec }
+            <td class="icon_cell" align="center">
+              <img src="{$tlImages.steps}" title="{$labels.access_test_steps_exec}"  
+                   onclick="javascript:openPrintPreview('exec',{$tc_old_exec.execution_id},
+                                                        null,null,'{$printExecutionAction}');"/>
+            </td>
+          {/if}
 
 
   			</tr>

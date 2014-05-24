@@ -14,8 +14,8 @@ Author : eloff, 2010
 @internal revisions
 *}
 {lang_get var="inc_steps_labels" 
-          s="show_hide_reorder, step_number, step_actions,expected_results, 
-             execution_type_short_descr,delete_step,insert_step,show_ghost_string"}
+          s="show_hide_reorder, step_number, step_actions,expected_results,latest_exec_notes,exec_result,clear_all_notes,
+             step_exec_notes,execution_type_short_descr,delete_step,insert_step,show_ghost_string"}
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
 
@@ -42,6 +42,15 @@ Author : eloff, 2010
     <th>&nbsp;</th>
     <th>&nbsp;</th>
     {/if}
+    {if $add_exec_info}
+      <th>{if $tlCfg->exec_cfg->steps_exec_notes_default == 'latest'}{$inc_steps_labels.latest_exec_notes}
+          {else}{$inc_steps_labels.step_exec_notes}{/if}
+          <img class="clickable" src="{$tlImages.clear_notes}" 
+          onclick="javascript:clearTextAreaByClassName('step_note_textarea');" title="{$inc_steps_labels.clear_all_notes}"></th>
+      <th>{$inc_steps_labels.exec_result}</th>
+    {/if}    
+
+
   </tr>
   
   {$rowCount=$steps|@count} 
@@ -82,6 +91,21 @@ Author : eloff, 2010
     </td>
     
     {/if}
+
+    {if $add_exec_info}
+      <td class="exec_tcstep_note">
+        <textarea class="step_note_textarea" name="step_notes[{$step_info.id}]" id="step_notes_{$step_info.id}" 
+                  cols="40" rows="5">{$step_info.execution_notes|escape}</textarea>
+      </td>
+
+      <td>
+        <select name="step_status[{$step_info.id}]" id="step_status_{$step_info.id}">
+          {html_options options=$gui->execStatusValues}
+        </select>
+      </td>
+
+    {/if}
+
     
   </tr>
     {if $ghost_control}

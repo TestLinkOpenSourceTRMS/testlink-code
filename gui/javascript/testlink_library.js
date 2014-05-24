@@ -1464,6 +1464,12 @@ function openPrintPreview(type, id, child_id, revision, print_action)
     case 'tc':
       feature_url += "&testcase_id=" + id + "&tcversion_id=" + child_id;
     break;
+
+    case 'exec':
+     feature_url += "?id=" + id;
+    break;
+
+
     
   }
   windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,toolbar=yes,dependent=yes,menubar=yes";
@@ -1640,3 +1646,18 @@ function toogleImageURL(img_container_oid,file_id)
     return '<img src="lib/attachments/attachmentdownload.php?id=' + file_id + '"/>';
   } 
 }
+
+
+/**
+ *
+ */
+function clearTextAreaByClassName(cssClassName)
+{
+  var ol = document.getElementsByClassName(cssClassName);
+  for (var idx= 0;idx < ol.length;idx++)
+  {
+    ol[idx].value = '';
+  }   
+}
+
+

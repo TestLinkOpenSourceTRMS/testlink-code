@@ -862,6 +862,12 @@ div.login_form {
   padding: 			5px;
 }
 
+.exec_tcstep_note
+{
+  padding:2px;
+  width:5px;
+}
+
 
 /* 20071227 - franciscom - to avoid problems
    with third party css

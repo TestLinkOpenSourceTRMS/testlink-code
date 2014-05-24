@@ -1081,7 +1081,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->loadExecDashboard = false;
     $gui->treeFormToken = $argsObj->treeFormToken;
     
-    $gui->execStatusValues=null;
+    // CORTADO 
+    $gui->execStatusValues = createResultsMenu();
+    $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
+    if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) )
+    {
+      unset($gui->execStatusValues[$cfgObj->tc_status['all']]);
+    }
+
+
     $gui->can_use_bulk_op=0;
     $gui->exec_notes_editors=null;
     $gui->bulk_exec_notes_editor=null;
@@ -1260,8 +1268,9 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 
 */
 function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
-{      
-  $options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
+{ 
+  $options=array('getNoExecutions' => 1, 'groupByBuild' => 0, 'getStepsExecInfo' => 1);
+
   $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
                                              $argsObj->build_id,$argsObj->platform_id,$options);
     
@@ -1699,14 +1708,14 @@ function initWebEditors(&$guiObj,$cfgObj,$baseHREF)
 {
   if( $guiObj->can_use_bulk_op )
   {
-      $guiObj->execStatusValues=createResultsMenu();
-      if( isset($guiObj->execStatusValues[$cfgObj->tc_status['all']]) )
-      {
-          unset($guiObj->execStatusValues[$cfgObj->tc_status['all']]);
-      }
+      //$guiObj->execStatusValues=createResultsMenu();
+      //if( isset($guiObj->execStatusValues[$cfgObj->tc_status['all']]) )
+      //{
+      //    unset($guiObj->execStatusValues[$cfgObj->tc_status['all']]);
+      //}
   
       $of=web_editor("bulk_exec_notes",$baseHREF,$cfgObj->editorCfg);
-       $of->Value = getItemTemplateContents('execution_template', $of->InstanceName, null);
+      $of->Value = getItemTemplateContents('execution_template', $of->InstanceName, null);
       
       // Magic numbers that can be determined by trial and error
       $guiObj->bulk_exec_notes_editor=$of->CreateHTML(10,60);         

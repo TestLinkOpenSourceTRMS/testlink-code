@@ -12,7 +12,7 @@
  *    Test specification/ Test plan.
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  *
  */
 require_once("../../config.inc.php");
@@ -311,6 +311,8 @@ function init_checkboxes(&$args)
   // If you want to add or remove elements in this array, you must also update
   // $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
   
+  $execCfg = config_get('exec_cfg');
+
   $arrCheckboxes = array();
   
   // these are the options which are always needed, type-specific ones follow below in switch
@@ -348,7 +350,19 @@ function init_checkboxes(&$args)
       if ($args->doc_type == DOC_TEST_PLAN_EXECUTION || $args->doc_type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) 
       {
         $arrCheckboxes[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',  'checked' => 'n');
+        
+        if($execCfg->steps_exec)
+        {  
+          $arrCheckboxes[] = array('value' => 'step_exec_notes', 'description' => 'opt_show_tcstep_exec_notes',  
+                                   'checked' => 'n');
+        }
         $arrCheckboxes[] = array('value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
+        
+        if($execCfg->steps_exec)
+        {  
+          $arrCheckboxes[] = array('value' => 'step_exec_status','description' => 'opt_show_tcstep_exec_status','checked' => 'y');
+        }
+        
         $arrCheckboxes[] = array('value' => 'build_cfields','description' => 'opt_show_build_cfields','checked' => 'n');
         $arrCheckboxes[] = array('value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
         // $arrCheckboxes[] = array('value' => 'assigned_to_me','description' => 'opt_show_only_assigned_to_me','checked' => 'n');

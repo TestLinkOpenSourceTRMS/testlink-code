@@ -13,12 +13,14 @@
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.6
+ * @since 1.9.11
  * 
  *
  **/
 
 require_once('common.php');
+require_once('attachments.inc.php');
+
 
 /** 
  * Building the dropdown box of results filter
@@ -59,6 +61,8 @@ function write_execution(&$db,&$exec_signature,&$exec_data)
 {
   $executions_table = DB_TABLE_PREFIX . 'executions';
   $resultsCfg = config_get('results');
+  $execCfg = config_get('exec_cfg');
+
   $db_now = $db->db_now();
   $cfield_mgr = New cfield_mgr($db);
   $cf_prefix = $cfield_mgr->get_name_prefix();
@@ -143,7 +147,45 @@ function write_execution(&$db,&$exec_signature,&$exec_data)
           }  
         }                          
         $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $exec_signature->tplan_id,$cf_map);
-      }                                     
+      }               
+
+
+      // 20140412 
+      $hasMoreData = new stdClass();
+      $hasMoreData->step_notes = isset($exec_data['step_notes']);
+      $hasMoreData->step_status = isset($exec_data['step_status']);
+      $hasMoreData->nike = $execCfg->steps_exec && 
+                           ($hasMoreData->step_notes || $hasMoreData->step_status);
+
+      if( $hasMoreData->nike )
+      {
+        $target = DB_TABLE_PREFIX . 'execution_tcsteps';
+        $key2loop = array_keys($exec_data['step_notes']);
+        foreach( $key2loop as $step_id )
+        {
+          $doIt = (!is_null($exec_data['step_notes'][$step_id]) && 
+                   trim($exec_data['step_notes'][$step_id]) != '') || 
+                  $exec_data['step_status'][$step_id] != $resultsCfg['status_code']['not_run'];
+
+          if( $doIt )
+          {
+            $sql = " INSERT INTO {$target} (execution_id,tcstep_id,notes";
+            $values = " VALUES ( {$execution_id}, {$step_id}," . 
+                      "'" . $db->prepare_string($exec_data['step_notes'][$step_id]) . "'";
+
+            $status = strtolower(trim($exec_data['step_status'][$step_id]));
+            $status = $status[0];
+            if( $status != $resultsCfg['status_code']['not_run'] )
+            {
+              $sql .= ",status";
+              $values .= ",'" . $db->prepare_string($status) . "'";
+            }  
+            $sql .= ") " . $values . ")";
+            $db->exec_query($sql);
+          }         
+        }  
+      }  
+
     }
   }
 }
@@ -281,19 +323,42 @@ function get_execution(&$dbHandler,$execution_id,$opt=null)
  * 
  * @return boolean result of delete
  * 
- * @TODO delete attachment, userassignment
+ * @TODO delete attachments FROM DISK when are saved on Filesystem
  * @TODO run SQL as transaction if database engine allows 
  **/
 function delete_execution(&$db,$exec_id)
 {
-  $tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs','cfield_execution_values'));
+  $tables = tlObjectWithDB::getDBTables(
+              array('executions','execution_bugs','cfield_execution_values',
+                    'execution_tcsteps','attachments'));
   
-  $sql = array(
-    "DELETE FROM {$tables['execution_bugs']} WHERE execution_id = {$exec_id}", // delete bugs
-    "DELETE FROM {$tables['cfield_execution_values']} WHERE execution_id = {$exec_id}", // delete CF
-    "DELETE FROM {$tables['executions']} WHERE id = {$exec_id}" // delete execution
-  );
+  $sid = intval($exec_id);
+
+
+  // Attachments NEED special processing.
   
+  $dummy = " SELECT id FROM {$tables['attachments']} " . 
+           " WHERE fk_table = 'executions' AND fk_id = {$sid}";
+  
+  $rs = $db->fetchRowsIntoMap($dummy,'id');
+  if(!is_null($rs))
+  {
+    foreach($rs as $fik => $v)
+    {
+      deleteAttachment($db,$fik,false);
+    }  
+  }  
+
+  // order is CRITIC, because is DELETING ORDER => ATTENTION to Foreing Keys
+  $sql = array();
+  $sql[] = "DELETE FROM {$tables['execution_bugs']} WHERE execution_id = {$sid}";
+  $sql[] = "DELETE FROM {$tables['cfield_execution_values']} WHERE execution_id = {$sid}"; 
+  $sql[] = "DELETE FROM {$tables['execution_tcsteps']} WHERE execution_id = {$sid}";
+  
+  // This delete HAS TO BE THE LATEST, because is the PARENT
+  $ldx = count($sql);
+  $sql[$ldx] = "DELETE FROM {$tables['executions']} WHERE id = {$sid}";
+
   foreach ($sql as $the_stm)
   {
     $result = $db->exec_query($the_stm);

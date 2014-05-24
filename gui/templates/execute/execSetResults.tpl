@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-@since 1.9.10
+@since 1.9.11
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -27,7 +27,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
 	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
-  bulk_tc_status_management,
+  bulk_tc_status_management,access_test_steps_exec,
 	attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
 	img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
 	execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,

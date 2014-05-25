@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *  
- * @filesource 	xmlrpc.class.php
+ * @filesource  xmlrpc.class.php
  *
- * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
- * @package 	TestlinkAPI
+ * @author    Asiel Brumfield <asielb@users.sourceforge.net>
+ * @package   TestlinkAPI
  * 
  * Testlink API makes it possible to interact with Testlink  
  * using external applications and services. This makes it possible to report test results 
@@ -20,7 +20,7 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.10
+ * @since 1.9.11
  *
  */
 
@@ -205,8 +205,8 @@ class TestlinkXMLRPCServer extends IXR_Server
    * An array containing strings for valid statuses 
    * Will be initialized using user configuration via config_get()
    */
-    public $statusCode;
-    public $codeStatus;
+  public $statusCode;
+  public $codeStatus;
   
   
   /**
@@ -670,7 +670,11 @@ class TestlinkXMLRPCServer extends IXR_Server
           // this means we aren't supposed to guess the buildid
           if(false == $this->checkGuess())       
           {
-            $this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
+            //if( $options['feedbackOnGuess'] )
+            //{  
+            //  $this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
+            // }
+
             $this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);        
             $status=false;
           }
@@ -1044,7 +1048,8 @@ class TestlinkXMLRPCServer extends IXR_Server
       else
       {
         $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
-        $tcase_info = $this->tcaseMgr->get_by_id($tcase_id,testcase::ALL_VERSIONS,null, array('output' => 'essential',));
+        $tcase_info = $this->tcaseMgr->get_by_id($tcase_id,testcase::ALL_VERSIONS,null, 
+                                                 array('output' => 'essential'));
         if( is_null($platform_id) )
         {
           $msg = sprintf(TCASEID_NOT_IN_TPLANID_STR,$tcase_info[0]['name'],$tcase_id,$tplan_info['name'],$tplan_id);          
@@ -1129,11 +1134,11 @@ class TestlinkXMLRPCServer extends IXR_Server
    */    
   public function getLatestBuildForTestPlan($args)
   {
-      $operation=__FUNCTION__;
-       $msg_prefix="({$operation}) - ";
-      $status_ok=true;
-      $this->_setArgs($args);
-        $resultInfo=array();
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $status_ok=true;
+    $this->_setArgs($args);
+    $resultInfo=array();
 
         $checkFunctions = array('authenticate','checkTestPlanID');       
         $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
@@ -3941,7 +3946,6 @@ public function getTestCase($args)
       $name_exists = $this->_isParamPresent(self::$platformNameParamName,$messagePrefix);
       $id_exists = $this->_isParamPresent(self::$platformIDParamName,$messagePrefix);
       $status = $name_exists | $id_exists;
-      // for debug - file_put_contents('c:\checkPlatformIdentity.txt', $status ? 1:0);                            
 
       if(!$status)
       {
@@ -3950,61 +3954,58 @@ public function getTestCase($args)
         $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
       }        
         
-        if($status)
+      if($status)
+      {
+        // get test plan name is useful for error messages
+        $tplanInfo = $this->tplanMgr->get_by_id($tplanID);
+        if(is_null($platformInfo))
         {
-          // get test plan name is useful for error messages
-          $tplanInfo = $this->tplanMgr->get_by_id($tplanID);
-          if(is_null($platformInfo))
-          {
-             $platformInfo = $this->tplanMgr->getPlatforms($tplanID,array('outputFormat' => 'map'));  
-          }
+          $platformInfo = $this->tplanMgr->getPlatforms($tplanID,array('outputFormat' => 'map'));  
+        }
 
-          if(is_null($platformInfo))
-          {
-            $status = false;
-            $msg = sprintf($messagePrefix . TESTPLAN_HAS_NO_PLATFORMS_STR,$tplanInfo['name']);
-            $this->errors[] = new IXR_Error(TESTPLAN_HAS_NO_PLATFORMS, $msg);
-          }
-            
+        if(is_null($platformInfo))
+        {
+          $status = false;
+          $msg = sprintf($messagePrefix . TESTPLAN_HAS_NO_PLATFORMS_STR,$tplanInfo['name']);
+          $this->errors[] = new IXR_Error(TESTPLAN_HAS_NO_PLATFORMS, $msg);
         }
+            
+      }
          
-        if( $status )
+      if( $status )
+      {
+        $platform_name = null;
+        $platform_id = null;
+        if($name_exists)
+        { 
+          $this->errors[]=$platformInfo;
+          $platform_name = $this->args[self::$platformNameParamName];
+          $status = in_array($this->args[self::$platformNameParamName],$platformInfo);
+        }
+        else
         {
-          $platform_name = null;
-          $platform_id = null;
-          if($name_exists)
-          { 
-            // file_put_contents('c:\checkPlatformIdentity.txt', $this->args[self::$platformNameParamName]);                            
-            // file_put_contents('c:\checkPlatformIdentity.txt', serialize($platformInfo));                            
-            // $this->errors[]=$platformInfo;
-            $platform_name = $this->args[self::$platformNameParamName];
-            $status = in_array($this->args[self::$platformNameParamName],$platformInfo);
-            }
-            else
-            {
-              $platform_id = $this->args[self::$platformIDParamName];
-              $status = isset($platformInfo[$this->args[self::$platformIDParamName]]);
-            }
+          $platform_id = $this->args[self::$platformIDParamName];
+          $status = isset($platformInfo[$this->args[self::$platformIDParamName]]);
+        }
             
-          if( !$status )
-          {
-            // Platform does not exist in target testplan
-            // Can I Try to understand if platform exists on test project ?
-        // $this->tprojectMgr->            
-             $msg = sprintf($messagePrefix . PLATFORM_NOT_LINKED_TO_TESTPLAN_STR,
-                               $platform_name,$platform_id,$tplanInfo['name']);
-           $this->errors[] = new IXR_Error(PLATFORM_NOT_LINKED_TO_TESTPLAN, $msg);
-          }  
-        }
-        
-        if($status)
+        if( !$status )
         {
-          if($name_exists)
-          { 
-            $dummy = array_flip($platformInfo);
-            $this->args[self::$platformIDParamName] = $dummy[$this->args[self::$platformNameParamName]];
-          }
+          // Platform does not exist in target testplan
+          // Can I Try to understand if platform exists on test project ?
+          $msg = sprintf($messagePrefix . PLATFORM_NOT_LINKED_TO_TESTPLAN_STR,
+                                 $platform_name,$platform_id,$tplanInfo['name']);
+          $this->errors[] = new IXR_Error(PLATFORM_NOT_LINKED_TO_TESTPLAN, $msg);
+        }  
+      }
+        
+      if($status)
+      {
+        if($name_exists)
+        { 
+          $dummy = array_flip($platformInfo);
+          $this->args[self::$platformIDParamName] = $dummy[$this->args[self::$platformNameParamName]];
         }
+      }
       return $status;
     }   
 
@@ -4520,17 +4521,16 @@ public function uploadAttachment($args, $messagePrefix='', $setArgs=true)
   $checkFunctions[] = 'checkForeignKey';
   $checkFunctions[] = 'checkUploadAttachmentRequest';
 
-    $statusOk = $this->_runChecks($checkFunctions,$msg_prefix); // && $this->userHasRight("mgt_view_tc");
+  $statusOk = $this->_runChecks($checkFunctions,$msg_prefix); // && $this->userHasRight("mgt_view_tc");
 
   if($statusOk)
   {    
     $fkId = $this->args[self::$foreignKeyIdParamName];
-      $fkTable = $this->args[self::$foreignKeyTableNameParamName];
-      $title = $this->args[self::$titleParamName];
+    $fkTable = $this->args[self::$foreignKeyTableNameParamName];
+    $title = $this->args[self::$titleParamName];
 
-    // return array($fkId,$fkTable,$title);      
-      // creates a temp file and returns an array with size and tmp_name
-      $fInfo = $this->createAttachmentTempFile();
+    // creates a temp file and returns an array with size and tmp_name
+    $fInfo = $this->createAttachmentTempFile();
       if ( !$fInfo )
       {
       // Error creating attachment temp file. Ask user to check temp dir 
@@ -5941,10 +5941,13 @@ protected function createAttachmentTempFile()
     * @param string $args["devKey"]
     * @param int $args["testplanid"]
     * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
-    * @param int $args["buildid"]
-    * @param int $args["buildname"]
-    * @param int $args["platformid"] optional
-    * @param int $args["platformname"] optional
+    * @param int $args["buildid"] Mandatory => you can provide buildname as alternative
+    * @param int $args["buildname"] Mandatory => you can provide buildid (DB ID) as alternative
+    * @param int $args["platformid"] optional - BECOMES MANDATORY if Test plan has platforms
+    *                                           you can provide platformname as alternative  
+    *  
+    * @param int $args["platformname"] optional - BECOMES MANDATORY if Test plan has platforms
+    *                                           you can provide platformid as alternative  
     * @param string $args["user'] - login name => tester
     *
     */
@@ -5957,21 +5960,37 @@ protected function createAttachmentTempFile()
     $resultInfo=array();
 
     // Checks are done in order
-    $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity');
-
+    $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity','checkBuildID');
     $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
 
-    // Check if requested test case is linke dto test plan
+    if( $status_ok )
+    {
+      if( ($status_ok = $this->_isParamPresent(self::$userParamName,$msg_prefix,self::SET_ERROR)) )
+      {
+        $tester_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);          
+        if( !($status_ok = !is_null($tester_id)) )
+        {  
+          $msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,$this->args[self::$userParamName]);
+          $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);  
+        }
+      }  
+    }
+
+    // Check if requested test case is linke to test plan
     // if answer is yes, get link info, in order to be able to check if 
     // we need also platform info
     if( $status_ok )
     {
+      $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
+                           'platform_id' => null,
+                           'build_id' => $this->args[self::$buildIDParamName]);
+
       $tplan_id = $this->args[self::$testPlanIDParamName];
       $tcase_id = $this->args[self::$testCaseIDParamName];
       $filters = array('exec_status' => "ALL", 'active_status' => "ALL",
                        'tplan_id' => $tplan_id, 'platform_id' => null);
       
-      $info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters);
+      $info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters,array('output' => "feature_id"));
 
       // more than 1 item => we have platforms
       // access key => tcversion_id, tplan_id, platform_id
@@ -5997,36 +6016,54 @@ protected function createAttachmentTempFile()
         // get platform_id and check it
         if( ($status_ok = $this->checkPlatformIdentity($tplan_id)) )
         {
-          $platform_id = $this->args[self::$platformIDParamName];
-          $platform_info = $this->tplanMgr->getPlatforms($tplan_id,array('outputFormat' => 'mapAccessByID', 
+          $platform_set = $this->tplanMgr->getPlatforms($tplan_id,array('outputFormat' => 'mapAccessByID', 
                                                                          'outputDetails' => 'name'));
 
-          $status_ok = $this->_checkTCIDAndTPIDValid($platform_info,$msg_prefix);
+          // Now check if link has all 3 components
+          // test plan, test case, platform
+          $platform_id = $this->args[self::$platformIDParamName];
+          $platform_info = array($platform_id => $platform_set[$platform_id]);
+
+          if( ($status_ok = $this->_checkTCIDAndTPIDValid($platform_info,$msg_prefix)) )
+          {
+            $execContext['platform_id'] = $platform_id;
+          }  
         }  
       }  
     }
 
-    // return $status_ok;
-                 
-    $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
-                         'platform_id' => null,'build_id' => null);
-
+    
     if( $status_ok )
     {
-      if($this->_isBuildIDPresent() || $this->_isBuildNamePresent())
-      {
-        if( ($status_ok =  $this->checkBuildID($msg_prefix)) )
-        {
-            $execContext['build_id'] = $this->args[self::$buildIDParamName];  
-        }  
-      } 
-      else
-      {
-        // build is mandatory
-        $status_ok = false;
-      }  
-    }
-    
+      $assignment_mgr = new assignment_mgr($this->dbObj);
+      
+      // Remove old execution task assignment 
+      // `id` int(10) unsigned NOT NULL auto_increment,
+      // `type` int(10) unsigned NOT NULL default '1',
+      // `feature_id` int(10) unsigned NOT NULL default '0',
+      // `user_id` int(10) unsigned default '0',
+      // `build_id` int(10) unsigned default '0',
+      // `deadline_ts` datetime NULL,
+      // `assigner_id`  int(10) unsigned default '0',
+      // `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      // `status` int(10) unsigned default '1',
+      $link = current($link);
+      $feature = array($link['feature_id'] => array('build_id' => $execContext['build_id']));
+      $assignment_mgr->delete_by_feature_id_and_build_id($feature);
+
+      // Now assign
+      $types = $assignment_mgr->get_available_types();
+      $assign_status = $assignment_mgr->get_available_status();
+      $oo[$link['feature_id']]['type'] = $types['testcase_execution']['id'];
+      $oo[$link['feature_id']]['status'] = $assign_status['open']['id'];
+      $oo[$link['feature_id']]['user_id'] = $tester_id;
+      $oo[$link['feature_id']]['assigner_id'] = $this->userID;
+      $oo[$link['feature_id']]['build_id'] = $execContext['build_id'];
+      
+      $resultInfo = array("status" => true, "args" => $this->args);
+      unset($resultInfo['args']['devKey']);
+    }  
+
     return $status_ok ? $resultInfo : $this->errors;
   }
 

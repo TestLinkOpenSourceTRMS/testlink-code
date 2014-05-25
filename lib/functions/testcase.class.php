@@ -1308,9 +1308,9 @@ class testcase extends tlObjectWithAttachments
 
 
     $exec_status = strtoupper($my['filters']['exec_status']);
-      $active_status = strtoupper($my['filters']['active_status']);
-      $tplan_id = $my['filters']['tplan_id'];
-      $platform_id = $my['filters']['platform_id'];
+    $active_status = strtoupper($my['filters']['active_status']);
+    $tplan_id = $my['filters']['tplan_id'];
+    $platform_id = $my['filters']['platform_id'];
 
     $active_filter='';
     if($active_status !='ALL')
@@ -1330,6 +1330,11 @@ class testcase extends tlObjectWithAttachments
       
       case 'simple':
       break;
+
+      case 'feature_id':
+        $fields2get .=  'TTC.id AS feature_id,';
+      break;
+
     }
     
     switch ($exec_status)
@@ -1380,12 +1385,12 @@ class testcase extends tlObjectWithAttachments
         } 
       break;
   
-        case "EXECUTED":
+      case "EXECUTED":
       case "NOT_EXECUTED":
         $getFilters = array('exec_status' => $exec_status,'active_status' => $active_status,
-                  'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
-            $recordset=$this->get_exec_status($id,$getFilters);
-        break;
+                            'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
+        $recordset=$this->get_exec_status($id,$getFilters);
+      break;
     }
 
     // Multiple Test Case Steps

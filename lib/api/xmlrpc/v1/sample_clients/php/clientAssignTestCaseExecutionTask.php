@@ -13,13 +13,37 @@ require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
 $method="assignTestCaseExecutionTask";
+$utc = 0;
+$devKey = isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : 'admin';
 
-$unitTestDescription="Test - {$method} - Test Plan WITHOUT Platforms";
+// ---------------------------------------------------------------------------------------
+$utc++;
+$unitTestDescription="Test #{$utc} - {$method} - All OK";
 
 $args=array();
-$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
-// $args["testcaseexternalid"]='GK-13';
+$args["devKey"] = $devKey;
 $args["testplanid"] = 9;
+$args["testcaseexternalid"] = 'GK-1';
+$args["platformname"] = 'P1';
+$args["buildname"] = '1.0';
+$args["user"] = 'giskard';
+
+
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+echo $unitTestDescription;
+$answer = runTest($client,$method,$args);
+// ---------------------------------------------------------------------------------------
+
+$utc++;
+$unitTestDescription="Test #{$utc} - {$method} - Missing argument - Test Plan ID";
+
+$args=array();
+$args["devKey"] = $devKey;
+// $args["testplanid"] = 9;
 $args["testcaseexternalid"] = 'GK-1';
 $args["platformname"] = 'P2';
 
@@ -27,5 +51,105 @@ $args["platformname"] = 'P2';
 $debug=true;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
+
+echo $unitTestDescription;
+$answer = runTest($client,$method,$args);
+// ---------------------------------------------------------------------------------------
+
+$utc++;
+$unitTestDescription="Test #{$utc} - {$method} - Missing argument - Test Case ";
+
+$args=array();
+$args["devKey"] = $devKey;
+$args["testplanid"] = 9;
+// $args["testcaseexternalid"] = 'GK-1';
+$args["platformname"] = 'P2';
+
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+echo $unitTestDescription;
+$answer = runTest($client,$method,$args);
+// ---------------------------------------------------------------------------------------
+
+$utc++;
+$unitTestDescription="Test #{$utc} - {$method} - Missing argument - Build Name ";
+
+$args=array();
+$args["devKey"] = $devKey;
+
+$args["testplanid"] = 9;
+$args["testcaseexternalid"] = 'GK-1';
+// $args["buildname"] = '1.0';
+$args["platformname"] = 'P2';
+
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+echo $unitTestDescription;
+$answer = runTest($client,$method,$args);
+// ---------------------------------------------------------------------------------------
+
+$utc++;
+$unitTestDescription="Test #{$utc} - {$method} - Wrong argument - Test Plan ID ";
+
+$args=array();
+$args["devKey"] = $devKey;
+
+$args["testplanid"] = 900000;
+$args["testcaseexternalid"] = 'GK-1';
+$args["buildname"] = 'WRONG - 1.0';
+$args["platformname"] = 'P2';
+
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+echo $unitTestDescription;
+$answer = runTest($client,$method,$args);
+// ---------------------------------------------------------------------------------------
+
+$utc++;
+$unitTestDescription="Test #{$utc} - {$method} - Wrong argument - Test Case External ID ";
+
+$args=array();
+$args["devKey"] = $devKey;
+
+$args["testplanid"] = 9;
+$args["testcaseexternalid"] = 'GK-WRONG-1';
+$args["buildname"] = 'WRONG - 1.0';
+$args["platformname"] = 'P2';
+
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+echo $unitTestDescription;
+$answer = runTest($client,$method,$args);
+// ---------------------------------------------------------------------------------------
+
+$utc++;
+$unitTestDescription="Test #{$utc} - {$method} - Wrong argument - Build Name ";
+
+$args=array();
+$args["devKey"] = $devKey;
+
+$args["testplanid"] = 9;
+$args["testcaseexternalid"] = 'GK-1';
+$args["buildname"] = 'WRONG - 1.0';
+$args["platformname"] = 'P2';
+
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+echo $unitTestDescription;
 $answer = runTest($client,$method,$args);
 // ---------------------------------------------------------------------------------------

@@ -13,7 +13,7 @@
  * @author Andreas Simon
  * @internal revisions
  *
- * @since 1.9.10
+ * @since 1.9.11
  *}
 
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
@@ -102,7 +102,7 @@
       {/if}
 
       {if $control->settings.setting_platform}
-        {assign var="platformID" value=$control->settings.setting_platform.selected}
+        {$platformID=$control->settings.setting_platform.selected}
         <tr>
           <td>{$labels.platform}</td>
           <td>
@@ -147,7 +147,7 @@
       {if $control->draw_export_testplan_button || $control->draw_import_xml_results_button}
         <tr>
           <td>&nbsp;</td><td>&nbsp;</td>
-        </tr>>      
+        </tr>   
         <tr>
           <td>&nbsp;</td>
           <td>

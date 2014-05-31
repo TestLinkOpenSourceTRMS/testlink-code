@@ -7,7 +7,8 @@
  *
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
+ * 20140531 - franciscom - contribution + refactoring adding new support methods
  * 
 **/
 require_once('Zend/Loader/Autoloader.php');
@@ -152,22 +153,25 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   **/
 	public function getIssue($issueID)
 	{
-		// $client = $this->APIClient;
-
 		$issue = null;
-		$args = array(array('login' => (string)$this->cfg->username, 
-							          'password' => (string)$this->cfg->password,'remember' => 1));
 
-		$resp = array();
-		$method = 'User.login';
-		$resp[$method] = $this->APIClient->call($method, $args);
-		
+    $resp = array();
+    $login = $this->login();		
+    $resp = array_merge($resp,(array)$login['response']);
+
+
 		$method = 'Bug.get';
 		$args = array(array('ids' => array(intval($issueID)), 'permissive' => true));
+		if (isset($login['userToken'])) 
+    {
+			$args[0]['Bugzilla_token'] = $login['userToken'];
+		}
 		$resp[$method] = $this->APIClient->call($method, $args);
-		
-		$method = 'User.logout';
-		$resp[$method] = $this->APIClient->call($method);
+
+
+    $op = $this->logout($login['userToken']);
+    $resp = array_merge($resp,(array)$op['response']);
+
 
 		if(count($resp['Bug.get']['faults']) == 0)
 		{
@@ -302,39 +306,46 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   function getAccessibleProducts()
   {
     $issue = null;
-    $args = array(array('login' => (string)$this->cfg->username, 
-                        'password' => (string)$this->cfg->password,'remember' => 1));
-    
+
     $resp = array();
-    $method = 'User.login';
-    $resp[$method] = $this->APIClient->call($method, $args);
-    
+    $login = $this->login();    
+    $resp = array_merge($resp,(array)$login['response']);
+
     $method = 'Product.get_accessible_products';
-    $itemSet = $this->APIClient->call($method);
+    $args = array(array());
+    if (isset($login['userToken'])) 
+    {
+      $args[0]['Bugzilla_token'] = $login['userToken'];
+    }
+    $itemSet = $this->APIClient->call($method, $args);
     
-    $method = 'User.logout';
-    $resp[$method] = $this->APIClient->call($method);
+    $op = $this->logout($login['userToken']);
+    $resp = array_merge($resp,(array)$op['response']);
     
     return $itemSet;
   }
 
+  /**
+   *
+   */
   function getProduct($id)
   {
     $issue = null;
-    $args = array(array('login' => (string)$this->cfg->username, 
-                        'password' => (string)$this->cfg->password,'remember' => 1));
-    
     $resp = array();
-    $method = 'User.login';
-    $resp[$method] = $this->APIClient->call($method, $args);
+    $login = $this->login();    
+    $resp = array_merge($resp,(array)$login['response']);
     
     $method = 'Product.get';
     $args = array(array('ids' => array(intval($id))));
+    if (isset($login['userToken'])) 
+    {
+      $args[0]['Bugzilla_token'] = $login['userToken'];
+    }
     $itemSet = $this->APIClient->call($method,$args);
     
-    $method = 'User.logout';
-    $resp[$method] = $this->APIClient->call($method);
-    
+    $op = $this->logout($login['userToken']);
+    $resp = array_merge($resp,(array)$op['response']);
+
     return $itemSet; 	  
   }
 
@@ -377,19 +388,21 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   function addIssue($summary,$description)
   {
     $issue = null;
-    $args = array(array('login' => (string)$this->cfg->username, 
-                        'password' => (string)$this->cfg->password,'remember' => 1));
-    
     $resp = array();
-    $method = 'User.login';
-    $resp[$method] = $this->APIClient->call($method, $args);
+    $login = $this->login();    
+    $resp = array_merge($resp,(array)$login['response']);
     
     $method = 'Bug.create';
     $issue = array('product' => (string)$this->cfg->product,
                    'component' => (string)$this->cfg->component,
                    'summary' => $summary,
                    'description' => $description);
-    
+
+    if (isset($login['userToken'])) 
+    {
+      $args[0]['Bugzilla_token'] = $login['userToken'];
+    }
+
     foreach($this->issueDefaults as $prop => $default)
     {
       $issue[$prop] = (string)$this->cfg->$prop;
@@ -409,9 +422,10 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
       tLog($msg, 'WARNING');
     }
       
-    $method = 'User.logout';
-    $resp[$method] = $this->APIClient->call($method);
-    return $op; 	  
+    $logout = $this->logout($login['userToken']);
+    $resp = array_merge($resp,(array)$logout['response']);
+
+    return $op;
   }
 
  /**
@@ -420,6 +434,38 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
   function canCreateViaAPI()
   {
     return (property_exists($this->cfg, 'product') && property_exists($this->cfg, 'component'));
+  }
+
+
+
+ /**
+  *
+  **/
+  private function login()
+  {
+    $args = array(array('login' => (string)$this->cfg->username, 
+                        'password' => (string)$this->cfg->password,'remember' => 1));
+    $ret = array();
+    $ret['response']['User.login'] = $this->APIClient->call('User.login', $args);
+    $ret['userToken'] = $ret['response']['User.login']['token'];
+    return $ret;
+  }  
+
+
+ /**
+  *
+  **/
+  private function logout($userToken=null)
+  {
+    $args = array(array());
+    if( !is_null($userToken) ) 
+    {
+      $args[0]['Bugzilla_token'] = $userToken;
+    }
+
+    $ret = array();
+    $ret['response']['User.logout'] = $this->APIClient->call('User.logout', $args);
+    return $ret;
   }
 
 }

@@ -440,7 +440,7 @@ function init_args(&$dbHandler,$optionTransferCfg)
   }
   
   $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
-  $_SESSION['setting_refresh_tree_on_action'] : 0;
+                             $_SESSION['setting_refresh_tree_on_action'] : 0;
 
   return $args;
 }
@@ -689,36 +689,37 @@ returns:
 */
 function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$l18n)
 {
+  $guiObj = new stdClass();
+  $guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];;
 
-    $guiObj = new stdClass();
-    $guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];;
-
-    $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
+  $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
      
-    $options = array();
-    $options['check_duplicate_name'] = config_get('check_names_for_duplicates');
-    $options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
-    $options['copyKeywords'] = $argsObj->copyKeywords;
+  $options = array();
+  $options['check_duplicate_name'] = config_get('check_names_for_duplicates');
+  $options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
+  $options['copyKeywords'] = $argsObj->copyKeywords;
 
-    // copy_to($source,$destination,...)
-    $op = $tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
-    if( $op['status_ok'] )
-    {
-        $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
-                        $argsObj->target_position,$exclude_node_types);
+  // copy_to($source,$destination,...)
+  $op = $tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
+  if( $op['status_ok'] )
+  {
+    $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
+                                                 $argsObj->target_position,$exclude_node_types);
 
 
-        // get info to provide feedback
-        $dummy = $tsuiteMgr->tree_manager->get_node_hierarchy_info(array($argsObj->objectID, $argsObj->containerID));
+    // get info to provide feedback
+    $dummy = $tsuiteMgr->tree_manager->get_node_hierarchy_info(array($argsObj->objectID, $argsObj->containerID));
 
-        $msgk = $op['name_changed'] ? 'tsuite_copied_ok_name_changed' : 'tsuite_copied_ok';
-        $guiObj->user_feedback = sprintf(lang_get($msgk),$dummy[$argsObj->objectID]['name'],
-                        $dummy[$argsObj->containerID]['name'],$op['name']);
-    }
+    $msgk = $op['name_changed'] ? 'tsuite_copied_ok_name_changed' : 'tsuite_copied_ok';
+    $guiObj->user_feedback = sprintf(lang_get($msgk),$dummy[$argsObj->objectID]['name'],
+                                     $dummy[$argsObj->containerID]['name'],$op['name']);
+  }
+  $guiObj->refreshTree = $op['status_ok'] && $argsObj->refreshTree;
+  $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+  $guiObj->id = $argsObj->objectID;
+  $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
 
-    $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
-    $guiObj->id = $argsObj->objectID;
-    $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
+  return $op['status_ok'];
 }
 
 /*
@@ -739,6 +740,7 @@ function moveTestSuite(&$smartyObj,$template_dir,&$tprojectMgr,$argsObj)
 
     $guiObj = new stdClass();
     $guiObj->id = $argsObj->tprojectID;
+    $guiObj->refreshTree = $argsObj->refreshTree;
 
     $tprojectMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->tprojectID,null,'ok');
 }

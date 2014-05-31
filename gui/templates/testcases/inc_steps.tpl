@@ -60,7 +60,7 @@ Author : eloff, 2010
   <tr id="step_row_{$step_info.step_number}">
     <td style="text-align:left;">
       <span class="order_info" style='display:none'>
-      <input type="text" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
+      <input type="text" class="step_number" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
         value="{$step_info.step_number}"
         size="{#STEP_NUMBER_SIZE#}"
         maxlength="{#STEP_NUMBER_MAXLEN#}">

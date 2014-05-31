@@ -1660,4 +1660,51 @@ function clearTextAreaByClassName(cssClassName)
   }   
 }
 
+/**
+ *
+ */
+function validateStepsReorder(cssClassName)
+{
+  var ol = document.getElementsByClassName(cssClassName);
+  var status = true;
+  var dummy;
+  
+  for (var idx= 0;idx < ol.length;idx++)
+  {
+    dummy = ol[idx].value;
+    dummy = dummy.trim();
+    if(dummy == '')
+    {
+      alert('Empty step number - KO');
+      return false;
+    }  
 
+    if(isNaN(dummy))
+    {
+      alert('Only numbers allowed - KO');
+      return false;
+    }  
+
+    if( dummy <= 0)
+    {
+      alert('Only numbers > 0, please - KO');
+      return false;
+    }  
+  }   
+
+  // check that all steps numbers are different
+  dummy = [];
+  for (var idx= 0;idx < ol.length;idx++)
+  {
+    if( dummy.indexOf(ol[idx].value) < 0 )
+    {
+      dummy.push(ol[idx].value);
+    }  
+    else
+    {
+      alert('Step numbers must be unique');
+      return false;
+    }  
+  }
+  return status;
+}

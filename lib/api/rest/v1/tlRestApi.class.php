@@ -61,6 +61,7 @@ class tlRestApi
   protected $reqSpecMgr = null;
   protected $reqMgr = null;
   protected $platformMgr = null;
+  protected $cfieldMgr = null;
 
   /** userID associated with the apiKey provided */
   protected $userID = null;
@@ -108,6 +109,8 @@ class tlRestApi
     $this->app->get('/testprojects', array($this,'authenticate'), array($this,'getProjects'));
 
     $this->app->get('/testprojects/:id', array($this,'authenticate'), array($this,'getProjects'));
+    $this->app->get('/testprojects/:id/testcases', array($this,'authenticate'), array($this,'getProjectTestCases'));
+    $this->app->get('/testprojects/:id/testplans', array($this,'authenticate'), array($this,'getProjectTestPlans'));
 
     $this->app->post('/testprojects', array($this,'authenticate'), array($this,'createTestProject'));
     $this->app->post('/executions', array($this,'authenticate'), array($this,'createTestCaseExecution'));
@@ -117,8 +120,6 @@ class tlRestApi
     $this->app->post('/testsuites', array($this,'authenticate'), array($this,'createTestSuite'));
     $this->app->post('/testcases', array($this,'authenticate'), array($this,'createTestCase'));
 
-    // $this->app->get('/testprojects/:id', array($this,'getProjects'));
-    // $this->app->get('/testprojects/:id/testplans/', array($this,'getTestProjectTestPlans'));
     // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
 
 
@@ -135,7 +136,8 @@ class tlRestApi
     $this->tplanMetricsMgr=new tlTestPlanMetrics($this->db);
     $this->reqSpecMgr=new requirement_spec_mgr($this->db);
     $this->reqMgr=new requirement_mgr($this->db);
-    
+    $this->cfieldMgr=$this->tprojectMgr->cfield_mgr;
+
     $this->tables = $this->tcaseMgr->getDBTables();
     
     $resultsCfg = config_get('results');
@@ -193,6 +195,40 @@ class tlRestApi
     echo json_encode(array('name' => __CLASS__ . ' : Get Route /whoAmI'));
   }
   
+  /**
+   *
+   */
+  private function lookupProject($id)
+  {
+    $prj = null;
+    if( !is_null($id) )
+    {
+      $opt = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
+      $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
+      if( ($safeID = intval($id)) > 0)
+      {
+        if( isset($zx[$safeID]) )
+        {
+          $prj = $this->tprojectMgr->get_by_id($safeID);
+        } 
+      } 
+      else
+      {
+        // Will consider id = name
+        foreach( $zx as $key => $value ) 
+        {
+          if( strcmp($value['name'],$id) == 0 )
+          {
+            $safeID = $this->db->prepare_string($id);
+            $prj = $this->tprojectMgr->get_by_name($safeID)[0];
+            break;   
+          }  
+        }
+      } 
+    }
+
+    return $prj;
+  }
 
   /**
    *
@@ -205,31 +241,10 @@ class tlRestApi
       $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
                    'add_reqmgrsystem' => true);
       $op['item'] = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
-    }  
+    }
     else
     {
-      $opt = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
-      $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
-      if( ($safeID = intval($id)) > 0)
-      {
-        if( isset($zx[$safeID]) )
-        {
-          $op['item'] = $this->tprojectMgr->get_by_id($safeID);  
-        } 
-      } 
-      else
-      {
-        // Will consider id = name
-        foreach( $zx as $key => $value ) 
-        {
-          if( strcmp($value['name'],$id) == 0 )
-          {
-            $safeID = $this->db->prepare_string($id);
-            $op['item'] = $this->tprojectMgr->get_by_name($safeID);
-            break;   
-          }  
-        }
-      } 
+      $op['item'] = $this->lookupProject($id);
     } 
 
     // Developer (silly?) information
@@ -237,8 +252,62 @@ class tlRestApi
     echo json_encode($op);
   }
 
+  public function getProjectTestPlans($id)
+  {
+    $op  = array();
+    $prj = $this->lookupProject($id);
 
+    if( !is_null($prj) )
+    {
+      $id = $prj['id'];
+      $testPlans = $this->tprojectMgr->get_all_testplans($id);
+      if( !is_null($testPlans) && count($testPlans) > 0 )
+      {
+        $op['items']   = $testPlans;
+        $op['message'] = 'ok';
+        $op['status']  = 'ok';
+      }
+    }
+    else {
+      $op['message'] = "Invalid Test Project ID '" . $id . "'!";
+      $op['status']  = 'error';
+    }
 
+    echo json_encode($op);
+  }
+
+  public function getProjectTestCases($id)
+  {
+    $op  = array();
+    $prj = $this->lookupProject($id);
+
+    if( !is_null($prj) )
+    {
+      $id  = $prj['id'];
+      $all = array();
+      $this->tprojectMgr->get_all_testcases_id($id,$all);
+      if( !is_null($all) && count($all) > 0 )
+      {
+        $tcs = array();
+        foreach( $all as $key => $value )
+        {
+          $tc = $this->tcaseMgr->get_last_version_info($value);
+          $tc['keywords'] = $this->tcaseMgr->get_keywords_map($value);
+          $tc['customfields'] = $this->cfieldMgr->get_linked_cfields_at_design($id,1,null,'testcase',$tc['id']);
+          array_push($tcs, $tc);
+        }
+        $op['items']   = $tcs;
+        $op['message'] = 'ok';
+        $op['status']  = 'ok';
+      }
+    }
+    else {
+      $op['message'] = "Invalid Test Project ID '" . $id . "'!";
+      $op['status']  = 'error';
+    }
+
+    echo json_encode($op);
+  }
 
 // ==============================================
   /**

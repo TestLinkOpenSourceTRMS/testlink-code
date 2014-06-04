@@ -21,7 +21,7 @@
  * =============================================================================
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  *
  *
 **/
@@ -93,6 +93,7 @@ abstract class issueTrackerInterface
 
   /**
    *
+   * 
    **/
   function setCfg($xmlString)
   {
@@ -173,10 +174,17 @@ abstract class issueTrackerInterface
       return false;
     }
        
+    // cast everything to string in order to avoid issues
+    // @20140604 someone has been issues trying to connect to JIRA on MSSQL    
     $this->cfg->dbtype = strtolower((string)$this->cfg->dbtype);
+    $this->cfg->dbhost = (string)$this->cfg->dbhost;
+    $this->cfg->dbuser = (string)$this->cfg->dbuser;
+    $this->cfg->dbpassword = (string)$this->cfg->dbpassword;
+    $this->cfg->dbname = (string)$this->cfg->dbname;
+
     $this->dbConnection = new database($this->cfg->dbtype);
     $result = $this->dbConnection->connect(false, $this->cfg->dbhost,$this->cfg->dbuser,
-                         $this->cfg->dbpassword, $this->cfg->dbname);
+                                           $this->cfg->dbpassword, $this->cfg->dbname);
 
     if (!$result['status'])
     {

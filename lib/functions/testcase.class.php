@@ -1803,14 +1803,18 @@ class testcase extends tlObjectWithAttachments
     $tcInfo = null;
     switch($my['options']['output'])
     {
+
+      case 'thin':
+        $fields2get = " TCV.id AS tcversion_id";
+      break;    
+
       case 'minimun':
-      default:
-        $fields2get = " TCV.id, TCV.version, TCV.tc_external_id,NH_TC.name ";
+        $fields2get = " TCV.id, TCV.id AS tcversion_id, TCV.version, TCV.tc_external_id,NH_TC.name ";
       break;    
 
       case 'full':
       default:
-        $fields2get = " TCV.*,NH_TC.name ";
+        $fields2get = " TCV.*,TCV.id AS tcversion_id, NH_TC.name ";
       break;    
     }
     

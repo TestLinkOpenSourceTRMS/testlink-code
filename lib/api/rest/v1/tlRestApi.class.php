@@ -25,10 +25,8 @@
  *
  *
  * @internal revisions 
- * @since 1.9.8
- * 20130817 - franciscom - TICKET 5865: REST response header should define content-type application/json
- * 20130722 - franciscom - added array($this,'authenticate') on each route
- *                         to launch always automatically the authentication
+ * @since 1.9.11
+ *
  */
 
 require_once('../../../../config.inc.php');
@@ -108,6 +106,8 @@ class tlRestApi
     $this->app->get('/testprojects', array($this,'authenticate'), array($this,'getProjects'));
 
     $this->app->get('/testprojects/:id', array($this,'authenticate'), array($this,'getProjects'));
+    $this->app->get('/testprojects/:id/testcases', array($this,'authenticate'), array($this,'getProjectTestCases'));
+    $this->app->get('/testprojects/:id/testplans', array($this,'authenticate'), array($this,'getProjectTestPlans'));
 
     $this->app->post('/testprojects', array($this,'authenticate'), array($this,'createTestProject'));
     $this->app->post('/executions', array($this,'authenticate'), array($this,'createTestCaseExecution'));
@@ -117,8 +117,6 @@ class tlRestApi
     $this->app->post('/testsuites', array($this,'authenticate'), array($this,'createTestSuite'));
     $this->app->post('/testcases', array($this,'authenticate'), array($this,'createTestCase'));
 
-    // $this->app->get('/testprojects/:id', array($this,'getProjects'));
-    // $this->app->get('/testprojects/:id/testplans/', array($this,'getTestProjectTestPlans'));
     // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
 
 
@@ -135,7 +133,8 @@ class tlRestApi
     $this->tplanMetricsMgr=new tlTestPlanMetrics($this->db);
     $this->reqSpecMgr=new requirement_spec_mgr($this->db);
     $this->reqMgr=new requirement_mgr($this->db);
-    
+    $this->cfieldMgr=$this->tprojectMgr->cfield_mgr;
+
     $this->tables = $this->tcaseMgr->getDBTables();
     
     $resultsCfg = config_get('results');
@@ -193,23 +192,23 @@ class tlRestApi
     echo json_encode(array('name' => __CLASS__ . ' : Get Route /whoAmI'));
   }
   
-
   /**
    *
    */
-  public function getProjects($id=null)
+  public function getProjects($id=null, $opt=null)
   {
-    $op = array('status' => 'ok', 'message' => 'ok');
+    $options = array_merge(array('output' => 'rest'), (array)$opt);
+    $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
     if(is_null($id))
     {
-      $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
-                   'add_reqmgrsystem' => true);
-      $op['item'] = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
+      $opOptions = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
+                          'add_reqmgrsystem' => true);
+      $op['item'] = $this->tprojectMgr->get_accessible_for_user($this->userID,$opOptions);
     }  
     else
     {
-      $opt = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
-      $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opt);
+      $opOptions = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
+      $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opOptions);
       if( ($safeID = intval($id)) > 0)
       {
         if( isset($zx[$safeID]) )
@@ -234,11 +233,76 @@ class tlRestApi
 
     // Developer (silly?) information
     // json_encode() transforms maps in objects.
+    switch($options['output'])
+    {
+      case 'internal':
+        return $op['item'];
+      break;
+
+      case 'rest':
+      default:
+        echo json_encode($op);
+      break;
+    }
+  }
+
+  /**
+   *
+   */
+  public function getProjectTestPlans($id)
+  {
+    $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
+    $tproject = $this->getProjects($id, array('output' => 'internal'));
+
+
+    if( !is_null($tproject) )
+    {
+      $items = $this->tprojectMgr->get_all_testplans($id);
+      $op['items'] = (!is_null($items) && count($items) > 0) ? $items : null;
+    }
+    else 
+    {
+      $op['message'] = "Invalid Test Project ID '" . $id . "'!";
+      $op['status']  = 'error';
+    }
+
     echo json_encode($op);
   }
 
+  /**
+   * Will return LATEST VERSION of each test case.
+   * Does return test step info ?
+   *
+   */ 
+  public function getProjectTestCases($id)
+  {
+    $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
+    $tproject = $this->getProjects($id, array('output' => 'internal'));
 
+    if( !is_null($tproject) )
+    {
+      $tcaseIDSet = array();
+      $this->tprojectMgr->get_all_testcases_id($id,$tcaseIDSet);
+      if( !is_null($tcaseIDSet) && count($tcaseIDSet) > 0 )
+      {
+        $op['items'] = array();
+        foreach( $tcaseIDSet as $key => $tcaseID )
+        {
+          $item = $this->tcaseMgr->get_last_version_info($tcaseID);
+          $item['keywords'] = $this->tcaseMgr->get_keywords_map($tcaseID);
+          $item['customfields'] = $this->tcaseMgr->get_linked_cfields_at_design($tcaseID,$item['tcversion_id'],null,null,$id);
+          $op['items'][] = $item;
+        }
+      }
+    }
+    else 
+    {
+      $op['message'] = "Invalid Test Project ID '" . $id . "'!";
+      $op['status']  = 'error';
+    }
 
+    echo json_encode($op);
+  }
 
 // ==============================================
   /**

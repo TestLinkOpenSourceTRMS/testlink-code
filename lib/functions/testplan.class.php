@@ -538,6 +538,13 @@ class testplan extends tlObjectWithAttachments
     //
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+    // protect yourself :) - 20140607
+    if( is_null($id) || (is_int($id) && intval($id) <= 0 ) || (is_array($id) && count($id) == 0) )
+    {
+      return 0;  // >>>----> Bye
+    } 
+
+
     $my['opt'] = array('output' => 'number');
     $my['opt'] = array_merge($my['opt'],(array)$opt);
     
@@ -547,11 +554,12 @@ class testplan extends tlObjectWithAttachments
       $sql_filter = ' AND platform_id IN (' . implode(',',(array)$platform_id) . ')';
     }
     
-    
+
+
     $out = null;
     $outfields = "/* $debugMsg */ " . ' SELECT COUNT(testplan_id) AS qty ';
     $dummy = " FROM {$this->tables['testplan_tcversions']} " .
-            " WHERE testplan_id IN (" . implode(',',(array)$id) . ") {$sql_filter}";
+             " WHERE testplan_id IN (" . implode(',',(array)$id) . ") {$sql_filter}";
 
     switch( $my['opt']['output'] )
     {

@@ -194,12 +194,15 @@ class tlRestApi
   
   /**
    *
+   * @param mixed idCard if provided identifies test project
+   *                     if intval() > 0 => is considered DBID
+   *                     else => is used as PROJECT NAME
    */
-  public function getProjects($id=null, $opt=null)
+  public function getProjects($idCard=null, $opt=null)
   {
     $options = array_merge(array('output' => 'rest'), (array)$opt);
     $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
-    if(is_null($id))
+    if(is_null($idCard))
     {
       $opOptions = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
                           'add_reqmgrsystem' => true);
@@ -209,7 +212,7 @@ class tlRestApi
     {
       $opOptions = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
       $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opOptions);
-      if( ($safeID = intval($id)) > 0)
+      if( ($safeID = intval($idCard)) > 0)
       {
         if( isset($zx[$safeID]) )
         {
@@ -221,10 +224,10 @@ class tlRestApi
         // Will consider id = name
         foreach( $zx as $key => $value ) 
         {
-          if( strcmp($value['name'],$id) == 0 )
+          if( strcmp($value['name'],$idCard) == 0 )
           {
-            $safeID = $this->db->prepare_string($id);
-            $op['item'] = $this->tprojectMgr->get_by_name($safeID);
+            $safeString = $this->db->prepare_string($idCard);
+            $op['item'] = $this->tprojectMgr->get_by_name($safeString);
             break;   
           }  
         }
@@ -248,21 +251,23 @@ class tlRestApi
 
   /**
    *
+   * @param mixed idCard if provided identifies test project
+   *                     if intval() > 0 => is considered DBID
+   *                     else => is used as PROJECT NAME
    */
-  public function getProjectTestPlans($id)
+  public function getProjectTestPlans($idCard)
   {
     $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
-    $tproject = $this->getProjects($id, array('output' => 'internal'));
-
+    $tproject = $this->getProjects($idCard, array('output' => 'internal'));
 
     if( !is_null($tproject) )
     {
-      $items = $this->tprojectMgr->get_all_testplans($id);
+      $items = $this->tprojectMgr->get_all_testplans($tproject[0]['id']);
       $op['items'] = (!is_null($items) && count($items) > 0) ? $items : null;
     }
     else 
     {
-      $op['message'] = "Invalid Test Project ID '" . $id . "'!";
+      $op['message'] = "No Test Project identified by '" . $idCard . "'!";
       $op['status']  = 'error';
     }
 
@@ -273,16 +278,19 @@ class tlRestApi
    * Will return LATEST VERSION of each test case.
    * Does return test step info ?
    *
+   * @param mixed idCard if provided identifies test project
+   *                     if intval() > 0 => is considered DBID
+   *                     else => is used as PROJECT NAME
    */ 
-  public function getProjectTestCases($id)
+  public function getProjectTestCases($idCard)
   {
     $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
-    $tproject = $this->getProjects($id, array('output' => 'internal'));
+    $tproject = $this->getProjects($idCard, array('output' => 'internal'));
 
     if( !is_null($tproject) )
     {
       $tcaseIDSet = array();
-      $this->tprojectMgr->get_all_testcases_id($id,$tcaseIDSet);
+      $this->tprojectMgr->get_all_testcases_id($tproject[0]['id'],$tcaseIDSet);
       if( !is_null($tcaseIDSet) && count($tcaseIDSet) > 0 )
       {
         $op['items'] = array();
@@ -290,14 +298,15 @@ class tlRestApi
         {
           $item = $this->tcaseMgr->get_last_version_info($tcaseID);
           $item['keywords'] = $this->tcaseMgr->get_keywords_map($tcaseID);
-          $item['customfields'] = $this->tcaseMgr->get_linked_cfields_at_design($tcaseID,$item['tcversion_id'],null,null,$id);
+          $item['customfields'] = $this->tcaseMgr->get_linked_cfields_at_design($tcaseID,$item['tcversion_id'],
+                                                                                null,null,$tproject[0]['id']);
           $op['items'][] = $item;
         }
       }
     }
     else 
     {
-      $op['message'] = "Invalid Test Project ID '" . $id . "'!";
+      $op['message'] = "No Test Project identified by '" . $idCard . "'!";
       $op['status']  = 'error';
     }
 

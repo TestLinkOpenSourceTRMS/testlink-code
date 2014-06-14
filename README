@@ -1,10 +1,10 @@
 ===============================================================
-         TestLink 1.9.10 (Prague Bugfix 10) - Read me
+         TestLink 1.9.1 (Prague Bugfix 11) - Read me
 ===============================================================
 
 Contents
 1. Introduction
-2. Release notes / Critic Configuration Notes
+2. Release notes / CRITIC Configuration Notes
 3. System Requirements
 4. Installation & SECURITY
 5. Upgrade and Migration
@@ -12,10 +12,13 @@ Contents
 7. Bug Reports and Feedback
 8. Supporting our work
 9. Regarding forum usage www.testlink.org
-10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10
 11. Testlink & FreeTest
 12. Security
 13. JIRA DB interface changes
+14. People supporting TestLink
+
+
 
 1. Introduction
 ===============================================================
@@ -62,10 +65,10 @@ You allocate tests to staff who carry them out and record the results.
 A wide variety of reports provide information on what has been done and what still needs to be done.
 
 
-2. Release notes / Critic Configuration Notes
+2. Release notes / CRITIC Configuration Notes
 ===============================================================
 
-This release contains bugfixes for 1.9.8
+This release contains bugfixes for 1.9.10
 See CHANGELOG file for detailed list of issues fixed.
 
 *** CRITIC PHP.INI Settings ***
@@ -162,8 +165,8 @@ Check Installation manual and TestLink forum if you meet a problem.
 ===============================================================
 When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
 Migration HAS TO BE DONE MANUALLY => read below 
-- Upgrade from 1.9.3  to 1.9.4/5/6/7/8
-- Upgrade from 1.9.4/5 to 1.9.7
+- Upgrade from 1.9.3  to 1.9.4/5/6/7/8/9/10/11
+- Upgrade from 1.9.4/5 to 1.9.11
 - Upgrade from 1.9.7 to 1.9.8
 - Migration from other releases that 1.9.3
 
@@ -191,7 +194,7 @@ Migration HAS TO BE DONE MANUALLY => read below
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.3 to 1.9.4/5/6/7/8
+- Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql
@@ -209,6 +212,8 @@ b) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sq
 
 then give a look to section 'Upgrade from 1.9.7 to 1.9.8'
 then give a look to section 'Upgrade from 1.9.8 to 1.9.9'
+then give a look to section 'Upgrade from 1.9.9 to 1.9.10'
+then give a look to section 'Upgrade from 1.9.10 to 1.9.11'
 
 - Upgrade from 1.9.7 to 1.9.8
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
@@ -219,6 +224,17 @@ b) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/stepZ/z_final_step.
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/stepZ/z_final_step.sql
+
+- Upgrade from 1.9.9 to 1.9.10
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/stepZ/z_final_step.sql
+
+- Upgrade from 1.9.10 to 1.9.11
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/stepZ/z_final_step.sql
+
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
@@ -232,9 +248,9 @@ Extreme example Migration from 1.7.4
 
 1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
 1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 
-1.9.8 => 1.9.9 => 1.9.10
+1.9.8 => 1.9.9 => 1.9.10 => 1.9.11
 
-You have to read carefully README and instructions provided by installer.
+You have to read carefully README and instructions (if any) provided by installer.
 Sometimes version changes do not require actions on DB structure or data. 
 
 
@@ -361,8 +377,11 @@ PLEASE: read this short hints before you write a topic:
 :!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
-10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9      
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10      
 ===============================================================
+
+1.9.10
+Long waited feature: execution notes & results for test steps
 
 1.9.9
 User can have two different (mutual exclusive) kind of authentication
@@ -395,11 +414,23 @@ http://www.freetest.net.br
 
 We want to thanks xistence (xistence@0x90.nl) for his tests.
 
+
 13. JIRA DB interface changes
 ===============================================================
+
 TICKET 6028: Integration with Jira 6.1 broken. - Due to JIRA schema changes
 Contibution by adnkoks
 You need to change you xml configuration on TestLink, to add a new MANDATORY
 property <jiraversion></jiraversion>
 Without this property TestLink WILL CRASH => this is a desired behaviour
 
+
+14. People/Companies supporting TestLink
+===============================================================
+
+- Bitnami
+provided a VM on Cloud to do tests
+
+- Team Cortado (Germany)
+payed custom development of Long waited feature: execution notes & results for test steps,
+donating feature to community (is not the first time they do this!)

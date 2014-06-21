@@ -291,6 +291,9 @@ class testcaseCommands
     $guiObj->cf = $cf_smarty;
     $guiObj->tc=$tc_data[0];
     $guiObj->opt_cfg=$otCfg;
+
+    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?version_id=" .
+                              $argsObj->tcversion_id . '&edit=testcase&id=' . intval($argsObj->tcase_id) . "'"; 
     $guiObj->template=$templateCfg->default_template;
     return $guiObj;
   }
@@ -426,18 +429,22 @@ class testcaseCommands
                       
     $tcinfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id);
     list($prefix,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->testproject_id);
-        $prefix .= $cfg->glue_character;
-        $external_id = $prefix . $tcinfo[0]['tc_external_id'];
+    $prefix .= $cfg->glue_character;
+    $external_id = $prefix . $tcinfo[0]['tc_external_id'];
         
     $guiObj->title = lang_get('title_del_tc');
     $guiObj->testcase_name =  $tcinfo[0]['name'];
     $guiObj->testcase_id = $argsObj->tcase_id;
     $guiObj->tcversion_id = testcase::ALL_VERSIONS;
     $guiObj->refreshTree = 1;
-     $guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
+    $guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
     
-      $templateCfg = templateConfiguration('tcDelete');
-      $guiObj->template=$templateCfg->default_template;
+    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 'lib/testcases/archiveData.php?version_id=undefined&' .
+                              'edit=testcase&id=' . intval($guiObj->testcase_id) . "'";    
+
+    new dBug($guiObj);                          
+    $templateCfg = templateConfiguration('tcDelete');
+    $guiObj->template=$templateCfg->default_template;
     return $guiObj;
   }
 

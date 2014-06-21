@@ -39,7 +39,8 @@ delete test case in test specification
 	  			      {if $gui->display_platform}
 	  			        <td align="left">{$status.platform_name|escape}</td>
 	  			      {/if}
-	  				    <td style="width:4%;text-align:center;">{if $status.executed != ""}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png" />{/if}</td>
+	  				    <td style="width:4%;text-align:center;">
+	  				    {if $status.executed != ""}<img src="{$tlImages.checked}" />{/if}</td>
 	  				  </tr>
 	  			  {/foreach}
 	  			{/foreach}
@@ -48,14 +49,13 @@ delete test case in test specification
       	{$gui->delete_message}
     {/if}
     
-    {if $gui->delete_enabled} {* TICKET 4322 *}
+    {if $gui->delete_enabled}
 	  <p>{$labels.question_del_tc}</p>
 	  <form method="post" 
 	        action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
 	  	<input type="submit" id="do_delete" name="do_delete" value="{$labels.btn_yes_iw2del}" />
 	  	<input type="button" name="cancel_delete"
-	  	                     onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
-	  	                     value="{$labels.btn_no}" />
+	  	                     onclick="javascript:{$gui->cancelActionJS};" value="{$labels.btn_no}" />
 	  </form>
     {/if}
  

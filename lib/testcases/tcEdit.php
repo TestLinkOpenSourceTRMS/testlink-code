@@ -8,12 +8,12 @@
  * @filesource  tcEdit.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org/
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.11
  *
  **/
 require_once("../../config.inc.php");

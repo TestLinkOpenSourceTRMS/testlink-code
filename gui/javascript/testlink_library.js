@@ -229,10 +229,8 @@ function ET(id,v)
 {
   // get checkboxes status
   var _FUNCTION_NAME_="ET";
-  var pParams = tree_getPrintPreferences();
   var my_location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
   // alert(_FUNCTION_NAME_ + " " +my_location);
-  
   parent.workframe.location = my_location;
 }
 

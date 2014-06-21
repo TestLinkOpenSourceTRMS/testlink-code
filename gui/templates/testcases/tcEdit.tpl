@@ -119,16 +119,18 @@ function validateForm(the_form)
            onclick="show_modified_warning=false; doAction.value='doUpdate'" value="{$labels.btn_save}" />
     
     <input type="button" name="go_back" value="{$labels.cancel}" 
-           onclick="show_modified_warning=false; javascript: history.back();"/>
+           onclick="show_modified_warning=false; 
+                    javascript: {if isset($gui->cancelActionJS)}{$gui->cancelActionJS} {else} history.back() {/if};"/>
   </div>  
   {include file="testcases/tcEdit_New_viewer.tpl"}
   
   {* when save or cancel is pressed do not show modification warning *}
   <div class="groupBtn">
-    <input id="do_update" type="submit" name="do_update" 
+    <input id="do_update_bottom" type="submit" name="do_update" 
            onclick="show_modified_warning=false; doAction.value='doUpdate'" value="{$labels.btn_save}" />
-    <input type="button" name="go_back" value="{$labels.cancel}" 
-           onclick="show_modified_warning=false; javascript: history.back();"/>
+    <input type="button" name="go_back_bottom" value="{$labels.cancel}" 
+           onclick="show_modified_warning=false; 
+                    javascript: {if isset($gui->cancelActionJS)}{$gui->cancelActionJS} {else} history.back() {/if};"/>
   </div>  
 </form>
 

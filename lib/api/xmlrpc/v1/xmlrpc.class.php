@@ -145,6 +145,8 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $getStepsInfoParamName = "getstepsinfo";
   public static $importanceParamName = "importance";
   public static $internalIDParamName = "internalid";
+  public static $itsEnabledParamName = "itsEnabled";
+  public static $itsidParamName = "itsid";
   public static $keywordIDParamName = "keywordid";
   public static $keywordNameParamName = "keywords";
   
@@ -221,6 +223,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
     $this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
     $this->reqMgr=new requirement_mgr($this->dbObj);
+    $this->it = new tlIssueTracker($this->dbObj);
     
     $this->tables = $this->tcaseMgr->getDBTables();
     
@@ -1620,6 +1623,8 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @param int $args["active"]  OPTIONAL
      * @param int $args["public"]  OPTIONAL
+   * @param int $args["itsid"]  OPTIONAL
+   * @param boolean $args["itsEnabled"]  OPTIONAL
      *   
    * @return mixed $resultInfo
    */
@@ -1654,7 +1659,8 @@ class TestlinkXMLRPCServer extends IXR_Server
       // other optional parameters (not of complex type)
       // key 2 check with default value is parameter is missing
       $keys2check = array(self::$activeParamName => 1,self::$publicParamName => 1,
-                          self::$noteParamName => '');
+                          self::$noteParamName => '',self::$itsEnabledParamName => 0,
+                          self::$itsidParamName => -1);
       foreach($keys2check as $key => $value)
       {
         $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : $value;
@@ -1671,6 +1677,16 @@ class TestlinkXMLRPCServer extends IXR_Server
       // $info=$this->tprojectMgr->create($name,'',$options,$notes,$active,$prefix,$public);
             
       $info=$this->tprojectMgr->create($item);
+      
+      // link to an ITS if provided
+      if ($optional[self::$itsidParamName] != -1)
+      {
+        $this->it->link($optional[self::$itsidParamName], $info);
+      }
+      if ($optional[self::$itsEnabledParamName] > 0)
+      {
+        $this->tprojectMgr->enableIssueTracker($info);
+      }
 
       $resultInfo = array();
       $resultInfo[]= array("operation" => __FUNCTION__,
@@ -5871,6 +5887,27 @@ protected function createAttachmentTempFile()
     return $ret;
   }
 
+  /**
+   * Gets the Issue Tracker System from its name
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param string $args["name"] ITS name 
+   * @return mixed $resultInfo      
+   * @access public
+   */
+  public function getIssueTrackerSystem($args)
+  {
+    $this->_setArgs($args);
+
+    if($this->authenticate())
+    {
+      return $this->it->getByName($args['name']);
+    } else {
+      return $this->errors;
+    }
+
+  }
 
   function initMethodYellowPages()
   {
@@ -5925,6 +5962,7 @@ protected function createAttachmentTempFile()
                             'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
                             'tl.getUserByLogin' => 'this:getUserByLogin',
                             'tl.getUserByID' => 'this:getUserByID',
+                            'tl.getIssueTrackerSystem' => 'this:getIssueTrackerSystem',
                             'tl.deleteExecution' => 'this:deleteExecution',
                             'tl.doesUserExist' => 'this:doesUserExist',
                             'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',

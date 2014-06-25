@@ -171,7 +171,7 @@ class gforgesoapInterface extends issueTrackerInterface
 				$issue->statusCode = $issue->status_id;
 				$issue->statusVerbose = $this->getStatusLabel($issue, $statusObj);
 				$this->statusVerbose = $issue->statusVerbose;
-				$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusVerbose, $issue->statusCode);
+				$issue->statusHTMLString = $this->buildStatusHTMLString($issue->statusCode);
 				$issue->summaryHTMLString = $this->buildSummaryHTMLString($issue);
 				$issue->isResolved = (array_search($issue->statusVerbose, $this->resolvedStatus->byName) > 0);
 				//new dBug($issue);

@@ -3639,7 +3639,7 @@ $TLS_remoteExecServerConfigProblems = 'Remote execution can not be launched due 
                     'Please check if the required Custom Fields are defined and assigned ' .
                     'to this test project'; 
 
-$TLS_remoteExecServerConnectionFailure = 'Remote execution connection failure - check you config';
+$TLS_remoteExecServerConnectionFailure = 'Remote execution connection failure - check your config';
 
 
 // ----- int_polarion.php -----

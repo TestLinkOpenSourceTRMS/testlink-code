@@ -10,13 +10,12 @@
  * @filesource  tcSearch.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org/
  *
  *
  *  @internal revisions
- *  @since 1.9.9
- *  20130916 - franciscom - TICKET 5922: Filters on creation and modification dates is ignored in test cases search
+ *  @since 1.9.11
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -126,9 +125,10 @@ if ($args->tprojectID)
   }  
 
   $args->created_by = trim($args->created_by);
+  $from['users'] = '';
   if( $args->created_by != '' )
   {
-    $from['users'] = " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
+    $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
     $filter['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
                         "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
                         "       AUTHOR.last LIKE '%{$args->created_by}%') ";
@@ -137,7 +137,7 @@ if ($args->tprojectID)
   $args->edited_by = trim($args->edited_by);
   if( $args->edited_by != '' )
   {
-    $from['users'] = " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
+    $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
     $filter['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
                         "         UPDATER.first LIKE '%{$args->edited_by}%' OR " .
                         "         UPDATER.last LIKE '%{$args->edited_by}%') ";

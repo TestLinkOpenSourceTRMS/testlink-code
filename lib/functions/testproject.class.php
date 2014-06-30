@@ -6,11 +6,11 @@
  * @filesource  testproject.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2005-2013, TestLink community 
+ * @copyright   2005-2014, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  * 
  **/
 
@@ -19,7 +19,7 @@ require_once('attachments.inc.php');
 
 /**
  * class is responsible to get project related data and CRUD test project
- * @package 	TestLink
+ * @package   TestLink
  */
 class testproject extends tlObjectWithAttachments
 {
@@ -3017,15 +3017,20 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
 {
   $keySet = (array)$keyword_id;
+  $sql = null;
   if(in_array(-1,$keySet))
   {  
     // get all test cases present on test project
     $tcaseSet = array();
     $this->get_all_testcases_id($testproject_id,$tcaseSet);
-    $sql = " /* WITHOUT KEYWORDS */ " . 
-           " SELECT NHTC.id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NHTC " .  
-           " WHERE NHTC.id IN (" . implode(',',$tcaseSet) . ") AND NOT EXISTS " .
-           " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK WHERE TCK.testcase_id = NHTC.id) ";
+
+    if(count($tcaseSet) > 0)
+    { 
+      $sql = " /* WITHOUT KEYWORDS */ " . 
+             " SELECT NHTC.id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NHTC " .  
+             " WHERE NHTC.id IN (" . implode(',',$tcaseSet) . ") AND NOT EXISTS " .
+             " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK WHERE TCK.testcase_id = NHTC.id) ";
+    }
   }
   else
   {  
@@ -3048,7 +3053,7 @@ function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_fi
              " WHERE {$keyword_filter} ";
     }
   }
-  $hits = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+  $hits = !is_null($sql) ? $this->db->fetchRowsIntoMap($sql,'testcase_id') : null;
   return($hits);
 }
 

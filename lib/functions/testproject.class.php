@@ -628,11 +628,7 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
     }  
   }  
 
-  // if(!is_null($my['filters']))   echo $sql;
-
   $sql .= str_replace('nodes_hierarchy','NHTPROJ',$my['opt']['order_by']);
-  // echo $sql;
-
   $parseOpt = false;
   $do_post_process = 0;
   switch($my['opt']['output'])
@@ -2742,19 +2738,21 @@ function getTestSpec($id,$filters=null,$options=null)
   $items = array();
 
     $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
-                 'remove_empty_branches' => false);
+                           'remove_empty_branches' => false);
                  
    $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
                           'exclude_children_of' => $this->nt2exclude_children,
                           'exclude_branches' => null,
-                          'testcase_name' => null,
+                          'testcase_name' => null, 
+                          'importance' => null, 'testcase_id' => null, 'execution_type' => null,
+                          'status' => null,
                           'additionalWhereClause' => null);      
  
   $my['filters'] = array_merge($my['filters'], (array)$filters);
   $my['options'] = array_merge($my['options'], (array)$options);
  
-    if( $my['options']['exclude_testcases'] )
-    {
+  if( $my['options']['exclude_testcases'] )
+  {
     $my['filters']['exclude_node_types']['testcase']='exclude me';
   }
   
@@ -2763,28 +2761,23 @@ function getTestSpec($id,$filters=null,$options=null)
   // If we have choose any type of filter, we need to force remove empty test suites
   // TICKET 4217: added filter for importance
   if( !is_null($my['filters']['testcase_name']) || !is_null($my['filters']['testcase_id']) ||
-    !is_null($my['filters']['execution_type']) || !is_null($my['filters']['exclude_branches']) ||
-        !is_null($my['filters']['importance']) ||
-    $my['options']['remove_empty_branches'] )
+      !is_null($my['filters']['execution_type']) || !is_null($my['filters']['exclude_branches']) ||
+      !is_null($my['filters']['importance']) || $my['options']['remove_empty_branches'] )
   {
     $my['options']['remove_empty_nodes_of_type'] = 'testsuite';
   }
   
   $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
   $qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
-   return $items;
+  return $items;
 }
 
 
 /**
- *
  * 
  * @return
  *
  * @internal revisions
- * 20121010 - asimon - TICKET 4217: added filter for importance
- * 20120913 - asimon - TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
- *                                  for every test case with no active version
  */
 function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 {
@@ -2797,16 +2790,16 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
   static $tcversionFilter;
   static $childFilterOn;
   static $staticSql;
-  
+
   if (!$my)
   {
     $qnum=0;
     $node_types = array_flip($this->tree_manager->get_available_node_types());
         
-    // TICKET 4217: added filter for importance
     $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
-                      'additionalWhereClause' => '', 'testcase_name' => null,
-                      'testcase_id' => null,'active_testcase' => false, 'importance' => null);
+                           'additionalWhereClause' => '', 'testcase_name' => null,
+                           'testcase_id' => null,'active_testcase' => false, 
+                           'importance' => null, 'status' => null);
                            
     $my['options'] = array('remove_empty_nodes_of_type' => null);
 
@@ -2823,16 +2816,19 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
     $tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
     $tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
 
-
-    
-    // TICKET 4217: added filter for importance
     $tcversionFilter['execution_type'] = !is_null($my['filters']['execution_type']);
     $tcversionFilter['importance'] = !is_null($my['filters']['importance']);
-    $tcversionFilter['enabled'] = $tcversionFilter['execution_type'] || $tcversionFilter['importance'];
+    $tcversionFilter['status'] = !is_null($my['filters']['status']);
+
+    $actOnVersion = array('execution_type','importance','status');
+
+    $tcversionFilter['enabled'] = false;
+    foreach($actOnVersion as $target)
+    {
+      $tcversionFilter['enabled'] = $tcversionFilter['enabled'] ||  $tcversionFilter[$target];
+    }  
 
     $childFilterOn = $tcaseFilter['enabled'] || $tcversionFilter['enabled'];
-    
-  
 
     if( !is_null($my['options']['remove_empty_nodes_of_type']) )
     {
@@ -2916,35 +2912,50 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 
 
     // We can add here keyword filtering if exist ?
-
-        // TICKET 4217: added filter for importance
     if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
     {
-            if ($tcversionFilter['importance'] || $tcversionFilter['execution_type'])
-            {
-                $ssx .= " WHERE ";
-            }
-            
-            if( $tcversionFilter['importance'] )
-            {
-                $ssx .= " TCV.importance = " . $my['filters']['importance'];
-                $filterOnTC = true;
-            }
+      $addAnd = false;
+      if ($tcversionFilter['importance'] || $tcversionFilter['execution_type'] || 
+          $tcversionFilter['status'] )
+      {
+        $ssx .= " WHERE ";
+      }
+           
+      if( $tcversionFilter['importance'] )
+      {
+        $ssx .= " TCV.importance = " . $my['filters']['importance'];
+        $filterOnTC = true;
+        $addAnd = true;
+      }
 
-            if ($tcversionFilter['importance'] && $tcversionFilter['execution_type'])
-            {
-                $ssx .= " AND ";
-            }
+      if( $addAnd && $tcversionFilter['execution_type'])
+      {
+        $ssx .= " AND ";
+      }
             
       if( $tcversionFilter['execution_type'] )
       {
         $ssx .= " TCV.execution_type = " . $my['filters']['execution_type'];
         $filterOnTC = true;
+        $addAnd = true;
+      }  
+
+      if( $addAnd && $tcversionFilter['status'])
+      {
+        $ssx .= " AND ";
+      }
+            
+      if( $tcversionFilter['status'] )
+      {
+        $ssx .= " TCV.status = " . $my['filters']['status'];
+        $filterOnTC = true;
+        $addAnd = true;
       }  
     }    
     
     // new dBug($ssx);
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
+
     // new dBug($highlander);
     if( $filterOnTC )
     {

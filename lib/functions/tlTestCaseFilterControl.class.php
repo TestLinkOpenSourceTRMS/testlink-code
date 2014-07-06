@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2013, TestLink community
+ * @copyright  2006-2014, TestLink community
  * @link       http://testlink.sourceforge.net/
  * 
  *
@@ -34,7 +34,7 @@
  *    --> assign requirements
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  */
 
 /*
@@ -209,6 +209,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                'filter_toplevel_testsuite' => array("POST", tlInputParameter::STRING_N,0,100),
                                'filter_keywords' => array("POST", tlInputParameter::ARRAY_INT),
                                // 'filter_active_inactive' => array("POST", tlInputParameter::INT_N),
+                               'filter_workflow_status' => array("POST", tlInputParameter::INT_N),
                                'filter_importance' => array("POST", tlInputParameter::INT_N),
                                'filter_priority' => array("POST", tlInputParameter::INT_N),
                                'filter_execution_type' => array("POST", tlInputParameter::INT_N),
@@ -235,6 +236,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                                             'filter_toplevel_testsuite',
                                                             'filter_keywords',
                                                             // 'filter_active_inactive',
+                                                            'filter_workflow_status',
                                                             'filter_importance',
                                                             'filter_execution_type',
                                                             'filter_custom_fields'),
@@ -1862,6 +1864,40 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $this->filters[$key] = array('selected' => $selection);
     $this->active_filters[$key] = $selection;
   } 
+
+
+  /**
+   *
+   */
+  private function init_filter_workflow_status() 
+  {
+    $key = 'filter_workflow_status';
+    if (!$this->tc_mgr) 
+    {
+      $this->tc_mgr = new testcase($this->db);
+    }
+
+    // handle filter reset
+    $selection = $this->args->{$key};
+    if (!$selection || $this->args->reset_filters) 
+    {
+      $selection = null;
+    } 
+    else 
+    {
+      $this->do_filtering = true;
+    }
+    
+    $this->filters[$key] = array('items' => array(), 'selected' => $selection);
+
+    // load domain
+    // add "any" string to these types at index 0 as default selection
+    $this->filters[$key]['items'] = $this->tc_mgr->getWorkFlowStatusDomain();
+    $this->filters[$key]['items'] = array(0 => $this->option_strings['any'])
+                                          + $this->filters[$key]['items'];
+    
+    $this->active_filters[$key] = $selection;
+  }
 
 
   

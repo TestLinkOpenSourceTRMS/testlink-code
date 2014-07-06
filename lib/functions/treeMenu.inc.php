@@ -52,12 +52,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
-  new dBug($options);
-
-
   $my = array();
-  
-  // TICKET 4353: added active/inactive filter
   $my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
                          'tc_action_enabled' => 1, 'viewType' => 'testSpecTree',
                          'ignore_inactive_testcases' => null,
@@ -2139,11 +2134,16 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
     $flt['execution_type'] = intval($fObj['filter_execution_type']);
   }
 
-    // TICKET 4217: added filter for importance
-    if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) )
-    {
-            $flt['importance'] = intval($fObj['filter_importance']);
-    }
+  if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) )
+  {
+    $flt['importance'] = intval($fObj['filter_importance']);
+  }
+
+  if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) )
+  {
+    $flt['status'] = intval($fObj['filter_workflow_status']);
+  }
+
     
   $opt = array('recursive' => true,'exclude_testcases' => false);
   $items = $tprojectMgr->getTestSpec($tprojectID,$flt,$opt); 
@@ -2267,9 +2267,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
         continue;
       }
 
-      // TICKET 4353: added $db for active/inactive filter
       $counters_map = prepareTestSpecNode($db, $tprojectMgr,$tprojectID,$current,$map_node_tccount);
-      // new dBug($current);
       
       // 20120831 - to be analized carefully, because this can be solution
       // to null issue with json and ext-js

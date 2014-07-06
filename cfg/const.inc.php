@@ -887,5 +887,4 @@ $tlCfg->results['charts']['dimensions'] =
 $tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
                                 'reviewInProgress' => 3, 'rework' => 4, 
                                 'obsolete' => 5, 'future' => 6, 'final' => 7 );   
-// ----- END ----------------------------------------------------------------------------
-?>
+// END 

@@ -6555,4 +6555,14 @@ class testcase extends tlObjectWithAttachments
     return $rs;     
   }
 
+  /**
+   *
+   */
+  function getWorkFlowStatusDomain()
+  {
+    $dummy = getConfigAndLabels('testCaseStatus','code');
+    return $dummy['lbl'];
+  }
+
+
 }  

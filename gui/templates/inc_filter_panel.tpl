@@ -17,7 +17,7 @@
  *}
 
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
-                        build,filter_tcID,filter_on,filter_result,
+                        build,filter_tcID,filter_on,filter_result,status,
                         btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
                         filter_owner,TestPlan,test_plan,caption_nav_filters,
                         platform, include_unassigned_testcases, filter_active_inactive,
@@ -249,40 +249,49 @@
       </tr>
     {/if}
 
-        {* TICKET 4353: added filter for active/inactive test cases *}
-        {if isset($control->filters.filter_active_inactive) && $control->filters.filter_active_inactive}
-            <tr>
-                <td>{$labels.filter_active_inactive}</td>
-                <td>
-                    <select name="filter_active_inactive">
-                        {html_options options=$control->filters.filter_active_inactive.items
-                        selected=$control->filters.filter_active_inactive.selected}
-                    </select>
-                </td>
-            </tr>
-        {/if}
+    {* TICKET 4353: added filter for active/inactive test cases *}
+    {if isset($control->filters.filter_active_inactive) && $control->filters.filter_active_inactive}
+      <tr>
+        <td>{$labels.filter_active_inactive}</td>
+          <td>
+            <select name="filter_active_inactive">
+                   {html_options options=$control->filters.filter_active_inactive.items
+                   selected=$control->filters.filter_active_inactive.selected}
+            </select>
+          </td>
+      </tr>
+    {/if}
+
+    {if $control->filters.filter_workflow_status}
+      <tr>
+        <td>{$labels.status}</td>
+        <td>
+            <select name="filter_workflow_status">
+              {html_options options=$control->filters.filter_workflow_status.items
+              selected=$control->filters.filter_workflow_status.selected}
+            </select>
+        </td>
+      </tr>
+    {/if}
             
-        {* TICKET 4217: added importance filter on test specification *}
-        {if $control->filters.filter_importance}
-            <tr>
-                <td>{$labels.importance}</td>
-                <td>
-                    <select name="filter_importance">
-                        {* add "any" option to smarty global variable *}
-                        <option value="">{$control->option_strings.any}</option>
-                        {html_options options=$gsmarty_option_importance
-                        selected=$control->filters.filter_importance.selected}
-                    </select>
-                </td>
-            </tr>
-        {/if}
+    {if $control->filters.filter_importance}
+      <tr>
+        <td>{$labels.importance}</td>
+        <td>
+          <select name="filter_importance">
+            <option value="">{$control->option_strings.any}</option>
+                    {html_options options=$gsmarty_option_importance
+                    selected=$control->filters.filter_importance.selected}
+          </select>
+        </td>
+      </tr>
+    {/if}
             
     {if $control->filters.filter_priority}
       <tr>
         <td>{$labels.priority}</td>
         <td>
           <select name="filter_priority">
-          {* add "any" option to smarty global variable for priority *}
           <option value="">{$control->option_strings.any}</option>
           {html_options options=$gsmarty_option_importance
                                   selected=$control->filters.filter_priority.selected}

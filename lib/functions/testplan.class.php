@@ -2057,13 +2057,10 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $my['opt'] = array('fields' => 
-                       'id,testplan_id, name, notes, active, is_open,release_date,closed_on_date',
-                       'orderBy' => "  ORDER BY name ASC", 'getCount' => false, 'buildID' => null);
+                       'id,testplan_id, name, notes, active, is_open,release_date,closed_on_date,creation_ts',
+                       'orderBy' => " ORDER BY name ASC", 'getCount' => false, 'buildID' => null);
 
     $my['opt'] = array_merge($my['opt'],(array)$opt);
-
-    // REST API DEBUG echo json_encode(array($debugMsg,$my['opt']));
-
     if( $my['opt']['getCount'] )
     {
       $my['opt']['orderBy'] = null;
@@ -2105,10 +2102,10 @@ class testplan extends tlObjectWithAttachments
     $sql .= ($doOrderBy = !is_null($my['opt']['orderBy'])) ? $my['opt']['orderBy'] : '';
     
     $rs = $this->db->fetchRowsIntoMap($sql,$accessField);
-    if( !is_null($rs) && $doOrderBy)
+
+    // _natsort_builds() has to be used ONLY if name is used on ORDER BY
+    if( !is_null($rs) && $doOrderBy && strpos($my['opt']['orderBy'],'name') !== FALSE)
     {
-      // 20130428
-      // I would like to understand why the ORDER BY clause is not enough 
       $rs = $this->_natsort_builds($rs);
     }
     

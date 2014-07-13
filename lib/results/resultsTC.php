@@ -7,10 +7,10 @@
 * @author       Martin Havlat <havlat@users.sourceforge.net>
 * @author       Chad Rosen
 * 
-* Show Test Report by individual test case.
+* Test Results Matrix
 *
 * @internal revisions
-* @since 1.9.10
+* @since 1.9.11
 */
 require('../../config.inc.php');
 require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
@@ -532,10 +532,11 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
   $l18n['not_run']=lang_get($cfg['results']['status_label']['not_run']);
 
 
-  $guiObj->buildInfoSet = $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS); 
+  $guiObj->matrixCfg  = config_get('resultMatrixReport');
+  $guiObj->buildInfoSet = $tplanMgr->get_builds($argsObj->tplan_id, testplan::ACTIVE_BUILDS,null,
+                                                array('orderBy' => $guiObj->matrixCfg->buildOrderByClause)); 
   $guiObj->activeBuildsQty = count($guiObj->buildInfoSet);
 
-  $guiObj->matrixCfg  = config_get('resultMatrixReport');
 
   // hmm need to understand if this can be removed
   if ($guiObj->matrixCfg->buildColumns['latestBuildOnLeft'])

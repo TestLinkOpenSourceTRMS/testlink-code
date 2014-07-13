@@ -605,6 +605,9 @@ $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
 // 
 $tlCfg->resultMatrixReport->buildQtyLimit = 6;
 
+// ORDER BY sql clause, refers to builds table columns
+$tlCfg->resultMatrixReport->buildOrderByClause = " ORDER BY name ASC";
+
 
 // Show all available status details for test plans on metrics dashboard 
 $tlCfg->metrics_dashboard = new stdClass();

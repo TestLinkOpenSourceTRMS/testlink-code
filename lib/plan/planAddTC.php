@@ -795,7 +795,7 @@ function addToTestPlan(&$dbHandler,&$argsObj,&$guiObj,&$tplanMgr,&$tcaseMgr)
     $features2add = null;
     $status_map = $tplanMgr->assignment_mgr->get_available_status();
     $types_map = $tplanMgr->assignment_mgr->get_available_types();
-    $db_now = $db->db_now();
+    $db_now = $dbHandler->db_now();
     $tcversion_tcase = array_flip($items_to_link['tcversion']);
                 
     $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);

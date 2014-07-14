@@ -6060,6 +6060,8 @@ protected function createAttachmentTempFile()
       $oo[$link['feature_id']]['assigner_id'] = $this->userID;
       $oo[$link['feature_id']]['build_id'] = $execContext['build_id'];
       
+      $assignment_mgr->assign($oo);
+      
       $resultInfo = array("status" => true, "args" => $this->args);
       unset($resultInfo['args']['devKey']);
     }  

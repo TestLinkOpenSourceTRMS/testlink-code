@@ -15,13 +15,12 @@
  *
  * @package     TestLink
  * @author      Andreas Morsing
- * @copyright   2005-2013, TestLink community 
+ * @copyright   2005-2014, TestLink community 
  * @filesource  logger.class.php
- * @link        http://www.teamst.org
+ * @link        http://www.testlink.org
  * @since       1.8
  * 
  * @internal revisions
- * 20130816 - franciscom - added management of L18N (Localization) logs, instead of use WARNING for this kind of logs. 
  *
  **/
  
@@ -37,7 +36,6 @@ class tlLogger extends tlObject
 
   /** 
    * Log levels VALUES
-   * There are 5 logging levels available. 
    * Log messages will only be displayed if they level is present in 
    * config option array $tlCfg->loggerFilter.
    * Example:
@@ -1063,11 +1061,11 @@ class tlFileLogger extends tlObject
   public function writeTransaction(&$t)
   {
     if ($this->getEnableLoggingStatus() == false)
-      {
+    {
       return tl::OK;
-      }  
-      if (!$this->logLevelFilter)
-      {
+    }  
+    if (!$this->logLevelFilter)
+    {
       return;
     }
 
@@ -1075,18 +1073,17 @@ class tlFileLogger extends tlObject
     $subjects = array("%prefix","%transactionID","%name","%entryPoint","%startTime","%endTime","%duration");
     $bFinished = $t->endTime ? 1 : 0;
     $formatString = $bFinished ? self::$closedTransactionFormatString : self::$openTransactionFormatString;
-    $replacements = array($bFinished ? "<<" :">>",
-              $t->getObjectID(),
-              $t->name,
-              $t->entryPoint,
-              gmdate("y/M/j H:i:s",$t->startTime),
-              $bFinished ? gmdate("y/M/j H:i:s",$t->endTime) : null,
-              $t->duration,
-            );
+    $replacements = array($bFinished ? "<<" :">>", $t->getObjectID(), $t->name, $t->entryPoint,
+                                                   gmdate("y/M/j H:i:s",$t->startTime),
+                          $bFinished ? gmdate("y/M/j H:i:s",$t->endTime) : null,
+                          $t->duration,);
     $line = str_replace($subjects,$replacements,$formatString);
     return $this->writeEntry(self::getLogFileName(),$line);
   }
 
+  /**
+   *
+   */ 
   public function writeEvent(&$e)
   {
     if (!($e->logLevel & $this->logLevelFilter))
@@ -1113,6 +1110,7 @@ class tlFileLogger extends tlObject
     $line = str_replace($subjects,$replacements,self::$eventFormatString);
 
     $this->writeEntry(self::getLogFileName(),$line);
+
     // audits are also logged to a global audits logfile
     if ($e->logLevel == tlLogger::AUDIT)
     {
@@ -1242,6 +1240,9 @@ class tlMailLogger extends tlObjectWithDB
     return $cfg;
   }
 
+  /**
+   *
+   */
   public function writeEvent(&$event)
   {
     if (!$this->doLogging)

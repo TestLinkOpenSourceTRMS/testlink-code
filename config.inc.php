@@ -203,10 +203,10 @@ $g_removeEventsOlderThan = 30;
                             
 
 /**  @var map keys: 'all' + values present on proprety of logger class $loggerTypeDomain
-*       values can be only these defined on logger.class.php 
+ *                  values can be only these defined on logger.class.php 
  *   @since 1.9.4                                  
  *   example array('all' => array('INFO','AUDIT'),
- *           'mail' =>  array('ERROR'))
+ *                 'mail' =>  array('ERROR'))
  */                            
 $tlCfg->loggerFilter = null; // default defined on logger.class.php ;                            
 

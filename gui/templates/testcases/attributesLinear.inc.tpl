@@ -36,6 +36,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <input type="text" name="estimated_execution_duration" id="estimated_execution_duration"
      size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}"
      title="{$labels.estimated_execution_duration}" 
-     value={$gui->tc.estimated_exec_duration}>
+     value="{$gui->tc.estimated_exec_duration}" {$tlCfg->testcase_cfg->estimated_execution_duration->required}>
 </span>
 </div>

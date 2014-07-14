@@ -75,7 +75,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <input type="text" name="estimated_execution_duration" id="estimated_execution_duration"
        size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}"
        title="{$tcView_viewer_labels.estimated_execution_duration}" 
-       value={$args_testcase.estimated_exec_duration}>
+       value="{$args_testcase.estimated_exec_duration}" {$tlCfg->testcase_cfg->estimated_execution_duration->required}>
   <input type="submit" name="setEstimated" value="{$tcView_viewer_labels.btn_save}" />
   </span>
   {else}

@@ -799,6 +799,13 @@ $tlCfg->testcase_cfg->duplicated_name_algorithm->text = strftime("%Y%m%d-%H:%M:%
 // $tlCfg->testcase_cfg->duplicated_name_algorithm->text = " (%s)";
 
 
+// TICKET 6422: Estimation in Test specification as mandatory field
+// Implemented using HTML5
+$tlCfg->testcase_cfg->estimated_execution_duration = new stdClass();
+// $tlCfg->testcase_cfg->estimated_execution_duration->required = 'required';
+$tlCfg->testcase_cfg->estimated_execution_duration->required = '';
+
+
 /** text template for a new items:
     Test Case: summary, steps, expected_results, preconditions
 

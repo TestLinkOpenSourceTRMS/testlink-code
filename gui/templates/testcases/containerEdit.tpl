@@ -19,6 +19,8 @@ Edit test specification: containers
 {include file="inc_del_onclick.tpl"}
 
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
+
+{if $gui->hasKeywords} 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
@@ -29,6 +31,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
 {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
+{/if}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -110,12 +113,16 @@ function validateForm(f)
      </div>
      <p>
    {/if}
-   
+  
+  {if $gui->hasKeywords} 
   <div>
    <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
    {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
-   </div>
+  </div>
+  {/if}
+  
   <br></br>
+  
   <div>
     <input type="submit" name="update_testsuite" id="update_testsuite_bottom" value="{$labels.btn_save}" 
            onclick="show_modified_warning = false; doAction.value='update_testsuite'" />

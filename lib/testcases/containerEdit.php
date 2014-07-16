@@ -166,9 +166,12 @@ switch($action)
   case 'edit_testsuite':
   case 'new_testsuite':
     keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
+
     $smarty->assign('opt_cfg', $opt_cfg);
     $gui = new stdClass();
     $gui->refreshTree = $args->refreshTree;
+    $gui->hasKeywords = (count($opt_cfg->from->map) > 0) || (count($opt_cfg->to->map) > 0);
+
     $smarty->assign('gui', $gui);
     $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
                                  $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
@@ -228,6 +231,7 @@ switch($action)
 
     $gui = new stdClass();
     $gui->refreshTree = $args->refreshTree;
+
     $smarty->assign('gui', $gui);
     $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
                                  $args->containerID, null,$messages,$webEditorTemplateKey,$userInput);

@@ -1408,11 +1408,11 @@ global $g_loggerCfg;
 $g_tlLogger = tlLogger::create($db);
 if( !is_null($g_loggerCfg) )
 {
-    foreach($g_loggerCfg as $loggerKey => $cfgValue)
-    {
-        $pfn = $cfgValue['enable'] ? 'enableLogging' : 'disableLogging';
-        $g_tlLogger->$pfn($loggerKey);
-    }
+  foreach($g_loggerCfg as $loggerKey => $cfgValue)
+  {
+    $pfn = $cfgValue['enable'] ? 'enableLogging' : 'disableLogging';
+    $g_tlLogger->$pfn($loggerKey);
+  }
 }
 
 if( !is_null(config_get('loggerFilter')) )
@@ -1422,7 +1422,3 @@ if( !is_null(config_get('loggerFilter')) )
 
 $g_tlLogger->startTransaction();
 set_error_handler("watchPHPErrors");
-
-// 20130815 - franciscom
-// --------------------------------------------------------------------------------------
-?>

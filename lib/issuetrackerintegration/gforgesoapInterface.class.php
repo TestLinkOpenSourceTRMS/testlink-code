@@ -24,7 +24,7 @@ class gforgesoapInterface extends issueTrackerInterface
 	protected $APIClient;
 	protected $authToken;
 	protected $statusDomain = array();
-  protected $statusVerbose = "";
+	protected $statusVerbose = "";
 	protected $l18n;
 	protected $labels = array('duedate' => 'its_duedate_with_separator');
 	
@@ -43,7 +43,7 @@ class gforgesoapInterface extends issueTrackerInterface
 		$this->defaultResolvedStatus[] = 'Resolved';
 		$this->defaultResolvedStatus[] = 'Closed';
 		$this->defaultResolvedStatus[] = 'Fixed';
-    $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
 		$this->setCfg($config);
 		$this->completeCfg();
@@ -64,17 +64,17 @@ class gforgesoapInterface extends issueTrackerInterface
 	{
 		$base = trim($this->cfg->uribase,"/") . '/' ;
 		if( !property_exists($this->cfg,'uriwsdl') )
-	    {
-	    	$this->cfg->uriwsdl = $base . 'gf/xmlcompatibility/soap5/?wsdl';
+			{
+				$this->cfg->uriwsdl = $base . 'gf/xmlcompatibility/soap5/?wsdl';
 			}
 		if( !property_exists($this->cfg,'uriview') )
-	    {
-	    	$this->cfg->uriview = $base . 'gf/project/'.$_SESSION['testprojectName'].'/tracker/?action=TrackerItemEdit&amp;tracker_item_id=';
+			{
+				$this->cfg->uriview = $base . 'gf/project/'.$_SESSION['testprojectName'].'/tracker/?action=TrackerItemEdit&amp;tracker_item_id=';
 			}
 		// $base/gf/project/valati/tracker/?action=TrackerItemAdd&tracker_id=1841
 		if( !property_exists($this->cfg,'uricreate') )
-	    {
-	    	$this->cfg->uricreate = $base . 'gf/project/'.$_SESSION['testprojectName'].'/tracker/';
+			{
+				$this->cfg->uricreate = $base . 'gf/project/'.$_SESSION['testprojectName'].'/tracker/';
 			}
 	}
 
@@ -96,7 +96,7 @@ class gforgesoapInterface extends issueTrackerInterface
 	public function getIssueStatusCode($issueID)
 	{
 		$issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->statusCode : false;
+		return (!is_null($issue) && is_object($issue)) ? $issue->statusCode : false;
 	}
 
 		
@@ -111,7 +111,7 @@ class gforgesoapInterface extends issueTrackerInterface
 	function getIssueStatusVerbose($issueID)
 	{
 		$issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->statusVerbose : null;
+		return (!is_null($issue) && is_object($issue)) ? $issue->statusVerbose : null;
 	}
 	
 	
@@ -124,7 +124,7 @@ class gforgesoapInterface extends issueTrackerInterface
 	function getIssueSummary($issueID)
 	{
 		$issue = $this->getIssue($issueID);
-		return !is_null($issue) ? $issue->summary : null;
+		return (!is_null($issue) && is_object($issue)) ? iconv("UTF-8", "ISO-8859-1", $issue->summary) : null;
 	}
 	
 	/**
@@ -139,7 +139,7 @@ class gforgesoapInterface extends issueTrackerInterface
 			{
 				$issue = $this->APIClient->getTrackerItemFull($this->authToken, $issueID);
 				//new dBug($issue);
-            
+						
 				$target = array();
 				$dataID = array();
 				foreach($issue->extra_field_data as $efd)
@@ -147,14 +147,13 @@ class gforgesoapInterface extends issueTrackerInterface
 						$target[] = $efd->tracker_extra_field_id;
 						$dataID[] = $efd->tracker_extra_field_data_id;
 					}
-          	
+						
 				// retrieve Status extra field (type 7)
 				$extraFields = $this->APIClient->getTrackerExtraFields($this->authToken,
 																										$issue->tracker_id,
 																										STATUSTYPEID,
 																										null, null, null, null, null, null);
 				//new dBug($extraFields);
-
 				if (!is_null($extraFields))
 					$statusObj = $extraFields[0];
 				else
@@ -165,7 +164,7 @@ class gforgesoapInterface extends issueTrackerInterface
 																																						 $statusObj->tracker_extra_field_id,
 																																						 '', -1, -1);
 				//new dBug($this->statusDomain);
-            
+						
 				// We are going to have a set of standard properties
 				$issue->IDHTMLString = "<b>{$issueID} : </b>";
 				$issue->statusCode = $issue->status_id;
@@ -181,7 +180,7 @@ class gforgesoapInterface extends issueTrackerInterface
 				tLog("GFORGE Ticket ID $issueID - " . $e->getMessage(), 'WARNING');
 				$issue = null;
 			}
-        
+				
 		return $issue;
 	}
 
@@ -237,7 +236,7 @@ class gforgesoapInterface extends issueTrackerInterface
 				catch (SoapFault $f)
 					{
 						$this->connected = false;
-						tLog(__CLASS__."."__FUNCTION__ . " - SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage()}, detail: {$f->detail})","ERROR");
+						tLog(__CLASS__.".".__FUNCTION__ . " - SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage()}, detail: {$f->detail})","ERROR");
 					}
 			}
 		return $this->connected;
@@ -281,7 +280,7 @@ class gforgesoapInterface extends issueTrackerInterface
 				$res['msg'] = "SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage()})";
 				if($my['opt']['log'])
 					{
-						tLog("SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage()}, detail: {$f->detail})","ERROR");
+						tLog(__CLASS__.".".__FUNCTION__ . " - SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage()}, detail: {$f->detail})","ERROR");
 					}	
 			}
 		return $res;
@@ -319,16 +318,16 @@ class gforgesoapInterface extends issueTrackerInterface
 			"<username>GFORGE LOGIN NAME</username>\n" .
 			"<password>GFORGE PASSWORD</password>\n" .
 			"<uribase>http://gforge.org/</uribase>\n" .
-      "<!-- Configure This if you want NON STANDARD BEHAVIOR for considered issue resolved -->\n" .
-      "<resolvedstatus>\n" .
-      "<status>Resolved</status>\n" .
-      "<status>Closed</status>\n" .
-      "</resolvedstatus>\n" .
+			"<!-- Configure This if you want NON STANDARD BEHAVIOR for considered issue resolved -->\n" .
+			"<resolvedstatus>\n" .
+			"<status>Resolved</status>\n" .
+			"<status>Closed</status>\n" .
+			"</resolvedstatus>\n" .
 			"</issuetracker>\n";
 		return $template;
 	}
 
- 	
+	
 	/**
 	 *
 	 * @author francisco.mancardi@gmail.com>
@@ -340,39 +339,39 @@ class gforgesoapInterface extends issueTrackerInterface
 
 
  /**
-   * Set resolved status from config
-   *
-   * default implementation must be overloaded: resolved status code is moving
-   * 
-   * @author Aurelien TISNE <aurelien.tisne@c-s.fr>
-   **/
-  public function setResolvedStatusCfg()
-  {
-    if( property_exists($this->cfg,'resolvedstatus') )
-    {
-      $statusCfg = (array)$this->cfg->resolvedstatus;
-    }
-    else
-    {
-      $statusCfg['status'] = $this->defaultResolvedStatus;
-    }
-    $this->resolvedStatus = new stdClass();
-    foreach($statusCfg['status'] as $cfx)
-    {
-      $this->resolvedStatus->byName[] = $cfx;
-    }
+	 * Set resolved status from config
+	 *
+	 * default implementation must be overloaded: resolved status code is moving
+	 * 
+	 * @author Aurelien TISNE <aurelien.tisne@c-s.fr>
+	 **/
+	public function setResolvedStatusCfg()
+	{
+		if( property_exists($this->cfg,'resolvedstatus') )
+		{
+			$statusCfg = (array)$this->cfg->resolvedstatus;
+		}
+		else
+		{
+			$statusCfg['status'] = $this->defaultResolvedStatus;
+		}
+		$this->resolvedStatus = new stdClass();
+		foreach($statusCfg['status'] as $cfx)
+		{
+			$this->resolvedStatus->byName[] = $cfx;
+		}
 	}
 
-  /**
-   * Retrieve the status label of an issue
-   *
-   * @param $issue Current ITS issue
-   * @param $statusObj Extra field 'Status' of the issue $issue
-   *
-   * @return string The label of the status
-   *
-   * @author Aurelien TISNE <aurelien.tisne@c-s.fr>
-   **/
+	/**
+	 * Retrieve the status label of an issue
+	 *
+	 * @param $issue Current ITS issue
+	 * @param $statusObj Extra field 'Status' of the issue $issue
+	 *
+	 * @return string The label of the status
+	 *
+	 * @author Aurelien TISNE <aurelien.tisne@c-s.fr>
+	 **/
 	function getStatusLabel($issue, $statusObj)
 	{
 		$status="Not found";
@@ -386,11 +385,10 @@ class gforgesoapInterface extends issueTrackerInterface
 		foreach($this->statusDomain as $statusElement) {
 			if ($statusElement->element_id == $statusValueID) {
 				$status = $statusElement->element_name;
-            break;
+						break;
 			}
 		}
-
-		return $status;
+		return iconv("UTF-8", "ISO-8859-1",$status);
 	}
 
 	/**
@@ -411,7 +409,7 @@ class gforgesoapInterface extends issueTrackerInterface
 	 **/
 	function buildSummaryHTMLString($issue)
 	{
-		$summary = $issue->summary;
+		$summary = iconv("UTF-8", "ISO-8859-1", $issue->summary);
 /* no duedate in standard fields
 		$strDueDate = $this->helperParseDate($issue->duedate);
 		if( !is_null($strDueDate) )
@@ -422,80 +420,80 @@ class gforgesoapInterface extends issueTrackerInterface
 		return $summary;
 	}
 
-  public static function checkEnv()
-  {
-    $ret = array();
-    $ret['status'] = extension_loaded('soap');
-    $ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
-    return $ret;
-  }
+	public static function checkEnv()
+	{
+		$ret = array();
+		$ret['status'] = extension_loaded('soap');
+		$ret['msg'] = $ret['status'] ? 'OK' : 'You need to enable SOAP extension';
+		return $ret;
+	}
 
-  /**
-   * Creates an association in GForge between a tracker item and a Testlink execution test
-   *
-   * @return 
-   *
-   * @version 1.0
-   * @author Daniel Nistor <daniel.nistor@c-s.ro>
-   **/
-  function createBugAssociation($bugId, $testId)
-  {
-    if (!$this->isConnected())
-      return null;
-    
-    $status = null;
-    try{
-      $status =  $this->APIClient->addAssociation($this->authToken, 'Testlink', $testId, 'trackeritem', $bugId, 'Created using Testlink');
-    } catch(SoapFault $f) {
-			tLog(__CLASS__."."__FUNCTION__ . " - SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage()}, detail: {$f->detail})","ERROR");
-    }
-    
-    return $status; 
-  }
-	
-  /**
-   * Deletes an association in GForge between a tracker item and a Testlink execution test
-   *
-   * @return 
-   *
-   * @version 1.0
-   * @author Daniel Nistor <daniel.nistor@c-s.ro>
-   **/
-  function deleteBugAssociation($bugId, $testId)
+	/**
+	 * Creates an association in GForge between a tracker item and a Testlink execution test
+	 *
+	 * @return 
+	 *
+	 * @version 1.0
+	 * @author Daniel Nistor <daniel.nistor@c-s.ro>
+	 **/
+	function createBugAssociation($bugId, $testId)
 	{
 		if (!$this->isConnected())
 			return null;
 		
 		$status = null;
 		try{
-			$status =  $this->APIClient->deleteAssociation($this->authToken, 'Testlink', $testId, 'trackeritem', $bugId);
+			$status =	 $this->APIClient->addAssociation($this->authToken, 'Testlink', $testId, 'trackeritem', $bugId, 'Created using Testlink');
 		} catch(SoapFault $f) {
-			tLog(__CLASS__."."__FUNCTION__ . " - SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage(), detail: {$f->detail}})","ERROR");
+			tLog(__CLASS__.".".__FUNCTION__ . " - SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage()}, detail: {$f->detail})","ERROR");
+		}
+		
+		return $status; 
+	}
+	
+	/**
+	 * Deletes an association in GForge between a tracker item and a Testlink execution test
+	 *
+	 * @return 
+	 *
+	 * @version 1.0
+	 * @author Daniel Nistor <daniel.nistor@c-s.ro>
+	 **/
+	function deleteBugAssociation($bugId, $testId)
+	{
+		if (!$this->isConnected())
+			return null;
+		
+		$status = null;
+		try{
+			$status =	 $this->APIClient->deleteAssociation($this->authToken, 'Testlink', $testId, 'trackeritem', $bugId);
+		} catch(SoapFault $f) {
+			tLog(__CLASS__.".".__FUNCTION__ . " - SOAP Fault: (code: {$f->getCode()}, string: {$f->getMessage()}, detail: {$f->detail})","ERROR");
 		}
 
 		return $status;
 	}
 
-	/*    
+	/*		
 				getTrackerItem() 
 
 				$issue (object)
-				tracker_id 			371
-				tracker_item_id 	7091
-				status_id 			0
-				priority 			3
-				submitted_by 		14030
-				open_date 			2011-03-31 03:00:00
-				close_date 			2011-04-07 03:00:00
-				summary 			Add support for Gforge6
-				details 			Add support for Gforge As 6.0 (hierarchical tracker items)
-				last_modified_date 	2011-05-26 20:31:40
-				last_modified_by 	14030
-				sort_order 			0
-				parent_id 			0
-				has_subitems 		[empty string]
-				subitems_count 		0    
+				tracker_id			371
+				tracker_item_id		7091
+				status_id				0
+				priority			3
+				submitted_by		14030
+				open_date				2011-03-31 03:00:00
+				close_date			2011-04-07 03:00:00
+				summary				Add support for Gforge6
+				details				Add support for Gforge As 6.0 (hierarchical tracker items)
+				last_modified_date	2011-05-26 20:31:40
+				last_modified_by	14030
+				sort_order			0
+				parent_id				0
+				has_subitems		[empty string]
+				subitems_count		0		 
 	*/
-    
+		
 }
 ?>

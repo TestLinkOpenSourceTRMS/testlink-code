@@ -1861,30 +1861,27 @@ class testcase extends tlObjectWithAttachments
     returns:
   
     rev: 
-        20100521 - franciscom - BUGID 3481 - preconditions are not copied
-        20080119 - franciscom - tc_external_id management
   
   */
   function copy_tcversion($id,$from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $now = $this->db->db_now();
-      $sql="/* $debugMsg */ " . 
+    $now = $this->db->db_now();
+    $sql = "/* $debugMsg */ " . 
            " INSERT INTO {$this->tables['tcversions']} " . 
            " (id,version,tc_external_id,author_id,creation_ts,summary, " . 
-           "  importance,execution_type,preconditions) " .
+           "  importance,execution_type,preconditions,estimated_exec_duration) " .
            " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
            "        tc_external_id, " .
            "        {$user_id} AS author_id, {$now} AS creation_ts," .
-           "        summary,importance,execution_type, preconditions" .
+           "        summary,importance,execution_type, preconditions,estimated_exec_duration " .
            " FROM {$this->tables['tcversions']} " .
            " WHERE id={$from_tcversion_id} ";
     $result = $this->db->exec_query($sql);  
      
-      // BUGID 3431
-      // copy custom fields values JUST DESIGN AREA
-      $this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' => $from_tcversion_id),
-                        array('id' => $id, 'tcversion_id' => $to_tcversion_id));
+    // copy custom fields values JUST DESIGN AREA
+    $this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' => $from_tcversion_id),
+                                      array('id' => $id, 'tcversion_id' => $to_tcversion_id));
     
       
     // Need to get all steps

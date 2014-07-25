@@ -670,11 +670,6 @@ class TestlinkXMLRPCServer extends IXR_Server
           // this means we aren't supposed to guess the buildid
           if(false == $this->checkGuess())       
           {
-            //if( $options['feedbackOnGuess'] )
-            //{  
-            //  $this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
-            // }
-
             $this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);        
             $status=false;
           }
@@ -1217,13 +1212,21 @@ class TestlinkXMLRPCServer extends IXR_Server
    * 
    * @param int $args["buildname"] - optional (see $args["buildid"])
    *
+   * @param int $args["options"] - optional 
+   *                               options['getBugs'] = true / false
    *
    *
    * @return mixed $resultInfo
-   *               if execution found, array with these keys:
+   *               if execution found
+   *               array that contains a map with these keys:
    *               id (execution id),build_id,tester_id,execution_ts,
    *               status,testplan_id,tcversion_id,tcversion_number,
    *               execution_type,notes.
+   *
+   *               If user has requested getbugs, then a key bugs (that is an array)
+   *               will also exists. 
+   *               
+   *               
    *
    *               if test case has not been execute,
    *               array('id' => -1)
@@ -1238,6 +1241,10 @@ class TestlinkXMLRPCServer extends IXR_Server
       $this->_setArgs($args);
       $resultInfo = array();
       $status_ok=true;
+
+      $options = new stdClass();
+      $options->getBugs = 0;
+
                 
       // Checks are done in order
       $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity');
@@ -1251,6 +1258,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 
       if( $status_ok )
       {
+        if( $this->_isParamPresent(self::$optionsParamName,$msg_prefix) )
+        {
+          $dummy = $this->args[self::$optionsParamName];
+          if( is_array($dummy) )
+          {
+            foreach($dummy as $key => $value)
+            {
+              $options->$key = ($value > 0) ? 1 : 0;
+            }
+          }
+        }
+
         // Now we can check for Optional parameters
         if($this->_isBuildIDPresent() || $this->_isBuildNamePresent())
         {
@@ -1274,6 +1293,9 @@ class TestlinkXMLRPCServer extends IXR_Server
           }  
         }  
       }  
+
+
+
 
       if( $status_ok )
       {
@@ -1303,9 +1325,18 @@ class TestlinkXMLRPCServer extends IXR_Server
         }  
         else
         {
-          // OK Select * is not a good practice but ...
-          $sql = "SELECT * FROM {$this->tables['executions']} WHERE id=" . key($rs);
-          $resultInfo[] = $this->dbObj->fetchFirstRow($sql);
+          // OK Select * is not a good practice but ... (fman)
+          $targetID = intval(key($rs));
+          $sql = "SELECT * FROM {$this->tables['executions']} WHERE id=" . $targetID;
+          $resultInfo[0] = $this->dbObj->fetchFirstRow($sql);
+
+          if($options->getBugs)
+          {
+            $resultInfo[0]['bugs'] = array();
+            $sql = " SELECT DISTINCT bug_id FROM {$this->tables['execution_bugs']} " . 
+                   " WHERE execution_id = " . $targetID;
+            $resultInfo[0]['bugs'] = (array)$this->dbObj->get_recordset($sql);       
+          }  
         }  
       }
       
@@ -1618,8 +1649,8 @@ class TestlinkXMLRPCServer extends IXR_Server
    *        keys  requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
    *
    * @param int $args["active"]  OPTIONAL
-     * @param int $args["public"]  OPTIONAL
-     *   
+   * @param int $args["public"]  OPTIONAL
+   *   
    * @return mixed $resultInfo
    */
   public function createTestProject($args)
@@ -1667,14 +1698,12 @@ class TestlinkXMLRPCServer extends IXR_Server
       $item->is_public = ($optional[self::$publicParamName] > 0) ? 1 : 0;
       $item->color = '';
       
-      // $info=$this->tprojectMgr->create($name,'',$options,$notes,$active,$prefix,$public);
-            
       $info=$this->tprojectMgr->create($item);
 
       $resultInfo = array();
       $resultInfo[]= array("operation" => __FUNCTION__,
-                               "additionalInfo" => null,
-                               "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
+                           "additionalInfo" => null,
+                           "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
       return $resultInfo;
     }
     else

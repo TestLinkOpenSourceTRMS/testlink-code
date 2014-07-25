@@ -99,6 +99,7 @@ function auth_does_password_match(&$user,$cleartext_password)
   		$msg[ERROR_LDAP_UPDATE_FAILED] = lang_get('error_ldap_update_failed');
   		$msg[ERROR_LDAP_USER_NOT_FOUND] = lang_get('error_ldap_user_not_found');
   		$msg[ERROR_LDAP_BIND_FAILED] = lang_get('error_ldap_bind_failed');
+  		$msg[ERROR_LDAP_START_TLS_FAILED] = lang_get('error_ldap_start_tls_failed');
   		
   		$dummy = ldap_authenticate($user->login, $cleartext_password);
   		$ret->status_ok = $dummy->status_ok;

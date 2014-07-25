@@ -48,10 +48,20 @@ function ldap_connect_bind( $p_binddn = '', $p_password = '' )
 	{
 		ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $authCfg['ldap_version']);
 		ldap_set_option($t_ds, LDAP_OPT_REFERRALS, 0);
-	    $bind_method = $authCfg['ldap_tls'] ? 'ldap_start_tls' :'ldap_bind'; 
 
 
 		$ret->handler=$t_ds;
+
+		# Start TLS if enabled
+		if ($authCfg['ldap_tls'])
+		{
+			if (!ldap_start_tls($t_ds))
+			{
+				$ret->status = ERROR_LDAP_START_TLS_FAILED;
+				$ret->info = 'ERROR_LDAP_START_TLS_FAILED';
+				return $ret;
+			}
+		}
 
 		# If no Bind DN and Password is set, attempt to login as the configured
 		#  Bind DN.
@@ -63,10 +73,10 @@ function ldap_connect_bind( $p_binddn = '', $p_password = '' )
 
 		if ( !is_blank( $p_binddn ) && !is_blank( $p_password ) ) 
 		{
-			$t_br = $bind_method( $t_ds, $p_binddn, $p_password );
+			$t_br = ldap_bind( $t_ds, $p_binddn, $p_password );
 		} else {
 			# Either the Bind DN or the Password are empty, so attempt an anonymous bind.
-			$t_br = $bind_method( $t_ds );
+			$t_br = ldap_bind( $t_ds );
 		}
 		
 		if ( !$t_br ) 

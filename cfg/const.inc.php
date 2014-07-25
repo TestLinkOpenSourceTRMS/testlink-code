@@ -545,6 +545,7 @@ define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',		1401 );
 define( 'ERROR_LDAP_UPDATE_FAILED',				1402 );
 define( 'ERROR_LDAP_USER_NOT_FOUND',			1403 );
 define( 'ERROR_LDAP_BIND_FAILED',				1404 );
+define( 'ERROR_LDAP_START_TLS_FAILED',          1405 );
 
 
 // --------------------------------------------------------------------------------------

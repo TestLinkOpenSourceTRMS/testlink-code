@@ -31,10 +31,8 @@
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
-{* TICKET 5251: only use validateForm() to validate result filter when result filter is actually enabled *}
 <form method="post" id="filter_panel_form" name="filter_panel_form"
-
-      {if $control->formAction} action="{$control->formAction}" {/if}
+      {if $control->formAction } action="{$control->formAction}" {/if}
 
       {if $control->filters.filter_result}
         onsubmit="return validateForm(this);document.getElementById('filter_result_method').disabled=false;"

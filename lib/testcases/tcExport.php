@@ -8,7 +8,7 @@
  * Scope: test case and test suites export
  * 
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.11
  * 
  */
 require_once("../../config.inc.php");
@@ -20,16 +20,8 @@ $templateCfg = templateConfiguration();
 $tcase_mgr = null;
 $tree_mgr = new tree($db);
 $args = init_args();
+$gui = initializeGui($args);
 
-$gui = new stdClass();
-$gui->do_it = 1;
-$gui->nothing_todo_msg = '';
-$gui->export_filename = '';
-$gui->page_title = '';
-$gui->object_name='';
-$gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
-
-$exporting_just_one_tc = 0;
 $node_id = $args->container_id;
 $check_children = 0;
 
@@ -61,8 +53,7 @@ else
   // Exporting situations:
   // All test cases in test suite.
   // One test case.
-  $exporting_just_one_tc = ($args->tcase_id && $args->tcversion_id);
-  if($exporting_just_one_tc)
+  if($gui->oneTestCaseExport)
   {
     $tcase_mgr = new testcase($db);
     $tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id,null,array('output' => 'essential'));
@@ -113,15 +104,16 @@ if ($args->doExport)
   {
     case 'XML':
       $pfn = 'exportTestSuiteDataToXML';
-      if ($exporting_just_one_tc)
+      if ($gui->oneTestCaseExport)
       {
         $pfn = 'exportTestCaseDataToXML';
       }
       break;
   }
+
   if ($pfn)
   {
-    if ($exporting_just_one_tc)
+    if ($gui->oneTestCaseExport)
     {
       $args->optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
       $content = $tcase_mgr->$pfn($args->tcase_id,$args->tcversion_id,$args->tproject_id,null,$args->optExport);
@@ -201,4 +193,30 @@ function init_args()
   $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
   return $args;
+}
+
+
+function initializeGui($argsObj)
+{
+  $guiObj = new stdClass();
+  $guiObj->do_it = 1;
+  $guiObj->nothing_todo_msg = '';
+  $guiObj->export_filename = '';
+  $guiObj->page_title = '';
+  $guiObj->object_name='';
+  $guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : ''; 
+
+  $guiObj->oneTestCaseExport = ($argsObj->tcase_id && $argsObj->tcversion_id);
+
+  if($argsObj->useRecursion || !$guiObj->oneTestCaseExport)
+  {
+    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?" .
+                              'edit=testsuite&id=' . intval($argsObj->container_id) . "'"; 
+  } 
+  else
+  {
+    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?" .
+                              'edit=testcase&id=' . intval($argsObj->tcase_id) . "'"; 
+  } 
+  return $guiObj;
 }

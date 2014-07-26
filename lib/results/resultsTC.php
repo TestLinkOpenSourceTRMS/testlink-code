@@ -576,8 +576,19 @@ function createSpreadsheet($gui,$args,$buildIDSet)
                            'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
                            'result_on_last_build' => null,'last_execution' => null));
 
+  // contribution to have more than 26 columns   
   $cellRange = range('A','Z');
-  // $colors4cell = array('font' => array('color' => PHPExcel_Style_Color::COLOR_RED));
+  $cellRangeLen = count($cellRange);
+  for($idx = 0; $idx < $cellRangeLen; $idx++)
+  {
+    for($j = 0; $j < $cellRangeLen; $jdx++) 
+    {
+      $cellRange[] = $cellRange[$idx] . $cellRange[$jdx];
+    }
+  }
+
+
+
 
   $styleReportContext = array('font' => array('bold' => true));
   $styleDataHeader = array('font' => array('bold' => true),

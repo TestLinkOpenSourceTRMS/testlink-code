@@ -141,6 +141,7 @@ if($do_display)
   $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 
                    'exec_type' => $args->executionType, 'importance' => $args->importance,
                    'cfields' => $args->control_panel['filter_custom_fields'],
+                   'workflow_status' => $args->workflow_status,
                    'tcase_name' => $args->control_panel['filter_testcase_name']);
 
 
@@ -299,7 +300,11 @@ function init_args(&$tproject_mgr)
   {
     $args->keywordsFilterType = $session_data[$ak];
   }
-  
+
+
+  $ak = 'filter_workflow_status';
+  $args->workflow_status = isset($session_data[$ak]) ? $session_data[$ak] : null; 
+
   $args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
   $args->activity = isset($_REQUEST['activity']) ? $_REQUEST['activity'] : '';
 

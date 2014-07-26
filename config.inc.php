@@ -1258,6 +1258,7 @@ $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_keywords = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_active_inactive = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_execution_type = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_workflow_status = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->advanced_filter_mode_choice = ENABLED;
 

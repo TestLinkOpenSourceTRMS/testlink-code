@@ -6750,14 +6750,15 @@ class testplan extends tlObjectWithAttachments
     //         " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status ";
     // 
     // $fullEID = $this->helperConcatTCasePrefix($safe['tplan_id']);
-    $commonFields = " SELECT NH_TCASE.name AS tcase_name, NH_TCASE.id AS tcase_id,NH_TCASE.id AS tc_id,TPTCV.tcversion_id,TCV.version," .
-                     " TCV.tc_external_id AS external_id, TCV.execution_type," .
-                     " TPTCV.id AS feature_id," .
-                     ($my['options']['addPriority'] ? "(TPTCV.urgency * TCV.importance) AS priority," : '') .
-                     " TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
-                     " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status, " .
-                     " E.execution_duration, " .
-                     ($my['options']['addImportance'] ? " TCV.importance," : '') .
+    $commonFields = " SELECT NH_TCASE.name AS tcase_name, NH_TCASE.id AS tcase_id, " .
+                    " NH_TCASE.id AS tc_id,TPTCV.tcversion_id,TCV.version," .
+                    " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.status," .
+                    " TPTCV.id AS feature_id," .
+                    ($my['options']['addPriority'] ? "(TPTCV.urgency * TCV.importance) AS priority," : '') .
+                    " TPTCV.platform_id,PLAT.name AS platform_name,TPTCV.node_order AS execution_order,".
+                    " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status, " .
+                    " E.execution_duration, " .
+                    ($my['options']['addImportance'] ? " TCV.importance," : '') .
                     $this->helperConcatTCasePrefix($safe['tplan_id']) . "  AS full_external_id ";
 
     // used on tester assignment feature when working at test suite level

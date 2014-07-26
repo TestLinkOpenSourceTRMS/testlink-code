@@ -5137,7 +5137,7 @@ class testcase extends tlObjectWithAttachments
       $keySet = implode(',',array_keys($recordset));
       $sql = "/* $debugMsg */ " .       
              " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
-             " TCV.version,TCV.execution_type,TCV.importance {$cfSelect} " .
+             " TCV.version,TCV.execution_type,TCV.importance,TCV.status {$cfSelect} " .
              " FROM {$this->tables['tcversions']} TCV " .
              " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
              " ON NH_TCVERSION.id = TCV.id {$cfJoin} " .
@@ -5149,7 +5149,6 @@ class testcase extends tlObjectWithAttachments
       // Processing has to be done no matter value of cfQty
       // (not doing this has produced in part TICKET 4704,4708)
       // entries whose count() < number of custom fields has to be removed
-      // TICKET 4708
       if( !is_null($recordset) )
       {
         $key2loop = array_keys($recordset);

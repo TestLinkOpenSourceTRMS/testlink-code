@@ -6,14 +6,12 @@
  * @filesource  specview.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2004-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2004-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.8
- *
- * 20130706 - franciscom - TICKET 5788: test case execution order not working on RIGHT PANE
- *
+ * @since 1.9.11
+ 
  * 
  **/ 
 
@@ -145,7 +143,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
                          'add_custom_fields' => 0) + (array)$options;
 
   $my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 
-               'importance' => null, 'cfields' => null);
+                         'importance' => null, 'cfields' => null);
   foreach( $my as $key => $settings)
   {
     if( !is_null($$key) && is_array($$key) )
@@ -172,7 +170,8 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 
   $key2map = array('keyword_id' => 'keywords', 'tcase_id' => 'testcases', 
                    'execution_type' => 'exec_type', 'importance' => 'importance',
-                   'cfields' => 'cfields','tcase_name' => 'tcase_name' );
+                   'cfields' => 'cfields','tcase_name' => 'tcase_name',
+                   'status' => 'workflow_status');
 
   $pfFilters = array('tcase_node_type_id' => $hash_descr_id['testcase']);
   foreach($key2map as $tk => $fk)
@@ -491,8 +490,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   $tck_map = null;
   $tobj_mgr = new testproject($dbHandler);
 
-  // TICKET 5788: test case execution order not working on RIGHT PANE
-  // 20130706 - We can try with 'order_cfg'
   $opt = null; 
   if($specViewType =='testplan')
   {
@@ -500,16 +497,17 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   }
   $test_spec = $tobj_mgr->get_subtree($nodeId,null,$opt);
 
-  // new dBug($test_spec);
-
   $key2loop = null;
   $useAllowed = false;
   
-  $nullCheckFilter = array('tcase_id' => false, 'importance' => false,'tcase_name' => false, 'cfields' => false);
+  $nullCheckFilter = array('tcase_id' => false, 'importance' => false,'tcase_name' => false, 
+                           'cfields' => false, 'status' => false);
+
   $zeroNullCheckFilter = array('execution_type' => false);
   $useFilter = array('keyword_id' => false) + $nullCheckFilter + $zeroNullCheckFilter;
 
   $applyFilters = false;
+
   foreach($nullCheckFilter as $key => $value)
   {
     $useFilter[$key] = !is_null($filters[$key]);
@@ -522,7 +520,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     $applyFilters = $applyFilters || $useFilter[$key];
   }
   
-  
+
   if( $useFilter['tcase_id'] )
   {
     $testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
@@ -572,8 +570,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
         unset($itemSet[$key]);
       }
     }
+
     if( count($itemSet) > 0 && 
-      ($useFilter['execution_type'] || $useFilter['importance'] || $useFilter['cfields']) )
+        ($useFilter['execution_type'] || $useFilter['importance'] || $useFilter['cfields'] || 
+         $useFilter['status']) 
+      )
     {
       // This logic can have some Potential Performance ISSUE - 20120619 - fman
       $targetSet = array_keys($itemSet);
@@ -581,7 +582,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 
       $getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
-      // die($specViewType);
 
       switch($specViewType)
       {
@@ -612,11 +612,12 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
                 }
               }
             }
-            
+
             if( !is_null($item) )
             {
               if( $useFilter['execution_type'] && ($item['execution_type'] != $filters['execution_type']) || 
-                  $useFilter['importance'] && ($item['importance'] != $filters['importance']) )
+                  $useFilter['importance'] && ($item['importance'] != $filters['importance']) || 
+                  $useFilter['status'] && ($item['status'] != $filters['status']))
               {
                 $tspecKey = $itemSet[$targetTestCase];  
                 $test_spec[$tspecKey]=null; 

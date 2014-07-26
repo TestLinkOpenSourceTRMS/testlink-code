@@ -256,8 +256,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                                             'filter_keywords',
                                                             'filter_priority',
                                                             'filter_execution_type',
-                                                          // enabled user filter when assigning testcases
-                                                          'filter_assigned_user',
+                                                            // enabled user filter when assigning testcases
+                                                            'filter_assigned_user',
                                                             'filter_custom_fields',
                                                             'filter_result'),
                                        'plan_add_mode' => array('filter_tc_id',
@@ -267,6 +267,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                                                 // 'filter_active_inactive',
                                                                 'filter_importance',
                                                                 'filter_execution_type',
+                                                                'filter_workflow_status',
                                                                 'filter_custom_fields'));
 
   /**
@@ -285,8 +286,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * @var array
    */
    
-  // TICKET 5176: Possibility to filter by Platform - changes in 'plan_mode'
-  // 
   private $mode_setting_mapping = array('edit_mode' => array('setting_refresh_tree_on_action'),
                                         'execution_mode' => array('setting_testplan',
                                                                   'setting_build',

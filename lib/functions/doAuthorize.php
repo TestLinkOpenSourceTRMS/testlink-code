@@ -7,13 +7,13 @@
  *
  * @filesource  doAuthorize.php
  * @package     TestLink
- * @author      Chad Rosen, Martin Havlat
- * @copyright   2003-2013, TestLink community 
- * @link        http://www.teamst.org/
+ * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
+ * @copyright   2003-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.11
  */
 
 require_once("users.inc.php");
@@ -184,7 +184,7 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
     else
     {
       logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",
-              $user->dbID,"users");
+                    $user->dbID,"users");
     } 
 
   }
@@ -228,6 +228,7 @@ function auth_does_password_match(&$userObj,$cleartext_password)
       $msg[ERROR_LDAP_UPDATE_FAILED] = lang_get('error_ldap_update_failed');
       $msg[ERROR_LDAP_USER_NOT_FOUND] = lang_get('error_ldap_user_not_found');
       $msg[ERROR_LDAP_BIND_FAILED] = lang_get('error_ldap_bind_failed');
+      $msg[ERROR_LDAP_START_TLS_FAILED] = lang_get('error_ldap_start_tls_failed');
       
       $xx = ldap_authenticate($userObj->login, $cleartext_password);
       $ret->status_ok = $xx->status_ok;

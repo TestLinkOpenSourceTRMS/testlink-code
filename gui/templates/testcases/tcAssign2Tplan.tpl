@@ -17,9 +17,8 @@ rev: BUGID 2378
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 
 function check_action_precondition(container_id,action)
@@ -84,8 +83,7 @@ function check_action_precondition(container_id,action)
 <input type="submit" id="add2testplan"  name="add2testplan" value="{$labels.btn_add}"       
        onclick="return check_action_precondition('checkboxes','default');" />
 {/if}
-<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-  			                   onclick="javascript:history.back();" />  
+<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:{$gui->cancelActionJS};" />  
 </form>
 {else}
   {$labels.no_test_plans}

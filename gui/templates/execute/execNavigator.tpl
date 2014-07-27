@@ -65,7 +65,7 @@ Ext.onReady(function() {
 function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id,mode) 
 {
   wargs = "tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + "&platform_id=" + platform_id + "&build_id=" + build_id;  
-  wargs = wargs + "&exportContent=" + mode;
+  wargs = wargs + "&closeOnCancel=1&exportContent=" + mode;
   wref = window.open(fRoot+"lib/plan/planExport.php?"+wargs,
                      windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
   wref.focus();

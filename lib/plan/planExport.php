@@ -17,13 +17,13 @@
  * generates file format that can be used to import results
  * 
  * @filesource  planExport.php
- * @package   TestLink
- * @author    Francisco Mancardi
- * @copyright   2003-2012, TestLink community 
- * @link    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @author      Francisco Mancardi
+ * @copyright   2003-2014, TestLink community 
+ * @link        http://www.testlink.org/
  * 
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.11
  *
  **/
 require_once("../../config.inc.php");
@@ -86,6 +86,7 @@ function init_args()
   $args = new stdClass();
   $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
   $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
+  $args->closeOnCancel = isset($_REQUEST['closeOnCancel']) ? $_REQUEST['closeOnCancel'] : 0;
 
   // ------------------------------------------------------------------------------------------------
   // IMPORTANT NOTICE - 20101101 - franciscom
@@ -133,6 +134,7 @@ function initializeGui(&$argsObj,&$tplanMgr)
   $guiObj = new stdClass();
   $guiObj->do_it = 1;
   $guiObj->nothing_todo_msg = '';
+  $guiObj->closeOnCancel = $argsObj->closeOnCancel;
   
   // If there is a platform setted -> use in name.
   if( $argsObj->platform_id > 0 )

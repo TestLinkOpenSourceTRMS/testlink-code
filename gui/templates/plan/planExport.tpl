@@ -8,7 +8,7 @@ internal revisions
 *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
-             view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
+             view_file_format_doc,export_with_keywords,btn_export,btn_cancel,view_file_format_doc'} 
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -63,7 +63,7 @@ function validateForm(f)
   	<select name="exportType">
   		{html_options options=$gui->exportTypes}
   	</select>
-	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
+	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
   	</td>
   	</tr>
   	</table>
@@ -72,6 +72,7 @@ function validateForm(f)
   		<input type="submit" name="export" value="{$labels.btn_export}" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+             {elseif $gui->closeOnCancel} onclick="window.close();"
     		     {else}  onclick="javascript:history.back();" {/if} />
   	</div>
   </form>

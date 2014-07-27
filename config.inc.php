@@ -399,6 +399,24 @@ $tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
 /** Login page could show an informational text */
 $tlCfg->login_info = ''; // Empty by default
 
+
+/** 
+ * controls if operation area (buttons) starts open ('' or 'inline') or closed ('none') on:
+ * - test suite management
+ * - test case management
+ * - req. spec management
+ * - req. management
+ */
+$tlCfg->gui->op_area_display = new stdClass();
+
+// test_spec_container => test project, test suite
+$tlCfg->gui->op_area_display->test_spec_container = 'none'; // ''
+$tlCfg->gui->op_area_display->test_case = 'none'; // 'inline'
+$tlCfg->gui->op_area_display->req_spec_container = 'none'; // 'inline'
+$tlCfg->gui->op_area_display->req = 'none'; // 'inline'
+
+
+
 /**
  * @var string Availability of Test Project specific background colour
  * 'background'  -> standard behaviour for 1.6.x you can have a different

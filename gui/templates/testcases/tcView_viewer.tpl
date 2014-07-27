@@ -121,7 +121,8 @@ viewer for test case in test specification
     
   {/if}
 
-<div style="display: none;" class="groupBtn" id="tcView_viewer_tcase_control_panel">
+<div style="display:{$tlCfg->gui->op_area_display->test_case};" 
+     class="groupBtn" id="tcView_viewer_tcase_control_panel">
     <form style="display: inline;" id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />

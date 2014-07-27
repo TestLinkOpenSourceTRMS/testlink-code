@@ -41,7 +41,7 @@ viewer for requirement
   </div>
 {/if}
 
-<div style="display: none;" class="groupBtn" id="control_panel">
+<div style="display: {$tlCfg->gui->op_area_display->req};" class="groupBtn" id="control_panel">
   {if $args_grants->req_mgmt == "yes"}
     <form style="display: inline;" id="reqViewF_{$req_version_id}" name="reqViewF_{$req_version_id}" 
           action="lib/requirements/reqEdit.php" method="post">

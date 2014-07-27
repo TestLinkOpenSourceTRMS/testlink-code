@@ -5,7 +5,7 @@ Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 @internal revisions
-@since 1.9.10
+@since 1.9.11
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg"}

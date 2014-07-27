@@ -2320,10 +2320,8 @@ $TLS_href_reqmgrsystem_management = "Req. Management System Management";
 $TLS_system_config = 'System';
 
 
-
-// ----- contribution by asimon for req/reqspec search BUGID 2976 -----
 $TLS_href_search_req = "Search Requirements";
-$TLS_href_search_req_spec = "Search Requirement Specifiations";
+$TLS_href_search_req_spec = "Search Requirement Specifications";
 $TLS_caption_search_form_req = "Search Requirements";
 $TLS_caption_search_form_req_spec = "Search Requirement Specifications";
 $TLS_title_search_req = "Search";

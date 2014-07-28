@@ -20,7 +20,7 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.11
+ * @since 1.9.12
  *
  */
 
@@ -6098,6 +6098,112 @@ protected function createAttachmentTempFile()
     return $status_ok ? $resultInfo : $this->errors;
   }
 
+
+  /**
+   * Gets the result of LAST EXECUTION for a particular testcase on a test plan.
+   * If there are no filter criteria regarding platform and build,
+   * result will be get WITHOUT checking for a particular platform and build.
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["tplanid"]
+   * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
+   * @param int $args["buildid"] Mandatory => you can provide buildname as alternative
+   * @param int $args["buildname"] Mandatory => you can provide buildid (DB ID) as alternative
+   * @param int $args["platformid"] optional - BECOMES MANDATORY if Test plan has platforms
+   *                                           you can provide platformname as alternative  
+   *  
+   * @param int $args["platformname"] optional - BECOMES MANDATORY if Test plan has platforms
+   *                                           you can provide platformid as alternative  
+   *
+   *
+   * @return mixed $resultInfo
+   *
+   * @access public
+   */
+  public function getTestCaseAssignedTester($args)
+  {
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $status_ok=true;
+    $this->_setArgs($args);
+    $resultInfo=array();
+
+    // Checks are done in order
+    $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity','checkBuildID');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+    // Check if requested test case is linke to test plan
+    // if answer is yes, get link info, in order to be able to check if 
+    // we need also platform info
+    if( $status_ok )
+    {
+      $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
+                           'platform_id' => null,
+                           'build_id' => $this->args[self::$buildIDParamName]);
+
+      $tplan_id = $this->args[self::$testPlanIDParamName];
+      $tcase_id = $this->args[self::$testCaseIDParamName];
+      $filters = array('exec_status' => "ALL", 'active_status' => "ALL",
+                       'tplan_id' => $tplan_id, 'platform_id' => null);
+      
+      $info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters,array('output' => "feature_id"));
+
+      // more than 1 item => we have platforms
+      // access key => tcversion_id, tplan_id, platform_id
+      $link = current($info);
+      $link = $link[$tplan_id]; 
+      $hits = count($link);
+      $check_platform = (count($hits) > 1) || !isset($link[0]);
+    }
+
+    if( $status_ok && $check_platform )
+    {
+      // this means that platform is MANDATORY
+      if( !$this->_isParamPresent(self::$platformIDParamName,$msg_prefix) && 
+          !$this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
+      {
+        $status_ok = false;
+        $pname = self::$platformNameParamName . ' OR ' . self::$platformIDParamName; 
+        $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+      }  
+      else
+      {
+        // get platform_id and check it
+        if( ($status_ok = $this->checkPlatformIdentity($tplan_id)) )
+        {
+          $platform_set = $this->tplanMgr->getPlatforms($tplan_id,array('outputFormat' => 'mapAccessByID', 
+                                                                         'outputDetails' => 'name'));
+
+          // Now check if link has all 3 components
+          // test plan, test case, platform
+          $platform_id = $this->args[self::$platformIDParamName];
+          $platform_info = array($platform_id => $platform_set[$platform_id]);
+
+          if( ($status_ok = $this->_checkTCIDAndTPIDValid($platform_info,$msg_prefix)) )
+          {
+            $execContext['platform_id'] = $platform_id;
+          }  
+        }  
+      }  
+    }
+
+    if( $status_ok )
+    {
+      $getOpt = array('output' => 'assignment_info', 'build4assignment' => $execContext['build_id']);
+      $dummy = $this->tplanMgr->getLinkInfo($tplan_id,$tcase_id,$platform_id,$getOpt);
+      $resultInfo[0] = array('user_id' => $dummy[0]['user_id'],'login' => $dummy[0]['login'],
+                             'first' => $dummy[0]['first'], 'last' => $dummy[0]['last']);
+    }
+    
+    return $status_ok ? $resultInfo : $this->errors;
+
+  }
+
+
+
+
   /**
    *
    */
@@ -6126,6 +6232,7 @@ protected function createAttachmentTempFile()
                             'tl.removePlatformFromTestPlan' => 'this:removePlatformFromTestPlan',
                             'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
                             'tl.getProjects' => 'this:getProjects',
+                            'tl.getTestCaseAssignedTester' => 'this:getTestCaseAssignedTester',
                             'tl.getTestProjectByName' => 'this:getTestProjectByName',
                             'tl.getTestPlanByName' => 'this:getTestPlanByName',
                             'tl.getProjectPlatforms' => 'this:getProjectPlatforms',

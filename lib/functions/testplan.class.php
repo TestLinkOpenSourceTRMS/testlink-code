@@ -6471,17 +6471,20 @@ class testplan extends tlObjectWithAttachments
         // Go ahead
         $safe_id['build_id'] = intval($my['opt']['build4assignment']);
 
-          $more_cols = ',TPTCV.id AS feature_id,TPTCV.platform_id,PLAT.name AS platform_name' .
-                 ',NHTCV.parent_id AS tc_id,UA.user_id,TCV.importance,TPTCV.urgency' .
-                 ',(TCV.importance * TPTCV.urgency) AS priority ';
+        $more_cols = ',USERS.login,USERS.first,USERS.last' .
+                     ',TPTCV.id AS feature_id,TPTCV.platform_id,PLAT.name AS platform_name' .
+                     ',NHTCV.parent_id AS tc_id,UA.user_id,TCV.importance,TPTCV.urgency' .
+                     ',(TCV.importance * TPTCV.urgency) AS priority ';
         $sql .= " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
-                 " ON UA.build_id = " . $safe_id['build_id'] .
-                 " AND UA.feature_id = TPTCV.id ";
+                " ON UA.build_id = " . $safe_id['build_id'] .
+                " AND UA.feature_id = TPTCV.id ";
                  
         $sql .= " LEFT OUTER JOIN {$this->tables['platforms']} PLAT " .
-                 " ON PLAT.id = TPTCV.platform_id ";
-                 
-                 
+                " ON PLAT.id = TPTCV.platform_id ";
+
+        $sql .= " LEFT OUTER JOIN {$this->tables['users']} USERS " .
+                " ON USERS.id = UA.user_id ";
+
       break;
 
       

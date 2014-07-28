@@ -66,32 +66,32 @@ if(!is_null($args->doAction))
           if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
           {
             // Do only if tester has changed
-              if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
-              {
-                $op='upd';
-                $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
-                $features2[$op][$feature_id]['type'] = $task_test_execution;
-                $features2[$op][$feature_id]['status'] = $open;
-                $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-                $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-                $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-                          $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];             
-                          $features2[$op][$feature_id]['creation_ts'] = $db_now; //BUGID 3346
-                          $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
+            if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
+            {
+              $op='upd';
+              $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
+              $features2[$op][$feature_id]['type'] = $task_test_execution;
+              $features2[$op][$feature_id]['status'] = $open;
+              $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+              $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+              $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+              $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];             
+              $features2[$op][$feature_id]['creation_ts'] = $db_now; 
+              $features2[$op][$feature_id]['build_id'] = $args->build_id;
             }
           } 
           else
           {
-                      $op='del';
+            $op='del';
             $features2[$op][$feature_id]['tcase_id'] = $key_tc;
             $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-                      $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];
-                      $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406             
+            $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];
+            $features2[$op][$feature_id]['build_id'] = $args->build_id; 
           } 
         }
         else if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
         {
-            $op='ins';
+          $op='ins';
           $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
           $features2[$op][$feature_id]['type'] = $task_test_execution;
           $features2[$op][$feature_id]['status'] = $open;

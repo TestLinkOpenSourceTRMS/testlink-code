@@ -2368,7 +2368,7 @@ $TLS_title_test_plan_mgmt = "Test Plan";
 
 
 // ----- gui/templates/metricsDashboard.tpl -----
-$TLS_info_metrics_dashboard_progress = "The project progress is calcaluted by summing up all executions " .
+$TLS_info_metrics_dashboard_progress = "The project progress is calculated by summing up all executions " .
                                        "for a specific execution result for all platforms within all test " .
                                        "plans. This sum is then set into relation to the sum of all active " .
                                        "test cases for all platforms within all test plans.";
@@ -2376,7 +2376,7 @@ $TLS_info_metrics_dashboard = "This Report shows the progress for the whole proj
                               "(or only active) test plans defined within project.<br />" .
                               "\"Overall Progress\" for test plans is calculated based upon " .
                               "the progress of each platform (if in use).<br />" .
-                              "\"Test Project Progress\" is calucated based upon the progress " .
+                              "\"Test Project Progress\" is calculated based upon the progress " .
                               "of all (or only active) test plans.";
 $TLS_overall_progress = "Overall Progress";
 $TLS_progress_absolute = "Progress";

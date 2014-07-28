@@ -1,5 +1,5 @@
 ===============================================================
-         TestLink 1.9.1 (Prague Bugfix 11) - Read me
+         TestLink 1.9.11 (Prague Bugfix 11) - Read me
 ===============================================================
 
 Contents
@@ -330,7 +330,7 @@ This list comprise people that has helped
   Shinichi Sugiyama,    Shinsuke Matsuki,     Shizuka Ban,
   Takahiro Wada,        Toshinori Sawaguchi,  Toshiyuki Kawanishi,
   Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
-  Yukiko Kajino			Yasuharu Nishi
+  Yukiko Kajino			    Yasuharu Nishi
 
 
 
@@ -377,7 +377,7 @@ PLEASE: read this short hints before you write a topic:
 :!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
-10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10      
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10
 ===============================================================
 
 1.9.10
@@ -419,7 +419,7 @@ We want to thanks xistence (xistence@0x90.nl) for his tests.
 ===============================================================
 
 TICKET 6028: Integration with Jira 6.1 broken. - Due to JIRA schema changes
-Contibution by adnkoks
+Contribution by adnkoks
 You need to change you xml configuration on TestLink, to add a new MANDATORY
 property <jiraversion></jiraversion>
 Without this property TestLink WILL CRASH => this is a desired behaviour

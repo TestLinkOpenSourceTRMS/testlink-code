@@ -5,9 +5,9 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2013, TestLink community 
+ * @copyright   2005-2014, TestLink community 
  * @filesource  tc_exec_assignment.php
- * @link        http://www.teamst.org/index.php
+ * @link        http://www.testlink.org
  *
  * @internal revisions
  * 
@@ -36,8 +36,8 @@ $keywordsFilter->items = null;
 $keywordsFilter->type = null;
 if(is_array($args->keyword_id))
 {
-    $keywordsFilter->items = $args->keyword_id;
-    $keywordsFilter->type = $gui->keywordsFilterType;
+  $keywordsFilter->items = $args->keyword_id;
+  $keywordsFilter->type = $gui->keywordsFilterType;
 }
 $arrData = array();
 
@@ -214,33 +214,31 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-    $args->user_id = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
-    $args->tproject_name = $_SESSION['testprojectName'];
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
+  $args->user_id = $_SESSION['userID'];
+  $args->tproject_id = $_SESSION['testprojectID'];
+  $args->tproject_name = $_SESSION['testprojectName'];
       
-    $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
-                      'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
-                      'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
+  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+                    'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
+                    'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
     
-    foreach($key2loop as $key => $value)
-    {
-      $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-    }
+  foreach($key2loop as $key => $value)
+  {
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+  }
     
-  
-  // BUGID 3516
   // For more information about the data accessed in session here, see the comment
   // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
   $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $mode = 'plan_mode';
   $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
 
-  $args->control_panel = $session_data;  // BUGID 3934
+  $args->control_panel = $session_data;
     
   $key2loop = array('refreshTree' => array('key' => 'setting_refresh_tree_on_action', 'value' => 0),
-            'filter_assigned_to' => array('key' => 'filter_assigned_user', 'value' => null));
+                    'filter_assigned_to' => array('key' => 'filter_assigned_user', 'value' => null));
   
   foreach($key2loop as $key => $info)
   {
@@ -248,31 +246,35 @@ function init_args()
   }
   
     
-    $args->keyword_id = 0;
+  $args->keyword_id = 0;
   $fk = 'filter_keywords';
-  if (isset($session_data[$fk])) {
+  if (isset($session_data[$fk])) 
+  {
     $args->keyword_id = $session_data[$fk];
-    if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+    if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
+    {
       $args->keyword_id = $args->keyword_id[0];
     }
   }
   
   $args->keywordsFilterType = null;
   $fk = 'filter_keywords_filter_type';
-  if (isset($session_data[$fk])) {
+  if (isset($session_data[$fk])) 
+  {
     $args->keywordsFilterType = $session_data[$fk];
   }
   
   
   $args->testcases_to_show = null;
-  if (isset($session_data['testcases_to_show'])) {
+  if (isset($session_data['testcases_to_show'])) 
+  {
     $args->testcases_to_show = $session_data['testcases_to_show'];
   }
   
-  // BUGID 3406
   $args->build_id = isset($session_data['setting_build']) ? $session_data['setting_build'] : 0;
   $args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-  if ($args->tplan_id) {
+  if ($args->tplan_id) 
+  {
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
   }
     
@@ -291,53 +293,47 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
   $platform_mgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
   
-    $tcase_cfg = config_get('testcase_cfg');
-    $gui = new stdClass();
-    $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
-    $gui->usePlatforms = $platform_mgr->platformsActiveForTestplan($argsObj->tplan_id);
-    $gui->bulk_platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
-    $gui->bulk_platforms[0] = lang_get("all_platforms");
-    ksort($gui->bulk_platforms);
+  $tcase_cfg = config_get('testcase_cfg');
+  $gui = new stdClass();
+  $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+  $gui->usePlatforms = $platform_mgr->platformsActiveForTestplan($argsObj->tplan_id);
+  $gui->bulk_platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+  $gui->bulk_platforms[0] = lang_get("all_platforms");
+  ksort($gui->bulk_platforms);
     
-    $gui->send_mail = $argsObj->send_mail;
-    $gui->send_mail_checked = "";
-    if($gui->send_mail)
-    {
-      $gui->send_mail_checked = ' checked="checked" ';
-    }
+  $gui->send_mail = $argsObj->send_mail;
+  $gui->send_mail_checked = "";
+  if($gui->send_mail)
+  {
+    $gui->send_mail_checked = ' checked="checked" ';
+  }
     
-    $gui->glueChar=$tcase_cfg->glue_character;
+  $gui->glueChar=$tcase_cfg->glue_character;
     
-    if ($argsObj->level != 'testproject')
-    {
-      $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-      $gui->testCasePrefix .= $tcase_cfg->glue_character;
-                    
-      $gui->keywordsFilterType = $argsObj->keywordsFilterType;
+  if ($argsObj->level != 'testproject')
+  {
+    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
+    $gui->testCasePrefix .= $tcase_cfg->glue_character;
+    $gui->keywordsFilterType = $argsObj->keywordsFilterType;
+    $gui->build_id = $argsObj->build_id;
+    $gui->tplan_id = $argsObj->tplan_id;
+      
+    $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
+    $gui->testPlanName = $tplan_info['name'];
   
-      // BUGID 4636
-      $gui->build_id = $argsObj->build_id;
-      $gui->tplan_id = $argsObj->tplan_id;
-      
-      $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
-      $gui->testPlanName = $tplan_info['name'];
-      
-      // 3406
-      $build_info = $tplanMgr->get_build_by_id($argsObj->tplan_id, $argsObj->build_id);
-      $gui->buildName = $build_info['name'];
-      $gui->main_descr = sprintf(lang_get('title_tc_exec_assignment'), 
-                                 $gui->buildName, $gui->testPlanName);
+    $build_info = $tplanMgr->get_build_by_id($argsObj->tplan_id, $argsObj->build_id);
+    $gui->buildName = $build_info['name'];
+    $gui->main_descr = sprintf(lang_get('title_tc_exec_assignment'),$gui->buildName, $gui->testPlanName);
 
-      // 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
-      $tproject_mgr = new testproject($dbHandler);
-      $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
+    $tproject_mgr = new testproject($dbHandler);
+    $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
 
-      $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
-      $gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
-      $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$tproject_info,$gui->all_users);
+    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
+    $gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
+    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$tproject_info,$gui->all_users);
   }
 
-    return $gui;
+  return $gui;
 }
 
 
@@ -349,84 +345,84 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
  */
 function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$features,$operation)
 {
-    $testers['new']=null;
-    $testers['old']=null;
-    $mail_details['new']=lang_get('mail_testcase_assigned') . "<br /><br />";
-    $mail_details['old']=lang_get('mail_testcase_assignment_removed'). "<br /><br />";
-    $mail_subject['new']=lang_get('mail_subject_testcase_assigned');
-    $mail_subject['old']=lang_get('mail_subject_testcase_assignment_removed');
-    $use_testers['new']= ($operation == 'del') ? false : true ;
-    $use_testers['old']= ($operation == 'ins') ? false : true ;
+  $testers['new']=null;
+  $testers['old']=null;
+  $mail_details['new']=lang_get('mail_testcase_assigned') . "<br /><br />";
+  $mail_details['old']=lang_get('mail_testcase_assignment_removed'). "<br /><br />";
+  $mail_subject['new']=lang_get('mail_subject_testcase_assigned');
+  $mail_subject['old']=lang_get('mail_subject_testcase_assignment_removed');
+  $use_testers['new']= ($operation == 'del') ? false : true ;
+  $use_testers['old']= ($operation == 'ins') ? false : true ;
    
 
-    $tcaseSet=null;
-    $tcnames=null;
-    $email=array();
+  $tcaseSet=null;
+  $tcnames=null;
+  $email=array();
    
-    $assigner=$guiObj->all_users[$argsObj->user_id]->firstName . ' ' .
-              $guiObj->all_users[$argsObj->user_id]->lastName ;
+  $assigner=$guiObj->all_users[$argsObj->user_id]->firstName . ' ' .
+            $guiObj->all_users[$argsObj->user_id]->lastName ;
               
-    $email['from_address']=config_get('from_email');
-    $body_first_lines = lang_get('testproject') . ': ' . $argsObj->tproject_name . '<br />' .
-                        lang_get('testplan') . ': ' . $guiObj->testPlanName .'<br /><br />';
+  $email['from_address']=config_get('from_email');
+  $body_first_lines = lang_get('testproject') . ': ' . $argsObj->tproject_name . '<br />' .
+                      lang_get('testplan') . ': ' . $guiObj->testPlanName .'<br /><br />';
 
 
-    // Get testers id
-    foreach($features as $feature_id => $value)
+  // Get testers id
+  foreach($features as $feature_id => $value)
+  {
+    if($use_testers['new'])
     {
-        if($use_testers['new'])
-        {
-            $testers['new'][$value['user_id']][$value['tcase_id']]=$value['tcase_id'];              
-        }
-        if( $use_testers['old'] )
-        {
-            $testers['old'][$value['previous_user_id']][$value['tcase_id']]=$value['tcase_id'];              
-        }
+      $testers['new'][$value['user_id']][$value['tcase_id']]=$value['tcase_id'];              
+    }
+  
+    if( $use_testers['old'] )
+    {
+      $testers['old'][$value['previous_user_id']][$value['tcase_id']]=$value['tcase_id'];              
+    }
         
-        $tcaseSet[$value['tcase_id']]=$value['tcase_id'];
-        $tcversionSet[$value['tcversion_id']]=$value['tcversion_id'];
-    } 
+    $tcaseSet[$value['tcase_id']]=$value['tcase_id'];
+    $tcversionSet[$value['tcversion_id']]=$value['tcversion_id'];
+  } 
 
-    $infoSet=$tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
-    foreach($infoSet as $value)
-    {
-        $tcnames[$value['testcase_id']] = $guiObj->testCasePrefix . $value['tc_external_id'] . ' ' . $value['name'];    
-    }
+  $infoSet=$tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
+  foreach($infoSet as $value)
+  {
+    $tcnames[$value['testcase_id']] = $guiObj->testCasePrefix . $value['tc_external_id'] . ' ' . $value['name'];    
+  }
     
-    $path_info = $tcaseMgr->tree_manager->get_full_path_verbose($tcaseSet);
-    $flat_path=null;
-    foreach($path_info as $tcase_id => $pieces)
-    {
-        $flat_path[$tcase_id]=implode('/',$pieces) . '/' . $tcnames[$tcase_id];  
-    }
+  $path_info = $tcaseMgr->tree_manager->get_full_path_verbose($tcaseSet);
+  $flat_path=null;
+  foreach($path_info as $tcase_id => $pieces)
+  {
+    $flat_path[$tcase_id]=implode('/',$pieces) . '/' . $tcnames[$tcase_id];  
+  }
 
 
-    foreach($testers as $tester_type => $tester_set)
+  foreach($testers as $tester_type => $tester_set)
+  {
+    if( !is_null($tester_set) )
     {
-        if( !is_null($tester_set) )
+      $email['subject'] = $mail_subject[$tester_type] . ' ' . $guiObj->testPlanName;  
+      foreach($tester_set as $user_id => $value)
+      {
+        $userObj=$guiObj->all_users[$user_id];
+        $email['to_address']=$userObj->emailAddress;
+        $email['body'] = $body_first_lines;
+        $email['body'] .= sprintf($mail_details[$tester_type],
+                          $userObj->firstName . ' ' .$userObj->lastName,$assigner);
+        foreach($value as $tcase_id)
         {
-            $email['subject'] = $mail_subject[$tester_type] . ' ' . $guiObj->testPlanName;  
-            foreach($tester_set as $user_id => $value)
-            {
-                $userObj=$guiObj->all_users[$user_id];
-                $email['to_address']=$userObj->emailAddress;
-                $email['body'] = $body_first_lines;
-                $email['body'] .= sprintf($mail_details[$tester_type],
-                                          $userObj->firstName . ' ' .$userObj->lastName,$assigner);
-                foreach($value as $tcase_id)
-                {
-                    $email['body'] .= $flat_path[$tcase_id] . '<br />';  
-                }  
-                $email['body'] .= '<br />' . date(DATE_RFC1123);
-                $email_op = email_send($email['from_address'], $email['to_address'], 
-                    $email['subject'], $email['body'], '', true, true);
-            } // foreach($tester_set as $user_id => $value)
-        }                       
-    }
+          $email['body'] .= $flat_path[$tcase_id] . '<br />';  
+        }  
+        $email['body'] .= '<br />' . date(DATE_RFC1123);
+        $email_op = email_send($email['from_address'], $email['to_address'], 
+        $email['subject'], $email['body'], '', true, true);
+      } // foreach($tester_set as $user_id => $value)
+    }                       
+  }
 }
 
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,'testplan_planning');
 }
-?>

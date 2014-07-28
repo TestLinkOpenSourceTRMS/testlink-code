@@ -23,8 +23,8 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.11'); 
-define('TL_VERSION', TL_VERSION_NUMBER . '(The Robots of Dawn)'); 
+define('TL_VERSION_NUMBER', '1.9.12'); 
+define('TL_VERSION', 'DEV' . TL_VERSION_NUMBER . '(GaGa and the twins)'); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Last Database version that is used to give users feedback about necesssary upgrades

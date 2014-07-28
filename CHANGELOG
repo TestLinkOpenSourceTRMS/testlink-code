@@ -5,6 +5,47 @@
 http://www.testlink.org
 https://twitter.com/TLOpenSource
 
+TestLink - 1.9.11 (2014 Q2 - bug fixing) (Released  on 2014-08-02)
+===========================================================================
+
+[35 tickets]
+-6453: [GUI] Spelling mistake in Metrics Dashboard (fman) - resolved.
+-6265: [Test Execute - Export Test Plan] Cancel button is not working (fman) - resolved.
+-6337: [User Interface General] Spelling mistake in Requirements submenu (fman) - resolved.
+-6450: [Test Plan - Add/Remove Test Cases] Add/Remove Test Case to test plan - Status Filter (fman) - resolved.
+-6442: [Test Plan - Assign Test Case Execution] Assign Test Case Execution: Undefined property: tlTestCaseFilterControl::$formAction (fman) - resolved.
+-6444: [API - XMLRPC] Extend API - XMLRPC function "getLastExecutionResult" to return also the linked bug ids (fman) - resolved.
+-6447: [Test Specification] "Estimated exec. (min)" is blank when new test case version is created. (fman) - resolved.
+-6331: [API - XMLRPC] Assign test case execution XMLRPC method (fman) - resolved.
+-6424: [Reports - Req. Based Report] No excution details page poped up when clicking "Execution" icon of non-excuted case on "Requirements based Report" page (fman) - resolved.
+-4738: [Reports] "Last Build" on Test result matrix takes the wrong build as being last (fman) - resolved.
+-5938: [Test Specification] Include "Status" as filtering option in the Filters section (fman) - resolved.
+-6394: [Filters - Test Specification] Status Filter (fman) - resolved.
+-6370: [Test Specification] DB Access Error appear while I try to assign keyword to non existing test case (fman) - resolved.
+-6379: [Test Specification] DB Access Error appears under Search Test Cases (fman) - resolved.
+-6377: [Test Plan Management] When just ONE TEST PLAN exists, deleting it causes DB error on screen (fman) - resolved.
+-6262: [Test Specification] The tree-list view is not refreshed when moving/copying a test suite (fman) - resolved.
+-6356: [Test Spec. - Test Case Steps] Add control to force (at least from GUI) that all step numbers ARE UNIQUE (fman) - resolved.
+-6355: [Test Spec. - Test Case Steps] Add control to force (at least from GUI) that step number has to be > 0 (fman) - resolved.
+-6350: [Bug Tracking System - Bugzilla Integration] Bugzilla Integration is not working in Bugzilla 4.4.4 (fman) - resolved.
+-6336: [GUI] Char out of place in filter - Test Execution (fman) - resolved.
+-6325: [Test Execute] Blank Page shown if a user has not been assigned any tests and he visits the Test Execution Page (fman) - resolved.
+-6320: [Reports] Add configuration variable for the results By Status report (fman) - resolved.
+-6318: [Test Plan - Add/Remove Platforms] "Add / Remove Platforms" link does nothing (fman) - resolved.
+-6314: [Export/Import] Export TestPlan XML with FULL Testcase External ID to permit TO THIRD PARTY TOOL generation of Execution Result XML file (fman) - resolved.
+-6361: [User Interface Customization] Need a user setting to optionally always display testcase "Actions" buttons. (fman) - resolved.
+-6357: [Database Schema] Database Schema - TestLink 1.9.x (fman) - resolved.
+-6396: [Test Specification] Edit test case - cancel button refactoring (fman) - resolved.
+-6391: [Test Specification] The 'Edit Test Case' page crashed after clicking 'Close' button (fman) - resolved.
+-6392: [Test Specification] 'Add Test Case Version to Test Plans' page crashes after clicking 'Cancel' button (fman) - resolved.
+-6343: [Reports - Test report matrix] Test Results Matrix exports as spreadsheet fails with high number of active builds (> 40) (fman) - resolved.
+-6119: [Test Plan - Add/Remove Test Cases] Add/Remove Test Case - Right Pane Refactoring - Display Test Plan Tree + Test Report (fman) - resolved.
+-6341: [Reports] Test Plan Report - test case version seems missing (fman) - resolved.
+-6422: [Test Specification] Estimation in Test specification as mandatory field via Javascript (fman) - resolved.
+-6390: [Test Execute] Tree is slow to load when user clicks on Test Execution. (fman) - resolved.
+-6365: [Test Plan Management] Test case creation in test link is not updated in test suite automatically (fman) - resolved.
+
+
 
 TestLink - 1.9.10 (2014 Q1 - bug fixing) (Released  on 2014-04-25)
 ===========================================================================

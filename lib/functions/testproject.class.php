@@ -609,20 +609,21 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   }
   unset($userObj);
   
-  // 20130929
   foreach($my['filters'] as $fname => $fspec)
   {
     if(!is_null($fspec))
     {
       $sql .= " AND NHTPROJ.$fname";
+
+      $safe = $this->db->prepare_string($fspec['value']);
       switch($fspec['op'])
       {
         case '=':
-          $sql .= "='" . $fspec['value'] ."'";         
+          $sql .= "='" . $safe ."'";
         break;
 
         case 'like':
-          $sql .= " LIKE '%" . $fspec['value'] ."%'";         
+          $sql .= " LIKE '%" . $safe ."%'";         
         break;
       }
     }  

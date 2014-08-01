@@ -56,8 +56,8 @@ if(!is_null($gui->tprojects) || $args->doAction=='list')
 
   if(count($gui->tprojects) == 0)
   {
-      $template2launch = "projectEdit.tpl"; 
-      $gui->doAction = "create";
+    $template2launch = "projectEdit.tpl"; 
+    $gui->doAction = "create";
   }
 }
 
@@ -76,16 +76,23 @@ function init_args()
   $args = new stdClass();
   $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0 ;
   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'list' ;
-  $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
   $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null; 
   $args->name = isset($_REQUEST['name']) ? trim($_REQUEST['name']) : null ;
 
+
+
   if(!is_null($args->name))
   {
-    if(strlen(trim($args->name)) == 0)
+    $args->name = trim($args->name); 
+    if(strlen($args->name) == 0)
     {  
       $args->name = null;
     }      
+    else
+    {
+      $args->name = substr($args->name,0,100);
+    }  
   } 
   return $args;  
 }
@@ -104,14 +111,14 @@ function initializeGui(&$dbHandler,&$argsObj)
 
   switch($argsObj->doAction)
   {
-    case 'search':
-      $filters = array('name' => array('op' => 'like', 'value' => $argsObj->name));
-      $guiObj->feedback = lang_get('no_records_found');
+    case 'list':
+      $filters = null;
     break;
 
-    case 'list':
+    case 'search':
     default:
-      $filters = null;
+      $filters = array('name' => array('op' => 'like', 'value' => $argsObj->name));
+      $guiObj->feedback = lang_get('no_records_found');
     break;
   }
 

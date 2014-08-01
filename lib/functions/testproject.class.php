@@ -714,20 +714,20 @@ function get_subtree($id,$filters=null,$opt=null)
 {
   $my = array();
   $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 'output' => 'full');
-   $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
+  $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
                           'exclude_children_of' => $this->nt2exclude_children,
                           'exclude_branches' => null,
                           'additionalWhereClause' => '');      
     
   $my['options'] = array_merge($my['options'],(array)$opt);
-   $my['filters'] = array_merge($my['filters'],(array)$filters);
+  $my['filters'] = array_merge($my['filters'],(array)$filters);
 
-     if($my['options']['exclude_testcases'])
-    {
-      $my['filters']['exclude_node_types']['testcase']='exclude me';
-    }
+  if($my['options']['exclude_testcases'])
+  {
+    $my['filters']['exclude_node_types']['testcase']='exclude me';
+  }
     
-  $subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
+  $subtree = $this->tree_manager->get_subtree(intval($id),$my['filters'],$my['options']);
   return $subtree;   
 }
 
@@ -766,25 +766,25 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
     }
   }
 
-
-  $gui->container_data = $this->get_by_id($id);
+  $safeID = intval($id);
+  $gui->container_data = $this->get_by_id($safeID);
   $gui->moddedItem = $gui->container_data;
   $gui->level = 'testproject';
   $gui->page_title = lang_get('testproject');
   $gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
-  $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
+  $gui->attachmentInfos = getAttachmentInfosFrom($this,$safeID);
    
   // attachments management on page
-  $gui->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($id);
-  $gui->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($id);
+  $gui->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($safeID);
+  $gui->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($safeID);
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
   $gui->fileUploadMsg = '';
   
   $exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
-  $gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
+  $gui->canDoExport = count($this->tree_manager->get_children($safeID,$exclusion)) > 0;
   if ($modded_item_id)
   {
-    $gui->moddedItem = $this->get_by_id($modded_item_id);
+    $gui->moddedItem = $this->get_by_id(intval($modded_item_id));
   }
   $smarty->assign('gui', $gui);  
   $smarty->display($template_dir . 'containerView.tpl');
@@ -2954,10 +2954,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
       }  
     }    
     
-    // new dBug($ssx);
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
-
-    // new dBug($highlander);
     if( $filterOnTC )
     {
       $ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;

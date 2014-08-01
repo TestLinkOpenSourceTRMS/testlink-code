@@ -559,7 +559,7 @@ class tree extends tlObject
   */
   function change_parent($node_id, $parent_id) 
   {
-      $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
+    $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
     if( is_array($node_id) )
     {
       $id_list = implode(",",$node_id);
@@ -569,7 +569,8 @@ class tree extends tlObject
     {
       $where_clause=" WHERE id = {$node_id}";
     }
-    $sql = "/* $debugMsg */ UPDATE {$this->object_table} SET parent_id = {$parent_id} {$where_clause}";
+    $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
+           " SET parent_id = " . $this->db->prepare_int($parent_id) . " {$where_clause}";
     
     $result = $this->db->exec_query($sql);
     
@@ -608,7 +609,7 @@ class tree extends tlObject
   
     $sql = "/* $debugMsg */ " .
            " SELECT id,name,parent_id,node_type_id,node_order FROM {$this->object_table} " .
-           " WHERE parent_id = {$id} ORDER BY node_order,id";
+           " WHERE parent_id = " . $this->db->prepare_int($id) . " ORDER BY node_order,id";
       
     $node_list=array();  
     $result = $this->db->exec_query($sql);
@@ -1350,12 +1351,12 @@ class tree extends tlObject
       {
         $sql = "/* {$debugMsg} */ " . 
                " SELECT parent_id FROM {$this->object_table} NHA " .
-               " WHERE NHA.id = {$id} ";
+               " WHERE NHA.id = " . $this->db->prepare_int($id);
         $rs = $this->db->get_recordset($sql);
         $parentNodeID = intval($rs[0]['parent_id']);     
             
       }
-      $additionalFilters = " AND NHA.id <> {$id} ";
+      $additionalFilters = " AND NHA.id <> " . $this->db->prepare_int($id);
     }    
 
     if( $parentNodeID <= 0)
@@ -1369,7 +1370,7 @@ class tree extends tlObject
            " SELECT count(0) AS qty FROM {$this->object_table} NHA " .
            " WHERE NHA.node_type_id  = {$node_type_id} " .
            " AND NHA.name = '" . $this->db->prepare_string($name) . "'" .
-           " AND NHA.parent_id = {$parentNodeID} {$additionalFilters} "; 
+           " AND NHA.parent_id = " . $this->db->prepare_int($parentNodeID) . " {$additionalFilters} "; 
  
     $rs = $this->db->get_recordset($sql);
     if( $rs[0]['qty'] > 0)
@@ -1410,7 +1411,7 @@ class tree extends tlObject
     }
     
     $sql = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
-           " WHERE NH.parent_id = {$node_id} {$additionalWhereClause} ";
+           " WHERE NH.parent_id = " . $this->db->prepare_int($node_id) . " {$additionalWhereClause} ";
     $rs = $this->db->get_recordset($sql);
     if( !is_null($rs) )
     {
@@ -1473,7 +1474,7 @@ class tree extends tlObject
       if( count($children) == 0 )
       {
         $sql2 = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
-                " WHERE NH.id = {$node_id}";
+                " WHERE NH.id = " . $this->db->prepare_int($node_id);
         $node_info = $this->db->get_recordset($sql2);
         if( isset($this->class_name[$node_info[0]['node_type_id']]) )
         {
@@ -1666,5 +1667,5 @@ class tree extends tlObject
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
     return $rs;  
   }
+  
 }// end class
-?>

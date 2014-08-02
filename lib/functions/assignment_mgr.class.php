@@ -21,7 +21,7 @@
 class assignment_mgr extends tlObjectWithDB
 {
 
-  function assignment_mgr(&$db) 
+  function __construct(&$db) 
   {
     parent::__construct($db);
   }

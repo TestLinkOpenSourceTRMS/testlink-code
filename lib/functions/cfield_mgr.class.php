@@ -5,8 +5,8 @@
  *
  * @package 	  TestLink
  * @author 		  franciscom
- * @copyright 	2005-2013, TestLink community
- * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
+ * @copyright 	2005-2014, TestLink community
+ * @copyright 	Mantis BT team (some parts of code was reused from the Mantis project) 
  * @filesource  cfield_mgr.class.php
  * @link 		    http://testlink.sourceforge.net
  *
@@ -320,8 +320,8 @@ class cfield_mgr extends tlObject
 
 
   */
-function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
-{
+  function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
+  {
     $enabled_mgmt=array();
     $tl_node_types=$this->tree_manager->get_available_node_types();
     foreach($this->node_types as $verbose_type)
@@ -333,7 +333,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         }
     }
     return($enabled_mgmt);
-}
+  }
 
 
 
@@ -445,43 +445,43 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         $node_type_id=$hash_descr_id[$node_type];
 
         $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                             " AND CFNT.node_type_id={$node_type_id} ";
+                             " AND CFNT.node_type_id=" . $this->db->prepare_int($node_type_id);
     }
     if( !is_null($node_id) )
     {
       $additional_values .= ",CFDV.value AS value,CFDV.node_id AS node_id";
       $additional_join .= " LEFT OUTER JOIN {$this->tables[$table_key]} CFDV ON CFDV.field_id=CF.id " .
-                          " AND CFDV.node_id={$node_id} ";
+                          " AND CFDV.node_id=" . $this->db->prepare_int($node_id);
     }
 
     if( !is_null($filters) )
     {
-        if( isset($filters['show_on_execution']) && !is_null($filters['show_on_execution']) )
-        {
-            $additional_filter .= " AND CF.show_on_execution=1 ";
-        }   
+      if( isset($filters['show_on_execution']) && !is_null($filters['show_on_execution']) )
+      {
+        $additional_filter .= " AND CF.show_on_execution=1 ";
+      }   
         
-        // Probably this piece need to be changed to act on enable_on_ attribute
-        // due to CF display logic refactoring
-        // if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
-        // {
-        //     $additional_filter .= " AND CF.show_on_testplan_design=1 ";
-        // }   
-        if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
-        {
-            $additional_filter .= " AND CF.enable_on_testplan_design=1 ";
-        }   
+      // Probably this piece need to be changed to act on enable_on_ attribute
+      // due to CF display logic refactoring
+      // if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
+      // {
+      //     $additional_filter .= " AND CF.show_on_testplan_design=1 ";
+      // }   
+      if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
+      {
+        $additional_filter .= " AND CF.enable_on_testplan_design=1 ";
+      }   
            
-        if( isset($filters['cfield_id']) && !is_null($filters['cfield_id']) )
-        {
-            $additional_filter .= " AND CF.id={$filters['cfield_id']} ";
-        }
+      if( isset($filters['cfield_id']) && !is_null($filters['cfield_id']) )
+      {
+        $additional_filter .= " AND CF.id={$filters['cfield_id']} ";
+      }
         
-        $filterKey='location';
-        if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
-        {
-            $additional_filter .= " AND CFTP.$filterKey={$filters[$filterKey]} ";
-        }
+      $filterKey='location';
+      if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
+      {
+        $additional_filter .= " AND CFTP.$filterKey={$filters[$filterKey]} ";
+      }
     }
 
     $sql="/* $debugMsg */ SELECT CF.*,CFTP.display_order,CFTP.location,CFTP.required " .
@@ -957,7 +957,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          " WHERE CF.id=CFNT.field_id " .
          " AND   CF.id=CFTP.field_id " .
          " AND   NT.id=CFNT.node_type_id " .
-         " AND   CFTP.testproject_id={$tproject_id} ";
+         " AND   CFTP.testproject_id=" . $this->db->prepare_int($tproject_id);
 
     if( !is_null($active) )
     {
@@ -994,7 +994,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		if(is_null($cfield_ids))
 		{
 			return;
-        }
+    }
 
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
@@ -1011,7 +1011,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				{
 					logAuditEvent(TLS("audit_cfield_assigned",$cf[$field_id]['name'],$tproject_info['name']),
 								            "ASSIGN",$tproject_id,"testprojects");
-			    }					            
+		    }					            
 			}
 		}
 	} //function end
@@ -1042,8 +1042,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		{
 			$sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_testprojects']} " .
 				   " SET active={$active_val} " .
-				   " WHERE testproject_id={$tproject_id} " .
-				   " AND field_id={$field_id}";
+				   " WHERE testproject_id=" . $this->db->prepare_int($tproject_id) .
+				   " AND field_id=" . $this->db->prepare_int($field_id);
 
 			if ($this->db->exec_query($sql))
 			{
@@ -1081,7 +1081,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
       $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_testprojects']} " .
            " SET required=" . $safe->val .
            " WHERE testproject_id=" . $safe->tproject_id .
-           " AND field_id={$field_id}";
+           " AND field_id=" . $this->db->prepare_int($field_id);
 
       if ($this->db->exec_query($sql))
       {
@@ -1109,20 +1109,19 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
    *
    */
 	function unlink_from_testproject($tproject_id,$cfield_ids)
-  	{
-	  	if(is_null($cfield_ids))
-	  	{
+  {
+		if(is_null($cfield_ids))
+		{
 			return;
-        }
+    }
         
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        // just for audit porpouses
-		$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
+  	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
-			// BUGID 0000677
 			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testprojects']} " .
-			       " WHERE field_id = {$field_id} AND testproject_id = {$tproject_id} ";
+			       " WHERE field_id = " . $this->db->prepare_int($field_id) .
+             " AND testproject_id = " . $this->db->prepare_int($tproject_id);
 			if ($this->db->exec_query($sql))
 			{
 				$cf = $this->get_by_id($field_id);
@@ -1130,10 +1129,10 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				{
 					logAuditEvent(TLS("audit_cfield_unassigned",$cf[$field_id]['name'],$tproject_info['name']),
 		         					 "ASSIGN",$tproject_id,"testprojects");
-		        } 					 
+	      } 					 
 			}
 		}
-  	} //function end
+  } //function end
 
 
 
@@ -1148,15 +1147,15 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function get_by_name($name)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	  	$my_name=$this->db->prepare_string(trim($name));
+	  $my_name=$this->db->prepare_string(trim($name));
 
-	  	$sql="/* $debugMsg */  SELECT CF.*, CFNT.node_type_id,NT.description AS node_type" .
+	  $sql="/* $debugMsg */  SELECT CF.*, CFNT.node_type_id,NT.description AS node_type" .
 	  	     " FROM {$this->tables['custom_fields']} CF, {$this->tables['cfield_node_types']} CFNT," .
 	  	     " {$this->tables['node_types']} NT" .
 	  	     " WHERE CF.id=CFNT.field_id " .
 	  	     " AND CFNT.node_type_id=NT.id " .
 	  	     " AND name='{$my_name}' ";
-    	return($this->db->fetchRowsIntoMap($sql,'id'));
+    return $this->db->fetchRowsIntoMap($sql,'id');
   }
 
   /*
@@ -1175,7 +1174,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	  	     " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
 	  	     " WHERE CF.id=CFNT.field_id " .
            " AND CF.id IN (" . implode(',',(array)$id) . ")";
-	  	     // " AND CF.id={$id} ";
     return($this->db->fetchRowsIntoMap($sql,'id'));
 	}
 
@@ -1196,7 +1194,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	  	     " FROM {$this->tables['cfield_node_types']} CFNT, " .
 	  	     "      {$this->tables['nodes_types']} NT " .
 	  	     " WHERE NT.id=CFNT.node_type_id " .
-	  	     " CFNt.field_id={$id} ";
+	  	     " CFNt.field_id=" . $this->db->prepare_int($id);
 
     return($this->db->fetchRowsIntoMap($sql,'field_id'));
 	}
@@ -1732,8 +1730,10 @@ function name_is_unique($id,$name)
       {
         $value = $type_and_value['cf_value'];
 
-        $where_clause = " WHERE field_id={$field_id} AND tcversion_id={$node_id} " .
- 			            " AND execution_id={$execution_id} AND testplan_id={$testplan_id}" ;
+        $where_clause = " WHERE field_id=" . $this->db->prepare_int($field_id) . 
+                        " AND tcversion_id=" . $this->db->prepare_int($node_id) .
+ 			                  " AND execution_id=" .$this->db->prepare_int($execution_id) .
+                        " AND testplan_id=" . $this->db->prepare_int($testplan_id);
 
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -1750,33 +1750,30 @@ function name_is_unique($id,$name)
         }
         $safe_value=$this->db->prepare_string($value);
 
-		// BUGID 3989
         if( count($rs) > 0 && $value != "")   //$this->db->num_rows($result) > 0 )
         {
-          $sql = "UPDATE {$this->tables['cfield_execution_values']} " .
-                 " SET value='{$safe_value}' " .
-    	         $where_clause;
-    	  $this->db->exec_query($sql);      
+          $sql = " UPDATE {$this->tables['cfield_execution_values']} " .
+                 " SET value='{$safe_value}' " .   $where_clause;
+    	    $this->db->exec_query($sql);      
         }
-        // BUGID 3989
         else if (count($rs) == 0 && $value != "")
         {
 
           # Remark got from Mantis code:
-  		  # Always store the value, even if it's the default value
-  		  # This is important, as the definitions might change but the
-  		  #  values stored with a bug must not change
-  		  $sql = "INSERT INTO {$this->tables['cfield_execution_values']} " .
-  				 " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
-  			     " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
-		  $this->db->exec_query($sql);
+  		    # Always store the value, even if it's the default value
+  		    # This is important, as the definitions might change but the
+  		    #  values stored with a bug must not change
+  		    $sql = "INSERT INTO {$this->tables['cfield_execution_values']} " .
+  				       " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
+  			         " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
+		      $this->db->exec_query($sql);
         
-  		// BUGID 3989
-        } else if (count($rs) > 0 && $value == "") {
-  			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
-  				   $where_clause;
-  			$this->db->exec_query($sql);
-  		}
+        } 
+        else if (count($rs) > 0 && $value == "") 
+        {
+  			  $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " . $where_clause;
+  			  $this->db->exec_query($sql);
+  		  }
         
       } //foreach($cfield
     } //if( !is_null($cfield) )
@@ -1808,8 +1805,8 @@ function name_is_unique($id,$name)
            value: can be an array, or a string depending the <field_type_id>
 
            $cf_map: hash
-           key: cfield_id
-           value: custom field definition data
+                    key: cfield_id
+                    value: custom field definition data
 
 
     returns: hash or null.
@@ -1842,8 +1839,7 @@ function name_is_unique($id,$name)
     {
       foreach($cf_map as $key => $value)
       {
-        $cfield[$key]=array("type_id"  => $value['type'],
-                            "cf_value" => '');
+        $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => '');
       }
     }
     // -------------------------------------------------------------------------

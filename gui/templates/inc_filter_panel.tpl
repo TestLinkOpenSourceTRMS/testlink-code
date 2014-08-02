@@ -27,7 +27,8 @@
                         custom_field, search_type_like, importance,import_xml_results,
                         document_id, req_expected_coverage, title,bugs_on_context,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,
-                        btn_export_testplan_tree,btn_export_testplan_tree_for_results'}
+                        btn_export_testplan_tree,btn_export_testplan_tree_for_results,
+                        tester_works_with_settings'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -312,7 +313,7 @@
 
     {if $control->filters.filter_assigned_user}
     <tr>
-      <td>{$labels.filter_owner}</td>
+      <td>{$labels.filter_owner}<img src="{$tlImages.info_small}" title="{$labels.tester_works_with_settings}"></td>
       <td>
 
       {if $control->advanced_filter_mode}

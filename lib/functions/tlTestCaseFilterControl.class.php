@@ -537,19 +537,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
     
     // special situations 
     // the build setting is in plan mode only needed for one feature
-    if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
+    if ($this->mode == 'plan_mode' && 
+        ($this->args->feature != 'tc_exec_assignment' && $this->args->feature != 'test_urgency') )
     {
       $this->settings['setting_build'] = false;
       $this->settings['setting_platform'] = false;
     }
   
-    // TICKET 5176: Possibility to filter by Platform - changes in 'plan_mode'  
-    //if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') 
-    //{
-    //  $this->settings['setting_platform'] = false;
-    //}
-    
-    
     // if at least one active setting is left to display, switch settings panel on
     if ($at_least_one_active) 
     {

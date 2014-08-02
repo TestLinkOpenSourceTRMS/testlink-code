@@ -9,7 +9,7 @@ Smarty template - manage test case urgency
 {lang_get var="labels" 
           s='title_plan_urgency, th_testcase, th_urgency, urgency_low, urgency_medium, urgency_high,
              label_set_urgency_ts, btn_set_urgency_tc, urgency_description,testsuite_is_empty,
-             priority, importance, execution_history, design'}
+             priority, importance, execution_history, design,assigned_to'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -22,12 +22,12 @@ Smarty template - manage test case urgency
 {if $gui->listTestCases != ''}
   <div class="groupBtn">
     <form method="post" action="{$ownURL}" id="set_urgency">
-  <span>{$labels.label_set_urgency_ts}
+     <span>{$labels.label_set_urgency_ts}
       <input type="submit" name="high_urgency" value="{$labels.urgency_high}" />
       <input type="submit" name="medium_urgency" value="{$labels.urgency_medium}" />
       <input type="submit" name="low_urgency" value="{$labels.urgency_low}" />
-    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
-    <input type="hidden" name="id" value="{$gui->node_id}" />
+      <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+      <input type="hidden" name="id" value="{$gui->node_id}" />
     </span>
     </form>
   </div>
@@ -36,9 +36,11 @@ Smarty template - manage test case urgency
   <form method="post" action="{$ownURL}" id="set_urgency_tc">
   <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
   <input type="hidden" name="id" value="{$gui->node_id}" />
+  <input type="hidden" name="form_token" id="form_token" value="{$gui->formToken}" />
   <table class="simple_tableruler" style="text-align: center">
   <tr>
     <th style="text-align: left;">{$labels.th_testcase}</th>
+    <th style="text-align: left;">{$labels.assigned_to}</th>
     <th>{$labels.importance}</th>
     <th colspan="3">{$labels.th_urgency}</th>
     <th>{$labels.priority}</th>
@@ -55,6 +57,12 @@ Smarty template - manage test case urgency
            title="{$labels.design}" />
         {$res.tcprefix|escape}{$res.tc_external_id}{$gsmarty_gui->title_separator_1}{$res.name|escape}
     </td>
+    <td style="text-align: left;">
+        {if $res.assigned_to != ''}
+        <img src="{$tlImages.info_small}" title="{$res.first|escape} {$res.last|escape}"> {$res.assigned_to|escape} 
+        {/if}
+    </td>
+
     {$importance=$res.importance}
     <td>{$gsmarty_option_importance.$importance}</td>
       {$urgencyCode=$res.urgency}
@@ -71,7 +79,7 @@ Smarty template - manage test case urgency
            name="urgency[{$res.tcversion_id}]"
            value="{$smarty.const.MEDIUM}" 
            {if $urgencyCode == $smarty.const.MEDIUM}
-               checked="checked"
+             checked="checked"
            {/if}
           />
       <span style="vertical-align:middle;">{$labels.urgency_medium}</span>

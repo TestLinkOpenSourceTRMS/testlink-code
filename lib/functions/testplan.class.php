@@ -3810,7 +3810,7 @@ class testplan extends tlObjectWithAttachments
     if(is_null($keywordMgr))
     {
       $tcaseExportOptions = array('CFIELDS' => true, 'KEYWORDS' => 'true');
-          $keywordMgr = new tlKeyword();      
+      $keywordMgr = new tlKeyword();      
       $tsuiteMgr = new testsuite($this->db);
     }  
     
@@ -3826,43 +3826,43 @@ class testplan extends tlObjectWithAttachments
         $kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
       }  
 
-        $cfMap = (array)$tsuiteMgr->get_linked_cfields_at_design($container['id'],null,null,$tproject_id);
+      $cfMap = (array)$tsuiteMgr->get_linked_cfields_at_design($container['id'],null,null,$tproject_id);
       if( count($cfMap) > 0 )
       {
-          $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
+        $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
       } 
       
       $tsuiteData = $tsuiteMgr->get_by_id($container['id']);
-        $xmlTC = "\n\t<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
-                 "\n\t\t<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>" .
+      $xmlTC = "\n\t<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
+               "\n\t\t<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>" .
                "\n\t\t<details><![CDATA[{$tsuiteData['details']}]]>" .
                "\n\t\t{$kwXML}{$cfXML}</details>";
-      }
+    }
     $childNodes = isset($container['childNodes']) ? $container['childNodes'] : null ;
     if( !is_null($childNodes) )
     {
-        $loop_qty=sizeof($childNodes); 
-        for($idx = 0;$idx < $loop_qty;$idx++)
-        {
-          $cNode = $childNodes[$idx];
+      $loop_qty=sizeof($childNodes); 
+      for($idx = 0;$idx < $loop_qty;$idx++)
+      {
+        $cNode = $childNodes[$idx];
         switch($cNode['node_table'])
-          {
-            case 'testsuites':
-              $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id);
-            break;
+        {
+          case 'testsuites':
+            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id);
+          break;
             
-            case 'testcases':
-                if( is_null($tcaseMgr) )
-                {
-                  $tcaseMgr = new testcase($this->db);
-              }
-              // testcase::LATEST_VERSION,
-              $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
-                                                           $tproject_id,testcase::NOXMLHEADER,
-                                                           $tcaseExportOptions);
+          case 'testcases':
+            if( is_null($tcaseMgr) )
+            {
+              $tcaseMgr = new testcase($this->db);
+            }
+            // testcase::LATEST_VERSION,
+            $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
+                                                         $tproject_id,testcase::NOXMLHEADER,
+                                                         $tcaseExportOptions);
             break;
-          }
         }
+      }
     }   
 
     if( isset($container['id']) )

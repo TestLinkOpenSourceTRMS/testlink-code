@@ -125,28 +125,23 @@ function checkRights(&$db,&$user)
  */
 function init_args()
 {
-    $args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
+  $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-    $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
-    $args->do_upload = isset($_REQUEST['uploadFile']) ? 1 : 0;
+  $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+  $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
+  $args->do_upload = isset($_REQUEST['uploadFile']) ? 1 : 0;
     
-    $args->userID = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+  $args->userID = intval($_SESSION['userID']);
+  $args->tproject_id = $_SESSION['testprojectID'];
+  $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
     
-    return $args;
+  return $args;
 }
 
 
 /**
  *
- *
- * 
- *
- * @internal Revisions
- * 20101017 - franciscom - creation
  */
 function initializeGui(&$argsObj,&$tplanMgr)
 {
@@ -157,7 +152,7 @@ function initializeGui(&$argsObj,&$tplanMgr)
   
   $info = $tplanMgr->get_by_id($argsObj->tplan_id);
   $guiObj->main_descr = lang_get('testplan') . ' ' . $info['name'];
-  $guiObj->tplan_id = $argsObj->tplan_id;
+  $guiObj->tplan_id = intval($argsObj->tplan_id);
   $guiObj->import_done = false;
   return $guiObj;
 }
@@ -199,14 +194,14 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
   // </xml>
   $msg = array(); 
   $labels = init_labels(array('link_without_required_platform' => null, 'ok' => null,
-                'link_without_platform_element' => null,
-                'no_platforms_on_tproject' => null, 'tcase_link_updated' => null,
-                'link_with_platform_not_needed' => null,
-                'tproject_has_zero_testcases' => null,
-                'platform_not_on_tproject' => null, 'platform_linked' => null,
-                'platform_not_linked' => null, 'tcase_doesnot_exist' => null,
-                'tcversion_doesnot_exist' => null, 'not_imported' => null,
-                'link_to_tplan_feedback' => null, 'link_to_platform' => null ));
+                              'link_without_platform_element' => null,
+                              'no_platforms_on_tproject' => null, 'tcase_link_updated' => null,
+                              'link_with_platform_not_needed' => null,
+                              'tproject_has_zero_testcases' => null,
+                              'platform_not_on_tproject' => null, 'platform_linked' => null,
+                              'platform_not_linked' => null, 'tcase_doesnot_exist' => null,
+                              'tcversion_doesnot_exist' => null, 'not_imported' => null,
+                              'link_to_tplan_feedback' => null, 'link_to_platform' => null ));
 
   // Double Check
   // Check if Test Plan Parent (Test Project) has testcases, if not abort
@@ -229,9 +224,9 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
     $tprojectMgr->get_all_testcases_id($contextObj->tproject_id,$tcaseSet,array('output' => 'external_id'));
     $tcaseSet = array_flip($tcaseSet);
 
-      // Test Plan name will not be used
-      // <testplan>  <name></name>
-      //
+    // Test Plan name will not be used
+    // <testplan>  <name></name>
+    //
     // Platform definition info will not be used 
     //
     // I will try to link the platforms if are defined
@@ -444,14 +439,9 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 
 /**
  *
- *
- * 
- *
- * @internal Revisions
- * 20101031 - franciscom - creation
  */
- function processPlatforms(&$platMgr,&$tplanMgr,$universe,$xmlSubset,$lbl,$tplanID)
- {
+function processPlatforms(&$platMgr,&$tplanMgr,$universe,$xmlSubset,$lbl,$tplanID)
+{
   $ret = array('status_ok' => true, 'msg' => null);
   $children = $xmlSubset->children();
   $msg_ok = array();
@@ -490,5 +480,4 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
     $ret['msg'] = $msg_ok;
   }
   return $ret;
- }
-?>
+}

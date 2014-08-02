@@ -7,14 +7,13 @@
  *
  * @package 	  TestLink
  * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2013, TestLink community 
- * @filesource  platformsImport.php,v 1.6 2010/02/21 17:07:41 franciscom Exp $
- * @link 		    http://www.teamst.org/index.php
+ * @copyright   2005-2014, TestLink community 
+ * @filesource  platformsImport.php
+ * @link 		    http://www.testlink.org
  * @uses 		    config.inc.php
  *
  * @internal revisions
- * @since 1.9.9
- * 20130930 - franciscom - goback_url input parameter removed, to avoid XSS attack
+ * @since 1.9.11
  *
  */
 require('../../config.inc.php');
@@ -129,7 +128,7 @@ function doImport(&$dbHandler,$testproject_id)
         }
         else
         {
-          $import_msg['ok'][] = lang_get('bad_line_skipped');
+          $import_msg['ko'][] = lang_get('bad_line_skipped');
         }  
       }      
     }
@@ -145,6 +144,10 @@ function doImport(&$dbHandler,$testproject_id)
 		$file_check = array('show_results' => 0, 'status_ok' => 0,'msg' => $msg);
 	}
   
+  if( count($import_msg['ko']) == 0 )
+  {
+    $import_msg['ko'] = null;
+  }  
   $file_check['import_msg'] = $import_msg;
   return $file_check;
 }

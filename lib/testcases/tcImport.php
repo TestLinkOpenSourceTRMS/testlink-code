@@ -791,9 +791,9 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
       {
           $tc['requirements'] = $requirements;  
       } 
-       }  
-      $tcaseSet[$jdx++] = $tc;    
-    }
+    }  
+    $tcaseSet[$jdx++] = $tc;    
+  }
   return $tcaseSet;
 }
 
@@ -802,16 +802,15 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
  * 
  *
  * @internal revisions
- * 20100821 - franciscom - BUGID 3695 - added "execution_type"
  */
 function getStepsFromSimpleXMLObj($simpleXMLItems)
 {
-    $itemStructure['elements'] = array('string' => array("actions"=>null,"expectedresults" => null),
-                               'integer' => array("step_number" => null,"execution_type" => null));
+  $itemStructure['elements'] = array('string' => array("actions"=>null,"expectedresults" => null),
+                                     'integer' => array("step_number" => null,"execution_type" => null));
                                
-    // 20110205 - franciscom - seems key 'transformations' is not managed on
-    // getItemsFromSimpleXMLObj(), then ??? is useless???                               
-    $itemStructure['transformations'] = array("expectedresults" => "expected_results");
+  // 20110205 - franciscom - seems key 'transformations' is not managed on
+  // getItemsFromSimpleXMLObj(), then ??? is useless???                               
+  $itemStructure['transformations'] = array("expectedresults" => "expected_results");
                                
   $items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
 

@@ -2418,6 +2418,7 @@ $TLS_import_results_tc_not_found = "Test Case %s not found in test plan" . $TLS_
 $TLS_import_results_invalid_result = "Test Case %s has an invalid result %s " . $TLS_imp_result_ko;
 $TLS_import_results_ok = "Test Case %s - version %s - Tester: %s - Result: %s - Execution Timestamp: %s - Imported!";
 $TLS_import_results_tc_exists = "Test Case %s - version = %s - is in the test plan.";
+$TLS_invalid_cf = "Test Case %s - Custom field with name %s can not be imported - please check available custom fields definitions";
 $TLS_tcase_external_id_do_not_exists = "Test Case with external id=%s, can not be found " . $TLS_imp_result_ko;
 $TLS_tcase_internal_id_do_not_exists = "Test Case with internal id=%s, can not be found "  . $TLS_imp_result_ko;
 $TLS_tcase_id_is_not_number = "Test Case internal id=%s is not a number " . $TLS_imp_result_ko;

@@ -8,10 +8,11 @@
  * @filesource  resultsImport.php
  * @package     TestLink
  * @author      Kevin Levy
- * @copyright   2010,2012 TestLink community 
+ * @author      Francisco Mancardi - francisco.mancardi@gmail.com
+ * @copyright   2010,2014 TestLink community 
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.11
  *
  **/
 
@@ -25,22 +26,10 @@ $templateCfg = templateConfiguration();
 
 
 $args = init_args($db);
-$gui = new stdClass();
-$gui->import_title=lang_get('title_results_import_to');
-$gui->buildID=$args->buildID;
-$gui->platformID=$args->platformID;
-$gui->tplanID=$args->tplanID;
-
-$gui->file_check=array('status_ok' => 1, 'msg' => 'ok');
-$gui->importTypes=array("XML" => "XML");
-$gui->importLimit = config_get('import_file_max_size_bytes');
-$gui->doImport = ($args->importType != "");
-$gui->testprojectName=$args->testprojectName;
-
+$gui = initializeGui($args);
 
 $resultMap=null;
 $dest=TL_TEMP_PATH . session_id()."-results.import";
-
 $container_description=lang_get('import_xml_results');
 
 if ($args->doUpload)
@@ -184,7 +173,8 @@ function saveImportedResultData(&$db,$resultData,$context)
   
   
   $l18n = array('import_results_tc_not_found' => '' ,'import_results_invalid_result' => '',
-                'tproject_id_not_found' => '', 'import_results_ok' => '');
+                'tproject_id_not_found' => '', 'import_results_ok' => '',
+                'invalid_cf' => '');
   foreach($l18n as $key => $value)
   {
     $l18n[$key] = lang_get($key);
@@ -425,9 +415,10 @@ function saveImportedResultData(&$db,$resultData,$context)
                ($addExecDuration ? ",{$tcase_exec['execution_duration']}" : '') . ")";
 
         $db->exec_query($sql); 
+        $execution_id = $db->insert_id($tables['executions']);
+
         if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
         { 
-          $execution_id = $db->insert_id($tables['executions']);
           foreach($tcase_exec['bug_id'] as $bug_id)
           {
             $bug_id = trim($bug_id);
@@ -444,6 +435,38 @@ function saveImportedResultData(&$db,$resultData,$context)
             }
           }
         }
+        
+        if( isset($tcase_exec['custom_fields']) && !is_null($tcase_exec['custom_fields']) && is_array($tcase_exec['custom_fields']) )
+        { 
+          // Get linked custom fields to this test project, for test case on execution
+          // $context->tprojectID
+          $cfieldMgr = new cfield_mgr($db);
+          $cfSetByName = $cfieldMgr->get_linked_cfields_at_execution($context->tprojectID,1,'testcase',null,null,null,'name');
+          foreach($tcase_exec['custom_fields'] as $cf)
+          {
+            $ak = null;
+            if( isset($cfSetByName[$cf['name']]) )
+            {
+              // write to db blind
+              $ak[$cfSetByName[$cf['name']]['id']]['cf_value'] = $cf['value']; 
+            }  
+            else
+            {
+              $message=sprintf($l18n['invalid_cf'],$tcase_identity,$cf['name']);
+            } 
+
+            if(!is_null($ak))
+            {
+              $cfieldMgr->execution_values_to_db($ak,$tcversion_id,$execution_id,$context->tplanID,null,'plain');
+            }  
+          }  
+        }
+
+        if( !is_null($message) )
+        {
+          $resultMap[]=array($message);
+        }  
+
         $message=sprintf($l18n['import_results_ok'],$tcase_identity,$version,$tester_name,
                          $resulstCfg['code_status'][$result_code],$execution_ts);
 
@@ -526,6 +549,13 @@ function importExecutionFromXML(&$xmlTCExec)
       $execInfo['bug_id'][] = (string) $bug; // BUGID 3331  
     }
   }
+
+  $execInfo['custom_fields'] = null;
+  if(property_exists($xmlTCExec, 'custom_fields') && property_exists($xmlTCExec->custom_fields, 'custom_field'))
+  {
+    $itemStructure['elements'] = array('string' => array("name" => 'trim',"value" => 'trim'));
+    $execInfo['custom_fields'] = getItemsFromSimpleXMLObj($xmlTCExec->custom_fields->custom_field,$itemStructure);
+  }  
   return $execInfo;     
 }
 
@@ -573,12 +603,12 @@ function init_args(&$dbHandler)
   $args->buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : null;
   $args->platformID = isset($_REQUEST['platformID']) ? intval($_REQUEST['platformID']) : null;
   $args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : null;
-  $args->tplanID = !is_null($args->tplanID) ? $args->tplanID : $_SESSION['testplanID'];
+  $args->tplanID = !is_null($args->tplanID) ? $args->tplanID : intval($_SESSION['testplanID']);
 
   $args->tprojectID = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : null;
   if( is_null($args->tprojectID))
   {
-    $args->tprojectID = $_SESSION['testprojectID'];
+    $args->tprojectID = intval($_SESSION['testprojectID']);
     $args->testprojectName = $_SESSION['testprojectName'];
   }
   else
@@ -589,7 +619,7 @@ function init_args(&$dbHandler)
   }
     
   $args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
-  $args->userID=$_SESSION['userID'];
+  $args->userID=intval($_SESSION['userID']);
     
   return $args;
 }
@@ -703,4 +733,20 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
     }
   }
   return $checks;
+}
+
+function initializeGui(&$argsObj)
+{
+  $guiObj = new stdClass();
+  $guiObj->import_title=lang_get('title_results_import_to');
+  $guiObj->buildID=$argsObj->buildID;
+  $guiObj->platformID=$argsObj->platformID;
+  $guiObj->tplanID=$argsObj->tplanID;
+
+  $guiObj->file_check=array('status_ok' => 1, 'msg' => 'ok');
+  $guiObj->importTypes=array("XML" => "XML");
+  $guiObj->importLimit = config_get('import_file_max_size_bytes');
+  $guiObj->doImport = ($argsObj->importType != "");
+  $guiObj->testprojectName=$argsObj->testprojectName;
+  return $guiObj;  
 }

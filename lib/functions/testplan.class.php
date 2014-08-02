@@ -2400,7 +2400,7 @@ class testplan extends tlObjectWithAttachments
     
     // 20081122 - franciscom - humm!! need to look better IMHO this call is done to wrong function
     $cf_map=$this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,self::ENABLED,
-      $show_on_execution,'testplan',$id);
+    $show_on_execution,'testplan',$id);
     return($cf_map);
   }
 
@@ -2430,8 +2430,8 @@ class testplan extends tlObjectWithAttachments
       and cfield_testprojects.active = 1 
       and custom_fields.enable_on_execution = 1 
       and custom_fields.show_on_execution = 1 
-      and cfield_testprojects.testproject_id = {$tproject_id}
-      order by field_id";
+      and cfield_testprojects.testproject_id = " . $this->db->prepare_int($tproject_id) .
+      "order by field_id";
     
     $field_map = $this->db->fetchColumnsIntoMap($sql,'field_id','label');
     return($field_map);
@@ -2492,8 +2492,8 @@ class testplan extends tlObjectWithAttachments
   {
     $cf_smarty='';
     $parent_id=null;
-        $label_css_style=' class="labelHolder" ' ;
-       $value_css_style = ' ';
+    $label_css_style=' class="labelHolder" ' ;
+    $value_css_style = ' ';
 
     $add_table=true;
     $table_style='';
@@ -2506,9 +2506,7 @@ class testplan extends tlObjectWithAttachments
       $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
     } 
     
-    // BUGID 3989
-      $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
-      
+    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
     if( $scope=='design' )
     {
       $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$filters);
@@ -6933,18 +6931,18 @@ class testplan extends tlObjectWithAttachments
     return $this->db->insert_id($this->tables['executions']);    
   }
 
-/**
- *
- */
-function getExecutionDurationForSet($execIDSet)
-{
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-  $sql = "/* $debugMsg */ " .
-         "SELECT E.id, E.execution_duration AS duration ".
-         "FROM {$this->tables['executions']} E " .
-         "WHERE id IN (" . implode(',',$execIDSet) . ')';
-  return $this->db->get_recordset($sql);       
-}
+  /**
+   *
+   */
+  function getExecutionDurationForSet($execIDSet)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* $debugMsg */ " .
+           "SELECT E.id, E.execution_duration AS duration ".
+           "FROM {$this->tables['executions']} E " .
+           "WHERE id IN (" . implode(',',$execIDSet) . ')';
+    return $this->db->get_recordset($sql);       
+  }
 
   /**
    *
@@ -6988,7 +6986,19 @@ function getExecutionDurationForSet($execIDSet)
     // </testcase>
     $mm = $this->getLinkedStaticView($id,$filters,array('output' => 'array','detail' => '4results'));
 
-
+    // Custom fields processing
+    if(!is_null($mm) && ($tcaseQty=count($mm)) > 0)
+    {
+      $xcf = $this->cfield_mgr->get_linked_cfields_at_execution($item['tproject_id'],1,'testcase');
+      if(!is_null($xcf) && ($cfQty=count($xcf)) > 0)
+      {
+        for($gdx=0; $gdx < $tcaseQty; $gdx++)
+        {
+          $mm[$gdx]['xmlcustomfields'] = $this->cfield_mgr->exportValueAsXML($xcf);
+        }    
+      }  
+    }  
+    
     $xml_root = null;
     $xml_template = "\n" . 
                     "\t<testcase external_id=\"{{FULLEXTERNALID}}\">" . "\n" . 
@@ -6998,10 +7008,11 @@ function getExecutionDurationForSet($execIDSet)
                     "\t\t" . "<!-- if not present now() will be used -->" . "\n" .
                     "\t\t" . "<timestamp>YYYY-MM-DD HH:MM:SS</timestamp>" . "\n" .  
                     "\t\t" . "<bug_id>put your bug id here</bug_id>" . "\n" .  
-                    "\t</testcase>" . "\n" . 
+                    "\t\t" . "||CUSTOMFIELDS||" . "\n" .  
+                    "\t</testcase>" . "\n";
 
     $xml_mapping = null;
-    $xml_mapping = array("{{FULLEXTERNALID}}" => "full_external_id");
+    $xml_mapping = array("{{FULLEXTERNALID}}" => "full_external_id", "||CUSTOMFIELDS||" => "xmlcustomfields");
     $linked_testcases = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
     $zorba = $xmlString .= $linked_testcases . "\n</results>\n";
 
@@ -7683,16 +7694,15 @@ class milestone_mgr extends tlObject
           $id
     returns:
 
-    rev: 20090103 - franciscom - get test plan name.
   */
   function get_by_id($id)
   {
     $sql=" SELECT M.id, M.name, M.a AS high_percentage, M.b AS medium_percentage, M.c AS low_percentage, " .
-       " M.target_date, M.start_date, M.testplan_id, NH.name as testplan_name " .   
-       " FROM {$this->tables['milestones']} M, {$this->tables['nodes_hierarchy']} NH " .
-       " WHERE M.id = {$id} AND NH.id=M.testplan_id";
-    $myrow = $this->db->fetchRowsIntoMap($sql,'id');
-    return $myrow;
+         " M.target_date, M.start_date, M.testplan_id, NH.name as testplan_name " .   
+         " FROM {$this->tables['milestones']} M, {$this->tables['nodes_hierarchy']} NH " .
+         " WHERE M.id = " . $this->db->prepare_int($id) . " AND NH.id=M.testplan_id";
+    $row = $this->db->fetchRowsIntoMap($sql,'id');
+    return $row;
   }
 
   /**
@@ -7710,7 +7720,7 @@ class milestone_mgr extends tlObject
   function check_name_existence($tplan_id,$milestone_name,$milestone_id=null,$case_sensitive=0)
   {
     $sql = " SELECT id, name FROM {$this->tables['milestones']} " .
-         " WHERE testplan_id = {$tplan_id} ";
+           " WHERE testplan_id = " . $this->db->prepare_int($tplan_id);
     
     if($case_sensitive)
     {

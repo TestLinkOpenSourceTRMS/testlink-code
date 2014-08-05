@@ -154,13 +154,15 @@
             <image src="{$tlImages.export}" title="{$labels.btn_export_testplan_tree}"
                    onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
                                                            '{$control->settings.setting_testplan.selected}','{$platformID}',
-                                                           '{$control->settings.setting_build.selected}','tree');" />
+                                                           '{$control->settings.setting_build.selected}','tree',
+                                                           '{$control->form_token}');" />
             &nbsp;                                               
             <image src="{$tlImages.export_for_results_import}" title="{$labels.btn_export_testplan_tree_for_results}"
                    onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
                                                            '{$control->settings.setting_testplan.selected}',
                                                            '{$platformID}',
-                                                           '{$control->settings.setting_build.selected}','4results');" />
+                                                           '{$control->settings.setting_build.selected}','4results',
+                                                           '{$control->form_token}');" />
 
             &nbsp;                                               
             {/if}

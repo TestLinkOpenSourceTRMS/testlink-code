@@ -6523,7 +6523,7 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
     $my = array('filters' => '', 'options' => '');
 
-    $my['filters'] = array('platform_id' => null,'tsuites_id' => null);
+    $my['filters'] = array('platform_id' => null,'tsuites_id' => null, 'tcaseSet' => null);
     $my['filters'] = array_merge($my['filters'],(array)$filters);
 
     $my['options'] = array('output' => 'map','order_by' => null, 'detail' => 'full');
@@ -6538,7 +6538,7 @@ class testplan extends tlObjectWithAttachments
     $feid = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
 
 
-    $addWhere = array('platform' => '','tsuite' => '');
+    $addWhere = array('platform' => '','tsuite' => '', 'tcases' => '');
     $platQty = 0;
     if( !is_null($my['filters']['platform_id']) )
     {
@@ -6555,7 +6555,15 @@ class testplan extends tlObjectWithAttachments
       $addWhere['tsuite'] = 'AND NH_TCASE.parent_id IN (' . implode(',',$dummy) . ')';
     }
     
+    if( !is_null($my['filters']['tcaseSet']) )
+    {
+      $dummy = (array)$my['filters']['tcaseSet'];
+      array_walk($dummy,'intval');
+      $addWhere['tsuite'] = 'AND NH_TCASE.id IN (' . implode(',',$dummy) . ')';
+    }
     
+
+
     switch($my['options']['detail'])
     {
       case '4results':
@@ -6947,9 +6955,12 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function exportForResultsToXML($id,$context,$optExport = array())
+  function exportForResultsToXML($id,$context,$optExport = array(),$filters=null)
   {
-    $filters = null;
+    $my['filters'] = array('platform_id' => null, 'tcaseSet' => null);
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+
     $item = $this->get_by_id($id,array('output' => 'minimun','caller' => __METHOD__));
 
     $xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
@@ -6972,7 +6983,7 @@ class testplan extends tlObjectWithAttachments
     {
       $info = $this->platform_mgr->getByID($context['platform_id']);
       $xmlString .= "\t<platform name=\"" . htmlspecialchars($info['name']) . "\" />\n";
-      $filters['platform_id'] = $context['platform_id'];
+      $my['filters']['platform_id'] = $context['platform_id'];
     } 
 
     // <testcase external_id="BB-1" >
@@ -6984,7 +6995,7 @@ class testplan extends tlObjectWithAttachments
     // <result>p</result>
     // <notes>functionality works great </notes>
     // </testcase>
-    $mm = $this->getLinkedStaticView($id,$filters,array('output' => 'array','detail' => '4results'));
+    $mm = $this->getLinkedStaticView($id,$my['filters'],array('output' => 'array','detail' => '4results'));
 
     // Custom fields processing
     if(!is_null($mm) && ($tcaseQty=count($mm)) > 0)

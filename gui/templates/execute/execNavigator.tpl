@@ -62,10 +62,11 @@ Ext.onReady(function() {
  * IMPORTANT DEVELOPMENT NOTICE
  * ATTENTION args is a GLOBAL Javascript variable, then be CAREFULL
  */
-function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id,mode) 
+function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id,mode,form_token) 
 {
   wargs = "tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + "&platform_id=" + platform_id + "&build_id=" + build_id;  
   wargs = wargs + "&closeOnCancel=1&exportContent=" + mode;
+  wargs = wargs + "&form_token=" + form_token;
   wref = window.open(fRoot+"lib/plan/planExport.php?"+wargs,
                      windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
   wref.focus();

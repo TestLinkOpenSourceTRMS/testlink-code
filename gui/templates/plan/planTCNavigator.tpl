@@ -18,7 +18,6 @@ Scope: show test plan tree for execution
 
 {* includes Ext.ux.CollapsiblePanel *}
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
-{literal}
 <script type="text/javascript">
   treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
               loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
@@ -48,7 +47,6 @@ Scope: show test plan tree for execution
     treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                 loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
     </script>
-    {/literal}
     
     <script type="text/javascript">
       treeCfg.root_name = '{$gui->ajaxTree->root_node->name}';
@@ -62,7 +60,6 @@ Scope: show test plan tree for execution
     </script>
 
 <script type="text/javascript">
-{literal}
 function pre_submit()
 {
   document.getElementById('called_url').value = parent.workframe.location;
@@ -79,7 +76,6 @@ function update2latest(id)
   var action_url = fRoot+'/'+menuUrl+"?doAction=doBulkUpdateToLatest&level=testplan&id="+id+args;
   parent.workframe.location = action_url;
 }
-{/literal}
 </script>
 
 
@@ -90,7 +86,7 @@ function update2latest(id)
  * Above included file closes <head> tag and opens <body>, so this is not done here.
  *}
  
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->title_navigator} {$gui->additional_string|escape}</h1>

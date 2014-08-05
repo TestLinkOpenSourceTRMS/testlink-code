@@ -57,7 +57,9 @@ if ($args->doExport)
     case '4results':
     $context = array('platform_id' => $args->platform_id, 'build_id' => $args->build_id,
                      'tproject_id' => $args->tproject_id);
-    $content = $tplan_mgr->exportForResultsToXML($args->tplan_id,$context);
+
+    $content = $tplan_mgr->exportForResultsToXML($args->tplan_id,$context,null,
+                                                 array('tcaseSet' => $args->testCaseSet));
     $tLogMsg .= ' : exportForResultsToXML()';
   }
 
@@ -118,6 +120,17 @@ function init_args()
     
   $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
   $args->exportContent = isset($_REQUEST['exportContent']) ? $_REQUEST['exportContent'] : 'linkedItems';
+
+  $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+  $args->testCaseSet = null;
+  if($args->treeFormToken >0)
+  {  
+    $mode = 'execution_mode';
+    $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? 
+                    $_SESSION[$mode][$args->treeFormToken] : null;
+
+    $args->testCaseSet = $session_data['testcases_to_show'];
+  }
   return $args;
 }
 
@@ -160,6 +173,7 @@ function initializeGui(&$argsObj,&$tplanMgr)
   $guiObj->platform_id = intval($argsObj->platform_id);
   $guiObj->build_id = intval($argsObj->build_id);
   $guiObj->exportContent = $argsObj->exportContent;
+  $guiObj->treeFormToken = $argsObj->treeFormToken;
 
   return $guiObj;
 }

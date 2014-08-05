@@ -141,27 +141,28 @@
     <div id='test_plan_mgmt_topics'>
     
       {if $gui->grants.mgt_testplan_create == "yes"}
-	    	<img src="{$tlImages.bullet}" />
+	    	{* <img src="{$tlImages.bullet}" /> *}
        		<a href="lib/plan/planView.php">{$labels.href_plan_management}</a>
 	    {/if}
 	    
 	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}
 	    	<br />
-	    	<img src="{$tlImages.bullet}" />
+	    	{* <img src="{$tlImages.bullet}" /> *}
            	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
       {/if} {* testplan_create_build *}
 	    
+      {if $gui->grants.testplan_milestone_overview == "yes" and $gui->countPlans > 0}
+            <br />
+          {* <img src="{$tlImages.bullet}" /> *}
+            <a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
+      {/if}
+
 	    {if $gui->grants.testplan_user_role_assignment == "yes" && $gui->countPlans > 0}
 	    	<br />
-	    	<img src="{$tlImages.bullet}" />
+	    	{* <img src="{$tlImages.bullet}" /> *}
        	    <a href="lib/usermanagement/usersAssign.php?featureType=testplan&amp;featureID={$gui->testplanID}">{$labels.href_assign_user_roles}</a>
 	    {/if}
       
-	    {if $gui->grants.testplan_milestone_overview == "yes" and $gui->countPlans > 0}
-            <br />
-        	<img src="{$tlImages.bullet}" />
-           	<a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
-	    {/if}
 	    
     </div>
   {/if}
@@ -171,26 +172,23 @@
 	{if $display_right_block_2}
     <div id='test_execution_topics'>
 		{if $gui->grants.testplan_execute == "yes"}
-			<img src="{$tlImages.bullet}" />
+			{* <img src="{$tlImages.bullet}" /> *}
 			<a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
       <br /> 
 		
       {if $gui->grants.exec_testcases_assigned_to_me == "yes"}
-			 <img src="{$tlImages.bullet}" />
+			 {* <img src="{$tlImages.bullet}" /> *}
 			 <a href="{$gui->url.testcase_assignments}">{$labels.href_my_testcase_assignments}</a>
 			 <br />
       {/if} 
 		{/if} 
       
 		{if $gui->grants.testplan_metrics == "yes"}
-			<img src="{$tlImages.bullet}" />
+			{* <img src="{$tlImages.bullet}" /> *}
 			<a href="{$gui->launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
 			<br />
-      {* do not understand this check => will remove *}        
-      {* {if $gui->grants.exec_testcases_assigned_to_me == "yes"} *}
-  			<img src="{$tlImages.bullet}" />
+  			{* <img src="{$tlImages.bullet}" /> *}
   			<a href="{$gui->url.metrics_dashboard}">{$labels.href_metrics_dashboard}</a>
-      {* {/if} *}
 		{/if} 
     </div>
 	{/if}
@@ -200,37 +198,39 @@
 	{if $display_right_block_3}
     <div id='testplan_contents_topics'>
     {if $gui->grants.testplan_add_remove_platforms == "yes"}
-  		<img src="{$tlImages.bullet}" />
+  		{* <img src="{$tlImages.bullet}" /> *}
   	  <a href="lib/platforms/platformsAssign.php?tplan_id={$gui->testplanID}">{$labels.href_platform_assign}</a>
   		<br />
     {/if} 
 		
-		<img src="{$tlImages.bullet}" />
+		{* <img src="{$tlImages.bullet}" /> *}
 	  <a href="{$gui->launcher}?feature=planAddTC">{$labels.href_add_remove_test_cases}</a>
 	  <br />
+
+    <a href="{$gui->launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
+    <br />
 		
+    {if $session['testprojectOptions']->testPriorityEnabled && 
+        $gui->grants.testplan_set_urgent_testcases == "yes"}
+      {* <img src="{$tlImages.bullet}" /> *}
+      <a href="{$gui->launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
+      <br />
+    {/if}
+
     {if $gui->grants.testplan_update_linked_testcase_versions == "yes"}
-		  <img src="{$tlImages.bullet}" />
+		  {* <img src="{$tlImages.bullet}" /> *}
 	   	<a href="{$gui->launcher}?feature=planUpdateTC">{$labels.href_update_tplan}</a>
 	    <br />
     {/if} 
 
     {if $gui->grants.testplan_show_testcases_newest_versions == "yes"}
-		  <img src="{$tlImages.bullet}" />
+		  {* <img src="{$tlImages.bullet}" /> *}
 	   	<a href="{$gui->launcher}?feature=newest_tcversions">{$labels.href_newest_tcversions}</a>
 	    <br />
     {/if} 
 
-		<img src="{$tlImages.bullet}" />
-	  <a href="{$gui->launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
-	  <br />
+		{* <img src="{$tlImages.bullet}" /> *}
 
-		{if $session['testprojectOptions']->testPriorityEnabled && 
-        $gui->grants.testplan_set_urgent_testcases == "yes"}
-			<img src="{$tlImages.bullet}" />
-	   	<a href="{$gui->launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
-		  <br />
-		{/if}
     </div>
   {/if}
   {* ------------------------------------------------------------------------------------------ *}

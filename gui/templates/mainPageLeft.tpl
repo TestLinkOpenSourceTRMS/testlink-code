@@ -143,37 +143,37 @@ function display_left_block_5()
   {if $display_left_block_1}
     <div id='testproject_topics'>
     {if $gui->grants.project_edit == "yes"}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/project/projectView.php">{$labels.href_tproject_management}</a>
       <br />
     {/if}
     
     {if $gui->grants.tproject_user_role_assignment == "yes"}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/usermanagement/usersAssign.php?featureType=testproject&amp;featureID={$gui->testprojectID}">{$labels.href_assign_user_roles}</a>
       <br />
     {/if}
 
     {if $gui->grants.cfield_management == "yes"}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/cfields/cfieldsTprojectAssign.php">{$labels.href_cfields_tproject_assign}</a>
       <br />
     {/if}
     
     {if $gui->grants.keywords_view == "yes"}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
       <br />
     {/if} {* view_keys_rights *}
     
     {if $gui->grants.platform_management == "yes"}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>
       <br />
     {/if}
 
     {if $gui->grants.project_inventory_view}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/inventory/inventoryView.php">{$labels.href_inventory}</a>
     {/if}
     </div>
@@ -183,13 +183,13 @@ function display_left_block_5()
   {if $display_left_block_2}
     <div id='system_topics'>
     {if $gui->grants.cfield_management == "yes"}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
       <br />
     {/if}
      
     {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/issuetrackers/issueTrackerView.php">{$labels.href_issuetracker_management}</a>
     {/if}
     </div>
@@ -202,24 +202,24 @@ function display_left_block_5()
     <div id="requirements_topics" >
       {if $gui->grants.reqs_view == "yes"}
 
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
         <a href="{$gui->launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a><br/>
-        <img src="{$tlImages.bullet}" />
+        {* <img src="{$tlImages.bullet}" /> *}
         <a href="lib/requirements/reqOverview.php">{$labels.href_req_overview}</a><br/>
 
-        <img src="{$tlImages.bullet}" />
+        {* <img src="{$tlImages.bullet}" /> *}
         <a href="{$gui->launcher}?feature=searchReq">{$labels.href_search_req}</a><br/>
-        <img src="{$tlImages.bullet}" />
+        {* <img src="{$tlImages.bullet}" /> *}
         <a href="{$gui->launcher}?feature=searchReqSpec">{$labels.href_search_req_spec}</a>
       <br />
      {/if}
        
     {if $gui->grants.reqs_edit == "yes"}
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
       <br />
 
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
     {/if}
     </div>
@@ -230,7 +230,7 @@ function display_left_block_5()
   {* ---------------------------------------------------------------------------------------- *}
    {if $display_left_block_4}
       <div id="testspecification_topics" >
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
       <a href="{$gui->launcher}?feature=editTc">
         {if $gui->grants.modify_tc eq "yes"}
           {lang_get s='href_edit_tc'}
@@ -240,7 +240,7 @@ function display_left_block_5()
       </a>
       {if $gui->hasTestCases}
       <br />
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
           <a href="{$gui->launcher}?feature=searchTc">{$labels.href_search_tc}</a>
       {/if}    
       
@@ -261,7 +261,7 @@ function display_left_block_5()
         <a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
         *}
         <br />
-        <img src="{$tlImages.bullet}" />
+        {* <img src="{$tlImages.bullet}" /> *}
         <a href="lib/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&tproject_id={$gui->testprojectID}">{$labels.link_report_test_cases_created_per_user}</a>
      {/if}
 
@@ -270,7 +270,7 @@ function display_left_block_5()
   {/if}
 
     <div id='testlink_application'>
-      <img src="{$tlImages.bullet}" />
+      {* <img src="{$tlImages.bullet}" /> *}
     <form style="display:inline;">
       <select class="menu_combo" style="font-weight:normal;" name="docs" size="1"
               onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, 

@@ -6203,6 +6203,127 @@ protected function createAttachmentTempFile()
 
 
 
+ /**
+  * Returns all bugs linked to a particular testcase on a test plan.
+  * If there are no filter criteria regarding platform and build,
+  * result will be get WITHOUT checking for a particular platform and build.
+  *
+  * @param struct $args
+  * @param string $args["devKey"]
+  * @param int $args["tplanid"]
+  * @param int $args["testcaseid"]: Pseudo optional.
+  *                                 if does not is present then testcaseexternalid MUST BE present
+  *
+  * @param int $args["testcaseexternalid"]: Pseudo optional.
+  *                                         if does not is present then testcaseid MUST BE present
+  *
+  * @param string $args["platformid"]: optional. 
+  *                                    ONLY if not present, then $args["platformname"] 
+  *                                    will be analized (if exists)
+  *
+  * @param string $args["platformname"]: optional (see $args["platformid"])
+  *
+  * @param int $args["buildid"]: optional
+  *                              ONLY if not present, then $args["buildname"] will be analized (if exists)
+  * 
+  * @param int $args["buildname"] - optional (see $args["buildid"])
+  *
+  *
+  * @return mixed $resultInfo
+  *               if execution found
+  *               array that contains a map with these keys:
+  *               bugs
+  *
+  *               if test case has not been execute,
+  *               array('id' => -1)
+  *
+  * @access public
+  */
+   public function getTestCaseBugs($args)
+   {
+     $operation=__FUNCTION__;
+     $msg_prefix="({$operation}) - ";
+       
+     $this->_setArgs($args);
+     $resultInfo = array();
+     $status_ok=true;
+ 
+               
+     // Checks are done in order
+     $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity');
+     $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && 
+                $this->_checkTCIDAndTPIDValid(null,$msg_prefix) && 
+                $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);       
+
+     $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
+                          'platform_id' => null,'build_id' => null);
+
+     // Now we can check for Optional parameters
+     if($this->_isBuildIDPresent() || $this->_isBuildNamePresent())
+     {
+       if( ($status_ok =  $this->checkBuildID($msg_prefix)) )
+       {
+         $execContext['build_id'] = $this->args[self::$buildIDParamName];  
+       }  
+     }  
+
+     if( $status_ok )
+     {
+        if( $this->_isParamPresent(self::$platformIDParamName,$msg_prefix) ||
+            $this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
+        {
+          $status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName]);
+          if( $status_ok)
+          {
+            $execContext['platform_id'] = $this->args[self::$platformIDParamName];  
+          }  
+        }  
+     }  
+
+     if( $status_ok )
+     {
+       $sql = " SELECT MAX(id) AS exec_id FROM {$this->tables['executions']} " .
+              " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " .
+              " AND tcversion_id IN (" .
+              " SELECT id FROM {$this->tables['nodes_hierarchy']} " .
+              " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})";
+
+       if(!is_null($execContext['build_id']))
+       {
+         $sql .= " AND build_id = " . intval($execContext['build_id']);
+       }  
+
+       if(!is_null($execContext['platform_id']))
+       {
+         $sql .= " AND platform_id = " . intval($execContext['platform_id']);
+       }  
+
+       $rs = $this->dbObj->fetchRowsIntoMap($sql,'exec_id');
+       if( is_null($rs) )
+       {
+         // has not been executed
+         // execution id = -1 => test case has not been runned.
+         $resultInfo[]=array('id' => -1);
+       }  
+       else
+       {
+         $targetIDs=array();
+         foreach($rs as $execrun)
+         {
+           $targetIDs[]=$execrun['exec_id'];
+         }
+         $resultInfo[0]['bugs'] = array();
+         $sql = " SELECT DISTINCT bug_id FROM {$this->tables['execution_bugs']} " . 
+                " WHERE execution_id in (" . $implode(',',$targetIDs) . ")";
+         $resultInfo[0]['bugs'] = (array)$this->dbObj->get_recordset($sql);       
+       }  
+     }
+     
+     return $status_ok ? $resultInfo : $this->errors;
+   }
+ 
+
+
 
   /**
    *
@@ -6233,6 +6354,7 @@ protected function createAttachmentTempFile()
                             'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
                             'tl.getProjects' => 'this:getProjects',
                             'tl.getTestCaseAssignedTester' => 'this:getTestCaseAssignedTester',
+                            'tl.getTestCaseBugs' => 'this:getTestCaseBugs',
                             'tl.getTestProjectByName' => 'this:getTestProjectByName',
                             'tl.getTestPlanByName' => 'this:getTestPlanByName',
                             'tl.getProjectPlatforms' => 'this:getProjectPlatforms',

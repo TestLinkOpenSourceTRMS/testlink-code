@@ -5,5 +5,5 @@ Purpose: smarty template - login page title
 *}
 <div class="login_title">
 <p><img alt="Company logo" title="logo" src="{$smarty.const.TL_THEME_IMG_DIR}{$tlCfg->logo_login}" />
-   <br />TestLink {$tlVersion|escape}</p>
+   <br />{$tlVersion|escape}</p>
 </div>

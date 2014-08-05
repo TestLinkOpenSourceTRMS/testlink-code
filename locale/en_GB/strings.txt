@@ -117,7 +117,9 @@ $TLS_hint_mail_for_tester = 'Additional Text to be sent on Notification mail';
 $TLS_hint_like_search_on_name= 'Search wil be done on NAME in LIKE %value%';
 
 $TLS_keyword = "Keyword";
+$TLS_login = "Login";
 $TLS_log_message = "Log message";
+
 $TLS_mandatory = "Mandatory fields";
 $TLS_manual = "Manual";
 $TLS_Milestone = "Milestone";
@@ -1301,7 +1303,7 @@ $TLS_btn_manage_user = "Manage user";
 
 
 // ----- gui/templates/login.tpl -----
-$TLS_btn_login = "Login";
+$TLS_btn_login = "Log in";
 $TLS_login_name = "Login Name";
 $TLS_lost_password_q = "Lost Password?";
 $TLS_new_user_q = "New User?";

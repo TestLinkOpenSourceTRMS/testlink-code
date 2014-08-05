@@ -19,6 +19,14 @@ body, body.testlink {
 	padding:		0px;
 }
 
+body.landing {
+	background:  	#059; /* 059 */
+	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
+	font-size: 		small;
+	margin:			0px;
+	padding:		0px;
+}
+
 /** 
 use together with #header-wrap, to create a section on top of body
 that remain always visible while rest of body content scrolls,
@@ -385,6 +393,16 @@ div.messages {
 	color:				white;
 	margin: 			3px;
 	padding:			3px;
+}
+
+div.messages_rounded {
+	background-color:	#059;
+	color:				white;
+	margin: 			3px;
+	padding:			3px;
+    border-style:solid;
+    border-color:#059;
+    border-radius: 10px;
 }
 
 /***** tabbed menu ******************************************************************* */
@@ -790,13 +808,12 @@ div.exec_test_spec {
 
 div.login_title {
 	text-align: 	center;
-	width: 			50%;
+	width: 			80%;
 	background: 	#CDE;
 	margin: 		0px;
 	padding: 		5px 0px;
 	font-weight : 	bold;
-	font-variant : 	small-caps;
-	letter-spacing: 5px;
+	letter-spacing: 2px;
 }
 
 div.login_form {
@@ -804,14 +821,38 @@ div.login_form {
 	width: 			30%;
 	margin: 		35%;
 	margin-top: 	60px;
-	background: 	#CDE;
+	background: 	#CDE;  /* CDE */
 	padding: 		30px;
 	border: 		1px;
+    border-style:solid;
+    border-color:#CDE;
+    border-radius: 15px;
+}
+
+div.login_form.large { 
+	border-color:#FFF;	
+	font-size: large;
 }
 
 
+div.login_form.medium { 
+    border: 4px;
+    border-style:solid;
+	border-color:#FFF;	
+	font-size: medium;
+}
+/*
+div.login_form.medium { 
+    border-style:solid;
+	border-color:#FFF;	
+	font-size: medium;
+}
+*/
 
 
+.big_button{
+	width: 80px; height : 30px; 
+}
 
 
 .custom_field_container {

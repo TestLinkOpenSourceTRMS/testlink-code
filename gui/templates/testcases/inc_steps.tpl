@@ -42,7 +42,7 @@ Author : eloff, 2010
     <th>&nbsp;</th>
     <th>&nbsp;</th>
     {/if}
-    {if $add_exec_info}
+    {if isset($add_exec_info) && $add_exec_info}
       <th>{if $tlCfg->exec_cfg->steps_exec_notes_default == 'latest'}{$inc_steps_labels.latest_exec_notes}
           {else}{$inc_steps_labels.step_exec_notes}{/if}
           <img class="clickable" src="{$tlImages.clear_notes}" 
@@ -92,7 +92,7 @@ Author : eloff, 2010
     
     {/if}
 
-    {if $add_exec_info}
+    {if isset($add_exec_info) && $add_exec_info}
       <td class="exec_tcstep_note">
         <textarea class="step_note_textarea" name="step_notes[{$step_info.id}]" id="step_notes_{$step_info.id}" 
                   cols="40" rows="5">{$step_info.execution_notes|escape}</textarea>

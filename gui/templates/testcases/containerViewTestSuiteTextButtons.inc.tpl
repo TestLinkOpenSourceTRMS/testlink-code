@@ -11,6 +11,7 @@
         </form>
         </span>
         <form method="post" action="lib/testcases/containerEdit.php">
+          <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
           <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
           <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
           <input type="hidden" name="containerType" value="{$gui->containerType}" />
@@ -39,11 +40,13 @@
       <fieldset class="groupBtn">
         <h2>{$labels.testcase_operations}</h2>
         <form method="post" action="lib/testcases/tcEdit.php">
+          <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
           <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
           <input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
         </form>
 
         <form method="post" action="lib/testcases/containerEdit.php">
+          <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
           <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
           <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
           <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"

@@ -66,6 +66,8 @@ function check_action_precondition(container_id,action,msg)
 	<form id="move_copy_testcases" name="move_copy_testcases" method="post"
 	      action="lib/testcases/containerEdit.php?objectID={$objectID}">
 
+    <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
+
     {if !$testCasesTableView}    
       {if $user_feedback != ''}
         <div class="user_feedback">{$user_feedback}</div>

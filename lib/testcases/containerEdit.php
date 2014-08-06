@@ -36,6 +36,7 @@ $opt_cfg->js_ot_name = 'ot';
 $args = init_args($db,$opt_cfg);
 $level = $args->containerType;
 
+
 $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
@@ -446,6 +447,19 @@ function init_args(&$dbHandler,$optionTransferCfg)
   $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
                              $_SESSION['setting_refresh_tree_on_action'] : 0;
 
+
+
+  $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+  $args->testCaseSet = null;
+
+
+  if($args->treeFormToken >0)
+  {  
+    $mode = 'edit_mode';
+    $sdata = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? 
+             $_SESSION[$mode][$args->treeFormToken] : null;
+    $args->testCaseSet = isset($sdata['testcases_to_show']) ? $sdata['testcases_to_show'] : null;
+  }
   return $args;
 }
 
@@ -786,90 +800,99 @@ returns: -
 */
 function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$argsObj,$feedback='')
 {
-    $tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
-    $testcase_cfg = config_get('testcase_cfg');
-    $glue = $testcase_cfg->glue_character;
+  $tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
+  $testcase_cfg = config_get('testcase_cfg');
+  $glue = $testcase_cfg->glue_character;
 
-    $containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
-    $containerName = $argsObj->tsuite_name;
-    if( is_null($containerName) )
-    {
-        $dummy = $treeMgr->get_node_hierarchy_info($argsObj->objectID);
-        $containerName = $dummy['name'];
-    }
+  $containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
+  $containerName = $argsObj->tsuite_name;
+  if( is_null($containerName) )
+  {
+    $dummy = $treeMgr->get_node_hierarchy_info($argsObj->objectID);
+    $containerName = $dummy['name'];
+  }
 
 
-    // 20081225 - franciscom have discovered that exclude selected testsuite branch is not good
-    //            when you want to move lots of testcases from one testsuite to it's children
-    //            testsuites. (in this situation tree drag & drop is not ergonomic).
-    $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);
-    $tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
+  // 20081225 - franciscom have discovered that exclude selected testsuite branch is not good
+  //            when you want to move lots of testcases from one testsuite to it's children
+  //            testsuites. (in this situation tree drag & drop is not ergonomic).
+  $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);
+  $tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
 
-    // 20081225 - franciscom
-    // While testing with PostGres have found this behaivour:
-    // No matter is UPPER CASE has used on field aliases, keys on hash returned by
-    // ADODB are lower case.
-    // Accessing this keys on Smarty template using UPPER CASE fails.
-    // Solution: have changed case on Smarty to lower case.
-    //
+  // 20081225 - franciscom
+  // While testing with PostGres have found this behaivour:
+  // No matter is UPPER CASE has used on field aliases, keys on hash returned by
+  // ADODB are lower case.
+  // Accessing this keys on Smarty template using UPPER CASE fails.
+  // Solution: have changed case on Smarty to lower case.
+  //
 
-    // $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
-    //        " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
-    //        " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
-    //        " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
-    //        " WHERE NHB.parent_id=NHA.id " .
-    //        " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
-    //        " AND NHA.parent_id={$containerID} " .
-    //        " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id ";
+  // $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
+  //        " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
+  //        " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
+  //        " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
+  //        " WHERE NHB.parent_id=NHA.id " .
+  //        " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
+  //        " AND NHA.parent_id={$containerID} " .
+  //        " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id ";
 
-    // $orderClause = " ORDER BY TCORDER,TCNAME";
+  // $orderClause = " ORDER BY TCORDER,TCNAME";
 
-    // $sql .= $orderClause;
-    // $children = $dbHandler->get_recordset($sql);
+  // $sql .= $orderClause;
+  // $children = $dbHandler->get_recordset($sql);
 
-    $sqlA = " SELECT MAX(TCV.version) AS lvnum, NHTC.node_order, NHTC.name, NHTC.id, TCV.tc_external_id AS tcexternalid" .
-            " FROM {$tables['nodes_hierarchy']} NHTC " .
-            " JOIN {$tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
-            " JOIN {$tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
-            " JOIN {$tables['node_types']} NT ON NT.id = NHTC.node_type_id AND NT.description='testcase'" .
-            " WHERE NHTC.parent_id = {$containerID} " .
-            " GROUP BY NHTC.id,TCV.tc_external_id,NHTC.name,NHTC.node_order ";
+  $sqlA = " SELECT MAX(TCV.version) AS lvnum, NHTC.node_order, NHTC.name, NHTC.id, TCV.tc_external_id AS tcexternalid" .
+          " FROM {$tables['nodes_hierarchy']} NHTC " .
+          " JOIN {$tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+          " JOIN {$tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+          " JOIN {$tables['node_types']} NT ON NT.id = NHTC.node_type_id AND NT.description='testcase'" .
+          " WHERE NHTC.parent_id = " . intval($containerID);
 
-    $sqlB = " SELECT SQLA.id AS tcid, SQLA.name AS tcname,SQLA.node_order AS tcorder, SQLA.tcexternalid," . 
-            " MTCV.summary FROM ($sqlA) SQLA " .
-            " JOIN {$tables['nodes_hierarchy']} MNHTCV ON MNHTCV.parent_id = SQLA.id " .
-            " JOIN {$tables['tcversions']} MTCV ON MTCV.id = MNHTCV.id AND MTCV.version = SQLA.lvnum";
-    $orderClause = " ORDER BY TCORDER,TCNAME";        
+  if( !is_null($argsObj->testCaseSet) )
+  {
+    $sqlA .= " AND NHTC.id IN (" . implode(',', $argsObj->testCaseSet). ")";
+  }        
 
-    // $childA = $dbHandler->get_recordset($sqlA);
-    // $setB = $dbHandler->get_recordset($sqlB . $orderClause);
-    $children = $dbHandler->get_recordset($sqlB . $orderClause);
+  $sqlA .=" GROUP BY NHTC.id,TCV.tc_external_id,NHTC.name,NHTC.node_order ";
 
-    // check if operation can be done
-    $user_feedback = $feedback;
-    if(!is_null($children) && (sizeof($children) > 0) && sizeof($testsuites))
-    {
-        $op_ok = true;
-    }
-    else
-    {
-        $children = null;
-        $op_ok = false;
-        $user_feedback = lang_get('no_testcases_available_or_tsuite');
-    }
+  $sqlB = " SELECT SQLA.id AS tcid, SQLA.name AS tcname,SQLA.node_order AS tcorder, SQLA.tcexternalid," . 
+          " MTCV.summary FROM ($sqlA) SQLA " .
+          " JOIN {$tables['nodes_hierarchy']} MNHTCV ON MNHTCV.parent_id = SQLA.id " .
+          " JOIN {$tables['tcversions']} MTCV ON MTCV.id = MNHTCV.id AND MTCV.version = SQLA.lvnum";
+  $orderClause = " ORDER BY TCORDER,TCNAME";        
 
-    $smartyObj->assign('testCasesTableView', ($argsObj->action == 'testcases_table_view') );
+  $children = $dbHandler->get_recordset($sqlB . $orderClause);
 
-    $smartyObj->assign('op_ok', $op_ok);
-    $smartyObj->assign('user_feedback', $user_feedback);
-    $smartyObj->assign('tcprefix', $tcasePrefix);
-    $smartyObj->assign('testcases', $children);
-    $smartyObj->assign('old_containerID', $argsObj->tprojectID); //<<<<-- check if is needed
-    $smartyObj->assign('containers', $testsuites);
-    $smartyObj->assign('objectID', $containerID);
-    $smartyObj->assign('object_name', $containerName);
-    $smartyObj->assign('top_checked','checked=checked');
-    $smartyObj->assign('bottom_checked','');
+  // check if operation can be done
+  $user_feedback = $feedback;
+  if(!is_null($children) && (sizeof($children) > 0) && sizeof($testsuites))
+  {
+    $op_ok = true;
+  }
+  else
+  {
+    $children = null;
+    $op_ok = false;
+    $user_feedback = lang_get('no_testcases_available_or_tsuite');
+  }
+
+  $gui = new stdClass();
+  $gui->treeFormToken = $gui->form_token = $argsObj->treeFormToken; 
+
+
+  $smartyObj->assign('testCasesTableView', ($argsObj->action == 'testcases_table_view') );
+
+  $smartyObj->assign('gui', $gui);
+  $smartyObj->assign('op_ok', $op_ok);
+  $smartyObj->assign('user_feedback', $user_feedback);
+  $smartyObj->assign('tcprefix', $tcasePrefix);
+  $smartyObj->assign('testcases', $children);
+  $smartyObj->assign('old_containerID', $argsObj->tprojectID); //<<<<-- check if is needed
+  $smartyObj->assign('containers', $testsuites);
+  $smartyObj->assign('objectID', $containerID);
+  $smartyObj->assign('object_name', $containerName);
+  $smartyObj->assign('top_checked','checked=checked');
+  $smartyObj->assign('bottom_checked','');
 }
 
 

@@ -19,12 +19,17 @@ View test specification containers
              btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
              testsuite_operations, testcase_operations,btn_create_from_issue_xml,btn_gen_test_suite_spec'}
 
+{$ft=''}
+{if isset($gui->form_token)}
+  {$ft=$gui->form_token}
+{/if}
+
 {$container_id=$gui->container_data.id}
 {$tcImportAction="lib/testcases/tcImport.php?containerID=$container_id"}
 {$importToTProjectAction="$basehref$tcImportAction&amp;bIntoProject=1&amp;useRecursion=1&amp;"}
 {$importToTSuiteAction="$basehref$tcImportAction&amp;useRecursion=1"}
 {$importTestCasesAction="$basehref$tcImportAction"}
-{$tcExportAction="lib/testcases/tcExport.php?containerID=$container_id"}
+{$tcExportAction="lib/testcases/tcExport.php?containerID=$container_id&amp;form_token=$ft"}
 {$exportTestCasesAction="$basehref$tcExportAction"}
 
 {$testSpecFullDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=0&id=$container_id"}
@@ -34,10 +39,6 @@ View test specification containers
 {$testSuiteDocAction="$basehref$testSuiteDocAction"}
 
 
-{$ft=''}
-{if isset($gui->form_token)}
-  {$ft=$gui->form_token}
-{/if}
 {$tsuiteExportAction="$basehref$tcExportAction&amp;useRecursion=1&amp;form_token=$ft"}
 
 {$tcMantisXMLAction="lib/testcases/tcCreateFromIssueMantisXML.php?containerID=$container_id"}
@@ -87,11 +88,12 @@ function jsCallDeleteFile(btn, text, o_id)
     <fieldset class="groupBtn">
     <h2>{$labels.testsuite_operations}</h2>
     <form method="post" action="lib/testcases/containerEdit.php">
+      <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
       <input type="hidden" name="doAction" id="doAction" value="" />
       <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
       <input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
       <input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
-               title="{$labels.btn_reorder_testsuites_alpha}" />
+             title="{$labels.btn_reorder_testsuites_alpha}" />
 
       <input type="button" onclick="location='{$importToTProjectAction}'"  value="{$labels.btn_import_testsuite}" />
 

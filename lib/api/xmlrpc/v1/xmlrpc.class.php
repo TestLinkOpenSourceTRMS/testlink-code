@@ -6282,7 +6282,7 @@ protected function createAttachmentTempFile()
 
      if( $status_ok )
      {
-       $sql = " SELECT MAX(id) AS exec_id FROM {$this->tables['executions']} " .
+       $sql = " SELECT id AS exec_id FROM {$this->tables['executions']} " . 
               " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " .
               " AND tcversion_id IN (" .
               " SELECT id FROM {$this->tables['nodes_hierarchy']} " .
@@ -6314,7 +6314,7 @@ protected function createAttachmentTempFile()
          }
          $resultInfo[0]['bugs'] = array();
          $sql = " SELECT DISTINCT bug_id FROM {$this->tables['execution_bugs']} " . 
-                " WHERE execution_id in (" . $implode(',',$targetIDs) . ")";
+                " WHERE execution_id in (" . implode(',',$targetIDs) . ")";
          $resultInfo[0]['bugs'] = (array)$this->dbObj->get_recordset($sql);       
        }  
      }

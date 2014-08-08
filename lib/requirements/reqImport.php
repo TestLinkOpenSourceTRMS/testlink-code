@@ -10,6 +10,7 @@
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
  * @internal revisions
+ * since 1.9.12
  *
  */
 require_once("../../config.inc.php");
@@ -84,6 +85,10 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
       if( $argsObj->importType == 'XML' )
       {
         $retval->file_check['status_ok']=!(($xml=simplexml_load_file_wrapper($fileName)) === FALSE);
+        if( !$retval->file_check['status_ok'] )
+        {
+          $retval->file_check['msg'] = lang_get('import_failed_xml_load_failed');
+        }  
       }
     } 
   }
@@ -92,17 +97,6 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
     $retval->file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_req_file'));
   } 
   // ----------------------------------------------------------------------------------------------
-  
-  /*
-  if($retval->file_check['status_ok']) 
-  {
-    $isReqSpec = property_exists($xml,'req_spec');
-    if(!$isReqSpec && $argsObj->req_spec_id <= 0) 
-    {
-      $retval->file_check = array('status_ok' => FALSE, 'msg' => lang_get('please_create_req_spec_first'));
-    }
-  }
-  */
 
   if($retval->file_check['status_ok'])
   {
@@ -129,6 +123,7 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
     unlink($fileName);
     $retval->msg = lang_get('req_import_finished');
   }
+
   return $retval;    
 }
 
@@ -176,9 +171,9 @@ function init_args()
   }
     
   $args->achecked_req = isset($request['achecked_req']) ? $request['achecked_req'] : null;
-  $args->tproject_id = $_SESSION['testprojectID'];
+  $args->tproject_id = intval($_SESSION['testprojectID']);
   $args->tproject_name = $_SESSION['testprojectName'];
-  $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  $args->user_id = intval(isset($_SESSION['userID']) ? $_SESSION['userID'] : 0);
   $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 
   $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? 

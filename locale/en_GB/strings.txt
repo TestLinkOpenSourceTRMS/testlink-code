@@ -2824,6 +2824,7 @@ $TLS_tproject_import_requirements = '%s : Import Requirements';
 $TLS_reqspec_import_requirements = '%s : Import Requirements';
 $TLS_tproject_import_req_spec = '%s : Import Req. Specs';
 $TLS_reqspec_import_req_spec = '%s : Import Req. Specs';
+$TLS_import_failed_xml_load_failed = 'Import xml load failed';
 
 $TLS_same_docid = 'has same DOC ID';
 $TLS_same_title = 'has same title';

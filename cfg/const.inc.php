@@ -179,6 +179,8 @@ define('AUTOMATION_NOTES_KO', -1);
 define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
 define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
+define('REMOVEME', 'd8ba8cfb-ca92-4fa5-83c2-551977d405fb');
+
 
 // --------------------------------------------------------------------------------------
 /* [GUI] */

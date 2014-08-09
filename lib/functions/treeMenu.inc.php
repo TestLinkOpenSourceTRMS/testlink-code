@@ -217,7 +217,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     // Remove null elements (Ext JS tree do not like it ).
     // :null happens on -> "children":null,"text" that must become "children":[],"text"
     // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-    $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+    // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
+                               array(':[]','',''), $menustring); 
   }
   $treeMenu->menustring = $menustring; 
 
@@ -542,8 +544,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
             }
           }
       } 
-            if( !is_null($node) )
-            {
+      if( !is_null($node) )
+      {
         // needed to avoid problems when using json_encode with EXTJS
         unset($node['childNodes']);
         $node['leaf']=true;
@@ -589,11 +591,12 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
       // I use set an element to null to filter out leaf menu items
       if(is_null($current))
       {
+        $childNodes[$idx] = REMOVEME;
         continue;
       }
       
       $counters_map = prepareNode($db,$current,$decoding_info,$map_node_tccount,
-                                $tck_map,$tplan_tcases,$my['filters'],$my['options']);
+                                  $tck_map,$tplan_tcases,$my['filters'],$my['options']);
       foreach($counters_map as $key => $value)
       {
         $tcase_counters[$key] += $counters_map[$key];   
@@ -610,7 +613,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
                                             'name' => $node['name']);
     }
 
-        // node must be destroyed if empty had we have using filtering conditions
+    // node must be destroyed if empty had we have using filtering conditions
     if( ($filtersApplied || !is_null($tplan_tcases)) && 
       !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
     {
@@ -681,6 +684,11 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
     $forbidden_parents['testsuite'] = 'testcase';
   }
   
+  if( !isset($node['name']) )
+  {  
+    return $testCasesIDList;
+  }
+    
   // custom Property that will be accessed by EXT-JS using node.attributes
   $node['testlink_node_name'] = filterString($node['name']);
   $node['testlink_node_type'] = $hash_id_descr[$node['node_type_id']];
@@ -734,7 +742,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
                                          $linkto,$testCasePrefix,$opt);
     }
   }
-
+  
   return $testCasesIDList;
 }
 
@@ -1055,8 +1063,6 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
                 $sql .=  " AND ({$cf_sql}) ";
             }
 
-      //echo $sql;      
-      
       $rows = $db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
       
       //if there exist as many rows as custom fields to be filtered by
@@ -1477,16 +1483,15 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
   // replace key ('childNodes') to 'children'
   if (isset($req_spec['childNodes']))
   {
-    $menustring = str_ireplace('childNodes', 'children', 
-                               json_encode($req_spec['childNodes'])); 
+    $menustring = str_ireplace('childNodes', 'children', json_encode($req_spec['childNodes'])); 
   }
 
   if (!is_null($menustring))
   {
     // delete null elements for Ext JS
-    $menustring = str_ireplace(array(':null',',null','null,','null'),
-                               array(':[]','','',''),
-                               $menustring); 
+    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
+                               array(':[]','',''), $menustring); 
+
   }
   $treeMenu->menustring = $menustring; 
   
@@ -2001,24 +2006,24 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
   if($test_spec)
   {
-      if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
-      {
-        $test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
-                                                       $my['filters']['filter_custom_fields'],$hash_descr_id);
-      }
-    
-      $pnFilters = array('keywords' => $my['filters']['filter_keywords'],
-                         'keywords_filter_type' => $my['filters']['filter_keywords_filter_type']);
 
-      $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'],
-                         'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
-                         'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
+    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
+    {
+      $test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
+                                                     $my['filters']['filter_custom_fields'],$hash_descr_id);
+    }
+    
+    $pnFilters = array('keywords' => $my['filters']['filter_keywords'],
+                       'keywords_filter_type' => $my['filters']['filter_keywords_filter_type']);
+
+    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'],
+                       'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
+                       'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
     
     // Important/CRITIC: 
     // prepareTestSpecNode() will make changes to $test_spec like filtering by test case keywords.
     $testcase_counters = prepareTestSpecNode($db, $tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,
                                              $pnFilters,$pnOptions);
-
 
     if( is_null($test_spec) )
     {
@@ -2089,7 +2094,10 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
     // Remove null elements (Ext JS tree do not like it ).
     // :null happens on -> "children":null,"text" that must become "children":[],"text"
     // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-    $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+    // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+    // $menustring = preg_replace('/,\s*"[^"]+":null|"[^"]+":null,?/', '', $menustring);
+    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
+                               array(':[]','',''), $menustring); 
   }
   $treeMenu->menustring = $menustring; 
 
@@ -2206,42 +2214,43 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
 
   if($node_type == 'testcase')
   {
-        $remove_node = false;
+    $remove_node = false;
         
-        if ($my['options']['ignoreInactiveTestCases'])
-        {
-            $sql = " SELECT COUNT(TCV.id) AS count_active_versions " .
-                " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
-                " WHERE NH.parent_id=" . $node['id'] .
-                " AND NH.id = TCV.id AND TCV.active=1";
-            $result = $db->exec_query($sql);
-            $row = $db->fetch_array($result);
-            if ($row['count_active_versions'] == 0)
-            {
-                $remove_node = true;
-            }
-        }
-        else if ($my['options']['ignoreActiveTestCases'])
-        {
-            $sql = " SELECT COUNT(TCV.id) AS count_active_versions " .
-                " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
-                " WHERE NH.parent_id=" . $node['id'] .
-                " AND NH.id = TCV.id AND TCV.active=1";
-            $result = $db->exec_query($sql);
-            $row = $db->fetch_array($result);
-            if ($row['count_active_versions'] != 0)
-            {
-                $remove_node = true;
-            }
-        }
+    if ($my['options']['ignoreInactiveTestCases'])
+    {
+      $sql = " SELECT COUNT(TCV.id) AS count_active_versions " .
+             " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+             " WHERE NH.parent_id=" . $node['id'] .
+             " AND NH.id = TCV.id AND TCV.active=1";
+      $result = $db->exec_query($sql);
+      $row = $db->fetch_array($result);
+      if ($row['count_active_versions'] == 0)
+      {
+        $remove_node = true;
+      }
+    }
+    else if ($my['options']['ignoreActiveTestCases'])
+    {
+      $sql = " SELECT COUNT(TCV.id) AS count_active_versions " .
+             " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+             " WHERE NH.parent_id=" . $node['id'] .
+             " AND NH.id = TCV.id AND TCV.active=1";
+      $result = $db->exec_query($sql);
+      $row = $db->fetch_array($result);
+      if ($row['count_active_versions'] != 0)
+      {
+        $remove_node = true;
+      }
+   }
         
-    if( $my['options']['hideTestCases'] || $remove_node ||
+   if( $my['options']['hideTestCases'] || $remove_node ||
       ($doFilterOn['keywords'] && !isset($tcFilterByKeywords[$node['id']])) )
-    {
-      $node = null;
-    } 
-    else 
-    {
+   {
+     $node = REMOVEME;
+     // $node = null;
+   } 
+   else 
+   {
       // needed to avoid problems when using json_encode with EXTJS
       unset($node['childNodes']);
       $node['leaf']=true;
@@ -2264,6 +2273,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
       // I use set an element to null to filter out leaf menu items
       if(is_null($current))
       {
+        $childNodes[$idx] = REMOVEME;
         continue;
       }
 
@@ -2271,22 +2281,19 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
       
       // 20120831 - to be analized carefully, because this can be solution
       // to null issue with json and ext-js
-      // if( is_null($current) )
-      // {
-      //  echo 'TO NULX';
-      //  unset($childNodes[$idx]);
-      // }
+      if( is_null($current) )
+      {
+        $childNodes[$idx] = REMOVEME;
+      }
       
       $tcase_counters['testcase_count'] += $counters_map['testcase_count'];   
     }
-    //new dBug($pos2unset);
-    
     $node['testcase_count'] = $tcase_counters['testcase_count'];
     
     if (isset($node['id']))
     {
-      $map_node_tccount[$node['id']] = array( 'testcount' => $node['testcase_count'],
-                                            'name' => $node['name']);
+      $map_node_tccount[$node['id']] = array('testcount' => $node['testcase_count'],
+                                             'name' => $node['name']);
     }
 
         // node must be destroyed if empty had we have using filtering conditions

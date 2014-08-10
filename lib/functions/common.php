@@ -274,6 +274,8 @@ function initTopMenu(&$db)
   $_SESSION['testprojectTopMenu'] = '';
   $guiTopMenu = config_get('guiTopMenu');
 
+  $imageSet = TLSmarty::getImageSet();
+
   // check if Project is available
   if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
   {
@@ -313,10 +315,23 @@ function initTopMenu(&$db)
         {
           $_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
           "target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-          "tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> | ";
+          "tabindex=''" . $idx++ . "''>";
+
+          if( isset($element['imgKey']) )
+          {
+           $_SESSION['testprojectTopMenu'] .= '<img src="' . $imageSet[$element['imgKey']] . '"' .
+                                              ' title="' . lang_get($element['label']) . '">'; 
+          }  
+          else
+          {
+           $_SESSION['testprojectTopMenu'] .= lang_get($element['label']); 
+          }  
+
+          $_SESSION['testprojectTopMenu'] .= "</a>&nbsp;&nbsp;&nbsp;";
         }
       }
     }
+    $_SESSION['testprojectTopMenu'] .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
   }
 }
 

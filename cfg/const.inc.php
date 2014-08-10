@@ -813,38 +813,46 @@ $tlCfg->review_types = array(1 => 'undefined',2 => 'typo',3 => 'recommendation',
  * - condition: specific condition = ['','TestPlanAvailable','ReqMgmtEnabled']
  * - shortcut: keyboard HTML shortcut
  * - target: window/frame name (mainframe in the most of cases)
+ * - imgKey
  * 
  * @since TestLink version 1.9 
  */
 $tlCfg->guiTopMenu[1] = array('label' => 'home','url' => 'index.php','right' => null,
+                              'imgKey' => 'home',
                               'condition'=>'','shortcut'=>'h','target'=>'_parent');
 
 $tlCfg->guiTopMenu[2] = array('label' => 'title_requirements',
+                              'imgKey' => 'requirements',
                               'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
                               'right' => 'mgt_view_req','condition'=>'ReqMgmtEnabled',
                               'shortcut'=>'r','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[3] = array('label' => 'title_specification',
+                              'imgKey' => 'test_specification', 
                               'url' => 'lib/general/frmWorkArea.php?feature=editTc',
                               'right' => 'mgt_view_tc','condition'=>'',
                               'shortcut'=>'t','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[4] = array('label' => 'title_execute',
+                              'imgKey' => 'execution',
                               'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
                               'right' => 'testplan_execute','condition'=>'TestPlanAvailable',
                               'shortcut'=>'e','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[5] = array('label' => 'title_results',
+                              'imgKey' => 'report',
                               'url' => 'lib/general/frmWorkArea.php?feature=showMetrics',
                               'right' => 'testplan_metrics','condition'=>'TestPlanAvailable',
                               'shortcut'=>'r','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[6] = array('label' => 'title_admin',
+                              'imgKey' => 'user',
                               'url' => 'lib/usermanagement/usersView.php',
                               'right' => 'mgt_users','condition'=>'',
                               'shortcut'=>'u','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[7] = array('label' => 'title_events',
+                              'imgKey' => 'events',
                               'url' => 'lib/events/eventviewer.php',
                               'right' => array('events_mgt', 'mgt_view_events'),'condition'=>'',
                               'shortcut'=>'v','target'=>'mainframe'); 

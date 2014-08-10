@@ -18,14 +18,12 @@ $args = init_args();
 $gui = new stdClass();
 $gui_cfg = config_get("gui");
 
-$gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$gui->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
 $gui->tcasePrefix = '';
 $gui->searchSize = 8;
 if($gui->tprojectID > 0)
 {
-  $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($gui->tprojectID) . 
-                      config_get('testcase_cfg')->glue_character;
-                        
+  $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($gui->tprojectID) . config_get('testcase_cfg')->glue_character;
   $gui->searchSize = tlStringLen($gui->tcasePrefix) + $gui_cfg->dynamic_quick_tcase_search_input_size;
 }
 $gui->TestProjects = $tproject_mgr->get_accessible_for_user($args->user->dbID,
@@ -49,7 +47,7 @@ if($gui->tprojectID)
 	$testPlanSet = $args->user->getAccessibleTestPlans($db,$gui->tprojectID);
   $gui->TestPlanCount = sizeof($testPlanSet);
 
-	$tplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
+	$tplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : null;
   if( !is_null($tplanID) )
   {
     // Need to set this info on session with first Test Plan from $testPlanSet

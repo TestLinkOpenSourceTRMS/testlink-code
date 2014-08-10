@@ -7,13 +7,11 @@
  *
  * @filesource  projectEdit.php
  * @package     TestLink
- * @author      Martin Havlat
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
- *
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.12
  *
  */
 
@@ -88,6 +86,8 @@ switch($args->doAction)
 
   case 'setActive':
   case 'setInactive':
+  case 'enableRequirements':
+  case 'disableRequirements':
     $m2c = $args->doAction;
     $tproject_mgr->$m2c($args->tprojectID);
     $template= null;
@@ -108,8 +108,8 @@ $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_vi
 $feedback_type = '';  
 if(!$status_ok)
 {
-   $feedback_type = 'error';  
-   $args->doAction = "ErrorOnAction";
+  $feedback_type = 'error';  
+  $args->doAction = "ErrorOnAction";
 }
 
 switch($args->doAction)
@@ -119,6 +119,8 @@ switch($args->doAction)
     case "doUpdate":
     case "setActive":
     case "setInactive":
+    case 'enableRequirements':
+    case 'disableRequirements':
       if( ($addIssueTracker = $addReqMgrSystem = is_null($template)) )
       {
         $template = 'projectView.tpl';
@@ -193,7 +195,6 @@ switch($args->doAction)
       $smarty->assign('feedback_type', $feedback_type);
       $smarty->display($templateCfg->template_dir . $template);
     break;
-
 }
 
 
@@ -294,13 +295,13 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
  */
 function prepareOptions($argsObj)
 {
-      $options = new stdClass();
-      $options->requirementsEnabled = $argsObj->optReq;
-      $options->testPriorityEnabled = $argsObj->optPriority;
-      $options->automationEnabled = $argsObj->optAutomation;
-      $options->inventoryEnabled = $argsObj->optInventory;
+  $opts = new stdClass();
+  $opts->requirementsEnabled = $argsObj->optReq;
+  $opts->testPriorityEnabled = $argsObj->optPriority;
+  $opts->automationEnabled = $argsObj->optAutomation;
+  $opts->inventoryEnabled = $argsObj->optInventory;
 
-      return $options;
+  return $opts;
 }
 
 /**
@@ -323,7 +324,7 @@ function doCreate($argsObj,&$tprojectMgr)
   $check_op = crossChecks($argsObj,$tprojectMgr);
   foreach($key2get as $key)
   {
-      $op->$key=$check_op[$key];
+    $op->$key=$check_op[$key];
   }
 
   if($op->status_ok)
@@ -472,8 +473,6 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
         }  
       } 
       
-
-      // TICKET 5634
       if( !$argsObj->is_public)
       {
         // does user have an SPECIFIC role on Test Project ?
@@ -500,9 +499,9 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
   }
   else
   {
-      $op->ui->doActionValue = 'doUpdate';
-      $op->ui->buttonValue = lang_get('btn_save');
-      $op->ui->caption = sprintf(lang_get('caption_edit_tproject'),$op->oldName);
+    $op->ui->doActionValue = 'doUpdate';
+    $op->ui->buttonValue = lang_get('btn_save');
+    $op->ui->caption = sprintf(lang_get('caption_edit_tproject'),$op->oldName);
   }
 
   return $op;
@@ -555,40 +554,40 @@ function edit(&$argsObj,&$tprojectMgr)
 */
 function crossChecks($argsObj,&$tprojectMgr)
 {
-    $op = new stdClass();
-    $updateAdditionalSQLFilter = null ;
-    $op = $tprojectMgr->checkName($argsObj->tprojectName);
+  $op = new stdClass();
+  $updateAdditionalSQLFilter = null ;
+  $op = $tprojectMgr->checkName($argsObj->tprojectName);
 
-    $check_op = array();
-    $check_op['msg'] = array();
-    $check_op['status_ok'] = $op['status_ok'];
+  $check_op = array();
+  $check_op['msg'] = array();
+  $check_op['status_ok'] = $op['status_ok'];
 
-    if($argsObj->doAction == 'doUpdate')
-    {
-        $updateAdditionalSQLFilter = " testprojects.id <> {$argsObj->tprojectID}";
-    }
+  if($argsObj->doAction == 'doUpdate')
+  {
+    $updateAdditionalSQLFilter = " testprojects.id <> {$argsObj->tprojectID}";
+  }
     
-    if($check_op['status_ok'])
+  if($check_op['status_ok'])
+  {
+    if($tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQLFilter))
     {
-        if($tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQLFilter))
-        {
-          $check_op['msg'][] = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
-          $check_op['status_ok'] = 0;
-        }
+      $check_op['msg'][] = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
+      $check_op['status_ok'] = 0;
+    }
             
-            // Check prefix no matter what has happen with previous check
-        $rs = $tprojectMgr->get_by_prefix($argsObj->tcasePrefix,$updateAdditionalSQLFilter);
-        if(!is_null($rs))
-        {
-          $check_op['msg'][] = sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
-          $check_op['status_ok'] = 0;
-        }
-    }
-    else
+    // Check prefix no matter what has happen with previous check
+    $rs = $tprojectMgr->get_by_prefix($argsObj->tcasePrefix,$updateAdditionalSQLFilter);
+    if(!is_null($rs))
     {
-         $check_op['msg'][] = $op['msg'];
+      $check_op['msg'][] = sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
+      $check_op['status_ok'] = 0;
     }
-    return $check_op;
+  }
+  else
+  {
+    $check_op['msg'][] = $op['msg'];
+  }
+  return $check_op;
 }
 
 /*
@@ -624,9 +623,8 @@ function create(&$argsObj,&$tprojectMgr)
 */
 function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 {
-
-    $ope_status = $tprojectMgr->delete($argsObj->tprojectID);
-    $op = new stdClass();
+  $ope_status = $tprojectMgr->delete($argsObj->tprojectID);
+  $op = new stdClass();
   $op->status_ok = $ope_status['status_ok'];
   $op->reloadType = 'none';
 
@@ -641,7 +639,7 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
     $op->msg = lang_get('info_product_not_deleted_check_log') . ' ' . $ope_status['msg'];
   }
 
-    return $op;
+  return $op;
 }
 
 
@@ -666,15 +664,6 @@ function initializeGui(&$dbHandler,$argsObj)
     $guiObj->$pr = $mgr->getAll();
     unset($mgr);
   }
-
-  // $mgr = new tlIssueTracker($dbHandler);
-  // $guiObj->issueTrackers = $mgr->getAll();
-  // unset($mgr);
-  // 
-  // $mgr = new tlReqMgrSystem($dbHandler);
-  // $guiObj->reqMgrSystems = $itMgr->getAll();
-  // unset($mgr);
-  // 
   return $guiObj;
 }
 

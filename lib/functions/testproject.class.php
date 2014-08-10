@@ -5,12 +5,11 @@
  * 
  * @filesource  testproject.class.php
  * @package     TestLink
- * @author      franciscom
  * @copyright   2005-2014, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.12
  * 
  **/
 
@@ -40,6 +39,8 @@ class testproject extends tlObjectWithAttachments
 
   var $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 
+  var $debugMsg;
+
   /** 
    * Class constructor
    * 
@@ -50,6 +51,7 @@ class testproject extends tlObjectWithAttachments
     $this->db = &$db;
     $this->tree_manager = new tree($this->db);
     $this->cfield_mgr=new cfield_mgr($this->db);
+    $this->debugMsg = 'Class:' . __CLASS__ . ' - Method: ';
     tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
     $this->object_table = $this->tables['testprojects'];
   }
@@ -165,55 +167,53 @@ function create($item,$opt=null)
  * @return boolean result of DB update
  *
  * @internal
- *   20100213 - havlatm - options updated, header description
- *  20060312 - franciscom - name is setted on nodes_hierarchy table
  *
  **/
 function update($id, $name, $color, $notes,$options,$active=null,
-        $tcasePrefix=null,$is_public=null)
+                $tcasePrefix=null,$is_public=null)
 {
-    $status_ok=1;
+  $status_ok=1;
   $status_msg = 'ok';
   $log_msg = 'Test project ' . $name . ' update: Ok.';
   $log_level = 'INFO';
+  $safeID = intval($id);
 
   $add_upd='';
   if( !is_null($active) )
   {
-      $add_upd .=',active=' . (intval($active) > 0 ? 1:0);
+    $add_upd .=',active=' . (intval($active) > 0 ? 1:0);
   }
 
   if( !is_null($is_public) )
   {
-      $add_upd .=',is_public=' . (intval($is_public) > 0 ? 1:0);
+    $add_upd .=',is_public=' . (intval($is_public) > 0 ? 1:0);
   }
 
   if( !is_null($tcasePrefix) )
   {
-      $tcprefix=$this->formatTcPrefix($tcasePrefix);
-      $add_upd .=",prefix='" . $this->db->prepare_string($tcprefix) . "'" ;
+    $tcprefix=$this->formatTcPrefix($tcasePrefix);
+    $add_upd .=",prefix='" . $this->db->prepare_string($tcprefix) . "'" ;
   }
   $serOptions = serialize($options);
 
   $sql = " UPDATE {$this->object_table} SET color='" . $this->db->prepare_string($color) . "', ".
-      " options='" .  $serOptions . "', " .
-      " notes='" . $this->db->prepare_string($notes) . "' {$add_upd} " .
-      " WHERE id=" . $id;
+         " options='" .  $serOptions . "', " .
+         " notes='" . $this->db->prepare_string($notes) . "' {$add_upd} " .
+         " WHERE id=" . $safeID;
   $result = $this->db->exec_query($sql);
 
   if ($result)
   {
     // update related node
     $sql = "UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
-        $this->db->prepare_string($name) .
-        "' WHERE id= {$id}";
+           $this->db->prepare_string($name) .  "' WHERE id= {$safeID}";
     $result = $this->db->exec_query($sql);
   }
 
   if ($result)
   {
     // update session data
-    $this->setSessionProject($id);
+    $this->setSessionProject($safeID);
   }
   else
   {
@@ -2847,8 +2847,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
                  " FROM {$this->tables['nodes_hierarchy']} NH ";
     
   }
-  // new dBug($tcaseFilter);
-
   $sql =  $staticSql . " WHERE NH.parent_id = {$node_id} " .
           " AND (" .
           "      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
@@ -3361,5 +3359,69 @@ function getPublicAttr($id)
   }
 
 
+
+  /**
+   * @used-by projectEdit.php
+   */
+  function enableRequirements($id)
+  {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+    $opt = $this->getOptions($safeID = intval($id));
+    $opt->requirementsEnabled = 1;
+    $this->setOptions($safeID,$opt);
+  }  
+
+  /**
+   * @used-by projectEdit.php
+   */
+  function disableRequirements($id)
+  {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+    $opt = $this->getOptions($safeID = intval($id));
+    $opt->requirementsEnabled = 0;
+    $this->setOptions($safeID,$opt);
+  }  
+
+
+  /**
+   * @used-by 
+   */
+  function getOptions($id)
+  {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+    $sql = "/* $debugMsg */ SELECT testprojects.options ".
+           " FROM {$this->object_table} testprojects " .
+           " WHERE testprojects.id = " . intval($id);
+    $rs = $this->db->get_recordset($sql);  
+    return unserialize($rs[0]['options']);       
+  }  
+
+  /**
+   * @used-by 
+   */
+  function setOptions($id,$optObj)
+  {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+
+    $nike = false;
+    $itemOpt = $this->getOptions( ($safeID = intval($id)) );
+    foreach($itemOpt as $prop => $value)
+    {
+      if( property_exists($optObj, $prop) )
+      {
+        $itemOpt->$prop = $optObj->$prop;
+        $nike = true;
+      }  
+    }
+
+    if($nike)
+    {
+      $sql = "/* $debugMsg */ UPDATE {$this->object_table} " . 
+             " SET options = '" . $this->db->prepare_string(serialize($itemOpt)) . "'" .
+             " WHERE testprojects.id = " . $safeID;
+
+      $this->db->exec_query($sql);  
+    }  
+  }  
 
 } // end class

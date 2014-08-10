@@ -342,6 +342,7 @@ class TLSmarty extends Smarty
                    'bullet' => TL_THEME_IMG_DIR . 'slide_gripper.gif',
                    'calendar' => TL_THEME_IMG_DIR . 'calendar.gif',
                    'checked' => TL_THEME_IMG_DIR . 'apply_f2_16.png',
+                   'choiceOn' => TL_THEME_IMG_DIR . 'accept.png',
                    'clear' => TL_THEME_IMG_DIR . 'trash.png',
                    'clear_notes' => TL_THEME_IMG_DIR . 'font_delete.png',
                    'check_ok' => TL_THEME_IMG_DIR . 'lightbulb.png',

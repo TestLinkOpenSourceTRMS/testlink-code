@@ -7,9 +7,7 @@ Development hint:
 some variables smarty and javascript are created on the inc_*.tpl files.
 
 @internal revisions
-@since 1.9.9
-20130914 - franciscom - TICKET 5907: Links are not click-able in Description fields for Projects Test Plans and Builds
-
+@since 1.9.12
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -30,7 +28,8 @@ some variables smarty and javascript are created on the inc_*.tpl files.
           th_name,th_notes,testproject_alt_edit,testproject_alt_active,btn_search_filter,
           th_requirement_feature,testproject_alt_delete,btn_create,public,hint_like_search_on_name,
           testproject_alt_requirement_feature,th_active,th_delete,th_id,btn_reset_filter,
-          th_issuetracker,th_reqmgrsystem_short,active_click_to_change,inactive_click_to_change'}
+          th_issuetracker,th_reqmgrsystem_short,active_click_to_change,inactive_click_to_change,
+          click_to_enable,click_to_disable'}
 
 
 {include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
@@ -120,10 +119,15 @@ var del_action=fRoot+'{$deleteAction}';
       *}
       <td class="clickable_icon">
         {if $testproject.opt->requirementsEnabled}
-            <img style="border:none" title="{$labels.testproject_alt_requirement_feature}"
-                      alt="{$labels.testproject_alt_requirement_feature}" src="{$tlImages.checked}"/>
+            <input type="image" style="border:none" 
+                   title="{$labels.click_to_disable}"  alt="{$labels.click_to_disable}" 
+                   onClick = "doAction.value='disableRequirements';tprojectID.value={$testproject.id};"
+                   src="{$tlImages.on}"/>
           {else}
-            &nbsp;
+            <input type="image" style="border:none" 
+                   title="{$labels.click_to_enable}"  alt="{$labels.click_to_enable}" 
+                   onClick = "doAction.value='enableRequirements';tprojectID.value={$testproject.id};"
+                   src="{$tlImages.off}"/>
           {/if}
       </td>
       <td class="clickable_icon">
@@ -141,7 +145,7 @@ var del_action=fRoot+'{$deleteAction}';
       </td>
       <td class="clickable_icon">
         {if $testproject.is_public}
-            <img style="border:none"  title="{$labels.public}" alt="{$labels.public}" src="{$tlImages.checked}" />
+            <img style="border:none"  title="{$labels.public}" alt="{$labels.public}" src="{$tlImages.choiceOn}" />
           {else}
             &nbsp;
           {/if}

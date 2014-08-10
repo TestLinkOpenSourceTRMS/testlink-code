@@ -35,6 +35,8 @@ if($args->tproject_id)
     $tplanSet = array_keys($gui->tplans);
     $dummy = $tplan_mgr->count_testcases($tplanSet,null,array('output' => 'groupByTestPlan'));
     $buildQty = $tplan_mgr->get_builds($tplanSet,null,null,array('getCount' => true));
+    $rightSet = array('testplan_user_role_assignment');
+
     foreach($tplanSet as $idk)
     {
       $gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? intval($dummy[$idk]['qty']) : 0;
@@ -47,8 +49,6 @@ if($args->tproject_id)
 
 
       // Get rights for each test plan
-      $rightSet = array('testplan_user_role_assignment');
-
       foreach($rightSet as $target)
       {
         $roleObj = &$args->user->globalRole;

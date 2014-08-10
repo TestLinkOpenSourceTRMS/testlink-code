@@ -6,9 +6,9 @@
  * Manages test plans
  *
  * @package   TestLink
- * @copyright 2007-2013, TestLink community 
+ * @copyright 2007-2014, TestLink community 
  * @version   planEdit.php
- * @link      http://www.teamst.org/index.php
+ * @link      http://www.testlink.org/
  *
  *
  * @internal revisions
@@ -233,7 +233,6 @@ switch($args->do_action)
     $gui->tplans = $args->user->getAccessibleTestPlans($db,$args->tproject_id,null,
                                                            array('output' =>'mapfull','active' => null));
     $gui->drawPlatformQtyColumn = false;
-
     if( !is_null($gui->tplans) )
     {
       // do this test project has platform definitions ?
@@ -245,6 +244,7 @@ switch($args->do_action)
       $dummy = $tplan_mgr->count_testcases($tplanSet,null,array('output' => 'groupByTestPlan'));
       $buildQty = $tplan_mgr->get_builds($tplanSet,null,null,array('getCount' => true));
 
+      $rightSet = array('testplan_user_role_assignment');
       foreach($tplanSet as $idk)
       {
         $gui->tplans[$idk]['tcase_qty'] = isset($dummy[$idk]['qty']) ? intval($dummy[$idk]['qty']) : 0;
@@ -254,6 +254,28 @@ switch($args->do_action)
           $plat = $tplan_mgr->getPlatforms($idk);
           $gui->tplans[$idk]['platform_qty'] = is_null($plat) ? 0 : count($plat);
         }
+  
+        foreach($rightSet as $target)
+        {
+          $roleObj = &$args->user->globalRole;
+          if($gui->tplans[$idk]['has_role'] > 0)
+          {
+            if( isset($args->user->tplanRoles[ $gui->tplans[$idk]['has_role'] ]) )
+            { 
+              $roleObj = &$args->user->tplanRoles[ $gui->tplans[$idk]['has_role'] ];
+            }
+            else
+            {
+              // session cache has not still updated => get from DB ?
+              $roleObj = &$args->user->getEffectiveRole($db,$args->tproject_id,$idk);
+            }  
+          }  
+          else if (!is_null($args->user->tprojectRoles))
+          {
+            $roleObj = &$args->user->tprojectRoles[$args->tproject_id];
+          }  
+          $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);  
+        }  
       }   
     }
     break;

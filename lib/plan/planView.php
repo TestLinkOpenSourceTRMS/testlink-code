@@ -5,8 +5,7 @@
  *
  * @filesource	planView.php
  * @internal revisions
- * @since 1.9.6
- * 20130113 - franciscom - TICKET 5465: Inactive test plan are not displayed on Test management
+ * @since 1.9.12
  *
  */
 require_once('../../config.inc.php');
@@ -17,6 +16,7 @@ $templateCfg = templateConfiguration();
 
 $args=init_args();
 $gui = initializeGui($db,$args);
+
 if($args->tproject_id)
 {
   $tproject_mgr = new testproject($db);
@@ -44,6 +44,24 @@ if($args->tproject_id)
         $plat = $tplan_mgr->getPlatforms($idk);
         $gui->tplans[$idk]['platform_qty'] = is_null($plat) ? 0 : count($plat);
       }
+
+
+      // Get rights for each test plan
+      $rightSet = array('testplan_user_role_assignment');
+
+      foreach($rightSet as $target)
+      {
+        $roleObj = &$args->user->globalRole;
+        if($gui->tplans[$idk]['has_role'] > 0)
+        {
+          $roleObj = &$args->user->tplanRoles[$gui->tplans[$idk]['has_role']];
+        }  
+        else if (!is_null($args->user->tprojectRoles))
+        {
+          $roleObj = &$args->user->tprojectRoles[$args->tproject_id];
+        }  
+        $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);  
+      }  
     }    
     unset($tplan_mgr);  
   }
@@ -92,4 +110,3 @@ function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,'mgt_testplan_create');
 }
-?>

@@ -19,7 +19,7 @@ some smarty and javascript variables are created on the inc_*.tpl files.
 {$createAction="$managerURL?do_action=create"}
 {$exportAction="lib/plan/planExport.php?tplan_id="}
 {$importAction="lib/plan/planImport.php?tplan_id="}
-
+{$assignRolesAction="lib/usermanagement/usersAssign.php?featureType=testplan&featureID="}
 
 {lang_get var="labels" 
           s='testplan_title_tp_management,testplan_txt_empty_list,sort_table_by_column,
@@ -28,7 +28,7 @@ some smarty and javascript variables are created on the inc_*.tpl files.
           btn_testplan_create,th_id,error_no_testprojects_present,btn_export_import,
           export_import,export,import,export_testplan_links,import_testplan_links,build_qty,
           testcase_qty,platform_qty,active_click_to_change,inactive_click_to_change,
-          testcase_number_help,platform_number_help,build_number_help'}
+          testcase_number_help,platform_number_help,build_number_help,assign_roles'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg"}
@@ -76,9 +76,7 @@ var del_action=fRoot+'{$deleteAction}';
       {/if} 
       <th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
       <th class="{$noSortableColumnClass}">{$labels.public}</th>
-      <th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>
-      <th class="{$noSortableColumnClass}">{$labels.export}</th>
-      <th class="{$noSortableColumnClass}">{$labels.import}</th>
+      <th class="{$noSortableColumnClass}">&nbsp;</th>
     </tr>
     </thead>
     <tbody>
@@ -128,25 +126,28 @@ var del_action=fRoot+'{$deleteAction}';
             &nbsp;        
           {/if}
       </td>
-      <td class="clickable_icon">
+      <td style="width:8%;">
           <img style="border:none;cursor: pointer;" 
                alt="{$labels.testplan_alt_delete_tp}"
              title="{$labels.testplan_alt_delete_tp}" 
              onclick="delete_confirmation({$testplan.id},'{$testplan.name|escape:'javascript'|escape}',
                                           '{$del_msgbox_title}','{$warning_msg}');"
              src="{$tlImages.delete}"/>
-      </td>
-      <td class="clickable_icon">
           <a href="{$exportAction}{$testplan.id}"> 
           <img style="border:none;cursor: pointer;" alt="{$labels.export_testplan_links}" 
                title="{$labels.export_testplan_links}" src="{$tlImages.export}"/>
           </a>     
-      </td>
-      <td class="clickable_icon">
           <a href="{$importAction}{$testplan.id}"> 
           <img style="border:none;cursor: pointer;" alt="{$labels.import_testplan_links}" 
                title="{$labels.import_testplan_links}"  src="{$tlImages.import}"/>
           </a>     
+
+          {if $testplan.rights.testplan_user_role_assignment}
+            <a href="{$assignRolesAction}{$testplan.id}"> 
+            <img style="border:none;cursor: pointer;" alt="{$labels.assign_roles}" 
+                 title="{$labels.assign_roles}"  src="{$tlImages.user}"/>
+            </a>     
+          {/if}
       </td>
     </tr>
     {/foreach}

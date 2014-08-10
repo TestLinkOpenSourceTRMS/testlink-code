@@ -1437,6 +1437,23 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 $tlCfg->custom_css = null;
 
 
+/** 
+ * Configurable templates this can help if you want to use a non standard template.
+ * i.e. you want to develop a new one without loosing the original template.
+ * key: original TL template name WITHOUT extension
+ * value: whatever name you want, only constrain you have to copy your template
+ *        ON SAME FOLDER where original template is. 
+ * See example below        
+ */
+$g_tpl = array();
+ 
+// Example 
+// $g_tpl = array('tcView'  => 'custom_tcView.tpl',
+//                 'tcSearchView' => 'myOwnTCSearchView.tpl',
+//                 'tcEdit' => 'tcEdit_ultraCool.tpl');
+
+
+
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
 // DO NOT CHANGE NOTHING BELOW

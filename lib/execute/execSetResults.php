@@ -1308,7 +1308,8 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
     $other_execs = null;
     if($guiObj->history_on)
     {
-      $execContext = array('tplan_id' => $argsObj->tplan_id, 'platform_id' => $argsObj->platform_id, 
+      // CRITIC see for key names - testcases.class.php -> getExecutionSet() 
+      $execContext = array('testplan_id' => $argsObj->tplan_id, 'platform_id' => $argsObj->platform_id, 
                            'build_id' => $argsObj->build_id);
 
       if($cfgObj->exec_cfg->show_history_all_builds )
@@ -1321,12 +1322,6 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
       }  
       
       $options = array('exec_id_order' => $cfgObj->exec_cfg->history_order);
-        
-      // 20120614 - franciscom - need to undertand if tcversion_id is needed
-      // in order to refactor getExecutionSet
-      //
-      // $other_execs = $tcaseMgr->get_executions($tcase_id,$tcversion_id,$argsObj->tplan_id,
-      //                                          $filters['build_id'],$filters['platform_id'],$options);
       $other_execs = $tcaseMgr->getExecutionSet($tcase_id,$tcversion_id,$execContext,$options);
     }    
     else
@@ -1443,10 +1438,9 @@ function buildExecContext(&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
   $debugMsg = "File:" . __FILE__ . "Function:" . __FUNCTION__;
 
   $ret = array();
-  $ret['target'] = array(  'tc_versions' => null,'version_id' => null, 
-              'feature_id' => null, 'basic_info' => null);
+  $ret['target'] = array('tc_versions' => null,'version_id' => null,'feature_id' => null, 'basic_info' => null);
   $ret['context'] = array('tproject_id' => null,'tplan_id' => null, 'platform_id' => null,
-                'build_id' => null,'user_id' => null);
+                          'build_id' => null,'user_id' => null);
   
   
   foreach($ret as $area => &$value)
@@ -1525,7 +1519,8 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
   
   if( !is_null($idCard) )
   {
-    $execContext = array('tplan_id' => $argsObj->tplan_id,'platform_id' => $argsObj->platform_id,
+    // CRITIC see for key names - testcases.class.php -> getExecutionSet() 
+    $execContext = array('testplan_id' => $argsObj->tplan_id,'platform_id' => $argsObj->platform_id,
                          'build_id' => $argsObj->build_id);    
 
     $ltcv = null;

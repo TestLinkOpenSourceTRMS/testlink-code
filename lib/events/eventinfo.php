@@ -19,19 +19,19 @@ $event = null;
 $args = init_args();
 if ($args->id)
 {
-	$event = new tlEvent($args->id);
-	if ($event->readFromDB($db,tlEvent::TLOBJ_O_GET_DETAIL_TRANSACTION) >= tl::OK)
-	{
-		$user = new tlUser($event->userID);
-		if ($user->readFromDB($db) < tl::OK)
-		{
-			$user = null;
-		}
-	}
-	else
-	{
-		$event = null;
-	}
+  $event = new tlEvent($args->id);
+  if ($event->readFromDB($db,tlEvent::TLOBJ_O_GET_DETAIL_TRANSACTION) >= tl::OK)
+  {
+    $user = new tlUser($event->userID);
+    if ($user->readFromDB($db) < tl::OK)
+    {
+      $user = null;
+    }
+  }
+  else
+  {
+    $event = null;
+  }
 }
 
 $smarty = new TLSmarty();
@@ -45,11 +45,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	$iParams = array("id" => array(tlInputParameter::STRING_N,0,50));
-	$args = new stdClass();
-	P_PARAMS($iParams,$args);
+  $iParams = array("id" => array(tlInputParameter::INT_N));
+  $args = new stdClass();
+  P_PARAMS($iParams,$args);
 
-	return $args;
+  return $args;
 }
 
 /**
@@ -62,6 +62,5 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	return ($user->hasRight($db,"mgt_view_events")) ? true : false;
+  return ($user->hasRight($db,"mgt_view_events")) ? true : false;
 }
-?>

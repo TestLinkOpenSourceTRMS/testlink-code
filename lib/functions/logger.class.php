@@ -363,7 +363,7 @@ class tlLogger extends tlObject
 
     if(is_null($userID))
     {
-      $userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
+      $userID = isset($_SESSION['currentUser']) ? intval($_SESSION['currentUser']->dbID) : 0;
     }
     $sessionID = $userID ? session_id() : null;
 
@@ -431,7 +431,9 @@ class tlTransaction extends tlDBObject
   public function __destruct()
   {
     if (!is_null($this->name))
+    {  
       $this->close();
+    }
     parent::__destruct();
   }
 
@@ -444,7 +446,9 @@ class tlTransaction extends tlDBObject
     $this->userID = null;
     $this->sessionID = null;
     if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+    {
       $this->dbID = null;
+    }  
   }
   
   /*
@@ -482,7 +486,7 @@ class tlTransaction extends tlDBObject
     
     if ($options & self::TLOBJ_O_SEARCH_BY_ID)
     {
-      $clauses[] = "id = {$this->dbID}";
+      $clauses[] = "id = " . intval($this->dbID);
     }
     
     if ($clauses)
@@ -515,7 +519,7 @@ class tlTransaction extends tlDBObject
       if (!is_null($this->sessionID))
       {
         $sessionID = "'".$db->prepare_string($this->sessionID)."'";
-            }
+      }
             
       $query = "/* $debugMsg */ INSERT INTO {$this->tables['transactions']} " .
                "(entry_point,start_time,end_time,user_id,session_id) " .
@@ -530,7 +534,8 @@ class tlTransaction extends tlDBObject
     {
       $endTime = $db->prepare_int(time());
       $query = " /* $debugMsg */ " .
-           " UPDATE {$this->tables['transactions']} SET end_time = {$endTime} WHERE id = {$this->dbID}";
+               " UPDATE {$this->tables['transactions']} SET end_time = {$endTime} "
+               " WHERE id = " . intval($this->dbID);
       $result = $db->exec_query($query);
     }
     return $result ? tl::OK : tl::ERROR;

@@ -70,11 +70,14 @@ class jiraCommons
   function buildSummaryHTMLString($issue)
   {
     $summary = $issue->summary;
-    $strDueDate = $this->helperParseDate($issue->duedate);
-    if( !is_null($strDueDate) )
-    { 
-    	$summary .= "<b> [$strDueDate] </b> ";
-    }
+    if(property_exists($issue, 'duedate'))
+    {
+      $strDueDate = $this->helperParseDate($issue->duedate);
+      if( !is_null($strDueDate) )
+      { 
+        $summary .= "<b> [$strDueDate] </b> ";
+      }
+    }  
     return $summary;
   }
   

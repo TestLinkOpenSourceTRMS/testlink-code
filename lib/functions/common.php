@@ -11,14 +11,14 @@
  * a feature specific code because of performance and readability reasons
  *
  * @filesource  common.php
- * @package   TestLink
+ * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2013 TestLink community 
- * @link      http://www.teamst.org/index.php
- * @since     1.5
+ * @Copyright   2005,2014 TestLink community 
+ * @link        http://www.testlink.org
+ * @since       1.5
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.12
  *
  */
 
@@ -482,11 +482,13 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
  * @param   string   Browser location - use for redirection or refresh of another frame
  *                   Default: 'location'
  */
-function redirect($path, $level = 'location')
+function redirect($url, $level = 'location')
 {
+  // XSS Attack - 06486: Cross-Site Scripting on login page
+  $safeUrl = urlencode($url);
   echo "<html><head></head><body>";
   echo "<script type='text/javascript'>";
-  echo "$level.href='$path';";
+  echo "$level.href='$safeUrl';";
   echo "</script></body></html>";
   exit;
 }

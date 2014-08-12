@@ -22,15 +22,18 @@ require_once("opt_transfer.php");
 require_once("web_editor.php");
 
 $cfg = getCfg();
-testlinkInitPage($db);
 $optionTransferName = 'ot';
-$args = init_args($cfg,$optionTransferName);
-require_once(require_web_editor($cfg->webEditorCfg['type']));
 
+testlinkInitPage($db);
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
+
+
+$args = init_args($cfg,$optionTransferName,$tcase_mgr);
+require_once(require_web_editor($cfg->webEditorCfg['type']));
+
 
 $templateCfg = templateConfiguration('tcEdit');
 
@@ -130,6 +133,13 @@ switch($args->doAction)
     $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
   break;
 
+
+  case "doAddRelation":
+  case "doDeleteRelation":
+    $op = $commandMgr->$pfn($args,$_REQUEST);
+    $doRender = true;
+  break;
+  
 }
 
 
@@ -329,7 +339,7 @@ else if($args->do_activate_this || $args->do_deactivate_this)
   returns:
 
 */
-function init_args(&$cfgObj,$otName)
+function init_args(&$cfgObj,$otName,&$tcaseMgr)
 {
   $tc_importance_default = config_get('testcase_importance_default');
   
@@ -347,6 +357,12 @@ function init_args(&$cfgObj,$otName)
   {
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : 0;
   }  
+  if($args->tcase_id == 0)
+  {
+    $args->tcase_id = intval(isset($_REQUEST['relation_source_tcase_id']) ? 
+                             $_REQUEST['relation_source_tcase_id'] : 0);
+  }
+  
 
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
   
@@ -449,7 +465,24 @@ function init_args(&$cfgObj,$otName)
 
 
   $args->fileTitle = isset($_REQUEST['fileTitle'])? $_REQUEST['fileTitle'] : "";
+
+
+
+  $args->relation_type = isset($_REQUEST['relation_type']) ? $_REQUEST['relation_type'] : null;
+  $args->relation_id = intval(isset($_REQUEST['relation_id']) ? $_REQUEST['relation_id'] : 0);
+
+  $args->relation_destination_tcase = isset($_REQUEST['relation_destination_tcase']) ? 
+                                      $_REQUEST['relation_destination_tcase'] : null;
+
+  $args->dummy = $tcaseMgr->getInternalID($args->relation_destination_tcase, array('output' => 'map'));
+
+  $args->destination_tcase_id = $args->dummy['id'];
+
+  // need to check if user has access rights to test project is project is private.
+
+
   $args->user = $_SESSION['currentUser'];
+
   return $args;
 }
 
@@ -645,7 +678,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
                              'doDeleteStep' => '', 'doReorderSteps' => '','doResequenceSteps' => '',
                              'doInsertStep' => 'doUpdateStep',
                              'setImportance' => '','setStatus' => '',
-                             'setExecutionType' => '', "setEstimatedExecDuration" => '');
+                             'setExecutionType' => '', "setEstimatedExecDuration" => '',
+                             'doAddRelation' => '', 'doDeleteRelation' => '');
 
   $key2work = 'initWebEditorFromTemplate';
   $initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
@@ -723,6 +757,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
         case "setStatus":
         case "setExecutionType":
         case "setEstimatedExecDuration":
+        case "doAddRelation":
+        case "doDeleteRelation":
             $renderType = 'template';
             
             // Document this !!!!
@@ -739,11 +775,12 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
             $pos = strpos($tpl, '.php');
             if($pos === false)
             {
-                $tpl = $tplDir . $tpl;      
+              $tpl = $tplDir . $tpl;      
             }
             else
             {
-                $renderType = 'redirect';  
+              echo 'fff';
+              $renderType = 'redirect';  
             } 
         break;
     }

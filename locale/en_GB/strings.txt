@@ -77,6 +77,7 @@ $TLS_click_to_set_open = "Closed (click to open)";
 $TLS_click_to_set_closed = "Open (click to close)";
 $TLS_click_to_disable = "Enabled (click to disable)";
 $TLS_click_to_enable = "Disabled (click to enable)";
+$TLS_current_testcase = "This test case";
 $TLS_confirm = "Confirm";
 $TLS_config= "Configuration";
 $TLS_created_by= "Created by";
@@ -194,6 +195,7 @@ $TLS_timestamp_lastchange  = "Last Change";
 $TLS_title = "Title";
 $TLS_too_much_data = "Amount of potential data to be generated is too high - please refine your request";
 $TLS_too_much_builds = "You have %s Active Builds, please choose no more than %s";
+$TLS_testcase_doesnot_exists = "Test Case with external ID: %s - does not exist";
 
 $TLS_without_keywords = "without keywords";
 $TLS_without_keywords_bracketed = "[Without keywords]";
@@ -350,6 +352,15 @@ $TLS_elapsed_seconds = 'Processing time (seconds)';
 
 $TLS_addLinkToTestCase = 'Add link to test case';
 $TLS_removeLinkToTestCase = 'Remove test case link';
+
+
+$TLS_parent_of = "parent of";
+$TLS_child_of = "child of";
+$TLS_blocks = "blocks";
+$TLS_depends = "depends on";
+$TLS_related_to = "related to";
+
+
 
 // ----- unsorted (TODO move) -------------------------------------
 $TLS_problems_loading_xml_content = "Unable to load XML data, Check your file.";
@@ -2865,6 +2876,7 @@ $TLS_relation_type = "Type";
 $TLS_relation_document = "Related Requirement";
 $TLS_relation_status = "Status";
 $TLS_relation_set_by = "Set by";
+$TLS_relation_set_on = "Date/time";
 $TLS_relation_delete = "Delete";
 $TLS_relations = "Relations";
 $TLS_th_relations = "# Related Req.";

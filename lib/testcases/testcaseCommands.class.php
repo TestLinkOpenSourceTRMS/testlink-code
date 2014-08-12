@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
  **/
 
 class testcaseCommands
@@ -102,18 +102,26 @@ class testcaseCommands
    * initialize common test case information, useful when working on steps
    *
    */
-  function initTestCaseBasicInfo(&$argsObj,&$guiObj)
+  function initTestCaseBasicInfo(&$argsObj,&$guiObj,$opt=null)
   {
 
+    $my['opt'] = array('accessByStepID' => true);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
     $greenCard = array('tcase_id' => $argsObj->tcase_id, 'tcversion_id' => $argsObj->tcversion_id);
-    foreach($greenCard as $ky)
-    {
-      if($ky == 0)
+    if( $my['opt']['accessByStepID'] )
+    {  
+      foreach($greenCard as $ky)
       {
-        $greenCard = $this->tcaseMgr->getIdCardByStepID($argsObj->step_id);   
-        break;
-      }  
+        // this logic need to be explained BETTER
+        if($ky == 0)
+        {
+          $greenCard = $this->tcaseMgr->getIdCardByStepID($argsObj->step_id);   
+          break;
+        }  
+      }
     }
+
 
     $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,
                                             array('output' => 'full_without_steps','renderGhost' => true));
@@ -442,7 +450,6 @@ class testcaseCommands
     $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 'lib/testcases/archiveData.php?version_id=undefined&' .
                               'edit=testcase&id=' . intval($guiObj->testcase_id) . "'";    
 
-    new dBug($guiObj);                          
     $templateCfg = templateConfiguration('tcDelete');
     $guiObj->template=$templateCfg->default_template;
     return $guiObj;
@@ -488,16 +495,16 @@ class testcaseCommands
       // When deleting JUST one version, there is no need to refresh tree
     if($argsObj->tcversion_id != testcase::ALL_VERSIONS)
     {
-        $guiObj->main_descr .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
-        $guiObj->refreshTree = 0;
-          $guiObj->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
+      $guiObj->main_descr .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
+      $guiObj->refreshTree = 0;
+      $guiObj->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
     }
 
     $guiObj->testcase_name = $tcinfo[0]['name'];
     $guiObj->testcase_id = $argsObj->tcase_id;
     
-      $templateCfg = templateConfiguration('tcDelete');
-      $guiObj->template=$templateCfg->default_template;
+    $templateCfg = templateConfiguration('tcDelete');
+    $guiObj->template=$templateCfg->default_template;
     return $guiObj;
   }
 
@@ -758,10 +765,10 @@ class testcaseCommands
      */
   function doCopyStep(&$argsObj,$request)
   {
-      $guiObj = $this->initGuiBean($argsObj);
+    $guiObj = $this->initGuiBean($argsObj);
     $guiObj->user_feedback = '';
     $guiObj->step_exec_type = $argsObj->exec_type;
-        $guiObj->tcversion_id = $argsObj->tcversion_id;
+    $guiObj->tcversion_id = $argsObj->tcversion_id;
     
     // need to document difference bewteen these two similar concepts
     $guiObj->action = __FUNCTION__;
@@ -775,17 +782,17 @@ class testcaseCommands
     $new_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
     $new_step++;
 
-      $source_info = $this->tcaseMgr->get_steps($argsObj->tcversion_id,$argsObj->step_number);
-      $source_info = current($source_info);
-        $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,$source_info['actions'],
-                                        $source_info['expected_results'],$source_info['execution_type']);      
+    $source_info = $this->tcaseMgr->get_steps($argsObj->tcversion_id,$argsObj->step_number);
+    $source_info = current($source_info);
+    $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,$source_info['actions'],
+                                       $source_info['expected_results'],$source_info['execution_type']);      
 
     if( $op['status_ok'] )
     {
       $guiObj->user_feedback = sprintf(lang_get('step_number_x_created_as_copy'),$new_step,$argsObj->step_number);
-        $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+      $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
 
-         $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+      $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
       $this->initTestCaseBasicInfo($argsObj,$guiObj);
     }  
 
@@ -801,10 +808,10 @@ class testcaseCommands
 
     $guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
     $guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+    $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 
-      $templateCfg = templateConfiguration('tcStepEdit');
-      $guiObj->template=$templateCfg->default_template;
+    $templateCfg = templateConfiguration('tcStepEdit');
+    $guiObj->template=$templateCfg->default_template;
     return $guiObj;
   }
 
@@ -1084,4 +1091,68 @@ class testcaseCommands
     return $idy;
   }
   
+
+  /**
+   * 
+   *
+   */
+  function doAddRelation(&$argsObj,&$request)
+  {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    if($argsObj->destination_tcase_id >0)
+    {
+      $relTypeInfo = explode('_',$argsObj->relation_type);
+      $source_id = $argsObj->tcase_id;
+      $destination_id = $argsObj->destination_tcase_id;
+      if( $relTypeInfo[1] == "destination" ) 
+      {
+        $source_id = $argsObj->destination_tcase_id;
+        $destination_id = $argsObj->tcase_id;
+      }      
+      $this->tcaseMgr->addRelation($source_id, $destination_id,$relTypeInfo[0], $argsObj->user_id); 
+    } 
+    else
+    {
+      $guiObj->user_feedback = sprintf(lang_get('testcase_doesnot_exists'), $argsObj->relation_destination_tcase);
+    } 
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    
+    if($guiObj->user_feedback != '')
+    {
+      $guiObj->template .= "&add_relation_feedback_msg=" . urlencode($guiObj->user_feedback);
+    }  
+    return $guiObj;
+  }
+
+  /**
+   * 
+   *
+   */
+  function doDeleteRelation(&$argsObj,&$request)
+  {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    if($argsObj->relation_id >0)
+    {
+      $this->tcaseMgr->deleteRelationByID($argsObj->relation_id);
+    } 
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" .
+                        "&caller=delRel";
+
+    return $guiObj;
+  }
+
+
 } // end class  

@@ -11,7 +11,7 @@
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.11','Test Link 1.9.11',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.12','Test Link 1.9.12',GETDATE());
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON

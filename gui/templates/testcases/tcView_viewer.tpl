@@ -390,6 +390,9 @@ function launchInsertStep(step_id)
   </div>
   {/if}
   
+
+{include file="testcases/relations.inc.tpl"} 
+
 {if $args_linked_versions != null}
   {* Test Case version Test Plan Assignment *}
   <br />

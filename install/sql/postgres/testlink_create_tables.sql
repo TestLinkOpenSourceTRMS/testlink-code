@@ -782,6 +782,21 @@ CREATE TABLE /*prefix*/cfield_build_design_values(
 CREATE INDEX /*prefix*/IX_cfield_build_design_values ON /*prefix*/cfield_build_design_values ("node_id");
 
 
+
+--
+-- Table structure for table tcase_relations
+--
+CREATE TABLE /*prefix*/tcase_relations (
+  id BIGSERIAL NOT NULL,
+  source_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,
+  destination_id  INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,
+  relation_type INT2 NOT NULL DEFAULT '1',
+  author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  creation_ts TIMESTAMP NOT NULL DEFAULT now(),
+  PRIMARY KEY (id)
+);
+
+
 --
 -- TICKET 4914: Create View - tcversions_last_active
 --

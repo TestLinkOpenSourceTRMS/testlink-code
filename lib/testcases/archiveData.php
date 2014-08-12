@@ -92,6 +92,7 @@ function init_args(&$dbHandler)
                    "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),
                    "tcaseExternalID" => array(tlInputParameter::STRING_N,0,16),
                    "tcaseVersionNumber" => array(tlInputParameter::INT_N),
+                   "add_relation_feedback_msg" => array(tlInputParameter::STRING_N,0,255),
                    "caller" => array(tlInputParameter::STRING_N,0,10));               
 
   $args = new stdClass();
@@ -156,11 +157,13 @@ function init_args(&$dbHandler)
     break;
      
     case 'testcase':
-      $viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
-      $viewerCfg['disable_edit'] = 0;
-      $viewerCfg['refreshTree'] = 0;
+      $args->viewerArgs = array('action' => '', 'msg_result' => '', 'user_feedback' => '',
+                                'disable_edit' => 0, 'refreshTree' => 0,
+                                'add_relation_feedback_msg' => $args->add_relation_feedback_msg);
             
       $args->id = is_null($args->id) ? 0 : $args->id;
+      $args->tcase_id = $args->id;
+
       if( is_null($args->tcaseTestProject) && $args->id > 0 )
       {
         $args->tcaseTestProject = $tprojectMgr->getByChildID($args->id);
@@ -218,8 +221,8 @@ function initializeEnv($dbHandler)
   $gui->direct_link = null;
   $gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
   $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
-  $gui->viewerArgs = array('action' => '', 'msg_result' => '','user_feedback' => '', 'disable_edit' => 0,
-                           'refreshTree' => 0);
+  $gui->viewerArgs = $args->viewerArgs;
+
 
   return array($args,$gui,$grants);
 }
@@ -324,7 +327,7 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   {
     if( $get_path_info || $args->show_path )
     {
-        $gui->path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
+      $gui->path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
     }
     $platform_mgr = new tlPlatform($dbHandler,$args->tproject_id);
     $gui->platforms = $platform_mgr->getAllAsMap();

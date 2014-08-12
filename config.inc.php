@@ -824,6 +824,47 @@ $tlCfg->testcase_cfg->estimated_execution_duration = new stdClass();
 $tlCfg->testcase_cfg->estimated_execution_duration->required = '';
 
 
+
+// There are some preconfigured standard types which you can use,
+// additionally you can configure your own types.
+$tlCfg->testcase_cfg->relations = new stdClass();
+$tlCfg->testcase_cfg->relations->enable = TRUE;
+$tlCfg->testcase_cfg->relations->interproject_linking = FALSE;
+
+
+/** 
+ * Localization identifiers for test cases relation types
+ * Types, which are configured above, have to be configured 
+ * here too with attributes "source" and "destination".
+ *
+ * Last value will be selected in GUI as default.
+ * 
+ * Form has to be like this:
+ * 
+ * ... = array(
+ *    RELATIONNAME => array(
+ *      'source' => 'SOURCE_LOCALIZATION_KEY',
+ *      'destination' => 'DESTINATION_LOCALIZATION_KEY'),
+ *    ...
+ * 
+ * @since TestLink 1.9.12
+ **/
+
+$tlCfg->testcase_cfg->relations->type_labels = array(
+  TL_REL_TYPE_PARENT_CHILD => array('source' => 'parent_of','destination' => 'child_of'),
+  TL_REL_TYPE_BLOCKS_DEPENDS => array('source' => 'blocks','destination' => 'depends'),
+  TL_REL_TYPE_RELATED => array('source' => 'related_to','destination' => 'related_to')
+);
+
+
+
+$tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHILD => 'parent_child',
+                                                          TL_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
+                                                          TL_REL_TYPE_RELATED => 'related_to');
+
+
+
+
 /** text template for a new items:
     Test Case: summary, steps, expected_results, preconditions
 

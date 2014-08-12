@@ -681,3 +681,15 @@ CREATE TABLE /*prefix*/text_templates (
   is_public tinyint(1) NOT NULL default '0',
   UNIQUE KEY idx_text_templates (type,title)
 ) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
+
+
+
+CREATE TABLE /*prefix*/tcase_relations (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `source_id` int(10) unsigned NOT NULL,
+  `destination_id` int(10) unsigned NOT NULL,
+  `relation_type` smallint(5) unsigned NOT NULL default '1',
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) DEFAULT CHARSET=utf8;

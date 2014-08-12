@@ -1,12 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.37.6.2 2010/12/11 17:31:47 franciscom Exp $
+# testlink_create_default_data.sql
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL
 # ---------------------------------------------------------------------------------
 
 # Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.11', 'TestLink 1.9.11',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.12', 'TestLink 1.9.12',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');

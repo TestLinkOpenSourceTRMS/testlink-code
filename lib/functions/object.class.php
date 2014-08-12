@@ -4,12 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource  object.class.php
- * @package   TestLink
+ * @package     TestLink
  * @copyright   2007-2014, TestLink community 
- * @link    http://www.testlink.org
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.12
  **/
  
 /** 
@@ -253,6 +253,7 @@ abstract class tlObject implements iSerialization
                     'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
                     'role_rights' => DB_TABLE_PREFIX . 'role_rights',
                     'roles' => DB_TABLE_PREFIX . 'roles',
+                    'tcase_relations' => DB_TABLE_PREFIX . 'tcase_relations',
                     'tcversions' => DB_TABLE_PREFIX . 'tcversions',
                     'tcsteps' => DB_TABLE_PREFIX . 'tcsteps',
                     'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
@@ -268,7 +269,7 @@ abstract class tlObject implements iSerialization
                     'user_group_assign' => DB_TABLE_PREFIX . 'user_group_assign',
                     'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
                     'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-                    'users' => DB_TABLE_PREFIX . 'users' ); 
+                    'users' => DB_TABLE_PREFIX . 'users'); 
 
     if ($tableNames != null)
     { 

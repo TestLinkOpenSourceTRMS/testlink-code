@@ -794,16 +794,10 @@ function open_help_window(help_page,locale)
   returns:
 
   rev :
-       20101111 - asimon - now also remembers popup size like other functions do
-       20090715 - franciscom - added documentation
-       20070930 - franciscom - REQ - BUGID 1078
 
 */
 function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 {
-  //@TODO schlundus, what is show_mode? not used in archiveData.php
-  //You are right: problem fixed see documentation added on header (franciscom)
-  // 
   var feature_url = "lib/testcases/archiveData.php";
   feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
           tcase_id+"&tcversion_id="+tcversion_id;

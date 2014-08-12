@@ -67,6 +67,8 @@ class testcase extends tlObjectWithAttachments
   var $export_file_types = array("XML" => "XML");
   var $execution_types = array();
   var $cfg;
+  var $debugMsg;
+
   
   /**
    * testplan class constructor
@@ -94,6 +96,7 @@ class testcase extends tlObjectWithAttachments
     $this->cfg = new stdClass();
     $this->cfg->testcase = config_get('testcase_cfg');
     $this->cfg->execution = config_get('exec_cfg');  // CORTADO
+    $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
     
     // ATTENTION:
     // second argument is used to set $this->attachmentTableName,property that this calls
@@ -832,9 +835,6 @@ class testcase extends tlObjectWithAttachments
    *  rev :
    * 
    */
-
-  
-       
   function show(&$smarty,$guiObj,$identity,$grants)
   {
 
@@ -848,8 +848,11 @@ class testcase extends tlObjectWithAttachments
     $idCard->tcase_id = intval($idSet[0]);
     $idCard->tcversion_id = $version_id;
     $idCard->tproject_id = $identity->tproject_id;
+
     $gui = $this->initShowGui($guiObj,$grants,$idSet[0],$idCard);
-   
+    $gui->tcase_id = $idCard->tcase_id;
+    $gui->tcversion_id = $idCard->tcversion_id;
+
     $userIDSet = array();
     if($status_ok)
     {
@@ -885,7 +888,6 @@ class testcase extends tlObjectWithAttachments
         {
           continue;
         }
-        
 
         $tc_array[0]['tc_external_id'] = $gui->tcasePrefix . $tc_array[0]['tc_external_id'];
         $tc_array[0]['ghost'] = '[ghost]"TestCase":"' . $tc_array[0]['tc_external_id'] . '","Version":"' .
@@ -949,13 +951,25 @@ class testcase extends tlObjectWithAttachments
         }
         $gui->arrReqs[] = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
 
-        } 
+        if($this->cfg->testcase->relations->enable)
+        {
+          $gui->relationSet[] = $this->getRelations($tc_id);        
+        }  
       } 
+    } 
+
+    $gui->relations = $gui->relationSet[0];
+    $gui->relation_domain = '';
+    if($this->cfg->testcase->relations->enable)
+    {
+      $gui->relation_domain = $this->getRelationTypeDomainForHTMLSelect();
+    }  
 
     // Removing duplicate and NULL id's
     unset($userIDSet['']);
     $gui->users = tlUser::getByIDs($this->db,array_keys($userIDSet),'id');
     $gui->cf = null;
+
 
     $this->initShowGuiActions($gui);
     $tplCfg = templateConfiguration('tcView');
@@ -1004,19 +1018,10 @@ class testcase extends tlObjectWithAttachments
     // Check if new name will be create a duplicate testcase under same parent
     if( ($checkDuplicates = config_get('check_names_for_duplicates')) )
     {   
-      // $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
-      
-      // new dBug($check);
       // get my parent
       $mi = $this->tree_manager->get_node_hierarchy_info($id);
       $itemSet = $this->getDuplicatesByName($name,$mi['parent_id'],array('id2exclude' => $id));  
-      // new dBug($itemSet);
 
-      /*
-      $ret['status_ok'] = !$check['status']; 
-      $ret['msg'] = $check['msg']; 
-      $ret['reason'] = $ret['status_ok'] ? '' : 'already_exists';
-      */
       if(!is_null($itemSet))
       {
         $ret['status_ok'] = false; 
@@ -1031,7 +1036,6 @@ class testcase extends tlObjectWithAttachments
         // get more info for feedback
 
       }  
-      // new dBug($ret);
     }    
   
     if($ret['status_ok'])
@@ -2039,7 +2043,7 @@ class testcase extends tlObjectWithAttachments
     $my['filters'] = array('active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => 1);
     $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-    $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 
+    $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 'getPrefix' => false,
                            'order_by' => null, 'renderGhost' => false, 'withGhostString' => false);
     $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -2146,10 +2150,10 @@ class testcase extends tlObjectWithAttachments
         $sql = " SELECT NHTC.name,NHTC.node_order,NHTCV.parent_id AS testcase_id, " . 
                " NHTC.parent_id AS testsuite_id, " .
                " TCV.version, TCV.id, TCV.tc_external_id " .
-                 " FROM {$this->tables['nodes_hierarchy']} NHTCV " . 
-                 " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id " .
-                 " JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id " .
-                 " {$where_clause} {$active_filter} ";
+               " FROM {$this->tables['nodes_hierarchy']} NHTCV " . 
+               " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id " .
+               " JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id " .
+               " {$where_clause} {$active_filter} ";
                  
             if(is_null($my['options']['order_by']))
             {
@@ -2184,7 +2188,7 @@ class testcase extends tlObjectWithAttachments
     {
       $recordset = $this->db->get_recordset($sql);
     }
-  
+
     // ghost on preconditions and summary
     if( !is_null($recordset) && $my['options']['renderGhost'] )
     {
@@ -2224,6 +2228,18 @@ class testcase extends tlObjectWithAttachments
         $recordset[$accessKey]['steps'] = $step_set;
       } 
     }
+
+    if( !is_null($recordset) && $my['options']['getPrefix'] )
+    {
+      $pfx = $this->getPrefix($id);
+      $key2loop = array_keys($recordset);
+      foreach( $key2loop as $accessKey)
+      {
+        $recordset[$accessKey]['fullExternalID'] =  $pfx[0] . $this->cfg->testcase->glue_character . 
+                                                    $recordset[$accessKey]['tc_external_id'];
+      } 
+    }  
+
     return ($recordset ? $recordset : null);
   }
   
@@ -2634,7 +2650,7 @@ class testcase extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $internalID = 0;
     $my['opt'] = array('glue' => $this->cfg->testcase->glue_character, 
-                       'tproject_id' => null);
+                       'tproject_id' => null, 'output' => null);
     $my['opt'] = array_merge($my['opt'], (array)$opt);
 
     $status_ok = false;
@@ -2642,7 +2658,18 @@ class testcase extends tlObjectWithAttachments
     // When using this method on a context where caller certifies that
     // test project is OK, we will skip this check.
     $tproject_id = $my['opt']['tproject_id'];
-    
+    if( !is_null($tproject_id) && !is_null($my['opt']['output']) )
+    {  
+      $sql = " SELECT id,is_public  FROM {$this->tables['testprojects']} " .
+             " WHERE id = " . intval($tproject_id);
+      $tproject_info = $this->db->get_recordset($sql);
+      if( !is_null($tproject_info) )
+      {
+        $tproject_info = current($tproject_info);
+      }  
+    }
+
+   
     // Find the last glue char
     $gluePos = strrpos($stringID, $my['opt']['glue']);
     $isFullExternal = ($gluePos !== false);
@@ -2664,12 +2691,14 @@ class testcase extends tlObjectWithAttachments
       {
         // Check first if Test Project prefix is valid, if not abort
         $testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
-        $sql = "SELECT id  FROM {$this->tables['testprojects']} " .
-               "WHERE prefix = '" . $testCasePrefix . "'";
+        $sql = "SELECT id,is_public  FROM {$this->tables['testprojects']} " .
+               "WHERE prefix = '" . $this->db->prepare_string($testCasePrefix) . "'";
         $tproject_info = $this->db->get_recordset($sql);
         if( $status_ok = !is_null($tproject_info) )
         {
-          $tproject_id = $tproject_info[0]['id'];
+          $tproject_info = current($tproject_info);
+          $tproject_id = $tproject_info['id'];
+          // $tproject_id = $tproject_info[0]['id'];
         }  
       }
       else
@@ -2689,7 +2718,7 @@ class testcase extends tlObjectWithAttachments
              " FROM {$this->tables['tcversions']} TCV " .
              " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
              " ON TCV.id = NHTCV.id " .
-             " WHERE  TCV.tc_external_id = {$externalID}";
+             " WHERE  TCV.tc_external_id = " . intval($externalID);
     
       $testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
       if(!is_null($testCases))
@@ -2705,8 +2734,8 @@ class testcase extends tlObjectWithAttachments
         }
       }
     }
-    
-    return $internalID;
+    return is_null($my['opt']['output']) ? $internalID : 
+           array('id' => $internalID,'tproject' => $tproject_info);
   }
   
   /*
@@ -5374,6 +5403,8 @@ class testcase extends tlObjectWithAttachments
     // IMPORTANT NOTICE: keys are field names of executions tables
     $my['filters'] = array('tcversion_id' => null,'testplan_id' => null,
                            'platform_id' => null, 'build_id' => null);  
+
+    
     $my['filters'] = array_merge($my['filters'], (array)$filters);
 
     $my['options'] = array('exec_id_order' => 'DESC');  
@@ -6163,11 +6194,13 @@ class testcase extends tlObjectWithAttachments
     $goo->platforms = null;
 
 
+    // add_relation_feedback_msg @used-by testcaseCommands.class.php:doAddRelation()
     $viewer_defaults = array('title' => lang_get('title_test_case'),'show_title' => 'no',
                              'action' => '', 'msg_result' => '','user_feedback' => '',
                              'refreshTree' => 1, 'disable_edit' => 0,
                              'display_testproject' => 0,'display_parent_testsuite' => 0,
-                             'hilite_testcase_name' => 0,'show_match_count' => 0);
+                             'hilite_testcase_name' => 0,'show_match_count' => 0,
+                             'add_relation_feedback_msg' => '');
   
     $viewer_defaults = array_merge($viewer_defaults, (array)$guiObj->viewerArgs);
 
@@ -6177,6 +6210,8 @@ class testcase extends tlObjectWithAttachments
     $goo->hilite_testcase_name = $viewer_defaults['hilite_testcase_name'];
     $goo->action = $viewer_defaults['action'];
     $goo->user_feedback = $viewer_defaults['user_feedback'];
+    $goo->add_relation_feedback_msg = $viewer_defaults['add_relation_feedback_msg'];
+
 
     $goo->pageTitle = $viewer_defaults['title'];
     $goo->display_testcase_path = !is_null($goo->path_info);
@@ -6237,6 +6272,9 @@ class testcase extends tlObjectWithAttachments
     $goo->platforms = $platformMgr->getAllAsMap();
 
     $goo->tcasePrefix = $this->tproject_mgr->getTestCasePrefix($goo->tproject_id) . $this->cfg->testcase->glue_character;
+
+
+    // new dBug($goo);
     return $goo;
   }
 
@@ -6551,6 +6589,248 @@ class testcase extends tlObjectWithAttachments
   {
     $dummy = getConfigAndLabels('testCaseStatus','code');
     return $dummy['lbl'];
+  }
+
+
+  /**
+   *
+   */
+  public function getRelations($id) 
+  {
+    $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
+
+    $safeID = intval($id);
+
+    $relSet = array();
+    $relSet['num_relations'] = 0;
+    $relSet['item'] = current($this->get_by_id($id,self::LATEST_VERSION,null, 
+                                               array('output' => 'essential','getPrefix' => true)));
+    $relSet['relations'] = array();
+
+    $tproject_mgr = new testproject($this->db);
+
+    $sql = " $debugMsg SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " . 
+           " FROM {$this->tables['tcase_relations']} " .
+           " WHERE source_id=$safeID OR destination_id=$safeID " .
+           " ORDER BY id ASC ";
+   
+    $relSet['relations']= $this->db->get_recordset($sql);  
+
+    if( !is_null($relSet['relations']) && count($relSet['relations']) > 0 )
+    {
+      $labels = $this->getRelationLabels();
+      $label_keys = array_keys($labels);
+      foreach($relSet['relations'] as $key => $rel) 
+      {
+        // is this relation type is configured?
+        if( ($relTypeAllowed = in_array($rel['relation_type'],$label_keys)) ) 
+        { 
+            $relSet['relations'][$key]['source_localized'] = $labels[$rel['relation_type']]['source'];
+            $relSet['relations'][$key]['destination_localized'] = $labels[$rel['relation_type']]['destination'];
+            
+            $type_localized = 'destination_localized';
+            $other_key = 'source_id';
+            if ($id == $rel['source_id']) 
+            {
+              $type_localized = 'source_localized';
+              $other_key = 'destination_id';
+            } 
+            $relSet['relations'][$key]['type_localized'] = $relSet['relations'][$key][$type_localized];
+            $otherItem = $this->get_by_id($rel[$other_key],self::LATEST_VERSION,null, 
+                                          array('output' => 'essential','getPrefix' => true));
+                      
+
+            // only add it, if either interproject linking is on or if it is in the same project
+            $relTypeAllowed = false;
+            //if ($this->relationsCfg->interProjectLinking || 
+            //    ($otherItem[0]['testproject_id'] == $relSet['req']['testproject_id'])) 
+            //{
+              $relTypeAllowed = true;
+              $relSet['relations'][$key]['related_tcase'] = $otherItem[0];
+              // $other_tproject = $tproject_mgr->get_by_id($otherItem[0]['testproject_id']);
+              // $relSet['relations'][$key]['related_tcase']['testproject_name'] = $other_tproject['name'];
+              
+              $user = tlUser::getByID($this->db,$rel['author_id']);
+              $relSet['relations'][$key]['author'] = $user->getDisplayName();
+            //} 
+          } 
+          
+          if( !$relTypeAllowed )
+          {
+            unset($relSet['relations'][$key]);
+          }
+                 
+        } // end foreach
+        
+        $relSet['num_relations'] = count($relSet['relations']);
+    }
+
+    return $relSet;
+  }
+
+  /**
+   *
+   */
+  public static function getRelationLabels() 
+  {
+    $cfg = config_get('testcase_cfg');
+    $labels = $cfg->relations->type_labels;
+    foreach ($labels as $key => $label) 
+    {
+      $labels[$key] = init_labels($label);
+    }
+    return $labels;
+  }
+
+
+  /**
+   *
+   */
+  public function deleteAllRelations($id) 
+  {
+    $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
+    $id_list = implode(",", (array)$id);
+    $sql = " $debugMsg DELETE FROM {$this->tables['tcase_relations']} " . 
+           " WHERE source_id IN ($id_list) OR destination_id IN ($id_list) ";
+    $this->db->exec_query($sql);
+  }
+
+
+
+  /**
+   * checks if there is a relation of a given type between two requirements
+   * 
+   * @author Andreas Simon
+   * 
+   * @param integer $first_id   ID to check
+   * @param integer $second_id  ID to check
+   * @param integer $rel_type_id relation type ID to check
+   * 
+   * @return true, if relation already exists, false if not
+   */
+  public function relationExits($first_id, $second_id, $rel_type_id) 
+  {
+    $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
+
+    $safe_first_id = intval($first_id);
+    $safe_second_id = intval($second_id);
+
+    $sql = " $debugMsg SELECT COUNT(0) AS qty " .
+           " FROM {$this->tables['tcase_relations']} " .
+           " WHERE ((source_id=" . $safe_first_id . " AND destination_id=" . $safe_second_id . ") " . 
+           " OR (source_id=" . $safe_second_id . " AND destination_id=" . $safe_first_id .  ")) " . 
+           " AND relation_type=" . intval($rel_type_id);
+    
+    $rs = $this->db->get_recordset($sql);
+    return($rs[0]['qty'] > 0);
+  }
+
+  /**
+   * Get count of all relations, no matter if it is source or destination
+   * or what type of relation it is.
+   * 
+   * @param integer $id requirement ID to check
+   * 
+   * @return integer $count
+   */
+  public function getRelationsCount($id) 
+  {
+    $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
+    $safeID = intval($id);
+    $sql = " $debugMsg SELECT COUNT(*) AS qty " .
+           " FROM {$this->tables['tcase_relations']} " .
+           " WHERE source_id=$safeID OR destination_id=$safeID ";
+    $rs = $this->db->get_recordset($sql);
+    return($rs[0]['qty']);
+  }
+
+  /**
+   * add a relation of a given type
+   * 
+   * @author Andreas Simon
+   * 
+   * @param integer $source_id ID of source requirement
+   * @param integer $destination_id ID of destination requirement
+   * @param integer $type_id relation type ID to set
+   * @param integer $author_id user's ID
+   */
+  public function addRelation($source_id, $destination_id, $type_id, $author_id, $ts=null) 
+  {
+    $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
+
+    // check if exists before trying to add
+    if( !$this->relationExits($source_id, $destination_id, $type_id) )
+    {
+
+      $time = is_null($ts) ? $this->db->db_now() : $ts;
+      $sql = " $debugMsg INSERT INTO {$this->tables['tcase_relations']} "  . 
+             " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+             " values ($source_id, $destination_id, $type_id, $author_id, $time)";
+      $this->db->exec_query($sql);
+      $ret = array('status_ok' => true, 'msg' => 'relation_added');
+    }  
+    else
+    {
+      $ret = array('status_ok' => false, 'msg' => 'relation_already_exists');
+    }  
+    return $ret;
+  }
+
+  /**
+   * delete an existing relation
+   * 
+   * @author Andreas Simon
+   * 
+   * @param int $id relation id
+   */
+  public function deleteRelationByID($relID) 
+  {
+    $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
+    $sql = " $debugMsg DELETE FROM {$this->tables['tcase_relations']} WHERE id=" . intval($relID);
+
+    echo $sql;
+    $this->db->exec_query($sql);
+  }
+
+  /**
+   * 
+   * @return array $htmlSelect info needed to create select box on multiple templates
+   */
+  function getRelationTypeDomainForHTMLSelect() 
+  {
+    
+    $htmlSelect = array('items' => array(), 'selected' => null, 'equal_relations' => array());
+    $labels = $this->getRelationLabels();
+    
+    foreach ($labels as $key => $lab) 
+    {
+      $htmlSelect['items'][$key . "_source"] = $lab['source'];
+      if ($lab['source'] != $lab['destination']) 
+      {
+        // relation is not equal as labels for source and dest are different
+        $htmlSelect['items'][$key . "_destination"] = $lab['destination']; 
+      } 
+      else 
+      {
+        // mark this as equal relation - no parent/child, makes searching simpler
+        $htmlSelect['equal_relations'][] = $key . "_source"; 
+      }
+    }
+    
+    // set "related to" as default preselected value in forms
+    if (defined('TL_REL_TYPE_RELATED') && isset($htmlSelect[TL_REL_TYPE_RELATED . "_source"])) 
+    {
+      $selected_key = TL_REL_TYPE_RELATED . "_source";
+    } 
+    else 
+    {
+      // "related to" is not configured, so take last element as selected one
+      $keys = array_keys($htmlSelect['items']);
+      $selected_key = end($keys);
+    }
+    $htmlSelect['selected'] = $selected_key;
+    
+    return $htmlSelect;
   }
 
 

@@ -540,6 +540,12 @@ $tlCfg->urgency['code_label'] = array(HIGH => 'urgency_high',MEDIUM => 'urgency_
 // --------------------------------------------------------------------------------------
 /* [States & Review] */
 
+
+define('TL_REL_TYPE_PARENT_CHILD', 1);
+define('TL_REL_TYPE_BLOCKS_DEPENDS', 2);
+define('TL_REL_TYPE_RELATED', 3);
+
+
 /**
  * data status constants are applicable for data like requirement, test case, Test Plan 
  * @since 2.0 

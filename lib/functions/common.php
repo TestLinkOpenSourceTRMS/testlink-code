@@ -485,7 +485,7 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
 function redirect($url, $level = 'location')
 {
   // XSS Attack - 06486: Cross-Site Scripting on login page
-  $safeUrl = urlencode($url);
+  $safeUrl = addslashes($url);
   echo "<html><head></head><body>";
   echo "<script type='text/javascript'>";
   echo "$level.href='$safeUrl';";

@@ -57,7 +57,7 @@ function init_args()
   }  
 
   $args->refreshTree = intval($args->refreshTree);
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
   $args->user = $_SESSION['currentUser'];
   $args->userID = $args->user->dbID;

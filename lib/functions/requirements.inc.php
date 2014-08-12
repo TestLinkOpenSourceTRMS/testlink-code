@@ -8,8 +8,8 @@
  * @filesource  requirements.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
  * @internal revisions
  * @since 1.9.9

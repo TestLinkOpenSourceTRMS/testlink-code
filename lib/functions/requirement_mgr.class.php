@@ -2501,26 +2501,34 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    * 
    * @return array $htmlSelect info needed to create select box on multiple templates
    */
-  function init_relation_type_select() {
+  function init_relation_type_select() 
+  {
     
     $htmlSelect = array('items' => array(), 'selected' => null, 'equal_relations' => array());
     $labels = $this->get_all_relation_labels();
     
-    foreach ($labels as $key => $lab) {
+    foreach ($labels as $key => $lab) 
+    {
       $htmlSelect['items'][$key . "_source"] = $lab['source'];
-      if ($lab['source'] != $lab['destination']) {
+      if ($lab['source'] != $lab['destination']) 
+      {
         // relation is not equal as labels for source and dest are different
         $htmlSelect['items'][$key . "_destination"] = $lab['destination']; 
-      } else {
+      } 
+      else 
+      {
         // mark this as equal relation - no parent/child, makes searching simpler
         $htmlSelect['equal_relations'][] = $key . "_source"; 
       }
     }
     
     // set "related to" as default preselected value in forms
-    if (defined('TL_REQ_REL_TYPE_RELATED') && isset($htmlSelect[TL_REQ_REL_TYPE_RELATED . "_source"])) {
+    if (defined('TL_REQ_REL_TYPE_RELATED') && isset($htmlSelect[TL_REQ_REL_TYPE_RELATED . "_source"])) 
+    {
       $selected_key = TL_REQ_REL_TYPE_RELATED . "_source";
-    } else {
+    } 
+    else 
+    {
       // "related to" is not configured, so take last element as selected one
       $keys = array_keys($htmlSelect['items']);
       $selected_key = end($keys);

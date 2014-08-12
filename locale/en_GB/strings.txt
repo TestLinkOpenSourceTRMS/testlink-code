@@ -360,6 +360,9 @@ $TLS_blocks = "blocks";
 $TLS_depends = "depends on";
 $TLS_related_to = "related to";
 
+$TLS_tcase_relation_hint = "PREFIX-ID";
+$TLS_tcase_relation_help = "(if you are linking to a test on same test project, you can write ONLY the ID)";
+
 
 
 // ----- unsorted (TODO move) -------------------------------------

@@ -4,7 +4,7 @@
              relation_destination_tcase, in, btn_add, img_title_delete_relation,
              no_records_found,other_versions,version,title_test_case,match_count,warning,
              commit_title,current_direct_link,current_testcase,test_case,relation_set_on,
-             specific_direct_link,req_does_not_exist,actions,'}
+             specific_direct_link,req_does_not_exist,actions,tcase_relation_hint,tcase_relation_help'}
 
 
 {lang_get s='delete_rel_msgbox_msg' var='delete_rel_msgbox_msg'}
@@ -82,6 +82,8 @@ var pF_delete_relation = delete_relation;
     
         <input type="text" name="relation_destination_tcase" id="relation_destination_tcase"
                value="{$labels.relation_destination_tcase}" 
+               placeholder="{$rel_labels.tcase_relation_hint}"
+               title="{$rel_labels.tcase_relation_help}"
                size="{#TC_EXTERNAL_ID_SIZE#}" maxlength="{#TC_EXTERNAL_ID_MAXLEN#}" 
                onclick="javascript:this.value=''" required />
         <input type="submit" name="relation_submit_btn" value="{$rel_labels.btn_add}" />

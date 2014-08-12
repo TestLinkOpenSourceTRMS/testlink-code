@@ -5885,6 +5885,10 @@ class testcase extends tlObjectWithAttachments
     {
       $ele = intval($ele);
     }
+
+    // dammed names!!!
+    $safeContext['tplan_id'] = isset($safeContext['tplan_id']) ? $safeContext['tplan_id'] : $safeContext['testplan_id'];
+    
     
     // we have to manage following situations
     // 1. we do not know test case version id.

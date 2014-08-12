@@ -534,7 +534,7 @@ class tlTransaction extends tlDBObject
     {
       $endTime = $db->prepare_int(time());
       $query = " /* $debugMsg */ " .
-               " UPDATE {$this->tables['transactions']} SET end_time = {$endTime} "
+               " UPDATE {$this->tables['transactions']} SET end_time = {$endTime} " . 
                " WHERE id = " . intval($this->dbID);
       $result = $db->exec_query($query);
     }

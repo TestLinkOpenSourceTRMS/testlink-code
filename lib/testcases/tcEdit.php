@@ -474,13 +474,17 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
   $args->relation_destination_tcase = isset($_REQUEST['relation_destination_tcase']) ? 
                                       $_REQUEST['relation_destination_tcase'] : null;
 
-  $args->dummy = $tcaseMgr->getInternalID($args->relation_destination_tcase, array('output' => 'map'));
+  $args->relation_destination_tcase = str_replace(' ','',$args->relation_destination_tcase);
+  $getOpt = array('tproject_id' => null, 'output' => 'map');                         
+  if( is_numeric($args->relation_destination_tcase) )   
+  {
+    $getOpt['tproject_id'] = $args->tproject_id;
+  }  
+  $args->dummy = $tcaseMgr->getInternalID($args->relation_destination_tcase,$getOpt);
 
   $args->destination_tcase_id = $args->dummy['id'];
 
   // need to check if user has access rights to test project is project is private.
-
-
   $args->user = $_SESSION['currentUser'];
 
   return $args;

@@ -23,7 +23,7 @@
  * @link        http://www.testlink.org/
  * 
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.12
  *
  **/
 require_once("../../config.inc.php");
@@ -42,25 +42,28 @@ if ($args->doExport)
   $tLogMsg = 'basename(__FILE__) : ' . basename(__FILE__) . ' : $args->exportContent : ' . $args->exportContent;
   switch ($args->exportContent)
   {
-    case 'linkedItems':
-    $content = $tplan_mgr->exportLinkedItemsToXML($args->tplan_id);
-    $tLogMsg .= ' : exportLinkedItemsToXML()';
-    break;
-    
     case 'tree':
-    $context = array('platform_id' => $args->platform_id, 'build_id' => $args->build_id,
-             'tproject_id' => $args->tproject_id);
-    $content = $tplan_mgr->exportTestPlanDataToXML($args->tplan_id,$context);
-    $tLogMsg .= ' : exportTestPlanDataToXML()';
+      $context = array('platform_id' => $args->platform_id, 'build_id' => $args->build_id,
+                       'tproject_id' => $args->tproject_id);
+      $content = $tplan_mgr->exportTestPlanDataToXML($args->tplan_id,$context);
+      $tLogMsg .= ' : exportTestPlanDataToXML()';
     break;
 
     case '4results':
-    $context = array('platform_id' => $args->platform_id, 'build_id' => $args->build_id,
-                     'tproject_id' => $args->tproject_id);
+      $context = array('platform_id' => $args->platform_id, 'build_id' => $args->build_id,
+                       'tproject_id' => $args->tproject_id);
 
-    $content = $tplan_mgr->exportForResultsToXML($args->tplan_id,$context,null,
-                                                 array('tcaseSet' => $args->testCaseSet));
-    $tLogMsg .= ' : exportForResultsToXML()';
+      $content = $tplan_mgr->exportForResultsToXML($args->tplan_id,$context,null,
+                                                   array('tcaseSet' => $args->testCaseSet));
+      $tLogMsg .= ' : exportForResultsToXML()';
+    break;
+
+    case 'linkedItems':
+    default:
+      $args->exportContent = 'linkedItems';
+      $content = $tplan_mgr->exportLinkedItemsToXML($args->tplan_id);
+      $tLogMsg .= ' : exportLinkedItemsToXML()';
+    break;
   }
 
   tLog($tLogMsg,'DEBUG');
@@ -84,7 +87,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
-    
+
   $args = new stdClass();
   $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
   $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
@@ -119,8 +122,23 @@ function init_args()
   }
     
   $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
-  $args->exportContent = isset($_REQUEST['exportContent']) ? $_REQUEST['exportContent'] : 'linkedItems';
+  
+  // TICKET 6498: Cross-Site Scripting on /lib/plan/planExport.php (CWE-80)
+  $default = 'linkedItems';
+  $args->exportContent = isset($_REQUEST['exportContent']) ? substr($_REQUEST['exportContent'],0,strlen($default)) : $default;
+  switch ($args->exportContent)
+  {
+    case 'tree':
+    case '4results':
+    case 'linkedItems':
+    break;
 
+    default:
+      $args->exportContent = $default;
+    break;
+  }
+
+  // Vulnerable ?
   $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $args->testCaseSet = null;
   if($args->treeFormToken >0)

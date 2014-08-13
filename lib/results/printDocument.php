@@ -436,12 +436,12 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
       break;
       
     case DOC_REQ_SPEC:
-      $my['filters'] = array(  'exclude_node_types' =>  array(  'testplan'=>'exclude me', 
-                                                                'testsuite'=>'exclude me',
-                                                    'testcase'=>'exclude me'),
-                               'exclude_children_of' => array(  'testcase'=>'exclude my children',
-                                                    'testsuite'=> 'exclude my children',
-                                                    'requirement'=>'exclude my children'));
+      $my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me', 
+                                                            'testsuite'=>'exclude me',
+                                                            'testcase'=>'exclude me'),
+                             'exclude_children_of' => array('testcase'=>'exclude my children',
+                                                            'testsuite'=> 'exclude my children',
+                                                            'requirement'=>'exclude my children'));
       break;
   }
 
@@ -716,4 +716,3 @@ function checkRights(&$db,&$user,$context = null)
   $check = $user->hasRight($db,'testplan_metrics',$context->tproject_id,$context->tplan_id,$context->getAccessAttr);
   return $check;
 }
-?>

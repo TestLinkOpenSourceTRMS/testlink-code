@@ -163,11 +163,11 @@ function init_args($request_hash, $session_hash,$date_format)
     
   $args->closed_on_date = isset($request_hash['closed_on_date']) ? $request_hash['closed_on_date'] : null;
     
-  $args->tplan_id = isset($session_hash['testplanID']) ? $session_hash['testplanID']: 0;
+  $args->tplan_id = isset($session_hash['testplanID']) ? intval($session_hash['testplanID']) : 0;
   $args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
-  $args->testprojectID = $session_hash['testprojectID'];
+  $args->testprojectID = intval($session_hash['testprojectID']);
   $args->testprojectName = $session_hash['testprojectName'];
-  $args->userID = $session_hash['userID'];
+  $args->userID = intval($session_hash['userID']);
 
   return $args;
 }

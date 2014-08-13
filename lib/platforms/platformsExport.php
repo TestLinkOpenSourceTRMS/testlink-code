@@ -51,7 +51,7 @@ function init_args()
                    "export_filename" => array(tlInputParameter::STRING_N,0,255));
     
   R_PARAMS($iParams,$args);
-  $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->testproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
   
   if(is_null($args->export_filename))

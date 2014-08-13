@@ -363,6 +363,9 @@ $TLS_related_to = "related to";
 $TLS_tcase_relation_hint = "PREFIX-ID";
 $TLS_tcase_relation_help = "(if you are linking to a test on same test project, you can write ONLY the ID)";
 
+$TLS_quick_passed = "Click to set to passed";
+$TLS_quick_failed = "Click to set to failed";
+$TLS_quick_blocked = "Click to set to blocked";
 
 
 // ----- unsorted (TODO move) -------------------------------------

@@ -7,7 +7,6 @@
  * 
  * @internal revisions
  * @1.9.7
- * 20130311 - franciscom - integer input are sanitized
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -35,6 +34,31 @@ $gui->resultSet = $tcase_mgr->get_assigned_to_user($args->user_id, $args->tproje
                                                    $tplan_param, $options, $filters);
 
 $doIt = !is_null($gui->resultSet);
+
+// will work only on standard exec status
+$exec = getQuickExecCfg($gui,$imgSet,$statusGui->status_code);
+
+
+
+$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy','executions','tcversions'));
+
+if($args->result != '' && $args->tcvx > 0)
+{
+
+  // get version number
+  $sql =  " SELECT TCV.version FROM  {$tables['tcversions']} TCV WHERE TCV.id = " . $args->tcvx;
+  $xx = $db->get_recordset($sql);
+  $version_number = $xx[0]['version'];
+
+  $sql = " INSERT INTO {$tables['executions']} ".
+         " (status,tester_id,execution_ts,tcversion_id,tcversion_number,testplan_id,platform_id,build_id)".
+         " VALUES ('{$args->result}', {$args->user_id}, " . $db->db_now() . "," .
+         "         {$args->tcvx}, {$version_number}, {$args->tpx}, {$args->pxi},{$args->bxi})";
+
+  $db->exec_query($sql);
+}  
+
+
 if( $doIt )
 {   
   $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
@@ -67,6 +91,11 @@ if( $doIt )
       	$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
 
         // create linked icons
+        $ekk = sprintf($exec['common'],$tplan_id,$tcase['platform_id'],$tplan_id,$tcase['build_id'],
+                       $tplan_id,$tcversion_id,$tplan_id);
+        $elk = sprintf($exec['passed'],$tplan_id) . $ekk . '&nbsp;' . sprintf($exec['failed'],$tplan_id ) . $ekk . '&nbsp;' . 
+               sprintf($exec['blocked'],$tplan_id) . $ekk;
+
         $exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
                              "<img title=\"{$gui->l18n['execution_history']}\" src=\"{$imgSet['history_small']}\" /></a> ";
         
@@ -78,7 +107,7 @@ if( $doIt )
         $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
                      "<img title=\"{$gui->l18n['design']}\" src=\"{$imgSet['edit_icon']}\" /></a> ";
         
-        $current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_history_link .
+        $current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $elk . $exec_history_link .
                          $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
                          $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
                          sprintf($gui->l18n['tcversion_indicator'],$tcase['version']);
@@ -159,7 +188,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @author Andreas Simon
  * @param $date
  */
-function get_date_diff($date) {
+function get_date_diff($date) 
+{
 	$date = (is_string($date)) ? strtotime($date) : $date;
 	$i = 1/60/60/24;
 	return floor((time() - $date) * $i);
@@ -184,12 +214,13 @@ function get_date_diff($date) {
 function init_args(&$dbHandler)
 {
   $_REQUEST=strings_stripSlashes($_REQUEST);
+
   $args = new stdClass();
   
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   if( $args->tproject_id == 0)
   {
-      $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }  
   if( $args->tproject_id == 0)
   {
@@ -269,7 +300,18 @@ function init_args(&$dbHandler)
 
 
 	$args->priority_enabled = $_SESSION['testprojectOptions']->testPriorityEnabled ? true : false;
-	
+
+
+  // quick & dirty execution
+  $args->tpx = isset($_REQUEST['tpx']) ? intval($_REQUEST['tpx']) : 0;
+  $dirtyHarry = array('pxi','bxi','tcvx');
+  foreach($dirtyHarry as $tg)
+  {
+    $key = $tg . '_' . $args->tpx;
+    $args->$tg = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
+  }  
+	$args->result = isset($_REQUEST['result_' .  $args->tpx]) ? $_REQUEST['result_' .  $args->tpx][0] : '';
+  
 	return $args;
 }
 
@@ -342,6 +384,7 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
                                  'testplan' => null, 'assigned_tc_overview' => null,
                                  'testcases_assigned_to_user' => null,
+                                 'quick_passed' => null, 'quick_failed' => null,'quick_blocked' => null,
                                  'low_priority' => null,'medium_priority' => null,'high_priority' => null,
                                  'design' => null, 'execution' => null, 'execution_history' => null));
 
@@ -356,6 +399,9 @@ function initializeGui(&$dbHandler,$argsObj)
   {
     $gui->pageTitle=sprintf($gui->l18n['testcases_assigned_to_user'],$gui->tproject_name, $argsObj->user_name);
   }
+
+  $gui->user_id = $argsObj->user_id;
+  $gui->tplan_id = $argsObj->tplan_id;
 
   return $gui;  
 }
@@ -403,4 +449,23 @@ function getStatusGuiCfg()
   }
   return $ret;
 }
-?>
+
+/**
+ * ATTENTION: xx.value is strongly related to HTML input names on tcAssignedToUser.tpl
+ */
+function getQuickExecCfg($gui,$imgSet,$statusCode)
+{
+  $qexe['passed'] = "<img title=\"{$gui->l18n['quick_passed']}\" src=\"{$imgSet['exec_passed']}\" " .
+                    " onclick=\"result_%s.value='{$statusCode['passed']}';"; 
+
+
+  $qexe['failed'] = "<img title=\"{$gui->l18n['quick_failed']}\" src=\"{$imgSet['exec_failed']}\" " .
+                    " onclick=\"result_%s.value='{$statusCode['failed']}';"; 
+
+  $qexe['blocked'] = "<img title=\"{$gui->l18n['quick_blocked']}\" src=\"{$imgSet['exec_blocked']}\" " .
+                    " onclick=\"result_%s.value='{$statusCode['blocked']}';"; 
+
+  $qexe['common'] = 'pxi_%s.value=%s;bxi_%s.value=%s;tcvx_%s.value=%s;fog_%s.submit();" /> ';
+
+  return $qexe;  
+}

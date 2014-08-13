@@ -42,7 +42,7 @@ require_once("lang_api.php");
  * @internal revisions
  *
  */
-function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tprojectID) 
+function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tprojectID) 
 {
   
   static $tableColspan;
@@ -137,7 +137,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
   if ($options['toc']) 
   {
     $options['tocCode'] .= '<p style="padding-left: ' . 
-                             (15*$level).'px;"><a href="#' . prefixToHTMLID('req'.$node['id']) . '">' .
+                             (15 * $reqLevel).'px;"><a href="#' . prefixToHTMLID('req'.$node['id']) . '">' .
                            $name . '</a></p>';
     $output .= '<a name="' . prefixToHTMLID('req'.$node['id']) . '"></a>';
   }
@@ -308,7 +308,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $level, $tproje
  * 
  * @return string $output HTML Code
  */
-function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $level, $tprojectID) 
+function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLevel, $tprojectID) 
 {
   static $tableColspan;
   static $firstColWidth;
@@ -321,7 +321,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
   static $nodeTypes;
   
   $output = '';
-  $level = ($level > 0) ? $level : 1;
+  $reLevel = ($reLevel > 0) ? $reLevel : 1;
   
   if (!$req_spec_mgr) 
   {
@@ -371,13 +371,13 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
     $output = '<p style="page-break-before: always"></p>';
   }
   $output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
-             "<h{$level} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
-             $name . "</h{$level}></th></tr>\n";
+             "<h{$reLevel} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
+             $name . "</h{$reLevel}></th></tr>\n";
      
   if ($options['toc'])
   {
-    $spacing = ($level == 2) ? "<br>" : "";
-    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
+    $spacing = ($reLevel == 2) ? "<br>" : "";
+    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10 * $reLevel).'px;">' .
                           '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></p></b>\n";
     $output .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
   }
@@ -491,14 +491,14 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $leve
  * 
  * @return string $output HTML Code
  */
-function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
-                                       $tocPrefix, $rsCnt, $level, $user_id,
-                                       $tplan_id = 0, $tprojectID = 0) {
+function renderReqSpecTreeForPrinting(&$db, &$node, &$options,$tocPrefix, $rsCnt, $rstLevel, $user_id,
+                                      $tplan_id = 0, $tprojectID = 0) 
+{
   
   static $tree_mgr;
   static $map_id_descr;
   static $tplan_mgr;
-   $code = null;
+  $code = null;
 
   if(!$tree_mgr)
   { 
@@ -517,13 +517,13 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
     case 'requirement_spec':
             $tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $rsCnt;
             $code .= renderReqSpecNodeForPrinting($db,$node,$options,
-                               $tocPrefix, $level, $tprojectID);
+                               $tocPrefix, $rstLevel, $tprojectID);
     break;
 
     case 'requirement':
       $tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $rsCnt;
       $code .= renderReqForPrinting($db, $node, $options,
-                                    $tocPrefix, $level, $tprojectID);
+                                    $tocPrefix, $rstLevel, $tprojectID);
       break;
   }
   
@@ -547,9 +547,8 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,
           $rsCnt++;
       }
       
-      $code .= renderReqSpecTreeForPrinting($db, $current, $options,
-                                             $tocPrefix, $rsCnt, $level+1, $user_id,
-                                             $tplan_id, $tprojectID);
+      $code .= renderReqSpecTreeForPrinting($db, $current, $options,$tocPrefix, $rsCnt, 
+                                            $rstLevel+1, $user_id, $tplan_id, $tprojectID);
     }
   }
   
@@ -883,7 +882,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
   static $its;
   static $buildCfields;  
   static $statusL10N;
-
+  
 
   $code = null;
   $tcInfo = null;
@@ -1082,7 +1081,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
   {
     // EXTERNAL ID added
 	 $options['tocCode'] .= '<p style="padding-left: ' . 
-                          (15*$level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
+                          (15 * $level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
                           htmlspecialchars($external_id) . ": ". $name . '</a></p>';	
     $code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
   }
@@ -1311,30 +1310,59 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
     }
   }
 
-  // collect REQ for TC
-  if ($options['requirement'])
-  {
-      if(!$req_mgr)
-      {
-          $req_mgr = new requirement_mgr($db);
-      }
-      $requirements = $req_mgr->get_all_for_tcase($id);
-      $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
-               $labels['reqs'].'</span>'; 
-      $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 
-      if (sizeof($requirements))
+  // 20140813
+  $relSet = $tc_mgr->getRelations($id);
+  if(!is_null($relSet['relations']))
+  {
+    // $fx = str_repeat('&nbsp;',5); // MAGIC allowed    
+    $code .= '<tr><td width="' . $cfg['firstColWidth'] . 
+             '" valign="top"><span class="label">' . $labels['relations'] . '</span></td>'; 
+
+    $code .= '<td>';
+    for($rdx=0; $rdx < $relSet['num_relations']; $rdx++)
+    {
+      if($relSet['relations'][$rdx]['source_id'] == $id)
       {
-        foreach ($requirements as $req)
-        {
-          $code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) . "<br />";
-        }
+        $ak = 'source_localized';
       }
       else
       {
-        $code .= '&nbsp;' . $labels['none'] . '<br />';
+        $ak = 'destination_localized';
       }
-      $code .= "</td></tr>\n";
+      $code .= htmlspecialchars($relSet['relations'][$rdx][$ak]) . ' - ' .
+               htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['fullExternalID']) . ':' .
+               htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['name']) .  '<br>';
+    } 
+    $code .= '</td></tr>';
+  }  
+
+
+
+  // collect REQ for TC
+  if ($options['requirement'])
+  {
+    if(!$req_mgr)
+    {
+      $req_mgr = new requirement_mgr($db);
+    }
+    $requirements = $req_mgr->get_all_for_tcase($id);
+    $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
+             $labels['reqs'].'</span>'; 
+    $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
+
+    if (sizeof($requirements))
+    {
+      foreach ($requirements as $req)
+      {
+        $code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) . "<br />";
+      }
+    }
+    else
+    {
+      $code .= '&nbsp;' . $labels['none'] . '<br />';
+    }
+    $code .= "</td></tr>\n";
   }
     
   // collect keywords for TC
@@ -1342,7 +1370,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
   {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['keywords'].':</span>';
-      $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
+    $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
     $arrKeywords = $tc_mgr->getKeywords($id);
     if (sizeof($arrKeywords))
     {
@@ -1363,8 +1391,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
   $attachSet =  (array)$tc_mgr->getAttachmentInfos($id);
   if (count($attachSet) > 0)
   {
-    $code .= "<tr><td><span class=\"label\">" .
-             $labels['attached_files'] . "</span></td><td><ul>";
+    $code .= "<tr><td><span class=\"label\">" . $labels['attached_files'] . "</span></td><td><ul>";
     foreach($attachSet as $item)
     {
       $fname = "";
@@ -1383,9 +1410,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
     }
     $code .="</ul></td></tr>";
   }
-
-
-
 
   $code .= "</table>\n</div>\n";
   return $code;
@@ -1521,13 +1545,6 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context)
   returns:
   
   @internal revisions:
-*/
-/*
-function renderTestPlanForPrinting(&$db, $base_href,&$node, $item_type, &$options, $tocPrefix,
-                                   $tcCnt, $level, $user_id, $tplan_id, $tprojectID, 
-                                   $platform_id,$build_id)
-
-
 */
 function renderTestPlanForPrinting(&$db,&$node,&$options,$env,$context)
 
@@ -1681,7 +1698,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
-                      'execution_type_manual','execution_type_auto','importance',
+                      'execution_type_manual','execution_type_auto','importance','relations',
                       'estimated_execution_duration','step_exec_notes','step_exec_status',
                       'high_importance','medium_importance','low_importance','execution_duration',
                       'priority', 'high_priority','medium_priority','low_priority');

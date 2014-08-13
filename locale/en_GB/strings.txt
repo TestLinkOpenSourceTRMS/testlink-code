@@ -367,6 +367,9 @@ $TLS_quick_passed = "Click to set to passed";
 $TLS_quick_failed = "Click to set to failed";
 $TLS_quick_blocked = "Click to set to blocked";
 
+$TLS_onchange_save = "Value will be automatically saved when changed";
+
+
 
 // ----- unsorted (TODO move) -------------------------------------
 $TLS_problems_loading_xml_content = "Unable to load XML data, Check your file.";

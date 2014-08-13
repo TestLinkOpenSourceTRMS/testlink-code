@@ -55,15 +55,16 @@ function init_args()
   $args = new stdClass();
   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'export';
   $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
-  $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
+  $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : null;
   $args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
   
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
-    if( $args->tproject_id == 0 )
-    { 
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+  if( $args->tproject_id == 0 )
+  { 
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
   $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
+
   return $args;  
 }
 
@@ -81,31 +82,31 @@ function initializeGui(&$argsObj,&$req_spec_mgr)
   $gui->tproject_id = $argsObj->tproject_id;
   
   switch($argsObj->scope)
-    {
-      case 'tree':
-       $gui->req_spec['title'] = lang_get('all_reqspecs_in_tproject');
-       $gui->req_spec_id = 0;
-         $exportFileName = 'all-req.xml';
-      break;
+  {
+    case 'tree':
+      $gui->req_spec['title'] = lang_get('all_reqspecs_in_tproject');
+      $gui->req_spec_id = 0;
+      $exportFileName = 'all-req.xml';
+    break;
       
-      case 'branch':
-       $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
-       $gui->req_spec_id = $argsObj->req_spec_id;
-       $exportFileName = $gui->req_spec['title'] . '-req-spec.xml';
-      break;
+    case 'branch':
+      $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
+      $gui->req_spec_id = $argsObj->req_spec_id;
+      $exportFileName = $gui->req_spec['title'] . '-req-spec.xml';
+    break;
 
-      case 'items':
-       $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
-       $gui->req_spec_id = $argsObj->req_spec_id;
-       $exportFileName = $gui->req_spec['title'] . '-child_req.xml';
-      break;
+    case 'items':
+      $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
+      $gui->req_spec_id = $argsObj->req_spec_id;
+      $exportFileName = $gui->req_spec['title'] . '-child_req.xml';
+    break;
       
   }
   
   $gui->export_filename = trim($argsObj->export_filename);
   if($gui->export_filename == "")
   {
-      $gui->export_filename = $exportFileName;
+    $gui->export_filename = $exportFileName;
   }
   return $gui;  
 }
@@ -167,4 +168,3 @@ function doExport(&$argsObj,&$req_spec_mgr)
     exit();
   }
 }
-?>

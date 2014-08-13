@@ -6024,8 +6024,9 @@ protected function createAttachmentTempFile()
       // more than 1 item => we have platforms
       // access key => tcversion_id, tplan_id, platform_id
       $link = current($info);
-      $link = $link[$tplan_id]; 
+      $link = $link[$tplan_id];   // Inside test plan, is indexed by platform
       $hits = count($link);
+      $platform_id = 0;
       $check_platform = (count($hits) > 1) || !isset($link[0]);
     }
 
@@ -6046,7 +6047,7 @@ protected function createAttachmentTempFile()
         if( ($status_ok = $this->checkPlatformIdentity($tplan_id)) )
         {
           $platform_set = $this->tplanMgr->getPlatforms($tplan_id,array('outputFormat' => 'mapAccessByID', 
-                                                                         'outputDetails' => 'name'));
+                                                                        'outputDetails' => 'name'));
 
           // Now check if link has all 3 components
           // test plan, test case, platform
@@ -6076,13 +6077,18 @@ protected function createAttachmentTempFile()
       // `assigner_id`  int(10) unsigned default '0',
       // `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       // `status` int(10) unsigned default '1',
-      $link = current($link);
+
+      // ATTENTION WITH PLATFORMS
+      $link = is_null($execContext['platform_id']) ? $link[0] : $link[$execContext['platform_id']];
+
+
       $feature = array($link['feature_id'] => array('build_id' => $execContext['build_id']));
       $assignment_mgr->delete_by_feature_id_and_build_id($feature);
 
       // Now assign
       $types = $assignment_mgr->get_available_types();
       $assign_status = $assignment_mgr->get_available_status();
+
       $oo[$link['feature_id']]['type'] = $types['testcase_execution']['id'];
       $oo[$link['feature_id']]['status'] = $assign_status['open']['id'];
       $oo[$link['feature_id']]['user_id'] = $tester_id;

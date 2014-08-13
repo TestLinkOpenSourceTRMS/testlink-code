@@ -581,7 +581,7 @@ function createSpreadsheet($gui,$args,$buildIDSet)
   $cellRangeLen = count($cellRange);
   for($idx = 0; $idx < $cellRangeLen; $idx++)
   {
-    for($j = 0; $j < $cellRangeLen; $jdx++) 
+    for($jdx = 0; $jdx < $cellRangeLen; $jdx++) 
     {
       $cellRange[] = $cellRange[$idx] . $cellRange[$jdx];
     }

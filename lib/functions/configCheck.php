@@ -9,13 +9,12 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
  * @internal revisions
  * @since 1.9.9
- * 20131001 - PHP version check changed
  **/
 
 /**
@@ -493,6 +492,12 @@ function checkSchemaVersion(&$db)
       break;
   }
   
+  /* It will be better for debug if this message will be written to a log file
+  if($result['status'] != tl::OK)
+  {
+
+  } 
+  */ 
   return $result;
 }
 

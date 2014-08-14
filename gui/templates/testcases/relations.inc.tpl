@@ -49,10 +49,11 @@ var pF_delete_relation = delete_relation;
 </script>
 
 
-    <form method="post" action="lib/testcases/tcEdit.php" 
+    <form method="post" action="lib/testcases/tcEdit.php">
+    {*
         onSubmit="javascript:return validate_testcase('relation_destination_req_doc_id', 
-                                                      '{$rel_labels.relation_destination_doc_id}');">
-    
+                                                      '{$rel_labels.relation_destination_tcase}');">
+    *}
         <input type="hidden" name="doAction" value="doAddRelation" />
         <input type="hidden" name="relation_source_tcase_id" id="relation_source_tcase_id" value="{$gui->id}" />
         <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
@@ -71,7 +72,7 @@ var pF_delete_relation = delete_relation;
         </tr>
       {/if}
     
-      {if $gui->relations.rw || true}
+      {*  {if $gui->relations.rw || true} *}
       <tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
       
         <span class="bold">{$rel_labels.new_relation}:</span> {$rel_labels.current_testcase}
@@ -81,7 +82,6 @@ var pF_delete_relation = delete_relation;
         </select>
     
         <input type="text" name="relation_destination_tcase" id="relation_destination_tcase"
-               value="{$labels.relation_destination_tcase}" 
                placeholder="{$rel_labels.tcase_relation_hint}"
                title="{$rel_labels.tcase_relation_help}"
                size="{#TC_EXTERNAL_ID_SIZE#}" maxlength="{#TC_EXTERNAL_ID_MAXLEN#}" 
@@ -90,17 +90,15 @@ var pF_delete_relation = delete_relation;
         
         </td>
       </tr>
-      {/if}     
+    {*   {/if}  *}
 
-    {if $gui->relations.num_relations}
+    {if $gui->relations.num_relations > 0}
       
       <tr>
         <th><nobr>{$rel_labels.relation_id} / {$rel_labels.relation_type}</nobr></th>
         <th colspan="1">{$rel_labels.test_case}</th>
         <th><nobr>{$rel_labels.relation_set_by}</nobr></th>
-        {if $gui->relations.rw || TRUE}
-          <th><nobr>&nbsp;</nobr></th>
-        {/if}
+        {* {if $gui->relations.rw || TRUE}       <th><nobr>&nbsp;</nobr></th>    {/if} *}
       </tr>
       
       {foreach item=rx from=$gui->relations.relations}

@@ -253,7 +253,7 @@ abstract class tlObject implements iSerialization
                     'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
                     'role_rights' => DB_TABLE_PREFIX . 'role_rights',
                     'roles' => DB_TABLE_PREFIX . 'roles',
-                    'tcase_relations' => DB_TABLE_PREFIX . 'tcase_relations',
+                    'testcase_relations' => DB_TABLE_PREFIX . 'testcase_relations',
                     'tcversions' => DB_TABLE_PREFIX . 'tcversions',
                     'tcsteps' => DB_TABLE_PREFIX . 'tcsteps',
                     'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',

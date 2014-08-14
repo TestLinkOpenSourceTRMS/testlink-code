@@ -1203,13 +1203,9 @@ class testcase extends tlObjectWithAttachments
   }
   
   
-  /* 
-   
-  rev:
-    20100107 - franciscom - Multiple Test Case Step Feature 
-    20081015 - franciscom - added check to avoid bug due to no children
-  
-  */
+  /** 
+   *
+   */
   function delete($id,$version_id = self::ALL_VERSIONS)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1248,8 +1244,9 @@ class testcase extends tlObjectWithAttachments
           $children['tcversion'][]=$value['tcversion_id'];
           $children['step'][]=$value['step_id'];
         }
-      $this->_execution_delete($id,$version_id,$children);
-      $this->_blind_delete($id,$version_id,$children);
+        $this->_execution_delete($id,$version_id,$children);
+        $this->deleteAllRelations($id);
+        $this->_blind_delete($id,$version_id,$children);
       }
 
   
@@ -1435,36 +1432,31 @@ class testcase extends tlObjectWithAttachments
   function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $sql = array();
+    $sql = array();
 
     $destroyTC = false;
-      $item_id = $version_id;
+    $item_id = $version_id;
     $tcversion_list = $version_id;
-      $target_nodes = $version_id;
-      if( $version_id == self::ALL_VERSIONS)
-      {
-        $destroyTC = true;
-          $item_id = $id;
-        $tcversion_list=implode(',',$children['tcversion']);
-        $target_nodes = $children['tcversion'];
-      }
+    $target_nodes = $version_id;
+    if( $version_id == self::ALL_VERSIONS)
+    {
+      $destroyTC = true;
+      $item_id = $id;
+      $tcversion_list=implode(',',$children['tcversion']);
+      $target_nodes = $children['tcversion'];
+    }
 
-      // BUGID 3431
-      $this->cfield_mgr->remove_all_design_values_from_node($target_nodes);
+    $this->cfield_mgr->remove_all_design_values_from_node($target_nodes);
 
-    // BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
-    // BUGID 3573: MySQL does not like ALIAS
-    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['user_assignments']} " .
-         " WHERE feature_id in (" .
-         " SELECT id FROM {$this->tables['testplan_tcversions']}  " .
-           " WHERE tcversion_id IN ({$tcversion_list}))";
+    $sql[] = "/* $debugMsg */ DELETE FROM {$this->tables['user_assignments']} " .
+             " WHERE feature_id in (" .
+             " SELECT id FROM {$this->tables['testplan_tcversions']}  " .
+             " WHERE tcversion_id IN ({$tcversion_list}))";
     
     $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testplan_tcversions']}  " .
            " WHERE tcversion_id IN ({$tcversion_list})";
   
     // Multiple Test Case Steps Feature
-    
-    // BUGID 3702
     if( !is_null($children['step']) )
     {
       // remove null elements
@@ -1478,23 +1470,23 @@ class testcase extends tlObjectWithAttachments
       
         if( count($children['step']) > 0)
         { 
-        $step_list=trim(implode(',',$children['step']));
+          $step_list=trim(implode(',',$children['step']));
           $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
-               " WHERE id IN ({$step_list})";
+                 " WHERE id IN ({$step_list})";
         }
       }
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
-           " WHERE id IN ({$tcversion_list})";
+             " WHERE id IN ({$tcversion_list})";
 
       foreach ($sql as $the_stm)
       {
-      $result = $this->db->exec_query($the_stm);
+        $result = $this->db->exec_query($the_stm);
       }
     
       if($destroyTC)
       {
-      // Remove data that is related to Test Case => must be deleted when there is no more trace
-      // of test case => when all version are deleted
+        // Remove data that is related to Test Case => must be deleted when there is no more trace
+        // of test case => when all version are deleted
         $sql = null;
         $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
         $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
@@ -1504,10 +1496,7 @@ class testcase extends tlObjectWithAttachments
           $result = $this->db->exec_query($the_stm);
         }
 
-          $this->deleteAttachments($id);
-          // BUGID 3431
-          // $this->cfield_mgr->remove_all_design_values_from_node($id);
-      
+        $this->deleteAttachments($id);
       }
       
       // Attention:
@@ -1518,7 +1507,7 @@ class testcase extends tlObjectWithAttachments
   
   
   /*
-  Delete the following info:
+    Delete the following info:
     bugs
     executions
     cfield_execution_values
@@ -6614,7 +6603,7 @@ class testcase extends tlObjectWithAttachments
     $tproject_mgr = new testproject($this->db);
 
     $sql = " $debugMsg SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " . 
-           " FROM {$this->tables['tcase_relations']} " .
+           " FROM {$this->tables['testcase_relations']} " .
            " WHERE source_id=$safeID OR destination_id=$safeID " .
            " ORDER BY id ASC ";
    
@@ -6694,7 +6683,7 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
     $id_list = implode(",", (array)$id);
-    $sql = " $debugMsg DELETE FROM {$this->tables['tcase_relations']} " . 
+    $sql = " $debugMsg DELETE FROM {$this->tables['testcase_relations']} " . 
            " WHERE source_id IN ($id_list) OR destination_id IN ($id_list) ";
     $this->db->exec_query($sql);
   }
@@ -6720,7 +6709,7 @@ class testcase extends tlObjectWithAttachments
     $safe_second_id = intval($second_id);
 
     $sql = " $debugMsg SELECT COUNT(0) AS qty " .
-           " FROM {$this->tables['tcase_relations']} " .
+           " FROM {$this->tables['testcase_relations']} " .
            " WHERE ((source_id=" . $safe_first_id . " AND destination_id=" . $safe_second_id . ") " . 
            " OR (source_id=" . $safe_second_id . " AND destination_id=" . $safe_first_id .  ")) " . 
            " AND relation_type=" . intval($rel_type_id);
@@ -6742,7 +6731,7 @@ class testcase extends tlObjectWithAttachments
     $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
     $safeID = intval($id);
     $sql = " $debugMsg SELECT COUNT(*) AS qty " .
-           " FROM {$this->tables['tcase_relations']} " .
+           " FROM {$this->tables['testcase_relations']} " .
            " WHERE source_id=$safeID OR destination_id=$safeID ";
     $rs = $this->db->get_recordset($sql);
     return($rs[0]['qty']);
@@ -6767,7 +6756,7 @@ class testcase extends tlObjectWithAttachments
     {
 
       $time = is_null($ts) ? $this->db->db_now() : $ts;
-      $sql = " $debugMsg INSERT INTO {$this->tables['tcase_relations']} "  . 
+      $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  . 
              " (source_id, destination_id, relation_type, author_id, creation_ts) " .
              " values ($source_id, $destination_id, $type_id, $author_id, $time)";
       $this->db->exec_query($sql);
@@ -6790,7 +6779,7 @@ class testcase extends tlObjectWithAttachments
   public function deleteRelationByID($relID) 
   {
     $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
-    $sql = " $debugMsg DELETE FROM {$this->tables['tcase_relations']} WHERE id=" . intval($relID);
+    $sql = " $debugMsg DELETE FROM {$this->tables['testcase_relations']} WHERE id=" . intval($relID);
 
     echo $sql;
     $this->db->exec_query($sql);
@@ -6837,5 +6826,5 @@ class testcase extends tlObjectWithAttachments
     return $htmlSelect;
   }
 
-
+  
 }  

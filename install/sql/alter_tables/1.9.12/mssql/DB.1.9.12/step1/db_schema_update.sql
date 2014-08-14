@@ -21,13 +21,13 @@
 --  -----------------------------------------------------------------------------------
 --
 --- 
-CREATE TABLE /*prefix*/tcase_relations (
+CREATE TABLE /*prefix*/testcase_relations (
   id int IDENTITY(1,1) NOT NULL,
   source_id INT NOT NULL DEFAULT '0',
   destination_id  INT NOT NULL DEFAULT '0',
   relation_type INT NOT NULL DEFAULT '1',
   author_id int NOT NULL,
-  creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_tcase_relations_creation_ts DEFAULT (getdate()),
+  creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_testcase_relations_creation_ts DEFAULT (getdate()),
   CONSTRAINT /*prefix*/PK_req_relations PRIMARY KEY  CLUSTERED 
   (
     id

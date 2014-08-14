@@ -9,9 +9,9 @@
 --
 
 --
--- Table structure for table tcase_relations
+-- Table structure for table testcase_relations
 --
-CREATE TABLE /*prefix*/tcase_relations (
+CREATE TABLE /*prefix*/testcase_relations (
   id BIGSERIAL NOT NULL,
   source_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,
   destination_id  INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id) ON DELETE CASCADE,

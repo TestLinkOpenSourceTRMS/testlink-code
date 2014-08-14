@@ -1,4 +1,4 @@
-CREATE TABLE /*prefix*/tcase_relations (
+CREATE TABLE /*prefix*/testcase_relations (
   `id` int(10) unsigned NOT NULL auto_increment,
   `source_id` int(10) unsigned NOT NULL,
   `destination_id` int(10) unsigned NOT NULL,

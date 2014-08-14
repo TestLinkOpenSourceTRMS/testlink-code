@@ -11,7 +11,7 @@
 {lang_get s='delete_rel_msgbox_title' var='delete_rel_msgbox_title'}
 
 <script type="text/javascript">
-var alert_box_title = "{$rl_labels.warning|escape:'javascript'}";
+var alert_box_title = "{$rel_labels.warning|escape:'javascript'}";
 var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
 var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
 

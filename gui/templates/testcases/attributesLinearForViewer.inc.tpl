@@ -12,7 +12,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 
-  <span class="labelHolder">{$tcView_viewer_labels.status}{$smarty.const.TITLE_SEP}</span>
+  <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}">
+  {$tcView_viewer_labels.status}{$smarty.const.TITLE_SEP}</span>
   {if $edit_enabled}
   <select name="status" id="status" onchange="document.getElementById('statusForm').submit();">
     {html_options options=$gui->domainTCStatus selected=$args_testcase.status}
@@ -22,8 +23,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {/if}
 </form>
 
-
-
 {if $session['testprojectOptions']->testPriorityEnabled}
    <form style="display:inline;" id="importanceForm" name="importanceForm" method="post" 
          action="lib/testcases/tcEdit.php">
@@ -32,7 +31,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
     
-  <span class="labelHolder" style="margin-left:20px;">{$tcView_viewer_labels.importance}{$smarty.const.TITLE_SEP}</span>
+  <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}"
+        style="margin-left:20px;">{$tcView_viewer_labels.importance}{$smarty.const.TITLE_SEP}</span>
     {if $edit_enabled}
     <select name="importance" onchange="document.getElementById('importanceForm').submit();" >
           {html_options options=$gsmarty_option_importance selected=$args_testcase.importance}
@@ -50,7 +50,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <input type="hidden" name="doAction" id="doAction" value="setExecutionType">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-  <span class="labelHolder" style="margin-left:20px;">{$tcView_viewer_labels.execution_type}{$smarty.const.TITLE_SEP}</span>
+  <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}" 
+        style="margin-left:20px;">{$tcView_viewer_labels.execution_type}{$smarty.const.TITLE_SEP}</span>
   {if $edit_enabled}
     <select name="exec_type" onchange="document.getElementById('execTypeForm').submit();" >
       {html_options options=$gui->execution_types selected=$args_testcase.execution_type}

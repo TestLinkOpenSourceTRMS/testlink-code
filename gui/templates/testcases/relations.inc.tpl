@@ -1,3 +1,10 @@
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+@filesource relations.inc.tpl
+@internal revisions
+@since 1.9.12
+*}
+
 {lang_get var='rel_labels' 
           s='relation_id, relation_type, relation_tcase, relation_status, relation_project,
              relation_set_by, relation_delete, relations, new_relation, by, title_created,
@@ -111,16 +118,13 @@ var pF_delete_relation = delete_relation;
              {$rx.author|escape}</span></nobr></td>
 
           <td align="center">
-          {if $gui->req_relations.rw || TRUE}
             <a href="javascript:relation_delete_confirmation({$gui->relations.item.testcase_id}, {$rx.id}, 
                                                               delete_rel_msgbox_title, delete_rel_msgbox_msg, 
                                                               pF_delete_relation);">
            <img src="{$tlImages.delete}" title="{$rel_labels.img_title_delete_relation}"  style="border:none" /></a>
-          {/if}
           </td>
         </tr>
       {/foreach}
-            
     {/if}
     
     </table>

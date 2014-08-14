@@ -15,11 +15,11 @@
  * we have forgot to populate this info.
  * This is the reason for several issues.
  * The approach will be to understand who is the caller and apply different logics
- * instead of recreate the logic to populate $_SESSION (I think this approach
- * will be simpler).
+ * instead of recreate the logic to populate $_SESSION 
+ * (I think this approach will be simpler).
  * 
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
  *
 **/
 require_once('../../config.inc.php');
@@ -249,6 +249,8 @@ if(!is_null($linked_tcversions))
       }
         
       $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id);
+      $gui->relations = $tcase_mgr->getRelations($tcase_id);
+      //$gui->kw = $tcase_mgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
       $gui->other_execs = getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
         
       // Get attachment,bugs, etc
@@ -319,6 +321,8 @@ else
 
   // To silence smarty errors
   //  future must be initialized in a right way
+
+  new dBug($gui);
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
@@ -1250,7 +1254,12 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 
 
   // keywords ?
-  $guiObj->kw = $tcaseMgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
+  // $guiObj->kw = $tcaseMgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
+
+
+  // 20140814
+  // $guiObj->relations = $tcaseMgr->getRelations($tcase_id);
+  // new dBug($guiObj);
 
   return array($tcase_id,$tcversion_id);
 }

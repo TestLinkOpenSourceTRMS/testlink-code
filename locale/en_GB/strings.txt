@@ -2882,6 +2882,7 @@ $TLS_no_req_spec_available = "No Requirements Specification available for this T
 $TLS_relation_id = "#";
 $TLS_current_req = "Current requirement";
 $TLS_relation_type = "Type";
+$TLS_relation_type_extended ="Relation type";
 $TLS_relation_document = "Related Requirement";
 $TLS_relation_status = "Status";
 $TLS_relation_set_by = "Set by";

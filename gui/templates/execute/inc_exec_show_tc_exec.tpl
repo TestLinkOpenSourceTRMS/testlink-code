@@ -443,6 +443,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_execution_types=$gui->execution_types
              args_tcAttachments=$gui->tcAttachments
              args_req_details=$gui->req_details
+             args_relations=$gui->relations
              args_cfg=$cfg}
 
     {if $tc_exec.can_be_executed}

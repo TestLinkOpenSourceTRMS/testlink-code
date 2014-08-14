@@ -58,6 +58,19 @@ Author : franciscom
       </td>
     </tr>
 
+    {* relations - 20140814 *}
+    {if $args_relations != '' && !is_null($args_relations)}
+      <tr>
+        <td colspan="{$tableColspan}">
+        {include file="execute/exec_tc_relations.inc.tpl"  
+                 argsColSpan=$tableColspan argsRelSet=$args_relations}  
+        </td>
+      </tr>
+    {/if}
+
+
+
+
 
     <tr>
     <td colspan="{$tableColspan}">

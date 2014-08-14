@@ -72,7 +72,6 @@ var pF_delete_relation = delete_relation;
         </tr>
       {/if}
     
-      {*  {if $gui->relations.rw || true} *}
       <tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
       
         <span class="bold">{$rel_labels.new_relation}:</span> {$rel_labels.current_testcase}
@@ -90,7 +89,6 @@ var pF_delete_relation = delete_relation;
         
         </td>
       </tr>
-    {*   {/if}  *}
 
     {if $gui->relations.num_relations > 0}
       
@@ -98,7 +96,7 @@ var pF_delete_relation = delete_relation;
         <th><nobr>{$rel_labels.relation_id} / {$rel_labels.relation_type}</nobr></th>
         <th colspan="1">{$rel_labels.test_case}</th>
         <th><nobr>{$rel_labels.relation_set_by}</nobr></th>
-        {* {if $gui->relations.rw || TRUE}       <th><nobr>&nbsp;</nobr></th>    {/if} *}
+        <th><nobr>&nbsp;</nobr></th>
       </tr>
       
       {foreach item=rx from=$gui->relations.relations}

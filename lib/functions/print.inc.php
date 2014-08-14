@@ -741,19 +741,19 @@ function renderSimpleChapter($title, $content, $addToStyle=null)
 env->base_href
 env->item_type
 env->tocPrefix
-env->testCounter
+env->testCounter => env->tocCounter
 env->user_id
 
 context['tproject_id']
 context['tplan_id']
 context['platform_id']
 context['build_id']
-context['level']
+context['level']  >>>>> WRONG
 context['prefix']
 
 */
 
-function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context)
+function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocPrefix,$indentLevel)
 {
   static $tree_mgr;
   static $id_descr;
@@ -777,20 +777,20 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context)
     break;
 
     case 'testsuite':
-      $env->tocPrefix .= (!is_null($env->tocPrefix) ? "." : '') . $env->testCounter;
-      $code .= renderTestSuiteNodeForPrinting($db,$node,$env,$options,$context);
+      $tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $env->tocCounter;
+      $code .= renderTestSuiteNodeForPrinting($db,$node,$env,$options,$context,$tocPrefix,$indentLevel);
     break;
 
     case 'testcase':
-      $code .= renderTestCaseForPrinting($db,$node,$options,$env,$context); 
+      $code .= renderTestCaseForPrinting($db,$node,$options,$env,$context,$indentLevel); 
     break;
   }
   
   if (isset($node['childNodes']) && $node['childNodes'])
   {
-    
+    // Need to be a LOCAL COUNTER for each PARENT
+    $TOCCounter = 0;
     $childNodes = $node['childNodes'];
-    $env->testCounter = 0;
     $children_qty = sizeof($childNodes);
     for($idx = 0;$idx < $children_qty ;$idx++)
     {
@@ -799,13 +799,14 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context)
       {
         continue;
       }
-            
+
       if (isset($current['node_type_id']) && $id_descr[$current['node_type_id']] == 'testsuite')
       {
-        $env->testCounter++;
+        // Each time I found a contained Test Suite need to add a .x.x. to TOC
+        $TOCCounter++;
       }
-      $context['level']++;
-      $code .= renderTestSpecTreeForPrinting($db,$current,$options,$env,$context);
+      $env->tocCounter = $TOCCounter;
+      $code .= renderTestSpecTreeForPrinting($db,$current,$options,$env,$context,$tocPrefix,$indentLevel+1);
     }
   }
   
@@ -863,7 +864,7 @@ function gendocGetUserName(&$db, $userId)
  *
  * @internal revisions
  */
-function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
+function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLevel)
 {
   
   static $req_mgr;
@@ -890,7 +891,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
   $tcase_pieces = null;
 
   $id = $node['id'];
-  $level = $context['level'];
+  $level = $indentLevel;
   $prefix = isset($context['prefix']) ? $context['prefix'] : null;
   $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
   $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
@@ -1183,7 +1184,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
         {
           $code .= $cfields['specScope']['before_steps_results'];    
         }
-        if ($tcInfo[$key] != '')
+        if (!is_null($tcInfo[$key]) && $tcInfo[$key] != '')
         {
           $code .= '<tr>' .
                    '<td><span class="label">' . $labels['step_number'] .':</span></td>' .
@@ -1215,14 +1216,25 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context)
                      '<td>' .  $tcInfo[$key][$ydx]['actions'] . '</td>' .
                      '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>';
 
+            $nike = !is_null($sxni[$tcInfo[$key][$ydx]['id']]);
             if( $options['step_exec_notes'] )
             {
-              $code .= '<td>' . $sxni[$tcInfo[$key][$ydx]['id']]['notes'] . '</td>';
+              $code .= '<td>';
+              if( $nike )
+              {
+                $code .= $sxni[$tcInfo[$key][$ydx]['id']]['notes'];
+              }  
+              $code .= '</td>';
             }
 
             if( $options['step_exec_status'] )
             {
-              $code .= '<td>' . $statusL10N[$sxni[$tcInfo[$key][$ydx]['id']]['status']] . '</td>';
+              $code .= '<td>';
+              if( $nike )
+              {
+                $code .= $statusL10N[$sxni[$tcInfo[$key][$ydx]['id']]['status']];
+              }  
+              $code .= '</td>';
             }
 
             $code .= '</tr>';
@@ -1440,11 +1452,15 @@ function renderTOC(&$options)
   function: renderTestSuiteNodeForPrinting
   args :
   returns:
-  
-*/
-function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context)
-{
 
+  ATTENTION: This variables: $tocPrefix,$indentLevel
+
+             can not be passed on a data type that pass by reference
+             because need to have LOCAL life during recursion.
+             Having added it as members of $env and $context has generated a BUG
+*/
+function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$tocPrefix,$indentLevel)
+{
   static $tsuite_mgr;
   static $labels;
   static $title_separator;
@@ -1461,20 +1477,21 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context)
   $name = isset($node['name']) ? htmlspecialchars($node['name']) : '';
   $cfields = array('design' => '');
     
-  $docHeadingNumbering = $options['headerNumbering'] ? ($env->tocPrefix . ".") : '';
+  $docHeadingNumbering = $options['headerNumbering'] ? ($tocPrefix . ".") : '';
     
   if ($options['toc'])
   {
   
-    $spacing = ($context['level'] == 2 && $env->tocPrefix != 1) ? "<br>" : "";
-    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$context['level']).'px;">' .
-                           '<a href="#' . prefixToHTMLID($env->tocPrefix) . '">' . $docHeadingNumbering . 
+    // echo $env->tocPrefix . '<br>';
+    $spacing = ($indentLevel == 2 && $tocPrefix != 1) ? "<br>" : "";
+    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10 * $indentLevel).'px;">' .
+                           '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . 
                            $name . "</a></p></b>\n";
     $code .= "<a name='". prefixToHTMLID($context['prefix']) . "'></a>\n";
   
   }
 
-  $docHeadingLevel = ($context['level']-1); //we would like to have html top heading H1 - H6
+  $docHeadingLevel = ($indentLevel-1); //we would like to have html top heading H1 - H6
   $docHeadingLevel = ($docHeadingLevel > 6) ? 6 : $docHeadingLevel;
   $code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering . $labels['test_suite'] .
            $title_separator . $name . "</h{$docHeadingLevel}>\n";
@@ -1551,7 +1568,7 @@ function renderTestPlanForPrinting(&$db,&$node,&$options,$env,$context)
 {
   $tProjectMgr = new testproject($db);
   $context['prefix'] = $tProjectMgr->getTestCasePrefix($context['tproject_id']);
-  $code =  renderTestSpecTreeForPrinting($db,$node,$options,$env,$context);
+  $code =  renderTestSpecTreeForPrinting($db,$node,$options,$env,$context,$env->tocPrefix,$context['level']);
   return $code;
 }
 
@@ -1851,7 +1868,7 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id)
   $out =  '';
 
   // $id = $node['id'];
-  // $level = $context['level'];
+  // $level = $context['level'];  ===> WRONG
   // $prefix = isset($context['prefix']) ? $context['prefix'] : null;
   // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
   // $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
@@ -1927,12 +1944,12 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id)
     $tcase['tcversion_id'] = $tcase['id'];
     $tcase['id'] = $node['parent_id'];
 
-    // $out .= renderTestCaseForPrinting($dbHandler, $baseHref, $tcase, $renderOptions, $context);
-    // $out .= renderTestCaseForPrinting($db,$node,$options,$env,$context); 
     $env = new stdClass();
     $env->base_href = $baseHref;
     $env->reportType = $renderOptions['docType'];
-    $out .= renderTestCaseForPrinting($dbHandler,$tcase,$renderOptions,$env,$context); 
+
+    $identLevel = 100000;
+    $out .= renderTestCaseForPrinting($dbHandler,$tcase,$renderOptions,$env,$context,$indentLevel); 
 
   }  
   return $out;

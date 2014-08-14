@@ -193,13 +193,15 @@ if ($treeForPlatform)
           $env = new stdClass();
           $env->base_href = $_SESSION['basehref'];
           $env->item_type = $doc_info->content_range;
-          $env->tocPrefix = 0;
-          $env->testCounter = 1;
+          $env->tocPrefix = null;
+          $env->tocCounter = 0;
           $env->user_id = $args->user_id;
           $env->reportType = $doc_info->type;
           
           $actionContext['level'] = 0;
-          $docText .= renderTestSpecTreeForPrinting($db,$tree2work,$printingOptions,$env,$actionContext);
+          $indentLevelStart = 1;
+          $docText .= renderTestSpecTreeForPrinting($db,$tree2work,$printingOptions,$env,$actionContext,
+                                                    $env->tocPrefix,$indentLevelStart);
 
           /*
           $docText .= renderTestSpecTreeForPrinting($db, $_SESSION['basehref'], $tree2work, $doc_info->content_range,

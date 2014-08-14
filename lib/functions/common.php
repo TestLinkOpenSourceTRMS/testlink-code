@@ -486,10 +486,24 @@ function redirect($url, $level = 'location')
 {
   // XSS Attack - 06486: Cross-Site Scripting on login page
   $safeUrl = addslashes($url);
+
+  /*
+  $safeUrl = $url;
+  if( filter_var($url, FILTER_VALIDATE_URL) )
+  {
+    $safeUrl = $url;
+  } 
+  else
+  {
+    file_put_contents('/tmp/debug_tl.log', 'URL Failed FILTER_VAR_VALIDATE');
+    $safeUrl =' index.php';
+  }
+  */
   echo "<html><head></head><body>";
   echo "<script type='text/javascript'>";
   echo "$level.href='$safeUrl';";
   echo "</script></body></html>";
+  
   exit;
 }
 

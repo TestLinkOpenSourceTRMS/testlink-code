@@ -105,6 +105,7 @@ function init_args(&$dbHandler)
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
   $args->feature = $args->edit;
   $args->tcaseTestProject = null;
+  $args->viewerArgs = null;
 
   $args->automationEnabled = 0;
   $args->requirementsEnabled = 0;
@@ -153,6 +154,7 @@ function init_args(&$dbHandler)
   switch($args->feature)
   {
     case 'testsuite':
+      $args->viewerArgs = null;
       $_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
     break;
      

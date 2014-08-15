@@ -8,20 +8,22 @@
  * The original can be found on the link below.
  *
  * https://www.owasp.org/index.php/PHP_CSRF_Guard
+ * CSRF - Advisory ID: HTB23088
+ *
  *
  * @package TestLink
  * @author TestLink Community
- * @copyright 2012, TestLink community
- * @link http://www.teamst.org
+ * @copyright 2012,2014 TestLink community
+ * @link http://www.testlink.org
  *
  * @internal revisions
- *  20121101 - kinow - TICKET 4977 - CSRF - Advisory ID: HTB23088
+ * 
  **/
 
 // start session if not set yet
 if(!isset($_SESSION))
 {
-    session_start();
+  session_start();
 }
 
 /**

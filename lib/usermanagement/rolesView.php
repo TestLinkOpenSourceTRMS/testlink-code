@@ -32,17 +32,16 @@ switch ($args->doAction)
     }
   break;
 
-  case 'confirmDelete':
-    $doDelete = 1;
+  default:
   break;
-
 }
 
 $userFeedback = null;
 if($doDelete)
 {
   // CSRF check
-  if( csrfguard_validate_token($args->csrfid,$args->csrftoken) )
+  if( !is_null($args->csrfid) && !is_null($args->csrftoken) && 
+      csrfguard_validate_token($args->csrfid,$args->csrftoken) )
   {
     // only NON SYSTEM ROLES CAN be deleted
     if($args->roleid > TL_LAST_SYSTEM_ROLE)
@@ -58,7 +57,6 @@ if($doDelete)
     die($msg);
   }  
 }
-
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 
 $highlight = initialize_tabsmenu();
@@ -82,7 +80,7 @@ function init_args()
   $iParams = array("roleid" => array(tlInputParameter::INT_N),
                    "csrfid" => array(tlInputParameter::STRING_N,0,30),
                    "csrftoken" => array(tlInputParameter::STRING_N,0,128),
-                   "doAction" => array(tlInputParameter::STRING_N,0,100));
+                   "doAction" => array(tlInputParameter::STRING_N,0,15));
 
   $args = new stdClass();
   $pParams = R_PARAMS($iParams,$args);

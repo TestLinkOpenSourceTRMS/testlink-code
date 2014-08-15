@@ -1,5 +1,5 @@
 ===============================================================
-         TestLink 1.9.11 (Prague Bugfix 11) - Read me
+         TestLink 1.9.12 (Prague Bugfix 12) - Read me
 ===============================================================
 
 Contents
@@ -12,11 +12,12 @@ Contents
 7. Bug Reports and Feedback
 8. Supporting our work
 9. Regarding forum usage www.testlink.org
-10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10,19,11
 11. Testlink & FreeTest
 12. Security
 13. JIRA DB interface changes
 14. People supporting TestLink
+15. Miscelaneous
 
 
 
@@ -214,6 +215,7 @@ then give a look to section 'Upgrade from 1.9.7 to 1.9.8'
 then give a look to section 'Upgrade from 1.9.8 to 1.9.9'
 then give a look to section 'Upgrade from 1.9.9 to 1.9.10'
 then give a look to section 'Upgrade from 1.9.10 to 1.9.11'
+then give a look to section 'Upgrade from 1.9.10 to 1.9.12'
 
 - Upgrade from 1.9.7 to 1.9.8
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
@@ -235,6 +237,10 @@ WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/stepZ/z_final_step.sql
 
+- Upgrade from 1.9.11 to 1.9.12
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/stepZ/z_final_step.sql
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
@@ -248,7 +254,7 @@ Extreme example Migration from 1.7.4
 
 1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
 1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 
-1.9.8 => 1.9.9 => 1.9.10 => 1.9.11
+1.9.8 => 1.9.9 => 1.9.10 => 1.9.11 => 1.9.12
 
 You have to read carefully README and instructions (if any) provided by installer.
 Sometimes version changes do not require actions on DB structure or data. 
@@ -377,8 +383,11 @@ PLEASE: read this short hints before you write a topic:
 :!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
-10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10,1.9.11
 ===============================================================
+
+1.9.12
+Test case relations
 
 1.9.10
 Long waited feature: execution notes & results for test steps
@@ -412,7 +421,15 @@ http://www.freetest.net.br
 12. Security
 ===============================================================
 
+1.9.12
+Research team of Portcullis Computer Security Ltd
+cedric (mantis.testlink.org user name)
+
+
+1.9.10
 We want to thanks xistence (xistence@0x90.nl) for his tests.
+
+
 
 
 13. JIRA DB interface changes
@@ -434,3 +451,8 @@ provided a VM on Cloud to do tests
 - Team Cortado (Germany)
 payed custom development of Long waited feature: execution notes & results for test steps,
 donating feature to community (is not the first time they do this!)
+
+
+15. Miscelaneous
+===============================================================
+https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet

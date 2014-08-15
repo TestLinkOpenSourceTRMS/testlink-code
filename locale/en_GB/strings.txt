@@ -3800,5 +3800,9 @@ $TLS_link_report_test_plan_results_csv = 'Test Plan results (XLSX)';
 $TLS_display_inline ="Display inline";
 
 $TLS_tester_works_with_settings = 'This filter works in combination with values of settings area';
+
+$TLS_demo_usage = "This is a DEMO SITE, use it with RESPECT. <br>" .
+                  "Site will be re-installed at randmon intervals WITHOUT warning.<br>" .
+                  "All data will be deleted at each install.<br>" .
+                  "<b>If you find TestLink useful think about supporting our work<br>";
 // ----- END ------------------------------------------------------------------
-?>

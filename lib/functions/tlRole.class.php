@@ -348,7 +348,7 @@ class tlRole extends tlDBObject
     $sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," .
            " {$this->tables['user_testproject_roles']} user_testproject_roles " .
            " WHERE users.id = user_testproject_roles.user_id";
-    $sql .= " AND user_testproject_roles.role_id = {$this->dbID} AND users.id < 10";
+    $sql .= " AND user_testproject_roles.role_id = {$this->dbID} ";
     $idSet = $db->fetchColumnsIntoArray($sql,"id");
     
     return $idSet; 

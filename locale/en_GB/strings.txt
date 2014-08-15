@@ -368,6 +368,8 @@ $TLS_quick_failed = "Click to set to failed";
 $TLS_quick_blocked = "Click to set to blocked";
 
 $TLS_onchange_save = "Value will be automatically saved when changed";
+$TLS_CSRF_attack = "Cross-Site Request Forgery attack!";
+
 
 
 

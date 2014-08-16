@@ -67,9 +67,14 @@ function init_args()
 	{
 		$args->exec_id = isset($_SESSION['bugAdd_execID']) ? $_SESSION['bugAdd_execID'] : 0;
 	}	
+
+  $args->user = $_SESSION['currentUser'];
 	return $args;
 }
 
+/**
+ *
+ */
 function addIssue($dbHandler,$argsObj,$itsObj)
 {
   $opOK = false;             
@@ -98,7 +103,10 @@ function addIssue($dbHandler,$argsObj,$itsObj)
                         $exec['build_name'],$exec['execution_ts']) . "\n" .
                         $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
   
-  $rs = $itsObj->addIssue($auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),$signature);  
+  $opt = new stdClass();
+  $opt->reporter = $argsObj->user->login;
+  $rs = $itsObj->addIssue($auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),
+                          $signature,$opt);  
   if($rs['status_ok'])
   {                   
     $msg = $rs['msg'];
@@ -128,6 +136,9 @@ function initializeGui($argsObj)
   return $gui;
 }
 
+/**
+ *
+ */
 function itsProcess(&$dbHandler,$argsObj,&$guiObj)
 {
   $its = null;

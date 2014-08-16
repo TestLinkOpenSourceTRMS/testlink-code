@@ -279,7 +279,7 @@ class jirarestInterface extends issueTrackerInterface
    *
    *
    */
-  public function addIssue($summary,$description)
+  public function addIssue($summary,$description,$opt=null)
   {
     try
     {
@@ -290,6 +290,13 @@ class jirarestInterface extends issueTrackerInterface
                            'issuetype' => array( 'id' => (int)$this->cfg->issuetype)
                            ));
 
+      if(!is_null($opt))
+      {
+        if(property_exists($opt, 'reporter'))
+        {
+          $issue['fields']['reporter'] = array('name' => $opt->reporter);
+        }  
+      }  
 
       if(!is_null($this->issueAttr))
       {

@@ -434,6 +434,7 @@ function initializeGui($statusCode,&$argsObj,&$tplanMgr)
   // see reports.cfg.php
   $reportCfg = config_get('reports_list');
 
+  $lbl_th_bugs_not_linked = lang_get('th_bugs_not_linked');
   $needle = 'list_tc_';
   $nl = strlen($needle);
   foreach( $reportCfg as $key => $val )
@@ -446,7 +447,7 @@ function initializeGui($statusCode,&$argsObj,&$tplanMgr)
       $verbose_status = substr($key, $nl);
 
       // if( $verbose_status != 'not_run' || $verbose_status != 'passed' )
-      $guiObj->bugs_msg = $labels['th_bugs_not_linked'];
+      $guiObj->bugs_msg = $lbl_th_bugs_not_linked;
       if( isset($reportCfg[$key]['misc']) )
       {
         if( isset($reportCfg[$key]['misc']['bugs_not_linked']) &&  

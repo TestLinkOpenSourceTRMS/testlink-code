@@ -267,7 +267,7 @@ class tlUser extends tlDBObject
 
     if ($options & self::TLOBJ_O_SEARCH_BY_ID)
     {
-      $clauses[] = "id = {$this->dbID}";    
+      $clauses[] = "id = " . intval($this->dbID);    
     }
     if ($options & self::USER_O_SEARCH_BYLOGIN)
     {
@@ -322,11 +322,11 @@ class tlUser extends tlDBObject
   public function readTestProjectRoles(&$db,$testProjectID = null)
   {
     $sql = "SELECT testproject_id,role_id " .
-             " FROM {$this->tables['user_testproject_roles']} user_testproject_roles " .
-             " WHERE user_id = {$this->dbID}";
+           " FROM {$this->tables['user_testproject_roles']} user_testproject_roles " .
+           " WHERE user_id = " . intval($this->dbID);
     if ($testProjectID)
     {
-      $sql .= " AND testproject_id = {$testProjectID}";
+      $sql .= " AND testproject_id = " . intval($testProjectID);
     }
     $allRoles = $db->fetchColumnsIntoMap($sql,'testproject_id','role_id');
     $this->tprojectRoles = null;
@@ -366,10 +366,10 @@ class tlUser extends tlDBObject
   {
     $sql = "SELECT testplan_id,role_id " . 
            " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
-           " WHERE user_id = {$this->dbID}";
+           " WHERE user_id = " . intval($this->dbID);
     if ($testPlanID)
     {
-      $sql .= " AND testplan_id = {$testPlanID}";
+      $sql .= " AND testplan_id = " . intval($testPlanID);
     }
         
     $allRoles = $db->fetchColumnsIntoMap($sql,'testplan_id','role_id');
@@ -405,6 +405,8 @@ class tlUser extends tlDBObject
    */
   public function writeToDB(&$db)
   {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
     $result = $this->checkDetails($db);
     if ($result >= tl::OK)
     {    
@@ -420,7 +422,7 @@ class tlUser extends tlDBObject
       // if answer is yes => change also cookie_string.
       if($this->dbID)
       {
-        $gsql = " SELECT password FROM {$this->object_table} WHERE id = " . $this->dbID;
+        $gsql = " /* debugMsg */ SELECT password FROM {$this->object_table} WHERE id = " . $this->dbID;
         $rs = $db->get_recordset($gsql);
         if(strcmp($rs[0]['password'],$this->password) == 0) 
         {
@@ -428,13 +430,13 @@ class tlUser extends tlDBObject
           $t_cookie_string = null;
         }    
 
-        $sql = "UPDATE {$this->tables['users']} " .
-               "SET first = '" . $db->prepare_string($this->firstName) . "'" .
+        $sql = "/* debugMsg */ UPDATE {$this->tables['users']} " .
+               " SET first = '" . $db->prepare_string($this->firstName) . "'" .
                ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
                ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
                ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
                ", password = " . "'" . $db->prepare_string($this->password) . "'" .
-               ", role_id = ". $db->prepare_string($this->globalRoleID) . 
+               ", role_id = ". $db->prepare_int($this->globalRoleID) . 
                ", active = ". $db->prepare_string($this->isActive) . 
                ", auth_method = ". "'" . $db->prepare_string($this->authentication) . "'";
 
@@ -442,20 +444,20 @@ class tlUser extends tlDBObject
         {        
           $sql .= ", cookie_string = " .  "'" . $db->prepare_string($t_cookie_string) . "'";
         }        
-        $sql .= " WHERE id = " . $this->dbID;
+        $sql .= " WHERE id = " . intval($this->dbID);
         $result = $db->exec_query($sql);
       }
       else
       {
-        $sql = "INSERT INTO {$this->tables['users']} " .
-             " (login,password,cookie_string,first,last,email,role_id,locale,active,auth_method) " .
-             " VALUES ('" . 
-             $db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
-             $db->prepare_string($t_cookie_string) . "','" .
-             $db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
-             $db->prepare_string($this->emailAddress) . "'," . $this->globalRoleID. ",'". 
-             $db->prepare_string($this->locale). "'," . $this->isActive . "," . 
-             "'" . $db->prepare_string($this->authentication). "'" . ")";
+        $sql = "/* debugMsg */ INSERT INTO {$this->tables['users']} " .
+               " (login,password,cookie_string,first,last,email,role_id,locale,active,auth_method) " .
+               " VALUES ('" . 
+               $db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
+               $db->prepare_string($t_cookie_string) . "','" .
+               $db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
+               $db->prepare_string($this->emailAddress) . "'," . $db->prepare_int($this->globalRoleID) . ",'". 
+               $db->prepare_string($this->locale). "'," . $this->isActive . "," . 
+               "'" . $db->prepare_string($this->authentication). "'" . ")";
 
         $result = $db->exec_query($sql);
         if($result)
@@ -476,9 +478,10 @@ class tlUser extends tlDBObject
    **/  
   public function deleteFromDB(&$db)
   {
+    $safeUserID = intval($this->dbID);
     $sqlSet = array();
-    $sqlSet[] = "DELETE FROM {$this->table['user_assignments']} WHERE user_id = {$this->dbID}";
-    $sqlSet[] = "DELETE FROM {$this->table['users']}  WHERE id = {$this->dbID}";
+    $sqlSet[] = "DELETE FROM {$this->table['user_assignments']} WHERE user_id = {$safeUserID}";
+    $sqlSet[] = "DELETE FROM {$this->table['users']}  WHERE id = {$safeUserID}";
 
     foreach($sqlSet as $sql)
     {
@@ -506,8 +509,7 @@ class tlUser extends tlDBObject
    **/
   protected function deleteTestProjectRoles(&$db)
   {
-    $sql = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE user_id = {$this->dbID}";
-  
+    $sql = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE user_id = " . intval($this->dbID);
     return $db->exec_query($sql) ? tl::OK : tl::ERROR;
   }
 
@@ -680,7 +682,7 @@ class tlUser extends tlDBObject
     $sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," . 
            " {$this->tables['user_testplan_roles']} user_testplan_roles " .
            " WHERE  users.id = user_testplan_roles.user_id";
-    $sql .= " AND user_testplan_roles.role_id = {$this->dbID}";
+    $sql .= " AND user_testplan_roles.role_id = " . intval($this->dbID);
     $idSet = $db->fetchColumnsIntoArray($sql,"id");
     
     return $idSet; 
@@ -715,37 +717,37 @@ class tlUser extends tlDBObject
     $sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
          " JOIN {$this->tables['role_rights']} a ON a.role_id=u.role_id" .
          " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
-         " WHERE b.description='{$rightNick}'";
+         " WHERE b.description='" . $db->prepare_string($rightNick) . "'";
     $defaultRoles = $db->fetchRowsIntoMap($sql,'id');
 
     // get users for project roles
     $sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
          " JOIN {$this->tables['user_testproject_roles']} p ON p.user_id=u.id" .
-         " AND p.testproject_id=" . $testprojectID .
+         " AND p.testproject_id=" . intval($testprojectID) .
          " JOIN {$this->tables['role_rights']} a ON a.role_id=p.role_id" .
          " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
-         " WHERE b.description='{$rightNick}'";
+         " WHERE b.description='" . $db->prepare_string($rightNick) . "'";
     $projectRoles = $db->fetchRowsIntoMap($sql,'id');
     
     // merge arrays    
     // the next function is available from php53 but we support php52
     // $output = array_replace($output1, $output2);
-      if( !is_null($projectRoles) )
+    if( !is_null($projectRoles) )
+    {
+      foreach($projectRoles as $k => $v) 
       {
-        foreach($projectRoles as $k => $v) 
+        if( !isset($defaultRoles[$k]) ) 
         {
-               if( !isset($defaultRoles[$k]) ) 
-               {
-                 $defaultRoles[$k] = $v;
-              }
+          $defaultRoles[$k] = $v;
         }
       }
+    }
 
-      // format for ext-js combo-box (remove associated array)
-      // foreach($defaultRoles as $k => $v) 
-      // {
-         //     $output[] = $v;
-      // }
+    // format for ext-js combo-box (remove associated array)
+    // foreach($defaultRoles as $k => $v) 
+    // {
+    //     $output[] = $v;
+    // }
     $output = array_values($defaultRoles);   
        
     return $output;
@@ -949,8 +951,8 @@ class tlUser extends tlDBObject
            " JOIN {$this->tables['testplans']} TPLAN ON NH.id=TPLAN.id  " .
            " LEFT OUTER JOIN {$this->tables['user_testplan_roles']} USER_TPLAN_ROLES" .
            " ON TPLAN.id = USER_TPLAN_ROLES.testplan_id " .
-           " AND USER_TPLAN_ROLES.user_id = $this->dbID " .
-           " WHERE testproject_id = {$testprojectID} AND ";
+           " AND USER_TPLAN_ROLES.user_id = " . intval($this->dbID) .
+           " WHERE testproject_id = " . intval($testprojectID) . " AND ";
     
     
     if (!is_null($my['options']['active'])) 
@@ -960,7 +962,7 @@ class tlUser extends tlDBObject
   
     if (!is_null($testplanID))
     {
-      $sql .= " NH.id = {$testplanID} AND ";
+      $sql .= " NH.id = " . intval($testplanID) . " AND ";
     }
     
     $globalNoRights = ($this->globalRoleID == TL_ROLES_NO_RIGHTS);
@@ -1051,8 +1053,8 @@ class tlUser extends tlDBObject
     $result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
     if ($result == tl::OK)
     {
-        $matches = array();
-        $email_regex = config_get('validation_cfg')->user_email_valid_regex_php;
+      $matches = array();
+      $email_regex = config_get('validation_cfg')->user_email_valid_regex_php;
       if (!preg_match($email_regex,$email,$matches))
       {
         $result = self::E_EMAILFORMAT;
@@ -1097,12 +1099,14 @@ class tlUser extends tlDBObject
   static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
   {
     $users = null;
-    for($i = 0;$i < sizeof($ids);$i++)
+    for($idx = 0;$idx < sizeof($ids);$idx++)
     {
-      $id = $ids[$i];
+      $id = $ids[$idx];
       $user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
       if ($user)
+      {  
         $users[$id] = $user;
+      }  
     }
     return $users ? $users : null;
   }
@@ -1115,7 +1119,7 @@ class tlUser extends tlDBObject
     if (!is_null($whereClause))
     {
       $sql .= ' '.$whereClause;
-      }
+    }
     $sql .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
     
     return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
@@ -1127,7 +1131,7 @@ class tlUser extends tlDBObject
   {
     $booleanVal = intval($value) > 0 ? 1 : 0;
     $sql = " UPDATE {$this->tables['users']} SET active = {$booleanVal} " .
-           " WHERE id = " . $this->dbID;
+           " WHERE id = " . intval($this->dbID);
     $result = $db->exec_query($sql);
     return tl::OK;
   }
@@ -1142,9 +1146,6 @@ class tlUser extends tlDBObject
    * (ideas regarding cookie_string -> from Mantisbt).
    *
    * @internal revisions
-   * 20110815 - franciscom -   TICKET 4342: Security problem with multiple Testlink installations 
-   *              on the same server.
-   *              
    */
   public function writePasswordToDB(&$db)
   {
@@ -1160,7 +1161,7 @@ class tlUser extends tlDBObject
       // if answer is yes => change also cookie_string.
       $t_cookie_string = null;
 
-      $gsql = " SELECT password FROM {$this->object_table} WHERE id = " . $this->dbID;
+      $gsql = " SELECT password FROM {$this->object_table} WHERE id = " . intval($this->dbID);
       $rs = $db->get_recordset($gsql);
       if(strcmp($rs[0]['password'],$this->password) != 0) 
       {
@@ -1175,7 +1176,7 @@ class tlUser extends tlDBObject
       {        
         $sql .= ", cookie_string = " .  "'" . $db->prepare_string($t_cookie_string) . "'";
       }        
-      $sql .= " WHERE id = " . $this->dbID;
+      $sql .= " WHERE id = " . intval($this->dbID);
       $result = $db->exec_query($sql);
     }
     $result = $result ? tl::OK : self::E_DBERROR;
@@ -1209,8 +1210,8 @@ class tlUser extends tlDBObject
    */
   function auth_is_cookie_string_unique(&$db,$p_cookie_string) 
   {
-    $sql =   "SELECT COUNT(0) AS hits FROM $this->object_table " .
-        "WHERE cookie_string = '" . $db->prepare_string($p_cookie_string) . "'" ;
+    $sql = "SELECT COUNT(0) AS hits FROM $this->object_table " .
+           "WHERE cookie_string = '" . $db->prepare_string($p_cookie_string) . "'" ;
     $rs = $db->fetchFirstRow($sql);
   
     if( !is_array($rs) )
@@ -1327,7 +1328,7 @@ class tlUser extends tlDBObject
   {
     $tables = tlObject::getDBTables('users');
     $target = $dbHandler->prepare_string($value);
-    $sql = "SELECT * FROM {$tables['users']} WHERE script_key='{$target}'";
+    $sql = "SELECT * FROM {$tables['users']} WHERE script_key='" . $dbHandler->prepare_string($target) . "'";
 
     $rs = $dbHandler->fetchRowsIntoMap($sql, "id");
     return $rs;

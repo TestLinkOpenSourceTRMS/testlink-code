@@ -17,6 +17,7 @@ class redminerestInterface extends issueTrackerInterface
   private $APIClient;
   private $issueDefaults;
   private $issueAttr = null;
+  private $translate = null;
 
 	var $defaultResolvedStatus;
 
@@ -40,7 +41,13 @@ class redminerestInterface extends issueTrackerInterface
     {
       return false;
     }  
-    
+
+    // http://www.redmine.org/issues/6843
+    // "Target version" is the new display name for this property, 
+    // but it's still named fixed_version internally and thus in the API.
+    // $issueXmlObj->addChild('fixed_version_id', (string)2);
+    $this->translate['targetversion'] = 'fixed_version_id';
+
 		$this->completeCfg();
 		$this->setResolvedStatusCfg();
 	  $this->connect();
@@ -335,15 +342,15 @@ class redminerestInterface extends issueTrackerInterface
       // "Target version" is the new display name for this property, 
       // but it's still named fixed_version internally and thus in the API.
       // $issueXmlObj->addChild('fixed_version_id', (string)2);
-
       if(!is_null($this->issueAttr))
       {
         foreach($this->issueAttr as $ka => $kv)
         {
           // will treat everything as simple strings
-          $issueXmlObj->addChild($ka, (string)$kv);
+          $issueXmlObj->addChild((isset($this->translate[$ka]) ? $this->translate[$ka] : $ka), (string)$kv);
         }  
       }  
+      var_dump($issueXmlObj);
       $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
       $ret = array('status_ok' => true, 'id' => (string)$op->id, 
                    'msg' => sprintf(lang_get('redmine_bug_created'),$summary,$issueXmlObj->project_id));
@@ -372,7 +379,7 @@ class redminerestInterface extends issueTrackerInterface
 				        "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
 				        "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
                 "<!-- Configure This if you need to provide other attributes -->\n" .
-                "<!-- <attributes><targetversion>10100<targetversion></attributes>  -->\n" .
+                "<!-- <attributes><targetversion>10100</targetversion></attributes>  -->\n" .
 	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
                 "<resolvedstatus>\n" .
                 "<status><code>3</code><verbose>Resolved</verbose></status>\n" .

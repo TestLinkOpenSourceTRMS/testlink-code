@@ -321,8 +321,6 @@ else
 
   // To silence smarty errors
   //  future must be initialized in a right way
-
-  new dBug($gui);
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
@@ -1251,15 +1249,6 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
   $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
                                                                          'nodes_hierarchy',true,1);
-
-
-  // keywords ?
-  // $guiObj->kw = $tcaseMgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
-
-
-  // 20140814
-  // $guiObj->relations = $tcaseMgr->getRelations($tcase_id);
-  // new dBug($guiObj);
 
   return array($tcase_id,$tcversion_id);
 }

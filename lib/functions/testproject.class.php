@@ -569,6 +569,10 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
       $cols = ' TPROJ.id,NHTPROJ.name ';
     break;
 
+    case 'prefix':
+      $cols = ' TPROJ.id,TPROJ.prefix,TPROJ.active,NHTPROJ.name ';
+    break;
+
     case 'full':
     default:
       $cols = ' TPROJ.*,NHTPROJ.name,COALESCE(UTR.role_id,U.role_id) AS effective_role ';
@@ -674,7 +678,8 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
         {
          $noteActive = TL_INACTIVE_MARKUP;
         }
-        $items[$id] = $noteActive . $row['name'];
+        $items[$id] = $noteActive . 
+                      ( ($my['opt']['field_set'] =='prefix') ? ($row['prefix'] . ':') : '' ) . $row['name'];
       }
       break;
       

@@ -457,12 +457,24 @@ $tlCfg->frame_workarea_default_width = "30%";
 $tlCfg->gui->show_icon_edit = false;
 
 /**
+ * ''       => test project name
+ * 'prefix' => prefix : test project name
+ *
+ * ATTENTION : * is used to indicate test project is INACTIVE
+ *             see also $tlCfg->gui->tprojects_combo_order_by
+ */
+$tlCfg->gui->tprojects_combo_format = '';
+
+
+/**
  * Order to use when building a testproject combobox (value must be SQL compliant)
  * For example:
  *    'ORDER BY name'
  *    'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
  **/
 $tlCfg->gui->tprojects_combo_order_by = 'ORDER BY nodes_hierarchy.id DESC';
+
+
 
 /** Configure the input size of test case search by id on navigation bar.
  *  This value will be added to the length of the prefix to dynamically set input size.

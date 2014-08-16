@@ -28,7 +28,9 @@ if($gui->tprojectID > 0)
 }
 $gui->TestProjects = $tproject_mgr->get_accessible_for_user($args->user->dbID,
                                                             array('output' => 'map_name_with_inactive_mark',
+                                                            	  'field_set' => $tlCfg->gui->tprojects_combo_format,
                                                                   'order_by' => $tlCfg->gui->tprojects_combo_order_by));
+
 
 
 $gui->TestProjectCount = sizeof($gui->TestProjects);

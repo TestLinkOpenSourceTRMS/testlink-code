@@ -64,10 +64,10 @@ else
   }
   else
   {
+    $check_children = 1;
     $node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
     $gui->export_filename = $node_info['name'] . '.testsuite-children-testcases.xml';
     $gui->page_title = lang_get('title_tc_export_all');
-    $check_children = 1;
     $gui->nothing_todo_msg = lang_get('no_testcases_to_export');
   }
 }
@@ -115,6 +115,7 @@ if ($args->doExport)
   {
     if ($gui->oneTestCaseExport)
     {
+      $args->optExport['RELATIONS'] = true;
       $args->optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
       $content = $tcase_mgr->$pfn($args->tcase_id,$args->tcversion_id,$args->tproject_id,null,$args->optExport);
     } 
@@ -186,7 +187,7 @@ function init_args()
   $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
   $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
   $args->tproject_name = $_SESSION['testprojectName'];
   $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
 

@@ -1064,10 +1064,6 @@ class testsuite extends tlObjectWithAttachments
     returns: 
     
     @internal revisions
-    @since 1.9.7
-    20130327 - franciscom - TICKET 5592: keywords or custom fields are not imported on test suites  
-
-    TICKET 5070: Custom fields are not imported
   */
   function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
   {
@@ -1077,10 +1073,12 @@ class testsuite extends tlObjectWithAttachments
     
     if(is_null($keywordMgr))
     {
-          $keywordMgr = new tlKeyword();      
+      $keywordMgr = new tlKeyword();      
     } 
     
     $xmlTC = null;
+    $relCache = array();
+
     $doRecursion = isset($optExport['RECURSIVE']) ? $optExport['RECURSIVE'] : 0;
     if($doRecursion)
     {
@@ -1116,28 +1114,48 @@ class testsuite extends tlObjectWithAttachments
     
     $childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null ;
     $tcase_mgr=null;
+    $relXmlData = '';
     if( !is_null($childNodes) )
     {
-        $loop_qty=sizeof($childNodes); 
-        for($idx = 0;$idx < $loop_qty;$idx++)
+      $loop_qty=sizeof($childNodes); 
+      for($idx = 0;$idx < $loop_qty;$idx++)
+      {
+        $cNode = $childNodes[$idx];
+        $nTable = $cNode['node_table'];
+        if ($doRecursion && $nTable == 'testsuites')
         {
-          $cNode = $childNodes[$idx];
-          $nTable = $cNode['node_table'];
-          if ($doRecursion && $nTable == 'testsuites')
-          {
-            $xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
-          }
-          else if ($nTable == 'testcases')
-          {
-            if( is_null($tcase_mgr) )
-            {
-              $tcase_mgr = new testcase($this->db);
-            }
-            $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
-                                                          $tproject_id,true,$optExport);
-          }
+          $xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
         }
+        else if ($nTable == 'testcases')
+        {
+          if( is_null($tcase_mgr) )
+          {
+            $tcase_mgr = new testcase($this->db);
+          }
+          $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
+                                                        $tproject_id,true,$optExport);
+
+
+          // 20140816
+          // Collect and do cache of all test case relations that exists inside this test suite.
+          $relSet = $tcase_mgr->getRelations($cNode['id']);
+          if($relSet['num_relations'] >0)
+          {
+            foreach($relSet['relations'] as $key => $rel) 
+            {
+              // If we have already found this relation, skip it.
+              if ( !in_array($rel['id'], $relCache) ) 
+              {
+                $relXmlData .= $tcase_mgr->exportRelationToXML($rel,$relSet['item']);
+                $relCache[] = $rel['id'];
+              }  
+            }
+          } 
+        }
+      }
     }   
+    // after we scanned all relations and exported all relations to xml, let's output it to the XML buffer
+    $xmlTC .= $relXmlData;
     $xmlTC .= $doRecursion ? "</testsuite>" : "</testcases>"; 
     return $xmlTC;
   }

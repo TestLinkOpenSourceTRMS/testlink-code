@@ -3480,7 +3480,6 @@ class testcase extends tlObjectWithAttachments
       $reqMgr = new requirement_mgr($this->db);      
       $keywordMgr = new tlKeyword();      
       $cfieldMgr = new cfield_mgr($this->db);    
-
     }
 
     // Useful when you need to get info but do not have tcase id  
@@ -3564,6 +3563,29 @@ class testcase extends tlObjectWithAttachments
     $tc_data[0]['xmlsteps'] = $xmlsteps;
     // ------------------------------------------------------------------------------------
     
+
+    $tc_data[0]['xmlrelations'] = null;
+    $addElemTpl = '';
+
+    // When exporting JUST a test case, exporting relations can be used 
+    // as documentation.
+    // When exporting a Test Suite, format can be different as has been done
+    // with requirements.
+    // While ideas become clear , i prefer to add this option for testing
+    if( isset($optExport['RELATIONS']) &&  $optExport['RELATIONS'] )
+    {
+      $xmlRel = null;
+      $addElemTpl .= "||RELATIONS||";
+      $relSet = $this->getRelations($tcase_id);
+      if($relSet['num_relations'] > 0 )
+      {
+        foreach($relSet['relations'] as $rk => $rv) 
+        {
+          $xmlRel .= $this->exportRelationToXML($rv,$relSet['item']);
+        }
+        $tc_data[0]['xmlrelations'] = $xmlRel;
+      }
+    }  
     
     $rootElem = "{{XMLCODE}}";
     if (isset($optExport['ROOTELEM']))
@@ -3586,7 +3608,7 @@ class testcase extends tlObjectWithAttachments
                 "\t<estimated_exec_duration>||ESTIMATED_EXEC_DURATION||</estimated_exec_duration>\n" .
                 "\t<status>||STATUS||</status>\n" .
                 "||STEPS||\n" .
-                "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
+                "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||{$addElemTpl}</testcase>\n";  
   
   
       // ||yyy||-> tags,  {{xxx}} -> attribute 
@@ -3609,8 +3631,10 @@ class testcase extends tlObjectWithAttachments
                     "||STEPS||" => "xmlsteps",
                     "||KEYWORDS||" => "xmlkeywords",
                     "||CUSTOMFIELDS||" => "xmlcustomfields",
-                    "||REQUIREMENTS||" => "xmlrequirements");
-      
+                    "||REQUIREMENTS||" => "xmlrequirements",
+                    "||RELATIONS||" => "xmlrelations");
+
+
       $xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info,$bNoXMLHeader);
       return $xmlTC;
   }
@@ -6266,8 +6290,6 @@ class testcase extends tlObjectWithAttachments
 
     $goo->tcasePrefix = $this->tproject_mgr->getTestCasePrefix($goo->tproject_id) . $this->cfg->testcase->glue_character;
 
-
-    // new dBug($goo);
     return $goo;
   }
 
@@ -6826,5 +6848,63 @@ class testcase extends tlObjectWithAttachments
     return $htmlSelect;
   }
 
+  /**
+   * exportRelationToXML
+   * 
+   * Function to export a test case relation to XML.
+   *
+   * @param  int $relation relation data array
+   * @param  string $troject_id
+   *
+   * @return  string with XML code
+   *
+   * <relation>
+   *   <source>testcase external id</source>
+   *   <source_project>prj</source_project>
+   *   <destination>doc2_id</destination>
+   *   <destination_project>testcase external id</destination_project>
+   *   <type>0</type>
+   * </relation>
+   * 
+   * @internal revisions
+   *
+   */
+  function exportRelationToXML($relation,$item)
+  {
+    $xmlStr = '';
+
+    if(!is_null($relation)) 
+    {
+      // need to understand if swap is needed, this happens when
+      // relation type is 
+      // - child_of 
+      // - depends_on 
+      // where item is DESTINATION and NOT SOURCE
+      if( $relation['source_id'] == $item['testcase_id'])
+      {
+        $ele['source_ext_id'] = $item['fullExternalID'];
+        $ele['destination_ext_id'] = $relation['related_tcase']['fullExternalID'];
+      } 
+      else
+      {
+        // SWAP
+        $ele['source_ext_id'] = $relation['related_tcase']['fullExternalID'];
+        $ele['destination_ext_id'] = $item['fullExternalID']; 
+      } 
+      $ele['relation_type'] = $relation['relation_type'];
+
+      $info = array("||SOURCE||" => "source_ext_id","||DESTINATION||" => "destination_ext_id",
+                    "||TYPE||" => "relation_type");
+
+      $elemTpl = "\t" .   "<relation>" . "\n\t\t" . "<source>||SOURCE||</source>" ;
+      $elemTpl .= "\n\t\t" . "<destination>||DESTINATION||</destination>";
+      $elemTpl .=  "\n\t\t" . "<type>||TYPE||</type>" . "\n\t" . "</relation>" . "\n";
+                   
+      $work[] = $ele;
+      $xmlStr = exportDataToXML($work,"{{XMLCODE}}",$elemTpl,$info,true);              
+    }
+  
+    return $xmlStr;
+  }
   
 }  

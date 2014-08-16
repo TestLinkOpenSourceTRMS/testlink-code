@@ -1012,7 +1012,7 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
               // otherwise export it to XML.
               $testproject_id = $this->relationsCfg->interProjectLinking ? $tproject_id : null;
               $relXmlData .= $this->req_mgr->exportRelationToXML($rel,$tproject_id,
-                                                                       $this->relationsCfg->interProjectLinking);
+                                                                 $this->relationsCfg->interProjectLinking);
               $relationsCache[] = $rel['id'];
             }
           }

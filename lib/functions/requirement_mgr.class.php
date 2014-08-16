@@ -97,8 +97,8 @@ class requirement_mgr extends tlObjectWithAttachments
   */
   function get_export_file_types()
   {
-      return $this->export_file_types;
-    }
+    return $this->export_file_types;
+  }
 
   /*
     function: get_impor_file_types
@@ -1231,8 +1231,6 @@ function set_order($map_id_order)
  *
  * @return  string with XML code
  *
- * 20111110 - franciscom - TICKET 4802: Exporting large amount of requirements ( qty > 1900) fails
- * 20111008 - franciscom - TICKET 4768: Requirements Export - Export Version and Revision
  */
 function exportReqToXML($id,$tproject_id=null)
 {            
@@ -1246,18 +1244,18 @@ function exportReqToXML($id,$tproject_id=null)
              "\n\t\t" . "<version>||VERSION||</version>" .
              "\n\t\t" . "<revision>||REVISION||</revision>" .
              "\n\t\t" . "<node_order>||NODE_ORDER||</node_order>".
-         "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
-         "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
-         "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
-         "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .         
-         "\n\t\t" . $this->customFieldValuesAsXML($id,$req[0]['version_id'],$tproject_id) . 
-         "\n\t" . "</requirement>" . "\n";
+             "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
+             "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
+             "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
+             "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .         
+             "\n\t\t" . $this->customFieldValuesAsXML($id,$req[0]['version_id'],$tproject_id) . 
+             "\n\t" . "</requirement>" . "\n";
              
-  $info = array (  "||DOCID||" => "req_doc_id","||TITLE||" => "title",
-          "||DESCRIPTION||" => "scope","||STATUS||" => "status",
-          "||TYPE||" => "type","||NODE_ORDER||" => "node_order",
-          "||EXPECTED_COVERAGE||" => "expected_coverage",
-          "||VERSION||" => "version","||REVISION||" => "revision");
+  $info = array("||DOCID||" => "req_doc_id","||TITLE||" => "title",
+                "||DESCRIPTION||" => "scope","||STATUS||" => "status",
+                "||TYPE||" => "type","||NODE_ORDER||" => "node_order",
+                "||EXPECTED_COVERAGE||" => "expected_coverage",
+                "||VERSION||" => "version","||REVISION||" => "revision");
   
   $xmlStr = exportDataToXML($reqData,"{{XMLCODE}}",$elemTpl,$info,true);                
   return $xmlStr;
@@ -3206,18 +3204,24 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 
 
   /**
-   * exportRequirementRelationToXML
+   * exportRelationToXML
    * 
    * Function to export a requirement relation to XML.
    *
    * @param  int $relation relation data array
    * @param  string $troject_id
-   * @param  bool $check_for_req_project (for interproject_linking output)
+   * @param  boolean check_for_req_project
    *
    * @return  string with XML code
+   * <relation>
+   *   <source>doc_id</source>
+   *   <source_project>prj</source_project>
+   *   <destination>doc2_id</destination>
+   *   <destination_project>prj2</destination_project>
+   *   <type>0</type>
+   * </relation>
    * 
    * @internal revisions
-   * 20110314 - kinow - Created function.
    *
    */
   function exportRelationToXML( $relation, $tproject_id = null, $check_for_req_project = false)
@@ -3226,7 +3230,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $source_docid = null; $destination_docid = null;
     $source_project = null; $destination_project = null;
 
-    if ( ! is_null( $relation ) ) 
+    if( !is_null($relation) ) 
     {
       // FRL : interproject linking support
       $tproject_mgr = new testproject($this->db);
@@ -3245,7 +3249,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       }
   
       $reqs = $this->get_by_id($relation['destination_id'],requirement_mgr::LATEST_VERSION);
-      if ( ! is_null ( $reqs ) && count($reqs) > 0 )
+      if( !is_null($reqs) && count($reqs) > 0 )
       {
         $destination_docid = $reqs[0]['req_doc_id'];
         if ($check_for_req_project)

@@ -10,7 +10,7 @@ Rev:
       {if $args_save_type == 'bulk'}
         {$radio_id_prefix = "bulk_status"}
       {else}
-        {$radio_id_prefix = "status"}
+        {$radio_id_prefix = "statusSingle"}
       {/if}
 
   		<table class="invisible">
@@ -21,22 +21,32 @@ Rev:
   			</td>
   			<td valign="top" style="width: 30%;">			
     				{* status of test *}
-      			<div class="title" style="text-align: center;">{$args_labels.test_exec_result}</div>
-    				
+            
+      			<div class="title" style="text-align: center;">
+            {if $args_save_type == 'bulk'} {$args_labels.test_exec_result} {else} &nbsp; {/if}
+            </div>
+
     				<div class="resultBox">
+              {if $args_save_type == 'bulk'}
                 {foreach key=verbose_status item=locale_status from=$tlCfg->results.status_label_for_exec_ui}
     						      <input type="radio" {$args_input_enable_mgmt} name="{$radio_id_prefix}[{$args_tcversion_id}]" 
     						      id="{$radio_id_prefix}_{$args_tcversion_id}_{$ResultsStatusCode.$verbose_status}" 
     							    value="{$ResultsStatusCode.$verbose_status}"
-    						      {if $args_save_type == 'bulk'}
-            							onclick="javascript:set_combo_group('execSetResults','status_','{$ResultsStatusCode.$verbose_status}');"
-    						      {/if}
+    											onclick="javascript:set_combo_group('execSetResults','status_','{$ResultsStatusCode.$verbose_status}');"
     							    {if $verbose_status eq $tlCfg->results.default_status}
     							        checked="checked" 
     							    {/if} /> &nbsp;{lang_get s=$locale_status}<br />
-    					  {/foreach}		
+    					  {/foreach}
+              {else}
+                {$args_labels.test_exec_result}&nbsp;
+                <select name="statusSingle[{$tcversion_id}]" id="statusSingle_{$tcversion_id}">
+                {html_options options=$gui->execStatusValues}
+                </select>
+              {/if}
+                
+
     					  <br />		
-                {$labels.execution_duration}
+                {$labels.execution_duration}&nbsp;
                 <input type="text" name="execution_duration" id="execution_duration"
                        size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
                 <br />

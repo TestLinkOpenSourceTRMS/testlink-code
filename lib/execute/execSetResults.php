@@ -383,7 +383,7 @@ function init_args(&$dbHandler,$cfgObj)
   // can be a list, will arrive via form POST
   $args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
 
-  $key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 
+  $key2loop = array('level' => '','status' => null, 'statusSingle' => null, 'do_bulk_save' => 0, 
                     'save_results' => 0, 'save_and_next' => 0, 'save_and_exit' => 0);
   foreach($key2loop as $key => $value)
   {
@@ -586,55 +586,55 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
   // --------------------------------------------------------------------------------
   if(!is_null($tsuite_info))
   {
-        $cookieKey = 'TL_execSetResults_tsdetails_view_status';
+    $cookieKey = 'TL_execSetResults_tsdetails_view_status';
     $exec_cfg = config_get('exec_cfg');
 
-      $a_tsvw=array();
-      $a_ts=array();
-      $a_tsval=array();
+    $a_tsvw=array();
+    $a_ts=array();
+    $a_tsval=array();
       
-      $tsuite_mgr = New testsuite($db);
-      
-      foreach($tsuite_info as $key => $elem)
-      {
-          $main_k = 'tsdetails_view_status_' . $key;
-          $a_tsvw[] = $main_k;
-          $a_ts[] = 'tsdetails_' . $key;
-            $expand_collapse = 0;
+    $tsuite_mgr = New testsuite($db);
+     
+    foreach($tsuite_info as $key => $elem)
+    {
+      $main_k = 'tsdetails_view_status_' . $key;
+      $a_tsvw[] = $main_k;
+      $a_ts[] = 'tsdetails_' . $key;
+      $expand_collapse = 0;
       if( !isset($request_hash[$main_k]) )
       {
         // First time we are entered here => we can need to understand how to proceed
-          switch($exec_cfg->expand_collapse->testsuite_details)
+        switch($exec_cfg->expand_collapse->testsuite_details)
+        {
+          case LAST_USER_CHOICE:
+          if (isset($_COOKIE[$cookieKey]) ) 
           {
-            case LAST_USER_CHOICE:
-            if (isset($_COOKIE[$cookieKey]) ) 
-              {
-                $expand_collapse = $_COOKIE[$cookieKey];
-            }
+            $expand_collapse = $_COOKIE[$cookieKey];
+          }
           break;  
           
           default:
             $expand_collapse = $exec_cfg->expand_collapse->testsuite_details;
           break;
-          } 
+        } 
       }
-          $a_tsval[] = isset($request_hash[$main_k]) ? $request_hash[$main_k] : $expand_collapse;
-          $tsuite_id = $elem['tsuite_id'];
-          $tc_id = $elem['tc_id'];
-          if(!isset($cached_cf[$tsuite_id]))
-          {
-            $cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id,'design',null,$tproject_id);
-          }
-          $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
-      }
-      if( count($a_tsval) > 0 )
+      $a_tsval[] = isset($request_hash[$main_k]) ? $request_hash[$main_k] : $expand_collapse;
+      $tsuite_id = $elem['tsuite_id'];
+      $tc_id = $elem['tc_id'];
+      if(!isset($cached_cf[$tsuite_id]))
       {
-      setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME, '/');
+        $cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id,'design',null,$tproject_id);
       }
+      $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
+    }
+    if( count($a_tsval) > 0 )
+    {
+      setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME, '/');
+    }
       
-      $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
-      $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
-      $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
+    $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
+    $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
+    $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
       
     $smarty->assign('ts_cf_smarty',$ts_cf_smarty);
   }

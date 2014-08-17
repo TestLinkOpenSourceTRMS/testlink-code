@@ -98,20 +98,22 @@ function write_execution(&$db,&$exec_signature,&$exec_data)
     $is_bulk_save=0;
   }
   
+  $execStatusKey = 'statusSingle';
   foreach ( $item2loop as $tcversion_id => $val)
   {
     $tcase_id=$exec_data['tc_version'][$tcversion_id];
-    $current_status = $exec_data['status'][$tcversion_id];
+    $current_status = $exec_data[$execStatusKey][$tcversion_id];
     $version_number=$exec_data['version_number'][$tcversion_id];;
     $has_been_executed = ($current_status != $resultsCfg['status_code']['not_run'] ? TRUE : FALSE);
     if($has_been_executed)
     { 
       
-      $my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));    
+      $my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(trim($exec_data['notes'][$tcversion_id])); 
+
       $sql = "INSERT INTO {$executions_table} ".
              "(build_id,tester_id,status,testplan_id,tcversion_id," .
              " execution_ts,notes,tcversion_number,platform_id,execution_duration)".
-             " VALUES ( {$exec_signature->build_id}, {$exec_signature->user_id}, '{$exec_data['status'][$tcversion_id]}',".
+             " VALUES ( {$exec_signature->build_id}, {$exec_signature->user_id}, '{$exec_data[$execStatusKey][$tcversion_id]}',".
              "{$exec_signature->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
              "{$version_number},{$exec_signature->platform_id}";
 

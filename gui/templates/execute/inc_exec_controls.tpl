@@ -49,9 +49,16 @@ Rev:
                 {$labels.execution_duration}&nbsp;
                 <input type="text" name="execution_duration" id="execution_duration"
                        size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
+
+              {if $args_save_type == 'single'}
+                <br />
+                {if $tc_exec.assigned_user == ''}
+                  {$labels.assign_exec_task_to_me}&nbsp;
+                  <input type="checkbox" name="assignTask"  id="assignTask">
+                {/if}
+
                 <br />
                 <br />    
-    		 			  {if $args_save_type == 'single'}
     		 			      <input type="submit" name="save_results[{$args_tcversion_id}]" 
     		 			            {$args_input_enable_mgmt}
                           onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};return checkSubmitForStatus('{$ResultsStatusCode.not_run}')"

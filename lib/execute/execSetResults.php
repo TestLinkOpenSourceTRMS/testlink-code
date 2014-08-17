@@ -148,6 +148,20 @@ if(!is_null($linked_tcversions))
     {  
       $_REQUEST['save_results'] = $args->save_results;
       write_execution($db,$args,$_REQUEST);
+
+      if($args->assignTask)
+      {
+        $fid = $tplan_mgr->getFeatureID($args->tplan_id,$args->platform_id,$args->version_id);
+        $taskMgr = new assignment_mgr($db);
+        $taskDomain = $taskMgr->get_available_types();
+        $taskStatusDomain = $taskMgr->get_available_status();
+
+        $fmap[$fid]['user_id'] = $fmap[$fid]['assigner_id'] = $args->user_id;
+        $fmap[$fid]['build_id'] = $args->build_id;
+        $fmap[$fid]['type'] = $taskDomain['testcase_execution']['id'];
+        $fmap[$fid]['status'] = $taskStatusDomain['open']['id'];
+        $taskMgr->assign($fmap);
+      }  
     }
 
     
@@ -364,10 +378,12 @@ function init_args(&$dbHandler,$cfgObj)
     $args->refreshTree = isset($_REQUEST['refresh_tree']) ? intval($_REQUEST['refresh_tree']) : 0;  
   }  
   
+  $args->assignTask = isset($_REQUEST['assignTask']) ? 1: 0;
+
   $args->tc_id = null;
   $args->tsuite_id = null;
   $args->user = $_SESSION['currentUser'];
-  $args->user_id = $args->user->dbID;
+  $args->user_id = intval($args->user->dbID);
   $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 
   $args->caller = isset($_REQUEST['caller']) ? $_REQUEST['caller'] : 'exec_feature';

@@ -14,7 +14,7 @@ class redminerestInterface extends issueTrackerInterface
 {
   private $APIClient;
   private $issueDefaults;
-  private $issueAttr = null;
+  private $issueOtherAttr = null; // see 
   private $translate = null;
 
 	var $defaultResolvedStatus;
@@ -89,29 +89,32 @@ class redminerestInterface extends issueTrackerInterface
            $kk = key($elem); 
            foreach($cc as $value)
            {
-              $this->issueAttr[$name][] = array($kk => (string)$value); 
+              $this->issueOtherAttr[$name][] = array($kk => (string)$value); 
            }
         } 
         else
         {
-          $this->issueAttr[$name] = (string)$elem;     
+          $this->issueOtherAttr[$name] = (string)$elem;     
         } 
       }
     }     
 
     // 20140816
-		$this->issueDefaults = array('trackerid' => 1);
+    // All attributes that I do not consider mandatory 
+    // are managed through the issueAdditionalAttributes
+    //
+    // On Redmine 1 seems to be standard for Issues/Bugs
+		$this->issueDefaults = array('trackerid' => 1); 
     foreach($this->issueDefaults as $prop => $default)
     {
-      if( !property_exists($this->cfg, $prop))
-      {
-        $this->cfg->$prop = $default;
-      } 
-
-      /*
       if(!isset($this->issueAttr[$prop]))
       {
         $this->issueAttr[$prop] = $default;
+      } 
+      /*
+      if( !property_exists($this->cfg, $prop))
+      {
+        $this->cfg->$prop = $default;
       } 
       */ 
     }   
@@ -293,37 +296,37 @@ class redminerestInterface extends issueTrackerInterface
 
   /**
    *
+   * From Redmine API documentation (@20130406)
+   * Parameters:
+   *
+   * issue - A hash of the issue attributes:
+   * - subject
+   * - description
+   * - project_id
+   * - tracker_id
+   * - status_id
+   * - category_id
+   * - fixed_version_id - see http://www.redmine.org/issues/6843
+   * - assigned_to_id   - ID of the user to assign the issue to (currently no mechanism to assign by name)
+   * - parent_issue_id  - ID of the parent issue  <= aslo know as Parent Task
+   * - custom_fields    - See Custom fields
+   * - watcher_user_ids - Array of user ids to add as watchers (since 2.3.0)
    */
   public function addIssue($summary,$description)
   {
-    // From Redmine API documentation (@20130406)
-    // Parameters:
-    //
-    // issue - A hash of the issue attributes:
-    // project_id
-    // tracker_id
-    // status_id
-    // subject
-    // description
-    // category_id
-    // assigned_to_id - ID of the user to assign the issue to (currently no mechanism to assign by name)
-    // parent_issue_id - ID of the parent issue
-    // custom_fields - See Custom fields
-    // watcher_user_ids - Array of user ids to add as watchers (since 2.3.0)
-
-  	  // Check mandatory info
-  	  if( !property_exists($this->cfg,'projectidentifier') )
-  	  {
-  	    throw new exception(__METHOD__ . " project identifier is MANDATORY");
-  	  }
+  	// Check mandatory info
+  	if( !property_exists($this->cfg,'projectidentifier') )
+  	{
+  	  throw new exception(__METHOD__ . " project identifier is MANDATORY");
+  	}
   	  
-     try
-     {
+    try
+    {
        // needs json or xml
       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
 
       // according with user report is better to use htmlspecialchars
-      // 5703: Create issue with Portuguese characters produces mangled text
+      // TICKET 5703: Create issue with Portuguese characters produces mangled text
       //
    		// $issueXmlObj->addChild('subject', htmlentities($summary));
    		// $issueXmlObj->addChild('description', htmlentities($description));
@@ -332,7 +335,10 @@ class redminerestInterface extends issueTrackerInterface
       $issueXmlObj->addChild('subject', substr(htmlspecialchars($summary),0,255) );
       $issueXmlObj->addChild('description', htmlspecialchars($description));
 
+      // Got from XML Configuration
    		$issueXmlObj->addChild('project_id', (string)$this->cfg->projectidentifier);
+
+
       if( property_exists($this->cfg,'trackerid') )
       {
         $issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
@@ -344,15 +350,31 @@ class redminerestInterface extends issueTrackerInterface
         $issueXmlObj->addChild('parent_issue_id', (string)$this->cfg->parent_issue_id);
       } 
 
+
+      // Why issuesAttr is issue ?
+      // Idea was 
+      // on XML config on TestLink provide direct access to a minimun set of MANDATORY
+      // attributes => without it issue can not be created.
+      // After first development/release of this feature people that knows better
+      // Redmine start asking for other attributes.
+      // Then to manage this other set of unknown attributes in a generic way idea was
+      // loop over an object property and blidly add it to request.
+      //
+      // Drawback/limitations
+      // I can not manage type (because I do not request this info) => will treat always as STRING 
+      //
+      // * Special case Target Version
       // http://www.redmine.org/issues/6843
       // "Target version" is the new display name for this property, 
       // but it's still named fixed_version internally and thus in the API.
       // $issueXmlObj->addChild('fixed_version_id', (string)2);
-      if(!is_null($this->issueAttr))
+      // 
+      if(!is_null($this->issueOtherAttr))
       {
-        foreach($this->issueAttr as $ka => $kv)
+        foreach($this->issueOtherAttr as $ka => $kv)
         {
-          // will treat everything as simple strings
+          // will treat everything as simple strings or can I check type
+          // see completeCfg()
           $issueXmlObj->addChild((isset($this->translate[$ka]) ? $this->translate[$ka] : $ka), (string)$kv);
         }  
       }  
@@ -384,15 +406,18 @@ class redminerestInterface extends issueTrackerInterface
                 "<uriview>http://tl.m.remine.org/issues/</uriview> <!-- for Redmine 1.x add show/ --> \n" .
 				        "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
 				        "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
-                "<!-- <parent_issue_id>12</parent_issue_id> -->\n" .
                 "<!--                                       -->\n" .
                 "<!-- Configure This if you need to provide other attributes, ATTENTION to REDMINE API Docum. -->\n" .
-                "<!-- <attributes><targetversion>10100</targetversion></attributes>  -->\n" .
+                "<!-- <attributes> -->\n" .
+                "<!--   <targetversion>10100</targetversion>\n" .
+                "<!--   <parent_issue_id>10100</parent_issue_id>\n" .
+                "<!-- </attributes>  -->\n" .
+                "<!--                                       -->\n" .
 	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
-                "<resolvedstatus>\n" .
-                "<status><code>3</code><verbose>Resolved</verbose></status>\n" .
-                "<status><code>5</code><verbose>Closed</verbose></status>\n" .
-                "</resolvedstatus>\n" .
+                "<!--  <resolvedstatus>-->\n" .
+                "<!--    <status><code>3</code><verbose>Resolved</verbose></status> -->\n" .
+                "<!--    <status><code>5</code><verbose>Closed</verbose></status> -->\n" .
+                "<!--  </resolvedstatus> -->\n" .
 				        "</issuetracker>\n";
 	  return $template;
   }

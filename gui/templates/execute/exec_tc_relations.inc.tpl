@@ -5,8 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @since 1.9.12
 *}
 {lang_get var='rel_labels' 
-          s='relation_id, relation_type_extended, relation_tcase,  relation_set_by,
-             test_case,relations, new_relation, by, title_created, relation_destination_tcase'}
+          s='relation_id,relation_type_extended,relation_set_by,test_case,relations'}
 
     {if $argsRelSet.num_relations > 0}
     <table class="simple" width="100%">

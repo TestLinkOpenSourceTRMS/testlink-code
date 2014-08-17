@@ -2643,7 +2643,8 @@ class testcase extends tlObjectWithAttachments
     $my['opt'] = array_merge($my['opt'], (array)$opt);
 
     $status_ok = false;
-                      
+    $tproject_info = null;
+
     // When using this method on a context where caller certifies that
     // test project is OK, we will skip this check.
     $tproject_id = $my['opt']['tproject_id'];

@@ -733,7 +733,7 @@ class testplan extends tlObjectWithAttachments
     $sql = " /* $debugMsg */ ". 
          " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
          " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
-         " WHERE TPTCV.testplan_id = {$id} ";
+         " WHERE TPTCV.testplan_id = " . intval($id);
          
     $linked_items = $this->db->fetchRowsIntoMap($sql,'parent_id');           
     return $linked_items;

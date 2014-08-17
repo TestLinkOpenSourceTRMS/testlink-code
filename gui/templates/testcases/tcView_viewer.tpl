@@ -393,7 +393,7 @@ function launchInsertStep(step_id)
 
 {include file="testcases/relations.inc.tpl"} 
 
-{if $args_linked_versions != null}
+{if $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}
   {* Test Case version Test Plan Assignment *}
   <br />
   <div {$addInfoDivStyle}>

@@ -22,7 +22,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.12
  *
  *
  **/
@@ -791,6 +791,9 @@ $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
+
+// TRUE will be displayed when displayed a test case
+$tlCfg->spec_cfg->show_tplan_usage = TRUE;
 
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow

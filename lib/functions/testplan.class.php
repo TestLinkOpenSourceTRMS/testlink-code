@@ -6663,9 +6663,13 @@ class testplan extends tlObjectWithAttachments
       switch($my['options']['accessKeyType'])
       {
         case 'tcase+platform':
-          $tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id');
+          $tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id'); // ,0,-1,'user_id');
         break;
         
+        case 'tcase+platform+stackOnUser':
+          $tplan_tcases = $this->db->fetchMapRowsIntoMapStackOnCol($sql2run,'tcase_id','platform_id','user_id');
+        break;
+
         case 'index':
           $tplan_tcases = $this->db->get_recordset($sql2run);
         break;  

@@ -21,9 +21,8 @@ generate the list of TC that can be removed from a Test Plan
 // Escape all messages (string)
 var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
 
-loop2do=0;   // needed for the convert grid logic
+// loop2do=0;   // needed for the convert grid logic
 function check_action_precondition(container_id,action)
 {
 	if(checkbox_count_checked(container_id) <= 0)
@@ -33,39 +32,11 @@ function check_action_precondition(container_id,action)
 	}
 	return true;
 }
-
-// 20100927 - franciscom
-//Ext.onReady(function()
-//{
-//  
-//  // Convert combo bulk_tester_div	  
-//  var idx=0;
-//  var gridSet = new Array();
-//  var converted = new Ext.form.ComboBox({
-//   typeAhead: true,
-//   triggerAction: 'all',
-//   transform:'bulk_tester_div',
-//   width:135,
-//   forceSelection:true
-// });
-//
-// 
-// 
-//  // create the grid   
-//  for(idx=1; idx <= loop2do; idx++)
-//  {
-//    gridSet[idx] = new Ext.ux.grid.TableGrid("the-table-"+idx, {
-//                       stripeRows: true // stripe alternate rows
-//                   });
-//    gridSet[idx].render();
-//  }
-//});
-{/literal}
 </script>
 
 </head>
 {* prefix for checkbox name ADD*}   
-{assign var="add_cb" value="achecked_tc"}
+{$add_cb="achecked_tc"}
 
 <body class="fixedheader">
 <form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
@@ -156,86 +127,95 @@ function check_action_precondition(container_id,action)
 			      	{if $session['testprojectOptions']->testPriorityEnabled}
 			      	  <th align="center">{$labels.priority}</th>
 			      	{/if}
-              <th align="center">&nbsp;&nbsp;{$labels.assigned_to}</th>
-              <th align="center">&nbsp;&nbsp;{$labels.assign_to}</th>
+              <th style="align:left;">&nbsp;&nbsp;{$labels.assigned_to}</th>
+              <th style="align:center;">&nbsp;&nbsp;{$labels.assign_to}</th>
             </tr>
 			      </thead>
             {* ---------------------------------------------------------------------------------------------------- *}
             <tbody>  
             {foreach from=$ts.testcases item=tcase}
+
               {* loop over platforms - ATTENTION al least platform_id=0 always exists *}
               {foreach from=$tcase.feature_id key=platform_id item=feature}
                 {if $tcase.linked_version_id != 0}
-                  {$userID=0}
-           	      {if isset($tcase.user_id[$platform_id])}
-            	  	  {$userID=$tcase.user_id[$platform_id]} 
-                  {/if} 
-            	    <tr>
-            	    	<td>
-                    		<input type="checkbox"  name='{$add_cb}[{$tcase.id}][{$platform_id}]' align="middle"
-                  			                        id='{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}' 
-                    		                        value="{$tcase.linked_version_id}" />
-                  			<input type="hidden" name="a_tcid[{$tcase.id}][{$platform_id}]" 
-                  			                     value="{$tcase.linked_version_id}" />
-                  			<input type="hidden" name="has_prev_assignment[{$tcase.id}][{$platform_id}]" 
-                  			                     value="{$userID}" />
-                  			<input type="hidden" name="feature_id[{$tcase.id}][{$platform_id}]" 
-                  			                     value="{$tcase.feature_id[$platform_id]}" />
-            	    	</td>
-            	    	<td>
-            	    		<img class="clickable" src="{$tlImages.history_small}"
-            	    		     onclick="javascript:openExecHistoryWindow({$tcase.id});"
-            	    		     title="{$labels.execution_history}" />
-            	    		<img class="clickable" src="{$tlImages.exec_icon}"
-            	    		     onclick="javascript:openExecutionWindow({$tcase.id},{$tcase.linked_version_id},{$gui->build_id},{$gui->tplan_id},{$platform_id});"
-            	    		     title="{$labels.execution}" />
-            	    		<img class="clickable" src="{$tlImages.edit}"
-            	    		     onclick="javascript:openTCaseWindow({$tcase.id},{$tcase.linked_version_id});"
-            	    		     title="{$labels.design}" />
-            	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
-            	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
-            	    		{$gsmarty_gui->role_separator_close}
-            	    	</td>
-                    {if $gui->platforms != ''}
-			      	        <td>{$gui->platforms[$platform_id]|escape}</td>
-                    {/if}	
+                  {foreach from=$tcase.user_id[$platform_id] key=udx item=userItem name="testerSet"}
+                    {$userID=0}
+             	      {if isset($tcase.user_id[$platform_id][$udx])} 
+                      {$userID=$tcase.user_id[$platform_id][$udx]} 
+                    {/if} 
 
-            	    	{if $session['testprojectOptions']->testPriorityEnabled}
-            	    		<td align="center">{if isset($gui->priority_labels[$tcase.priority])}{$gui->priority_labels[$tcase.priority]}{/if}</td>
-            	    	{/if}
-            	    	<td align="center">
-            	    	{if isset($tcase.user_id[$platform_id])}
-            	    	  {$userID=$tcase.user_id[$platform_id]} 
-            	    		{$gui->users[$userID]|escape}
+              	    <tr>
+                    {if $smarty.foreach.testerSet.iteration == 1}
+              	    	<td>
+                      		<input type="checkbox" name='{$add_cb}[{$tcase.id}][{$platform_id}]' align="middle"
+                    			                        id='{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}' 
+                      		                        value="{$tcase.linked_version_id}" />
+                    			<input type="hidden" name="a_tcid[{$tcase.id}][{$platform_id}]" 
+                    			                     value="{$tcase.linked_version_id}" />
+                    			<input type="hidden" name="has_prev_assignment[{$tcase.id}][{$platform_id}]" 
+                    			                     value="{$userID}" />
+                    			<input type="hidden" name="feature_id[{$tcase.id}][{$platform_id}]" 
+                    			                     value="{$tcase.feature_id[$platform_id]}" />
+              	    	</td>
+              	    	<td>
+              	    		<img class="clickable" src="{$tlImages.history_small}"
+              	    		     onclick="javascript:openExecHistoryWindow({$tcase.id});"
+              	    		     title="{$labels.execution_history}" />
+              	    		<img class="clickable" src="{$tlImages.exec_icon}"
+              	    		     onclick="javascript:openExecutionWindow({$tcase.id},{$tcase.linked_version_id},{$gui->build_id},{$gui->tplan_id},{$platform_id});"
+              	    		     title="{$labels.execution}" />
+              	    		<img class="clickable" src="{$tlImages.edit}"
+              	    		     onclick="javascript:openTCaseWindow({$tcase.id},{$tcase.linked_version_id});"
+              	    		     title="{$labels.design}" />
+              	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}{$gsmarty_gui->title_separator_1}{$tcase.name|escape}
+              	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
+              	    		{$gsmarty_gui->role_separator_close}
+              	    	</td>
 
-                      {* user is a Tester? *}
-            	    		{if $gui->users[$userID] != '' && $gui->testers[$userID] == ''}{$labels.can_not_execute}{/if}
-                      <img class="clickable" src="{$tlImages.remove}"
-                           onclick="doAction.value='doRemove';targetFeature.value={$tcase.feature_id[$platform_id]};targetUser.value={$userID};tc_exec_assignment.submit();"
-                           title="{$labels.remove}" />                      
-            	    	{/if}
-            	    	</td>
-                    <td align="center">
-                  		  		<select multiples class="schosen-select"
-                                    data-placeholder="{$labels.chosen_blank_option}"
-                                    name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
-                  		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"
-                  		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}",1)' >
-                             {html_options options=$gui->testers}
-                  			   	{* {html_options options=$gui->testers selected=$userID} *}
-                            {* {html_options options=$gui->testers selected=$myArray} *}
+                      {if $gui->platforms != ''}
+  			      	        <td>{$gui->platforms[$platform_id]|escape}</td>
+                      {/if}	
 
-                  				  </select>
-                    </td>
-                  </tr>
-                  {/if}		
+              	    	{if $session['testprojectOptions']->testPriorityEnabled}
+              	    		<td align="center">
+                        {if isset($gui->priority_labels[$tcase.priority])}{$gui->priority_labels[$tcase.priority]}{/if}</td>
+              	    	{/if}
+                      
+                    {else}
+                        <td>&nbsp;</td><td>&nbsp;</td>
+                        {if $gui->platforms != ''}<td>&nbsp;</td>{/if} 
+                        {if $session['testprojectOptions']->testPriorityEnabled}<td>&nbsp;</td>{/if}
+                    {/if} {* do it JUST ON first iteration *}
+
+              	    	<td style="align:left;">
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+              	    		{if $gui->users[$userID] != ''}
+                        <img class="clickable" src="{$tlImages.remove}"
+                             onclick="doAction.value='doRemove';targetFeature.value={$tcase.feature_id[$platform_id]};targetUser.value={$userID};tc_exec_assignment.submit();"
+                             title="{$labels.remove}" /> 
+                          {$gui->users[$userID]|escape}
+                          {if $gui->testers[$userID] == ''}{$labels.can_not_execute}{/if} {* user is a Tester? *}
+                        {/if}                          
+              	    	</td>
+                      
+                      {if $smarty.foreach.testerSet.iteration == 1}
+                        <td align="center">
+                      		  		<select class="chosen-select"
+                                        data-placeholder="{$labels.chosen_blank_option}"
+                                        name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
+                      		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"
+                      		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}",1)' >
+                                 {html_options options=$gui->testers}
+                      				  </select>
+                        </td>
+                      {else}
+                        <td>&nbsp;</td>
+                      {/if}
+
+                    </tr>
+                  {/foreach} {* $tcase.user_id[$platform_id] *}
+                {/if} {* $tcase.linked_version_id != 0 *}		
               {/foreach}   
-              {*
-              removed to use ext-js         
-              {if $gui->platforms != ''}
-                <td colspan="8"><hr></td>
-              {/if}
-              *}
             {/foreach} {* {foreach from=$ts.testcases item=tcase} *}
             </tbody>
           </table>
@@ -243,13 +223,13 @@ function check_action_precondition(container_id,action)
       {/if} {* write buttons*}
 
       {if $gui->items_qty eq $smarty.foreach.div_drawing.iteration}
-          {assign var=next_level value=0}
+          {$next_level=0}
       {else}
-          {assign var=next_level value=$gui->items[$smarty.foreach.div_drawing.iteration].level}
+          {$next_level=$gui->items[$smarty.foreach.div_drawing.iteration].level}
       {/if}
       {if $ts.level gte $next_level}
-          {assign var="max_loop" value=$next_level}
-          {assign var="max_loop" value=$ts.level-$max_loop+1}
+          {$max_loop = $next_level+1}
+          {$max_loop=$ts.level-$max_loop}
           {section name="div_closure" loop=$gui->support_array max=$max_loop} </div> {/section}
       {/if}
       {if $smarty.foreach.div_drawing.last}</div> {/if}
@@ -259,14 +239,7 @@ function check_action_precondition(container_id,action)
 
 	</div>
   
-  {* 
-  <script type="text/javascript">
-  // needed for the convert grid logic
-  loop2do={$table_counter};
-  </script>
-  *}
-
-  {/if}
+ {/if}
   
 </form>
 <script>

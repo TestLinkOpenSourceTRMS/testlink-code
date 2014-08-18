@@ -252,8 +252,7 @@ if(!is_null($linked_tcversions))
         $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
                                                                        testcase::ANY_BUILD,
                                                                        $args->platform_id,$options);
-            
-        //Get UserID and Updater ID for current Version
+        // Get UserID and Updater ID for current Version
         $tc_current = $gui->map_last_exec_any_build;
         foreach ($tc_current as $key => $value)
         {
@@ -865,8 +864,9 @@ function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id,
     
     // map of map: main key version_id, secondary key: platform_id
     $p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id, $build_id);
+
+    /*
     $assignedTesterId = intval($p3[$version_id][$platform_id]['user_id']);
-    
     if($assignedTesterId)
     {
       $user = tlUser::getByID($db,$assignedTesterId);
@@ -875,7 +875,28 @@ function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id,
         $exec_info[$version_id]['assigned_user']= $user->getDisplayName();  
       }
       $exec_info[$version_id]['assigned_user_id'] = $assignedTesterId;
+    } 
+    */
+    // $exec_info[$version_id]['assigned_user'] = '';
+    // $exec_info[$version_id]['assigned_user_id'] = '';
+    foreach($p3[$version_id][$platform_id] as $uu)
+    {
+      $assignedTesterId = intval($uu['user_id']);
+      if($assignedTesterId)
+      {
+        $user = tlUser::getByID($db,$assignedTesterId);
+        if ($user)
+        {
+          $exec_info[$version_id]['assigned_user'][]= $user->getDisplayName();  
+
+        }
+        $exec_info[$version_id]['assigned_user_id'][] = $assignedTesterId;
+      } 
     }  
+    $exec_info[$version_id]['assigned_user'] = implode(',',$exec_info[$version_id]['assigned_user']);
+    $exec_info[$version_id]['assigned_user_id'] = implode(',',$exec_info[$version_id]['assigned_user_id']);
+    
+
   }
   return $exec_info;
 } //function end
@@ -1292,7 +1313,7 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
   {
     $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
                                    $argsObj->tplan_id,$argsObj->platform_id, $argsObj->build_id);
-        
+
     // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
     $can_execute = $guiObj->grants->execute && ($guiObj->build_is_open);
     $last_exec = setCanExecute($last_exec,$guiObj->exec_mode,$can_execute,$argsObj->user_id);

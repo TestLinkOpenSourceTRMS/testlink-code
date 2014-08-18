@@ -51,7 +51,6 @@ switch($args->doAction)
   case 'std':
     if(!is_null($args->achecked_tc))
     {
-
       $open = $status_map['open']['id'];
       $db_now = $db->db_now();
       $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
@@ -63,6 +62,8 @@ switch($args->doAction)
         foreach($platform_tcversion as $platform_id => $tcversion_id)
         {
           $feature_id = $args->feature_id[$key_tc][$platform_id];
+
+          /*
           if($args->has_prev_assignment[$key_tc][$platform_id] > 0)
           {
             if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
@@ -103,15 +104,25 @@ switch($args->doAction)
             $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
             $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
           }
+          */
+          $op='ins';
+          $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
+          $features2[$op][$feature_id]['type'] = $task_test_execution;
+          $features2[$op][$feature_id]['status'] = $open;
+          $features2[$op][$feature_id]['creation_ts'] = $db_now;
+          $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+          $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+          $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+          $features2[$op][$feature_id]['build_id'] = $args->build_id; 
         }
-        
+
       }
       
       foreach($features2 as $key => $values)
       {
         if( count($features2[$key]) > 0 )
         {
-          $assignment_mgr->$method2call[$key]($values);
+          $assignment_mgr->assign($values);
           $called[$key]=true;
         }  
       }
@@ -150,6 +161,7 @@ switch($args->level)
         
     $xx = $tplan_mgr->getLinkInfo($args->tplan_id,$args->id,$args->control_panel['setting_platform'],
                                   array('output' => 'assignment_info','build4assignment' => $args->build_id));
+    
     $linked_items[$args->id] = $xx;
     $opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
     $filters = array('keywords' => $keywordsFilter->items);
@@ -172,7 +184,6 @@ switch($args->level)
     $filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
     $filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
     
-    // $opt = array('user_assignments_per_build' => $args->build_id);
     $opt = array('assigned_on_build' => $args->build_id, 'addPriority' => true);
     $filters += $opt;
 
@@ -198,21 +209,9 @@ if ($_SESSION['testprojectOptions']->testPriorityEnabled)
   $gui->priority_labels = init_labels($urgencyCfg["code_label"]);
 }
 
-// $chronos[] = microtime(true);
-// $tnow = end($chronos); $tprev = prev($chronos);
-// $t_elapsed = number_format( $tnow - $tprev, 4);
-// echo '<br> ' . __FUNCTION__ . ' Elapsed BEFORE RENDERING (sec) (xxx()):' . $t_elapsed .'<br>';
-// reset($chronos); 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-
-// $chronos[] = microtime(true);
-// $tnow = end($chronos); $tprev = prev($chronos);
-// $t_elapsed = number_format( $tnow - $tprev, 4);
-// echo '<br> ' . __FUNCTION__ . ' Elapsed (sec) (xxx()):' . $t_elapsed .'<br>';
-// reset($chronos); 
-
 
 
 /*
@@ -293,7 +292,6 @@ function init_args()
   $args->targetFeature = intval(isset($_REQUEST['targetFeature']) ? $_REQUEST['targetFeature'] : 0);  
   $args->targetUser = intval(isset($_REQUEST['targetUser']) ? $_REQUEST['targetUser'] : 0);  
 
-  // new dBug($args);  die();
   return $args;
 }
 

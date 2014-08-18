@@ -1000,6 +1000,28 @@ class database
     return $items;
   }
 
+  /**
+   *
+   */
+  function fetchMapRowsIntoMapStackOnCol($sql,$column_main_key,$column_sec_key,$stackOnCol)
+  {
+    $items = null;
+    $result = $this->exec_query($sql);
+    if ($result)
+    {
+      while($row = $this->fetch_array($result))
+      {
+        if( !isset($items[$row[$column_main_key]][$row[$column_sec_key]]) )
+        {
+          $items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
+          $items[$row[$column_main_key]][$row[$column_sec_key]][$stackOnCol] = array();
+        }
+        $items[$row[$column_main_key]][$row[$column_sec_key]][$stackOnCol][]=$row[$stackOnCol];
+      }
+    }
+    unset($result);
+    return $items;
+  }
+
 
 } // end of database class
-?>

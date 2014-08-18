@@ -181,7 +181,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   
   
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
-
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);
   $idx = 0;
   $a_tcid = array();
@@ -224,12 +223,12 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   if(!is_null($out) && count($out) > 0 && !is_null($out[0]) && count($a_tcid))
   {
     $optGBI = array('output' => 'full_without_users',
-                'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
+                    'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
 
-    $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI); 
+    $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI);
     $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items);
   }
-  
+
   // Try to prune empty test suites, to reduce memory usage and to remove elements
   // that do not need to be displayed on user interface.
   if( count($result['spec_view']) > 0)
@@ -308,7 +307,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  * 
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.12
  * 
  */
 function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
@@ -345,11 +344,16 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
     $filters['tsuites_id'] = explode(',',$xx);
   }
   
-  // $opx = array('addExecInfo' => true, 'specViewFields' => true,'addPriority' => true) +   (array)$options;
-  // $opx = array('addExecInfo' => true, 'specViewFields' => true, 'orderBy' => ' execution_order ') +   (array)$options;
-  $opx = array('addExecInfo' => true, 'specViewFields' => true) +   (array)$options;
-  $tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
+  /*
+  $opx = array('addExecInfo' => true, 'specViewFields' => true, 
+               'accessKeyType' => 'tcase+platform+stackOnUser') + (array)$options;
 
+  */
+  // $opx = array('addExecInfo' => true, 'specViewFields' => true) + (array)$options;
+  $opx = array('addExecInfo' => true, 'specViewFields' => true, 
+               'accessKeyType' => 'tcase+platform+stackOnUser') + (array)$options;
+
+  $tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
   if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
   {
     $filteredSet = $tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
@@ -439,10 +443,8 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
   {
     $genSpecFilters['cfields'] = $my['filters']['cfieldsFilter'];
   }           
-              
   $out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
                        $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
-
   return $out;
 }
 
@@ -861,18 +863,19 @@ function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
 
 /**
  * 
- *
+ * Developer Notice
+ * key 'user_id' is JUST initialized
  */
 function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 {
-    $parent_idx=-1;
+  $parent_idx=-1;
   $pivot_tsuite = $test_spec[0];
   $level = array();
   $tcase_memory = null;
 
-    $node_types = $config['node_types'];
-    $write_status = $config['write_status'];
-    $is_uncovered_view_type = $config['is_uncovered_view_type'];
+  $node_types = $config['node_types'];
+  $write_status = $config['write_status'];
+  $is_uncovered_view_type = $config['is_uncovered_view_type'];
 
   $out=array();
   $idx = 0;
@@ -899,7 +902,6 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
     {
       continue;
     }
-    
     // In some situations during processing of testcase, a change of parent can
     // exists, then we need to update $tsuite_tcqty
     if($node_types[$current['node_type_id']] == "testcase")
@@ -909,7 +911,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
       $a_tsuite_idx[$tc_id] = $parent_idx;
       $out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,'name' => $current['name']);
   
-          // Reference to make code reading more human friendly       
+      // Reference to make code reading more human friendly       
       $outRef = &$out[$parent_idx]['testcases'][$tc_id];
       
       if($is_uncovered_view_type)
@@ -930,12 +932,21 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
         $outRef['executed'] = null; // 'no';
   
         // useful for tc_exec_assignment.php          
-        $outRef['user_id'] = null; //0;
+        $outRef['platforms'] = $platforms;
         $outRef['feature_id'] = null; //0;
         $outRef['linked_by'] = null; //0;
         $outRef['linked_ts'] = null;
         $outRef['priority'] = 0;
-        $outRef['platforms'] = $platforms;
+
+        /*
+        foreach($platforms as $plat )
+        {
+          $outRef['user_id'][$plat['id']] = 0; //array(array()); //null; //0;
+        }  
+        //$outRef['user_id'] = null; //array(array()); //null; //0;
+        */
+        $outRef['user_id'] = array();
+
           // $outRef['importance'] = 0;
       }
       $out[$parent_idx]['testcase_qty']++;
@@ -1010,7 +1021,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
     $tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
   }
 
-    unset($tcase_memory);
+  unset($tcase_memory);
   $tsuite_tcqty[$id] = $out[$hash_id_pos[$id]]['testcase_qty'];
   return array($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out);
 }
@@ -1028,7 +1039,10 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
  */
 function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_items)
 {
-  $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
+  // $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
+  $optionalIntegerFields = array('feature_id','linked_by');
+  $optionalArrayFields = array('user_id');
+
   $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
   $pivot_id=-1;
   
@@ -1103,10 +1117,9 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
           $out[$parent_idx]['linked_testcase_qty']++;
           $result['has_linked_items'] = 1;
 
-                    foreach($linked_testcase as $item)
-                    {  
-                      // 20120714 - franciscom - need t check if this info is needed.
-
+          foreach($linked_testcase as $item)
+          {  
+            // 20120714 - franciscom - need t check if this info is needed.
             if(isset($item['executed']) && (intval($item['executed']) >0) ||
                isset($item['exec_id']) && (intval($item['exec_id']) >0))
             {
@@ -1124,8 +1137,25 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
               {
                 $outRef[$fieldKey][$item['platform_id']]=intval($item[$fieldKey]);
               }
-              }
             }
+
+            // 20140818
+            // this logic has been created to cope with multiple tester assignment
+            foreach ($optionalArrayFields as $fieldKey )
+            {
+
+              if(is_array($item[$fieldKey]))
+              {
+                // this seems to be the path we follow when trying to work on test suite
+                $outRef[$fieldKey][$item['platform_id']]=$item[$fieldKey];
+              }  
+              else
+              {  
+                // this seems to be the path we follow when trying to work on SINGLE test case
+                $outRef[$fieldKey][$item['platform_id']][]=intval($item[$fieldKey]);
+              }  
+            }
+          }
           break;
         }
       }
@@ -1141,23 +1171,29 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
 
 /**
  * 
- *
+ * @internal revisions
+ * @since 1.9.12
+ * changed return type when there are no platforms
  */
 function getPlatforms($db,$tproject_id,$testplan_id)
 {
   $platform_mgr = new tlPlatform($db, $tproject_id);
 
-    if (is_null($testplan_id)) {
-        $platforms = $platform_mgr->getAll();
-    } else {
-        $platforms = $platform_mgr->getLinkedToTestplan($testplan_id);
-    }
+  if (is_null($testplan_id)) 
+  {
+    $platforms = $platform_mgr->getAll();
+  } 
+  else 
+  {
+    $platforms = $platform_mgr->getLinkedToTestplan($testplan_id);
+  }
+
   if( is_null($platforms) )
   {
     // need to create fake data for platform 0 in order 
     // to have only simple logic
-    $platforms = array( 'id' => 0, 'name' => '');
+    // $platforms= array( 'id' => 0, 'name' => '');
+    $platforms[0] = array( 'id' => 0, 'name' => '');
   }
   return $platforms;
 }
-?>

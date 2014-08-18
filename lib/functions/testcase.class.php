@@ -3683,18 +3683,17 @@ class testcase extends tlObjectWithAttachments
   {
     // 20110622 - asimon - TICKET 4600: Blocked execution of testcases
     $sql =  "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id,T.platform_id, " .
-        "       UA.user_id,UA.type,UA.status,UA.assigner_id ".
-        " FROM {$this->tables['testplan_tcversions']}  T " .
-        " LEFT OUTER JOIN {$this->tables['user_assignments']}  UA ON UA.feature_id = T.id " .
-        // " WHERE T.testplan_id={$tplan_id} " .
-        " WHERE T.testplan_id={$tplan_id} AND UA.build_id = {$build_id} " .
-        " AND   T.tcversion_id = {$tcversion_id} " .
-        " AND   (UA.type=" . $this->assignment_types['testcase_execution']['id'] .
-        "        OR UA.type IS NULL) ";
+            "       UA.user_id,UA.type,UA.status,UA.assigner_id ".
+            " FROM {$this->tables['testplan_tcversions']}  T " .
+            " LEFT OUTER JOIN {$this->tables['user_assignments']}  UA ON UA.feature_id = T.id " .
+            " WHERE T.testplan_id={$tplan_id} AND UA.build_id = {$build_id} " .
+            " AND   T.tcversion_id = {$tcversion_id} " .
+            " AND   (UA.type=" . $this->assignment_types['testcase_execution']['id'] .
+            "        OR UA.type IS NULL) ";
   
   
     // $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
-        $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','platform_id');
+    $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','platform_id',database::CUMULATIVE);
     
     return $recordset;
   }

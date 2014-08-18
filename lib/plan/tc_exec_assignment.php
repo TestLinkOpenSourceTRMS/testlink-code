@@ -10,7 +10,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * 
+ * @since 1.9.12
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -41,70 +41,72 @@ if(is_array($args->keyword_id))
 }
 $arrData = array();
 
-if(!is_null($args->doAction))
+// echo $args->doAction;echo is_null($args->doActionButton);die();
+$status_map = $assignment_mgr->get_available_status();
+$types_map = $assignment_mgr->get_available_types();
+$task_test_execution = $types_map['testcase_execution']['id'];
+
+switch($args->doAction)
 {
-  if(!is_null($args->achecked_tc))
-  {
-    $types_map = $assignment_mgr->get_available_types();
-    $status_map = $assignment_mgr->get_available_status();
-
-    $task_test_execution = $types_map['testcase_execution']['id'];
-    $open = $status_map['open']['id'];
-    $db_now = $db->db_now();
-
-    $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
-    $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id_and_build_id');
-    $called = array( 'upd' => false, 'ins' => false, 'del' => false);
-
-    foreach($args->achecked_tc as $key_tc => $platform_tcversion)
+  case 'std':
+    if(!is_null($args->achecked_tc))
     {
-      foreach($platform_tcversion as $platform_id => $tcversion_id)
+
+      $open = $status_map['open']['id'];
+      $db_now = $db->db_now();
+      $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
+      $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id_and_build_id');
+      $called = array( 'upd' => false, 'ins' => false, 'del' => false);
+
+      foreach($args->achecked_tc as $key_tc => $platform_tcversion)
       {
-        $feature_id = $args->feature_id[$key_tc][$platform_id];
-        if($args->has_prev_assignment[$key_tc][$platform_id] > 0)
+        foreach($platform_tcversion as $platform_id => $tcversion_id)
         {
-          if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
+          $feature_id = $args->feature_id[$key_tc][$platform_id];
+          if($args->has_prev_assignment[$key_tc][$platform_id] > 0)
           {
-            // Do only if tester has changed
-            if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
+            if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
             {
-              $op='upd';
-              $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
-              $features2[$op][$feature_id]['type'] = $task_test_execution;
-              $features2[$op][$feature_id]['status'] = $open;
-              $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+              // Do only if tester has changed
+              if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
+              {
+                $op='upd';
+                $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
+                $features2[$op][$feature_id]['type'] = $task_test_execution;
+                $features2[$op][$feature_id]['status'] = $open;
+                $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+                $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+                $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+                $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];             
+                $features2[$op][$feature_id]['creation_ts'] = $db_now; 
+                $features2[$op][$feature_id]['build_id'] = $args->build_id;
+              }
+            } 
+            else
+            {
+              $op='del';
               $features2[$op][$feature_id]['tcase_id'] = $key_tc;
               $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-              $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];             
-              $features2[$op][$feature_id]['creation_ts'] = $db_now; 
-              $features2[$op][$feature_id]['build_id'] = $args->build_id;
-            }
-          } 
-          else
+              $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];
+              $features2[$op][$feature_id]['build_id'] = $args->build_id; 
+            } 
+          }
+          else if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
           {
-            $op='del';
+            $op='ins';
+            $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
+            $features2[$op][$feature_id]['type'] = $task_test_execution;
+            $features2[$op][$feature_id]['status'] = $open;
+            $features2[$op][$feature_id]['creation_ts'] = $db_now;
+            $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
             $features2[$op][$feature_id]['tcase_id'] = $key_tc;
             $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-            $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];
-            $features2[$op][$feature_id]['build_id'] = $args->build_id; 
-          } 
+            $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
+          }
         }
-        else if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
-        {
-          $op='ins';
-          $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
-          $features2[$op][$feature_id]['type'] = $task_test_execution;
-          $features2[$op][$feature_id]['status'] = $open;
-          $features2[$op][$feature_id]['creation_ts'] = $db_now;
-          $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-          $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-          $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-          $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
-        }
+        
       }
       
-    }
-    
       foreach($features2 as $key => $values)
       {
         if( count($features2[$key]) > 0 )
@@ -113,19 +115,28 @@ if(!is_null($args->doAction))
           $called[$key]=true;
         }  
       }
-        
-    if($args->send_mail)
-    {
-      foreach($called as $ope => $ope_status)
+          
+      if($args->send_mail)
       {
-        if($ope_status)
+        foreach($called as $ope => $ope_status)
         {
-          send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
+          if($ope_status)
+          {
+            send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
+          }
         }
-      }
-    } // if($args->send_mail)   
-  }  
+      } // if($args->send_mail)   
+    }  
+  break;
+
+  case 'doRemove':
+    $signature[] = array('type' => $task_test_execution, 'user_id' => $args->targetUser, 
+                       'feature_id' => $args->targetFeature, 'build_id' => $args->build_id);
+    $assignment_mgr->deleteBySignature($signature);
+  break; 
 }
+
+
 
 
 switch($args->level)
@@ -216,11 +227,11 @@ function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $args = new stdClass();
-  $args->user_id = $_SESSION['userID'];
-  $args->tproject_id = $_SESSION['testprojectID'];
+  $args->user_id = intval($_SESSION['userID']);
+  $args->tproject_id = intval($_SESSION['testprojectID']);
   $args->tproject_name = $_SESSION['testprojectName'];
       
-  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+  $key2loop = array('doActionButton' => null, 'doAction' => null,'level' => null , 'achecked_tc' => null, 
                     'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
                     'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
     
@@ -271,13 +282,18 @@ function init_args()
     $args->testcases_to_show = $session_data['testcases_to_show'];
   }
   
-  $args->build_id = isset($session_data['setting_build']) ? $session_data['setting_build'] : 0;
-  $args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
+  $args->build_id = intval(isset($session_data['setting_build']) ? $session_data['setting_build'] : 0);
+  $args->tplan_id = intval(isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0);
   if ($args->tplan_id) 
   {
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+    $args->tplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
   }
     
+
+  $args->targetFeature = intval(isset($_REQUEST['targetFeature']) ? $_REQUEST['targetFeature'] : 0);  
+  $args->targetUser = intval(isset($_REQUEST['targetUser']) ? $_REQUEST['targetUser'] : 0);  
+
+  // new dBug($args);  die();
   return $args;
 }
 

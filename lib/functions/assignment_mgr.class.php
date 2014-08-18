@@ -73,6 +73,31 @@ class assignment_mgr extends tlObjectWithDB
     $result = $this->db->exec_query($sql);
   }
   
+  /**
+   * Delete the user assignments for a given build.
+   * 
+   * @author Andreas Simon
+   * @param int $build_id The ID of the build for which the user assignments shall be deleted.
+   * @param int $delete_all_types If true, all assignments regardless of type will be deleted,
+   *                              else (default) only tester assignments.
+   */
+  function delete_by_build_id($build_id, $delete_all_types = false) 
+  {
+    $type_sql = "";
+    
+    if (!$delete_all_types) 
+    {
+      $types = $this->get_available_types();
+      $tc_execution_type = $types['testcase_execution']['id'];
+      $type_sql = " AND type = {$tc_execution_type} ";
+    }
+    
+    $sql = " DELETE FROM {$this->tables['user_assignments']} " .
+           " WHERE build_id = " . intval($build_id) . " {$type_sql} ";
+    
+    $this->db->exec_query($sql);
+  }
+
   // delete assignments by feature id and build_id
   function delete_by_feature_id_and_build_id($feature_map) 
   {
@@ -92,6 +117,26 @@ class assignment_mgr extends tlObjectWithDB
     
     $sql .= " AND build_id = {$build_id} ";
     $result = $this->db->exec_query($sql);
+  }
+
+  /**
+   * $items array of signature
+   * signature = array('type' => ,'feature_id' =>,'user_id' =>, 'build_id' => )
+   *
+   */
+  function deleteBySignature($items) 
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    foreach($items as $signature)
+    {
+      $sql = " DELETE FROM {$this->tables['user_assignments']} WHERE 1=1 ";
+      foreach($signature as $column => $val)
+      {
+        $sql .= " AND $column = " . intval($val);
+      }  
+      $result = $this->db->exec_query($sql);
+    }  
   }
 
 
@@ -298,32 +343,6 @@ class assignment_mgr extends tlObjectWithDB
     $this->db->exec_query($sql);
   } 
   
-  /**
-   * Delete the user assignments for a given build.
-   * 
-   * @author Andreas Simon
-   * @param int $build_id The ID of the build for which the user assignments shall be deleted.
-   * @param int $delete_all_types If true, all assignments regardless of type will be deleted,
-   *                              else (default) only tester assignments.
-   */
-  function delete_by_build_id($build_id, $delete_all_types = false) 
-  {
-    $type_sql = "";
-    
-    if (!$delete_all_types) 
-    {
-      $types = $this->get_available_types();
-      $tc_execution_type = $types['testcase_execution']['id'];
-      $type_sql = " AND type = {$tc_execution_type} ";
-    }
-    
-    $sql = " DELETE FROM {$this->tables['user_assignments']} " .
-           " WHERE build_id = {$build_id} {$type_sql} ";
-    
-    $this->db->exec_query($sql);
-  }
-
-
 
   /**
    * get hash with build id and amount of test cases assigned to testers
@@ -336,14 +355,14 @@ class assignment_mgr extends tlObjectWithDB
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $rs = null;
     $types = $this->get_available_types();
-      $execAssign = $types['testcase_execution']['id'];
+    $execAssign = $types['testcase_execution']['id'];
       
     $sql =  "/* $debugMsg */ ".
-        " SELECT COUNT(id) AS qty, build_id " . 
-        " FROM {$this->tables['user_assignments']} " .
-        " WHERE build_id IN ( " . implode(",",(array)$buildID) . " ) " .
-        " AND type = {$execAssign} " .
-        " GROUP BY build_id ";
+            " SELECT COUNT(id) AS qty, build_id " . 
+            " FROM {$this->tables['user_assignments']} " .
+            " WHERE build_id IN ( " . implode(",",(array)$buildID) . " ) " .
+            " AND type = {$execAssign} " .
+            " GROUP BY build_id ";
       $rs = $this->db->fetchRowsIntoMap($sql,'build_id');
       
     return $rs;
@@ -363,24 +382,24 @@ class assignment_mgr extends tlObjectWithDB
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $rs = null;
     $types = $this->get_available_types();
-      $execAssign = $types['testcase_execution']['id'];
+    $execAssign = $types['testcase_execution']['id'];
 
     $sql =  "/* $debugMsg */ ".
-        " SELECT count(0) as qty, UA.build_id ".
-        " FROM {$this->tables['user_assignments']} UA " .
-        " JOIN {$this->tables['builds']}  BU ON UA.build_id = BU.id " .
-        " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
-        "     ON TPTCV.testplan_id = BU.testplan_id " .
-        "     AND TPTCV.id = UA.feature_id " .
-        " LEFT OUTER JOIN {$this->tables['executions']} E " .
-        "     ON E.testplan_id = TPTCV.testplan_id " . 
-        "     AND E.tcversion_id = TPTCV.tcversion_id " .
-        "     AND E.platform_id = TPTCV.platform_id " .
-        "     AND E.build_id = UA.build_id " .
-        " WHERE UA.build_id IN ( " . implode(",",(array)$buildID) . " ) " .
-        " AND E.status IS NULL " .       
-        " AND type = {$execAssign} " .
-        " GROUP BY UA.build_id ";
+            " SELECT count(0) as qty, UA.build_id ".
+            " FROM {$this->tables['user_assignments']} UA " .
+            " JOIN {$this->tables['builds']}  BU ON UA.build_id = BU.id " .
+            " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+            "     ON TPTCV.testplan_id = BU.testplan_id " .
+            "     AND TPTCV.id = UA.feature_id " .
+            " LEFT OUTER JOIN {$this->tables['executions']} E " .
+            "     ON E.testplan_id = TPTCV.testplan_id " . 
+            "     AND E.tcversion_id = TPTCV.tcversion_id " .
+            "     AND E.platform_id = TPTCV.platform_id " .
+            "     AND E.build_id = UA.build_id " .
+            " WHERE UA.build_id IN ( " . implode(",",(array)$buildID) . " ) " .
+            " AND E.status IS NULL " .       
+            " AND type = {$execAssign} " .
+            " GROUP BY UA.build_id ";
       
       $rs = $this->db->fetchRowsIntoMap($sql,'build_id');
       
@@ -388,6 +407,9 @@ class assignment_mgr extends tlObjectWithDB
   }
 
 
+  /**
+   *
+   */
   function getUsersByFeatureBuild($featureSet,$buildID,$assignmentType)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;

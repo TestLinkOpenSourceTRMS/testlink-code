@@ -398,6 +398,7 @@ class TLSmarty extends Smarty
                    'off' => TL_THEME_IMG_DIR . 'lightbulb_off.png',
                    'public' => TL_THEME_IMG_DIR . 'door_open.png',
                    'private' => TL_THEME_IMG_DIR . 'door.png',
+                   'remove' => TL_THEME_IMG_DIR . 'delete.png',
                    'reorder' => TL_THEME_IMG_DIR . 'arrow_switch.png',
                    'report' => TL_THEME_IMG_DIR . 'report.png',
                    'requirements' => TL_THEME_IMG_DIR . 'cart.png',

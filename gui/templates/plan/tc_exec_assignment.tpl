@@ -4,17 +4,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 generate the list of TC that can be removed from a Test Plan 
 
 @filesource tc_exec_assignment.tpl
-@internal revisions
-20120907 - asimon - TICKET 5211: Assign Test Case Execution: text "toggle_all" is displayed next to every test suite title
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
                           btn_update_selected_tc,show_tcase_spec,can_not_execute,
-                          send_mail_to_tester,platform,no_testcase_available,
+                          send_mail_to_tester,platform,no_testcase_available,chosen_blank_option,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
-                          check_uncheck_all_tc,execution,design,execution_history
-                          '}
+                          check_uncheck_all_tc,execution,design,execution_history,remove'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -96,14 +93,14 @@ function check_action_precondition(container_id,action)
 			<select name="bulk_tester_div"  id="bulk_tester_div">
 				{html_options options=$gui->testers selected=0}
 			</select>
-			{* TICKET 4624 *}
 			<input type='button' name='bulk_user_assignment' id='bulk_user_assignment'
 				onclick='if(check_action_precondition("tc_exec_assignment","default"))
 						        set_combo_if_checkbox("tc_exec_assignment_cb","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
 				value="{$labels.btn_do}" />
 		</div>
 		<div>
-			<input type='submit' name='doAction' value='{$labels.btn_update_selected_tc}' />
+			<input type='submit' name='doActionButton' id='doActionButton' value='{$labels.btn_update_selected_tc}' />
+      <input type="hidden" name="doAction" id="doAction" value='std' />
 			<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked} />
 			{$labels.send_mail_to_tester}
 			</span>
@@ -116,11 +113,14 @@ function check_action_precondition(container_id,action)
 
   {if $gui->has_tc}
    <div class="workBack" id="tc_exec_assignment_cb">
-	  {assign var=table_counter value=0}
-	  {assign var=top_level value=$gui->items[0].level}
+    <input type="hidden" name="targetFeature" id="targetFeature" value="0"/>
+    <input type="hidden" name="targetUser" id="targetUser" value="0"/>
+
+	  {$table_counter=0}
+	  {$top_level=$gui->items[0].level}
 	  {foreach from=$gui->items item=ts key=idx name="div_drawing"}
-	    {assign var="ts_id" value=$ts.testsuite.id}
-	    {assign var="div_id" value="div_$ts_id"}
+	    {$ts_id=$ts.testsuite.id}
+	    {$div_id="div_$ts_id"}
 	    {if $ts_id != ''}
 	      <div id="{$div_id}" style="margin-left:{$ts.level}0px; border:1;">
         <br />
@@ -129,7 +129,6 @@ function check_action_precondition(container_id,action)
 			                            onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
                                   title="{$labels.check_uncheck_children_checkboxes}" />
         {$ts.testsuite.name|escape}
-        {* TICKET 5211: "toggle_all" is displayed next to every test suite title on assigning test case execution *}
 	      </h3>
 
         {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -137,7 +136,7 @@ function check_action_precondition(container_id,action)
 
     	  {if $ts.write_buttons eq 'yes'}
           {if $ts.testcase_qty gt 0}
-	          {assign var="table_counter" value=$table_counter+1}
+	          {$table_counter=$table_counter+1}
             <table cellspacing="0" style="font-size:small;" width="100%" id="the-table-{$table_counter}">
             {* ---------------------------------------------------------------------------------------------------- *}
 			      {* Heading *}
@@ -164,12 +163,12 @@ function check_action_precondition(container_id,action)
             {* ---------------------------------------------------------------------------------------------------- *}
             <tbody>  
             {foreach from=$ts.testcases item=tcase}
-              {* loop over platforms *}
+              {* loop over platforms - ATTENTION al least platform_id=0 always exists *}
               {foreach from=$tcase.feature_id key=platform_id item=feature}
                 {if $tcase.linked_version_id != 0}
-                  {assign var="userID" value=0}
+                  {$userID=0}
            	      {if isset($tcase.user_id[$platform_id])}
-            	  	{assign var="userID" value=$tcase.user_id[$platform_id]} 
+            	  	  {$userID=$tcase.user_id[$platform_id]} 
                   {/if} 
             	    <tr>
             	    	<td>
@@ -206,18 +205,26 @@ function check_action_precondition(container_id,action)
             	    	{/if}
             	    	<td align="center">
             	    	{if isset($tcase.user_id[$platform_id])}
-            	    	  {assign var="userID" value=$tcase.user_id[$platform_id]} 
-                      {*userID::{$userID}*}
+            	    	  {$userID=$tcase.user_id[$platform_id]} 
             	    		{$gui->users[$userID]|escape}
+
+                      {* user is a Tester? *}
             	    		{if $gui->users[$userID] != '' && $gui->testers[$userID] == ''}{$labels.can_not_execute}{/if}
+                      <img class="clickable" src="{$tlImages.remove}"
+                           onclick="doAction.value='doRemove';targetFeature.value={$tcase.feature_id[$platform_id]};targetUser.value={$userID};tc_exec_assignment.submit();"
+                           title="{$labels.remove}" />                      
             	    	{/if}
             	    	</td>
                     <td align="center">
-                  		  		<select name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
+                  		  		<select multiples class="schosen-select"
+                                    data-placeholder="{$labels.chosen_blank_option}"
+                                    name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
                   		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"
                   		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}",1)' >
-                  			   	{*  {html_options options=$gui->testers selected=$tcase.user_id} *}
-                  			   	{html_options options=$gui->testers selected=$userID}
+                             {html_options options=$gui->testers}
+                  			   	{* {html_options options=$gui->testers selected=$userID} *}
+                            {* {html_options options=$gui->testers selected=$myArray} *}
+
                   				  </select>
                     </td>
                   </tr>
@@ -252,13 +259,20 @@ function check_action_precondition(container_id,action)
 
 	</div>
   
+  {* 
   <script type="text/javascript">
   // needed for the convert grid logic
   loop2do={$table_counter};
   </script>
+  *}
 
   {/if}
   
 </form>
+<script>
+jQuery( document ).ready(function() {
+jQuery(".chosen-select").chosen({ width: "85%" });
+});
+</script>
 </body>
 </html>

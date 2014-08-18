@@ -371,6 +371,7 @@ $TLS_onchange_save = "Value will be automatically saved when changed";
 $TLS_CSRF_attack = "Cross-Site Request Forgery attack!";
 $TLS_already_exists_not_updated = "Already exists => not updated";
 $TLS_assign_exec_task_to_me = "Assign task to me";
+$TLS_chosen_blank_option = "   ";
 
 
 

@@ -108,16 +108,17 @@ class tlReports extends tlObjectWithDB
             }
           }
           
+          // $tlImages.bullet
 
           $dl = $items[$xdx]['directLink']; 
           $mask = '<img class="clickable" title="%s" alt="%s" ' .
                   ' onclick="showHideByClass(' . "'div','%s');event.stopPropagation();" . '" ' .
-                  ' src="' . $context->imgSet['direct_link'] . '" align="left" />';
+                  ' src="' . $context->imgSet['link_to_report'] . '" align="center" />';
 
           $divClass = 'direct_link_' . $xdx;        
           $items[$xdx]['toggle'] = sprintf($mask,$toggleMsg,$toggleMsg,$divClass);
           $items[$xdx]['directLinkDiv'] = '<div class="' . $divClass . '" ' .
-                                          "style='display:none;border:1px solid;background-color:yellow;'>" . 
+                                          "style='display:none;border:1px solid;background-color:white;'>" . 
                                           '<a href="' . $dl .'" target="_blank">' . $dl . '</a><br></div>';
           $xdx++;
         }

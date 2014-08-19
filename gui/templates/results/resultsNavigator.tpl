@@ -1,22 +1,14 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.11.2.1 2010/11/16 09:49:07 asimon83 Exp $ *}
-{* Purpose: smarty template - show Test Results and Metrics *}
-{* Rev :
-        20101116 - asimon - BUGID 4009: "Test Case Assignment Overview" did not show assignments in some situations
-        20100410 - franciscom - BUGID 3370
-        20081109 - franciscom - refactoring 
-        20070113 - franciscom - use of smarty config file
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+@filesource resultsNavigator.tpl
 *}
 {lang_get var="labels"
           s="title_nav_results,title_report_type,btn_print,test_plan,show_inactive_tplans"}
 
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
+{$cfg_section=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes"}
 
-
-
-{literal}
 <script type="text/javascript">
 function reportPrint(){
 	parent["workframe"].focus();
@@ -29,11 +21,9 @@ function pre_submit()
  return true;
 }
 </script>
-{/literal}
 </head>
 
 <body>
-
 <h1 class="title">{$labels.title_nav_results}</h1>
 
 <div style="margin:0px; padding:0px;">
@@ -59,7 +49,6 @@ function pre_submit()
 		</select>
 		</span>
 		<br>
-		{* BUGID 3370 *}
 		<span>{$labels.show_inactive_tplans}
 		<input type="checkbox" {$gui->checked_show_inactive_tplans} onclick="this.form.submit();" 
 		       id="show_inactive_tplans" name="show_inactive_tplans" >
@@ -74,16 +63,13 @@ function pre_submit()
 {if $gui->do_report.status_ok}
   {foreach from=$gui->menuItems item=menu}
     <span>
- 	       {if $menu.directLink != ''}
-  	       {$menu.toggle} 
-	       {else}
-	        <img src="{$tlImages.bullet}" />
-	       {/if}
-    	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}
-	             {if $gui->checked_show_inactive_tplans}&amp;show_inactive_tplans=1{/if}" 
-	       target="workframe">{$menu.name}</a>
-	       </span><br />
- 	       {$menu.directLinkDiv}
+      <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}
+	          {if $gui->checked_show_inactive_tplans}&amp;show_inactive_tplans=1{/if}" 
+	     target="workframe">{$menu.name}</a>
+	  {if $menu.directLink != ''}{$menu.toggle}{/if}
+	</span>
+	<br>
+	{$menu.directLinkDiv}
   {/foreach}
 {else}
   {$gui->do_report.msg}
@@ -93,7 +79,7 @@ function pre_submit()
 
 <script type="text/javascript">
 {if $gui->workframe != ''}
-	parent.workframe.location='{$gui->workframe}';
+  parent.workframe.location='{$gui->workframe}';
 {/if}
 </script>
 

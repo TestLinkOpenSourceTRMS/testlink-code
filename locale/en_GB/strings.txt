@@ -3000,6 +3000,10 @@ $TLS_format_xls = 'MS Excel';
 $TLS_format_msword = 'MS Word';
 $TLS_format_pdf = 'PDF';
 $TLS_format_mail_html = 'Email (HTML)';
+$TLS_format_pseudo_odt = 'Pseudo OpenOffice Writer';
+$TLS_format_pseudo_ods = 'Pseudo OpenOffice Calc';
+$TLS_format_pseudo_xls = 'MS Excel';
+$TLS_format_pseudo_msword = 'Pseudo MS Word';
 
 
 // ----- lib/results/resultsSend.php -----

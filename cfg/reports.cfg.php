@@ -35,10 +35,10 @@ define('FORMAT_MAIL_HTML', 6);
 /** supported document formats (value = localization ID) */
 $tlCfg->reports_formats = array(
 	FORMAT_HTML => 'format_html',
-	FORMAT_ODT => 'format_odt', 
-	FORMAT_ODS => 'format_ods', 
-	FORMAT_XLS => 'format_xls', 
-	FORMAT_MSWORD => 'format_msword',
+	FORMAT_ODT => 'format_pseudo_odt', 
+	FORMAT_ODS => 'format_pseudo_ods', 
+	// FORMAT_XLS => 'format_xls', 
+	FORMAT_MSWORD => 'format_pseudo_msword',
 //	FORMAT_PDF => 'format_pdf', not implemented yet
 	FORMAT_MAIL_HTML => 'format_mail_html'
 );
@@ -79,14 +79,14 @@ $tlCfg->reports_list['test_plan'] = array(
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_DESIGN,
 	'enabled' => 'all',
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_plan',
-	'format' => 'format_html,format_odt,format_msword'
+	'format' => 'format_html,format_pseudo_odt,format_mpseudo_sword'
 );
 $tlCfg->reports_list['test_report'] = array( 
 	'title' => 'link_report_test_report',
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION,
 	'enabled' => 'all',
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_report',
-	'format' => 'format_html,format_odt,format_msword'
+	'format' => 'format_html,format_pseudo_odt,format_mpseudo_sword'
 );
 
 $tlCfg->reports_list['test_report_on_build'] = array( 
@@ -94,7 +94,7 @@ $tlCfg->reports_list['test_report_on_build'] = array(
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
 	'enabled' => 'all',
 	// 'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
-	'format' => 'format_html,format_odt,format_msword'
+	'format' => 'format_html,format_pseudo_odt,format_mpseudo_sword'
 );
 
 $tlCfg->reports_list['metrics_tp_general'] = array( 
@@ -102,7 +102,7 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 	'url' => 'lib/results/resultsGeneral.php',
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=metrics_tp_general',
-	'format' => 'format_html,format_ods,format_xls,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods,format_mail_html'
 );
 
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
@@ -132,50 +132,30 @@ $tlCfg->reports_list['results_matrix'] = array(
 	'url' => 'lib/results/resultsTC.php',
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
-	'format' => 'format_html,format_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['failed'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_failed',
-	'format' => 'format_html,format_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_blocked'] = array( 
 	'title' => 'link_report_blocked_tcs',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['blocked'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_blocked',
-	'format' => 'format_html,format_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods,format_mail_html'
 );
 $tlCfg->reports_list['list_tc_not_run'] = array( 
 	'title' => 'link_report_not_run',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['not_run'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_not_run',
-	'format' => 'format_html,format_ods,format_mail_html',
+	'format' => 'format_html,format_pseudo_ods,format_mail_html',
 	'misc' => array('bugs_not_linked' => false)
 );
-
-// Example
-// $tlCfg->reports_list['list_tc_passed'] = array( 
-//	'title' => 'link_report_passed',
-//	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['passed'],
-//	'enabled' => 'all', 
-//	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_passed',
-//	'format' => 'format_html,format_ods,format_mail_html',
-//	'misc' => array('bugs_not_linked' => false)
-// );
-
-
-
-// not will be available on 1.9.4   
-// $tlCfg->reports_list['list_tc_notrunanyplatform'] = array(
-// 	'title' => 'link_report_not_run_any_platform',
-// 	'url' => 'lib/results/tcNotRunAnyPlatform.php',
-// 	'enabled' => 'all', 'directLink' => '',
-// 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
-// );
 
 $tlCfg->reports_list['tcases_without_tester'] = array(
 	'title' => 'link_report_tcases_without_tester',

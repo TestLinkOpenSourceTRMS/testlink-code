@@ -249,6 +249,10 @@ class tlTestPlanMetrics extends testplan
 
 
   /**
+   * @used-by getOverallBuildStatusForRender()
+   *          XML-RPC getExecCountersByBuild()
+   *
+   *
    * No matter we are trying to calculate metrics for BUILDS,
    * we need to consider execution status at Build and Platform level.
    *
@@ -272,6 +276,11 @@ class tlTestPlanMetrics extends testplan
    *  opt => array('getOnlyAssigned' => false, 'tprojectID' => 0, 
    *               'getPlatformSet' => false, 'processClosedBuilds' => true);
    *  filters => array('buildSet' => null);
+   *
+   * @internal revisions
+   * @since 1.9.12
+   * 20140819 - test case exec assignment to MULTIPLE TESTERS
+   *
    */
   function getExecCountersByBuildExecStatus($id, $filters=null, $opt=null)
   {
@@ -285,7 +294,7 @@ class tlTestPlanMetrics extends testplan
     $sqlLEBBP =  $sqlStm['LEBBP'];
 
     $sqlUnionAB  =  "/* {$debugMsg} sqlUnionAB - executions */" . 
-                  " SELECT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
+                  " SELECT DISTINCT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
                   " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
                   " FROM {$this->tables['testplan_tcversions']} TPTCV " .
                   " JOIN {$this->tables['user_assignments']} UA " .
@@ -308,7 +317,7 @@ class tlTestPlanMetrics extends testplan
                   " AND UA.build_id IN ({$builds->inClause}) ";
       
     $sqlUnionBB  =  "/* {$debugMsg} sqlUnionBB - NOT RUN */" . 
-                   " SELECT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
+                   " SELECT DISTINCT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
                   " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
                   " FROM {$this->tables['testplan_tcversions']} TPTCV " .
                   " JOIN {$this->tables['user_assignments']} UA " .
@@ -340,12 +349,18 @@ class tlTestPlanMetrics extends testplan
                   " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
                   " AND E.id IS NULL AND LEBBP.id IS NULL";
       
+
+    // 20140819 - I've not documented why I've use UNION ALL
+    // UNION ALL includes duplicates, but now (@20140819) because I've implemented
+    // test case exec assignment to MULTIPLE TESTERS, I need to remove duplicates
+    // to avoid wrong exec_qty.
+    // My choice was: add DISTINCT to each union piece.
+    // May be is a wrong choice, but I need to read and test more to understand  
     $sql =  " /* {$debugMsg} UNION WITH ALL CLAUSE */" .
             " SELECT build_id,status, count(0) AS exec_qty " .
             " FROM ($sqlUnionAB UNION ALL $sqlUnionBB ) AS SQBU " .
             " GROUP BY build_id,status ";
     $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','status');              
-
 
     // Need to Add info regarding:
     // - Add info for ACTIVE BUILD WITHOUT any execution. ???
@@ -367,15 +382,17 @@ class tlTestPlanMetrics extends testplan
     }
     
     // get total assignments by BUILD ID
-    $sql =   "/* $debugMsg */ ".
-            " SELECT COUNT(0) AS qty, UA.build_id " . 
+    // 20140819 - changes due to test case exec assignment to MULTIPLE TESTERS
+    $sql =  "/* $debugMsg */ ".
+            " SELECT COUNT(0) AS qty, TT.build_id FROM ( " .
+            " SELECT DISTINCT UA.build_id, UA.feature_id " . 
             " FROM {$this->tables['user_assignments']} UA " .
             " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
             " WHERE UA. build_id IN ( " . $builds->inClause . " ) " .
             " AND UA.type = {$this->execTaskCode} " . 
-            " GROUP BY build_id";
+            " GROUP BY build_id,feature_id) TT " .
+            " GROUP BY build_id ";
 
-    //$exec['total_assigned'] = (array)$this->db->fetchRowsIntoMap($sql,'build_id');
     $exec['total'] = (array)$this->db->fetchRowsIntoMap($sql,'build_id');
     $exec['active_builds'] = $builds->infoSet;
 
@@ -408,11 +425,11 @@ class tlTestPlanMetrics extends testplan
       // ACTIVE BUILDS were TEST CASES HAVE TESTER ASSIGNMENT
       $buildList = array_keys($metrics['with_tester']);
       $renderObj->info = array();  
-        foreach($buildList as $buildID)
-        {
+      foreach($buildList as $buildID)
+      {
         $totalRun = 0;
-          $renderObj->info[$buildID]['build_name'] = $metrics['active_builds'][$buildID]['name'];   
-          $renderObj->info[$buildID][$totalKey] = $metrics['total'][$buildID]['qty'];   
+        $renderObj->info[$buildID]['build_name'] = $metrics['active_builds'][$buildID]['name'];   
+        $renderObj->info[$buildID][$totalKey] = $metrics['total'][$buildID]['qty'];   
 
         $renderObj->info[$buildID]['details'] = array();
         
@@ -425,25 +442,22 @@ class tlTestPlanMetrics extends testplan
           if( $renderObj->info[$buildID][$totalKey] > 0 ) 
           {
             $rf[$statusVerbose]['percentage'] = number_format(100 * 
-                                      ($rf[$statusVerbose]['qty'] / 
-                                        $renderObj->info[$buildID][$totalKey]),1);
+                                               ($rf[$statusVerbose]['qty'] / 
+                                                $renderObj->info[$buildID][$totalKey]),1);
           }
           
           $totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
         }
         $renderObj->info[$buildID]['percentage_completed'] =  number_format(100 * 
-                                          ($totalRun / 
-                                           $renderObj->info[$buildID][$totalKey]),1);
-        }
+                                                             ($totalRun / $renderObj->info[$buildID][$totalKey]),1);
+      }
          
-        foreach($code_verbose as $status_verbose)
-        {
-          $l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
-                          lang_get($status_verbose); 
-        
-          $renderObj->colDefinition[$status_verbose]['qty'] = $l18n_label;
-          $renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
-        }
+      foreach($code_verbose as $human)
+      {
+        $l10n = isset($labels[$human]) ? lang_get($labels[$human]) : lang_get($human); 
+        $renderObj->colDefinition[$human]['qty'] = $l10n;
+        $renderObj->colDefinition[$human]['percentage'] = '[%]';
+      }
   
     }
     return $renderObj;
@@ -1172,10 +1186,9 @@ class tlTestPlanMetrics extends testplan
          
         foreach($code_verbose as $status_verbose)
         {
-          $l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
-                          lang_get($status_verbose); 
+          $l10n = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : lang_get($status_verbose); 
         
-          $renderObj->colDefinition[$status_verbose]['qty'] = $l18n_label;
+          $renderObj->colDefinition[$status_verbose]['qty'] = $l10n;
           $renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
         }
   

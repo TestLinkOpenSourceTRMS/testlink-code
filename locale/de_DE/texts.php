@@ -26,6 +26,8 @@
  * 
  * Edit by: devwag00\fixccey 06.05.2014
  *
+ * Edit by: sschiele@mesnet.de 2014-08-19
+ * Fixed String formatting errors
  **/
 
 
@@ -85,19 +87,17 @@ $TLS_htmltext['editTc'] 		= "<p>Die <i>Testspezifikation</i> ermöglicht das " .
 	"verschieben und kopieren können. Sie können auch importiert und exportiert werden (mit den Testfällen).</li>
 	<li>Test Suiten sind skalierbare Ordner. Nutzer können Test Suiten im Test Projekt   " .
 	"verschieben und kopieren. Sie können importiert und exportiert werden (mit den Testfällen).
-	<li>Durch Auswahl der neu erstellten Test Suite in dem Navigations-Baum können neue Testfälle mit 
+	<li>Durch Auswahl der neu erstellten Test Suite in dem Navigations-Baum können neue Testfälle mit ".
 	"<b>Testfälle erstellen</b> erstellt werden. Ein Testfall in einem Test Projekt spezifiziert ein bestimmtes Testszenario, " .
 	"die erwarteten Ergebnisse und benutzerdefinierte Felder (siehe Benutzeranleitung). " .
 	"Für eine verbesserte Nachvollziehbarkeit ".  
-	"(Traceability) können den Testfällen <b>Stichwörter</b> zugewiesen werden" .</li>
+	"(Traceability) können den Testfällen <b>Stichwörter</b> zugewiesen werden.</li>
 	<li>In der Baumansicht auf der linken Seite können Sie die Daten bearbeiten. Jeder Testfall speichert den eigenen Verlauf.</li>
-
-
 	<li>Die erstellte Test Spezifikation kann einem <span class=\"help\" onclick=
 	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> zugewiesen werden, wenn die Testfälle fertig sind.</li>
 </ol>
 
-<p>Mit TestLink können Testfälle in Test Suiten gegliedert werden.".
+<p>Mit TestLink können Testfälle in Test Suiten gegliedert werden." .
 "Test Suiten können in Test Suiten verschachtelt werden, sodass hierarchische Einstufungen möglich sind.
  Diese Information kann dann mit den Testfällen ausgedruckt werden.</p>";
 
@@ -261,7 +261,7 @@ Die <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['keywordsAssign']	= "Stichwörter zuweisen";
 $TLS_htmltext['keywordsAssign'] 			= "<h2>Zweck:</h2>
-<p>Auf der "Stichwort zuweisen" Seite können Nutzer stapelweise Stichwörter den vorhandenen 
+<p>Auf der Stichwort zuweisen Seite können Nutzer stapelweise Stichwörter den vorhandenen 
 Testfällen und Suiten zuweisen.</p>
 
 <h2>Um Stichwörter zuzuweisen:</h2>
@@ -282,7 +282,7 @@ in dem Test Plan.
 </p>
 <p>Das ist in TestLink so umgesetzt, damit ältere Testfall Versionen im Test Plan nicht von Stichwort
 Zuweisungen neuerer Testfall Versionen betroffen sind. 
-Testfälle des Test Plans können durch ein klick auf "Testfälle aktualisieren" aktualisiert werden. Dies 
+Testfälle des Test Plans können durch ein klick auf Testfälle aktualisieren aktualisiert werden. Dies 
 sollte möglichst vor dem Zuweisen von Stichwörtern geschehen.</p>";
 
 
@@ -327,15 +327,15 @@ der Ausführung unterscheiden. Sie können ebenfalls ein Reportformat auswählen
 <p> Es gibt eine Auswahl von verschieden Reports, deren Zweck und Funktion werden unten erklärt.</p>
 
 <h3>Test Plan</h3>
-<p>In dem Dokument "Test Plan" können Inhalt und Dokumentenstruktur definiert werden. </p>
+<p>In dem Dokument 'Test Plan' können Inhalt und Dokumentenstruktur definiert werden. </p>
 
 <h3>Test Report</h3>
-<p>In dem Dokument "Test Report" können Inhalt und Dokumentenstruktur definiert werden. 
+<p>In dem Dokument 'Test Report' können Inhalt und Dokumentenstruktur definiert werden. 
 Testfälle mit den Ergebnissen sind mit eingeschlossen.</p>
 
 <h3>Allgemeine Test Plan Metriken</h3>
 <p>Diese Seite zeigt den neuesten Status eines Test Plans nach Test Suite, Besitzer und Stichwort.
-Der "neueste Status" wird durch das neueste Build, auf dem die Testfälle ausgeführt wurden, bestimmt.
+Der 'neueste Status' wird durch das neueste Build, auf dem die Testfälle ausgeführt wurden, bestimmt.
 Wenn bspw. ein Testfall auf mehrere Builds ausgeführt wurde, dann wird nur das letzte Ergebnis berücksichtigt.</p>
 
 <p>'Letztes Test Ergebnis' wird in vielen Reports genutzt und ist wie folgt festgelegt:</p>
@@ -362,7 +362,7 @@ Build 1 als 'OK' markiert wird und in Build 2 nicht ausgeführt wird, so wird da
 	die den Testfällen zugewiesen sind.</li>
 	<li><b>Ergebnisse nach Besitzer</b>
 	Listet alle Besitzer des aktuellen Test Plans, denen Testfälle zugewiesen wurden.
-	Testfälle die nicht zugewiesen wurden erscheinen unter "nicht zugewiesen".</li>
+	Testfälle die nicht zugewiesen wurden erscheinen unter 'nicht zugewiesen'.</li>
 </ul>
 
 <h3>Der gesamte Build Status</h3>
@@ -387,7 +387,7 @@ dann können Sie dieses Bedienelement ändern.</li>
 <li><b>Besitzer</b> 0->1 Besitzer können ausgewählt werden. Standardmäßig sind keine Besitzer ausgewählt. 
 Ist kein Besitzer ausgewählt, werden alle Testfälle unabhängig von Besitzer Zuweisungen berücksichtigt.
 Zurzeit gibt es keine Funktion um nach nicht zugewiesenen Testfällen zu suchen. Besitzern werden Testfälle per Test Plan 
-über die "Testfälle an Benutzer zuweisen" Seite zugewiesen. Wenn Sie an Testergebnissen eines bestimmtes Testers interessiert sind, 
+über die 'Testfälle an Benutzer zuweisen' Seite zugewiesen. Wenn Sie an Testergebnissen eines bestimmtes Testers interessiert sind, 
 dann können Sie dieses Bedienelement ändern.</li>
 <li><b>Top-Level Suite</b> 0->n Suiten höchster Ebene können ausgewählt werden. Standardmäßig sind alle Suiten
 ausgewählt. Nur Suiten die selektiert sind, werden für die Ergebnis-Metriken abgefragt. Wenn Sie nur an einer 
@@ -398,11 +398,11 @@ Wenn Sie bspw. wissen möchten wieviele Testfälle auf den letzten 3 Builds ausg
 Bedienelement geändert werden. 
 Die Auswahl der Stichwörter, Besitzer und Top Level Suite schreibt die Anzahl der Testfälle eines Test Plans vor, 
 womit die Metrik per Suite oder Metrik per Test Plan berechnet werden.
-Wenn z.B der Besitzer 'Greg', Stichwort="Priorität 1", und alle wählbaren Test Suiten ausgewählt sind, werden nur Priorität 1 Testfälle,
+Wenn z.B der Besitzer 'Greg', Stichwort='Priorität 1', und alle wählbaren Test Suiten ausgewählt sind, werden nur Priorität 1 Testfälle,
 die Greg zugewiesen sind berücksichtigt. Die Anzahl der Testfälle im Test Report werden durch diese 3 Bedienelemente
 beeinflusst. 
 Die Auswahl der Builds beeinflusst ob ein Testfall als 'OK', 'Fehlgeschlagen', 'Blockiert', oder 'nicht getestet' gilt. 
-Bitte sehen Sie nach unter "Letztes Test Ergebnis".</li>
+Bitte sehen Sie nach unter 'Letztes Test Ergebnis'.</li>
 </ul>
 <p>Klicken Sie das Element 'Abschicken' an um mit der Anfrage fortzufahren und die Ausgabe zu betrachten.</p>
 
@@ -418,7 +418,7 @@ des ausgewählten Builds.</li>
 
 <h3>Blockierte, fehlgeschlagene und nicht getestete Testfall Reports</h3>
 <p>Diese Reports zeigen alle zurzeit blockierten, fehlerhaften oder nicht getesteten Testfälle an. Die 
-"Letztes Test Ergebnis" Logik (welches oben unter "Allgemeine Test Plan Metriken" beschrieben ist) 
+'Letztes Test Ergebnis' Logik (welches oben unter 'Allgemeine Test Plan Metriken' beschrieben ist) 
 wird angewendet um zu bestimmen ob  ein Testfall als 'Fehlgeschlagen', 'Blockiert', oder 'nicht getestet' 
 betrachtet werden soll. Testergebnisse von fehlgeschlagenen und blockierten Testfällen zeigen 
 die zugehörigen BUGs an, falls ein BUG Tracking System genutzt wird.</p>
@@ -429,7 +429,7 @@ wurde dann wird das aktuellste Test Ergebnis angezeigt. Es wird empfohlen den Be
 zu exportieren, um bei großen Datenmengen die Daten einfacher durchzusehen.</p>
 
 <h3>Charts - Allgemeine Test Plan Metriken</h3>
-<p>Die "Letztes Test Ergebnis" Logik wird bei allen vier angezeigten Charts angewendet
+<p>Die 'Letztes Test Ergebnis' Logik wird bei allen vier angezeigten Charts angewendet
 Die Grafiken sind animiert, um sich die Metriken des aktuellen Test Plans zu einfach vorzustellen zu können.
 Die vier Charts sind:</p>
 <ul><li>Kreisdiagramm insgesamt von bestandenen / fehlgeschlagenen / blockierten / nicht getesteten Testfällen</li>
@@ -494,7 +494,7 @@ sich geändert hat. Oft klären sich Funktionalitäten während dem Testen." .
 <ol>
 	<li>Wählen Sie eine zu testende Test Suite oder Testfall aus.</li>
 	<li>Wählen Sie die neue Version des bestimmten Testfalls über die Kombo-Box aus.</li>
-	<li>Klicken Sie auf "Aktualisiere Test Plan" um die Änderungen zu übernehmen.</li>
+	<li>Klicken Sie auf 'Aktualisiere Test Plan' um die Änderungen zu übernehmen.</li>
 	<li>Um zu prüfen: Öffnen Sie die Ausführungs-Seite, um die Texte der Testfälle zu betrachten.</li>
 </ol>";
 

@@ -59,6 +59,9 @@ $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->diffEngine = new stdClass();
 $tlCfg->tplanDesign = new stdClass();
 
+$tlCfg->notifications = new stdClass();
+
+
 
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -128,6 +131,7 @@ $tlCfg->charts_font_size = 8;
 // ----------------------------------------------------------------------------
 /* [SERVER ENVIRONMENT] */
 
+
 /**
  * TICKET 4969: Add Setting to Force HTTPS
  */
@@ -155,6 +159,11 @@ $tlCfg->sessionInactivityTimeout = 9900;
  */
 //ini_set('session.gc_maxlifetime', 54000);
 
+$tlCfg->notifications->userSignUp = new stdClass();
+$tlCfg->notifications->userSignUp->enabled = TRUE;  // @see notifyGlobalAdmins()
+$tlCfg->notifications->userSignUp->to = new stdClass();
+$tlCfg->notifications->userSignUp->to->roles = array(TL_ROLES_ADMIN);
+$tlCfg->notifications->userSignUp->to->users = null; // i.e. array('login01','login02');
 
 // ----------------------------------------------------------------------------
 /* [LOGGING] */

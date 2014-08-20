@@ -9,14 +9,14 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.9
- * 20130914 - franciscom - TICKET 5895: New Account Created notification is sent to wrong destinations
+ * @since 1.9.12
  *
  */
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('email_api.php');
+
 
 $templateCfg = templateConfiguration();
 if (!config_get('user_self_signup'))
@@ -54,7 +54,11 @@ if($args->doEditUser)
     }
     if ($result >= tl::OK)
     {
-      notifyGlobalAdmins($db,$user);
+      $cfg = config_get('notifications');
+      if($cfg->userSignUp->enabled)
+      {  
+        notifyGlobalAdmins($db,$user);
+      }
       logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
       redirect(TL_BASE_HREF . "login.php?note=first");
       exit();
@@ -102,16 +106,45 @@ function init_args()
 function notifyGlobalAdmins(&$dbHandler,&$userObj)
 {
   // Get email addresses for all users that have default role = administrator
-  $roleMgr = new tlRole(TL_ROLES_ADMIN);
-  $userSet = $roleMgr->getUsersWithGlobalRole($dbHandler);
-  $mail['subject'] = lang_get('new_account');
-  $key2loop = array_keys($userSet);
-  foreach($key2loop as $userID)
+ 
+  $cfg = config_get('notifications');
+  if( !is_null($cfg->userSignUp->to->roles) )
   {
-    $mail['to'][$userID] = $userSet[$userID]->emailAddress; 
+    foreach($cfg->userSignUp->to->roles as $roleID)
+    {
+      $roleMgr = new tlRole($roleID);
+      $userSet = $roleMgr->getUsersWithGlobalRole($dbHandler);
+      $key2loop = array_keys($userSet);
+      foreach($key2loop as $userID)
+      {
+        if(!isset($mail['to'][$userID]))
+        {
+          $mail['to'][$userID] = $userSet[$userID]->emailAddress; 
+        }  
+      }
+    }  
+  }  
+  if( !is_null($cfg->userSignUp->to->users) )
+  {
+    // Brute force query
+    $tables = tlObject::getDBTables('users');
+    $sql = " SELECT id,email FROM {$tables['users']} " .
+           " WHERE login IN('" . implode("','", $cfg->userSignUp->to->users) . "')";
+    $userSet = $dbHandler->fetchRowsIntoMap($sql,'id');
+    if(!is_null($userSet))
+    {
+      foreach($userSet as $userID => $elem)
+      {
+        if(!isset($mail['to'][$userID]))
+        {
+          $mail['to'][$userID] = $elem['email'];
+        }  
+      }
+    }  
   }
-  // email_api uses ',' as list separator
-  $mail['to'] = implode(',',$mail['to']);
+
+  $mail['to'] = implode(',',$mail['to']); // email_api uses ',' as list separator
+  $mail['subject'] = lang_get('new_account');
   $mail['body'] = lang_get('new_account') . "\n";
   $mail['body'] .= " user:$userObj->login\n"; 
   $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";

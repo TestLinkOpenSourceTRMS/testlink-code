@@ -17,7 +17,6 @@ require_once('common.php');
 require_once('users.inc.php');
 require_once('email_api.php');
 
-
 $templateCfg = templateConfiguration();
 if (!config_get('user_self_signup'))
 {
@@ -43,30 +42,36 @@ if($args->doEditUser)
   else
   {
     $user = new tlUser(); 
-    $result = $user->setPassword($args->password);
-    if ($result >= tl::OK)
+    $rx = $user->checkPasswordQuality($args->password);
+    if( $rx['status_ok'] >= tl::OK )
     {
-      $user->login = $args->login;
-      $user->emailAddress = $args->email;
-      $user->firstName = $args->firstName;
-      $user->lastName = $args->lastName;
-      $result = $user->writeToDB($db);
-    }
-    if ($result >= tl::OK)
-    {
-      $cfg = config_get('notifications');
-      if($cfg->userSignUp->enabled)
-      {  
-        notifyGlobalAdmins($db,$user);
+      $result = $user->setPassword($args->password);
+      if ($result >= tl::OK)
+      {
+        $user->login = $args->login;
+        $user->emailAddress = $args->email;
+        $user->firstName = $args->firstName;
+        $user->lastName = $args->lastName;
+        $result = $user->writeToDB($db);
+
+        $cfg = config_get('notifications');
+        if($cfg->userSignUp->enabled)
+        {  
+          notifyGlobalAdmins($db,$user);
+        }
+        logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
+        redirect(TL_BASE_HREF . "login.php?note=first");
+        exit();
       }
-      logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
-      redirect(TL_BASE_HREF . "login.php?note=first");
-      exit();
-    }
-    else 
+      else 
+      {
+        $message = getUserErrorMessage($result);
+      } 
+    }  
+    else
     {
-      $message = getUserErrorMessage($result);
-    } 
+      $message = $rx['msg'];
+    }  
   }
 }
 

@@ -1377,4 +1377,63 @@ class tlUser extends tlDBObject
       exit();
     }
   }
+
+
+  /**
+   *
+   */
+  static function checkPasswordQuality($password)
+  {
+    $cfg = config_get('passwordChecks');
+
+    $regexp['number'] = "#[0-9]+#";
+    $regexp['letter'] = "#[a-z]+#";
+    $regexp['capital'] = "#[A-Z]+#";
+    $regexp['symbol'] = "#\W+#";
+
+
+    $pl = strlen($password);
+    $ret = array('status_ok' => tl::OK, 'msg' => 'ok');
+
+    foreach($cfg as $attr => $val)
+    {
+      $base_msg = lang_get('bad_password_' . $attr);
+      switch($attr)
+      {
+        case 'minlen':
+          if( $pl < intval($val) )
+          {
+            $ret['status_ok'] = tl::ERROR;
+            $ret['msg'] = sprintf($base_msg,intval($val), $pl);
+          }  
+        break;
+
+        case 'maxlen':
+          if( $pl > intval($val) )
+          {
+            $ret['status_ok'] = tl::ERROR;
+            $ret['msg'] = sprintf($base_msg, intval($val), $pl);
+          }  
+        break;
+
+        case 'number':
+        case 'letter':
+        case 'capital':
+        case 'symbol':
+          if( !preg_match($regexp[$attr], $password) )
+          {
+            $ret['status_ok'] = tl::ERROR;
+            $ret['msg'] = $base_msg;
+          }  
+        break;
+      }
+
+      if($ret['status_ok'] == tl::ERROR)
+      {
+        break;
+      }  
+    }  
+    return $ret;
+
+  }
 }

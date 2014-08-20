@@ -477,6 +477,16 @@ $TLS_your_info_please = "Enter Your User Information";
 $TLS_new_account = "TestLink - New Account Created";
 $TLS_invalid_security_token = "Invalid security token";
 
+$TLS_bad_password_minlen = 'Password requirement - min len %s - actual lenght %s';
+$TLS_bad_password_maxlen = 'Password requirement - MAX len %s - actual lenght %s';
+$TLS_bad_password_number = 'Password requirement - must contains at least one number';
+$TLS_bad_password_letter = 'Password requirement - must contains at least one letter';
+$TLS_bad_password_capital = 'Password requirement - must contains at least one CAPITAL LETTER';
+$TLS_bad_password_symbol = 'Password requirement - must contains at least one symbol';
+
+
+
+
 
 // ----- archiveData.php -----
 $TLS_container_title_testcase = $TLS_test_case;

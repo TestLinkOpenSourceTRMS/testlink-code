@@ -286,6 +286,16 @@ $tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'a
 /* Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';
 
+// Applies only if authentication methos is DB.
+// Used when:
+// 1. user sign up
+// 
+// null => only check password IS NOT EMPTY
+// 
+// $tlCfg->passwordChecks = array('minlen' => 8,'maxlen' => 20,'number' => true,'letter' => true,
+//	                              'capital' => true, 'symbol' => true);
+$tlCfg->passwordChecks = null;
+
 
 /**
  * Single Sign On authentication

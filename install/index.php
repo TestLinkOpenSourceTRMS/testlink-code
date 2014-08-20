@@ -51,12 +51,26 @@ $forum_url = 'forum.testlink.org';
     You are welcome to visit our <a target="_blank" href="http://forum.testlink.org">
     forum</a> to browse or discuss.
     </p>
-    <p><ul>
-    <li><a href="installIntro.php?type=new">New installation</a></li>
-    </ul></p>
+    <p><h3>Some user contributed videos (You Tube)</h3></p>
+    <b>
+    <a href="https://www.youtube.com/watch?v=NOvTWZvc2x8" target="#">Installation of "Testlink" & Creating project.</a><br>
+    <a href="https://www.youtube.com/watch?v=P2zWScVjuag" target="#">TestLink Test Management Tool Tutorial</a><br>
+    <a href="https://www.youtube.com/watch?v=7xH1LKQU1TA" target="#">Introduction to TestLink</a><br>
+    <a href="https://www.youtube.com/watch?v=6s48WGuX2WE" target="#">TestLink Walkthrough</a><br>
+    </b>
+
+    <p><ul><li><a href="installIntro.php?type=new">New installation</a></li></ul></p>
+
+    <br>
+    <i>
+    TestLink is a complicated piece of software, and has always been released under 
+    an Open Source license, and this will continue into the far future. 
+    <br>It has cost thousands of hours to develop, test and support TestLink. 
+    <br>If you find TestLink valuable, we would appreciate if you would consider 
+    buying a support agreement or requesting custom development.    
+    </i>
 </div>
 <div class="tlLiner">&nbsp;</div>
-
 </div>
 </body>
 </html>

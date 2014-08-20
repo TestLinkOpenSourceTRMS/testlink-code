@@ -1948,7 +1948,7 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id)
     $env->base_href = $baseHref;
     $env->reportType = $renderOptions['docType'];
 
-    $identLevel = 100000;
+    $indentLevel = 100000;
     $out .= renderTestCaseForPrinting($dbHandler,$tcase,$renderOptions,$env,$context,$indentLevel); 
 
   }  

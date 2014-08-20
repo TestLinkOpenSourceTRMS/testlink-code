@@ -216,6 +216,10 @@ $g_removeEventsOlderThan = 30;
  *   @since 1.9.4                                  
  *   example array('all' => array('INFO','AUDIT'),
  *                 'mail' =>  array('ERROR'))
+ *
+ *   $tlCfg->loggerFilter = array('db' => array('DEBUG','AUDIT','WARNING','ERROR'),
+ *                                'file' => array('NONE'));
+ *
  */                            
 $tlCfg->loggerFilter = null; // default defined on logger.class.php ;                            
 

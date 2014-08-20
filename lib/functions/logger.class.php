@@ -247,9 +247,9 @@ class tlLogger extends tlObject
    */
   public function disableLogging($logger = null)
   {
-      if(is_null($logger))
-      {
-        $this->doLogging = false;
+    if(is_null($logger))
+    {
+      $this->doLogging = false;
     }
     else
     {
@@ -270,20 +270,24 @@ class tlLogger extends tlObject
    */
   public function enableLogging($logger = null)
   {
-      if(is_null($logger))
-      {
-         $this->doLogging = false;
+    if(is_null($logger))
+    {
+      $this->doLogging = false;
     }
     else
     {
-        $loggerSet = explode(",",$logger);
-        foreach($loggerSet as $idx => $loggerKey)
-        {
-            $this->loggers[$loggerKey]->enableLogging();
-        }
+      $loggerSet = explode(",",$logger);
+      foreach($loggerSet as $idx => $loggerKey)
+      {
+        $this->loggers[$loggerKey]->enableLogging();
+      }
     }
   }
 
+  /**
+   *
+   *
+   */
   public function getEnableLoggingStatus($logger = null)
   {
     $status = is_null($logger) ? $this->doLogging : $this->loggers[$logger]->getEnableLoggingStatus();
@@ -595,13 +599,12 @@ class tlEventManager extends tlObjectWithDB
   
     public static function create(&$db)
     {
-        if (!isset(self::$s_instance))
-    {
-            $c = __CLASS__;
-            self::$s_instance = new $c($db);
-        }
-
-        return self::$s_instance;
+      if (!isset(self::$s_instance))
+      {
+        $c = __CLASS__;
+        self::$s_instance = new $c($db);
+      }
+      return self::$s_instance;
     }
 
   /*
@@ -617,25 +620,28 @@ class tlEventManager extends tlObjectWithDB
                                $endTime = null, $users = null)
   {
     $clauses = null;
-        $usersFilter = null;
+    $usersFilter = null;
     if (!is_null($logLevels))
     {
       $logLevels = (array) $logLevels;
       $logLevels = implode(",",$logLevels);
       $clauses[] = "log_level IN ({$logLevels})";
     }
+    
     if (!is_null($objectIDs) && !empty($objectIDs))
     {
       $objectIDs = (array) $objectIDs;
-        $objectIDs = implode(",",$objectIDs);
-        $clauses[] = "object_id IN ({$objectIDs})";
+      $objectIDs = implode(",",$objectIDs);
+      $clauses[] = "object_id IN ({$objectIDs})";
     }
+    
     if (!is_null($objectTypes) && !empty($objectTypes) )
     {
       $objectTypes = (array) $objectTypes;
       $objectTypes = $this->db->prepare_string(implode("','",$objectTypes));
       $clauses[] = "object_type IN ('{$objectTypes}')";
     }
+    
     if (!is_null($activityCodes))
     {
       $activityCodes = (array) $activityCodes;
@@ -646,23 +652,23 @@ class tlEventManager extends tlObjectWithDB
     if (!is_null($startTime))
     {
       $clauses[] = "fired_at >= {$startTime}";
-        }
+    }
 
     if (!is_null($endTime))
     {
       $clauses[] = "fired_at <= {$endTime}";
     }
     
-      if (!is_null($users))
-      {
-          $usersFilter = " JOIN {$this->tables['transactions']}  T " .
-                   " ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
-      }
+    if (!is_null($users))
+    {
+      $usersFilter = " JOIN {$this->tables['transactions']}  T " .
+                     " ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
+    }
     $query = "SELECT E.id FROM {$this->tables['events']} E {$usersFilter}";
-      if ($clauses)
-      {
-          $query .= " WHERE " . implode(" AND ",$clauses);
-      }
+    if ($clauses)
+    {
+      $query .= " WHERE " . implode(" AND ",$clauses);
+    }
 
     $query .= " ORDER BY transaction_id DESC,fired_at DESC";
   
@@ -732,7 +738,7 @@ class tlEvent extends tlDBObject
 
   public $transaction = null;
 
-    //detail levels  @TODO DOCUMENT DETAILS OF WHAT ?
+  //detail levels  @TODO DOCUMENT DETAILS OF WHAT ?
   const TLOBJ_O_GET_DETAIL_TRANSACTION = 1;
 
   public function getLogLevel()
@@ -850,7 +856,7 @@ class tlEvent extends tlDBObject
 
 
       $query = "/* $debugMsg */ " .
-           "INSERT INTO {$this->tables['events']} (transaction_id,log_level,description,source," .
+               "INSERT INTO {$this->tables['events']} (transaction_id,log_level,description,source," .
                "fired_at,object_id,object_type,activity) " .
                "VALUES ({$transactionID},{$logLevel},'{$description}',{$local->source}," .
                "{$firedAt},{$local->objectID},{$local->objectType},{$local->activityCode})";
@@ -909,7 +915,7 @@ class tlDBLogger extends tlObjectWithDB
 
   public function disableLogging()
   {
-      $this->doLogging = false;
+    $this->doLogging = false;
   }
 
   public function enableLogging()
@@ -925,8 +931,8 @@ class tlDBLogger extends tlObjectWithDB
 
   public function writeTransaction(&$t)
   {
-      if ($this->getEnableLoggingStatus() == false)
-      {
+    if ($this->getEnableLoggingStatus() == false)
+    {
       return tl::OK;
     }
       
@@ -947,9 +953,9 @@ class tlDBLogger extends tlObjectWithDB
       $this->pendingTransaction = null;
       if ($t->dbID)
       {
-          $this->disableLogging();
+        $this->disableLogging();
         $t->writeToDb($this->db);
-          $this->enableLogging();
+        $this->enableLogging();
       }
       return tl::OK;
     }
@@ -1010,10 +1016,16 @@ class tlDBLogger extends tlObjectWithDB
     {
       global $db;
       if ($db)
+      {
         $this->db = &$db;
+      }  
+        
     }
     if (!$this->db || !$this->db->db->isConnected())
+    {
       return tl::ERROR;
+    }  
+      
     return tl::OK;
   }
 
@@ -1047,7 +1059,7 @@ class tlFileLogger extends tlObject
 
   public function disableLogging()
   {
-      $this->doLogging = false;
+    $this->doLogging = false;
   }
 
   public function enableLogging()
@@ -1069,6 +1081,7 @@ class tlFileLogger extends tlObject
     {
       return tl::OK;
     }  
+    
     if (!$this->logLevelFilter)
     {
       return;
@@ -1109,9 +1122,9 @@ class tlFileLogger extends tlObject
     // build the logfile entry
     $subjects = array("%timestamp","%errorlevel","%source","%description","%sessionid");
     $replacements = array(gmdate("y/M/j H:i:s",$e->timestamp),
-                tlLogger::$logLevels[$e->logLevel],
-                $e->source,$description,
-                $e->sessionID ? $e->sessionID : "<nosession>");
+                          tlLogger::$logLevels[$e->logLevel],
+                          $e->source,$description,
+                          $e->sessionID ? $e->sessionID : "<nosession>");
     $line = str_replace($subjects,$replacements,self::$eventFormatString);
 
     $this->writeEntry(self::getLogFileName(),$line);
@@ -1136,7 +1149,7 @@ class tlFileLogger extends tlObject
     if ($fd)
     {
       fputs($fd,$line);
-        fclose($fd);
+      fclose($fd);
     }
   }
 
@@ -1183,7 +1196,6 @@ class tlFileLogger extends tlObject
 
 
 /**
- * @TODO SCHLUNDUS: idea of a debug "to screen logger", to be defined,
  * @package   TestLink
  */
 class tlHTMLLogger
@@ -1219,11 +1231,11 @@ class tlMailLogger extends tlObjectWithDB
   
     // now we need to check if we have all needed configuration
     $key2check = array('sendto_email','from_email','return_path_email');
-       $regex2match = config_get('validation_cfg')->user_email_valid_regex_php;
+    $regex2match = config_get('validation_cfg')->user_email_valid_regex_php;
     $this->configIsOK = true;
     foreach($key2check as $emailKey)
     {
-        $matches = array();
+      $matches = array();
       $this->$emailKey = trim($this->$emailKey);
       if (is_blank($this->$emailKey) || !preg_match($regex2match,$this->$emailKey,$matches))
       {
@@ -1284,14 +1296,13 @@ class tlMailLogger extends tlObjectWithDB
     
     $verboseTimeStamp = gmdate("y/M/j H:i:s",$event->timestamp);
     $replacements = array($verboseTimeStamp,
-                tlLogger::$logLevels[$event->logLevel],
-                $event->source,$description,
-                $event->sessionID ? $event->sessionID : "<nosession>");
+                          tlLogger::$logLevels[$event->logLevel],
+                          $event->source,$description,
+                          $event->sessionID ? $event->sessionID : "<nosession>");
     $email_body = str_replace($subjects,$replacements,self::$eventFormatString);
 
     try
     {
-      
       $mail_subject = $verboseTimeStamp . lang_get('mail_logger_email_subject');
       $mail_subject .= isset($_SESSION['basehref']) ?  $_SESSION['basehref'] : config_get('instance_id');
       email_send($this->from_email, $this->sendto_email, $mail_subject, $email_body);
@@ -1354,15 +1365,9 @@ class tlMailLogger extends tlObjectWithDB
  */
 function watchPHPErrors($errno, $errstr, $errfile, $errline)
 {
-  $errors = array (
-      E_USER_NOTICE => "E_USER_NOTICE",
-      E_USER_WARNING => "E_USER_WARNING",
-      E_USER_NOTICE => "E_USER_NOTICE",
-      E_ERROR => "E_ERROR",
-      E_WARNING => "E_WARNING",
-      E_NOTICE => "E_NOTICE",
-      E_STRICT => "E_STRICT"
-    );
+  $errors = array(E_USER_NOTICE => "E_USER_NOTICE",E_USER_WARNING => "E_USER_WARNING",
+                  E_USER_NOTICE => "E_USER_NOTICE",E_ERROR => "E_ERROR",
+                  E_WARNING => "E_WARNING",E_NOTICE => "E_NOTICE",E_STRICT => "E_STRICT");
 
   if (isset($errors[$errno]))
   {

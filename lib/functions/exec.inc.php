@@ -91,14 +91,16 @@ function write_execution(&$db,&$exec_signature,&$exec_data)
     $item2loop= $exec_data['status'];
     $is_bulk_save=1;
     $bulk_notes = $db->prepare_string(trim($exec_data['bulk_exec_notes']));   
+    $execStatusKey = 'status';
+
   } 
   else
   {
     $item2loop= $exec_data['save_results'];
     $is_bulk_save=0;
+    $execStatusKey = 'statusSingle';
   }
-  
-  $execStatusKey = 'statusSingle';
+
   foreach ( $item2loop as $tcversion_id => $val)
   {
     $tcase_id=$exec_data['tc_version'][$tcversion_id];

@@ -482,7 +482,7 @@ $tlCfg->gui->show_icon_edit = false;
  * ATTENTION : * is used to indicate test project is INACTIVE
  *             see also $tlCfg->gui->tprojects_combo_order_by
  */
-$tlCfg->gui->tprojects_combo_format = '';
+$tlCfg->gui->tprojects_combo_format = 'prefix';
 
 
 /**
@@ -491,7 +491,8 @@ $tlCfg->gui->tprojects_combo_format = '';
  *    'ORDER BY name'
  *    'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
  **/
-$tlCfg->gui->tprojects_combo_order_by = 'ORDER BY nodes_hierarchy.id DESC';
+// $tlCfg->gui->tprojects_combo_order_by = 'ORDER BY nodes_hierarchy.id DESC';
+$tlCfg->gui->tprojects_combo_order_by = 'ORDER BY TPROJ.prefix ASC';
 
 
 

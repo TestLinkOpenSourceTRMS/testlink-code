@@ -859,44 +859,30 @@ function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id,
 {     
   foreach($exec_info as $version_id => $value)
   {
-    $exec_info[$version_id]['assigned_user'] = '';
-    $exec_info[$version_id]['assigned_user_id'] = 0;
+    $exec_info[$version_id]['assigned_user'] = null;
+    $exec_info[$version_id]['assigned_user_id'] = null;
     
     // map of map: main key version_id, secondary key: platform_id
     $p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id, $build_id);
-
-    /*
-    $assignedTesterId = intval($p3[$version_id][$platform_id]['user_id']);
-    if($assignedTesterId)
-    {
-      $user = tlUser::getByID($db,$assignedTesterId);
-      if ($user)
+    if(!is_null($p3))
+    { 
+      foreach($p3[$version_id][$platform_id] as $uu)
       {
-        $exec_info[$version_id]['assigned_user']= $user->getDisplayName();  
-      }
-      $exec_info[$version_id]['assigned_user_id'] = $assignedTesterId;
-    } 
-    */
-    // $exec_info[$version_id]['assigned_user'] = '';
-    // $exec_info[$version_id]['assigned_user_id'] = '';
-    foreach($p3[$version_id][$platform_id] as $uu)
-    {
-      $assignedTesterId = intval($uu['user_id']);
-      if($assignedTesterId)
-      {
-        $user = tlUser::getByID($db,$assignedTesterId);
-        if ($user)
+        $assignedTesterId = intval($uu['user_id']);
+        if($assignedTesterId)
         {
-          $exec_info[$version_id]['assigned_user'][]= $user->getDisplayName();  
+          $user = tlUser::getByID($db,$assignedTesterId);
+          if ($user)
+          {
+            $exec_info[$version_id]['assigned_user'][]= $user->getDisplayName();  
 
-        }
-        $exec_info[$version_id]['assigned_user_id'][] = $assignedTesterId;
-      } 
+          }
+          $exec_info[$version_id]['assigned_user_id'][] = $assignedTesterId;
+        } 
+      }
     }  
-    $exec_info[$version_id]['assigned_user'] = implode(',',$exec_info[$version_id]['assigned_user']);
-    $exec_info[$version_id]['assigned_user_id'] = implode(',',$exec_info[$version_id]['assigned_user_id']);
-    
-
+    $exec_info[$version_id]['assigned_user'] = implode(',',(array)$exec_info[$version_id]['assigned_user']);
+    $exec_info[$version_id]['assigned_user_id'] = implode(',',(array)$exec_info[$version_id]['assigned_user_id']);
   }
   return $exec_info;
 } //function end

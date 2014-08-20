@@ -789,10 +789,7 @@ class tlUser extends tlDBObject
   {
     global $g_propRights_global;
     global $g_propRights_product;
-    
-    // var_dump($this->tprojectRoles);
 
-    
     if (!is_null($tplanID))
     {
       $testPlanID = $tplanID;
@@ -1305,6 +1302,9 @@ class tlUser extends tlDBObject
     return $this->securityCookie;
   }
 
+  /**
+   *
+   */
   static function hasRoleOnTestProject(&$dbHandler,$id,$tprojectID)
   {
     $tables = tlObject::getDBTables('user_testproject_roles');
@@ -1314,6 +1314,9 @@ class tlUser extends tlDBObject
     return !is_null($rs);
   }
 
+  /**
+   *
+   */
   static function hasRoleOnTestPlan(&$dbHandler,$id,$tplanID)
   {
     $tables = tlObject::getDBTables('user_testplan_roles');
@@ -1324,6 +1327,9 @@ class tlUser extends tlDBObject
   }
 
 
+  /**
+   *
+   */
   static public function getByAPIKey(&$dbHandler,$value)
   {
     $tables = tlObject::getDBTables('users');
@@ -1371,6 +1377,4 @@ class tlUser extends tlDBObject
       exit();
     }
   }
-
-
 }

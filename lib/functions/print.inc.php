@@ -1026,11 +1026,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $getByID['filters'] = null;
     if( !is_null($exec_info) )
     {
-      // 
       $getByID['tcversion_id'] = null;
       $getByID['filters'] = array('version_number' => $exec_info[0]['tcversion_number']);
-
-      if( $options['build_cfields'] )
+      if( isset($options['build_cfields']) && $options['build_cfields'] )
       {
         if( !isset($buildCfields[$exec_info[0]['build_id']]) )
         {

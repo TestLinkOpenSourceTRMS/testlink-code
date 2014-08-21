@@ -1384,16 +1384,19 @@ class tlUser extends tlDBObject
    */
   static function checkPasswordQuality($password)
   {
+    $ret = array('status_ok' => tl::OK, 'msg' => 'ok');
     $cfg = config_get('passwordChecks');
+    if( is_null($cfg) )
+    {
+      return $ret;  // >>---> Bye!
+    }  
 
     $regexp['number'] = "#[0-9]+#";
     $regexp['letter'] = "#[a-z]+#";
     $regexp['capital'] = "#[A-Z]+#";
     $regexp['symbol'] = "#\W+#";
 
-
     $pl = strlen($password);
-    $ret = array('status_ok' => tl::OK, 'msg' => 'ok');
 
     foreach($cfg as $attr => $val)
     {

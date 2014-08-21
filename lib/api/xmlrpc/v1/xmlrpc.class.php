@@ -472,22 +472,22 @@ class TestlinkXMLRPCServer extends IXR_Server
    */    
     protected function checkTestCaseID($messagePrefix='')
     {
-        $msg = $messagePrefix;
-        $status_ok=$this->_isTestCaseIDPresent();
-        if( $status_ok)
+      $msg = $messagePrefix;
+      $status_ok=$this->_isTestCaseIDPresent();
+      if( $status_ok)
+      {
+        $tcaseid = $this->args[self::$testCaseIDParamName];
+        if(!$this->_isTestCaseIDValid($tcaseid))
         {
-            $tcaseid = $this->args[self::$testCaseIDParamName];
-            if(!$this->_isTestCaseIDValid($tcaseid))
-            {
-              $this->errors[] = new IXR_Error(INVALID_TCASEID, $msg . INVALID_TCASEID_STR);
-              $status_ok=false;
-            }
-        }      
-        else
-        {
-          $this->errors[] = new IXR_Error(NO_TCASEID, $msg . NO_TCASEID_STR);
+          $this->errors[] = new IXR_Error(INVALID_TCASEID, $msg . INVALID_TCASEID_STR);
+          $status_ok=false;
         }
-        return $status_ok;
+      }      
+      else
+      {
+        $this->errors[] = new IXR_Error(NO_TCASEID, $msg . NO_TCASEID_STR);
+      }
+      return $status_ok;
     }
     
   /**
@@ -3895,6 +3895,9 @@ public function getTestCase($args)
     $checkFunctions = array('authenticate','checkExecutionID');       
     $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
   
+    // missing :
+    // we need to get Context => Test plan & Test project to understand if 
+    // user has the right to do this operation
     if($status_ok)
     {      
       if( $this->userHasRight("exec_delete",self::CHECK_PUBLIC_PRIVATE_ATTR) )  
@@ -3926,28 +3929,27 @@ public function getTestCase($args)
    */        
     protected function checkExecutionID($messagePrefix='',$setError=false)
     {
-        // need to be implemented - franciscom
-    $pname = self::$executionIDParamName;
-    $status_ok = $this->_isParamPresent($pname,$messagePrefix,$setError);
-    if(!$status_ok)
-    {    
-          $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
-          $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
-    }
-    else
-    {
-      $status_ok = is_int($this->args[$pname]) && $this->args[$pname] > 0;
-      if( !$status_ok )
-      {
-              $msg = $messagePrefix . sprintf(PARAMETER_NOT_INT_STR,$pname,$this->args[$pname]);
-              $this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
-      }
+      $pname = self::$executionIDParamName;
+      $status_ok = $this->_isParamPresent($pname,$messagePrefix,$setError);
+      if(!$status_ok)
+      {    
+        $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+      } 
       else
       {
+        $status_ok = is_int($this->args[$pname]) && $this->args[$pname] > 0;
+        if( !$status_ok )
+        {
+          $msg = $messagePrefix . sprintf(PARAMETER_NOT_INT_STR,$pname,$this->args[$pname]);
+          $this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
+        }
+        else
+        {
         
+        }
       }
-    }
-    return $status_ok;
+      return $status_ok;
     }
 
 
@@ -4339,7 +4341,7 @@ public function uploadRequirementSpecificationAttachment($args)
   $msg_prefix = "(" .__FUNCTION__ . ") - ";
   $args[self::$foreignKeyTableNameParamName] = 'req_specs';
   $args[self::$foreignKeyIdParamName] = $args['reqspecid'];
-    $this->_setArgs($args);
+  $this->_setArgs($args);
   return $this->uploadAttachment($args,$msg_prefix,false);
 }
 
@@ -4367,7 +4369,7 @@ public function uploadRequirementAttachment($args)
   $msg_prefix = "(" .__FUNCTION__ . ") - ";
   $args[self::$foreignKeyTableNameParamName] = 'requirements';
   $args[self::$foreignKeyIdParamName] = $args['requirementid'];
-    $this->_setArgs($args);
+  $this->_setArgs($args);
   return $this->uploadAttachment($args,$msg_prefix,false);
 }
 
@@ -4464,9 +4466,21 @@ public function uploadTestCaseAttachment($args)
   $args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
   $args[self::$foreignKeyIdParamName] = $args[self::$testCaseIDParamName];
   $this->_setArgs($args);
-  $checkFunctions = array('authenticate', 'checkTestCaseID');
+  $checkFunctions = array('authenticate', 'checkTestCaseIdentity');
 
-  $statusOk = $this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
+  if( $statusOk = $this->_runChecks($checkFunctions,$msg_prefix) )
+  {
+    // Need to get test project information from test case in order to be able
+    // to do RIGHTS check on $this->userHasRight()
+    // !!! Important Notice!!!!: 
+    // method checkTestCaseIdentity sets $this->args[self::$testCaseIDParamName]
+
+     $this->args[self::$testProjectIDParamName] = 
+        $this->tcaseMgr->getTestProjectFromTestCase($this->args[self::$testCaseIDParamName]);
+
+     $statusOk = $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
+  }  
+
   $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
   return $ret;
 }
@@ -4495,7 +4509,11 @@ public function uploadExecutionAttachment($args)
   $msg_prefix = "(" .__FUNCTION__ . ") - ";
   $args[self::$foreignKeyTableNameParamName] = 'executions';
   $args[self::$foreignKeyIdParamName] = $args['executionid'];
-    $this->_setArgs($args);
+  $this->_setArgs($args);
+
+  // We need to check that user has right to execute in order to allow
+  // him/her to do attachment
+
   return $this->uploadAttachment($args,$msg_prefix,false);
 }
 
@@ -4550,7 +4568,7 @@ public function uploadAttachment($args, $messagePrefix='', $setArgs=true)
   $checkFunctions[] = 'checkForeignKey';
   $checkFunctions[] = 'checkUploadAttachmentRequest';
 
-  $statusOk = $this->_runChecks($checkFunctions,$msg_prefix); // && $this->userHasRight("mgt_view_tc");
+  $statusOk = $this->_runChecks($checkFunctions,$msg_prefix); 
 
   if($statusOk)
   {    
@@ -4560,28 +4578,28 @@ public function uploadAttachment($args, $messagePrefix='', $setArgs=true)
 
     // creates a temp file and returns an array with size and tmp_name
     $fInfo = $this->createAttachmentTempFile();
-      if ( !$fInfo )
-      {
+    if ( !$fInfo )
+    {
       // Error creating attachment temp file. Ask user to check temp dir 
       // settings in php.ini and security and rights of this dir.
-        $msg = $msg_prefix . ATTACH_TEMP_FILE_CREATION_ERROR_STR;
-        $this->errors[] = new IXR_ERROR(ATTACH_TEMP_FILE_CREATION_ERROR,$msg); 
-        $statusOk = false;
-      } 
-      else 
-      {
-        // The values have already been validated in the method 
-        // checkUploadAttachmentRequest()
-        $fInfo['name'] = $args[self::$fileNameParamName];
-        $fInfo['type'] = $args[self::$fileTypeParamName];
+      $msg = $msg_prefix . ATTACH_TEMP_FILE_CREATION_ERROR_STR;
+      $this->errors[] = new IXR_ERROR(ATTACH_TEMP_FILE_CREATION_ERROR,$msg); 
+      $statusOk = false;
+    } 
+    else 
+    {
+      // The values have already been validated in the method 
+      // checkUploadAttachmentRequest()
+      $fInfo['name'] = $args[self::$fileNameParamName];
+      $fInfo['type'] = $args[self::$fileTypeParamName];
         
       $attachmentRepository = tlAttachmentRepository::create($this->dbObj);
       $uploadedFile = $attachmentRepository->insertAttachment($fkId,$fkTable,$title,$fInfo);
       if( !$uploadedFile )
       {
-          $msg = $msg_prefix . ATTACH_DB_WRITE_ERROR_STR;
-          $this->errors[] = new IXR_ERROR(ATTACH_DB_WRITE_ERROR,$msg); 
-          $statusOk = false; 
+        $msg = $msg_prefix . ATTACH_DB_WRITE_ERROR_STR;
+        $this->errors[] = new IXR_ERROR(ATTACH_DB_WRITE_ERROR,$msg); 
+        $statusOk = false; 
       } 
       else 
       {
@@ -4596,10 +4614,10 @@ public function uploadAttachment($args, $messagePrefix='', $setArgs=true)
         // It would be nice have all info available in db
         // $resultInfo['file_path'] = $args[""]; 
         // we could also return the tmp_name, but would it be useful?
-         $resultInfo['file_size'] = $fInfo['size'];
-         $resultInfo['file_type'] = $args[self::$fileTypeParamName];
+        $resultInfo['file_size'] = $fInfo['size'];
+        $resultInfo['file_type'] = $args[self::$fileTypeParamName];
       }
-      }
+    }
   }
     
   return $statusOk ? $resultInfo : $this->errors;

@@ -57,10 +57,6 @@ var pF_delete_relation = delete_relation;
 
 
     <form method="post" action="lib/testcases/tcEdit.php">
-    {*
-        onSubmit="javascript:return validate_testcase('relation_destination_req_doc_id', 
-                                                      '{$rel_labels.relation_destination_tcase}');">
-    *}
         <input type="hidden" name="doAction" value="doAddRelation" />
         <input type="hidden" name="relation_source_tcase_id" id="relation_source_tcase_id" value="{$gui->id}" />
         <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
@@ -68,34 +64,36 @@ var pF_delete_relation = delete_relation;
 
     <table class="simple" id="relations">
     
-      <tr><th colspan="7">{$rel_labels.relations} 
-          {if $gui->relations.num_relations > 0} ({$gui->relations.num_relations}) {/if}</th></tr>
+      {if $args_edit_enabled}
+        <tr><th colspan="7">{$rel_labels.relations} 
+            {if $gui->relations.num_relations > 0} ({$gui->relations.num_relations}) {/if}</th></tr>
+      
+        {if $gui->add_relation_feedback_msg != ''}
+          <tr style="height:40px; vertical-align: middle;">
+            <td style="height:40px; vertical-align: middle;" colspan="7">
+            <div class="info">{$gui->add_relation_feedback_msg}</div>
+            </td>
+          </tr>
+        {/if}
     
-      {if $gui->add_relation_feedback_msg != ''}
-        <tr style="height:40px; vertical-align: middle;">
-          <td style="height:40px; vertical-align: middle;" colspan="7">
-          <div class="info">{$gui->add_relation_feedback_msg}</div>
+        <tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
+        
+          <span class="bold">{$rel_labels.new_relation}:</span> {$rel_labels.current_testcase}
+            
+          <select name="relation_type">
+          {html_options options=$gui->relation_domain.items selected=$gui->relation_domain.selected}
+          </select>
+      
+          <input type="text" name="relation_destination_tcase" id="relation_destination_tcase"
+                 placeholder="{$rel_labels.tcase_relation_hint}"
+                 title="{$rel_labels.tcase_relation_help}"
+                 size="{#TC_EXTERNAL_ID_SIZE#}" maxlength="{#TC_EXTERNAL_ID_MAXLEN#}" 
+                 onclick="javascript:this.value=''" required />
+          <input type="submit" name="relation_submit_btn" value="{$rel_labels.btn_add}" />
+          
           </td>
         </tr>
       {/if}
-    
-      <tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
-      
-        <span class="bold">{$rel_labels.new_relation}:</span> {$rel_labels.current_testcase}
-          
-        <select name="relation_type">
-        {html_options options=$gui->relation_domain.items selected=$gui->relation_domain.selected}
-        </select>
-    
-        <input type="text" name="relation_destination_tcase" id="relation_destination_tcase"
-               placeholder="{$rel_labels.tcase_relation_hint}"
-               title="{$rel_labels.tcase_relation_help}"
-               size="{#TC_EXTERNAL_ID_SIZE#}" maxlength="{#TC_EXTERNAL_ID_MAXLEN#}" 
-               onclick="javascript:this.value=''" required />
-        <input type="submit" name="relation_submit_btn" value="{$rel_labels.btn_add}" />
-        
-        </td>
-      </tr>
 
     {if $gui->relations.num_relations > 0}
       

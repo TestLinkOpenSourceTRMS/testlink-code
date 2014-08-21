@@ -391,7 +391,7 @@ function launchInsertStep(step_id)
   {/if}
   
 
-{include file="testcases/relations.inc.tpl"} 
+{include file="testcases/relations.inc.tpl" args_edit_enabled=$edit_enabled} 
 
 {if $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}
   {* Test Case version Test Plan Assignment *}

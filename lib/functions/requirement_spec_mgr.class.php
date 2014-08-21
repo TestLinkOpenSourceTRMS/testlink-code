@@ -9,7 +9,7 @@
  * Manager for requirement specification (requirement container)
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
  * 
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
@@ -1538,13 +1538,16 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
         } 
       }  // if($create_req)   
 
-      $relationsMap = $items[$idx]['relations'];
-      $numberOfRelations = count($relationsMap);
-      for($jdx=0; $jdx < $numberOfRelations; $jdx++)
-      {
-        $rel = $relationsMap[$jdx];
-        $dummy = $this->req_mgr->createRelationFromMap($rel, $tproject_id, $author_id);
-        $user_feedback = array_merge($user_feedback,$dummy); 
+      if(isset($items[$idx]['relations']))
+      {  
+        $relationsMap = $items[$idx]['relations'];
+        $numberOfRelations = count($relationsMap);
+        for($jdx=0; $jdx < $numberOfRelations; $jdx++)
+        {
+          $rel = $relationsMap[$jdx];
+          $dummy = $this->req_mgr->createRelationFromMap($rel, $tproject_id, $author_id);
+          $user_feedback = array_merge($user_feedback,$dummy); 
+        }
       } 
     } // if($result['status_ok'])
   }    

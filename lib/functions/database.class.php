@@ -4,22 +4,17 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource  database.class.php
- * @package   TestLink
- * @author    Francisco Mancardi
- * @author    Mantis Team
+ * @package     TestLink
+ * @author      Francisco Mancardi
+ * @author      Mantis Team
  * @copyright   2006-2011 TestLink community 
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
- *        (Parts of code has been adapted from Mantis BT)
- * @link    http://www.teamst.org/index.php
+ *             (Parts of code has been adapted from Mantis BT)
+ * @link       http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.4 
- * 20120519 - franciscom - new methods fetchRowsIntoMapAddRC(),fetchRowsIntoMap4l()
- * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
- * 20120430 - franciscom - new method fetchRowsIntoMap3l()
- * 20120129 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
- *                    PHP on WINDOWS version 5.3 and higher
- *
+ * @since 1.9.12 
+
  */
  
 /**
@@ -959,32 +954,26 @@ class database
     $result = $this->exec_query($sql,$limit);
     if ($result)
     {
-      // -----------------------------------------------
-            // Error management Code         
-            $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
+      $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
       if( ($empty_column = (trim($column)=='') ) )
       {
         $errorMsg .= 'empty column - SQL:' . $sql;
-          trigger_error($errorMsg,E_USER_NOTICE);
-          return null;
-        }
+        trigger_error($errorMsg,E_USER_NOTICE);
+        return null;
+      }
 
       while($row = $this->fetch_array($result))
       {
-        // -----------------------------------------------
-                // Error management Code         
-                if( !isset($row[$column]) )
-                {
-                $errorMsg .= 'missing column:' . $column;
-              $errorMsg .= ' - SQL:' . $sql;
-            trigger_error($errorMsg,E_USER_NOTICE);
-            return null;
-          } 
-                // -----------------------------------------------
-                
-                if(!isset($items[$row[$column]]) )
-                {
-                  $row['recordcount'] = 0;
+        if( !isset($row[$column]) )
+        {
+          $errorMsg .= 'missing column:' . $column;
+          $errorMsg .= ' - SQL:' . $sql;
+          trigger_error($errorMsg,E_USER_NOTICE);
+          return null;
+        } 
+        if(!isset($items[$row[$column]]) )
+        {
+          $row['recordcount'] = 0;
         }
         else
         {
@@ -1001,7 +990,7 @@ class database
   }
 
   /**
-   *
+   * @used-by testplan.class.php
    */
   function fetchMapRowsIntoMapStackOnCol($sql,$column_main_key,$column_sec_key,$stackOnCol)
   {

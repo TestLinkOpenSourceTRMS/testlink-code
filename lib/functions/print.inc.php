@@ -1214,7 +1214,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                      '<td>' .  $tcInfo[$key][$ydx]['actions'] . '</td>' .
                      '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>';
 
-            $nike = !is_null($sxni[$tcInfo[$key][$ydx]['id']]);
+            $nike = !is_null($sxni) && !is_null($sxni[$tcInfo[$key][$ydx]['id']]);
             if( $options['step_exec_notes'] )
             {
               $code .= '<td>';

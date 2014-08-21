@@ -31,7 +31,6 @@ $args = init_args($tproject_mgr);
 
 $gui = init_gui($args);
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
-$gui->warning_msg = lang_get('no_linked_req');
 
 $smarty = new TLSmarty();
 if(count($gui->reqIDs) > 0) 
@@ -57,15 +56,12 @@ if(count($gui->reqIDs) > 0)
     // array to gather table data row per row
   $rows = array();    
   
-  foreach($gui->reqIDs as $id) {
+  foreach($gui->reqIDs as $id) 
+  {
     
     // now get the rest of information for this requirement
     $req = $req_mgr->get_by_id($id, $version_option);
-
-    // coverage data
     $tc_coverage = count($req_mgr->get_coverage($id));
-
-    // number of relations, if feature is enabled
     if ($cfg->req->relations->enable) 
     {
       $relations = $req_mgr->count_relations($id);
@@ -78,17 +74,19 @@ if(count($gui->reqIDs) > 0)
     
     // reqspec-"path" to requirement
     $path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
-    foreach ($path as $key => $p) {
+    foreach ($path as $key => $p) 
+    {
       $path[$key] = $p['name'];
     }
     $path = htmlentities(implode("/", $path), ENT_QUOTES, $cfg->charset);
       
-    foreach($req as $version) {
+    foreach($req as $version) 
+    {
       
       // get content for each row to display
-        $result = array();
+      $result = array();
         
-        /**
+      /**
          * IMPORTANT: 
          * the order of following items in this array has to be
          * the same as column headers are below!!!
@@ -105,43 +103,43 @@ if(count($gui->reqIDs) > 0)
          * 9. all custom fields in order of $fields
          */
         
-        $result[] = $path;
+      $result[] = $path;
         
-        $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
+      $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
                    '<img title="' .$labels['requirement'] . '" src="' . $imgSet['edit'] . '" /></a> ';
       
-        $linked_title = '<!-- ' . $title . ' -->' . $edit_link . $title;
+      $linked_title = '<!-- ' . $title . ' -->' . $edit_link . $title;
         
-        $result[] = $linked_title;
+      $result[] = $linked_title;
         
-        // version and revision number
-        $version_revison = sprintf($labels['version_revision_tag'],$version['version'],$version['revision']);
-        $padded_data = sprintf("%05d%05d", $version['version'], $version['revision']);
-        // use html comment to sort properly by this columns (extjs)
-        $result[] = "<!-- $padded_data -->{$version_revison}";
+      // version and revision number
+      $version_revison = sprintf($labels['version_revision_tag'],$version['version'],$version['revision']);
+      $padded_data = sprintf("%05d%05d", $version['version'], $version['revision']);
+    
+      // use html comment to sort properly by this columns (extjs)
+      $result[] = "<!-- $padded_data -->{$version_revison}";
         
-        // $dummy necessary to avoid warnings on event viewer because localize_dateOrTimeStamp expects
-        // second parameter to be passed by reference
-        $dummy = null;
+      // $dummy necessary to avoid warnings on event viewer because localize_dateOrTimeStamp expects
+      // second parameter to be passed by reference
+      $dummy = null;
         
-        // use html comment to sort properly by this columns (extjs)
-        $result[] = "<!--{$version['creation_ts']}-->" .
-                    localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']) .
-                    " ({$version['author']})";
+      // use html comment to sort properly by this columns (extjs)
+      $result[] = "<!--{$version['creation_ts']}-->" .
+                  localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']) .
+                  " ({$version['author']})";
       
-        // on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
-        $never_modified = "0000-00-00 00:00:00";
+      // on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
+      $never_modified = "0000-00-00 00:00:00";
 
-        // use html comment to sort properly by this columns (extjs)
-        $modification_ts = "<!-- 0 -->" . lang_get('never');
-        if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $never_modified) )
-        {
-          $modification_ts = "<!--{$version['modification_ts']}-->" .
-                             localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', 
-                                                      $version['modification_ts']) . 
-                             " ({$version['modifier']})";
-        }
-        $result[] = $modification_ts;
+      // use html comment to sort properly by this columns (extjs)
+      $modification_ts = "<!-- 0 -->" . lang_get('never');
+      if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $never_modified) )
+      {
+        $modification_ts = "<!--{$version['modification_ts']}-->" .
+                           localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$version['modification_ts']) . 
+                           " ({$version['modifier']})";
+      }
+      $result[] = $modification_ts;
         
       // is it frozen?
       $result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
@@ -256,26 +254,25 @@ if(count($gui->reqIDs) > 0)
 
       // create table object, fill it with columns and row data and give it a title
       $matrix = new tlExtTable($columns, $rows, 'tl_table_req_overview');
-        $matrix->title = $labels['requirements'];
+      $matrix->title = $labels['requirements'];
         
-        // 20100822 - asimon - removal of magic numbers
-        // group by Req Spec
-        $matrix->setGroupByColumnName($labels['req_spec_short']);
+      // group by Req Spec
+      $matrix->setGroupByColumnName($labels['req_spec_short']);
         
-        // sort by coverage descending if enabled, otherwise by status
-        $sort_name = ($cfg->req->expected_coverage_management) ? $labels['th_coverage'] : $labels['status'];
-        $matrix->setSortByColumnName($sort_name);
-        $matrix->sortDirection = 'DESC';
+      // sort by coverage descending if enabled, otherwise by status
+      $sort_name = ($cfg->req->expected_coverage_management) ? $labels['th_coverage'] : $labels['status'];
+      $matrix->setSortByColumnName($sort_name);
+      $matrix->sortDirection = 'DESC';
         
-        // define toolbar
-        $matrix->showToolbar = true;
-        $matrix->toolbarExpandCollapseGroupsButton = true;
-        $matrix->toolbarShowAllColumnsButton = true;
-        $matrix->toolbarRefreshButton = true;
-        $matrix->showGroupItemsCount = true;
-        // show custom field content in multiple lines
-        $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
-        $gui->tableSet= array($matrix);
+      // define toolbar
+      $matrix->showToolbar = true;
+      $matrix->toolbarExpandCollapseGroupsButton = true;
+      $matrix->toolbarShowAllColumnsButton = true;
+      $matrix->toolbarRefreshButton = true;
+      $matrix->showGroupItemsCount = true;
+      // show custom field content in multiple lines
+      $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
+      $gui->tableSet= array($matrix);
     }
 } 
 
@@ -331,9 +328,10 @@ function init_gui(&$argsObj)
   $gui = new stdClass();
   
   $gui->pageTitle = lang_get('caption_req_overview');
-  $gui->warning_msg = '';
+  $gui->warning_msg = lang_get('no_linked_req');
   $gui->tproject_name = $argsObj->tproject_name;
   $gui->all_versions = $argsObj->all_versions;
+  $gui->tableSet = null;
   
   return $gui;
 }

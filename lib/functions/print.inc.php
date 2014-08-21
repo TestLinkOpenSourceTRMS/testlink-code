@@ -1189,6 +1189,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                    '<td><span class="label">' . $labels['step_actions'] .':</span></td>' .
                    '<td><span class="label">' . $labels['expected_results'] .':</span></td>';
 
+          $sxni = null;         
           if( $options['step_exec_notes'] || $options['step_exec_status'] )
           {
             $sxni = $tc_mgr->getStepsExecInfo($exec_info[0]['execution_id']);

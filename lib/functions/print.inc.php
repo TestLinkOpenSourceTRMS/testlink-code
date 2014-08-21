@@ -1079,7 +1079,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   if ($options['toc'])
   {
     // EXTERNAL ID added
-	 $options['tocCode'] .= '<p style="padding-left: ' . 
+	  $options['tocCode'] .= '<p style="padding-left: ' . 
                           (15 * $level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
                           htmlspecialchars($external_id) . ": ". $name . '</a></p>';	
     $code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
@@ -1100,7 +1100,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   switch($env->reportType)
   {
     case DOC_TEST_PLAN_DESIGN:
-      $version_number = $node['version'];
+      $version_number = $node['version'];  // why not $tcInfo['version'] ???
     break;
     
     case DOC_TEST_PLAN_EXECUTION:
@@ -1717,7 +1717,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
                       'execution_type_manual','execution_type_auto','importance','relations',
                       'estimated_execution_duration','step_exec_notes','step_exec_status',
                       'high_importance','medium_importance','low_importance','execution_duration',
-                      'priority', 'high_priority','medium_priority','low_priority');
+                      'priority', 'high_priority','medium_priority','low_priority','attached_files');
                       
     $labelsQty=count($labelsKeys);         
     for($idx=0; $idx < $labelsQty; $idx++)

@@ -3,10 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: clientUploadTestCaseAttachment.php,v $
+ * @filesource	clientUploadTestCaseAttachment.php
  *
  * @version $Revision: 1.1 $
- * @modified $Date: 2010/09/18 14:46:38 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -24,8 +23,8 @@ $attach = file_get_contents('./other/marilyn-monroe.jpg');
 $attach = file_get_contents('./other/README');
 $encoded = base64_encode($attach);
 $args=array();
-$args["devKey"]=DEV_KEY;
-$args["testcaseid"]=4;
+$args["devKey"]='api';
+$args["testcaseid"]=86;
 $args["title"] = 'a README TXT FILE';
 $args["filename"] = 'README';
 $args["content"] = $encoded;

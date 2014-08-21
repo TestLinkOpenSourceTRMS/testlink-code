@@ -4,6 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 generate the list of TC that can be removed from a Test Plan 
 
 @filesource tc_exec_assignment.tpl
+@internal revisions
+@since 1.9.12
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
@@ -31,6 +33,57 @@ function check_action_precondition(container_id,action)
 		return false;
 	}
 	return true;
+}
+
+/**
+ * Uses JQuery needed if select uses chosen plugin !!!
+ */
+function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
+{
+  var f=document.getElementById(oid);
+  var all_inputs = f.getElementsByTagName('input');
+  var input_element;
+  var check_id='';
+  var apieces='';
+  var combo_id_suffix='';
+  var cb_id= new Array();
+  var jdx=0;
+  var idx=0;
+    
+  // Build an array with the html select ids
+  //  
+  for(idx = 0; idx < all_inputs.length; idx++)
+  {
+    input_element=all_inputs[idx];    
+    if(input_element.type == "checkbox" &&  
+       input_element.checked  &&
+       !input_element.disabled)
+    {
+      check_id=input_element.id;
+      
+      // Consider the id a list with '_' as element separator
+      apieces=check_id.split("_");
+      
+      // apieces.length-2 => test case id
+      // apieces.length-1 => platform id
+      combo_id_suffix=apieces[apieces.length-2] + '_' + apieces[apieces.length-1];
+      cb_id[jdx]=combo_id_prefix + combo_id_suffix;
+      jdx++;
+    } 
+  }
+
+  // To avoid issues with $  
+  jQuery.noConflict();
+
+  // now set the combos
+  for(idx = 0; idx < cb_id.length; idx++)
+  {
+     // debug - alert(cb_id[idx] + " will be" + value_to_assign);
+     // input_element=document.getElementById(cb_id[idx]);
+     // input_element.value=value_to_assign;
+     jQuery('#' + cb_id[idx]).val(value_to_assign);
+     jQuery('#' + cb_id[idx]).trigger("chosen:updated");  // needed by chosen
+  }
 }
 </script>
 
@@ -66,7 +119,7 @@ function check_action_precondition(container_id,action)
 			</select>
 			<input type='button' name='bulk_user_assignment' id='bulk_user_assignment'
 				onclick='if(check_action_precondition("tc_exec_assignment","default"))
-						        set_combo_if_checkbox("tc_exec_assignment_cb","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
+						        setComboIfCbx("tc_exec_assignment_cb","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
 				value="{$labels.btn_do}" />
 		</div>
 		<div>
@@ -200,7 +253,7 @@ function check_action_precondition(container_id,action)
                       
                       {if $smarty.foreach.testerSet.iteration == 1}
                         <td align="center">
-                      		  		<select class="fman-disabled-chosen-select"
+                      		  		<select class="chosen-select"
                                         data-placeholder="{$labels.chosen_blank_option}"
                                         name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
                       		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"

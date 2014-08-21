@@ -6,7 +6,7 @@
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions
- * @1.9.7
+ * @1.9.12
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -84,7 +84,14 @@ if( $doIt )
       	
       	if ($args->show_user_column) 
       	{
-      		$current_row[] = htmlspecialchars($args->userSet[$tcase['user_id']]['login']);
+          if($tcase['user_id'] > 0 &&  isset($args->userSet[$tcase['user_id']]))
+          {
+            $current_row[] = htmlspecialchars($args->userSet[$tcase['user_id']]['login']);
+          }
+          else
+          {
+            $current_row[] = '';
+          }  
       	}
       
       	$current_row[] = htmlspecialchars($tcase['build_name']);

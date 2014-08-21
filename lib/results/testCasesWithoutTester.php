@@ -8,20 +8,13 @@
  * For a test plan, list test cases that HAS NOT BEEN RUN AND HAS NO TESTER ASSIGNED
  *
  * @internal revisions
- * @since 1.9.8
+ * @since 1.9.12
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
-
-
-// Time tracking
-//$tstart = microtime(true);
-//$chronos[] = $tstart; $tnow = end($chronos);reset($chronos);
-// Memory metrics	
-//$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
 
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
@@ -158,12 +151,12 @@ function init_args(&$tplan_mgr)
   R_PARAMS($iParams,$args);
     
   $args->show_platforms = false;
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
 
   $args->tplan_name = '';
   if(!$args->tplan_id)
   {
-      $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+    $args->tplan_id = intval(isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0);
   }
   
   if($args->tplan_id > 0)
@@ -176,7 +169,10 @@ function init_args(&$tplan_mgr)
   return $args;
 }
 
-
+/**
+ *
+ *
+ */
 function featureLinks($lbl,$img)
 {
   $links = array();
@@ -188,15 +184,16 @@ function featureLinks($lbl,$img)
 
   // %s => test case id
   $links['edit'] = '<a href="javascript:openTCEditWindow(%s);" >' .
-          '<img title="' . $lbl['design'] . '" '. 
-            'src="' . $img['edit_icon'] . '" /></a> ';
+          '<img title="' . $lbl['design'] . '" '. 'src="' . $img['edit_icon'] . '" /></a> ';
 
 
   $links['full'] = $links['exec_history'] . $links['edit'];
-
   return $links;
 }
 
+/**
+ *
+ */
 function initializeGui(&$dbHandler,&$argsObj)
 {
   $gui = new stdClass();
@@ -213,6 +210,8 @@ function initializeGui(&$dbHandler,&$argsObj)
   $gui->options->testPriorityEnabled = $dummy['opt']->testPriorityEnabled;
   $gui->labels = init_labels(array('design' => null, 'execution' => null, 'execution_history' => null,
                                     'match_count' => null));
+
+  $gui->tableSet = null;
   return $gui;
 }
 
@@ -223,4 +222,3 @@ function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,'testplan_metrics');
 }
-?>

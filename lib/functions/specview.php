@@ -10,7 +10,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.12
  
  * 
  **/ 
@@ -344,14 +344,7 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
     $filters['tsuites_id'] = explode(',',$xx);
   }
   
-  /*
-  $opx = array('addExecInfo' => true, 'specViewFields' => true, 
-               'accessKeyType' => 'tcase+platform+stackOnUser') + (array)$options;
-
-  */
-  // $opx = array('addExecInfo' => true, 'specViewFields' => true) + (array)$options;
-  $opx = array('addExecInfo' => true, 'specViewFields' => true, 
-               'accessKeyType' => 'tcase+platform+stackOnUser') + (array)$options;
+  $opx = array('addExecInfo' => true, 'specViewFields' => true) + (array)$options;
 
   $tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
   if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
@@ -1143,16 +1136,18 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
             // this logic has been created to cope with multiple tester assignment
             foreach ($optionalArrayFields as $fieldKey )
             {
-
-              if(is_array($item[$fieldKey]))
-              {
-                // this seems to be the path we follow when trying to work on test suite
-                $outRef[$fieldKey][$item['platform_id']]=$item[$fieldKey];
-              }  
-              else
+              if(isset($item[$fieldKey]))
               {  
-                // this seems to be the path we follow when trying to work on SINGLE test case
-                $outRef[$fieldKey][$item['platform_id']][]=intval($item[$fieldKey]);
+                if(is_array($item[$fieldKey]))
+                {
+                  // this seems to be the path we follow when trying to work on test suite
+                  $outRef[$fieldKey][$item['platform_id']]=$item[$fieldKey];
+                }  
+                else
+                {  
+                  // this seems to be the path we follow when trying to work on SINGLE test case
+                  $outRef[$fieldKey][$item['platform_id']][]=intval($item[$fieldKey]);
+                }
               }  
             }
           }

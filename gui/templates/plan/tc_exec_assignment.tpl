@@ -189,7 +189,7 @@ function check_action_precondition(container_id,action)
 
               	    	<td style="align:left;">
                         &nbsp;&nbsp;&nbsp;&nbsp;
-              	    		{if $gui->users[$userID] != ''}
+              	    		{if $userID >0 && $gui->users[$userID] != ''}
                         <img class="clickable" src="{$tlImages.remove}"
                              onclick="doAction.value='doRemove';targetFeature.value={$tcase.feature_id[$platform_id]};targetUser.value={$userID};tc_exec_assignment.submit();"
                              title="{$labels.remove}" /> 

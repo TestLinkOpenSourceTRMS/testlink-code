@@ -183,9 +183,11 @@ switch($args->level)
     $filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
     $filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
     $filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
-    
+
+    // ORDER IS CRITIC - Attention in refactoring    
     $opt = array('assigned_on_build' => $args->build_id, 'addPriority' => true);
     $filters += $opt;
+    $opt['accessKeyType'] = 'tcase+platform+stackOnUser';
 
     // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
     $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);

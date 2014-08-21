@@ -10,12 +10,12 @@
  * then to change Test Project user need to use main Test Project Combo
  * 
  * @package 	  TestLink
- * @copyright   2005-2012, TestLink community
+ * @copyright   2005-2014, TestLink community
  * @filesource  usersAssign.php
- * @link 		    http://www.teamst.org/index.php
+ * @link 		    http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.12
  *
  */
 
@@ -115,9 +115,15 @@ if(is_null($gui->features) || count($gui->features) == 0)
 }
 else
 {
-  $accessKey = $gui->features[$gui->featureID]['is_public'] ? 'public' : 'private';
   $imgSet = $smarty->getImages();
+  $accessKey = 'vorsicht';
+  if( isset($gui->features[$gui->featureID]) )
+  {
+    $accessKey = $gui->features[$gui->featureID]['is_public'] ? 'public' : 'private';
+    $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
+  }  
   $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
+
 }
 
 

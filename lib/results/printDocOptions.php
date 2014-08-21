@@ -12,7 +12,7 @@
  *    Test specification/ Test plan.
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.12
  *
  */
 require_once("../../config.inc.php");
@@ -31,6 +31,7 @@ switch($args->doc_type)
 {
   case DOC_TEST_SPEC:
   case DOC_REQ_SPEC:
+    $gui->buildInfoSet = null;
   break;
 
   case DOC_TEST_PLAN_DESIGN:

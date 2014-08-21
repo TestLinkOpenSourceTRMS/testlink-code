@@ -200,7 +200,7 @@ function check_action_precondition(container_id,action)
                       
                       {if $smarty.foreach.testerSet.iteration == 1}
                         <td align="center">
-                      		  		<select class="chosen-select"
+                      		  		<select class="fman-disabled-chosen-select"
                                         data-placeholder="{$labels.chosen_blank_option}"
                                         name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
                       		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"

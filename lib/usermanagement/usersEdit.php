@@ -228,8 +228,8 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj,$newPasswordSendMetho
   // This can be done by passing a parameter to Zend_Validate_Hostname when you instantiate it. 
   // The paramter should be an integer which determines what types of hostnames are allowed. 
   // You are encouraged to use the Zend_Validate_Hostname constants to do this.
-    // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
-    // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
+  // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
+  // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
   // 
   $validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
   $smtp_host = config_get( 'smtp_host' );
@@ -297,36 +297,36 @@ function decodeRoleId(&$dbHandler,$roleID)
 
 function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 {
-    $doRender = false;
-    switch($argsObj->doAction)
-    {
-        case "edit":
-        case "create":
-        case "resetPassword":
-          $doRender = true;
-        $tpl = $templateCfg->default_template;
-        break;
+  $doRender = false;
+  switch($argsObj->doAction)
+  {
+    case "edit":
+    case "create":
+    case "resetPassword":
+      $doRender = true;
+      $tpl = $templateCfg->default_template;
+    break;
 
     case "doCreate":
     case "doUpdate":
-        if(!is_null($templateCfg->template))
-        {
-            $doRender = true;
-            $tpl = $templateCfg->template;
-        }
-        else
-        {
-      header("Location: usersView.php");
-      exit();
-        }
-      break;
+      if(!is_null($templateCfg->template))
+      {
+        $doRender = true;
+        $tpl = $templateCfg->template;
+      }
+      else
+      {
+        header("Location: usersView.php");
+        exit();
+      }
+    break;
 
-    }
+  }
 
-    if($doRender)
-    {
-        $smartyObj->display($templateCfg->template_dir . $tpl);
-    }    
+  if($doRender)
+  {
+    $smartyObj->display($templateCfg->template_dir . $tpl);
+  }    
 }
 
 
@@ -336,7 +336,6 @@ function initializeGui()
   $guiObj->op = new stdClass();
   $guiObj->op->user_feedback = '';
   $guiObj->op->status = tl::OK;
-
 
 
   $guiObj->authCfg = config_get('authentication');

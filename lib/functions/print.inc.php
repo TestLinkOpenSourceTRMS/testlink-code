@@ -9,12 +9,12 @@
  *
  * @package   TestLink
  * @author    Martin Havlat <havlat@users.sourceforge.net>
- * @copyright 2007-2013, TestLink community 
+ * @copyright 2007-2012, TestLink community 
  * @uses      printDocument.php
  *
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.12
  *
  */ 
 

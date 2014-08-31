@@ -228,6 +228,7 @@ class testcaseCommands
 
     if($tcase['status_ok'])
     {
+      $guiObj->actionOK = true;
       if($argsObj->stay_here)
       {   
         $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,ENABLED,
@@ -251,6 +252,7 @@ class testcaseCommands
     }
     elseif(isset($tcase['msg']))
     {
+      $guiObj->actionOK = false;
       $guiObj->user_feedback = lang_get('error_tc_add');
       $guiObj->user_feedback .= '' . $tcase['msg'];
       $guiObj->sqlResult = 'ko';

@@ -707,6 +707,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
       break;
 
       case "doCreate":
+        $initWebEditorFromTemplate = $opObj->actionOK;
+        $of->Value = $argsObj->$key;
+      break;
+      
       case "doDelete":
       case "doCopyStep":
       case "doUpdateStep":
@@ -723,7 +727,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
     }
     $guiObj->operation = $actionOperation[$argsObj->doAction];
   
-    if(  $initWebEditorFromTemplate )
+    if($initWebEditorFromTemplate)
     {
       $of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');  
     }

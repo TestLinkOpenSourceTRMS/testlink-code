@@ -11,7 +11,7 @@
  * @link 		    http://testlink.sourceforge.net
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
  *
 **/
 
@@ -773,13 +773,14 @@ class cfield_mgr extends tlObject
         break;
       }
 
+      $safeNodeID = intval($node_id);
       foreach($cfield as $field_id => $type_and_value)
       {
         $value = $type_and_value['cf_value'];
 
         // do I need to update or insert this value?
         $sql = "/* $debugMsg */ SELECT value FROM {$this->tables[$table_key]} " .
-    		       " WHERE field_id={$field_id} AND	node_id={$node_id}";
+    		       " WHERE field_id=" . intval($field_id) . " AND	node_id=" . $safeNodeID;
 
         $result = $this->db->exec_query($sql);
 
@@ -789,7 +790,6 @@ class cfield_mgr extends tlObject
            $value = substr($value,0,$this->max_length_value);
         }
         
-
         $safe_value = $this->db->prepare_string($value);
         $rowCount = $this->db->num_rows($result); 
         if( $rowCount > 0 ) 
@@ -804,7 +804,7 @@ class cfield_mgr extends tlObject
             // bye, bye record
             $sql = "/* $debugMsg */ DELETE FROM {$this->tables[$table_key]} ";
           }  
-          $sql .=  " WHERE field_id={$field_id} AND node_id={$node_id}";
+          $sql .=  " WHERE field_id=" . intval($field_id) . " AND node_id=" . $safeNodeID;
           $this->db->exec_query($sql);
         }
         else if ($rowCount == 0 && $value != "")
@@ -815,7 +815,7 @@ class cfield_mgr extends tlObject
   		    #  values stored with a bug must not change
   		    $sql = "/* $debugMsg */ INSERT INTO {$this->tables[$table_key]} " .
   				       " ( field_id, node_id, value ) " .
-  				       " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
+  				       " VALUES	( " . intval($field_id) . ", {$safeNodeID}, '{$safe_value}' )";
   		    $this->db->exec_query($sql);
         } 
       } //foreach($cfield
@@ -859,7 +859,7 @@ class cfield_mgr extends tlObject
     }
     else
     {
-      $sql .= " WHERE node_id={$node_id}";
+      $sql .= " WHERE node_id=" . intval($node_id);
     }
 
     $this->db->exec_query($sql);
@@ -997,12 +997,13 @@ class cfield_mgr extends tlObject
     }
 
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
+    $safeID = intval($tproject_id);
+    $tproject_info = $this->tree_manager->get_node_hierarchy_info($safeID);
 		foreach($cfield_ids as $field_id)
 		{
 			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_testprojects']} " .
 			   	   " (testproject_id,field_id) " .
-			   	   " VALUES({$tproject_id},{$field_id})";
+			   	   " VALUES({$safeID},{$field_id})";
 
 			if ($this->db->exec_query($sql))
 			{
@@ -1014,7 +1015,7 @@ class cfield_mgr extends tlObject
 		    }					            
 			}
 		}
-	} //function end
+	}
 
 
   /*
@@ -1230,7 +1231,7 @@ class cfield_mgr extends tlObject
 		}	    
 		
 		// seems here is better do not touch.
-	    $safe['possible_values'] = $this->db->prepare_string($cf['possible_values']);
+	  $safe['possible_values'] = $this->db->prepare_string($cf['possible_values']);
 
 		$onezero = array('show_on_design','enable_on_design','show_on_testplan_design',
 						         'enable_on_testplan_design','show_on_execution','enable_on_execution');
@@ -1350,15 +1351,15 @@ class cfield_mgr extends tlObject
 
 		$sql =	"UPDATE {$this->tables['custom_fields']}  " .
     			 	" SET	name='" . $safecf['name'] . "'," . 
-    			 	"		label='" . $safecf['label'] . "'," .
-    			 	"     	type={$safecf['type']}," .
-    			 	"		possible_values='" . $safecf['possible_values'] . "'," .
-    			 	"     	show_on_design={$safecf['show_on_design']}," .
-    			 	"     	enable_on_design={$safecf['enable_on_design']}," .
-    			 	"     	show_on_testplan_design={$safecf['show_on_testplan_design']}," .
-    			 	"     	enable_on_testplan_design={$safecf['enable_on_testplan_design']}," .
-    			 	"     	show_on_execution={$safecf['show_on_execution']}," .
-    			 	"     	enable_on_execution={$safecf['enable_on_execution']}" .
+    			 	"		  label='" . $safecf['label'] . "'," .
+    			 	"     type={$safecf['type']}," .
+    			 	"		  possible_values='" . $safecf['possible_values'] . "'," .
+    			 	"     show_on_design={$safecf['show_on_design']}," .
+    			 	"     enable_on_design={$safecf['enable_on_design']}," .
+    			 	"     show_on_testplan_design={$safecf['show_on_testplan_design']}," .
+    			 	"     enable_on_testplan_design={$safecf['enable_on_testplan_design']}," .
+    			 	"     show_on_execution={$safecf['show_on_execution']}," .
+    			 	"     enable_on_execution={$safecf['enable_on_execution']}" .
     			 	" WHERE id={$safecf['id']}";
 		$result = $this->db->exec_query($sql);
 

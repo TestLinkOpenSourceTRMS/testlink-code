@@ -8,12 +8,12 @@
  * @filesource  treeMenu.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2005-2014, TestLink community 
+ * @link        http://www.testlink.org
  * @uses        config.inc.php
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 require_once("execTreeMenu.inc.php");
@@ -967,7 +967,8 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
   static $debugMsg = null;
   
   $rows = null;
-  if (!$debugMsg) {
+  if (!$debugMsg) 
+  {
     $tables = tlObject::getDBTables(array('cfield_design_values','nodes_hierarchy','tcversions'));
     $debugMsg = 'Function: ' . __FUNCTION__;
   }
@@ -986,31 +987,35 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
     {
       $delete_suite = false;
       
-      if (isset($node['childNodes']) && is_array($node['childNodes'])) {
+      if (isset($node['childNodes']) && is_array($node['childNodes'])) 
+      {
         // node is a suite and has children, so recurse one level deeper      
         $tcase_tree[$key]['childNodes'] = filter_by_cf_values($db,$tcase_tree[$key]['childNodes'], 
                                                               $cf_hash,$node_types); 
         
         // now remove testsuite node if it is empty after coming back from recursion
-        if (!count($tcase_tree[$key]['childNodes'])) {
+        if (!count($tcase_tree[$key]['childNodes'])) 
+        {
           $delete_suite = true;
         }
-      } else {
+      } 
+      else 
+      {
         // nothing in here, suite was already empty
         $delete_suite = true;
       }
       
-      if ($delete_suite) {
+      if ($delete_suite) 
+      {
         unset($tcase_tree[$key]);
         $node_deleted = true;
       }
-        // TICKET 5186: Filtering by the value of custom fields on test specification is not working
-    } else if ($node['node_type_id'] == $node_types['testcase']) {
+    } 
+    else if ($node['node_type_id'] == $node_types['testcase']) 
+    {
       // node is testcase, check if we need to delete it
-      
       $passed = false;
             
-      //BUGID 2877 - Custom Fields linked to TC versions
       // TICKET 5186: added "DISTINCT" to SQL clause, detailed explanation follows at the end of function
       // Note: SQL statement has been adopted to filter by latest active tc version.
       // That is a better solution for the explained problem than using the distinct keyword.
@@ -1031,39 +1036,42 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
       // Query uses OR, but final processing makes that CF LOGIC work in AND MODE as expected
       if (isset($cf_hash)) 
       { 
-                $countmain = 1;
-                $cf_sql = '';
-                foreach ($cf_hash as $cf_id => $cf_value) 
-                {
-                    
-                    if ( $countmain != 1 ) 
-                    {
-                        $cf_sql .= " OR ";
-                    }
-                    // single value or array?
-                    if (is_array($cf_value)) 
-                    {
-                        $count = 1;
-                        foreach ($cf_value as $value) 
-                        {
-                            if ($count > 1) 
-                            {
-                                $cf_sql .= " AND ";
-                            }
-                            $cf_sql .= "( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
-                            $count++;
-                            //print_r($count);
-                        }
-                    } else 
-                    {
-                        $cf_sql .= " ( CFD.value LIKE '%{$cf_value}%' AND CFD.field_id = {$cf_id} ) ";
-                    }
-                    $countmain++;
-                }
-                $sql .=  " AND ({$cf_sql}) ";
+        $countmain = 1;
+        $cf_sql = '';
+        foreach ($cf_hash as $cf_id => $cf_value) 
+        {
+          if ( $countmain != 1 ) 
+          {
+            $cf_sql .= " OR ";
+          }
+ 
+          $safeID = intval($cf_id);
+          // single value or array?
+          if (is_array($cf_value)) 
+          {
+            $count = 1;
+            foreach ($cf_value as $value) 
+            {
+              if ($count > 1) 
+              {
+                $cf_sql .= " AND ";
+              }
+              $safeValue = $db->prepare_string($value);
+              $cf_sql .= "( CFD.value LIKE '%{$safeValue}%' AND CFD.field_id = {$safeID} )";
+              $count++;
             }
+          } 
+          else 
+          {
+            $safeValue = $db->prepare_string($cf_value);
+            $cf_sql .= " ( CFD.value LIKE '%{$safeValue}%' AND CFD.field_id = {$safeID} ) ";
+          }
+          $countmain++;
+        }
+        $sql .=  " AND ({$cf_sql}) ";
+      }
 
-      $rows = $db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
+      $rows = $db->fetchColumnsIntoArray($sql,'value');
       
       //if there exist as many rows as custom fields to be filtered by
       //the tc does meet the criteria

@@ -918,7 +918,7 @@ $tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHI
 // string: value of value member is assigned to FCK object
 // string_id: value member is used in a lang_get() call, and return value
 //       is assigned to FCK object. Configure string_id on custom_strings.txt
-// file: value member is used as file name.
+// value: value member is used as file name.
 //       file is readed and it's contains assigned to FCK object
 //
 // any other value for type, results on '' assigned to FCK object

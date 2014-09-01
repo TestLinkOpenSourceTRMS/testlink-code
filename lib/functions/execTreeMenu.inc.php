@@ -780,7 +780,10 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     // Remove null elements (Ext JS tree do not like it ).
     // :null happens on -> "children":null,"text" that must become "children":[],"text"
     // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-    $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+    // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
+                               array(':[]','',''), $menustring); 
+
   }  
   
   $treeMenu->menustring = $menustring;

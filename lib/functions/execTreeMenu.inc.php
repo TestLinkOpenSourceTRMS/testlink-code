@@ -11,12 +11,13 @@
  * @filesource  execTreeMenu.inc.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2013, TestLink community 
+ * @copyright   2013,2014 TestLink community 
  * @link        http://testlink.sourceforge.net/ 
  * @uses        config.inc.php
+ * @uses        const.inc.php
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
  */
 
 /**
@@ -239,7 +240,10 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     // Remove null elements (Ext JS tree do not like it ).
     // :null happens on -> "children":null,"text" that must become "children":[],"text"
     // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-    $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+    // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
+                               array(':[]','',''), $menustring); 
+
   }  
   
   $treeMenu->menustring = $menustring;

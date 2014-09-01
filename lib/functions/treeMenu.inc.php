@@ -459,22 +459,22 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
         }
       }
 
-            // TICKET 4496: added inactive testcase filter
-            if ($node && $my['options']['ignoreActiveTestCases'])
-            {
-                $sql=" /* $debugMsg - line:" . __LINE__ . " */ " .
-                    " SELECT count(TCV.id) AS num_active_versions " .
-                    " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
-                    " WHERE NH.parent_id=" . $node['id'] .
-                    " AND NH.id = TCV.id AND TCV.active=1";
+      // TICKET 4496: added inactive testcase filter
+      if ($node && $my['options']['ignoreActiveTestCases'])
+      {
+        $sql=" /* $debugMsg - line:" . __LINE__ . " */ " .
+             " SELECT count(TCV.id) AS num_active_versions " .
+             " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+             " WHERE NH.parent_id=" . $node['id'] .
+             " AND NH.id = TCV.id AND TCV.active=1";
 
-                $result = $db->exec_query($sql);
-                $myrow = $db->fetch_array($result);
-                if($myrow['num_active_versions'] != 0)
-                {
-                    $node = null;
-                }
-            }
+        $result = $db->exec_query($sql);
+        $myrow = $db->fetch_array($result);
+        if($myrow['num_active_versions'] != 0)
+        {
+          $node = null;
+        }
+      }
     }
     // -------------------------------------------------------------------
     
@@ -484,9 +484,9 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     {
       $sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
              " SELECT COALESCE(MAX(TCV.id),0) AS targetid, TCV.tc_external_id AS external_id" .
-           " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
-           " WHERE  NH.id = TCV.id {$activeVersionClause} AND NH.parent_id={$node['id']} " .
-           " GROUP BY TCV.tc_external_id ";
+             " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+             " WHERE  NH.id = TCV.id {$activeVersionClause} AND NH.parent_id={$node['id']} " .
+             " GROUP BY TCV.tc_external_id ";
          
       $rs = $db->get_recordset($sql);
       if( is_null($rs) )
@@ -495,8 +495,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
       }
       else
       { 
-          $node['external_id'] = $rs[0]['external_id'];
-          $target_id = $rs[0]['targetid'];
+        $node['external_id'] = $rs[0]['external_id'];
+        $target_id = $rs[0]['targetid'];
         
         if( $filterOnTCVersionAttribute )
         {
@@ -537,12 +537,12 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
                     " {$my['filters']['filter_priority']} ";
           }
           
-            $rs = $db->fetchRowsIntoMap($sql,'execution_type');
-            if(is_null($rs))
-            {
+          $rs = $db->fetchRowsIntoMap($sql,'execution_type');
+          if(is_null($rs))
+          {
               $node = null;
-            }
           }
+        }
       } 
       if( !is_null($node) )
       {
@@ -757,6 +757,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
  *              when node is of testcase type.
  * 
  * @return datatype description
+ * @used-by execTreeMenu.inc.php
  * 
  */
 function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$testCasePrefix,$opt)

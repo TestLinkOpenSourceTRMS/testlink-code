@@ -267,7 +267,11 @@ switch($args->do_action)
             else
             {
               // session cache has not still updated => get from DB ?
-              $roleObj = &$args->user->getEffectiveRole($db,$args->tproject_id,$idk);
+              $roleObj = $args->user->getEffectiveRole($db,$args->tproject_id,$idk);
+              if(!is_null($roleObj))
+              {
+                $roleObj = &$roleObj;
+              }  
             }  
           }  
           else if (!is_null($args->user->tprojectRoles))

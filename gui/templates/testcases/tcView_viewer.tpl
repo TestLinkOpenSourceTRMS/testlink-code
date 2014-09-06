@@ -326,7 +326,7 @@ function launchInsertStep(step_id)
 
   <span class="order_info" style='display:none'>
   <input type="submit" name="renumber_step" 
-          onclick="doAction.value='doReorderSteps';{$gui->submitCode};javascript: return validateStepsReorder('step_number');" 
+          onclick="doAction.value='doReorderSteps';{$gui->submitCode};javascript: return validateStepsReorder('step_number{$args_testcase.id}');"
           value="{$tcView_viewer_labels.btn_reorder_steps}" />
   </span>
   {/if}

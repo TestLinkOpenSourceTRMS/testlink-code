@@ -29,6 +29,8 @@
           
           <input type="submit" name="testcases_table_view" value="{$labels.btn_testcases_table_view}"
                  title="{$labels.btn_testcases_table_view}" />
+          
+          <input type="button" onclick="location='{$testSuiteDocAction}'" value="{$labels.btn_gen_test_spec}" />
 
           <input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
           <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />

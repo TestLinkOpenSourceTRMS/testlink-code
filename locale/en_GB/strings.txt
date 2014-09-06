@@ -2622,6 +2622,7 @@ $TLS_testnotes = "Testing notes";
 $TLS_last_exec_result = "Last Result";
 $TLS_test_project_notes = "Test Project description";
 $TLS_undefined_req_spec_type = "Req Spec Type (%s) is undefined";
+$TLS_report_exec_result = "Execution Result";
 
 // ----- lib/functions/users.inc.php -----
 $TLS_duplicate_login = "A user with that login already exists!";

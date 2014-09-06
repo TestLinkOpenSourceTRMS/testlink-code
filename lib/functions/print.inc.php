@@ -1003,22 +1003,29 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
            " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
            " B.name AS build_name,E.execution_duration " .
-           " FROM {$tables['executions']} E, {$tables['builds']} B" .
-           " WHERE E.build_id = B.id " . 
-           " AND E.testplan_id = " . intval($tplan_id) .
-           " AND E.platform_id = " . intval($platform_id) .
-           " AND E.tcversion_id = " . intval($linkedItem[0]['tcversion_id']);
-      
-    if($build_id > 0)
+           " FROM {$tables['executions']} E, {$tables['builds']} B " .
+           " WHERE E.build_id = B.id ";
+
+    if(isset($context['exec_id']))
     {
-      $sql .= " AND E.build_id = " . intval($build_id);
+      $sql .= " AND E.id=" . intval($context['exec_id']);
     }
     else
     {
-      // We are looking for LATEST EXECUTION of CURRENT LINKED test case version
-      $sql .= " AND E.tcversion_number=" . intval($linkedItem[0]['version']);
-    }       
-    $sql .= " ORDER BY execution_id DESC";
+      $sql .= " AND E.testplan_id = " . intval($tplan_id) .
+              " AND E.platform_id = " . intval($platform_id) .
+              " AND E.tcversion_id = " . intval($linkedItem[0]['tcversion_id']);
+      if($build_id > 0)
+      {
+        $sql .= " AND E.build_id = " . intval($build_id);
+      }
+      else
+      {
+        // We are looking for LATEST EXECUTION of CURRENT LINKED test case version
+        $sql .= " AND E.tcversion_number=" . intval($linkedItem[0]['version']);
+      }
+      $sql .= " ORDER BY execution_id DESC";
+    }
     $exec_info = $db->get_recordset($sql,null,1);
 
 
@@ -1710,7 +1717,8 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
       }    
     }
 
-    $labelsKeys=array('last_exec_result', 'title_execution_notes', 'none', 'reqs','author', 'summary',
+    $labelsKeys=array('last_exec_result', 'report_exec_result',
+                      'title_execution_notes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
@@ -1762,13 +1770,8 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
     $td_colspan .= ' colspan="' . $colspan . '" '; 
   }
 
-  $out .= '<tr><td width="20%" valign="top">' .
-          '<span class="label">' . $labels['last_exec_result'] . ':</span></td>' .
-          '<td '  .$td_colspan . '><b>' . $testStatus . "</b></td></tr>\n" .
-          '<tr><td width="20%">' .
-          '<span class="label">' . $labels['execution_duration'] . ':</span></td>' .
-          '<td '  .$td_colspan . '><b>' . $exec_info[0]['execution_duration'] . "</b></td></tr>\n" .
-          '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
+
+  $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
           '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n";
 
   // Check if CF exits for this BUILD
@@ -1777,10 +1780,16 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
      $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"></td>' . 
              '<td '  .$td_colspan . '>' . $buildCF[$exec_info[0]['build_id']] . "</td></tr>\n";
   }        
-
-
   $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
           '<td '  .$td_colspan . '>' . $testerNameCache[$exec_info[0]['tester_id']] . "</b></td></tr>\n";
+
+
+  $out .= '<tr><td width="20%" valign="top">' .
+          '<span class="label">' . $labels['report_exec_result'] . ':</span></td>' .
+          '<td '  .$td_colspan . '><b>' . $testStatus . "</b></td></tr>\n" .
+          '<tr><td width="20%">' .
+          '<span class="label">' . $labels['execution_duration'] . ':</span></td>' .
+          '<td '  .$td_colspan . '><b>' . $exec_info[0]['execution_duration'] . "</b></td></tr>\n";
 
   if ($executionNotes != '') // show exection notes is not empty
   {

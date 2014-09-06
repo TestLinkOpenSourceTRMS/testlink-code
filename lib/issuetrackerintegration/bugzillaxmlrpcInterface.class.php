@@ -398,10 +398,6 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
                    'summary' => $summary,
                    'description' => $description);
 
-    if (isset($login['userToken'])) 
-    {
-      $args[0]['Bugzilla_token'] = $login['userToken'];
-    }
 
     foreach($this->issueDefaults as $prop => $default)
     {
@@ -409,6 +405,12 @@ class bugzillaxmlrpcInterface extends issueTrackerInterface
     }
     
     $args = array($issue);
+    if (isset($login['userToken'])) 
+    {
+      $args[0]['Bugzilla_token'] = $login['userToken'];
+    }
+
+    
     $op = $this->APIClient->call($method,$args);
     if( ($op['status_ok'] = ($op['id'] > 0)) )
     {

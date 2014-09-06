@@ -954,13 +954,13 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
    * Need to get CF with execution scope
    */
   $exec_info = null;
-  $getExecutions = false;
   $getByID['filters'] = null;
 
   switch($options["docType"])
   {
     case DOC_TEST_SPEC:
       $getByID['tcversion_id'] = testcase::LATEST_VERSION;
+      $getExecutions = false;
     break;
 
     case SINGLE_TESTCASE:
@@ -1002,9 +1002,11 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
     $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
            " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
-           " B.name AS build_name,E.execution_duration " .
-           " FROM {$tables['executions']} E, {$tables['builds']} B " .
-           " WHERE E.build_id = B.id ";
+           " E.execution_type, " .
+           " B.name AS build_name " .
+           " FROM {$tables['executions']} E " .
+           " JOIN {$tables['builds']} B ON B.id = E.build_id " .
+           " WHERE 1 = 1 ";
 
     if(isset($context['exec_id']))
     {
@@ -1263,6 +1265,11 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            '<td colspan="' .  ($cfg['tableColspan']-1) . '">';
 
 
+  // This is what have been choosen DURING DESIGN, but may be we can choose at DESIGN
+  // manual and the execute AUTO, or may be choose AUTO and execute MANUAL.
+  // After report on MANTIS, seems that we need to provide in output two values:
+  // DESIGN execution type
+  // EXECUTION execution type         
   switch ($tcInfo['execution_type'])
   {
     case TESTCASE_EXECUTION_TYPE_AUTO:
@@ -1321,10 +1328,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }
     else
     {
-        $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
-            '<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
-            '<td colspan="' . ($cfg['tableColspan']-1) . '"><b>' . $labels["test_status_not_run"] . 
-            "</b></td></tr>\n";
+      $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+               '<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
+               '<td colspan="' . ($cfg['tableColspan']-1) . '"><b>' . $labels["test_status_not_run"] . 
+               "</b></td></tr>\n";
     }
   }
 
@@ -1717,7 +1724,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
       }    
     }
 
-    $labelsKeys=array('last_exec_result', 'report_exec_result',
+    $labelsKeys=array('last_exec_result', 'report_exec_result','execution_details','execution_mode',
                       'title_execution_notes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
@@ -1747,6 +1754,10 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
 
 /**
  * 
+ * @internal revisions
+ * @since 1.9.12
+ *
+ * TICKET 6545: On report with test steps exec wrong value is used for test case execution type
  *
  */
 function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan,$show_exec_notes = false,$buildCF=null)
@@ -1764,12 +1775,28 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
   
   $executionNotes = $show_exec_notes ? $exec_info[0]['notes'] : '';
 
+  // new dBug();
+  switch($exec_info[0]['execution_type'])
+  {
+    case TESTCASE_EXECUTION_TYPE_AUTO:
+      $etk = 'execution_type_auto';          
+    break;
+
+    case TESTCASE_EXECUTION_TYPE_MANUAL:
+    default:
+      $etk = 'execution_type_manual';          
+    break;
+  }
+
   $td_colspan = '';
   if( !is_null($colspan) ) 
   {
     $td_colspan .= ' colspan="' . $colspan . '" '; 
   }
 
+  $out .= '<tr style="' . "font-weight: bold;background: #EEE;text-align: left;" . '">' .
+          '<td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['execution_details'] .'</td>' . 
+          '<td '  .$td_colspan . '>' . "&nbsp;" . "</b></td></tr>\n";
 
   $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
           '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n";
@@ -1787,9 +1814,17 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
   $out .= '<tr><td width="20%" valign="top">' .
           '<span class="label">' . $labels['report_exec_result'] . ':</span></td>' .
           '<td '  .$td_colspan . '><b>' . $testStatus . "</b></td></tr>\n" .
+
           '<tr><td width="20%">' .
-          '<span class="label">' . $labels['execution_duration'] . ':</span></td>' .
-          '<td '  .$td_colspan . '><b>' . $exec_info[0]['execution_duration'] . "</b></td></tr>\n";
+          '<span class="label">' . $labels['execution_mode'] . ':</span></td>' .
+          '<td '  .$td_colspan . '><b>' . $labels[$etk] . "</b></td></tr>\n" .
+
+          '<tr><td width="20%">' .
+          '<span class="label">' . $labels['execution_duration'] . ':</span></td>';
+
+  $out .= '<td '  .$td_colspan . '><b>' . 
+          (isset($exec_info[0]['execution_duration']) ? $exec_info[0]['execution_duration'] : "&nbsp;") . 
+          "</b></td></tr>\n";
 
   if ($executionNotes != '') // show exection notes is not empty
   {

@@ -91,6 +91,23 @@ function jsCallDeleteFile(btn, text, o_id)
       <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
       <input type="hidden" name="doAction" id="doAction" value="" />
       <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+
+      <input type="image" src="{$tlImages.add}" name="new_testsuite" id="new_testsuite" 
+             onclick="doAction.value='new_testsuite'" title="{$labels.btn_new_testsuite}">
+      
+      <input type="image" src="{$tlImages.order_alpha}" name="reorder_testproject_testsuites_alpha" 
+             id="reorder_testproject_testsuites_alpha" 
+             onclick="doAction.value='reorder_testproject_testsuites_alpha'" title="{$labels.btn_reorder_testsuites_alpha}">
+
+      <img src="{$tlImages.import}" onclick="location='{$importToTProjectAction}'" title="{$labels.btn_import_testsuite}" />
+
+      {if $gui->canDoExport}
+        <img src="{$tlImages.export}" onclick="location='{$tsuiteExportAction}'" title="{$labels.btn_export_all_testsuites}" />
+      {/if}
+
+      <img src="{$tlImages.report}" onclick="location='{$testSpecFullDocAction}'" title="{$labels.btn_gen_test_spec}" />
+
+      <!--
       <input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
       <input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
              title="{$labels.btn_reorder_testsuites_alpha}" />
@@ -102,6 +119,8 @@ function jsCallDeleteFile(btn, text, o_id)
       {/if}
 
       <input type="button" onclick="location='{$testSpecFullDocAction}'" value="{$labels.btn_gen_test_spec}" />
+      -->
+
     </form>
     </fieldset>
   </div>

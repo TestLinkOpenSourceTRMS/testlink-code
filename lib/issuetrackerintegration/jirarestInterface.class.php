@@ -7,7 +7,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
@@ -112,8 +112,8 @@ class jirarestInterface extends issueTrackerInterface
                    'password' => (string)trim($this->cfg->password),
                    'host' => (string)trim($this->cfg->uriapi));
   	  $this->APIClient = new JiraApi\Jira($par);
-      $this->connected = true;
 
+      $this->connected = $this->APIClient->testLogin();
     }
   	catch(Exception $e)
   	{

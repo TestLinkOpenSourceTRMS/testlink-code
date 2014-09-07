@@ -8,13 +8,14 @@
  * @internal revisions
  *
 **/
-require_once('../../../config.inc.php');
+require_once('../../../../config.inc.php');
 require_once('common.php');
 
 $it_mgr = new tlIssueTracker($db);
 $itt = $it_mgr->getTypes();
 
 // last test ok: 20121210
+/*
 $cfg = "<!-- Template mantissoapInterface -->\n" .
        "<issuetracker>\n" .
        "<username>u0113</username>\n" .
@@ -26,6 +27,22 @@ $cfg = "<!-- Template mantissoapInterface -->\n" .
        "<status><code>90</code><verbose>closed</verbose></status>\n" .
        "</resolvedstatus>\n".
        "</issuetracker>\n";
+*/
+
+$username='administrator';
+$password='root';
+$uribase='http://localhost/development/mantis/mantisbt-1.2.15/';
+
+
+$cfg = "<!-- Template mantissoapInterface -->\n" .
+       "<issuetracker>\n" .
+       "<username>$username</username>\n" .
+       "<password>$password</password>\n" .
+       "<uribase>$uribase</uribase>\n" .
+       "<project>Project ONE</project>\n" .
+       "<category>YUMO</category>" .
+       "</issuetracker>\n";
+
 
 echo '<hr><br>';
 echo "<b>Testing  Issue Tracker Integration - mantissoapInterface </b>";
@@ -40,16 +57,12 @@ $its = new mantissoapInterface(5,$cfg);
 
 echo 'Connection OK?<br>';
 var_dump($its->isConnected());
+
+$issueID = 12;
+$issueNote = 'SONO UNA NOTAwww!!!';
 if( $its->isConnected() )
 {
-	echo '<b>Connected !</br></b>';
-	
-	echo '<b>get resolved status configuration</br></b>';
-	new dBug($its->getResolvedStatusCfg());
-	
-	echo '<b>get issue </br></b>';
-	new dBug($its->getIssue(102575));
-	new dBug($its->getIssue(102529));
-	
+  echo '<b>Connected !</br></b>';
+  $xx = $its->addNote($issueID,$issueNote);	
+  var_dump($xx);
 }
-?>

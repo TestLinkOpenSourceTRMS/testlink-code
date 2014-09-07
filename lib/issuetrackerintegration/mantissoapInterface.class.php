@@ -7,7 +7,8 @@
  * @since 1.9.4
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
+ *
 **/
 class mantissoapInterface extends issueTrackerInterface
 {
@@ -158,7 +159,7 @@ class mantissoapInterface extends issueTrackerInterface
     $safe_id = intval($id);
     try
     {
-      $status_ok = $client->mc_issue_exists($this->cfg->username,$this->cfg->password,$safe_id) ? 1 : 0;
+      $status_ok = $client->mc_issue_exists((string)$this->cfg->username,(string)$this->cfg->password,$safe_id) ? 1 : 0;
     }
     catch (SoapFault $f) 
     {
@@ -420,6 +421,63 @@ class mantissoapInterface extends issueTrackerInterface
     return $ret;
   }
   
+
+  /**
+   *
+   * Mantis API Call mc_issue_note_addR
+   * <part name="username" type="xsd:string"/>
+   * <part name="password" type="xsd:string"/>
+   * <part name="issue_id" type="xsd:integer"/>
+   * <part name="note" type="tns:IssueNoteData"/>
+   * <xsd:complexType name="IssueNoteData">
+   * <xsd:all>
+   * <xsd:element name="id" type="xsd:integer" minOccurs="0"/>
+   * <xsd:element name="reporter" type="tns:AccountData" minOccurs="0"/>
+   * <xsd:element name="text" type="xsd:string" minOccurs="0"/>
+   * <xsd:element name="view_state" type="tns:ObjectRef" minOccurs="0"/>
+   * <xsd:element name="date_submitted" type="xsd:dateTime" minOccurs="0"/>
+   * <xsd:element name="last_modified" type="xsd:dateTime" minOccurs="0"/>
+   * <xsd:element name="time_tracking" type="xsd:integer" minOccurs="0"/>
+   * <xsd:element name="note_type" type="xsd:integer" minOccurs="0"/>
+   * <xsd:element name="note_attr" type="xsd:string" minOccurs="0"/>
+   * </xsd:all>
+   *
+   *
+   */
+  public function addNote($issueID,$noteText)
+  {
+    static $client;
+    $ret = array('status_ok' => false,'msg' => '', 'note_id' => -1);
+    if (!$this->isConnected())
+    {
+      return $ret;
+    }
+    
+    if(is_null($client))
+    {
+      $dummy = $this->getClient();
+      $client = $dummy['client'];
+    }
+
+    $safe = new stdClass();
+    $safe->username = (string)$this->cfg->username;
+    $safe->password = (string)$this->cfg->password;
+    $safe->issueID = intval($issueID);
+
+    if($client->mc_issue_exists($safe->username,$safe->password,$safe->issueID))
+    {
+      $issueNoteData = array('text' => $noteText);
+      $ret['note_id'] = $client->mc_issue_note_add($safe->username,$safe->password,$safe->issueID,$issueNoteData);
+    }
+    else
+    {
+      $ret['msg'] = 'issue does not exist';
+    }
+    return $ret;
+  }
+  
+
+
   /**
    *
    **/

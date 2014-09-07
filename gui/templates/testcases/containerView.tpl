@@ -5,7 +5,7 @@ View test specification containers
 
 @filesource containerView.tpl
 @internal revisions
-@since 1.9.10
+@since 1.9.12
 *}
 
 {lang_get var='labels' 
@@ -86,7 +86,7 @@ function jsCallDeleteFile(btn, text, o_id)
        title="{$labels.actions}" />
   <div id="tproject_control_panel" style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
     <fieldset class="groupBtn">
-    <h2>{$labels.testsuite_operations}</h2>
+    <b>{$labels.testsuite_operations}</b>
     <form method="post" action="lib/testcases/containerEdit.php">
       <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
       <input type="hidden" name="doAction" id="doAction" value="" />
@@ -106,21 +106,6 @@ function jsCallDeleteFile(btn, text, o_id)
       {/if}
 
       <img src="{$tlImages.report}" onclick="location='{$testSpecFullDocAction}'" title="{$labels.btn_gen_test_spec}" />
-
-      <!--
-      <input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
-      <input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
-             title="{$labels.btn_reorder_testsuites_alpha}" />
-
-      <input type="button" onclick="location='{$importToTProjectAction}'"  value="{$labels.btn_import_testsuite}" />
-
-      {if $gui->canDoExport}
-      <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
-      {/if}
-
-      <input type="button" onclick="location='{$testSpecFullDocAction}'" value="{$labels.btn_gen_test_spec}" />
-      -->
-
     </form>
     </fieldset>
   </div>

@@ -350,6 +350,7 @@ class TLSmarty extends Smarty
                    'check_ko' => TL_THEME_IMG_DIR . 'link_error.png',
                    'cog'  => TL_THEME_IMG_DIR . 'cog.png',
                    'create_copy' => TL_THEME_IMG_DIR . 'application_double.png',
+                   'create_from_xml' => TL_THEME_IMG_DIR . 'wand.png',
                    'date' => TL_THEME_IMG_DIR . 'date.png',
                    'delete' => TL_THEME_IMG_DIR . 'trash.png',
                    'demo_mode' => TL_THEME_IMG_DIR . 'emoticon_tongue.png',

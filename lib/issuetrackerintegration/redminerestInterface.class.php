@@ -395,6 +395,32 @@ class redminerestInterface extends issueTrackerInterface
 
   /**
    *
+   */
+  public function addNote($issueID,$noteText)
+  {
+    try
+    {
+       // needs json or xml
+      $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
+      $issueXmlObj->addChild('notes', htmlspecialchars($noteText));
+      $op = $this->APIClient->addIssueNoteFromSimpleXML($issueID,$issueXmlObj);
+      $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+                   'msg' => sprintf(lang_get('redmine_bug_created'),$summary,$issueXmlObj->project_id));
+     }
+     catch (Exception $e)
+     {
+       $msg = "REDMINE Add Note to Ticket FAILURE => " . $e->getMessage();
+       tLog($msg, 'WARNING');
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+     }
+     return $ret;
+  }  
+
+
+
+
+  /**
+   *
    * @author francisco.mancardi@gmail.com>
    **/
 	public static function getCfgTemplate()

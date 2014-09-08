@@ -195,7 +195,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data)
 }
 
 /**
- * 
+ * DELETE + INSERT => this way we will not add duplicates
  *
  */
 function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
@@ -240,9 +240,9 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
   {
     
     $sql =  "/* $debugMsg */ SELECT execution_id,bug_id,builds.name AS build_name " .
-            "FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
+            " FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
             " {$tables['builds']} builds ".
-            " WHERE execution_id = {$execution_id} " .
+            " WHERE execution_id = " . intval($execution_id) .
             " AND   execution_id = executions.id " .
             " AND   executions.build_id = builds.id " .
             " ORDER BY builds.name,bug_id";
@@ -254,10 +254,13 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
       $addAttr = !is_null($raw);
       foreach($map as $elem)
       {
-        $dummy = $bug_interface->buildViewBugLink($elem['bug_id'],$opt);
-        $bug_list[$elem['bug_id']]['link_to_bts'] = $dummy->link;
-        $bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
-        $bug_list[$elem['bug_id']]['isResolved'] = $dummy->isResolved;
+        if(!isset($bug_list[$elem['bug_id']]))
+        {
+          $dummy = $bug_interface->buildViewBugLink($elem['bug_id'],$opt);
+          $bug_list[$elem['bug_id']]['link_to_bts'] = $dummy->link;
+          $bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
+          $bug_list[$elem['bug_id']]['isResolved'] = $dummy->isResolved;
+        }  
         if($addAttr)
         {
           foreach($raw as $kj)
@@ -383,12 +386,77 @@ function delete_execution(&$db,$exec_id)
  */
 function updateExecutionNotes(&$db,$execID,$notes)
 {
-    $table = tlObjectWithDB::getDBTables('executions');
-    $sql = "UPDATE {$table['executions']} " .
-           "SET notes = '" . $db->prepare_string($notes) . "' " .
-           "WHERE id = {$execID}";
+  $table = tlObjectWithDB::getDBTables('executions');
+  $sql = "UPDATE {$table['executions']} " .
+         "SET notes = '" . $db->prepare_string($notes) . "' " .
+         "WHERE id = " . intval($execID);
     
-    return $db->exec_query($sql) ? tl::OK : tl::ERROR;     
+  return $db->exec_query($sql) ? tl::OK : tl::ERROR;     
 }
 
-?>
+/**
+ * get data about bug from external tool
+ * 
+ * @param resource &$db reference to database handler
+ * @param object &$bug_interface reference to instance of bugTracker class
+ * @param integer $execution_id Identifier of execution record
+ * 
+ * @return array list of 'bug_id' with values: build_name,link_to_bts,isResolved
+ */
+function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
+{
+  $tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs','builds'));
+  $bugSet = array();
+  $bugCache = array();
+  $cc = 0;
+
+  $debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
+  if( is_object($bug_interface) )
+  {
+    $sql =  "/* $debugMsg */ SELECT EB.execution_id,EB.bug_id,B.name AS build_name " .
+            " FROM {$tables['execution_bugs']} EB " . 
+            " JOIN {$tables['executions']} E ON E.id = EB.execution_id " .
+            " JOIN {$tables['builds']} B  ON B.id = E.build_id " .
+            " WHERE EB.execution_id IN (" . implode(',',$execSet) . ")" .
+            " ORDER BY B.name,EB.bug_id";
+
+    $rs = $db->fetchMapRowsIntoMap($sql,'execution_id','bug_id');
+    new dBug($rs);
+
+    if( !is_null($rs) )
+    {   
+      $opt['raw'] = $raw;
+      $addAttr = !is_null($raw);
+      $cc = 0;
+      foreach($rs as $key => $bugElem)
+      {
+        foreach($bugElem as $bugID => $elem)
+        {
+          if(!isset($bugCache[$elem['bug_id']]))
+          {
+            // echo $elem['bug_id'] . '<br>';
+            // $cc++;
+            $dummy = $bug_interface->buildViewBugLink($elem['bug_id'],$opt);
+            $bugCache[$elem['bug_id']]['link_to_bts'] = $dummy->link;
+            $bugCache[$elem['bug_id']]['build_name'] = $elem['build_name'];
+            $bugCache[$elem['bug_id']]['isResolved'] = $dummy->isResolved;
+            if($addAttr)
+            {
+              foreach($raw as $kj)
+              {
+                if( property_exists($dummy,$kj) )
+                {
+                  $bugCache[$elem['bug_id']][$kj] = $dummy->$kj;
+                }
+              } 
+            }       
+          }  
+          $bugSet[$key][$elem['bug_id']] = $bugCache[$elem['bug_id']];
+          unset($dummy);
+        }  
+      }
+    }
+  }
+  //echo $cc;
+  return $bugSet;
+}

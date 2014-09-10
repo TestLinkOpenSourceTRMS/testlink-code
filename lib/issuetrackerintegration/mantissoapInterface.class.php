@@ -376,8 +376,33 @@ class mantissoapInterface extends issueTrackerInterface
 
   /**
    *
+   * from mantisconnect.php
+   *
+   * ### AccountData
+   * $l_oServer->wsdl->addComplexType('AccountData','complexType','struct','all','',
+   * array( 'id'        =>   array( 'name' => 'id',        'type' => 'xsd:integer', 'minOccurs' => '0'),
+   *        'name'      =>   array( 'name' => 'name',      'type' => 'xsd:string',  'minOccurs' => '0'),
+   *        'real_name' =>   array( 'name' => 'real_name', 'type' => 'xsd:string',  'minOccurs' => '0'),
+   *        'email'     =>   array( 'name' => 'email',     'type' => 'xsd:string',  'minOccurs' => '0')
+   *
+   *
+   * From IssueData I want to have the example for project to understand what data structure I need to use
+   *
+   * ### IssueData
+   * $l_oServer->wsdl->addComplexType('IssueData','complexType','struct','all','',
+   *    array('id'            =>   array( 'name' => 'id',               'type' => 'xsd:integer',     'minOccurs' => '0' ),
+   *          'view_state'    =>   array( 'name' => 'view_state',       'type' => 'tns:ObjectRef',   'minOccurs' => '0' ),
+   *          'last_updated'  =>   array( 'name' => 'last_updated', 'type' => 'xsd:dateTime',    'minOccurs' => '0' ),
+   *          'project'   =>   array( 'name' => 'project',      'type' => 'tns:ObjectRef',   'minOccurs' => '0' ),   
+   *
+   *
+   * ### ObjectRef
+   * $l_oServer->wsdl->addComplexType('ObjectRef','complexType','struct','all','',
+   * array('id'    =>   array( 'name' => 'id',       'type' => 'xsd:integer',     'minOccurs' => '0'),
+   *       'name'  =>   array( 'name' => 'name', 'type' => 'xsd:string',  'minOccurs' => '0')
+   *  
    */
-  public function addIssue($summary,$description)
+  public function addIssue($summary,$description,$opt=null)
   {
     static $client;
     $ret = array('status_ok' => false, 'id' => -1,'msg' => '');
@@ -409,6 +434,17 @@ class mantissoapInterface extends issueTrackerInterface
 
       $categoryName = (property_exists($this->cfg,'category')) ? (string)$this->cfg->category : null;
       $issue['category'] = (is_null($categoryName) || !isset($codeName[$categoryName])) ? current($nameCode) : $categoryName;
+
+      // user tester as Reporter
+      if(!is_null($opt))
+      {
+        if(property_exists($opt, 'reporter'))
+        {
+          $issue['reporter'] = array('name' => $opt->reporter);
+        }  
+      }  
+
+
       $ret['id'] = $client->mc_issue_add($safe->username,$safe->password,$issue);
       $ret['status_ok'] = true;
       $ret['msg'] = sprintf(lang_get('mantis_bug_created'), $safeSummary,$safe->project);

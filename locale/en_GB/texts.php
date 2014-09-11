@@ -293,8 +293,6 @@ $TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
 current Test Plan for execution. You can also select a Report format:</p>
 <ul>
 <li><b>Normal</b> - report is displayed in web page</li>
-<li><b>Pseudo OpenOffice Writer</b> - report imported to OpenOffice Writer</li>
-<li><b>Pseudo OpenOffice Calc</b> - report imported to OpenOffice Calc</li>
 <li><b>Pseudo MS Word</b> - report imported to Microsoft Word</li>
 <li><b>Pseudo MS Excel</b> - report imported to Microsoft Excel</li>
 <li><b>HTML Email</b> - report is emailed to user's email address</li>

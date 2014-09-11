@@ -30,7 +30,8 @@
           <input type="image" src="{$tlImages.testcases_table_view}" name="testcases_table_view" id="testcases_table_view" 
                  onclick="doAction.value='testcases_table_view'" title="{$labels.btn_testcases_table_view}">
 
-          <img src="{$tlImages.report}" onclick="location='{$testSuiteDocAction}'" title="{$labels.btn_gen_test_spec}" />
+          <img src="{$tlImages.report}" onclick="window.open('{$testSuiteDocAction}')" 
+               title="{$labels.btn_gen_test_suite_spec_new_window}" />
           <img src="{$tlImages.import}" onclick="location='{$importToTSuiteAction}'" title="{$labels.btn_import_testsuite}" />
           <img src="{$tlImages.export}" onclick="location='{$tsuiteExportAction}'" title="{$labels.btn_export_testsuite}" />
         </form>

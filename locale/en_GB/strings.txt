@@ -668,10 +668,11 @@ $TLS_btn_add_bug = "Add bug";
 $TLS_bug_id = "Bug id";
 $TLS_button_enter_bug = "Add bug to TestLink (bug must exists on BTS)";
 $TLS_link_bts_create_bug = "Access to Bug Tracking System ";
-$TLS_title_bug_add = "Add bug report";
+$TLS_title_bug_add = "Add link to bug report";
 $TLS_hint_bug_notes = "Notes are initialized with execution notes. " .
                       "If you leave it empty no note will added to issue on Issue Tracker System";
 
+$TLS_add_issue_note = "Write note on issue";
 
 // ----- gui/templates/bug_delete.tpl -----
 $TLS_title_delete_bug = "Delete bug report";
@@ -739,7 +740,9 @@ $TLS_btn_export_all_testsuites = "Export All Test Suites";
 $TLS_btn_export_tc = "Export";
 $TLS_btn_export_testsuite = "Export";
 $TLS_btn_gen_test_spec = 'Test Spec Document (HTML)';
+$TLS_btn_gen_test_spec_new_window = 'Test Spec Document (HTML) on new window';
 $TLS_btn_gen_test_suite_spec = 'Test Suite Document (HTML)';
+$TLS_btn_gen_test_suite_spec_new_window = 'Test Suite Document (HTML) on new window';
 $TLS_btn_import_tc = "Import";
 $TLS_btn_import_testsuite = "Import";
 $TLS_btn_move_cp_testsuite = "Move/Copy";

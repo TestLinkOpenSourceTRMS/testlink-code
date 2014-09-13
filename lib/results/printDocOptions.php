@@ -143,11 +143,16 @@ function init_args(&$dbHandler)
   $args->testprojectOptReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
   
 
+  $args->format = is_null($args->format) ? FORMAT_HTML : $args->format;
+  $args->type = is_null($args->type) ? DOC_TEST_PLAN_DESIGN : $args->type;
+  $args->doc_type = $args->type;
+
   // Changes to call this page also in add/remove test cases feature  
   $args->showOptions = true;
   $args->showHelpIcon = true;
   $args->tplan_info = null;
   $args->mainTitle = '';
+
   if( ($args->tplan_id = intval($args->tplan_id)) <= 0 || $args->activity != '')   
   {
     $args->showOptions = false;
@@ -161,9 +166,6 @@ function init_args(&$dbHandler)
       //  . ' - ' . $l18n[$args->activity];
     }
   }  
-  $args->format = is_null($args->format) ? FORMAT_HTML : $args->format;
-  $args->type = is_null($args->type) ? DOC_TEST_PLAN_DESIGN : $args->type;
-  $args->doc_type = $args->type;
   return $args;
 }
 
@@ -187,12 +189,13 @@ function initializeGui(&$db,$args)
         
   $gui = new stdClass();
   $gui->showOptions = $args->showOptions;
+  $gui->showOptionsCheckBoxes = $gui->showOptions;
+
   $gui->showHelpIcon = $args->showHelpIcon;
 
   $gui->mainTitle = '';
   $gui->outputFormat = array(FORMAT_HTML => lang_get('format_html'), 
-                             FORMAT_ODT => lang_get('format_odt'), 
-                             FORMAT_MSWORD => lang_get('format_msword'));
+                             FORMAT_MSWORD => lang_get('format_pseudo_msword'));
 
   $gui->outputOptions = init_checkboxes($args);
   if($gui->showOptions == false)
@@ -223,6 +226,8 @@ function initializeGui(&$db,$args)
   switch($args->doc_type)
   {
     case DOC_REQ_SPEC:
+      $gui->showOptions = true;
+      $gui->showOptionsCheckBoxes = false;
       $gui->tree_title = lang_get('title_req_print_navigator');
       $gui->ajaxTree->loader = $args->basehref . 'lib/ajax/getrequirementnodes.php?' .
                                "root_node={$args->tproject_id}&show_children=0&operation=print";

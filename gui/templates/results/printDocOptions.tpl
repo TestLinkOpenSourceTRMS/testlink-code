@@ -58,7 +58,10 @@ jQuery(".chosen-select").chosen({ width: "100%" });
                   {if $gui->showHelpIcon}{include file="inc_help.tpl" helptopic="hlp_generateDocOptions" show_help_icon=true}{/if}
                 </h1>
 
+{* Control if options are visible *}
 <div style="margin: 10px; {if !$gui->showOptions}display:none;{/if}" >
+
+
 <form method="GET" id="printDocOptions" name="printDocOptions"
       action="lib/results/printDocument.php?type={$gui->doc_type}">
 
@@ -86,7 +89,7 @@ jQuery(".chosen-select").chosen({ width: "100%" });
   
   <table class="smallGrey" id="optionsContainer" name="optionsContainer">
     {section name=number loop=$gui->outputOptions}
-    <tr>
+    <tr style="margin: 10px; {if !$gui->showOptionsCheckBoxex}display:none;{/if}">
       <td>{$gui->outputOptions[number].description}</td>
       <td>
         <input type="checkbox" name="{$gui->outputOptions[number].value}" id="cb{$gui->outputOptions[number].value}"
@@ -94,6 +97,18 @@ jQuery(".chosen-select").chosen({ width: "100%" });
       </td>
     </tr>
     {/section}
+
+    <tr style="margin: 10px; {if !$gui->showOptionsCheckBoxex}display:none;{/if}>
+     <td><input type="button" id="toogleOptions" name="toogleOptions"
+                onclick='cs_all_checkbox_in_div("optionsContainer","cb","toggle_memory");'
+                value="{$labels.check_uncheck_all_options}" /> </td>
+    </tr>
+
+    <tr>
+      <td>&nbsp;<td>
+    </tr>
+
+
     <tr>
     {if $docType == 'testspec' || $docType == 'reqspec'}
       <td>{$labels.tr_td_show_as}</td>
@@ -108,11 +123,6 @@ jQuery(".chosen-select").chosen({ width: "100%" });
     </tr>
     
 
-    <tr>
-     <td><input type="button" id="toogleOptions" name="toogleOptions"
-                onclick='cs_all_checkbox_in_div("optionsContainer","cb","toggle_memory");'
-                value="{$labels.check_uncheck_all_options}" /> </td>
-    </tr>
   </table>
 </form>
 </div>

@@ -2135,9 +2135,8 @@ $TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
 
 // ----- gui/templates/printDocOptions.tpl -----
 $TLS_doc_opt_title = 'Document options';
-$TLS_doc_opt_guide = 'Modify options for required structure of document. ' .
-                     '<br />Select the top line in tree menu for all or a specific ' .
-                     'element to generate a document content.';
+$TLS_doc_opt_guide = 'Click on tree root to generate full doc, or an specific folder for branch doc ';
+
 $TLS_tr_td_show_as = "Show as";
 $TLS_check_uncheck_all_options = "check / uncheck all";
 $TLS_test_report_on_build = "Test Report on Build";

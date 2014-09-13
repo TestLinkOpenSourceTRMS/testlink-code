@@ -215,16 +215,16 @@ with name defined in configuration <i>(default is: \$tlCfg->req_cfg->default_tes
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
 $TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
-<p>From here you can print a single requirement, all the requirements within a requirement specification,
+<p>You can generate document with the requirements within a requirement specification,
 or all the requirements in a test project.</p>
 <h2>Get Started:</h2>
 <ol>
 <li>
-<p>Select the parts of the requirements you want to display, and then click on a requirement, 
+<p>Select the parts of the requirements you want to display, and then click on a  
 requirement specification, or the test project. A printable page will be displayed.</p>
 </li>
 <li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
-the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document. 
+the information displayed as HTML, or in a Pseudo Micosoft Word document. 
 See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> for more information.</p>
 </li>
@@ -292,7 +292,7 @@ $TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
 		"(defined in top of navigator). This Test Plan could differ from the
 current Test Plan for execution. You can also select a Report format:</p>
 <ul>
-<li><b>Normal</b> - report is displayed in web page</li>
+<li><b>HTML</b> - report is displayed in web page</li>
 <li><b>Pseudo MS Word</b> - report imported to Microsoft Word</li>
 <li><b>Pseudo MS Excel</b> - report imported to Microsoft Excel</li>
 <li><b>HTML Email</b> - report is emailed to user's email address</li>

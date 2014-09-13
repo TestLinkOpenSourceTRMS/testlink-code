@@ -33,17 +33,11 @@ define('FORMAT_PDF', 5);
 define('FORMAT_MAIL_HTML', 6);
 
 /** supported document formats (value = localization ID) */
-$tlCfg->reports_formats = array(
-	FORMAT_HTML => 'format_html',
-	FORMAT_ODT => 'format_pseudo_odt', 
-	FORMAT_ODS => 'format_pseudo_ods', 
-	// FORMAT_XLS => 'format_xls', 
-	FORMAT_MSWORD => 'format_pseudo_msword',
-//	FORMAT_PDF => 'format_pdf', not implemented yet
-	FORMAT_MAIL_HTML => 'format_mail_html'
-);
+$tlCfg->reports_formats = array(FORMAT_HTML => 'format_html',FORMAT_MSWORD => 'format_pseudo_msword',
+								FORMAT_MAIL_HTML => 'format_mail_html');
 
 /** Mime Content Type */
+/*
 $tlCfg->reports_applications = array(
 	FORMAT_HTML => 'text/html',
 	FORMAT_ODT => 'application/vnd.oasis.opendocument.text', 
@@ -52,16 +46,13 @@ $tlCfg->reports_applications = array(
 	FORMAT_MSWORD => 'application/vnd.ms-word',
 	FORMAT_PDF => 'application/pdf'
 );
+*/
+$tlCfg->reports_applications = array(FORMAT_HTML => 'text/html',FORMAT_XLS => 'application/vnd.ms-excel', 
+									 FORMAT_MSWORD => 'application/vnd.ms-word');
+
 
 /** Report file extenssion */
-$tlCfg->reports_file_extension = array(
-	FORMAT_HTML => 'html', 
-	FORMAT_ODT => 'odt', 
-	FORMAT_ODS => 'ods', 
-	FORMAT_XLS => 'xls', 
-	FORMAT_MSWORD => 'doc',
-	FORMAT_PDF => 'pdf',
-);
+$tlCfg->reports_file_extension = array(FORMAT_HTML => 'html',FORMAT_XLS => 'xls',FORMAT_MSWORD => 'doc');
 
 
 /** 
@@ -79,14 +70,14 @@ $tlCfg->reports_list['test_plan'] = array(
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_DESIGN,
 	'enabled' => 'all',
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_plan',
-	'format' => 'format_html,format_pseudo_odt,format_mpseudo_sword'
+	'format' => 'format_html,format_mpseudo_sword'
 );
 $tlCfg->reports_list['test_report'] = array( 
 	'title' => 'link_report_test_report',
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION,
 	'enabled' => 'all',
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_report',
-	'format' => 'format_html,format_pseudo_odt,format_mpseudo_sword'
+	'format' => 'format_html,format_mpseudo_sword'
 );
 
 $tlCfg->reports_list['test_report_on_build'] = array( 
@@ -94,7 +85,7 @@ $tlCfg->reports_list['test_report_on_build'] = array(
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
 	'enabled' => 'all',
 	// 'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
-	'format' => 'format_html,format_pseudo_odt,format_mpseudo_sword'
+	'format' => 'format_html,format_mpseudo_sword'
 );
 
 $tlCfg->reports_list['metrics_tp_general'] = array( 

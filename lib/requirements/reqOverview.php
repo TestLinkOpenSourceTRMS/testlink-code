@@ -116,27 +116,25 @@ if(count($gui->reqIDs) > 0)
         // use html comment to sort properly by this columns (extjs)
         $result[] = "<!-- $padded_data -->{$version_revison}";
           
-        // $dummy necessary to avoid warnings on event viewer because localize_dateOrTimeStamp expects
-        // second parameter to be passed by reference
-        $dummy = null;
-          
         // use html comment to sort properly by this columns (extjs)
-        $result[] = "<!--{$version['creation_ts']}-->" .
-                    localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']) .
+        $result[] = "<!--{$version['creation_ts']}-->" . localizeTimeStamp($version['creation_ts'],$cfg->datetime) . 
                     " ({$version['author']})";
       
-        // on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
-        $never_modified = "0000-00-00 00:00:00";
-
-        // use html comment to sort properly by this columns (extjs)
-        $modification_ts = "<!-- 0 -->" . $labels['never'];
-        if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $never_modified) )
+        // 20140914 - 
+        // Because we can do this logic thoundands of times, I suppose it will cost less
+        // to do not use my other approach of firts assigning instead of using else.
+        // 
+        // use html comment to sort properly by this column (extjs)
+        if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $cfg->neverModifiedTS) )
         {
-          $modification_ts = "<!--{$version['modification_ts']}-->" .
-                             localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$version['modification_ts']) . 
-                             " ({$version['modifier']})";
+          $result[] = "<!--{$version['modification_ts']}-->" . localizeTimeStamp($version['modification_ts'],$cfg->datetime) . 
+                      " ({$version['modifier']})";
         }
-        $result[] = $modification_ts;
+        else
+        {
+          $result[] = "<!-- 0 -->" . $labels['never'];  
+        }  
+        
         
         // is it frozen?
         $result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
@@ -173,7 +171,7 @@ if(count($gui->reqIDs) > 0)
 
           foreach ($linked_cfields as $cf) 
           {
-            $verbose_type = trim($req_mgr->cfield_mgr->custom_field_types[$cf['type']]);
+            $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
             $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
             if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 )
             {
@@ -344,9 +342,13 @@ function getCfg()
   $cfg->req = config_get('req_cfg');
   $cfg->date = config_get('date_format');
   $cfg->datetime = config_get('timestamp_format');
-
-
   $cfg->edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
+
+
+  // on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
+  $cfg->neverModifiedTS = "0000-00-00 00:00:00";
+
+
   return $cfg;
 }
 

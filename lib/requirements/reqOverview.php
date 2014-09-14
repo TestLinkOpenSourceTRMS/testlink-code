@@ -35,6 +35,8 @@ $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 $smarty = new TLSmarty();
 if(count($gui->reqIDs) > 0) 
 {
+  $chronoStart = microtime(true);
+
   $imgSet = $smarty->getImages();
   $gui->warning_msg = '';
 
@@ -42,7 +44,7 @@ if(count($gui->reqIDs) > 0)
   $type_labels = init_labels($cfg->req->type_labels);
   $status_labels = init_labels($cfg->req->status_labels);
   
-  $labels2get = array('no' => 'No', 'yes' => 'Yes', 'not_aplicable' => null,
+  $labels2get = array('no' => 'No', 'yes' => 'Yes', 'not_aplicable' => null,'never' => null,
                       'req_spec_short' => null,'title' => null, 'version' => null, 'th_coverage' => null,
                       'frozen' => null, 'type'=> null,'status' => null,'th_relations' => null, 'requirements' => null,
                       'number_of_reqs' => null, 'number_of_versions' => null, 'requirement' => null,
@@ -51,6 +53,8 @@ if(count($gui->reqIDs) > 0)
   $labels = init_labels($labels2get);
   
   $gui->cfields4req = (array)$cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement', null, 'name');
+  $gui->processCF = count($gui->cfields4req) > 0;
+
   $version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
 
     // array to gather table data row per row
@@ -62,11 +66,6 @@ if(count($gui->reqIDs) > 0)
     // now get the rest of information for this requirement
     $req = $req_mgr->get_by_id($id, $version_option);
     $tc_coverage = count($req_mgr->get_coverage($id));
-    if ($cfg->req->relations->enable) 
-    {
-      $relations = $req_mgr->count_relations($id);
-      $relations = "<!-- " . sprintf("%010d", $relations) . " -->" . $relations;
-    }
     
     // create the link to display
     $title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $cfg->charset) . $cfg->glue_char . 
@@ -103,108 +102,102 @@ if(count($gui->reqIDs) > 0)
          * 9. all custom fields in order of $fields
          */
         
-      $result[] = $path;
+        $result[] = $path;
         
-      $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
-                   '<img title="' .$labels['requirement'] . '" src="' . $imgSet['edit'] . '" /></a> ';
+        $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
+                     '<img title="' .$labels['requirement'] . '" src="' . $imgSet['edit'] . '" /></a> ';
       
-      $linked_title = '<!-- ' . $title . ' -->' . $edit_link . $title;
+        $result[] =  '<!-- ' . $title . ' -->' . $edit_link . $title;
         
-      $result[] = $linked_title;
-        
-      // version and revision number
-      $version_revison = sprintf($labels['version_revision_tag'],$version['version'],$version['revision']);
-      $padded_data = sprintf("%05d%05d", $version['version'], $version['revision']);
-    
-      // use html comment to sort properly by this columns (extjs)
-      $result[] = "<!-- $padded_data -->{$version_revison}";
-        
-      // $dummy necessary to avoid warnings on event viewer because localize_dateOrTimeStamp expects
-      // second parameter to be passed by reference
-      $dummy = null;
-        
-      // use html comment to sort properly by this columns (extjs)
-      $result[] = "<!--{$version['creation_ts']}-->" .
-                  localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']) .
-                  " ({$version['author']})";
+        // version and revision number
+        $version_revison = sprintf($labels['version_revision_tag'],$version['version'],$version['revision']);
+        $padded_data = sprintf("%05d%05d", $version['version'], $version['revision']);
       
-      // on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
-      $never_modified = "0000-00-00 00:00:00";
+        // use html comment to sort properly by this columns (extjs)
+        $result[] = "<!-- $padded_data -->{$version_revison}";
+          
+        // $dummy necessary to avoid warnings on event viewer because localize_dateOrTimeStamp expects
+        // second parameter to be passed by reference
+        $dummy = null;
+          
+        // use html comment to sort properly by this columns (extjs)
+        $result[] = "<!--{$version['creation_ts']}-->" .
+                    localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']) .
+                    " ({$version['author']})";
+      
+        // on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
+        $never_modified = "0000-00-00 00:00:00";
 
-      // use html comment to sort properly by this columns (extjs)
-      $modification_ts = "<!-- 0 -->" . lang_get('never');
-      if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $never_modified) )
-      {
-        $modification_ts = "<!--{$version['modification_ts']}-->" .
-                           localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$version['modification_ts']) . 
-                           " ({$version['modifier']})";
-      }
-      $result[] = $modification_ts;
-        
-      // is it frozen?
-      $result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
-      
-      // coverage
-      // use html comment to sort properly by this columns (extjs)
-      if($cfg->req->expected_coverage_management) 
-      {
-        $expected = $version['expected_coverage'];
-        $coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($tc_coverage/0)";
-        if ($expected > 0) 
+        // use html comment to sort properly by this columns (extjs)
+        $modification_ts = "<!-- 0 -->" . $labels['never'];
+        if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $never_modified) )
         {
-          $percentage = round(100 / $expected * $tc_coverage, 2);
-          $padded_data = sprintf("%010d", $percentage); //bring all percentages to same length
-          $coverage_string = "<!-- $padded_data --> {$percentage}% ({$tc_coverage}/{$expected})";
+          $modification_ts = "<!--{$version['modification_ts']}-->" .
+                             localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$version['modification_ts']) . 
+                             " ({$version['modifier']})";
         }
-        $result[] = $coverage_string;
-      }
-      
-      $result[] = $type_labels[$version['type']];
-      $result[] = $status_labels[$version['status']];
-      
-      if ($cfg->req->relations->enable) 
-      {
-        $result[] = $relations;
-      }
-      
-      
-      // get custom field values for this req version
-      $linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
-
-      foreach ($linked_cfields as $cf) 
-      {
-        $verbose_type = trim($req_mgr->cfield_mgr->custom_field_types[$cf['type']]);
-        $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
-
-        /*
-        if ($verbose_type == 'date' && is_numeric($value) && $value != 0) {
-          $value = strftime("$date_format_cfg ($label['sweek_short'] %W)", $value);
-        }
-        if ($verbose_type == 'datetime' && is_numeric($value) && $value != 0) {
-          $value = strftime("$time_format_cfg ($label['sweek_short'] %W)", $value);
-        }
-        */
-
-        if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 )
+        $result[] = $modification_ts;
+        
+        // is it frozen?
+        $result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
+        
+        // coverage
+        // use html comment to sort properly by this columns (extjs)
+        if($cfg->req->expected_coverage_management) 
         {
-          $value = strftime( $cfg->$verbose_type . " ({$label['week_short']} %W)" , $value);
+          $expected = $version['expected_coverage'];
+          $coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($tc_coverage/0)";
+          if ($expected > 0) 
+          {
+            $percentage = round(100 / $expected * $tc_coverage, 2);
+            $padded_data = sprintf("%010d", $percentage); //bring all percentages to same length
+            $coverage_string = "<!-- $padded_data --> {$percentage}% ({$tc_coverage}/{$expected})";
+          }
+          $result[] = $coverage_string;
+        }
+        
+        $result[] = isset($type_labels[$version['type']]) ? $type_labels[$version['type']] : '';
+        $result[] = isset($status_labels[$version['status']]) ? $status_labels[$version['status']] : '';
+      
+        if ($cfg->req->relations->enable) 
+        {
+          $relations = $req_mgr->count_relations($id);
+          $result[] = "<!-- " . sprintf("%010d", $relations) . " -->" . $relations;
+        }
+     
+      
+        if($gui->processCF)
+        {
+          // get custom field values for this req version
+          $linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
+
+          foreach ($linked_cfields as $cf) 
+          {
+            $verbose_type = trim($req_mgr->cfield_mgr->custom_field_types[$cf['type']]);
+            $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
+            if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 )
+            {
+              $value = strftime( $cfg->$verbose_type . " ({$label['week_short']} %W)" , $value);
+            }  
+
+            $result[] = $value;
+          }
         }  
-
-        $result[] = $value;
-      }
         
         $rows[] = $result;
       }
     }
-    
+
+    // -------------------------------------------------------------------------------------------------- 
+    // Construction of EXT-JS table starts here    
     if(($gui->row_qty = count($rows)) > 0 ) 
     {
       $version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];
       $gui->pageTitle .= " - " . $version_string . ": " . $gui->row_qty;
-    
-      // get column header titles for the table
         
      /**
+       * get column header titles for the table
+       * 
        * IMPORTANT: 
        * the order of following items in this array has to be
        * the same as row content above!!!
@@ -274,6 +267,9 @@ if(count($gui->reqIDs) > 0)
       $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
       $gui->tableSet= array($matrix);
     }
+
+    $chronoStop = microtime(true);
+    $gui->elapsedSeconds = round($chronoStop - $chronoStart);
 } 
 
 

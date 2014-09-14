@@ -386,4 +386,24 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
   return $retVal;
 }
 
-?>
+/**
+ *
+ *
+ */ 
+function localizeTimeStamp($value,$format)
+{
+  if (!is_numeric($value))
+  {
+    // in order to manage without error what seems to be 
+    // a MSSQL PHP Drivers format
+    // YYYY-MM-DDTHH:MM:SSZ
+    //
+    $value = trim(str_replace(array('T','Z'), ' ',$value));
+    $value = strtotime($value);
+  }
+  
+  return strftime($format, $value);
+}
+
+
+

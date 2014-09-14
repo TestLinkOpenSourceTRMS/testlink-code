@@ -221,6 +221,8 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
          $where_clause . $filter_clause . $my['options']['order_by'];
 
 
+  // echo $sql;
+
   if ($version_id != self::LATEST_VERSION)
   {
     $recordset = $this->db->get_recordset($sql);
@@ -243,6 +245,10 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
 
   $rs = null;
+  // echo 'IN::' . __FUNCTION__ . '<br>';
+  // new dBug($recordset);
+
+
   if(!is_null($recordset))
   {
     // Decode users
@@ -270,6 +276,10 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
       }  
     }
   }    
+
+  // echo 'IN::' . __FUNCTION__ . '<br>';
+  // new dBug($rs);
+
   unset($recordset);
   unset($my);
   unset($dummy);
@@ -2390,14 +2400,15 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    * 
    * @return integer $count
    */
-  public function count_relations($id) {
-    
+  public function count_relations($id) 
+  {
     $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+    $safeID = intval($id);
     $sql = " $debugMsg SELECT COUNT(*) AS qty " .
-         " FROM {$this->tables['req_relations']} " .
-         " WHERE source_id=$id OR destination_id=$id ";
+           " FROM {$this->tables['req_relations']} " .
+           " WHERE source_id={$safeID} OR destination_id={$safeID} ";
     $rs = $this->db->get_recordset($sql);
-      return($rs[0]['qty']);
+    return($rs[0]['qty']);
   }
   
   
@@ -3467,7 +3478,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    * 20110314 - kinow - Created function.
    */
   function getByDocIDInProject($doc_id, $req_project=null, $tproject_id=null,$parent_id=null, $options = null)
-    {
+  {
     $reqs = null;
     if ( !is_null($req_project) )
     {
@@ -3486,5 +3497,182 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     }
     return $reqs;
   }
-  
+
+
+/*
+  function: getByIDBulkLatestVersionRevision
+
+  @used by reqOverView
+
+  args: id: requirement id (can be an array)
+      [version_id]: requirement version id (can be an array)
+      [version_number]: 
+      [options]
+      
+
+  returns: null if query fails
+           map with requirement info
+
+  @internal revisions
+  @since 1.9.12
+
+*/
+function getByIDBulkLatestVersionRevision($id)
+{
+  static $debugMsg;
+  static $userCache;  // key: user id, value: display name
+  static $lables;
+  static $user_keys;
+
+  if(!$debugMsg)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $labels['undefined'] = lang_get('undefined');
+    $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
+  }
+
+
+  $in_clause = "IN (" . implode(",",(array)$id) . ") ";
+  $where_clause = " WHERE NH_REQV.parent_id " . $in_clause;
+
+   // added -1 AS revision_id to make some process easier 
+  $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+         " REQV.scope,REQV.status,REQV.type,REQV.active," . 
+         " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+         " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+         " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
+         " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+         " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+
+         " FROM {$this->tables['nodes_hierarchy']} NH_REQV JOIN " . 
+         "( SELECT XNH_REQV.parent_id,MAX(XNH_REQV.id) AS LATEST_VERSION_ID " . 
+         "  FROM  {$this->tables['nodes_hierarchy']} XNH_REQV " . 
+         "  WHERE XNH_REQV.parent_id {$in_clause} " .  
+         "  GROUP BY XNH_REQV.parent_id ) ZAZA ON NH_REQV.id = ZAZA.LATEST_VERSION_ID " .
+
+         " JOIN {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
+         " JOIN {$this->object_table} REQ ON REQ.id = NH_REQV.parent_id " .
+
+         " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+         " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+         " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+         $where_clause;
+
+
+  // echo $sql;
+  $recordset = $this->db->get_recordset($sql);
+
+
+  $rs = null;
+  // echo 'IN::' . __FUNCTION__ . '<br>';
+  // new dBug($recordset);
+
+
+  if(!is_null($recordset))
+  {
+    // Decode users
+    $rs = $recordset;
+    $key2loop = array_keys($recordset);
+    foreach( $key2loop as $key )
+    {
+      foreach( $user_keys as $ukey => $userid_field)
+      {
+        $rs[$key][$ukey] = '';
+        if(trim($rs[$key][$userid_field]) != "")
+        {
+          if( !isset($userCache[$rs[$key][$userid_field]]) )
+          {
+            $user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
+            $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+            $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
+            unset($user);
+          }
+          else
+          {
+            $rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
+          }
+        }
+      }  
+    }
+  }    
+
+  // echo 'IN::' . __FUNCTION__ . '<br>';
+  // new dBug($rs);
+
+  unset($recordset);
+  unset($my);
+  unset($dummy);
+  return $rs;
+}
+
+/**
+ *
+ * @internal revisions
+ * @since 1.9.12
+ */
+function getCoverageCounter($id)
+{
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
+  $safe_id = intval($id);
+  $sql = "/* $debugMsg */ " . 
+           " SELECT COUNT(0) AS qty " .
+           " FROM {$this->tables['req_coverage']} " .
+           " WHERE req_id = " . $safe_id;
+
+
+  $rs = $this->db->get_recordset($sql);
+  return $rs[0]['qty'];
+}
+
+
+/**
+ *
+ * @internal revisions
+ * @since 1.9.12
+ */
+function getCoverageCounterSet($itemSet)
+{
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $sql = "/* $debugMsg */ " . 
+           " SELECT req_id, COUNT(0) AS qty " .
+           " FROM {$this->tables['req_coverage']} " .
+           " WHERE req_id IN (" . implode(',', $itemSet) . ")" .
+           " GROUP BY req_id ";
+
+  $rs = $this->db->fetchRowsIntoMap($sql,'req_id');
+  return $rs;
+}
+
+
+  /**
+   *
+   * @internal revisions
+   * @since 1.9.12
+   */
+  public function getRelationsCounters($itemSet) 
+  {
+    $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+    $inSet = implode(',',$itemSet);
+
+    $sqlS = " $debugMsg SELECT COUNT(*) AS qty, source_id AS req_id " .
+            " FROM {$this->tables['req_relations']} " .
+            " WHERE source_id IN ({$inSet}) " .
+            ' GROUP BY req_id ';
+
+    $sqlD = " $debugMsg SELECT COUNT(*) AS qty, destination_id AS req_id " .
+            " FROM {$this->tables['req_relations']} " .
+            " WHERE destination_id IN ({$inSet}) " .
+            ' GROUP BY req_id ';
+
+    $sqlT = " SELECT SUM(qty) AS qty, req_id " .
+            " FROM ($sqlS UNION ALL $sqlD) D ".
+            ' GROUP BY req_id ';
+
+    $rs = $this->db->fetchColumnsIntoMap($sqlT,'req_id','qty');
+    return $rs;
+  }
+
+
+
 } // class end

@@ -65,6 +65,11 @@ if(count($gui->reqIDs) > 0)
   {
     $reqSet = $req_mgr->getByIDBulkLatestVersionRevision($gui->reqIDs,array('outputFormat' => 'mapOfArray'));
   }
+  else
+  {
+    $reqSet = $req_mgr->get_by_id($gui->reqIDs, $version_option,null,array('output_format' => 'mapOfArray'));
+    // new dBug($reqSet);
+  }  
 
   
   if($cfg->req->expected_coverage_management) 
@@ -83,15 +88,16 @@ if(count($gui->reqIDs) > 0)
   foreach($gui->reqIDs as $id) 
   {
     // now get the rest of information for this requirement
-    if( $version_option == requirement_mgr::ALL_VERSIONS )
-    {
-      // This need to be refactored in future to improve performance
-      $req = $req_mgr->get_by_id($id, $version_option);
-    }  
-    else
-    {
-      $req = $reqSet[$id];
-    }  
+    //if( $version_option == requirement_mgr::ALL_VERSIONS )
+    //{
+    //  // This need to be refactored in future to improve performance
+      //$req = $req_mgr->get_by_id($id, $version_option);
+    //}  
+    //else
+    //{
+    //  $req = $reqSet[$id];
+    //}  
+    $req = $reqSet[$id];
 
     // create the link to display
     $title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $cfg->charset) . $cfg->glue_char . 

@@ -12,7 +12,7 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.12
  * 
  */
 
@@ -34,7 +34,7 @@ class requirement_mgr extends tlObjectWithAttachments
   var $import_file_types = array("csv" => "CSV",
                                  "csv_doors" => "CSV (Doors)",
                                  "XML" => "XML",
-                     "DocBook" => "DocBook");
+                                 "DocBook" => "DocBook");
 
   var $export_file_types = array("XML" => "XML");
   
@@ -152,7 +152,9 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
   
   
-  $my['options'] = array('order_by' => " ORDER BY REQV.version DESC ");
+  $my['options'] = array('order_by' => " ORDER BY REQV.version DESC ", 
+                         'output_format' => 'array');
+
   $my['options'] = array_merge($my['options'], (array)$options);
 
     // null => do not filter
@@ -222,10 +224,23 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 
 
   // echo $sql;
-
+  $decodeUserMode = 'simple';       
   if ($version_id != self::LATEST_VERSION)
   {
-    $recordset = $this->db->get_recordset($sql);
+    switch($my['options']['output_format'])
+    {
+  
+      case 'mapOfArray':
+        $recordset = $this->db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
+        $decodeUserMode = 'complex';       
+      break;
+  
+      case 'array':
+      default:
+        $recordset = $this->db->get_recordset($sql);
+      break;
+        
+    }
   }
   else
   {
@@ -241,6 +256,8 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     else
     {
       // Write to event viewer ???
+      // Developer Needs to user 
+      die('use getByIDBulkLatestVersionRevision()');
     }
   }
 
@@ -253,27 +270,64 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   {
     // Decode users
     $rs = $recordset;
-    $key2loop = array_keys($recordset);
-    foreach( $key2loop as $key )
+
+    switch ($decodeUserMode) 
     {
-      foreach( $user_keys as $ukey => $userid_field)
-      {
-        $rs[$key][$ukey] = '';
-        if(trim($rs[$key][$userid_field]) != "")
+      case 'complex':
+        // output[REQID][0] = array('id' =>, 'xx' => ...)
+        $flevel = array_keys($recordset);
+        foreach($flevel as $flk)
         {
-          if( !isset($userCache[$rs[$key][$userid_field]]) )
+          $key2loop = array_keys($recordset[$flk]);
+          foreach( $key2loop as $key )
           {
-            $user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
-            $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
-            $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
-            unset($user);
+            foreach( $user_keys as $ukey => $userid_field)
+            {
+              $rs[$flk][$key][$ukey] = '';
+              if(trim($rs[$flk][$key][$userid_field]) != "")
+              {
+                if( !isset($userCache[$rs[$flk][$key][$userid_field]]) )
+                {
+                  $user = tlUser::getByID($this->db,$rs[$flk][$key][$userid_field]);
+                  $rs[$flk][$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+                  $userCache[$rs[$flk][$key][$userid_field]] = $rs[$flk][$key][$ukey];
+                  unset($user);
+                }
+                else
+                {
+                  $rs[$flk][$key][$ukey] = $userCache[$rs[$flk][$key][$userid_field]];
+                }
+              }
+            }  
           }
-          else
+        }  
+      break;
+      
+      case 'simple':
+      default:
+        $key2loop = array_keys($recordset);
+        foreach( $key2loop as $key )
+        {
+          foreach( $user_keys as $ukey => $userid_field)
           {
-            $rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
-          }
+            $rs[$key][$ukey] = '';
+            if(trim($rs[$key][$userid_field]) != "")
+            {
+              if( !isset($userCache[$rs[$key][$userid_field]]) )
+              {
+                $user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
+                $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+                $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
+                unset($user);
+              }
+              else
+              {
+                $rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
+              }
+            }
+          }  
         }
-      }  
+      break;
     }
   }    
 
@@ -2059,10 +2113,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
            " (id, srs_id, req_doc_id)" .
              " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "')";
            
-      if (!$this->db->exec_query($sql))
-      {
+    if (!$this->db->exec_query($sql))
+    {
       $result = array( 'id' => -1, 'status_ok' => 0);
-       $result['msg'] = lang_get('error_inserting_req');
+      $result['msg'] = lang_get('error_inserting_req');
     }
     else
     {
@@ -2072,8 +2126,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     unset($sql);
     unset($req_id);
     
-      return $result;
-    }
+    return $result;
+  }
 
   /*
     function: create_version
@@ -2098,17 +2152,17 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_versions']} " .
            " (id,version,scope,status,type,expected_coverage,author_id,creation_ts) " . 
-             " VALUES({$item_id},{$version},'" . $this->db->prepare_string($scope) . "','" . 
-             $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "'," .
-             "{$expected_coverage},{$user_id}," . $this->db->db_now() . ")";
+           " VALUES({$item_id},{$version},'" . trim($this->db->prepare_string($scope)) . "','" . 
+           $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "'," .
+           "{$expected_coverage}," . intval($user_id) . "," . $this->db->db_now() . ")";
              
     $result = $this->db->exec_query($sql);
     $ret = array( 'msg' => 'ok', 'id' => $item_id, 'status_ok' => 1);
     if (!$result)
     {
       $ret['msg'] = $this->db->error_msg();
-        $ret['status_ok']=0;
-        $ret['id']=-1;
+      $ret['status_ok']=0;
+      $ret['id']=-1;
     }
     unset($sql);
     unset($result);
@@ -2156,10 +2210,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
     
     // need to update log message in new created version
-    $sql =   "/* $debugMsg */ " .
-        " UPDATE {$this->tables['req_versions']} " .
-        " SET log_message = '" . $this->db->prepare_string($log_msg) . "'" .
-        " WHERE id={$version_id}";
+    $sql = "/* $debugMsg */ " .
+           " UPDATE {$this->tables['req_versions']} " .
+           " SET log_message = '" . trim($this->db->prepare_string($log_msg)) . "'" .
+           " WHERE id={$version_id}";
     $this->db->exec_query($sql);    
       
     return $ret;
@@ -2790,7 +2844,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
           " SELECT REQV.id AS version_id, REQV.version," .
           "     REQV.creation_ts, REQV.author_id, " .
           "     REQV.modification_ts, REQV.modifier_id, " . 
-               self::NO_REVISION . " AS revision_id, " .
+                self::NO_REVISION . " AS revision_id, " .
           "      REQV.revision, REQV.scope, " .
           "      REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " .
           " COALESCE(REQV.log_message,'') AS log_message" .
@@ -2924,21 +2978,21 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $sql =   " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+    $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
            " REQRV.scope,REQRV.status,REQRV.type,REQRV.active," . 
-               " REQRV.is_open,REQRV.author_id,REQV.version,REQRV.parent_id AS version_id," .
-               " REQRV.expected_coverage,REQRV.creation_ts,REQRV.modifier_id," .
-               " REQRV.modification_ts,REQRV.revision, REQRV.id AS revision_id," .
-               " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
-             " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
-             " FROM {$this->tables['req_revisions']} REQRV " .
-             " JOIN {$this->tables['req_versions']} REQV ON REQV.id = REQRV.parent_id ".
-             " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQRV.parent_id ".
-             " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
-             " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
-             " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
-             " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-        " WHERE REQRV.id = " . intval($revision_id);
+           " REQRV.is_open,REQRV.author_id,REQV.version,REQRV.parent_id AS version_id," .
+           " REQRV.expected_coverage,REQRV.creation_ts,REQRV.modifier_id," .
+           " REQRV.modification_ts,REQRV.revision, REQRV.id AS revision_id," .
+           " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+           " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+           " FROM {$this->tables['req_revisions']} REQRV " .
+           " JOIN {$this->tables['req_versions']} REQV ON REQV.id = REQRV.parent_id ".
+           " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQRV.parent_id ".
+           " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+           " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+           " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+           " WHERE REQRV.id = " . intval($revision_id);
     $dummy = $this->db->get_recordset($sql);
     
     if( !is_null($dummy) )

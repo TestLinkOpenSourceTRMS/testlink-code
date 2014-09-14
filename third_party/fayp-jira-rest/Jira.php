@@ -265,4 +265,25 @@ class Jira
 
         return $item;
     }
+
+    /**
+     * From JIRA Docs
+     *
+     * Returns a list of active users that match the search string and 
+     * have all specified permissions for the project or issue.
+     * This resource can be accessed by users with ADMINISTER_PROJECT permission for the project or 
+     * global ADMIN or SYSADMIN rights.     
+     */
+    public function checkUserPermissionsForProject($username,$projectKey,$permissionCSV)
+    {
+        $uri = $this->host . 'user/permission/search/?' .
+               "username=$username&permissions=$permissionCSV&projectKey=$projectKey";
+        $this->request->openConnect($uri, 'GET');
+        $this->request->execute();
+        $user = json_decode($this->request->getResponseBody());
+
+        return $user;
+    }
+
+
 }

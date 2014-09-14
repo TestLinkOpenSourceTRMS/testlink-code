@@ -14,10 +14,12 @@ View test specification containers
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
              btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,btn_testcases_table_view,
              btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
-             btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,actions,btn_gen_test_spec,
+             btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,actions,
+             btn_gen_test_spec,btn_gen_test_spec_new_window,
+             btn_gen_test_suite_spec,btn_gen_test_suite_spec_new_window,
              btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
              btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
-             testsuite_operations, testcase_operations,btn_create_from_issue_xml,btn_gen_test_suite_spec'}
+             testsuite_operations, testcase_operations,btn_create_from_issue_xml'}
 
 {$ft=''}
 {if isset($gui->form_token)}
@@ -105,7 +107,8 @@ function jsCallDeleteFile(btn, text, o_id)
         <img src="{$tlImages.export}" onclick="location='{$tsuiteExportAction}'" title="{$labels.btn_export_all_testsuites}" />
       {/if}
 
-      <img src="{$tlImages.report}" onclick="location='{$testSpecFullDocAction}'" title="{$labels.btn_gen_test_spec}" />
+      <img src="{$tlImages.report}" onclick="window.open('{$testSpecFullDocAction}')" 
+           title="{$labels.btn_gen_test_spec_new_window}" />
     </form>
     </fieldset>
   </div>

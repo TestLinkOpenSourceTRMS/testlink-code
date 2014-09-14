@@ -3517,7 +3517,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   @since 1.9.12
 
 */
-function getByIDBulkLatestVersionRevision($id)
+function getByIDBulkLatestVersionRevision($id,$opt=null)
 {
   static $debugMsg;
   static $userCache;  // key: user id, value: display name
@@ -3531,6 +3531,8 @@ function getByIDBulkLatestVersionRevision($id)
     $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
   }
 
+  $my['opt'] = array('outputFormat' => 'map');
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
 
   $in_clause = "IN (" . implode(",",(array)$id) . ") ";
   $where_clause = " WHERE NH_REQV.parent_id " . $in_clause;
@@ -3560,7 +3562,8 @@ function getByIDBulkLatestVersionRevision($id)
 
 
   // echo $sql;
-  $recordset = $this->db->get_recordset($sql);
+  $sqlOpt = ($my['opt']['outputFormat'] == 'map' ? 0 : database::CUMULATIVE);        
+  $recordset = $this->db->fetchRowsIntoMap($sql,'id',$sqlOpt);
 
 
   $rs = null;
@@ -3572,36 +3575,72 @@ function getByIDBulkLatestVersionRevision($id)
   {
     // Decode users
     $rs = $recordset;
-    $key2loop = array_keys($recordset);
-    foreach( $key2loop as $key )
+
+    // try to guess output structure
+    $x = array_keys(current($rs));
+    if( is_int($x[0]) )
     {
-      foreach( $user_keys as $ukey => $userid_field)
+      // output[REQID][0] = array('id' =>, 'xx' => ...)
+      $flevel = array_keys($recordset);
+      foreach($flevel as $flk)
       {
-        $rs[$key][$ukey] = '';
-        if(trim($rs[$key][$userid_field]) != "")
+        $key2loop = array_keys($recordset[$flk]);
+        foreach( $key2loop as $key )
         {
-          if( !isset($userCache[$rs[$key][$userid_field]]) )
+          foreach( $user_keys as $ukey => $userid_field)
           {
-            $user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
-            $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
-            $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
-            unset($user);
-          }
-          else
-          {
-            $rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
-          }
+            $rs[$flk][$key][$ukey] = '';
+            if(trim($rs[$flk][$key][$userid_field]) != "")
+            {
+              if( !isset($userCache[$rs[$flk][$key][$userid_field]]) )
+              {
+                $user = tlUser::getByID($this->db,$rs[$flk][$key][$userid_field]);
+                $rs[$flk][$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+                $userCache[$rs[$flk][$key][$userid_field]] = $rs[$flk][$key][$ukey];
+                unset($user);
+              }
+              else
+              {
+                $rs[$flk][$key][$ukey] = $userCache[$rs[$flk][$key][$userid_field]];
+              }
+            }
+          }  
         }
       }  
-    }
-  }    
+    } 
+    else
+    {
+      // output[REQID] = array('id' =>, 'xx' => ...)
+      $key2loop = array_keys($recordset);
+      foreach( $key2loop as $key )
+      {
+        foreach( $user_keys as $ukey => $userid_field)
+        {
+          $rs[$key][$ukey] = '';
+          if(trim($rs[$key][$userid_field]) != "")
+          {
+            if( !isset($userCache[$rs[$key][$userid_field]]) )
+            {
+              $user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
+              $rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+              $userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
+              unset($user);
+            }
+            else
+            {
+              $rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
+            }
+          }
+        }  
+      }
+    }  
 
-  // echo 'IN::' . __FUNCTION__ . '<br>';
-  // new dBug($rs);
+  }    
 
   unset($recordset);
   unset($my);
   unset($dummy);
+
   return $rs;
 }
 

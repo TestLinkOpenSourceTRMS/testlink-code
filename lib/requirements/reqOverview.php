@@ -37,6 +37,7 @@ if(count($gui->reqIDs) > 0)
 {
   $chronoStart = microtime(true);
 
+  $pathCache = null;
   $imgSet = $smarty->getImages();
   $gui->warning_msg = '';
 
@@ -55,219 +56,251 @@ if(count($gui->reqIDs) > 0)
   $gui->cfields4req = (array)$cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement', null, 'name');
   $gui->processCF = count($gui->cfields4req) > 0;
 
-  $version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
 
-    // array to gather table data row per row
-  $rows = array();    
+  $coverageSet = null;
+  $relationCounters = null;
+
+  $version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
+  if( $version_option == requirement_mgr::LATEST_VERSION )
+  {
+    $reqSet = $req_mgr->getByIDBulkLatestVersionRevision($gui->reqIDs,array('outputFormat' => 'mapOfArray'));
+  }
+
   
+  if($cfg->req->expected_coverage_management) 
+  {
+    $coverageSet = $req_mgr->getCoverageCounterSet($gui->reqIDs);
+  }
+
+  if($cfg->req->relations->enable) 
+  {
+    $relationCounters = $req_mgr->getRelationsCounters($gui->reqIDs);
+  }
+
+  // array to gather table data row per row
+  $rows = array();    
+ 
   foreach($gui->reqIDs as $id) 
   {
-    
     // now get the rest of information for this requirement
-    $req = $req_mgr->get_by_id($id, $version_option);
-    $tc_coverage = count($req_mgr->get_coverage($id));
-    
+    if( $version_option == requirement_mgr::ALL_VERSIONS )
+    {
+      // This need to be refactored in future to improve performance
+      $req = $req_mgr->get_by_id($id, $version_option);
+    }  
+    else
+    {
+      $req = $reqSet[$id];
+    }  
+
     // create the link to display
     $title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $cfg->charset) . $cfg->glue_char . 
              htmlentities($req[0]['title'], ENT_QUOTES, $cfg->charset);
     
     // reqspec-"path" to requirement
-    $path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
-    foreach ($path as $key => $p) 
+    if( !isset($pathCache[$req[0]['srs_id']]) )
     {
-      $path[$key] = $p['name'];
-    }
-    $path = htmlentities(implode("/", $path), ENT_QUOTES, $cfg->charset);
-      
+      $path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
+      foreach ($path as $key => $p) 
+      {
+        $path[$key] = $p['name'];
+      }
+      $pathCache[$req[0]['srs_id']] = htmlentities(implode("/", $path), ENT_QUOTES, $cfg->charset);
+    }         
+
     foreach($req as $version) 
     {
-      
       // get content for each row to display
       $result = array();
         
       /**
-         * IMPORTANT: 
-         * the order of following items in this array has to be
-         * the same as column headers are below!!!
-         * 
-         * should be:
-         * 1. path
-         * 2. title
-         * 3. version
-         * 4. frozen (is_open attribute)
-         * 5. coverage (if enabled)
-         * 6. type
-         * 7. status
-         * 8. relations (if enabled)
-         * 9. all custom fields in order of $fields
-         */
+        * IMPORTANT: 
+        * the order of following items in this array has to be
+        * the same as column headers are below!!!
+        * 
+        * should be:
+        * 1. path
+        * 2. title
+        * 3. version
+        * 4. frozen (is_open attribute)
+        * 5. coverage (if enabled)
+        * 6. type
+        * 7. status
+        * 8. relations (if enabled)
+        * 9. all custom fields in order of $fields
+        */
         
-        $result[] = $path;
+      $result[] = $pathCache[$req[0]['srs_id']];
         
-        $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
-                     '<img title="' .$labels['requirement'] . '" src="' . $imgSet['edit'] . '" /></a> ';
+      $edit_link = '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
+                   '<img title="' .$labels['requirement'] . '" src="' . $imgSet['edit'] . '" /></a> ';
       
-        $result[] =  '<!-- ' . $title . ' -->' . $edit_link . $title;
+      $result[] =  '<!-- ' . $title . ' -->' . $edit_link . $title;
         
-        // version and revision number
-        $version_revison = sprintf($labels['version_revision_tag'],$version['version'],$version['revision']);
-        $padded_data = sprintf("%05d%05d", $version['version'], $version['revision']);
+      // version and revision number
+      // $version_revision = sprintf($labels['version_revision_tag'],$version['version'],$version['revision']);
+      // $padded_data = sprintf("%05d%05d", $version['version'], $version['revision']);
       
-        // use html comment to sort properly by this columns (extjs)
-        $result[] = "<!-- $padded_data -->{$version_revison}";
+      // use html comment to sort properly by this column (extjs)
+      // USE CARVED IN THE STONE [vxxsyy] to save function calls.
+      $result[] = "<!-- " . sprintf("%05d%05d", $version['version'], $version['revision']) . "-->" .
+                  "[v{$version['version']}r{$version['revision']}]";
           
-        // use html comment to sort properly by this columns (extjs)
-        $result[] = "<!--{$version['creation_ts']}-->" . localizeTimeStamp($version['creation_ts'],$cfg->datetime) . 
+      // use html comment to sort properly by this columns (extjs)
+      $result[] = "<!--{$version['creation_ts']}-->" . localizeTimeStamp($version['creation_ts'],$cfg->datetime) . 
                     " ({$version['author']})";
       
-        // 20140914 - 
-        // Because we can do this logic thoundands of times, I suppose it will cost less
-        // to do not use my other approach of firts assigning instead of using else.
-        // 
-        // use html comment to sort properly by this column (extjs)
-        if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $cfg->neverModifiedTS) )
-        {
-          $result[] = "<!--{$version['modification_ts']}-->" . localizeTimeStamp($version['modification_ts'],$cfg->datetime) . 
-                      " ({$version['modifier']})";
-        }
-        else
-        {
-          $result[] = "<!-- 0 -->" . $labels['never'];  
-        }  
-        
-        
-        // is it frozen?
-        $result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
-        
-        // coverage
-        // use html comment to sort properly by this columns (extjs)
-        if($cfg->req->expected_coverage_management) 
-        {
-          $expected = $version['expected_coverage'];
-          $coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($tc_coverage/0)";
-          if ($expected > 0) 
-          {
-            $percentage = round(100 / $expected * $tc_coverage, 2);
-            $padded_data = sprintf("%010d", $percentage); //bring all percentages to same length
-            $coverage_string = "<!-- $padded_data --> {$percentage}% ({$tc_coverage}/{$expected})";
-          }
-          $result[] = $coverage_string;
-        }
-        
-        $result[] = isset($type_labels[$version['type']]) ? $type_labels[$version['type']] : '';
-        $result[] = isset($status_labels[$version['status']]) ? $status_labels[$version['status']] : '';
-      
-        if ($cfg->req->relations->enable) 
-        {
-          $relations = $req_mgr->count_relations($id);
-          $result[] = "<!-- " . sprintf("%010d", $relations) . " -->" . $relations;
-        }
-     
-      
-        if($gui->processCF)
-        {
-          // get custom field values for this req version
-          $linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
-
-          foreach ($linked_cfields as $cf) 
-          {
-            $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
-            $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
-            if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 )
-            {
-              $value = strftime( $cfg->$verbose_type . " ({$label['week_short']} %W)" , $value);
-            }  
-
-            $result[] = $value;
-          }
-        }  
-        
-        $rows[] = $result;
+      // 20140914 - 
+      // Because we can do this logic thoundands of times, I suppose it will cost less
+      // to do not use my other approach of firts assigning instead of using else.
+      // 
+      // use html comment to sort properly by this column (extjs)
+      if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $cfg->neverModifiedTS) )
+      {
+        $result[] = "<!--{$version['modification_ts']}-->" . localizeTimeStamp($version['modification_ts'],$cfg->datetime) . 
+                    " ({$version['modifier']})";
       }
-    }
-
-    // -------------------------------------------------------------------------------------------------- 
-    // Construction of EXT-JS table starts here    
-    if(($gui->row_qty = count($rows)) > 0 ) 
-    {
-      $version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];
-      $gui->pageTitle .= " - " . $version_string . ": " . $gui->row_qty;
+      else
+      {
+        $result[] = "<!-- 0 -->" . $labels['never'];  
+      }  
         
-     /**
-       * get column header titles for the table
-       * 
-       * IMPORTANT: 
-       * the order of following items in this array has to be
-       * the same as row content above!!!
-       * 
-       * should be:
-       * 1. path
-       * 2. title
-       * 3. version
-       * 4. frozen
-       * 5. coverage (if enabled)
-       * 6. type
-       * 7. status
-       * 8. relations (if enabled)
-       * 9. then all custom fields in order of $fields
-       */
-      $columns = array();
-      $columns[] = array('title_key' => 'req_spec_short', 'width' => 200);
-      $columns[] = array('title_key' => 'title', 'width' => 150);
-      $columns[] = array('title_key' => 'version', 'width' => 30);
-      $columns[] = array('title_key' => 'created_on', 'width' => 55);
-      $columns[] = array('title_key' => 'modified_on','width' => 55);
         
-      $frozen_for_filter = array($labels['yes'],$labels['no']);
-      $columns[] = array('title_key' => 'frozen', 'width' => 30, 'filter' => 'list',
-                         'filterOptions' => $frozen_for_filter);
+      // is it frozen?
+      $result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
         
+      // coverage
+      // use html comment to sort properly by this columns (extjs)
       if($cfg->req->expected_coverage_management) 
       {
-        $columns[] = array('title_key' => 'th_coverage', 'width' => 80);
+        $tc_coverage = isset($coverageSet[$id]) ? $coverageSet[$id]['qty'] : 0;
+        $expected = $version['expected_coverage'];
+        $coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($tc_coverage/0)";
+        if ($expected > 0) 
+        {
+          $percentage = round(100 / $expected * $tc_coverage, 2);
+          $padded_data = sprintf("%010d", $percentage); //bring all percentages to same length
+          $coverage_string = "<!-- $padded_data --> {$percentage}% ({$tc_coverage}/{$expected})";
+        }
+        $result[] = $coverage_string;
       }
-              
-      $columns[] = array('title_key' => 'type', 'width' => 60, 'filter' => 'list',
-                           'filterOptions' => $type_labels);
-      $columns[] = array('title_key' => 'status', 'width' => 60, 'filter' => 'list',
-                           'filterOptions' => $status_labels);
+        
+      $result[] = isset($type_labels[$version['type']]) ? $type_labels[$version['type']] : '';
+      $result[] = isset($status_labels[$version['status']]) ? $status_labels[$version['status']] : '';
       
       if ($cfg->req->relations->enable) 
       {
-        $columns[] = array('title_key' => 'th_relations', 'width' => 50, 'filter' => 'numeric');
+        $rx = isset($relationCounters[$id]) ? $relationCounters[$id] : 0;
+        $result[] = "<!-- " . str_pad($rx,10,'0') . " -->" . $rx;
       }
-        
-      foreach($gui->cfields4req as $cf) 
+     
+      
+      if($gui->processCF)
       {
-        $columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $cfg->charset), 'type' => 'text',
-                           'col_id' => 'id_cf_' .$cf['name']);
-      }
+        // get custom field values for this req version
+        $linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
 
-      // create table object, fill it with columns and row data and give it a title
-      $matrix = new tlExtTable($columns, $rows, 'tl_table_req_overview');
-      $matrix->title = $labels['requirements'];
+        foreach ($linked_cfields as $cf) 
+        {
+          $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
+          $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
+          if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 )
+          {
+            $value = strftime( $cfg->$verbose_type . " ({$label['week_short']} %W)" , $value);
+          }  
+          $result[] = $value;
+        }
+      }  
         
-      // group by Req Spec
-      $matrix->setGroupByColumnName($labels['req_spec_short']);
+      $rows[] = $result;
+    }
+  }
+    
+  // echo 'Elapsed Time since SCRIPT START to EXT-JS Phase START (sec) =' . round(microtime(true) - $chronoStart);
+  // die();
+  // -------------------------------------------------------------------------------------------------- 
+  // Construction of EXT-JS table starts here    
+  if(($gui->row_qty = count($rows)) > 0 ) 
+  {
+    $version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];
+    $gui->pageTitle .= " - " . $version_string . ": " . $gui->row_qty;
+       
+    /**
+     * get column header titles for the table
+     * 
+     * IMPORTANT: 
+     * the order of following items in this array has to be
+     * the same as row content above!!!
+     * 
+     * should be:
+     * 1. path
+     * 2. title
+     * 3. version
+     * 4. frozen
+     * 5. coverage (if enabled)
+     * 6. type
+     * 7. status
+     * 8. relations (if enabled)
+     * 9. then all custom fields in order of $fields
+     */
+    $columns = array();
+    $columns[] = array('title_key' => 'req_spec_short', 'width' => 200);
+    $columns[] = array('title_key' => 'title', 'width' => 150);
+    $columns[] = array('title_key' => 'version', 'width' => 30);
+    $columns[] = array('title_key' => 'created_on', 'width' => 55);
+    $columns[] = array('title_key' => 'modified_on','width' => 55);
+      
+    $frozen_for_filter = array($labels['yes'],$labels['no']);
+    $columns[] = array('title_key' => 'frozen', 'width' => 30, 'filter' => 'list',
+                       'filterOptions' => $frozen_for_filter);
         
-      // sort by coverage descending if enabled, otherwise by status
-      $sort_name = ($cfg->req->expected_coverage_management) ? $labels['th_coverage'] : $labels['status'];
-      $matrix->setSortByColumnName($sort_name);
-      $matrix->sortDirection = 'DESC';
+    if($cfg->req->expected_coverage_management) 
+    {
+      $columns[] = array('title_key' => 'th_coverage', 'width' => 80);
+    }
+              
+    $columns[] = array('title_key' => 'type', 'width' => 60, 'filter' => 'list',
+                       'filterOptions' => $type_labels);
+    $columns[] = array('title_key' => 'status', 'width' => 60, 'filter' => 'list',
+                       'filterOptions' => $status_labels);
+      
+    if ($cfg->req->relations->enable) 
+    {
+      $columns[] = array('title_key' => 'th_relations', 'width' => 50, 'filter' => 'numeric');
+    }
         
-      // define toolbar
-      $matrix->showToolbar = true;
-      $matrix->toolbarExpandCollapseGroupsButton = true;
-      $matrix->toolbarShowAllColumnsButton = true;
-      $matrix->toolbarRefreshButton = true;
-      $matrix->showGroupItemsCount = true;
-      // show custom field content in multiple lines
-      $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
-      $gui->tableSet= array($matrix);
+    foreach($gui->cfields4req as $cf) 
+    {
+      $columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $cfg->charset), 'type' => 'text',
+                         'col_id' => 'id_cf_' .$cf['name']);
     }
 
-    $chronoStop = microtime(true);
-    $gui->elapsedSeconds = round($chronoStop - $chronoStart);
+    // create table object, fill it with columns and row data and give it a title
+    $matrix = new tlExtTable($columns, $rows, 'tl_table_req_overview');
+    $matrix->title = $labels['requirements'];
+        
+    // group by Req Spec
+    $matrix->setGroupByColumnName($labels['req_spec_short']);
+        
+    // sort by coverage descending if enabled, otherwise by status
+    $sort_name = ($cfg->req->expected_coverage_management) ? $labels['th_coverage'] : $labels['status'];
+    $matrix->setSortByColumnName($sort_name);
+    $matrix->sortDirection = 'DESC';
+        
+    // define toolbar
+    $matrix->showToolbar = true;
+    $matrix->toolbarExpandCollapseGroupsButton = true;
+    $matrix->toolbarShowAllColumnsButton = true;
+    $matrix->toolbarRefreshButton = true;
+    $matrix->showGroupItemsCount = true;
+    
+    // show custom field content in multiple lines
+    $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
+    $gui->tableSet= array($matrix);
+  }
+
+  $chronoStop = microtime(true);
+  $gui->elapsedSeconds = round($chronoStop - $chronoStart);
 } 
 
 
@@ -342,12 +375,11 @@ function getCfg()
   $cfg->req = config_get('req_cfg');
   $cfg->date = config_get('date_format');
   $cfg->datetime = config_get('timestamp_format');
-  $cfg->edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
-
 
   // on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
   $cfg->neverModifiedTS = "0000-00-00 00:00:00";
 
+  // $cfg->req->expected_coverage_management = FALSE;   // FORCED FOR TEST
 
   return $cfg;
 }

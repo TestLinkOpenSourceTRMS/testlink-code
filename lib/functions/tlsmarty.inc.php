@@ -14,7 +14,7 @@
  * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.12
  *
  */
 
@@ -406,6 +406,7 @@ class TLSmarty extends Smarty
                    'remove' => TL_THEME_IMG_DIR . 'delete.png',
                    'reorder' => TL_THEME_IMG_DIR . 'arrow_switch.png',
                    'report' => TL_THEME_IMG_DIR . 'report.png',
+                   'report_word' => TL_THEME_IMG_DIR . 'page_word.png',
                    'requirements' => TL_THEME_IMG_DIR . 'cart.png',
                    'resequence' => TL_THEME_IMG_DIR . 'control_equalizer.png',
                    'summary_small' => TL_THEME_IMG_DIR . 'information_small.png',

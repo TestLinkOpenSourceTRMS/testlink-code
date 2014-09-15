@@ -32,6 +32,10 @@
 
           <img src="{$tlImages.report}" onclick="window.open('{$testSuiteDocAction}')" 
                title="{$labels.btn_gen_test_suite_spec_new_window}" />
+
+          <img src="{$tlImages.report_word}" onclick="window.open('{$testSuiteWordDocAction}')" 
+               title="{$labels.btn_gen_test_suite_spec_word_new_window}" />
+
           <img src="{$tlImages.import}" onclick="location='{$importToTSuiteAction}'" title="{$labels.btn_import_testsuite}" />
           <img src="{$tlImages.export}" onclick="location='{$tsuiteExportAction}'" title="{$labels.btn_export_testsuite}" />
         </form>

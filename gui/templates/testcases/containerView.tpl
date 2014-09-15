@@ -16,6 +16,7 @@ View test specification containers
              btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
              btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,actions,
              btn_gen_test_spec,btn_gen_test_spec_new_window,
+             btn_gen_test_spec_word,btn_gen_test_suite_spec_word,
              btn_gen_test_suite_spec,btn_gen_test_suite_spec_new_window,
              btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
              btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
@@ -37,8 +38,15 @@ View test specification containers
 {$testSpecFullDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=0&id=$container_id"}
 {$testSpecFullDocAction="$basehref$testSpecFullDocAction"}
 
+
+{$testSpecFullWordDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=4&id=$container_id"}
+{$testSpecFullWordDocAction="$basehref$testSpecFullWordDocAction"}
+
 {$testSuiteDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=0&id=$container_id"}
 {$testSuiteDocAction="$basehref$testSuiteDocAction"}
+
+{$testSuiteWordDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=4&id=$container_id"}
+{$testSuiteWordDocAction="$basehref$testSuiteWordDocAction"}
 
 
 {$tsuiteExportAction="$basehref$tcExportAction&amp;useRecursion=1&amp;form_token=$ft"}
@@ -109,6 +117,10 @@ function jsCallDeleteFile(btn, text, o_id)
 
       <img src="{$tlImages.report}" onclick="window.open('{$testSpecFullDocAction}')" 
            title="{$labels.btn_gen_test_spec_new_window}" />
+
+      <img src="{$tlImages.report_word}" onclick="window.open('{$testSpecFullWordDocAction}')" 
+           title="{$labels.btn_gen_test_spec_word}" />
+
     </form>
     </fieldset>
   </div>

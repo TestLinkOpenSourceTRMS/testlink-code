@@ -16,7 +16,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 <body onunload="dialog_onUnload(bug_dialog)" onload="dialog_onLoad(bug_dialog)">
 <h1 class="title">
-  {$labels.title_bug_add} 
+  {$gui->pageTitle|escape} 
   {include file="inc_help.tpl" helptopic="hlp_btsIntegration" show_help_icon=true}
 </h1>
 
@@ -26,14 +26,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
     <input type="hidden" name="user_action" id="user_action" value="">
 
-    {if $gui->user_action == 'link'}
+    {if $gui->user_action == 'link' || $gui->user_action == 'add_note'}
       <p>
       <a style="font-weight:normal" target="_blank" href="{$gui->createIssueURL}">
       {$labels.link_bts_create_bug}({$gui->issueTrackerVerboseID|escape})</a>
       </p>  
       <p class="label">{$gui->issueTrackerVerboseType|escape} {$labels.bug_id}
         <input type="text" id="bug_id" name="bug_id" required value="{$gui->bug_id}"
-               size="{#BUGID_SIZE#}" maxlength="{$gui->bugIDMaxLength}"/>
+               size="{#BUGID_SIZE#}" maxlength="{$gui->bugIDMaxLength}" 
+               {if $gui->user_action == 'add_note'} readonly {/if} />
       </p>
 
       {if $gui->tlCanAddIssueNote }
@@ -41,11 +42,19 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         <textarea id="bug_notes" name="bug_notes" rows="10" cols="60" >{$gui->bug_notes}</textarea>
       {/if}    
     {/if}
+
+
     <div class="groupBtn">
      {if $gui->user_action == 'link'}
       <input type="submit" value="{$labels.btn_save}" 
              onclick="user_action.value='link';return dialog_onSubmit(bug_dialog)" />
      {/if} 
+
+     {if $gui->user_action == 'add_note'}
+      <input type="submit" value="{$labels.btn_save}" onclick="user_action.value='add_note'" />
+     {/if} 
+
+
       <input type="button" value="{$labels.btn_close}" onclick="window.close()" />
     </div>
   </form>

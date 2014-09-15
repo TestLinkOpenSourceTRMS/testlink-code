@@ -340,6 +340,7 @@ class TLSmarty extends Smarty
                    'bug_create_into_bts' => TL_THEME_IMG_DIR . 'bug_add_famfamfam.png',
                    'bug_link_tl_to_bts_disabled' => TL_THEME_IMG_DIR . 'bug_link_disabled_famfamfam.png',
                    'bug_create_into_bts_disabled' => TL_THEME_IMG_DIR . 'bug_add_disabled_famfamfam.png',
+                   'bug_add_note' => TL_THEME_IMG_DIR . 'bug_edit.png',
                    'bullet' => TL_THEME_IMG_DIR . 'slide_gripper.gif',
                    'calendar' => TL_THEME_IMG_DIR . 'calendar.gif',
                    'checked' => TL_THEME_IMG_DIR . 'apply_f2_16.png',

@@ -20,37 +20,52 @@ $gui = initializeGui($args);
 
 list($its,$issueT) = itsProcess($db,$args,$gui);
 
-if(!$gui->tlCanCreateIssue || $args->user_action == 'link')
+if(!$gui->tlCanCreateIssue || $args->user_action == 'link' || $args->user_action == 'add_note' )
 {
   // Well do not think is very elegant to check for $args->bug_id != ""
   // to understand if user has pressed ADD Button
   if(!is_null($issueT) && $args->bug_id != "")
   {
   	$l18n = init_labels(array("error_wrong_BugID_format" => null,"error_bug_does_not_exist_on_bts" => null));
-  	$gui->msg = $l18n["error_wrong_BugID_format"];
-  	if ($its->checkBugIDSyntax($args->bug_id))
-  	{
-  		
-  		if ($its->checkBugIDExistence($args->bug_id))
-  		{ 	  
-  			if (write_execution_bug($db,$args->exec_id, $args->bug_id))
-  			{
-  				$gui->msg = lang_get("bug_added");
-  				logAuditEvent(TLS("audit_executionbug_added",$args->bug_id),"CREATE",$args->exec_id,"executions");
 
-          // blank notes will not be added :).
-          if($gui->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
+    switch($args->user_action)
+    {
+      case 'link':
+        $gui->msg = $l18n["error_wrong_BugID_format"];
+        if ($its->checkBugIDSyntax($args->bug_id))
+        {
+          
+          if ($its->checkBugIDExistence($args->bug_id))
+          {     
+            if (write_execution_bug($db,$args->exec_id, $args->bug_id))
+            {
+              $gui->msg = lang_get("bug_added");
+              logAuditEvent(TLS("audit_executionbug_added",$args->bug_id),"CREATE",$args->exec_id,"executions");
+
+              // blank notes will not be added :).
+              if($gui->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
+              {
+                // will do call to update issue Notes
+                $its->addNote($args->bug_id,$gui->bug_notes);
+              }  
+            }
+          }
+          else
           {
-            // will do call to update issue Notes
-            $its->addNote($args->bug_id,$gui->bug_notes);
+            $gui->msg = sprintf($l18n["error_bug_does_not_exist_on_bts"],$gui->bug_id);
           }  
-  			}
-  		}
-      else
-      {
-        $gui->msg = sprintf($l18n["error_bug_does_not_exist_on_bts"],$gui->bug_id);
-      }  
-  	}
+        }
+      break;
+      
+      case 'add_note':
+        // blank notes will not be added :).
+        $gui->msg = '';
+        if($gui->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
+        {
+          $its->addNote($args->bug_id,$gui->bug_notes);
+        }  
+      break;
+    }
   }
 }
 
@@ -67,12 +82,13 @@ function init_args(&$dbHandler)
   // sorry for magic numbers
   // link => 4
   // create => 6
+  // add_note => 8
 	$iParams = array("exec_id" => array("GET",tlInputParameter::INT_N),
-		               "bug_id" => array("POST",tlInputParameter::STRING_N),
+		               "bug_id" => array("REQUEST",tlInputParameter::STRING_N),
 		               "tproject_id" => array("REQUEST",tlInputParameter::INT_N),
 		               "tcversion_id" => array("REQUEST",tlInputParameter::INT_N),
                    "bug_notes" => array("POST",tlInputParameter::STRING_N),
-		               "user_action" => array("REQUEST",tlInputParameter::STRING_N,4,6));
+		               "user_action" => array("REQUEST",tlInputParameter::STRING_N,4,8));
 		             
 		             
 	$args = new stdClass();
@@ -86,9 +102,8 @@ function init_args(&$dbHandler)
 		$args->exec_id = intval(isset($_SESSION['bugAdd_execID']) ? $_SESSION['bugAdd_execID'] : 0);
 	}	
 
-
   $args->bug_id = trim($args->bug_id);
-  if( $args->bug_id == ''  && $args->exec_id > 0)
+  if( $args->bug_id == '' && $args->exec_id > 0)
   {
     $map = get_execution($dbHandler,$args->exec_id);
     $args->bug_notes = $map[0]['notes'];    
@@ -170,6 +185,22 @@ function initializeGui($argsObj)
   $gui->user_action = $argsObj->user_action;
   $gui->bug_notes = $argsObj->bug_notes;
   $gui->bug_id = $argsObj->bug_id;
+
+  switch($argsObj->user_action)
+  {
+    case 'create':
+      $gui->pageTitle = lang_get('create_issue');
+    break;
+
+    case 'add_note':
+      $gui->pageTitle = lang_get('add_issue_note');
+    break;
+
+    case 'link':
+    default:
+      $gui->pageTitle = lang_get('title_bug_add');
+    break;
+  }
 
   return $gui;
 }

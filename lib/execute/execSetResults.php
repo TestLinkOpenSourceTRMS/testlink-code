@@ -77,6 +77,7 @@ if($info['issue_tracker_enabled'])
     $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueT['issuetracker_name']})";  
     $gui->createIssueURL = $its->getEnterBugURL();
     $gui->tlCanCreateIssue = method_exists($its,'addIssue') && $its->canCreateViaAPI();
+    $gui->tlCanAddIssueNote = method_exists($its,'addNote');
   }
   else
   {
@@ -1207,7 +1208,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->platform_div_title = lang_get('platform') . ' ' . $gui->platform_info['name'];
     
 
-    $gui->issueTrackerIntegrationOn = $gui->tlCanCreateIssue = false;
+    $gui->issueTrackerIntegrationOn = $gui->tlCanCreateIssue = $gui->tlCanAddIssueNote = false;
     
     $gui->node_id = $argsObj->id;
     $gui->draw_save_and_exit = ($argsObj->caller == 'tcAssignedToMe');

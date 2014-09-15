@@ -551,6 +551,18 @@ function open_bug_add_window(tproject_id,tcversion_id,exec_id,user_action)
   window.open(fRoot+link2launch,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
 }
 
+/**
+ *
+ */
+function open_bug_note_add_window(bug_id,tproject_id,tcversion_id,exec_id,user_action)
+{
+  link2launch = "lib/execute/bugAdd.php?user_action=" + user_action + "&tcversion_id="+tcversion_id +
+                "&tproject_id=" + tproject_id + "&exec_id="+exec_id + "&bug_id=" + bug_id;
+                
+  window.open(fRoot+link2launch,"bug_add_note","width=510,height=270,resizable=yes,dependent=yes");
+}
+
+
 function bug_dialog()
 {
   this.refWindow = null;

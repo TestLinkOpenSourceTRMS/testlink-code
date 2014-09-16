@@ -26,7 +26,7 @@ testlinkInitPage($db,true,false,"checkRights");
 $gui_cfg = config_get('gui');
 $templateCfg = templateConfiguration();
 
-$session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$session_tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
 $template = null;
 
 
@@ -229,9 +229,9 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
   }
 
   // get input from the project edit/create page
-  $checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,
+  $checkbox_keys = array('is_public' => 0,'active' => 0,
                          'optPriority' => 0,'optAutomation' => 0,
-                         'optInventory' => 0, 'issue_tracker_enabled' => 0,
+                         'optReq' => 0,'optInventory' => 0,'issue_tracker_enabled' => 0,
                          'reqmgr_integration_enabled' => 0);
   foreach ($checkbox_keys as $key => $value)
   {
@@ -280,7 +280,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
   
   
   $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
-  $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
+  $args->userID = intval(isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0);
   $args->testprojects = null;
   $args->projectOptions = prepareOptions($args);
 
@@ -600,13 +600,24 @@ function crossChecks($argsObj,&$tprojectMgr)
 */
 function create(&$argsObj,&$tprojectMgr)
 {
+  $gui = new stdClass();
+
+  // Set defaults here
   $argsObj->active = 1;
   $argsObj->is_public = 1;
+  $argsObj->optPriority = 1;
+  $argsObj->optAutomation = 1;
 
-  $gui = new stdClass();
+  $gui->active = $argsObj->active;
+  $gui->is_public = $argsObj->is_public;
+  $gui->projectOptions = $argsObj->projectOptions = prepareOptions($argsObj);
   $gui->doActionValue = 'doCreate';
   $gui->buttonValue = lang_get('btn_create');
   $gui->caption = lang_get('caption_new_tproject');
+
+
+
+  new dBug($gui);
 
   $gui->testprojects = $tprojectMgr->get_all(null,array('access_key' => 'id'));
   return $gui;

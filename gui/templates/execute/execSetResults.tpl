@@ -120,7 +120,7 @@ function validateForm(f)
 }
 
 /*
-  function: checkSubmitForStatus
+  function: checkSubmitForStatusRadio
             if a radio (with a particular id, see code for details)
             with $statusCode has been checked, then false is returned to block form submit().
             
@@ -138,7 +138,7 @@ function validateForm(f)
   returns: 
 
 */
-function checkSubmitForStatus($statusCode)
+function checkSubmitForStatusRadio(statusCode)
 {
   var button_clicked;
   var access_key;
@@ -149,9 +149,41 @@ function checkSubmitForStatus($statusCode)
  	isChecked = document.getElementById(access_key).checked;
   if(isChecked)
   {
-      alert_message(alert_box_title,warning_nothing_will_be_saved);
-      return false;
+    alert_message(alert_box_title,warning_nothing_will_be_saved);
+    return false;
   }
+  return true;
+}
+
+
+/*
+  function: checkSubmitForStatusCombo
+            $statusCode has been checked, then false is returned to block form submit().
+            
+            Dev. Note - remember this:
+            
+            KO:
+               onclick="foo();checkSubmitForStatus('n')"
+            OK
+               onclick="foo();return checkSubmitForStatus('n')"
+                              ^^^^^^ 
+            
+
+  args :
+  
+  returns: 
+
+*/
+function checkSubmitForStatusCombo(oid,statusCode2block)
+{
+  var access_key;
+  var isChecked;
+  
+  if(document.getElementById(oid).value == statusCode2block)
+  {
+    alert_message(alert_box_title,warning_nothing_will_be_saved);
+    return false;
+  }  
   return true;
 }
 

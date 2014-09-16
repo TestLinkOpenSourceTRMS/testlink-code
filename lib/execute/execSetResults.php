@@ -68,7 +68,7 @@ $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 $attachmentRepository = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
-$gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
+$gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr,$its);
 if($info['issue_tracker_enabled'])
 {
   if(!is_null($its) && $its->isConnected())
@@ -148,7 +148,7 @@ if(!is_null($linked_tcversions))
     if( $args->save_results || $args->do_bulk_save)
     {  
       $_REQUEST['save_results'] = $args->save_results;
-      write_execution($db,$args,$_REQUEST);
+      write_execution($db,$args,$_REQUEST,$its);
 
       if($args->assignTask)
       {
@@ -379,6 +379,7 @@ function init_args(&$dbHandler,$cfgObj)
   }  
   
   $args->assignTask = isset($_REQUEST['assignTask']) ? 1: 0;
+  $args->createIssue = isset($_REQUEST['createIssue']) ? 1: 0;
 
   $args->tc_id = null;
   $args->tsuite_id = null;
@@ -1093,12 +1094,13 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
   returns: 
 
 */
-function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$issueTracker)
 {
     $buildMgr = new build_mgr($dbHandler);
     $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
     $gui = new stdClass();
+    $gui->tlCanCreateIssue = !is_null($issueTracker) && method_exists($issueTracker,'addIssue');
     $gui->remoteExecFeedback = $gui->user_feedback = '';
     $gui->tplan_id=$argsObj->tplan_id;
     $gui->tproject_id=$argsObj->tproject_id;

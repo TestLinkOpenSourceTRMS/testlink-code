@@ -56,7 +56,12 @@ Rev:
                   {$labels.assign_exec_task_to_me}&nbsp;
                   <input type="checkbox" name="assignTask"  id="assignTask">
                 {/if}
-
+                
+                {if $gui->tlCanCreateIssue}
+                  {$labels.bug_create_into_bts}&nbsp;
+                  <input type="checkbox" name="createIssue"  id="createIssue">
+                {/if}
+                  
                 <br />
                 <br />    
     		 			      <input type="submit" name="save_results[{$args_tcversion_id}]" 

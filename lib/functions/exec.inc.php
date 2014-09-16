@@ -57,7 +57,7 @@ function createResultsMenu()
  * @internal revisions
  * 
  */
-function write_execution(&$db,&$exec_signature,&$exec_data)
+function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
 {
   $executions_table = DB_TABLE_PREFIX . 'executions';
   $resultsCfg = config_get('results');
@@ -136,6 +136,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data)
       // at least for Postgres DBMS table name is needed. 
       $execution_id = $db->insert_id($executions_table);
       
+      
       if( $has_custom_fields )
       {
         // test useful when doing bulk update, because some type of custom fields
@@ -188,6 +189,17 @@ function write_execution(&$db,&$exec_signature,&$exec_data)
             $db->exec_query($sql);
           }         
         }  
+      }  
+
+
+      // 20140916
+      if(isset($exec_data['createIssue']) && !is_null($issueTracker) && method_exists($issueTracker,'addIssue'))
+      {
+        $execContext = new stdClass();
+        $execContext->exec_id = $execution_id;
+        $execContext->tcversion_id = $tcversion_id;
+        $execContext->user = $exec_signature->user;
+        addIssue($db,$execContext,$issueTracker);
       }  
 
     }
@@ -459,4 +471,58 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
   }
   //echo $cc;
   return $bugSet;
+}
+
+
+/**
+ *
+ */
+function addIssue($dbHandler,$argsObj,$itsObj)
+{
+  $opOK = false;             
+  $msg = '';
+  $resultsCfg = config_get('results');                      
+  $tcaseMgr = new testcase($dbHandler);
+  $dummy = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->tcversion_id);
+  $auditSign = $tcaseMgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
+  $exec = current($tcaseMgr->getExecution($argsObj->exec_id,$argsObj->tcversion_id));
+
+
+  $dummy = $exec['status'];
+  if( isset($resultsCfg['code_status'][$exec['status']]) )
+  {
+    $dummy = $resultsCfg['code_status'][$exec['status']];  
+  }                         
+  $exec['statusVerbose'] = sprintf(lang_get('issue_exec_result'),$dummy);
+  
+  unset($tcaseMgr);
+  $signature = sprintf(lang_get('issue_generated_description'),
+                       $argsObj->exec_id,$exec['tester_login'],$exec['testplan_name']);
+  
+  if($exec['platform_id'] > 0)
+  {
+    $signature .= sprintf(lang_get('issue_platform') ,$exec['platform_name']);
+  }
+  $signature .= sprintf(lang_get('issue_build') . lang_get('execution_ts_iso'),
+                        $exec['build_name'],$exec['execution_ts']) . "\n" .
+                        $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
+  
+  $opt = new stdClass();
+  $opt->reporter = $argsObj->user->login;
+  $rs = $itsObj->addIssue($auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),
+                          $signature,$opt);  
+  if($rs['status_ok'])
+  {                   
+    $msg = $rs['msg'];
+    $opOK = true;
+    if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id']))
+    {
+      logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
+    }
+  }
+  else
+  {
+    $msg = $rs['msg'];
+  }
+  return array($opOK,$msg);
 }

@@ -115,56 +115,6 @@ function init_args(&$dbHandler)
   return $args;
 }
 
-/**
- *
- */
-function addIssue($dbHandler,$argsObj,$itsObj)
-{
-  $opOK = false;             
-  $msg = '';
-	$resultsCfg = config_get('results');                      
-  $tcaseMgr = new testcase($dbHandler);
-  $dummy = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->tcversion_id);
-  $auditSign = $tcaseMgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
-  $exec = current($tcaseMgr->getExecution($argsObj->exec_id,$argsObj->tcversion_id));
-  $dummy = $exec['status'];
-  if( isset($resultsCfg['code_status'][$exec['status']]) )
-  {
-    $dummy = $resultsCfg['code_status'][$exec['status']];  
-  }                         
-  $exec['statusVerbose'] = sprintf(lang_get('issue_exec_result'),$dummy);
-  
-  unset($tcaseMgr);
-  $signature = sprintf(lang_get('issue_generated_description'),
-                       $argsObj->exec_id,$exec['tester_login'],$exec['testplan_name']);
-  
-  if($exec['platform_id'] > 0)
-  {
-    $signature .= sprintf(lang_get('issue_platform') ,$exec['platform_name']);
-  }
-  $signature .= sprintf(lang_get('issue_build') . lang_get('execution_ts_iso'),
-                        $exec['build_name'],$exec['execution_ts']) . "\n" .
-                        $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
-  
-  $opt = new stdClass();
-  $opt->reporter = $argsObj->user->login;
-  $rs = $itsObj->addIssue($auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),
-                          $signature,$opt);  
-  if($rs['status_ok'])
-  {                   
-    $msg = $rs['msg'];
-    $opOK = true;
-  	if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id']))
-  	{
-  		logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
-  	}
-  }
-  else
-  {
-    $msg = $rs['msg'];
-  }
-  return array($opOK,$msg);
-}
 
 /**
  *

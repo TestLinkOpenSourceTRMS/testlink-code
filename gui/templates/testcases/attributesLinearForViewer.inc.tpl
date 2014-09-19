@@ -6,7 +6,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <p>
 <fieldset>
 <legend></legend>
-<form style="display:inline;" id="statusForm" name="statusForm" id="statusForm" 
+<form style="display:inline;" 
+      id="statusForm_{$args_testcase.id}" name="statusForm_{$args_testcase.id}"  
       method="post" action="lib/testcases/tcEdit.php">
   <input type="hidden" name="doAction" id="doAction" value="setStatus">
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
@@ -15,7 +16,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}">
   {$tcView_viewer_labels.status}{$smarty.const.TITLE_SEP}</span>
   {if $edit_enabled}
-  <select name="status" id="status" onchange="document.getElementById('statusForm').submit();">
+  <select name="status" id="status" onchange="document.getElementById('statusForm_{$args_testcase.id}').submit();">
     {html_options options=$gui->domainTCStatus selected=$args_testcase.status}
   </select>
   {else}
@@ -24,7 +25,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 </form>
 
 {if $session['testprojectOptions']->testPriorityEnabled}
-   <form style="display:inline;" id="importanceForm" name="importanceForm" method="post" 
+   <form style="display:inline;" id="importanceForm_{$args_testcase.id}" 
+         name="importanceForm_{$args_testcase.id}" method="post" 
          action="lib/testcases/tcEdit.php">
 
     <input type="hidden" name="doAction" id="doAction" value="setImportance">
@@ -34,7 +36,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}"
         style="margin-left:20px;">{$tcView_viewer_labels.importance}{$smarty.const.TITLE_SEP}</span>
     {if $edit_enabled}
-    <select name="importance" onchange="document.getElementById('importanceForm').submit();" >
+    <select name="importance" onchange="document.getElementById('importanceForm{$args_testcase.id}').submit();" >
           {html_options options=$gsmarty_option_importance selected=$args_testcase.importance}
     </select>
     {else}
@@ -45,15 +47,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 {if $session['testprojectOptions']->automationEnabled}
-<form style="display:inline;" id="execTypeForm" name="execTypeForm" method="post" 
-      action="lib/testcases/tcEdit.php">
+<form style="display:inline;" id="execTypeForm_{$args_testcase.id}" 
+      name="execTypeForm_{$args_testcase.id}" method="post" action="lib/testcases/tcEdit.php">
     <input type="hidden" name="doAction" id="doAction" value="setExecutionType">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}" 
         style="margin-left:20px;">{$tcView_viewer_labels.execution_type}{$smarty.const.TITLE_SEP}</span>
   {if $edit_enabled}
-    <select name="exec_type" onchange="document.getElementById('execTypeForm').submit();" >
+    <select name="exec_type" onchange="document.getElementById('execTypeForm_{$args_testcase.id}').submit();" >
       {html_options options=$gui->execution_types selected=$args_testcase.execution_type}
     </select>
   {else}
@@ -62,7 +64,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 </form>
 {/if}
 
-<form style="display:inline;" id="estimatedExecDurationForm" name="estimatedExecDurationForm" method="post"
+<form style="display:inline;" id="estimatedExecDurationForm_{$args_testcase.id}" 
+      name="estimatedExecDurationForm_{$args_testcase.id}" method="post"
       action="lib/testcases/tcEdit.php">
   <input type="hidden" name="doAction" id="doAction" value="setEstimatedExecDuration">
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />

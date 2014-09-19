@@ -201,7 +201,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     else
     {
       $tplan_tcases = array();
-      $test_spec['childNodes'][0] = null;
+      $test_spec['childNodes'][0] = REMOVEME;
 
       $testcase_counters = helperInitCounters();
       foreach($testcase_counters as $key => $value)
@@ -215,6 +215,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
 
     // CRITIC: renderExecTreeNode() WILL MODIFY $tplan_tcases, can empty it completely
     $linkedTestCasesSet = array_keys((array)$tplan_tcases);
+
 
     $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,
                                      $renderTreeNodeOpt);
@@ -230,10 +231,11 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $treeMenu->rootnode->href=$test_spec['href'];
   
   if( !is_null($menustring) )
-  {  
+  { 
     // Change key ('childNodes')  to the one required by Ext JS tree.
     if(isset($test_spec['childNodes'])) 
     {
+      
       $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
     }
     
@@ -241,8 +243,8 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     // :null happens on -> "children":null,"text" that must become "children":[],"text"
     // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
     // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
-    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
-                               array(':[]','',''), $menustring); 
+    $target = array(':' . REMOVEME,'"' . REMOVEME . '"', ',"' . REMOVEME .'"','"' . REMOVEME . '",');
+    $menustring = str_ireplace($target,array(':[]','','',''), $menustring); 
 
   }  
   
@@ -447,6 +449,7 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
         // I use set an element to null to filter out leaf menu items
         if(is_null($current))
         {
+          $childNodes[$idx] = REMOVEME;  // 19
           continue;
         }
         
@@ -648,6 +651,7 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 
  
   $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
+
   $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
   $test_spec['id'] = $tproject_id;
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];
@@ -760,7 +764,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
 
   }  // if($test_spec)
   
-    
   $treeMenu->rootnode=new stdClass();
   $treeMenu->rootnode->name=$test_spec['text'];
   $treeMenu->rootnode->id=$test_spec['id'];
@@ -781,9 +784,8 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     // :null happens on -> "children":null,"text" that must become "children":[],"text"
     // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
     // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
-    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
-                               array(':[]','',''), $menustring); 
-
+    $target = array(':' . REMOVEME,'"' . REMOVEME . '"', ',"' . REMOVEME .'"','"' . REMOVEME . '",');
+    $menustring = str_ireplace($target,array(':[]','','',''), $menustring); 
   }  
   
   $treeMenu->menustring = $menustring;

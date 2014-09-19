@@ -887,7 +887,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     $nodes_qty = sizeof($node['childNodes']);
     for($idx = 0;$idx <$nodes_qty ;$idx++)
     {
-      if(is_null($node['childNodes'][$idx]))
+      if(is_null($node['childNodes'][$idx]) || $node['childNodes'][$idx]==REMOVEME)
       {
         continue;
       }
@@ -2280,7 +2280,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
     {
       $current = &$childNodes[$idx];
       // I use set an element to null to filter out leaf menu items
-      if(is_null($current))
+      if(is_null($current) || $current== REMOVEME)
       {
         $childNodes[$idx] = REMOVEME;
         continue;

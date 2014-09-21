@@ -203,6 +203,7 @@ $TLS_without_keywords = "without keywords";
 $TLS_without_keywords_bracketed = "[Without keywords]";
 
 
+
 $TLS_warning = "Warning";
 $TLS_warning_delete = "You are going to delete: %s <br /><br /> Are you sure?";
 
@@ -814,6 +815,7 @@ $TLS_was_success = " was successfully ";
 // ----- gui/templates/inc_filter_panel.tpl -----
 $TLS_logical_and = "And";
 $TLS_logical_or = "Or";
+$TLS_not_linked = "Not linked";
 $TLS_btn_apply_filter = $TLS_btn_apply;
 $TLS_btn_reset_filters = "Reset Filters";
 $TLS_caption_nav_filters = "Filters";

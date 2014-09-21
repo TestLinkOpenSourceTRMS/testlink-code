@@ -3030,41 +3030,63 @@ function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_fi
 {
   $keySet = (array)$keyword_id;
   $sql = null;
-  if(in_array(-1,$keySet))
-  {  
-    // get all test cases present on test project
-    $tcaseSet = array();
-    $this->get_all_testcases_id($testproject_id,$tcaseSet);
 
-    if(count($tcaseSet) > 0)
-    { 
-      $sql = " /* WITHOUT KEYWORDS */ " . 
-             " SELECT NHTC.id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NHTC " .  
-             " WHERE NHTC.id IN (" . implode(',',$tcaseSet) . ") AND NOT EXISTS " .
-             " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK WHERE TCK.testcase_id = NHTC.id) ";
-    }
+  $tcaseSet = array();
+  if(in_array(-1,$keySet) || $keyword_filter_type == 'NotLinked')
+  {  
+    $this->get_all_testcases_id($testproject_id,$tcaseSet);
+  }
+  $hasTCases = count($tcaseSet) > 0;
+
+  if(in_array(-1,$keySet) && $hasTCases)
+  {  
+    $sql = " /* WITHOUT KEYWORDS */ " . 
+           " SELECT NHTC.id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NHTC " .  
+           " WHERE NHTC.id IN (" . implode(',',$tcaseSet) . ") AND NOT EXISTS " .
+           " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK WHERE TCK.testcase_id = NHTC.id) ";
   }
   else
   {  
     $keyword_filter = " keyword_id IN (" . implode(',',$keySet) . ")";            
-    if($keyword_filter_type == 'And')
+
+    switch($keyword_filter_type)
     {
-      $sql = " /* Filter Type = AND */ " .
-             " SELECT FOXDOG.testcase_id FROM " .
-             " ( SELECT COUNT(testcase_id) AS HITS,testcase_id " .
-             "   FROM {$this->tables['testcase_keywords']} " .
-             "   WHERE {$keyword_filter} " .
-             "   GROUP BY testcase_id ) AS FOXDOG " . 
-             " WHERE FOXDOG.HITS = " . count($keyword_id );
-    }    
-    else
-    {
-      $sql = " /* Filter Type = OR */ " .
-             " SELECT testcase_id " .
-             " FROM {$this->tables['testcase_keywords']} " .
-             " WHERE {$keyword_filter} ";
+
+      case 'NotLinked':
+        if($hasTCases)
+        {
+          $sql = " /* WITHOUT SPECIFIC KEYWORDS */ " . 
+                 " SELECT NHTC.id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NHTC " .  
+                 " WHERE NHTC.id IN (" . implode(',',$tcaseSet) . ") " .
+                 " AND NOT EXISTS " .
+                 " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK " . 
+                 "  WHERE TCK.testcase_id = NHTC.id AND {$keyword_filter} )";
+        } 
+      break;
+
+
+      case 'And':
+        $sql = " /* Filter Type = AND */ " .
+               " SELECT FOXDOG.testcase_id FROM " .
+               " ( SELECT COUNT(testcase_id) AS HITS,testcase_id " .
+               "   FROM {$this->tables['testcase_keywords']} " .
+               "   WHERE {$keyword_filter} " .
+               "   GROUP BY testcase_id ) AS FOXDOG " . 
+               " WHERE FOXDOG.HITS = " . count($keyword_id );
+      break;
+
+
+      case 'Or':
+      default:
+        $sql = " /* Filter Type = OR */ " .
+               " SELECT testcase_id " .
+               " FROM {$this->tables['testcase_keywords']} " .
+               " WHERE {$keyword_filter} ";
+      break;
     }
   }
+
+  new dBug($sql);
   $hits = !is_null($sql) ? $this->db->fetchRowsIntoMap($sql,'testcase_id') : null;
   return($hits);
 }

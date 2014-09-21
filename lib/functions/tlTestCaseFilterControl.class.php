@@ -324,7 +324,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
   
   
   
-  
   /**
    *
    * @param database $dbHandler
@@ -357,6 +356,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $this->delete_old_session_data();
     
     $this->save_session_data();
+
   }
 
   /**
@@ -1437,6 +1437,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $type = 'filter_keywords_filter_type';
     $this->filters[$key] = false;
     $keywords = null;
+    $l10n = init_labels(array('logical_or' => null,'logical_and' => null, 'not_linked' => null));
+
 
     switch ($this->mode) 
     {
@@ -1490,8 +1492,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
       // additional data for the filter type (logical and/or)
       $this->filters[$key][$type] = array();
-      $this->filters[$key][$type]['items'] = array('Or' => lang_get('logical_or'),
-                                                           'And' => lang_get('logical_and'));
+      $this->filters[$key][$type]['items'] = array('Or' => $l10n['logical_or'],
+                                                   'And' => $l10n['logical_and'],
+                                                   'NotLinked' => $l10n['not_linked']);
       $this->filters[$key][$type]['selected'] = $type_selection;
     }
     

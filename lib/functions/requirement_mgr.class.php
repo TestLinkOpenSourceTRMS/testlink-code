@@ -1135,9 +1135,9 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 
 
   */
-  function bulk_assignment($req_id,$testcase_id)
+  function bulk_assignment($req_id,$testcase_id,$author_id)
   {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $insertCounter=0;  // just for debug
     $requirementSet=$req_id;
@@ -1145,11 +1145,12 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     
     if( !is_array($req_id) )
     {
-       $requirementSet=array($req_id);  
+      $requirementSet=array($req_id);  
     }
+
     if( !is_array($testcase_id) )
     {
-       $tcaseSet=array($testcase_id);  
+      $tcaseSet=array($testcase_id);  
     }
 
     $req_list=implode(",",$requirementSet);
@@ -1158,22 +1159,23 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     // Get coverage for this set of requirements and testcase, to be used
     // to understand if insert if needed
     $sql = " /* $debugMsg */ SELECT req_id,testcase_id FROM {$this->tables['req_coverage']} " .
-         " WHERE req_id IN ({$req_list}) AND testcase_id IN ({$tcase_list})";
+           " WHERE req_id IN ({$req_list}) AND testcase_id IN ({$tcase_list})";
     $coverage = $this->db->fetchMapRowsIntoMap($sql,'req_id','testcase_id');
    
    
-    $insert_sql = "INSERT INTO {$this->tables['req_coverage']} (req_id,testcase_id) ";
+    $now = $this->db->db_now();
+    $insert_sql = "INSERT INTO {$this->tables['req_coverage']} (req_id,testcase_id,author_id,creation_ts) ";
     foreach($tcaseSet as $tcid)
     {
-        foreach($requirementSet as $reqid)
+      foreach($requirementSet as $reqid)
+      {
+        if( !isset($coverage[$reqid][$tcid]) )
         {
-            if( !isset($coverage[$reqid][$tcid]) )
-            {
-                $insertCounter++;
-                $sql = $insert_sql . "VALUES ({$reqid},{$tcid})";
-                $this->db->exec_query($sql);
-            }    
-        }
+          $insertCounter++;
+          $sql = $insert_sql . "VALUES ({$reqid},{$tcid},{$author_id},{$now})";
+          $this->db->exec_query($sql);
+        }    
+      }
     }
     return $insertCounter;
   }
@@ -2283,18 +2285,18 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   {
     
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $now = $this->db->db_now();
-      $sql="/* $debugMsg */ INSERT INTO {$this->tables['req_versions']} " .
+    $now = $this->db->db_now();
+    $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_versions']} " .
            " (id,version,author_id,creation_ts,scope,status,type,expected_coverage) " .
            " SELECT {$to_version_id} AS id, {$as_version_number} AS version, " .
            "        {$user_id} AS author_id, {$now} AS creation_ts," .
            "        scope,status,type,expected_coverage " .
            " FROM {$this->tables['req_versions']} " .
-           " WHERE id={$from_version_id} ";
-      $result = $this->db->exec_query($sql);
+           " WHERE id=" . intval($from_version_id);
+    $result = $this->db->exec_query($sql);
            
-      $this->copy_cfields(array('id' => $id, 'version_id' => $from_version_id),
-                array('id' => $id, 'version_id' => $to_version_id));
+    $this->copy_cfields(array('id' => $id, 'version_id' => $from_version_id),
+                        array('id' => $id, 'version_id' => $to_version_id));
          
   }
 

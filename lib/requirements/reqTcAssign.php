@@ -213,7 +213,7 @@ function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
 
     if( !is_null($tcase_set) && count($tcase_set) )
     {
-      $assignmentCounter = $req_mgr->bulk_assignment($requirements,$tcase_set);
+      $assignmentCounter = $req_mgr->bulk_assignment($requirements,$tcase_set,$argsObj->user->dbID);
     }
 
   } 

@@ -2451,9 +2451,10 @@ $TLS_bugdeleting_was_ok = "The bug was successfully deleted!";
 $TLS_error_ldap_auth_failed = "LDAP authentication failed";
 $TLS_error_ldap_bind_failed = "LDAP binding failed (invalid credentials)";
 $TLS_error_ldap_server_connect_failed = "Connecting to the LDAP server failed ".
-    "(check hostname, port and LDAP version).";
+                                        "(check hostname, port and LDAP version).";
 $TLS_error_ldap_update_failed = "Updating LDAP failed";
 $TLS_error_ldap_user_not_found = "LDAP user not found";
+$TLS_error_ldap_start_tls_failed = "LDAP start TLS failed";
 $TLS_unknown_authentication_method = "Do not know how to handle %s authentication method";
 
 

@@ -200,6 +200,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   static $tcasePrefix;
   static $glueChar;
 
+  $ret = null;
+  
   if (!$tcData)
   {
     return;
@@ -439,10 +441,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                                       $exec_type,$importance,$createOptions))
         {
           $resultMap[] = array($name,$ret['msg']);
-          // if($ret['status_ok'])
-          //{
-          //  $tcase_mgr->setEstimatedExecDuration($ret['tcversion_id'],$attr['estimatedExecDuration']);
-          //}  
         }  
     }
       

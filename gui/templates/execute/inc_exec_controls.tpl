@@ -52,12 +52,15 @@ Rev:
 
               {if $args_save_type == 'single'}
                 <br />
+                {$addBR=0}
                 {if $tc_exec.assigned_user == ''}
                   {$labels.assign_exec_task_to_me}&nbsp;
                   <input type="checkbox" name="assignTask"  id="assignTask">
+                  {$addBR=1}
                 {/if}
                 
                 {if $gui->tlCanCreateIssue}
+                  {if $addBR}<br>{/if} 
                   {$labels.bug_create_into_bts}&nbsp;
                   <input type="checkbox" name="createIssue"  id="createIssue">
                 {/if}

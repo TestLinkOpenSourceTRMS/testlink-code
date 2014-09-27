@@ -54,11 +54,9 @@ function delete_relation(btn, text, item_id, relation_id)
 var pF_delete_relation = delete_relation;
 
 </script>
-
-
     <form method="post" action="lib/testcases/tcEdit.php">
         <input type="hidden" name="doAction" value="doAddRelation" />
-        <input type="hidden" name="relation_source_tcase_id" id="relation_source_tcase_id" value="{$gui->id}" />
+        <input type="hidden" name="relation_source_tcase_id" id="relation_source_tcase_id" value="{$gui->tcase_id}" />
         <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
         <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}" />
 
@@ -105,10 +103,9 @@ var pF_delete_relation = delete_relation;
       </tr>
       
       {foreach item=rx from=$gui->relations.relations}
-        {$rel_status=$rx.related_item.status}
         <tr>
           <td class="bold"><nobr>{$rx.id} / {$rx.type_localized|escape}</nobr></td>
-          <td colspan="{$colspan}">
+          <td>
             <a href="javascript:openTCaseWindow({$rx.related_tcase.testcase_id},{$rx.related_tcase.id})">
             {$rx.related_tcase.fullExternalID|escape}:
             {$rx.related_tcase.name|escape}</a></td>

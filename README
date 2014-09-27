@@ -69,7 +69,7 @@ A wide variety of reports provide information on what has been done and what sti
 2. Release notes / CRITIC Configuration Notes
 ===============================================================
 
-This release contains bugfixes for 1.9.10
+This release contains bugfixes for 1.9.11
 See CHANGELOG file for detailed list of issues fixed.
 
 *** CRITIC PHP.INI Settings ***
@@ -92,10 +92,9 @@ Server environment should consists from:
 - DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2005/2008
 
 Supported client web-browsers: 
-- Firefox 10 - 23
+- Firefox 10 - 32
 - Internet Explorer 9.x
 - Chrome   
-
 
 
 4. Installation & SECURITY
@@ -185,6 +184,10 @@ Migration HAS TO BE DONE MANUALLY => read below
  If you are updating a same major version (for example 1.7.0 to 1.7.1) 
  you need to use Upgrade Database.
  
+ PLEASE GIVE A LOOK TO:
+ MANTIS 6594: Migration scripts don't cover testcase steps and expected results, 
+              also testcase ID's are empty in GUI
+
  If you are using a different major version detailed in options,  
  you need to use the specific Migrations.
  
@@ -215,7 +218,7 @@ then give a look to section 'Upgrade from 1.9.7 to 1.9.8'
 then give a look to section 'Upgrade from 1.9.8 to 1.9.9'
 then give a look to section 'Upgrade from 1.9.9 to 1.9.10'
 then give a look to section 'Upgrade from 1.9.10 to 1.9.11'
-then give a look to section 'Upgrade from 1.9.10 to 1.9.12'
+then give a look to section 'Upgrade from 1.9.11 to 1.9.12'
 
 - Upgrade from 1.9.7 to 1.9.8
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
@@ -268,6 +271,7 @@ This list comprise people that has helped
 
 --- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
+                       (well really the One Man Band ;) )
 * Asiel Brumfield - Infrastructure
 
 
@@ -369,6 +373,7 @@ Useful mails: testlink.forum@gmail.com, testlink.helpme@gmail.com
 
 if you find TestLinl useful, think about a donation to support our work.
 contact testlink.forum@gmail.com
+You can donate using PayPal or Flattr
 
 
 9. Regarding forum usage www.testlink.org
@@ -388,6 +393,8 @@ PLEASE: read this short hints before you write a topic:
 
 1.9.12
 Test case relations
+Improvements on Issue Tracker integration (edit notes when linking)
+Requirements Overview performance improvements
 
 1.9.10
 Long waited feature: execution notes & results for test steps
@@ -456,3 +463,11 @@ donating feature to community (is not the first time they do this!)
 15. Miscelaneous
 ===============================================================
 https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
+
+Hitek School (http://www.hitekschool.com/)
+ - Group of students help to test TestLink
+
+Wellington Institute of Technology (www.weltec.ac.nz)
+ - Group of studente is working on creating automation infrastructure to test TestLink
+
+

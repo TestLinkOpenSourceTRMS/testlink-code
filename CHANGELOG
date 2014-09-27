@@ -3,9 +3,88 @@
 *******************************************************************************
 
 http://www.testlink.org
+http://forum.testlink.org
 https://twitter.com/TLOpenSource
 
-TestLink - 1.9.11 (2014 Q2 - bug fixing) (Released  on 2014-07-28)
+TestLink - 1.9.12 (2014 Q3) (Released on 2014-09-28)
+===========================================================================
+[73 tickets]
+- 6578: [Test Execute] Save execution result - option to CREATE Issue while saving (fman) - resolved.
+- 6595: [Localization] string 'error_ldap_start_tls_failed' is not localized for locale 'en_GB' 
+- 6591: [Requirement to Test Case Assignment] Requirements Bulk Assignment- Assigned By & Timestamp are not saved 
+- 6255: [Requirement to Test Case Assignment] Requirements Bulk Assignment does not respect Test Case filter 
+- 6416: [Test Specification] Filtering for keywords with decent number of testcases results in infinite spinner for loading 
+- 6580: [Filters- Test Specification] Test Specification- Possibility to filter test cases without some keywords 
+- 6321: [Reports- Req. Based Report] Can't choose options in Requirement Specification Report 
+- 6548: [Bug Tracking System- Bugzilla Integration] Bugzilla XMLRPC Integration: Bug creation is not working in Bugzilla 4.4.4 
+- 6570: [Test Spec / Test Suite HTML Report] HTML report will be generated in NEW WINDOW 
+- 6517: [Test Plan- Assign Test Case Execution] Possibility to assign Test cases to multiple users 
+- 6581: [Test Specification] Can't update status, exec type, importance for previous tc version 
+- 6577: [Test Project Management] Create Test project- Default ON for Test priority & Automation 
+- 6556: [Test Specification] Test Suite & Test Case operations when working on Test Suite => migrate to icons 
+- 6554: [Test Specification] Test Suite operations when working on Test Project => migrate to icons 
+- 6574: [Test Spec / Test Suite Pseudo Word Report] Test Spec / Test Suite Pseudo Word Report 
+- 6566: [Bug Tracking System- Mantis Integration] Mantis- Create Issue via SOAP API- reporter will be set to TestLink Logged user 
+- 6513: [Bug Tracking System- JIRA Integration] Create Issue via REST API- reporter will be set to TestLink Logged user 
+- 6415: [Reports] Reports with direct link are dispayed shifted 
+- 6506: [Security] Cross-Site Request Forgery on lib/usermanagement/rolesView.php (CWE-352) 
+- 6455: [Test Execute- Navigator] "null" erasing in test execution tree 
+- 6557: [Bug Tracking System- Bugzilla Integration] Mantis SOAP- addNote() method 
+- 6555: [Bug Tracking System- JIRA Integration] JIRA- REST Integration- Check for connection OK is WRONG 
+- 6551: [Test Specification] (User cannot export Test Spec Document) Possibility to generate HTML DOC for a specific Test Suite 
+- 6545: [Reports] On report with test steps exec wrong value is used for test case execution type 
+- 6543: [Failed/Blocked Test Cases] test steps execution report (print view) always shows FOR TEST CASE lastest execution result 
+- 6553: [Test Spec.- Test Case Steps] Reordering of steps alwaws gives error if more than one test case version exists 
+- 6531: [Custom fields] Apostrophe in test case custom field string, list, multiselection list causes DB errors, bad filtering, etc 
+- 6525: [Security] Configuration of password requirements 
+- 6524: [General] New configuration option- notifications 
+- 6516: [Test Plan- Assign Test Case Execution] Remove Tester through direct icon 
+- 6511: [Bug Tracking System- Redmine Integration] Redmine Integration- Problems with target version mapping 
+- 6515: [Test Execute] Exec test case- New Option Assign to me execution task if not assigned 
+- 6514: [Test Execute] Exec test case- choose results from combo instead of radio buttons 
+- 6509: [Usability] Test project combo on top- possibility to display test project prefix 
+- 6504: [Req Overview] Report Last Modified column- on POSTGRES 01/01/1970 is displayed 
+- 6481: [Test Project Management] Enable/Disable Requirements feature from test project list 
+- 6498: [Security] Cross-Site Scripting on /lib/plan/planExport.php (CWE-80) 
+- 6499: [Security] Blind SQL Injection on /lib/requirements/reqExport.php (CWE-89) 
+- 6492: [Test Cases Assigned to Me] Allow Quick & Dirty execution 
+- 6489: [JIRA Integration] Undefined property: stdClass::$duedate- when running 'failed test cases' report) 
+- 6486: [Security] Cross-Site Scripting on login page 
+- 6488: [Security] SQL Injection (CWE-89) (eventinfo.php) 
+- 6460: [API- XMLRPC] Extend API- XMLRPC Add function "getTestCaseBugs" 
+- 6483: [User Interface General] Top menu- replace text with images 
+- 6482: [Test Plan Management] Test plan list- action buttons refactoring 
+- 6473: [Requirements Import- TL XML format] Confusing message appears while using Import under Requirements 
+- 6296: [Test Specification- Move/Copy Test Cases] feature should only present filtered tests for move/copy when filer is applied. 
+- 6464: [Test Importance / Urgency / Priority] Set Test urgency- display also tester assigned 
+- 6463: [Platforms- import] Platforms import- user feedback improvements 
+- 6451: [Import results XML format] FEATURE REQUEST- Importing custom fields in in test execution 
+- 4722: [Import results XML format] Importing custom field values during test results import 
+- 6452: [API- XMLRPC] Get user assigned to test case XMLRPC method 
+- 6490: [API- XMLRPC] Assign test to user using assignTestCaseExecutionTask doesn't report the right platform (fman)- closed.
+- 6497: [Reports- Test report matrix] memory exhausted when use test report matrix (fman)- closed.
+- 6461: [Filters] Filter in "Set urgent Test Case section dosen't work (1.9.9) (fman)- closed.
+- 6484: [Test Execute] Complete execution history disregards testplan ID => due to typo error (fman)- closed.
+- 6562: [Redmine Integration] Redmine REST Integration- Possibility to ADD notes to issues on Redmine from TestLink 
+- 6547: [New Feature] Automatically add comment to issue report when link a test execution to a issue 
+- 6560: [Mantis Integration] Mantis SOAP Integration- Possibility to ADD notes to issues on Mantis from TestLink 
+- 5234: [Test Spec.- Test Case relations] Relation feature for Testcase 
+- 6501: [Test Spec.- Test Case relations] Export Test Case- relations need to be included 
+- 6493: [Test Spec.- Test Case relations] Test Case execution- Display Test case relations 
+- 6068: [Bug Tracking Systems Integration] JIRA REST API Integration- CRITIC ONLY via HTTPS 
+- 5487: [Database General] When using Foreing Keys, add ON DELETE CASCADE option when available 
+- 6590: [Reports- Test report matrix] Export of Test Result Matrix fails and shows blank page due to PHP out of memory error 
+- 6572: [Req Overview] Req overview feature- performance issues with 2000 req or more 
+- 6530: [Test Spec.- Test Case relations] User with right Guess can create test case relation (KO) 
+- 6230: [Filters- Test Specification] Possibility to configure Test plan usage show up in Test specification 
+- 6470: [Test Execute- Export for Results Import] Test Execute- Export for Results Imports => honors filters 
+- 6607: [New Feature] Export users list
+- 6533: [Test Specification] Template for Summary and Preconditions is not used when creating multiple Testcases
+- 6540: [Database MS-SQL] Error creating tables into database using the script provided with 1.9.11
+- 5201: [Users and Rights] There is a id criteria on tlRole::getUserIDsWithTestProjectRole function that is not needed
+
+
+TestLink- 1.9.11 (2014 Q2 - bug fixing) (Released  on 2014-07-28)
 ===========================================================================
 
 [35 tickets]

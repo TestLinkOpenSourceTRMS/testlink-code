@@ -89,7 +89,7 @@ jQuery(".chosen-select").chosen({ width: "100%" });
   
   <table class="smallGrey" id="optionsContainer" name="optionsContainer">
     {section name=number loop=$gui->outputOptions}
-    <tr style="margin: 10px; {if !$gui->showOptionsCheckBoxex}display:none;{/if}">
+    <tr style="margin: 10px; {if !$gui->showOptionsCheckBoxes}display:none;{/if}">
       <td>{$gui->outputOptions[number].description}</td>
       <td>
         <input type="checkbox" name="{$gui->outputOptions[number].value}" id="cb{$gui->outputOptions[number].value}"
@@ -98,7 +98,7 @@ jQuery(".chosen-select").chosen({ width: "100%" });
     </tr>
     {/section}
 
-    <tr style="margin: 10px; {if !$gui->showOptionsCheckBoxex}display:none;{/if}>
+    <tr style="margin: 10px; {if !$gui->showOptionsCheckBoxes}display:none;{/if}>
      <td><input type="button" id="toogleOptions" name="toogleOptions"
                 onclick='cs_all_checkbox_in_div("optionsContainer","cb","toggle_memory");'
                 value="{$labels.check_uncheck_all_options}" /> </td>

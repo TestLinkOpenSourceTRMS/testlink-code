@@ -77,6 +77,7 @@ switch($args->doAction)
   case "doCopyStep":
   case "doUpdateStep":
   case "doUpdateStepAndExit":
+  case "doUpdateStepAndInsert":
   case "doDeleteStep":
   case "doReorderSteps":
   case "doInsertStep":
@@ -111,6 +112,7 @@ switch($args->doAction)
   case "doCopyStep":
   case "doUpdateStep":
   case "doUpdateStepAndExit":
+  case "doUpdateStepAndInsert":
   case "doDeleteStep":
   case "doReorderSteps":
   case "doInsertStep":
@@ -443,9 +445,10 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
   $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
 
+  // Specialized webEditorConfiguration
   $action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,
-                        "doUpdateStep" => true, "doInsertStep" => true, "doCopyStep" => true);
-  
+                        "doUpdateStep" => true, "doInsertStep" => true, 
+                        "doCopyStep" => true,"doUpdateStepAndInsert" => true);
   if( isset($action2check[$args->doAction]) )
   {
     $cfgObj->webEditorCfg = getWebEditorCfg('steps_design');  
@@ -528,7 +531,6 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
   
   returns: object
   
-  rev: 20080902 - franciscom - manage column number as function of layout for tinymce
 */
 function createWebEditors($basehref,$editorCfg,$editorSet=null)
 {
@@ -580,8 +582,7 @@ function getCfg()
     $cfg->editorKeys = new stdClass();
     $cfg->editorKeys->testcase = array('summary' => true, 'preconditions' => true);    
     $cfg->editorKeys->step = array('steps' => true, 'expected_results' => true);    
-    
-    
+
     return $cfg;
 }
 
@@ -661,10 +662,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
 {
     $smartyObj = new TLSmarty();
     
-    // need by webeditor loading logic present on inc_head.tpl
+    // needed by webeditor loading logic present on inc_head.tpl
     $smartyObj->assign('editorType',$guiObj->editorType);  
 
     $renderType = 'none';
+
     //
     // key: operation requested (normally received from GUI on doAction)
     // value: operation value to set on doAction HTML INPUT
@@ -678,7 +680,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
                              'edit' => 'doUpdate','delete' => 'doDelete', 'doDelete' => '',
                              'createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
                              'doCopyStep' => 'doUpdateStep',
-                             'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
+                             'editStep' => 'doUpdateStep', 
+                             'doUpdateStep' => 'doUpdateStep', 
+                             'doUpdateStepAndInsert' => 'doUpdateStep', 
                              'doDeleteStep' => '', 'doReorderSteps' => '','doResequenceSteps' => '',
                              'doInsertStep' => 'doUpdateStep',
                              'setImportance' => '','setStatus' => '',
@@ -691,6 +695,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
   $cleanUpWebEditor = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
 
   $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg,$editorKeys); 
+
   foreach ($oWebEditor->cfg as $key => $value)
   {
     $of = &$oWebEditor->editor[$key];
@@ -721,6 +726,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
       case "create":
       case "doCreateStep":
       case "doInsertStep":
+      case "doUpdateStepAndInsert":
       default:  
         $initWebEditorFromTemplate = true;
       break;
@@ -767,6 +773,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
         case "setEstimatedExecDuration":
         case "doAddRelation":
         case "doDeleteRelation":
+        case "doUpdateStepAndInsert":
             $renderType = 'template';
             
             // Document this !!!!
@@ -787,7 +794,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
             }
             else
             {
-              echo 'fff';
               $renderType = 'redirect';  
             } 
         break;
@@ -810,5 +816,3 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
     }
 
 }
-
-?>

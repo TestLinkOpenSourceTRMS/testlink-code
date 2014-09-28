@@ -292,6 +292,7 @@ $TLS_btn_print_view = "Print view";
 $TLS_btn_reset_filter = "Reset Filter";
 $TLS_btn_save = "Save";
 $TLS_btn_save_and_exit = "Save & exit";
+$TLS_btn_save_and_insert = "Save & insert";
 $TLS_btn_search_filter = "Search/Filter";
 $TLS_btn_unassign = "Unassign";
 $TLS_btn_uncheck = "Uncheck";

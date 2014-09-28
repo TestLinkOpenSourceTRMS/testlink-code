@@ -35,7 +35,7 @@ CKEDITOR.editorConfig = function( config )
 		  'Link','Image','Anchor','SpecialChar']
 	];
 	
-	// mini Toolbar - BUGID 4163
+	// mini Toolbar
 	config.toolbar_TestlinkMini = 
 	[
 		['NumberedList','BulletedList','-',

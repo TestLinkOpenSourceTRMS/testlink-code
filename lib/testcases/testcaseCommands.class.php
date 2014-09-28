@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  **/
 
 class testcaseCommands
@@ -897,6 +897,9 @@ class testcaseCommands
   }
   
 
+  /**
+   *
+   */
   function doResequenceSteps(&$argsObj,$request)
   {
     $guiObj = $this->initGuiBean($argsObj);
@@ -1155,6 +1158,19 @@ class testcaseCommands
 
     return $guiObj;
   }
+
+
+
+  /**
+   * doUpdateStepAndExit
+   *
+   */
+  function doUpdateStepAndInsert(&$argsObj,$request)
+  {
+    $this->doUpdateStep($argsObj,$request);
+    return $this->doInsertStep($argsObj,$request);
+  }
+
 
 
 } // end class  

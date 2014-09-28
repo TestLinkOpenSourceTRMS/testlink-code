@@ -118,6 +118,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $map_node_tccount=array();
   $tplan_tcs=null;
   $tc2show = null;
+
   if($test_spec)
   {
     $tck_map = null;  // means no filter
@@ -769,7 +770,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
   static $cssClasses;
 
   $node_type = $hash_id_descr[$node['node_type_id']];
-  $menustring = '';
+
   if(!$resultsCfg)
   { 
     $doColouringOn['testcase'] = 1;
@@ -812,7 +813,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     // manage defaults
     $opt['showTestCaseExecStatus'] = isset($opt['showTestCaseExecStatus']) ? $opt['showTestCaseExecStatus'] : true;
     $opt['nodeHelpText'] = isset($opt['nodeHelpText']) ? $opt['nodeHelpText'] : array();
-
   }
   $name = filterString($node['name']);
 
@@ -825,7 +825,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     case 'testproject':
     case 'testsuite':
       $node['leaf'] = false;
-      // $versionID = 0;
       $pfn = !is_null($pf[$node_type]) ? $pf[$node_type] . "({$node['id']})" : null;
 
       $testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0; 
@@ -843,7 +842,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
       
     case 'testcase':
       $node['leaf'] = true;
-      // $versionID = $node['tcversion_id'];
       $pfn = $opt['tc_action_enabled'] ? "ST({$node['id']},{$node['tcversion_id']})" :null;
 
       $node['text'] = "<span ";
@@ -856,8 +854,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
                            '" alt="' . $l18n[$status_code] . '">';
         }
       }  
-
-    
+  
     
       if($opt['showTestCaseID'])
       {
@@ -873,7 +870,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
   
   $node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
   $node['href'] = is_null($pfn)? '' : "javascript:{$pfn}";
-  
+
   // ----------------------------------------------------------------------------------------------
   if( isset($tcase_node[$node['id']]) )
   {
@@ -891,11 +888,11 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
       {
         continue;
       }
-      $menustring .= renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
-                                        $hash_id_descr,$linkto,$testCasePrefix,$opt);
+      renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
+                         $hash_id_descr,$linkto,$testCasePrefix,$opt);
     }
   }
-  return $menustring;
+  return;
 }
 
 

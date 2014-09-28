@@ -73,8 +73,6 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     }  
   }  
 
-
-
   $tplan_mgr = new testplan($dbHandler);
   $tproject_mgr = new testproject($dbHandler);
   $tcase_node_type = $tplan_mgr->tree_manager->node_descr_id['testcase'];
@@ -186,7 +184,6 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
         }  
       }
 
-
       // ATTENTION: sometimes we use $my['options'], other $options
       $pnOptions = array('hideTestCases' => $options['hideTestCases'], 'viewType' => 'executionTree');
       $pnFilters = null;    
@@ -201,7 +198,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     else
     {
       $tplan_tcases = array();
-      $test_spec['childNodes'][0] = REMOVEME;
+      unset($test_spec['childNodes']);
 
       $testcase_counters = helperInitCounters();
       foreach($testcase_counters as $key => $value)
@@ -215,13 +212,9 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
 
     // CRITIC: renderExecTreeNode() WILL MODIFY $tplan_tcases, can empty it completely
     $linkedTestCasesSet = array_keys((array)$tplan_tcases);
-
-
-    $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,
-                                     $renderTreeNodeOpt);
-
+    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,$renderTreeNodeOpt);
   }
-
+  
   $treeMenu->rootnode=new stdClass();
   $treeMenu->rootnode->name=$test_spec['text'];
   $treeMenu->rootnode->id=$test_spec['id'];
@@ -230,24 +223,25 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $treeMenu->rootnode->position=$test_spec['position'];     
   $treeMenu->rootnode->href=$test_spec['href'];
   
-  if( !is_null($menustring) )
-  { 
-    // Change key ('childNodes')  to the one required by Ext JS tree.
-    if(isset($test_spec['childNodes'])) 
-    {
-      
-      $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
-    }
-    
-    // Remove null elements (Ext JS tree do not like it ).
-    // :null happens on -> "children":null,"text" that must become "children":[],"text"
-    // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-    // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
-    $target = array(':' . REMOVEME,'"' . REMOVEME . '"', ',"' . REMOVEME .'"','"' . REMOVEME . '",');
-    $menustring = str_ireplace($target,array(':[]','','',''), $menustring); 
+  // Change key ('childNodes')  to the one required by Ext JS tree.
+  $menustring = '';
+  if(isset($test_spec['childNodes'])) 
+  {
+    $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
+  }
+   
+  // Remove null elements (Ext JS tree do not like it ).
+  // :null happens on -> "children":null,"text" that must become "children":[],"text"
+  // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+  // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+  //   
+  // 20140928 - order of replace is CRITIC
+  $target = array(',"' . REMOVEME .'"','"' . REMOVEME . '",');
+  $menustring = str_ireplace($target,array('',''), $menustring); 
 
-  }  
-  
+  $target = array(':' . REMOVEME,'"' . REMOVEME . '"');
+  $menustring = str_ireplace($target,array(':[]',''), $menustring); 
+
   $treeMenu->menustring = $menustring;
   return array($treeMenu, $linkedTestCasesSet);
 }
@@ -403,9 +397,9 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
       // What if Test plan has NO PLATFORMS ?
       // This piece of code will not be executed
       //
-      // echo 'unsetting node for test case';
       unset($tplan_tcases[$node['id']]);
-      $node = null;
+      // $node = null;
+      $node = REMOVEME;
     } 
     else 
     {
@@ -422,7 +416,8 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
 
       if ( $my['options']['hideTestCases'] )
       {
-        $node = null;
+        // $node = null;
+        $node = REMOVEME;
       }
       else
       {
@@ -486,7 +481,8 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
       if( !is_null($tplan_tcases) && !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
       {
         // echo 'nullfying-';
-        $node = null;
+        // $node = null;
+        $node = REMOVEME;
       }
     }
     else if ($node_type == 'testsuite')
@@ -497,7 +493,8 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
       // If is an EMPTY Test suite and we have added filtering conditions, We will destroy it.
       if ($filtersApplied || !is_null($tplan_tcases) )
       {
-        $node = null;
+        // $node = null;
+        $node = REMOVEME;
       } 
     }
   }  

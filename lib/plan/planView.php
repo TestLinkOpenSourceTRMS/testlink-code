@@ -51,19 +51,24 @@ if($args->tproject_id)
       // Get rights for each test plan
       foreach($rightSet as $target)
       {
+        // DEV NOTE - CRITIC
+        // I've made a theorically good performance choice to 
+        // assign to $roleObj a reference to different roleObj
+        // UNFORTUNATELLY this choice was responsible to destroy point object
+        // since second LOOP
         $roleObj = null;
         if($gui->tplans[$idk]['has_role'] > 0)
         {
-          $roleObj = &$args->user->tplanRoles[$gui->tplans[$idk]['has_role']];
+          $roleObj = $args->user->tplanRoles[$gui->tplans[$idk]['has_role']];
         }  
         else if (!is_null($args->user->tprojectRoles))
         {
-          $roleObj = &$args->user->tprojectRoles[$args->tproject_id];
+          $roleObj = $args->user->tprojectRoles[$args->tproject_id];
         }  
 
         if(is_null($roleObj))
         {
-          $roleObj = &$args->user->globalRole;
+          $roleObj = $args->user->globalRole;
         }  
         $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);  
       }  

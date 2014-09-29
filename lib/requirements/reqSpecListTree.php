@@ -37,7 +37,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
   $args = new stdClass();
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
   $args->basehref = $_SESSION['basehref'];
     

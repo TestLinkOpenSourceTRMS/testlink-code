@@ -13,7 +13,7 @@
  * @uses        config.inc.php
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 require_once("execTreeMenu.inc.php");
@@ -1436,10 +1436,8 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
   
   $my = array();
   
-  $my['options'] = array('for_printing' => 0,
-                         'exclude_branches' => null,
-                         'recursive' => true,
-                         'order_cfg' => array('type' => 'spec_order'));
+  $my['options'] = array('for_printing' => 0,'exclude_branches' => null,
+                         'recursive' => true,'order_cfg' => array('type' => 'spec_order'));
   
   $my['filters'] = array('exclude_node_types' =>  array('testplan' => 'exclude me',
                                                         'testsuite' => 'exclude me',
@@ -1448,14 +1446,10 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
                          'exclude_children_of' => array('testcase' => 'exclude my children',
                                                         'requirement' => 'exclude my children',
                                                         'testsuite' => 'exclude my children'),
-                         'filter_doc_id' => null,
-                         'filter_title' => null,
-                         'filter_status' => null,
-                         'filter_type' => null,
-                         'filter_spec_type' => null,
-                         'filter_coverage' => null,
-                         'filter_relation' => null,
-                         'filter_tc_id' => null,
+                         'filter_doc_id' => null, 'filter_title' => null,
+                         'filter_status' => null, 'filter_type' => null,
+                         'filter_spec_type' => null, 'filter_coverage' => null,
+                         'filter_relation' => null,  'filter_tc_id' => null,
                          'filter_custom_fields' => null);
   
   // merge with given parameters
@@ -1482,7 +1476,6 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
   $treeMenu->rootnode->name = $req_spec['name'];
   $treeMenu->rootnode->id = $req_spec['id'];
   $treeMenu->rootnode->leaf = isset($req_spec['leaf']) ? $req_spec['leaf'] : false;
-  //$treeMenu->rootnode->text = $req_spec['name']; //not needed, accidentally duplicated
   $treeMenu->rootnode->position = $req_spec['position'];      
   $treeMenu->rootnode->href = $req_spec['href'];
     
@@ -1494,15 +1487,18 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
 
   if (!is_null($menustring))
   {
-    // delete null elements for Ext JS
-    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
-                               array(':[]','',''), $menustring); 
+    $menustring = str_ireplace(array(',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
+                               array('',''), $menustring); 
 
+    $menustring = str_ireplace(array(':' . REMOVEME, '"' . REMOVEME .'"'),
+                               array(':[]',''), $menustring); 
   }
   $treeMenu->menustring = $menustring; 
   
   return $treeMenu;
 }
+
+
 /**
  * Generate a filtered map with all fitting requirements in it.
  * 
@@ -1700,21 +1696,25 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
  * @return array tree structure after filtering out unneeded nodes
  */
 function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id_nodetype,
-                                  &$map_nodetype_id, &$filters, &$options) {
+                                  &$map_nodetype_id, &$filters, &$options) 
+{
   $child_req_count = 0;
-  
-  if (isset($node['childNodes']) && is_array($node['childNodes'])) {
+  if (isset($node['childNodes']) && is_array($node['childNodes'])) 
+  {
     // node has childs, must be a specification (or testproject)
-    foreach ($node['childNodes'] as $key => $childnode) {
+    foreach ($node['childNodes'] as $key => $childnode) 
+    {
       $current_childnode = &$node['childNodes'][$key];
       $current_childnode = prepare_reqspec_treenode($db, $level + 1, $current_childnode, 
-                                                   $filtered_map, $map_id_nodetype,
-                                                   $map_nodetype_id,
-                                                   $filters, $options);
+                                                    $filtered_map, $map_id_nodetype,
+                                                    $map_nodetype_id,
+                                                    $filters, $options);
       
       // now count childnodes that have not been deleted and are requirements
-      if (!is_null($current_childnode)) {
-        switch ($current_childnode['node_type_id']) {
+      if(!is_null($current_childnode) && $current_childnode != REMOVEME) 
+      {
+        switch($current_childnode['node_type_id']) 
+        {
           case $map_nodetype_id['requirement']:
             $child_req_count ++;
           break;
@@ -1730,33 +1730,32 @@ function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id
   $node_type = $map_id_nodetype[$node['node_type_id']];
   
   $delete_node = false;
-  
-  switch ($node_type) {
+  switch ($node_type) 
+  {
     case 'testproject':
       $node['total_req_count'] = $child_req_count;  
     break;
     
     case 'requirement_spec':
       // add requirement count
-      $node['child_req_count'] = $child_req_count;
       // delete empty specs
-      if (!$child_req_count) {
-        $delete_node = true;
-      }
+      $node['child_req_count'] = $child_req_count;
+      $delete_node = !$child_req_count;
     break;
     
     case 'requirement':
       // delete node from tree if it is not in $filtered_map
-      if (is_null($filtered_map) || !array_key_exists($node['id'], $filtered_map)) {
-        $delete_node = true;
-      }
+      $delete_node = (is_null($filtered_map) || !array_key_exists($node['id'], $filtered_map));
     break;
   }
   
-  if ($delete_node) {
+  if ($delete_node) 
+  {
     unset($node);
-    $node = null;
-  } else {
+    $node = REMOVEME;
+  } 
+  else 
+  {
     $node = render_reqspec_treenode($db, $node, $filtered_map, $map_id_nodetype);
   }
   

@@ -36,7 +36,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}"
         style="margin-left:20px;">{$tcView_viewer_labels.importance}{$smarty.const.TITLE_SEP}</span>
     {if $edit_enabled}
-    <select name="importance" onchange="document.getElementById('importanceForm{$args_testcase.id}').submit();" >
+    <select name="importance" onchange="document.getElementById('importanceForm_{$args_testcase.id}').submit();" >
           {html_options options=$gsmarty_option_importance selected=$args_testcase.importance}
     </select>
     {else}

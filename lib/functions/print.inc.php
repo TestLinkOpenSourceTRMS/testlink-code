@@ -8,13 +8,12 @@
  * @filesource  print.inc.php
  *
  * @package   TestLink
- * @author    Martin Havlat <havlat@users.sourceforge.net>
- * @copyright 2007-2012, TestLink community 
+ * @copyright 2007-2014, TestLink community 
  * @uses      printDocument.php
  *
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  *
  */ 
 
@@ -964,15 +963,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     break;
 
     case SINGLE_TESTCASE:
-     $getByID['tcversion_id'] = $node['tcversion_id'];
-     $getExecutions = ($options['cfields'] || $options['passfail'] || $options['notes'] ||
-                       $options['step_exec_notes'] || $options['step_exec_status']);
+      $getByID['tcversion_id'] = $node['tcversion_id'];
+      $getExecutions = ($options['passfail'] || $options['notes'] ||
+                        $options['step_exec_notes'] || $options['step_exec_status']);
     break;
 
     default:
-     $getByID['tcversion_id'] = $node['tcversion_id'];
-     $getExecutions = ($options['cfields'] || $options['passfail'] || $options['notes'] ||
-                       $options['step_exec_notes'] || $options['step_exec_status']);
+      $getByID['tcversion_id'] = $node['tcversion_id'];
+      $getExecutions = ($options['cfields'] || $options['passfail'] || $options['notes'] ||
+                        $options['step_exec_notes'] || $options['step_exec_status']);
     break;
   }
 
@@ -1775,7 +1774,6 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
   
   $executionNotes = $show_exec_notes ? $exec_info[0]['notes'] : '';
 
-  // new dBug();
   switch($exec_info[0]['execution_type'])
   {
     case TESTCASE_EXECUTION_TYPE_AUTO:

@@ -777,8 +777,11 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   // :null happens on -> "children":null,"text" that must become "children":[],"text"
   // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
   // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
-  $target = array(':' . REMOVEME,'"' . REMOVEME . '"', ',"' . REMOVEME .'"','"' . REMOVEME . '",');
-  $menustring = str_ireplace($target,array(':[]','','',''), $menustring); 
+  $target = array(',"' . REMOVEME .'"','"' . REMOVEME . '",');
+  $menustring = str_ireplace($target,array('',''), $menustring); 
+
+  $target = array(':' . REMOVEME,'"' . REMOVEME . '"');
+  $menustring = str_ireplace($target,array(':[]',''), $menustring); 
   
   $treeMenu->menustring = $menustring;
   return array($treeMenu, $keys);

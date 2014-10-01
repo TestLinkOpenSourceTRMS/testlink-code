@@ -17,7 +17,7 @@
  * @uses        const.inc.php
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  */
 
 /**
@@ -749,18 +749,14 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   
     $keys = array_keys($tplan_tcases);
     $renderTreeNodeOpt['hideTestCases'] = $my['options']['hideTestCases'];
-    // $renderTreeNodeOpt['tc_action_enabled'] = 1;
     $renderTreeNodeOpt['tc_action_enabled'] = isset($my['options']['tc_action_enabled']) ? 
                                               $my['options']['tc_action_enabled'] : 1;
-
-    // $renderTreeNodeOpt['nodeHelpText'] = $my['options']['nodeHelpText']; 
     $renderTreeNodeOpt['showTestCaseExecStatus'] = $my['options']['showTestCaseExecStatus']; 
 
-    $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,
-                                     $renderTreeNodeOpt);
-
+    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,$renderTreeNodeOpt);
   }  // if($test_spec)
   
+
   $treeMenu->rootnode=new stdClass();
   $treeMenu->rootnode->name=$test_spec['text'];
   $treeMenu->rootnode->id=$test_spec['id'];
@@ -768,22 +764,21 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   $treeMenu->rootnode->text=$test_spec['text'];
   $treeMenu->rootnode->position=$test_spec['position'];     
   $treeMenu->rootnode->href=$test_spec['href'];
-  
-  if( !is_null($menustring) )
-  {  
-    // Change key ('childNodes')  to the one required by Ext JS tree.
-    if(isset($test_spec['childNodes'])) 
-    {
-      $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
-    }
+
+
+  // Change key ('childNodes')  to the one required by Ext JS tree.
+  $menustring = '';
+  if(isset($test_spec['childNodes'])) 
+  {
+    $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));
+  }
     
-    // Remove null elements (Ext JS tree do not like it ).
-    // :null happens on -> "children":null,"text" that must become "children":[],"text"
-    // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-    // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
-    $target = array(':' . REMOVEME,'"' . REMOVEME . '"', ',"' . REMOVEME .'"','"' . REMOVEME . '",');
-    $menustring = str_ireplace($target,array(':[]','','',''), $menustring); 
-  }  
+  // Remove null elements (Ext JS tree do not like it ).
+  // :null happens on -> "children":null,"text" that must become "children":[],"text"
+  // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+  // $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+  $target = array(':' . REMOVEME,'"' . REMOVEME . '"', ',"' . REMOVEME .'"','"' . REMOVEME . '",');
+  $menustring = str_ireplace($target,array(':[]','','',''), $menustring); 
   
   $treeMenu->menustring = $menustring;
   return array($treeMenu, $keys);

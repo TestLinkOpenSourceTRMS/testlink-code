@@ -98,17 +98,13 @@ jQuery(".chosen-select").chosen({ width: "100%" });
     </tr>
     {/section}
 
-    <tr style="margin: 10px; {if !$gui->showOptionsCheckBoxes}display:none;{/if}>
+    <tr style="margin: 10px;{if !$gui->showOptionsCheckBoxes}display:none;{/if}">
      <td><input type="button" id="toogleOptions" name="toogleOptions"
                 onclick='cs_all_checkbox_in_div("optionsContainer","cb","toggle_memory");'
                 value="{$labels.check_uncheck_all_options}" /> </td>
     </tr>
 
-    <tr>
-      <td>&nbsp;<td>
-    </tr>
-
-
+    
     <tr>
     {if $docType == 'testspec' || $docType == 'reqspec'}
       <td>{$labels.tr_td_show_as}</td>

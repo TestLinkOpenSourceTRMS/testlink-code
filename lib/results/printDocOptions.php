@@ -136,7 +136,7 @@ function init_args(&$dbHandler)
 
 
   R_PARAMS($iParams,$args);
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0);
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
   $args->basehref = $_SESSION['basehref'];
@@ -157,15 +157,15 @@ function init_args(&$dbHandler)
   {
     $args->showOptions = false;
     $args->showHelpIcon = false;
-    $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+    $args->tplan_id = intval(isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0);
     if($args->tplan_id > 0)
     {  
       $tplan_mgr = new testplan($dbHandler);
       $args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
       $args->mainTitle = $l18n['test_plan'] . ': ' . $args->tplan_info['name'];
-      //  . ' - ' . $l18n[$args->activity];
     }
   }  
+
   return $args;
 }
 
@@ -188,8 +188,7 @@ function initializeGui(&$db,$args)
   $reqCfg = config_get('req_cfg');
         
   $gui = new stdClass();
-  $gui->showOptions = $args->showOptions;
-  $gui->showOptionsCheckBoxes = $gui->showOptions;
+  $gui->showOptionsCheckBoxes = $gui->showOptions = $args->showOptions;
 
   $gui->showHelpIcon = $args->showHelpIcon;
 
@@ -293,7 +292,6 @@ function initializeGui(&$db,$args)
   {
     $gui->getArguments .= '&docTestPlanId=' . $args->tplan_id;
   }
-
   return $gui;  
 }
 

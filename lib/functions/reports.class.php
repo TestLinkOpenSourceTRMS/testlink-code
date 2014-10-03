@@ -9,7 +9,7 @@
  *   
  * @package   TestLink
  * @author    Martin Havlat
- * @copyright 2005-2013, TestLink community 
+ * @copyright 2005-2014, TestLink community 
  * @version   reports.class.php
  * @link      http://testlink.sourceforge.net/
  * @uses      config.inc.php
@@ -81,9 +81,9 @@ class tlReports extends tlObjectWithDB
     $apiKeyIsValid = ($apiKeyLen == 32 || $apiKeyLen == 64); // I'm sorry for MAGIC
     
     $xdx = 0;
+    
     foreach ($reportList as &$reportItem) 
     {
-
       // check validity of report   
       if (($reportItem['enabled'] == 'all') || 
           (($reportItem['enabled'] == 'req') && $req_mgmt_enabled) ||

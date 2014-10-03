@@ -62,15 +62,16 @@ if($gui->do_report['status_ok'])
   unset($tplan_mgr);
 
   $context->apikey = $dmy['api_key'];
-  // $context->apikey = $_SESSION['currentUser']->userApiKey;
   $context->imgSet = $smarty->getImages();
   $gui->menuItems = $reports_mgr->get_list_reports($context,$gui->btsEnabled,$args->optReqs, 
                                                    $tlCfg->reports_formats[$args->format]);
 }
 
+$gui->selectedReportType = $args->format;
+$gui->reportTypes = localize_array($tlCfg->reports_formats);
+
+
 $smarty->assign('gui', $gui);
-$smarty->assign('arrReportTypes', localize_array($tlCfg->reports_formats));
-$smarty->assign('selectedReportType', $args->format);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**

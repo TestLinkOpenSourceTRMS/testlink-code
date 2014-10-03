@@ -70,22 +70,21 @@ $tlCfg->reports_list['test_plan'] = array(
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_DESIGN,
 	'enabled' => 'all',
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_plan',
-	'format' => 'format_html,format_mpseudo_sword'
+	'format' => 'format_html,format_pseudo_msword'
 );
 $tlCfg->reports_list['test_report'] = array( 
 	'title' => 'link_report_test_report',
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION,
 	'enabled' => 'all',
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=test_report',
-	'format' => 'format_html,format_mpseudo_sword'
+	'format' => 'format_html,format_pseudo_msword'
 );
 
 $tlCfg->reports_list['test_report_on_build'] = array( 
 	'title' => 'link_report_test_report_on_build',
 	'url' => 'lib/results/printDocOptions.php?type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
 	'enabled' => 'all',
-	// 'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=' . DOC_TEST_PLAN_EXECUTION_ON_BUILD,
-	'format' => 'format_html,format_mpseudo_sword'
+	'format' => 'format_html,format_pseudo_msword'
 );
 
 $tlCfg->reports_list['metrics_tp_general'] = array( 

@@ -12,7 +12,7 @@
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  * 
  */
 
@@ -890,15 +890,18 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
       {
         // follow hierarchy of test suites to create
         $tsuiteInfo = null;
-        $testsuite_name = substr($node['name'],0,$truncate_limit). $addition;
+
+        // deal with UTF-8
+        // $testsuite_name = substr($node['name'],0,$truncate_limit). $addition;
+        $testsuite_name = mb_substr($node['name'],0,$truncate_limit,mb_detect_encoding($node['name'])) . $addition;
         if( !$deep_create )
         {
           // child test suite with this name, already exists on current parent ?
           // At first a failure we will not check anymore an proceed with deep create
-          $sql="/* $debugMsg */ SELECT id,name FROM {$this->tables['nodes_hierarchy']} NH " .
-                " WHERE name='" . $this->db->prepare_string($testsuite_name) . "' " .
-                " AND node_type_id=" . $node_descr_type['testsuite'] . 
-                " AND parent_id = {$parent_id} ";
+          $sql = "/* $debugMsg */ SELECT id,name FROM {$this->tables['nodes_hierarchy']} NH " .
+                 " WHERE name='" . $this->db->prepare_string($testsuite_name) . "' " .
+                 " AND node_type_id=" . $node_descr_type['testsuite'] . 
+                 " AND parent_id = {$parent_id} ";
               
               // If returns more that one record use ALWAYS first
           $tsuiteInfo = $this->db->fetchRowsIntoMap($sql,'id');

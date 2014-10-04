@@ -41,7 +41,6 @@ if(is_array($args->keyword_id))
 }
 $arrData = array();
 
-// echo $args->doAction;echo is_null($args->doActionButton);die();
 $status_map = $assignment_mgr->get_available_status();
 $types_map = $assignment_mgr->get_available_types();
 $task_test_execution = $types_map['testcase_execution']['id'];
@@ -63,48 +62,6 @@ switch($args->doAction)
         {
           $feature_id = $args->feature_id[$key_tc][$platform_id];
 
-          /*
-          if($args->has_prev_assignment[$key_tc][$platform_id] > 0)
-          {
-            if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
-            {
-              // Do only if tester has changed
-              if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
-              {
-                $op='upd';
-                $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
-                $features2[$op][$feature_id]['type'] = $task_test_execution;
-                $features2[$op][$feature_id]['status'] = $open;
-                $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-                $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-                $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-                $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];             
-                $features2[$op][$feature_id]['creation_ts'] = $db_now; 
-                $features2[$op][$feature_id]['build_id'] = $args->build_id;
-              }
-            } 
-            else
-            {
-              $op='del';
-              $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-              $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-              $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];
-              $features2[$op][$feature_id]['build_id'] = $args->build_id; 
-            } 
-          }
-          else if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
-          {
-            $op='ins';
-            $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
-            $features2[$op][$feature_id]['type'] = $task_test_execution;
-            $features2[$op][$feature_id]['status'] = $open;
-            $features2[$op][$feature_id]['creation_ts'] = $db_now;
-            $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-            $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-            $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-            $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
-          }
-          */
           $op='ins';
           $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
           $features2[$op][$feature_id]['type'] = $task_test_execution;
@@ -168,7 +125,7 @@ switch($args->level)
     
     $my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
                             $linked_items,null,$filters,$opt);
-    
+
     // index 0 contains data for the parent test suite of this test case, 
     // other elements are not needed.
     $out = array();
@@ -190,13 +147,16 @@ switch($args->level)
     $opt['accessKeyType'] = 'tcase+platform+stackOnUser';
 
     // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
-    $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
+    // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
+
+    $out = getFilteredSpecViewFlat($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
   break;
 
   default:
     show_instructions('tc_exec_assignment');
   break;
 }
+
 
 $gui->items = $out['spec_view'];
 
@@ -213,8 +173,10 @@ if ($_SESSION['testprojectOptions']->testPriorityEnabled)
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+$tpl = $templateCfg->template_dir . $templateCfg->default_template;
+$tpl = str_replace('.tpl', '_flat.tpl', $tpl);
+$smarty->display($tpl);
 
 /*
   function: 

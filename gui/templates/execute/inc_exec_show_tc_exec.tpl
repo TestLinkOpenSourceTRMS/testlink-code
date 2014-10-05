@@ -2,7 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
 @internal revisions
-@since 1.9.11
+@since 1.9.13
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -444,6 +444,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_tcAttachments=$gui->tcAttachments
              args_req_details=$gui->req_details
              args_relations=$gui->relations
+             args_keywords=$gui->kw
              args_cfg=$cfg}
 
     {if $tc_exec.can_be_executed}

@@ -19,7 +19,7 @@
  * (I think this approach will be simpler).
  * 
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  *
 **/
 require_once('../../config.inc.php');
@@ -264,7 +264,7 @@ if(!is_null($linked_tcversions))
         
       $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id);
       $gui->relations = $tcase_mgr->getRelations($tcase_id);
-      //$gui->kw = $tcase_mgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
+      $gui->kw = $tcase_mgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
       $gui->other_execs = getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
         
       // Get attachment,bugs, etc
@@ -335,6 +335,7 @@ else
 
   // To silence smarty errors
   //  future must be initialized in a right way
+
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);

@@ -68,10 +68,6 @@ Author : franciscom
       </tr>
     {/if}
 
-
-
-
-
     <tr>
     <td colspan="{$tableColspan}">
       {if $args_design_time_cf[$testcase_id].standard_location != ''}
@@ -118,6 +114,18 @@ Author : franciscom
       {/if}
       </td>
     </tr>
+
+    {if isset($args_keywords)}
+      <tr>
+        <td colspan="{$tableColspan}">
+          <b>{$args_labels.keywords}{$smarty.const.TITLE_SEP}</b>&nbsp
+          {foreach item=keyword_item from=$args_keywords name=itemKeywords}
+            {$keyword_item.keyword|escape}{if !$smarty.foreach.itemKeywords.last},&nbsp;{/if} 
+          {/foreach}
+        </td>
+      </tr>
+    {/if}
+
     </table>
     </div>
 

@@ -21,7 +21,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get 
   var='labels'
   s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
-	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
+	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
   estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,

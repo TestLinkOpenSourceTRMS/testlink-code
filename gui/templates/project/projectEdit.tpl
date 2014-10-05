@@ -6,7 +6,7 @@
  * @filesource  projectEdit.tpl
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.13
  *
  *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -260,12 +260,11 @@ return true;
       <tr><td cols="2">
         {if $gui->canManage == "yes"}
         <div class="groupBtn">
-          {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
-                  added hidden   *}
           <input type="hidden" name="doAction" value="{$doActionValue}" />
-        <input type="hidden" name="tprojectID" value="{$gui->tprojectID}" />
+          <input type="hidden" name="tprojectID" value="{$gui->tprojectID}" />
           <input type="submit" name="doActionButton" value="{$buttonValue}" />
-        <input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
+          <input type="button" name="go_back" value="{$labels.cancel}" 
+                 onclick="javascript: location.href=fRoot+'lib/project/projectView.php';" />
         </div>
       {/if}
       </td></tr>

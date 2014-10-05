@@ -12,7 +12,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.13
  **/
 
 require_once('../../config.inc.php');
@@ -255,28 +255,37 @@ switch($args->do_action)
           $gui->tplans[$idk]['platform_qty'] = is_null($plat) ? 0 : count($plat);
         }
   
+        // Get rights for each test plan
         foreach($rightSet as $target)
         {
-          $roleObj = &$args->user->globalRole;
+          // DEV NOTE - CRITIC
+          // I've made a theorically good performance choice to 
+          // assign to $roleObj a reference to different roleObj
+          // UNFORTUNATELLY this choice was responsible to destroy point object
+          // since second LOOP
+          $roleObj = null;
           if($gui->tplans[$idk]['has_role'] > 0)
           {
             if( isset($args->user->tplanRoles[ $gui->tplans[$idk]['has_role'] ]) )
             { 
-              $roleObj = &$args->user->tplanRoles[ $gui->tplans[$idk]['has_role'] ];
+              $roleObj = $args->user->tplanRoles[ $gui->tplans[$idk]['has_role'] ];
             }
             else
             {
+              // Need To review this comment
               // session cache has not still updated => get from DB ?
               $roleObj = $args->user->getEffectiveRole($db,$args->tproject_id,$idk);
-              if(!is_null($roleObj))
-              {
-                $roleObj = &$roleObj;
-              }  
             }  
           }  
-          else if (!is_null($args->user->tprojectRoles))
+          else if (!is_null($args->user->tprojectRoles) && 
+                   isset($args->user->tprojectRoles[$args->tproject_id]) )
           {
-            $roleObj = &$args->user->tprojectRoles[$args->tproject_id];
+            $roleObj = $args->user->tprojectRoles[$args->tproject_id];
+          }  
+
+          if(is_null($roleObj))
+          {
+            $roleObj = $args->user->globalRole;
           }  
           $gui->tplans[$idk]['rights'][$target] = $roleObj->hasRight($target);  
         }  

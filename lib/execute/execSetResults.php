@@ -378,7 +378,7 @@ function init_args(&$dbHandler,$cfgObj)
   {
     $args->refreshTree = isset($_REQUEST['refresh_tree']) ? intval($_REQUEST['refresh_tree']) : 0;  
   }  
-  
+
   $args->assignTask = isset($_REQUEST['assignTask']) ? 1: 0;
   $args->createIssue = isset($_REQUEST['createIssue']) ? 1: 0;
 
@@ -1138,10 +1138,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     $gui->platform_notes_view_status=$argsObj->platform_notes_view_status;
 
     $gui->refreshTree = $argsObj->refreshTree;
-    if (!$argsObj->status || $argsObj->status == $cfgObj->tc_status['not_run']) {
+    if (!$argsObj->statusSingle || current($argsObj->statusSingle) == $cfgObj->tc_status['not_run']) {
       $gui->refreshTree = 0;
     }
-    
+
     $gui->map_last_exec_any_build=null;
     $gui->map_last_exec=null;
 

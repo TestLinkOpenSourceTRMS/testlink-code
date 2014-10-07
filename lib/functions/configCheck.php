@@ -478,6 +478,9 @@ function checkSchemaVersion(&$db)
     case 'DB 1.5':
     case 'DB 1.6':
     case 'DB 1.9.8':
+    case 'DB 1.9.10':
+    case 'DB 1.9.11':
+    case 'DB 1.9.12':
       $result['msg'] = $manualop_msg;
     break;
 

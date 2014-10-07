@@ -216,12 +216,14 @@ CREATE INDEX /*prefix*/executions_idx2 ON /*prefix*/executions ("execution_type"
 -- Table structure for table "execution_tcsteps"
 --
 CREATE TABLE /*prefix*/execution_tcsteps (
+   "id" BIGSERIAL NOT NULL ,
    "execution_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id),
    "tcstep_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcsteps (id),
    "notes" TEXT NULL DEFAULT NULL,
    "status" CHAR(1) NULL DEFAULT NULL,
-  PRIMARY KEY  ("execution_id","tcstep_id")
+  PRIMARY KEY ("id")
 );
+CREATE UNIQUE INDEX /*prefix*/execution_tcsteps_uidx1 ON  /*prefix*/execution_tcsteps ("execution_id","tcstep_id");
 
 --
 -- Table structure for table "testplan_tcversions"

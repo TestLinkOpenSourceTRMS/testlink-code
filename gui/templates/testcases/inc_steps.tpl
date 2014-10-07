@@ -105,9 +105,16 @@ Author : eloff, 2010
       </td>
 
     {/if}
-
-    
+   
   </tr>
+  <tr>
+    <td colspan=6>
+    {include file="attachments_simple.inc.tpl" 
+             attach_id=$step_info.id 
+             attach_downloadOnly=$bDownloadOnly}
+    </td>
+  </tr>  
+
     {if $ghost_control}
     <tr class='ghost' style='display:none'><td></td><td>{$step_info.ghost_action}</td><td>{$step_info.ghost_result}</td></tr>    
     {/if}
@@ -124,6 +131,7 @@ Author : eloff, 2010
         </td>
       </tr>
     {/if}
+
   {/foreach}
 {else}
   {* Vertical layout *}

@@ -270,7 +270,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {/if}
 
 
-<form method="post" id="execSetResults" name="execSetResults" onSubmit="javascript:return validateForm(this);">
+<form method="post" id="execSetResults" name="execSetResults" 
+      enctype="multipart/form-data"
+      onSubmit="javascript:return validateForm(this);">
 
   <input type="hidden" id="save_button_clicked"  name="save_button_clicked" value="0" />
   <input type="hidden" id="do_delete"  name="do_delete" value="0" />

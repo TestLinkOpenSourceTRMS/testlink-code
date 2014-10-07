@@ -357,6 +357,7 @@ function init_args(&$dbHandler,$cfgObj)
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
+ 
   // Settings and Filters that we put on session to create some 
   // sort of persistent scope, because we have had issues when passing this info
   // using GET mode (size limits)
@@ -426,6 +427,8 @@ function init_args(&$dbHandler,$cfgObj)
     // under the hood when getting data from $_REQUEST, then this piece
     // of code not only will be useless BUT WRONG, because will try
     // to unserialize something that IS NOT SERIALIZED!!!!
+
+    // After TICKET 6651, may be need to limit size of $args->filter_status
     if(is_string($args->filter_status) && strlen($args->filter_status) > 1)
     {
       $args->filter_status = json_decode($args->filter_status);
@@ -1109,7 +1112,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     $gui->platform_id = $argsObj->platform_id;
     $gui->loadExecDashboard = false;
     $gui->treeFormToken = $argsObj->treeFormToken;
-    
+    $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
+
+
     // CORTADO 
     $gui->execStatusValues = createResultsMenu();
     $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';

@@ -223,11 +223,13 @@ CREATE TABLE /*prefix*/executions (
 
 
 CREATE TABLE /*prefix*/execution_tcsteps (
+   id int(10) unsigned NOT NULL auto_increment,
    execution_id int(10) unsigned NOT NULL default '0',
    tcstep_id int(10) unsigned NOT NULL default '0',
    notes text,
    status char(1) default NULL,
-  PRIMARY KEY  (`execution_id`,`tcstep_id`)
+  PRIMARY KEY  (id),
+  UNIQUE KEY /*prefix*/execution_tcsteps_idx1(`execution_id`,`tcstep_id`)
 ) DEFAULT CHARSET=utf8;
 
 

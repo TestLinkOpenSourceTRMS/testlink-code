@@ -10,7 +10,7 @@
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.13
  * 
  */
 
@@ -6590,7 +6590,7 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = "/* {$debugMsg} */ " . 
-           " SELECT execution_id,tcstep_id,notes,status FROM {$this->tables['execution_tcsteps']} " .
+           " SELECT id, execution_id,tcstep_id,notes,status FROM {$this->tables['execution_tcsteps']} " .
            " WHERE execution_id = " . intval($execution_id);
 
     $rs = $this->db->fetchRowsIntoMap($sql,'tcstep_id');       

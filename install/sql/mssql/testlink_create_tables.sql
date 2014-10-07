@@ -252,11 +252,17 @@ CREATE NONCLUSTERED INDEX /*prefix*/executions_IX1 ON  /*prefix*/executions
 -- Table structure for table "execution_tcsteps"
 --
 CREATE TABLE /*prefix*/execution_tcsteps (
+   id int IDENTITY(1,1) NOT NULL,
    execution_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_execution_id DEFAULT ((0)),  
    tcstep_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_tcstep_id DEFAULT ((0)),
    notes nvarchar(max)   NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_notes DEFAULT (NULL),
    status char(1)  NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_status DEFAULT (NULL),
   CONSTRAINT /*prefix*/PK_executions_tcsteps PRIMARY KEY CLUSTERED 
+  ( 
+    id ASC
+  ) ON [PRIMARY],
+
+  CONSTRAINT /*prefix*/UIX_executions_tcsteps UNIQUE NONCLUSTERED 
   ( 
   execution_id,tcstep_id ASC
   ) ON [PRIMARY]

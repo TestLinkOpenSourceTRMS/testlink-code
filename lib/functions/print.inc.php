@@ -882,6 +882,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   static $its;
   static $buildCfields;  
   static $statusL10N;
+  static $docRepo;
   
 
   $code = null;
@@ -941,6 +942,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
         $statusL10N[$vc] = lang_get($cfg['results']['status_label_for_exec_ui'][$vstat]);  
       }  
     }
+
+    // 20141007
+    $docRepo = tlAttachmentRepository::create($db);
+
   }
 
   $cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
@@ -1192,6 +1197,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
         }
         if (!is_null($tcInfo[$key]) && $tcInfo[$key] != '')
         {
+          $td_colspan = 3;
           $code .= '<tr>' .
                    '<td><span class="label">' . $labels['step_number'] .':</span></td>' .
                    '<td><span class="label">' . $labels['step_actions'] .':</span></td>' .
@@ -1204,11 +1210,13 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
             if( $options['step_exec_notes'] )
             {
+              $td_colspan++;
               $code .= '<td><span class="label">' . $labels['step_exec_notes'] .':</span></td>';
             }       
 
             if( $options['step_exec_status'] )
             {
+              $td_colspan++;
               $code .= '<td><span class="label">' . $labels['step_exec_status'] .':</span></td>';
             }          
           }  
@@ -1223,7 +1231,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                      '<td>' .  $tcInfo[$key][$ydx]['actions'] . '</td>' .
                      '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>';
 
-            $nike = !is_null($sxni) && !is_null($sxni[$tcInfo[$key][$ydx]['id']]);
+            $nike = !is_null($sxni) && isset($sxni[$tcInfo[$key][$ydx]['id']]) && 
+                    !is_null($sxni[$tcInfo[$key][$ydx]['id']]);
             if( $options['step_exec_notes'] )
             {
               $code .= '<td>';
@@ -1243,8 +1252,40 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
               }  
               $code .= '</td>';
             }
-
             $code .= '</tr>';
+
+            // Attachment management
+            if($getExecutions)
+            {
+              if( isset($sxni[$tcInfo[$key][$ydx]['id']]))
+              {
+                $attachInfo = getAttachmentInfos($docRepo,$sxni[$tcInfo[$key][$ydx]['id']]['id'],
+                                                 'execution_tcsteps',true,1);
+
+                if( !is_null($attachInfo) )
+                {
+                  $code .= '<tr><td colspan="' . $td_colspan . '">';
+                  $code .= '<b>' . $labels['exec_attachments'] . '</b><br>';
+                  foreach($attachInfo as $fitem)
+                  {
+                    if($fitem['is_image'])
+                    {
+                      $code .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
+                      $code .= '<li>' . '<img src="' . $env->base_href . 
+                               'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . '"> </li>';
+                    }  
+                    else
+                    {
+                      $code .= '<li>' . '<a href="' . $env->base_href . 
+                               'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . 
+                               '" ' . ' target="#blank" > ' . htmlspecialchars($fitem['file_name']) . '</a></li>';
+                    }  
+                  }  
+                  $code .= '</td></tr>';
+                }  
+              }  
+            }  // $getExecutions
+
           }
         }
       }
@@ -1730,6 +1771,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance','relations',
                       'estimated_execution_duration','step_exec_notes','step_exec_status',
+                      'exec_attachments',
                       'high_importance','medium_importance','low_importance','execution_duration',
                       'priority', 'high_priority','medium_priority','low_priority','attached_files');
                       
@@ -1903,6 +1945,7 @@ function renderTestPlanItem($info)
 
 /**
  *
+ * 20141007 - adding attachment management at step level
  */
 function renderExecutionForPrinting(&$dbHandler, $baseHref, $id)
 {

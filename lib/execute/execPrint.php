@@ -4,10 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	execPrint.php 
- * @package 	TestLink
- * @author		Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright 	2005-2014, TestLink community 
- * @link 		http://www.testlink.org
+ * @package 	  TestLink
+ * @author		  Francisco Mancardi - francisco.mancardi@gmail.com
+ * @copyright   2005-2014, TestLink community 
+ * @link 		    http://www.testlink.org
  *
  */
 

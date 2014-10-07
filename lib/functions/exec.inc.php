@@ -8,12 +8,12 @@
  *
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2012, TestLink community 
+ * @copyright   2005-2014, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.13
  * 
  *
  **/
@@ -59,6 +59,13 @@ function createResultsMenu()
  */
 function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
 {
+  static $docRepo;
+
+  if(is_null($docRepo))
+  {
+    $docRepo = tlAttachmentRepository::create($db);
+  }  
+
   $executions_table = DB_TABLE_PREFIX . 'executions';
   $resultsCfg = config_get('results');
   $execCfg = config_get('exec_cfg');
@@ -187,12 +194,58 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
             }  
             $sql .= ") " . $values . ")";
             $db->exec_query($sql);
+
+            $execution_tcsteps_id = $db->insert_id($target);
+
+            // NOW MANAGE attachments
+            if( isset($_FILES['uploadedFile']['name'][$step_id]) && 
+                !is_null($_FILES['uploadedFile']['name'][$step_id])) 
+            {
+              // May be we have enabled MULTIPLE on file upload
+              if( is_array($_FILES['uploadedFile']['name'][$step_id])) 
+              {
+                $curly = count($_FILES['uploadedFile']['name'][$step_id]);
+                for($moe=0; $moe < $curly; $moe++)
+                {
+                  $fSize = isset($_FILES['uploadedFile']['size'][$step_id][$moe]) ? 
+                           $_FILES['uploadedFile']['size'][$step_id][$moe] : 0;
+
+                  $fTmpName = isset($_FILES['uploadedFile']['tmp_name'][$step_id][$moe]) ? 
+                              $_FILES['uploadedFile']['tmp_name'][$step_id][$moe] : '';
+
+                  if ($fSize && $fTmpName != "")
+                  {
+                    $fk2loop = array_keys($_FILES['uploadedFile']);
+                    foreach($fk2loop as $tk)
+                    {
+                      $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id][$moe];
+                    }  
+                    $uploaded = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo);
+                  }
+                }  
+              } 
+              else
+              {
+                $fSize = isset($_FILES['uploadedFile']['size'][$step_id]) ? $_FILES['uploadedFile']['size'][$step_id] : 0;
+                $fTmpName = isset($_FILES['uploadedFile']['tmp_name'][$step_id]) ? 
+                            $_FILES['uploadedFile']['tmp_name'][$step_id] : '';
+
+                if ($fSize && $fTmpName != "")
+                {
+                  $fk2loop = array_keys($_FILES['uploadedFile']);
+                  foreach($fk2loop as $tk)
+                  {
+                    $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id];
+                  }  
+                  $uploaded = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo);
+                }
+              } 
+              
+            }
           }         
         }  
       }  
 
-
-      // 20140916
       if(isset($exec_data['createIssue']) && !is_null($issueTracker) && method_exists($issueTracker,'addIssue'))
       {
         $execContext = new stdClass();
@@ -433,7 +486,6 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
             " ORDER BY B.name,EB.bug_id";
 
     $rs = $db->fetchMapRowsIntoMap($sql,'execution_id','bug_id');
-    new dBug($rs);
 
     if( !is_null($rs) )
     {   

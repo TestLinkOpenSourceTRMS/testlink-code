@@ -422,13 +422,13 @@ function init_args(&$dbHandler,$cfgObj)
     // at least when result DIFFERENT that NOT RUN is used on filter
     //
     // 20120616 - franciscom
-    // some strange thing to investigate, seems that userialize is invoked
+    // some strange thing to investigate, seems that unserialize is invoked
     // under the hood when getting data from $_REQUEST, then this piece
     // of code not only will be useless BUT WRONG, because will try
     // to unserialize something that IS NOT SERIALIZED!!!!
     if(is_string($args->filter_status) && strlen($args->filter_status) > 1)
     {
-      $args->filter_status = unserialize($args->filter_status);
+      $args->filter_status = json_decode($args->filter_status);
     }
   }
   

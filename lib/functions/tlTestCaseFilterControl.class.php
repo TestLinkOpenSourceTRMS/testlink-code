@@ -819,14 +819,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
       // Using serialization      
       if ($this->active_filters['filter_assigned_user']) 
       {
-        $string .= '&filter_assigned_user='. serialize($this->active_filters['filter_assigned_user']) .
+        $string .= '&filter_assigned_user='. json_encode($this->active_filters['filter_assigned_user']) .
                    '&filter_assigned_user_include_unassigned=' . 
                    ($this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0');
       }
       
       if ($this->active_filters['filter_result_result']) 
       {
-        $string .= '&filter_result_result=' . serialize($this->active_filters['filter_result_result']) .
+        $string .= '&filter_result_result=' . json_encode($this->active_filters['filter_result_result']) .
                    '&filter_result_method=' . $this->active_filters['filter_result_method'] .
                    '&filter_result_build=' .  $this->active_filters['filter_result_build'];
       }

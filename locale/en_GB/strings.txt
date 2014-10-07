@@ -50,6 +50,7 @@ $TLS_bug_add_note = 'Add issue note';
 
 
 $TLS_exec_result = 'Result';
+$TLS_exec_attachments = 'Execution Attachments';
 $TLS_inactive_click_to_change = 'Inactive (click to set active)';
 
 $TLS_default_auth_method = "Default";

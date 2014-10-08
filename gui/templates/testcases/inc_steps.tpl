@@ -60,12 +60,15 @@ Author : eloff, 2010
   <tr id="step_row_{$step_info.step_number}">
     <td style="text-align:left;">
       <span class="order_info" style='display:none'>
-      <input type="text" class="step_number{$args_testcase.id}" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
-        value="{$step_info.step_number}"
-        size="{#STEP_NUMBER_SIZE#}"
-        maxlength="{#STEP_NUMBER_MAXLEN#}">
-      {include file="error_icon.tpl" field="step_number"}
-      </span>{$step_info.step_number}
+      {if $edit_enabled}
+        <input type="text" class="step_number{$args_testcase.id}" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
+          value="{$step_info.step_number}"
+          size="{#STEP_NUMBER_SIZE#}"
+          maxlength="{#STEP_NUMBER_MAXLEN#}">
+        {include file="error_icon.tpl" field="step_number"}
+      {/if}
+      </span>
+      {$step_info.step_number}
     </td>
     <td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$step_info.actions}
     </td>

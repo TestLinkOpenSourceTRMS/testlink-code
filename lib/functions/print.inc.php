@@ -901,7 +901,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   // init static elements
   if (!$tables)
   {
-    $tables = tlDBObject::getDBTables(array('executions','builds'));
+    $tables = tlDBObject::getDBTables(array('executions','builds','execution_tcsteps'));
     $tc_mgr = new testcase($db);
     $tplan_urgency = new testPlanUrgency($db);
     $build_mgr = new build_mgr($db);
@@ -1260,7 +1260,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
               if( isset($sxni[$tcInfo[$key][$ydx]['id']]))
               {
                 $attachInfo = getAttachmentInfos($docRepo,$sxni[$tcInfo[$key][$ydx]['id']]['id'],
-                                                 'execution_tcsteps',true,1);
+                                                 $tables['execution_tcsteps'],true,1);
 
                 if( !is_null($attachInfo) )
                 {

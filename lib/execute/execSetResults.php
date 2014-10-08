@@ -92,8 +92,8 @@ $attachmentInfos = null;
 $do_show_instructions = ($args->level == "" || $args->level == 'testproject') ? 1 : 0;
 if ($do_show_instructions)
 {
-    show_instructions('executeTest');
-    exit();
+  show_instructions('executeTest');
+  exit();
 }
 
 // Testplan executions and result archiving. 
@@ -335,7 +335,6 @@ else
 
   // To silence smarty errors
   //  future must be initialized in a right way
-
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
@@ -1104,6 +1103,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
     $gui = new stdClass();
+    $gui->allowStepAttachments = true;
     $gui->tlCanCreateIssue = !is_null($issueTracker) && method_exists($issueTracker,'addIssue');
     $gui->remoteExecFeedback = $gui->user_feedback = '';
     $gui->tplan_id=$argsObj->tplan_id;

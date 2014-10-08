@@ -852,6 +852,7 @@ class testcase extends tlObjectWithAttachments
     $gui = $this->initShowGui($guiObj,$grants,$idSet[0],$idCard);
     $gui->tcase_id = $idCard->tcase_id;
     $gui->tcversion_id = $idCard->tcversion_id;
+    $gui->allowStepsAttachments = false;
 
     $userIDSet = array();
     if($status_ok)

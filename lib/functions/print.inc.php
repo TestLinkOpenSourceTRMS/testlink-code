@@ -1092,9 +1092,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   if ($options['toc'])
   {
     // EXTERNAL ID added
-	  $options['tocCode'] .= '<p style="padding-left: ' . 
+    $options['tocCode'] .= '<p style="padding-left: ' . 
                           (15 * $level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
-                          htmlspecialchars($external_id) . ": ". $name . '</a></p>';	
+                          htmlspecialchars($external_id) . ": ". $name . '</a></p>';  
     $code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
   }
     
@@ -1113,7 +1113,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   switch($env->reportType)
   {
     case DOC_TEST_PLAN_DESIGN:
-      $version_number = $node['version'];  // why not $tcInfo['version'] ???
+      $version_number = isset($node['version']) ? $node['version'] : $tcInfo['version'];
     break;
     
     case DOC_TEST_PLAN_EXECUTION:

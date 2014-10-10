@@ -31,9 +31,10 @@ $charset = config_get('charset');
 $openBuildsQty = $tplan_mgr->getNumberOfBuilds($args->tplan_id,null,testplan::OPEN_BUILDS);
 
 // not too wise duplicated code, but effective => Quick & Dirty
-if( $openBuildsQty <= 0 )
+if( $openBuildsQty <= 0 && !$args->show_closed_builds)
 {
 	$gui->warning_message = lang_get('no_open_builds');
+  $gui->tableSet = null;
 	$smarty = new TLSmarty();
 	$smarty->assign('gui',$gui);
 	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);

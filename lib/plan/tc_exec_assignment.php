@@ -99,10 +99,11 @@ switch($args->doAction)
 
   case 'doRemove':
     $signature[] = array('type' => $task_test_execution, 'user_id' => $args->targetUser, 
-                       'feature_id' => $args->targetFeature, 'build_id' => $args->build_id);
+                         'feature_id' => $args->targetFeature, 'build_id' => $args->build_id);
     $assignment_mgr->deleteBySignature($signature);
   break; 
 }
+
 
 
 
@@ -121,7 +122,7 @@ switch($args->level)
     
     $linked_items[$args->id] = $xx;
     $opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
-    $filters = array('keywords' => $keywordsFilter->items);
+    $filters = array('keywords' => $keywordsFilter->items, 'testcases' => $args->id);
     
     $my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
                             $linked_items,null,$filters,$opt);
@@ -171,11 +172,11 @@ if ($_SESSION['testprojectOptions']->testPriorityEnabled)
   $gui->priority_labels = init_labels($urgencyCfg["code_label"]);
 }
 
-$smarty = new TLSmarty();
-$smarty->assign('gui', $gui);
-
 $tpl = $templateCfg->template_dir . $templateCfg->default_template;
 $tpl = str_replace('.tpl', '_flat.tpl', $tpl);
+
+$smarty = new TLSmarty();
+$smarty->assign('gui', $gui);
 $smarty->display($tpl);
 
 /*

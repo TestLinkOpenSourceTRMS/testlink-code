@@ -149,6 +149,10 @@ class assignment_mgr extends tlObjectWithDB
     * $feature_map['feature_id']['assigner_id']
     * $feature_map['feature_id']['build_id']
     * 
+    *
+    * Need to manage situation where user_id = 0 is passed
+    * I will IGNORE IT
+    *
     * @internal revisions
     */
   function assign($feature_map) 
@@ -156,50 +160,54 @@ class assignment_mgr extends tlObjectWithDB
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $ret = array();
     $types = $this->get_available_types();
-
+    $safe = null;
     foreach($feature_map as $feature_id => $elem)
     {
       // Check if exists before adding
+      $safe['user_id'] = intval($elem['user_id']);
       $check = "/* $debugMsg */ ";
       $check .= " SELECT id FROM {$this->tables['user_assignments']} " .
                 " WHERE feature_id = " . intval($feature_id) .
                 " AND build_id = " . intval($elem['build_id']) .
                 " AND type = " . intval($elem['type']) .
-                " AND user_id = " . intval($elem['user_id']);
+                " AND user_id = " . $safe['user_id'];
 
       $rs = $this->db->get_recordset($check);
       if( is_null($rs) || count($rs) == 0 )
       {
-        $sql = "INSERT INTO {$this->tables['user_assignments']} " .
-               "(feature_id,user_id,assigner_id,type,status,creation_ts";
-                    
-        $values = "VALUES({$feature_id},{$elem['user_id']},{$elem['assigner_id']}," .
-                  "{$elem['type']},{$elem['status']},";
-        $values .= (isset($elem['creation_ts']) ? $elem['creation_ts'] : $this->db->db_now());                   
-        
-        if(isset($elem['deadline_ts']) )
+        if($safe['user_id'] > 0)
         {
-          $sql .=",deadline_ts";
-          $values .="," . $elem['deadline_ts']; 
-        }     
-        
-        if (isset($elem['build_id'])) 
-        {
-          $sql .= ",build_id";
-          $values .= "," . intval($elem['build_id']);
-        }
-        else
-        {
-          if($elem['type'] == $types['testcase_execution']['id'])
+          $sql = "INSERT INTO {$this->tables['user_assignments']} " .
+                 "(feature_id,user_id,assigner_id,type,status,creation_ts";
+                      
+          $values = "VALUES({$feature_id},{$elem['user_id']},{$elem['assigner_id']}," .
+                    "{$elem['type']},{$elem['status']},";
+          $values .= (isset($elem['creation_ts']) ? $elem['creation_ts'] : $this->db->db_now());                   
+          
+          if(isset($elem['deadline_ts']) )
           {
-            throw new Exception("Error Processing Request - BUILD ID is Mandatory");
+            $sql .=",deadline_ts";
+            $values .="," . $elem['deadline_ts']; 
+          }     
+          
+          if (isset($elem['build_id'])) 
+          {
+            $sql .= ",build_id";
+            $values .= "," . intval($elem['build_id']);
+          }
+          else
+          {
+            if($elem['type'] == $types['testcase_execution']['id'])
+            {
+              throw new Exception("Error Processing Request - BUILD ID is Mandatory");
+            }  
           }  
+          
+          $sql .= ") " . $values . ")";
+          tLog(__METHOD__ . '::' . $sql,"DEBUG");
+          $this->db->exec_query($sql);
+          $ret[] = $sql;
         }  
-        
-        $sql .= ") " . $values . ")";
-        tLog(__METHOD__ . '::' . $sql,"DEBUG");
-        $this->db->exec_query($sql);
-        $ret[] = $sql;
       }  
     }
     return $ret;

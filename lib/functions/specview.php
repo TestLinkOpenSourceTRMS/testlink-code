@@ -199,6 +199,9 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
     list($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out) = buildSkeleton($id,$name,$cfg,$test_spec,$platforms);
   } 
   
+
+
+
   // This code has been replace (see below on Remove empty branches)
   // Once we have created array with testsuite and children testsuites
   // we are trying to remove nodes that has 0 test case count.
@@ -931,17 +934,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
         $outRef['linked_by'] = null; //0;
         $outRef['linked_ts'] = null;
         $outRef['priority'] = 0;
-
-        /*
-        foreach($platforms as $plat )
-        {
-          $outRef['user_id'][$plat['id']] = 0; //array(array()); //null; //0;
-        }  
-        //$outRef['user_id'] = null; //array(array()); //null; //0;
-        */
         $outRef['user_id'] = array();
-
-          // $outRef['importance'] = 0;
       }
       $out[$parent_idx]['testcase_qty']++;
       $a_tcid[] = $current['id'];
@@ -1136,8 +1129,13 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
             // this logic has been created to cope with multiple tester assignment
             foreach ($optionalArrayFields as $fieldKey )
             {
-              if(isset($item[$fieldKey]))
-              {  
+              //echo $fieldKey . '<br>';
+              //new dBug($item);
+              //echo isset($item[$fieldKey]);
+
+              // We have issues when no user is assigned because  is
+              //if(isset($item[$fieldKey]))
+              //{  
                 if(is_array($item[$fieldKey]))
                 {
                   // this seems to be the path we follow when trying to work on test suite
@@ -1148,7 +1146,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
                   // this seems to be the path we follow when trying to work on SINGLE test case
                   $outRef[$fieldKey][$item['platform_id']][]=intval($item[$fieldKey]);
                 }
-              }  
+              //}  
             }
           }
           break;

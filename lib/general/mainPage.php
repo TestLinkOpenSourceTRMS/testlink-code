@@ -150,9 +150,9 @@ if( (strcmp($secCfg, 'ALWAYS') == 0) ||
   $gui->securityNotes = getSecurityNotes($db);
 }  
 
+$gui->opt_requirements = isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
+                         $_SESSION['testprojectOptions']->requirementsEnabled : null; 
 
-$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
-                                    $_SESSION['testprojectOptions']->requirementsEnabled : null); 
 $smarty->assign('gui',$gui);
 $smarty->display('mainPage.tpl');
 

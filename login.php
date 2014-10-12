@@ -127,9 +127,18 @@ function init_gui(&$db,$args)
 {
   $gui = new stdClass();
   
+  $secCfg = config_get('config_check_warning_frequence');
+  $gui->securityNotes = '';
+  if( (strcmp($secCfg, 'ALWAYS') == 0) || 
+      (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesDone'])) )
+  {
+    $_SESSION['getSecurityNotesDone'] = 1;
+    $gui->securityNotes = getSecurityNotes($db);
+  }  
+
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
-  $gui->securityNotes = getSecurityNotes($db);
+
   $gui->external_password_mgmt = false;
   $gui->login_disabled = (('LDAP' == $gui->authCfg['method']) && !checkForLDAPExtension()) ? 1 : 0;
 

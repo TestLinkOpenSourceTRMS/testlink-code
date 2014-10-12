@@ -29,18 +29,13 @@
     <script  type="text/javascript">
     function display_right_block_1()
     {
-        var rp1 = new Ext.Panel({
-                                title:'{$labels.title_test_plan_mgmt}',
-                                collapsible:false,
-                                collapsed: false,
-                                draggable: false,
-                                contentEl: 'test_plan_mgmt_topics',
-                                baseCls: 'x-tl-panel',
-                                bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: 'menu_right_block_{$menuLayout.testPlan}',
-                                width:'100%'
+      var rp1 = new Ext.Panel({ title:'{$labels.title_test_plan_mgmt}',
+                                collapsible:false, collapsed: false, draggable: false,
+                                contentEl: 'test_plan_mgmt_topics', baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;", width:'100%',
+                                renderTo: 'menu_right_block_{$menuLayout.testPlan}'
                                 });
-     }
+    }
     </script>
 {/if}
 
@@ -48,22 +43,15 @@
    {$display_right_block_2=true}
 
     <script  type="text/javascript">
-    {literal}
     function display_right_block_2()
     {
-        var rp2 = new Ext.Panel({
-                                 title: {/literal}'{$labels.title_test_execution}'{literal},
-                                 collapsible:false,
-                                 collapsed: false,
-                                 draggable: false,
-                                 contentEl: 'test_execution_topics',
-                                 baseCls: 'x-tl-panel',
-                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                 renderTo: {/literal}'menu_right_block_{$menuLayout.testExecution}'{literal},
-                                 width:'100%'
-                                });
+      var rp2 = new Ext.Panel({ title: '{$labels.title_test_execution}',
+                                collapsible: false, collapsed: false, draggable: false,
+                                contentEl: 'test_execution_topics', baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;", width: '100%',
+                                renderTo: 'menu_right_block_{$menuLayout.testExecution}'                       
+                              });
      }
-    {/literal}
     </script>
 {/if}
 
@@ -71,22 +59,15 @@
    {$display_right_block_3=true}
 
     <script  type="text/javascript">
-    {literal}
     function display_right_block_3()
     {
-        var rp3 = new Ext.Panel({
-                            title: {/literal}'{$labels.title_test_case_suite}'{literal},
-                            collapsible:false,
-                            collapsed: false,
-                            draggable: false,
-                            contentEl: 'testplan_contents_topics',
-                            baseCls: 'x-tl-panel',
-                            bodyStyle: "background:#c8dce8;padding:3px;",
-                            renderTo: {/literal}'menu_right_block_{$menuLayout.testPlanContents}'{literal},
-                            width:'100%'
-                                });
+      var rp3 = new Ext.Panel({ title: '{$labels.title_test_case_suite}',
+                                collapsible:false, collapsed: false, draggable: false,
+                                contentEl: 'testplan_contents_topics', baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;", width: '100%',
+                                renderTo: 'menu_right_block_{$menuLayout.testPlanContents}'
+                              });
      }
-    {/literal}
     </script>
 
 {/if}
@@ -103,7 +84,6 @@
               inc_help_alt="$text_hint" inc_help_title="$text_hint"  
               inc_help_style="float: right;vertical-align: top;"}
 
-{* |truncate:#TESTPLAN_TRUNCATE_SIZE# *}
  	   <form name="testplanForm" action="lib/general/mainPage.php">
        {if $gui->countPlans > 0}
 		     {$labels.current_test_plan}:<br/>
@@ -146,21 +126,13 @@
 	    
 	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}
 	    	<br />
-           	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
+       	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
       {/if}
 	    
       {if $gui->grants.testplan_milestone_overview == "yes" and $gui->countPlans > 0}
-            <br />
-            <a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
+         <br />
+         <a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
       {/if}
-
-      {* 
-	    {if $gui->grants.testplan_user_role_assignment == "yes" && $gui->countPlans > 0}
-	    	<br />
-       	    <a href="lib/usermanagement/usersAssign.php?featureType=testplan&amp;featureID={$gui->testplanID}">{$labels.href_assign_user_roles}</a>
-	    {/if}
-      *}
-	    
     </div>
   {/if}
   {* ----------------------------------------------------------------------------------- *}

@@ -134,10 +134,22 @@ $gui->url = array('metrics_dashboard' => 'lib/results/metricsDashboard.php',
 $gui->launcher = 'lib/general/frmWorkArea.php';
 $gui->arrPlans = $arrPlans;                   
 $gui->countPlans = count($gui->arrPlans);
-$gui->securityNotes = getSecurityNotes($db);
+
+
 $gui->testprojectID = $testprojectID;
 $gui->testplanID = $testplanID;
-$gui->docs = getUserDocumentation();
+
+$gui->docs = config_get('userDocOnDesktop') ? getUserDocumentation() : null;
+
+$secCfg = config_get('config_check_warning_frequence');
+$gui->securityNotes = '';
+if( (strcmp($secCfg, 'ALWAYS') == 0) || 
+      (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesOnMainPageDone'])) )
+{
+  $_SESSION['getSecurityNotesOnMainPageDone'] = 1;
+  $gui->securityNotes = getSecurityNotes($db);
+}  
+
 
 $smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
                                     $_SESSION['testprojectOptions']->requirementsEnabled : null); 

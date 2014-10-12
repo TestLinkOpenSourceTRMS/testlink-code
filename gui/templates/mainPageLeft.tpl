@@ -20,11 +20,13 @@
                           href_reqmgrsystem_management'}
 
 {$menuLayout=$tlCfg->gui->layoutMainPageLeft}
+
+{* DO NOT GET CONFUSED this are SMARTY variables NOT JS *}
 {$display_left_block_1=false}
 {$display_left_block_2=false}
 {$display_left_block_3=false}
 {$display_left_block_4=false}
-{$display_left_block_5=true}
+{$display_left_block_5=$tlCfg->userDocOnDesktop}
 
 {if $gui->testprojectID && 
       ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
@@ -116,22 +118,6 @@
    </script>
 {/if}
 
-<script type="text/javascript">
-function display_left_block_5()
-{
-  var p5 = new Ext.Panel({
-                          title: '{$labels.title_documentation}',
-                          collapsible:false,
-                          collapsed: false,
-                          draggable: false,
-                          contentEl: 'testlink_application',
-                          baseCls: 'x-tl-panel',
-                          bodyStyle: "background:#c8dce8;padding:3px;",
-                          renderTo: 'menu_left_block_{$menuLayout.general}',
-                          width:'100%'
-                          });
-}
-</script>
 
 <div class="vertical_menu" style="float: left">
   <div id='menu_left_block_2'></div><br />
@@ -242,18 +228,42 @@ function display_left_block_5()
     
     </div>
   {/if}
-  <div id='testlink_application'>
-    <form style="display:inline;">
-      <select class="menu_combo" style="font-weight:normal;" name="docs" size="1"
-              onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, 
-              '{$basehref}');" >
-          <option value="leer"> -{lang_get s='access_doc'}-</option>
-          {if $gui->docs}
-            {foreach from=$gui->docs item=doc}
-                <option value="{$doc}">{$doc}</option>
-            {/foreach}
-          {/if}
-      </select>
-    </form>
+
+
+  {if $display_left_block_5}
+    <script type="text/javascript">
+    function display_left_block_5()
+    {
+      var p5 = new Ext.Panel({
+                              title: '{$labels.title_documentation}',
+                              collapsible:false,
+                              collapsed: false,
+                              draggable: false,
+                              contentEl: 'testlink_application',
+                              baseCls: 'x-tl-panel',
+                              bodyStyle: "background:#c8dce8;padding:3px;",
+                              renderTo: 'menu_left_block_{$menuLayout.general}',
+                              width:'100%'
+                              });
+    }
+    </script>
+
+
+    <div id='testlink_application'>
+      <form style="display:inline;">
+        <select class="menu_combo" style="font-weight:normal;" name="docs" size="1"
+                onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, 
+                '{$basehref}');" >
+            <option value="leer"> -{lang_get s='access_doc'}-</option>
+            {if $gui->docs}
+              {foreach from=$gui->docs item=doc}
+                  <option value="{$doc}">{$doc}</option>
+              {/foreach}
+            {/if}
+        </select>
+      </form>
     </div>
+  {/if}
+
+
 </div>

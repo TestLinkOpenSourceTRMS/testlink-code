@@ -12,7 +12,8 @@
 <script type="text/javascript">
 window.onload=function()
 {
-  // Nifty("div.menu_bubble");
+
+  /* with typeof display_left_block_1 I'm checking is function exists */
   if( typeof display_left_block_1 != 'undefined')
   {
     display_left_block_1();
@@ -33,7 +34,10 @@ window.onload=function()
     display_left_block_4();
   }
 
-  display_left_block_5();
+  if( typeof display_left_block_5 != 'undefined')
+  {
+    display_left_block_5();
+  }
 
   if( typeof display_right_block_1 != 'undefined')
   {

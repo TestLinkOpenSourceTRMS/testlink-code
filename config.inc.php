@@ -198,6 +198,18 @@ $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
 $tlCfg->config_check_warning_mode = 'FILE';
 
 /**
+ * ONCE_FOR_SESSION
+ * ALWAYS
+ */
+$tlCfg->config_check_warning_frequence = 'ONCE_FOR_SESSION';
+
+/**
+ *
+ */ 
+$tlCfg->userDocOnDesktop = OFF;
+
+
+/**
  * Configure if individual logging data stores are enabled of disabled
  * Possibile values to identify loggers: 'db','file'
  * $g_loggerCfg=null; all loggers enabled 

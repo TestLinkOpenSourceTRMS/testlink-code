@@ -68,7 +68,9 @@ if($gui->hasTestCases)
  * or is enough just call to getAccessibleTestPlans()
  */
 $filters = array('plan_status' => ACTIVE);
-$gui->num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
+$gui->num_active_tplans = $tproject_mgr->getActiveTestPlansCount($testprojectID);
+
+//sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
 
 // get Test Plans available for the user 
 $arrPlans = $currentUser->getAccessibleTestPlans($db,$testprojectID);

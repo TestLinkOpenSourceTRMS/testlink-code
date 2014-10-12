@@ -2112,10 +2112,10 @@ function get_all_testplans($testproject_id,$filters=null,$options=null)
 {
 
   $my['options'] = array('fields2get' => 'NH.id,NH.name,notes,active,is_public,testproject_id',
-               'outputType' => null);
+                         'outputType' => null);
   $my['options'] = array_merge($my['options'], (array)$options);
 
-    $forHMLSelect = false;
+  $forHMLSelect = false;
   if( !is_null($my['options']['outputType']) && $my['options']['outputType'] == 'forHMLSelect')
   {
     $forHMLSelect = true;
@@ -2126,15 +2126,14 @@ function get_all_testplans($testproject_id,$filters=null,$options=null)
          " FROM {$this->tables['nodes_hierarchy']} NH,{$this->tables['testplans']} TPLAN";
          
   $where = " WHERE NH.id=TPLAN.id ";
-    $where .= " AND (testproject_id = " . $this->db->prepare_int($testproject_id) . " ";
-    if( !is_null($filters) )
-    {
-    $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,
-                     'tplan2exclude' => null);
+  $where .= " AND (testproject_id = " . $this->db->prepare_int($testproject_id) . " ";
+  if( !is_null($filters) )
+  {
+    $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,'tplan2exclude' => null);
     
     foreach($key2check as $varname => $defValue)
     {
-        $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
+      $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
     }                
         
     $where .= " ) ";
@@ -2149,13 +2148,13 @@ function get_all_testplans($testproject_id,$filters=null,$options=null)
     {
       $where .= " AND TPLAN.id != {$tplan2exclude} ";
     }
-    }
-    else
-    {
-        $where .= ")";  
-    }  
+  }
+  else
+  {
+    $where .= ")";  
+  }  
+  
   $sql .= $where . " ORDER BY name";
-
   if( $forHMLSelect )
   {
     $map = $this->db->fetchColumnsIntoMap($sql,'id','name');
@@ -2164,6 +2163,7 @@ function get_all_testplans($testproject_id,$filters=null,$options=null)
   {
     $map = $this->db->fetchRowsIntoMap($sql,'id');
   }
+
   return($map);
 
 }
@@ -3086,7 +3086,6 @@ function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_fi
     }
   }
 
-  new dBug($sql);
   $hits = !is_null($sql) ? $this->db->fetchRowsIntoMap($sql,'testcase_id') : null;
   return($hits);
 }
@@ -3450,5 +3449,23 @@ function getPublicAttr($id)
       $this->db->exec_query($sql);  
     }  
   }  
+
+
+/**
+ *
+ */
+function getActiveTestPlansCount($id)
+{
+  $debugMsg = $this->debugMsg . __FUNCTION__;
+  $sql = "/* $debugMsg */ SELECT COUNT(0) AS qty".
+         " FROM {$this->tables['nodes_hierarchy']} NH_TPLAN " .
+         " JOIN {$this->tables['testplans']} TPLAN ON NH_TPLAN.id = TPLAN.id " .
+         " WHERE NH_TPLAN.parent_id = " . $this->db->prepare_int($id) .
+         " AND TPLAN.active = 1";
+
+  $rs = $this->db->get_recordset($sql);
+  return $rs[0]['qty'];       
+}
+
 
 } // end class

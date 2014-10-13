@@ -5,6 +5,8 @@
  * @filesource  reqTcAssign.php
  * @author Martin Havlat
  *
+ * @internal revisions
+ * @since 1.9.13
  *
 **/
 require_once("../../config.inc.php");
@@ -350,11 +352,15 @@ function initializeGui($argsObj)
  */
 function getTargetTestCases(&$dbHandler,&$argsObj)
 {
-  if(is_null(($items = $argsObj->tcaseSet)))
+  $mgr = new testsuite($dbHandler);
+  $items = $mgr->get_testcases_deep($argsObj->id,'only_id');
+  
+  if(!is_null($argsObj->tcaseSet))
   {  
-    $mgr = new testsuite($dbHandler);
-    $items = $mgr->get_testcases_deep($argsObj->id,'only_id');
+    $rr = array_intersect($items,$argsObj->tcaseSet);
+    $items = $rr;
   }
+
   return $items;
 }
 

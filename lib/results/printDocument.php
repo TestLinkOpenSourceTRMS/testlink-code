@@ -37,7 +37,8 @@ $printingOptions = initPrintOpt($_REQUEST,$doc_info);
 $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
 $treeForPlatform[0] = &$subtree;
 $doc_info->title = $doc_info->tproject_name;
-
+$doc_info->outputFormat = $printingOptions['outputFormat'] = $args->format;
+ 
 
 switch ($doc_info->type)
 {

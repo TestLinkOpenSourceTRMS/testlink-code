@@ -900,6 +900,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $platform_id = isset($context['platform_id']) ? $context['platform_id'] : 0;
   $build_id = isset($context['build_id']) ? $context['build_id'] : 0;
 
+
   // init static elements
   if (!$tables)
   {
@@ -1267,7 +1268,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                   $code .= '<b>' . $labels['exec_attachments'] . '</b><br>';
                   foreach($attachInfo as $fitem)
                   {
-                    if($fitem['is_image'])
+                    if($fitem['is_image'] && $options['outputFormat'] == FORMAT_HTML)
                     {
                       $code .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
                       $code .= '<li>' . '<img src="' . $env->base_href . 
@@ -1451,7 +1452,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       $fname .= htmlspecialchars($item['file_name']);
       $code .= "<li>$fname</li>";
 
-      if($item['is_image'])
+      if($item['is_image'] && $options['outputFormat'] == FORMAT_HTML)
       {
         $code .= '<li>' . '<img src="' . $env->base_href . 
                  'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
@@ -1474,11 +1475,11 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
       if( !is_null($execAttachInfo) )
       {
-        $code .= '<tr><td colspan="' . $td_colspan . '">';
+        $code .= '<tr><td colspan="' . $cfg['tableColspan'] . '">';
         $code .= '<b>' . $labels['exec_attachments'] . '</b><br>';
         foreach($execAttachInfo as $fitem)
         {
-          if($fitem['is_image'])
+          if($fitem['is_image'] && $options['outputFormat'] == FORMAT_HTML)
           {
             $code .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
             $code .= '<li>' . '<img src="' . $env->base_href . 
@@ -1608,7 +1609,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
         $fname .= htmlspecialchars($item['file_name']);
         $code .= "<li>$fname</li>";
 
-        if($item['is_image'])
+        if($item['is_image'] && $options['outputFormat'] == FORMAT_HTML)
         {
           $code .= '<li>' . '<img src="' . $env->base_href . 
                    'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';

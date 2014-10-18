@@ -564,7 +564,7 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
   }
 
   // Arrange data for caller
-  if ($min['totalMinutes'] != 0)
+  if (isset($min['totalMinutes']) && $min['totalMinutes'] != 0)
   {
     $stat['minutes'] = $min['totalMinutes']; 
     $stat['tcase_qty'] = $min['totalTestCases']; 

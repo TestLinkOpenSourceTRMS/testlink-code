@@ -269,6 +269,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
 
   // TICKET 0006037 - Contribution Refactored
   $attachSet =  $req_mgr->getAttachmentInfos($req['id']);
+  // new dBug($attachSet);
+
   if (count($attachSet))
   {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
@@ -942,10 +944,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
         $statusL10N[$vc] = lang_get($cfg['results']['status_label_for_exec_ui'][$vstat]);  
       }  
     }
-
-    // 20141007
     $docRepo = tlAttachmentRepository::create($db);
-
   }
 
   $cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
@@ -1359,21 +1358,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '">' . "</td></tr>";
   $code .= $cfields['specScope']['standard_location'] . $cfields['execScope'];
   
-  // generate test results data for test report 
-  if ($options['passfail'])
-  {
-    if ($exec_info) 
-    {
-      $code .= buildTestExecResults($db,$its,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,$options['notes'],$buildCfields);
-    }
-    else
-    {
-      $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
-               '<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
-               '<td colspan="' . ($cfg['tableColspan']-1) . '"><b>' . $labels["test_status_not_run"] . 
-               "</b></td></tr>\n";
-    }
-  }
 
 
   // 20140813
@@ -1475,6 +1459,52 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }
     $code .="</ul></td></tr>";
   }
+
+  // generate test results data for test report 
+  if ($options['passfail'])
+  {
+    if ($exec_info) 
+    {
+      $code .= buildTestExecResults($db,$its,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,$options['notes'],$buildCfields);
+
+      // Get Execution Attachments
+      // new dBug($exec_info);
+      // $execID 
+      $execAttachInfo = getAttachmentInfos($docRepo,$exec_info[0]['execution_id'],$tables['executions'],true,1);
+
+      if( !is_null($execAttachInfo) )
+      {
+        $code .= '<tr><td colspan="' . $td_colspan . '">';
+        $code .= '<b>' . $labels['exec_attachments'] . '</b><br>';
+        foreach($execAttachInfo as $fitem)
+        {
+          if($fitem['is_image'])
+          {
+            $code .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
+            $code .= '<li>' . '<img src="' . $env->base_href . 
+                              'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . '"> </li>';
+          }  
+          else
+          {
+            $code .= '<li>' . '<a href="' . $env->base_href . 
+                              'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . 
+                              '" ' . ' target="#blank" > ' . htmlspecialchars($fitem['file_name']) . '</a></li>';
+          }  
+        }  
+        $code .= '</td></tr>';
+      }  
+  
+    }
+    else
+    {
+      $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+               '<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
+               '<td colspan="' . ($cfg['tableColspan']-1) . '"><b>' . $labels["test_status_not_run"] . 
+               "</b></td></tr>\n";
+    }
+  }
+
+
 
   $code .= "</table>\n</div>\n";
   return $code;
@@ -1798,7 +1828,6 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
  * @internal revisions
  * @since 1.9.12
  *
- * TICKET 6545: On report with test steps exec wrong value is used for test case execution type
  *
  */
 function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan,$show_exec_notes = false,$buildCF=null)
@@ -1866,10 +1895,10 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
           (isset($exec_info[0]['execution_duration']) ? $exec_info[0]['execution_duration'] : "&nbsp;") . 
           "</b></td></tr>\n";
 
-  if ($executionNotes != '') // show exection notes is not empty
+  if ($executionNotes != '') // show execution notes is not empty
   {
     $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">'.$labels['title_execution_notes'] . '</td>' .
-          '<td '  .$td_colspan . '>' . nl2br($executionNotes)  . "</td></tr>\n"; 
+            '<td '  .$td_colspan . '>' . nl2br($executionNotes)  . "</td></tr>\n"; 
   }
 
   if( !is_null($its) ) 

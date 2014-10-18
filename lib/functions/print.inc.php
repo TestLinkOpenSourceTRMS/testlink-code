@@ -1457,6 +1457,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
         $code .= '<li>' . '<img src="' . $env->base_href . 
                  'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
       }  
+      else
+      {
+        $code .= '<li>' . '<a href="' . $env->base_href . 
+                 'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . 
+                 '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
+      }  
     }
     $code .="</ul></td></tr>";
   }
@@ -1613,6 +1619,12 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
         {
           $code .= '<li>' . '<img src="' . $env->base_href . 
                    'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
+        }  
+        else
+        {
+          $code .= '<li>' . '<a href="' . $env->base_href . 
+                   'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . 
+                   '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
         }  
       }
       $code .="</ul></td></tr>";

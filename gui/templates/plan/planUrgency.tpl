@@ -28,6 +28,7 @@ Smarty template - manage test case urgency
       <input type="submit" name="low_urgency" value="{$labels.urgency_low}" />
       <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
       <input type="hidden" name="id" value="{$gui->node_id}" />
+      <input type="hidden" name="form_token" id="form_token" value="{$gui->formToken}" />
     </span>
     </form>
   </div>
@@ -46,58 +47,68 @@ Smarty template - manage test case urgency
     <th>{$labels.priority}</th>
   </tr>
 
-  {foreach item=res from=$gui->listTestCases}
-  <tr>
-    <td style="text-align: left;">
-      <img class="clickable" src="{$tlImages.history_small}"
-           onclick="javascript:openExecHistoryWindow({$res.testcase_id});"
-           title="{$labels.execution_history}" />
-      <img class="clickable" src="{$tlImages.edit_icon}"
-           onclick="javascript:openTCaseWindow({$res.testcase_id});"
-           title="{$labels.design}" />
-        {$res.tcprefix|escape}{$res.tc_external_id}{$gsmarty_gui->title_separator_1}{$res.name|escape}
-    </td>
-    <td style="text-align: left;">
-        {if $res.assigned_to != ''}
-        <img src="{$tlImages.info_small}" title="{$res.first|escape} {$res.last|escape}"> {$res.assigned_to|escape} 
-        {/if}
-    </td>
+  {foreach item=itemSet from=$gui->listTestCases}
+    {$start=true}
 
-    {$importance=$res.importance}
-    <td>{$gsmarty_option_importance.$importance}</td>
-      {$urgencyCode=$res.urgency}
-    <td><input type="radio"
-           name="urgency[{$res.tcversion_id}]"
-           value="{$smarty.const.HIGH}" 
-           {if $urgencyCode == $smarty.const.HIGH}
-          checked="checked"
-           {/if}
-          />
-      <span style="vertical-align:middle;">{$labels.urgency_high}</span>
-    </td>
-    <td><input type="radio"
-           name="urgency[{$res.tcversion_id}]"
-           value="{$smarty.const.MEDIUM}" 
-           {if $urgencyCode == $smarty.const.MEDIUM}
-             checked="checked"
-           {/if}
-          />
-      <span style="vertical-align:middle;">{$labels.urgency_medium}</span>
-    </td>
-    <td><input type="radio"
-           name="urgency[{$res.tcversion_id}]"
-           value="{$smarty.const.LOW}" 
-           {if $urgencyCode == $smarty.const.LOW}
-               checked="checked"
-           {/if}
-          />
-      <span style="vertical-align:middle;">{$labels.urgency_low}</span>
-    </td>
-    {$priority=$res.priority}
-    <td>{$gsmarty_option_priority.$priority}</td>
-  </tr>
+    {foreach item=res from=$itemSet}
+       {$importance=$res.importance}
+       {$urgencyCode=$res.urgency}
+       {$priority=$res.priority}
+   
+      <tr>
+
+      {if $start}
+        {$start = false}
+          <td style="text-align: left;">
+            <img class="clickable" src="{$tlImages.history_small}"
+                 onclick="javascript:openExecHistoryWindow({$res.testcase_id});"
+                 title="{$labels.execution_history}" />
+            <img class="clickable" src="{$tlImages.edit_icon}"
+                 onclick="javascript:openTCaseWindow({$res.testcase_id});"
+                 title="{$labels.design}" />
+              {$res.tcprefix|escape}{$res.tc_external_id}{$gsmarty_gui->title_separator_1}{$res.name|escape}
+          </td>
+          <td style="text-align: left;">
+              {if $res.assigned_to != ''}
+              <img src="{$tlImages.info_small}" title="{$res.first|escape} {$res.last|escape}"> {$res.assigned_to|escape} 
+              {/if}
+          </td>
+
+          <td>{$gsmarty_option_importance.$importance}</td>
+          <td><input type="radio"  name="urgency[{$res.tcversion_id}]"  value="{$smarty.const.HIGH}" 
+                 {if $urgencyCode == $smarty.const.HIGH}  checked="checked"  {/if}  />
+            <span style="vertical-align:middle;">{$labels.urgency_high}</span>
+          </td>
+
+          <td><input type="radio"  name="urgency[{$res.tcversion_id}]"  value="{$smarty.const.MEDIUM}" 
+                 {if $urgencyCode == $smarty.const.MEDIUM} checked="checked" {/if}/>
+            <span style="vertical-align:middle;">{$labels.urgency_medium}</span>
+          </td>
+          
+          <td><input type="radio"  name="urgency[{$res.tcversion_id}]" value="{$smarty.const.LOW}" 
+                 {if $urgencyCode == $smarty.const.LOW} checked="checked" {/if}  />
+            <span style="vertical-align:middle;">{$labels.urgency_low}</span>
+          </td>
+          <td>{$gsmarty_option_priority.$priority}</td>
+      {else}
+          <td>&nbsp;</td>
+          <td style="text-align: left;">
+             {if $res.assigned_to != ''}
+               <img src="{$tlImages.info_small}" title="{$res.first|escape} {$res.last|escape}"> {$res.assigned_to|escape}
+               <br> &nbsp;  {* dirty way to improve layout ;( *}
+             {/if}
+          </td>
+          <td>&nbsp;</td>
+          <td><span style="vertical-align:middle;">&nbsp;</span></td>
+          <td><span style="vertical-align:middle;">&nbsp;</span></td>
+          <td><span style="vertical-align:middle;">&nbsp;</span></td>
+          <td>&nbsp;</td>
+      {/if}  
+      </tr>
+    {/foreach}
   {/foreach}
   </table>
+
   <div class="groupBtn">
     <input type="submit" value="{$labels.btn_set_urgency_tc}" />
   </div>

@@ -3,14 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @package   TestLink
- * @author    Martin Havlat
+ * @package     TestLink
+ * @author      Martin Havlat
  * @copyright   2007-2014, TestLink community 
  * @filesource  testPlanUrgency.class.php
- * @link    http://www.testlink.org
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- *
+ * @since 1.9.13
  */ 
 
 /** 
@@ -65,25 +65,27 @@ class testPlanUrgency extends testplan
   public function setSuiteUrgency($testplan_id, $node_id, $urgency)
   {
     $sql = " UPDATE {$this->tables['testplan_tcversions']} " . 
-         " SET urgency=" . $this->db->prepare_int($urgency) .
-         " WHERE testplan_id= " . $this->db->prepare_int($testplan_id) .
-         " AND tcversion_id IN (" .
-         " SELECT NHB.id " . 
-         " FROM {$this->tables['nodes_hierarchy']}  NHA, " .
-         " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['node_types']} NT " .
-         " WHERE NHA.node_type_id = NT.id " .
-         " AND NT.description='testcase' " . 
-         " AND NHB.parent_id = NHA.id " . 
-         " AND NHA.parent_id = " . $this->db->prepare_int($node_id);
+           " SET urgency=" . $this->db->prepare_int($urgency) .
+           " WHERE testplan_id= " . $this->db->prepare_int($testplan_id) .
+           " AND tcversion_id IN (" .
+           " SELECT NHB.id " . 
+           " FROM {$this->tables['nodes_hierarchy']}  NHA, " .
+           " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['node_types']} NT " .
+           " WHERE NHA.node_type_id = NT.id " .
+           " AND NT.description='testcase' " . 
+           " AND NHB.parent_id = NHA.id " . 
+           " AND NHA.parent_id = " . $this->db->prepare_int($node_id) . " )";
+
     $result = $this->db->exec_query($sql);
-    
-    $retval=$result ? OK : ERROR;
-    return $retval;
+    return $result ? OK : ERROR;;
   }
   
   /**
    * Collect urgency for a Test Suite within a Test Plan
    * 
+   * @used-by planUrgency.php
+   *
+   *
    * @param integer $testplan_id Test Plan ID
    * @param integer $node_id Test Suite 
    * @param integer $testproject_id
@@ -113,6 +115,9 @@ class testPlanUrgency extends testplan
     if( $my['options']['build4testers'] != 0 )
     {
       $tasks = $this->assignment_types;
+
+      // ATTENTION:
+      // Remember that test case execution task can be assigned to MULTIPLE USERS
       $moreFields = ',USERS.login AS assigned_to, USERS.first, USERS.last ';
 
       $moreJoins = " LEFT JOIN {$this->tables['user_assignments']} UA " .
@@ -172,8 +177,8 @@ class testPlanUrgency extends testplan
     }  
 
     $sql .= " ORDER BY NHB.node_order";
-    
-    return $this->db->get_recordset($sql);
+
+    return $this->db->fetchRowsIntoMap($sql,'tcversion_id',database::CUMULATIVE);
   }
   
   /**

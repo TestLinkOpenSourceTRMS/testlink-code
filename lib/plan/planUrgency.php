@@ -5,13 +5,13 @@
  * 
  *
  * @filesource  planUrgency.php
- * @package   TestLink
- * @author    Martin Havlat
+ * @package     TestLink
+ * @author      Martin Havlat
  * @copyright   2003-2014, TestLink community 
- * @link    http://www.testlink.org
+ * @link        http://www.testlink.org
  * 
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.13
  **/
  
 require('../../config.inc.php');
@@ -28,24 +28,11 @@ $templateCfg = templateConfiguration();
 $tplan_mgr = new testPlanUrgency($db);
 $gui = initializeGui($args,$tplan_mgr->tree_manager);
 
-// Set urgency for test suite
-if($args->urgency != OFF)
+if( $args->urgency != OFF || isset($args->urgency_tc) )
 {
-  $gui->user_feedback['type'] = $tplan_mgr->setSuiteUrgency($args->tplan_id, $args->node_id, $args->urgency);
-  $msg_key = ($gui->user_feedback['type'] == OK) ? "feedback_urgency_ok" : "feedback_urgency_fail";
-  $gui->user_feedback['message'] = lang_get($msg_key);
-}
+  $gui->user_feedback = doProcess($args,$tplan_mgr);
+}  
 
-
-
-// Set urgency for individual testcases
-if(isset($args->urgency_tc))
-{
-  foreach ($args->urgency_tc as $id => $urgency) 
-  {
-    $tplan_mgr->setTestUrgency($args->tplan_id, $id, $urgency);
-  }
-}
 
 // get the current urgency for child test cases
 $context = new stdClass();
@@ -53,13 +40,16 @@ $context->tplan_id = $args->tplan_id;
 $context->tsuite_id = $args->node_id;
 $context->tproject_id = $args->tproject_id;
 $context->platform_id = $args->platform_id;
+
 $gui->listTestCases = $tplan_mgr->getSuiteUrgency($context,array('build4testers' => $args->build4testers),
                                                   array('testcases' => $args->testCaseSet));
 
-// get priority for each test case
-foreach ((array)$gui->listTestCases as $id => $tcase) 
+foreach($gui->listTestCases as $tcversion_id => $tcaseSet) 
 {
-  $gui->listTestCases[$id]['priority'] = priority_to_level($tcase['priority']);
+  foreach($tcaseSet as $idx => $tcase)
+  {
+    $gui->listTestCases[$tcversion_id][$idx]['priority'] = priority_to_level($tcase['priority']);
+  }  
 }
 
 $smarty = new TLSmarty();
@@ -120,6 +110,7 @@ function init_args()
   $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? 
                   $_SESSION[$mode][$args->treeFormToken] : null;
 
+
   $args->testCaseSet = $session_data['testcases_to_show'];
   $args->build4testers = intval($session_data['setting_build']);
   $args->platform_id = intval($session_data['setting_platform']);
@@ -127,7 +118,9 @@ function init_args()
   return $args;
 }
 
-
+/**
+ *
+ */
 function initializeGui(&$argsObj,&$treeMgr)
 {
   $guiObj = new stdClass();
@@ -141,6 +134,34 @@ function initializeGui(&$argsObj,&$treeMgr)
   $guiObj->formToken = $argsObj->treeFormToken;
   return $guiObj;
 } 
+
+
+/**
+ *
+ */
+function doProcess(&$argsObj,&$tplanMgr)
+{
+  $userFeedback = null;
+
+  // Set urgency for test suite
+  if($argsObj->urgency != OFF)
+  {
+    $userFeedback['type'] = $tplanMgr->setSuiteUrgency($argsObj->tplan_id, $argsObj->node_id, $argsObj->urgency);
+    $userFeedback['message'] = lang_get(($userFeedback['type'] == OK) ? "feedback_urgency_ok" : "feedback_urgency_fail");
+  }
+
+  // Set urgency for individual testcases
+  if(isset($argsObj->urgency_tc))
+  {
+    foreach ($argsObj->urgency_tc as $id => $urgency) 
+    {
+      $tplanMgr->setTestUrgency($argsObj->tplan_id, $id, $urgency);
+    }
+  }
+
+  return $userFeedback;
+}
+
 
 
 function checkRights(&$db,&$user)

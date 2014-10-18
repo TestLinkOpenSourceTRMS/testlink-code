@@ -3,18 +3,21 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: attachmentdownload.php,v $
- *
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
- *
  * Downloads the attachment by a given id
+ *
+ * @filesource attachmentdownload.php
+ *
+ * @internal revisions
+ * @since 1.9.13
+ *
  */
 @ob_end_clean();
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
-testlinkInitPage($db,false,false,"checkRights");
+
+// This way can be called without _SESSION, this is useful for reports
+testlinkInitPage($db,false,true);
 
 $args = init_args();
 
@@ -37,7 +40,6 @@ if ($args->id)
       }
       header('Content-Type: '.$attachmentInfo['file_type']);
       header('Content-Length: '.$attachmentInfo['file_size']);
-      // header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
       header("Content-Disposition: inline; filename=\"{$attachmentInfo['file_name']}\"");
       header("Content-Description: Download Data");
       echo $content;

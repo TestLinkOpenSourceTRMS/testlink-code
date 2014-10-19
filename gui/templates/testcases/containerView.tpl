@@ -101,6 +101,7 @@ function jsCallDeleteFile(btn, text, o_id)
       <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
       <input type="hidden" name="doAction" id="doAction" value="" />
       <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+      <input type="hidden" name="containerType" id="containerType" value="{$gui->level}" />
 
       <input type="image" src="{$tlImages.add}" name="new_testsuite" id="new_testsuite" 
              onclick="doAction.value='new_testsuite'" title="{$labels.btn_new_testsuite}">

@@ -186,12 +186,16 @@ function EXDS()
 */
 function EP(id)
 {
+  // menuUrl 99% => archiveData.php
   var _FUNCTION_NAME_="EP";
 
   // get checkboxes status
   var pParams = tree_getPrintPreferences();
   var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" +
-                   "&level=testproject&id="+id+args+"&"+pParams;
+                   "&level=testproject&containerType=testproject&id="+id+args+"&"+pParams;
+
+  // alert(_FUNCTION_NAME_ + " " +action_url);
+                 
   parent.workframe.location = action_url;
 }
 
@@ -206,6 +210,8 @@ function EP(id)
 */
 function ETS(id)
 {
+  // menuUrl 99% => archiveData.php
+
   // get checkboxes status
   var _FUNCTION_NAME_="ETS";
   var pParams = tree_getPrintPreferences();

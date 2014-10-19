@@ -3,6 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * Used when creating and/or editing a container (Test project, Test suite)
+ *
  * @filesource  containerEdit.php
  * @package     TestLink
  * @author      Martin Havlat
@@ -10,7 +12,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.13
  * 
  */
 require_once("../../config.inc.php");
@@ -35,7 +37,6 @@ $opt_cfg->js_ot_name = 'ot';
 
 $args = init_args($db,$opt_cfg);
 $level = $args->containerType;
-
 
 $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
@@ -169,10 +170,27 @@ switch($action)
     keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 
     $smarty->assign('opt_cfg', $opt_cfg);
+
+
     $gui = new stdClass();
+    $gui->containerType = $level;
     $gui->refreshTree = $args->refreshTree;
     $gui->hasKeywords = (count($opt_cfg->from->map) > 0) || (count($opt_cfg->to->map) > 0);
 
+    $gui->cancelActionJS = 'location.href=fRoot+' . 
+                           "'lib/testcases/archiveData.php?id=" . intval($args->containerID);
+    switch($level)
+    {
+      case 'testproject':
+        $gui->cancelActionJS .= "&edit=testproject&level=testproject'";
+      break;  
+
+      case 'testsuite':
+        $gui->cancelActionJS .= "&edit=testsuite&level=testsuite&containerType=testsuite'";
+      break;  
+    }  
+
+    $smarty->assign('level', $level);
     $smarty->assign('gui', $gui);
     $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
                                  $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
@@ -231,9 +249,25 @@ switch($action)
     $smarty->assign('opt_cfg', $opt_cfg);
 
     $gui = new stdClass();
+    $gui->containerType = $level;
     $gui->refreshTree = $args->refreshTree;
+    $gui->cancelActionJS = 'location.href=fRoot+' . 
+                           "'lib/testcases/archiveData.php?id=" . intval($args->containerID);
+    
+    switch($level)
+    {
+      case 'testproject':
+        $gui->cancelActionJS .= "&edit=testproject&level=testproject'";
+      break;  
 
+      case 'testsuite':
+        $gui->cancelActionJS .= "&edit=testsuite&level=testsuite&containerType=testsuite'";
+      break;  
+    }  
+
+    $smarty->assign('level', $level);
     $smarty->assign('gui', $gui);
+
     $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
                                  $args->containerID, null,$messages,$webEditorTemplateKey,$userInput);
   break;
@@ -645,14 +679,16 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
 {
     $level = null;
     $oid = is_null($argsObj->testsuiteID) ? $argsObj->containerID : $argsObj->testsuiteID;
-    $children = $treeMgr->get_children($oid, array("testplan" => "exclude_me",
-                    "requirement_spec"  => "exclude_me"));
+    $children = $treeMgr->get_children($oid, 
+                                       array("testplan" => "exclude_me","requirement_spec"  => "exclude_me"));
     $object_info = $treeMgr->get_node_hierarchy_info($oid);
     $object_name = $object_info['name'];
 
 
     if (!sizeof($children))
-        $children = null;
+    {  
+      $children = null;
+    }
 
     $smartyObj->assign('arraySelect', $children);
     $smartyObj->assign('objectID', $oid);
@@ -660,9 +696,9 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
 
     if($oid == $argsObj->tprojectID)
     {
-        $level = 'testproject';
-        $smartyObj->assign('level', $level);
-        $smartyObj->assign('page_title',lang_get('container_title_' . $level));
+      $level = 'testproject';
+      $smartyObj->assign('level', $level);
+      $smartyObj->assign('page_title',lang_get('container_title_' . $level));
     }
 
     return $level;
@@ -1034,74 +1070,75 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 
     if( !is_null($guiObj->testCaseSet) && count($guiObj->testCaseSet) > 0)
     {
-        foreach($guiObj->testCaseSet as &$child)
-        {
-            $external = $tcaseMgr->getExternalID($child['id'],null,$tcasePrefix);
-            $child['external_id'] = $external[0];
+      foreach($guiObj->testCaseSet as &$child)
+      {
+        $external = $tcaseMgr->getExternalID($child['id'],null,$tcasePrefix);
+        $child['external_id'] = $external[0];
               
-            // key level 1 : Test Case Version ID
-            // key level 2 : Test Plan  ID
-            // key level 3 : Platform ID
-            $getOptions = array('addExecIndicator' => true);
-            $dummy = $tcaseMgr->get_exec_status($child['id'],null,$getOptions);
-            $child['draw_check'] = $argsObj->grants->delete_executed_testcases || (!$dummy['executed']);
+        // key level 1 : Test Case Version ID
+        // key level 2 : Test Plan  ID
+        // key level 3 : Platform ID
+        $getOptions = array('addExecIndicator' => true);
+        $dummy = $tcaseMgr->get_exec_status($child['id'],null,$getOptions);
+        $child['draw_check'] = $argsObj->grants->delete_executed_testcases || (!$dummy['executed']);
 
-            $hasExecutedTC = $hasExecutedTC || $dummy['executed'];
-            unset($dummy['executed']);
-            $guiObj->exec_status_quo[] = $dummy;
-        }
+        $hasExecutedTC = $hasExecutedTC || $dummy['executed'];
+        unset($dummy['executed']);
+        $guiObj->exec_status_quo[] = $dummy;
+      }
     }
     // Need to understand if platform column has to be displayed on GUI
     if( !is_null($guiObj->exec_status_quo) )
     {
-        // key level 1 : Test Case Version ID
-        // key level 2 : Test Plan  ID
-        // key level 3 : Platform ID
+      // key level 1 : Test Case Version ID
+      // key level 2 : Test Plan  ID
+      // key level 3 : Platform ID
 
-        $itemSet = array_keys($guiObj->exec_status_quo);
-        foreach($itemSet as $mainKey)
+      $itemSet = array_keys($guiObj->exec_status_quo);
+      foreach($itemSet as $mainKey)
+      {
+        $guiObj->display_platform[$mainKey] = false;
+        if(!is_null($guiObj->exec_status_quo[$mainKey]) )
         {
-            $guiObj->display_platform[$mainKey] = false;
-            if(!is_null($guiObj->exec_status_quo[$mainKey]) )
+          $versionSet = array_keys($guiObj->exec_status_quo[$mainKey]);
+          $stop = false;
+          foreach($versionSet as $version_id)
+          {
+            $tplanSet = array_keys($guiObj->exec_status_quo[$mainKey][$version_id]);
+            foreach($tplanSet as $tplan_id)
             {
-                $versionSet = array_keys($guiObj->exec_status_quo[$mainKey]);
-                $stop = false;
-                foreach($versionSet as $version_id)
-                {
-                    $tplanSet = array_keys($guiObj->exec_status_quo[$mainKey][$version_id]);
-                    foreach($tplanSet as $tplan_id)
-                    {
-                        if( ($guiObj->display_platform[$mainKey] = !isset($guiObj->exec_status_quo[$mainKey][$version_id][$tplan_id][0])) )
-                        {
-                            $stop = true;
-                            break;
-                        }
-                    }
-                    if($stop)
-                    {
-                        break;
-                    }
-                }
+              if( ($guiObj->display_platform[$mainKey] = !isset($guiObj->exec_status_quo[$mainKey][$version_id][$tplan_id][0])) )
+              {
+                $stop = true;
+                break;
+              }
             }
+       
+            if($stop)
+            {
+              break;
+            }
+          }
         }
+      }
     }
     // check if operation can be done
     $guiObj->user_feedback = $feedback;
     if(!is_null($guiObj->testCaseSet) && (sizeof($guiObj->testCaseSet) > 0) )
     {
-        $guiObj->op_ok = true;
-        $guiObj->user_feedback = '';
+      $guiObj->op_ok = true;
+      $guiObj->user_feedback = '';
     }
     else
     {
-        $guiObj->children = null;
-        $guiObj->op_ok = false;
-        $guiObj->user_feedback = is_null($guiObj->user_feedback) ? lang_get('no_testcases_available') : $guiObj->user_feedback;
+      $guiObj->children = null;
+      $guiObj->op_ok = false;
+      $guiObj->user_feedback = is_null($guiObj->user_feedback) ? lang_get('no_testcases_available') : $guiObj->user_feedback;
     }
 
     if(!$argsObj->grants->delete_executed_testcases && $hasExecutedTC)
     {
-        $guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
+      $guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
     }
 
     $guiObj->objectID = $containerID;
@@ -1123,13 +1160,13 @@ returns: -
 */
 function doDeleteTestCases(&$dbHandler,$tcaseSet,&$tcaseMgr)
 {
-    if( count($tcaseSet) > 0 )
+  if( count($tcaseSet) > 0 )
+  {
+    foreach($tcaseSet as $victim)
     {
-        foreach($tcaseSet as $victim)
-        {
-            $tcaseMgr->delete($victim);
-        }
+      $tcaseMgr->delete($victim);
     }
+  }
 }
 
 

@@ -4,7 +4,7 @@ $Id: tcNew.tpl,v 1.18.2.3 2011/01/14 14:39:04 asimon83 Exp $
 Purpose: smarty template - create new testcase
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,
@@ -16,7 +16,7 @@ Purpose: smarty template - create new testcase
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/tcase_utils.js" type="text/javascript"></script>
 
-{assign var="opt_cfg" value=$gui->opt_cfg}
+{$opt_cfg=$gui->opt_cfg}
 <script language="JavaScript" type="text/javascript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
 {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
@@ -27,25 +27,21 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
 
-{literal}
 <script type="text/javascript">
-{/literal}
-//BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   // get the div that contains the custom fields, accession by id
  	var cf_designTime = document.getElementById('cfields_design_time');
   if (isWhitespace(f.testcase_name.value)) 
   {
-      alert_message(alert_box_title,warning_empty_testcase_name);
-      selectField(f, 'testcase_name');
-      return false;
+    alert_message(alert_box_title,warning_empty_testcase_name);
+    selectField(f, 'testcase_name');
+    return false;
   }
   
-  /* BUGID 3874 - custom fields type validation */
   /* Validation of a limited type of custom fields */
 	if (cf_designTime)
  	{
@@ -53,24 +49,23 @@ function validateForm(f)
  		var cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)
 	  {
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      return false;
+	  	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	    alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	    return false;
 		}
 
  		cfields_container = cf_designTime.getElementsByTagName('textarea');
  		cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)
 	  {
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      return false;
+     	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	    alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	    return false;
 		}
 	}
 
   return true;
 }
-{/literal}
 </script>
 
 {if $tlCfg->gui->checkNotSaved}
@@ -125,8 +120,10 @@ function validateForm(f)
 			<input type="hidden" id="do_create"  name="do_create" value="do_create" />
 			<input type="submit" id="do_create_button"  name="do_create_button" value="{$labels.btn_create}" 
 			       onclick="show_modified_warning=false;" />
-			<input type="button" name="go_back" value="{$labels.cancel}" 
-			       onclick="javascript: show_modified_warning=false; history.back();"/>
+
+      <input type="button" id="go_back" value="{$labels.cancel}" 
+             onclick="show_modified_warning=false; 
+                     javascript: {if isset($gui->cancelActionJS)}{$gui->cancelActionJS} {else} history.back() {/if};"/>
 
      <input type="checkbox" id="stay_here"  name="stay_here" 
          {if $gui->stay_here} checked="checked" {/if}/> {$labels.stay_here_tc}
@@ -140,14 +137,15 @@ function validateForm(f)
 			<input type="hidden" id="do_create_2"  name="do_create" value="do_create" />
 			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{$labels.btn_create}" 
 			       onclick="show_modified_warning=false;" />
-			<input type="button" name="go_back" value="{$labels.cancel}" 
-			       onclick="javascript: show_modified_warning=false; history.back();"/>
+
+      <input type="button" id="go_back_2" value="{$labels.cancel}" 
+             onclick="show_modified_warning=false; 
+                     javascript: {if isset($gui->cancelActionJS)}{$gui->cancelActionJS} {else} history.back() {/if};"/>
 	</div>	
   
 </form>
 </div>
 
-{* BUGID 4067 *}
 {if $gui->sqlResult eq 'ok'}
 	{if isset($gui->refreshTree) && $gui->refreshTree}
 		{include file="inc_refreshTreeWithFilters.tpl"}

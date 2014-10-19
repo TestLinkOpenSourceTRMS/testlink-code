@@ -194,6 +194,11 @@ class testcaseCommands
       $this->tcaseMgr->html_table_of_custom_field_inputs(null,null,'design','',null,null,
                                                          $argsObj->testproject_id,$locationFilter, $_REQUEST);
     }  
+
+    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?id=" .
+                              intval($argsObj->container_id) . 
+                              '&edit=testsuite&level=testsuite&containerType=testsuite' .  "'"; 
+
     return $guiObj;
   }
 

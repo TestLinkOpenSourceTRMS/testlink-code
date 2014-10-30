@@ -2178,6 +2178,8 @@ $TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (inclu
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for build %s in test plan %s";
 $TLS_user = "User";
 $TLS_user_bulk_assignment = "Bulk user assignment";
+$TLS_user_bulk_remove = "Do Bulk user remove";
+
 
 
 

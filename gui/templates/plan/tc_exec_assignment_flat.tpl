@@ -13,7 +13,7 @@ generate the list of TC that can be removed from a Test Plan
                           send_mail_to_tester,platform,no_testcase_available,chosen_blank_option,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
-                          check_uncheck_all_tc,execution,design,execution_history,remove'}
+                          check_uncheck_all_tc,execution,design,execution_history,remove,user_bulk_remove'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -95,7 +95,7 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
 
   {* --------------------------------------------------------------------------------------------------------------- *}
   {* added z-index to avoid problems with scrolling when using EXT-JS *}
-  <div id="header-wrap" style="z-index:999;height:110px;"> <!-- header-wrap -->
+  <div id="header-wrap" style="z-index:999;height:120px;"> <!-- header-wrap -->
 	<h1 class="title">{$gui->main_descr|escape}</h1>
   {if $gui->has_tc}
     {include file="inc_update.tpl" result=$sqlResult refresh="yes"}
@@ -111,6 +111,8 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
 			{/if}
 			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment_cb', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.btn_do}</button>
 		</div>
+    <br>
+
 		<div>
 			{$labels.user_bulk_assignment}
 			<select name="bulk_tester_div"  id="bulk_tester_div">
@@ -120,14 +122,17 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
 				onclick='if(check_action_precondition("tc_exec_assignment","default"))
 						        setComboIfCbx("tc_exec_assignment_cb","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
 				value="{$labels.btn_do}" />
-		</div>
-		<div>
 			<input type='submit' name='doActionButton' id='doActionButton' value='{$labels.btn_update_selected_tc}' />
       <input type="hidden" name="doAction" id="doAction" value='std' />
 			<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked} />
 			{$labels.send_mail_to_tester}
 			</span>
 		</div>
+
+    <div>
+      <input type='submit' name='doBulkUserRemove' id='doBulkUserRemove' value='{$labels.user_bulk_remove}' />
+    </div>
+
 	</div>
   {else}
 	  <div class="workBack">{$labels.no_testcase_available}</div>

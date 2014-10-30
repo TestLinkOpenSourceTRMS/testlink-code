@@ -10,7 +10,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -96,6 +96,36 @@ switch($args->doAction)
       } // if($args->send_mail)   
     }  
   break;
+
+
+  case 'doBulkRemove':
+    if(!is_null($args->achecked_tc))
+    {
+      $op='del';
+      $features2[$op] = array();
+      foreach($args->achecked_tc as $key_tc => $platform_tcversion)
+      {
+        foreach($platform_tcversion as $platform_id => $tcversion_id)
+        {
+          $feature_id = $args->feature_id[$key_tc][$platform_id];
+
+          $features2[$op][$feature_id]['type'] = $task_test_execution;
+          $features2[$op][$feature_id]['build_id'] = $args->build_id; 
+        }
+
+      }
+      
+      foreach($features2 as $key => $values)
+      {
+        if( count($features2[$key]) > 0 )
+        {
+          $assignment_mgr->delete_by_feature_id_and_build_id($values);
+          $called[$key]=true;
+        }  
+      }
+         
+    }  
+  break; 
 
   case 'doRemove':
     $signature[] = array('type' => $task_test_execution, 'user_id' => $args->targetUser, 
@@ -203,7 +233,8 @@ function init_args()
   {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
-    
+  
+
   // For more information about the data accessed in session here, see the comment
   // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
   $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
@@ -257,6 +288,12 @@ function init_args()
   $args->targetFeature = intval(isset($_REQUEST['targetFeature']) ? $_REQUEST['targetFeature'] : 0);  
   $args->targetUser = intval(isset($_REQUEST['targetUser']) ? $_REQUEST['targetUser'] : 0);  
 
+
+  $args->doBulkUserRemove = isset($_REQUEST['doBulkUserRemove']) ? 1 : 0;
+  if($args->doBulkUserRemove)
+  {
+    $args->doAction = 'doBulkRemove';
+  }  
   return $args;
 }
 

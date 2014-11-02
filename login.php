@@ -258,7 +258,7 @@ function authorizePostProcessing($argsObj,$op)
       {
         // ... or show main page
         redirect($_SESSION['basehref'] . "index.php?caller=login" . 
-            ($argsObj->preqURI ? "&reqURI=".urlencode($argsObj->preqURI) :""));
+                 ($argsObj->preqURI ? "&reqURI=".urlencode($argsObj->preqURI) :""));
       
       }
       exit(); // hmm seems is useless

@@ -23,7 +23,8 @@ window.onload=function()
   {if $tlCfg->demoMode}{$labels.demo_usage}{/if}
   <form method="post" name="login_form" action="login.php">
     {if $gui->login_disabled eq 0}
-      <div class="messages_rounded" style="width:100%;text-align:center;border-radius: 5px;">{$gui->note|escape}</div>
+      {* can not escape not because sometimes contains valid HTML like HREF *}
+      <div class="messages_rounded" style="width:100%;text-align:center;border-radius: 5px;">{$gui->note}</div>
       <input type="hidden" name="reqURI" value="{$gui->reqURI|escape:'url'}"/>
       <input type="hidden" name="destination" value="{$gui->destination|escape:'url'}"/>
       <div class="messages_rounded" style="width:100%;border-radius: 5px;">

@@ -824,6 +824,11 @@ $tlCfg->exec_cfg->expand_collapse->platform_description = LAST_USER_CHOICE;
 $tlCfg->exec_cfg->expand_collapse->build_description = LAST_USER_CHOICE;
 $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
+// true => When saving an execution, already linked bugs are automatically linked to the new execution
+// false => When saving an execution, links between bugs and the new execution are lost (pre 1.9.12 behaviour)
+// 
+$tlCfg->exec_cfg->copy_linked_bugs = true;
+
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */

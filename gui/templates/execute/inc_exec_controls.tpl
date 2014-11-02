@@ -59,11 +59,20 @@ Rev:
                   {$addBR=1}
                 {/if}
                 
-                {if $gui->tlCanCreateIssue}
+				
+			  {if $gui->tlCanCreateIssue}
                   {if $addBR}<br>{/if} 
                   {$labels.bug_create_into_bts}&nbsp;
                   <input type="checkbox" name="createIssue"  id="createIssue">
                 {/if}
+				
+                {if $tlCfg->exec_cfg->gui_copy_linked_bugs}
+				<br>
+                  Link existants bugs to Execution&nbsp;
+                  <input type="checkbox" name="linkIssues"  id="linkIssues">
+                {/if}
+				
+				
                   
                 <br />
                 <br />    

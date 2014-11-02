@@ -74,6 +74,8 @@ function initializeGui(&$dbHandler,&$argsObj)
   $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
                                   LOW => lang_get('low_importance'));
 
+ 
+  $dummy = getConfigAndLabels('testCaseStatus','code');
+  $gui->domainTCStatus = array(0 => '') + $dummy['lbl'];
   return $gui;
 }
-?>

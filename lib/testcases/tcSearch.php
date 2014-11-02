@@ -15,7 +15,7 @@
  *
  *
  *  @internal revisions
- *  @since 1.9.11
+ *  @since 1.9.13
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -123,6 +123,12 @@ if ($args->tprojectID)
   {
     $filter['importance'] = " AND TCV.importance = {$args->importance} ";
   }  
+
+  if( $args->status > 0)
+  {
+    $filter['status'] = " AND TCV.status = {$args->status} ";
+  }  
+
 
   $args->created_by = trim($args->created_by);
   $from['users'] = '';
@@ -291,7 +297,8 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)
 function init_args($dateFormat)
 {
   $args = new stdClass();
-  $iParams = array("keyword_id" => array(tlInputParameter::INT_N),
+  $iParams = array("status" => array(tlInputParameter::INT_N),
+                   "keyword_id" => array(tlInputParameter::INT_N),
                    "version" => array(tlInputParameter::INT_N,999),
                    "custom_field_id" => array(tlInputParameter::INT_N),
                    "name" => array(tlInputParameter::STRING_N,0,50),

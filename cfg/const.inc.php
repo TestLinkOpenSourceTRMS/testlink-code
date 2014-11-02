@@ -886,6 +886,9 @@ $tlCfg->results['charts']['dimensions'] =
   );              
   
 // if you need to define new one, start on 20 please.
+// see strings.txt for labels
+// $TLS_testCaseStatus_KEY => $TLS_testCaseStatus_draft
+//  
 $tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
                                 'reviewInProgress' => 3, 'rework' => 4, 
                                 'obsolete' => 5, 'future' => 6, 'final' => 7 );   

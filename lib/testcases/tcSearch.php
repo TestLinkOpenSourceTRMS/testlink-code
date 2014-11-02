@@ -21,7 +21,6 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db);
-$date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
 $smarty = new TLSmarty();
@@ -32,12 +31,12 @@ $tproject_mgr = new testproject($db);
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $filter = null;
-list($args,$filter) = init_args($date_format_cfg);
+list($args,$filter) = init_args($tproject_mgr);
 
-$gui = initializeGui($args);
+$gui = initializeGui($args,$tproject_mgr);
 $map = null;
 
-if ($args->tprojectID)
+if ($args->tprojectID && $args->doAction == 'doSearch')
 {
   $tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
                                               'requirements','req_coverage','tcsteps',
@@ -69,7 +68,7 @@ if ($args->tprojectID)
         
       $tcase_mgr = new testcase ($db);
       $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
-      $filter['by_tc_id'] = " AND NH_TCV.parent_id = {$tcaseID} ";
+      $filter['by_tc_id'] = " AND NH_TCV.parent_id = " . intval($tcaseID);
   }
   else
   {
@@ -202,8 +201,11 @@ if ($args->tprojectID)
   }
 }
 
+if($gui->doSearch)
+{
+  $gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
+}  
 
-$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
 if($gui->row_qty > 0)
 { 
   if ($map)
@@ -292,12 +294,13 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)
 
 /**
  *
- *
  */
-function init_args($dateFormat)
+function init_args(&$tprojectMgr)
 {
   $args = new stdClass();
-  $iParams = array("status" => array(tlInputParameter::INT_N),
+  $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,10),
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "status" => array(tlInputParameter::INT_N),
                    "keyword_id" => array(tlInputParameter::INT_N),
                    "version" => array(tlInputParameter::INT_N,999),
                    "custom_field_id" => array(tlInputParameter::INT_N),
@@ -317,13 +320,34 @@ function init_args($dateFormat)
                    "modification_date_from" => array(tlInputParameter::STRING_N),
                    "modification_date_to" => array(tlInputParameter::STRING_N));
     
+
+      
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
   $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-  $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+  if(is_null($args->tproject_id))
+  {
+    $args->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
+    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+  }  
+  else
+  {
+    $args->tprojectID = intval($args->tproject_id);
+    $info = $tprojectMgr->get_by_id($args->tprojectID);
+    $args->tprojectName = $info['name'];
+  }  
+
+  if($args->tprojectID <= 0)
+  {
+    throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
+  }   
+
+
+
 
   // convert "creation date from" to iso format for database usage
   $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
@@ -336,6 +360,7 @@ function init_args($dateFormat)
                'modification_date_to' => ' modification_ts <= ');
 
 
+  $dateFormat = config_get('date_format');
   $filter = null;
   foreach($k2w as $key => $value)
   {
@@ -349,6 +374,7 @@ function init_args($dateFormat)
       }
     }
   } 
+
   return array($args,$filter);
 }
 
@@ -357,13 +383,12 @@ function init_args($dateFormat)
  * 
  *
  */
-function initializeGui(&$argsObj)
+function initializeGui(&$argsObj,&$tprojectMgr)
 {
   $gui = new stdClass();
 
   $gui->pageTitle = lang_get('caption_search_form');
   $gui->warning_msg = '';
-  $gui->tcasePrefix = '';
   $gui->path_info = null;
   $gui->resultSet = null;
   $gui->tableSet = null;
@@ -372,8 +397,57 @@ function initializeGui(&$argsObj)
   $gui->refresh_tree = false;
   $gui->hilite_testcase_name = false;
   $gui->show_match_count = false;
-  $gui->tc_current_version = null;
   $gui->row_qty = 0;
+  $gui->doSearch = ($argsObj->doAction == 'doSearch');
+  $gui->tproject_id = intval($argsObj->tprojectID);
   
+  // ----------------------------------------------------
+  $gui->mainCaption = lang_get('testproject') . " " . $argsObj->tprojectName;
+  $gui->creation_date_from = null;
+  $gui->creation_date_to = null;
+  $gui->modification_date_from = null;
+  $gui->modification_date_to = null;
+  $gui->search_important_notice = sprintf(lang_get('search_important_notice'),$argsObj->tprojectName);
+
+  $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,cfield_mgr::ENABLED,null,'testcase');
+
+  $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
+
+  $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
+  $gui->filter_by['keyword'] = !is_null($gui->keywords);
+
+  $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
+  $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
+
+  $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
+                                  LOW => lang_get('low_importance'));
+
+ 
+  $dummy = getConfigAndLabels('testCaseStatus','code');
+  $gui->domainTCStatus = array(0 => '') + $dummy['lbl'];
+
+
+  // need to set values that where used on latest search (if any was done)
+  // $gui->importance = config_get('testcase_importance_default');
+  $gui->importance = intval($argsObj->importance);
+  $gui->status = intval($argsObj->status);
+  $gui->tcversion = (is_null($argsObj->version) || $argsObj->version == '') ? '' : intval($argsObj->version);
+
+  $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . config_get('testcase_cfg')->glue_character;
+
+
+  $gui->targetTestCase = (is_null($argsObj->targetTestCase) || $argsObj->targetTestCase == '') ? 
+                         $gui->tcasePrefix : $argsObj->targetTestCase;
+
+                       
+  $txtin = array("summary","steps","expected_results","preconditions","name","created_by","edited_by");
+  foreach($txtin as $key )
+  {
+    $gui->$key = $argsObj->$key;
+  }  
+                   
+
+
+
   return $gui;
 }

@@ -207,8 +207,8 @@
        {/if}
       </a>
       {if $gui->hasTestCases}
-      <br />
-          <a href="{$gui->launcher}?feature=searchTc">{$labels.href_search_tc}</a>
+        <br />
+        <a href="lib/testcases/tcSearch.php?doAction=userInput&tproject_id={$gui->testprojectID}">{$labels.href_search_tc}</a>
       {/if}    
       
     {if $gui->hasKeywords}  
@@ -221,10 +221,9 @@
     {/if}
       
      {if $gui->grants.modify_tc eq "yes"}
-        <br />
-        <a href="lib/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&tproject_id={$gui->testprojectID}">{$labels.link_report_test_cases_created_per_user}</a>
+       <br />
+       <a href="lib/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&tproject_id={$gui->testprojectID}">{$labels.link_report_test_cases_created_per_user}</a>
      {/if}
-
     
     </div>
   {/if}

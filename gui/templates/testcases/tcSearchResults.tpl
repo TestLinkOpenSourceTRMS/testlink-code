@@ -7,7 +7,7 @@ Purpose: smarty template - view test case in test specification
 
 {include file="inc_head.tpl" openHead='yes'}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var="tableID" value="$matrix->tableID"}
+  {$tableID="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -22,20 +22,24 @@ Purpose: smarty template - view test case in test specification
 
 <h1 class="title">{$gui->pageTitle}</h1>
 
-<div class="workBack">
-{if $gui->warning_msg == ''}
-  {foreach from=$gui->tableSet key=idx item=matrix}
-    {assign var="tableID" value="table_$idx"}
-    {$matrix->renderBodySection($tableID)}
-  {/foreach}
-  <br />
-  {lang_get s='generated_by_TestLink_on'} {$smarty.now|date_format:$gsmarty_timestamp_format}
-{else}
-  <div class="user_feedback">
-  <br />
-  {$gui->warning_msg}
-  </div>
-{/if} 
+{include file="testcases/tcSearchGUI.inc.tpl"}
+
+{if $gui->doSearch}
+  <div class="workBack">
+  {if $gui->warning_msg == ''}
+    {foreach from=$gui->tableSet key=idx item=matrix}
+      {$tableIDe="table_$idx"}
+      {$matrix->renderBodySection($tableID)}
+    {/foreach}
+    <br />
+    {lang_get s='generated_by_TestLink_on'} {$smarty.now|date_format:$gsmarty_timestamp_format}
+  {else}
+    <div class="user_feedback">
+    <br />
+    {$gui->warning_msg}
+    </div>
+  {/if}
+{/if}    
 </div>
 </body>
 </html>

@@ -36,20 +36,7 @@ $imgSet = $smarty->getImages();
 $templateCfg = templateConfiguration();
 $args = init_args($db);
 $gui = initializeGui($db,$args,$imgSet);
-
-switch($args->do_action)
-{
-  case 'result':
-    $tpl = $templateCfg->default_template;
-  break;
-
-  case 'uinput':
-  default:
-    $tpl = 'tcCreatedPerUserOnTestProjectGUI.tpl';
-  break;
-}
-
-
+$tpl = $templateCfg->default_template;
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
@@ -83,6 +70,7 @@ function initializeGui(&$dbHandler,&$args,$images)
     break;
     
     case 'result':
+      initializeGuiForInput($dbHandler,$args,$gui);
       initializeGuiForResult($dbHandler,$args,$gui);
     break;
   }
@@ -91,6 +79,9 @@ function initializeGui(&$dbHandler,&$args,$images)
 }
 
 
+/**
+ *
+ */
 function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
 {
   $rcfg = config_get('results');
@@ -110,6 +101,7 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
   }
   
   $options = array();
+
   // convert starttime to iso format for database usage
   $dateFormat = config_get('date_format');
   $k2l = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
@@ -129,6 +121,7 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
   $options['endTime'] .= " " . (isset($argsObj->end_Hour) ? $argsObj->end_Hour : "00") . ":59:59";
 
   $mgr = new testproject($dbHandler);
+  $guiObj->searchDone = 1;
   $guiObj->resultSet = $mgr->getTestCasesCreatedByUser($argsObj->tproject_id,$argsObj->user_id,$options);
   if(!is_null($guiObj->resultSet)) 
   { 
@@ -203,27 +196,48 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
 }
 
 
+/**
+ *
+ */
 function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj)
 {
   
 	$room = config_get('gui_room');
 	$guiObj->str_option_any = sprintf($room,lang_get('any'));
 	$guiObj->str_option_none = sprintf($room,lang_get('nobody'));
+  $guiObj->warning_msg = '';
+  $guiObj->searchDone = 0;
   
 	$guiObj->users = new stdClass();
-
 	$guiObj->users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER,
 									                               array(TL_USER_ANYBODY => $guiObj->str_option_any) );
 
+  $guiObj->user_id = intval($argsObj->user_id);
 
   $dateFormat = config_get('date_format');
   $cfg = config_get('reportsCfg');
   $now = time();
-	$guiObj->selected_start_date = strftime($dateFormat, $now - ($cfg->start_date_offset));
-	$guiObj->selected_start_time = $cfg->start_time;
 
-	$guiObj->selected_end_date = strftime($dateFormat, $now);
-	$guiObj->selected_end_time = null;
+  if(is_null($argsObj->selected_start_date))
+  {
+    $guiObj->selected_start_date = strftime($dateFormat, $now - ($cfg->start_date_offset));
+    $guiObj->selected_start_time = $cfg->start_time;
+    
+    $guiObj->selected_end_date = strftime($dateFormat, $now);
+    $guiObj->selected_end_time = null;
+  }  
+  else
+  {
+    $guiObj->selected_start_date = $argsObj->selected_start_date[0];
+    $guiObj->selected_end_date = $argsObj->selected_end_date[0];
+
+    // we are using html_select_time (provided by Smarty Templates)
+    // then we need to provide selected in a format she likes.
+    $guiObj->selected_start_time = sprintf('%02d:00',$argsObj->start_Hour);
+    $guiObj->selected_end_time = sprintf('%02d:59',$argsObj->end_Hour);
+  } 
+
+
 }
 
 /**

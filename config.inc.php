@@ -830,7 +830,8 @@ $tlCfg->exec_cfg->gui_copy_linked_bugs = true;
 
 // true => When saving an execution, already linked bugs are automatically linked to the new execution
 // false => When saving an execution, links between bugs and the new execution are lost (pre 1.9.12 behaviour)
-$tlCfg->exec_cfg->copy_linked_bugs = true;
+$tlCfg->exec_cfg->default_copy_linked_bugs = true;
+
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */

@@ -685,6 +685,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
 }  
 // --------------------------------------------------------------------------------
 
+
 /*
   function: 
 
@@ -1358,7 +1359,7 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
 function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$cfgObj,&$tcaseMgr)
 {      
     $other_execs = null;
-    if($guiObj->history_on) 
+    if($guiObj->history_on)
     {
       // CRITIC see for key names - testcases.class.php -> getExecutionSet() 
       $execContext = array('testplan_id' => $argsObj->tplan_id, 'platform_id' => $argsObj->platform_id, 
@@ -1381,7 +1382,6 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
       // Warning!!!:
       // we can't use the data we have got with previous call to get_last_execution()
       // because if user have asked to save results last execution data may be has changed
-      
 	  $aux_map = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
                                                $argsObj->build_id,$argsObj->platform_id);
       if(!is_null($aux_map))

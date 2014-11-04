@@ -20,6 +20,8 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
+require_once('exec.inc.php');
+
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -417,6 +419,33 @@ function saveImportedResultData(&$db,$resultData,$context)
         $db->exec_query($sql); 
         $execution_id = $db->insert_id($tables['executions']);
 
+		//copy bugs from previous execution. 
+		if(config_get('copy_bugs_on_results_import')){
+			$order_Cfg = 'ASC';//force ordering to always access information at the same place
+			$options = array('exec_id_order' => $order_Cfg);
+			$other_execs = $tcase_mgr->getExecutionSet($tcase_id,$tcversion_id, null, $options);//all executions without testplan usage conditions
+			foreach($other_execs as $tcversion_id => $execInfo)
+			{
+				$nb_exec = sizeof($execInfo); 
+				$new_exec_id = $execInfo[$nb_exec - 1]['execution_id'];
+				if($nb_exec>1){ //a previous execution exists
+					$previous_exec_id = $execInfo[$nb_exec - 2]['execution_id'];
+					$sql = " /* $debugMsg */ " .            
+					   " SELECT bug_id ".
+						 "	FROM {$tables['execution_bugs']} " .
+					   " WHERE execution_id={$previous_exec_id} ";
+					$linked_bugs = $db->get_recordset($sql); 
+					if(count($linked_bugs) > 0)
+					{	
+						foreach($linked_bugs as $key => $value){  
+							write_execution_bug($db,$new_exec_id,$value[bug_id],false);
+						} 
+					}
+				}
+			}
+		}
+		
+		//inject new bug_id from xml file
         if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
         { 
           foreach($tcase_exec['bug_id'] as $bug_id)

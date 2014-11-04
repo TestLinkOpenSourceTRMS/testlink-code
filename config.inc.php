@@ -1415,6 +1415,10 @@ $tlCfg->import_file_max_size_bytes = '409600';
 /** Maximum line size of the imported file */
 $tlCfg->import_max_row = '10000'; // in chars
 
+/** Copy linked bugs of the previous tc execution to the new execution */
+// Used during XML import
+$tlCfg->copy_bugs_on_results_import = true;
+
 /** Set the default role used for new users */
 // - created from the login page.
 // - created using user management features

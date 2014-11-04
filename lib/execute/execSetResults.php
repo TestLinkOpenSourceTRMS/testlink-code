@@ -162,7 +162,29 @@ if(!is_null($linked_tcversions))
         $fmap[$fid]['type'] = $taskDomain['testcase_execution']['id'];
         $fmap[$fid]['status'] = $taskStatusDomain['open']['id'];
         $taskMgr->assign($fmap);
-      }  
+      } 
+	  
+		if($args->copyIssues){
+			if($args->level == 'testcase'){
+				$options = array('exec_id_order' => $cfgObj->exec_cfg->history_order);
+				$other_execs = $tcase_mgr->getExecutionSet($args->id,$args->version_id, null, $options);//all executions without testplan usage conditions
+				foreach($other_execs as $tcversion_id => $execInfo)
+				{
+					$nb_exec = sizeof($execInfo); 
+					$new_exec_id = $execInfo[$nb_exec - 1]['execution_id'];
+					if($nb_exec>1){ //a previous execution exists
+						$previous_exec_id = $execInfo[$nb_exec - 2]['execution_id'];
+						$linked_bugs = get_bugs_for_exec($db,$its,$previous_exec_id);
+						if(count($linked_bugs) > 0)
+						{	
+							foreach($linked_bugs as $bugID => $bugInfo){  
+								write_execution_bug($db,$new_exec_id,$bugID,false);
+							} 
+						}
+					}
+				}
+			}
+		} 
     }
 
     
@@ -381,6 +403,7 @@ function init_args(&$dbHandler,$cfgObj)
 
   $args->assignTask = isset($_REQUEST['assignTask']) ? 1: 0;
   $args->createIssue = isset($_REQUEST['createIssue']) ? 1: 0;
+  $args->copyIssues = isset($_REQUEST['copyIssues']) ? 1: 0;
 
   $args->tc_id = null;
   $args->tsuite_id = null;
@@ -661,7 +684,6 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
 
 }  
 // --------------------------------------------------------------------------------
-
 
 /*
   function: 
@@ -1336,7 +1358,7 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
 function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$cfgObj,&$tcaseMgr)
 {      
     $other_execs = null;
-    if($guiObj->history_on)
+    if($guiObj->history_on) 
     {
       // CRITIC see for key names - testcases.class.php -> getExecutionSet() 
       $execContext = array('testplan_id' => $argsObj->tplan_id, 'platform_id' => $argsObj->platform_id, 
@@ -1359,7 +1381,8 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
       // Warning!!!:
       // we can't use the data we have got with previous call to get_last_execution()
       // because if user have asked to save results last execution data may be has changed
-      $aux_map = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
+      
+	  $aux_map = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
                                                $argsObj->build_id,$argsObj->platform_id);
       if(!is_null($aux_map))
       {

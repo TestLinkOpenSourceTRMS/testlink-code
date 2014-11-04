@@ -69,7 +69,7 @@ Rev:
                 {if $tlCfg->exec_cfg->gui_copy_linked_bugs}
 				  <br>
                   Copy bugs from last Execution&nbsp;
-				  <input type="checkbox" name="linkIssues"  id="linkIssues" {if $tlCfg->exec_cfg->default_copy_linked_bugs} checked {/if}>
+				  <input type="checkbox" name="copyIssues[{$args_tcversion_id}]" id="copyIssues" {if $tlCfg->exec_cfg->default_copy_linked_bugs} checked {/if}>
                 {/if}
 				
 				

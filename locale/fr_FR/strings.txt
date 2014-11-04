@@ -1421,6 +1421,7 @@ $TLS_btn_save_exec_and_movetonext = "Enregistrer et passer au suivant";
 $TLS_bug_mgmt = "Gestion des anomalies";
 $TLS_bug_link_tl_to_bts = "Lier à une anomalie existante";
 $TLS_bug_create_into_bts = "Créer une anomalie";
+$TLS_bug_copy_from_last_exec = "Copier les bogues de la dernière exécution";
 $TLS_btn_export_testcases = "Exporter les cas de test";
 $TLS_build_is_closed = "Le Build est fermé.";
 $TLS_builds_notes = "Description de Build";

@@ -58,7 +58,6 @@ Rev:
                   <input type="checkbox" name="assignTask"  id="assignTask">
                   {$addBR=1}
                 {/if}
-                
 				
 			  {if $gui->tlCanCreateIssue}
                   {if $addBR}<br>{/if} 
@@ -68,7 +67,7 @@ Rev:
 				
                 {if $tlCfg->exec_cfg->gui_copy_linked_bugs}
 				  <br>
-                  Copy bugs from last Execution&nbsp;
+				  {$labels.bug_copy_from_last_exec}&nbsp;
 				  <input type="checkbox" name="copyIssues[{$args_tcversion_id}]" id="copyIssues" {if $tlCfg->exec_cfg->default_copy_linked_bugs} checked {/if}>
                 {/if}
 				

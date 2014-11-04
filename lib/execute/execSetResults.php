@@ -166,7 +166,7 @@ if(!is_null($linked_tcversions))
 	  
 		if($args->copyIssues){
 			if($args->level == 'testcase'){
-				$options = array('exec_id_order' => $cfgObj->exec_cfg->history_order);
+				$options = array('exec_id_order' => 'ASC');//force ordering to always access information at the same place
 				$other_execs = $tcase_mgr->getExecutionSet($args->id,$args->version_id, null, $options);//all executions without testplan usage conditions
 				foreach($other_execs as $tcversion_id => $execInfo)
 				{

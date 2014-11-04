@@ -825,17 +825,13 @@ $tlCfg->exec_cfg->expand_collapse->build_description = LAST_USER_CHOICE;
 $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 // true => GUI show an option to declare if bug must be copied for each execution
-// false => don't ask user, use default value (copy_linked_bugs)
+// false => don't ask user, use default value (default_copy_linked_bugs)
 $tlCfg->exec_cfg->gui_copy_linked_bugs = true;
 
-// true => When saving an execution, already linked bugs are automatically linked to the new execution
-// false => When saving an execution, links between bugs and the new execution are lost (pre 1.9.12 behaviour)
+// true => When saving an execution, bugs already linked to the last testcase execution are automatically linked to the new execution
+// false => When saving an execution, links between bugs and the new execution are lost (pre 1.9.13 behaviour)
 $tlCfg->exec_cfg->default_copy_linked_bugs = true;
 
-// true => When saving an execution, already linked bugs are automatically linked to the new execution
-// false => When saving an execution, links between bugs and the new execution are lost (pre 1.9.12 behaviour)
-// 
-$tlCfg->exec_cfg->copy_linked_bugs = true;
 
 
 // ----------------------------------------------------------------------------

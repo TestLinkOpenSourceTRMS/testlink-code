@@ -13,8 +13,14 @@
  * @copyright 	2003, TestLink community
  * @link 		http://www.teamst.org/index.php
  *
+ * ------------------------------------------------------------------------------------- 
+ * Spanish (es_ES) translation
+ * -------------------------------------------------------------------------------------
+ * Translated by: Jesus Hernandez
+ * Date: 2014/11/04
+ * -------------------------------------------------------------------------------------
  **/
 
-$TLS_test_status_my_status = "This is my custom result";
+$TLS_test_status_my_status = "Este es mi resultado personalizado";
 
 ?>

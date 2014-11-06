@@ -3,7 +3,7 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * English (en_GB) texts for help/instruction pages. Strings for dynamic pages
+ * Spanish (es_ES) texts for help/instruction pages. Strings for dynamic pages
  * are stored in strings.txt pages.
  *
  * Here we are defining GLOBAL variables. To avoid override of other globals
@@ -21,12 +21,12 @@
  * @version    	CVS: $Id: texts.php,v 1.29 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * -------------------------------------------------------------------------------------- 
+ * ------------------------------------------------------------------------------------- 
  * Spanish (es_ES) translation
- * --------------------------------------------------------------------------------------
- * Translated by: Jesús Hernández
- * Date: 2012/12/29
- * --------------------------------------------------------------------------------------
+ * -------------------------------------------------------------------------------------
+ * Translated by: Jesus Hernandez
+ * Date: 2014/11/04
+ * -------------------------------------------------------------------------------------
  **/
 
 
@@ -114,7 +114,6 @@ no distingue minúsculas de mayúsculas. Los resultados incluyen sólo los casos
 	<li>Todos los casos de prueba que cumplen los criterios son mostrados. Puedes modificar los casos de prueba mediante el enlace 'Título'.</li>
 </ol>";
 
-/* contribution by asimon for 2976 */
 // requirements search
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['searchReq']	= "Pantalla de Búsqueda de Requisitos";
@@ -192,7 +191,12 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>Puedes gestionar documentos de Especificac
 <h2>Especificación de Requisitos</h2>
 
 <p>Los requisitos están agrupados por documento de <b>Especificación de Requisitos</b> que están relacionados al 
-Proyecto de Pruebas.<br /> TestLink no soporta (aún) versiones para la Especificación de Requisitos
+Proyecto de Pruebas.</p>
+
+<p>Los documentos de Especificación de Requisitos pueden estar ordenados jerárquicamente. 
+Crear el nivel superior de los documentos de Especificación de Requisitos ulsando en el nodo del proyecto. </p>
+
+<p>TestLink no soporta (aún) versiones para la Especificación de Requisitos
 y los Requisitos en sí mismos. Por tanto, la versión del documento debe ser añadida después de
 un <b>Título</b> de Especificación.
 Un usuario puede añadir una simple descripción o notas al campo <b>Descripción</b>.</p>

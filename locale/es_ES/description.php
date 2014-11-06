@@ -3,7 +3,7 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Localization: English (en_GB) texts - default development localization (World-wide English)
+ * Localization: Spanish (es_ES) texts - en_GB is the default development localization (World-wide English)
  *
  * 
  * The file contains global variables with html text. These variables are used as 
@@ -14,7 +14,7 @@
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
  *
- * No revision is stored for the the file - see CVS history
+ * No revision is stored for the file - see CVS history
  * 
  * 
  * @package 	TestLink
@@ -29,8 +29,8 @@
  * ------------------------------------------------------------------------------------- 
  * Spanish (es_ES) translation
  * -------------------------------------------------------------------------------------
- * Translated by: Jesús Hernández
- * Date: 2012/12/29
+ * Translated by: Jesus Hernandez
+ * Date: 2014/11/04
  * -------------------------------------------------------------------------------------
  **/
 
@@ -253,6 +253,27 @@ que la cobertura sea del 40%.
 ";
 
 
+// planAddTC_m1.tpl
+$TLS_hlp_planAddTC = "<h2>En relación con 'Guardar Campos personalizados'</h2>
+Si has definidos y asignado Campos Personalizados al<br /> 
+Proyecto de Pruebas con las opciones:<br />
+ 'Mostrar en plan de pruebas' y <br />
+ 'Habilitar en el diseño del plan de pruebas'<br />
+los verás en esta pantalla SÓLO para los Casos de Prueba asignados al Plan de Pruebas.
+";
+
+
+// resultsByTesterPerBuild.tpl
+$TLS_hlp_results_by_tester_per_build_table = "<b>Más información sobre los testers:</b><br />
+Si pulsas en el nombre de un tester en esta tabla, verás un resumen más detallado
+de todos los Casos de Prueba asignados a ese usuario y su progreso de ejecución de pruebas.<br /><br />
+<b>Nota:</b><br />
+Este informe muestra los casos de prueba que están asignados a un usuario en concreto y que han sido ejecutados 
+en la build activa. Incluso si un caso de prueba ha sido ejecutado por un usuario diferente al que tiene asignado, 
+el caso de prueba will aparecerá como ejecutado por el usuario asignado.
+";
+
+
 // req_edit
 $TLS_hlp_req_edit = "<h3>Enlaces Internos:</h3>
 <p>Los Enlaces Internos sirven para crear enlaces a otros requisitos/especificaciones de requisitos 
@@ -312,27 +333,6 @@ una versión y un objetivo al que dirigirse:<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
 Esta sintaxis también funciona para especificaciones de requisitos (el atributo versión no se tiene en cuenta).<br />
 Si no especificas una versión, se mostrará el requisito completo incluyendo todas las versiones.</p>
-";
-
-
-// planAddTC_m1.tpl
-$TLS_hlp_planAddTC = "<h2>En relación con 'Guardar Campos personalizados'</h2>
-Si has definidos y asignado Campos Personalizados al<br /> 
-Proyecto de Pruebas con las opciones:<br />
- 'Mostrar en plan de pruebas' y <br />
- 'Habilitar en el diseño del plan de pruebas'<br />
-los verás en esta pantalla SÓLO para los Casos de Prueba asignados al Plan de Pruebas.
-";
-
-
-// resultsByTesterPerBuild.tpl
-$TLS_hlp_results_by_tester_per_build_table = "<b>Más información sobre los testers:</b><br />
-Si pulsas en el nombre de un tester en esta tabla, verás un resumen más detallado
-de todos los Casos de Prueba asignados a ese usuario y su progreso de ejecución de pruebas.<br /><br />
-<b>Nota:</b><br />
-Este informe muestra los casos de prueba que están asignados a un usuario en concreto y que han sido ejecutados 
-en la build activa. Incluso si un caso de prueba ha sido ejecutado por un usuario diferente al que tiene asignado, 
-el caso de prueba will aparecerá como ejecutado por el usuario asignado.
 ";
 
 

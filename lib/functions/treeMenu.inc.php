@@ -18,22 +18,6 @@
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 require_once("execTreeMenu.inc.php");
 
-/**
-* strip potential newlines and other unwanted chars from strings
-* Mainly for stripping out newlines, carriage returns, and quotes that were 
-* causing problems in javascript using jtree
-*
-* @param string $str
-* @return string string with the newlines removed
-*/
-function filterString($str)
-{
-  // avoid escaped characters in trees
-  $str = str_replace(array("\n","\r"), array("",""), $str);
-  $str = htmlspecialchars($str, ENT_QUOTES);  
-  return $str;
-}
-
 /** 
  * generate data for tree menu of Test Specification
  *
@@ -691,7 +675,12 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
   }
     
   // custom Property that will be accessed by EXT-JS using node.attributes
-  $node['testlink_node_name'] = filterString($node['name']);
+  // strip potential newlines and other unwanted chars from strings
+  // Mainly for stripping out newlines, carriage returns, and quotes that were 
+  // causing problems in javascript using jtree
+  $node['testlink_node_name'] = str_replace(array("\n","\r"), array("",""), $node['testlink_node_name']);
+  $node['testlink_node_name'] = htmlspecialchars($node['testlink_node_name'], ENT_QUOTES);  
+
   $node['testlink_node_type'] = $hash_id_descr[$node['node_type_id']];
   $node['forbidden_parent'] = $forbidden_parents[$node['testlink_node_type']];
 
@@ -814,8 +803,9 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     $opt['showTestCaseExecStatus'] = isset($opt['showTestCaseExecStatus']) ? $opt['showTestCaseExecStatus'] : true;
     $opt['nodeHelpText'] = isset($opt['nodeHelpText']) ? $opt['nodeHelpText'] : array();
   }
-  $name = filterString($node['name']);
 
+  $name = $node['name'];
+  
   // custom Property that will be accessed by EXT-JS using node.attributes
   $node['testlink_node_name'] = $name;
   $node['testlink_node_type'] = $node_type;
@@ -858,6 +848,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     
       if($opt['showTestCaseID'])
       {
+        // optimizable
         $node['text'] .= "<b>" . htmlspecialchars($testCasePrefix . $node['external_id']) . "</b>:";
       } 
       $node['text'] .= "{$name}</span>";

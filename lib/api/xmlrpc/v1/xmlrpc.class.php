@@ -4086,8 +4086,6 @@ public function getTestCase($args)
 
     // Here steps and expected results are not needed => do not request => less data on network
     // $options = array('getSteps' => 0);
-    // $last_exec = $this->tcaseMgr->get_last_execution($tcase_id,testcase::ALL_VERSIONS,
-    //                                                 $testplan_id,$build_id,$platform_id,$options);
     $opt = array('output' => 'exec_id');
     $exec_id = $this->tcaseMgr->getLatestExecSingleContext(array('id' => $tcase_id, 'version_id' => null),
                                                            $execContext, $opt);

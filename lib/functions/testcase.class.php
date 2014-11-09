@@ -3253,15 +3253,16 @@ class testcase extends tlObjectWithAttachments
     $status_not_run = $resultsCfg['status_code']['not_run'];
 
     $filterKeys = array('build_id','platform_id');
-        foreach($filterKeys as $key)
-        {
-          $filterBy[$key] = '';
-          if( !is_null($$key) )
-          {
-            $itemSet = implode(',', (array)$$key);
-            $filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
-          }
-        }
+    foreach($filterKeys as $key)
+    {
+      $filterBy[$key] = '';
+      if( !is_null($$key) )
+      {
+        $itemSet = implode(',', (array)$$key);
+        $filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
+      }
+    }
+
     $where_clause_1 = '';
     $where_clause_2 = '';
     $add_columns='';
@@ -6908,4 +6909,24 @@ class testcase extends tlObjectWithAttachments
     return $xmlStr;
   }
   
+
+  /**
+   * Will do analisys IGNORING test plan, platform and build
+   * get info of execution WRITTEN to DB.
+   *
+   */
+  function getSystemWideLastestExecutionID($tcversion_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* $debugMsg */ " . 
+           " SELECT MAX(e.id) AS execution_id " .
+           " FROM {$this->tables['executions']} e " .
+           " WHERE e.tcversion_id = " . intval($tcversion_id);       
+
+
+    $rs = $this->db->get_recordset($sql);
+    return intval($rs[0]['execution_id']);
+  }
+
+
 }  

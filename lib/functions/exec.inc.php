@@ -143,6 +143,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
       // at least for Postgres DBMS table name is needed. 
       $execution_id = $db->insert_id($executions_table);
       
+      $execSet[$tcversion_id] = $execution_id;
       
       if( $has_custom_fields )
       {
@@ -254,9 +255,10 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         $execContext->user = $exec_signature->user;
         addIssue($db,$execContext,$issueTracker);
       }  
-
     }
   }
+
+  return $execSet;
 }
 
 /**
@@ -409,6 +411,21 @@ function delete_execution(&$db,$exec_id)
 
   // Attachments NEED special processing.
   
+  // get test step exec attachments if any exists
+  $dummy = " SELECT id FROM {$tables['execution_tcsteps']} " . 
+           " WHERE execution_id = {$sid}";
+  
+  $rs = $db->fetchRowsIntoMap($dummy,'id');
+  if(!is_null($rs))
+  {
+    foreach($rs as $fik => $v)
+    {
+      deleteAttachment($db,$fik,false);
+    }  
+  }  
+
+
+  // execution attachments
   $dummy = " SELECT id FROM {$tables['attachments']} " . 
            " WHERE fk_table = 'executions' AND fk_id = {$sid}";
   
@@ -498,8 +515,6 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
         {
           if(!isset($bugCache[$elem['bug_id']]))
           {
-            // echo $elem['bug_id'] . '<br>';
-            // $cc++;
             $dummy = $bug_interface->buildViewBugLink($elem['bug_id'],$opt);
             $bugCache[$elem['bug_id']]['link_to_bts'] = $dummy->link;
             $bugCache[$elem['bug_id']]['build_name'] = $elem['build_name'];
@@ -521,7 +536,6 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
       }
     }
   }
-  //echo $cc;
   return $bugSet;
 }
 
@@ -578,3 +592,44 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   }
   return array($opOK,$msg);
 }
+
+
+/**
+ * copy issues from execution to another execution
+ *
+ */
+function copyIssues(&$dbHandler,$source,$dest)
+{
+  $debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
+
+  $tables = tlObjectWithDB::getDBTables(array('execution_bugs'));
+  $blist=array();
+
+  $sql = "/* $debugMsg */ SELECT bug_id FROM {$tables['execution_bugs']} " .
+         " WHERE execution_id = " . intval($source);
+
+  $linkedIssues = $dbHandler->fetchRowsIntoMap($sql,'bug_id');
+  if( !is_null($linkedIssues) )
+  {  
+    $idSet = array_keys($linkedIssues);
+    $safeDest = intval($dest);
+
+    $blist = implode("','", $idSet);
+    $sql = "/* $debugMsg */ DELETE FROM {$tables['execution_bugs']} " . 
+           " WHERE execution_id=" . $safeDest .
+           " AND bug_id IN ('" . $blist ."')";
+  
+    $dbHandler->exec_query($sql);
+  
+    $dummy = array();
+    foreach($idSet as $bi)
+    {
+      $dummy[] = "({$safeDest},$bi)";
+    }
+    $sql = "INSERT INTO {$tables['execution_bugs']} (execution_id,bug_id) VALUES " .
+           implode(",", $dummy);
+
+    $dbHandler->exec_query($sql);         
+  }
+
+} 

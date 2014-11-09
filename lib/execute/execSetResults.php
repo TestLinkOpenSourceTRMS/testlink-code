@@ -145,10 +145,19 @@ if(!is_null($linked_tcversions))
     // this has to be done to do not break logic present on write_execution()
     $args->save_results = $args->save_and_next ? $args->save_and_next : 
                           ($args->save_results ? $args->save_results : $args->save_and_exit);
+
     if( $args->save_results || $args->do_bulk_save)
     {  
+      // Need to get Latest execution ID before writing
+      $lexid = 0;
+      if($args->copyIssues && $args->level == 'testcase')
+      {
+        $lexid = $tcase_mgr->getSystemWideLastestExecutionID($args->version_id);
+      }  
+
+
       $_REQUEST['save_results'] = $args->save_results;
-      write_execution($db,$args,$_REQUEST,$its);
+      $execSet = write_execution($db,$args,$_REQUEST,$its);
 
       if($args->assignTask)
       {
@@ -163,7 +172,16 @@ if(!is_null($linked_tcversions))
         $fmap[$fid]['status'] = $taskStatusDomain['open']['id'];
         $taskMgr->assign($fmap);
       }  
+
+      if($lexid > 0 && $args->copyIssues && $args->level == 'testcase')
+      {
+        copyIssues($db,$lexid,$execSet[$args->version_id]);
+      } 
     }
+
+
+
+
 
     
     // Need to re-read to update test case status
@@ -381,6 +399,8 @@ function init_args(&$dbHandler,$cfgObj)
 
   $args->assignTask = isset($_REQUEST['assignTask']) ? 1: 0;
   $args->createIssue = isset($_REQUEST['createIssue']) ? 1: 0;
+  $args->copyIssues = isset($_REQUEST['copyIssues']) ? 1: 0;
+
 
   $args->tc_id = null;
   $args->tsuite_id = null;
@@ -694,11 +714,11 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
       
       if($bugInterfaceOn)
       {
-      $the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
-      if(count($the_bugs) > 0)
-      {
-        $bugs[$exec_id] = $the_bugs;
-      }  
+        $the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
+        if(count($the_bugs) > 0)
+        {
+          $bugs[$exec_id] = $the_bugs;
+        }  
       }
 
       // Custom fields
@@ -1460,9 +1480,9 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$testSet,&$treeMgr,&$tc
 }
 
 
-
-
-
+/**
+ *
+ */
 function buildExecContext(&$argsObj,$tcasePrefix,&$tplanMgr,&$tcaseMgr)
 {
   $debugMsg = "File:" . __FILE__ . "Function:" . __FUNCTION__;

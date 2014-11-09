@@ -24,7 +24,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
-  estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,
+  estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
 	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
   bulk_tc_status_management,access_test_steps_exec,assign_exec_task_to_me,

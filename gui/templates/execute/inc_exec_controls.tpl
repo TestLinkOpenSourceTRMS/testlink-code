@@ -46,7 +46,7 @@ Rev:
                 
 
     					  <br />		
-                {$labels.execution_duration}&nbsp;
+                {$args_labels.execution_duration}&nbsp;
                 <input type="text" name="execution_duration" id="execution_duration"
                        size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
 
@@ -54,17 +54,25 @@ Rev:
                 <br />
                 {$addBR=0}
                 {if $tc_exec.assigned_user == ''}
-                  {$labels.assign_exec_task_to_me}&nbsp;
+                  {$args_labels.assign_exec_task_to_me}&nbsp;
                   <input type="checkbox" name="assignTask"  id="assignTask">
                   {$addBR=1}
                 {/if}
                 
                 {if $gui->tlCanCreateIssue}
                   {if $addBR}<br>{/if} 
-                  {$labels.bug_create_into_bts}&nbsp;
+                  {$args_labels.bug_create_into_bts}&nbsp;
                   <input type="checkbox" name="createIssue"  id="createIssue">
                 {/if}
-                  
+
+                {if $tlCfg->exec_cfg->copyLatestExecIssues->enabled}
+                  {if $addBR}<br>{/if}
+                  {$args_labels.bug_copy_from_latest_exec}&nbsp;
+                   <input type="checkbox" name="copyIssues[{$args_tcversion_id}]" id="copyIssues" 
+                    {if $tlCfg->exec_cfg->copyLatestExecIssues->default} checked {/if}>
+                {/if}
+
+
                 <br />
                 <br />    
     		 			      <input type="submit" name="save_results[{$args_tcversion_id}]" 
@@ -96,5 +104,5 @@ Rev:
         {/if}
   		</table>
       <div class="messages" style="align:center;">
-      {$labels.exec_not_run_result_note}
+      {$args_labels.exec_not_run_result_note}
       </div>

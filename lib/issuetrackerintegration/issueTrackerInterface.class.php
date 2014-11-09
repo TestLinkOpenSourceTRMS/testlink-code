@@ -300,13 +300,17 @@ abstract class issueTrackerInterface
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     $link = "<a href='" . $this->buildViewBugURL($issueID) . "' target='_blank'>";
-
     $issue = $this->getIssue($issueID);
-    
+
+    $ret = new stdClass();
+    $ret->link = '';
+    $ret->isResolved = false;
+    $ret->op = false;
+
     if( is_null($issue) || !is_object($issue) )
     {
-      $link = '';
-      return $link;
+      $ret->link = "TestLink Internal Message: getIssue($issueID) FAILURE on " . __METHOD__;
+      return $ret;
     }
     
     $useIconv = property_exists($this->cfg,'dbcharset');
@@ -337,6 +341,9 @@ abstract class issueTrackerInterface
 
     if($my['opt']['addSummary'])
     {
+
+      new dBug((string)$issue->summaryHTMLString);
+
       if (!is_null($issue->summaryHTMLString))
       {
         $link .= " : ";
@@ -346,7 +353,7 @@ abstract class issueTrackerInterface
         }
         else
         {
-          $link .= $issue->summaryHTMLString;
+          $link .= (string)$issue->summaryHTMLString;
         }
       }
     }
@@ -361,6 +368,7 @@ abstract class issueTrackerInterface
     $ret = new stdClass();
     $ret->link = $link;
     $ret->isResolved = $issue->isResolved;
+    $ret->op = true;
 
     if( isset($my['opt']['raw']) && !is_null(isset($my['opt']['raw'])) )
     {

@@ -65,7 +65,7 @@ class mantissoapInterface extends issueTrackerInterface
    **/
   function buildViewBugURL($id)
   {
-    return $this->cfg->uriview . urlencode($id);
+    return (string)($this->cfg->uriview . urlencode($id));
   }
   
   
@@ -156,10 +156,15 @@ class mantissoapInterface extends issueTrackerInterface
     }
     
     $status_ok = 0;
-    $safe_id = intval($id);
+
+    $safe = new stdClass();
+    $safe->username = (string)$this->cfg->username;
+    $safe->password = (string)$this->cfg->password;
+    $safe->id = intval($id);
+
     try
     {
-      $status_ok = $client->mc_issue_exists((string)$this->cfg->username,(string)$this->cfg->password,$safe_id) ? 1 : 0;
+      $status_ok = $client->mc_issue_exists($safe->username,$safe->password,$safe->id) ? 1 : 0;
     }
     catch (SoapFault $f) 
     {
@@ -190,7 +195,7 @@ class mantissoapInterface extends issueTrackerInterface
     {
       return false;
     }
-    
+
     if(is_null($client))
     {
       $dummy = $this->getClient();
@@ -198,13 +203,18 @@ class mantissoapInterface extends issueTrackerInterface
     }
 
     $status = false;
-    $safe_id = intval($id);
     $issue = null;
     try
     {
-      if($client->mc_issue_exists($this->cfg->username,$this->cfg->password,$safe_id))
+      $safe = new stdClass();
+      $safe->username = (string)$this->cfg->username;
+      $safe->password = (string)$this->cfg->password;
+      $safe->id = intval($id);
+
+
+      if($client->mc_issue_exists($safe->username,$safe->password,$safe->id))
       {
-        $issue = $client->mc_issue_get($this->cfg->username,$this->cfg->password,$safe_id);
+        $issue = $client->mc_issue_get($safe->username,$safe->password,$safe->id);
         if( !is_null($issue) && is_object($issue) )
         {       
           $issue->IDHTMLString = "<b>{$id} : </b>";
@@ -480,7 +490,7 @@ class mantissoapInterface extends issueTrackerInterface
    *
    *
    */
-  public function addNote($issueID,$noteText)
+  public function addNote($issueID,$noteText,$opt=null)
   {
     static $client;
     $ret = array('status_ok' => false,'msg' => '', 'note_id' => -1);
@@ -503,6 +513,15 @@ class mantissoapInterface extends issueTrackerInterface
     if($client->mc_issue_exists($safe->username,$safe->password,$safe->issueID))
     {
       $issueNoteData = array('text' => $noteText);
+
+      // If provided user tester as Reporter
+      if(!is_null($opt))
+      {
+        if(property_exists($opt, 'reporter'))
+        {
+          $issueNoteData['reporter'] = array('name' => $opt->reporter);
+        }  
+      }  
       $ret['note_id'] = $client->mc_issue_note_add($safe->username,$safe->password,$safe->issueID,$issueNoteData);
     }
     else

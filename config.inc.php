@@ -825,6 +825,21 @@ $tlCfg->exec_cfg->expand_collapse->build_description = LAST_USER_CHOICE;
 $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 
+
+$tlCfg->exec_cfg->copyLatestExecIssues = new stdClass();
+
+// true => When saving an execution, a new option will be displayed, and user will be
+//         able to do a choice
+//         COPY OR NOT issues linked to latest execution to the new execution
+// DEAFULT false => no option on GUI
+
+$tlCfg->exec_cfg->copyLatestExecIssues->enabled = FALSE;
+
+
+// value to set as default
+$tlCfg->exec_cfg->copyLatestExecIssues->default = FALSE;
+
+
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
 

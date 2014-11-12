@@ -1101,7 +1101,8 @@ class testsuite extends tlObjectWithAttachments
           $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
         } 
       }
-      $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
+      $xmlTC = '<testsuite id="' . $tsuiteData['id'] . '" ' .
+               'name="' . htmlspecialchars($tsuiteData['name']). '" >' .
                "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
                "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}";
     }

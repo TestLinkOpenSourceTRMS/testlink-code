@@ -12,7 +12,7 @@ require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
-$method="assignTestCaseExecutionTask";
+$method="unassignTestCaseExecutionTask";
 $utc = 0;
 $devKey = isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : 'admin';
 
@@ -27,8 +27,10 @@ $args["testcaseexternalid"] = 'DSM-1';
 // $args["platformname"] = 'Apache Derby';
 // $args["platformname"] = 'Informix';
 $args["buildname"] = '1.0';
-$args["user"] = 'David.Gilmour';
-//$args["user"] = 'Nick.Mason';
+$args["action"] = 'unassignAll';
+
+//$args["user"] = 'David.Gilmour';
+// $args["user"] = 'Nick.Mason';
 
 
 /*

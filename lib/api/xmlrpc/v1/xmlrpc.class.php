@@ -20,7 +20,7 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.12
+ * @since 1.9.13
  *
  */
 
@@ -5998,128 +5998,40 @@ protected function createAttachmentTempFile()
     */
   public function assignTestCaseExecutionTask($args)
   {
-    $operation=__FUNCTION__;
-    $msg_prefix="({$operation}) - ";
-    $status_ok=true;
-    $this->_setArgs($args);
-    $resultInfo=array();
-
-    // Checks are done in order
-    $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity','checkBuildID');
-    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
-
-    if( $status_ok )
-    {
-      if( ($status_ok = $this->_isParamPresent(self::$userParamName,$msg_prefix,self::SET_ERROR)) )
-      {
-        $tester_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);          
-        if( !($status_ok = !is_null($tester_id)) )
-        {  
-          $msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,$this->args[self::$userParamName]);
-          $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);  
-        }
-      }  
-    }
-
-    // Check if requested test case is linke to test plan
-    // if answer is yes, get link info, in order to be able to check if 
-    // we need also platform info
-    if( $status_ok )
-    {
-      $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
-                           'platform_id' => null,
-                           'build_id' => $this->args[self::$buildIDParamName]);
-
-      $tplan_id = $this->args[self::$testPlanIDParamName];
-      $tcase_id = $this->args[self::$testCaseIDParamName];
-      $filters = array('exec_status' => "ALL", 'active_status' => "ALL",
-                       'tplan_id' => $tplan_id, 'platform_id' => null);
-      
-      $info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters,array('output' => "feature_id"));
-
-      // more than 1 item => we have platforms
-      // access key => tcversion_id, tplan_id, platform_id
-      $link = current($info);
-      $link = $link[$tplan_id];   // Inside test plan, is indexed by platform
-      $hits = count($link);
-      $platform_id = 0;
-      $check_platform = (count($hits) > 1) || !isset($link[0]);
-    }
-
-    if( $status_ok && $check_platform )
-    {
-      // this means that platform is MANDATORY
-      if( !$this->_isParamPresent(self::$platformIDParamName,$msg_prefix) && 
-          !$this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
-      {
-        $status_ok = false;
-        $pname = self::$platformNameParamName . ' OR ' . self::$platformIDParamName; 
-        $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
-        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
-      }  
-      else
-      {
-        // get platform_id and check it
-        if( ($status_ok = $this->checkPlatformIdentity($tplan_id)) )
-        {
-          $platform_set = $this->tplanMgr->getPlatforms($tplan_id,array('outputFormat' => 'mapAccessByID', 
-                                                                        'outputDetails' => 'name'));
-
-          // Now check if link has all 3 components
-          // test plan, test case, platform
-          $platform_id = $this->args[self::$platformIDParamName];
-          $platform_info = array($platform_id => $platform_set[$platform_id]);
-
-          if( ($status_ok = $this->_checkTCIDAndTPIDValid($platform_info,$msg_prefix)) )
-          {
-            $execContext['platform_id'] = $platform_id;
-          }  
-        }  
-      }  
-    }
-
-    
-    if( $status_ok )
-    {
-      $assignment_mgr = new assignment_mgr($this->dbObj);
-      
-      // Remove old execution task assignment 
-      // `id` int(10) unsigned NOT NULL auto_increment,
-      // `type` int(10) unsigned NOT NULL default '1',
-      // `feature_id` int(10) unsigned NOT NULL default '0',
-      // `user_id` int(10) unsigned default '0',
-      // `build_id` int(10) unsigned default '0',
-      // `deadline_ts` datetime NULL,
-      // `assigner_id`  int(10) unsigned default '0',
-      // `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      // `status` int(10) unsigned default '1',
-
-      // ATTENTION WITH PLATFORMS
-      $link = is_null($execContext['platform_id']) ? $link[0] : $link[$execContext['platform_id']];
-
-
-      $feature = array($link['feature_id'] => array('build_id' => $execContext['build_id']));
-      $assignment_mgr->delete_by_feature_id_and_build_id($feature);
-
-      // Now assign
-      $types = $assignment_mgr->get_available_types();
-      $assign_status = $assignment_mgr->get_available_status();
-
-      $oo[$link['feature_id']]['type'] = $types['testcase_execution']['id'];
-      $oo[$link['feature_id']]['status'] = $assign_status['open']['id'];
-      $oo[$link['feature_id']]['user_id'] = $tester_id;
-      $oo[$link['feature_id']]['assigner_id'] = $this->userID;
-      $oo[$link['feature_id']]['build_id'] = $execContext['build_id'];
-      
-      $assignment_mgr->assign($oo);
-      
-      $resultInfo = array("status" => true, "args" => $this->args);
-      unset($resultInfo['args']['devKey']);
-    }  
-
-    return $status_ok ? $resultInfo : $this->errors;
+    $msgPrefix = "(" . __FUNCTION__ . ") - ";
+    $args['action'] = 'assignOne';
+    return $this->manageTestCaseExecutionTask($args,$msgPrefix); 
   }
 
+
+  /**
+    * @param struct $args
+    * @param string $args["devKey"]
+    * @param int $args["testplanid"]
+    * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
+    * @param int $args["buildid"] Mandatory => you can provide buildname as alternative
+    * @param int $args["buildname"] Mandatory => you can provide buildid (DB ID) as alternative
+    * @param int $args["platformid"] optional - BECOMES MANDATORY if Test plan has platforms
+    *                                           you can provide platformname as alternative  
+    *  
+    * @param int $args["platformname"] optional - BECOMES MANDATORY if Test plan has platforms
+    *                                           you can provide platformid as alternative  
+    * @param string $args["user'] - login name => tester 
+    *                             - NOT NEEDED f $args['action'] = 'unassignAll'
+    * ¸
+    *
+    */
+  public function unassignTestCaseExecutionTask($args)
+  {
+    $msgPrefix = "(" . __FUNCTION__ . ") - ";
+    if( !isset($args['action']) )
+    {
+      $args['action'] = 'unassignOne';
+    }  
+    return $this->manageTestCaseExecutionTask($args,$msgPrefix);  
+  }
+
+   
 
   /**
    * Gets the result of LAST EXECUTION for a particular testcase on a test plan.
@@ -6345,6 +6257,172 @@ protected function createAttachmentTempFile()
    }
  
 
+/**
+    * @param struct $args
+    * @param string $args["devKey"]
+    * @param string $args["action"]: assignOne, unassignOne, unassignAll
+    * 
+    * @param int $args["testplanid"]
+    * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
+    * @param int $args["buildid"] Mandatory => you can provide buildname as alternative
+    * @param int $args["buildname"] Mandatory => you can provide buildid (DB ID) as alternative
+    * @param int $args["platformid"] optional - BECOMES MANDATORY if Test plan has platforms
+    *                                           you can provide platformname as alternative  
+    *  
+    * @param int $args["platformname"] optional - BECOMES MANDATORY if Test plan has platforms
+    *                                           you can provide platformid as alternative  
+    * @param string $args["user'] - login name => tester
+    *
+    */
+  private function manageTestCaseExecutionTask($args,$msg_prefix)
+  {
+    $status_ok=true;
+    $this->_setArgs($args);
+    $resultInfo=array();
+
+    // Checks are done in order
+    $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity','checkBuildID');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+    if( $status_ok )
+    {
+      switch ($args['action'])
+      {
+        case 'assignOne':
+        case 'unassignOne':
+          if( ($status_ok = $this->_isParamPresent(self::$userParamName,$msg_prefix,self::SET_ERROR)) )
+          {
+            $tester_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);          
+            if( !($status_ok = !is_null($tester_id)) )
+            {  
+              $msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,$this->args[self::$userParamName]);
+              $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);  
+            }
+          }  
+        break;
+
+        case 'unassignAll':
+        break;
+      }
+    }
+      
+    // Check if requested test case is linked to test plan
+    // if answer is yes, get link info, in order to be able to check if 
+    // we need also platform info
+    if( $status_ok )
+    {
+      $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
+                           'platform_id' => null,
+                           'build_id' => $this->args[self::$buildIDParamName]);
+
+      $tplan_id = $this->args[self::$testPlanIDParamName];
+      $tcase_id = $this->args[self::$testCaseIDParamName];
+      $filters = array('exec_status' => "ALL", 'active_status' => "ALL",
+                       'tplan_id' => $tplan_id, 'platform_id' => null);
+      
+      $info = $this->tcaseMgr->get_linked_versions($tcase_id,$filters,array('output' => "feature_id"));
+
+      // more than 1 item => we have platforms
+      // access key => tcversion_id, tplan_id, platform_id
+      $link = current($info);
+      $link = $link[$tplan_id];   // Inside test plan, is indexed by platform
+      $hits = count($link);
+      $platform_id = 0;
+      $check_platform = (count($hits) > 1) || !isset($link[0]);
+    }
+
+    if( $status_ok && $check_platform )
+    {
+      // this means that platform is MANDATORY
+      if( !$this->_isParamPresent(self::$platformIDParamName,$msg_prefix) && 
+          !$this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
+      {
+        $status_ok = false;
+        $pname = self::$platformNameParamName . ' OR ' . self::$platformIDParamName; 
+        $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+      }  
+      else
+      {
+        // get platform_id and check it
+        if( ($status_ok = $this->checkPlatformIdentity($tplan_id)) )
+        {
+          $platform_set = $this->tplanMgr->getPlatforms($tplan_id,array('outputFormat' => 'mapAccessByID', 
+                                                                        'outputDetails' => 'name'));
+
+          // Now check if link has all 3 components
+          // test plan, test case, platform
+          $platform_id = $this->args[self::$platformIDParamName];
+          $platform_info = array($platform_id => $platform_set[$platform_id]);
+
+          if( ($status_ok = $this->_checkTCIDAndTPIDValid($platform_info,$msg_prefix)) )
+          {
+            $execContext['platform_id'] = $platform_id;
+          }  
+        }  
+      }  
+    }
+
+    
+    if( $status_ok )
+    {
+      $assignment_mgr = new assignment_mgr($this->dbObj);
+      $types = $assignment_mgr->get_available_types();
+      
+      // Remove old execution task assignment 
+      // `id` int(10) unsigned NOT NULL auto_increment,
+      // `type` int(10) unsigned NOT NULL default '1',
+      // `feature_id` int(10) unsigned NOT NULL default '0',
+      // `user_id` int(10) unsigned default '0',
+      // `build_id` int(10) unsigned default '0',
+      // `deadline_ts` datetime NULL,
+      // `assigner_id`  int(10) unsigned default '0',
+      // `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      // `status` int(10) unsigned default '1',
+
+      // ATTENTION WITH PLATFORMS
+      $link = is_null($execContext['platform_id']) ? $link[0] : $link[$execContext['platform_id']];
+      $feature = array($link['feature_id'] => array('build_id' => $execContext['build_id']));
+      
+      switch ($args['action'])
+      {
+        case 'unassignOne':
+          $signature[] = array('type' => $types['testcase_execution']['id'], 'user_id' => $tester_id, 
+                               'feature_id' => $link['feature_id'],'build_id' => $execContext['build_id']);
+          $assignment_mgr->deleteBySignature($signature);
+        break;
+
+        case 'assignOne':
+          // Step 1 - remove if exists
+          $signature[] = array('type' => $types['testcase_execution']['id'], 'user_id' => $tester_id, 
+                               'feature_id' => $link['feature_id'],'build_id' => $execContext['build_id']);
+          $assignment_mgr->deleteBySignature($signature);
+    
+          // Step 2 - Now assign
+          $assign_status = $assignment_mgr->get_available_status();
+
+          $oo[$link['feature_id']]['type'] = $types['testcase_execution']['id'];
+          $oo[$link['feature_id']]['status'] = $assign_status['open']['id'];
+          $oo[$link['feature_id']]['user_id'] = $tester_id;
+          $oo[$link['feature_id']]['assigner_id'] = $this->userID;
+          $oo[$link['feature_id']]['build_id'] = $execContext['build_id'];
+          $assignment_mgr->assign($oo);
+        break;
+
+        case 'unassignAll':
+          $oo[$link['feature_id']]['type'] = $types['testcase_execution']['id'];
+          $oo[$link['feature_id']]['build_id'] = $execContext['build_id'];
+          $assignment_mgr->delete_by_feature_id_and_build_id($oo);
+        break;
+      }  
+
+      $resultInfo = array("status" => true, "args" => $this->args);
+      unset($resultInfo['args']['devKey']);
+    }  
+
+    return $status_ok ? $resultInfo : $this->errors;
+  }
+
 
 
   /**
@@ -6411,6 +6489,7 @@ protected function createAttachmentTempFile()
                             'tl.updateTestCase' => 'this:updateTestCase',
                             'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
                             'tl.assignTestCaseExecutionTask' => 'this:assignTestCaseExecutionTask',
+                            'tl.unassignTestCaseExecutionTask' => 'this:unassignTestCaseExecutionTask',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

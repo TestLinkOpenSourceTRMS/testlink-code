@@ -67,7 +67,7 @@ $gui->total_reqs = 0;
 if (count($req_ids)) 
 {   
   list($gui->total_reqs,$req_spec_map,$testcases) = buildReqSpecMap($req_ids,$req_mgr,$req_spec_mgr,$tplan_mgr,
-                                    $args->states_to_show->selected,$args);
+                                                                    $args->states_to_show->selected,$args);
   if (!count($req_spec_map)) 
   {
     $gui->warning_msg = $labels['no_matching_reqs'];
@@ -77,11 +77,6 @@ else
 {
   $gui->warning_msg = $labels['no_srs_defined'];
 }
-
-//New dBug($req_spec_map);
-
-//New dBug($testcases);
-
 
 // second step: walk through req spec map, count/calculate, store results
 if(count($req_spec_map)) 
@@ -97,6 +92,8 @@ if(count($req_spec_map))
       $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['expected_coverage'] = 
         $req_spec_map[$req_spec_id]['requirements'][$req_id]['expected_coverage'];
     
+
+      new dBug($testcases);
       foreach ($req_info['linked_testcases'] as $key => $tc_info) 
       {
         $tc_id = $tc_info['id'];
@@ -137,6 +134,8 @@ if(count($req_spec_map))
 // last step: build the table
 if (count($req_spec_map)) 
 {
+  $allStatusCode = config_get('results');
+
   // headers
   $columns = array();
   $columns[] = array('title_key' => 'req_spec_short',
@@ -279,6 +278,7 @@ if (count($req_spec_map))
 
       // show all linked tcversions incl exec result
       $linked_tcs_with_status = '';
+      new dBug($status_code_map);
       if (count($req_info['linked_testcases']) > 0 ) 
       {
         foreach($req_info['linked_testcases'] as $testcase) 
@@ -289,10 +289,16 @@ if (count($req_spec_map))
           if(isset($testcases[$tc_id]['exec_status'])) 
           {
             $status = $testcases[$tc_id]['exec_status'];
+            $status_l10n = $eval_status_map[$status]['label'];
           }
-          
+          else
+          {
+            $not_run = $allStatusCode['status_code']['not_run'];
+            $status_l10n = $labels['not_in_testplan'];
+          }  
           $colored_status = '<span class="' . $eval_status_map[$status]['css_class'] . '">[' . 
-                            $eval_status_map[$status]['label'] . ']</span>';
+                            $status_l10n . ']</span>';
+
           
           $tc_name = $prefix . $testcase['tc_external_id'] . $title_sep . $testcase['name'];
           
@@ -583,13 +589,14 @@ function setUpLabels($reqCfg)
   $slbl = init_labels($reqCfg->status_labels);
 
   $labels = init_labels( array('requirement' => null,'requirements' => null,
-                       'type' => null,'req_availability' => null,
-                         'linked_tcs' => null,'no_linked_tcs' => null,
-                       'goto_testspec' => null,'design' => null,
-                       'no_label_for_req_type'  => null, 'progress' => null,
-                       'na' => 'not_aplicable', 'no_matching_reqs' => null,
-                             'execution' => null,'no_srs_defined' => null,
-                             'execution_history' => null, 'req_spec_short' => null));
+                               'type' => null,'req_availability' => null,
+                               'linked_tcs' => null,'no_linked_tcs' => null,
+                               'goto_testspec' => null,'design' => null,
+                               'no_label_for_req_type'  => null, 'progress' => null,
+                               'na' => 'not_aplicable', 'no_matching_reqs' => null,
+                               'execution' => null,'no_srs_defined' => null,
+                               'not_in_testplan' => null,
+                               'execution_history' => null, 'req_spec_short' => null));
 
   return array($rsptlbl,$rtlbl,$slbl,$labels);
 }

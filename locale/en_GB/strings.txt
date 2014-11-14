@@ -141,6 +141,7 @@ $TLS_navigator_update_linked_tcversions = "Update Linked Test Case Versions";
 
 $TLS_needed = "Needed";
 $TLS_not_aplicable = "N/A";
+$TLS_not_in_testplan = "Not in test plan";
 $TLS_notes = "Notes";
 $TLS_latest_exec_notes = "Notes (latest exec)";
 $TLS_step_exec_notes = "Execution notes";

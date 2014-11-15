@@ -714,10 +714,14 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
  *          and platforms have to be considered
  *
  */
-function get_coverage($id,$context=null)
+function get_coverage($id,$context=null,$options=null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
+  $my = array('options' => array('accessKey' => 'idx'));
+  $my['options'] = array_merge($my['options'], (array)$options);
+
+
   $safe_id = intval($id);
   $common = array();
   
@@ -748,7 +752,19 @@ function get_coverage($id,$context=null)
   }
   $sql .=  " ORDER BY tc_external_id ";
 
-  return $this->db->get_recordset($sql);
+
+  switch($my['options']['accessKey'])
+  {
+    case 'tcase_id':
+      $rs = $this->db->fetchRowsIntoMap($sql,'id');
+    break;
+
+    case 'idx':
+    default:
+      $rs = $this->db->get_recordset($sql);
+    break;
+  }
+  return $rs;
 }
 
 

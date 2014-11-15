@@ -6,12 +6,12 @@
  * Report requirement based results
  *
  * @filesource  resultsReqs.php
- * @package   TestLink
- * @author    Martin Havlat
+ * @package     TestLink
+ * @author      Martin Havlat
  * 
  * 
  * internal revisions
- * @since 1.9.11
+ * @since 1.9.13
  */
 
 require_once("../../config.inc.php");
@@ -93,7 +93,6 @@ if(count($req_spec_map))
         $req_spec_map[$req_spec_id]['requirements'][$req_id]['expected_coverage'];
     
 
-      new dBug($testcases);
       foreach ($req_info['linked_testcases'] as $key => $tc_info) 
       {
         $tc_id = $tc_info['id'];
@@ -278,7 +277,6 @@ if (count($req_spec_map))
 
       // show all linked tcversions incl exec result
       $linked_tcs_with_status = '';
-      new dBug($status_code_map);
       if (count($req_info['linked_testcases']) > 0 ) 
       {
         foreach($req_info['linked_testcases'] as $testcase) 
@@ -419,7 +417,6 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
 {
   // check if requirement is fully covered (">= 100%")
   $fully_covered = ($counters['total'] >= $counters['expected_coverage']) ? true : false;
-  $evaluation = $fully_covered ? 'partially_passed' : 'partially_passed_nfc';
 
   if( !isset($counters[$status_code['not_run']]) )
   {
@@ -434,15 +431,52 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
     $doIt = false;
   }
   
+  
+  // because we can have a situation where NOT ALL test cases assigned to req
+  // are linked to test plan, we need to compute how many results we have
+  // because this figure is equal to qty of test cases linked to test plan
+
+  
   // if there are linked test cases and all are not run => Req. takes status 'not run'
+  // how many status counters are set ?
+  $hmc = 0;
+  foreach($status_code as $verbose => $code)
+  {
+    $hmc += isset($counters[$code]);
+  }  
+
+  if( ($counters['total'] > 0) ) 
+  {
+    if($hmc == 1)
+    {
+      if( $counters[$status_code['not_run']] != 0 )
+      {
+        $evaluation = $fully_covered ? $status_code['not_run'] : ($status_code['not_run'] . '_nfc');
+        $doIt = false;
+      }  
+    }  
+    else
+    {
+      if(($counters['total'] == $counters[$status_code['not_run']]))
+      {
+        $evaluation = $fully_covered ? $status_code['not_run'] : ($status_code['not_run'] . '_nfc');
+        $doIt = false;
+      }  
+    }  
+  }
+
+  /*
   if( ($counters['total'] > 0) && ($counters['total'] == $counters[$status_code['not_run']]) ) 
   {
     $evaluation = $fully_covered ? $status_code['not_run'] : ($status_code['not_run'] . '_nfc');
     $doIt = false;
   }
+  */
   
   if($doIt) 
   {
+    $evaluation = $fully_covered ? 'partially_passed' : 'partially_passed_nfc';
+    
     foreach($algorithm_cfg['checkOrder'] as $checkKey) 
     {
       $doOuterBreak = false;
@@ -626,12 +660,12 @@ function setUpReqStatusCfg()
   
   // add additional states for requirement evaluation
   $evalbl = init_labels(array('partially_passed' => null, 'partially_passed_reqs' => null,
-                            'uncovered' => null, 'uncovered_reqs' => null,
-                'passed_nfc' => null, 'passed_nfc_reqs' => null,
-                'failed_nfc' => null, 'failed_nfc_reqs' => null,
-                'blocked_nfc' => null, 'blocked_nfc_reqs' => null,
-                'not_run_nfc' => null, 'not_run_nfc_reqs' => null,
-                'partially_passed_nfc' => null, 'partially_passed_nfc_reqs' => null));
+                              'uncovered' => null, 'uncovered_reqs' => null,
+                              'passed_nfc' => null, 'passed_nfc_reqs' => null,
+                              'failed_nfc' => null, 'failed_nfc_reqs' => null,
+                              'blocked_nfc' => null, 'blocked_nfc_reqs' => null,
+                              'not_run_nfc' => null, 'not_run_nfc_reqs' => null,
+                              'partially_passed_nfc' => null, 'partially_passed_nfc_reqs' => null));
 
   $eva['partially_passed'] = array('label' => $evalbl['partially_passed'],
                                    'long_label' => $evalbl['partially_passed_reqs'],
@@ -672,7 +706,9 @@ function setUpReqStatusCfg()
 }
 
 
-
+/**
+ *
+ */
 function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilter,&$argsObj)
 {   
   $rspec = array();
@@ -686,6 +722,8 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     $coverageContext['platform_id'] = $argsObj->platform;
   }
   
+  // Test case linked to test plan
+  $itemsInTestPlan = $tplanMgr->get_linked_items_id($argsObj->tplan_id);
   foreach($reqSet as $id) 
   {
     // get the information for this requirement
@@ -694,7 +732,7 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     
     // if req is "usable" (has one of the selected states) add it
     if( in_array($req['status'], $reqStatusFilter, true) || 
-      in_array("0", $reqStatusFilter, true) ) 
+        in_array("0", $reqStatusFilter, true) ) 
     {
       $total++;
       
@@ -705,7 +743,14 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
         $rspec[$req['srs_id']]['requirements'] = array();
       }
 
-      $req['linked_testcases'] = (array)$reqMgr->get_coverage($id,$coverageContext);
+      $req['linked_testcases'] = (array)$reqMgr->get_coverage($id,$coverageContext,array('accessKey' => 'tcase_id'));
+
+      // Now loop to mark test cases ASSIGNED to requirements as LINKED OR NOT to Test plan under analisys.
+      foreach($req['linked_testcases'] as $itemID => $dummy)
+      {
+        $req['linked_testcases'][$itemID]['in_testplan'] = isset($itemsInTestPlan[$itemID]);  
+      }  
+
       $rspec[$req['srs_id']]['requirements'][$id] = $req;
 
       foreach ($req['linked_testcases'] as $tc) 
@@ -715,6 +760,19 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     }
   }
 
+  // Get test case data from test case version LINKED TO TEST PLAN, 
+  // using as FILTER test cases ASSIGNED (linked) TO requirements
+  //
+  // ATTENTION:
+  // What can happens is this
+  // Test spec has TC1,TC2,TC3,TC4
+  // REQ 1 has TC1,TC2.TC3 assigned
+  // TEST PLAN A has only TC1, TC2
+  //
+  // It will be impossibile to provide a CLEAR INDICATION of 
+  // relation between REQ status and Test case exec status, because
+  // TC3 is NOT PART OF TEST PLAN under analisys
+  //
   $tcaseSet = array();
   if (count($tc_ids)) 
   {
@@ -725,10 +783,9 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     }
     $options = array('addExecInfo' => true,'accessKeyType' => 'tcase');
     
-    //New dBug($filters);
-    
     $tcaseSet = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $options);
   }
+
   return array($total,$rspec,$tcaseSet);
 }
 
@@ -745,4 +802,3 @@ function checkRights(&$db, &$user)
 {
   return $user->hasRight($db,'testplan_metrics');
 }
-?>

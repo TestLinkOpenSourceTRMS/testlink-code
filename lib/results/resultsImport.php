@@ -20,6 +20,7 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
+require_once('exec.inc.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -144,7 +145,7 @@ function importResults(&$db,&$xml,$context)
     $resultData = importExecutionsFromXML($xmlTCExec);
     if ($resultData) 
     {
-      $resultMap = saveImportedResultData($db,$resultData,$executionContext);
+      $resultMap = saveImportedResultData($db,$resultData,$executionContext,$context);
     }
   }
   return $resultMap;
@@ -162,7 +163,7 @@ function importResults(&$db,&$xml,$context)
 
   rev: 
 */
-function saveImportedResultData(&$db,$resultData,$context)
+function saveImportedResultData(&$db,$resultData,$context,$options)
 {
   if (!$resultData)
   {
@@ -405,6 +406,13 @@ function saveImportedResultData(&$db,$resultData,$context)
         }
 
         $addExecDuration = (strlen($tcase_exec['execution_duration']) > 0 && is_numeric($tcase_exec['execution_duration']));
+
+        $lexid = 0;
+        if($options->copyIssues)
+        {
+          $lexid = $tcase_mgr->getSystemWideLastestExecutionID($tcversion_id);
+        }  
+
         $sql = " /* $debugMsg */ " .
                " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
                " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type" .
@@ -416,6 +424,12 @@ function saveImportedResultData(&$db,$resultData,$context)
 
         $db->exec_query($sql); 
         $execution_id = $db->insert_id($tables['executions']);
+
+        if($lexid > 0 && $options->copyIssues)
+        {
+          copyIssues($db,$lexid,$execution_id);
+        } 
+
 
         if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
         { 
@@ -597,7 +611,9 @@ function init_args(&$dbHandler)
   $args=new stdClass();
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
-  $args->importType=isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+  $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+  $args->copyIssues = isset($_REQUEST['copyIssues']) ? 1 : 0;
+
 
   // Need to use REQUEST because sometimes data arrives on GET and other on POST (has hidden fields)
   $args->buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : null;
@@ -620,7 +636,7 @@ function init_args(&$dbHandler)
     
   $args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
   $args->userID=intval($_SESSION['userID']);
-    
+
   return $args;
 }
 
@@ -735,18 +751,24 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
   return $checks;
 }
 
+
+/**
+ *
+ *
+ */
 function initializeGui(&$argsObj)
 {
   $guiObj = new stdClass();
-  $guiObj->import_title=lang_get('title_results_import_to');
-  $guiObj->buildID=$argsObj->buildID;
-  $guiObj->platformID=$argsObj->platformID;
-  $guiObj->tplanID=$argsObj->tplanID;
+  $guiObj->import_title = lang_get('title_results_import_to');
+  $guiObj->buildID = $argsObj->buildID;
+  $guiObj->platformID = $argsObj->platformID;
+  $guiObj->tplanID = $argsObj->tplanID;
 
-  $guiObj->file_check=array('status_ok' => 1, 'msg' => 'ok');
-  $guiObj->importTypes=array("XML" => "XML");
+  $guiObj->file_check = array('status_ok' => 1, 'msg' => 'ok');
+  $guiObj->importTypes = array("XML" => "XML");
   $guiObj->importLimit = config_get('import_file_max_size_bytes');
   $guiObj->doImport = ($argsObj->importType != "");
-  $guiObj->testprojectName=$argsObj->testprojectName;
+  $guiObj->testprojectName = $argsObj->testprojectName;
+  $guiObj->copyIssues = $argsObj->copyIssues;
   return $guiObj;  
 }

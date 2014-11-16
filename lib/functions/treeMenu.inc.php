@@ -678,7 +678,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
   // strip potential newlines and other unwanted chars from strings
   // Mainly for stripping out newlines, carriage returns, and quotes that were 
   // causing problems in javascript using jtree
-  $node['testlink_node_name'] = str_replace(array("\n","\r"), array("",""), $node['testlink_node_name']);
+  $node['testlink_node_name'] = str_replace(array("\n","\r"), array("",""), $node['name']);
   $node['testlink_node_name'] = htmlspecialchars($node['testlink_node_name'], ENT_QUOTES);  
 
   $node['testlink_node_type'] = $hash_id_descr[$node['node_type_id']];

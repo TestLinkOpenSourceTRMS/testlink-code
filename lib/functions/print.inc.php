@@ -371,6 +371,11 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
   {
     $output = '<p style="page-break-before: always"></p>';
   }
+
+  // Remember that only H1 to H6 exists
+  $reLevel = ($reLevel > 6) ? 6 : $reLevel;
+  $reLevel = ($reLevel < 1) ? 1 : $reLevel;
+
   $output .= "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
              "<h{$reLevel} class=\"doclevel\"> <span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
              $name . "</h{$reLevel}></th></tr>\n";
@@ -451,7 +456,6 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
     }
   }
   
-  // TICKET 0006037 - Contribution Refactored
   $attachSet =  $req_spec_mgr->getAttachmentInfos($spec_id);
   if (count($attachSet))
   {
@@ -1581,8 +1585,13 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   
   }
 
-  $docHeadingLevel = ($indentLevel-1); //we would like to have html top heading H1 - H6
+  // we would like to have html top heading H1 - H6
+  $docHeadingLevel = ($indentLevel-1); 
+
+  // Remember that only H1 to H6 exists
   $docHeadingLevel = ($docHeadingLevel > 6) ? 6 : $docHeadingLevel;
+  $docHeadingLevel = ($docHeadingLevel < 1) ? 1 : $docHeadingLevel;
+  
   $code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering . $labels['test_suite'] .
            $title_separator . $name . "</h{$docHeadingLevel}>\n";
 

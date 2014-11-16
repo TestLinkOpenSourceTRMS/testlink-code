@@ -1131,7 +1131,8 @@ class testcaseCommands
     } 
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+    // It's OK put fixed 0 on version_id other functions on the chain to do the display know how to manage this
+    $guiObj->template = "archiveData.php?version_id=0&" . 
                         "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
     
     if($guiObj->user_feedback != '')

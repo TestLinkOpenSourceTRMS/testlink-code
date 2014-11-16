@@ -42,7 +42,6 @@ $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
 
-$a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl',
@@ -108,7 +107,7 @@ if($init_opt_transfer)
 }
 
 // create  web editor objects
-list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateKey) = initWebEditors($a_keys,$level,$editorCfg);
+list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateKey) = initWebEditors($action,$level,$editorCfg);
 if($get_c_data)
 {
   $name_ok = 1;
@@ -1002,24 +1001,39 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj,
  * initWebEditors
  *
  */
-function initWebEditors($webEditorKeys,$containerType,$editorCfg)
+function initWebEditors($action,$itemType,$editorCfg)
 {
-  switch($containerType)
+  $webEditorKeys = array('testsuite' => array('details'));
+  $itemTemplateKey=null;
+
+  switch($action)
   {
-    case 'testsuite':
-      $itemTemplateKey='testsuite_template';
+    case 'new_testsuite':
+    case 'add_testsuite':
+    case 'edit_testsuite':
+      $accessKey = 'testsuite';
     break;
 
     default:
-      $itemTemplateKey=null;
+      $accessKey = '';
+    break;
+  }
+
+
+  switch($itemType)
+  {
+    case 'testproject': 
+    case 'testsuite':
+      $itemTemplateKey = 'testsuite_template';
+      $accessKey = 'testsuite';
     break;
   }
 
   $oWebEditor = array();
   $htmlNames = '';
-  if( isset($webEditorKeys[$containerType]) )
+  if( isset($webEditorKeys[$accessKey]) )
   {  
-    $htmlNames = $webEditorKeys[$containerType];
+    $htmlNames = $webEditorKeys[$accessKey];
     foreach ($htmlNames as $key)
     {
       $oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorCfg);

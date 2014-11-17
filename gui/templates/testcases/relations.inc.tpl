@@ -2,14 +2,14 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource relations.inc.tpl
 @internal revisions
-@since 1.9.12
+@since 1.9.13
 *}
 
 {lang_get var='rel_labels' 
-          s='relation_id, relation_type, relation_tcase, relation_status, relation_project,
+          s='relation_id, relation_type, relation_status, relation_project,
              relation_set_by, relation_delete, relations, new_relation, by, title_created,
-             relation_destination_tcase, in, btn_add, img_title_delete_relation,
-             no_records_found,other_versions,version,title_test_case,match_count,warning,
+             in, btn_add, img_title_delete_relation,no_records_found,other_versions,version,
+             title_test_case,match_count,warning,
              commit_title,current_direct_link,current_testcase,test_case,relation_set_on,
              specific_direct_link,req_does_not_exist,actions,tcase_relation_hint,tcase_relation_help'}
 

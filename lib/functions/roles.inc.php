@@ -143,10 +143,14 @@ function init_global_rights_maps()
 
 
   // Global means test project independent.
-  $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
-                                 "role_management" => $l18n['desc_role_management'],
-                                 "user_role_assignment" => $l18n['desc_user_role_assignment']); 
+  //
+  // $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
+  //                                "role_management" => $l18n['desc_role_management'],
+  //                                "user_role_assignment" => $l18n['desc_user_role_assignment']); 
   
+  $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
+                                 "role_management" => $l18n['desc_role_management']);
+
   $g_rights_users = $g_rights_users_global;
               
   $g_rights_system = array ("mgt_view_events" => $l18n['desc_mgt_view_events'],

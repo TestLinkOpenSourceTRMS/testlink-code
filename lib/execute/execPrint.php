@@ -20,14 +20,9 @@ $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);
 $args = init_args();
-// $node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
-// $node['tcversion_id'] = $args->tcversion_id;
 
 $gui = new stdClass();
-// $gui->outputFormatDomain = $args->outputFormatDomain;
-//$gui->object_name='';
 $gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
-//$gui->object_name = $node['name'];
 $gui->page_title = '';
 
 // Struture defined in printDocument.php	
@@ -40,8 +35,8 @@ $level = 0;
 $tplanID = 0;
 $prefix = null;
 $text2print = '';
-$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],
- 								SINGLE_TESTCASE,array('gui/javascript/testlink_library.js'));
+$text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_TESTCASE,
+                                array('gui/javascript/testlink_library.js'));
 
 $text2print .= renderExecutionForPrinting($db,$_SESSION['basehref'],$args->id);
 
@@ -57,9 +52,9 @@ echo $text2print;
 */
 function init_args()
 {
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-    $args->goback_url = null;
-    return $args;
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
+  $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+  $args->goback_url = null;
+  return $args;
 }

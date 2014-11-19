@@ -1016,6 +1016,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            " JOIN {$tables['builds']} B ON B.id = E.build_id " .
            " WHERE 1 = 1 ";
 
+
+    // new dBug($context);
     if(isset($context['exec_id']))
     {
       $sql .= " AND E.id=" . intval($context['exec_id']);
@@ -1190,6 +1192,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     
   if(!is_null($tcase_pieces))
   {
+
+    // Check user rights in order to understand if can delete attachments here
+    //   function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
+    // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
+    // $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
+    $canManageAttachments = $context['user']->hasRight($db,'testplan_execute',$tprojectID,$tplan_id);
     // Multiple Test Case Steps Feature
     foreach($tcase_pieces as $key)
     {
@@ -1270,20 +1278,30 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                 {
                   $code .= '<tr><td colspan="' . $td_colspan . '">';
                   $code .= '<b>' . $labels['exec_attachments'] . '</b><br>';
+
                   foreach($attachInfo as $fitem)
                   {
+                    $code .= '<form method="POST" name="fda' . $fitem['id'] . '" ' .
+                             ' id="fda' . $fitem['id'] . "' " .
+                             ' action="' . $env->base_href . 'lib/execute/execPrint.php">';
+                    
+                    $code .= '<input type="hidden" name="id" value="' . intval($context['exec_id']) . '">';
+                    $code .= '<input type="hidden" name="deleteAttachmentID" value="' . intval($fitem['id']) . '">';
+      
                     if($fitem['is_image']) // && $options['outputFormat'] == FORMAT_HTML)
                     {
                       $code .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
                       $code .= '<li>' . '<img src="' . $env->base_href . 
-                               'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . '"> </li>';
+                               'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . '">';
                     }  
                     else
                     {
                       $code .= '<li>' . '<a href="' . $env->base_href . 
                                'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . 
-                               '" ' . ' target="#blank" > ' . htmlspecialchars($fitem['file_name']) . '</a></li>';
+                               '" ' . ' target="#blank" > ' . htmlspecialchars($fitem['file_name']) . '</a>';
                     }  
+                    $code .= '<input type="image" alt="' . $labels['alt_delete_attachment'] . '"' .
+                             'src="' . $env->base_href . TL_THEME_IMG_DIR . 'trash.png"></li></form>';
                   }  
                   $code .= '</td></tr>';
                 }  
@@ -1823,7 +1841,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance','relations',
                       'estimated_execution_duration','step_exec_notes','step_exec_status',
-                      'exec_attachments',
+                      'exec_attachments','alt_delete_attachment',
                       'high_importance','medium_importance','low_importance','execution_duration',
                       'priority', 'high_priority','medium_priority','low_priority','attached_files');
                       
@@ -1996,9 +2014,8 @@ function renderTestPlanItem($info)
 
 /**
  *
- * 20141007 - adding attachment management at step level
  */
-function renderExecutionForPrinting(&$dbHandler, $baseHref, $id)
+function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null)
 {
   $out =  '';
 
@@ -2084,6 +2101,8 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id)
     $env->reportType = $renderOptions['docType'];
 
     $indentLevel = 100000;
+
+    $context['user'] = $userObj;
     $out .= renderTestCaseForPrinting($dbHandler,$tcase,$renderOptions,$env,$context,$indentLevel); 
 
   }  

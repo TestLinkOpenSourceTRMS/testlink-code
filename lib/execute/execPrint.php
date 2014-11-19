@@ -25,6 +25,11 @@ $gui = new stdClass();
 $gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
 $gui->page_title = '';
 
+if($args->deleteAttachmentID >0)
+{
+  deleteAttachment($db,$args->deleteAttachmentID);
+}  
+
 // Struture defined in printDocument.php	
 $printingOptions = array('toc' => 0,'body' => 1,'summary' => 1, 'header' => 0,'headerNumbering' => 0,
 	                     'passfail' => 0, 'author' => 1, 'notes' => 1, 'requirement' => 1, 'keyword' => 1, 
@@ -38,7 +43,7 @@ $text2print = '';
 $text2print .= renderHTMLHeader($gui->page_title,$_SESSION['basehref'],SINGLE_TESTCASE,
                                 array('gui/javascript/testlink_library.js'));
 
-$text2print .= renderExecutionForPrinting($db,$_SESSION['basehref'],$args->id);
+$text2print .= renderExecutionForPrinting($db,$_SESSION['basehref'],$args->id,$_SESSION['currentUser']);
 
 echo $text2print;
 
@@ -53,8 +58,11 @@ echo $text2print;
 function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
+
   $args = new stdClass();
   $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+  $args->deleteAttachmentID = isset($_REQUEST['deleteAttachmentID']) ? intval($_REQUEST['deleteAttachmentID']) : 0;
+
   $args->goback_url = null;
   return $args;
 }

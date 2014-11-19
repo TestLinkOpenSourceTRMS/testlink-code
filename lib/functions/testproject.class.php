@@ -588,7 +588,6 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
          " AND UTR.user_id =" . $safe_user_id . $itsql . $rmssql .
          " WHERE 1=1 ";
   
-  // file_put_contents('/tmp/get_accessible_for_user.txt', $sql); 
   // Private test project feature
   if( $globalRoleID != TL_ROLES_ADMIN )
   {

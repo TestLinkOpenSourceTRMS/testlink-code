@@ -8,10 +8,10 @@
  *
  * How this feature works:
  * 
- * @package 	TestLink
- * @author 		franciscom
+ * @package   TestLink
+ * @author    franciscom
  * @copyright 2012,2013 TestLink community
- * @link 		  http://www.teamst.org/index.php
+ * @link      http://www.teamst.org/index.php
  * @since     1.9.10
  *
  * @internal revisions
@@ -41,7 +41,7 @@ switch($args->light)
     {
       case 'metricsdashboard':
         $param =  "&tproject_id={$args->tproject_id}";
-  			$what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey{$param}";
+        $what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey{$param}";
       break;
 
 
@@ -66,36 +66,36 @@ switch($args->light)
                  "&tproject_id={$args->tproject_id}" .
                  "&header=y&summary=y&toc=y&body=y&cfields=y&author=y".
                  "&requirement=y&keyword=y&headerNumbering=y&format=0";    
-  			$what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
+        $what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
       break;
       
       
       case 'metrics_tp_general':
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
                  "&format=0";
-  			$what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
+        $what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
       break;
   
       // case 'list_tc_failed':
       // case 'list_tc_blocked':
       // case 'list_tc_not_run':
       //  $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
-  		//	$what2launch = $cfg['url'] ."&apikey=$args->apikey{$param}";
+      //  $what2launch = $cfg['url'] ."&apikey=$args->apikey{$param}";
       // break;
       
       case 'results_matrix';
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
-  			$what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
+        $what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
 
       case 'results_by_tester_per_build';
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
-  			$what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
+        $what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
       
       case 'charts_basic':
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
-  			$what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
+        $what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
       
       
@@ -117,9 +117,8 @@ switch($args->light)
   
     if(!is_null($what2launch))
     {
-      // file_put_contents('/tmp/lnl.txt',TL_BASE_HREF . $what2launch);
-    	redirect(TL_BASE_HREF . $what2launch);
-  		exit();
+      redirect(TL_BASE_HREF . $what2launch);
+      exit();
     }
   break;
   
@@ -136,27 +135,27 @@ switch($args->light)
  */
 function init_args()
 {
-	$_REQUEST = strings_stripSlashes($_REQUEST);
-	$args = new stdClass();
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
 
   try
   {
     // ATTENTION - give a look to $tlCfg->reports_list
     $typeSize = 30;
-  	$iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
-  	                 "tproject_id" => array(tlInputParameter::INT_N),
-  	                 "tplan_id" => array(tlInputParameter::INT_N),
-  	                 "level" => array(tlInputParameter::STRING_N,0,16),
-  	                 "type" => array(tlInputParameter::STRING_N,0,$typeSize));  
-	}
+    $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
+                     "tproject_id" => array(tlInputParameter::INT_N),
+                     "tplan_id" => array(tlInputParameter::INT_N),
+                     "level" => array(tlInputParameter::STRING_N,0,16),
+                     "type" => array(tlInputParameter::STRING_N,0,$typeSize));  
+  }
   catch (Exception $e)  
   {  
     echo $e->getMessage();
     exit();
   }
 
-	                
-	R_PARAMS($iParams,$args);
+                  
+  R_PARAMS($iParams,$args);
   $args->light = 'red';
   $opt = array('setPaths' => true,'clearSession' => true);
   if(strlen($args->apikey) == 32)

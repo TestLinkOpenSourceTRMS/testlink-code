@@ -31,8 +31,6 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-// file_put_contents('/tmp/REQ.txt',serialize($_REQUEST));
-
 $root_node = isset($_REQUEST['root_node']) ? intval($_REQUEST['root_node']): null;
 $node = isset($_REQUEST['node']) ? intval($_REQUEST['node']) : $root_node;
 $filter_node = isset($_REQUEST['filter_node']) ? intval($_REQUEST['filter_node']) : null;
@@ -90,8 +88,6 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
   $sql .= " ORDER BY NHA.node_order ";    
     
     
-  // for debug 
-  //file_put_contents('/tmp/sql_display_node.txt', $sql); 
   $nodeSet = $dbHandler->get_recordset($sql);
        
   if($show_tcases)
@@ -105,8 +101,6 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     $external = $dbHandler->fetchRowsIntoMap($sql,'parent_id');
   }
     
-  // print_r(array_values($nodeSet));
-  //file_put_contents('/tmpsql_display_node.txt', serialize(array_values($nodeSet))); 
   if(!is_null($nodeSet)) 
   {
     $tproject_mgr = new testproject($dbHandler);

@@ -486,19 +486,6 @@ function redirect($url, $level = 'location')
 {
   // XSS Attack - 06486: Cross-Site Scripting on login page
   $safeUrl = addslashes($url);
-
-  /*
-  $safeUrl = $url;
-  if( filter_var($url, FILTER_VALIDATE_URL) )
-  {
-    $safeUrl = $url;
-  } 
-  else
-  {
-    file_put_contents('/tmp/debug_tl.log', 'URL Failed FILTER_VAR_VALIDATE');
-    $safeUrl =' index.php';
-  }
-  */
   echo "<html><head></head><body>";
   echo "<script type='text/javascript'>";
   echo "$level.href='$safeUrl';";
@@ -1263,13 +1250,11 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
 
   if(intval($rightsCheck->args->tplan_id) !=0)
   {
-    file_put_contents('/tmp/setUpEnvForAnonymousAccess.txt','testplan');
     $tplanMgr = new testplan($dbHandler);
     $item = $tplanMgr->getByAPIKey($apikey);
   }  
   else
   {
-    file_put_contents('/tmp/setUpEnvForAnonymousAccess.txt','testproject');
     $tprojectMgr = new testproject($dbHandler);
     $item = $tprojectMgr->getByAPIKey($apikey);
   }

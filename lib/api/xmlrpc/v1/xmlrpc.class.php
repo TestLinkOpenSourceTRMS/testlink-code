@@ -4762,9 +4762,6 @@ protected function createAttachmentTempFile()
            " AND TCV.id = NH.id ";
   
     $target_tcversion = $this->dbObj->fetchRowsIntoMap($sql,'version');
-    // $xx = "tcase_id:$tcase_id - version_number:$version_number";
-    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx);                            
-      
     if( !is_null($target_tcversion) && count($target_tcversion) == 1 )
     {
       $dummy = current($target_tcversion);
@@ -4778,9 +4775,6 @@ protected function createAttachmentTempFile()
                      $tcase_info['name']);  
       $ret = array('status_ok' => false, 'error_msg' => $msg , 'error_code' => TCASE_VERSION_NUMBER_KO);                                               
     }  
-                      
-    // $xx = "this->tcVersionID:$this->tcVersionID";
-    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx,FILE_APPEND); 
     return $ret;
   } 
 

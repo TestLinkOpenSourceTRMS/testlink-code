@@ -3625,9 +3625,6 @@ class testplan extends tlObjectWithAttachments
              
     $xml = exportDataToXML(array($item_info),$xml_root,$xml_template,$xml_mapping);
 
-    // for debug - 
-    // file_put_contents('c:\testplan.class.php.xml',$xml,FILE_APPEND);                             
-    // file_put_contents('c:\testplan.class.php.xml',$xml);                             
     return $xml;
   }
 

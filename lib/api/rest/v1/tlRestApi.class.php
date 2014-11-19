@@ -166,7 +166,6 @@ class tlRestApi
     $sql = "SELECT id FROM {$this->tables['users']} " .
            "WHERE script_key='" . $this->db->prepare_string($apiKey) . "'";
 
-    // DEBUG file_put_contents('/tmp/tlRestApi.class.authenticate.txt', $sql);
     $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
     if( ($ok=!is_null($this->userID)) )
     {

@@ -1197,7 +1197,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     //   function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
     // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
     // $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
-    $canManageAttachments = $context['user']->hasRight($db,'testplan_execute',$tprojectID,$tplan_id);
+    $canManageAttachments = false;
+    if(!is_null($context['user']))
+    {
+      $canManageAttachments = $context['user']->hasRight($db,'testplan_execute',$tprojectID,$tplan_id);
+    }  
+
     // Multiple Test Case Steps Feature
     foreach($tcase_pieces as $key)
     {

@@ -2620,21 +2620,23 @@ public function getTestCasesForTestPlan($args)
    */
   protected function getKeywordSet($tproject_id)
   { 
-      $kMethod=null;
-      $keywordSet=null;
-      if($this->_isParamPresent(self::$keywordNameParamName))
-      {
-          $kMethod='getValidKeywordSetByName';
-          $accessKey=self::$keywordNameParamName;
-      }
+    $keywordSet = null;
+    $kMethod = null;
+
+    if($this->_isParamPresent(self::$keywordNameParamName))
+    {
+      $kMethod='getValidKeywordSetByName';
+      $accessKey=self::$keywordNameParamName;
+    }
     else if ($this->_isParamPresent(self::$keywordIDParamName))
     {
-        $kMethod='getValidKeywordSetById';
-        $accessKey=self::$keywordIDParamName;
+      $kMethod='getValidKeywordSetById';
+      $accessKey=self::$keywordIDParamName;
     }
+
     if( !is_null($kMethod) )
     {
-          $keywordSet=$this->$kMethod($tproject_id,$this->args[$accessKey]);
+      $keywordSet=$this->$kMethod($tproject_id,$this->args[$accessKey]);
     }
       
     return $keywordSet;
@@ -2664,56 +2666,70 @@ public function getTestCasesForTestPlan($args)
     * @param $byName set this to true if $keywords is an array of keywords, false if it's an array of keywordIDs
     * @return string that represent a list of keyword id (comma is character separator)
     */
-  protected function getValidKeywordSet($tproject_id,$keywords,$byName)
+  protected function getValidKeywordSet($tproject_id,$keywords,$byName,$op=null)
   {
     $keywordSet = '';
+
+    $sql = " SELECT keyword,id FROM {$this->tables['keywords']} " .
+           " WHERE testproject_id = {$tproject_id} ";
+    
     $keywords = trim($keywords);
     if($keywords != "")
+    {
+      $a_keywords = explode(",",$keywords);
+      $items_qty = count($a_keywords);
+      for($idx = 0; $idx < $items_qty; $idx++)
       {
-        $a_keywords = explode(",",$keywords);
-          $items_qty = count($a_keywords);
-          for($idx = 0; $idx < $items_qty; $idx++)
-          {
         $a_keywords[$idx] = trim($a_keywords[$idx]);
-          }
-          $itemsSet = implode("','",$a_keywords);
-          $sql = " SELECT keyword,id FROM {$this->tables['keywords']} " .
-                 " WHERE testproject_id = {$tproject_id} ";
+      }
+      $itemsSet = implode("','",$a_keywords);
           
-          if ($byName)
+      if ($byName)
+      {
+        $sql .= " AND keyword IN ('{$itemsSet}')";
+      }
+      else
+      {
+        $sql .= " AND id IN ({$itemsSet})";
+      }
+    }
+
+    $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
+
+    if(!is_null($keywordMap))
+    {
+      if(is_null($op))
+      {
+        $a_items = null;
+        for($idx = 0; $idx < $items_qty; $idx++)
+        {
+          if(isset($keywordMap[$a_keywords[$idx]]))
           {
-            $sql .= " AND keyword IN ('{$itemsSet}')";
+            $a_items[] = $keywordMap[$a_keywords[$idx]]['id'];  
           }
-          else
-          {
-            $sql .= " AND id IN ({$itemsSet})";
-          }
-           
-          $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
-          if(!is_null($keywordMap))
-          {
-            $a_items = null;
-              for($idx = 0; $idx < $items_qty; $idx++)
-              {
-                if(isset($keywordMap[$a_keywords[$idx]]))
-                  {
-                      $a_items[] = $keywordMap[$a_keywords[$idx]]['id'];  
-                  }
-              }
-              if( !is_null($a_items))
-              {
-                  $keywordSet = implode(",",$a_items);
-              }    
         }
-    }  
+        if( !is_null($a_items))
+        {
+          $keywordSet = implode(",",$a_items);
+        }    
+      }  
+      else
+      {
+        foreach($keywordMap as $kw => $elem)
+        {
+          $keywordSet[$elem['id']] = $elem['keyword'];
+        }  
+      }  
+    }
+
     return $keywordSet;
    }
    
-    /**
+  /**
    * getValidKeywordSetById()
    *  
    * @param int $tproject_id
-    * @param $keywords array of keywords ID
+   * @param $keywords array of keywords ID
    *
    * @return string that represent a list of keyword id (comma is character separator)
    *
@@ -2721,7 +2737,7 @@ public function getTestCasesForTestPlan($args)
    */
     protected function  getValidKeywordSetById($tproject_id,$keywords)
     {
-    return $this->getValidKeywordSet($tproject_id,$keywords,false);
+      return $this->getValidKeywordSet($tproject_id,$keywords,false);
     }
 
 
@@ -6417,6 +6433,29 @@ protected function createAttachmentTempFile()
     return $status_ok ? $resultInfo : $this->errors;
   }
 
+  /**
+   *
+   */
+  public function getProjectKeywords($args)
+  {
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
+        
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate','checkTestProjectID');       
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
+  
+    if($status_ok)
+    {
+      $itemSet = $this->getValidKeywordSet(intval($this->args[self::$testProjectIDParamName]),
+                                           '',true,'getProjectKeywords');
+      return $itemSet;
+    }
+    else
+    {
+      return $this->errors;
+    } 
+  }
+
 
 
   /**
@@ -6447,12 +6486,13 @@ protected function createAttachmentTempFile()
                             'tl.removePlatformFromTestPlan' => 'this:removePlatformFromTestPlan',
                             'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
                             'tl.getProjects' => 'this:getProjects',
+                            'tl.getProjectKeywords' => 'this:getProjectKeywords',
+                            'tl.getProjectPlatforms' => 'this:getProjectPlatforms',
+                            'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
                             'tl.getTestCaseAssignedTester' => 'this:getTestCaseAssignedTester',
                             'tl.getTestCaseBugs' => 'this:getTestCaseBugs',
                             'tl.getTestProjectByName' => 'this:getTestProjectByName',
                             'tl.getTestPlanByName' => 'this:getTestPlanByName',
-                            'tl.getProjectPlatforms' => 'this:getProjectPlatforms',
-                            'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
                             'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',
                             'tl.getTotalsForTestPlan' => 'this:getTotalsForTestPlan',
                             'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',

@@ -6457,6 +6457,32 @@ protected function createAttachmentTempFile()
   }
 
 
+  /**
+   * Gets list of keywords for a given Test case
+   *
+   * @param $testcaseid
+   *
+   * @return map indexed by bug_id
+   *
+   * @access public
+   */
+  public function getTestCaseKeywords($args)
+  {
+    $msgPrefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate','checkTestCaseIdentity');
+    $status_ok=$this->_runChecks($checkFunctions,$msgPrefix);
+    if($status_ok)
+    {
+      $itemSet = $this->tcaseMgr->get_keywords_map(intval($this->args[self::$testCaseIDParamName]));
+      return $itemSet;
+    }
+    else
+    {
+      return $this->errors;
+    }
+  }
+
 
   /**
    *
@@ -6491,6 +6517,7 @@ protected function createAttachmentTempFile()
                             'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
                             'tl.getTestCaseAssignedTester' => 'this:getTestCaseAssignedTester',
                             'tl.getTestCaseBugs' => 'this:getTestCaseBugs',
+                            'tl.getTestCaseKeywords' => 'this:getTestCaseKeywords',
                             'tl.getTestProjectByName' => 'this:getTestProjectByName',
                             'tl.getTestPlanByName' => 'this:getTestPlanByName',
                             'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',

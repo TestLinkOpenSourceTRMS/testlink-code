@@ -3494,7 +3494,14 @@ class testcase extends tlObjectWithAttachments
       $tcase_id = $info['parent_id'];
     }
     
-    $tc_data = $this->get_by_id($tcase_id,$tcversion_id);
+    //   function get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null)
+    $opt = array('getPrefix' => false);
+    if(!isset($optExport['EXTERNALID']) || $optExport['EXTERNALID'])
+    {
+      $opt = array('getPrefix' => (isset($optExport['ADDPREFIX']) && $optExport['ADDPREFIX']));
+    }  
+    $tc_data = $this->get_by_id($tcase_id,$tcversion_id,null,$opt);
+   
     $testCaseVersionID = $tc_data[0]['id'];
     if (!$tproject_id)
     {
@@ -3535,9 +3542,9 @@ class testcase extends tlObjectWithAttachments
       
     if (isset($optExport['REQS']) && $optExport['REQS'])
     {
-        $requirements = $reqMgr->get_all_for_tcase($tcase_id);
-        if( !is_null($requirements) && count($requirements) > 0 )
-        {
+      $requirements = $reqMgr->get_all_for_tcase($tcase_id);
+      if( !is_null($requirements) && count($requirements) > 0 )
+      {
         $reqRootElem = "\t<requirements>\n{{XMLCODE}}\t</requirements>\n";
         $reqElemTemplate = "\t\t<requirement>\n" .
                            "\t\t\t<req_spec_title><![CDATA[||REQ_SPEC_TITLE||]]></req_spec_title>\n" .
@@ -3548,7 +3555,7 @@ class testcase extends tlObjectWithAttachments
         $reqDecode = array ("||REQ_SPEC_TITLE||" => "req_spec_title",
                             "||REQ_DOC_ID||" => "req_doc_id","||REQ_TITLE||" => "title");
         $tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
-        }
+      }
     }
     // ------------------------------------------------------------------------------------
     $stepRootElem = "<steps>{{XMLCODE}}</steps>";
@@ -3598,10 +3605,12 @@ class testcase extends tlObjectWithAttachments
     $elemTpl = "\n".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">' . "\n" .
                "\t<node_order><![CDATA[||NODE_ORDER||]]></node_order>\n";
                
+
     if(!isset($optExport['EXTERNALID']) || $optExport['EXTERNALID'])
     {
       $elemTpl .= "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n";
     }  
+
 
     $elemTpl .= "\t<version><![CDATA[||VERSION||]]></version>\n" .
                 "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
@@ -3623,7 +3632,7 @@ class testcase extends tlObjectWithAttachments
       $info = array("{{TESTCASE_ID}}" => "testcase_id",
                     "{{NAME}}" => "name",
                     "||NODE_ORDER||" => "node_order",
-                    "||EXTERNALID||" => "tc_external_id",
+                    "||EXTERNALID||" => ($opt['getPrefix'] ? 'fullExternalID': 'tc_external_id'),
                     "||VERSION||" => "version",
                     "||SUMMARY||" => "summary",
                     "||PRECONDITIONS||" => "preconditions",

@@ -176,9 +176,17 @@ function init_args()
   $args->exportKeywords = isset($_REQUEST['exportKeywords']) ? 1 : 0;
   $args->exportTestCaseExternalID = isset($_REQUEST['exportTestCaseExternalID']) ? 1 : 0;
 
+  $args->addPrefix = 0;
+  if($args->exportTestCaseExternalID)
+  {
+    $args->addPrefix = isset($_REQUEST['addPrefix']) ? 1 : 0;
+  }  
+
+
   $args->optExport = array('REQS' => $args->exportReqs, 'CFIELDS' => $args->exportCFields,
                            'KEYWORDS' => $args->exportKeywords, 
                            'EXTERNALID' => $args->exportTestCaseExternalID,
+                           'ADDPREFIX' => $args->addPrefix,
                            'RECURSIVE' => $args->useRecursion);
 
 

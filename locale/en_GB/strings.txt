@@ -2302,6 +2302,8 @@ $TLS_warning_users_will_be_reset = "Affected users will get role:";
 // ----- gui/templates/tcexport.tpl -----
 $TLS_export_filename = "Export filename";
 $TLS_export_tcase_external_id = 'Export Test Case external ID';
+$TLS_export_with_prefix = 'With Test Case prefix';
+
 $TLS_export_with_keywords = "Export with keywords";
 $TLS_warning_empty_filename = "Please give a file name";
 

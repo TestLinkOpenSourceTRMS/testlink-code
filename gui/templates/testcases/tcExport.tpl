@@ -12,7 +12,7 @@ test case export initial page
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,export_tcase_external_id,btn_cancel,
-             view_file_format_doc'} 
+             view_file_format_doc,export_with_prefix'} 
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -32,6 +32,24 @@ function validateForm(f)
   }
   return true;
 }
+
+function mirrorCheckbox(sourceOID,targetOID)
+{
+  var scb = document.getElementById(sourceOID);
+  var tcb = document.getElementById(targetOID);
+
+  if(scb.checked)
+  {
+    tcb.disabled = 0;
+  }  
+  else
+  {
+    tcb.checked = 0;
+    tcb.disabled = 1;
+  }  
+}
+
+
 </script>
 </head>
 
@@ -71,7 +89,12 @@ function validateForm(f)
     
     <tr>
     <td>{$labels.export_tcase_external_id}</td>
-    <td><input type="checkbox" name="exportTestCaseExternalID" id="exportTestCaseExternalID" value="1" checked /></td>
+    <td><input type="checkbox" name="exportTestCaseExternalID" id="exportTestCaseExternalID" 
+               value="1" onclick="mirrorCheckbox('exportTestCaseExternalID','addPrefix');" checked />
+    {$labels.export_with_prefix}
+    <input type="checkbox" name="addPrefix" id="addPrefix" value="1">
+    </td>
+    
     </tr>   
     <tr>
     <td>{$labels.title_req_export}</td>

@@ -6,7 +6,7 @@
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions
- * @1.9.12
+ * @since 1.9.13
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -38,8 +38,6 @@ $doIt = !is_null($gui->resultSet);
 // will work only on standard exec status
 $exec = getQuickExecCfg($gui,$imgSet,$statusGui->status_code);
 
-
-
 $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy','executions','tcversions'));
 
 if($args->result != '' && $args->tcvx > 0)
@@ -52,7 +50,7 @@ if($args->result != '' && $args->tcvx > 0)
 
   $sql = " INSERT INTO {$tables['executions']} ".
          " (status,tester_id,execution_ts,tcversion_id,tcversion_number,testplan_id,platform_id,build_id)".
-         " VALUES ('{$args->result}', {$args->user_id}, " . $db->db_now() . "," .
+         " VALUES ('{$args->result}', {$args->executedBy}, " . $db->db_now() . "," .
          "         {$args->tcvx}, {$version_number}, {$args->tpx}, {$args->pxi},{$args->bxi})";
 
   $db->exec_query($sql);
@@ -239,7 +237,6 @@ function init_args(&$dbHandler)
   $args->testprojectOptions = $info['opt'];
   unset($info);
 
-  // $userSet = $userObj->getNames($dbHandler);
   $args->user_id = isset($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
   if( $args->user_id != 0)
   {
@@ -254,6 +251,8 @@ function init_args(&$dbHandler)
     }
     $args->user = $_SESSION['currentUser'];
   }	
+
+  $args->executedBy = $args->user_id;
   $args->user_name = $args->user->login;
   $args->userSet =  $args->user->getNames($dbHandler);                  
 
@@ -318,7 +317,9 @@ function init_args(&$dbHandler)
     $args->$tg = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
   }  
 	$args->result = isset($_REQUEST['result_' .  $args->tpx]) ? $_REQUEST['result_' .  $args->tpx][0] : '';
-  
+
+
+  new dBug($args);  
 	return $args;
 }
 

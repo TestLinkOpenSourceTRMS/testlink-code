@@ -2731,6 +2731,7 @@ $TLS_kw_update_fails = "Update fails";
 $TLS_assigned_kword = "Assigned Keywords";
 $TLS_available_kword = "Available Keywords";
 $TLS_kword_to_be_assigned_to_testcases = "Keywords to be assigned to test cases";
+$TLS_assignToFilteredTestCases = 'Assign ONLY to filtered Test Cases';
 
 
 

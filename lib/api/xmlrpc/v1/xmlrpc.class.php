@@ -3938,6 +3938,54 @@ public function getTestCase($args)
     return $status_ok ? $resultInfo : $this->errors;
   }
 
+
+  /**
+   *  Delete a test plan and all related link to other items
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["$tplanID"]
+   *
+   * @return mixed $resultInfo
+   *         [status]  => true/false of success
+   *         [id]      => result id or error code
+   *         [message]  => optional message for error message string
+   * @access public
+   */
+  public function deleteTestPlan($args)
+  {
+  	$resultInfo = array();
+  	$operation=__FUNCTION__;
+  	$msg_prefix="({$operation}) - ";
+  	 
+  	$this->_setArgs($args);
+  	$resultInfo[0]["status"] = false;
+  	 
+  	$checkFunctions = array('authenticate','checkTestPlanID');
+  	$status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+  
+  	 
+  	if($status_ok)
+  	{
+  		if( $this->userHasRight("exec_delete",self::CHECK_PUBLIC_PRIVATE_ATTR) )
+  		{
+  			$this->tplanMgr->delete($args[self::$testPlanIDParamName]);
+  			$resultInfo[0]["status"] = true;
+  			$resultInfo[0]["id"] = $args[self::$testPlanIDParamName];
+  			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
+  			$resultInfo[0]["operation"] = $operation;
+  		}
+  		else
+  		{
+  			$status_ok = false;
+  			$this->errors[] = new IXR_Error(CFG_DELETE_EXEC_DISABLED,CFG_DELETE_EXEC_DISABLED_STR);
+  		}
+  	}
+  	 
+  	return $status_ok ? $resultInfo : $this->errors;
+  
+  }
+  
   /**
    * Helper method to see if an execution id exists on DB
    * no checks regarding other data like test case , test plam, build, etc are done
@@ -6561,6 +6609,7 @@ protected function createAttachmentTempFile()
                             'tl.setTestMode' => 'this:setTestMode',
                             'tl.ping' => 'this:sayHello', 
                             'tl.sayHello' => 'this:sayHello',
+    						'tl.deleteTestPlan' => 'this:deleteTestPlan',
                             'tl.repeat' => 'this:repeat'
                         );
   }

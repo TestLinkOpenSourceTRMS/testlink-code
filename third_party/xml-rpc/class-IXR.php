@@ -154,7 +154,6 @@ class IXR_Message {
     function parse() {
         // first remove the XML declaration
         $this->message = preg_replace('/<\?xml(.*)?\?'.'>/', '', $this->message,1);
-        
         if (trim($this->message) == '') {
             return false;
         }
@@ -169,7 +168,9 @@ class IXR_Message {
             /* die(sprintf('XML error: %s at line %d',
                 xml_error_string(xml_get_error_code($this->_parser)),
                 xml_get_current_line_number($this->_parser))); */
-            return false;
+        	// This is not allways an error, so print a log and return true
+        	error_log( "Warning: maybe there's a problem with the XML." );        	 
+            return true;
         }
         xml_parser_free($this->_parser);
         // Grab the error messages, if any

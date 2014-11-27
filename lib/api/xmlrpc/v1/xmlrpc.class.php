@@ -2328,6 +2328,7 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @param string $args["executestatus"] - optional
    * @param array $args["executiontype"] - optional
    * @param array $args["getstepinfo"] - optional - default false
+   * @param array $args["platformIDParamName"] - optional - default null
    * @param string $args["details"] - optional 
    *                  'full': (default) get summary,steps,expected_results,test suite name
    *                   'simple':
@@ -2349,6 +2350,7 @@ public function getTestCasesForTestPlan($args)
              self::$keywordIDParamName => null,self::$executedParamName => null,
              self::$assignedToParamName => null,self::$executeStatusParamName => null,
              self::$executionTypeParamName => null,self::$getStepsInfoParamName => false,
+             self::$platformIDParamName=> null,  				
              self::$detailsParamName => 'full');
            
   $optMutualExclusive=array(self::$keywordIDParamName => null,self::$keywordNameParamName => null);   
@@ -2361,7 +2363,8 @@ public function getTestCasesForTestPlan($args)
     
   $tplanid = $this->args[self::$testPlanIDParamName];
   $tplanInfo = $this->tplanMgr->tree_manager->get_node_hierarchy_info($tplanid);
-    
+  $platformid = $this->args[self::$platformIDParamName];
+  
   foreach($opt as $key => $value)
   {
     if($this->_isParamPresent($key))
@@ -2391,6 +2394,7 @@ public function getTestCasesForTestPlan($args)
                    'assigned_to' => $opt[self::$assignedToParamName],
                    'exec_status' => $opt[self::$executeStatusParamName],
                    'build_id' => $opt[self::$buildIDParamName],
+                   'platform_id'=> $platformid,
                    'exec_type' => $opt[self::$executionTypeParamName]);
     
   $recordset = $this->tplanMgr->getLTCVNewGeneration($tplanid,$filters,$options);

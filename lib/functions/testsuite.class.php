@@ -205,11 +205,11 @@ class testsuite extends tlObjectWithAttachments
   function update($id, $name, $details, $parent_id=null, $node_order=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $ret['status_ok']=0;
-      $ret['msg']='';
-      $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,intval($id),$parent_id);
-      if($check['status']==0)
-      {
+    $ret['status_ok']=0;
+    $ret['msg']='';
+    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,intval($id),$parent_id);
+    if($check['status']==0)
+    {
       $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
              " SET details = '" . $this->db->prepare_string($details) . "'" .
              " WHERE id = {$id}";
@@ -227,17 +227,17 @@ class testsuite extends tlObjectWithAttachments
         $result = $this->db->exec_query($sql);
       }
       
-        $ret['status_ok']=1;
+      $ret['status_ok']=1;
       $ret['msg']='ok';
       if (!$result)
       {
         $ret['msg'] = $this->db->error_msg();
       }
-      }
-      else
-      {
-        $ret['msg']=$check['msg'];
-      }
+    }
+    else
+    {
+      $ret['msg']=$check['msg'];
+    }
     return $ret;
   }
   
@@ -358,27 +358,35 @@ class testsuite extends tlObjectWithAttachments
     
     
     rev :
-        20100328 - BUGID 2645 - contribution - added parent_id
-          20070324 - added node_order in result set
   
   */
-  function get_by_id($id, $order_by = '')
+  function get_by_id($id, $opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('orderByClause' => '','renderImageInline' => false);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
     $sql = "/* $debugMsg */ SELECT TS.*, NH.name, NH.node_type_id, NH.node_order, NH.parent_id " .
            "  FROM {$this->tables['testsuites']} TS, " .
            " {$this->tables['nodes_hierarchy']} NH   WHERE TS.id = NH.id AND TS.id "; 
 
     $sql .= is_array($id) ? " IN (" . implode(',',$id) . ")" : " = {$id} ";
-    $sql .= $order_by;
+    $sql .= $my['opt']['orderByClause'];
     
     
-      $rs = $this->db->fetchRowsIntoMap($sql,'id');
+    $rs = $this->db->fetchRowsIntoMap($sql,'id');
     if( !is_null($rs) )
-      {
-        $rs = count($rs) == 1 ? current($rs) : $rs;
-      }
-      return $rs;
+    {
+      $rs = count($rs) == 1 ? current($rs) : $rs;
+    }
+   
+    // now inline image processing (if needed)
+    if( !is_null($rs) && $my['opt']['renderImageInline'])
+    {
+      $this->renderImageAttachments($id,$rs);
+    }
+
+    return $rs;
   }
   
   
@@ -456,11 +464,11 @@ class testsuite extends tlObjectWithAttachments
       $gui->sqlAction = $action;
     }
     
-    $gui->container_data = $this->get_by_id($id);
+    $gui->container_data = $this->get_by_id($id,array('renderImageInline' => true));
     $gui->moddedItem = $gui->container_data;
     if ($modded_item_id)
     {
-      $gui->moddedItem = $this->get_by_id($modded_item_id);
+      $gui->moddedItem = $this->get_by_id($modded_item_id,array('renderImageInline' => true));
     }
 
     $gui->cf = $this->html_table_of_custom_field_values($id);
@@ -602,28 +610,28 @@ class testsuite extends tlObjectWithAttachments
              id: new created if everything OK, -1 if problems.
 
     @internal revisions
-    20110405 - franciscom - BUGID 4374: When copying a project, external TC ID is not preserved
-                added option 'preserve_external_id' needed by tcase copy_to()
+    When copying a project, external TC ID is not preserved
+    added option 'preserve_external_id' needed by tcase copy_to()
 
   */
   function copy_to($id, $parent_id, $user_id,$options=null,$mappings=null)
   {
 
-        $my['options'] = array('check_duplicate_name' => 0,
-                     'action_on_duplicate_name' => 'allow_repeat',
-                     'copyKeywords' => 0, 'copyRequirements' => 0,
-                     'preserve_external_id' => false);  
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array('check_duplicate_name' => 0,
+                           'action_on_duplicate_name' => 'allow_repeat',
+                           'copyKeywords' => 0, 'copyRequirements' => 0,
+                           'preserve_external_id' => false);  
+    $my['options'] = array_merge($my['options'], (array)$options);
 
-      $my['mappings'] = array();
-      $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
+    $my['mappings'] = array();
+    $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
 
     $copyTCaseOpt = array('preserve_external_id' => $my['options']['preserve_external_id'],
-                'copy_also' => 
+                          'copy_also' => 
                           array('keyword_assignments' => $my['options']['copyKeywords'],
                                 'requirement_assignments' => $my['options']['copyRequirements']) ); 
                                 
-      $copyOptions = array('keyword_assignments' => $my['options']['copyKeywords']);
+    $copyOptions = array('keyword_assignments' => $my['options']['copyKeywords']);
       
     $tcase_mgr = new testcase($this->db);
     $tsuite_info = $this->get_by_id($id);
@@ -636,16 +644,22 @@ class testsuite extends tlObjectWithAttachments
     $new_tsuite_id = $op['id'];
     
     // Work on root of these subtree
-      // Attachments
-      // Keyword assignment
-      // Custom Field values
-      $this->copy_attachments($id,$new_tsuite_id);
+    // Attachments          - always copied
+    // Keyword assignment   - according to user choice
+    // Custom Field values  - always copied
+    $oldToNew = $this->copy_attachments($id,$new_tsuite_id);
+    $inlineImg = null;
+    if(!is_null($oldToNew))
+    {
+      $this->inlineImageProcessing($new_tsuite_id,$tsuite_info['details'],$oldToNew);
+    }
+
     if( $my['options']['copyKeywords'] )
     {
       $kmap = isset($my['mappings']['keywords']) ? $my['mappings']['keywords'] : null;
-        $this->copy_keyword_assignment($id,$new_tsuite_id,$kmap);
+      $this->copy_keyword_assignment($id,$new_tsuite_id,$kmap);
     }
-        $this->copy_cfields_values($id,$new_tsuite_id);
+    $this->copy_cfields_values($id,$new_tsuite_id);
     
     
     $my['filters'] = array('exclude_children_of' => array('testcase' => 'exclude my children'));
@@ -653,7 +667,7 @@ class testsuite extends tlObjectWithAttachments
     if (!is_null($subtree))
     {
       $parent_decode=array();
-        $parent_decode[$id]=$new_tsuite_id;
+      $parent_decode[$id]=$new_tsuite_id;
       foreach($subtree as $the_key => $elem)
       {
         $the_parent_id=$parent_decode[$elem['parent_id']];
@@ -663,24 +677,30 @@ class testsuite extends tlObjectWithAttachments
             // forgotten parameter $mappings caused requirement assignments to use wrong IDs
             $tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt, $my['mappings']);
             $op['mappings'] += $tcOp['mappings'];
-            break;
+          break;
             
           case $this->node_types_descr_id['testsuite']:
             $tsuite_info = $this->get_by_id($elem['id']);
             $ret = $this->create($the_parent_id,$tsuite_info['name'],
                                  $tsuite_info['details'],$tsuite_info['node_order']);      
             
-              $parent_decode[$elem['id']] = $ret['id'];
-              $op['mappings'][$elem['id']] = $ret['id']; 
-              
-                $tcase_mgr->copy_attachments($elem['id'],$ret['id']);
+            $parent_decode[$elem['id']] = $ret['id'];
+            $op['mappings'][$elem['id']] = $ret['id']; 
+                
+            $oldToNew = $this->copy_attachments($elem['id'],$ret['id']);
+            $inlineImg = null;
+            if(!is_null($oldToNew))
+            {
+              $this->inlineImageProcessing($ret['id'],$tsuite_info['details'],$oldToNew);
+            }
+
             if( $my['options']['copyKeywords'] )
             {
-                $this->copy_keyword_assignment($elem['id'],$ret['id'],$kmap);
+              $this->copy_keyword_assignment($elem['id'],$ret['id'],$kmap);
             }
-                $this->copy_cfields_values($elem['id'],$ret['id']);
+            $this->copy_cfields_values($elem['id'],$ret['id']);
                 
-            break;
+          break;
         }
       }
     }
@@ -1340,7 +1360,7 @@ class testsuite extends tlObjectWithAttachments
    **/
   function copy_attachments($source_id,$target_id)
   {
-    $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
+    return $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
   }
 
   /** 
@@ -1412,7 +1432,7 @@ class testsuite extends tlObjectWithAttachments
       
       if($my['options']['details'] == 'full')
       {
-          $itemSet = $this->get_by_id($itemKeys, 'ORDER BY node_order');
+          $itemSet = $this->get_by_id($itemKeys, array('orderByClause' => 'ORDER BY node_order'));
         }
         else
         {
@@ -1545,5 +1565,138 @@ class testsuite extends tlObjectWithAttachments
            "&file_id=" ; 
     return $url;
   }
+
+
+  /**
+   * render Image Attachments INLINE
+   * 
+   * <img alt="" src="http://localhost/development/tl/testlink-ga-testlink-code/lib/attachments/attachmentdownload.php?id=1" 
+                 style="width: 1223px; height: 666px;" />   
+   */
+  function renderImageAttachments($id,&$item2render,$basehref=null)
+  {
+    static $attSet;
+    static $targetTag;
+
+    if(!$attSet || !isset($attSet[$id]))
+    {
+      $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
+      $beginTag = '[tlInlineImage]';
+      $endTag = '[/tlInlineImage]';
+    }  
+
+    if(is_null($attSet[$id]))
+    {
+      return;
+    } 
+
+    // $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
+    // second \'%s\' needed if I want to use Latest as indication, need to understand
+    // Javascript instead of javascript, because CKeditor sometimes complains
+    $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
+    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?id=%id%"></p>'; 
+
+    $key2check = array('details');
+    $rse = &$item2render;
+    foreach($key2check as $item_key)
+    {
+      $start = strpos($rse[$item_key],$beginTag);
+      $ghost = $rse[$item_key];
+
+      // There is at least one request to replace ?
+      if($start !== FALSE)
+      {
+        $xx = explode($beginTag,$rse[$item_key]);
+
+        // How many requests to replace ?
+        $xx2do = count($xx);
+        $ghost = '';
+        for($xdx=0; $xdx < $xx2do; $xdx++)
+        {
+          // Hope was not a false request.
+          if( strpos($xx[$xdx],$endTag) !== FALSE)
+          {
+            // Separate command string from other text
+            // Theorically can be just ONE, but it depends
+            // is user had not messed things.
+            $yy = explode($endTag,$xx[$xdx]);
+            if( ($elc = count($yy)) > 0)
+            {
+              $atx = $yy[0];
+              try
+              {
+                if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image'])
+                {
+                  $ghost .= str_replace('%id%',$atx,$img);
+                } 
+                $lim = $elc-1;
+                for($cpx=1; $cpx <= $lim; $cpx++) 
+                {
+                  $ghost .= $yy[$cpx];
+                }  
+              } 
+              catch (Exception $e)
+              {
+                $ghost .= $rse[$item_key];
+              }
+            }  
+          }
+          else
+          {
+            // nothing to do
+            $ghost .= $xx[$xdx];
+          }  
+        }
+      }
+
+      // reconstruct field contents
+      if($ghost != '')
+      {
+        $rse[$item_key] = $ghost;
+      }
+    }   
+  }
+
+  /**
+   *
+   */
+  function updateDetails($id,$details)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
+           " SET details = '" . $this->db->prepare_string($details) . "'" .
+           " WHERE id = " . intval($id);
+    $result = $this->db->exec_query($sql);
+
+  }  
+
+  /**
+   *
+   *
+   */ 
+  function inlineImageProcessing($id,$details,$rosettaStone)
+  {
+    // get all attachments, then check is there are images
+    $att = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
+    foreach($rosettaStone as $oid => $nid)
+    {
+      if($att[$nid]['is_image'])
+      {
+        $needle = str_replace($nid,$oid,$att[$nid]['inlineString']);
+        $inlineImg[] = array('needle' => $needle, 'rep' => $att[$nid]['inlineString']);
+      }  
+    }  
+    
+    if( !is_null($inlineImg) )
+    {
+      $dex = $details;
+      foreach($inlineImg as $elem)
+      {
+        $dex = str_replace($elem['needle'],$elem['rep'],$dex);
+      }  
+      $this->updateDetails($id,$dex);
+    }  
+  }
+
 
 } // end class

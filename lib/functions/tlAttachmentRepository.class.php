@@ -467,14 +467,14 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 * 
 	 * @return arrays returns an array with the attachments of the objects, or null on error
 	 */
-	public function getAttachmentInfosFor($fkid,$fkTableName)
+	public function getAttachmentInfosFor($fkid,$fkTableName,$accessKey='std')
 	{
-		$attachmentInfos = null;
-		$attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-		$loop2do = sizeof($attachmentIDs);
+		$itemSet = null;
+		$idSet = $this->getAttachmentIDsFor($fkid,$fkTableName);
+		$loop2do = sizeof($idSet);
 		for($idx = 0;$idx < $loop2do; $idx++)
 		{
-			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$idx]);
+			$attachmentInfo = $this->getAttachmentInfo($idSet[$idx]);
 			if ($attachmentInfo)
 			{
 				// needed because on inc_attachments.tpl this test:
@@ -482,10 +482,19 @@ class tlAttachmentRepository extends tlObjectWithDB
 				// is used to undertand if icon or other handle is needed to access
 				// file content
 				$attachmentInfo['title'] = trim($attachmentInfo['title']);
-				$attachmentInfos[] = $attachmentInfo;
+        switch($accessKey)
+        {
+          case 'id':
+            $itemSet[$attachmentInfo['id']] = $attachmentInfo;
+          break;
+
+          default:
+            $itemSet[] = $attachmentInfo;
+          break;
+        }
 			}
 		}
-		return $attachmentInfos;
+		return $itemSet;
 	}
 	
 	/**

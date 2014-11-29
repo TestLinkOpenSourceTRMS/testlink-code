@@ -869,7 +869,6 @@ class testcase extends tlObjectWithAttachments
       }
     }  
     
-
     if($status_ok && sizeof($idSet))
     {
       $cfx = 0;
@@ -885,10 +884,12 @@ class testcase extends tlObjectWithAttachments
         // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
         // if we are working on a set of test cases $version_id will be ALL VERSIONS
         if(!$tc_array = $this->get_by_id($tc_id,$version_id,null,
-                                         array('renderGhost' => true, 'withGhostString' => true)))
+                                         array('renderGhost' => true, 'withGhostString' => true,
+                                               'renderImageInline' => true, 'caller' => 'show()')))
         {
           continue;
         }
+
 
         $tc_array[0]['tc_external_id'] = $gui->tcasePrefix . $tc_array[0]['tc_external_id'];
         $tc_array[0]['ghost'] = '[ghost]"TestCase":"' . $tc_array[0]['tc_external_id'] . '","Version":"' .
@@ -959,7 +960,7 @@ class testcase extends tlObjectWithAttachments
       } 
     } 
 
-    $gui->relations = $gui->relationSet[0];
+     $gui->relations = $gui->relationSet[0];
     $gui->relation_domain = '';
     if($this->cfg->testcase->relations->enable)
     {
@@ -970,7 +971,6 @@ class testcase extends tlObjectWithAttachments
     unset($userIDSet['']);
     $gui->users = tlUser::getByIDs($this->db,array_keys($userIDSet),'id');
     $gui->cf = null;
-
 
     $this->initShowGuiActions($gui);
     $tplCfg = templateConfiguration('tcView');
@@ -1426,9 +1426,6 @@ class testcase extends tlObjectWithAttachments
     tcversions
     nodes from hierarchy
   
-    rev:
-       20100825 - BUGID 3702 
-         20070602 - franciscom - delete attachments
   */
   function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
   {
@@ -2029,12 +2026,13 @@ class testcase extends tlObjectWithAttachments
   */
   function get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null)
   {
-
     $my['filters'] = array('active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => 1);
     $my['filters'] = array_merge($my['filters'], (array)$filters);
 
     $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 'getPrefix' => false,
-                           'order_by' => null, 'renderGhost' => false, 'withGhostString' => false);
+                           'order_by' => null, 'renderGhost' => false, 'withGhostString' => false,
+                           'renderImageInline' => false);
+
     $my['options'] = array_merge($my['options'], (array)$options);
 
     $tcid_list = null;
@@ -2145,18 +2143,41 @@ class testcase extends tlObjectWithAttachments
                " JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id " .
                " {$where_clause} {$active_filter} ";
                  
-            if(is_null($my['options']['order_by']))
-            {
-              $sql .= " ORDER BY TCV.version DESC ";
-            }
-            else
-            {
-              $sql .= $my['options']['order_by'];
-            }
-            break;
+        if(is_null($my['options']['order_by']))
+        {
+          $sql .= " ORDER BY TCV.version DESC ";
+        }
+        else
+        {
+          $sql .= $my['options']['order_by'];
+        }
+      break;
     }
+
+    $render = array();
+    $render['ghost'] = false;
+    $render['ghostSteps'] = false;
+    $render['imageInline'] = $my['options']['renderImageInline'];
+
+    switch($my['options']['output'])
+    {
+      case 'full':
+      case 'full_without_users':
+        $render['ghost'] = $my['options']['renderGhost'];
+        $render['ghostSteps'] = true;
+      break;
+
+      case 'full_without_steps':
+        $render['ghost'] = $my['options']['renderGhost'];
+        $render['ghostSteps'] = false;
+      break;
     
-      // Control improvements
+      case 'essential':
+        $render['imageInline'] = false;
+      break;
+    }
+
+    // Control improvements
     if( !$version_id_is_array && $version_id == self::LATEST_VERSION)
     {
       // But, how performance wise can be do this, instead of using MAX(version)
@@ -2186,6 +2207,17 @@ class testcase extends tlObjectWithAttachments
       foreach( $key2loop as $accessKey)
       { 
         $this->renderGhost($recordset[$accessKey]);
+      } 
+      reset($recordset);
+    }
+
+    // 20141128
+    if( !is_null($recordset) && $render['imageInline'])
+    {
+      $key2loop = array_keys($recordset);
+      foreach( $key2loop as $accessKey)
+      { 
+        $this->renderImageAttachments($id,$recordset[$accessKey]);
       } 
       reset($recordset);
     }
@@ -6363,15 +6395,23 @@ class testcase extends tlObjectWithAttachments
     {
       $start = strpos($rse[$item_key],$tlBeginMark);
       $ghost = $rse[$item_key];
+
+      // There is at least one request to replace ?
       if($start !== FALSE)
       {
         $xx = explode($tlBeginMark,$rse[$item_key]);
+        
+        // How many requests to replace ?
         $xx2do = count($xx);
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++)
         {
+          // Hope was not a false request.
           if( strpos($xx[$xdx],$tlEndMark) !== FALSE)
           {
+            // Separate command string from other text
+            // Theorically can be just ONE, but it depends
+            // is user had not messed things.
             $yy = explode($tlEndMark,$xx[$xdx]);
             if( ($elc = count($yy)) > 0)
             {
@@ -6630,7 +6670,8 @@ class testcase extends tlObjectWithAttachments
     $relSet = array();
     $relSet['num_relations'] = 0;
     $relSet['item'] = current($this->get_by_id($id,self::LATEST_VERSION,null, 
-                                               array('output' => 'essential','getPrefix' => true)));
+                                               array('output' => 'essential','getPrefix' => true,
+                                                     'caller' => __FUNCTION__)));
     $relSet['relations'] = array();
 
     $tproject_mgr = new testproject($this->db);
@@ -6937,5 +6978,96 @@ class testcase extends tlObjectWithAttachments
     return intval($rs[0]['execution_id']);
   }
 
+
+  /**
+   * render Image Attachments INLINE
+   * 
+   * <img alt="" src="http://localhost/development/tl/testlink-ga-testlink-code/lib/attachments/attachmentdownload.php?id=1" 
+                 style="width: 1223px; height: 666px;" />   
+   */
+  function renderImageAttachments($id,&$item2render,$basehref=null)
+  {
+    static $attSet;
+    static $targetTag;
+
+    if(!$attSet || !isset($attSet[$id]))
+    {
+      $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
+      $beginTag = '[tlInlineImage]';
+      $endTag = '[/tlInlineImage]';
+    }  
+
+    if(is_null($attSet[$id]))
+    {
+      return;
+    } 
+
+    // $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
+    // second \'%s\' needed if I want to use Latest as indication, need to understand
+    // Javascript instead of javascript, because CKeditor sometimes complains
+    $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
+    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?id=%id%"></p>'; 
+
+    $key2check = array('summary','preconditions');
+    $rse = &$item2render;
+    foreach($key2check as $item_key)
+    {
+      echo 'Checking:' . $item_key . '<br>';
+      $start = strpos($rse[$item_key],$beginTag);
+      $ghost = $rse[$item_key];
+
+      // There is at least one request to replace ?
+      if($start !== FALSE)
+      {
+        $xx = explode($beginTag,$rse[$item_key]);
+
+        // How many requests to replace ?
+        $xx2do = count($xx);
+        $ghost = '';
+        for($xdx=0; $xdx < $xx2do; $xdx++)
+        {
+          // Hope was not a false request.
+          if( strpos($xx[$xdx],$endTag) !== FALSE)
+          {
+            // Separate command string from other text
+            // Theorically can be just ONE, but it depends
+            // is user had not messed things.
+            $yy = explode($endTag,$xx[$xdx]);
+            if( ($elc = count($yy)) > 0)
+            {
+              $atx = $yy[0];
+              try
+              {
+                if($attSet[$id][$atx]['is_image'])
+                {
+                  $ghost .= str_replace('%id%',$atx,$img);
+                } 
+                $lim = $elc-1;
+                for($cpx=1; $cpx <= $lim; $cpx++) 
+                {
+                  $ghost .= $yy[$cpx];
+                }  
+              } 
+              catch (Exception $e)
+              {
+                $ghost .= $rse[$item_key];
+              }
+            }  
+          }
+          else
+          {
+            // nothing to do
+            $ghost .= $xx[$xdx];
+          }  
+        }
+      }
+
+      // reconstruct field contents
+      if($ghost != '')
+      {
+        $rse[$item_key] = $ghost;
+      }
+    }   
+  }
 
 }  

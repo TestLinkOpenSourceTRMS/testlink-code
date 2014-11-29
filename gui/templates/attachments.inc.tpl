@@ -25,7 +25,8 @@ $gsmarty_attachments
 
 {lang_get var='labels'
           s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,attachment_title,
-             display_inline,local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,max_size_file_upload'}
+             display_inline,local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,
+             max_size_file_upload,display_inline_string'}
 
 {lang_get s='warning_delete_attachment' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -85,9 +86,14 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
         <img src="{$tlImages.eye}" style="border:none" title="{$labels.display_inline}" 
              onclick="c4i = document.getElementById('inline_img_container_{$info.id}');
              c4i.innerHTML=toogleImageURL('inline_img_container_{$info.id}',{$info.id});"/>
-
       {/if}
       - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
+      
+      {if $info.is_image}
+      <span><img src="{$tlImages.ghost_item}" title="{$labels.display_inline_string}" style="border:none" onclick="showHideByClass('span','ghost_' + {$info.id});"></span>
+      <span class='ghost_{$info.id}' style='display:none'>{$info.inlineString}</span>
+      {/if}
+
         {if !$attach_downloadOnly}
         <a href="javascript:delete_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
                                           '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',jsCallDeleteFile);">

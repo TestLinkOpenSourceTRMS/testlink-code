@@ -7012,7 +7012,6 @@ class testcase extends tlObjectWithAttachments
     $rse = &$item2render;
     foreach($key2check as $item_key)
     {
-      echo 'Checking:' . $item_key . '<br>';
       $start = strpos($rse[$item_key],$beginTag);
       $ghost = $rse[$item_key];
 

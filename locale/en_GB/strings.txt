@@ -3844,6 +3844,7 @@ $TLS_xls_jmexport_result_comment = 'Result comment';
 $TLS_link_report_test_plan_results_csv = 'Test Plan results (XLSX)';
 
 $TLS_display_inline ="Display inline";
+$TLS_display_inline_string ="Display inline ghost string";
 
 $TLS_tester_works_with_settings = 'This filter works in combination with values of settings area';
 

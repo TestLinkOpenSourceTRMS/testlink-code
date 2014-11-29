@@ -1593,7 +1593,7 @@ class testcase extends tlObjectWithAttachments
   
   
   /*
-  @internal revisions
+    @internal revisions
   */
   function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
   {
@@ -1632,6 +1632,24 @@ class testcase extends tlObjectWithAttachments
 
       if($newTCObj['status_ok'])
       {
+        $oldToNew = $this->copy_attachments($id,$newTCObj['id']);
+        $inlineImg = null;
+        if(!is_null($oldToNew))
+        {
+          // get all attachments, then check is there are images
+          $att = $this->attachmentRepository->getAttachmentInfosFor($newTCObj['id'],$this->attachmentTableName,'id');
+          foreach($oldToNew as $oid => $nid)
+          {
+            if($att[$nid]['is_image'])
+            {
+              $needle = str_replace($nid,$oid,$att[$nid]['inlineString']);
+              $inlineImg[] = array('needle' => $needle, 'rep' => $att[$nid]['inlineString']);
+            }  
+          }  
+        }  
+        $doInline = !is_null($inlineImg);
+        
+
         $ret['status_ok']=1;
         $newTCObj['mappings'][$id] = $newTCObj['id'];
 
@@ -1649,8 +1667,20 @@ class testcase extends tlObjectWithAttachments
           // In order to implement COPY to another test project, WE CAN NOT ASK
           // to method create_tcversion() to create inside itself THE STEPS.
           // Passing NULL as steps we instruct create_tcversion() TO DO NOT CREATE STEPS
+
+          // need to manage inline image attachments
           $ix->summary = $tcversion['summary'];
           $ix->preconditions = $tcversion['preconditions'];
+          if($doInline)
+          {
+            foreach($inlineImg as $elem)
+            {
+              $ix->summary = str_replace($elem['needle'],$elem['rep'],$ix->summary);
+              $ix->preconditions = str_replace($elem['needle'],$elem['rep'],$ix->preconditions);
+            }  
+          }  
+
+
           $ix->executionType = $tcversion['execution_type'];
           $ix->importance = $tcversion['importance'];
           $ix->version = $tcversion['version'];
@@ -1713,7 +1743,6 @@ class testcase extends tlObjectWithAttachments
           $this->copyReqAssignmentTo($id,$newTCObj['id'],$my['mappings']['requirements'],$ix->authorID);
         }
         
-         $this->copy_attachments($id,$newTCObj['id']);
       }
     }
     
@@ -3999,7 +4028,7 @@ class testcase extends tlObjectWithAttachments
    **/
   function copy_attachments($source_id,$target_id)
   {
-    $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
+    return $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
   }
 
   

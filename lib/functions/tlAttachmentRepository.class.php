@@ -55,8 +55,8 @@ class tlAttachmentRepository extends tlObjectWithDB
   function __construct(&$db)
   {
     tlObjectWithDB::__construct($db);
-      $this->repositoryType = self::getType();
-      $this->repositoryCompressionType = self::getCompression();
+    $this->repositoryType = self::getType();
+    $this->repositoryCompressionType = self::getCompression();
     $this->repositoryPath = self::getPathToRepository();
     $this->attachmentCfg = config_get('attachments');
     
@@ -459,7 +459,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     if ($this->attmObj->readFromDB($this->db))
     {
       $info = $this->attmObj->getInfo();
-        }
+    }
     return $info;
   }
   
@@ -525,6 +525,7 @@ class tlAttachmentRepository extends tlObjectWithDB
      */
   function copyAttachments($source_id,$target_id,$fkTableName)
   {
+    $mapping = null;
     $f_parts = null;
     $destFPath = null;
     $mangled_fname = '';
@@ -552,14 +553,15 @@ class tlAttachmentRepository extends tlObjectWithDB
         if($status_ok)
         {
           $this->attmObj->create($target_id,$fkTableName,$value['file_name'],
-                               $destFPath,$file_contents,$value['file_type'],
-                               $value['file_size'],$value['title']);
-          $this->attmObj->writeToDB($this->db);
+                                 $destFPath,$file_contents,$value['file_type'],
+                                 $value['file_size'],$value['title']);
+          $attID = 0;
+          $this->attmObj->writeToDB($this->db,$attID);
+          $mapping[$value['id']] = $attID;
         }
       }
     }
+
+    return $mapping;
   }
-
-
 }
-?>

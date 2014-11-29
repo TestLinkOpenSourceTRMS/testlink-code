@@ -288,7 +288,7 @@ class tlAttachment extends tlDBObject
    * 
    * @return integer returns tl::OK on success, tl::ERROR else
    */
-  public function writeToDB(&$db)
+  public function writeToDB(&$db,&$itemID=null)
   {
     $tableName = $db->prepare_string($this->fkTableName);
     $fName = $db->prepare_string($this->fName);
@@ -301,14 +301,15 @@ class tlAttachment extends tlDBObject
     $fContents = is_null($this->fContents) ? 'NULL' : "'".$db->prepare_string($this->fContents)."'";
     
     $query = "INSERT INTO {$this->tables['attachments']} 
-         (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 
-          VALUES ({$this->fkID},'{$tableName}','{$fName}',{$destFPath},{$this->fSize},'{$this->fType}'," . $db->db_now() . 
-          ",$fContents,{$this->compressionType},'{$title}')";
+             (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 
+             VALUES ({$this->fkID},'{$tableName}','{$fName}',{$destFPath},{$this->fSize},'{$this->fType}'," . $db->db_now() . 
+             ",$fContents,{$this->compressionType},'{$title}')";
     
     $result = $db->exec_query($query);
     if ($result)
     {
       $this->dbID = $db->insert_id();
+      $itemID = $this->dbID;
     }
     
     return $result ? tl::OK : tl::ERROR;

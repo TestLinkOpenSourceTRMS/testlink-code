@@ -7037,7 +7037,7 @@ class testcase extends tlObjectWithAttachments
               $atx = $yy[0];
               try
               {
-                if($attSet[$id][$atx]['is_image'])
+                if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image'])
                 {
                   $ghost .= str_replace('%id%',$atx,$img);
                 } 

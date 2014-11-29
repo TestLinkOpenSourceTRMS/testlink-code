@@ -1302,6 +1302,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->args->$key = intval($session_selection);  
     }  
    
+    // If this platform is NOT valid for Test plan, I will set the first one
+    // (is nay exists).
+    if( !isset($platformSet[$this->args->$key]) )
+    {
+      $this->args->$key = key($platformSet);
+    }  
+
     switch($this->mode)
     {
       case 'plan_mode':

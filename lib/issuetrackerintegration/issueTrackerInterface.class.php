@@ -341,9 +341,6 @@ abstract class issueTrackerInterface
 
     if($my['opt']['addSummary'])
     {
-
-      new dBug((string)$issue->summaryHTMLString);
-
       if (!is_null($issue->summaryHTMLString))
       {
         $link .= " : ";

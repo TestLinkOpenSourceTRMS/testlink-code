@@ -38,21 +38,25 @@ Purpose: smarty template - show Test Results and Metrics
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name} 
 
+{if $gui->hint != ''}
+  <h1><center>{$gui->hint}</center></h1>
+{/if}
+
 {if $gui->warning_msg == ''}
   <table class="simple" style="text-align: center; margin-left: 0px;">
-       <tr>
-           <th>{$labels.bugs_open}</th>
-           <th>{$labels.bugs_resolved}</th>
-           <th>{$labels.bugs_total}</th>
-           <th>{$labels.tcs_with_bugs}</th>
-       </tr>
+    <tr>
+      <th>{$labels.bugs_open}</th>
+      <th>{$labels.bugs_resolved}</th>
+      <th>{$labels.bugs_total}</th>
+      <th>{$labels.tcs_with_bugs}</th>
+    </tr>
        
-       <tr>
-           <td>{$gui->totalOpenBugs}</td>
-           <td>{$gui->totalResolvedBugs}</td>
-           <td>{$gui->totalBugs}</td>
-           <td>{$gui->totalCasesWithBugs}</td>
-       </tr>
+    <tr>
+      <td>{$gui->totalOpenBugs}</td>
+      <td>{$gui->totalResolvedBugs}</td>
+      <td>{$gui->totalBugs}</td>
+      <td>{$gui->totalCasesWithBugs}</td>
+    </tr>
   </table>
   
   <br />

@@ -730,6 +730,7 @@ class testplan extends tlObjectWithAttachments
   function get_linked_items_id($id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
     $sql = " /* $debugMsg */ ". 
          " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
          " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
@@ -5580,13 +5581,12 @@ class testplan extends tlObjectWithAttachments
   function helperConcatTCasePrefix($id)
   {
     // Get test case prefix
-      $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-      $io = $this->tree_manager->get_node_hierarchy_info($id);
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $io = $this->tree_manager->get_node_hierarchy_info($id);
       
-      list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
-      $prefix .= $this->tcaseCfg->glue_character;
-      $concat = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
+    list($prefix,$garbage) = $this->tcase_mgr->getPrefix(null,$io['parent_id']);
+    $prefix .= $this->tcaseCfg->glue_character;
+    $concat = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
 
     unset($io);
     unset($garbage);
@@ -7091,6 +7091,43 @@ class testplan extends tlObjectWithAttachments
     $url = "lib/plan/planEdit.php?do_action=deleteFile&tplan_id=" . intval($id) . "&file_id=" ; 
     return $url;
   }
+
+
+  /**
+   * @used-by
+   */
+  function getAllExecutionsWithBugs($id,$platform_id=null,$build_id=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $safe['tplan_id'] = intval($id);
+    $fullEID = $this->helperConcatTCasePrefix($safe['tplan_id']);
+    
+    $sql = " /* $debugMsg */ ". 
+           " SELECT DISTINCT E.id AS exec_id,EB.bug_id,NHTC.id AS tcase_id, NHTC.id AS tc_id, " .
+           " NHTC.name AS name, NHTSUITE.name AS tsuite_name, TCV.tc_external_id AS external_id," .
+           " $fullEID  AS full_external_id " .
+           " FROM {$this->tables['executions']} E " .
+           " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+           " ON TPTCV.tcversion_id = E.tcversion_id " .
+           " AND TPTCV.testplan_id = E.testplan_id " .
+           " JOIN {$this->tables['execution_bugs']} EB " . 
+           " ON EB.execution_id = E.id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTCV " . 
+           " ON NHTCV.id = E.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTC " . 
+           " ON NHTC.id = NHTCV.parent_id " .
+           " JOIN {$this->tables['tcversions']} TCV " . 
+           " ON TCV.id = E.tcversion_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHTSUITE " . 
+           " ON NHTSUITE.id = NHTC.parent_id " .
+           " WHERE TPTCV.testplan_id = " . $safe['tplan_id'];
+         
+    $items = $this->db->get_recordset($sql);           
+    return $items;
+  }
+
+
 
 
 } // end class testplan

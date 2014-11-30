@@ -179,11 +179,20 @@ $tlCfg->reports_list['results_requirements'] = array(
 
 $tlCfg->reports_list['list_problems'] = array( 
 	'title' => 'link_report_total_bugs',
-	'url' => 'lib/results/resultsBugs.php',
+	'url' => 'lib/results/resultsBugs.php?type=0',
 	'enabled' => 'bts',
 	'directLink' => '',
 	'format' => 'format_html'
 );
+
+$tlCfg->reports_list['issues_all_exec'] = array( 
+	'title' => 'link_report_total_bugs_all_exec',
+	'url' => 'lib/results/resultsBugs.php?type=1',
+	'enabled' => 'bts',
+	'directLink' => '',
+	'format' => 'format_html'
+);
+
 $tlCfg->reports_list['tcases_with_cf'] = array( 
 	'title' => 'link_report_tcases_with_cf',
 	'url' => 'lib/results/testCasesWithCF.php',

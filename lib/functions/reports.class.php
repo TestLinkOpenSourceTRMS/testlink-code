@@ -108,8 +108,6 @@ class tlReports extends tlObjectWithDB
             }
           }
           
-          // $tlImages.bullet
-
           $dl = $items[$xdx]['directLink']; 
           $mask = '<img class="clickable" title="%s" alt="%s" ' .
                   ' onclick="showHideByClass(' . "'div','%s');event.stopPropagation();" . '" ' .

@@ -7,9 +7,7 @@
  * @author kevinlevy
  * 
  * @internal revisions
- * @since 1.9.8
- * 
- * 
+ * @since 1.9.13
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -39,7 +37,6 @@ if($info['issue_tracker_enabled'])
   unset($it_mgr);
 } 
 
-
 $smarty = new TLSmarty;
 $img = $smarty->getImages();
 $openBugs = array();
@@ -55,12 +52,25 @@ $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 unset($tproject_mgr);
 
 // $filters = array();
-//$options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
+// $options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
 // $execSet = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
-$execSet = (array)$metricsMgr->getLTCVNewGeneration($args->tplan_id,null,
-                                                    array('addExecInfo' => true, 'accessKeyType' => 'index',
-                                                          'specViewFields' => true, 'testSuiteInfo' => true,
-                                                          'includeNotRun' => false));
+
+switch($args->verboseType)
+{
+  case 'all':
+    $execSet = $tplan_mgr->getAllExecutionsWithBugs($args->tplan_id);
+  break;
+
+  case 'latest':
+  default:
+    $execSet = (array)$metricsMgr->getLTCVNewGeneration($args->tplan_id,null,
+                                                        array('addExecInfo' => true, 'accessKeyType' => 'index',
+                                                              'specViewFields' => true, 'testSuiteInfo' => true,
+                                                              'includeNotRun' => false));
+  break;
+
+
+}
 
 $testcase_bugs = array();
 $mine = array();
@@ -77,6 +87,7 @@ foreach ($execSet as $execution)
     // First bug found for this tc
     if (!isset($testcase_bugs[$tc_id])) 
     {
+      // This is ONLY PARENT TEST SUITE !!!
       $suiteName = $execution['tsuite_name'];
       $tc_name = $execution['full_external_id'] . ":" . $execution['name'];
 
@@ -85,6 +96,7 @@ foreach ($execSet as $execution)
                            "<img title=\"" . $l18n['execution_history'] ."\" src=\"{$img['history']}\" /></a> ";
       $edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
                    "<img title=\"" . $l18n['design'] . "\" src=\"{$img['edit']}\" /></a> ";
+
       $tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $exec_history_link .
                  $edit_link . $tc_name;
 
@@ -150,11 +162,13 @@ $gui->user = $args->user;
 $gui->printDate = '';
 $gui->tproject_name = $tproject_info['name'];
 $gui->tplan_name = $tplan_info['name'];
-$gui->title = lang_get('link_report_total_bugs');
+$gui->title = $args->title;
 $gui->totalOpenBugs = $totalOpenBugs;
 $gui->totalResolvedBugs = $totalResolvedBugs;
 $gui->totalBugs = $totalBugs;
 $gui->totalCasesWithBugs = $totalCasesWithBugs;
+$gui->hint = $args->hint;
+
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -178,7 +192,6 @@ function buildBugString(&$db,$execID,&$bugInterface,&$openBugsArray,&$resolvedBu
     {
       foreach($bugs as $bugID => $bugInfo)
       {
-    
         if($bugInfo['isResolved'])
         {
           if(!in_array($bugID, $resolvedBugsArray))
@@ -227,13 +240,30 @@ function getColumnsDefinition()
 function init_args()
 {
   $iParams = array("format" => array(tlInputParameter::INT_N),
-                   "tplan_id" => array(tlInputParameter::INT_N));
+                   "tplan_id" => array(tlInputParameter::INT_N),
+                   "type" => array(tlInputParameter::INT_N) );
+
   $args = new stdClass();
   $pParams = R_PARAMS($iParams,$args);
   
-  $args->tproject_id = $_SESSION['testprojectID'];
+  $args->tproject_id = intval($_SESSION['testprojectID']);
   $args->user = $_SESSION['currentUser'];
 
+  switch($args->type)
+  {
+    case 1:
+      $args->verboseType = 'all';   
+      $args->title = lang_get('link_report_total_bugs_all_exec');
+      $args->hint = lang_get('link_report_total_bugs_all_exec');
+    break;
+
+    default:
+    case 0:
+      $args->verboseType = 'latest';  
+      $args->title = lang_get('link_report_total_bugs');
+      $args->hint = '';
+    break;
+  }
   return $args;
 }
 

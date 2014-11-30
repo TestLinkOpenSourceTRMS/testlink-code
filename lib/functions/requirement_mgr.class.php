@@ -3065,9 +3065,12 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    * 20110306 - franciscom - created
    *
     */
-  function get_version_revision($version_id,$revision_access)
+  function get_version_revision($version_id,$revision_access,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('renderImageInline' => false);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
     $sql =   "/* $debugMsg */";
     
     if( isset($revision_access['number']) )
@@ -3127,6 +3130,16 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     }
 
     $rs = $this->db->get_recordset($sql);
+    
+    if(!is_null() && $my['opt']['renderImageInline'])
+    {
+      $k2l = array_keys($rs);
+      foreach($k2l as $akx)
+      { 
+        $this->renderImageAttachments($rs[$akx]['req_id'],$rs[$akx]);
+      } 
+      reset($rs);
+    }  
     return $rs;
   }
 

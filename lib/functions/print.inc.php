@@ -91,14 +91,15 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   $versionID = isset($node['version_id']) ? intval($node['version_id']) : requirement_mgr::LATEST_VERSION;
   $revision = isset($node['revision']) ? intval($node['revision']) : null;
 
+  $getOpt = array('renderImageInline' => true);
   if( is_null($revision) )
   {
     // will get last revision of requested req version 
-    $dummy = $req_mgr->get_by_id($node['id'],$versionID);  
+    $dummy = $req_mgr->get_by_id($node['id'],$versionID,1,$getOpt);  
   }
   else
   {
-    $dummy = $req_mgr->get_version_revision($versionID,array('number' => $revision));  
+    $dummy = $req_mgr->get_version_revision($versionID,array('number' => $revision),$getOpt);  
     if(!is_null($dummy))
     {
       // do this way instead of using SQL alias on get_version_revision(), in order

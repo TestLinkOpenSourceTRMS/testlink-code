@@ -113,8 +113,8 @@ class requirement_mgr extends tlObjectWithAttachments
   */
   function get_import_file_types()
   {
-       return $this->import_file_types;
-    }
+    return $this->import_file_types;
+  }
 
 
 
@@ -153,7 +153,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   
   
   $my['options'] = array('order_by' => " ORDER BY REQV.version DESC ", 
-                         'output_format' => 'array');
+                         'output_format' => 'array', 'renderImageInline' => false);
 
   $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -264,6 +264,18 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   $rs = null;
   // echo 'IN::' . __FUNCTION__ . '<br>';
   // new dBug($recordset);
+
+
+  // 20141130 - inline images 
+  if(!is_null($recordset) && $my['options']['renderImageInline'])
+  {
+    $k2l = array_keys($recordset);
+    foreach($k2l as $akx)
+    { 
+      $this->renderImageAttachments($id,$recordset[$akx]);
+    } 
+    reset($recordset);
+  }
 
 
   if(!is_null($recordset))
@@ -505,30 +517,31 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       
       // only if no new revision is created set modifier and modification ts
       // otherwise those values are handled by function create_new_revision()
-      if (!$create_revision) {
+      if (!$create_revision) 
+      {
         $sql_temp .= ", modifier_id={$user_id}, modification_ts={$db_now} ";
       }
       
-      $sql[] = $sql_temp . " WHERE id={$version_id}";
+      $sql[] = $sql_temp . " WHERE id=" . intval($version_id);
 
-    foreach($sql as $stm)
-    {
+      foreach($sql as $stm)
+      {
         $qres = $this->db->exec_query($stm);
         if( !$qres )
         {
-            $result['status_ok'] = 0;
-            $result['msg'] = $this->db->error_msg;
-            $result['sql'] = $stm;
-            break;
+          $result['status_ok'] = 0;
+          $result['msg'] = $this->db->error_msg;
+          $result['sql'] = $stm;
+          break;
         }
-    }
+      }
 
     } //     if($chk['status_ok'] || $skip_controls)
     else
-  {
+    {
       $result['status_ok']=$chk['status_ok'];
       $result['msg']=$chk['msg'];
-  }
+    }
     return $result;
   } //function end
 
@@ -1210,13 +1223,13 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
   */
   function get_relationships($req_id)
   {
-  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = " /* $debugMsg */ SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
            " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy, " .
            "      {$this->tables['req_coverage']} req_coverage " .
-       " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
-         " AND  req_coverage.req_id={$req_id}";
+           " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
+           " AND  req_coverage.req_id={$req_id}";
 
     return ($this->db->get_recordset($sql));
   }
@@ -1933,14 +1946,14 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    */
   function copy_to($id,$parent_id,$user_id,$tproject_id=null,$options=null)
   {
-      $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
+    $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
     $my['options'] = array('copy_also' => null, 'caller' => '');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array_merge($my['options'], (array)$options);
     
-         if( is_null($my['options']['copy_also']) )
-      {
-          $my['options']['copy_also'] = array('testcase_assignment' => true);   
-      }
+    if( is_null($my['options']['copy_also']) )
+    {
+      $my['options']['copy_also'] = array('testcase_assignment' => true);   
+    }
 
     $root = $tproject_id;
     if( is_null($root) )
@@ -1950,10 +1963,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       $root = $target['testproject_id'];
     }
   
-    //echo 'MM - ' . __FUNCTION__ . ' Before get_by_id():' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
+    // NEED INLINE REFACTORING
     $item_versions = $this->get_by_id($id);
-    //echo 'MM - ' . __FUNCTION__ . ' AFTER get_by_id():' . ' memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
-
     if($item_versions)
     {
       if($my['options']['caller'] == 'copy_testproject')
@@ -2084,7 +2095,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   function generateDocID($id, $tproject_id)
   {
     $item_info = $this->get_by_id($id);
-        $item_info = $item_info[0]; 
+    $item_info = $item_info[0]; 
 
     // Check if another req with same DOC ID exists on test project (MASTER CONTAINER),
     // If yes generate a new DOC ID
@@ -2241,10 +2252,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   }
 
 
-    /**
-   * 
-    *
-     */
+ /**
+  * 
+  *
+  */
   function get_last_version_info($id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2566,7 +2577,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    *              )
    *      )
    */
-  public static function get_all_relation_labels() {
+  public static function get_all_relation_labels() 
+  {
     
     $labels = config_get('req_cfg')->rel_type_labels;
     
@@ -2835,8 +2847,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   
   /**
    * used to create overwiew of changes between revisions
-    * 20110116 - franciscom - BUGID 4172 - MSSQL UNION text field issue
-    */
+   * 20110116 - franciscom - BUGID 4172 - MSSQL UNION text field issue
+   */
   function get_history($id,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2958,32 +2970,40 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    * 
    *
     */
-  function get_version($version_id)
+  function get_version($version_id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('renderImageInline' => false);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-    $sql =   " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+    $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
            " REQV.scope,REQV.status,REQV.type,REQV.active," . 
-               " REQV.is_open,REQV.author_id,REQV.version,REQV.revision,REQV.id AS version_id," .
-               " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
-               " REQV.modification_ts,REQV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
-             " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
-             " FROM {$this->object_table} REQ " .
-             " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
-             " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id ".
-             " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
-             " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
-             " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-        " WHERE REQV.id = " . intval($version_id);
+           " REQV.is_open,REQV.author_id,REQV.version,REQV.revision,REQV.id AS version_id," .
+           " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+           " REQV.modification_ts,REQV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+           " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+           " FROM {$this->object_table} REQ " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id ".
+           " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
+           " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+           " WHERE REQV.id = " . intval($version_id);
 
     $dummy = $this->db->get_recordset($sql);
     
     if( !is_null($dummy) )
     {
-       $this->decode_users($dummy);    
+      $this->decode_users($dummy);    
       $dummy = $dummy[0];
     }
-    return is_null($dummy) ? null : $dummy;  
+
+    if(!is_null($dummy) && $my['opt']['renderImageInline'])
+    {
+      $this->renderImageAttachments($dummy['id'],$dummy);
+    }  
+
+    return $dummy;  
   }  
 
 
@@ -2992,12 +3012,13 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
    * 
    *
    * @internal revision
-   * 20110306 - franciscom - fixed wrong mapping for REQREV ID on output recordset.
    *
-    */
-  function get_revision($revision_id)
+   */
+  function get_revision($revision_id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $my['opt'] = array('renderImageInline' => false);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
            " REQRV.scope,REQRV.status,REQRV.type,REQRV.active," . 
@@ -3018,10 +3039,16 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     
     if( !is_null($dummy) )
     {
-       $this->decode_users($dummy);    
+      $this->decode_users($dummy);    
       $dummy = $dummy[0];
     }
-    return is_null($dummy) ? null : $dummy;  
+
+    if(!is_null($dummy) && $my['opt']['renderImageInline'])
+    {
+      $this->renderImageAttachments($dummy['id'],$dummy);
+    }  
+
+    return $dummy;  
   }  
 
   
@@ -3051,53 +3078,54 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       // Req Versions -> holds LATEST revision
       // Req Revisions -> holds other revisions
       $sql .= " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version," .
-            "     REQV.creation_ts, REQV.author_id, " .
-          "     REQV.modification_ts, REQV.modifier_id, " . 
-                 self::NO_REVISION . " AS revision_id, " .
-            "      REQV.revision, REQV.scope, " .
-            "      REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " .
-            " COALESCE(REQV.log_message,'') AS log_message, NH_REQ.name AS title " .
-            " FROM {$this->tables['req_versions']}  REQV " .
-          " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
-          " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
-          " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
-          " WHERE NH_REQV.id = {$version_id} AND REQV.revision = {$rev_number} "; 
+              "     REQV.creation_ts, REQV.author_id, " .
+              "     REQV.modification_ts, REQV.modifier_id, " . 
+              self::NO_REVISION . " AS revision_id, " .
+              "      REQV.revision, REQV.scope, " .
+              "      REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " .
+              " COALESCE(REQV.log_message,'') AS log_message, NH_REQ.name AS title " .
+              " FROM {$this->tables['req_versions']}  REQV " .
+              " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+              " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+              " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+              " WHERE NH_REQV.id = {$version_id} AND REQV.revision = {$rev_number} "; 
 
       $sql .=  " UNION ALL ( " .
             " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " .
             "     REQRV.creation_ts, REQRV.author_id, " .
-          "     REQRV.modification_ts, REQRV.modifier_id, " . 
-          "     REQRV.id AS revision_id, " .
-          "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+            "     REQRV.modification_ts, REQRV.modifier_id, " . 
+            "     REQRV.id AS revision_id, " .
+            "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
             "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
             "     COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " .
-          " FROM {$this->tables['req_versions']} REQV " .
-          " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
-          " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
-          " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
-          " JOIN {$this->tables['req_revisions']} REQRV " .
-          " ON REQRV.parent_id = REQV.id " . 
-          " WHERE NH_REQV.id = {$version_id} AND REQRV.revision = {$rev_number} ) ";
+            " FROM {$this->tables['req_versions']} REQV " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+            " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+            " JOIN {$this->tables['req_revisions']} REQRV " .
+            " ON REQRV.parent_id = REQV.id " . 
+            " WHERE NH_REQV.id = {$version_id} AND REQRV.revision = {$rev_number} ) ";
     
     }  
     else
     {  
       // revision_id is present ONLY on req revisions table, then we do not need UNION
        $sql .=  " SELECT NH_REQV.parent_id AS req_id, REQV.id AS version_id, REQV.version, " .
-            "     REQRV.creation_ts, REQRV.author_id, " .
-          "     REQRV.modification_ts, REQRV.modifier_id, " . 
-          "     REQRV.id AS revision_id, " .
-          "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
-            "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
-            "     COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " .
-          " FROM {$this->tables['req_versions']} REQV " .
-          " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
-          " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
-          " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
-          " JOIN {$this->tables['req_revisions']} REQRV " .
-          " ON REQRV.parent_id = REQV.id " . 
-          " WHERE NH_REQV.id = {$version_id} AND REQRV.revision_id = " . intval($revision_access['id']);
+                "     REQRV.creation_ts, REQRV.author_id, " .
+                "     REQRV.modification_ts, REQRV.modifier_id, " . 
+                "     REQRV.id AS revision_id, " .
+                "     REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+                "     REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
+                "     COALESCE(REQRV.log_message,'') as log_message, NH_REQ.name AS title " .
+                " FROM {$this->tables['req_versions']} REQV " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+                " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+                " JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+                " JOIN {$this->tables['req_revisions']} REQRV " .
+                " ON REQRV.parent_id = REQV.id " . 
+                " WHERE NH_REQV.id = {$version_id} AND REQRV.revision_id = " . intval($revision_access['id']);
     }
+
     $rs = $this->db->get_recordset($sql);
     return $rs;
   }
@@ -3786,6 +3814,141 @@ function getCoverageCounterSet($itemSet)
     $rs = $this->db->fetchColumnsIntoMap($sqlT,'req_id','qty');
     return $rs;
   }
+
+
+  /**
+   *
+   *
+   */
+  function updateScope($reqVersionID)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $sql = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " .
+           " SET scope='" . $this->db->prepare_string($scope) . "'" .
+           " WHERE id=" . intval($reqVersionID);
+    $this->db->exec_query($sql);    
+  }
+
+
+  /**
+   * render Image Attachments INLINE
+   * 
+   */
+  function renderImageAttachments($id,&$item2render,$basehref=null)
+  {
+    static $attSet;
+    static $targetTag;
+
+    if(!$attSet || !isset($attSet[$id]))
+    {
+      $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
+      $beginTag = '[tlInlineImage]';
+      $endTag = '[/tlInlineImage]';
+    }  
+
+    if(is_null($attSet[$id]))
+    {
+      return;
+    } 
+
+    // $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
+    // second \'%s\' needed if I want to use Latest as indication, need to understand
+    // Javascript instead of javascript, because CKeditor sometimes complains
+    $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
+    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?id=%id%"></p>'; 
+
+    $key2check = array('scope');
+    $rse = &$item2render;
+    foreach($key2check as $item_key)
+    {
+      $start = strpos($rse[$item_key],$beginTag);
+      $ghost = $rse[$item_key];
+
+      // There is at least one request to replace ?
+      if($start !== FALSE)
+      {
+        $xx = explode($beginTag,$rse[$item_key]);
+
+        // How many requests to replace ?
+        $xx2do = count($xx);
+        $ghost = '';
+        for($xdx=0; $xdx < $xx2do; $xdx++)
+        {
+          // Hope was not a false request.
+          if( strpos($xx[$xdx],$endTag) !== FALSE)
+          {
+            // Separate command string from other text
+            // Theorically can be just ONE, but it depends
+            // is user had not messed things.
+            $yy = explode($endTag,$xx[$xdx]);
+            if( ($elc = count($yy)) > 0)
+            {
+              $atx = $yy[0];
+              try
+              {
+                if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image'])
+                {
+                  $ghost .= str_replace('%id%',$atx,$img);
+                } 
+                $lim = $elc-1;
+                for($cpx=1; $cpx <= $lim; $cpx++) 
+                {
+                  $ghost .= $yy[$cpx];
+                }  
+              } 
+              catch (Exception $e)
+              {
+                $ghost .= $rse[$item_key];
+              }
+            }  
+          }
+          else
+          {
+            // nothing to do
+            $ghost .= $xx[$xdx];
+          }  
+        }
+      }
+
+      // reconstruct field contents
+      if($ghost != '')
+      {
+        $rse[$item_key] = $ghost;
+      }
+    }   
+  }
+
+
+
+  /**
+   * scope is managed at revision and version level
+   * @since 1.9.13
+   */ 
+  function inlineImageProcessing($idCard,$scope,$rosettaStone)
+  {
+    // get all attachments, then check is there are images
+    $att = $this->attachmentRepository->getAttachmentInfosFor($idCard->id,$this->attachmentTableName,'id');
+    foreach($rosettaStone as $oid => $nid)
+    {
+      if($att[$nid]['is_image'])
+      {
+        $needle = str_replace($nid,$oid,$att[$nid]['inlineString']);
+        $inlineImg[] = array('needle' => $needle, 'rep' => $att[$nid]['inlineString']);
+      }  
+    }  
+    
+    if( !is_null($inlineImg) )
+    {
+      $dex = $scope;
+      foreach($inlineImg as $elem)
+      {
+        $dex = str_replace($elem['needle'],$elem['rep'],$dex);
+      }  
+      $this->updateScope($idCard->versionID,$dex);
+    }  
+  }
+
 
 
 

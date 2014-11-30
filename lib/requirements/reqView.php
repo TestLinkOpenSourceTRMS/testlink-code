@@ -27,8 +27,6 @@ $args = init_args();
 $gui = initialize_gui($db,$args,$tproject_mgr);
 $smarty = new TLSmarty();
 
-
-
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 
@@ -86,7 +84,8 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
     
   /* if wanted, show only the given version */
   $gui->version_option = ($argsObj->req_version_id) ? $argsObj->req_version_id : requirement_mgr::ALL_VERSIONS;
-  $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option);
+  $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option,
+                                           1,array('renderImageInline' => true));
   
   $gui->reqHasBeenDeleted = false;
   if( is_null($gui->req_versions) )

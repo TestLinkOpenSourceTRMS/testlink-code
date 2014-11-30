@@ -54,9 +54,12 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   static $req_spec_cfg;
   static $decodeReq;
   static $force = null;
+  static $basehref;
+
   
   if (!$req_mgr) 
   {
+    $basehref = $_SESSION['basehref'];
     $req_cfg = config_get('req_cfg');
     $req_spec_cfg = config_get('req_spec_cfg');
     $firstColWidth = '20%';
@@ -267,25 +270,29 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
     }
   }
 
-  // TICKET 0006037 - Contribution Refactored
+  // Display Images Inline (Always)
   $attachSet =  $req_mgr->getAttachmentInfos($req['id']);
-  // new dBug($attachSet);
-
   if (count($attachSet))
   {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
-               $labels['attached_files'] . "</span></td><td><ul>";
-    foreach($attachSet as $item)
+               $labels['attached_files'] . "</span></td><td>";
+    
+    foreach($attachSet as $fitem)
     {
-      $fname = "";
-      if ($item['title'])
+      if($fitem['is_image'])
       {
-        $fname .=  htmlspecialchars($item['title']) . " : ";
-      }
-      $fname .= htmlspecialchars($item['file_name']);
-      $output .= "<li>$fname</li>";
+        $output .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
+        $output .= '<li>' . '<img src="' . $basehref . 
+                   'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . '">';
+      }  
+      else
+      {
+        $output .= '<li>' . '<a href="' . $basehref . 
+                   'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . 
+                   '" ' . ' target="#blank" > ' . htmlspecialchars($fitem['file_name']) . '</a>';
+      }  
     }
-    $output .="</ul></td></tr>";
+    $output .="</td></tr>";
   }
 
 
@@ -320,12 +327,14 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
   static $req_spec_cfg;
   static $reqSpecTypeLabels;
   static $nodeTypes;
-  
+  static $basehref;
+
   $output = '';
   $reLevel = ($reLevel > 0) ? $reLevel : 1;
   
   if (!$req_spec_mgr) 
   {
+    $basehref = $_SESSION['basehref'];
     $req_spec_cfg = config_get('req_spec_cfg');
     $firstColWidth = '20%';
     $tableColspan = 2;
@@ -1293,7 +1302,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                     $code .= '<input type="hidden" name="id" value="' . intval($context['exec_id']) . '">';
                     $code .= '<input type="hidden" name="deleteAttachmentID" value="' . intval($fitem['id']) . '">';
       
-                    if($fitem['is_image']) // && $options['outputFormat'] == FORMAT_HTML)
+                    if($fitem['is_image'])
                     {
                       $code .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
                       $code .= '<li>' . '<img src="' . $env->base_href . 

@@ -4,16 +4,16 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @internal revisions
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="cfViewAction" value="lib/cfields/cfieldsView.php"}
+{$cfViewAction="lib/cfields/cfieldsView.php"}
 
-{assign var="cfImportAction" value="lib/cfields/cfieldsImport.php?goback_url="}
-{assign var="importCfieldsAction" value="$basehref$cfImportAction$basehref$cfViewAction"}
+{$cfImportAction="lib/cfields/cfieldsImport.php?goback_url="}
+{$importCfieldsAction="$basehref$cfImportAction$basehref$cfViewAction"}
 
-{assign var="cfExportAction" value="lib/cfields/cfieldsExport.php?goback_url="}
-{assign var="exportCfieldsAction" value="$basehref$cfExportAction$basehref$cfViewAction"}
+{$cfExportAction="lib/cfields/cfieldsExport.php?goback_url="}
+{$exportCfieldsAction="$basehref$cfExportAction$basehref$cfViewAction"}
 
 
 {lang_get var="labels"

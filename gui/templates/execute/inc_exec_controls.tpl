@@ -48,7 +48,9 @@ Rev:
     					  <br />		
                 {$args_labels.execution_duration}&nbsp;
                 <input type="text" name="execution_duration" id="execution_duration"
-                       size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
+                       size="{#EXEC_DURATION_SIZE#}" 
+                       onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                       maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
 
               {if $args_save_type == 'single'}
                 <br />

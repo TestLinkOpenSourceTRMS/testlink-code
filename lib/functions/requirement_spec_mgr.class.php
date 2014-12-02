@@ -9,7 +9,7 @@
  * Manager for requirement specification (requirement container)
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  * 
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
@@ -1688,17 +1688,15 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	           id: new created if everything OK, -1 if problems.
 	
 	  rev :
-	  20110817 - franciscom - TICKET 4360
 	*/
 	function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 	{
 		
-		static $get_tree_nt2exclude;
+	  static $get_tree_nt2exclude;
 		if(!$get_tree_nt2exclude)
 		{
-			$get_tree_nt2exclude = array('req_version' => 'exclude_me',
-							  			 'req_revision' => 'exclude_me',
-							  			 'requirement_spec_revision' => 'exclude_me');
+			$get_tree_nt2exclude = array('req_version' => 'exclude_me','req_revision' => 'exclude_me',
+							  			             'requirement_spec_revision' => 'exclude_me');
 		}
 		
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1709,27 +1707,27 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		
 
 		$item_info = $this->get_by_id($id);
-        $target_doc = $this->generateDocID($id,$tproject_id);		
+    $target_doc = $this->generateDocID($id,$tproject_id);		
 		$new_item = $this->create($tproject_id,$parent_id,$target_doc,$item_info['title'],
 		                          $item_info['scope'],$item_info['total_req'],
 		                          $item_info['author_id'],$item_info['type'],$item_info['node_order']);
 	
-	    $op = $new_item;
-	    if( $new_item['status_ok'] )
-	    {
-	    	$op['mappings'][$id] = $new_item['id'];
-	    	$op['mappings']['req_spec'] = array();
-	    	$op['mappings']['req'] = array();
-	    	$op['mappings']['req_version'] = array();
+	  $op = $new_item;
+	  if( $new_item['status_ok'] )
+	  {
+	   	$op['mappings'][$id] = $new_item['id'];
+	  	$op['mappings']['req_spec'] = array();
+	   	$op['mappings']['req'] = array();
+	   	$op['mappings']['req_version'] = array();
 	    		
-			// $this->copy_cfields($id,$new_item['id']);
-			// Important notice
-			// 
-			$idCard = array('parent_id' => $id, 'tproject_id' => $tproject_id); 
-        	$this->copy_cfields($idCard,$new_item['id']);
+		  $idCard = array('parent_id' => $id, 'tproject_id' => $tproject_id); 
+      $this->copy_cfields($idCard,$new_item['id']);
+      
+      $this->copy_attachments($id,$new_item['id']);
+
+
         	
-        	
-        	// Now loop to copy all items inside it    	
+      // Now loop to copy all items inside it    	
  			// null is OK, because $id is a req spec, there is no risk
  			// to copy/traverse wrong node types.
  			// Hmmm may be req_revi ???
@@ -1738,70 +1736,55 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		
 			if (!is_null($subtree))
 			{
-				$reqMgr =  new requirement_mgr($this->db);
-				$parent_decode=array();
-			  	$parent_decode[$id]=$new_item['id'];
+			  $reqMgr =  new requirement_mgr($this->db);
+			  $parent_decode=array();
+			 	$parent_decode[$id]=$new_item['id'];
 			  	
-			  	// $loop2do = count($subtree);
-				// for($sdx=0; $sdx <= $loop2do; $sdx++)
-				
-				// using reference has to avoid duplicate => memory consumption
-				// (at least this is info found on Internet)
-				// Few test indicates that it's true, but that using a counter
-				// is still better.
-				//
-				// $sdx=1;
-				// foreach($subtree as &$elem)
+  			// using reference has to avoid duplicate => memory consumption
+  			// (at least this is info found on Internet)
+  			// Few test indicates that it's true, but that using a counter
+  			// is still better.
+  				//
 			  	$loop2do = count($subtree);
-				for($sdx=0; $sdx <= $loop2do; $sdx++)
-				{
-					// echo 'MM - SDX:' . $sdx++ . '<br>';
-					// echo 'MM - SDX:' . $sdx . '<br>';
-					//echo 'MM -  Before elem() memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
-					$elem = &$subtree[$sdx];
-					//echo 'MM -  AFTER  elem() memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
-					
+  				for($sdx=0; $sdx <= $loop2do; $sdx++)
+	   			{
+		  			$elem = &$subtree[$sdx];
 				  	$the_parent_id = isset($parent_decode[$elem['parent_id']]) ? $parent_decode[$elem['parent_id']] : null;
-					switch ($elem['node_type_id'])
-					{
-						case $this->node_types_descr_id['requirement']:
-						
-							//echo 'MM -  Going to copy REQ <br>';
-							//echo 'MM -  Before copy_to() memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
-							$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,$tproject_id,$my['options']);
-							//echo 'MM -  AFTER copy_to()  memory_get_usage:' . memory_get_usage(true) . ' - memory_get_peak_usage:' . memory_get_peak_usage(true) . '<br>';
-							$op['status_ok'] = $ret['status_ok'];
-							
-							$op['mappings']['req'] += $ret['mappings']['req'];
-							$op['mappings']['req_version'] += $ret['mappings']['req_version'];
-							// gc_collect_cycles();
+			   		switch ($elem['node_type_id'])
+				  	{
+					   	case $this->node_types_descr_id['requirement']:
+  							$ret = $reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,$tproject_id,$my['options']);
+  							$op['status_ok'] = $ret['status_ok'];
+  							$op['mappings']['req'] += $ret['mappings']['req'];
+  							$op['mappings']['req_version'] += $ret['mappings']['req_version'];
 							break;
 							
-						case $this->node_types_descr_id['requirement_spec']:
-							$item_info = $this->get_by_id($elem['id']);
+	   					case $this->node_types_descr_id['requirement_spec']:
+  							$item_info = $this->get_by_id($elem['id']);
         	                
-        	                // hmm, when copy_to() is called because we are duplicating
-        	                // a test project, call to generateDocID(), can be avoided.
-        	                // we have IMHO an absolute inexistent risk.
-        	                $target_doc = $this->generateDocID($elem['id'],$tproject_id);		
+                // hmm, when copy_to() is called because we are duplicating
+                // a test project, call to generateDocID(), can be avoided.
+                // we have IMHO an absolute inexistent risk.
+                $target_doc = $this->generateDocID($elem['id'],$tproject_id);		
 							
 							
-							$ret = $this->create($tproject_id,$the_parent_id,$target_doc,$item_info['title'],
-			                                     $item_info['scope'],$item_info['total_req'],
-			                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
+		  					$ret = $this->create($tproject_id,$the_parent_id,$target_doc,$item_info['title'],
+			                               $item_info['scope'],$item_info['total_req'],
+			                               $item_info['author_id'],$item_info['type'],$item_info['node_order']);
 
 					    	$parent_decode[$elem['id']]=$ret['id'];
-				      		$op['mappings']['req_spec'][$elem['id']] = $ret['id'];
+			      		$op['mappings']['req_spec'][$elem['id']] = $ret['id'];
 
-				      		if( ($op['status_ok'] = $ret['status_ok']) )
-				      		{
-				      			// try to reduce memory usage
-				      			// $idCard = array('parent_id' => $elem['id'], 'tproject_id' => $tproject_id);
+				      	if( ($op['status_ok'] = $ret['status_ok']) )
+				      	{
+				      	  // try to reduce memory usage
+				      		// $idCard = array('parent_id' => $elem['id'], 'tproject_id' => $tproject_id);
 				      			$this->copy_cfields(array('parent_id' => $elem['id'], 'tproject_id' => $tproject_id),
-				      								$ret['id']);
-							}
+				      								          $ret['id']);
+							  }
 							break;
 					}
+
 					if( $op['status_ok'] == 0 )
 					{
 						break;
@@ -2325,6 +2308,15 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
   {
     $url = "lib/requirements/reqSpecEdit.php?doAction=deleteFile&req_spec_id=" . intval($id) . "&file_id=" ; 
     return $url;
+  }
+
+  /** 
+   * Copy attachments from source to target
+   * 
+   **/
+  function copy_attachments($source_id,$target_id)
+  {
+    return $this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
   }
 
 

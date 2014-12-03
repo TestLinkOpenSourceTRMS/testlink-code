@@ -51,6 +51,7 @@ switch($args->feature)
     }
     else
     {
+      $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id,$args->tproject_id);
       $gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
       $item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,
                       array('show_mode' => $args->show_mode));

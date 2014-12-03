@@ -1699,4 +1699,18 @@ class testsuite extends tlObjectWithAttachments
   }
 
 
+  /**
+   * 
+   *
+   */
+  function buildDirectWebLink($base_href,$id,$tproject_id)
+  {
+    $tproject_mgr = new testproject($this->db);
+    $prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
+    $dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . '&item=testsuite&id=' . $id;
+    return $dl;
+  }
+
+
+
 } // end class

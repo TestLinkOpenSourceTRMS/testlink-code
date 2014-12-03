@@ -100,8 +100,8 @@ $gui->whoami = $args->user->getDisplayName() . ' ' . $tlCfg->gui->role_separator
 $gui->updateMainPage = 0;
 if ($args->testproject)
 {
-	$gui->updateMainPage = 1;
-	// set test project ID for the next session
+  // set test project ID for the next session
+	$gui->updateMainPage = is_null($args->caller);
 	setcookie('TL_lastTestProjectForUserID_'. $args->user->dbID, $args->testproject, TL_COOKIE_KEEPTIME, '/');
 }
 
@@ -124,7 +124,8 @@ function getGrants(&$db,&$userObj)
 
 function init_args()
 {
-	$iParams = array("testproject" => array(tlInputParameter::INT_N));
+	$iParams = array("testproject" => array(tlInputParameter::INT_N),
+                   "caller" => array(tlInputParameter::STRING_N,1,6));
 	$args = new stdClass();
 	$pParams = G_PARAMS($iParams,$args);
 

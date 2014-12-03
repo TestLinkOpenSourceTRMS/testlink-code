@@ -1,6 +1,10 @@
+    {$tlImages.toggle_direct_link} &nbsp;
+
     <img class="clickable" src="{$tlImages.cog}" 
          onclick="javascript:toogleShowHide('tsuite_control_panel');"  title="{$labels.actions}" />
     
+   <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
+
     <div id="tsuite_control_panel" style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
       <fieldset class="groupBtn">
         <b>{$labels.testsuite_operations}</b>

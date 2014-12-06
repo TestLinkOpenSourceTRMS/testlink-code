@@ -1385,6 +1385,7 @@ $TLS_as_first_testcase = "Destination position top";
 $TLS_as_last_testcase = "Destination position bottom";
 $TLS_btn_mv = "Move";
 $TLS_choose_container = "Choose Test Suite";
+$TLS_copy_new_name = "New test case name (applied only when coping)";
 $TLS_inst_copy = "Copy Test Case to any Test Suite.";
 $TLS_inst_move = "Move Test Case to a different Test Suite.";
 $TLS_inst_copy_move_warning = "Important: You can only choose Test Suites belonging to this Test Project.";

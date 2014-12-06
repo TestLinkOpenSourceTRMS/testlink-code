@@ -417,43 +417,6 @@ class testcase extends tlObjectWithAttachments
               */ 
             break;
           }
-
-          /*
-          if( $my['options']['importLogic']['actionOnHit'] == 'create_new_version')
-          {
-            if( ($sf = intval($my['options']['external_id'])) > 0 )
-            {
-              $info = $this->get_by_external($sf, $parent_id);
-              if( !is_null($info))
-              {
-                if( count($info) > 1)
-                {
-                  // abort
-                  throw new Exception("More than one test case with same external ID");
-                }  
-
-                $doCreate = false;
-                $ret['id'] = key($info);
-                $ret['external_id'] = $sf;
-                $ret['version_number'] = -1;
-                $ret['external_id_already_exists'] = true;
-
-                // I this situation we will need to also update test case name.
-                // Then we need to check that new name will not conflict with an existing one
-                if( strcmp($info['name'],$name) != 0)
-                {
-                  $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);  
-                  if( is_null($itemSet) )
-                  {
-                    $ret['name'] = $name;
-                    $ret['update_name'] = true;
-                  }  
-                }  
-                return $ret;
-              }  
-            }  
-          }
-          */
         break;    
       }
     }  
@@ -1600,6 +1563,7 @@ class testcase extends tlObjectWithAttachments
     $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
     $my['options'] = array('check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
                            'action_on_duplicate_name' => 'generate_new', 
+                           'use_this_name' => null,
                            'copy_also' => null, 'preserve_external_id' => false,
                            'renderGhostSteps' => false, 'stepAsGhost' => false);
 
@@ -1622,8 +1586,10 @@ class testcase extends tlObjectWithAttachments
     $tcase_info = $this->get_by_id($id,$tcVersionID);
     if ($tcase_info)
     {
-      $newTCObj = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
-                                           $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
+      $callme = !is_null($my['options']['use_this_name']) ? $my['options']['use_this_name'] : $tcase_info[0]['name'];
+      $callme = $this->trim_and_limit($callme);
+
+      $newTCObj = $this->create_tcase_only($parent_id,$callme,$tcase_info[0]['node_order'],self::AUTOMATIC_ID,
                                            $my['options']);
       $ix = new stdClass();
       $ix->authorID = $user_id;
@@ -7097,5 +7063,30 @@ class testcase extends tlObjectWithAttachments
       }
     }   
   }
+
+
+  /**
+   *
+   */
+  function trim_and_limit($s, $len = 100)
+  {
+    $s = trim($s);
+    if (tlStringLen($s) > $len) 
+    {
+      $s = tlSubStr($s, 0, $len);
+    }
+
+    return $s;
+  }
+
+  /**
+   *
+   */
+  function generateTimeStampName($name)
+  {
+    return strftime("%Y%m%d-%H:%M:%S", time()) . ' ' . $name;
+  }
+
+
 
 }  

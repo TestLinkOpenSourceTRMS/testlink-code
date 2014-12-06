@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.13
  *
  **/
 require_once("../../config.inc.php");
@@ -213,10 +213,13 @@ else if($args->move_copy_tc)
   
   $gui->top_checked = 'checked=checked';
   $gui->bottom_checked = '';
-  $gui->old_container = $the_tc_node['parent_id']; // original container
+  
   $gui->array_container = $the_xx;
+  $gui->old_container = $the_tc_node['parent_id']; // original container
+  $gui->testsuite_id = $the_tc_node['parent_id'];
   $gui->testcase_id = $args->tcase_id;
   $gui->name = $tc_info[0]['name'];
+  $gui->testcase_name = $tcase_mgr->generateTimeStampName($gui->name);
 
   
   $smarty->assign('gui', $gui);
@@ -240,7 +243,8 @@ else if($args->do_copy || $args->do_copy_ghost_zone)
   $action_result = 'copied';
   $options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
                    'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
-                   'copy_also' => $args->copy, 'stepAsGhost' => $args->do_copy_ghost_zone);
+                   'copy_also' => $args->copy, 'stepAsGhost' => $args->do_copy_ghost_zone,
+                   'use_this_name' => $args->name);
   
   $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$options);
   $msg = $result['msg'];
@@ -367,8 +371,6 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
   
 
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
-  
-  // $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
   $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
 
   // Normally Rich Web Editors  

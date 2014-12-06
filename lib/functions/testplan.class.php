@@ -1381,8 +1381,8 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $cp_methods = array('copy_milestones' => 'copy_milestones',
-                      'copy_user_roles' => 'copy_user_roles',
-                      'copy_platforms_links' => 'copy_platforms_links',
+                        'copy_user_roles' => 'copy_user_roles',
+                        'copy_platforms_links' => 'copy_platforms_links',
                         'copy_attachments' => 'copy_attachments');
 
     $mapping_methods = array('copy_platforms_links' => 'platforms');
@@ -1399,21 +1399,23 @@ class testplan extends tlObjectWithAttachments
 
     $my['options'] = array_merge($my['options'], (array)$options);
     
+    $safe['new_tplan_id'] = intval($new_tplan_id);
+
     // get source testplan general info
     $rs_source=$this->get_by_id($id);
     
     if(!is_null($tplan_name))
     {
       $sql="/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-         "SET name='" . $this->db->prepare_string(trim($tplan_name)) . "' " .
-         "WHERE id={$new_tplan_id}";
+           "SET name='" . $this->db->prepare_string(trim($tplan_name)) . "' " .
+           "WHERE id=" . $safe['new_tplan_id'];
       $this->db->exec_query($sql);
     }
     
     if(!is_null($tproject_id))
     {
       $sql="/* $debugMsg */ UPDATE {$this->tables['testplans']} SET testproject_id={$tproject_id} " .
-         "WHERE id={$new_tplan_id}";
+           "WHERE id=" . $safe['new_tplan_id'];
       $this->db->exec_query($sql);
     }
 
@@ -1422,7 +1424,7 @@ class testplan extends tlObjectWithAttachments
     $build_id_mapping = null;
     if($my['options']['items2copy']['copy_builds']) 
     {
-      $build_id_mapping = $this->copy_builds($id,$new_tplan_id);
+      $build_id_mapping = $this->copy_builds($id,$safe['new_tplan_id']);
     }
 
     // Important Notice:
@@ -1474,9 +1476,12 @@ class testplan extends tlObjectWithAttachments
     {
       foreach($rs as $build)
       {
-        $sql=" /* $debugMsg */ INSERT INTO {$this->tables['builds']} (name,notes,testplan_id) " .
-          "VALUES ('" . $this->db->prepare_string($build['name']) ."'," .
-          "'" . $this->db->prepare_string($build['notes']) ."',{$new_tplan_id})";
+        $sql = " /* $debugMsg */ INSERT INTO {$this->tables['builds']} " .
+               " (name,notes,release_date,testplan_id) " .
+               "VALUES ('" . $this->db->prepare_string($build['name']) ."'," .
+               "'" . $this->db->prepare_string($build['notes']) . "'," .
+               "'" . $this->db->prepare_string($build['release_date']) . "'," .
+               " {$new_tplan_id})";
         
         $this->db->exec_query($sql);
         $new_id = $this->db->insert_id($this->tables['builds']);

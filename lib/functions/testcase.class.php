@@ -815,7 +815,7 @@ class testcase extends tlObjectWithAttachments
     $gui = $this->initShowGui($guiObj,$grants,$idSet[0],$idCard);
     $gui->tcase_id = $idCard->tcase_id;
     $gui->tcversion_id = $idCard->tcversion_id;
-    $gui->allowStepsAttachments = false;
+    $gui->allowStepAttachments = false;
 
     $userIDSet = array();
     if($status_ok)
@@ -4869,7 +4869,9 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $my['options'] = array( 'fields2get' => '*', 'accessKey' => null, 'renderGhostSteps' => true);
+    $my['options'] = array( 'fields2get' => '*', 'accessKey' => null, 
+                            'renderGhostSteps' => true, 'renderImageInline' => true);
+
     $my['options'] = array_merge($my['options'], (array)$options);
     
     $step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
@@ -4896,6 +4898,18 @@ class testcase extends tlObjectWithAttachments
       $this->renderGhostSteps($result);
     }
     
+    if(!is_null($result) && $my['options']['renderImageInline'])
+    {
+      // for attachments we need main entity => Test case
+      $tcvnode = $this->tree_manager->get_node_hierarchy_info($tcversion_id);
+      $k2l = count($result);
+      $gaga = array('actions','expected_results');
+      for($idx=0; $idx < $k2l; $idx++)
+      {
+        $this->renderImageAttachments($tcvnode['parent_id'],$result[$idx],$gaga);
+      }  
+    }
+    
     return $result;
   }
 
@@ -4906,7 +4920,8 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $my['options'] = array( 'fields2get' => '*', 'accessKey' => null, 'renderGhostSteps' => true);
+    $my['options'] = array('fields2get' => '*', 'accessKey' => null, 
+                           'renderGhostSteps' => true, 'renderImageInline' => true);
     $my['options'] = array_merge($my['options'], (array)$options);
     
     $step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
@@ -6181,6 +6196,9 @@ class testcase extends tlObjectWithAttachments
     return $signature;        
   }
 
+  /**
+   *
+   */
   public function getTestSuite($id)
   {
     $dummy = $this->tree_manager->get_node_hierarchy_info($id);
@@ -6978,10 +6996,11 @@ class testcase extends tlObjectWithAttachments
    * render Image Attachments INLINE
    * 
    */
-  function renderImageAttachments($id,&$item2render,$basehref=null)
+  private function renderImageAttachments($id,&$item2render,$key2check=array('summary','preconditions'),$basehref=null)
   {
     static $attSet;
-    static $targetTag;
+    static $beginTag;
+    static $endTag;
 
     if(!$attSet || !isset($attSet[$id]))
     {
@@ -7003,7 +7022,6 @@ class testcase extends tlObjectWithAttachments
     $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
     $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=1&id=%id%"></p>'; 
 
-    $key2check = array('summary','preconditions');
     $rse = &$item2render;
     foreach($key2check as $item_key)
     {

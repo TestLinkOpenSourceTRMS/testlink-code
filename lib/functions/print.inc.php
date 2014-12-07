@@ -899,7 +899,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   static $buildCfields;  
   static $statusL10N;
   static $docRepo;
-  
 
   $code = null;
   $tcInfo = null;
@@ -962,9 +961,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $docRepo = tlAttachmentRepository::create($db);
   }
 
-  $cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
-  $cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 'value_css_style' => $cspan );
-
+  $cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 
+                            'value_css_style' => ' colspan = "' . ($cfg['tableColspan']-1) . '" ' );
 
   /** 
    * @TODO THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
@@ -973,6 +971,11 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
    */
   $exec_info = null;
   $getByID['filters'] = null;
+
+
+  $opt = array();
+  $opt['step_exec_notes'] = isset($options['step_exec_notes']) && $options['step_exec_notes'];
+  $opt['step_exec_status'] = isset($options['step_exec_status']) && $options['step_exec_status'];          
 
   switch($options["docType"])
   {
@@ -984,13 +987,13 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     case SINGLE_TESTCASE:
       $getByID['tcversion_id'] = $node['tcversion_id'];
       $getExecutions = ($options['passfail'] || $options['notes'] ||
-                        $options['step_exec_notes'] || $options['step_exec_status']);
+                        $opt['step_exec_notes'] || $opt['step_exec_status']);
     break;
 
     default:
       $getByID['tcversion_id'] = $node['tcversion_id'];
       $getExecutions = ($options['cfields'] || $options['passfail'] || $options['notes'] ||
-                        $options['step_exec_notes'] || $options['step_exec_status']);
+                        $opt['step_exec_notes'] || $opt['step_exec_status']);
     break;
   }
 
@@ -1210,7 +1213,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
     // $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
     $canManageAttachments = false;
-    if(!is_null($context['user']))
+    if(isset($context['user']) && !is_null($context['user']))
     {
       $canManageAttachments = $context['user']->hasRight($db,'testplan_execute',$tprojectID,$tplan_id);
     }  
@@ -1232,18 +1235,18 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                    '<td><span class="label">' . $labels['step_actions'] .':</span></td>' .
                    '<td><span class="label">' . $labels['expected_results'] .':</span></td>';
 
-          $sxni = null;         
-          if( $options['step_exec_notes'] || $options['step_exec_status'] )
+          $sxni = null;
+          if($opt['step_exec_notes'] || $opt['step_exec_status'])
           {
             $sxni = $tc_mgr->getStepsExecInfo($exec_info[0]['execution_id']);
 
-            if( $options['step_exec_notes'] )
+            if($opt['step_exec_notes'])
             {
               $td_colspan++;
               $code .= '<td><span class="label">' . $labels['step_exec_notes'] .':</span></td>';
             }       
 
-            if( $options['step_exec_status'] )
+            if($opt['step_exec_status'])
             {
               $td_colspan++;
               $code .= '<td><span class="label">' . $labels['step_exec_status'] .':</span></td>';
@@ -1262,7 +1265,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
             $nike = !is_null($sxni) && isset($sxni[$tcInfo[$key][$ydx]['id']]) && 
                     !is_null($sxni[$tcInfo[$key][$ydx]['id']]);
-            if( $options['step_exec_notes'] )
+            if( $opt['step_exec_notes'] )
             {
               $code .= '<td>';
               if( $nike )
@@ -1272,7 +1275,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
               $code .= '</td>';
             }
 
-            if( $options['step_exec_status'] )
+            if( $opt['step_exec_status'] )
             {
               $code .= '<td>';
               if( $nike )
@@ -1480,7 +1483,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $attachSet =  (array)$tc_mgr->getAttachmentInfos($id);
   if (count($attachSet) > 0)
   {
-    $code .= "<tr><td><span class=\"label\">" . $labels['attached_files'] . "</span></td><td><ul>";
+    $code .= '<tr><td> <span class="label">' . $labels['attached_files'] . '</span></td>';
+    $code .= '<td colspan="' . ($cfg['tableColspan']-2) . '"><ul>';
+
     foreach($attachSet as $item)
     {
       $fname = "";
@@ -1514,8 +1519,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       $code .= buildTestExecResults($db,$its,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,$options['notes'],$buildCfields);
 
       // Get Execution Attachments
-      // new dBug($exec_info);
-      // $execID 
       $execAttachInfo = getAttachmentInfos($docRepo,$exec_info[0]['execution_id'],$tables['executions'],true,1);
 
       if( !is_null($execAttachInfo) )

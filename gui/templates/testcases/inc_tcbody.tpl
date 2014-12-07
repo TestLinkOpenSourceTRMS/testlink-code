@@ -15,7 +15,7 @@ viewer for test case in test specification
 
 	  <tr>
 	  	<th class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.version}
-	  	{$inc_tcbody_testcase.version|escape}ddd
+	  	{$inc_tcbody_testcase.version|escape}
 		<img class="clickable" src="{$tlImages.ghost_item}"
              title="{$inc_tcbody_labels.show_ghost_string}"
              onclick="showHideByClass('tr','ghostTC');">

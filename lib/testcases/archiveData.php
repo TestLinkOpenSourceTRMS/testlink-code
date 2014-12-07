@@ -217,8 +217,10 @@ function initializeEnv($dbHandler)
   $gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 
   // has sense only when we work on test case
+  $dummy = testcase::getLayout();
+  $gui->tableColspan = $dummy->tableToDisplayTestCaseSteps->colspan;
+
   $gui->platforms = null;
-  $gui->tableColspan = 5;
   $gui->loadOnCancelURL = '';
   $gui->attachments = null;
   $gui->direct_link = null;
@@ -293,10 +295,14 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   $get_path_info = false;
   $item_mgr = new testcase($dbHandler);
 
+
+  // has sense only when we work on test case
+  $dummy = testcase::getLayout();
+  $gui->tableColspan = $dummy->tableToDisplayTestCaseSteps->colspan;
+
   $gui->viewerArgs['refresh_tree'] = 'no';
   $gui->path_info = null;
   $gui->platforms = null;
-  $gui->tableColspan = 5;
   $gui->loadOnCancelURL = '';
   $gui->attachments = null;
   $gui->direct_link = null;

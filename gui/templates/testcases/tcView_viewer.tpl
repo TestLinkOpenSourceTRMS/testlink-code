@@ -257,7 +257,6 @@ viewer for test case in test specification
    {/if}
    
 
-{literal}
 <script type="text/javascript">
 /**
  * used instead of window.open().
@@ -283,7 +282,6 @@ function launchInsertStep(step_id)
 
 
 </script>
-{/literal}
 
 <form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
   <input type="hidden" name="goback_url" value="{$goBackAction}" />

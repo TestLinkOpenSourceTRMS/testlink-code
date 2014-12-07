@@ -76,7 +76,9 @@ class testcaseCommands
     $obj->step_id = -1;
     $obj->step_set = '';
     $obj->steps = '';
-    $obj->tableColspan = 5;
+
+    $dummy = testcase::getLayout();
+    $obj->tableColspan = $dummy->tableToDisplayTestCaseSteps->colspan;
     $obj->tcase_id = property_exists($argsObj,'tcase_id') ? $argsObj->tcase_id : -1;
     $obj->viewerArgs = null;
 

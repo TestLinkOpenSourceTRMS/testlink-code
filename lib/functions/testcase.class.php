@@ -68,6 +68,7 @@ class testcase extends tlObjectWithAttachments
   var $execution_types = array();
   var $cfg;
   var $debugMsg;
+  var $layout;
 
   
   /**
@@ -93,11 +94,14 @@ class testcase extends tlObjectWithAttachments
 
     $this->execution_types = $this->getExecutionTypes();
 
+    $this->layout = $this->getLayout();
+
     $this->cfg = new stdClass();
     $this->cfg->testcase = config_get('testcase_cfg');
     $this->cfg->execution = config_get('exec_cfg');  // CORTADO
     $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
-    
+
+
     // ATTENTION:
     // second argument is used to set $this->attachmentTableName,property that this calls
     // get from his parent
@@ -6254,7 +6258,8 @@ class testcase extends tlObjectWithAttachments
     $goo->bodyOnLoad = "";
     $goo->bodyOnUnload = "storeWindowSize('TCEditPopup')";
 
-    $goo->tableColspan = 5; // sorry magic related to table to display steps
+
+    $goo->tableColspan = $this->layout->tableToDisplayTestCaseSteps->colspan; 
 
     $goo->tc_current_version = array();
     $goo->status_quo = array();
@@ -7105,6 +7110,20 @@ class testcase extends tlObjectWithAttachments
     return strftime("%Y%m%d-%H:%M:%S", time()) . ' ' . $name;
   }
 
+  /**
+   *
+   */
+  static function getLayout()
+  {
+    $ly = new stdClass();
+    $ly->tableToDisplayTestCaseSteps = new stdClass();
+
+    // MAGIC: columns are:
+    //column for reorder, action, expected results, exec type, delete, insert
+    $ly->tableToDisplayTestCaseSteps->colspan = 6;
+
+    return $ly;                    
+  }
 
 
 }  

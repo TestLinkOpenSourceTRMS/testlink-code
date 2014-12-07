@@ -7,14 +7,15 @@ viewer for test case in test specification
 <table class="simple">
   {if $inc_tcbody_show_title == "yes"}
 	<tr>
-		<th colspan="{$inc_tcbody_tableColspan}">
-		{$inc_tcbody_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$inc_tcbody_testcase.name|escape}</th>
+	  <th colspan="{$inc_tcbody_tableColspan}">
+	  {$inc_tcbody_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$inc_tcbody_testcase.name|escape}
+	  </th>
 	</tr>
   {/if}
 
 	  <tr>
-	  	<td class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.version}
-	  	{$inc_tcbody_testcase.version|escape}
+	  	<th class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.version}
+	  	{$inc_tcbody_testcase.version|escape}ddd
 		<img class="clickable" src="{$tlImages.ghost_item}"
              title="{$inc_tcbody_labels.show_ghost_string}"
              onclick="showHideByClass('tr','ghostTC');">
@@ -53,17 +54,17 @@ viewer for test case in test specification
 	  <tr><td>&nbsp;</td></tr>
 
 	<tr>
-		<td class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.summary}</td>
+	  <th class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.summary}</td>
 	</tr>
 	<tr>
-		<td colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_testcase.summary}</td>
+		<td colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_testcase.summary}<p></td>
 	</tr>
 
 	<tr>
-		<td class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.preconditions}</td>
+		<th class="bold" colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_labels.preconditions}</td>
 	</tr>
 	<tr>
-		<td colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_testcase.preconditions}</td>
+		<td colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_testcase.preconditions}<p></td>
 	</tr>
 
 	{if $inc_tcbody_cf.before_steps_results neq ''}
@@ -73,6 +74,6 @@ viewer for test case in test specification
       </td>
 	</tr>
 	{/if}
-{if $inc_tcbody_close_table}	
+{if $inc_tcbody_close_table}
 </table>
 {/if}

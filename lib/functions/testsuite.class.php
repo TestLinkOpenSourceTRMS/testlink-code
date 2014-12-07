@@ -1593,8 +1593,10 @@ class testsuite extends tlObjectWithAttachments
     // $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
     // second \'%s\' needed if I want to use Latest as indication, need to understand
     // Javascript instead of javascript, because CKeditor sometimes complains
+    //
+    // CRITIC: skipCheck is needed to render OK when creating report on Pseudo-Word format.
     $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?id=%id%"></p>'; 
+    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=1&id=%id%"></p>'; 
 
     $key2check = array('details');
     $rse = &$item2render;

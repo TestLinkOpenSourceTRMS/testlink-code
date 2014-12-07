@@ -1589,13 +1589,17 @@ function renderTOC(&$options)
 function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$tocPrefix,$indentLevel)
 {
   static $tsuite_mgr;
-  static $labels;
+  static $l10n;
   static $title_separator;
   static $cfieldFormatting;
 
-  if(!is_null($labels))
+  if(is_null($l10n))
   {
-    $labels = array('test_suite' => lang_get('test_suite'),'details' => lang_get('details'));
+    $l10n = array('test_suite' => 'test_suite', 'details' => 'details', 
+                  'attached_files' => 'attached_files');
+                    
+    $l10n = init_labels($l10n);
+
     $title_separator = config_get('gui_title_separator_1');
     $cfieldFormatting = array('table_css_style' => 'class="cf"');
   }  
@@ -1636,17 +1640,21 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
     { 
       $tsuite_mgr = new testsuite($db);
     }
-    $tInfo = $tsuite_mgr->get_by_id($node['id']);
+  
+    $tInfo = $tsuite_mgr->get_by_id($node['id'],array('renderImageInline' => true));
     if ($tInfo['details'] != '')
     {
-      $code .= '<div>'.$tInfo['details']. '</div>';
+      $code .= '<div>' . $tInfo['details'] . '</div>';
     }
      
     $attachSet =  (array)$tsuite_mgr->getAttachmentInfos($node['id']);
+
     if (count($attachSet) > 0)
     {
-      $code .= "<table>";
-      $code .= "<tr><td><span class=\"label\">" . $labels['attached_files'] . "</span></td><td><ul>";
+      $code .= '<table><caption style="text-align:left;">' . $l10n['attached_files'] . '</caption>';
+      // $code .= '<tr><td><span class="label">' . 'UUUU' . $labels['attached_files'] . "</span></td><td><ul>";
+      $code .= '<tr><td>&nbsp</td>';
+      $code .= '<td><ul>';
       foreach($attachSet as $item)
       {
         $fname = "";
@@ -1657,7 +1665,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
         $fname .= htmlspecialchars($item['file_name']);
         $code .= "<li>$fname</li>";
 
-        if($item['is_image']) // && $options['outputFormat'] == FORMAT_HTML)
+        if($item['is_image']) 
         {
           $code .= '<li>' . '<img src="' . $env->base_href . 
                    'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';

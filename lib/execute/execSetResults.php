@@ -1119,128 +1119,128 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
 */
 function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$issueTracker)
 {
-    $buildMgr = new build_mgr($dbHandler);
-    $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
+  $buildMgr = new build_mgr($dbHandler);
+  $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
-    $gui = new stdClass();
-    $gui->allowStepAttachments = true;
-    $gui->tlCanCreateIssue = !is_null($issueTracker) && method_exists($issueTracker,'addIssue');
-    $gui->remoteExecFeedback = $gui->user_feedback = '';
-    $gui->tplan_id=$argsObj->tplan_id;
-    $gui->tproject_id=$argsObj->tproject_id;
-    $gui->build_id = $argsObj->build_id;
-    $gui->platform_id = $argsObj->platform_id;
-    $gui->loadExecDashboard = false;
-    $gui->treeFormToken = $argsObj->treeFormToken;
-    $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
+  $gui = new stdClass();
+  $gui->allowStepAttachments = true;
+  $gui->tlCanCreateIssue = !is_null($issueTracker) && method_exists($issueTracker,'addIssue');
+  $gui->remoteExecFeedback = $gui->user_feedback = '';
+  $gui->tplan_id=$argsObj->tplan_id;
+  $gui->tproject_id=$argsObj->tproject_id;
+  $gui->build_id = $argsObj->build_id;
+  $gui->platform_id = $argsObj->platform_id;
+  $gui->loadExecDashboard = false;
+  $gui->treeFormToken = $argsObj->treeFormToken;
+  $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
 
 
-    // CORTADO 
-    $gui->execStatusValues = createResultsMenu();
-    $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
-    if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) )
-    {
-      unset($gui->execStatusValues[$cfgObj->tc_status['all']]);
-    }
+  // CORTADO 
+  $gui->execStatusValues = createResultsMenu();
+  $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
+  if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) )
+  {
+    unset($gui->execStatusValues[$cfgObj->tc_status['all']]);
+  }
 
 
-    $gui->can_use_bulk_op=0;
-    $gui->exec_notes_editors=null;
-    $gui->bulk_exec_notes_editor=null;
-    $gui->req_details=null;
-    $gui->attachmentInfos=null;
-    $gui->bugs=null;
-    $gui->other_exec_cfields=null;
-    $gui->ownerDisplayName = null;
+  $gui->can_use_bulk_op=0;
+  $gui->exec_notes_editors=null;
+  $gui->bulk_exec_notes_editor=null;
+  $gui->req_details=null;
+  $gui->attachmentInfos=null;
+  $gui->bugs=null;
+  $gui->other_exec_cfields=null;
+  $gui->ownerDisplayName = null;
     
-    $gui->editorType=$cfgObj->editorCfg['type'];
-    $gui->filter_assigned_to=$argsObj->filter_assigned_to;
-    $gui->tester_id=$argsObj->user_id;
-    $gui->include_unassigned=$argsObj->include_unassigned;
-    $gui->tpn_view_status=$argsObj->tpn_view_status;
-    $gui->bn_view_status=$argsObj->bn_view_status;
-    $gui->bc_view_status=$argsObj->bc_view_status;
-    $gui->platform_notes_view_status=$argsObj->platform_notes_view_status;
+  $gui->editorType=$cfgObj->editorCfg['type'];
+  $gui->filter_assigned_to=$argsObj->filter_assigned_to;
+  $gui->tester_id=$argsObj->user_id;
+  $gui->include_unassigned=$argsObj->include_unassigned;
+  $gui->tpn_view_status=$argsObj->tpn_view_status;
+  $gui->bn_view_status=$argsObj->bn_view_status;
+  $gui->bc_view_status=$argsObj->bc_view_status;
+  $gui->platform_notes_view_status=$argsObj->platform_notes_view_status;
 
-    $gui->refreshTree = $argsObj->refreshTree;
-    if (!$argsObj->statusSingle || current($argsObj->statusSingle) == $cfgObj->tc_status['not_run']) {
-      $gui->refreshTree = 0;
-    }
+  $gui->refreshTree = $argsObj->refreshTree;
+  if (!$argsObj->statusSingle || current($argsObj->statusSingle) == $cfgObj->tc_status['not_run']) 
+  {
+    $gui->refreshTree = 0;
+  }
 
-    $gui->map_last_exec_any_build=null;
-    $gui->map_last_exec=null;
+  $gui->map_last_exec_any_build=null;
+  $gui->map_last_exec=null;
 
       
-    // 20081122 - franciscom
-    // Just for the records:  
-    // doing this here, we avoid to do on processTestSuite() and processTestCase(),
-    // but absolutely this will not improve in ANY WAY perfomance, because we do not loop
-    // over these two functions.   
-    $tprojectMgr = new testproject($dbHandler);
-    $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
-    $build_info = $buildMgr->get_by_id($argsObj->build_id);
-    $gui->build_notes=$build_info['notes'];
-    $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
-    $gui->execution_types=$tcaseMgr->get_execution_types();
+  // 20081122 - franciscom
+  // Just for the records:  
+  // doing this here, we avoid to do on processTestSuite() and processTestCase(),
+  // but absolutely this will not improve in ANY WAY perfomance, because we do not loop
+  // over these two functions.   
+  $tprojectMgr = new testproject($dbHandler);
+  $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+  $build_info = $buildMgr->get_by_id($argsObj->build_id);
+  $gui->build_notes=$build_info['notes'];
+  $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
+  $gui->execution_types=$tcaseMgr->get_execution_types();
 
-    if($argsObj->filter_assigned_to)
+  if($argsObj->filter_assigned_to)
+  {
+    $userSet = tlUser::getByIds($dbHandler,array_values($argsObj->filter_assigned_to));
+    if ($userSet)
     {
-      $userSet = tlUser::getByIds($dbHandler,array_values($argsObj->filter_assigned_to));
-      if ($userSet)
+      foreach($userSet as $key => $userObj) 
       {
-          foreach($userSet as $key => $userObj) 
-          {
-              $gui->ownerDisplayName[$key] = $userObj->getDisplayName();
-          }    
+        $gui->ownerDisplayName[$key] = $userObj->getDisplayName();
       }    
-    }
-    // ------------------------------------------------------------------
+    }    
+  }
+  // ------------------------------------------------------------------
 
-    $dummy = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
-    $gui->build_name = isset($dummy[$argsObj->build_id]) ? $dummy[$argsObj->build_id] : '';
-    $gui->build_div_title = lang_get('build') . ' ' . $gui->build_name;
+  $dummy = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
+  $gui->build_name = isset($dummy[$argsObj->build_id]) ? $dummy[$argsObj->build_id] : '';
+  $gui->build_div_title = lang_get('build') . ' ' . $gui->build_name;
 
+  $gui->exec_mode = initializeExecMode($dbHandler,$cfgObj->exec_cfg,
+                                       $argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
+ 
+  $gui->grants = initializeRights($dbHandler,$argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
 
-    $gui->exec_mode = initializeExecMode($dbHandler,$cfgObj->exec_cfg,
-                                         $argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
+  $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
+  $gui->testplan_notes = $rs['notes'];
+  $gui->testplan_div_title = lang_get('test_plan') . ' ' . $rs['name'];
+
+  // Important note: 
+  // custom fields for test plan can be edited ONLY on design, that's reason why we are using 
+  // scope = 'design' instead of 'execution'
+  $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'design',
+                                                                        array('show_on_execution' => 1));
+    
+
+  $gui->build_cfields = $buildMgr->html_table_of_custom_field_values($argsObj->build_id,$argsObj->tproject_id,
+                                                                     'design',array('show_on_execution' => 1));
+    
+  $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
+                                       'btn_history_on','btn_history_off','history_on');
+  $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';
+
+  $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
+  $gui->has_platforms = !is_null($dummy) ? 1 : 0;
+    
+  $gui->platform_info['id']=0;
+  $gui->platform_info['name']='';
+  if(!is_null($argsObj->platform_id) && $argsObj->platform_id > 0 )
+  { 
+    $gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
+  }
+  $gui->platform_div_title = lang_get('platform') . ' ' . $gui->platform_info['name'];
+    
+
+  $gui->issueTrackerIntegrationOn = $gui->tlCanCreateIssue = $gui->tlCanAddIssueNote = false;
   
-    $gui->grants = initializeRights($dbHandler,$argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
-
-    $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
-    $gui->testplan_notes = $rs['notes'];
-    $gui->testplan_div_title = lang_get('test_plan') . ' ' . $rs['name'];
-
-    // Important note: 
-    // custom fields for test plan can be edited ONLY on design, that's reason why we are using 
-    // scope = 'design' instead of 'execution'
-    $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'design',
-                                                                          array('show_on_execution' => 1));
-    
-
-    $gui->build_cfields = $buildMgr->html_table_of_custom_field_values($argsObj->build_id,$argsObj->tproject_id,
-                                                                       'design',array('show_on_execution' => 1));
-    
-    $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
-                                         'btn_history_on','btn_history_off','history_on');
-    $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';
-
-    $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
-    $gui->has_platforms = !is_null($dummy) ? 1 : 0;
-    
-    $gui->platform_info['id']=0;
-    $gui->platform_info['name']='';
-    if(!is_null($argsObj->platform_id) && $argsObj->platform_id > 0 )
-    { 
-      $gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
-    }
-    $gui->platform_div_title = lang_get('platform') . ' ' . $gui->platform_info['name'];
-    
-
-    $gui->issueTrackerIntegrationOn = $gui->tlCanCreateIssue = $gui->tlCanAddIssueNote = false;
-    
-    $gui->node_id = $argsObj->id;
-    $gui->draw_save_and_exit = ($argsObj->caller == 'tcAssignedToMe');
-    return $gui;
+  $gui->node_id = $argsObj->id;
+  $gui->draw_save_and_exit = ($argsObj->caller == 'tcAssignedToMe');
+  return $gui;
 }
 
 

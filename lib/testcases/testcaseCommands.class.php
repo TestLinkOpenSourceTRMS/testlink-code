@@ -124,7 +124,8 @@ class testcaseCommands
 
 
     $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,
-                                            array('output' => 'full_without_steps','renderGhost' => true));
+                                            array('output' => 'full_without_steps',
+                                                  'renderGhost' => true, 'renderImageInline' => true));
 
 
     $external = $this->tcaseMgr->getExternalID($greenCard['tcase_id'],$argsObj->testproject_id);

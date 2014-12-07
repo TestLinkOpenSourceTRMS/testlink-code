@@ -1068,7 +1068,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }  
   }
 
-  $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],array('renderGhost' => true));
+  //
+  $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
+                               array('renderGhost' => true,'renderImageInline' => true));
   if ($tcInfo)
   {
     $tcInfo = $tcInfo[0];

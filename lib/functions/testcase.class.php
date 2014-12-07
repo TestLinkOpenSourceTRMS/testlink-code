@@ -6977,8 +6977,6 @@ class testcase extends tlObjectWithAttachments
   /**
    * render Image Attachments INLINE
    * 
-   * <img alt="" src="http://localhost/development/tl/testlink-ga-testlink-code/lib/attachments/attachmentdownload.php?id=1" 
-                 style="width: 1223px; height: 666px;" />   
    */
   function renderImageAttachments($id,&$item2render,$basehref=null)
   {
@@ -7000,8 +6998,10 @@ class testcase extends tlObjectWithAttachments
     // $href = '<a href="Javascript:openTCW(\'%s\',%s);">%s:%s' . " $versionTag (link)<p></a>";
     // second \'%s\' needed if I want to use Latest as indication, need to understand
     // Javascript instead of javascript, because CKeditor sometimes complains
+    //
+    // CRITIC: skipCheck is needed to render OK when creating report on Pseudo-Word format.
     $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?id=%id%"></p>'; 
+    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=1&id=%id%"></p>'; 
 
     $key2check = array('summary','preconditions');
     $rse = &$item2render;

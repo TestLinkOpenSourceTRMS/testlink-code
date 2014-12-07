@@ -5250,7 +5250,6 @@ class testcase extends tlObjectWithAttachments
           {
             if( count($recordset[$key]) < $cfQty)
             {
-              // echo 'REMOVING<br>';
               unset($recordset[$key]); // remove
             }
             else
@@ -5560,8 +5559,6 @@ class testcase extends tlObjectWithAttachments
        $where_clause .
        " ORDER BY execution_id {$my['options']['exec_id_order']} ";
 
-  
-    //echo __FUNCTION__ . '::' . $sql . '<br>';
     $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
     return($recordset ? $recordset : null);
   }
@@ -5628,7 +5625,6 @@ class testcase extends tlObjectWithAttachments
            " LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id " .
            $where_clause;
 
-    // echo $sql;
     $recordset = $this->db->fetchRowsIntoMap($sql,'platform_id');
     return($recordset ? $recordset : null);
   }
@@ -6386,7 +6382,6 @@ class testcase extends tlObjectWithAttachments
 
   /**
    * render Ghost Test Case
-   * 20130404
    */
   function renderGhost(&$item2render)
   {
@@ -6399,6 +6394,8 @@ class testcase extends tlObjectWithAttachments
     $href = '<a href="Javascript:openTCW(\'%s\',\'%s\');">%s:%s' . " $versionTag $hint<p></a>";
     $tlBeginMark = '[ghost]';
     $tlEndMark = '[/ghost]';
+    $tlEndMarkLen = strlen($tlEndMark);
+
     $key2check = array('summary','preconditions');
     
     // I've discovered that working with Web Rich Editor generates 
@@ -6407,6 +6404,8 @@ class testcase extends tlObjectWithAttachments
     // Hope this set is enough.
     // 20130605 - after algorithm change, this seems useless
     //$replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+    // $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
+
 
     $rse = &$item2render;
     foreach($key2check as $item_key)
@@ -6418,19 +6417,23 @@ class testcase extends tlObjectWithAttachments
       if($start !== FALSE)
       {
         $xx = explode($tlBeginMark,$rse[$item_key]);
-        
+ 
         // How many requests to replace ?
         $xx2do = count($xx);
         $ghost = '';
         for($xdx=0; $xdx < $xx2do; $xdx++)
         {
+          $isTestCaseGhost = true;
+          
           // Hope was not a false request.
-          if( strpos($xx[$xdx],$tlEndMark) !== FALSE)
+          // if( strpos($xx[$xdx],$tlEndMark) !== FALSE)
+          if( ($cutting_point = strpos($xx[$xdx],$tlEndMark)) !== FALSE)
           {
             // Separate command string from other text
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($tlEndMark,$xx[$xdx]);
+ 
             if( ($elc = count($yy)) > 0)
             {
               $dx = $yy[0];
@@ -6438,9 +6441,11 @@ class testcase extends tlObjectWithAttachments
               // trick to convert to array  
               $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
               $dx = json_decode($dx,true);
+ 
               try
               {
-                if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
+                $xid = $this->getInternalID($dx['TestCase']);
+                if( $xid > 0 )
                 {
                   $linkFeedback=")";
                   $addInfo="";
@@ -6463,14 +6468,41 @@ class testcase extends tlObjectWithAttachments
                   $fi = $this->get_basic_info($xid,array('number' => $vn));
                   if(!is_null($fi))
                   {
-                    $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn,$linkFeedback);
+                    if( isset($dx['Step']) ) 
+                    {
+                      $isTestCaseGhost = false;
+
+                      // ghost for rendering Test Case Step (string display)
+                      // [ghost]"Step":1,"TestCase":"MOK-2","Version":1[/ghost]
+                      if(intval($dx['Step']) > 0)
+                      { 
+                        $deghosted = true;
+                        //$rightside = '';
+                        //if(strlen($xx[$xdx]) > $cutting_point+$tlEndMarkLen)
+                        //{
+                          $rightside = trim(substr($xx[$xdx],$cutting_point+$tlEndMarkLen));
+                          //echo $rightside;
+                        //}  
+                        $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
+
+                        $ghost .= $stx[0]['actions'] . $rightside;
+                      }
+                    }
+                    else
+                    {
+                      // ghost for rendering Test Case (create link)
+                      $ghost .= sprintf($href,$dx['TestCase'],$vn,$dx['TestCase'],$fi[0]['name'],$vn,$linkFeedback);
+                    }  
                   }
                 }
 
-                $lim = $elc-1;
-                for($cpx=1; $cpx <= $lim; $cpx++) 
+                if($isTestCaseGhost)
                 {
-                  $ghost .= $yy[$cpx];
+                  $lim = $elc-1;
+                  for($cpx=1; $cpx <= $lim; $cpx++) 
+                  {
+                    $ghost .= $yy[$cpx];
+                  }  
                 }  
               } 
               catch (Exception $e)
@@ -6486,6 +6518,7 @@ class testcase extends tlObjectWithAttachments
           }  
         }
       }
+
       if($ghost != '')
       {
         $rse[$item_key] = $ghost;
@@ -6872,8 +6905,6 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
     $sql = " $debugMsg DELETE FROM {$this->tables['testcase_relations']} WHERE id=" . intval($relID);
-
-    echo $sql;
     $this->db->exec_query($sql);
   }
 

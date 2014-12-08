@@ -182,53 +182,60 @@ class tlTestPlanMetrics extends testplan
     // get amount of test cases for each execution result + total amount of test cases
     $planMetrics = $this->getExecCountersByExecStatus($tplanID);
 
-
-
     $milestones =  is_null($milestoneSet) ? $this->get_milestones($tplanID) : $milestoneSet;
 
     // get amount of test cases for each priority for test plan      
     $priorityCounters = $this->getPrioritizedTestCaseCounters($tplanID);
-        $pc = array(LOW => 'result_low_percentage', MEDIUM => 'result_medium_percentage',
-                    HIGH => 'result_high_percentage' );
+    $pc = array(LOW => 'result_low_percentage', MEDIUM => 'result_medium_percentage',
+                HIGH => 'result_high_percentage' );
         
-        $checks = array(LOW => 'low_percentage', MEDIUM => 'medium_percentage',
-                        HIGH => 'high_percentage' );
+    $checks = array(LOW => 'low_percentage', MEDIUM => 'medium_percentage',
+                    HIGH => 'high_percentage' );
 
-        $on_off = array(LOW => 'low_incomplete', MEDIUM => 'medium_incomplete',
-                        HIGH => 'high_incomplete' );
+    $on_off = array(LOW => 'low_incomplete', MEDIUM => 'medium_incomplete',
+                    HIGH => 'high_incomplete' );
         
-        // Important:
-        // key already defined on item: high_percentage,medium_percentage,low_percentage
+    // Important:
+    // key already defined on item: high_percentage,medium_percentage,low_percentage
     foreach($milestones as $item)
     {
-            $item['tcs_priority'] = $priorityCounters;
-        $item['tc_total'] = $planMetrics['total'];
-        
-        // get amount of executed test cases for each priority before target_date
-        $item['results'] = $this->getPrioritizedResults($tplanID, $item['target_date'], $item['start_date']);
-            $item['tc_completed'] = 0;
+      $item['tcs_priority'] = $priorityCounters;
+      $item['tc_total'] = $planMetrics['total'];
+
+      // get amount of executed test cases for each priority before target_date
+      $item['results'] = $this->getPrioritizedResults($tplanID, $item['target_date'], $item['start_date']);
+      $item['tc_completed'] = 0;
             
-            // calculate percentage of executed test cases for each priority
-            foreach( $pc as $key => $item_key)
-            {
-              $item[$item_key] = $this->get_percentage($priorityCounters[$key], $item['results'][$key]);
-              $item['tc_completed'] += $item['results'][$key];
-            }
-            
-            // amount of all executed tc with any priority before target_date / all test cases
-            $item['percentage_completed'] = $this->get_percentage($item['tc_total'], $item['tc_completed']);
-            
-            foreach( $checks as $key => $item_key)
-            {
-              // add 1 decimal places to expected percentages
-              $item[$checks[$key]] = number_format($item[$checks[$key]], 1);
-              
-              // check if target for each priority is reached
-              // show target as reached if expected percentage is greater than executed percentage
-              $item[$on_off[$key]] = ($item[$checks[$key]] > $item[$pc[$key]]) ? ON : OFF;
-            }
-        $results[$item['id']] = $item;
+      // calculate percentage of executed test cases for each priority
+      foreach( $pc as $key => $item_key)
+      {
+        $target_key = $checks[$key];
+        if( $item[$target_key] == 0 )
+        {
+          $item[$item_key] = 100;
+        } 
+        else 
+        {
+          $item[$item_key] = ($priorityCounters[$key] > 0) ? 
+                             $this->get_percentage($priorityCounters[$key], $item['results'][$key]) : 0;
+        }  
+        $item['tc_completed'] += $item['results'][$key];
       }
+
+      // amount of all executed tc with any priority before target_date / all test cases
+      $item['percentage_completed'] = $this->get_percentage($item['tc_total'], $item['tc_completed']);
+
+      foreach( $checks as $key => $item_key)
+      {
+        // add 1 decimal places to expected percentages
+        $item[$checks[$key]] = number_format($item[$checks[$key]], 1);
+              
+        // check if target for each priority is reached
+        // show target as reached if expected percentage is greater than executed percentage
+        $item[$on_off[$key]] = ($item[$checks[$key]] > $item[$pc[$key]]) ? ON : OFF;
+      }
+      $results[$item['id']] = $item;
+    }
     return $results;
   }
   
@@ -242,7 +249,7 @@ class tlTestPlanMetrics extends testplan
    */
   function get_percentage($total, $parameter)
   {
-    $percentCompleted = $total > 0 ? (($parameter / $total) * 100) : 100;
+    $percentCompleted = ($total > 0) ? (($parameter / $total) * 100) : 100;
     return number_format($percentCompleted,1);
   }
 

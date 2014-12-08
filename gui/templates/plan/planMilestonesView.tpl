@@ -3,22 +3,22 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: planMilestonesView.tpl,v 1.11 2010/10/17 09:46:37 franciscom Exp $
 
 Rev:
-  20100427 - franciscom - BUGID 3402 - missing refactoring of test project options
-  20090910 - franciscom - added start_date
 *}
 {lang_get var='labels' s='no_milestones,title_milestones,title_existing_milestones,th_name,
                          th_date_format,th_perc_a_prio,th_perc_b_prio,th_perc_c_prio,
-                         btn_new_milestone,start_date,
+                         btn_new_milestone,start_date,title_report_milestones,until,
+						 th_milestone,th_tc_priority_high,th_expected,th_tc_priority_medium,
+						 th_expected,th_tc_priority_low,th_expected,th_overall,
                          th_perc_testcases,th_delete,alt_delete_milestone,no_milestones'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/plan/planMilestonesEdit.php"}
-{assign var="editAction" value="$managerURL?doAction=edit"}
-{assign var="deleteAction" value="$managerURL?doAction=doDelete&id="}
-{assign var="createAction" value="$managerURL?doAction=create&tplan_id="}
+{$managerURL="lib/plan/planMilestonesEdit.php"}
+{$editAction="$managerURL?doAction=edit"}
+{$deleteAction="$managerURL?doAction=doDelete&id="}
+{$createAction="$managerURL?doAction=create&tplan_id="}
 
 {lang_get s='warning_delete_milestone' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
@@ -86,6 +86,48 @@ var del_action=fRoot+'{$deleteAction}';
 		</tr>
 		{/foreach}
 		</table>
+
+
+		{if $gui->itemsLive != ""}
+			<h2>{$labels.title_report_milestones}</h2>
+
+			<table class="simple_tableruler sortable" style="text-align: center; margin-left: 0px;">
+			<tr>
+				<th>{$labels.th_milestone}</th>
+				<th>{$labels.th_tc_priority_high}</th>
+				<th>{$labels.th_expected}</th>
+				<th>{$labels.th_tc_priority_medium}</th>
+				<th>{$labels.th_expected}</th>
+				<th>{$labels.th_tc_priority_low}</th>
+				<th>{$labels.th_expected}</th>
+				<th>{$labels.th_overall}</th>
+			</tr>
+ 			{foreach item=res from=$gui->itemsLive}
+  			<tr>
+  				<td>{$res.name|escape} {$tlCfg->gui_separator_open}
+  						{if $res.start_date|escape != "0000-00-00"}
+						{$labels.from} {$res.start_date|escape}
+						{/if}
+  						{$labels.until} {$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
+	  			<td class="{if $res.high_incomplete}failed{else}passed{/if}">
+	  					{$res.result_high_percentage} % {$tlCfg->gui_separator_open} 
+	  					{$res.results.3}/{$res.tcs_priority.3} {$tlCfg->gui_separator_close}</td>
+	  			<td>{$res.high_percentage} %</td>
+	  			<td class="{if $res.medium_incomplete}failed{else}passed{/if}">
+	  					{$res.result_medium_percentage} % {$tlCfg->gui_separator_open} 
+	  					{$res.results.2}/{$res.tcs_priority.2} {$tlCfg->gui_separator_close}</td>
+	  			<td>{$res.medium_percentage} %</td>
+	  			<td class="{if $res.low_incomplete}failed{else}passed{/if}">
+	  					{$res.result_low_percentage} % {$tlCfg->gui_separator_open} 
+	  					{$res.results.1}/{$res.tcs_priority.1} {$tlCfg->gui_separator_close}</td>
+	  			<td>{$res.low_percentage} %</td>
+				<td>{$res.percentage_completed} %</td>
+  			</tr>
+  			{/foreach}
+		</table>
+		{/if}
+
+
 
   {else}
 		<p>{$labels.no_milestones}</p>

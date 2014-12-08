@@ -776,6 +776,7 @@ $TLS_th_testplan_name = "Test Plan Name";
 // ----- gui/templates/cfields/cfieldsEdit.tpl -----
 $TLS_assigned_to_testprojects = "Assigned to Test Projects";
 $TLS_available_on = "Available for";
+$TLS_btn_add_and_assign_to_current = 'Add and assign (to current test project)';
 $TLS_custom_field = "Custom field";
 $TLS_context_design = "test specification";
 $TLS_context_exec = "test execution";

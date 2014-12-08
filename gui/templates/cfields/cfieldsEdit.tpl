@@ -39,7 +39,7 @@ This is done to simplify logic.
              warning_empty_cfield_name,warning_empty_cfield_label,testproject,assigned_to_testprojects,
              enable_on_design,show_on_exec,enable_on_exec,enable_on_testplan_design,
              available_on,btn_upd,btn_delete,warning_no_type_change,enable_on,
-             btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
+             btn_add,btn_cancel,show_on_design,show_on_testplan_design,btn_add_and_assign_to_current,"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -481,6 +481,9 @@ function initShowOnExec(id_master,show_on_cfg)
 	{else}
 		<input type="submit" name="do_update" value="{$labels.btn_add}"
 		       onclick="do_action.value='do_add'"/>
+
+    <input type="submit" name="do_add_and_assign" id="do_add_and_assign" value="{$labels.btn_add_and_assign_to_current}"
+           onclick="do_action.value='do_add_and_assign'"/>
 	{/if}
 		<input type="button" name="cancel" value="{$labels.btn_cancel}"
 			onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php';" />

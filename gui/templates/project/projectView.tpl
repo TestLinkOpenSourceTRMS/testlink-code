@@ -7,8 +7,9 @@ Development hint:
 some variables smarty and javascript are created on the inc_*.tpl files.
 
 @internal revisions
-@since 1.9.12
+@since 1.9.13
 *}
+
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -43,7 +44,7 @@ var del_action=fRoot+'{$deleteAction}';
 
 <body {$body_onload}>
 
-<h1 class="title">{$labels.title_testproject_management}</h1>
+<h1 class="title">{$gui->pageTitle}</h1>
 <div class="workBack">
 
 <div class="groupBtn">

@@ -11,7 +11,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  *
  */
 
@@ -131,6 +131,15 @@ switch($args->doAction)
       $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
                    'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
       $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
+      
+      $gui->pageTitle = lang_get('title_testproject_management');
+      $gui->itemQty = count($gui->tprojects);
+      if($gui->itemQty > 0)
+      {
+        $gui->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$gui->itemQty);
+      }  
+
+
       if($addIssueTracker)
       {
         $imgSet = $smarty->getImages();
@@ -658,7 +667,7 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 /*
  *
  * @internal revisions
- * @since 1.9.4
+ *
  */
 function initializeGui(&$dbHandler,$argsObj)
 {

@@ -7,9 +7,9 @@
  *
  * @package 	  TestLink
  * @author 		  TestLink community
- * @copyright   2007-2013, TestLink community 
+ * @copyright   2007-2014, TestLink community 
  * @filesource  projectView.php
- * @link 		    http://www.teamst.org/index.php
+ * @link 		    http://www.testlink.org/
  *
  * @internal revisions
  * @since 1.9.9
@@ -27,13 +27,13 @@ $imgSet = $smarty->getImages();
 $args = init_args();
 $gui = initializeGui($db,$args);
 
+new dBug($gui);
 
 $template2launch = $templateCfg->default_template;
 if(!is_null($gui->tprojects) || $args->doAction=='list')
 {  
-  $loop2do = count($gui->tprojects);
   $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
-  for($idx=0; $idx < $loop2do; $idx++)
+  for($idx=0; $idx < $gui->itemQty; $idx++)
   {
     $gui->tprojects[$idx]['itstatusImg'] = '';
     if($gui->tprojects[$idx]['itname'] != '')
@@ -108,7 +108,7 @@ function initializeGui(&$dbHandler,&$argsObj)
   $guiObj->canManage = $argsObj->user->hasRight($dbHandler,"mgt_modify_product");
   $guiObj->name = is_null($argsObj->name) ? '' : $argsObj->name;
   $guiObj->feedback = '';
-
+  
   switch($argsObj->doAction)
   {
     case 'list':
@@ -126,6 +126,15 @@ function initializeGui(&$dbHandler,&$argsObj)
   $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
                'add_reqmgrsystem' => true);
   $guiObj->tprojects = $tproject_mgr->get_accessible_for_user($argsObj->userID,$opt,$filters);
+  $guiObj->pageTitle = lang_get('title_testproject_management');
+
+  $guiObj->itemQty = count($guiObj->tprojects);
+
+  if($guiObj->itemQty > 0)
+  {
+    $guiObj->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$guiObj->itemQty);
+  }  
+
   return $guiObj;
 }
 

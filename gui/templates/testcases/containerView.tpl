@@ -35,14 +35,13 @@ View test specification containers
 {$tcExportAction="lib/testcases/tcExport.php?containerID=$container_id&amp;form_token=$ft"}
 {$exportTestCasesAction="$basehref$tcExportAction"}
 
-{$testSpecFullDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=0&id=$container_id"}
+{$testSpecFullDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=0&id=$container_id&form_token=$ft"}
 {$testSpecFullDocAction="$basehref$testSpecFullDocAction"}
-
 
 {$testSpecFullWordDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=4&id=$container_id"}
 {$testSpecFullWordDocAction="$basehref$testSpecFullWordDocAction"}
 
-{$testSuiteDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=0&id=$container_id"}
+{$testSuiteDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=0&id=$container_id&form_token=$ft"}
 {$testSuiteDocAction="$basehref$testSuiteDocAction"}
 
 {$testSuiteWordDocAction="lib/results/printDocument.php?type=testspec&level=testsuite&allOptionsOn=1&format=4&id=$container_id"}

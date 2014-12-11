@@ -78,7 +78,11 @@ else
   $gui->warning_msg = $labels['no_srs_defined'];
 }
 
+// new dBug($testcases);
+
 // second step: walk through req spec map, count/calculate, store results
+// new dBug($req_spec_map);
+
 if(count($req_spec_map)) 
 {
   foreach ($req_spec_map as $req_spec_id => $req_spec_info) 
@@ -783,7 +787,18 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     }
     $options = array('addExecInfo' => true,'accessKeyType' => 'tcase');
     
-    $tcaseSet = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $options);
+
+    // new dBug($filters);
+    if(isset($filters['platform_id']))
+    {
+      $tcaseSet = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $options);
+    }  
+    else
+    {
+      $tcaseSet = $tplanMgr->getLTCVOnTestPlan($argsObj->tplan_id, $filters, $options);
+    }  
+
+
   }
 
   return array($total,$rspec,$tcaseSet);

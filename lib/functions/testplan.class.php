@@ -6654,6 +6654,8 @@ class testplan extends tlObjectWithAttachments
         $sql2run = $sql2do;
       }
 
+      // new dBug($sql2run);
+
       // added when trying to fix: 
       // TICKET 5788: test case execution order not working on RIGHT PANE
       // Anyway this did not help
@@ -6707,7 +6709,7 @@ class testplan extends tlObjectWithAttachments
    *
    *
    * @internal revisions
-   * @since 1.9.10
+   * @since 1.9.13
    */
   function getLinkedTCVersionsSQL($id,$filters=null,$options=null)
   {
@@ -6717,7 +6719,9 @@ class testplan extends tlObjectWithAttachments
     
     $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
                                     'assigned_on_build' => null, 'testSuiteInfo' => false,
-                                    'addPriority' => false,'addImportance' => false));
+                                    'addPriority' => false,'addImportance' => false,
+                                    'ignorePlatformAndBuild' => false));
+
     $my['options'] = array_merge($mop['options'],$my['options']);
       
     if(  ($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )
@@ -6743,12 +6747,32 @@ class testplan extends tlObjectWithAttachments
     // Before this ticket LEX was just on BUILD => ignoring platforms
     // Need to understand if will create side effects.
     //
-    $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
-              " MAX(EE.id) AS id " .
-              " FROM {$this->tables['executions']} EE " . 
-              " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
-              $buildClause['lex'] .
-              " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+    if($my['options']['ignorePlatformAndBuild'])
+    {
+      $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id," .
+                " MAX(EE.id) AS id " .
+                " FROM {$this->tables['executions']} EE " . 
+                " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
+                " GROUP BY EE.tcversion_id,EE.testplan_id ";
+
+      $platformLEX = " ";
+      $platformEXEC = " ";
+
+    }  
+    else
+    {
+      $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
+                " MAX(EE.id) AS id " .
+                " FROM {$this->tables['executions']} EE " . 
+                " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
+                $buildClause['lex'] .
+                " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+
+      // TICKET 5182           
+      $platformLEX = " AND LEX.platform_id = TPTCV.platform_id "; 
+      $platformEXEC = " AND E.platform_id = TPTCV.platform_id ";
+
+    }  
     
     // -------------------------------------------------------------------------------------
     // adding tcversion on output can be useful for Filter on Custom Field values,
@@ -6815,13 +6839,13 @@ class testplan extends tlObjectWithAttachments
                          " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
                          " LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
                          " ON  LEX.testplan_id = TPTCV.testplan_id " .
-                         " AND LEX.platform_id = TPTCV.platform_id " .   // TICKET 5182
+                         $platformLEX .
                          " AND LEX.tcversion_id = TPTCV.tcversion_id " .
                          " AND LEX.testplan_id = " . $safe['tplan_id'] .
                          " LEFT OUTER JOIN {$this->tables['executions']} E " .
                          " ON  E.tcversion_id = TPTCV.tcversion_id " .
                          " AND E.testplan_id = TPTCV.testplan_id " .
-                         " AND E.platform_id = TPTCV.platform_id " .
+                         $platformEXEC .
                          " AND E.id = LEX.id " .  // TICKET 6159
                          $buildClause['exec_join'] .
 
@@ -6843,18 +6867,19 @@ class testplan extends tlObjectWithAttachments
              
                      " JOIN ({$sqlLEX}) AS LEX " .
                      " ON  LEX.testplan_id = TPTCV.testplan_id " .
-                     " AND LEX.platform_id = TPTCV.platform_id " .    // TICKET 5182
+                     $platformLEX .
                      " AND LEX.tcversion_id = TPTCV.tcversion_id " .
                      " AND LEX.testplan_id = " . $safe['tplan_id'] .
+
                      " JOIN {$this->tables['executions']} E " .
                      " ON  E.tcversion_id = TPTCV.tcversion_id " .
                      " AND E.testplan_id = TPTCV.testplan_id " .
-                     " AND E.platform_id = TPTCV.platform_id " .
+                     $platformEXEC .
                      " AND E.id = LEX.id " .  // TICKET 6159
                      $buildClause['exec_join'] .
                          
-                      " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
-                      $my['where']['where'];
+                     " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
+                     $my['where']['where'];
 
     return $union;
   }
@@ -7131,6 +7156,75 @@ class testplan extends tlObjectWithAttachments
     $items = $this->db->get_recordset($sql);           
     return $items;
   }
+
+
+  /**
+   *
+   */
+  public function getLTCVOnTestPlan($id,$filters=null,$options=null)
+  {
+    $debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
+    $my = array('filters' => array(),
+                'options' => array('allow_empty_build' => 1,'addPriority' => false,
+                                   'accessKeyType' => 'tcase+platform',
+                                   'addImportance' => false,
+                                   'includeNotRun' => true, 'orderBy' => null));
+    $amk = array('filters','options');
+    foreach($amk as $mk)
+    {
+      $my[$mk] = array_merge($my[$mk], (array)$$mk);
+    }
+        
+    $my['options']['ignorePlatformAndBuild'] = true;    
+    if( !is_null($sql2do = $this->getLinkedTCVersionsSQL($id,$my['filters'],$my['options'])) )
+    {
+      // need to document better
+      if( is_array($sql2do) )
+      {        
+        $sql2run = $sql2do['exec'];
+        if($my['options']['includeNotRun'])
+        {
+          $sql2run .= ' UNION ' . $sql2do['not_run'];
+        } 
+      }
+      else
+      {
+        $sql2run = $sql2do;
+      }
+
+      // echo __FUNCTION__;
+      // new dBug($sql2run);
+      
+      // added when trying to fix: 
+      // TICKET 5788: test case execution order not working on RIGHT PANE
+      // Anyway this did not help
+      if( !is_null($my['options']['orderBy']) )
+      {  
+        $sql2run = " SELECT * FROM ($sql2run) XX ORDER BY " . $my['options']['orderBy'];
+      }
+
+      switch($my['options']['accessKeyType'])
+      {
+        case 'tcase+platform':
+          $tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id'); // ,0,-1,'user_id');
+        break;
+        
+        case 'tcase+platform+stackOnUser':
+          $tplan_tcases = $this->db->fetchMapRowsIntoMapStackOnCol($sql2run,'tcase_id','platform_id','user_id');
+        break;
+
+        case 'index':
+          $tplan_tcases = $this->db->get_recordset($sql2run);
+        break;  
+        
+        default:
+          $tplan_tcases = $this->db->fetchRowsIntoMap($sql2run,'tcase_id');
+        break;  
+      }  
+    }
+    return $tplan_tcases;
+  }
+
 
 
 

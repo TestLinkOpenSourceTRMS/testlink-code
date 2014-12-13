@@ -1145,11 +1145,10 @@ $tlCfg->req_cfg->expected_coverage_management = ENABLED;
 // DIABLED: ONLY Requirement Specification is shown
 $tlCfg->req_cfg->show_child_reqs_on_reqspec_print_view = DISABLED;
 
-// 20090111 - franciscom
+// 
 // Order of test cases status in this array, is used to undestand
 // to what status set requirement in the requirements report.
 // Standard algorithm, present in getReqCoverage(), is:
-//
 //
 // if at least one of Test Cases linked to Requirement has status FAILED
 //    Requirement Coverage Status = FAILED
@@ -1168,7 +1167,8 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['atLeastOne']=array('faile
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('passed');
 
 // Configure here what status has to get requirement when check of type 'all' fails like
-// in following situation (BUGID 2171)
+// in following situation (Mantis 2171)
+//
 // If particular requirement has assigned more than one test cases, and:
 // - at least one of assigned test cases was not yet executed
 // - the rest of assigned test cases was executed and passed
@@ -1184,7 +1184,7 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('passed');
 
 
 
-// TICKET 4661 - truncate log message to this amount of chars for reqSpecCompareRevisions
+// truncate log message to this amount of chars for reqSpecCompareRevisions
 $tlCfg->req_spec_cfg->log_message_len = 200;
 
 

@@ -850,7 +850,7 @@ function doNotRunAnalysis($tcaseQty,$execStatusCounter,$notRunCode)
   }  
   else
   {
-    if(($execStatusCounter['total'] == $counters[$execStatusCounter]))
+    if(($execStatusCounter['totalTPTCV'] == $execStatusCounter[$notRunCode]))
     {
       $evaluation = $notRunCode;
       $doIt = false;

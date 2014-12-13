@@ -3,7 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Test navigator for Test Plan
+ * Test navigator for Test Plan.
+ * Used on Test Case Execution Assignment feature
  *
  * @filesource  planTCNavigator.php
  * @package     TestLink

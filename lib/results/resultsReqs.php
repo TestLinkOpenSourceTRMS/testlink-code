@@ -89,7 +89,8 @@ if(count($rspecSet))
     $rspecSet[$rspec_id]['req_counters'] = array('total' => 0);
     foreach ($req_spec_info['requirements'] as $req_id => $req_info) 
     {
-      $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters'] = array('total' => 0);
+      // Test Plan Test Case Version (TPTCV)
+      $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters'] = array('total' => 0,'totalTPTCV' => 0);
       
       // add coverage for more detailed evaluation
       $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['expected_coverage'] = 
@@ -99,13 +100,15 @@ if(count($rspecSet))
       {
         $tc_id = $tc_info['id'];
         $plat2loop = array_keys($testcases[$tc_id]);
-        $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
+        $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['total']++;
  
         foreach($plat2loop as $plat_id)
         {
+          $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['totalTPTCV']++;
           if (isset($testcases[$tc_id][$plat_id]['exec_status'])) 
           {
             $status = $testcases[$tc_id][$plat_id]['exec_status'];
+         
             // if the counters for this status don't exist yet, initialize them with 0
             if (!isset($rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters'][$status])) 
             {
@@ -117,7 +120,6 @@ if(count($rspecSet))
         }  
       }
       
-
       // evaluate this requirement by configured coverage algorithm
       $eval = evaluate_req($status_code_map, $req_cfg->coverageStatusAlgorithm,
                            $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']);
@@ -436,7 +438,8 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
   $doIt = true;
   if ($counters['total'] == 0) 
   {
-    // Zero test cases linked => uncovered
+    // Zero test cases linked to Requirement => uncovered
+    // Do we really display this req on report?
     $evaluation = 'uncovered';
     $doIt = false;
   }
@@ -445,7 +448,7 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
   // because we can have a situation where NOT ALL test cases assigned to req
   // are linked to test plan, we need to compute how many results we have
   // because this figure is equal to qty of test cases linked to test plan
-  // ATTENTION: this is right when there are no platforms.
+  // ATTENTION: recheck logic when there are PLATFORMS.
   
   // if there are linked test cases and ALL are not run => Req. takes status 'not run'
   // how many status counters are set ?
@@ -457,7 +460,6 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
 
   if( ($counters['total'] > 0) ) 
   {
-    // Not Run ANALISYS
     list($evaluation,$doIt) = doNotRunAnalysis($hmc,$counters,$status_code['not_run']);
     if(!$doIt)
     {
@@ -484,7 +486,7 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
           break;
         }
         
-        if($checkKey == 'all' && $count == $counters['total']) 
+        if($checkKey == 'all' && ($count == $counters['totalTPTCV']) )
         {
           $evaluation = $is_fully_covered ? $code : $code . "_nfc";
           $doOuterBreak = true;

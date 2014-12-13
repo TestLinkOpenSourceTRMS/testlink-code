@@ -7207,9 +7207,6 @@ class testplan extends tlObjectWithAttachments
         $sql2run = $sql2do;
       }
 
-      echo __FUNCTION__;
-      // new dBug($sql2run);
-      
       // added when trying to fix: 
       // TICKET 5788: test case execution order not working on RIGHT PANE
       // Anyway this did not help
@@ -7275,9 +7272,6 @@ class testplan extends tlObjectWithAttachments
         $sql2run = $sql2do;
       }
 
-      echo __FUNCTION__;
-      // new dBug($sql2run);
-      
       // added when trying to fix: 
       // TICKET 5788: test case execution order not working on RIGHT PANE
       // Anyway this did not help

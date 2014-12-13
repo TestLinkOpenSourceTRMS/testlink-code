@@ -53,22 +53,23 @@ foreach($i2u as $ik)
 
 $reqContext = array('tproject_id' => $args->tproject_id, 'tplan_id' => $args->tplan_id, 
                     'platform_id' => $args->platform);
+
 $reqSetX = (array)$req_mgr->getAllByContext($reqContext);
 $req_ids = array_keys($reqSetX);
 
 $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . (config_get('testcase_cfg')->glue_character);
 
-$req_spec_map = array();
+$rspecSet = array();
 $testcases = array();
 
 // first step: get the requirements and linked testcases with which we have to work,
-// order them into $req_spec_map by spec
+// order them into $rspecSet by spec
 $gui->total_reqs = 0;
 if (count($req_ids)) 
 {   
-  list($gui->total_reqs,$req_spec_map,$testcases) = buildReqSpecMap($req_ids,$req_mgr,$req_spec_mgr,$tplan_mgr,
+  list($gui->total_reqs,$rspecSet,$testcases) = buildReqSpecMap($req_ids,$req_mgr,$req_spec_mgr,$tplan_mgr,
                                                                     $args->states_to_show->selected,$args);
-  if (!count($req_spec_map)) 
+  if (!count($rspecSet)) 
   {
     $gui->warning_msg = $labels['no_matching_reqs'];
   }
@@ -78,64 +79,64 @@ else
   $gui->warning_msg = $labels['no_srs_defined'];
 }
 
-// new dBug($testcases);
 
 // second step: walk through req spec map, count/calculate, store results
-// new dBug($req_spec_map);
-
-if(count($req_spec_map)) 
+if(count($rspecSet)) 
 {
-  foreach ($req_spec_map as $req_spec_id => $req_spec_info) 
+
+  foreach ($rspecSet as $rspec_id => $req_spec_info) 
   {
-    $req_spec_map[$req_spec_id]['req_counters'] = array('total' => 0);
+    $rspecSet[$rspec_id]['req_counters'] = array('total' => 0);
     foreach ($req_spec_info['requirements'] as $req_id => $req_info) 
     {
-      $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'] = array('total' => 0);
+      $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters'] = array('total' => 0);
       
       // add coverage for more detailed evaluation
-      $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['expected_coverage'] = 
-        $req_spec_map[$req_spec_id]['requirements'][$req_id]['expected_coverage'];
+      $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['expected_coverage'] = 
+      $rspecSet[$rspec_id]['requirements'][$req_id]['expected_coverage'];
     
-
       foreach ($req_info['linked_testcases'] as $key => $tc_info) 
       {
         $tc_id = $tc_info['id'];
-        $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
-        
-        if (isset($testcases[$tc_id]['exec_status'])) 
+        $plat2loop = array_keys($testcases[$tc_id]);
+        $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
+ 
+        foreach($plat2loop as $plat_id)
         {
-          $status = $testcases[$tc_id]['exec_status'];
-          
-          // if the counters for this status don't exist yet, initialize them with 0
-          if (!isset($req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'][$status])) 
+          if (isset($testcases[$tc_id][$plat_id]['exec_status'])) 
           {
-            $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'][$status] = 0;
+            $status = $testcases[$tc_id][$plat_id]['exec_status'];
+            // if the counters for this status don't exist yet, initialize them with 0
+            if (!isset($rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters'][$status])) 
+            {
+              $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters'][$status] = 0;
+            }
+            
+            $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters'][$status] ++;
           }
-          
-          $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'][$status] ++;
-        }
+        }  
       }
       
 
       // evaluate this requirement by configured coverage algorithm
       $eval = evaluate_req($status_code_map, $req_cfg->coverageStatusAlgorithm,
-                           $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']);
+                           $rspecSet[$rspec_id]['requirements'][$req_id]['tc_counters']);
 
-      $req_spec_map[$req_spec_id]['requirements'][$req_id]['evaluation'] = $eval;
+      $rspecSet[$rspec_id]['requirements'][$req_id]['evaluation'] = $eval;
       
-      if (!isset($req_spec_map[$req_spec_id]['req_counters'][$eval])) 
+      if (!isset($rspecSet[$rspec_id]['req_counters'][$eval])) 
       {
-        $req_spec_map[$req_spec_id]['req_counters'][$eval] = 0;
+        $rspecSet[$rspec_id]['req_counters'][$eval] = 0;
       }
       
-      $req_spec_map[$req_spec_id]['req_counters'][$eval] ++;
-      $req_spec_map[$req_spec_id]['req_counters']['total'] ++;
+      $rspecSet[$rspec_id]['req_counters'][$eval] ++;
+      $rspecSet[$rspec_id]['req_counters']['total'] ++;
     }
   }
 }
 
 // last step: build the table
-if (count($req_spec_map)) 
+if (count($rspecSet)) 
 {
   $allStatusCode = config_get('results');
 
@@ -176,7 +177,7 @@ if (count($req_spec_map))
   
   // data for rows
   $rows = array();
-  foreach ($req_spec_map as $req_spec_id => $req_spec_info) 
+  foreach ($rspecSet as $rspec_id => $req_spec_info) 
   {
     
     // build the evaluation data string and attache it to req spec name for table group feature
@@ -213,16 +214,16 @@ if (count($req_spec_map))
       {
         $expected_coverage = $req_info['expected_coverage'];
         $current = count($req_info['linked_testcases']);
+        if ($expected_coverage) 
+        {
+          $coverage_string = "<!-- -1 -->" . $labels['na'] . " ($current/0)";
           if ($expected_coverage) 
           {
-          $coverage_string = "<!-- -1 -->" . $labels['na'] . " ($current/0)";
-            if ($expected_coverage) 
-            {
-              $percentage = 100 / $expected_coverage * $current;
-              $coverage_string = comment_percentage($percentage) .
+            $percentage = 100 / $expected_coverage * $current;
+            $coverage_string = comment_percentage($percentage) .
                                " ({$current}/{$expected_coverage})";
-            }
-            $single_row[] = $coverage_string;
+          }
+          $single_row[] = $coverage_string;
         } 
         else 
         {
@@ -240,7 +241,7 @@ if (count($req_spec_map))
                       $eval_status_map[$eval]['label'] . '</span>';
       
       $single_row[] = isset($req_type_labels[$req_info['type']]) ? $req_type_labels[$req_info['type']] : 
-              sprintf($labels['no_label_for_req_type'],$req_info['type']);
+                      sprintf($labels['no_label_for_req_type'],$req_info['type']);
       
       $single_row[] = $status_labels[$req_info['status']];
       
@@ -283,46 +284,50 @@ if (count($req_spec_map))
       $linked_tcs_with_status = '';
       if (count($req_info['linked_testcases']) > 0 ) 
       {
-        foreach($req_info['linked_testcases'] as $testcase) 
+        // ATTENTION HERE IS WHERE PLATFORMS AFFECTS
+        foreach($req_info['linked_testcases'] as $ltcase) 
         {
-          $tc_id = $testcase['id'];
-          
-          $status = $status_code_map['not_run'];
-          if(isset($testcases[$tc_id]['exec_status'])) 
+          $tc_id = $ltcase['id'];
+          foreach($testcases[$tc_id] as $pelem)
           {
-            $status = $testcases[$tc_id]['exec_status'];
-            $status_l10n = $eval_status_map[$status]['label'];
-          }
-          else
-          {
-            $not_run = $allStatusCode['status_code']['not_run'];
-            $status_l10n = $labels['not_in_testplan'];
+            $status = $status_code_map['not_run'];
+            if(isset($pelem['exec_status'])) 
+            {
+              $status = $pelem['exec_status'];
+              $status_l10n = $eval_status_map[$status]['label'];
+            }
+            else
+            {
+              $not_run = $allStatusCode['status_code']['not_run'];
+              $status_l10n = $labels['not_in_testplan'];
+            }  
+            $pname = ($pelem['platform_id'] > 0 ? ($pelem['platform_name'] . '/') : '' );
+            $colored_status = '<span class="' . $eval_status_map[$status]['css_class'] . '">' . 
+                              '[' . $pname . $status_l10n . ']</span>';
+
+            
+            $tc_name = $prefix . $ltcase['tc_external_id'] . $title_sep . $ltcase['name'];
+            
+            $exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
+                                 "<img title=\"{$labels['execution_history']}\" " .
+                                 " src=\"{$images['history_small']}\" /></a> ";
+            $edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
+                         "<img title=\"{$labels['design']}\" src=\"{$images['edit_icon']}\" /></a> ";
+            
+            $exec_link = "";
+
+
+            if(isset($pelem['exec_status']) && $pelem['exec_status'] != $status_code_map['not_run']) 
+            {
+              $exec_link = "<a href=\"javascript:openExecutionWindow(" .
+                           "{$tc_id}, {$pelem['tcversion_id']}, {$pelem['exec_on_build']} , " .
+                           "{$pelem['exec_on_tplan']}, {$pelem['platform_id']});\">" .
+                           "<img title=\"{$labels['execution']}\" src=\"{$images['exec_icon']}\" /></a> ";
+            }
+
+            $linked_tcs_with_status .= "{$exec_history_link} {$edit_link} {$exec_link} {$colored_status} {$tc_name}<br>";
           }  
-          $colored_status = '<span class="' . $eval_status_map[$status]['css_class'] . '">[' . 
-                            $status_l10n . ']</span>';
 
-          
-          $tc_name = $prefix . $testcase['tc_external_id'] . $title_sep . $testcase['name'];
-          
-          $exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tc_id});\">" .
-                               "<img title=\"{$labels['execution_history']}\" " .
-                               " src=\"{$images['history_small']}\" /></a> ";
-          $edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
-                 "<img title=\"{$labels['design']}\" src=\"{$images['edit_icon']}\" /></a> ";
-          
-          $exec_link = "";
-
-
-          if(isset($testcases[$tc_id]['exec_status']) && 
-             $testcases[$tc_id]['exec_status'] != $status_code_map['not_run']) 
-          {
-            $exec_link = "<a href=\"javascript:openExecutionWindow(" .
-                         "{$tc_id}, {$testcases[$tc_id]['tcversion_id']}, {$testcases[$tc_id]['exec_on_build']} , " .
-                         "{$testcases[$tc_id]['exec_on_tplan']}, {$testcases[$tc_id]['platform_id']});\">" .
-                         "<img title=\"{$labels['execution']}\" src=\"{$images['exec_icon']}\" /></a> ";
-          }
-
-          $linked_tcs_with_status .= "{$exec_history_link} {$edit_link} {$exec_link} {$colored_status} {$tc_name}<br>";
         }
       } 
       else  
@@ -336,7 +341,7 @@ if (count($req_spec_map))
     }
   }
   
-    $matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
+  $matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
   $matrix->title = $gui->pageTitle;
   
   // group by Req Spec and hide that column
@@ -419,8 +424,9 @@ function build_req_spec_description(&$evalcode_status_map, &$spec_info, $ext_mgm
  */
 function evaluate_req(&$status_code, &$algorithm_cfg, &$counters) 
 {
-  // check if requirement is fully covered (">= 100%")
-  $fully_covered = ($counters['total'] >= $counters['expected_coverage']) ? true : false;
+  // init
+  $evaluation = null;
+  $is_fully_covered = ($counters['total'] >= $counters['expected_coverage']) ? true : false;
 
   if( !isset($counters[$status_code['not_run']]) )
   {
@@ -439,9 +445,9 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
   // because we can have a situation where NOT ALL test cases assigned to req
   // are linked to test plan, we need to compute how many results we have
   // because this figure is equal to qty of test cases linked to test plan
-
+  // ATTENTION: this is right when there are no platforms.
   
-  // if there are linked test cases and all are not run => Req. takes status 'not run'
+  // if there are linked test cases and ALL are not run => Req. takes status 'not run'
   // how many status counters are set ?
   $hmc = 0;
   foreach($status_code as $verbose => $code)
@@ -451,38 +457,21 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
 
   if( ($counters['total'] > 0) ) 
   {
-    if($hmc == 1)
+    // Not Run ANALISYS
+    list($evaluation,$doIt) = doNotRunAnalysis($hmc,$counters,$status_code['not_run']);
+    if(!$doIt)
     {
-      if( $counters[$status_code['not_run']] != 0 )
-      {
-        $evaluation = $fully_covered ? $status_code['not_run'] : ($status_code['not_run'] . '_nfc');
-        $doIt = false;
-      }  
-    }  
-    else
-    {
-      if(($counters['total'] == $counters[$status_code['not_run']]))
-      {
-        $evaluation = $fully_covered ? $status_code['not_run'] : ($status_code['not_run'] . '_nfc');
-        $doIt = false;
-      }  
+      $evaluation .= ($is_fully_covered ? '' : '_nfc');
     }  
   }
 
-  /*
-  if( ($counters['total'] > 0) && ($counters['total'] == $counters[$status_code['not_run']]) ) 
-  {
-    $evaluation = $fully_covered ? $status_code['not_run'] : ($status_code['not_run'] . '_nfc');
-    $doIt = false;
-  }
-  */
-  
   if($doIt) 
   {
-    $evaluation = $fully_covered ? 'partially_passed' : 'partially_passed_nfc';
-    
+    $evaluation = null;
+    $analisysDone = false;
     foreach($algorithm_cfg['checkOrder'] as $checkKey) 
     {
+      $analisysDone = true;
       $doOuterBreak = false;
       foreach($algorithm_cfg['checkType'][$checkKey] as $status2check) 
       {
@@ -490,14 +479,14 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
         $count = isset($counters[$code]) ? $counters[$code] : 0;
         if ($checkKey == 'atLeastOne' && $count) 
         {
-          $evaluation = $fully_covered ? $code : $code . "_nfc";
+          $evaluation = $is_fully_covered ? $code : $code . "_nfc";
           $doOuterBreak = true;
           break;
         }
         
         if($checkKey == 'all' && $count == $counters['total']) 
         {
-          $evaluation = $fully_covered ? $code : $code . "_nfc";
+          $evaluation = $is_fully_covered ? $code : $code . "_nfc";
           $doOuterBreak = true;
           break;
         }
@@ -508,6 +497,16 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
         break;
       }
     }
+
+    if($analisysDone && is_null($evaluation))
+    {
+      $evaluation = 'partially_passed';
+      if($counters[$status_code['not_run']] == 0)
+      {
+        $evaluation = $status_code['passed'];
+      }  
+      $evaluation .= ($is_fully_covered ? '' : '_nfc');
+    }  
   }
   return $evaluation;
 }
@@ -524,7 +523,7 @@ function evaluate_req(&$status_code, &$algorithm_cfg, &$counters)
 function comment_percentage($percentage) 
 {
   $percentage = round($percentage, 2);
-    $padded_percentage = sprintf("%010d", $percentage);
+  $padded_percentage = sprintf("%010d", $percentage);
   $string = "<!-- {$padded_percentage} --> {$percentage}% ";
   return $string;
 }
@@ -586,6 +585,16 @@ function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
   }
   
   $args->platform = $_SESSION['platform'] = $platform;
+
+
+  // $dummy = $tplan_mgr->get_builds_for_html_options($id,$active=null,$open=null,$opt=null)
+  $dummy = $tplan_mgr->get_builds_for_html_options($args->tplan_id);
+  $args->buildSet = $dummy ? array(0 => $gui_open . lang_get('any') . $gui_close) + $dummy : null;
+  $args->build = 0;
+  if (isset($_REQUEST['build'])) 
+  {
+    $args->build = $_REQUEST['build'];
+  } 
   
   return $args;
 }
@@ -610,10 +619,14 @@ function init_gui(&$argsObj,&$tplanMgr)
   $gui->selected_platform = $argsObj->platform;
   $gui->platforms = $argsObj->platformSet;
 
+  $gui->builds = $argsObj->buildSet;
+  $gui->selected_build = $argsObj->build;
+  
   $dummy = $tplanMgr->get_by_id($argsObj->tplan_id);
   $gui->tplan_name = $dummy['name'];
 
   $gui->baseHref = $_SESSION['basehref'];
+
   return $gui;
 }
 
@@ -633,13 +646,15 @@ function setUpLabels($reqCfg)
                                'no_label_for_req_type'  => null, 'progress' => null,
                                'na' => 'not_aplicable', 'no_matching_reqs' => null,
                                'execution' => null,'no_srs_defined' => null,
-                               'not_in_testplan' => null,
+                               'not_in_testplan' => null,'platform' => null,
                                'execution_history' => null, 'req_spec_short' => null));
 
   return array($rsptlbl,$rtlbl,$slbl,$labels);
 }
 
-
+/**
+ *
+ */
 function setUpReqStatusCfg()
 {
   $results_cfg = config_get('results');
@@ -669,6 +684,7 @@ function setUpReqStatusCfg()
                               'failed_nfc' => null, 'failed_nfc_reqs' => null,
                               'blocked_nfc' => null, 'blocked_nfc_reqs' => null,
                               'not_run_nfc' => null, 'not_run_nfc_reqs' => null,
+                              'passed' => null,
                               'partially_passed_nfc' => null, 'partially_passed_nfc_reqs' => null));
 
   $eva['partially_passed'] = array('label' => $evalbl['partially_passed'],
@@ -699,7 +715,7 @@ function setUpReqStatusCfg()
                                        'long_label' => $evalbl['partially_passed_nfc_reqs'],
                                        'css_class' => 'passed_text');
   
-  
+
   // add count for each status to show test progress
   foreach ($eva as $key => $status) 
   {
@@ -727,7 +743,8 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
   }
   
   // Test case linked to test plan
-  $itemsInTestPlan = $tplanMgr->get_linked_items_id($argsObj->tplan_id);
+  // $itemsInTestPlan = $tplanMgr->get_linked_items_id($argsObj->tplan_id);
+  $itemsInTestPlan = $tplanMgr->getLinkedItems($argsObj->tplan_id);
   foreach($reqSet as $id) 
   {
     // get the information for this requirement
@@ -781,27 +798,63 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
   if (count($tc_ids)) 
   {
     $filters = array('tcase_id' => $tc_ids);
-    if ($argsObj->platform != 0) 
+    $f2a = array('platform','build');
+    foreach($f2a as $fk)
     {
-      $filters['platform_id'] = $argsObj->platform;
-    }
-    $options = array('addExecInfo' => true,'accessKeyType' => 'tcase');
-    
+      if ($argsObj->$fk != 0) 
+      {
+        $filters[$fk . '_id'] = $argsObj->$fk;
+      }
 
-    // new dBug($filters);
-    if(isset($filters['platform_id']))
+    }  
+    
+    $filterOnly = array();
+    $filterOnly['platform_id'] = isset($filters['platform_id']) &&  !isset($filters['build_id']);
+    $filterOnly['build_id'] = !isset($filters['platform_id']) &&  isset($filters['build_id']);
+    $noFilter = !isset($filters['platform_id']) && !isset($filters['build_id']);
+    $allFilters = isset($filters['platform_id']) && isset($filters['build_id']);
+
+    // $options = array('addExecInfo' => true,'accessKeyType' => 'tcase');
+    $options = array('addExecInfo' => true,'accessKeyType' => 'tcase+platform');
+
+    if($noFilter || $filterOnly['platform_id'])  
+    {
+      $tcaseSet = $tplanMgr->getLTCVOnTestPlanPlatform($argsObj->tplan_id, $filters, $options);
+    }  
+    else if ($allFilters || $filterOnly['build_id'])
     {
       $tcaseSet = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $options);
     }  
-    else
-    {
-      $tcaseSet = $tplanMgr->getLTCVOnTestPlan($argsObj->tplan_id, $filters, $options);
-    }  
-
-
   }
 
   return array($total,$rspec,$tcaseSet);
+}
+
+/**
+ *
+ */
+function doNotRunAnalysis($tcaseQty,$execStatusCounter,$notRunCode)
+{
+  $evaluation = null;
+  $doIt = true;
+
+  if($tcaseQty == 1)
+  {
+    if( $execStatusCounter[$notRunCode] != 0 )
+    {
+      $evaluation = $notRunCode;
+      $doIt = false;
+    }  
+  }  
+  else
+  {
+    if(($execStatusCounter['total'] == $counters[$execStatusCounter]))
+    {
+      $evaluation = $notRunCode;
+      $doIt = false;
+    }  
+  }
+  return array($evaluation,$doIt);
 }
 
 

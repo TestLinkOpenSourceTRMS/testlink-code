@@ -740,6 +740,7 @@ class testplan extends tlObjectWithAttachments
     return $linked_items;
   }
 
+
   /**
    * @internal revisions
    * 
@@ -6720,7 +6721,8 @@ class testplan extends tlObjectWithAttachments
     $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
                                     'assigned_on_build' => null, 'testSuiteInfo' => false,
                                     'addPriority' => false,'addImportance' => false,
-                                    'ignorePlatformAndBuild' => false));
+                                    'ignorePlatformAndBuild' => false,
+                                    'ignoreBuild' => false, 'ignorePlatform' => false));
 
     $my['options'] = array_merge($mop['options'],$my['options']);
       
@@ -6759,6 +6761,19 @@ class testplan extends tlObjectWithAttachments
       $platformEXEC = " ";
 
     }  
+    else if ($my['options']['ignoreBuild']) 
+    {
+      $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
+                " MAX(EE.id) AS id " .
+                " FROM {$this->tables['executions']} EE " . 
+                " WHERE EE.testplan_id = " . $safe['tplan_id'] . 
+                " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id";
+
+      // TICKET 5182           
+      $platformLEX = " AND LEX.platform_id = TPTCV.platform_id "; 
+      $platformEXEC = " AND E.platform_id = TPTCV.platform_id ";
+
+    }
     else
     {
       $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
@@ -7192,7 +7207,7 @@ class testplan extends tlObjectWithAttachments
         $sql2run = $sql2do;
       }
 
-      // echo __FUNCTION__;
+      echo __FUNCTION__;
       // new dBug($sql2run);
       
       // added when trying to fix: 
@@ -7223,6 +7238,94 @@ class testplan extends tlObjectWithAttachments
       }  
     }
     return $tplan_tcases;
+  }
+
+
+  /**
+   *
+   */
+  public function getLTCVOnTestPlanPlatform($id,$filters=null,$options=null)
+  {
+    $debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
+    $my = array('filters' => array(),
+                'options' => array('allow_empty_build' => 1,'addPriority' => false,
+                                   'accessKeyType' => 'tcase+platform',
+                                   'addImportance' => false,
+                                   'includeNotRun' => true, 'orderBy' => null));
+    $amk = array('filters','options');
+    foreach($amk as $mk)
+    {
+      $my[$mk] = array_merge($my[$mk], (array)$$mk);
+    }
+        
+    $my['options']['ignoreBuild'] = true;    
+    if( !is_null($sql2do = $this->getLinkedTCVersionsSQL($id,$my['filters'],$my['options'])) )
+    {
+      // need to document better
+      if( is_array($sql2do) )
+      {        
+        $sql2run = $sql2do['exec'];
+        if($my['options']['includeNotRun'])
+        {
+          $sql2run .= ' UNION ' . $sql2do['not_run'];
+        } 
+      }
+      else
+      {
+        $sql2run = $sql2do;
+      }
+
+      echo __FUNCTION__;
+      // new dBug($sql2run);
+      
+      // added when trying to fix: 
+      // TICKET 5788: test case execution order not working on RIGHT PANE
+      // Anyway this did not help
+      if( !is_null($my['options']['orderBy']) )
+      {  
+        $sql2run = " SELECT * FROM ($sql2run) XX ORDER BY " . $my['options']['orderBy'];
+      }
+
+      switch($my['options']['accessKeyType'])
+      {
+        case 'tcase+platform':
+          $tplan_tcases = $this->db->fetchMapRowsIntoMap($sql2run,'tcase_id','platform_id'); // ,0,-1,'user_id');
+        break;
+        
+        case 'tcase+platform+stackOnUser':
+          $tplan_tcases = $this->db->fetchMapRowsIntoMapStackOnCol($sql2run,'tcase_id','platform_id','user_id');
+        break;
+
+        case 'index':
+          $tplan_tcases = $this->db->get_recordset($sql2run);
+        break;  
+        
+        default:
+          $tplan_tcases = $this->db->fetchRowsIntoMap($sql2run,'tcase_id');
+        break;  
+      }  
+    }
+    return $tplan_tcases;
+  }
+
+
+  
+  /**
+   *
+   */
+  function getLinkedItems($id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $sql = " /* $debugMsg */ ". 
+         " SELECT parent_id AS tcase_id,TPTCV.platform_id " .
+         " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+         " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
+         " WHERE TPTCV.testplan_id = " . intval($id);
+         
+    $items = $this->db->fetchMapRowsIntoMap($sql,'tcase_id','platform_id');
+           
+    return $items;
   }
 
 

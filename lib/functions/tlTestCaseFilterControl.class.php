@@ -34,7 +34,7 @@
  *    --> assign requirements
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.13
  */
 
 /*
@@ -1302,12 +1302,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->args->$key = intval($session_selection);  
     }  
    
-    // If this platform is NOT valid for Test plan, I will set the first one
-    // (is nay exists).
-    if( !isset($platformSet[$this->args->$key]) )
-    {
-      $this->args->$key = key($platformSet);
-    }  
 
     switch($this->mode)
     {
@@ -1324,6 +1318,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
         throw new Exception(__METHOD__ . "Mode:" . $this->mode . 'Do not know what to do', 1);
       break;
     }
+
+    // If this platform is NOT valid for Test plan, I will set the first one
+    // (is any exists).
+    if( !isset($this->settings[$key]['items']) )
+    {
+      $this->args->$key = key($this->settings[$key]['items']);
+    }  
     
     $this->settings[$key]['selected'] = $this->args->$key;
     if($this->args->$key <= 0)

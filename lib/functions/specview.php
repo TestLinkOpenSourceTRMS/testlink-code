@@ -231,7 +231,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
                     'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
 
     $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI);
-    $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items);
+    $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items,$options);
   }
 
   // Try to prune empty test suites, to reduce memory usage and to remove elements
@@ -1024,8 +1024,11 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
  *
  * @internal revisions:
  */
-function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_items)
+function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_items,$opt=null)
 {
+  $my['opt'] = array('useOptionalArrayFields' => false);
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+
   $optionalIntegerFields = array('feature_id','linked_by');
   $optionalArrayFields = array('user_id');
 
@@ -1125,17 +1128,12 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
               }
             }
 
-            // 20140818
             // this logic has been created to cope with multiple tester assignment
-            foreach ($optionalArrayFields as $fieldKey )
-            {
-              //echo $fieldKey . '<br>';
-              //new dBug($item);
-              //echo isset($item[$fieldKey]);
-
-              // We have issues when no user is assigned because  is
-              //if(isset($item[$fieldKey]))
-              //{  
+            if($my['opt']['useOptionalArrayFields'])
+            {  
+              foreach ($optionalArrayFields as $fieldKey )
+              {
+                // We have issues when no user is assigned because  is
                 if(is_array($item[$fieldKey]))
                 {
                   // this seems to be the path we follow when trying to work on test suite
@@ -1145,8 +1143,8 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
                 {  
                   // this seems to be the path we follow when trying to work on SINGLE test case
                   $outRef[$fieldKey][$item['platform_id']][]=intval($item[$fieldKey]);
-                }
-              //}  
+                }  
+              }
             }
           }
           break;
@@ -1340,7 +1338,7 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
                     'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
 
     $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI);
-    $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items);
+    $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items,$options);
   }
 
 

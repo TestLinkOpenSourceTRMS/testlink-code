@@ -151,7 +151,9 @@ switch($args->level)
                                   array('output' => 'assignment_info','build4assignment' => $args->build_id));
     
     $linked_items[$args->id] = $xx;
-    $opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
+    $opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id,
+                 'useOptionalArrayFields' => true);
+
     $filters = array('keywords' => $keywordsFilter->items, 'testcases' => $args->id);
     
     $my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
@@ -176,10 +178,10 @@ switch($args->level)
     $opt = array('assigned_on_build' => $args->build_id, 'addPriority' => true);
     $filters += $opt;
     $opt['accessKeyType'] = 'tcase+platform+stackOnUser';
+    $opt['useOptionalArrayFields'] = true;
 
     // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
     // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
-
     $out = getFilteredSpecViewFlat($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
   break;
 

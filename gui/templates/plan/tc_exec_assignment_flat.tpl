@@ -101,7 +101,6 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
     {include file="inc_update.tpl" result=$sqlResult refresh="yes"}
 	<div class="groupBtn">
 		<div>
-			{$labels.check_uncheck_all_tc}
 			{if $gui->usePlatforms}
 			<select id="select_platform">
 				{html_options options=$gui->bulk_platforms}
@@ -109,7 +108,7 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
 			{else}
 			<input type="hidden" id="select_platform" value="0">
 			{/if}
-			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment_cb', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.btn_do}</button>
+			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment_cb', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.check_uncheck_all_tc}</button>
 		</div>
     <br>
 

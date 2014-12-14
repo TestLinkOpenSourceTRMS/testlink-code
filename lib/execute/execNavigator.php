@@ -3,14 +3,18 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * link/unlink test cases to a test plan
+ * Test navigator for Test Plan for following features
+ *
+ * - Test case execution
+ *
  *
  * @filesource  execNavigator.php
- * @package   TestLink
- * @copyright   2007-2011, TestLink community
- * @link    http://www.teamst.org/index.php
+ * @package     TestLink
+ * @copyright   2007-2014, TestLink community
+ * @link        http://www.testlink.org
  *
  * @internal revisions
+ * since 1.9.3
  *
  **/
 
@@ -69,6 +73,7 @@ function initializeGui(&$control)
   
   $dummy = config_get('execution_filter_methods');
   $gui->lastest_exec_method = $dummy['status_code']['latest_execution'];
+  $gui->pageTitle = lang_get('href_execute_test');
 
   return $gui;
 }

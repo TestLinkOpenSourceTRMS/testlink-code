@@ -5,7 +5,7 @@
  * @filesource  execDashboard.php
  * 
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.13
  *
 **/
 require_once('../../config.inc.php');
@@ -218,6 +218,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
   { 
     $gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
   }
+
+  $gui->pageTitlePrefix = lang_get('execution_context') . ':';
   return $gui;
 }
 

@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource execNavigator.tpl
 
 @internal revisions
-@since 1.9.10
+@since 1.9.13
 *}
 
 {lang_get var="labels"
@@ -122,11 +122,7 @@ treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
 {$build_number=$control->settings.setting_build.selected}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1 class="title">{$labels.test_plan}{$tlCfg->gui_title_separator_1} {$control->args->testplan_name|escape}
-{$tlCfg->gui_separator_open}{$labels.build}{$tlCfg->gui_title_separator_1}
-{$control->settings.setting_build.items.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
-
-
+<h1 class="title">{$gui->pageTitle}</h1>
 {include file='inc_filter_panel.tpl'}
 {include file="inc_tree_control.tpl"}
 <div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>

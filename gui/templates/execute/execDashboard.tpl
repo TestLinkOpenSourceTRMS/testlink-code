@@ -23,6 +23,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <body>
 
 <h1 class="title">
+{$gui->pageTitlePrefix}  
 {$labels.testplan} {$gui->testplan_name|escape} {$title_sep_type3} {$labels.build} {$gui->build_name|escape}
 {if $gui->platform_info.name != ""}
   {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_info.name|escape}

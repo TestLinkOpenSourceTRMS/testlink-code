@@ -2491,6 +2491,7 @@ $TLS_invalid_tester = "Test Case %s - tester with login %s can not be found " . 
 $TLS_import_results_tc_not_found = "Test Case %s not found in test plan" . $TLS_imp_result_ko;
 $TLS_import_results_invalid_result = "Test Case %s has an invalid result %s " . $TLS_imp_result_ko;
 $TLS_import_results_ok = "Test Case %s - version %s - Tester: %s - Result: %s - Execution Timestamp: %s - Imported!";
+$TLS_import_results_filtered = "Test Case %s - version %s - Tester: %s - Result: %s - Execution Timestamp: %s - Ignored! : execution already present in TestLink";
 $TLS_import_results_tc_exists = "Test Case %s - version = %s - is in the test plan.";
 $TLS_invalid_cf = "Test Case %s - Custom field with name %s can not be imported - please check available custom fields definitions";
 $TLS_tcase_external_id_do_not_exists = "Test Case with external id=%s, can not be found " . $TLS_imp_result_ko;

@@ -284,6 +284,7 @@ $TLS_btn_generate_doc = "Generate document";
 $TLS_btn_import = "Import";
 $TLS_btn_monitor   = "Monitor";
 $TLS_btn_move = "Move";
+$TLS_btn_move_copy = "Move/Copy";
 $TLS_btn_no = "No";
 $TLS_btn_new_revision = "New revision";
 $TLS_btn_next = "Next";

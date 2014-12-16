@@ -3312,7 +3312,8 @@ class testcase extends tlObjectWithAttachments
     //               1 -> get last execution on EACH BUILD.
     //                    GROUP BY must be done BY tcversion_id,build_id
     //   
-    $localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0, 'getSteps' => 1, 'getStepsExecInfo' => 0);
+    $localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0, 'getSteps' => 1, 
+                        'getStepsExecInfo' => 0, 'output' => 'std');
     if(!is_null($options) && is_array($options))
     {
       $localOptions=array_merge($localOptions,$options);    
@@ -3414,31 +3415,51 @@ class testcase extends tlObjectWithAttachments
     }
   
     //
-    $sql= "/* $debugMsg */ SELECT e.id AS execution_id, " .
-          " COALESCE(e.status,'{$status_not_run}') AS status, " .
-          " e.execution_type AS execution_run_type,e.execution_duration, " .
-          " NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id," .
-          " tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary," .
-          " tcversions.preconditions," .
-          " tcversions.importance,tcversions.author_id," .
-          " tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active," .
-          " tcversions.is_open,tcversions.execution_type," .
-          " tcversions.estimated_exec_duration,tcversions.status AS wkfstatus," .
-          " users.login AS tester_login,users.first AS tester_first_name," .
-          " users.last AS tester_last_name, e.tester_id AS tester_id," .
-          " e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number," .
-          " builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open," .
-          " e.platform_id,p.name AS platform_name" .
-          " FROM {$this->tables['nodes_hierarchy']} NHA" .
-          " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id" .
-          " JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id" .
-          " {$executions_join}" .
-          " LEFT OUTER JOIN {$this->tables['builds']} builds ON builds.id = e.build_id" .
-          "                 AND builds.testplan_id = {$tplan_id}" .
-          " LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id " .
-          " LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id" .
-          " $where_clause_2" .
-          " ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
+    switch ($localOptions['output']) 
+    {
+      case 'timestamp':
+        $sql= "/* $debugMsg */ SELECT e.id AS execution_id, " .
+              " COALESCE(e.status,'{$status_not_run}') AS status, " .
+              " e.execution_ts, e.build_id,e.tcversion_number," .
+              " FROM {$this->tables['nodes_hierarchy']} NHA" .
+              " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id" .
+              " JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id" .
+              " {$executions_join}" .
+              " $where_clause_2" .
+              " ORDER BY NHB.parent_id ASC, NHA.parent_id ASC, execution_id DESC";
+      break;
+      
+      case 'std':
+      default:
+        $sql= "/* $debugMsg */ SELECT e.id AS execution_id, " .
+              " COALESCE(e.status,'{$status_not_run}') AS status, " .
+              " e.execution_type AS execution_run_type,e.execution_duration, " .
+              " NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id," .
+              " tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary," .
+              " tcversions.preconditions," .
+              " tcversions.importance,tcversions.author_id," .
+              " tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active," .
+              " tcversions.is_open,tcversions.execution_type," .
+              " tcversions.estimated_exec_duration,tcversions.status AS wkfstatus," .
+              " users.login AS tester_login,users.first AS tester_first_name," .
+              " users.last AS tester_last_name, e.tester_id AS tester_id," .
+              " e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number," .
+              " builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open," .
+              " e.platform_id,p.name AS platform_name" .
+              " FROM {$this->tables['nodes_hierarchy']} NHA" .
+              " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id" .
+              " JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id" .
+              " {$executions_join}" .
+              " LEFT OUTER JOIN {$this->tables['builds']} builds ON builds.id = e.build_id" .
+              "                 AND builds.testplan_id = {$tplan_id}" .
+              " LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id " .
+              " LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id" .
+              " $where_clause_2" .
+              " ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
+      break;
+    }
+
+
       
     $recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
     
@@ -3490,7 +3511,8 @@ class testcase extends tlObjectWithAttachments
 
     return($recordset ? $recordset : null);
   }
-  
+
+ 
   
   /*
     function: exportTestCaseDataToXML
@@ -5990,6 +6012,35 @@ class testcase extends tlObjectWithAttachments
         $out = (!is_null($dummy) ? $dummy[0]['id'] : null); 
       break;  
     
+      case 'timestamp':
+            $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .
+              " COALESCE(E.status,'{$status_not_run}') AS status," .
+              " NHTC.id AS testcase_id, TCV.id AS tcversion_id, E.execution_ts" .
+              " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+              " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTCV.id" .
+              " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+              " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+            
+              " LEFT OUTER JOIN ({$sqlLEX}) AS LEX " .
+              " ON  LEX.testplan_id = TPTCV.testplan_id " .
+              " AND LEX.platform_id = TPTCV.platform_id " .
+              " AND LEX.tcversion_id = TPTCV.tcversion_id " .
+              " AND LEX.build_id = {$safeContext['build_id']} " .
+          
+              " LEFT OUTER JOIN {$this->tables['executions']} E " . 
+              " ON E.id = LEX.id " .
+      
+              " WHERE TPTCV.testplan_id = {$safeContext['tplan_id']} " .
+              " AND TPTCV.platform_id = {$safeContext['platform_id']} " .
+              $addWhere .
+              " AND (E.build_id = {$safeContext['build_id']} OR E.build_id IS NULL)";
+            
+              // using database::CUMULATIVE is just a trick to return data structure
+              // that will be liked on execSetResults.php
+              $out = $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
+      break;  
+  
+
       case 'full':
       default:
           $sql= "/* $debugMsg */ SELECT E.id AS execution_id, " .

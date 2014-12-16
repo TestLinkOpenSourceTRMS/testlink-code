@@ -2531,6 +2531,8 @@ $TLS_invalid_tester = "Cas de test %s - testeur avec login %s inconnu " . $TLS_i
 $TLS_import_results_tc_not_found = "Cas de test %s inconnu dans la campagne de test " . $TLS_imp_result_ko;
 $TLS_import_results_invalid_result = "Cas de test %s avec résultat invalide %s " . $TLS_imp_result_ko;
 $TLS_import_results_ok = "Cas de test %s - version %s - Testeur %s - Résultat %s - Horodatage d’exécution %s - importé.";
+$TLS_import_results_filtered = "Cas de test %s - version %s - Horodatage d’exécution %s - ignoré :" .
+                               " cette exécution est déjà présente dans TestLink.";
 $TLS_import_results_tc_exists = "Cas de test %s - version %s - dans la campagne de test.";
 $TLS_tcase_external_id_do_not_exists = "Cas de test avec ID externe %s inconnu " . $TLS_imp_result_ko;
 $TLS_tcase_internal_id_do_not_exists = "Cas de test avec ID interne %s inconnu "  . $TLS_imp_result_ko;

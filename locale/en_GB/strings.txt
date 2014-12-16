@@ -448,6 +448,11 @@ $TLS_demo_login_message = 'This is a DEMO SITE, use it with respect.' .
 $TLS_demo_mode_suggested_user='Login as admin';
 $TLS_demo_mode_suggested_password='Use admin as password';
 
+
+$TLS_on_top = "Destination position top";
+$TLS_at_bottom = "Destination position bottom";
+
+
 // ----- JAVASCRIPT -----
 // Used on javascript logic to validate Custom Field values
 $TLS_warning_numeric_cf = "Custom Field %s accepts only numeric values";
@@ -2493,6 +2498,9 @@ $TLS_import_results_tc_not_found = "Test Case %s not found in test plan" . $TLS_
 $TLS_import_results_invalid_result = "Test Case %s has an invalid result %s " . $TLS_imp_result_ko;
 $TLS_import_results_ok = "Test Case %s - version %s - Tester: %s - Result: %s - Execution Timestamp: %s - Imported!";
 $TLS_import_results_tc_exists = "Test Case %s - version = %s - is in the test plan.";
+$TLS_import_results_skipped = "Test Case %s - version %s - Tester: %s - Result: %s - " .
+                              "Execution Timestamp: %s - NOT IMPORTED (same Test Case, version, Timestamp)";
+
 $TLS_invalid_cf = "Test Case %s - Custom field with name %s can not be imported - please check available custom fields definitions";
 $TLS_tcase_external_id_do_not_exists = "Test Case with external id=%s, can not be found " . $TLS_imp_result_ko;
 $TLS_tcase_internal_id_do_not_exists = "Test Case with internal id=%s, can not be found "  . $TLS_imp_result_ko;
@@ -2503,6 +2511,7 @@ $TLS_invalid_exec_type = "Execution type code [%s] is not valid" . $TLS_imp_resu
 $TLS_missing_exec_type = "Execution type code was not provided - using (%s => %s)";
 $TLS_internal_id = "Internal ID:%s";
 $TLS_external_id = "External ID:%s";
+
 
 
 // ----- lib/functions/results.inc.php -----
@@ -3864,4 +3873,11 @@ $TLS_demo_usage = "This is a DEMO SITE, use it with RESPECT. <br>" .
                   "Site will be re-installed at randmon intervals WITHOUT warning.<br>" .
                   "All data will be deleted at each install.<br>" .
                   "<b>If you find TestLink useful think about supporting our work<br>";
+
+
+// reqSpecMoveOrCopy.tpl
+$TLS_info_move_req_spec = "Move Req. Spec.";
+$TLS_info_copy_req_spec = "Copy Req. Spec.";
+$TLS_choose_dest_req_spec = "Choose dest. Req. Spec.";
+
 // ----- END ------------------------------------------------------------------

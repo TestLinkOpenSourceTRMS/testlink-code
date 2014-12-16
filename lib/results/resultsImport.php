@@ -12,7 +12,7 @@
  * @copyright   2010,2014 TestLink community 
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.13
  *
  **/
 
@@ -175,7 +175,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
   
   $l18n = array('import_results_tc_not_found' => '' ,'import_results_invalid_result' => '',
                 'tproject_id_not_found' => '', 'import_results_ok' => '',
-                'invalid_cf' => '');
+                'invalid_cf' => '', 'import_results_skipped' => '');
   foreach($l18n as $key => $value)
   {
     $l18n[$key] = lang_get($key);
@@ -413,75 +413,91 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
           $lexid = $tcase_mgr->getSystemWideLastestExecutionID($tcversion_id);
         }  
 
-        $sql = " /* $debugMsg */ " .
-               " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
-               " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type" .
-               ($addExecDuration ? ',execution_duration':'') . ")" .
-               " VALUES ({$context->buildID}, {$tester_id},'{$result_code}',{$context->tplanID}, ".
-               " {$tcversion_id},{$execution_ts},'{$notes}', {$version}, " . 
-               " {$context->platformID}, {$tcase_exec['execution_type']}" .
-               ($addExecDuration ? ",{$tcase_exec['execution_duration']}" : '') . ")";
-
-        $db->exec_query($sql); 
-        $execution_id = $db->insert_id($tables['executions']);
-
-        if($lexid > 0 && $options->copyIssues)
+        $idCard = array('id' => $tcase_id,'version_id' => $tcversion_id);
+        $exco = array('tplan_id' => $context->tplanID, 'platform_id' => $context->platformID, 
+                      'build_id' => $context->buildID);
+        $lexInfo = $tcase_mgr->getLatestExecSingleContext($idCard,$exco,array('output' => 'timestamp'));
+        $doInsert = true;
+        if(!is_null($lexInfo))
         {
-          copyIssues($db,$lexid,$execution_id);
-        } 
-
-
-        if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
-        { 
-          foreach($tcase_exec['bug_id'] as $bug_id)
-          {
-            $bug_id = trim($bug_id);
-            $sql = " /* $debugMsg */ " .            
-                   " SELECT execution_id AS check_qty FROM  {$tables['execution_bugs']} " .
-                   " WHERE bug_id = '{$bug_id}' AND execution_id={$execution_id} ";
-            $rs = $db->get_recordset($sql); 
-            if( is_null($rs) )
-            {
-              $sql = " /* $debugMsg */ " .
-                     " INSERT INTO {$tables['execution_bugs']} (bug_id,execution_id)" .
-                     " VALUES ('" . $db->prepare_string($bug_id) . "', {$execution_id} )";
-                    $db->exec_query($sql); 
-            }
-          }
-        }
-        
-        if( isset($tcase_exec['custom_fields']) && !is_null($tcase_exec['custom_fields']) && is_array($tcase_exec['custom_fields']) )
-        { 
-          // Get linked custom fields to this test project, for test case on execution
-          // $context->tprojectID
-          $cfieldMgr = new cfield_mgr($db);
-          $cfSetByName = $cfieldMgr->get_linked_cfields_at_execution($context->tprojectID,1,'testcase',null,null,null,'name');
-          foreach($tcase_exec['custom_fields'] as $cf)
-          {
-            $ak = null;
-            if( isset($cfSetByName[$cf['name']]) )
-            {
-              // write to db blind
-              $ak[$cfSetByName[$cf['name']]['id']]['cf_value'] = $cf['value']; 
-            }  
-            else
-            {
-              $message=sprintf($l18n['invalid_cf'],$tcase_identity,$cf['name']);
-            } 
-
-            if(!is_null($ak))
-            {
-              $cfieldMgr->execution_values_to_db($ak,$tcversion_id,$execution_id,$context->tplanID,null,'plain');
-            }  
-          }  
-        }
-
-        if( !is_null($message) )
-        {
-          $resultMap[]=array($message);
+          $tts = $lexInfo[$tcase_id][0]['execution_ts'];
+          $doInsert = ($lexInfo[$tcase_id][0]['execution_ts'] != trim($execution_ts,"'"));
+          $msgTxt = $l18n['import_results_skipped'];
         }  
 
-        $message=sprintf($l18n['import_results_ok'],$tcase_identity,$version,$tester_name,
+        if( $doInsert )
+        {
+          $sql = " /* $debugMsg */ " .
+                 " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
+                 " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type" .
+                 ($addExecDuration ? ',execution_duration':'') . ")" .
+                 " VALUES ({$context->buildID}, {$tester_id},'{$result_code}',{$context->tplanID}, ".
+                 " {$tcversion_id},{$execution_ts},'{$notes}', {$version}, " . 
+                 " {$context->platformID}, {$tcase_exec['execution_type']}" .
+                 ($addExecDuration ? ",{$tcase_exec['execution_duration']}" : '') . ")";
+
+          $db->exec_query($sql); 
+          $execution_id = $db->insert_id($tables['executions']);
+
+          if($lexid > 0 && $options->copyIssues)
+          {
+            copyIssues($db,$lexid,$execution_id);
+          } 
+          if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
+          { 
+            foreach($tcase_exec['bug_id'] as $bug_id)
+            {
+              $bug_id = trim($bug_id);
+              $sql = " /* $debugMsg */ " .            
+                     " SELECT execution_id AS check_qty FROM  {$tables['execution_bugs']} " .
+                     " WHERE bug_id = '{$bug_id}' AND execution_id={$execution_id} ";
+              $rs = $db->get_recordset($sql); 
+              if( is_null($rs) )
+              {
+                $sql = " /* $debugMsg */ " .
+                       " INSERT INTO {$tables['execution_bugs']} (bug_id,execution_id)" .
+                       " VALUES ('" . $db->prepare_string($bug_id) . "', {$execution_id} )";
+                      $db->exec_query($sql); 
+              }
+            }
+          }
+          if( isset($tcase_exec['custom_fields']) && !is_null($tcase_exec['custom_fields']) && is_array($tcase_exec['custom_fields']) )
+          { 
+            // Get linked custom fields to this test project, for test case on execution
+            // $context->tprojectID
+            $cfieldMgr = new cfield_mgr($db);
+            $cfSetByName = $cfieldMgr->get_linked_cfields_at_execution($context->tprojectID,1,'testcase',null,null,null,'name');
+            foreach($tcase_exec['custom_fields'] as $cf)
+            {
+              $ak = null;
+              if( isset($cfSetByName[$cf['name']]) )
+              {
+                // write to db blind
+                $ak[$cfSetByName[$cf['name']]['id']]['cf_value'] = $cf['value']; 
+              }  
+              else
+              {
+                $message=sprintf($l18n['invalid_cf'],$tcase_identity,$cf['name']);
+              } 
+
+              if(!is_null($ak))
+              {
+                $cfieldMgr->execution_values_to_db($ak,$tcversion_id,$execution_id,$context->tplanID,null,'plain');
+              }  
+            }  
+          }
+
+          if( !is_null($message) )
+          {
+            $resultMap[]=array($message);
+          }  
+
+          // $message=sprintf($l18n['import_results_ok'],$tcase_identity,$version,$tester_name,
+          //                 $resulstCfg['code_status'][$result_code],$execution_ts);
+          $msgTxt = $l18n['import_results_ok'];
+
+        }  
+        $message=sprintf($msgTxt,$tcase_identity,$version,$tester_name,
                          $resulstCfg['code_status'][$result_code],$execution_ts);
 
       }

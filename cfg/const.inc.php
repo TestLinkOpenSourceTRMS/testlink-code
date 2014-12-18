@@ -361,15 +361,8 @@ $att_model_m2->show_upload_column = true;
  * The code is used in DB to store results (not GUI).  
  * Do not do localisation here, i.e do not change "passed" by your national language.
  */ 
-$tlCfg->results['status_code'] = array (
-  'failed'        => 'f',
-  'blocked'       => 'b',
-  'passed'        => 'p',
-  'not_run'       => 'n',
-  'not_available' => 'x',
-  'unknown'       => 'u',
-  'all'           => 'a'
-); 
+$tlCfg->results['status_code'] = array('failed' => 'f','blocked' => 'b','passed' => 'p','not_run' => 'n',
+                                       'not_available' => 'x','unknown' => 'u','all' => 'a'); 
 
 
 /** 
@@ -386,12 +379,12 @@ $tlCfg->results['status_code'] = array (
  * </code>        
  */
 $tlCfg->results['status_label'] = array('not_run' => 'test_status_not_run',
-                    'passed' => 'test_status_passed',
-                    'failed' => 'test_status_failed',
-                    'blocked'=> 'test_status_blocked',
-                      'all' => 'test_status_all_status',
-                      'not_available' => 'test_status_not_available',
-                    'unknown' => 'test_status_unknown');
+                                        'passed' => 'test_status_passed',
+                                        'failed' => 'test_status_failed',
+                                        'blocked'=> 'test_status_blocked',
+                                        'all' => 'test_status_all_status',
+                                        'not_available' => 'test_status_not_available',
+                                        'unknown' => 'test_status_unknown');
 
 // Is RIGHT to have this configuration DIFFERENT from $tlCfg->results['status_label'],
 // because you must choose to not allow some of previous status be available
@@ -411,9 +404,9 @@ $tlCfg->results['status_label'] = array('not_run' => 'test_status_not_run',
 //          used to localize the strings.
 //
 $tlCfg->results['status_label_for_exec_ui'] = array('not_run' => 'test_status_not_run',
-                          'passed'  => 'test_status_passed',
-                          'failed'  => 'test_status_failed',
-                          'blocked' => 'test_status_blocked');
+                                                    'passed'  => 'test_status_passed',
+                                                    'failed'  => 'test_status_failed',
+                                                    'blocked' => 'test_status_blocked');
 
 /** 
  * Selected execution result by default. Values is key from $tlCfg->results['status_label']
@@ -426,7 +419,7 @@ $tlCfg->results['default_status'] = 'not_run';
  * Colours should be compiant with definition in CSS 
  **/
 $tlCfg->results['charts']['status_colour'] = array('not_run' => '000000','passed'  => '006400',
-                           'failed'  => 'B22222','blocked' => '00008B');
+                                                   'failed'  => 'B22222','blocked' => '00008B');
 
 /*
  * arrays for new filter types (BUGID 2455, BUGID 3026)

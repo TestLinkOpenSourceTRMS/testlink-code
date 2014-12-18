@@ -172,15 +172,26 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
   $debugMsg = ' FUNCTION: ' . __FUNCTION__;
   $tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs'));
   
-  
-  $l18n = array('import_results_tc_not_found' => '' ,'import_results_invalid_result' => '',
+  $tcaseCfg=config_get('testcase_cfg');
+
+  // --------------------------------------------------------------------------------------- 
+  $l10n = array('import_results_tc_not_found' => '' ,'import_results_invalid_result' => '',
                 'tproject_id_not_found' => '', 'import_results_ok' => '',
                 'invalid_cf' => '', 'import_results_skipped' => '');
-  foreach($l18n as $key => $value)
+
+  foreach($l10n as $key => $value)
   {
-    $l18n[$key] = lang_get($key);
+    $l10n[$key] = lang_get($key);
   }
-  
+
+  $resultsCfg=config_get('results');
+  foreach($resultsCfg['status_label'] as $ks => $lbl)
+  {
+    $key = $resultsCfg['status_code'][$ks];
+    $l10n[$key] = lang_get($lbl);
+  }
+  // ---------------------------------------------------------------------------------------
+
   // Get Column definitions to get size dinamically instead of create constants
   $columnDef = array();
   $adodbObj = $db->get_dbmgr_object();
@@ -198,8 +209,6 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
   $user->readFromDB($db);
   
   $tcase_mgr=new testcase($db);
-  $resulstCfg=config_get('results');
-  $tcaseCfg=config_get('testcase_cfg');
   
   $resultMap=array();
   $tplan_mgr=null;
@@ -246,7 +255,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
   $checks['status_ok'] = !is_null($dummy);
   if( !$checks['status_ok'] )
   {
-    $checks['msg'][] = sprintf($l18n['tproject_id_not_found'],$context->tprojectID);
+    $checks['msg'][] = sprintf($l10n['tproject_id_not_found'],$context->tprojectID);
   }
 
   if( !$checks['status_ok'] )
@@ -369,7 +378,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
     {
       $tcase_identity = $using_external_id ? $tcase_external_id : $tcase_id; 
       $result_code = strtolower($tcase_exec['result']);
-      $result_is_acceptable = isset($resulstCfg['code_status'][$result_code]) ? true : false;
+      $result_is_acceptable = isset($resultsCfg['code_status'][$result_code]) ? true : false;
       $notes = $tcase_exec['notes'];
       $message = null;
        
@@ -377,11 +386,11 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
       $info_on_case = $tplan_mgr->getLinkInfo($context->tplanID,$tcase_id,$context->platformID);
       if(is_null($info_on_case))
       {
-        $message=sprintf($l18n['import_results_tc_not_found'],$tcase_identity);
+        $message=sprintf($l10n['import_results_tc_not_found'],$tcase_identity);
       }
       else if (!$result_is_acceptable) 
       {
-        $message=sprintf($l18n['import_results_invalid_result'],$tcase_identity,$tcase_exec['result']);
+        $message=sprintf($l10n['import_results_invalid_result'],$tcase_identity,$tcase_exec['result']);
       } 
       else 
       {
@@ -422,7 +431,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
         {
           $tts = $lexInfo[$tcase_id][0]['execution_ts'];
           $doInsert = ($lexInfo[$tcase_id][0]['execution_ts'] != trim($execution_ts,"'"));
-          $msgTxt = $l18n['import_results_skipped'];
+          $msgTxt = $l10n['import_results_skipped'];
         }  
 
         if( $doInsert )
@@ -477,7 +486,7 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
               }  
               else
               {
-                $message=sprintf($l18n['invalid_cf'],$tcase_identity,$cf['name']);
+                $message=sprintf($l10n['invalid_cf'],$tcase_identity,$cf['name']);
               } 
 
               if(!is_null($ak))
@@ -491,15 +500,10 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
           {
             $resultMap[]=array($message);
           }  
-
-          // $message=sprintf($l18n['import_results_ok'],$tcase_identity,$version,$tester_name,
-          //                 $resulstCfg['code_status'][$result_code],$execution_ts);
-          $msgTxt = $l18n['import_results_ok'];
+          $msgTxt = $l10n['import_results_ok'];
 
         }  
-        $message=sprintf($msgTxt,$tcase_identity,$version,$tester_name,
-                         $resulstCfg['code_status'][$result_code],$execution_ts);
-
+        $message=sprintf($msgTxt,$tcase_identity,$version,$tester_name,$l10n[$result_code],$execution_ts);
       }
     }
   

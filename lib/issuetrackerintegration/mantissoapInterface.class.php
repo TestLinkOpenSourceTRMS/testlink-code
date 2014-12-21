@@ -7,7 +7,7 @@
  * @since 1.9.4
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  *
 **/
 class mantissoapInterface extends issueTrackerInterface
@@ -455,10 +455,16 @@ class mantissoapInterface extends issueTrackerInterface
       }  
 
 
+      // because issue id on TestLink is considered a string, 
+      // in order to make work ORDER BY, I will format it adding 0 to left as done on Mantis GUI
+      // example: 6845 => 0006845
       $ret['id'] = $client->mc_issue_add($safe->username,$safe->password,$issue);
+      $ret['id'] = sprintf('%06u',$ret['id']);
+
       $ret['status_ok'] = true;
-      $ret['msg'] = sprintf(lang_get('mantis_bug_created'), $safeSummary,$safe->project);
-  
+      $ret['msg'] = sprintf(lang_get('mantis_bug_created'), $ret['id'],$safeSummary,$safe->project);
+
+      new dBug($ret);
     }
     else
     {
@@ -541,5 +547,5 @@ class mantissoapInterface extends issueTrackerInterface
     return (property_exists($this->cfg, 'project') && property_exists($this->cfg, 'category'));
   }
 
-
+  
 }

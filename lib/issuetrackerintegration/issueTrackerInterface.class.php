@@ -21,7 +21,7 @@
  * =============================================================================
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.13
  *
  *
 **/
@@ -46,7 +46,9 @@ abstract class issueTrackerInterface
   
   var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
   var $guiCfg = array();
-  
+  var $summaryLengthLimit = 120;  // Mantis max is 128.  
+
+
   /**
    * Construct and connect to BTS.
    * Can be overloaded in specialized class
@@ -543,5 +545,15 @@ abstract class issueTrackerInterface
     return $str;
   }
 
- 
+  /**
+   * return the maximum length in chars of a issue summary
+   * used on TestLink GUI
+   *
+   * @return int 
+   */
+  function getBugSummaryMaxLength()
+  {
+    return $this->summaryLengthLimit;
+  }
+
 }

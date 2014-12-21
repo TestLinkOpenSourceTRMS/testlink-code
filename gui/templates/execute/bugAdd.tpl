@@ -2,7 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource bugAdd.tpl
 @internal revisions
-@since 1.9.12
+@since 1.9.13
 
 *}
 {include file="inc_head.tpl"}
@@ -11,7 +11,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {lang_get var='labels' 
           s='title_bug_add,link_bts_create_bug,bug_id,notes,hint_bug_notes,
-             btn_close,btn_add_bug,btn_save'} 
+             btn_close,btn_add_bug,btn_save,bug_summary'} 
 
 
 <body onunload="dialog_onUnload(bug_dialog)" onload="dialog_onLoad(bug_dialog)">
@@ -24,30 +24,44 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <div class="workBack">
   <form action="lib/execute/bugAdd.php" method="post">
     <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+    <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}">
     <input type="hidden" name="user_action" id="user_action" value="">
 
     {if $gui->user_action == 'link' || $gui->user_action == 'add_note'}
       <p>
-      <a style="font-weight:normal" target="_blank" href="{$gui->createIssueURL}">
-      {$labels.link_bts_create_bug}({$gui->issueTrackerVerboseID|escape})</a>
+      <a style="font-weight:normal" target="_blank" href="{$gui->issueTrackerCfg->createIssueURL}">
+      {$labels.link_bts_create_bug}({$gui->issueTrackerCfg->VerboseID|escape})</a>
       </p>  
-      <p class="label">{$gui->issueTrackerVerboseType|escape} {$labels.bug_id}
+      <p class="label">{$gui->issueTrackerCfg->VerboseType|escape} {$labels.bug_id}
         <input type="text" id="bug_id" name="bug_id" required value="{$gui->bug_id}"
-               size="{#BUGID_SIZE#}" maxlength="{$gui->bugIDMaxLength}" 
+               size="{#BUGID_SIZE#}" maxlength="{$gui->issueTrackerCfg->bugIDMaxLength}" 
                {if $gui->user_action == 'add_note'} readonly {/if} />
       </p>
 
-      {if $gui->tlCanAddIssueNote }
-      <p class="label"><img src="{$tlImages.info}" title="{$labels.hint_bug_notes}">{$labels.notes}</p>
-        <textarea id="bug_notes" name="bug_notes" rows="10" cols="60" >{$gui->bug_notes}</textarea>
-      {/if}    
     {/if}
 
+    {if $gui->user_action == 'create'}
+      <p class="label">{$labels.bug_summary}(*)
+        <input type="text" id="bug_summary" name="bug_summary" required value="{$gui->bug_summary}"
+               size="{#BUGSUMMARY_SIZE#}" maxlength="{$gui->issueTrackerCfg->bugSummaryMaxLength}" 
+      </p>
+    {/if}
+
+    {if $gui->issueTrackerCfg->tlCanAddIssueNote }
+      <p class="label"><img src="{$tlImages.info}" title="{$labels.hint_bug_notes}">{$labels.notes}</p>
+        <textarea id="bug_notes" name="bug_notes" 
+                  rows="{#BUGNOTES_ROWS#}" cols="{#BUGNOTES_COLS#}" >{$gui->bug_notes}</textarea>
+    {/if}    
 
     <div class="groupBtn">
      {if $gui->user_action == 'link'}
       <input type="submit" value="{$labels.btn_save}" 
-             onclick="user_action.value='link';return dialog_onSubmit(bug_dialog)" />
+             onclick="user_action.value='{$gui->user_action}';return dialog_onSubmit(bug_dialog)" />
+     {/if} 
+
+     {if $gui->user_action == 'create'}
+      <input type="submit" value="{$labels.btn_save}" 
+             onclick="user_action.value='doCreate';return dialog_onSubmit(bug_dialog)" />
      {/if} 
 
      {if $gui->user_action == 'add_note'}

@@ -301,6 +301,7 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
 {
   $tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs','builds'));
   $bug_list=array();
+  $cfg = config_get('exec_cfg');
 
   $debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
   if( is_object($bug_interface) )
@@ -312,7 +313,7 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
             " WHERE execution_id = " . intval($execution_id) .
             " AND   execution_id = executions.id " .
             " AND   executions.build_id = builds.id " .
-            " ORDER BY builds.name,bug_id";
+            " {$cfg->bugs_order_clause}";
 
     $map = $db->get_recordset($sql);
     if( !is_null($map) )
@@ -573,10 +574,18 @@ function addIssue($dbHandler,$argsObj,$itsObj)
                         $exec['build_name'],$exec['execution_ts']) . "\n" .
                         $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
   
+
+
+  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj); 
+  if(strlen(trim($argsObj->bug_summary)) != 0 )
+  {
+    $issueText->summary = $argsObj->bug_summary;
+  }
+
   $opt = new stdClass();
   $opt->reporter = $argsObj->user->login;
-  $rs = $itsObj->addIssue($auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),
-                          $signature,$opt);  
+  $rs = $itsObj->addIssue($issueText->summary,$argsObj->bug_notes,$opt); 
+  
   if($rs['status_ok'])
   {                   
     $msg = $rs['msg'];
@@ -592,6 +601,8 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   }
   return array($opOK,$msg);
 }
+
+
 
 
 /**
@@ -631,5 +642,52 @@ function copyIssues(&$dbHandler,$source,$dest)
 
     $dbHandler->exec_query($sql);         
   }
-
 } 
+
+
+
+/**
+ *
+ */
+function generateIssueText($dbHandler,$argsObj,$itsObj)
+{
+  $ret = new stdClass();
+
+  $opOK = false;             
+  $msg = '';
+  $resultsCfg = config_get('results');                      
+  $tcaseMgr = new testcase($dbHandler);
+  $exec = current($tcaseMgr->getExecution($argsObj->exec_id,$argsObj->tcversion_id));
+
+  $dummy = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->tcversion_id);
+  $ret->auditSign = $tcaseMgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
+
+
+  $dummy = $exec['status'];
+  if( isset($resultsCfg['code_status'][$exec['status']]) )
+  {
+    $dummy = $resultsCfg['code_status'][$exec['status']];  
+  }                         
+  $exec['statusVerbose'] = sprintf(lang_get('issue_exec_result'),$dummy);
+  
+  unset($tcaseMgr);
+  $ret->description = sprintf(lang_get('issue_generated_description'),
+                            $argsObj->exec_id,$exec['tester_login'],$exec['testplan_name']);
+  
+  if($exec['platform_id'] > 0)
+  {
+    $ret->description .= sprintf(lang_get('issue_platform') ,$exec['platform_name']);
+  }
+  $ret->description .= sprintf(lang_get('issue_build') . lang_get('execution_ts_iso'),
+                             $exec['build_name'],$exec['execution_ts']) . "\n" .
+                             $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
+  
+
+  // return $auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']);
+  $ret->timestamp = sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']);
+  $ret->summary = $ret->auditSign . ' - ' . $ret->timestamp;
+  return $ret;
+
+}
+
+

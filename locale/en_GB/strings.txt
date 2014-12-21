@@ -680,6 +680,7 @@ $TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
 // ----- gui/templates/bug_add.tpl -----
 $TLS_btn_add_bug = "Add bug";
 $TLS_bug_id = "Bug id";
+$TLS_bug_summary = "Issue Summary";
 $TLS_button_enter_bug = "Add bug to TestLink (bug must exists on BTS)";
 $TLS_link_bts_create_bug = "Access to Bug Tracking System ";
 $TLS_title_bug_add = "Add link to bug report";
@@ -3802,7 +3803,7 @@ $TLS_jira_bug_created = "JIRA Issue Created (summary:%s) on project with key:%s"
 $TLS_redmine_bug_created = "REDMINE Issue Created (summary:%s) on project with identifier:%s";
 $TLS_fogbugz_bug_created = "FOGBUGZ Issue Created (summary:%s) on project:%s";
 $TLS_youtrack_bug_created = "YOUTRACK Issue Created (summary:%s) on project with id:%s";
-$TLS_mantis_bug_created = "MANTIS Issue Created (summary:%s) on project with key:%s";
+$TLS_mantis_bug_created = "MANTIS Issue %s - Created (summary:%s) on project with key:%s";
 $TLS_bugzilla_bug_created = "BUGZILLA Issue Created (summary:%s) on product:%s";
 $TLS_bts_check_ok = "Connection is OK";
 $TLS_bts_check_ko = "Connection is KO (detailed messages on TestLink Event Log), check configuration";

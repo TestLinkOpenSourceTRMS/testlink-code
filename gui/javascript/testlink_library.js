@@ -24,7 +24,7 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // @internal revisions
-// @since 1.9.11
+// @since 1.9.13
 
 
 /*
@@ -554,7 +554,20 @@ function open_bug_add_window(tproject_id,tcversion_id,exec_id,user_action)
 {
   link2launch = "lib/execute/bugAdd.php?user_action=" + user_action + "&tcversion_id="+tcversion_id +
                 "&tproject_id=" + tproject_id + "&exec_id="+exec_id;
-  window.open(fRoot+link2launch,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
+
+  switch(user_action)  
+  {
+    case 'create':
+      wh = "width=700,height=400";
+    break;
+
+    default:
+      wh = "width=510,height=400";
+    break;
+  }            
+  
+  // window.open(fRoot+link2launch,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
+  window.open(fRoot+link2launch,"bug_add",wh+",resizable=yes,dependent=yes");
 }
 
 /**

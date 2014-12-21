@@ -22,7 +22,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  *
  *
  **/
@@ -839,6 +839,10 @@ $tlCfg->exec_cfg->copyLatestExecIssues->enabled = FALSE;
 // value to set as default
 $tlCfg->exec_cfg->copyLatestExecIssues->default = FALSE;
 
+// you can choose only between this columns
+// 'execution_id,bug_id,builds.name'
+// (see exec.inc.php, function get_bugs_for_exec())
+$tlCfg->exec_cfg->bugs_order_clause = ' ORDER BY builds.name,bug_id ';
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */

@@ -459,12 +459,10 @@ class mantissoapInterface extends issueTrackerInterface
       // in order to make work ORDER BY, I will format it adding 0 to left as done on Mantis GUI
       // example: 6845 => 0006845
       $ret['id'] = $client->mc_issue_add($safe->username,$safe->password,$issue);
-      $ret['id'] = sprintf('%06u',$ret['id']);
+      $ret['id'] = sprintf('%07u',$ret['id']);
 
       $ret['status_ok'] = true;
       $ret['msg'] = sprintf(lang_get('mantis_bug_created'), $ret['id'],$safeSummary,$safe->project);
-
-      new dBug($ret);
     }
     else
     {

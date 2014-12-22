@@ -1634,7 +1634,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   $docHeadingLevel = ($docHeadingLevel > 6) ? 6 : $docHeadingLevel;
   $docHeadingLevel = ($docHeadingLevel < 1) ? 1 : $docHeadingLevel;
   
-  $code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering . $labels['test_suite'] .
+  $code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering . $l10n['test_suite'] .
            $title_separator . $name . "</h{$docHeadingLevel}>\n";
 
 

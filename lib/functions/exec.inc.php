@@ -555,36 +555,22 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   $exec = current($tcaseMgr->getExecution($argsObj->exec_id,$argsObj->tcversion_id));
 
 
-  $dummy = $exec['status'];
-  if( isset($resultsCfg['code_status'][$exec['status']]) )
-  {
-    $dummy = $resultsCfg['code_status'][$exec['status']];  
-  }                         
-  $exec['statusVerbose'] = sprintf(lang_get('issue_exec_result'),$dummy);
-  
-  unset($tcaseMgr);
-  $signature = sprintf(lang_get('issue_generated_description'),
-                       $argsObj->exec_id,$exec['tester_login'],$exec['testplan_name']);
-  
-  if($exec['platform_id'] > 0)
-  {
-    $signature .= sprintf(lang_get('issue_platform') ,$exec['platform_name']);
-  }
-  $signature .= sprintf(lang_get('issue_build') . lang_get('execution_ts_iso'),
-                        $exec['build_name'],$exec['execution_ts']) . "\n" .
-                        $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
-  
-
-
-  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj); 
-  if(strlen(trim($argsObj->bug_summary)) != 0 )
+  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj);  
+  if(property_exists($argsObj,'bug_summary') && strlen(trim($argsObj->bug_summary)) != 0 )
   {
     $issueText->summary = $argsObj->bug_summary;
   }
 
+  if(property_exists($argsObj, 'bug_notes'))
+  {  
+    $issueText->description = $argsObj->bug_notes;
+  }
+
+
+
   $opt = new stdClass();
   $opt->reporter = $argsObj->user->login;
-  $rs = $itsObj->addIssue($issueText->summary,$argsObj->bug_notes,$opt); 
+  $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
   
   if($rs['status_ok'])
   {                   
@@ -682,10 +668,20 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
                              $exec['build_name'],$exec['execution_ts']) . "\n" .
                              $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
   
+  if(property_exists($argsObj, 'bug_notes'))
+  {  
+    $ret->description = $argsObj->bug_notes;
+  }
 
   // return $auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']);
   $ret->timestamp = sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']);
   $ret->summary = $ret->auditSign . ' - ' . $ret->timestamp;
+  if(property_exists($argsObj,'bug_summary') && strlen(trim($argsObj->bug_summary)) != 0 )
+  {
+    $ret->summary = $argsObj->bug_summary;
+  }
+
+
   return $ret;
 
 }

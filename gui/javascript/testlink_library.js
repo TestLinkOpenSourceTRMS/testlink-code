@@ -1731,3 +1731,36 @@ function validateStepsReorder(cssClassName)
   }
   return status;
 }
+
+
+/**
+ * toogle Required attribute on field that can be Show/Hide
+ *
+ */
+function toogleRequiredOnShowHide(oid,display_type)
+{
+  var obj = document.getElementById(oid);
+  if (!obj)
+  {
+    return;
+  }                  
+
+  if(obj.style.display == 'none')
+  {
+    if(display_type != undefined)
+    {
+      obj.style.display = display_type;
+    } 
+    else
+    {
+      // SHOW, then field has to be Required
+      obj.style.display = '';
+      obj.setAttribute('required',reqAttrValue);
+    } 
+  }
+  else
+  {
+    obj.style.display = 'none';
+    obj.removeAttribute('required'); 
+  }
+}

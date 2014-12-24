@@ -55,7 +55,7 @@ if($info['issue_tracker_enabled'])
 {
   $it_mgr = new tlIssueTracker($db);
   $its = $it_mgr->getInterfaceObject($args->tproject_id);
-  $issueT = $it_mgr->getLinkedTo($args->tproject_id);
+  $issueTrackerCfg = $it_mgr->getLinkedTo($args->tproject_id);
   unset($it_mgr);
 }
 
@@ -73,8 +73,11 @@ if($info['issue_tracker_enabled'])
 {
   if(!is_null($its) && $its->isConnected())
   {
+    $gui->issueTrackerCfg = new stdClass();
+    $gui->issueTrackerCfg->bugSummaryMaxLength = $its->getBugSummaryMaxLength();
     $gui->issueTrackerIntegrationOn = true;
-    $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueT['issuetracker_name']})";  
+    $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueTrackerCfg['issuetracker_name']})"; 
+
     $gui->createIssueURL = $its->getEnterBugURL();
     $gui->tlCanCreateIssue = method_exists($its,'addIssue') && $its->canCreateViaAPI();
     $gui->tlCanAddIssueNote = method_exists($its,'addNote');
@@ -116,6 +119,12 @@ if(!is_null($linked_tcversions))
     $tcase = null;
     list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
                                                     $tree_mgr,$tcase_mgr,$attachmentRepository);
+
+    $dummy = $tree_mgr->get_node_hierarchy_info($args->version_id);
+    $gui->bug_summary = $tcase_mgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
+    $ts = sprintf(lang_get('execution_ts_iso'), date('Y-m-dTH:i',time()));
+    $gui->bug_summary .= (' ' . $ts);
+     
   }
   else
   {
@@ -501,6 +510,7 @@ function init_args(&$dbHandler,$cfgObj)
     $args->tproject_id = $dm['parent_id']; 
   }
 
+  $args->bug_summary = isset($_POST['bug_summary']) ? $_POST['bug_summary'] : null;
   return $args;
 }
 

@@ -253,6 +253,12 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         $execContext->exec_id = $execution_id;
         $execContext->tcversion_id = $tcversion_id;
         $execContext->user = $exec_signature->user;
+
+        if(property_exists($exec_signature,'bug_summary'))
+        {
+          $execContext->bug_summary = $exec_signature->bug_summary;
+        }  
+       
         addIssue($db,$execContext,$issueTracker);
       }  
     }
@@ -673,7 +679,6 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
     $ret->description = $argsObj->bug_notes;
   }
 
-  // return $auditSign . ' - ' . sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']);
   $ret->timestamp = sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']);
   $ret->summary = $ret->auditSign . ' - ' . $ret->timestamp;
   if(property_exists($argsObj,'bug_summary') && strlen(trim($argsObj->bug_summary)) != 0 )

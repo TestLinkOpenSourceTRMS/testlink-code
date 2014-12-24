@@ -14,6 +14,14 @@ Rev:
       {/if}
 
   		<table class="invisible">
+      <tr style="display:none;" id="issue_summary">
+        <td colspan="2">
+          <span class="label">{$args_labels.bug_summary}</span>
+           <input type="text" id="bug_summary" name="bug_summary" value="{$gui->bug_summary}"
+                  size="{#BUGSUMMARY_SIZE#}" maxlength="{$gui->issueTrackerCfg->bugSummaryMaxLength}" 
+                  style="display:none;" required>
+        </td>
+      </tr>
   		<tr>
   			<td style="text-align: center;">
   				<div class="title">{$args_labels.test_exec_notes}</div>
@@ -21,7 +29,6 @@ Rev:
   			</td>
   			<td valign="top" style="width: 30%;">			
     				{* status of test *}
-            
       			<div class="title" style="text-align: center;">
             {if $args_save_type == 'bulk'} {$args_labels.test_exec_result} {else} &nbsp; {/if}
             </div>
@@ -64,7 +71,8 @@ Rev:
                 {if $gui->tlCanCreateIssue}
                   {if $addBR}<br>{/if} 
                   {$args_labels.bug_create_into_bts}&nbsp;
-                  <input type="checkbox" name="createIssue"  id="createIssue">
+                  <input type="checkbox" name="createIssue"  id="createIssue" 
+                         onclick="javascript:toogleShowHide('issue_summary');javascript:toogleRequiredOnShowHide('bug_summary');">
                 {/if}
 
                 {if $tlCfg->exec_cfg->copyLatestExecIssues->enabled}

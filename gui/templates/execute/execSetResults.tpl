@@ -35,7 +35,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
 	deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
-	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,
+	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,bug_summary,
   bug_link_tl_to_bts,bug_create_into_bts,execution_duration,execution_duration_short,
   add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback'}
 

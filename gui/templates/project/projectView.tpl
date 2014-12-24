@@ -40,6 +40,18 @@ some variables smarty and javascript are created on the inc_*.tpl files.
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'{$deleteAction}';
 </script>
+
+{if $tlCfg->gui->projectView->pagination->enabled}
+<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+<script type="text/javascript" language="javascript" class="init">
+$(document).ready(function() {
+  $('#item_view').DataTable();
+} );
+</script>
+{/if}
+
 </head>
 
 <body {$body_onload}>

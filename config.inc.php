@@ -435,6 +435,14 @@ $tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
 $tlCfg->login_info = ''; // Empty by default
 
 
+
+/** 
+ * controls if pagination (via Javascript) will be enabled
+ */
+$tlCfg->gui->projectView = new stdClass();
+$tlCfg->gui->projectView->pagination = new stdClass();
+$tlCfg->gui->projectView->pagination->enabled = true;
+
 /** 
  * controls if operation area (buttons) starts open ('' or 'inline') or closed ('none') on:
  * - test suite management

@@ -45,9 +45,10 @@ var del_action=fRoot+'{$deleteAction}';
 <link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
 <script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
 <script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+
 <script type="text/javascript" language="javascript" class="init">
 $(document).ready(function() {
-  $('#item_view').DataTable();
+  $('#item_view').DataTable({ "lengthMenu": [ [25, 50, 75, -1], [25, 50, 75, "All"] ] });
 } );
 </script>
 {/if}

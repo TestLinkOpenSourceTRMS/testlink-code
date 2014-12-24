@@ -11,7 +11,6 @@ Testlink: smarty template -
 {include file="inc_ext_js.tpl" css_only=1}
 
 <script language="JavaScript" type="text/javascript">
-{literal}
 /*
 Set value for a group of combo (have same prefix).
 MUST TO BE PLACED IN COMMON LIBRARY
@@ -34,10 +33,8 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
 		}	
 	}
 }
-{/literal}
 </script>
 
-{literal}
 <script type="text/javascript">
 function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayValue)
 {
@@ -68,16 +65,26 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 
 }
 </script>
-{/literal}
 
+{if $tlCfg->gui->usersAssign->pagination->enabled}
+<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript" language="javascript" class="init">
+$(document).ready(function() {
+  $('#item_view').DataTable({ "lengthMenu": [ [25, 50, 75, -1], [25, 50, 75, "All"] ] });
+} );
+</script>
+{/if}
 
 
 </head>
 <body>
 
 <h1 class="title">{$labels.title_user_mgmt} - {$labels.title_assign_roles}</h1>
-{assign var="umgmt" value="lib/usermanagement"}
-{assign var="my_feature_name" value=''}
+{$umgmt="lib/usermanagement"}
+{$my_feature_name=''}
 
 {***** TABS *****}
 {assign var="highlight" value=$gui->highlight}
@@ -147,7 +154,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
     </div>
     
     <div id="usersRoleTable">
-	    <table class="common sortable" width="75%">
+	    <table class="common sortable" width="100%" id="item_view">
     	<tr>
     		<th>{$tlImages.sort_hint}{$labels.User}</th>
     		{assign var="featureVerbose" value=$gui->featureType}

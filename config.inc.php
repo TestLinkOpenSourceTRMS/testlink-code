@@ -443,6 +443,11 @@ $tlCfg->gui->projectView = new stdClass();
 $tlCfg->gui->projectView->pagination = new stdClass();
 $tlCfg->gui->projectView->pagination->enabled = true;
 
+$tlCfg->gui->usersAssign = new stdClass();
+$tlCfg->gui->usersAssign->pagination = new stdClass();
+$tlCfg->gui->usersAssign->pagination->enabled = true;
+
+
 /** 
  * controls if operation area (buttons) starts open ('' or 'inline') or closed ('none') on:
  * - test suite management

@@ -121,6 +121,7 @@ switch($args->doAction)
   case "setStatus":
   case "setExecutionType":
   case "setEstimatedExecDuration":
+  case "removeKeyword":
     $op = $commandMgr->$pfn($args,$_REQUEST);
     $doRender = true;
   break;
@@ -348,7 +349,7 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 function init_args(&$cfgObj,$otName,&$tcaseMgr)
 {
   $tc_importance_default = config_get('testcase_importance_default');
-  
+
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -489,6 +490,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
 
   $args->destination_tcase_id = $args->dummy['id'];
 
+
+  $args->keyword_id = isset($_GET['keyword_id']) ? intval($_GET['keyword_id']) : 0;
+
   // need to check if user has access rights to test project is project is private.
   $args->user = $_SESSION['currentUser'];
 
@@ -595,9 +599,9 @@ function getCfg()
 */
 function getGrants(&$dbHandler)
 {
-    $grants=new stdClass();
-    $grants->requirement_mgmt=has_rights($dbHandler,"mgt_modify_req"); 
-    return $grants;
+  $grants=new stdClass();
+  $grants->requirement_mgmt=has_rights($dbHandler,"mgt_modify_req"); 
+  return $grants;
 }
 
 
@@ -689,7 +693,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
                              'doInsertStep' => 'doUpdateStep',
                              'setImportance' => '','setStatus' => '',
                              'setExecutionType' => '', "setEstimatedExecDuration" => '',
-                             'doAddRelation' => '', 'doDeleteRelation' => '');
+                             'doAddRelation' => '', 'doDeleteRelation' => '',
+                             'removeKeyword' => '');
 
   $key2work = 'initWebEditorFromTemplate';
   $initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
@@ -776,6 +781,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
         case "doAddRelation":
         case "doDeleteRelation":
         case "doUpdateStepAndInsert":
+        case "removeKeyword":        
             $renderType = 'template';
             
             // Document this !!!!

@@ -3881,4 +3881,9 @@ $TLS_info_move_req_spec = "Move Req. Spec.";
 $TLS_info_copy_req_spec = "Copy Req. Spec.";
 $TLS_choose_dest_req_spec = "Choose dest. Req. Spec.";
 
+
+$TLS_remove_kw_msgbox_title = "Remove keyword";
+$TLS_remove_kw_msgbox_msg = "Really remove keyword %i?";
+$TLS_img_title_remove_keyword = "Click to remove this keyword.";
+
 // ----- END ------------------------------------------------------------------

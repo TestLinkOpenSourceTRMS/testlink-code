@@ -342,22 +342,9 @@ function launchInsertStep(step_id)
 
   <p>
   <div {$addInfoDivStyle}>
-    <table cellpadding="0" cellspacing="0" style="font-size:100%;">
-          <tr>
-             <td width="35%" style="vertical-align:top;"><a href={$gsmarty_href_keywordsView}>{$tcView_viewer_labels.keywords}</a>: &nbsp;
-          </td>
-           <td style="vertical-align:top;">
-               {foreach item=keyword_item from=$args_keywords_map}
-                {$keyword_item.keyword|escape}
-                <br />
-                {foreachelse}
-                  {$tcView_viewer_labels.none}
-            {/foreach}
-          </td>
-        </tr>
-        </table>
+   {include file="testcases/keywords.inc.tpl" args_edit_enabled=$edit_enabled} 
   </div>
-
+  
   {if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->requirement_mgmt) }
   <div {$addInfoDivStyle}>
     <table cellpadding="0" cellspacing="0" style="font-size:100%;">

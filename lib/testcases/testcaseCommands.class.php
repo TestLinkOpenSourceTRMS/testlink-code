@@ -1182,5 +1182,28 @@ class testcaseCommands
   }
 
 
+ /**
+   * 
+   *
+   */
+  function removeKeyword(&$argsObj,&$request)
+  {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    if($argsObj->keyword_id > 0)
+    {
+      $this->tcaseMgr->deleteKeywords($guiObj->tcase_id,array($argsObj->keyword_id),testcase::AUDIT_ON);
+    } 
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" .
+                        "&caller=removeKeyword";
+    return $guiObj;
+  }
+
+
 
 } // end class  

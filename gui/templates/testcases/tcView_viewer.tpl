@@ -381,34 +381,5 @@ function launchInsertStep(step_id)
 {if $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}
   {* Test Case version Test Plan Assignment *}
   <br />
-  <div {$addInfoDivStyle}>
-    <span class="bold"> {$tcView_viewer_labels.testplan_usage} </span>
-    <table class="simple sortable">
-    <th>{$tcView_viewer_labels.version}</th>
-    <th>{$tlImages.sort_hint}{$tcView_viewer_labels.test_plan}</th>
-    {if $gui->platforms != null}
-      <th>{$tlImages.sort_hint}{$tcView_viewer_labels.platform}</th>
-    {/if}
-    {foreach from=$args_linked_versions item=link2tplan_platform}
-      {foreach from=$link2tplan_platform item=link2platform key=tplan_id}
-        {foreach from=$link2platform item=version_info}
-          <tr>
-          <td style="width:10%;text-align:center;">{$version_info.version}</td>
-          <td>{$version_info.tplan_name|escape}
-              <a href="{$execFeatureAction}" target="_parent" ><img class="clickable" src="{$tlImages.execute}" 
-                             title="{$tcView_viewer_labels.goto_execute}" /></a>
-          </td>
-          {if $gui->platforms != null}
-            <td>
-            {if $version_info.platform_id > 0}
-              {$gui->platforms[$version_info.platform_id]|escape}
-            {/if}          
-            </td>
-          {/if}
-          </tr>
-        {/foreach}
-      {/foreach}
-    {/foreach}
-    </table>
-  </div>
+  {include file="testcases/quickexec.inc.tpl" args_edit_enabled=$edit_enabled} 
 {/if}

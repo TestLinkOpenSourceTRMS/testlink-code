@@ -9,9 +9,9 @@ Purpose:
 @since 1.9.10
 *}
 {lang_get var='labels'
-          s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
+          s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,btn_save,
              check_uncheck_all_checkboxes,warning,execution_history,design,copy_requirement_assignments,
-             choose_target,copy_keywords,btn_move,btn_cp,summary,btn_copy_ghost_zone'}
+             choose_target,copy_keywords,btn_move,btn_cp,summary,btn_copy_ghost_zone,status,importance'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
@@ -56,7 +56,7 @@ function check_action_precondition(container_id,action,msg)
 <h1 class="title">{$level_translated}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
 
 <div class="workBack">
-{if !$testCasesTableView}    
+{if !$gui->testCasesTableView}    
   <h1 class="title">{$labels.title_move_cp_testcases}</h1>
 {/if}
 
@@ -68,7 +68,7 @@ function check_action_precondition(container_id,action,msg)
 
     <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
 
-    {if !$testCasesTableView}    
+    {if !$gui->testCasesTableView}    
       {if $user_feedback != ''}
         <div class="user_feedback">{$user_feedback}</div>
         <br />
@@ -95,24 +95,22 @@ function check_action_precondition(container_id,action,msg)
 		<div id="move_copy_checkboxes">
         <table class="simple">
           <tr>
-          {if !$testCasesTableView}  
           <th class="clickable_icon">
 			         <img src="{$tlImages.toggle_all}"
 			              onclick='cs_all_checkbox_in_div("move_copy_checkboxes","tcaseSet_","add_value_memory");'
                     title="{$labels.check_uncheck_all_checkboxes}" />
 			    </th>
-          {/if}
           <th>{$labels.th_test_case}</th>
           <th>{$labels.summary}</th>
+          <th>{$labels.status}</th>
+          <th>{$labels.importance}</th>
           </tr>
           
         {foreach from=$testcases key=rowid item=tcinfo}
             <tr>
-              {if !$testCasesTableView}  
                 <td>
-                    <input type="checkbox" name="tcaseSet[]" id="tcaseSet_{$tcinfo.tcid}" value="{$tcinfo.tcid}" />
+                    <input type="checkbox" name="tcaseSet[{$tcinfo.tcversion_id}]" id="tcaseSet_{$tcinfo.tcid}" value="{$tcinfo.tcid}" />
                 </td>
-              {/if}
                 <td>
                     <img class="clickable" src="{$tlImages.history_small}"
                          onclick="javascript:openExecHistoryWindow({$tcinfo.tcid});"
@@ -125,13 +123,40 @@ function check_action_precondition(container_id,action,msg)
                 <td style="width:60%;">
                   {$tcinfo.summary}
                 </td>
+                <td>{$gui->domainTCStatus[$tcinfo.status]}</td>
+                <td>{$gui->domainTCImportance[$tcinfo.importance]}</td>
             </tr>
         {/foreach}
         </table>
         <br />
     </div>
 
-    {if !$testCasesTableView}    
+    {if $gui->testCasesTableView}
+    {lang_get s='zero_testcase_selected' var="check_msg"}    
+    <div>
+
+      <span class="labelHolder">{$labels.status}</span>
+      <span>
+      <select name="tc_status" id="tc_status" 
+          onchange="content_modified = true">
+      {html_options options=$gui->domainTCStatus}
+      </select>
+      </span>
+
+      {if $session['testprojectOptions']->testPriorityEnabled}
+        <span class="labelHolder" style="margin-left:20px;">{$labels.importance}</span>
+        <span>
+        <select name="importance" onchange="content_modified = true">
+          {html_options options=$gui->domainTCImportance}
+        </select>
+        </span>
+      {/if}
+      <p>
+      <input type="submit" name="doBulkSet" id="doBulkSet" value="{$labels.btn_save}"
+             onclick="return check_action_precondition('move_copy_checkboxes','doBulkSet','{$check_msg}');"  />      
+    </div>
+
+    {else}
 		<div>
 			<input type="submit" name="do_move_tcase_set" value="{$labels.btn_move}"
              onclick="return check_action_precondition('move_copy_checkboxes','move','{$check_msg}');"  />

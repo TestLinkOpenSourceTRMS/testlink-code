@@ -49,7 +49,8 @@ $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'do_copy_tcase_set' => 'containerMoveTC.tpl',
                 'do_copy_tcase_set_ghost' => 'containerMoveTC.tpl',
                 'delete_testcases' =>  'containerDeleteTC.tpl',
-                'do_delete_testcases' =>  'containerDeleteTC.tpl');
+                'do_delete_testcases' =>  'containerDeleteTC.tpl',
+                'doBulkSet' => 'containerMoveTC.tpl',);
 
 $a_actions = array('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
                    'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
@@ -57,7 +58,8 @@ $a_actions = array('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite'
                    'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,'testcases_table_view' => 0,
                    'do_copy_tcase_set' => 0, 'do_copy_tcase_set_ghost' => 0, 'del_testsuites_bulk' => 0,
                    'delete_testcases' => 0,'do_delete_testcases' => 0, 'reorder_testcases' => 0,
-                   'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0);
+                   'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0,
+                   'doBulkSet' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
@@ -320,6 +322,14 @@ switch($action)
     $tproject_mgr->show($smarty,$gui,$template_dir,$args->tprojectID,null,null);
   break;
 
+  case 'doBulkSet':
+    $args->refreshTree = true;
+    doBulkSet($db,$args,$args->tcaseSet,$tcase_mgr);        
+    moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args);
+  break;
+
+
+
   default:
     trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
   break;
@@ -445,6 +455,10 @@ function init_args(&$dbHandler,$optionTransferCfg)
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
   $args->file_id = isset($_REQUEST['file_id']) ? intval($_REQUEST['file_id']) : 0;
   $args->fileTitle = isset($_REQUEST['fileTitle']) ? trim($_REQUEST['fileTitle']) : '';
+
+  $args->tc_status = isset($_REQUEST['tc_status']) ? intval($_REQUEST['tc_status']) : -1;
+  $args->importance = isset($_REQUEST['importance']) ? intval($_REQUEST['importance']) : -1;
+
 
   $args->user = $_SESSION['currentUser'];
   $args->grants = new stdClass();
@@ -891,7 +905,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
   $sqlA .=" GROUP BY NHTC.id,TCV.tc_external_id,NHTC.name,NHTC.node_order ";
 
   $sqlB = " SELECT SQLA.id AS tcid, SQLA.name AS tcname,SQLA.node_order AS tcorder, SQLA.tcexternalid," . 
-          " MTCV.summary FROM ($sqlA) SQLA " .
+          " MTCV.summary,MTCV.status,MTCV.importance,MTCV.id AS tcversion_id FROM ($sqlA) SQLA " .
           " JOIN {$tables['nodes_hierarchy']} MNHTCV ON MNHTCV.parent_id = SQLA.id " .
           " JOIN {$tables['tcversions']} MTCV ON MTCV.id = MNHTCV.id AND MTCV.version = SQLA.lvnum";
   $orderClause = " ORDER BY TCORDER,TCNAME";        
@@ -914,8 +928,18 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
   $gui = new stdClass();
   $gui->treeFormToken = $gui->form_token = $argsObj->treeFormToken; 
 
+  $dummy = getConfigAndLabels('testCaseStatus','code');
+  $gui->domainTCStatus = array(-1 => '') + $dummy['lbl'];
+  $gui->domainTCImportance = array(-1 => '', HIGH => lang_get('high_importance'), 
+                                   MEDIUM => lang_get('medium_importance'), 
+                                   LOW => lang_get('low_importance'));
 
-  $smartyObj->assign('testCasesTableView', ($argsObj->action == 'testcases_table_view') );
+  $gui->testCasesTableView = 0;
+  if(($argsObj->action == 'testcases_table_view') || ($argsObj->action == 'doBulkSet'))
+  {
+    $gui->testCasesTableView = 1;
+  }  
+
 
   $smartyObj->assign('gui', $gui);
   $smartyObj->assign('op_ok', $op_ok);
@@ -1271,4 +1295,28 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
   return $guiObj;
+}
+
+/**
+ *
+ *
+ */
+function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
+{
+  if( count($tcaseSet) > 0 )
+  {
+    foreach($tcaseSet as $tcversion_id => $tcase_id)
+    {
+      if($argsObj->tc_status >0)
+      {
+        $tcaseMgr->setStatus($tcversion_id,$argsObj->tc_status);
+      }  
+
+      if($argsObj->importance >0)
+      {
+        $tcaseMgr->setImportance($tcversion_id,$argsObj->importance);
+      }  
+
+    }
+  }
 }

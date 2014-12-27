@@ -681,6 +681,7 @@ $TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
 // ----- gui/templates/bug_add.tpl -----
 $TLS_btn_add_bug = "Add bug";
 $TLS_bug_id = "Bug id";
+$TLS_bug_description = "Issue Description";
 $TLS_bug_summary = "Issue Summary";
 $TLS_button_enter_bug = "Add bug to TestLink (bug must exists on BTS)";
 $TLS_link_bts_create_bug = "Access to Bug Tracking System ";
@@ -3796,10 +3797,14 @@ $TLS_no_open_builds = 'There are no open builds';
 $TLS_bts_project_does_not_exist = 'Project %s does not exists on Issue Tracker System';
 
 $TLS_execution_ts_iso = " Executed ON (ISO FORMAT): %s";
+$TLS_issue_exec_id = " Execution ID: %s";
+$TLS_issue_tester = "Tester: %s";
+$TLS_issue_tplan = "Test Plan: %s";
+$TLS_issue_build = " Build: %s";
+$TLS_issue_platform = " Platform: %s";
+$TLS_issue_exec_result = " Execution Status: %s";
 $TLS_issue_generated_description = "Execution ID: %s \n Tester: %s \n Test Plan: %s \n";
-$TLS_issue_build = " Build: %s \n";
-$TLS_issue_platform = " Platform: %s \n";
-$TLS_issue_exec_result = " Execution Status: %s \n";
+
 $TLS_jira_bug_created = "JIRA Issue Created (summary:%s) on project with key:%s";
 $TLS_redmine_bug_created = "REDMINE Issue Created (summary:%s) on project with identifier:%s";
 $TLS_fogbugz_bug_created = "FOGBUGZ Issue Created (summary:%s) on project:%s";

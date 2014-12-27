@@ -14,14 +14,6 @@ Rev:
       {/if}
 
   		<table class="invisible">
-      <tr style="display:none;" id="issue_summary">
-        <td colspan="2">
-          <span class="label">{$args_labels.bug_summary}</span>
-           <input type="text" id="bug_summary" name="bug_summary" value="{$gui->bug_summary}"
-                  size="{#BUGSUMMARY_SIZE#}" maxlength="{$gui->issueTrackerCfg->bugSummaryMaxLength}" 
-                  style="display:none;" required>
-        </td>
-      </tr>
   		<tr>
   			<td style="text-align: center;">
   				<div class="title">{$args_labels.test_exec_notes}</div>
@@ -113,6 +105,28 @@ Rev:
           </td></tr>
         {/if}
   		</table>
+
+      <table style="display:none;" id="issue_summary">
+      <tr>
+        <td colspan="2">
+          <div class="label">{$args_labels.bug_summary}</div>
+           <input type="text" id="bug_summary" name="bug_summary" value="{$gui->bug_summary}"
+                  size="{#BUGSUMMARY_SIZE#}" maxlength="{$gui->issueTrackerCfg->bugSummaryMaxLength}" 
+                  style="display:none;" required>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div class="label">{$args_labels.bug_description}</div>
+          <textarea id="bug_notes" name="bug_notes" 
+                  rows="{#BUGNOTES_ROWS#}" cols="{$gui->issueTrackerCfg->bugSummaryMaxLength}" ></textarea>          
+        </td>
+      </tr>
+
+      </table>
+
+
       <div class="messages" style="align:center;">
       {$args_labels.exec_not_run_result_note}
       </div>
+

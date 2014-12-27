@@ -258,7 +258,12 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         {
           $execContext->bug_summary = $exec_signature->bug_summary;
         }  
+        if(property_exists($exec_signature,'bug_notes'))
+        {
+          $execContext->bug_notes = $exec_signature->bug_notes;
+        }  
        
+
         addIssue($db,$execContext,$issueTracker);
       }  
     }
@@ -567,10 +572,12 @@ function addIssue($dbHandler,$argsObj,$itsObj)
     $issueText->summary = $argsObj->bug_summary;
   }
 
+  /*
   if(property_exists($argsObj, 'bug_notes'))
   {  
     $issueText->description = $argsObj->bug_notes;
   }
+  */
 
 
 
@@ -663,21 +670,40 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
   $exec['statusVerbose'] = sprintf(lang_get('issue_exec_result'),$dummy);
   
   unset($tcaseMgr);
-  $ret->description = sprintf(lang_get('issue_generated_description'),
-                            $argsObj->exec_id,$exec['tester_login'],$exec['testplan_name']);
-  
+
+  $platform_identity = '';
   if($exec['platform_id'] > 0)
   {
-    $ret->description .= sprintf(lang_get('issue_platform') ,$exec['platform_name']);
+    $platform_identity = sprintf(lang_get('issue_platform') ,$exec['platform_name']); 
   }
-  $ret->description .= sprintf(lang_get('issue_build') . lang_get('execution_ts_iso'),
-                             $exec['build_name'],$exec['execution_ts']) . "\n" .
-                             $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
-  
+
   if(property_exists($argsObj, 'bug_notes'))
   {  
-    $ret->description = $argsObj->bug_notes;
+    // parse 
+    $tags = array('%%EXECID%%','%%TESTER%%','%%TESTPLAN%%','%%PLATFORM%%',
+                  '%%BUILD%%', '%%EXECTS%%','%%EXECSTATUS%%','%%EXECNOTES%%'); 
+    $values = array(sprintf(lang_get('issue_exec_id'),$argsObj->exec_id),
+                    sprintf(lang_get('issue_tester'),$exec['tester_login']),
+                    sprintf(lang_get('issue_tplan'),$exec['testplan_name']),
+                    $platform_identity,
+                    sprintf(lang_get('issue_build'),$exec['build_name']),
+                    sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),
+                    $exec['statusVerbose'],
+                    $exec['execution_notes']);
+
+    $ret->description = str_replace($tags,$values,$argsObj->bug_notes);
   }
+  else
+  {
+    $ret->description = sprintf(lang_get('issue_generated_description'),
+                                $argsObj->exec_id,$exec['tester_login'],$exec['testplan_name']);
+    
+    $ret->description .= ($platform_identity != '') ? $platform_identity . "\n" : '';
+    $ret->description .= sprintf(lang_get('issue_build') . "\n" . lang_get('execution_ts_iso') . "\n",
+                                 $exec['build_name'],$exec['execution_ts']); 
+    $ret->description .= "\n" . $exec['statusVerbose'] . "\n\n" . $exec['execution_notes'];
+ 
+  }  
 
   $ret->timestamp = sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']);
   $ret->summary = $ret->auditSign . ' - ' . $ret->timestamp;

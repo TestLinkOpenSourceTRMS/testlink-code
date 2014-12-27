@@ -511,6 +511,8 @@ function init_args(&$dbHandler,$cfgObj)
   }
 
   $args->bug_summary = isset($_POST['bug_summary']) ? $_POST['bug_summary'] : null;
+  $args->bug_notes = isset($_POST['bug_notes']) ? $_POST['bug_notes'] : null;
+  
   return $args;
 }
 

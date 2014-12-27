@@ -19,10 +19,23 @@ Purpose:
 {include file="inc_jsCheckboxes.tpl"}
 {include file="inc_del_onclick.tpl"}
 
+
+<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript" language="javascript" class="init">
+$(document).ready(function() {
+  $('#item_view').DataTable({ "lengthMenu": [ [10, 25, 50, 75, -1], [10, 25, 50, 75, "All"] ] });
+} );
+</script>
+
 <script type="text/javascript">
-jQuery( document ).ready(function() {
-jQuery(".chosen-select").chosen({ width: "50%", search_contains: true });
-});
+{if !$gui->testCasesTableView}
+  jQuery( document ).ready(function() {
+  jQuery(".chosen-select").chosen({ width: "50%", search_contains: true });
+  });
+{/if}
 
 
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -93,7 +106,8 @@ function check_action_precondition(container_id,action,msg)
     {* used as memory for the check/uncheck all checkbox javascript logic *}
     <input type="hidden" name="add_value_memory"  id="add_value_memory"  value="0" />
 		<div id="move_copy_checkboxes">
-        <table class="simple">
+        <table class="simple" id="item_view">
+          <thead>
           <tr>
           <th class="clickable_icon">
 			         <img src="{$tlImages.toggle_all}"
@@ -105,7 +119,8 @@ function check_action_precondition(container_id,action,msg)
           <th>{$labels.status}</th>
           <th>{$labels.importance}</th>
           </tr>
-          
+          </thead>
+
         {foreach from=$testcases key=rowid item=tcinfo}
             <tr>
                 <td>

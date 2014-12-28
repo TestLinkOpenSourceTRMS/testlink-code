@@ -59,7 +59,7 @@ $aa_tfp = array(
      'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
      'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
      'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
-     'executeTest' => array('lib/execute/execNavigator.php', 'lib/execute/execDashboard.php?id='),
+     'executeTest' => array('lib/execute/execNavigator.php?setting_testplan=', 'lib/execute/execDashboard.php?id='),
      'showMetrics' => 'lib/results/resultsNavigator.php',
      'reqSpecMgmt' => array('lib/requirements/reqSpecListTree.php','lib/project/project_req_spec_mgmt.php?id=')
 );
@@ -82,10 +82,21 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment')))
 {
   // Check if for test project selected at least a test plan exist (BUGID 623)
-  if( isset($_SESSION['testplanID']) )
+  if( isset($_SESSION['testplanID']) || !is_null($args->tplan_id))
   {
     $open = ($showFeature == 'executeTest') ? true : null;
-    validateBuildAvailability($db,$_SESSION['testplanID'],$_SESSION['testplanName'],
+    $tplanIDCard = new stdClass();
+    $tplanIDCard->id = intval($_SESSION['testplanID']);
+    $tplanIDCard->name = $_SESSION['testplanName'];
+    $tplanMgr = new testplan($db);
+
+    if(!is_null($args->tplan_id))
+    {
+      $tplanIDCard->id = intval($args->tplan_id);
+      $dummy = $tplanMgr->tree_manager->get_node_hierarchy_info($tplanIDCard->id);
+      $tplanIDCard->name = $dummy['name'];
+    } 
+    validateBuildAvailability($db,$tplanMgr,$tplanIDCard->id,$tplanIDCard->name,
                               $_SESSION['testprojectName'], $open);
   }
   else
@@ -107,11 +118,18 @@ if( is_array($aa_tfp[$showFeature]) )
 {
   $leftPane = $aa_tfp[$showFeature][0];
   $rightPane = $aa_tfp[$showFeature][1];
-  // if( strpos($rightPane,"?") !== false )
+  
   if($rightPane[strlen($rightPane)-1] == '=')
   {
     $rightPane .= intval($_SESSION['testprojectID']);
   }  
+  
+  if($showFeature == 'executeTest')
+  {
+    $leftPane .= $args->tplan_id;
+  }
+  // new dBug($leftPane);
+
 } 
 else
 {
@@ -154,13 +172,12 @@ else
  *  $open: if execution is wanted, check for open builds
  *
  **/
-function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
+function validateBuildAvailability(&$db,&$tplanMgr,$tpID, $tpName, $prodName, $open)
 {
-  $tp = new testplan($db);
-  if (!$tp->getNumberOfBuilds($tpID, $open, $open))
+  if (!$tplanMgr->getNumberOfBuilds($tpID, $open, $open))
   {            
     $message = '<p>'  . lang_get('no_build_warning_part1') . 
-            "<b> " . htmlspecialchars($tpName) . "</b>";
+               "<b> " . htmlspecialchars($tpName) . "</b>";
     
     $link_to_op = '';
     $hint_text = '';

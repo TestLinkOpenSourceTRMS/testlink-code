@@ -276,7 +276,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * Its keys are the names of the settings, its values the arrays for the input parser.
    * @var array
    */
-  private $all_settings = array('setting_testplan' => array("POST", tlInputParameter::INT_N),
+  private $all_settings = array('setting_testplan' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_build' => array("POST", tlInputParameter::INT_N),
                                 'setting_platform' => array("POST", tlInputParameter::INT_N),
                                 'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL));
@@ -505,6 +505,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       tLog( __CLASS__ . ' :: Mode:' . $this->mode . ' - Wrong or missing GET argument: feature', 'ERROR');
       exit();
     }
+
   } // end of method
 
   /**

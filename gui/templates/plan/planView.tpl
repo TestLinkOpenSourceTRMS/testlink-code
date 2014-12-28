@@ -7,7 +7,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 some smarty and javascript variables are created on the inc_*.tpl files.
      
 @internal revisions
-@since 1.9.10
+@since 1.9.13
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -20,6 +20,9 @@ some smarty and javascript variables are created on the inc_*.tpl files.
 {$exportAction="lib/plan/planExport.php?tplan_id="}
 {$importAction="lib/plan/planImport.php?tplan_id="}
 {$assignRolesAction="lib/usermanagement/usersAssign.php?featureType=testplan&featureID="}
+{$gotoExecuteAction="lib/general/frmWorkArea.php?feature=executeTest&tplan_id="}
+
+
 
 {lang_get var="labels" 
           s='testplan_title_tp_management,testplan_txt_empty_list,sort_table_by_column,
@@ -28,7 +31,7 @@ some smarty and javascript variables are created on the inc_*.tpl files.
           btn_testplan_create,th_id,error_no_testprojects_present,btn_export_import,
           export_import,export,import,export_testplan_links,import_testplan_links,build_qty,
           testcase_qty,platform_qty,active_click_to_change,inactive_click_to_change,
-          testcase_number_help,platform_number_help,build_number_help,assign_roles'}
+          testcase_number_help,platform_number_help,build_number_help,assign_roles,execution'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg"}
@@ -148,6 +151,10 @@ var del_action=fRoot+'{$deleteAction}';
                  title="{$labels.assign_roles}"  src="{$tlImages.user}"/>
             </a>     
           {/if}
+          <a href="{$gotoExecuteAction}{$testplan.id}"> 
+          <img style="border:none;cursor: pointer;" alt="{$labels.execution}" 
+               title="{$labels.execution}"  src="{$tlImages.execution}"/>
+          </a>     
       </td>
     </tr>
     {/foreach}

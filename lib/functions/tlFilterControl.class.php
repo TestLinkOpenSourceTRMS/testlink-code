@@ -300,8 +300,8 @@ abstract class tlFilterControl extends tlObjectWithDB
     $this->args->user_id = $this->user->dbID;
     $this->args->user_name = $this->user->getDisplayName();
     
-    $this->args->testproject_id = isset($_SESSION['testprojectID']) ?
-                                  $_SESSION['testprojectID'] : 0;
+    $this->args->testproject_id = intval(isset($_SESSION['testprojectID']) ?
+                                  $_SESSION['testprojectID'] : 0);
     $this->args->testproject_name = isset($_SESSION['testprojectName']) ?
                                     $_SESSION['testprojectName'] : 0;
     

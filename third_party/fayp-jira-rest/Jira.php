@@ -248,7 +248,7 @@ class Jira
     public function addComment($comment, $issueKey)
     {
         $newComment = array(
-            "body"	=> $comment,
+            "body"  => $comment,
         );
 
         $this->request->openConnect($this->host . 'issue/' . $issueKey . '/comment', 'POST', $newComment);
@@ -285,5 +285,60 @@ class Jira
         return $user;
     }
 
+
+    /**
+     * get available issue types
+     *
+     * @return mixed
+     */
+    public function getIssueTypes()
+    {
+        $this->request->openConnect($this->host . 'issuetype', 'GET');
+        $this->request->execute();
+        $items = json_decode($this->request->getResponseBody());
+        return $items;
+    }
+
+   /**
+     * get available priorities
+     *
+     * @return mixed
+     */
+    public function getPriorities()
+    {
+        $this->request->openConnect($this->host . 'priority', 'GET');
+        $this->request->execute();
+        $items = json_decode($this->request->getResponseBody());
+        return $items;
+    }
+
+    /**
+     * get available versions
+     *
+     * @return mixed
+     */
+    public function getVersions($projectKey)
+    {
+        $uri = $this->host . "project/{$projectKey}/versions";
+        $this->request->openConnect($uri, 'GET');
+        $this->request->execute();
+        $items = json_decode($this->request->getResponseBody());        
+        return $items;
+    }
+
+
+    /**
+     * get available components
+     *
+     * @return mixed
+     */
+    public function getComponents($projectKey)
+    {
+        $uri = $this->host . "project/{$projectKey}/components";
+        $this->request->openConnect($uri, 'GET');
+        $this->request->execute();
+        $items = json_decode($this->request->getResponseBody());        
+        return $items;
+    }
 
 }

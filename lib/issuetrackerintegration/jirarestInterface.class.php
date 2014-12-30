@@ -328,6 +328,28 @@ class jirarestInterface extends issueTrackerInterface
   }  
 
 
+  public function getIssueTypes()
+  {
+    return $this->APIClient->getIssueTypes();
+  }
+
+  public function getPriorities()
+  {
+    return $this->APIClient->getPriorities();
+  }
+
+  public function getVersions()
+  {
+    return $this->APIClient->getVersions((string)$this->cfg->projectkey);
+  }
+
+  public function getComponents()
+  {
+    return $this->APIClient->getComponents((string)$this->cfg->projectkey);
+  }
+
+
+
   /**
    *
    * @author francisco.mancardi@gmail.com>

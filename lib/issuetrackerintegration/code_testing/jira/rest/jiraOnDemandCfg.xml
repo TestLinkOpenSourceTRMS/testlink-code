@@ -3,6 +3,6 @@
 <password>forum</password>
 <uribase>https://testlink.atlassian.net/</uribase>
 <uriapi>https://testlink.atlassian.net/rest/api/latest/</uriapi>
-<projectkey>'ZOFF'</projectkey>
+<projectkey>ZOFF</projectkey>
 <issuetype>1</issuetype>
 </issuetracker>

@@ -64,7 +64,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {if $gui->issueTrackerMetaData.versions != ''}
         <p>
         <label for="artifactVersion">{$labels.artifactVersion}</label> 
-        <select 
+        <select class="chosen-select" data-placeholder=" " required 
                 {if $gui->issueTrackerMetaData.versions.isMultiSelect}
                  name="artifactVersion[]" size="2" multiple
                 {else}
@@ -78,11 +78,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {if $gui->issueTrackerMetaData.components.items != ''}
         <p>
         <label for="artifactComponent">{$labels.artifactComponent}</label>         
-         <select  
+         <select class="chosen-select" data-placeholder=" " required 
                  {if $gui->issueTrackerMetaData.components.isMultiSelect}
-                 name="artifactComponent[]" size="2" multiple
+                   name="artifactComponent[]" size="2" multiple
                  {else}
-                 name="artifactComponent"
+                   name="artifactComponent"
                  {/if} 
                  >
          {html_options options=$gui->issueTrackerMetaData.components.items}
@@ -118,5 +118,25 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   </form>
 </div>
 
+<script>
+jQuery( document ).ready(function() {
+jQuery(".chosen-select").chosen({ width: "35%" });
+
+// From https://github.com/harvesthq/chosen/issues/515
+jQuery(".chosen-select").each(function(){
+    //    take each select and put it as a child of the chosen container
+    //    this mean it'll position any validation messages correctly
+    jQuery(this).next(".chosen-container").prepend(jQuery(this).detach());
+
+    //    apply all the styles, personally, I've added this to my stylesheet
+    jQuery(this).attr("style","display:block!important; position:absolute; clip:rect(0,0,0,0)");
+
+    //    to all of these events, trigger the chosen to open and receive focus
+    jQuery(this).on("click focus keyup",function(event){
+        jQuery(this).closest(".chosen-container").trigger("mousedown.chosen");
+    });
+});
+});
+</script>
 </body>
 </html>

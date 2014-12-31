@@ -19,6 +19,8 @@ list($args,$gui,$its,$issueT) = initEnv($db);
 
 if($gui->issueTrackerCfg->tlCanCreateIssue)
 {
+  // get matadata
+  $gui->issueTrackerMetaData = getIssueTrackerMetaData($its);
   switch($args->user_action)
   {
     case 'create':
@@ -109,6 +111,10 @@ function initEnv(&$dbHandler)
 		               "tproject_id" => array("REQUEST",tlInputParameter::INT_N),
 		               "tcversion_id" => array("REQUEST",tlInputParameter::INT_N),
                    "bug_notes" => array("POST",tlInputParameter::STRING_N),
+                   "issueType" => array("POST",tlInputParameter::INT_N),
+                   "issuePriority" => array("POST",tlInputParameter::INT_N),
+                   "artifactComponent" => array("POST",tlInputParameter::ARRAY_INT),
+                   "artifactVersion" => array("POST",tlInputParameter::ARRAY_INT),
 		               "user_action" => array("REQUEST",tlInputParameter::STRING_N,
                                           $user_action['minLengh'],$user_action['maxLengh']));
 		             

@@ -689,6 +689,12 @@ $TLS_title_bug_add = "Add link to bug report";
 $TLS_hint_bug_notes = "Notes are initialized with execution notes. " .
                       "If you leave it empty no note will added to issue on Issue Tracker System";
 
+$TLS_issueType = 'Issue Type';
+$TLS_issuePriority = 'Issue Priority';
+$TLS_artifactVersion = 'Version';
+$TLS_artifactComponent = 'Component';
+
+
 $TLS_add_issue_note = "Write note on issue";
 
 // ----- gui/templates/bug_delete.tpl -----

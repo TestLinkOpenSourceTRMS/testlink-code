@@ -11,7 +11,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {lang_get var='labels' 
           s='title_bug_add,link_bts_create_bug,bug_id,notes,hint_bug_notes,
-             btn_close,btn_add_bug,btn_save,bug_summary'} 
+             btn_close,btn_add_bug,btn_save,bug_summary,
+             issueType,issuePriority,artifactVersion,artifactComponent'} 
 
 
 <body onunload="dialog_onUnload(bug_dialog)" onload="dialog_onLoad(bug_dialog)">
@@ -45,6 +46,49 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         <input type="text" id="bug_summary" name="bug_summary" required value="{$gui->bug_summary}"
                size="{#BUGSUMMARY_SIZE#}" maxlength="{$gui->issueTrackerCfg->bugSummaryMaxLength}" 
       </p>
+    {/if}
+
+    {if $gui->issueTrackerMetaData != ''}
+      {if $gui->issueTrackerMetaData.issueTypes != ''}
+        <p>
+       <label for="issueType">{$labels.issueType}</label>
+       {html_options name="issueType" options=$gui->issueTrackerMetaData.issueTypes.items}
+      {/if}
+
+      {if $gui->issueTrackerMetaData.priorities != ''}
+        <p>
+       <label for="issuePriority">{$labels.issuePriority}</label> 
+       {html_options name="issuePriority" options=$gui->issueTrackerMetaData.priorities.items}
+      {/if}
+
+      {if $gui->issueTrackerMetaData.versions != ''}
+        <p>
+        <label for="artifactVersion">{$labels.artifactVersion}</label> 
+        <select 
+                {if $gui->issueTrackerMetaData.versions.isMultiSelect}
+                 name="artifactVersion[]" size="2" multiple
+                {else}
+                 name="artifactVersion"
+                {/if} 
+                >
+        {html_options options=$gui->issueTrackerMetaData.versions.items}
+        </select>
+      {/if}
+
+      {if $gui->issueTrackerMetaData.components.items != ''}
+        <p>
+        <label for="artifactComponent">{$labels.artifactComponent}</label>         
+         <select  
+                 {if $gui->issueTrackerMetaData.components.isMultiSelect}
+                 name="artifactComponent[]" size="2" multiple
+                 {else}
+                 name="artifactComponent"
+                 {/if} 
+                 >
+         {html_options options=$gui->issueTrackerMetaData.components.items}
+         </select>
+      {/if}
+
     {/if}
 
     {if $gui->issueTrackerCfg->tlCanAddIssueNote || $gui->user_action == 'create'}

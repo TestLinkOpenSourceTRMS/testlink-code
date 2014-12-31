@@ -7,7 +7,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.13
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
@@ -255,6 +255,10 @@ class jirarestInterface extends issueTrackerInterface
        "issuetype": {
           "name": "Bug"
        }
+       "priority": {
+        "id": 4
+       }
+
    }
 }
 */
@@ -290,18 +294,57 @@ class jirarestInterface extends issueTrackerInterface
                            'issuetype' => array( 'id' => (int)$this->cfg->issuetype)
                            ));
 
-      if(!is_null($opt))
-      {
-        if(property_exists($opt, 'reporter'))
-        {
-          $issue['fields']['reporter'] = array('name' => $opt->reporter);
-        }  
-      }  
-
       if(!is_null($this->issueAttr))
       {
         $issue = array_merge($issue,$this->issueAttr);
       }  
+
+
+      if(!is_null($opt))
+      {
+        if(property_exists($opt, 'issuePriority'))
+        {
+          // CRiTiC: if not casted to string, you will get following error from JIRA
+          // "Could not find valid 'id' or 'name' in priority object."
+          $issue['fields']['priority'] = array('id' => (string)$opt->issuePriority);
+        }
+
+        // these can have multiple values
+        if(property_exists($opt, 'artifactComponent'))
+        {
+          // YES is plural!!
+          $issue['fields']['components'] = array();
+          foreach( $opt->artifactComponent as $vv)
+          {
+            $issue['fields']['components'][] = array('id' => (string)$vv);
+          }  
+        }
+
+        if(property_exists($opt, 'artifactVersion'))
+        {
+          // YES is plural!!
+          $issue['fields']['versions'] = array();
+          foreach( $opt->artifactVersion as $vv)
+          {
+            $issue['fields']['versions'][] = array('id' => (string)$vv);
+          }  
+        }
+
+
+
+        if(property_exists($opt, 'reporter'))
+        {
+          $issue['fields']['reporter'] = array('name' => (string)$opt->reporter);
+        }
+
+        if(property_exists($opt, 'issueType'))
+        {
+          $issue['fields']['issuetype'] = array('id' => $opt->issueType);
+        }
+        
+
+      }  
+ 
 
       $op = $this->APIClient->createIssue($issue);
       $ret = array('status_ok' => false, 'id' => null, 'msg' => 'ko');
@@ -348,7 +391,47 @@ class jirarestInterface extends issueTrackerInterface
     return $this->APIClient->getComponents((string)$this->cfg->projectkey);
   }
 
+  public function getIssueTypesForHTMLSelect()
+  {
+    return array('items' => $this->objectAttrToIDName($this->getIssueTypes()),
+                 'isMultiSelect' => false);
+  }
 
+  public function getPrioritiesForHTMLSelect()
+  {
+    return array('items' => $this->objectAttrToIDName($this->getPriorities()),
+                 'isMultiSelect' => false); 
+  }
+
+
+  public function getVersionsForHTMLSelect()
+  {
+    return array('items' => $this->objectAttrToIDName($this->getVersions()),
+                 'isMultiSelect' => true); 
+   }
+
+  public function getComponentsForHTMLSelect()
+  {
+    return array('items' => $this->objectAttrToIDName($this->getComponents()),
+                 'isMultiSelect' => true); 
+  }
+
+ 
+
+  private function objectAttrToIDName($obj)
+  {
+    $ret = null;
+    if(!is_null($obj))
+    {
+      $ic = count($obj);
+      for($idx=0; $idx < $ic; $idx++)
+      {
+        $ret[$obj[$idx]->id] = $obj[$idx]->name; 
+      }  
+    }  
+    return $ret;    
+  }
+  
 
   /**
    *

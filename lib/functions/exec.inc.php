@@ -263,6 +263,27 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
           $execContext->bug_notes = $exec_signature->bug_notes;
         }  
        
+        if(property_exists($exec_signature,'issueType'))
+        {
+          $execContext->issueType = $exec_signature->issueType;
+        }  
+
+        if(property_exists($exec_signature,'issuePriority'))
+        {
+          $execContext->issuePriority = $exec_signature->issuePriority;
+        }  
+
+        if(property_exists($exec_signature,'artifactVersion'))
+        {
+          $execContext->artifactVersion = $exec_signature->artifactVersion;
+        }  
+
+        if(property_exists($exec_signature,'artifactComponent'))
+        {
+          $execContext->artifactComponent = $exec_signature->artifactComponent;
+        }  
+
+        
 
         addIssue($db,$execContext,$issueTracker);
       }  
@@ -572,17 +593,14 @@ function addIssue($dbHandler,$argsObj,$itsObj)
     $issueText->summary = $argsObj->bug_summary;
   }
 
-  /*
-  if(property_exists($argsObj, 'bug_notes'))
-  {  
-    $issueText->description = $argsObj->bug_notes;
-  }
-  */
-
-
 
   $opt = new stdClass();
   $opt->reporter = $argsObj->user->login;
+  $opt->issueType = $argsObj->issueType;
+  $opt->issuePriority = $argsObj->issuePriority;
+  $opt->artifactVersion = $argsObj->artifactVersion;
+  $opt->artifactComponent = $argsObj->artifactComponent;
+
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
   
   if($rs['status_ok'])
@@ -717,4 +735,36 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
 
 }
 
+/**
+ *
+ */
+function getIssueTrackerMetaData($itsObj)
+{
+
+  if(!isset($_SESSION['issueTrackerCfg']) || !$_SESSION['issueTrackerCfg'][$itsObj->name])
+  {
+    $ret = array();
+    $ret['issueTypes'] = null;
+    $ret['components'] = null;
+    $ret['priorities'] = null;
+    $ret['versions'] = null;
+
+    $target = array('issueTypes' => 'getIssueTypesForHTMLSelect',
+                    'priorities' => 'getPrioritiesForHTMLSelect',
+                    'versions' => 'getVersionsForHTMLSelect',
+                    'components' => 'getComponentsForHTMLSelect');
+
+    foreach($target as $key => $worker)
+    {
+      if(method_exists($itsObj, $worker) )
+      {
+        $ret[$key] = $itsObj->$worker();
+      }  
+    }
+
+    $_SESSION['issueTrackerCfg'][$itsObj->name]=$ret;      
+  }  
+    
+  return $_SESSION['issueTrackerCfg'][$itsObj->name];
+}
 

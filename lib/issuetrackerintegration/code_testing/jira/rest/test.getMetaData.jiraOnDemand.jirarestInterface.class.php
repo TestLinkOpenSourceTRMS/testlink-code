@@ -71,6 +71,12 @@ if( $its->isConnected() )
   var_dump($zorro);
   echo '</pre>';
 
+  $zorro = $its->getIssueTypesForHTMLSelect();
+  echo '<pre>';
+  echo 'ISSUE TYPES<br>';
+  var_dump($zorro);
+  echo '</pre>';
+
 
 
   $zorro = $its->getPriorities();

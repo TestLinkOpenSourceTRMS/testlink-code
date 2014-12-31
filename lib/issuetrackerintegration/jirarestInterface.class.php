@@ -370,6 +370,38 @@ class jirarestInterface extends issueTrackerInterface
     return $ret;
   }  
 
+  /**
+   * on JIRA notes is called comment
+   * 
+   */
+  public function addNote($issueID,$noteText,$opt=null)
+  {
+    try 
+    {
+      $op = $this->APIClient->addComment($noteText,$issueID);
+      $ret = array('status_ok' => false, 'id' => null, 'msg' => 'ko');
+      if(!is_null($op))
+      {  
+        if(isset($op->errors))
+        {
+          $ret['msg'] = $op->errors;
+        }
+        else
+        {        
+          $ret = array('status_ok' => true, 'id' => $op->key, 
+                       'msg' => sprintf(lang_get('jira_comment_added'),$issueID));
+        }  
+      }
+    }
+    catch (Exception $e)
+    {
+      $msg = "Add JIRA Issue Comment (REST) FAILURE => " . $e->getMessage();
+      tLog($msg, 'WARNING');
+      $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+    }    
+    return $ret;
+  }
+  
 
   public function getIssueTypes()
   {

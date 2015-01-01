@@ -31,7 +31,11 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 		<td>{$bug_elem.link_to_bts}</td>
 		{if $gui->tlCanAddIssueNote}
 		  <td>
-   		    <a href="javascript:open_bug_note_add_window({$bug_id},{$gui->tproject_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},'add_note')">
+		    {* Attention: 
+		       bug_id can be a number (i.e. for Mantis) or a string (i.e. for JIRA) depending of Issue Tracker System 
+               Only choice to avoid JS issues => treat always as string 
+		    *}
+   		    <a href="javascript:open_bug_note_add_window('{$bug_id}',{$gui->tproject_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},'add_note')">
    		    <img src="{$tlImages.bug_add_note}" title="{$labels.bug_add_note}" style="border:none" /></a>
 		  </td>
 		{/if}

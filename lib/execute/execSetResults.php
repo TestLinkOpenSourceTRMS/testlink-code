@@ -45,20 +45,7 @@ $templateCfg = templateConfiguration();
 
 $tcversion_id = null;
 $submitResult = null;
-$args = init_args($db,$cfg);
-
-// get issue tracker config and object to manage TestLink - BTS integration 
-$its = null;
-$tproject_mgr = new testproject($db);
-$info = $tproject_mgr->get_by_id($args->tproject_id);
-if($info['issue_tracker_enabled'])
-{
-  $it_mgr = new tlIssueTracker($db);
-  $its = $it_mgr->getInterfaceObject($args->tproject_id);
-  $issueTrackerCfg = $it_mgr->getLinkedTo($args->tproject_id);
-  unset($it_mgr);
-}
-
+list($args,$its,$issueTrackerCfg) = init_args($db,$cfg);
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -69,7 +56,7 @@ $attachmentRepository = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr,$its);
-if($info['issue_tracker_enabled'])
+if($args->issue_tracker_enabled)
 {
   if(!is_null($its) && $its->isConnected())
   {
@@ -308,7 +295,7 @@ if(!is_null($linked_tcversions))
         }
         $other_info = exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
                                            $args->tplan_id,$args->tproject_id, 
-                                           $info['issue_tracker_enabled'],$its);
+                                           $args->issue_tracker_enabled,$its);
                              
         $gui->attachments=$other_info['attachment'];
         $gui->bugs=$other_info['bugs'];
@@ -383,7 +370,6 @@ function init_args(&$dbHandler,$cfgObj)
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
- 
   // Settings and Filters that we put on session to create some 
   // sort of persistent scope, because we have had issues when passing this info
   // using GET mode (size limits)
@@ -510,10 +496,39 @@ function init_args(&$dbHandler,$cfgObj)
     $args->tproject_id = $dm['parent_id']; 
   }
 
-  $args->bug_summary = isset($_POST['bug_summary']) ? $_POST['bug_summary'] : null;
-  $args->bug_notes = isset($_POST['bug_notes']) ? $_POST['bug_notes'] : null;
+
+
+  // get issue tracker config and object to manage TestLink - BTS integration 
+  $its = null;
+  $itsCfg = null;
+
+  $tproject_mgr = new testproject($dbHandler);
+  $info = $tproject_mgr->get_by_id($args->tproject_id);
+  unset($tproject_mgr);
+  $bug_summary['minLengh'] = 1; 
+  $bug_summary['maxLengh'] = 1; 
+
+   
+  if( ($args->issue_tracker_enabled = $info['issue_tracker_enabled']) )
+  {
+    $it_mgr = new tlIssueTracker($dbHandler);
+    $its = $it_mgr->getInterfaceObject($args->tproject_id);
+    $itsCfg = $it_mgr->getLinkedTo($args->tproject_id);
+    unset($it_mgr);
+    $bug_summary['maxLengh'] = $its->getBugSummaryMaxLength(); 
+  }
+
+  $inputCfg = array("bug_summary" => array("POST",tlInputParameter::STRING_N,
+                                           $bug_summary['minLengh'],$bug_summary['maxLengh']),
+                    "bug_notes" => array("POST",tlInputParameter::STRING_N),
+                    "issueType" => array("POST",tlInputParameter::INT_N),
+                    "issuePriority" => array("POST",tlInputParameter::INT_N),
+                    "artifactComponent" => array("POST",tlInputParameter::ARRAY_INT),
+                    "artifactVersion" => array("POST",tlInputParameter::ARRAY_INT));
   
-  return $args;
+  I_PARAMS($inputCfg,$args);
+
+  return array($args,$its,$itsCfg);
 }
 
 
@@ -530,6 +545,8 @@ function init_args(&$dbHandler,$cfgObj)
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {
+
+
   if( isset($hash_REQUEST[$btn_on_name]) )
   {
     $history_on = true;
@@ -1232,9 +1249,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->build_cfields = $buildMgr->html_table_of_custom_field_values($argsObj->build_id,$argsObj->tproject_id,
                                                                      'design',array('show_on_execution' => 1));
     
+
+  
   $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
                                        'btn_history_on','btn_history_off','history_on');
   $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';
+
+
 
   $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
   $gui->has_platforms = !is_null($dummy) ? 1 : 0;
@@ -1252,6 +1273,19 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   
   $gui->node_id = $argsObj->id;
   $gui->draw_save_and_exit = ($argsObj->caller == 'tcAssignedToMe');
+
+  // get matadata
+  $gui->issueTrackerMetaData = !is_null($issueTracker) ? getIssueTrackerMetaData($issueTracker) : null; 
+  $gui->issueType = $argsObj->issueType;
+  $gui->issuePriority = $argsObj->issuePriority;
+  $gui->artifactVersion = $argsObj->artifactVersion;
+  $gui->artifactComponent = $argsObj->artifactComponent;   
+  
+  $gui->issueTrackerCfg = new stdClass(); 
+  $gui->issueTrackerCfg->bugSummaryMaxLength = 100;  // MAGIC I'm sorry
+
+  
+
   return $gui;
 }
 

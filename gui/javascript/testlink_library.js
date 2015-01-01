@@ -1755,7 +1755,7 @@ function toogleRequiredOnShowHide(oid,display_type)
     {
       // SHOW, then field has to be Required
       obj.style.display = '';
-      obj.setAttribute('required',reqAttrValue);
+      obj.setAttribute('required','required');
     } 
   }
   else

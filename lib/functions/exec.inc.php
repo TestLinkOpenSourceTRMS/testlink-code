@@ -162,8 +162,6 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $exec_signature->tplan_id,$cf_map);
       }               
 
-
-      // 20140412 
       $hasMoreData = new stdClass();
       $hasMoreData->step_notes = isset($exec_data['step_notes']);
       $hasMoreData->step_status = isset($exec_data['step_status']);
@@ -281,9 +279,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         if(property_exists($exec_signature,'artifactComponent'))
         {
           $execContext->artifactComponent = $exec_signature->artifactComponent;
-        }  
-
-        
+        }          
 
         addIssue($db,$execContext,$issueTracker);
       }  
@@ -602,20 +598,17 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   $opt->artifactComponent = $argsObj->artifactComponent;
 
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
+  $msg = $rs['msg'];
   
-  if($rs['status_ok'])
+  if( ($opOK = $rs['status_ok']) )
   {                   
-    $msg = $rs['msg'];
-    $opOK = true;
     if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id']))
     {
       logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
     }
   }
-  else
-  {
-    $msg = $rs['msg'];
-  }
+ 
+  new dBug($rs);
   return array($opOK,$msg);
 }
 
@@ -740,7 +733,7 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
  */
 function getIssueTrackerMetaData($itsObj)
 {
-
+ 
   if(!isset($_SESSION['issueTrackerCfg']) || !$_SESSION['issueTrackerCfg'][$itsObj->name])
   {
     $ret = array();

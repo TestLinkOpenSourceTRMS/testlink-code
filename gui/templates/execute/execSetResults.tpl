@@ -37,6 +37,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
 	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,bug_summary,bug_description,
   bug_link_tl_to_bts,bug_create_into_bts,execution_duration,execution_duration_short,
+  issueType,issuePriority,artifactVersion,artifactComponent,
   add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback'}
 
 
@@ -118,43 +119,6 @@ function validateForm(f)
   }
   return true;
 }
-
-/*
-  function: checkSubmitForStatusRadio
-            if a radio (with a particular id, see code for details)
-            with $statusCode has been checked, then false is returned to block form submit().
-            
-            Dev. Note - remember this:
-            
-            KO:
-               onclick="foo();checkSubmitForStatus('n')"
-            OK
-               onclick="foo();return checkSubmitForStatus('n')"
-                              ^^^^^^ 
-            
-
-  args :
-  
-  returns: 
-
-*/
-function checkSubmitForStatusRadio(statusCode)
-{
-  var button_clicked;
-  var access_key;
-  var isChecked;
-  
-  button_clicked=document.getElementById('save_button_clicked').value;
-  access_key='status_'+button_clicked+'_'+$statusCode; 
- 	isChecked = document.getElementById(access_key).checked;
-  if(isChecked)
-  {
-    alert_message(alert_box_title,warning_nothing_will_be_saved);
-    return false;
-  }
-  return true;
-}
-
 
 /*
   function: checkSubmitForStatusCombo
@@ -279,14 +243,20 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   <input type="hidden" id="exec_to_delete"  name="exec_to_delete" value="0" />
   <input type="hidden" id="form_token"  name="form_token" value="{$gui->treeFormToken}" />
   <input type="hidden" id="refresh_tree"  name="refresh_tree" value="{$gui->refreshTree}" />
+  <input type="hidden" id="{$gui->history_status_btn_name}" name="{$gui->history_status_btn_name}" value="1" />
 
   {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
     <div class="groupBtn">
       <input type="hidden" id="history_on" name="history_on" value="{$gui->history_on}" />
 
       <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
-      <input type="submit" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"
-             value="{lang_get s=$gui->history_status_btn_name}" />
+      <input type="button" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"
+             value="{lang_get s=$gui->history_status_btn_name}" 
+             onclick="javascript:toogleRequiredOnShowHide('bug_summary');
+                      javascript:toogleRequiredOnShowHide('artifactVersion');
+                      javascript:toogleRequiredOnShowHide('artifactComponent');
+                      execSetResults.submit();"/>
+
       <input type="button" id="pop_up_import_button" name="import_xml_button"
              value="{$labels.import_xml_results}"
              onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},

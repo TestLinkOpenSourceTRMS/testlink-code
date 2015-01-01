@@ -64,7 +64,11 @@ Rev:
                   {if $addBR}<br>{/if} 
                   {$args_labels.bug_create_into_bts}&nbsp;
                   <input type="checkbox" name="createIssue"  id="createIssue" 
-                         onclick="javascript:toogleShowHide('issue_summary');javascript:toogleRequiredOnShowHide('bug_summary');">
+                         onclick="javascript:toogleShowHide('issue_summary');
+                         javascript:toogleRequiredOnShowHide('bug_summary');
+                         javascript:toogleRequiredOnShowHide('artifactVersion');
+                         javascript:toogleRequiredOnShowHide('artifactComponent');
+                         ">
                 {/if}
 
                 {if $tlCfg->exec_cfg->copyLatestExecIssues->enabled}
@@ -115,6 +119,61 @@ Rev:
                   style="display:none;" required>
         </td>
       </tr>
+
+      <tr>
+      <td colspan="2">
+     {if $gui->issueTrackerMetaData != ''}
+      <p>
+      {if $gui->issueTrackerMetaData.issueTypes != ''}
+       <label for="issueType">{$labels.issueType}</label>
+       {html_options name="issueType" options=$gui->issueTrackerMetaData.issueTypes.items 
+        selected = $gui->issueType
+       }
+      {/if}
+
+      {if $gui->issueTrackerMetaData.priorities != ''}
+       <label for="issuePriority">{$labels.issuePriority}</label> 
+       {html_options name="issuePriority" options=$gui->issueTrackerMetaData.priorities.items
+        selected = $gui->issuePriority
+       }
+      {/if}
+      </p>
+
+      <p> 
+      {if $gui->issueTrackerMetaData.versions != ''}
+        <label for="artifactVersion">{$labels.artifactVersion}</label> 
+        <select class="chosen-select" data-placeholder=" " required id="artifactVersion" 
+                {if $gui->issueTrackerMetaData.versions.isMultiSelect}
+                 name="artifactVersion[]" size="2" multiple
+                {else}
+                 name="artifactVersion"
+                {/if} 
+                >
+        {html_options options=$gui->issueTrackerMetaData.versions.items
+        selected = $gui->artifactVersion
+        }
+        </select>
+      {/if}
+      
+      {if $gui->issueTrackerMetaData.components.items != ''}
+        <label for="artifactComponent">{$labels.artifactComponent}</label>         
+         <select class="chosen-select" data-placeholder=" " required id="artifactComponent" 
+                 {if $gui->issueTrackerMetaData.components.isMultiSelect}
+                   name="artifactComponent[]" size="2" multiple
+                 {else}
+                   name="artifactComponent"
+                 {/if} 
+                 >
+         {html_options options=$gui->issueTrackerMetaData.components.items
+         selected = $gui->artifactComponent
+         }
+         </select>
+      {/if}
+     </p>
+     {/if}  {* $gui->issueTrackerMetaData *}      
+      </td>
+      </tr>
+
       <tr>
         <td colspan="2">
           <div class="label">{$args_labels.bug_description}</div>
@@ -129,4 +188,26 @@ Rev:
       <div class="messages" style="align:center;">
       {$args_labels.exec_not_run_result_note}
       </div>
+
+
+      <script>
+      jQuery( document ).ready(function() {
+      jQuery(".chosen-select").chosen({ width: "35%" });
+
+      // From https://github.com/harvesthq/chosen/issues/515
+      jQuery(".chosen-select").each(function(){
+          //    take each select and put it as a child of the chosen container
+          //    this mean it'll position any validation messages correctly
+          jQuery(this).next(".chosen-container").prepend(jQuery(this).detach());
+
+          //    apply all the styles, personally, I've added this to my stylesheet
+          jQuery(this).attr("style","display:block!important; position:absolute; clip:rect(0,0,0,0)");
+
+          //    to all of these events, trigger the chosen to open and receive focus
+          jQuery(this).on("click focus keyup",function(event){
+              jQuery(this).closest(".chosen-container").trigger("mousedown.chosen");
+          });
+      });
+      });
+      </script>
 

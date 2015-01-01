@@ -111,6 +111,18 @@ Rev:
   		</table>
 
       <table style="display:none;" id="issue_summary">
+      {if $gui->addIssueOp != ''}   
+      <tr>
+        <td colspan="2">
+          <div class="label">{$gui->addIssueOp.msg}</div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">&nbsp;</td>
+      </tr>
+
+      {/if}
+
       <tr>
         <td colspan="2">
           <div class="label">{$args_labels.bug_summary}</div>

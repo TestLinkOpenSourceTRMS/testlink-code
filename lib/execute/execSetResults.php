@@ -153,8 +153,8 @@ if(!is_null($linked_tcversions))
 
 
       $_REQUEST['save_results'] = $args->save_results;
-      $execSet = write_execution($db,$args,$_REQUEST,$its);
-
+      list($execSet,$gui->addIssueOp) = write_execution($db,$args,$_REQUEST,$its);
+      
       if($args->assignTask)
       {
         $fid = $tplan_mgr->getFeatureID($args->tplan_id,$args->platform_id,$args->version_id);
@@ -175,11 +175,6 @@ if(!is_null($linked_tcversions))
       } 
     }
 
-
-
-
-
-    
     // Need to re-read to update test case status
     if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) 
     {  
@@ -1152,6 +1147,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+  $gui->addIssueOp = null;
   $gui->allowStepAttachments = true;
   $gui->tlCanCreateIssue = !is_null($issueTracker) && method_exists($issueTracker,'addIssue');
   $gui->remoteExecFeedback = $gui->user_feedback = '';

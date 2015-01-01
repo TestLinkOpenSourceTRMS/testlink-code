@@ -108,6 +108,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     $execStatusKey = 'statusSingle';
   }
 
+  $addIssueOp = null;
   foreach ( $item2loop as $tcversion_id => $val)
   {
     $tcase_id=$exec_data['tc_version'][$tcversion_id];
@@ -281,12 +282,12 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
           $execContext->artifactComponent = $exec_signature->artifactComponent;
         }          
 
-        addIssue($db,$execContext,$issueTracker);
+        $addIssueOp = addIssue($db,$execContext,$issueTracker);
       }  
     }
   }
 
-  return $execSet;
+  return array($execSet,$addIssueOp);
 }
 
 /**
@@ -574,8 +575,10 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
  */
 function addIssue($dbHandler,$argsObj,$itsObj)
 {
-  $opOK = false;             
-  $msg = '';
+  $ret = array();
+  $ret['status_ok'] = true;             
+  $ret['msg'] = '';
+
   $resultsCfg = config_get('results');                      
   $tcaseMgr = new testcase($dbHandler);
   $dummy = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->tcversion_id);
@@ -598,18 +601,17 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   $opt->artifactComponent = $argsObj->artifactComponent;
 
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
-  $msg = $rs['msg'];
-  
-  if( ($opOK = $rs['status_ok']) )
+  $ret['msg'] = $rs['msg'];
+  if( ($ret['status_ok'] = $rs['status_ok']) )
   {                   
     if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id']))
     {
       logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
     }
   }
- 
-  new dBug($rs);
-  return array($opOK,$msg);
+
+  // return array($opOK,$msg);
+  return $ret;
 }
 
 

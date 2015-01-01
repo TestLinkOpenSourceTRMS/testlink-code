@@ -355,7 +355,6 @@ class jirarestInterface extends issueTrackerInterface
           $ret['msg'] = __FUNCTION__ . ":Failure:JIRA Message:\n";
           foreach ($op->errors as $pk => $pv) 
           {
-            echo $pk;
             $ret['msg'] .= "$pk => $pv\n";
           }
         }

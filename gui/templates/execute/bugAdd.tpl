@@ -41,28 +41,31 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
     {/if}
 
-    {if $gui->user_action == 'create'}
+    {if $gui->user_action == 'create' || $gui->user_action == 'doCreate' }
       <p class="label">{$labels.bug_summary}(*)
         <input type="text" id="bug_summary" name="bug_summary" required value="{$gui->bug_summary}"
                size="{#BUGSUMMARY_SIZE#}" maxlength="{$gui->issueTrackerCfg->bugSummaryMaxLength}" 
       </p>
-    {/if}
 
-    {if $gui->issueTrackerMetaData != ''}
+     {if $gui->issueTrackerMetaData != ''}
+      <p>
       {if $gui->issueTrackerMetaData.issueTypes != ''}
-        <p>
        <label for="issueType">{$labels.issueType}</label>
-       {html_options name="issueType" options=$gui->issueTrackerMetaData.issueTypes.items}
+       {html_options name="issueType" options=$gui->issueTrackerMetaData.issueTypes.items 
+        selected = $gui->issueType
+       }
       {/if}
 
       {if $gui->issueTrackerMetaData.priorities != ''}
-        <p>
        <label for="issuePriority">{$labels.issuePriority}</label> 
-       {html_options name="issuePriority" options=$gui->issueTrackerMetaData.priorities.items}
+       {html_options name="issuePriority" options=$gui->issueTrackerMetaData.priorities.items
+        selected = $gui->issuePriority
+       }
       {/if}
+      </p>
 
+      <p> 
       {if $gui->issueTrackerMetaData.versions != ''}
-        <p>
         <label for="artifactVersion">{$labels.artifactVersion}</label> 
         <select class="chosen-select" data-placeholder=" " required 
                 {if $gui->issueTrackerMetaData.versions.isMultiSelect}
@@ -71,12 +74,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                  name="artifactVersion"
                 {/if} 
                 >
-        {html_options options=$gui->issueTrackerMetaData.versions.items}
+        {html_options options=$gui->issueTrackerMetaData.versions.items
+        selected = $gui->artifactVersion
+        }
         </select>
       {/if}
-
+      
       {if $gui->issueTrackerMetaData.components.items != ''}
-        <p>
         <label for="artifactComponent">{$labels.artifactComponent}</label>         
          <select class="chosen-select" data-placeholder=" " required 
                  {if $gui->issueTrackerMetaData.components.isMultiSelect}
@@ -85,14 +89,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                    name="artifactComponent"
                  {/if} 
                  >
-         {html_options options=$gui->issueTrackerMetaData.components.items}
+         {html_options options=$gui->issueTrackerMetaData.components.items
+         selected = $gui->artifactComponent
+         }
          </select>
       {/if}
-
+     </p>
+     {/if}  {* $gui->issueTrackerMetaData *}
     {/if}
 
-    {if $gui->issueTrackerCfg->tlCanAddIssueNote || $gui->user_action == 'create'}
-      <p class="label"><img src="{$tlImages.info}" title="{$labels.hint_bug_notes}">{$labels.notes}</p>
+    {if $gui->issueTrackerCfg->tlCanAddIssueNote || $gui->user_action == 'create' || $gui->user_action == 'doCreate'}
+      <span class="label"><img src="{$tlImages.info}" title="{$labels.hint_bug_notes}">{$labels.notes}</span>
         <textarea id="bug_notes" name="bug_notes" 
                   rows="{#BUGNOTES_ROWS#}" cols="{#BUGNOTES_COLS#}" >{$gui->bug_notes}</textarea>
     {/if}    
@@ -103,7 +110,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              onclick="user_action.value='{$gui->user_action}';return dialog_onSubmit(bug_dialog)" />
      {/if} 
 
-     {if $gui->user_action == 'create'}
+     {if $gui->user_action == 'create' || $gui->user_action == 'doCreate'}
       <input type="submit" value="{$labels.btn_save}" 
              onclick="user_action.value='doCreate';return dialog_onSubmit(bug_dialog)" />
      {/if} 

@@ -17,7 +17,8 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 list($args,$gui,$its,$issueT) = initEnv($db);
 
-if($gui->issueTrackerCfg->tlCanCreateIssue)
+if( ($args->user_action == 'create' || $args->user_action == 'doCreate') && 
+    $gui->issueTrackerCfg->tlCanCreateIssue)
 {
   // get matadata
   $gui->issueTrackerMetaData = getIssueTrackerMetaData($its);
@@ -39,6 +40,7 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
 {
   // Well do not think is very elegant to check for $args->bug_id != ""
   // to understand if user has pressed ADD Button
+  new dBug($args);
   if(!is_null($issueT) && $args->bug_id != "")
   {
   	$l18n = init_labels(array("error_wrong_BugID_format" => null,"error_bug_does_not_exist_on_bts" => null));
@@ -82,7 +84,6 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
     }
   }
 }
-
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -137,6 +138,7 @@ function initEnv(&$dbHandler)
   switch($args->user_action)
   {
     case 'create':
+    case 'doCreate':
       $gui->pageTitle = lang_get('create_issue');
     break;
 
@@ -156,6 +158,13 @@ function initEnv(&$dbHandler)
   $gui->tcversion_id = $args->tcversion_id;
   $gui->user_action = $args->user_action;
   $gui->bug_id = $args->bug_id;
+
+  $gui->issueType = $args->issueType;
+  $gui->issuePriority = $args->issuePriority;
+  $gui->artifactVersion = $args->artifactVersion;
+  $gui->artifactComponent = $args->artifactComponent;
+  
+  
   
 
   // -----------------------------------------------------------------------

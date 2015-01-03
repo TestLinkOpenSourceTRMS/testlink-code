@@ -125,10 +125,15 @@ Rev:
 
       <tr>
         <td colspan="2">
+          {* 
+             IMPORTANT:
+             Via Javascript the required attribute will be added when this input will be 
+             done visible because user has clicked on 'Create Issue' checkbox
+          *}
           <div class="label">{$args_labels.bug_summary}</div>
            <input type="text" id="bug_summary" name="bug_summary" value="{$gui->bug_summary}"
                   size="{#BUGSUMMARY_SIZE#}" maxlength="{$gui->issueTrackerCfg->bugSummaryMaxLength}" 
-                  style="display:none;" required>
+                  style="display:none;">
         </td>
       </tr>
 
@@ -152,9 +157,14 @@ Rev:
       </p>
 
       <p> 
+      {* 
+         IMPORTANT:
+         Via Javascript the required attribute will be added when this input will be 
+         done visible because user has clicked on 'Create Issue' checkbox
+      *}
       {if $gui->issueTrackerMetaData.versions != ''}
         <label for="artifactVersion">{$labels.artifactVersion}</label> 
-        <select class="chosen-select" data-placeholder=" " required id="artifactVersion" 
+        <select class="chosen-select-artifact" data-placeholder=" " id="artifactVersion" 
                 {if $gui->issueTrackerMetaData.versions.isMultiSelect}
                  name="artifactVersion[]" size="2" multiple
                 {else}
@@ -167,9 +177,14 @@ Rev:
         </select>
       {/if}
       
+      {* 
+         IMPORTANT:
+         Via Javascript the required attribute will be added when this input will be 
+         done visible because user has clicked on 'Create Issue' checkbox
+      *}
       {if $gui->issueTrackerMetaData.components.items != ''}
         <label for="artifactComponent">{$labels.artifactComponent}</label>         
-         <select class="chosen-select" data-placeholder=" " required id="artifactComponent" 
+         <select class="chosen-select-artifact" data-placeholder=" " id="artifactComponent" 
                  {if $gui->issueTrackerMetaData.components.isMultiSelect}
                    name="artifactComponent[]" size="2" multiple
                  {else}
@@ -204,18 +219,24 @@ Rev:
 
       <script>
       jQuery( document ).ready(function() {
-      jQuery(".chosen-select").chosen({ width: "35%" });
+
+      // IMPORTANT
+      // For some chosen select I want on page load to be DISPLAY NONE
+      // That's why I've changes from original example on the line where styles were applied
+      // 
+      jQuery(".chosen-select-artifact").chosen({ width: "35%" });
 
       // From https://github.com/harvesthq/chosen/issues/515
-      jQuery(".chosen-select").each(function(){
-          //    take each select and put it as a child of the chosen container
-          //    this mean it'll position any validation messages correctly
+      jQuery(".chosen-select-artifact").each(function(){
+          // take each select and put it as a child of the chosen container
+          // this mean it'll position any validation messages correctly
           jQuery(this).next(".chosen-container").prepend(jQuery(this).detach());
 
-          //    apply all the styles, personally, I've added this to my stylesheet
-          jQuery(this).attr("style","display:block!important; position:absolute; clip:rect(0,0,0,0)");
+          // apply all the styles, personally, I've added this to my stylesheet
+          // TESTLINK NOTE
+          jQuery(this).attr("style","display:none!important; position:absolute; clip:rect(0,0,0,0)");
 
-          //    to all of these events, trigger the chosen to open and receive focus
+          // to all of these events, trigger the chosen to open and receive focus
           jQuery(this).on("click focus keyup",function(event){
               jQuery(this).closest(".chosen-container").trigger("mousedown.chosen");
           });

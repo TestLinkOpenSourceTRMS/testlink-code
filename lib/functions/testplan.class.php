@@ -5915,7 +5915,9 @@ class testplan extends tlObjectWithAttachments
                           " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
                           // $fullEIDClause .
                           " TCV.tc_external_id AS external_id, " .
+                          " TPTCV.node_order AS exec_order," .
                           " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
+
                           
                           " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
                           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
@@ -5949,6 +5951,7 @@ class testplan extends tlObjectWithAttachments
                      " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,TCV.version," .
                      // $fullEIDClause .
                      " TCV.tc_external_id AS external_id, " .
+                     " TPTCV.node_order AS exec_order," . 
                      " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
                      
                      " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          

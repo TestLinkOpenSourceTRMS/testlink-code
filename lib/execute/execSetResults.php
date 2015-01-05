@@ -1749,6 +1749,8 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
       // before this refactoring
       //
       // $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id',database::CUMULATIVE);
+      $sql2run .= ' ORDER BY exec_order ';
+
       $ltcv = $tex = $tcaseMgr->db->$kmethod($sql2run,'tcase_id');
       if(!is_null($tex))
       {

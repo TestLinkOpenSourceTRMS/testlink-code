@@ -1284,6 +1284,8 @@ $TLS_modification_date_from = 'Modification Date From:';
 $TLS_modification_date_to = 'Modification Date To:';
 $TLS_search_important_notice = 'Important Notice: search is done only on test project %s.';
 $TLS_search_prefix_ignored = 'Test case prefix will be ignored';
+$TLS_jolly = "Jolly (OR)";
+$TLS_jolly_hint = "value will be searched like in OR mode in title,summary,preconditions,steps,actions";
 
 
 

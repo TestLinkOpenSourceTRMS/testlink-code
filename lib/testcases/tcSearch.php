@@ -47,17 +47,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
   $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '', 'users' => '');
   $tcaseID = null;
-
-  $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
-  foreach($k2w as $kf => $alias)
-  {
-    if($args->$kf != "")
-    {
-      $args->$kf =  $db->prepare_string($args->$kf);
-      $filter[$kf] = " AND {$alias}.{$kf} like '%{$args->$kf}%' ";
-    }
-  } 
-    
+  
    
   if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
   {
@@ -86,18 +76,54 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
      $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
   }
     
+
+  $useOr = false;
+  $filterSpecial = null;
+  $feOp = " AND ";
+  $filterSpecial['tricky'] = " 1=1 ";
+  if($args->jolly != "")
+  {
+    // $filterSpecial['trick'] = " 1=1 ";
+    $useOr = true;
+    $feOp = " OR ";
+    $filterSpecial['tricky'] = " 1=0 ";
+    $args->steps = $args->expected_results = $args->jolly;
+  }  
+    
   if($args->steps != "")
   {
     $args->steps = $db->prepare_string($args->steps);
-    $filter['by_steps'] = " AND TCSTEPS.actions like '%{$args->steps}%' ";  
+    $filterSpecial['by_steps'] = $feOp . " TCSTEPS.actions like '%{$args->steps}%' ";  
   }    
     
   if($args->expected_results != "")
   {
     $args->expected_results = $db->prepare_string($args->expected_results);
-    $filter['by_expected_results'] = " AND TCSTEPS.expected_results like '%{$args->expected_results}%' "; 
+    $filterSpecial['by_expected_results'] = $feOp . " TCSTEPS.expected_results like '%{$args->expected_results}%' "; 
   }    
-    
+
+  $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
+  $jollyEscaped = $db->prepare_string($args->jolly);
+  foreach($k2w as $kf => $alias)
+  {
+    if($args->$kf != "" || $args->jolly != '')
+    {
+      if( $args->jolly == '' )
+      {
+        $args->$kf =  $db->prepare_string($args->$kf);
+      }  
+      $filterSpecial[$kf] = " {$feOp} {$alias}.{$kf} like ";
+      $filterSpecial[$kf] .= ($args->jolly == '') ? " '%{$args->$kf}%' " : " '%{$jollyEscaped}%' "; 
+    }
+  } 
+ 
+  $otherFilters = '';  
+  if(!is_null($filterSpecial))
+  {
+    $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
+  }  
+
+
   if($args->custom_field_id > 0)
   {
     $args->custom_field_id = $db->prepare_string($args->custom_field_id);
@@ -183,8 +209,12 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       $sqlPart2 .= implode("",$filter);
     }
   
+    $sqlPart2 .= $otherFilters;
+
+
     // Count results
     $sql = $sqlCount . $sqlPart2;
+
     $gui->row_qty = $db->fetchOneValue($sql); 
     if ($gui->row_qty)
     {
@@ -318,7 +348,8 @@ function init_args(&$tprojectMgr)
                    "creation_date_from" => array(tlInputParameter::STRING_N),
                    "creation_date_to" => array(tlInputParameter::STRING_N),
                    "modification_date_from" => array(tlInputParameter::STRING_N),
-                   "modification_date_to" => array(tlInputParameter::STRING_N));
+                   "modification_date_to" => array(tlInputParameter::STRING_N),
+                   "jolly" => array(tlInputParameter::STRING_N));
     
 
       
@@ -439,11 +470,22 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->targetTestCase = (is_null($argsObj->targetTestCase) || $argsObj->targetTestCase == '') ? 
                          $gui->tcasePrefix : $argsObj->targetTestCase;
 
-                       
-  $txtin = array("summary","steps","expected_results","preconditions","name","created_by","edited_by");
+  
+  $txtin = array("created_by","edited_by","jolly");   
+  $jollyKilled = array("summary","steps","expected_results","preconditions","name");
+  $txtin = array_merge($txtin, $jollyKilled);
+  
   foreach($txtin as $key )
   {
     $gui->$key = $argsObj->$key;
+  }  
+
+  if($argsObj->jolly != '')
+  {
+    foreach($jollyKilled as $key)
+    {
+      $gui->$key = '';  
+    }  
   }  
                    
 

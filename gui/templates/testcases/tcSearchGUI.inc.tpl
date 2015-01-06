@@ -12,10 +12,10 @@ Purpose: show form for search through test cases in test specification
 
 {lang_get var="labels" 
           s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,edited_by,status,
-             th_title,summary,steps,expected_results,keyword,custom_field,created_by,
+             th_title,summary,steps,expected_results,keyword,custom_field,created_by,jolly_hint,
              search_type_like,preconditions,filter_mode_and,test_importance,search_prefix_ignored,
              creation_date_from,creation_date_to,modification_date_from,modification_date_to,
-             custom_field_value,btn_find,requirement_document_id,show_calender,clear_date'}
+             custom_field_value,btn_find,requirement_document_id,show_calender,clear_date,jolly'}
 
 
 <div style="margin: 1px;">
@@ -138,6 +138,12 @@ Purpose: show form for search through test cases in test specification
         <div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
       </td>
     </tr>
+
+     <tr>
+      <td>{$labels.jolly}<img src="{$tlImages.info}" title="{$labels.jolly_hint}"></td>
+      <td><input type="text" name="jolly" id="jolly" value="{$gui->jolly}"
+                 size="{#SUMMARY_SIZE#}" maxlength="{#SUMMARY_MAXLEN#}" /></td>
+     </tr>
     
    
     {if $gui->filter_by.keyword}

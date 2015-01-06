@@ -492,14 +492,14 @@ function init_args(&$dbHandler,$cfgObj)
   }
 
 
-
+  // Do this only on single execution mode
   // get issue tracker config and object to manage TestLink - BTS integration 
   $its = null;
   $itsCfg = null;
 
   $tproject_mgr = new testproject($dbHandler);
   $info = $tproject_mgr->get_by_id($args->tproject_id);
-  unset($tproject_mgr);
+  unset($tproject_mgr);  
   $bug_summary['minLengh'] = 1; 
   $bug_summary['maxLengh'] = 1; 
 
@@ -512,15 +512,21 @@ function init_args(&$dbHandler,$cfgObj)
     unset($it_mgr);
     $bug_summary['maxLengh'] = $its->getBugSummaryMaxLength(); 
   }
-
-  $inputCfg = array("bug_summary" => array("POST",tlInputParameter::STRING_N,
-                                           $bug_summary['minLengh'],$bug_summary['maxLengh']),
-                    "bug_notes" => array("POST",tlInputParameter::STRING_N),
+ 
+  
+  $inputCfg = array("bug_notes" => array("POST",tlInputParameter::STRING_N),
                     "issueType" => array("POST",tlInputParameter::INT_N),
                     "issuePriority" => array("POST",tlInputParameter::INT_N),
                     "artifactComponent" => array("POST",tlInputParameter::ARRAY_INT),
                     "artifactVersion" => array("POST",tlInputParameter::ARRAY_INT));
-  
+
+  $inputCfg["bug_summary"] = array("POST",tlInputParameter::STRING_N);
+  if(!$args->do_bulk_save)
+  {
+    $inputCfg["bug_summary"][2] = $bug_summary['minLengh'];
+    $inputCfg["bug_summary"][3] = $bug_summary['maxLengh']; 
+  } 
+
   I_PARAMS($inputCfg,$args);
 
   return array($args,$its,$itsCfg);

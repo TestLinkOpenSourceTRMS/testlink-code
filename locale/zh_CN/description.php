@@ -27,6 +27,7 @@
  *
  * ----------------------------------------------------------------------------------- */
 
+
 // printFilter.html //已校对
 $TLS_hlp_generateDocOptions = "<h2>根据选项生成的文档</h2>
 
@@ -49,6 +50,11 @@ $TLS_hlp_generateDocOptions = "<h2>根据选项生成的文档</h2>
 
 <p><b>导出格式：</b>共有两种格式：HTML和MS word。在第二种情况下，浏览器会自动调用MS word组件。</p>";
 
+
+
+
+
+
 // testPlan.html //已校对
 $TLS_hlp_testPlan = "<h2>测试计划</h2>
 
@@ -66,6 +72,13 @@ $TLS_hlp_testPlan = "<h2>测试计划</h2>
 
 <p>注意：用户有可能看不到一个包含任何测试计划的下拉菜单。
 在这种情况下，所有的链接（除了管理人员开启的）都不能使用。如果出现这种情况，你一定要跟领导或管理员联系，给你在项目中授予适当的权限或者为你创建一个测试计划。</p>"; 
+
+
+
+
+
+
+
 
 // custom_fields.html //已校对
 $TLS_hlp_customFields = "<h2>自定义字段</h2>
@@ -103,10 +116,17 @@ $TLS_hlp_customFields = "<h2>自定义字段</h2>
 </ul>
 ";
 
+
+
+
+
+
 // execMain.html  //已校对
 $TLS_hlp_executeMain = "<h2>执行测试用例</h2>
 <p>允许用户执行测试用例。执行本身只是一个对选择的构建的测试用例分配结果（通过，失败，锁定）的过程</p>
 <p>通过配置可以关联到缺陷跟踪系统。用户可以直接新建问题和浏览已经存在的问题。更多信息请查看安装手册。</p>";
+
+
 
 //bug_add.html //已校对
 $TLS_hlp_btsIntegration = "<h2>给测试用例添加问题</h2>
@@ -130,6 +150,7 @@ TestLink 仅仅简单地跟缺陷跟踪系统（BTS）进行了集成，即不�
 
 关闭添加问题页面后，你将在执行页面上看见一个问题数据的关联信息。
 </p>";
+
 
 // execFilter.html  //已校对
 $TLS_hlp_executeFilter = "<h2>设置过滤器并构建测试的实施</h2>
@@ -172,10 +193,18 @@ $TLS_hlp_executeFilter = "<h2>设置过滤器并构建测试的实施</h2>
  */
 
 
+
+
+
+
+
+
+
 // newest_tcversions.html //已校对
 $TLS_hlp_planTcModified = "<h2>被关联测试用例的最新版本</h2>
 <p>通过分析与测试计划关联的所有测试用例，那些有最新版本的测试用例将被罗列出来（相对应于当前测试计划的测试用例）
 </p>";
+
 
 
 // requirementsCoverage.html //已校对
@@ -207,6 +236,77 @@ TestLink 不支持即包含需求规约又包含需求的版本。
 ";
 
 
+
+
+
+$TLS_hlp_req_coverage_table = "<h3>覆盖率：</h3>
+A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
+to test it completely. 8 of those have already been created and linked to this Requirement, which 
+makes a coverage of 40 percent.
+";
+
+
+// req_edit
+$TLS_hlp_req_edit = "<h3>Internal links on scope:</h3>
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed in the config file.
+<br /><br />
+<b>用法：</b>
+<br />
+关联到需求：[req]req_doc_id[/req]<br />
+关联到需求规约：[req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>The test project of the requirement / requirement specification, a version and an anchor 
+to jump to can also be specified:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
+This syntax also works for requirement specifications (version attribute has no effect).<br />
+If you do not specify a version the whole requirement including all versions will be shown.</p>
+
+<h3>变更日志信息：</h3>
+<p>Whenever a change is made Testlink will ask for a log message. This log message served the purpose of traceability.
+If only the scope of the requirement has changed you are free to decide whether to create a new revision or not. 
+Whenever anything besides the scope is changed you are forced to create a new revision.</p>
+";
+
+
+// req_view
+$TLS_hlp_req_view = "<h3>Direct Links:</h3>
+<p>To easily share this document with others simply click the globe icon at the top of this document to create a direct link.</p>
+
+<h3>查看历史：</h3>
+<p>This feature allows to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
+The overview provides the Log message for each revision/version, a timestamp and the author of the last change.</p>
+
+<h3>测试用例覆盖：</h3>
+<p>显示该需求所有关联的测试用例。</p>
+
+<h3>关联关系：</h3>
+<p>需求关联关系用于标识需求间的关系建模。
+Custom relations and the option to allow relations between requirements of 
+different test projects can be configured on the config file.
+If you set the relation \"Requirement A is parent of Requirement B\", 
+Testlink will set the relation \"Requirement B is child of Requirement A\" implicitly.</p>
+";
+
+
+// req_spec_edit
+$TLS_hlp_req_spec_edit = "<h3>Internal links on scope:</h3>
+<p>Internal links serve the purpose of creating links to other requirements/requirement specifications 
+with a special syntax. Internal Links behaviour can be changed in the config file.
+<br /><br />
+<b>Usage:</b>
+<br />
+Link to requirements: [req]req_doc_id[/req]<br />
+Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>The test project of the requirement / requirement specification, a version and an anchor 
+to jump to can also be specified:<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
+This syntax also works for requirement specifications (version attribute has no effect).<br />
+If you do not specify a version the whole requirement including all versions will be shown.</p>
+";
+
+
 // planAddTC_m1.tpl //已校对
 $TLS_hlp_planAddTC = "<h2>关于'保存自定义字段'</h2>
 如果你已经定义而且指派了关键字到测试项目中，<br /> 
@@ -215,6 +315,17 @@ $TLS_hlp_planAddTC = "<h2>关于'保存自定义字段'</h2>
  '启用测试计划设计=true'<br />
 你将只能在已经与测试计划建立关联的测试用例页面看到这些关键字。
 ";
+
+
+// resultsByTesterPerBuild.tpl
+$TLS_hlp_results_by_tester_per_build_table = "<b>关于测试人员的更多信息：</b><br />
+若您在表格中点击了对应测试人员的名称，您将看到该测试人员的测试用例分配及测试执行的详细情况。<br /><br />
+<b>备注：</b><br />
+This Report shows those test cases, which are assigned to a specific user and have been executed 
+based on each active build. Even if a test case has been executed by another user than the assigned user, 
+the test case will appear as executed for the assigned user.
+";
+
 
 // xxx.html
 //$TLS_hlp_xxx = "";

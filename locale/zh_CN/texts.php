@@ -25,6 +25,11 @@
  * Revisions history is not stored for the file
  *
  * ------------------------------------------------------------------------------------ */
+$TLS_htmltext_title['error']	= "Application error";
+$TLS_htmltext['error'] 		= "<p>Unexpected error happens. Please check event viewer or " .
+		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
+		"<a href='http://www.testlink.org'>website</a>.</p>";
+
 
 
 $TLS_htmltext_title['assignReqs']	= "分配需求给测试用例"; //已校对
@@ -43,6 +48,11 @@ $TLS_htmltext['assignReqs'] 		= "<h2>目的:</h2>
 	    测试设计者可以点击'指派'按钮把需求指派到测试用例.这些新关联的
         测试用例会在工作区中间的'已指派的需求'中显示.</li>
 </ol>";
+
+
+
+
+
 
 
 // --------------------------------------------------------------------------------------
@@ -91,6 +101,61 @@ $TLS_htmltext['searchTc'] 		= "<h2>目的:</h2>
 </ol>";
 
 
+
+
+
+
+
+
+/* contribution by asimon for 2976 */
+// requirements search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReq']	= "需求搜索页面";
+$TLS_htmltext['searchReq'] 		= "<h2>目的：</h2>
+
+<p>Navigation according to keywords and/or searched strings. The search is not
+case sensitive. Result includes just requirements from actual Test Project.</p>
+
+<h2>搜索使用方法：</h2>
+
+<ol>
+	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
+	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>点击【查找】按钮；</li>
+	<li>显示所有满足查询条件的需求。您可以通过点击【标题】链接修改对应需求。</li>
+</ol>
+
+<h2>备注：</h2>
+
+<p>- 仅在当前测试项目内的需求才会被搜索到。<br>
+- The search is case-insensitive.<br>
+- Empty fields are not considered.</p>";
+
+// requirement specification search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReqSpec']	= "需求规约搜索页面";
+$TLS_htmltext['searchReqSpec'] 		= "<h2>目的：</h2>
+
+<p>Navigation according to keywords and/or searched strings. The search is not
+case sensitive. Result includes just requirement specifications from actual Test Project.</p>
+
+<h2>搜索使用方法：</h2>
+
+<ol>
+	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
+	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>点击【查找】按钮；</li>
+	<li>显示所有满足查询条件的需求。您可以通过点击【标题】链接修改对应的需求规约。</li>
+</ol>
+
+<h2>备注：</h2>
+
+<p>- 仅在当前测试项目内的需求规约才会被搜索到。<br>
+- The search is case-insensitive.<br>
+- Empty fields are not considered.</p>";
+/* end contribution */
+
+
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printTestSpec']	= "打印需求规约"; //printTC.html //已校对
 $TLS_htmltext['printTestSpec'] 			= "<h2>目的:</h2>
@@ -106,6 +171,11 @@ $TLS_htmltext['printTestSpec'] 			= "<h2>目的:</h2>
 <li><p>使用浏览器的打印功能来输出信息.<br />
  <i>注意:保证只打印右边的框架.</i></p></li>
 </ol>";
+
+
+
+
+
 
 
 // ------------------------------------------------------------------------------------------
@@ -131,13 +201,46 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档.</p>
 中的测试套件中. 标题和范围被复制到测试用例中.</p>";
 
 
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['printReqSpec'] = "打印需求规约"; //printReq
+$TLS_htmltext['printReqSpec'] = "<h2>目的：</h2>
+<p>You can generate document with the requirements within a requirement specification,
+or all the requirements in a test project.</p>
+<h2>开始：</h2>
+<ol>
+<li>
+<p>Select the parts of the requirements you want to display, and then click on a  
+requirement specification, or the test project. A printable page will be displayed.</p>
+</li>
+<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
+the information displayed as HTML, or in a Pseudo Micosoft Word document. 
+See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+'{$locale}');\">help</span> for more information.</p>
+</li>
+<li><p>Use your browser's print functionality to actually print the information.<br />
+<i>Note: Make sure to only print the right-hand frame.</i></p>
+</li>
+</ol>";
+
+
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['keywordsAssign']	= "指派关键字"; //已校对
-$TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
+$TLS_htmltext['keywordsAssign'] 			= "<h2>目的：</h2>
 <p>在该功能中用户可以批量地把关键字设置到现有的测试用例和测试套件中
 </p>
 
-<h2>指派关键字:</h2>
+<h2>指派关键字：</h2>
 <ol>
 	<li>在左边的视图中选择一个测试用例或者测试套件.</li>
 	<li>页面右上角中的设置可以让你把可用的关键字指派到每一个单独的测试用例上.</li>
@@ -150,6 +253,14 @@ $TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
 <p>TestLink会使用这种要求，以至于你对最新版本的测试用例指派的关键字对测试计划中的旧版本没什么影响. 
 如果你希望测试计划中的关键字及时更新，首先使用'更新修改的测试用例'来验证是否是最新版本
 在指派关键字之前.</p>";
+
+
+
+
+
+
+
+
 
 
 // ------------------------------------------------------------------------------------------
@@ -170,6 +281,10 @@ $TLS_htmltext['executeTest'] 		= "<h2>目的:</h2>
 	<li>保存结果.</li>
 </ol>
 <p><i>注意:如果你打算直接创建/跟踪问题，必须先配置TestLink关联到相关的bug跟踪工具.</i></p>";
+
+
+
+
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['showMetrics']	= "测试报告和统计数据"; //已校对
@@ -252,6 +367,12 @@ $TLS_htmltext['showMetrics'] 		= "<p>关于测试计划的报告" .
 <p>该报表显示了每个测试用例所发现的所有错误. 包括全部项目中的所有错误. 该报表只有在和错误跟踪系统整合了以后才可见.</p>";
 
 
+
+
+
+
+
+
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['planAddTC']	= "添加/删除测试用例到测试计划"; // testSetAdd //已校对
 $TLS_htmltext['planAddTC'] 			= "<h2>目的:</h2>
@@ -276,7 +397,6 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>目的</h2>
 	<li>点击'保存'按钮提交.</li>
 	<li>打开测试员的执行页面验证关联的情况.可以为使用者设置过滤器.</li>
 </ol>";
-
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['planUpdateTC']	= "更新测试计划中的测试用例"; //已校对
@@ -311,6 +431,10 @@ $TLS_htmltext['test_urgency'] 		= "<h2>目的</h2>
 	<li>点击'保存'来提交改变.</li>
 </ol>
 <p><i>例如:一个'高'紧急程度的测试套件中的'低'紧急程度的测试用例在执行时是'中'级别 " ."</i>";
+
+
+
+
 
 
 // ------------------------------------------------------------------------------------------

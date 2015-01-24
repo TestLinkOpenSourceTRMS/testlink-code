@@ -149,9 +149,15 @@ class jirarestInterface extends issueTrackerInterface
 		{
 
 			$issue = $this->APIClient->getIssue($issueID);
+      
+      // IMPORTANT NOTICE
+      // $issue->id do not contains ISSUE ID as displayed on GUI, but what seems to be an internal value.
+      // $issue->key has what we want.
+      // Very strange is how have this worked till today ?? (2015-01-24)
       if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
       {
         // We are going to have a set of standard properties
+        $issue->id = $issue->key;
         $issue->summary = $issue->fields->summary;
         $issue->statusCode = $issue->fields->status->id;
         $issue->statusVerbose = $issue->fields->status->name;

@@ -2611,7 +2611,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 
 
-    /**
+  /**
    * getKeywordSet()
    *  
    * @param int tproject_id
@@ -2646,11 +2646,11 @@ class TestlinkXMLRPCServer extends IXR_Server
   
 
 
-    /**
+  /**
    * getValidKeywordSetByName()
    *  
    * @param int $tproject_id
-    * @param $keywords array of keywords names
+   * @param $keywords array of keywords names
    *
    * @return string that represent a list of keyword id (comma is character separator)
    *
@@ -2684,20 +2684,20 @@ class TestlinkXMLRPCServer extends IXR_Server
       {
         $a_keywords[$idx] = trim($a_keywords[$idx]);
       }
-      $itemsSet = implode("','",$a_keywords);
-          
+      $itemSet = implode("','",$a_keywords);
+
       if ($byName)
       {
-        $sql .= " AND keyword IN ('{$itemsSet}')";
+        $sql .= " AND keyword IN ('{$itemSet}')";
       }
       else
       {
-        $sql .= " AND id IN ({$itemsSet})";
+        $sql .= " AND id IN ({$itemSet})";
       }
     }
 
+    
     $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
-
     if(!is_null($keywordMap))
     {
       if(is_null($op))
@@ -3146,22 +3146,22 @@ class TestlinkXMLRPCServer extends IXR_Server
    */
   protected function checkTestCaseAncestry($messagePrefix='')
   {
-      $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
-      $tproject_id=$this->args[self::$testProjectIDParamName];
-      $tcase_id=$this->args[self::$testCaseIDParamName];
-      $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
-      $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
+    $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
+    $tproject_id=$this->args[self::$testProjectIDParamName];
+    $tcase_id=$this->args[self::$testCaseIDParamName];
+    $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
+    $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
       
-      if($tcase_tproject_id != $tproject_id)
-      {
-          $status_ok=false;
-          $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
-          $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
-          $msg = $messagePrefix . sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
-                                          $tproject_info['name'],$tproject_id);  
-          $ret=array('status_ok' => false, 'error_msg' => $msg , 'error_code' => TCASE_TPROJECT_KO);                                               
-      } 
-      return $ret;
+    if($tcase_tproject_id != $tproject_id)
+    {
+      $status_ok=false;
+      $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
+      $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
+      $msg = $messagePrefix . sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
+                                      $tproject_info['name'],$tproject_id);  
+      $ret=array('status_ok' => false, 'error_msg' => $msg , 'error_code' => TCASE_TPROJECT_KO);                                               
+    } 
+    return $ret;
   }
 
 
@@ -6531,6 +6531,70 @@ protected function createAttachmentTempFile()
   }
 
 
+  /**
+   * addTestCaseKeywords
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param string $args["testcaseexternalid"]
+   * @param array $args["keywords"]: keywords
+   * 
+   * @return mixed $resultInfo
+   *
+   * @internal revisions
+   * @since 1.9.13
+   */
+  function addTestCaseKeywords($args)
+  {
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+    $resultInfo=array();
+    $version = -1;
+    $item = null;
+    $stepSet = null;
+    $stepNumberIDSet = null;
+      
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate','checkTestCaseIdentity');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+                 $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
+
+    if( $status_ok )
+    {
+      // Important Notice: method checkTestCaseIdentity sets
+      // $this->args[self::$testCaseIDParamName]
+      $tcaseID = $this->args[self::$testCaseIDParamName];
+      $resultInfo[self::$testCaseExternalIDParamName] = $args[self::$testCaseExternalIDParamName];
+      $resultInfo[self::$testCaseIDParamName] = $tcaseID;
+    
+      // check if keywords have been provided
+      $status_ok = $this->_isParamPresent(self::$keywordNameParamName,$msg_prefix,self::SET_ERROR);
+    }    
+
+    if($status_ok)
+    {
+      $tproject_id = $this->tcaseMgr->get_testproject($tcaseID);
+
+      // need to check if provided values are OK.
+      // we are not going to provide detailed error message if values are not valid.
+      // Only if all values are KO, we will inform user, otherwise
+      $keywordSet = $args[self::$keywordNameParamName];
+      $kw = $this->getValidKeywordSet($tproject_id,implode(",",$keywordSet),true,true);
+      if( is_null($kw) )
+      {
+        $status_ok = false;
+      }
+    }  
+
+    if($status_ok)
+    {
+      $this->tcaseMgr->addKeywords($tcaseID,array_keys($kw));
+      $resultInfo['status_ok'] = true;
+    }
+
+    return ($status_ok ? $resultInfo : $this->errors);
+  }
+
+
 
 
   /**
@@ -6601,6 +6665,7 @@ protected function createAttachmentTempFile()
                             'tl.setTestCaseExecutionType' => 'this:setTestCaseExecutionType',
                             'tl.assignTestCaseExecutionTask' => 'this:assignTestCaseExecutionTask',
                             'tl.unassignTestCaseExecutionTask' => 'this:unassignTestCaseExecutionTask',
+                            'tl.addTestCaseKeywords' => 'this:addTestCaseKeywords',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

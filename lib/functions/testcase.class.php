@@ -3658,12 +3658,22 @@ class testcase extends tlObjectWithAttachments
     $elemTpl = "\n".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">' . "\n" .
                "\t<node_order><![CDATA[||NODE_ORDER||]]></node_order>\n";
                
+    
+    // TICKET 6904: Export the Execution Order in a TestPlan for each testcase
+    if(isset($optExport['EXEC_ORDER']))
+    {
+      $elemTpl .= "\t<exec_order><![CDATA[||EXEC_ORDER||]]></exec_order>\n";
+
+      $tc_data[0]['exec_order'] = $optExport['EXEC_ORDER'];
+    } 
 
     if(!isset($optExport['EXTERNALID']) || $optExport['EXTERNALID'])
     {
       $elemTpl .= "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n";
     }  
 
+
+    
 
     $elemTpl .= "\t<version><![CDATA[||VERSION||]]></version>\n" .
                 "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
@@ -3685,6 +3695,7 @@ class testcase extends tlObjectWithAttachments
       $info = array("{{TESTCASE_ID}}" => "testcase_id",
                     "{{NAME}}" => "name",
                     "||NODE_ORDER||" => "node_order",
+                    "||EXEC_ORDER||" => "exec_order",
                     "||EXTERNALID||" => ($opt['getPrefix'] ? 'fullExternalID': 'tc_external_id'),
                     "||VERSION||" => "version",
                     "||SUMMARY||" => "summary",

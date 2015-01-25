@@ -3732,15 +3732,15 @@ class testplan extends tlObjectWithAttachments
                   "\t\t" . "<internal_id><![CDATA[||PLATFORMID||]]></internal_id>" .
                   "\n\t" . "</platform>";
                 
-        $xml_root = "{{XMLCODE}}";          
+      $xml_root = "{{XMLCODE}}";          
       $xml_mapping = null;
       $xml_mapping = array("||PLATFORMNAME||" => "platform_name", "||PLATFORMID||" => 'id');
 
       $mm = array();
       $mm[$context['platform_id']] = array('platform_name' => $info['name'], 'id' => $context['platform_id']);
-        $item_info['target_platform'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
-                                   ('noXMLHeader'=='noXMLHeader'));
-        $target_platform = "\t\t||TARGET_PLATFORM||\n";
+      $item_info['target_platform'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
+                                                      ('noXMLHeader'=='noXMLHeader'));
+      $target_platform = "\t\t||TARGET_PLATFORM||\n";
     }
     // -----------------------------------------------------------------------------------------------------
 
@@ -3780,7 +3780,9 @@ class testplan extends tlObjectWithAttachments
     $item_info['testsuites'] = null;
     if( !is_null($tplan_spec) && isset($tplan_spec['childNodes']) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
     {
-      $item_info['testsuites'] = '<testsuites>' . $this->exportTestSuiteDataToXML($tplan_spec,$context['tproject_id']) . 
+      $item_info['testsuites'] = '<testsuites>' . 
+                                 $this->exportTestSuiteDataToXML($tplan_spec,$context['tproject_id'],$id,
+                                                                 $context['platform_id']) . 
                                  '</testsuites>';
     } 
     
@@ -3803,19 +3805,21 @@ class testplan extends tlObjectWithAttachments
    * 
    *
    */
-  private function exportTestSuiteDataToXML($container,$tproject_id)
+  private function exportTestSuiteDataToXML($container,$tproject_id,$tplan_id,$platform_id)
   {
     static $keywordMgr;
     static $getLastVersionOpt = array('output' => 'minimun');
     static $tcaseMgr;
     static $tsuiteMgr;
     static $tcaseExportOptions;
-    
+    static $linkedItems;
+
     if(is_null($keywordMgr))
     {
-      $tcaseExportOptions = array('CFIELDS' => true, 'KEYWORDS' => 'true');
+      $tcaseExportOptions = array('CFIELDS' => true, 'KEYWORDS' => true, 'EXEC_ORDER' => 0);
       $keywordMgr = new tlKeyword();      
       $tsuiteMgr = new testsuite($this->db);
+      $linkedItems = $this->getLinkedItems($tplan_id);
     }  
     
     $xmlTC = null;
@@ -3852,7 +3856,7 @@ class testplan extends tlObjectWithAttachments
         switch($cNode['node_table'])
         {
           case 'testsuites':
-            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id);
+            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id,$tplan_id,$platform_id);
           break;
             
           case 'testcases':
@@ -3861,10 +3865,11 @@ class testplan extends tlObjectWithAttachments
               $tcaseMgr = new testcase($this->db);
             }
             // testcase::LATEST_VERSION,
+            $tcaseExportOptions['EXEC_ORDER'] = $linkedItems[$cNode['id']][$platform_id]['node_order'];
             $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
                                                          $tproject_id,testcase::NOXMLHEADER,
                                                          $tcaseExportOptions);
-            break;
+          break;
         }
       }
     }   
@@ -7315,7 +7320,7 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = " /* $debugMsg */ ". 
-         " SELECT parent_id AS tcase_id,TPTCV.platform_id " .
+         " SELECT parent_id AS tcase_id,TPTCV.platform_id,TPTCV.node_order " .
          " FROM {$this->tables['nodes_hierarchy']} NHTC " .
          " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
          " WHERE TPTCV.testplan_id = " . intval($id);

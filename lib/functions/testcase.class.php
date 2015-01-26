@@ -4953,7 +4953,7 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    */
-  private function getStepsSimple($tcversion_id,$step_number=0,$options=null)
+  function getStepsSimple($tcversion_id,$step_number=0,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 

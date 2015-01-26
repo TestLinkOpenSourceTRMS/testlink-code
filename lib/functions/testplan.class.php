@@ -9,13 +9,13 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
  * @internal revisions
  * 
- * @since 1.9.11
+ * @since 1.9.13
  **/
 
 /** related functionality */
@@ -6584,7 +6584,7 @@ class testplan extends tlObjectWithAttachments
         // Need to understand why in future  
         $sql = "/* $debugMsg */ " .
                " SELECT NH_TCV.parent_id AS tc_id, TPTCV.platform_id, TPTCV.id AS feature_id, " .
-               " TCV.tc_external_id AS external_id, {$feid} AS full_external_id";
+               " TCV.tc_external_id AS external_id, {$feid} AS full_external_id, TPTCV.tcversion_id ";
       break;      
 
       case 'full':
@@ -7018,7 +7018,7 @@ class testplan extends tlObjectWithAttachments
     $item = $this->get_by_id($id,array('output' => 'minimun','caller' => __METHOD__));
 
     $xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" .
-                 "<!-- TestLink - www.teamst.org - xml to allow results import -->\n";
+                 "<!-- TestLink - www.testlink.org - xml to allow results import -->\n";
     $xmlString .= "<results>\n";
     $xmlString .= "\t<testproject name=\"" . htmlspecialchars($item['tproject_name']) . '"' . 
                   " prefix=\"" . htmlspecialchars($item['prefix']) . '"' . " />\n";
@@ -7050,10 +7050,12 @@ class testplan extends tlObjectWithAttachments
     // <notes>functionality works great </notes>
     // </testcase>
     $mm = $this->getLinkedStaticView($id,$my['filters'],array('output' => 'array','detail' => '4results'));
+    
 
-    // Custom fields processing
     if(!is_null($mm) && ($tcaseQty=count($mm)) > 0)
     {
+
+      // Custom fields processing
       $xcf = $this->cfield_mgr->get_linked_cfields_at_execution($item['tproject_id'],1,'testcase');
       if(!is_null($xcf) && ($cfQty=count($xcf)) > 0)
       {
@@ -7062,7 +7064,32 @@ class testplan extends tlObjectWithAttachments
           $mm[$gdx]['xmlcustomfields'] = $this->cfield_mgr->exportValueAsXML($xcf);
         }    
       }  
+
+      // Test Case Steps
+      $gso = array('fields2get' => 'id,step_number', 'renderGhostSteps' => false, 'renderImageInline' => false);
+      $stepRootElem = "<steps>{{XMLCODE}}</steps>";
+      $stepTemplate = "\n" . '<step>' . "\n" .
+                      "\t<step_number>||STEP_NUMBER||</step_number>\n" .
+                      "\t<result>p</result>\n" .
+                      "\t<notes>||NOTES||</notes>\n" .
+                      "</step>\n";
+      $stepInfo = array("||STEP_NUMBER||" => "step_number", "||NOTES||" => "notes"); 
+   
+      for($gdx=0; $gdx < $tcaseQty; $gdx++)
+      {
+        $mm[$gdx]['steps'] = $this->tcase_mgr->getStepsSimple($mm[$gdx]['tcversion_id'],0,$gso);
+        if(!is_null($mm[$gdx]['steps']))
+        {
+          $qs = count($mm[$gdx]['steps']);
+          for($scx=0; $scx < $qs; $scx++)
+          {
+            $mm[$gdx]['steps'][$scx]['notes'] = 'your step exec notes';
+          }  
+          $mm[$gdx]['xmlsteps'] = exportDataToXML($mm[$gdx]['steps'],$stepRootElem,$stepTemplate,$stepInfo,true);
+        }  
+      }
     }  
+
     
     $xml_root = null;
     $xml_template = "\n" . 
@@ -7073,11 +7100,14 @@ class testplan extends tlObjectWithAttachments
                     "\t\t" . "<!-- if not present now() will be used -->" . "\n" .
                     "\t\t" . "<timestamp>YYYY-MM-DD HH:MM:SS</timestamp>" . "\n" .  
                     "\t\t" . "<bug_id>put your bug id here</bug_id>" . "\n" .  
+                    "\t\t" . "||STEPS||" . "\n" .  
                     "\t\t" . "||CUSTOMFIELDS||" . "\n" .  
                     "\t</testcase>" . "\n";
 
     $xml_mapping = null;
-    $xml_mapping = array("{{FULLEXTERNALID}}" => "full_external_id", "||CUSTOMFIELDS||" => "xmlcustomfields");
+    $xml_mapping = array("{{FULLEXTERNALID}}" => "full_external_id", "||CUSTOMFIELDS||" => "xmlcustomfields",
+                         "||STEPS||" => "xmlsteps");
+
     $linked_testcases = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
     $zorba = $xmlString .= $linked_testcases . "\n</results>\n";
 

@@ -6531,6 +6531,7 @@ protected function createAttachmentTempFile()
   }
 
 
+
   /**
    * addTestCaseKeywords
    * @param struct $args
@@ -6545,13 +6546,45 @@ protected function createAttachmentTempFile()
    */
   function addTestCaseKeywords($args)
   {
-    $operation=__FUNCTION__;
+    return $this->manageTestCaseKeywords($args,'add');
+  }
+
+  /**
+   * removeTestCaseKeywords
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param string $args["testcaseexternalid"]
+   * @param array $args["keywords"]: keywords
+   * 
+   * @return mixed $resultInfo
+   *
+   * @internal revisions
+   * @since 1.9.13
+   */
+  function removeTestCaseKeywords($args)
+  {
+    return $this->manageTestCaseKeywords($args,'remove');
+  }
+
+  /**
+   * manageTestCaseKeywords
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param string $args["testcaseexternalid"]
+   * @param array $args["keywords"]: keywords
+   * 
+   * @param string $action: domain 'add','remove'
+   * @return mixed $resultInfo
+   *
+   * @internal revisions
+   * @since 1.9.13
+   */
+  protected function manageTestCaseKeywords($args,$action)
+  {
+    $operation = str_replace('manage',$action,__FUNCTION__);
     $msg_prefix="({$operation}) - ";
     $resultInfo=array();
-    $version = -1;
-    $item = null;
-    $stepSet = null;
-    $stepNumberIDSet = null;
+    $method2call = ($action == 'add') ? 'addKeywords' : 'deleteKeywords';
       
     $this->_setArgs($args);
     $checkFunctions = array('authenticate','checkTestCaseIdentity');
@@ -6587,14 +6620,13 @@ protected function createAttachmentTempFile()
 
     if($status_ok)
     {
-      $this->tcaseMgr->addKeywords($tcaseID,array_keys($kw));
+      $this->tcaseMgr->$method2call($tcaseID,array_keys($kw));
+      $resultInfo['validKeywords'] = $kw;
       $resultInfo['status_ok'] = true;
     }
 
     return ($status_ok ? $resultInfo : $this->errors);
   }
-
-
 
 
   /**
@@ -6666,6 +6698,7 @@ protected function createAttachmentTempFile()
                             'tl.assignTestCaseExecutionTask' => 'this:assignTestCaseExecutionTask',
                             'tl.unassignTestCaseExecutionTask' => 'this:unassignTestCaseExecutionTask',
                             'tl.addTestCaseKeywords' => 'this:addTestCaseKeywords',
+                            'tl.removeTestCaseKeywords' => 'this:removeTestCaseKeywords',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

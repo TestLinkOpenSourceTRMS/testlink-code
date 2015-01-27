@@ -25,7 +25,7 @@
  * Revisions history is not stored for the file
  *
  * ------------------------------------------------------------------------------------ */
-$TLS_htmltext_title['error']	= "Application error";
+$TLS_htmltext_title['error']	= "程序错误";
 $TLS_htmltext['error'] 		= "<p>Unexpected error happens. Please check event viewer or " .
 		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
 		"<a href='http://www.testlink.org'>website</a>.</p>";
@@ -89,15 +89,15 @@ $TLS_htmltext['editTc'] 		= "<h2>目的:</h2>
 $TLS_htmltext_title['searchTc']	= "测试用例搜索页"; //已校对
 $TLS_htmltext['searchTc'] 		= "<h2>目的:</h2>
 
-<p>按照关键字和搜索字符串来进行搜索. 英文搜索是不区分大小写. 结果只包括当前测试项目中已有的测试用例.</p>
+<p>按照关键字和搜索字符串来进行搜索。英文搜索是不区分大小写。结果只包括当前测试项目中已有的测试用例。</p>
 
 <h2>搜索:</h2>
 
 <ol>
-	<li>在搜索栏中输入搜索字符串.不用的搜索框留空.</li>
-	<li>选择必须的关键字或者让该栏目留空为'不使用'.</li>
-	<li>点击“查找”.</li>
-	<li>所有符合搜索条件的测试用例就会显示出来. 你可以点击'标题'链接开始对测试用例进行其它操作.</li>
+	<li>在搜索栏中输入搜索字符串.不用的搜索框留空。</li>
+	<li>选择必须的关键字或者让该栏目留空为'不使用'。</li>
+	<li>点击“查找”。</li>
+	<li>所有符合搜索条件的测试用例就会显示出来. 你可以点击'标题'链接开始对测试用例进行其它操作。</li>
 </ol>";
 
 
@@ -113,14 +113,14 @@ $TLS_htmltext['searchTc'] 		= "<h2>目的:</h2>
 $TLS_htmltext_title['searchReq']	= "需求搜索页面";
 $TLS_htmltext['searchReq'] 		= "<h2>目的：</h2>
 
-<p>Navigation according to keywords and/or searched strings. The search is not
-case sensitive. Result includes just requirements from actual Test Project.</p>
+<p>根据关键字  AND/OR 进行相关搜索。英文搜索是不区分大小写。搜索结果只包括符合搜索条件的需求。</p>
 
+		
 <h2>搜索使用方法：</h2>
 
 <ol>
-	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
-	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>在编辑框中输入要使用的搜索关键字。不使用的字段可以置空。</li>
+	<li>填写必备搜索关键字，或将对应的搜索条件值设置为空或“未配置”。</li>
 	<li>点击【查找】按钮；</li>
 	<li>显示所有满足查询条件的需求。您可以通过点击【标题】链接修改对应需求。</li>
 </ol>
@@ -128,22 +128,22 @@ case sensitive. Result includes just requirements from actual Test Project.</p>
 <h2>备注：</h2>
 
 <p>- 仅在当前测试项目内的需求才会被搜索到。<br>
-- The search is case-insensitive.<br>
-- Empty fields are not considered.</p>";
+- 搜索关键字不区分大小写。<br>
+- 空字段搜索条件将被忽略。</p>";
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['searchReqSpec']	= "需求规约搜索页面";
 $TLS_htmltext['searchReqSpec'] 		= "<h2>目的：</h2>
 
-<p>Navigation according to keywords and/or searched strings. The search is not
-case sensitive. Result includes just requirement specifications from actual Test Project.</p>
+<p>根据关键字  AND/OR 进行相关搜索。英文搜索是不区分大小写。搜索结果只包括符合搜索条件的需求。</p>
+		
 
 <h2>搜索使用方法：</h2>
 
 <ol>
-	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
-	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>在编辑框中输入要使用的搜索关键字。不使用的字段可以置空。</li>
+	<li>填写必备搜索关键字，或将对应的搜索条件值设置为空或“未配置”。</li>
 	<li>点击【查找】按钮；</li>
 	<li>显示所有满足查询条件的需求。您可以通过点击【标题】链接修改对应的需求规约。</li>
 </ol>
@@ -151,8 +151,8 @@ case sensitive. Result includes just requirement specifications from actual Test
 <h2>备注：</h2>
 
 <p>- 仅在当前测试项目内的需求规约才会被搜索到。<br>
-- The search is case-insensitive.<br>
-- Empty fields are not considered.</p>";
+- 搜索关键字不区分大小写。<br>
+- 空字段搜索条件将被忽略。</p>";
 /* end contribution */
 
 
@@ -180,22 +180,22 @@ $TLS_htmltext['printTestSpec'] 			= "<h2>目的:</h2>
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['reqSpecMgmt']	= "需求规约设计"; //printTC.html //已校对
-$TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档.</p>
+$TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档。</p>
 
 <h2>需求规约</h2>
 
 <p>需求是由<b>需求规约文档</b>来约定的,然后关联到测试项目.
-<br /> TestLink(当前版本)暂时还不支持需求规约版本中包含了需求本身的情况. 
+<br /> TestLink(当前版本)暂时还不支持需求规约版本中包含了需求本身的情况。 
 所以，文档的版本必须在需求规约之后创建<b>标题</b>.
-用户可以添加简单描述到 <b>范围</b> 区域.</p>
+用户可以添加简单描述到 <b>范围</b> 区域。</p>
 
 <p><b><a name='total_count'>需求覆盖数目</a></b> 
-是为了统计需求覆盖率而使用的,如果不把所有的需求提交到TestLink管理，<b>0</b>那么当前结果分析中需求的数量以TestLink管理起来的需求为依据.</p>
-<p><i>例如: SRS项目中包括200个需求,但是只有50个需求被TestLink管理起来.那么测试覆盖率就是25%(如果所有的测试需求被测试的情况下).</i></p>
+是为了统计需求覆盖率而使用的,如果不把所有的需求提交到TestLink管理，<b>0</b>那么当前结果分析中需求的数量以TestLink管理起来的需求为依据。</p>
+<p><i>例如: SRS项目中包括200个需求,但是只有50个需求被TestLink管理起来.那么测试覆盖率就是25%(如果所有的测试需求被测试的情况下)。</i></p>
 
 <h2><a name='req'>需求</a></h2>
 
-<p>点击已创建的需求规约，如果项目中还不存在需求规约先创建一个.然后你就可以为这个需求规约创建具体的需求。每个需求包括标题，范围和当前状态.需求的状态可以是'有效的'或者'不可测试的'.不可测试的需求在结果分析时不被计入统计数据。这个参数可以被用来设置那些不可实施的功能特点或者错误的需求.</p>
+<p>点击已创建的需求规约，如果项目中还不存在需求规约先创建一个.然后你就可以为这个需求规约创建具体的需求。每个需求包括标题，范围和当前状态.需求的状态可以是'有效的'或者'不可测试的'。不可测试的需求在结果分析时不被计入统计数据。这个参数可以被用来设置那些不可实施的功能特点或者错误的需求。</p>
 
 <p>用户可以在需求界面中使用已创建的需求自动创建测试用例.这些测试用例被创建到名字定义在配置文件<i>(default is: \$tlCfg->req_cfg->default_testsuite_name ='Test suite created by Requirement - Auto';)</i>
 中的测试套件中. 标题和范围被复制到测试用例中.</p>";
@@ -215,21 +215,18 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档.</p>
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printReqSpec'] = "打印需求规约"; //printReq
 $TLS_htmltext['printReqSpec'] = "<h2>目的：</h2>
-<p>You can generate document with the requirements within a requirement specification,
-or all the requirements in a test project.</p>
+<p>您可以通过测试项目中的需求规约或全部需求内容生成需求文档。</p>
 <h2>开始：</h2>
 <ol>
 <li>
-<p>Select the parts of the requirements you want to display, and then click on a  
-requirement specification, or the test project. A printable page will be displayed.</p>
+<p>选择你想要显示的需求部分，点击对应的需求规约或测试项目，即可显示对应的需求文档。</p>
 </li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
-the information displayed as HTML, or in a Pseudo Micosoft Word document. 
-See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
-'{$locale}');\">help</span> for more information.</p>
+<li><p>使用导航栏内的 \"Show As\" 下拉框指定您需要显示的需求内容的输出格式，如HTML格式，或Pseudo Micosoft Word文档格式。
+查看 <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+'{$locale}');\">帮助</span>以获得更多帮助信息</p>
 </li>
-<li><p>Use your browser's print functionality to actually print the information.<br />
-<i>Note: Make sure to only print the right-hand frame.</i></p>
+<li><p>使用浏览器的打印功能来打印的选择的需求信息。<br />
+<i>注意：请确保您打印的内容仅限于右侧页面的展示内容。</i></p>
 </li>
 </ol>";
 

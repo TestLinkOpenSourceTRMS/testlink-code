@@ -33,7 +33,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Last localization update: 2013-04-14 (Testlink 1.9.6)";
+$TLS_last_update = "本地化文件最后更新日期：2015-01-27 (Testlink 1.9.12)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = '启用（点击禁用）';
@@ -244,9 +244,9 @@ $TLS_issue_summary = '概述';
 $TLS_issue_target_version = '目标版本';
 
 
-$TLS_low  = "低";
-$TLS_high = "高";
-$TLS_medium = "中";
+$TLS_low  = "低[C]";
+$TLS_high = "高[A]";
+$TLS_medium = "中[B]";
 
 // Actions (used wide)
 $TLS_add = "添加";
@@ -506,15 +506,15 @@ $TLS_bad_password_symbol = '密码规则要求 - 密码必须包含至少一个�
 
 // ----- archiveData.php -----
 $TLS_container_title_testcase = $TLS_test_case;
-$TLS_high_priority = "高";
-$TLS_medium_priority = "中";
-$TLS_low_priority = "低";
-$TLS_high_importance = "高";
-$TLS_medium_importance = "中";
-$TLS_low_importance = "低";
-$TLS_urgency_high 		= "高";
-$TLS_urgency_medium 	= "中";
-$TLS_urgency_low 		= "低";
+$TLS_high_priority = "高[A]";
+$TLS_medium_priority = "中[B]";
+$TLS_low_priority = "低[C]";
+$TLS_high_importance = "高[A]";
+$TLS_medium_importance = "中[B]";
+$TLS_low_importance = "低[C]";
+$TLS_urgency_high 		= "高[A]";
+$TLS_urgency_medium 	= "中[B]";
+$TLS_urgency_low 		= "低[C]";
 $TLS_test_importance 	= "测试用例等级";
 $TLS_testcases_assigned_to_user = '测试项目: %s - 测试用例指派给使用者: %s';
 $TLS_assigned_on = '指定日期';
@@ -592,7 +592,7 @@ $TLS_passwd_lost = "你的密码已经发送到你注册用户信息时指定的
 $TLS_password_reseted = "新密码已发送到你的邮箱";
 $TLS_please_login = "请登陆 ...";
 $TLS_session_expired = "你的会话已经超时！请重新登陆。";
-$TLS_your_first_login = "欢迎使用 TestLink！若您已具有访问权限账号，请登陆 ...";
+$TLS_your_first_login = "欢迎使用TestLink！若您已具有访问权限账号，请登陆 ...";
 
 
 // ----- newest_tcversions.php -----
@@ -791,7 +791,7 @@ $TLS_th_testplan_name = "测试计划名称";
 // ----- gui/templates/cfields/cfieldsEdit.tpl -----
 $TLS_assigned_to_testprojects = "关联到测试项目";
 $TLS_available_on = "有效";
-$TLS_btn_add_and_assign_to_current = 'Add and assign (to current test project)';
+$TLS_btn_add_and_assign_to_current = '新增并分配（到当前测试项目）';
 $TLS_custom_field = "自定义字段";
 $TLS_context_design = "测试规格说明";
 $TLS_context_exec = "测试执行";
@@ -869,7 +869,7 @@ $TLS_btn_export_testplan_tree_for_results = 'Export for results import';
 $TLS_expand_tree = "展开树";
 $TLS_collapse_tree = "折叠树";
 $TLS_filter_active_inactive = "有效/无效";
-$TLS_show_only_active_testcases = "At least ONE version is ACTIVE";
+$TLS_show_only_active_testcases = "至少要有一个可用的版本";
 $TLS_show_only_inactive_testcases = "所有版本不可用";
 $TLS_show_whole_spec_on_right_panel = '显示所有（在右侧面板上）';
 
@@ -1405,7 +1405,7 @@ $TLS_as_first_testcase = "目标位置顶部";
 $TLS_as_last_testcase = "目标位置底部";
 $TLS_btn_mv = "移动";
 $TLS_choose_container = "选择分类";
-$TLS_copy_new_name = "New test case name (applied only when coping)";
+$TLS_copy_new_name = "测试用例名称（仅在复制时可修改）";
 $TLS_inst_copy = "复制测试用例到测试用例集。";
 $TLS_inst_move = "将这个测试用例移动到另一个分类下（同一组件内）";
 $TLS_inst_copy_move_warning = "注意：你只能选择属于这个测试项目的测试用例集.";
@@ -1537,7 +1537,7 @@ $TLS_info_added_on_date = "测试用例添加到测试计划的时间";
 $TLS_empty_tc_summary = "<i>测试用例摘要为空</i>";
 
 $TLS_add_remove_selected_tc_hint = "操作将被应用到全部的测试用例集上";
-$TLS_btn_add_remove_selected_tc = "添加 / 删除选择的";
+$TLS_btn_add_remove_selected_tc = "删除选择的测试用例";
 $TLS_btn_add_selected_tc = "增加选择的测试用例";
 $TLS_btn_save_exec_order = "保存顺序";
 $TLS_btn_save_custom_fields ="保存自定义字段";
@@ -1955,9 +1955,9 @@ $TLS_no_notrun = "所有测试用例都已执行。";
 $TLS_no_not_run = "所有测试用例都已执行。";
 
 
-$TLS_no_not_run_with_tester = 'There are no test case (WITH TESTER ASSIGNED) that have not been run';
-$TLS_no_failed_with_tester = 'There are no failed test cases (WITH TESTER ASSIGNED)';
-$TLS_no_blocked_with_tester = 'There are no blocked test cases (WITH TESTER ASSIGNED)';
+$TLS_no_not_run_with_tester = '当前已分配测试人员的测试用例已全部执行。';
+$TLS_no_failed_with_tester = '当前已分配测试人员的测试用例全部测试通过。';
+$TLS_no_blocked_with_tester = '当前已分配测试人员的测试用例不存在锁定情况。There are no blocked test cases (WITH TESTER ASSIGNED)';
 
 
 
@@ -1979,15 +1979,15 @@ $TLS_title_report_milestones = "里程碑的状态";
 $TLS_th_completed = "已完成";
 $TLS_th_milestone = "里程碑 [日期]";
 $TLS_th_not_run = "尚未执行";
-$TLS_th_tc_priority_high = "最高级";
-$TLS_th_tc_priority_medium = "中等级别";
-$TLS_th_tc_priority_low = "低级";
+$TLS_th_tc_priority_high = "最高级[A]";
+$TLS_th_tc_priority_medium = "中等级别[B]";
+$TLS_th_tc_priority_low = "低级[C]";
 $TLS_th_progress = "测试进度 [%]";
 $TLS_th_goal = "执行目标 [%]";
 $TLS_th_overall_priority = "整体测试优先级";
 $TLS_th_overall_platform = "全部测试平台";
 $TLS_title_res_by_platform = "按平台分类";
-$TLS_th_expected = "期望的";
+$TLS_th_expected = "期望值";
 $TLS_th_overall = "整体";
 $TLS_info_res_by_top_level_suites = "此报告显示所有顶级测试用例集的结果。子测试用例集的结果" .
                                     "也被考虑在内。";
@@ -2100,7 +2100,7 @@ $TLS_not_run_nfc = "未运行 (nfc)";
 $TLS_not_run_nfc_reqs = "未运行的产品需求 (nfc)";
 $TLS_partially_passed_nfc = "部分通过 (nfc)";
 $TLS_partially_passed_nfc_reqs = "部分通过的产品需求 (nfc)";
-$TLS_req_evaluation_unknown = 'unknown';
+$TLS_req_evaluation_unknown = '未知';
 
 $TLS_linked_tcs = "连接的测试用例";
 $TLS_no_linked_tcs = "未连接的测试用例";
@@ -2151,10 +2151,10 @@ $TLS_multisort_button_tooltip = '点击更改排序方向' .
 
 
 // ----- gui/templates/results/tcNotRunAnyPlatform.tpl -----
-$TLS_info_tcNotRunAnyPlatform = "This report shows test cases that have been linked to the current test plan " .
-                             "but have not been executed on any platform at all.<br /> " .
-                             "As soon as a test case has been executed on at least one platform, " .
-                             "it will not appear anymore in this report.";
+$TLS_info_tcNotRunAnyPlatform = "该报告显示了已链接到当前测试计划，但尚未在任何平台上执行的测试用例。<br /> " .
+                             "测试用例一旦在任意平台上被执行过后，则不会出现在该报告中。";
+                             
+
 
 
 
@@ -2208,7 +2208,7 @@ $TLS_check_uncheck_children_checkboxes = "切换全部测试用例的选择 (包
 $TLS_title_tc_exec_assignment = "指派执行测试用例的任务 ";
 $TLS_user = "用户";
 $TLS_user_bulk_assignment = "用户指派";
-$TLS_user_bulk_remove = "Do Bulk user remove";
+$TLS_user_bulk_remove = "批量移除用户关联";
 
 
 
@@ -2298,14 +2298,14 @@ $TLS_warning_empty_login = "请输入登录名";
 // ----- gui/templates/attachmentupload.tpl -----
 $TLS_attachment_upload_ok = "文件已上传";
 $TLS_enter_attachment_title = "指定附件的名称";
-$TLS_attachment_title = "Title/name";
+$TLS_attachment_title = "附件备注";
 $TLS_import_was_ok = "导入成功";
 $TLS_max_size_cvs_file = "文件最大不超过：";
 $TLS_max_size_file_upload = "文件最大大小为";
 $TLS_title_upload_attachment = "上传附件";
-$TLS_error_file_size_larger_than_maximum_size_check_php_ini = "这个文件的大小已经超过了在php.ini设置的最大值!";
+$TLS_error_file_size_larger_than_maximum_size_check_php_ini = "该文件的大小已经超过了在php.ini设置的最大值!";
 
-$TLS_error_file_size_larger_than_maximum_size = "这个文件的大小已经超过了在TestLink中设置的最大值!";
+$TLS_error_file_size_larger_than_maximum_size = "该文件的大小已经超过了在TestLink中设置的最大值!";
 
 $TLS_error_file_upload = "这个文件不能上传!";
 
@@ -2316,7 +2316,7 @@ $TLS_alt_delete_role = "删除角色";
 $TLS_alt_edit_role = "编辑角色";
 $TLS_btn_confirm_delete = "删除";
 $TLS_delete_role = "删除角色";
-$TLS_th_duplicate_role = 'Duplicate';
+$TLS_th_duplicate_role = '复制角色';
 $TLS_duplicate_role = '创建一份拷贝';
 $TLS_no_roles = "无角色";
 $TLS_th_role_description = "描述";
@@ -2494,7 +2494,7 @@ $TLS_error_ldap_server_connect_failed = "连接LDAP服务器失败";
 $TLS_error_ldap_update_failed = "更新LDAP失败";
 $TLS_error_ldap_user_not_found = "LDAP中找不到用户。";
 $TLS_error_ldap_start_tls_failed = "LDAP 无法启动 TLS 服务。";
-$TLS_unknown_authentication_method = "Do not know how to handle %s authentication method";
+$TLS_unknown_authentication_method = "无法处理 %s 授权方式。";
 
 
 // ----- lib/functions/product.inc.php -----
@@ -2657,7 +2657,7 @@ $TLS_the_format_tc_xml_import = "";
 
 
 // ----- lib/functions/testsuite.class.php -----
-$TLS_component_name_already_exists = "组件名称已经存在";
+$TLS_component_name_already_exists = "组件名称已经存在。";
 $TLS_testsuite = "测试用例集";
 
 
@@ -2666,7 +2666,7 @@ $TLS_test_results_submitted = "提交测试结果成功。";
 
 
 // ----- lib/functions/info.inc.php -----
-$TLS_email_sent_message = "你查看的信息已经以邮件形式发送到你的邮箱，请注意查收";
+$TLS_email_sent_message = "你查看的信息已经以邮件形式发送到你的邮箱，请注意查收。";
 
 
 // ----- lib/functions/print.inc.php -----
@@ -2696,8 +2696,8 @@ $TLS_stmp_host_unconfigured = "SMTP主机没有配置正确！";
 
 // ----- lib/functions/common.php -----
 $TLS_test_automation_exec_ok = " 执行成功!";
-$TLS_test_automation_server_conn_failure = "不能链接HTTP服务器.";
-$TLS_XMLRPC_error_number = "XML-RPC 错误号:- ";
+$TLS_test_automation_server_conn_failure = "不能链接HTTP服务器。";
+$TLS_XMLRPC_error_number = "XML-RPC 错误号：- ";
 
 
 // ----- lib/functions/configCheck.php -----
@@ -2762,7 +2762,7 @@ $TLS_kw_update_fails = "更新失败";
 $TLS_assigned_kword = "指派关键字";
 $TLS_available_kword = "有效关键字";
 $TLS_kword_to_be_assigned_to_testcases = "待分配到测试用例的关键字";
-$TLS_assignToFilteredTestCases = 'Assign ONLY to filtered Test Cases';
+$TLS_assignToFilteredTestCases = '仅分配给过滤出来的测试用例';
 
 
 
@@ -2998,7 +2998,7 @@ $TLS_test_result_matrix_filters = "测试结果度量-过滤器";
 
 
 // ----- lib/results/resultsAllBuilds.php -----
-$TLS_title_metrics_x_build = " - 每个版本的测试结果进度";
+$TLS_title_metrics_x_build = " - 每个版本的测试进度";
 
 
 
@@ -3196,8 +3196,8 @@ $TLS_error_user_not_deleted = "该用户不能被删除!";
 $TLS_error_user_not_disabled = "无法禁用用户!";
 $TLS_error_user_login_length_error = "登录名或者太短或者太长!";
 $TLS_invalid_smtp_hostname = 'SMTP 主机名不正确';
-$TLS_password_cannot_be_reseted_invalid_smtp_hostname = '无法重新发送密码. ' .
-                                                        '原因: SMTP 主机名不正确';
+$TLS_password_cannot_be_reseted_invalid_smtp_hostname = '无法重新发送密码。' .
+                                                        '原因: SMTP 主机名不正确。';
 $TLS_password_cannot_be_reseted_reason = '无法重置密码，原因是: %s ';
 $TLS_login_does_not_exist = "登陆用户 %s 不存在。";
 
@@ -3223,7 +3223,7 @@ $TLS_list_inactive_tplans1 = "显示 ";
 $TLS_list_inactive_tplans2 = "当前尚未和一个测试项目关联的活动的测试计划";
 $TLS_assoc_test_project = "关联的测试项目";
 $TLS_btn_fix_tplans = "更新";
-$TLS_fix_tplans_no_rights = "您无权管理测试项目<br />请联系管理员";
+$TLS_fix_tplans_no_rights = "您无权管理测试项目。<br />请联系管理员。";
 
 $TLS_no_tplans_to_fix = "您当前没有测试计划关联到一个测试项目 - 这很好!";
 
@@ -3296,7 +3296,7 @@ $TLS_platform_management = "平台管理";
 $TLS_create_platform = "创建平台";
 $TLS_edit_platform = "编辑平台";
 $TLS_platform_name_already_exists = "平台名称 %s 已经存在!";
-$TLS_platform_update_failed = "更新平台失败";
+$TLS_platform_update_failed = "更新平台失败。";
 $TLS_warning_empty_platform = "平台不能为空!";
 
 // ----- api/TestlinkXMLRPCServerErrors.php -----
@@ -3426,12 +3426,12 @@ $TLS_API_PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK = "平台 (%s) 已被 %s 测试�
 
 
 
-$TLS_API_NODEID_INVALID_DATA_TYPE = "错误的数据类型 - 节点ID 应为正整数数组或负整数";
-$TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "Test Project Source Name: %s - does not exist";
+$TLS_API_NODEID_INVALID_DATA_TYPE = "错误的数据类型 - 节点ID 应为正整数数组或负整数。";
+$TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "测试项目源名称：%s 不存在。";
 
 // ----- audit log entries -----
-$TLS_audit_login_succeeded = "从 '{%2}' 登录 '{%1}' from '{%2}' 成功";
-$TLS_audit_login_failed = "从 '{%2}' 登录 '{%1}' from '{%2}' 失败";
+$TLS_audit_login_succeeded = "从 '{%2}' 登录 '{%1}' from '{%2}' 成功。";
+$TLS_audit_login_failed = "从 '{%2}' 登录 '{%1}' from '{%2}' 失败。";
 $TLS_audit_role_saved = "保存角色 '{%1}'";
 $TLS_audit_role_created = "创建角色 '{%1}'";
 $TLS_audit_role_deleted = "删除角色'{%1}'";
@@ -3502,7 +3502,7 @@ $TLS_audit_requirement_copy = "产品需求 'DOCID:{%1}' 已创建为产品需�
 $TLS_audit_req_version_deleted = " 产品需求 'DOCID:{%2}' 的版本{%1}  - {%3} 已被删除。";
 $TLS_audit_req_version_frozen = " 产品需求 'DOCID:{%2}' 的版本{%1}  - {%3} 已冻结。";
 $TLS_audit_req_monitoring_started = "产品需求 'DOCID:{%1}' - {%2} 对用户 {%3} 的监视启动。";
-$TLS_audit_req_version_unfrozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was unfrozen.";
+$TLS_audit_req_version_unfrozen = "产品需求 'DOCID:{%2}' 的版本 {%1}  - {%3} 已解冻。 ";
 
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - 版本 '{%3}' 被创建";
@@ -3577,7 +3577,7 @@ $TLS_issue_status_confirmed = "确认的问题";
 $TLS_issue_status_assigned = "关联问题";
 $TLS_issue_status_resolved = "已解决的问题";
 $TLS_issue_status_closed = "关闭的问题";
-$TLS_issue_status_custom_undefined_on_tl = '用户状态未在 Test Link 中配置 - 查看事件';
+$TLS_issue_status_custom_undefined_on_tl = '用户状态未在 TestLink 中配置 - 查看事件';
 $TLS_access_to_bts="访问缺陷追踪系统";
 
 
@@ -3697,8 +3697,8 @@ $TLS_import_req_new_version_failed = '创建新版本请求失败 - %s';
 $TLS_import_req_update_last_version_failed = '更新最新版本请求失败 - %s';
 
 $TLS_import_done = '导入成功';
-$TLS_import_syntax_error = 'Import done, but with syntax errors';
-$TLS_import_req_conflicts_other_branch = '文档 ID 与另外分支上的文档冲突';
+$TLS_import_syntax_error = '导入已完成，仍存在语法错。';
+$TLS_import_req_conflicts_other_branch = '文档 ID 与另外分支上的文档冲突。';
 $TLS_import_req_exists_here = '文档ID已存在';
 
 $TLS_invalid_release_date = '发布日期不正确。';
@@ -3797,7 +3797,7 @@ $TLS_issuetracker_interface_not_implemented = '缺陷跟踪系统接口 %s 不�
 $TLS_mail_logger_email_subject = ' :: TestLink 日志信息 :: ';
 
 // reqView.php
-$TLS_req_does_not_exist = "需求已不存在。";
+$TLS_req_does_not_exist = "需求不存在。";
 
 // resultsByTesterPerBuild.php
 $TLS_no_open_builds = '当前没有可用的开放构建。';
@@ -3884,16 +3884,16 @@ $TLS_display_inline_string ="Display inline ghost string";
 
 $TLS_tester_works_with_settings = 'This filter works in combination with values of settings area';
 
-$TLS_demo_usage = "This is a DEMO SITE, use it with RESPECT. <br>" .
-                  "Site will be re-installed at randmon intervals WITHOUT warning.<br>" .
-                  "All data will be deleted at each install.<br>" .
-                  "<b>If you find TestLink useful think about supporting our work<br>";
+$TLS_demo_usage = "这是一个演示站点，请尽情体验。<br>" .
+                  "演示站点会不定期重载，每次重载都会将所有的数据清空，且不会提供任何警告信息。<br>" .
+                  "<b>如您觉得TestLink对您的工作有所助益，请一定支持我们的工作。<br>";
+
 
 
 // reqSpecMoveOrCopy.tpl
 $TLS_info_move_req_spec = "移动需求规约";
 $TLS_info_copy_req_spec = "复制需求规约";
-$TLS_choose_dest_req_spec = "Choose dest. Req. Spec.";
+$TLS_choose_dest_req_spec = "选择 dest. Req. Spec.";
 
 
 $TLS_remove_kw_msgbox_title = "移除关键字";

@@ -394,6 +394,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	        <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
 	        <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
 	        <td>
+                  <img class="clickable" src="{$tlImages.history_small}"
+                       onclick="javascript:openExecHistoryWindow({$tc_exec.testcase_id});"
+                       title="{$labels.execution_history}" />
+                  <img class="clickable" src="{$tlImages.exec_icon}"
+                       onclick="javascript:openExecutionWindow({$tc_exec.testcase_id},{$tcversion_id},{$gui->build_id},{$gui->tplan_id},{$gui->platform_id});"
+                       title="{$labels.execution}" />
+                  <img class="clickable" src="{$tlImages.edit}"
+                       onclick="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id});"
+                       title="{$labels.design}" />        
 	        <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')" title="{$labels.show_tcase_spec}">
 	        {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
 	        </a>

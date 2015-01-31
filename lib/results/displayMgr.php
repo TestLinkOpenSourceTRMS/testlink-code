@@ -25,7 +25,6 @@ function generateHtmlEmail(&$smarty, $template_file, $mailCfg)
   $op->msg = 'ok';
   
   $html_report = $smarty->fetch($template_file);
-  
   if( ! property_exists($mailCfg,'from') )
   {
     $mailCfg->from = $_SESSION['currentUser']->emailAddress;
@@ -42,7 +41,11 @@ function generateHtmlEmail(&$smarty, $template_file, $mailCfg)
   }
   else
   {
-    $op = email_send( $mailCfg->from, $mailCfg->to, $mailCfg->subject, $html_report, $mailCfg->cc, false,true);
+    // TICKET 6905: Link to test case is still raw link (no title) in email(HTML) type of test report
+    // array('strip_email_links' => false)
+    $op = email_send( $mailCfg->from, $mailCfg->to, $mailCfg->subject, 
+                      $html_report, $mailCfg->cc, false,true,
+                      array('strip_email_links' => false));
 
     if($op->status_ok)
     {

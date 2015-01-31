@@ -8,12 +8,12 @@
  *
  * @filesource  resultsByStatus.php
  * @package     TestLink
- * @copyright   2007-2013, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.13
  * 
  */
 require('../../config.inc.php');
@@ -418,6 +418,7 @@ function init_args(&$dbHandler,$statusCode)
 function initializeGui($statusCode,&$argsObj,&$tplanMgr)
 {
   $guiObj = new stdClass();
+  $guiObj->format = $argsObj->format; 
   $guiObj->tproject_id = $argsObj->tproject_id; 
   $guiObj->tplan_id = $argsObj->tplan_id; 
   $guiObj->apikey = $argsObj->apikey;

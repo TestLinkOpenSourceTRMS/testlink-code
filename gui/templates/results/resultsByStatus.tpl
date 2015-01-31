@@ -5,7 +5,7 @@ show Test Results by Status
 
 @filesource	resultsByStatus.tpl
 @internal revisions
-@since 1.9.8
+@since 1.9.13
 *}
 
 {lang_get var='labels' 
@@ -16,7 +16,7 @@ show Test Results by Status
 
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
+  {$tableID=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -34,8 +34,11 @@ show Test Results by Status
   {if $gui->apikey != ''}
   <input type="hidden" name="apikey" id="apikey" value="{$gui->apikey}">
   {/if}
+
+  {if $gui->format != $smarty.const.FORMAT_MAIL_HTML}
   <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
          src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
+  {/if}       
 </form>
 </h1>
 
@@ -49,8 +52,8 @@ show Test Results by Status
 
 {if $gui->warning_msg == ''}
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value="table_$idx"}
-   		{$matrix->renderBodySection($tableID)}
+		{$tableID="table_$idx"}
+   	{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	<br />
 	

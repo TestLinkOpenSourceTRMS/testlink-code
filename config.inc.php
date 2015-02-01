@@ -631,7 +631,7 @@ $tlCfg->gui->checkNotSaved = ENABLED;
 
 /** Default ordering value for new Test Suites and Test Cases to separate them */
 $tlCfg->treemenu_default_testsuite_order = 1;
-$tlCfg->treemenu_default_testcase_order = 100;
+$tlCfg->treemenu_default_testcase_order = 1000;
 
 /** show/hide testcase id on tree menu */
 $tlCfg->treemenu_show_testcase_id = TRUE;
@@ -772,9 +772,22 @@ $tlCfg->exec_cfg->enable_tree_counters_colouring = ENABLED;
 
 // This can help to avoid performance problems.
 // Controls what happens on right frame when user clicks on a testsuite on tree.
-// ENABLED -> show all test cases presents on test suite and children test suite.
+// ENABLED -> show all test cases 
+//            see $tlCfg->exec_cfg->show_testsuite_contents_deep
+// 
 // DISABLED -> nothing happens, to execute a test case you need to click on test case
 $tlCfg->exec_cfg->show_testsuite_contents = DISABLED;
+
+// @since 1.9.13
+// works in 'team' with $tlCfg->exec_cfg->show_testsuite_contents 
+// children: only direct children.
+// deep: all test cases present in test suite and test suites in any level below 
+//       selected test suite.
+// IMPORTANT NOTICE:
+// selecting deep can create performance issues.
+// 
+$tlCfg->exec_cfg->show_testsuite_contents_deep = 'children';
+
 
 // ENABLED -> enable testcase counters by status on tree
 $tlCfg->exec_cfg->enable_tree_testcase_counters = ENABLED;
@@ -804,6 +817,13 @@ $tlCfg->exec_cfg->view_mode->tester='assigned_to_me';
 // assigned_to_me: test cases assigned to logged user.
 // assigned_to_me_or_free: test cases assigned to logged user or not assigned
 $tlCfg->exec_cfg->exec_mode->tester='assigned_to_me';
+
+
+// How to set defaut values for execution fields (standard & custom) 
+// clean => all clean 
+// latest => get as much as possible values from latest execution on
+//           same context => test plan,platform, build
+$tlCfg->exec_cfg->exec_mode->new_exec='clean';
 
 /** User filter in Test Execution navigator - default value */
 // logged_user -> combo will be set to logged user

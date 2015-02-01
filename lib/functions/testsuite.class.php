@@ -142,7 +142,14 @@ class testsuite extends tlObjectWithAttachments
     
     if( is_null($order) )
     {
-      $node_order = isset($cfg['treemenu_default_testsuite_order']) ? $cfg['treemenu_default_testsuite_order'] : 0;
+      // @since 1.9.13
+      //
+      //$node_order = isset($cfg['treemenu_default_testsuite_order']) ? 
+      //              $cfg['treemenu_default_testsuite_order'] : 0;
+      // get all siblings, then calculate bottom
+      // this way theorically each will be a different order.
+      // this can be good when ordering
+      $node_order = $this->tree_manager->getBottomOrder($parent_id,array('node_type' => 'testsuite')) + 1;  
     }
     else
     {

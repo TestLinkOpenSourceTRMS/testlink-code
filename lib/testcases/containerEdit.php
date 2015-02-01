@@ -623,15 +623,17 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
     $new_order = null;
 
     // compute order
-    $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
-    $siblings = $tsuiteMgr->tree_manager->get_children($argsObj->containerID,$nt2exclude);
-    if( !is_null($siblings) )
-    {
-        $dummy = end($siblings);
-        $new_order = $dummy['node_order']+1;
-    }
-    $ret = $tsuiteMgr->create($argsObj->containerID,$container['container_name'],$container['details'],
-                    $new_order,config_get('check_names_for_duplicates'),'block');
+    //
+    // $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+    // $siblings = $tsuiteMgr->tree_manager->get_children($argsObj->containerID,$nt2exclude);
+    // if( !is_null($siblings) )
+    //{
+    //    $dummy = end($siblings);
+    //    $new_order = $dummy['node_order']+1;
+    //}
+    $ret = $tsuiteMgr->create($argsObj->containerID,$container['container_name'],
+                              $container['details'],
+                              $new_order,config_get('check_names_for_duplicates'),'block');
      
     $op['messages']= array('msg' => $ret['msg'], 'user_feedback' => '');
     $op['status']=$ret['status_ok'];

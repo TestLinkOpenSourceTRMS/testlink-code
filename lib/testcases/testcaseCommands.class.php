@@ -215,14 +215,19 @@ class testcaseCommands
       
     // compute order
     $new_order = config_get('treemenu_default_testcase_order');
-    $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
-    $siblings = $this->tcaseMgr->tree_manager->get_children($argsObj->container_id,$nt2exclude);
-  
-    if( !is_null($siblings) )
+    $co = $this->tcaseMgr->tree_manager->getBottomOrder($argsObj->container_id,array('node_type' => 'testcase'));
+    if( $co > 0)
     {
-      $dummy = end($siblings);
-      $new_order = $dummy['node_order']+1;
-    }
+      $new_order = $co+1; 
+    }  
+    // $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+    // $siblings = $this->tcaseMgr->tree_manager->get_children($argsObj->container_id,$nt2exclude);
+  
+    //if( !is_null($siblings) )
+    //{
+    //  $dummy = end($siblings);
+    //  $new_order = $dummy['node_order']+1;
+    //}
 
     $options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
                      'action_on_duplicate_name' => 'block',

@@ -6,11 +6,11 @@
  * @filesource  tree.class.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2005-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2005-2015, TestLink community 
+ * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.7
+ * @since 1.9.13
  *
  */
 
@@ -729,15 +729,27 @@ class tree extends tlObject
     returns: order
   
   */
-  function getBottomOrder($parentID)
+  function getBottomOrder($parentID,$opt=null)
   {
-      $sql="SELECT MAX(node_order) AS top_order" .
+    $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
+    
+    $my['opt'] = array();
+    $my['opt'] = array_merge(array('node_type' => null),$opt);
+
+    
+    $sql = "SELECT MAX(node_order) AS max_order" .
            " FROM {$this->object_table} " . 
-           " WHERE parent_id={$parentID} " .
-           " GROUP BY parent_id";
-      $rs=$this->db->get_recordset($sql);
+           " WHERE parent_id={$parentID} ";
+
+    if(!is_null($my['opt']['node_type']))
+    {
+      $sql .= " AND node_type_id = " . $this->node_descr_id[$my['opt']['node_type']];
+    }       
+
+    $sql .= " GROUP BY parent_id ";
+    $rs=$this->db->get_recordset($sql);
       
-      return $rs[0]['top_order'];     
+    return $rs[0]['max_order'];     
   }
   
   

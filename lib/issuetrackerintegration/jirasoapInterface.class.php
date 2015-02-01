@@ -128,6 +128,7 @@ class jirasoapInterface extends issueTrackerInterface
 	    if(!is_null($issue) && is_object($issue))
 	    {
         // We are going to have a set of standard properties
+        $issue->id = $issueID;
 	      $issue->IDHTMLString = "<b>{$issueID} : </b>";
 	      $issue->statusCode = $issue->status;
 	      $issue->statusVerbose = array_search($issue->statusCode, $this->statusDomain);

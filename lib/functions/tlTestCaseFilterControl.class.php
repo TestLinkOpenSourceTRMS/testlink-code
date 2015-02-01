@@ -970,6 +970,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                           $this->args->testproject_name,
                                           $gui->menuUrl, $filters, $options);
           
+
           $this->set_testcases_to_show($forrest['leaves']);
           $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
@@ -1035,7 +1036,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                           $this->args->testproject_id,
                                           $this->args->testproject_name,
                                           $gui->menuUrl,$filters,$options);
-          
           $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
           $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
@@ -1085,7 +1085,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                                               'tplan_id' => $this->args->testplan_id,
                                                               'tplan_name' => $this->args->testplan_name),
                                                         $filters,$opt_etree);
-        
+
         $this->set_testcases_to_show($testcases_to_show);
         
         $root_node = $tree_menu->rootnode;
@@ -1438,7 +1438,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
   /**
    * 
-   * 
+   * @internal revision
+   * @since 1.9.13
+   * mode this affect domain
    */
   private function init_filter_keywords() 
   {
@@ -1472,6 +1474,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
       break;
     }
 
+    $special = array('domain' => array(), 'filter_mode' => array());
+    switch($this->mode)
+    {
+      case 'edit_mode':
+        $special['domain'] = array(-1 => $this->option_strings['without_keywords'], 
+                                    0 => $this->option_strings['any']);       
+        $special['filter_mode'] = array('NotLinked' => $l10n['not_linked']);                               
+      break;
+
+      case 'execution_mode':
+      case 'plan_add_mode':
+      case 'plan_mode':
+      default:
+        $special['domain'] = array(0 => $this->option_strings['any']);  
+        $special['filter_mode'] = array();
+      break;  
+    }
+
     $selection = $this->args->{$key};
     $type_selection = $this->args->{$type};
     
@@ -1491,10 +1511,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
         $this->do_filtering = true;
       }
       
-      // data for the keywords themselves
-      $this->filters[$key]['items'] = array(-1 => $this->option_strings['without_keywords'], 
-                                             0 => $this->option_strings['any']) + $keywords;
-
+      // data for the keywords themselves     
+      $this->filters[$key]['items'] = $special['domain'] + $keywords;
       $this->filters[$key]['selected'] = $selection;
       $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
                                          self::ADVANCED_FILTER_ITEM_QUANTITY);
@@ -1502,8 +1520,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
       // additional data for the filter type (logical and/or)
       $this->filters[$key][$type] = array();
       $this->filters[$key][$type]['items'] = array('Or' => $l10n['logical_or'],
-                                                   'And' => $l10n['logical_and'],
-                                                   'NotLinked' => $l10n['not_linked']);
+                                                   'And' => $l10n['logical_and']) +
+                                             $special['filter_mode'];
       $this->filters[$key][$type]['selected'] = $type_selection;
     }
     
@@ -1518,9 +1536,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->active_filters[$key] = $this->filters[$key]['selected'];
     }
     $this->active_filters[$type] = $selection ? $type_selection : null;
-  } // end of method
+  } 
 
-    // TICKET 4353: added active/inactive filter
+
+
+  // TICKET 4353: added active/inactive filter
   private function init_filter_active_inactive() 
   {
     $key = 'filter_active_inactive';

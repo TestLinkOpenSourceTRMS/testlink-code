@@ -4957,7 +4957,7 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $my['options'] = array('fields2get' => '*', 'accessKey' => null, 
+    $my['options'] = array('fields2get' => 'TCSTEPS.*', 'accessKey' => null, 
                            'renderGhostSteps' => true, 'renderImageInline' => true);
     $my['options'] = array_merge($my['options'], (array)$options);
     
@@ -4965,7 +4965,7 @@ class testcase extends tlObjectWithAttachments
     $safe_tcversion_id = $this->db->prepare_int($tcversion_id);
     
     $sql = "/* $debugMsg */ " . 
-           " SELECT TCSTEPS.{$my['options']['fields2get']} " .
+           " SELECT {$my['options']['fields2get']} " .
            " FROM {$this->tables['tcsteps']} TCSTEPS " .
            " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .
            " ON NH_STEPS.id = TCSTEPS.id " . 
@@ -4979,6 +4979,7 @@ class testcase extends tlObjectWithAttachments
     {
       $result = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
     }
+
     return $result;
   }
 

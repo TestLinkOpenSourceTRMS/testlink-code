@@ -3971,6 +3971,8 @@ class testplan extends tlObjectWithAttachments
     }
     
     $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+
+    // echo $method2call;
     $qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
     return $items;
   }
@@ -4123,14 +4125,14 @@ class testplan extends tlObjectWithAttachments
         }      
         
         // why we use exclude_children_of ?
-            // 1. Sometimes we don't want the children if the parent is a testcase,
-            //    due to the version management
-            //
-            if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
-            {
-              // Keep walking (Johny Walker Whisky)
-              $this->_get_subtree_rec($tplan_id,$row['id'],$node,$my['filters'],$my['options']);
-            }
+        // 1. Sometimes we don't want the children if the parent is a testcase,
+        //    due to the version management
+        //
+        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
+        {
+          // Keep walking (Johny Walker Whisky)
+          $this->_get_subtree_rec($tplan_id,$row['id'],$node,$my['filters'],$my['options']);
+        }
   
            
         // Have added this logic, because when export test plan will be developed
@@ -5876,8 +5878,11 @@ class testplan extends tlObjectWithAttachments
   function getLinkedForExecTree($id,$filters=null,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+
     $safe['tplan_id'] = intval($id);
     $my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
+   
   
     if( $my['filters']['build_id'] <= 0 )
     {
@@ -5911,6 +5916,8 @@ class testplan extends tlObjectWithAttachments
     // only to EXECUTED test case versions, the not_run piece of union is USELESS
     $union['not_run'] = null;        
 
+    // if(isset($my['filters']['bug_id'])
+
     if(!isset($my['filters']['bug_id']))
     {
       // adding tcversion on output can be useful for Filter on Custom Field values,
@@ -5922,7 +5929,7 @@ class testplan extends tlObjectWithAttachments
                           " TCV.tc_external_id AS external_id, " .
                           " TPTCV.node_order AS exec_order," .
                           " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
-
+                          $my['fields']['tsuites'] .
                           
                           " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
                           " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
@@ -5931,6 +5938,8 @@ class testplan extends tlObjectWithAttachments
                           $my['join']['ua'] .
                           $my['join']['keywords'] .
                           $my['join']['cf'] .
+                          $my['join']['tsuites'] .
+                          
                           " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
                 
                           " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
@@ -5958,7 +5967,8 @@ class testplan extends tlObjectWithAttachments
                      " TCV.tc_external_id AS external_id, " .
                      " TPTCV.node_order AS exec_order," . 
                      " COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status " .
-                     
+                     $my['fields']['tsuites'] .
+
                      " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
                      " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
                      " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
@@ -5966,6 +5976,8 @@ class testplan extends tlObjectWithAttachments
                      $my['join']['ua'] .
                      $my['join']['keywords'] .
                      $my['join']['cf'] .
+                     $my['join']['tsuites'] .
+
                      " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id " .
                      
                      " JOIN ({$sqlLEBBP}) AS LEBBP " .
@@ -6011,10 +6023,14 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
 
+    $ic['fields']['tsuites'] = '';
+
     $ic['join'] = array();
     $ic['join']['ua'] = '';
     $ic['join']['bugs'] = '';
     $ic['join']['cf'] = '';
+    $ic['join']['tsuites'] = '';
+
 
     $ic['where'] = array();
     $ic['where']['where'] = '';
@@ -6030,13 +6046,24 @@ class testplan extends tlObjectWithAttachments
                            'platform_id' => null, 'exec_type' => null,
                            'tcase_name' => null);
 
-    $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 'allow_empty_build' => 0);
+    $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 
+                           'allow_empty_build' => 0, 'addTSuiteOrder' => false);
     $ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
     $ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
 
 
     $ic['filters']['build_id'] = intval($ic['filters']['build_id']);
     
+
+    // 20150201
+    if($ic['options']['addTSuiteOrder'])
+    {
+      // PREFIX ALWAYS with COMMA
+      $ic['fields']['tsuites'] = ', NH_TSUITE.node_order AS tsuite_order ';
+      $ic['join']['tsuites'] = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
+                               " ON NH_TSUITE.id = NH_TCASE.parent_id ";
+    }  
+
     // This NEVER HAPPENS for Execution Tree, but if we want to reuse
     // this method for Tester Assignment Tree, we need to add this check
     //
@@ -6335,9 +6362,8 @@ class testplan extends tlObjectWithAttachments
     
     $my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
       
-      
-      // Need to detail better, origin of build_id.
-      // is got from GUI Filters area ?
+    // Need to detail better, origin of build_id.
+    // is got from GUI Filters area ?
     if(  ($my['options']['allow_empty_build'] == 0) && $my['filters']['build_id'] <= 0 )
     {
       // CRASH IMMEDIATELY
@@ -7066,7 +7092,7 @@ class testplan extends tlObjectWithAttachments
       }  
 
       // Test Case Steps
-      $gso = array('fields2get' => 'id,step_number', 'renderGhostSteps' => false, 'renderImageInline' => false);
+      $gso = array('fields2get' => 'TCSTEPS.id,TCSTEPS.step_number', 'renderGhostSteps' => false, 'renderImageInline' => false);
       $stepRootElem = "<steps>{{XMLCODE}}</steps>";
       $stepTemplate = "\n" . '<step>' . "\n" .
                       "\t<step_number>||STEP_NUMBER||</step_number>\n" .

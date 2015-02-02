@@ -8,7 +8,7 @@
  * @filesource  treeMenu.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @link        http://www.testlink.org
  * @uses        config.inc.php
  *
@@ -109,14 +109,14 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     if(!is_null($my['filters']['filter_keywords']))
     {
       $tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
-                 $my['filters']['filter_keywords'],
-                 $my['filters']['filter_keywords_filter_type']);
+                                                    $my['filters']['filter_keywords'],
+                                                    $my['filters']['filter_keywords_filter_type']);
       if( is_null($tck_map) )
       {
-        $tck_map=array();  // means filter everything
+        $tck_map=array();  // means that tree will be EMPTY
       }
     }
-    
+
     // Important: prepareNode() will make changes to $test_spec like filtering by test case 
     // keywords using $tck_map;
     $pnFilters = null;
@@ -203,8 +203,11 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     // :null happens on -> "children":null,"text" that must become "children":[],"text"
     // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
     // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-    $menustring = str_ireplace(array(':' . REMOVEME, ',"' . REMOVEME .'"', '"' . REMOVEME . '",'),
-                               array(':[]','',''), $menustring); 
+    $menustring = str_ireplace(array(':' . REMOVEME, 
+                                     ',"' . REMOVEME .'"', 
+                                     '"' . REMOVEME . '",',
+                                     '"' . REMOVEME . '"'),
+                               array(':[]','','',''), $menustring); 
   }
   $treeMenu->menustring = $menustring; 
 
@@ -339,6 +342,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     if( $testPlanIsNotEmpty && !isset($tplan_tcases[$node['id']]))
     {
       $node = null;
+      //$node = REMOVEME;
     }  
     else if( ($enabledFiltersOn['keywords'] && !isset($tck_map[$node['id']])) ||
              ($enabledFiltersOn['testcase_name'] &&  
@@ -346,7 +350,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
              ($enabledFiltersOn['testcase_id'] && ($node['id'] != $my['filters']['filter_tc_id'])) )  
     {
       unset($tplan_tcases[$node['id']]);
-      $node = null;
+      $node = null;  // OK - 20150129 
     }
     else
     {
@@ -378,6 +382,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
         {
           unset($tplan_tcases[$node['id']]);
           $node = null;
+          // $node = REMOVEME;
         } 
         else 
         {
@@ -406,7 +411,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
         }
       }
     
-      if ($node && $my['options']['ignoreInactiveTestCases'])
+      if ($node != REMOVEME && $my['options']['ignoreInactiveTestCases'])
       {
         // there are active tcversions for this node ???
         // I'm doing this instead of creating a test case manager object, because
@@ -441,11 +446,12 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
         if($myrow['num_active_versions'] == 0)
         {
           $node = null;
+          //$node = REMOVEME;
         }
       }
 
       // TICKET 4496: added inactive testcase filter
-      if ($node && $my['options']['ignoreActiveTestCases'])
+      if ($node !== REMOVEME && $my['options']['ignoreActiveTestCases'])
       {
         $sql=" /* $debugMsg - line:" . __LINE__ . " */ " .
              " SELECT count(TCV.id) AS num_active_versions " .
@@ -458,13 +464,14 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
         if($myrow['num_active_versions'] != 0)
         {
           $node = null;
+          //$node = REMOVEME;
         }
       }
     }
     // -------------------------------------------------------------------
     
     // -------------------------------------------------------------------
-    if ($node && ($my['options']['viewType']=='testSpecTree' || 
+    if (!is_null($node) && ($my['options']['viewType']=='testSpecTree' || 
         $my['options']['viewType'] =='testSpecTreeForTestPlan') )
     {
       $sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
@@ -476,7 +483,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
       $rs = $db->get_recordset($sql);
       if( is_null($rs) )
       {
-        $node = null;
+        $node = null;  // OK 20150129
       }
       else
       { 
@@ -525,11 +532,13 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
           $rs = $db->fetchRowsIntoMap($sql,'execution_type');
           if(is_null($rs))
           {
-              $node = null;
+            $node = null;  // OK - 20150129
           }
         }
       } 
-      if( !is_null($node) )
+      
+      // if( !is_null($node) )
+      if(!is_null($node) && $node != REMOVEME)
       {
         // needed to avoid problems when using json_encode with EXTJS
         unset($node['childNodes']);
@@ -543,6 +552,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     {
       $tcase_counters[$key]=0;
     }
+
     if(isset($tpNode['exec_status']) )
     {
       $tc_status_descr = $decoding_info['status_code_descr'][$tpNode['exec_status']];   
@@ -557,7 +567,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $tcase_counters['testcase_count'] = $init_value;
     if ( $my['options']['hideTestCases'] )
     {
-      $node = null;
+      $node = REMOVEME;
     }
     // ========================================================================
   }  // if($node_type == 'testcase')
@@ -569,17 +579,16 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     // node has to be a Test Suite ?
     $childNodes = &$node['childNodes'];
     $childNodesQty = count($childNodes);
-    
+
     for($idx = 0;$idx < $childNodesQty ;$idx++)
     {
       $current = &$childNodes[$idx];
       // I use set an element to null to filter out leaf menu items
-      if(is_null($current))
+      if(is_null($current) || $current == REMOVEME)  
       {
         $childNodes[$idx] = REMOVEME;
         continue;
       }
-      
       $counters_map = prepareNode($db,$current,$decoding_info,$map_node_tccount,
                                   $tck_map,$tplan_tcases,$my['filters'],$my['options']);
       foreach($counters_map as $key => $value)
@@ -595,14 +604,14 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     if (isset($node['id']))
     {
       $map_node_tccount[$node['id']] = array( 'testcount' => $node['testcase_count'],
-                                            'name' => $node['name']);
+                                              'name' => $node['name']);
     }
 
     // node must be destroyed if empty had we have using filtering conditions
     if( ($filtersApplied || !is_null($tplan_tcases)) && 
-      !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
+        !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
     {
-      $node = null;
+      $node = REMOVEME; // OK 20150129
     }
   }
   else if ($node_type == 'testsuite')
@@ -610,11 +619,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     // does this means is an empty test suite ??? - franciscom 20080328
     $map_node_tccount[$node['id']] = array( 'testcount' => 0,'name' => $node['name']);
     
-        // If is an EMPTY Test suite and we have added filtering conditions,
-        // We will destroy it.
+    // If is an EMPTY Test suite and we have added filtering conditions,
+    // We will destroy it.
     if ($filtersApplied || !is_null($tplan_tcases) )
     {
-      $node = null;
+      $node = REMOVEME;  // OK - 20150129
     } 
   }
 
@@ -2292,7 +2301,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
                                              'name' => $node['name']);
     }
 
-        // node must be destroyed if empty had we have using filtering conditions
+    // node must be destroyed if empty had we have using filtering conditions
     if( $filtersApplied && !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
     {
       $node = null;

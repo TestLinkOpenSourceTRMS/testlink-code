@@ -493,6 +493,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
 
   $args->keyword_id = isset($_GET['keyword_id']) ? intval($_GET['keyword_id']) : 0;
 
+  $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+  $args->platform_id = isset($_REQUEST['platform_id']) ? intval($_REQUEST['platform_id']) : 0;
+  
   // need to check if user has access rights to test project is project is private.
   $args->user = $_SESSION['currentUser'];
 

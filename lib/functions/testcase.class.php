@@ -1872,7 +1872,8 @@ class testcase extends tlObjectWithAttachments
     
       
     // Need to get all steps
-    $stepsSet = $this->get_steps($from_tcversion_id);
+    $gso = array('renderGhostSteps' => false, 'renderImageInline' => false);
+    $stepsSet = $this->get_steps($from_tcversion_id,0,$gso);
     if( !is_null($stepsSet) && count($stepsSet) > 0)
     {
       foreach($stepsSet as $key => $step)

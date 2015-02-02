@@ -242,12 +242,14 @@
             {html_options options=$control->filters.filter_keywords.items
                           selected=$control->filters.filter_keywords.selected}
           </select>
-
+      <div>
       {html_radios name='filter_keywords_filter_type'
                      options=$control->filters.filter_keywords.filter_keywords_filter_type.items
                      selected=$control->filters.filter_keywords.filter_keywords_filter_type.selected}
-        </td>
+      </div>
+      </td>
       </tr>
+      <tr><td>&nbsp;</td></tr>
     {/if}
 
     {* TICKET 4353: added filter for active/inactive test cases *}

@@ -448,6 +448,30 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
           $db->exec_query($sql); 
           $execution_id = $db->insert_id($tables['executions']);
 
+          // 20150127
+          /*
+          if(isset($tcase_exec['steps']) && !is_null($tcase_exec['steps']))
+          {
+            $stepSet = $tcase_mgr->getStepsSimple($tcversion_id,0,
+                                                  array('fields2get' => 'TCSTEPS.step_number,TCSTEPS.id',
+                                                        'accessKey' => 'step_number'));
+            $sc = count($tcase_exec['steps']);
+            for($sx=0; $sx < $sc; $sx++)
+            {
+              $snum = $$tcase_exec['steps'][$sx];
+              // assumption: all data is valid
+              if(isset($stepSet[$snum]))
+              {
+                
+              }  
+            }  
+          }  
+          new dBug($tcase_exec);
+          die();
+          */
+
+
+
           if($lexid > 0 && $options->copyIssues)
           {
             copyIssues($db,$lexid,$execution_id);
@@ -584,12 +608,21 @@ function importExecutionFromXML(&$xmlTCExec)
     }
   }
 
+  $execInfo['steps'] = null;
+  if(property_exists($xmlTCExec, 'steps') && property_exists($xmlTCExec->steps, 'step'))
+  {
+    $itemStructure['elements'] = array('integer' => array("step_number" => 'intval'),
+                                       'string' => array("result" => 'trim',"notes" => 'trim'));
+    $execInfo['steps'] = getItemsFromSimpleXMLObj($xmlTCExec->steps->step,$itemStructure);
+  }  
+
   $execInfo['custom_fields'] = null;
   if(property_exists($xmlTCExec, 'custom_fields') && property_exists($xmlTCExec->custom_fields, 'custom_field'))
   {
     $itemStructure['elements'] = array('string' => array("name" => 'trim',"value" => 'trim'));
     $execInfo['custom_fields'] = getItemsFromSimpleXMLObj($xmlTCExec->custom_fields->custom_field,$itemStructure);
   }  
+
   return $execInfo;     
 }
 
@@ -768,6 +801,13 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$
       }
     }
   }
+
+
+  if($checks['status_ok'] && isset($execValues['steps']) )
+  {
+    // To Be done
+  }
+
   return $checks;
 }
 

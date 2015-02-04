@@ -287,7 +287,7 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
 </form>
 <script>
 jQuery( document ).ready(function() {
-jQuery(".chosen-select").chosen({ width: "85%" });
+jQuery(".chosen-select").chosen({ width: "85%", allow_single_deselect: true });
 });
 </script>
 </body>

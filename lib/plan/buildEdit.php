@@ -6,7 +6,7 @@
  * @filesource  buildEdit.php
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.14
  *
  */
 require('../../config.inc.php');
@@ -32,14 +32,12 @@ $build_mgr = new build_mgr($db);
 
 $args = init_args($_REQUEST,$_SESSION,$date_format_cfg);
 
-$gui = new stdClass();
-$gui->main_descr = lang_get('title_build_2') . config_get('gui_title_separator_2') . 
-                   lang_get('test_plan') . config_get('gui_title_separator_1') . $args->tplan_name;
+$gui = initializeGui($args,$build_mgr);
+
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args->notes);
 
-$gui->cfields = $build_mgr->html_custom_field_inputs($args->build_id,$args->testprojectID,'design','',$_REQUEST);
 
 $op = new stdClass();
 $op->operation_descr = '';
@@ -169,7 +167,30 @@ function init_args($request_hash, $session_hash,$date_format)
   $args->testprojectName = $session_hash['testprojectName'];
   $args->userID = intval($session_hash['userID']);
 
+  $args->exec_status_filter = isset($request_hash['exec_status_filter']) ?
+                                    $request_hash['exec_status_filter'] : null;
+
   return $args;
+}
+
+/**
+ *
+ *
+ */
+function initializeGui(&$argsObj,&$buildMgr)
+{
+  $guiObj = new stdClass();
+  $guiObj->main_descr = lang_get('title_build_2') . config_get('gui_title_separator_2') . 
+                        lang_get('test_plan') . config_get('gui_title_separator_1') . 
+                        $argsObj->tplan_name;
+  $guiObj->cfields = $buildMgr->html_custom_field_inputs($argsObj->build_id,$argsObj->testprojectID,
+                                                         'design','',$_REQUEST);
+  $dummy = config_get('results');
+  foreach($dummy['status_label_for_exec_ui'] as $kv => $vl)
+  {
+    $guiObj->exec_status_filter['items'][$dummy['status_code'][$kv]] = lang_get($vl);  
+  }  
+  return $guiObj;
 }
 
 
@@ -363,7 +384,62 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) //,&$smartyObj)
       
       if ($argsObj->copy_tester_assignments && $argsObj->source_build_id) 
       {
-        $tplanMgr->assignment_mgr->copy_assignments($argsObj->source_build_id, $buildID, $argsObj->userID);
+        if(!is_null($argsObj->exec_status_filter) && is_array($argsObj->exec_status_filter))
+        {
+          $buildSet[] = $argsObj->source_build_id;
+
+          $execVerboseDomain = config_get('results');
+          $execVerboseDomain = array_flip($execVerboseDomain['status_code']);
+
+          // remember that assignment is done at platform + build
+          $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true,
+                          'outputDetails' => 'name');
+          $platformSet = $tplanMgr->getPlatforms($argsObj->tplan_id,$getOpt);
+          
+          $caOpt['keep_old_assignments'] = true;
+          foreach($platformSet as $platform_id => $pname)
+          {
+            $glf['filters']['platform_id'] = $platform_id; 
+            foreach($argsObj->exec_status_filter as $ec)
+            {
+              switch($execVerboseDomain[$ec])
+              {
+                case 'not_run':
+                  $tcaseSet = $tplanMgr->getHitsNotRunForBuildAndPlatform($argsObj->tplan_id,
+                                                                          $platform_id,
+                                                                          $argsObj->source_build_id);
+                  
+                break;
+
+                default:
+                  $tcaseSet = $tplanMgr->getHitsSingleStatusFull($argsObj->tplan_id,
+                                                                 $platform_id,
+                                                                 $ec,$buildSet);
+                break;            
+              }
+              if(!is_null($tcaseSet))
+              {
+                $targetSet = array_keys($tcaseSet);
+                $features = $tplanMgr->getLinkedFeatures($argsObj->tplan_id,$glf['filters']);
+                $caOpt['feature_set'] = null;
+                foreach($targetSet as $tcase_id)
+                {
+                  $caOpt['feature_set'][] = 
+                         $features[$tcase_id][$glf['filters']['platform_id']]['feature_id'];
+                }  
+                $tplanMgr->assignment_mgr->copy_assignments($argsObj->source_build_id, 
+                                                            $buildID, $argsObj->userID,$caOpt);
+              }  
+              
+            }  
+          }  
+
+        }  
+        else
+        {
+          $tplanMgr->assignment_mgr->copy_assignments($argsObj->source_build_id, 
+                                                      $buildID, $argsObj->userID);
+        }  
       }
           
       $op->user_feedback = '';

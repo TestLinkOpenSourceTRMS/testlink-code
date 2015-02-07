@@ -1053,7 +1053,9 @@ $TLS_copy_to_all_tplans = "Copy to all Test Plans";
 $TLS_release_date = "Release date";
 $TLS_closure_date = "Close on";
 $TLS_copy_tester_assignments = "Copy tester assignments";
-$TLS_assignment_source_build = "From existing build";
+$TLS_assignment_source_build = "From build";
+$TLS_with_exec_status = "With execution status";
+
 
 
 // gui/templates/inc_comp_viewer_ro.tpl

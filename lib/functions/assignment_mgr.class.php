@@ -6,12 +6,13 @@
  * Manager for assignment activities
  *
  * @filesource  assignment_mgr.class.php
- * @package   TestLink
- * @author    Francisco Mancardi
- * @copyright   2007-2014, TestLink community 
- * @link    http://www.testlink.org
+ * @package     TestLink
+ * @author      Francisco Mancardi
+ * @copyright   2007-2015, TestLink community 
+ * @link        http://www.testlink.org
  * 
  * @internal revisions
+ * @since 1.9.14
  */
  
 /**
@@ -331,25 +332,38 @@ class assignment_mgr extends tlObjectWithDB
    * @param int $source_build_id ID of the build to copy the assignments from
    * @param int $target_build_id ID of the target build to which the assignments will be copied
    * @param int $assigner_id will be set as assigner ID of the new assignments if != 0,
-   *                         otherwise old assigner ID will be copied 
-   * @param bool $keep_old_assignments if true, existing assignments in target build will be kept,
-   *                            otherwise (default) every existing tester assignment will be deleted
-   * @param int $copy_all_types If true, all assignments will be copied regardless of type, 
-   *                            else only tester assignments will be copied (default).
+   *                         otherwise old assigner ID will be copied
+   * @param array $opt 
+   *              key => keep_old_assignments: 
+   *                     true: existing assignments in target build will be kept,
+   *                     otherwise (default) every existing tester assignment will be deleted.
+   *
+   *              key => copy_all_types
+   *                     true: all assignments of any type will be copied. 
+   *                     false: only tester assignments will be copied (default).
+   *              key => feature_set: array of id
    */
-  function copy_assignments($source_build_id, $target_build_id, $assigner_id = 0,
-                            $keep_old_assignments = false, $copy_all_types = false) 
+  function copy_assignments($source_build_id, $target_build_id, 
+                            $assigner_id = 0, $opt = null)
   {
+  
+    $my = array('opt');
+    $my['opt']['keep_old_assignments'] = false;
+    $my['opt']['copy_all_types'] = false;
+    $my['opt']['feature_set'] = null;
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
     $ua = $this->tables['user_assignments'];
     $creation_ts = $this->db->db_now();
     $types = $this->get_available_types();
     $tc_execution_type = $types['testcase_execution']['id'];
     $delete_all_types = $copy_all_types;
       
-    $type_sql = ($copy_all_types) ? "" : " AND type = {$tc_execution_type} ";
+    $type_sql = ($my['opt']['copy_all_types']) ? "" : " AND type = {$tc_execution_type} ";
     $user_sql = (is_numeric($assigner_id) && $assigner_id != 0) ? $assigner_id : "assigner_id";
 
-    if ($keep_old_assignments == false) {
+    if ($my['opt']['keep_old_assignments'] == false) 
+    {
       // delete the old tester assignments in target builds if there are any
       $this->delete_by_build_id($target_build_id, $delete_all_types);
     }
@@ -357,11 +371,17 @@ class assignment_mgr extends tlObjectWithDB
     $sql = " INSERT INTO {$ua} " .
            " (type, feature_id, user_id, deadline_ts, " .
            " assigner_id, creation_ts, status, build_id) " .
+  
            " SELECT type, feature_id, user_id, deadline_ts, " . 
            " {$user_sql}, {$creation_ts}, status, {$target_build_id} " .
            " FROM {$ua} " .
-           " WHERE build_id = {$source_build_id} {$type_sql} ";
-    
+           " WHERE build_id = " . intval($source_build_id) . $type_sql;
+
+    if(!is_null($my['opt']['feature_set']))
+    {
+      $sql .= " AND feature_id IN (" . implode(',',$my['opt']['feature_set']). ")";
+    }
+
     $this->db->exec_query($sql);
   } 
   

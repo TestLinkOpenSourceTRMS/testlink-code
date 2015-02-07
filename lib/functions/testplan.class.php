@@ -15,7 +15,7 @@
  *
  * @internal revisions
  * 
- * @since 1.9.13
+ * @since 1.9.15
  **/
 
 /** related functionality */
@@ -38,6 +38,7 @@ class testplan extends tlObjectWithAttachments
   const ACTIVE_BUILDS=1;
   const OPEN_BUILDS=1;
   const ENABLED=1;
+  const IGNORE=-1;
 
   /** @var database handler */
   var $db;
@@ -3349,7 +3350,7 @@ class testplan extends tlObjectWithAttachments
     */
     function changeLinkedTCVersionsPlatform($id,$from,$to,$tcversionSet=null)
     {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+      $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
       $sqlFilter = '';
       if( !is_null($tcversionSet) )
       {
@@ -3357,27 +3358,27 @@ class testplan extends tlObjectWithAttachments
       }
       $whereClause = " WHERE testplan_id = {$id} AND platform_id = {$from} {$sqlFilter}";
 
-        $sqlStm = array();
-    $sqlStm[] = "/* {$debugMsg} */ " . 
-                " UPDATE {$this->tables['testplan_tcversions']} " .
-              " SET platform_id = {$to} " . $whereClause;
+      $sqlStm = array();
+      $sqlStm[] = "/* {$debugMsg} */ " . 
+                  " UPDATE {$this->tables['testplan_tcversions']} " .
+                  " SET platform_id = {$to} " . $whereClause;
 
-    $sqlStm[] = "/* {$debugMsg} */" .
-                " UPDATE {$this->tables['executions']} " .
-              " SET platform_id = {$to} " . $whereClause;
+      $sqlStm[] = "/* {$debugMsg} */" .
+                  " UPDATE {$this->tables['executions']} " .
+                  " SET platform_id = {$to} " . $whereClause;
 
-        foreach($sqlStm as $sql)
-        {
-      $this->db->exec_query($sql);    
-    }
+      foreach($sqlStm as $sql)
+      {
+        $this->db->exec_query($sql);    
+      }
     }
 
     /**
      *
-   * @param id: test plan id
-   * @param platformSet: default null, used as filter criteria.
-   * @return map: key platform id, values count,platform_id
-    */
+     * @param id: test plan id
+     * @param platformSet: default null, used as filter criteria.
+     * @return map: key platform id, values count,platform_id
+     */
   public function countLinkedTCVersionsByPlatform($id,$platformSet=null)
   {
     $sqlFilter = '';
@@ -3971,8 +3972,6 @@ class testplan extends tlObjectWithAttachments
     }
     
     $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
-
-    // echo $method2call;
     $qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
     return $items;
   }
@@ -4205,17 +4204,20 @@ class testplan extends tlObjectWithAttachments
    * @since 1.9.4
    *
    */
-  function getHitsNotRunAtLeastOneBuildForPlatform($id,$platformID,$buildSet=null) 
+  function getHitsNotRunForBuildAndPlatform($id,$platformID,$buildID) 
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
+    // list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
+
+    $safe_id['tplan'] = intval($id);
+    $safe_id['platform'] = intval($platformID);
+    $safe_id['build'] = intval($buildID);
 
     $sql =   "/* $debugMsg */ " .
-        " SELECT DISTINCT NHTCV.parent_id AS tcase_id, E.status " .
+        " SELECT DISTINCT NHTCV.parent_id AS tcase_id, E.status, B.id AS build_id " .
         " FROM {$this->tables['testplan_tcversions']} TPTCV " .
         
         " JOIN {$this->tables['builds']} B ON B.testplan_id = TPTCV.testplan_id " .
-        $buildsCfg['statusClause'] .
 
         " /* Needed to get TEST CASE ID */ " .
         " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
@@ -4230,9 +4232,9 @@ class testplan extends tlObjectWithAttachments
         
         " WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
         " AND TPTCV.platform_id = " . $safe_id['platform'] . 
-        " AND E.build_in IN ({$buildsCfg['inClause']}) " .
+        " AND B.id = " . $safe_id['build'] .
         " AND E.status IS NULL ";
-        
+         
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
   }
@@ -4363,7 +4365,6 @@ class testplan extends tlObjectWithAttachments
     // On Postgresql 
     // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
     // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
-
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
     
@@ -4388,6 +4389,7 @@ class testplan extends tlObjectWithAttachments
         " AND E.status IS NULL " .
         " GROUP BY tcase_id " .
         " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
+
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
@@ -4585,6 +4587,7 @@ class testplan extends tlObjectWithAttachments
         " AND TPTCV.platform_id = " . $safe_id['platform'] .
         " AND E.status IS NULL ";
         
+   
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
   }
@@ -4714,9 +4717,9 @@ class testplan extends tlObjectWithAttachments
    * ON LAST EXECUTION ON ALL builds on buils set (full) , for a platform
    *
    * If build set is NULL => ON LAST EXECUTION ON ALL ACTIVE builds (full), for a platform
-     * 
-     * @internal revisions:
-     * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
+   * 
+   * @internal revisions:
+   * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
    */
   function getHitsSameStatusFullALOP($id,$statusSet,$buildSet=null)
   {
@@ -4728,7 +4731,7 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
-                                 array('ignorePlatform' => true));
+                                                             array('ignorePlatform' => true));
 
     // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
     // The filtering for "not run" status was simply not implemented for the case 
@@ -6689,7 +6692,7 @@ class testplan extends tlObjectWithAttachments
         $sql2run = $sql2do;
       }
 
-      // new dBug($sql2run);
+    
 
       // added when trying to fix: 
       // TICKET 5788: test case execution order not working on RIGHT PANE
@@ -7386,6 +7389,44 @@ class testplan extends tlObjectWithAttachments
     return $items;
   }
 
+
+
+  /**
+   *
+   * @since 1.9.14
+   */
+  function getLinkedFeatures($id,$filters=null,$options=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $my = array('filters' => array(), $options => array());    
+    $my['filters'] = array('platform_id' => null);
+    $my['options'] = array('accessKey' => array('tcase_id','platform_id'));
+
+    $my['filters'] = array_merge($my['filters'],(array)$filters);
+    $my['options'] = array_merge($my['options'],(array)$options);
+
+    $sql = " /* $debugMsg */ ". 
+         " SELECT parent_id AS tcase_id,TPTCV.platform_id,TPTCV.id AS feature_id " .
+         " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+         " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
+         " WHERE TPTCV.testplan_id = " . intval($id);
+
+    if(!is_null($my['filters']['platform_id']))
+    {
+      $sql .= " AND TPTCV.platform_id = " . intval($my['filters']['platform_id']);
+    }  
+
+    if(!is_null($my['filters']['tcase_id']))
+    {
+      $sql .= " AND NHTC.parent_id IN (" . implode(',',$my['filters']['tcase_id']) . ") ";
+    }    
+
+    $items = $this->db->fetchMapRowsIntoMap($sql,$my['options']['accessKey'][0],
+                                                 $my['options']['accessKey'][1]);
+           
+    return $items;
+  }
 
 
 

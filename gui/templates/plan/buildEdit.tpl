@@ -1,31 +1,29 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
+@filesoruce buildEdit.tpl
 
 Purpose: smarty template - Add new build and show existing
 
 @internal revisions
-
+@since 1.9.14
 *}
-{assign var="managerURL" value="lib/plan/buildEdit.php"}
-{assign var="cancelAction" value="lib/plan/buildView.php"}
+{$managerURL="lib/plan/buildEdit.php"}
+{$cancelAction="lib/plan/buildView.php"}
 
 {lang_get var="labels"
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
              open,builds_description,cancel,release_date,closure_date,closed_on_date,
              copy_tester_assignments, assignment_source_build,show_event_history,
-             show_calender,clear_date"}
+             show_calender,clear_date,with_exec_status"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_build_name = "{$labels.warning_empty_build_name|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.build_name.value)) 
@@ -37,12 +35,11 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 
 <body onload="showOrHideElement('closure_date',{$gui->is_open})">
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->main_descr|escape}</h1>
@@ -74,18 +71,6 @@ function validateForm(f)
       <td>{$gui->notes}</td>
     </tr>
 
-    {* ====================================================================== 
-    {if $gui->cfields2 != ''}
-    <tr>
-      <td  colspan="2">
-        <div id="custom_field_container" class="custom_field_container">
-        {$gui->cfields}
-        </div>
-      </td>
-    </tr>
-    {/if}
-    *}
-
     {if $gui->cfields != ''}
       {foreach key=accessKey item=cf from=$gui->cfields}
       <tr>
@@ -115,7 +100,6 @@ function validateForm(f)
     <tr>
         <th style="background:none;">{$labels.release_date}</th>
         <td>
-        {* BUGID 3716, BUGID 3930 *}
                 <input type="text" 
                        name="release_date" id="release_date" 
                value="{$gui->release_date}" />
@@ -129,7 +113,6 @@ function validateForm(f)
 
 
 
-  {* BUGID 3406 *}
   {* show this only if we create a new build and there are other builds to copy from *}
   {if !$gui->build_id && $gui->source_build.build_count}
     <tr>
@@ -137,24 +120,40 @@ function validateForm(f)
       <td>
         <input type="checkbox"  name="copy_tester_assignments" id="copy_tester_assignments"
                {if $gui->copy_tester_assignments} checked {/if} 
-               onclick="showOrHideElement('source_build_selection',!this.checked)"
-        />
-        <span id="source_build_selection"
+               onclick="showOrHideElement('source_build_selection',!this.checked);
+                        showOrHideElement('exec_status',!this.checked)"
+        />       
+      </td>
+    </tr>
+  
+    <tr id="source_build_selection" 
         {if !$gui->copy_tester_assignments} style="display:none;" {/if} >
-          {$labels.assignment_source_build}
+      <th style="background:none;">{$labels.assignment_source_build}</th>
+      <td>
           <select name="source_build_id">
           {html_options options=$gui->source_build.items selected=$gui->source_build.selected}
           </select>
-        </span>
       </td>
     </tr>
-    {/if}
+
+    <tr id="exec_status" 
+        {if !$gui->copy_tester_assignments} style="display:none;" {/if} >
+      <th style="background:none;">{$labels.with_exec_status}</th>
+      <td>
+          <select name="exec_status_filter[]" id="exec_status_filter" 
+                  multiple="multiple">
+          {html_options options=$gui->exec_status_filter.items 
+                        selected=$gui->exec_status_filter.selected}
+          </select>
+      </td>
+    </tr>
+  
+  {/if}
     
   </table>
   <p>{$labels.builds_description}</p>
   <div class="groupBtn">  
 
-    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
     <input type="hidden" name="do_action" value="{$gui->buttonCfg->name}" />
     <input type="hidden" name="build_id" value="{$gui->build_id}" />
     

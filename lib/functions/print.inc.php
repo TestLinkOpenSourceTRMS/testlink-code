@@ -331,8 +331,8 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
   static $basehref;
 
   $output = '';
-  $reLevel = ($reLevel > 0) ? $reLevel : 1;
-  
+  $reLevel = ($rsLevel > 0) ? $rsLevel : 1;
+
   if (!$req_spec_mgr) 
   {
     $basehref = $_SESSION['basehref'];

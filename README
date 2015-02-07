@@ -360,18 +360,16 @@ This list comprise people that has helped
 7. Bug Reports and Feedback
 ===============================================================
 
-You may contact us at the TestLink forum at 
+You may contact TestLink User Community forum at 
 http://www.testlink.org/
 
 If you found this software useful for your company please
 post in forum on section "Companies using TestLink".
 
-To submit a bug or a feature, please use our Mantis installation at 
-http://www.testlink.org/mantis/. 
+To submit a bug or a feature, please use ONLY our Mantis installation at 
+http://www.testlink.org/mantis/
 
 You can follow us on twitter => http://twitter.com/#!/TLOpenSource
-
-Useful mails: testlink.forum@gmail.com, testlink.helpme@gmail.com
 
 
 8. Supporting our work
@@ -404,8 +402,11 @@ PLEASE: read this short hints before you write a topic:
 - Test Step execution - Attachment management 
 - Automatically copy linked bugs from previous execution to the new one
 - Export Test Spec - add option to export external ID WITH PREFIX
-and more
+- Improvements on JIRA integration:
+  user can set values on GUI for Components,Priorities,Versions,IssueTypes 
+  getting domain values from JIRA.
 
+... and more (read CHANGELOG file)
 
 
 1.9.12

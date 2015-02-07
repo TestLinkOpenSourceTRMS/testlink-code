@@ -1,14 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesView.tpl,v 1.11 2010/10/17 09:46:37 franciscom Exp $
-
-Rev:
+@filesource planMilestonesView.tpl
 *}
+
 {lang_get var='labels' s='no_milestones,title_milestones,title_existing_milestones,th_name,
                          th_date_format,th_perc_a_prio,th_perc_b_prio,th_perc_c_prio,
                          btn_new_milestone,start_date,title_report_milestones,until,
 						 th_milestone,th_tc_priority_high,th_expected,th_tc_priority_medium,
-						 th_expected,th_tc_priority_low,th_expected,th_overall,
+						 th_expected,th_tc_priority_low,th_expected,th_overall,from,
                          th_perc_testcases,th_delete,alt_delete_milestone,no_milestones'}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}

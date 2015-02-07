@@ -9,7 +9,7 @@
  * @filesource  const.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @see         config.inc.php
  *
  * @internal revisions
@@ -23,8 +23,8 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.13'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' (Stormbringer)'); 
+define('TL_VERSION_NUMBER', '1.9.14'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Padawan)'); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Last Database version that is used to give users feedback about necesssary upgrades

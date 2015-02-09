@@ -20,7 +20,7 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.13
+ * @since 1.9.14
  *
  */
 
@@ -2242,7 +2242,7 @@ class TestlinkXMLRPCServer extends IXR_Server
    * test case internal id
    * test case external id  (PREFIX-NNNN) 
    * 
-   * This is the only method that should be called directly to check test case identoty
+   * This is the only method that should be called directly to check test case identity
    *   
    * If everything OK, test case internal ID is setted.
    *
@@ -2251,8 +2251,8 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @return boolean
    * @access protected
    */    
-    protected function checkTestCaseIdentity($messagePrefix='')
-    {
+   protected function checkTestCaseIdentity($messagePrefix='')
+   {
       // Three Cases - Internal ID, External ID, No Id        
       $status=false;
       $tcaseID=0;
@@ -6462,9 +6462,10 @@ protected function createAttachmentTempFile()
   /**
    * Gets list of keywords for a given Test case
    *
-   * @param $testcaseid
+   * @param mixed $testcaseid can be int or array
+   *              $testcaseexternalid can be int or array
    *
-   * @return map indexed by bug_id
+   * @return map indexed by test case internal (DB) ID
    *
    * @access public
    */
@@ -6472,12 +6473,33 @@ protected function createAttachmentTempFile()
   {
     $msgPrefix="(" .__FUNCTION__ . ") - ";
     $this->_setArgs($args);
-    $checkFunctions = array('authenticate','checkTestCaseIdentity');
+
+    // Prepare material for checkTestCaseSetIdentity()
+    $a2check = array(self::$testCaseIDParamName,self::$testCaseExternalIDParamName);
+    foreach($a2check as $k2c)
+    {
+      if( isset($this->args[$k2c]) )
+      {
+        $retAsArray = is_array($this->args[$k2c]);
+        $this->args[$k2c] = (array)$this->args[$k2c];
+        $outBy = $k2c;
+        break;
+      }  
+    }  
+ 
+    $checkFunctions = array('authenticate','checkTestCaseSetIdentity');
     $status_ok=$this->_runChecks($checkFunctions,$msgPrefix);
+    
     if($status_ok)
     {
-      $itemSet = $this->tcaseMgr->get_keywords_map(intval($this->args[self::$testCaseIDParamName]));
-      return $itemSet;
+      foreach($this->args[self::$testCaseIDParamName] as $idx => $tcaseID)
+      {
+        $accessKey = ($outBy == self::$testCaseIDParamName) ? $tcaseID
+                                                            : $this->args[$outBy][$idx]; 
+                                                             
+        $itemSet[$accessKey] = $this->tcaseMgr->get_keywords_map(intval($tcaseID));
+      }  
+      return $retAsArray ? $itemSet : current($itemSet);
     }
     else
     {
@@ -6627,6 +6649,82 @@ protected function createAttachmentTempFile()
 
     return ($status_ok ? $resultInfo : $this->errors);
   }
+
+
+ /**
+   * Helper method to see if in a test case set identity provided is valid 
+   * Identity can be specified in one of these modes:
+   *
+   * test case internal id
+   * test case external id  (PREFIX-NNNN) 
+   * 
+   * If everything OK, an array of test case internal ID is setted.
+   *
+   * @param string $messagePrefix used to be prepended to error message
+   *
+   * @return boolean
+   * @access protected
+   */    
+    protected function checkTestCaseSetIdentity($messagePrefix='')
+    {
+      // Three Cases - Internal ID, External ID, No Id        
+      $status_ok = false;
+      $fromExternal = false;
+      $fromInternal = false;
+
+      $tcaseID = 0;
+      $tcaseIDSet = null;
+  
+      if($this->_isTestCaseExternalIDPresent())
+      {
+        $fromExternal = true;
+        $errorCode = INVALID_TESTCASE_EXTERNAL_ID;
+        $msg = $messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR;
+
+        foreach($this->args[self::$testCaseExternalIDParamName] as $tcaseExternalID)
+        {
+          $tcaseIDSet[] = intval($this->tcaseMgr->getInternalID($tcaseExternalID));            
+        }
+      }  
+
+      if($this->_isTestCaseIDPresent())
+      {
+        $fromInternal = true;
+        $errorCode = INVALID_TESTCASE_EXTERNAL_ID;
+        $msg = $messagePrefix . INVALID_TCASEID_STR;        
+        $tcaseIDSet = $this->args[self::$testCaseIDParamName];       
+      }  
+
+      if(!is_null($tcaseIDSet))
+      {
+        $status_ok = true;
+        foreach($tcaseIDSet as $idx => $tcaseID)
+        {
+          if (( ($tcaseID = intval($tcaseID)) <= 0 ) || 
+              (!$this->_isTestCaseIDValid($tcaseID,$messagePrefix)))
+          {
+            $status_ok = false;
+
+            if($fromInternal)
+            {  
+              $this->errors[] = new IXR_Error($errorCode,sprintf($msg,$tcaseID));
+            }
+            else 
+            {
+              $tcaseExternalID = $this->args[self::$testCaseExternalIDParamName][$idx];
+              $this->errors[] = new IXR_Error($errorCode,sprintf($msg,$tcaseExternalID));                  
+            }  
+          }
+        }  
+      }  
+       
+      if($status_ok)
+      {
+        $this->_setTestCaseID($tcaseIDSet);
+      }  
+
+      return $status_ok;
+    }   
 
 
   /**

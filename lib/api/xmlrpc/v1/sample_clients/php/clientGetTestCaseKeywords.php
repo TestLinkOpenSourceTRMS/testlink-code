@@ -17,7 +17,35 @@ $unitTestDescription="Test - {$method} - using testcaseid";
 
 $args=array();
 $args["devKey"]='admin';
-$args["testcaseid"]=2610;
+$args["testcaseid"]=41;
+
+$debug=true;
+echo $unitTestDescription;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+
+
+// ---
+$unitTestDescription="Test - {$method} - using testcaseexternalid";
+
+$args=array();
+$args["devKey"]='admin';
+$args["testcaseexternalid"]="XL5-1";
+
+$debug=true;
+echo $unitTestDescription;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+
+// -------------------------------------------------------------------------------------
+$method='getTestCaseKeywords';
+$unitTestDescription="Test - {$method} - using array of testcaseid";
+
+$args=array();
+$args["devKey"]='admin';
+$args["testcaseid"]=array(41);
 
 $debug=true;
 echo $unitTestDescription;
@@ -26,15 +54,16 @@ $client->debug=$debug;
 runTest($client,$method,$args);
 
 // ---
-$unitTestDescription="Test - {$method} - using testcaseexternalid";
+$unitTestDescription="Test - {$method} - using array of testcaseexternalid";
 
 $args=array();
 $args["devKey"]='admin';
-$args["testcaseexternalid"]="AF-1";
+$args["testcaseexternalid"] = array("XL5-1","XL5-2","XL5-3");
 
 $debug=true;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+
 

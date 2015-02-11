@@ -6,11 +6,11 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  * 
  */
 
@@ -6505,7 +6505,7 @@ class testcase extends tlObjectWithAttachments
               // trick to convert to array  
               $dx = '{' . html_entity_decode(trim($dx,'\n')) . '}';
               $dx = json_decode($dx,true);
- 
+
               try
               {
                 $xid = $this->getInternalID($dx['TestCase']);
@@ -6517,16 +6517,16 @@ class testcase extends tlObjectWithAttachments
                   if($vn == 0)
                   {
                     // User wants to follow latest ACTIVE VERSION    
-                    $yy = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
+                    $zorro = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
                     $linkFeedback=" to Latest ACTIVE Version)";
-                    if(is_null($yy))
+                    if(is_null($zorro))
                     {
                       // seems all versions are inactive, in this situation will get latest
-                      $yy = $this->get_last_version_info($xid,array('output' => 'full'));
+                      $zorro = $this->get_last_version_info($xid,array('output' => 'full'));
                       $addInfo = " - All versions are inactive!!";  
                       $linkFeedback=" to Latest Version{$addInfo})";
                     }  
-                    $vn = intval($yy['version']);
+                    $vn = intval($zorro['version']);
                   }  
 
                   $fi = $this->get_basic_info($xid,array('number' => $vn));
@@ -6538,15 +6538,15 @@ class testcase extends tlObjectWithAttachments
 
                       // ghost for rendering Test Case Step (string display)
                       // [ghost]"Step":1,"TestCase":"MOK-2","Version":1[/ghost]
+                      //
+                      // ATTENTION REMEMBER THAT ALSO CAN BE:
+                      // [ghost]"Step":1,"TestCase":"MOK-2","Version":""[/ghost]
+                      // [ghost]"Step":1,"TestCase":"MOK-2"[/ghost]
+                      //
                       if(intval($dx['Step']) > 0)
                       { 
                         $deghosted = true;
-                        //$rightside = '';
-                        //if(strlen($xx[$xdx]) > $cutting_point+$tlEndMarkLen)
-                        //{
-                          $rightside = trim(substr($xx[$xdx],$cutting_point+$tlEndMarkLen));
-                          //echo $rightside;
-                        //}  
+                        $rightside = trim(substr($xx[$xdx],$cutting_point+$tlEndMarkLen));
                         $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
 
                         $ghost .= $stx[0]['actions'] . $rightside;

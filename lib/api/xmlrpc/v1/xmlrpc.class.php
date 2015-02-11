@@ -6499,7 +6499,8 @@ protected function createAttachmentTempFile()
                                                              
         $itemSet[$accessKey] = $this->tcaseMgr->get_keywords_map(intval($tcaseID));
       }  
-      return $retAsArray ? $itemSet : current($itemSet);
+      // return $retAsArray ? $itemSet : current($itemSet);
+      return $itemSet;
     }
     else
     {

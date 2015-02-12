@@ -8,12 +8,12 @@
  *
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @filesource  exec.inc.php
- * @link        http://www.teamst.org/index.php
+ * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  * 
  *
  **/
@@ -647,7 +647,7 @@ function copyIssues(&$dbHandler,$source,$dest)
     $dummy = array();
     foreach($idSet as $bi)
     {
-      $dummy[] = "({$safeDest},$bi)";
+      $dummy[] = "({$safeDest},'{$bi}')";
     }
     $sql = "INSERT INTO {$tables['execution_bugs']} (execution_id,bug_id) VALUES " .
            implode(",", $dummy);

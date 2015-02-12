@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.14.4.1 2010/12/25 11:57:47 franciscom Exp $
+@filesource inc_exec_controls.tpl
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
-Rev: 
+@internal revisions
+@since 1.9.14 
 *}	
       {$ResultsStatusCode=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
@@ -62,6 +63,7 @@ Rev:
                 
                 {if $gui->tlCanCreateIssue}
                   {if $addBR}<br>{/if} 
+                  {$addBR=1}
                   {$args_labels.bug_create_into_bts}&nbsp;
                   <input type="checkbox" name="createIssue"  id="createIssue" 
                          onclick="javascript:toogleShowHide('issue_summary');

@@ -175,10 +175,12 @@ switch($args->level)
     $filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
 
     // ORDER IS CRITIC - Attention in refactoring    
-    $opt = array('assigned_on_build' => $args->build_id, 'addPriority' => true);
+    $opt = array('assigned_on_build' => $args->build_id, 'addPriority' => true,
+                 'addExecInfo' => false);
     $filters += $opt;
     $opt['accessKeyType'] = 'tcase+platform+stackOnUser';
     $opt['useOptionalArrayFields'] = true;
+    $opt['tlFeature'] = 'testCaseExecTaskAssignment';
 
     // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
     // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);

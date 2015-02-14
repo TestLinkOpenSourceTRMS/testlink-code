@@ -6,11 +6,11 @@
  * @filesource  specview.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2004-2014, TestLink community 
+ * @copyright   2004-2015, TestLink community 
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
  * 20141004 - franciscom -added *flat family of functions
  *
@@ -312,7 +312,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  * 
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  * 
  */
 function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
@@ -349,9 +349,24 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
     $filters['tsuites_id'] = explode(',',$xx);
   }
   
-  $opx = array('addExecInfo' => true, 'specViewFields' => true) + (array)$options;
 
-  $tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
+  // $opx = array('addExecInfo' => true, 'specViewFields' => true) + (array)$options;
+  $opx = array_merge( array('addExecInfo' => true, 'specViewFields' => true),
+                      (array)$options );
+  
+  switch($options['tlFeature'])
+  {
+    case 'testCaseExecTaskAssignment':
+      $method2call = 'getLinkedTCVXmen';
+    break;
+
+    case 'testCaseTestPlanAssignment':
+    default:
+      $method2call = 'getLTCVNewGeneration';
+    break;
+  }
+  $tplan_tcases = $tplanMgr->$method2call($argsObj->tplan_id, $filters, $opx);  
+  
   if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
   {
     $filteredSet = $tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
@@ -1059,7 +1074,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
       if( !isset($outRef['execution_order']) )
       {
         // Doing this I will set order for test cases that still are not linked.
-        // But Because I loop over all version (linked and not) if I always write, 
+        // But Because I loop over all versions (linked and not) if I always write, 
         // will overwrite right execution order of linked tcversion.
         //
         // N.B.:
@@ -1127,10 +1142,11 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
                 $outRef[$fieldKey][$item['platform_id']]=intval($item[$fieldKey]);
               }
             }
-
+         
             // this logic has been created to cope with multiple tester assignment
             if($my['opt']['useOptionalArrayFields'])
             {  
+
               foreach ($optionalArrayFields as $fieldKey )
               {
                 // We have issues when no user is assigned because  is
@@ -1340,7 +1356,6 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
     $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI);
     $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items,$options);
   }
-
 
   if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields'])
   {    

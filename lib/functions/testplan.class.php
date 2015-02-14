@@ -6050,7 +6050,8 @@ class testplan extends tlObjectWithAttachments
                            'tcase_name' => null);
 
     $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 
-                           'allow_empty_build' => 0, 'addTSuiteOrder' => false);
+                           'allow_empty_build' => 0, 'addTSuiteOrder' => false,
+                           'addImportance' => false, 'addPriority' => false);
     $ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
     $ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
 
@@ -6658,7 +6659,8 @@ class testplan extends tlObjectWithAttachments
   }
 
 
-  // need to recheck, because probably we need to be able to work without build id provided
+  // need to recheck, because probably we need to be able 
+  // to work without build id provided
   // has to be based on TREE USED on features like:
   // assign test case execution  or set test case urgency
   //
@@ -6669,6 +6671,7 @@ class testplan extends tlObjectWithAttachments
                 'options' => array('allow_empty_build' => 1,'addPriority' => false,
                                    'accessKeyType' => 'tcase+platform',
                                    'addImportance' => false,
+                                   'addExecInfo' => true,
                                    'includeNotRun' => true, 'orderBy' => null));
     $amk = array('filters','options');
     foreach($amk as $mk)
@@ -6690,9 +6693,7 @@ class testplan extends tlObjectWithAttachments
       else
       {
         $sql2run = $sql2do;
-      }
-
-    
+      }    
 
       // added when trying to fix: 
       // TICKET 5788: test case execution order not working on RIGHT PANE
@@ -6702,6 +6703,8 @@ class testplan extends tlObjectWithAttachments
         $sql2run = " SELECT * FROM ($sql2run) XX ORDER BY " . $my['options']['orderBy'];
       }
 
+      echo $my['options']['accessKeyType'];
+      echo $sql2run;
       switch($my['options']['accessKeyType'])
       {
         case 'tcase+platform':
@@ -7428,6 +7431,54 @@ class testplan extends tlObjectWithAttachments
     return $items;
   }
 
+  /**
+   * @used-by getFilteredLinkedVersions() - specview.php
+   * @used-by indirectly on tc_exec_assigment.php for test suites         
+   *
+   */
+  function getLinkedTCVXmen($id,$filters=null,$options=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $safe['tplan_id'] = intval($id);
+    $my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
+
+    // adding tcversion on output can be useful for Filter on Custom Field values,
+    // because we are saving values at TCVERSION LEVEL
+    $commonFields = "/* $debugMsg */ " .
+                    " SELECT NH_TCASE.name AS tcase_name, NH_TCASE.id AS tcase_id, " .
+                    " NH_TCASE.id AS tc_id,TPTCV.tcversion_id,TCV.version," .
+                    " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.status," .
+                    " TPTCV.id AS feature_id," .
+                    ($my['options']['addPriority'] ? "(TPTCV.urgency * TCV.importance) AS priority," : '') .
+                    " TPTCV.platform_id,TPTCV.node_order AS execution_order,".
+                    ($my['options']['addImportance'] ? " TCV.importance," : '') .
+                    $this->helperConcatTCasePrefix($safe['tplan_id']) . "  AS full_external_id ";
+
+    $commonFields .= ",UA.user_id";      
+    $commonFields .= ",NH_TCASE.name,TPTCV.creation_ts AS linked_ts,TPTCV.author_id AS linked_by" .
+                     ",NH_TCASE.parent_id AS testsuite_id";   
+    
+    $commonFields .= ",NH_TSUITE.name AS tsuite_name ";  
+
+    $my['join']['tsuites'] = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
+                             " ON NH_TSUITE.id = NH_TCASE.parent_id ";
+    
+    
+    
+    $sql =  $commonFields .
+            " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
+            " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = TPTCV.tcversion_id " .
+            " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+            $my['join']['tsuites'] .
+            $my['join']['ua'] .
+            $my['join']['keywords'] .
+            " WHERE TPTCV.testplan_id =" . $safe['tplan_id'];
+            $my['where']['where'];
+
+    $items = $this->db->fetchMapRowsIntoMapStackOnCol($sql,'tcase_id','platform_id','user_id');
+    return $items;
+  }
 
 
 

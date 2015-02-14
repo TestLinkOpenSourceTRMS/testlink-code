@@ -18,8 +18,8 @@ $unitTestDescription="Test - {$method}";
 
 $args=array();
 $args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : $devKey;
-$args["testcaseexternalid"]='MAB-1';
-$args["keywords"] = array('NATAZ'); 
+$args["keywords"] = array('MAB-1' => array('Barbie'),
+	                      'MAB-2' => array('Barbie')); 
 
 
 

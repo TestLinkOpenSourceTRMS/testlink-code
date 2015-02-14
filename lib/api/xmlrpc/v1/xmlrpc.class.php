@@ -6588,7 +6588,44 @@ protected function createAttachmentTempFile()
    */
   function addTestCaseKeywords($args)
   {
-    $operation = __FUNCTION__;
+    $ret = $this->checksForManageTestCaseKeywords($args,'add');
+    if( $ret['status_ok'] )
+    {
+      $kwSet = $this->args[self::$keywordNameParamName];
+      return $this->manageTestCaseKeywords($kwSet,$ret['tprojectSet'],'add');
+    }  
+    return $this->errors;
+  }
+
+  /**
+   * removeTestCaseKeywords
+   * @param struct $args
+   * @param string $args["devKey"]
+   * 
+   * @return mixed $resultInfo
+   *
+   * @internal revisions
+   * @since 1.9.14
+   */
+  function removeTestCaseKeywords($args)
+  {
+    $ret = $this->checksForManageTestCaseKeywords($args,'remove');
+    if( $ret['status_ok'] )
+    {
+      $kwSet = $this->args[self::$keywordNameParamName];
+      return $this->manageTestCaseKeywords($kwSet,$ret['tprojectSet'],'remove');
+    }  
+    return $this->errors;
+  }
+
+
+
+  /**
+   * @used by manageTestCaseKeywords
+   */
+  protected function checksForManageTestCaseKeywords($args,$action)
+  {
+    $operation = str_replace('checksForManage',$action,__FUNCTION__);
     $msg_prefix="({$operation}) - ";
     $resultInfo = array();
 
@@ -6600,12 +6637,6 @@ protected function createAttachmentTempFile()
     $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
     if( $status_ok )
     {
-      // Check & set list of test cases, may be user has sent test cases that
-      // belong to different test projects.
-      // this can generate some issues on grant checks
-      //
-      // return __LINE__;
-      // $items = $this->getTcaseDbId(array_keys($this->args[self::$keywordNameParamName]));
       $items = array_keys($this->args[self::$keywordNameParamName]);
       $status_ok = $this->checkTestCaseSetIdentity($msg_prefix,$items);
     }
@@ -6630,34 +6661,12 @@ protected function createAttachmentTempFile()
           break;
         }  
       }
-      
     }  
 
-    
-    if( $status_ok )
-    {
-      $kwSet = $this->args[self::$keywordNameParamName];
-      return $this->manageTestCaseKeywords($kwSet,$tprojectSet,'add');
-    }  
+    $ret['status_ok'] = $status_ok;
+    $ret['tprojectSet'] = $tprojectSet;
 
-    return $this->errors;
-  }
-
-  /**
-   * removeTestCaseKeywords
-   * @param struct $args
-   * @param string $args["devKey"]
-   * @param string $args["testcaseexternalid"]
-   * @param array $args["keywords"]: keywords
-   * 
-   * @return mixed $resultInfo
-   *
-   * @internal revisions
-   * @since 1.9.13
-   */
-  function removeTestCaseKeywords($args)
-  {
-    return $this->manageTestCaseKeywords($args,'remove');
+    return $ret;
   }
 
   /**
@@ -6679,6 +6688,7 @@ protected function createAttachmentTempFile()
       break;
 
       case 'delete':
+      case 'remove':
         $method2call = 'deleteKeywords';
       break;
 
@@ -6688,7 +6698,6 @@ protected function createAttachmentTempFile()
         return $resultInfo;
       break;
     }
-
 
     $kw = array();
     $resultInfo['validKeywords'] = null;

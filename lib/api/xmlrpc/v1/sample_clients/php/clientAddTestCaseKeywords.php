@@ -18,11 +18,8 @@ $unitTestDescription="Test - {$method}";
 
 $args=array();
 $args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : $devKey;
-$args["testcaseexternalid"]='MAB-1';
-// $args["keywords"] = array('RANA','RABA','MALA','CABA');
-$args["keywords"] = array('NATAZ','PEE'); //,'PEE','MALA','CABA');
-
-
+$args["keywords"] = array('MAB-3' => array('Barbie','Barbie'),
+	                      'MAB-2' => array('Barbie','Jessie'));
 
 $debug=true;
 $client = new IXR_Client($server_url);

@@ -5,9 +5,12 @@
  * @filesource	jirarestInterface.class.php
  * @author      Francisco Mancardi
  *
+ * @see https://developer.atlassian.com/jiradev/api-reference/jira-rest-apis
+ * @see https://developer.atlassian.com/jiradev/api-reference/jira-rest-apis/jira-rest-api-tutorials/
+ *
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
@@ -33,15 +36,22 @@ class jirarestInterface extends issueTrackerInterface
     $this->support->guiCfg = array('use_decoration' => true);
 
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+
 	  if( $this->setCfg($config) )
     {
       $this->completeCfg();
       $this->connect();
       $this->guiCfg = array('use_decoration' => true);
     }  
-
 	}
 
+   /**
+    *
+    */
+    function getIssueAttr()
+    {
+      return $this->issueAttr;
+    }
 
 	/**
 	 *
@@ -71,6 +81,12 @@ class jirarestInterface extends issueTrackerInterface
       $this->cfg->uricreate = $base . '';
     }
 
+
+    if( property_exists($this->cfg,'attributes') )
+    {
+      // echo __FUNCTION__ . "::Debug::Step#$step Going To Add attributes <br>";$step++;
+      // $this->processAttributes();
+    }    
 	}
 
 	/**
@@ -459,7 +475,9 @@ class jirarestInterface extends issueTrackerInterface
   }
 
  
-
+  /**
+   *
+   */
   private function objectAttrToIDName($obj)
   {
     $ret = null;
@@ -474,6 +492,9 @@ class jirarestInterface extends issueTrackerInterface
     return $ret;    
   }
   
+
+
+
 
   /**
    *
@@ -491,6 +512,7 @@ class jirarestInterface extends issueTrackerInterface
            "<uriview>https://testlink.atlassian.net/browse/</uriview>\n" .
            "<!-- Configure This if you want be able TO CREATE ISSUES -->\n" .
            "<projectkey>JIRA PROJECT KEY</projectkey>\n" .
+           "<userinteraction>1</userinteraction>\n" .
            "<issuetype>JIRA ISSUE TYPE</issuetype>\n" .
            "</issuetracker>\n";
 	  return $tpl;

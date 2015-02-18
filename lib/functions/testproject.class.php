@@ -5,11 +5,11 @@
  * 
  * @filesource  testproject.class.php
  * @package     TestLink
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.15
  * 
  **/
 
@@ -1708,17 +1708,33 @@ function setPublicStatus($id,$status)
    * @param integer $tproject_id
    * @return integer tl::OK on success, tl::ERROR else
    **/
-  function deleteUserRoles($tproject_id)
+  function deleteUserRoles($tproject_id,$users=null,$opt=null)
   {
-    $query = "DELETE FROM {$this->tables['user_testproject_roles']} " . 
-      " WHERE testproject_id = {$tproject_id}";
-    if ($this->db->exec_query($query))
+    $my['opt'] = array('auditlog' => true);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+    $query = " DELETE FROM {$this->tables['user_testproject_roles']} " . 
+             " WHERE testproject_id = " . intval($tproject_id) ;
+
+    if(!is_null($users))
+    {
+      $query .= " AND user_id IN(" . implode(',',$users) . ")";
+    } 
+
+    if ($this->db->exec_query($query) && $my['opt']['auditlog'])
     {
       $testProject = $this->get_by_id($tproject_id);
+    
       if ($testProject)
       {
-        logAuditEvent(TLS("audit_all_user_roles_removed_testproject",$testProject['name']),
-          "ASSIGN",$tproject_id,"testprojects");
+        if(is_null($users))
+        {
+          logAuditEvent(TLS("audit_all_user_roles_removed_testproject",$testProject['name']),
+                        "ASSIGN",$tproject_id,"testprojects");
+        }  
+        else
+        {
+          // TBD
+        }  
       }
       return tl::OK;
     }

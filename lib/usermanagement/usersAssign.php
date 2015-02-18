@@ -10,12 +10,12 @@
  * then to change Test Project user need to use main Test Project Combo
  * 
  * @package 	  TestLink
- * @copyright   2005-2014, TestLink community
+ * @copyright   2005-2015, TestLink community
  * @filesource  usersAssign.php
  * @link 		    http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  *
  */
 
@@ -446,9 +446,9 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 	                                                            array('output' =>'map'));
 	                                                            
 
-    echo __LINE__;
-    echo __FUNCTION__;
-    new dBug($myAccessibleSet);
+    //echo __LINE__;
+    //echo __FUNCTION__;
+    //new dBug($myAccessibleSet);
    
     // we want to change map key, from testplan id to a sequential index to maintain old logic
     $activeKeys = array_keys($activeTestplans);
@@ -463,7 +463,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
     }
     
 	  // $activeTestplans = array_values($activeTestplans);
-    new dBug($activeTestplans);  
+    //new dBug($activeTestplans);  
     	  
     // 2013-04-01
     // now is not clear why this logic is right  
@@ -574,7 +574,8 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 
 function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 {
-	$featureMgr->deleteUserRoles($argsObj->featureID);
+	$featureMgr->deleteUserRoles($argsObj->featureID,
+                               array_keys($argsObj->map_userid_roleid));
 	foreach($argsObj->map_userid_roleid as $user_id => $role_id)
 	{
 		if ($role_id)

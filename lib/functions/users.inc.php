@@ -8,11 +8,11 @@
  * @filesource  users.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2006-2014, TestLink community 
+ * @copyright   2006-2015, TestLink community 
  * @link        http://www.testlink.org
  *
  * @internal revisions
- *
+ * @since 1.9.14
  */
 require_once("common.php");
 
@@ -183,8 +183,15 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
   if ($retval['status'] >= tl::OK)
   {
     $cfg = config_get('authentication');
+    $userAuth = trim($user->authentication);
+    if($userAuth == '' || is_null($userAuth))
+    {
+      $userAuth = $cfg['method'];
+    }  
+  
     $cfg = $cfg['domain'];
-    $doIt = isset($cfg[$user->authentication]) && $cfg[$user->authentication]['allowPasswordManagement'];
+    $doIt = isset($cfg[$userAuth]) && 
+                  $cfg[$userAuth]['allowPasswordManagement'];
   }
 
   if ($doIt)
@@ -194,7 +201,7 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
     if( trim($user->emailAddress) != "")
     {
       $newPassword = tlUser::generatePassword(8,4); 
-      $retval['status'] = $user->setPassword($newPassword,$cfg[$user->authentication]);
+      $retval['status'] = $user->setPassword($newPassword,$cfg[$userAuth]);
       
       if ($retval['status'] >= tl::OK)
       {

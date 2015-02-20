@@ -600,7 +600,8 @@ $tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor','toolbar' 
                                                  'height' => 100);
 
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
-
+$tlCfg->gui->text_editor['edit_execution'] = array( 'type' => 'none', 'cols' => 80, 'rows' => 20);
+$tlCfg->gui->text_editor['display_execution_notes'] = array('type' => 'none', 'cols' => 80, 'rows' => 20);
 
 /** User can choose order of menu areas */
 $tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration' => 2 ,

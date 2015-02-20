@@ -6,7 +6,7 @@
  * @filesource	editExecution.php
  *
  * Edit an execution notes and custom fields
- * @since 1.9.7
+ * @since 1.9.14
  * 
 **/
 require_once('../../config.inc.php');
@@ -14,7 +14,7 @@ require_once('common.php');
 require_once('exec.inc.php');
 require_once("web_editor.php");
 
-$editorCfg = getWebEditorCfg('execution');
+$editorCfg = getWebEditorCfg('edit_execution');
 require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db,false,false,"checkRights");
@@ -38,14 +38,18 @@ $owebeditor->Value = $map[0]['notes'];
 
 // order on script is critic 
 $gui = initializeGui($args,$tcase_mgr);
-$gui->notes = $owebeditor->CreateHTML();
+$cols = intval(isset($editorCfg['cols']) ? $editorCfg['cols'] : 60);
+$rows = intval(isset($editorCfg['rows']) ? $editorCfg['rows'] : 10); 
+$gui->notes = $owebeditor->CreateHTML($rows,$cols);
 $gui->editorType = $editorCfg['type'];
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
+/**
+ *
+ */
 function doUpdate(&$db,&$args,&$tcaseMgr,&$request)
 {
  	updateExecutionNotes($db,$args->exec_id,$args->notes);
@@ -54,6 +58,9 @@ function doUpdate(&$db,&$args,&$tcaseMgr,&$request)
   $cfield_mgr->execution_values_to_db($request,$args->tcversion_id,$args->exec_id,$args->tplan_id);
 }
 
+/**
+ *
+ */
 function init_args()
 {
   // Take care of proper escaping when magic_quotes_gpc is enabled
@@ -75,7 +82,9 @@ function init_args()
   return $args; 
 }
 
-
+/**
+ *
+ */
 function initializeGui(&$argsObj,&$tcaseMgr)
 {
   $guiObj = new stdClass();
@@ -101,4 +110,3 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,"testplan_execute") && $user->hasRight($db,"exec_edit_notes");
 }
-?>

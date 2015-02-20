@@ -19,7 +19,7 @@
  * (I think this approach will be simpler).
  * 
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
 **/
 require_once('../../config.inc.php');
@@ -56,25 +56,6 @@ $attachmentRepository = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr,$its);
-if($args->issue_tracker_enabled)
-{
-  if(!is_null($its) && $its->isConnected())
-  {
-    $gui->issueTrackerCfg = new stdClass();
-    $gui->issueTrackerCfg->bugSummaryMaxLength = $its->getBugSummaryMaxLength();
-    $gui->issueTrackerIntegrationOn = true;
-    $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueTrackerCfg['issuetracker_name']})"; 
-
-    $gui->createIssueURL = $its->getEnterBugURL();
-    $gui->tlCanCreateIssue = method_exists($its,'addIssue') && $its->canCreateViaAPI();
-    $gui->tlCanAddIssueNote = method_exists($its,'addNote');
-  }
-  else
-  {
-    $gui->user_feedback = lang_get('issue_tracker_integration_problems');
-  }
-}
-
 
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
@@ -1043,15 +1024,17 @@ function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
     $itemTemplateValue = getItemTemplateContents('execution_template', 'notes', null);
     foreach($tcversions as $key => $tcv)
     {
-        $tcversion_id=$tcv['id'];
-        $tcase_id=$tcv['testcase_id'];
+      $tcversion_id=$tcv['id'];
+      $tcase_id=$tcv['testcase_id'];
 
-        $of=web_editor("notes[{$tcversion_id}]",$basehref,$editorCfg) ;
-        $of->Value = $itemTemplateValue;
+      $of=web_editor("notes[{$tcversion_id}]",$basehref,$editorCfg) ;
+      $of->Value = $itemTemplateValue;
        
-        // Magic numbers that can be determined by trial and error
-        $editors[$tcase_id]=$of->CreateHTML(10,60);         
-        unset($of);
+      // Magic numbers that can be determined by trial and error
+      $cols = intval(isset($editorCfg['cols']) ? $editorCfg['cols'] : 60);
+      $rows = intval(isset($editorCfg['rows']) ? $editorCfg['rows'] : 10); 
+      $editors[$tcase_id]=$of->CreateHTML($rows,$cols);         
+      unset($of);
     }
     return $editors;
 }
@@ -1276,17 +1259,42 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->node_id = $argsObj->id;
   $gui->draw_save_and_exit = ($argsObj->caller == 'tcAssignedToMe');
 
+  
+  $gui->issueTrackerCfg = new stdClass(); 
+  $gui->issueTrackerCfg->bugSummaryMaxLength = 100;  // MAGIC I'm sorry
+  $gui->issueTrackerCfg->editIssueAttr = false;
+  
+  if(!is_null($issueTracker) && $issueTracker->isConnected())
+  {
+    $dummy = $issueTracker->getCfg();
+    $gui->issueTrackerCfg->bugSummaryMaxLength = $issueTracker->getBugSummaryMaxLength();
+    $gui->issueTrackerCfg->editIssueAttr = intval($dummy->userinteraction);
+
+    $gui->issueTrackerIntegrationOn = true;
+    $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueTrackerCfg['issuetracker_name']})"; 
+
+    $gui->createIssueURL = $issueTracker->getEnterBugURL();
+    $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') && 
+                             $issueTracker->canCreateViaAPI();
+
+    $gui->tlCanAddIssueNote = method_exists($issueTracker,'addNote');
+  }
+  else
+  {
+    $gui->user_feedback = lang_get('issue_tracker_integration_problems');
+  }
+  
   // get matadata
-  $gui->issueTrackerMetaData = !is_null($issueTracker) ? getIssueTrackerMetaData($issueTracker) : null; 
+  $gui->issueTrackerMetaData = null;
+  if($gui->issueTrackerCfg->editIssueAttr == 1)
+  {
+    echo '000';
+    $gui->issueTrackerMetaData = !is_null($issueTracker) ? getIssueTrackerMetaData($issueTracker) : null; 
+  }  
   $gui->issueType = $argsObj->issueType;
   $gui->issuePriority = $argsObj->issuePriority;
   $gui->artifactVersion = $argsObj->artifactVersion;
   $gui->artifactComponent = $argsObj->artifactComponent;   
-  
-  $gui->issueTrackerCfg = new stdClass(); 
-  $gui->issueTrackerCfg->bugSummaryMaxLength = 100;  // MAGIC I'm sorry
-
-  
 
   return $gui;
 }
@@ -1803,17 +1811,13 @@ function initWebEditors(&$guiObj,$cfgObj,$baseHREF)
 {
   if( $guiObj->can_use_bulk_op )
   {
-      //$guiObj->execStatusValues=createResultsMenu();
-      //if( isset($guiObj->execStatusValues[$cfgObj->tc_status['all']]) )
-      //{
-      //    unset($guiObj->execStatusValues[$cfgObj->tc_status['all']]);
-      //}
-  
-      $of=web_editor("bulk_exec_notes",$baseHREF,$cfgObj->editorCfg);
+      $of = web_editor("bulk_exec_notes",$baseHREF,$cfgObj->editorCfg);
       $of->Value = getItemTemplateContents('execution_template', $of->InstanceName, null);
       
       // Magic numbers that can be determined by trial and error
-      $guiObj->bulk_exec_notes_editor=$of->CreateHTML(10,60);         
+      $cols = intval(isset($editorCfg['cols']) ? $cfgObj->editorCfg['cols'] : 60);
+      $rows = intval(isset($editorCfg['rows']) ? $cfgObj->editorCfg['rows'] : 10);       
+      $guiObj->bulk_exec_notes_editor = $of->CreateHTML($rows,$cols);         
       unset($of);    
   }
   else

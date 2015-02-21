@@ -8,12 +8,12 @@
  * @filesource  print.inc.php
  *
  * @package   TestLink
- * @copyright 2007-2014, TestLink community 
+ * @copyright 2007-2015, TestLink community 
  * @uses      printDocument.php
  *
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
  */ 
 
@@ -1023,7 +1023,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
     $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
            " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
-           " E.execution_type, " .
+           " E.execution_type, E.execution_duration, " .
            " B.name AS build_name " .
            " FROM {$tables['executions']} E " .
            " JOIN {$tables['builds']} B ON B.id = E.build_id " .
@@ -1052,7 +1052,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       $sql .= " ORDER BY execution_id DESC";
     }
     $exec_info = $db->get_recordset($sql,null,1);
-
 
     $getByID['tcversion_id'] = $linkedItem[0]['tcversion_id'];
     $getByID['filters'] = null;
@@ -1738,6 +1737,8 @@ function renderTestDuration($statistics,$platform_id=0)
   $realTimeAvailable = isset($statistics['real_execution']) && 
                       !is_null($statistics['real_execution']['platform'][$platform_id]);
   
+
+  // new dBug(array($estimatedTimeAvailable , $realTimeAvailable));
   if( $estimatedTimeAvailable || $realTimeAvailable)
   { 
     if($estimatedTimeAvailable) 

@@ -7487,7 +7487,7 @@ class testplan extends tlObjectWithAttachments
             $my['join']['tsuites'] .
             $my['join']['ua'] .
             $my['join']['keywords'] .
-            " WHERE TPTCV.testplan_id =" . $safe['tplan_id'];
+            " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . 
             $my['where']['where'];
 
     $items = $this->db->fetchMapRowsIntoMapStackOnCol($sql,'tcase_id','platform_id','user_id');

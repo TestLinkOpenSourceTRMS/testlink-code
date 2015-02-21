@@ -282,6 +282,9 @@ function init_args()
   }
   
   $args->build_id = intval(isset($session_data['setting_build']) ? $session_data['setting_build'] : 0);
+  $args->platform_id = intval(isset($session_data['setting_platform']) ? 
+                       $session_data['setting_platform'] : 0);
+  
   $args->tplan_id = intval(isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0);
   if ($args->tplan_id) 
   {

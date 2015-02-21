@@ -315,11 +315,13 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
  * @since 1.9.14
  * 
  */
-function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
+function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, 
+                                   $options = null)
 {
   static $tsuite_mgr;
   $doFilterByKeyword = (!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
   
+
   // Multiple step algoritm to apply keyword filter on type=AND
   // get_*_tcversions filters by keyword ALWAYS in OR mode.
   //
@@ -365,6 +367,18 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
       $method2call = 'getLTCVNewGeneration';
     break;
   }
+
+  if(!is_null($argsObj->testcases_to_show))
+  {
+    $filters['tcase_id'] = $argsObj->testcases_to_show;
+  }  
+  if($argsObj->platform_id > 0)
+  {
+    $filters['platform_id'] = $argsObj->platform_id;
+  }
+  //new dBug($argsObj->testcases_to_show);
+  //new dBug($filters);
+  //die();
   $tplan_tcases = $tplanMgr->$method2call($argsObj->tplan_id, $filters, $opx);  
   
   if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
@@ -373,6 +387,8 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
                                               $argsObj->keyword_id,$argsObj->keywordsFilterType);
     
     $filters = array('tcase_id' => array_keys($filteredSet));
+
+    // HERE WE CAN HAVE AN ISSUE
     $tplan_tcases = $tplanMgr->getLTCVNewGeneration($argsObj->tplan_id, $filters, $opx);
   }
   return $tplan_tcases; 
@@ -410,7 +426,8 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
   $my['options'] = array_merge($my['options'],(array)$options);
   
   // This does filter on keywords ALWAYS in OR mode.
-  $tplan_linked_tcversions = getFilteredLinkedVersions($dbHandler,$argsObj, $tplanMgr, $tcaseMgr, $options);
+  $tplan_linked_tcversions = 
+    getFilteredLinkedVersions($dbHandler,$argsObj, $tplanMgr, $tcaseMgr, $options);
 
   // With these pieces we implement the AND type of keyword filter.
   $testCaseSet = null;
@@ -1223,7 +1240,8 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
   $my['options'] = array_merge($my['options'],(array)$options);
   
   // This does filter on keywords ALWAYS in OR mode.
-  $tplan_linked_tcversions = getFilteredLinkedVersions($dbHandler,$argsObj, $tplanMgr, $tcaseMgr, $options);
+  $tplan_linked_tcversions = 
+    getFilteredLinkedVersions($dbHandler,$argsObj,$tplanMgr, $tcaseMgr, $options);
 
   // With these pieces we implement the AND type of keyword filter.
   $testCaseSet = null;

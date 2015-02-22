@@ -16,6 +16,7 @@ function manageTestCaseRelated(checkBoxOid)
   var target = ['version','priority','exec_assignment'];
   var dmode;
 
+  // Display
   dmode = 'none';
   if(obj.checked)
   {
@@ -27,6 +28,18 @@ function manageTestCaseRelated(checkBoxOid)
   {
     document.getElementById(target[idx]).style.display=dmode;
   }
+
+  // Enable / disable + value set
+  plink = document.getElementById('copy_platforms_links');
+  if(obj.checked)
+  {
+    plink.checked = true;
+    plink.disabled = true;
+  }  
+  else
+  {
+    plink.disabled = false;
+  } 
 } 
 
 function manageBuildRelated(checkBoxOid)
@@ -94,6 +107,15 @@ function manageBuildRelated(checkBoxOid)
       <input type="checkbox" name="copy_assigned_to" checked="checked"/>{$labels.testplan_copy_assigned_to}
     </td>
   </tr>
+
+  <tr id="platforms_links">
+    <td align='left'>
+      <input type="checkbox" name="copy_platforms_links" 
+             id="copy_platforms_links" disabled="disabled" 
+             checked="checked"/>{$labels.testplan_copy_platforms_links}
+    </td>
+  </tr>
+
   <tr>
     <td align='left'>
       <input type="checkbox" name="copy_milestones" checked="checked"/>{$labels.testplan_copy_milestones}
@@ -102,6 +124,7 @@ function manageBuildRelated(checkBoxOid)
 
   
   {* always copy platform links *}
+  <!--
   <input type="hidden" name="copy_platforms_links" value="1"/>
-
+  -->
 </table>

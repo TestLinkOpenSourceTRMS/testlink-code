@@ -21,7 +21,7 @@
  * =============================================================================
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
  *
 **/
@@ -48,7 +48,6 @@ abstract class issueTrackerInterface
   var $guiCfg = array();
   var $summaryLengthLimit = 120;  // Mantis max is 128.  
 
-
   /**
    * Construct and connect to BTS.
    * Can be overloaded in specialized class
@@ -62,7 +61,7 @@ abstract class issueTrackerInterface
     $this->name = $name;
 
     if( $this->setCfg($config) )
-    {
+    {     
       // useful only for integration via DB
       if( !property_exists($this->cfg,'dbcharset') )
       {
@@ -135,6 +134,14 @@ abstract class issueTrackerInterface
     {
       tLog(__METHOD__ . $msg, 'ERROR');  
     }  
+
+    // 
+    if( !property_exists($this->cfg,'userinteraction') )
+    {
+      $this->cfg->userinteraction = 0;  
+    }  
+    $this->cfg->userinteraction = intval($this->cfg->userinteraction) > 0 ? 1 : 0;
+
     return $retval;
   }
 

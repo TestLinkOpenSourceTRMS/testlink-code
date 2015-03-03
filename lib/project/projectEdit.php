@@ -7,11 +7,11 @@
  *
  * @filesource  projectEdit.php
  * @package     TestLink
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
  */
 
@@ -114,96 +114,95 @@ if(!$status_ok)
 
 switch($args->doAction)
 {
-    case "doCreate":
-    case "doDelete":
-    case "doUpdate":
-    case "setActive":
-    case "setInactive":
-    case 'enableRequirements':
-    case 'disableRequirements':
-      if( ($addIssueTracker = $addReqMgrSystem = is_null($template)) )
-      {
-        $template = 'projectView.tpl';
-        $gui->name = '';  // needed after addition of search function on test project view
-      }  
+  case "doCreate":
+  case "doDelete":
+  case "doUpdate":
+  case "setActive":
+  case "setInactive":
+  case 'enableRequirements':
+  case 'disableRequirements':
+    if( ($addIssueTracker = $addReqMgrSystem = is_null($template)) )
+    {
+      $template = 'projectView.tpl';
+      $gui->name = '';  // needed after addition of search function on test project view
+    }  
 
-      $gui->doAction = $reloadType;
-      $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
-                   'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
-      $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
+    $gui->doAction = $reloadType;
+    $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
+                 'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
+    $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
       
-      $gui->pageTitle = lang_get('title_testproject_management');
-      $gui->itemQty = count($gui->tprojects);
-      if($gui->itemQty > 0)
-      {
-        $gui->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$gui->itemQty);
-      }  
+    $gui->pageTitle = lang_get('title_testproject_management');
+    $gui->itemQty = count($gui->tprojects);
+    if($gui->itemQty > 0)
+    {
+      $gui->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$gui->itemQty);
+    }  
 
 
-      if($addIssueTracker)
+    if($addIssueTracker)
+    {
+      $imgSet = $smarty->getImages();
+      $loop2do = count($gui->tprojects);
+      $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
+      for($idx=0; $idx < $loop2do; $idx++)
       {
-        $imgSet = $smarty->getImages();
-        $loop2do = count($gui->tprojects);
-        $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
-        for($idx=0; $idx < $loop2do; $idx++)
+        $gui->tprojects[$idx]['itstatusImg'] = '';
+        if($gui->tprojects[$idx]['itname'] != '')
         {
-          $gui->tprojects[$idx]['itstatusImg'] = '';
-          if($gui->tprojects[$idx]['itname'] != '')
-          {
-            $ak = ($gui->tprojects[$idx]['issue_tracker_enabled']) ? 'active' : 'inactive';
-            $gui->tprojects[$idx]['itstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
-                                                   ' alt="' . $labels[$ak . '_integration'] . '" ' .
-                                                   ' src="' . $imgSet[$ak] . '"/>';
-          } 
-        }
+          $ak = ($gui->tprojects[$idx]['issue_tracker_enabled']) ? 'active' : 'inactive';
+          $gui->tprojects[$idx]['itstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
+                                                 ' alt="' . $labels[$ak . '_integration'] . '" ' .
+                                                 ' src="' . $imgSet[$ak] . '"/>';
+        } 
       }
+    }
         
-      if($addReqMgrSystem)
+    if($addReqMgrSystem)
+    {
+      $imgSet = $smarty->getImages();
+      $loop2do = count($gui->tprojects);
+      $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
+      for($idx=0; $idx < $loop2do; $idx++)
       {
-        $imgSet = $smarty->getImages();
-        $loop2do = count($gui->tprojects);
-        $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
-        for($idx=0; $idx < $loop2do; $idx++)
+        $gui->tprojects[$idx]['rmsstatusImg'] = '';
+        if($gui->tprojects[$idx]['rmsname'] != '')
         {
-          $gui->tprojects[$idx]['rmsstatusImg'] = '';
-          if($gui->tprojects[$idx]['rmsname'] != '')
-          {
-            $ak = ($gui->tprojects[$idx]['reqmgr_integration_enabled']) ? 'active' : 'inactive';
-            $gui->tprojects[$idx]['rmsstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
-                                                    ' alt="' . $labels[$ak . '_integration'] . '" ' .
-                                                    ' src="' . $imgSet[$ak] . '"/>';
-          } 
-        }
+          $ak = ($gui->tprojects[$idx]['reqmgr_integration_enabled']) ? 'active' : 'inactive';
+          $gui->tprojects[$idx]['rmsstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
+                                                  ' alt="' . $labels[$ak . '_integration'] . '" ' .
+                                                  ' src="' . $imgSet[$ak] . '"/>';
+        } 
       }
+    }
         
-        
-      $smarty->assign('gui',$gui);
-      $smarty->display($templateCfg->template_dir . $template);
-    break;
+    $smarty->assign('gui',$gui);
+    $smarty->display($templateCfg->template_dir . $template);
+  break;
 
 
-    case "ErrorOnAction":
-    default:
-      if( $args->doAction != "edit" && $args->doAction != "ErrorOnAction")
-      {
-        $of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
-      }
-      else
-      {
-        $of->Value = $args->notes;
-      }
+  case "ErrorOnAction":
+  default:
+    if( $args->doAction != "edit" && $args->doAction != "ErrorOnAction")
+    {
+      $of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
+    }
+    else
+    {
+      $of->Value = $args->notes;
+    }
       
-      foreach($ui as $prop => $value)
-      {
-        $smarty->assign($prop,$value);
-      }
+    foreach($ui as $prop => $value)
+    {
+      $smarty->assign($prop,$value);
+    }
 
-      $smarty->assign('gui', $args);
-      $smarty->assign('notes', $of->CreateHTML());
-      $smarty->assign('user_feedback', $user_feedback);
-      $smarty->assign('feedback_type', $feedback_type);
-      $smarty->display($templateCfg->template_dir . $template);
-    break;
+    $smarty->assign('gui', $args);
+    $smarty->assign('notes', $of->CreateHTML());
+    $smarty->assign('user_feedback', $user_feedback);
+    $smarty->assign('feedback_type', $feedback_type);
+    $smarty->display($templateCfg->template_dir . $template);
+  break;
 }
 
 
@@ -240,7 +239,8 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
   // get input from the project edit/create page
   $checkbox_keys = array('is_public' => 0,'active' => 0,
                          'optPriority' => 0,'optAutomation' => 0,
-                         'optReq' => 0,'optInventory' => 0,'issue_tracker_enabled' => 0,
+                         'optReq' => 0,'optInventory' => 0,
+                         'issue_tracker_enabled' => 0,
                          'reqmgr_integration_enabled' => 0);
   foreach ($checkbox_keys as $key => $value)
   {
@@ -249,6 +249,12 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 
   $args->issue_tracker_id = isset($request_hash['issue_tracker_id']) ? intval($request_hash['issue_tracker_id']) : 0;
   $args->reqmgrsystem_id = isset($request_hash['reqmgrsystem_id']) ? intval($request_hash['reqmgrsystem_id']) : 0;
+
+  // This way we are safe
+  if($args->issue_tracker_id == 0)
+  {
+    $args->issue_tracker_enabled = 0;  
+  }  
 
   if($args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
   {

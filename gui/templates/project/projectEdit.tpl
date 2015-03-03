@@ -6,7 +6,7 @@
  * @filesource  projectEdit.tpl
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
  *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -37,34 +37,55 @@
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
 var warning_empty_tproject_name = "{$labels.warning_empty_tproject_name|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
-if (isWhitespace(f.tprojectName.value))
-{
-   alert_message(alert_box_title,warning_empty_tproject_name);
-   selectField(f, 'tprojectName');
-   return false;
-}
-if (isWhitespace(f.tcasePrefix.value))
-{
-   alert_message(alert_box_title,warning_empty_tcase_prefix);
-   selectField(f, 'tcasePrefix');
-   return false;
+  if (isWhitespace(f.tprojectName.value))
+  {
+     alert_message(alert_box_title,warning_empty_tproject_name);
+     selectField(f, 'tprojectName');
+     return false;
+  }
+  if (isWhitespace(f.tcasePrefix.value))
+  {
+     alert_message(alert_box_title,warning_empty_tcase_prefix);
+     selectField(f, 'tcasePrefix');
+     return false;
+  }
+
+  return true;
 }
 
-return true;
+/**
+ *
+ *
+ */
+function manageIssueTracker(selectOID,targetOID)
+{
+  var so;
+  var to;
+
+  so = document.getElementById(selectOID);
+  to = document.getElementById(targetOID);
+
+  to.disabled = false;
+  if(so.selectedIndex == 0)
+  {
+    to.checked = false;
+    to.disabled = true;
+  }  
+
 }
-{/literal}
+
 </script>
 </head>
 
-<body>
+<body onload="manageIssueTracker('issue_tracker_id','issue_tracker_enabled');">
 <h1 class="title">
   {$main_descr|escape}  {$tlCfg->gui_title_separator_1}
   {$caption|escape}
   {if $mgt_view_events eq "yes" and $gui->tprojectID}
-    <img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+    <img style="margin-left:5px;" class="clickable" src="{$tlImages.help}" 
            onclick="showEventHistoryFor('{$gui->tprojectID}','testprojects')" 
            alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
   {/if}
@@ -182,7 +203,8 @@ return true;
           <td></td>
           <td>
             {$labels.issue_tracker}
-             <select name="issue_tracker_id" id="issue_tracker_id">
+             <select name="issue_tracker_id" id="issue_tracker_id"
+             onchange="manageIssueTracker('issue_tracker_id','issue_tracker_enabled');">
              <option value="0">&nbsp;</option>
              {foreach item=issue_tracker from=$gui->issueTrackers}
                <option value="{$issue_tracker.id}" 

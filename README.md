@@ -28,11 +28,12 @@ We plan to clean up things in future (there is no ETA for this task)
 There are several (may be too much) channels where you can find
 information regarding TestLink. 
 
-Website (bare bones info): http://www.testlink.org
-Issues & Feature requests: http://mantis.testlink.org
-Get Help from other users: http://forum.testlink.org
-Get latest news          : https://twitter.com/TLOpenSource
-                           http://www.linkedin.com/groups/TestLink-Open-Source-Test-Management-1842435
+1. Website (bare bones info): http://www.testlink.org
+2. Issues & Feature requests: http://mantis.testlink.org
+3. Get Help from other users: http://forum.testlink.org
+4. Get latest news          : https://twitter.com/TLOpenSource
+
+                              http://www.linkedin.com/groups/TestLink-Open-Source-Test-Management-1842435
 
 We kindly suggest you to use any channel for the right scope.
 

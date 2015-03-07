@@ -31,9 +31,8 @@ information regarding TestLink.
 1. Website (bare bones info): http://www.testlink.org
 2. Issues & Feature requests: http://mantis.testlink.org
 3. Get Help from other users: http://forum.testlink.org
-4. Get latest news          : https://twitter.com/TLOpenSource
-
-                              http://www.linkedin.com/groups/TestLink-Open-Source-Test-Management-1842435
+4. Get latest news          : * https://twitter.com/TLOpenSource
+                              * http://www.linkedin.com/groups/TestLink-Open-Source-Test-Management-1842435
 
 We kindly suggest you to use any channel for the right scope.
 

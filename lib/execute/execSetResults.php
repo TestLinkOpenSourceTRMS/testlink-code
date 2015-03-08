@@ -484,7 +484,6 @@ function init_args(&$dbHandler,$cfgObj)
   $bug_summary['minLengh'] = 1; 
   $bug_summary['maxLengh'] = 1; 
 
-   
   if( ($args->issue_tracker_enabled = $info['issue_tracker_enabled']) )
   {
     $it_mgr = new tlIssueTracker($dbHandler);
@@ -1264,24 +1263,28 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->issueTrackerCfg->bugSummaryMaxLength = 100;  // MAGIC I'm sorry
   $gui->issueTrackerCfg->editIssueAttr = false;
   
-  if(!is_null($issueTracker) && $issueTracker->isConnected())
+
+  if(!is_null($issueTracker))
   {
-    $dummy = $issueTracker->getCfg();
-    $gui->issueTrackerCfg->bugSummaryMaxLength = $issueTracker->getBugSummaryMaxLength();
-    $gui->issueTrackerCfg->editIssueAttr = intval($dummy->userinteraction);
+    if( $issueTracker->isConnected() )
+    {
+      $dummy = $issueTracker->getCfg();
+      $gui->issueTrackerCfg->bugSummaryMaxLength = $issueTracker->getBugSummaryMaxLength();
+      $gui->issueTrackerCfg->editIssueAttr = intval($dummy->userinteraction);
 
-    $gui->issueTrackerIntegrationOn = true;
-    $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueTrackerCfg['issuetracker_name']})"; 
+      $gui->issueTrackerIntegrationOn = true;
+      $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueTrackerCfg['issuetracker_name']})"; 
 
-    $gui->createIssueURL = $issueTracker->getEnterBugURL();
-    $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') && 
-                             $issueTracker->canCreateViaAPI();
+      $gui->createIssueURL = $issueTracker->getEnterBugURL();
+      $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') && 
+                               $issueTracker->canCreateViaAPI();
 
-    $gui->tlCanAddIssueNote = method_exists($issueTracker,'addNote');
-  }
-  else
-  {
-    $gui->user_feedback = lang_get('issue_tracker_integration_problems');
+      $gui->tlCanAddIssueNote = method_exists($issueTracker,'addNote');
+    }  
+    else
+    {
+      $gui->user_feedback = lang_get('issue_tracker_integration_problems');
+    }
   }
   
   // get matadata

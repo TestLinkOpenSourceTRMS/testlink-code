@@ -3,12 +3,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource containerMove.tpl
 Purpose: smarty template - form for move/copy container in test specification
 
-@since 1.9.9
+@since 1.9.14
 *}
 {lang_get s='container' var='parent'}
 {lang_get var="labels"
           s="cont_move_first,sorry_further,title_move_cp,cont_copy_first,defined_exclam,
-             cont_move_second,cont_copy_second,choose_target,copy_keywords,
+             cont_move_second,cont_copy_second,choose_target,
+             copy_copy_keywords,
+             copy_copy_requirement_assignments,
              btn_move,btn_cp,as_first_testsuite,as_last_testsuite"}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -45,9 +47,16 @@ jQuery(".chosen-select").chosen({ width: "50%", search_contains: true });
   	<br /><input type="radio" name="target_position"
 	          value="bottom" {$bottom_checked} />{$labels.as_last_testsuite}
 
+
 		<p>
-			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
-			{$labels.copy_keywords}
+			<input type="checkbox" name="copyKeywords" id="copyKeywords" 
+			  checked="checked" value="1" />
+			{$labels.copy_copy_keywords}
+		<br/>	
+			<input type="checkbox" name="copyRequirementAssignments" 
+			  id="copyRequirementAssignments"
+			  checked="checked" value="1" />
+			{$labels.copy_copy_requirement_assignments}
 		</p>
 
 		<div>

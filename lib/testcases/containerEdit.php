@@ -8,11 +8,11 @@
  * @filesource  containerEdit.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2014, TestLink community
+ * @copyright   2005-2015, TestLink community
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  * 
  */
 require_once("../../config.inc.php");
@@ -767,6 +767,8 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$l18n)
   $options['check_duplicate_name'] = config_get('check_names_for_duplicates');
   $options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
   $options['copyKeywords'] = $argsObj->copyKeywords;
+  $options['copyRequirements'] = $argsObj->copyRequirementAssignments;
+
 
   // copy_to($source,$destination,...)
   $op = $tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
@@ -786,6 +788,11 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$l18n)
   $guiObj->refreshTree = $op['status_ok'] && $argsObj->refreshTree;
   $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
   $guiObj->id = $argsObj->objectID;
+  $guiObj->treeFormToken = $guiObj->form_token = $argsObj->treeFormToken;
+  
+  $guiObj->direct_link = $tsuiteMgr->buildDirectWebLink($_SESSION['basehref'],
+                           $guiObj->id,$argsObj->tprojectID);
+
   $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
 
   return $op['status_ok'];

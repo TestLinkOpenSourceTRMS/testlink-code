@@ -1248,16 +1248,33 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
   } 
   doDBConnect($dbHandler);
 
-  if(intval($rightsCheck->args->tplan_id) !=0)
+  // @since 1.9.14
+  $checkMode = 'paranoic'; 
+  if(property_exists($rightsCheck->args, 'envCheckMode'))
   {
-    $tplanMgr = new testplan($dbHandler);
-    $item = $tplanMgr->getByAPIKey($apikey);
-  }  
-  else
-  {
-    $tprojectMgr = new testproject($dbHandler);
-    $item = $tprojectMgr->getByAPIKey($apikey);
+    $checkMode = $rightsCheck->args->envCheckMode;
   }
+
+  switch($checkMode)
+  {
+    case 'hippie':
+      $tk = array('testplan','testproject');
+    break;
+
+    default:
+      $tk[] = (intval($rightsCheck->args->tplan_id) != 0) ? 'testplan' : 'testproject';
+    break;
+  }
+
+  foreach($tk as $ak)
+  {
+    $item = getEntityByAPIKey($dbHandler,$apikey,$ak);
+    if(!is_null($item))
+    {
+      break;
+    }  
+  }  
+  
 
   $status_ok = false;
   if( !is_null($item) )
@@ -1307,3 +1324,30 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
 
   return $status_ok;
 }
+
+/**
+ *
+ */
+function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
+{
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  
+  $tables = tlObjectWithDB::getDBTables(array('testprojects','testplans'));
+  switch ($type) 
+  {
+    case 'testproject':
+      $target = $tables['testprojects'];
+    break;
+    
+    case 'testplan':
+      $target = $tables['testplans'];
+    break;
+  }
+  
+  $sql = "/* $debugMsg */ " .
+         " SELECT id FROM {$target} WHERE api_key = '{$apiKey}'";
+ 
+  $rs = $dbHandler->get_recordset($sql);
+  return ($rs ? $rs[0] : null);
+}
+

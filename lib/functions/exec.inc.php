@@ -595,12 +595,19 @@ function addIssue($dbHandler,$argsObj,$itsObj)
 
   $opt = new stdClass();
   $opt->reporter = $argsObj->user->login;
-  $opt->issueType = $argsObj->issueType;
-  $opt->issuePriority = $argsObj->issuePriority;
-  $opt->artifactVersion = $argsObj->artifactVersion;
-  $opt->artifactComponent = $argsObj->artifactComponent;
 
+  new dbug($argsObj);
+
+  $p2check = array('issueType','issuePriority','issuePriority','artifactComponent');
+  foreach($p2check as $prop)
+  {
+    if(property_exists($argsObj, $prop) && !is_null($argsObj->$prop))
+    {
+      $opt->$prop = $argsObj->$prop;    
+    }   
+  }  
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
+  
   $ret['msg'] = $rs['msg'];
   if( ($ret['status_ok'] = $rs['status_ok']) )
   {                   
@@ -610,7 +617,6 @@ function addIssue($dbHandler,$argsObj,$itsObj)
     }
   }
 
-  // return array($opOK,$msg);
   return $ret;
 }
 
@@ -704,7 +710,33 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
                     $exec['statusVerbose'],
                     $exec['execution_notes']);
 
+
+ 
     $ret->description = str_replace($tags,$values,$argsObj->bug_notes);
+   
+    // @since 1.9.4
+    // %%EXECATT:1%% => lnl.php?id=1&apikey=gfhdgjfgdsjgfjsg
+    /*
+    $target['value'] = '%%EXECATT:';
+    $target['len'] = strlen($target['value']);
+    $doIt = true;
+    while($doIt)
+    {
+      $mx = strpos($ret->description,$target['value']);
+      if( ($doIt = ($mx !== FALSE) )
+      {
+        // look for closing symbol
+        $cx = strpos($ret->description,'%%',$mx+$target['len']);
+
+        if($cx === FALSE)
+        {
+          // chaos! => abort
+          $doIt = false;
+        }  
+      }  
+    } 
+    */ 
+
   }
   else
   {

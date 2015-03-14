@@ -274,7 +274,7 @@ abstract class tlObject implements iSerialization
     if ($tableNames != null)
     { 
       $tableNames = (array)$tableNames;
-            $tableNames = array_flip($tableNames);      
+      $tableNames = array_flip($tableNames);      
       $tables = array_intersect_key($tables,$tableNames);
       if (sizeof($tables) != sizeof($tableNames))
       {
@@ -282,7 +282,7 @@ abstract class tlObject implements iSerialization
       } 
     }
     
-      return $tables;
+    return $tables;
   }
 
   static public function getDBViews($itemNames = null)
@@ -306,7 +306,7 @@ abstract class tlObject implements iSerialization
       return $items;
   }
 
-};
+}
 
 
 /**

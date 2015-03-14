@@ -35,10 +35,13 @@ switch($args->light)
     $what2launch = null; 
     $cfg = isset($reportCfg[$args->type]) ? $reportCfg[$args->type] : null;
     
-    // new dBug($args);
-    // die();
     switch($args->type)
     {
+      case 'file':
+        $what2launch = "lib/attachments/attachmentdownload.php" .
+                       "?id={$args->id}&apikey=$args->apikey";
+      break;
+
       case 'metricsdashboard':
         $param =  "&tproject_id={$args->tproject_id}";
         $what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey{$param}";
@@ -123,7 +126,7 @@ switch($args->light)
   break;
   
   default:
-    // too many users
+    // ??
   break;
   
 } 
@@ -146,26 +149,30 @@ function init_args()
                      "tproject_id" => array(tlInputParameter::INT_N),
                      "tplan_id" => array(tlInputParameter::INT_N),
                      "level" => array(tlInputParameter::STRING_N,0,16),
-                     "type" => array(tlInputParameter::STRING_N,0,$typeSize));  
+                     "type" => array(tlInputParameter::STRING_N,0,$typeSize),
+                     'id' => array(tlInputParameter::INT_N));  
   }
   catch (Exception $e)  
   {  
     echo $e->getMessage();
     exit();
   }
-
                   
   R_PARAMS($iParams,$args);
+
+  $args->envCheckMode = $args->type == 'file' ? 'hippie' : 'paranoic';
   $args->light = 'red';
   $opt = array('setPaths' => true,'clearSession' => true);
   if(strlen($args->apikey) == 32)
   {
+    $args->debug = 'USER-APIKEY';
     setUpEnvForRemoteAccess($dbHandler,$args->apikey,null,$opt);
     $user = tlUser::getByAPIKey($dbHandler,$args->apikey);
     $args->light = (count($user) == 1) ? 'green' : 'red';
   }
   else
   {
+    $args->debug = 'OBJECT-APIKEY';
     $kerberos = new stdClass();
     $kerberos->args = $args;
     $kerberos->method = null;

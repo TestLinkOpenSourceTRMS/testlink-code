@@ -5,7 +5,7 @@
  *
  * @filesource	bugAdd.php
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  * 
  */
 require_once('../../config.inc.php');
@@ -22,11 +22,12 @@ if( ($args->user_action == 'create' || $args->user_action == 'doCreate') &&
 {
   // get matadata
   $gui->issueTrackerMetaData = getIssueTrackerMetaData($its);
+  
   switch($args->user_action)
   {
     case 'create':
-     $issueText = generateIssueText($db,$args,$its);
-     $gui->bug_summary = $issueText->summary;
+     $dummy = generateIssueText($db,$args,$its); 
+     $gui->bug_summary = $dummy->summary;
     break;
 
     case 'doCreate':
@@ -40,7 +41,6 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
 {
   // Well do not think is very elegant to check for $args->bug_id != ""
   // to understand if user has pressed ADD Button
-  new dBug($args);
   if(!is_null($issueT) && $args->bug_id != "")
   {
   	$l18n = init_labels(array("error_wrong_BugID_format" => null,"error_bug_does_not_exist_on_bts" => null));
@@ -96,7 +96,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function initEnv(&$dbHandler)
 {
-  // "user_action" => array("REQUEST",tlInputParameter::STRING_N,MIN_LEN,MAX_LEN));
   $uaWhiteList = array();
   $uaWhiteList['elements'] = array('link','create','doCreate','add_note');
   $uaWhiteList['lenght'] = array();
@@ -110,6 +109,7 @@ function initEnv(&$dbHandler)
 	$iParams = array("exec_id" => array("GET",tlInputParameter::INT_N),
 		               "bug_id" => array("REQUEST",tlInputParameter::STRING_N),
 		               "tproject_id" => array("REQUEST",tlInputParameter::INT_N),
+                   "tplan_id" => array("REQUEST",tlInputParameter::INT_N),
 		               "tcversion_id" => array("REQUEST",tlInputParameter::INT_N),
                    "bug_notes" => array("POST",tlInputParameter::STRING_N),
                    "issueType" => array("POST",tlInputParameter::INT_N),
@@ -155,6 +155,7 @@ function initEnv(&$dbHandler)
   $gui->msg = '';
   $gui->bug_summary = '';
   $gui->tproject_id = $args->tproject_id;
+  $gui->tplan_id = $args->tplan_id;
   $gui->tcversion_id = $args->tcversion_id;
   $gui->user_action = $args->user_action;
   $gui->bug_id = $args->bug_id;
@@ -163,8 +164,6 @@ function initEnv(&$dbHandler)
   $gui->issuePriority = $args->issuePriority;
   $gui->artifactVersion = $args->artifactVersion;
   $gui->artifactComponent = $args->artifactComponent;
-  
-  
   
 
   // -----------------------------------------------------------------------
@@ -200,6 +199,15 @@ function initEnv(&$dbHandler)
   }
 
   $gui->bug_notes = $args->bug_notes = trim($args->bug_notes);
+
+  $args->basehref = $_SESSION['basehref'];
+  $tables = tlObjectWithDB::getDBTables(array('testplans'));
+  $sql = ' SELECT api_key FROM ' . $tables['testplans'] . 
+         ' WHERE id=' . intval($args->tplan_id);
+      
+  $rs = $dbHandler->get_recordset($sql);
+  $args->tplan_apikey = $rs[0]['api_key'];
+
   return array($args,$gui,$itObj,$itCfg);
 }
 

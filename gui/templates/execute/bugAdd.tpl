@@ -2,7 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource bugAdd.tpl
 @internal revisions
-@since 1.9.13
+@since 1.9.14
 
 *}
 {include file="inc_head.tpl"}
@@ -25,6 +25,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <div class="workBack">
   <form action="lib/execute/bugAdd.php" method="post">
     <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+    <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
     <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}">
     <input type="hidden" name="user_action" id="user_action" value="">
 

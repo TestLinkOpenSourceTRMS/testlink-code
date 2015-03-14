@@ -550,10 +550,11 @@ function tree_getCheckBox(id)
 /**
  *
  */
-function open_bug_add_window(tproject_id,tcversion_id,exec_id,user_action)
+function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,user_action)
 {
-  link2launch = "lib/execute/bugAdd.php?user_action=" + user_action + "&tcversion_id="+tcversion_id +
-                "&tproject_id=" + tproject_id + "&exec_id="+exec_id;
+  l2l = "lib/execute/bugAdd.php?user_action=" + user_action + 
+        "&tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + 
+        "&tplan_id=" + tplan_id + "&exec_id="+exec_id;
 
   switch(user_action)  
   {
@@ -566,8 +567,7 @@ function open_bug_add_window(tproject_id,tcversion_id,exec_id,user_action)
     break;
   }            
   
-  // window.open(fRoot+link2launch,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
-  window.open(fRoot+link2launch,"bug_add",wh+",resizable=yes,dependent=yes");
+  window.open(fRoot+l2l,"bug_add",wh+",resizable=yes,dependent=yes");
 }
 
 /**

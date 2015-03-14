@@ -379,7 +379,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   				{$execID=$tc_old_exec.execution_id}
 
   				{$attach_info=$gui->attachments[$execID]}
-  				{include file="inc_attachments.tpl"
+          {include file="attachments.inc.tpl"
   				         attach_attachmentInfos=$attach_info
   				         attach_id=$execID 
   				         attach_tableName="executions"

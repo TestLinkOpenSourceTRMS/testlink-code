@@ -24,8 +24,8 @@ $gsmarty_attachments
 *}
 
 {lang_get var='labels'
-          s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,attachment_title,
-             display_inline,local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,
+          s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,attachment_title,alt_delete_attachment,
+             display_inline,local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,display_ea_string,
              max_size_file_upload,display_inline_string'}
 
 {lang_get s='warning_delete_attachment' var="warning_msg"}
@@ -61,6 +61,12 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 {include file="inc_del_onclick.tpl"}
 {if $gsmarty_attachments->enabled && ($attach_attachmentInfos != "" || $attach_show_upload_btn)}
 
+{$displayGhost = 0}
+{if !isset($gui->showImgInlineString) || $gui->showImgInlineString == true}
+  {$displayGhost = 1}
+{/if}
+  
+
 <table class="{$attach_tableClassName}" {if $attach_inheritStyle == 0} style="{$attach_tableStyles}" {/if}>
   {if $attach_show_title}
   <tr>
@@ -80,7 +86,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
     {/if}
 
       <tr>
-      <td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
+      <td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold" title="FFFFF">
       {$my_link}</a> 
       {if $info.is_image} 
         <img src="{$tlImages.eye}" style="border:none" title="{$labels.display_inline}" 
@@ -89,18 +95,23 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
       {/if}
       - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
       
-      {if $info.is_image}
-      <span><img src="{$tlImages.ghost_item}" title="{$labels.display_inline_string}" style="border:none" onclick="showHideByClass('span','ghost_' + {$info.id});"></span>
-      <span class='ghost_{$info.id}' style='display:none'>{$info.inlineString}</span>
-      {/if}
+        {if $info.is_image && $displayGhost}
+        <span><img src="{$tlImages.ghost_item}" title="{$labels.display_inline_string}" style="border:none" onclick="showHideByClass('span','ghost_' + {$info.id});"></span>
+        <span class='ghost_{$info.id}' style='display:none'>{$info.inlineString}</span>
+        {/if}
+  
 
-        {if !$attach_downloadOnly}
+      {if !$attach_downloadOnly}
         <a href="javascript:delete_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
                                           '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',jsCallDeleteFile);">
-          <img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
-                                 title="{lang_get s='alt_delete_attachment'}"
-                                 src="{$tlImages.delete}" /></a>
-        {/if}
+          <img style="border:none;" alt="{$labels.alt_delete_attachment}"
+                                    title="{$labels.alt_delete_attachment}"
+                                    src="{$tlImages.delete}" /></a>
+      {/if}
+      {if isset($gui->showExternalAccessString) && $gui->showExternalAccessString}
+        <span><img src="{$tlImages.cog}" title="{$labels.display_ea_string}" style="border:none" onclick="showHideByClass('span','eas_' + {$info.id});"></span>
+        <span class='eas_{$info.id}' style='display:none'>%%EXECATT:{$info.id}%%</span>
+      {/if}  
       </td>
     </tr>
     <tr><td id="inline_img_container_{$info.id}" style="vertical-align:middle;"></td></tr>  {* to display images inline on user request *}

@@ -6717,8 +6717,6 @@ class testplan extends tlObjectWithAttachments
         $sql2run = " SELECT * FROM ($sql2run) XX ORDER BY " . $my['options']['orderBy'];
       }
 
-      echo $my['options']['accessKeyType'];
-      echo $sql2run;
       switch($my['options']['accessKeyType'])
       {
         case 'tcase+platform':

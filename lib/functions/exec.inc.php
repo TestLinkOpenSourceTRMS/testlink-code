@@ -252,6 +252,8 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         $execContext->exec_id = $execution_id;
         $execContext->tcversion_id = $tcversion_id;
         $execContext->user = $exec_signature->user;
+        $execContext->basehref = $exec_signature->basehref;
+        $execContext->tplan_apikey = $exec_signature->tplan_apikey;
 
         if(property_exists($exec_signature,'bug_summary'))
         {
@@ -595,9 +597,6 @@ function addIssue($dbHandler,$argsObj,$itsObj)
 
   $opt = new stdClass();
   $opt->reporter = $argsObj->user->login;
-
-  new dbug($argsObj);
-
   $p2check = array('issueType','issuePriority','issuePriority','artifactComponent');
   foreach($p2check as $prop)
   {
@@ -714,29 +713,32 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
  
     $ret->description = str_replace($tags,$values,$argsObj->bug_notes);
    
-    // @since 1.9.4
-    // %%EXECATT:1%% => lnl.php?id=1&apikey=gfhdgjfgdsjgfjsg
-    /*
+    // @since 1.9.14
+    // %%EXECATT:1%% => lnl.php?type=file&id=1&apikey=gfhdgjfgdsjgfjsg
     $target['value'] = '%%EXECATT:';
     $target['len'] = strlen($target['value']);
     $doIt = true;
+    $url2use = $argsObj->basehref . 'lnl.php?type=file&id=';
+
     while($doIt)
     {
       $mx = strpos($ret->description,$target['value']);
-      if( ($doIt = ($mx !== FALSE) )
+      if( ($doIt = !($mx === FALSE)) )
       {
-        // look for closing symbol
-        $cx = strpos($ret->description,'%%',$mx+$target['len']);
-
+        $offset = $mx+$target['len'];
+        $cx = strpos($ret->description,'%%',$offset);
         if($cx === FALSE)
         {
           // chaos! => abort
           $doIt = false;
+          break;
         }  
-      }  
+        $old = substr($ret->description,$mx,$cx-$mx+2);  // 2 is MAGIC!!!
+        $new = str_replace($target['value'],$url2use,$old);
+        $new = str_replace('%%','&apikey=' . $argsObj->tplan_apikey,$new);
+        $ret->description = str_replace($old,$new,$ret->description);
+      }
     } 
-    */ 
-
   }
   else
   {

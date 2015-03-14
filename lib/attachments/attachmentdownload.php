@@ -8,7 +8,7 @@
  * @filesource attachmentdownload.php
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
  */
 @ob_end_clean();
@@ -43,9 +43,6 @@ if ($args->id)
         //   test specifications  ( access to parent data - OK!)
         //   
         // What kind of attachments I've got ?
-        
-        new dBug($attachmentInfo);
-        
         $doIt = false;
         $attContext = $attachmentInfo['fk_table'];
         switch($attContext)

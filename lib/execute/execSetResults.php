@@ -510,6 +510,10 @@ function init_args(&$dbHandler,$cfgObj)
 
   I_PARAMS($inputCfg,$args);
 
+
+  $args->basehref = $_SESSION['basehref'];
+  
+
   return array($args,$its);
 }
 
@@ -1223,6 +1227,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
   $gui->testplan_notes = $rs['notes'];
   $gui->testplan_div_title = lang_get('test_plan') . ' ' . $rs['name'];
+  $argsObj->tplan_apikey = $rs['api_key'];
+
 
   // Important note: 
   // custom fields for test plan can be edited ONLY on design, that's reason why we are using 

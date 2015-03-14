@@ -7186,12 +7186,15 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function getByAPIKey($apiKey)
+  function getByAPIKey($apiKey,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+    $my['opt'] = array('checkIsValid' => false);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+    $fields2get = $my['opt']['checkIsValid'] ? 'id' : '*';
     $sql = "/* $debugMsg */ " .
-           " SELECT * FROM {$this->tables['testplans']} " .
+           " SELECT {$fields2get} FROM {$this->tables['testplans']} " .
            " WHERE api_key = '{$apiKey}'";
  
     $rs = $this->db->get_recordset($sql);

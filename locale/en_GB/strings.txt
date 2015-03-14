@@ -3903,5 +3903,6 @@ $TLS_choose_dest_req_spec = "Choose dest. Req. Spec.";
 $TLS_remove_kw_msgbox_title = "Remove keyword";
 $TLS_remove_kw_msgbox_msg = "Really remove keyword %i?";
 $TLS_img_title_remove_keyword = "Click to remove this keyword.";
+$TLS_display_ea_string ="Display attachement placeholder";
 
 // ----- END ------------------------------------------------------------------

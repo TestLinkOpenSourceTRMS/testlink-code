@@ -321,7 +321,7 @@ class jirarestInterface extends issueTrackerInterface
         $issue = array_merge($issue,$this->issueAttr);
       }  
 
-
+      new dBug($opt);
       if(!is_null($opt))
       {
         if(property_exists($opt, 'issuePriority'))

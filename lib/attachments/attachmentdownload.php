@@ -8,7 +8,7 @@
  * @filesource attachmentdownload.php
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
  */
 @ob_end_clean();
@@ -19,34 +19,89 @@ require_once('../functions/attachments.inc.php');
 // This way can be called without _SESSION, this is useful for reports
 testlinkInitPage($db,false,true);
 
-$args = init_args();
-
+$args = init_args($db);
 if ($args->id)
 {
   $attachmentRepository = tlAttachmentRepository::create($db);
   $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
-  // if ($attachmentInfo)
-  if ($attachmentInfo && ($args->skipCheck || checkAttachmentID($db,$args->id,$attachmentInfo)) )
+
+  
+  if ($attachmentInfo && 
+      ($args->skipCheck || checkAttachmentID($db,$args->id,$attachmentInfo)) )
   {
-    $content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
-    if ($content != "")
+    switch ($args->opmode) 
     {
-      @ob_end_clean();
-      header('Pragma: public');
-      header("Cache-Control: ");
-      if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"])))
-      { 
-        header('Pragma: no-cache');
-      }
-      header('Content-Type: '.$attachmentInfo['file_type']);
-      header('Content-Length: '.$attachmentInfo['file_size']);
-      header("Content-Disposition: inline; filename=\"{$attachmentInfo['file_name']}\"");
-      header("Content-Description: Download Data");
-      echo $content;
-      exit();
+      case 'API':
+        // want to check if apikey provided is right for attachment context
+        // - test project api key:
+        //   is needed to get attachments for:
+        //   test specifications
+        //
+        // - test plan api key:
+        //   is needed to get attacments for:
+        //   test case executions
+        //   test specifications  ( access to parent data - OK!)
+        //   
+        // What kind of attachments I've got ?
+        $doIt = false;
+        $attContext = $attachmentInfo['fk_table'];
+        switch($attContext)
+        {
+          case 'executions':
+            // check apikey
+            // 1. has to be a test plan key
+            // 2. execution must belong to the test plan.
+            $item = getEntityByAPIKey($db,$args->apikey,'testplan');
+            if( !is_null($item) )
+            {
+              $tables = tlObjectWithDB::getDBTables(array('executions'));
+              $sql = "SELECT testplan_id FROM {$tables['executions']} " .
+                     "WHERE id = " . intval($attachmentInfo['fk_id']);
+
+              $rs = $db->get_recordset($sql);
+              if(!is_null($rs))
+              {
+                if($rs['0']['testplan_id'] == $item['id'])
+                {
+                  // GOOD !
+                  $doIt = true;
+                }  
+              }       
+            }  
+          break;
+        }
+      break;
+      
+      case 'GUI':
+      default:
+        $doIt = true;
+      break;
     }
+
+
+    if( $doIt )
+    {
+      $content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
+      if ($content != "")
+      {
+        @ob_end_clean();
+        header('Pragma: public');
+        header("Cache-Control: ");
+        if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"])))
+        { 
+          header('Pragma: no-cache');
+        }
+        header('Content-Type: '.$attachmentInfo['file_type']);
+        header('Content-Length: '.$attachmentInfo['file_size']);
+        header("Content-Disposition: inline; filename=\"{$attachmentInfo['file_name']}\"");
+        header("Content-Description: Download Data");
+        echo $content;
+        exit();
+      }      
+    }  
   }
 }
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$args);
 $smarty->display('attachment404.tpl');
@@ -54,12 +109,30 @@ $smarty->display('attachment404.tpl');
 /**
  * @return object returns the arguments for the page
  */
-function init_args()
+function init_args(&$dbHandler)
 {
-  //the id (attachments.id) of the attachment to be downloaded
-  $iParams = array("id" => array(tlInputParameter::INT_N),'skipCheck' => array(tlInputParameter::INT_N));
+  // id (attachments.id) of the attachment to be downloaded
+  $iParams = array('id' => array(tlInputParameter::INT_N),
+                   'apikey' => array(tlInputParameter::STRING_N,64),  
+                   'skipCheck' => array(tlInputParameter::INT_N));
+  
   $args = new stdClass();
   G_PARAMS($iParams,$args);
+
+  $args->light = 'green';
+  $args->opmode = 'GUI';
+
+  // using apikey lenght to understand apikey type
+  // 32 => user api key
+  // other => test project or test plan
+  $args->apikey = trim($args->apikey);
+  $apikeyLenght = strlen($args->apikey);
+  if($apikeyLenght > 0)
+  {
+    $args->opmode = 'API';
+    $args->skipCheck = true;
+  } 
+
   return $args;
 }
 

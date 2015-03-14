@@ -45,7 +45,7 @@ $templateCfg = templateConfiguration();
 
 $tcversion_id = null;
 $submitResult = null;
-list($args,$its,$issueTrackerCfg) = init_args($db,$cfg);
+list($args,$its) = init_args($db,$cfg);
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -475,8 +475,8 @@ function init_args(&$dbHandler,$cfgObj)
 
   // Do this only on single execution mode
   // get issue tracker config and object to manage TestLink - BTS integration 
+  $args->itsCfg = null;
   $its = null;
-  $itsCfg = null;
 
   $tproject_mgr = new testproject($dbHandler);
   $info = $tproject_mgr->get_by_id($args->tproject_id);
@@ -488,9 +488,10 @@ function init_args(&$dbHandler,$cfgObj)
   {
     $it_mgr = new tlIssueTracker($dbHandler);
     $its = $it_mgr->getInterfaceObject($args->tproject_id);
-    $itsCfg = $it_mgr->getLinkedTo($args->tproject_id);
-    unset($it_mgr);
     $bug_summary['maxLengh'] = $its->getBugSummaryMaxLength(); 
+
+    $args->itsCfg = $it_mgr->getLinkedTo($args->tproject_id);
+    unset($it_mgr);
   }
  
   
@@ -509,7 +510,11 @@ function init_args(&$dbHandler,$cfgObj)
 
   I_PARAMS($inputCfg,$args);
 
-  return array($args,$its,$itsCfg);
+
+  $args->basehref = $_SESSION['basehref'];
+  
+
+  return array($args,$its);
 }
 
 
@@ -1135,6 +1140,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+  $gui->showExternalAccessString = true;
+  $gui->showImgInlineString = false;
+  
   $gui->addIssueOp = null;
   $gui->allowStepAttachments = true;
   $gui->tlCanCreateIssue = !is_null($issueTracker) && method_exists($issueTracker,'addIssue');
@@ -1222,6 +1230,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
   $gui->testplan_notes = $rs['notes'];
   $gui->testplan_div_title = lang_get('test_plan') . ' ' . $rs['name'];
+  $argsObj->tplan_apikey = $rs['api_key'];
+
 
   // Important note: 
   // custom fields for test plan can be edited ONLY on design, that's reason why we are using 
@@ -1264,16 +1274,19 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->issueTrackerCfg->editIssueAttr = false;
   
 
+  
   if(!is_null($issueTracker))
   {
     if( $issueTracker->isConnected() )
     {
-      $dummy = $issueTracker->getCfg();
+      $itsCfg = $issueTracker->getCfg();
+
       $gui->issueTrackerCfg->bugSummaryMaxLength = $issueTracker->getBugSummaryMaxLength();
-      $gui->issueTrackerCfg->editIssueAttr = intval($dummy->userinteraction);
+      $gui->issueTrackerCfg->editIssueAttr = intval($itsCfg->userinteraction);
 
       $gui->issueTrackerIntegrationOn = true;
-      $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . "({$issueTrackerCfg['issuetracker_name']})"; 
+      $gui->accessToIssueTracker = lang_get('link_bts_create_bug') . 
+                                   "({$argsObj->itsCfg['issuetracker_name']})"; 
 
       $gui->createIssueURL = $issueTracker->getEnterBugURL();
       $gui->tlCanCreateIssue = method_exists($issueTracker,'addIssue') && 
@@ -1291,14 +1304,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->issueTrackerMetaData = null;
   if($gui->issueTrackerCfg->editIssueAttr == 1)
   {
-    echo '000';
-    $gui->issueTrackerMetaData = !is_null($issueTracker) ? getIssueTrackerMetaData($issueTracker) : null; 
+    $gui->issueTrackerMetaData = !is_null($issueTracker) ? 
+                                 getIssueTrackerMetaData($issueTracker) : null; 
+    
+    $gui->issueType = $argsObj->issueType;
+    $gui->issuePriority = $argsObj->issuePriority;
+    $gui->artifactVersion = $argsObj->artifactVersion;
+    $gui->artifactComponent = $argsObj->artifactComponent;   
   }  
-  $gui->issueType = $argsObj->issueType;
-  $gui->issuePriority = $argsObj->issuePriority;
-  $gui->artifactVersion = $argsObj->artifactVersion;
-  $gui->artifactComponent = $argsObj->artifactComponent;   
-
+ 
   return $gui;
 }
 

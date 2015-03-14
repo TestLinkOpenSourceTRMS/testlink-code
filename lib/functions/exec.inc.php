@@ -252,6 +252,8 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         $execContext->exec_id = $execution_id;
         $execContext->tcversion_id = $tcversion_id;
         $execContext->user = $exec_signature->user;
+        $execContext->basehref = $exec_signature->basehref;
+        $execContext->tplan_apikey = $exec_signature->tplan_apikey;
 
         if(property_exists($exec_signature,'bug_summary'))
         {
@@ -595,12 +597,16 @@ function addIssue($dbHandler,$argsObj,$itsObj)
 
   $opt = new stdClass();
   $opt->reporter = $argsObj->user->login;
-  $opt->issueType = $argsObj->issueType;
-  $opt->issuePriority = $argsObj->issuePriority;
-  $opt->artifactVersion = $argsObj->artifactVersion;
-  $opt->artifactComponent = $argsObj->artifactComponent;
-
+  $p2check = array('issueType','issuePriority','issuePriority','artifactComponent');
+  foreach($p2check as $prop)
+  {
+    if(property_exists($argsObj, $prop) && !is_null($argsObj->$prop))
+    {
+      $opt->$prop = $argsObj->$prop;    
+    }   
+  }  
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
+  
   $ret['msg'] = $rs['msg'];
   if( ($ret['status_ok'] = $rs['status_ok']) )
   {                   
@@ -610,7 +616,6 @@ function addIssue($dbHandler,$argsObj,$itsObj)
     }
   }
 
-  // return array($opOK,$msg);
   return $ret;
 }
 
@@ -704,7 +709,36 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
                     $exec['statusVerbose'],
                     $exec['execution_notes']);
 
+
+ 
     $ret->description = str_replace($tags,$values,$argsObj->bug_notes);
+   
+    // @since 1.9.14
+    // %%EXECATT:1%% => lnl.php?type=file&id=1&apikey=gfhdgjfgdsjgfjsg
+    $target['value'] = '%%EXECATT:';
+    $target['len'] = strlen($target['value']);
+    $doIt = true;
+    $url2use = $argsObj->basehref . 'lnl.php?type=file&id=';
+
+    while($doIt)
+    {
+      $mx = strpos($ret->description,$target['value']);
+      if( ($doIt = !($mx === FALSE)) )
+      {
+        $offset = $mx+$target['len'];
+        $cx = strpos($ret->description,'%%',$offset);
+        if($cx === FALSE)
+        {
+          // chaos! => abort
+          $doIt = false;
+          break;
+        }  
+        $old = substr($ret->description,$mx,$cx-$mx+2);  // 2 is MAGIC!!!
+        $new = str_replace($target['value'],$url2use,$old);
+        $new = str_replace('%%','&apikey=' . $argsObj->tplan_apikey,$new);
+        $ret->description = str_replace($old,$new,$ret->description);
+      }
+    } 
   }
   else
   {

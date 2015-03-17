@@ -139,8 +139,25 @@ function init_gui(&$db,$args)
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
 
+  // Check multiple auth methods, only disable login if none is accessible
+  $use_db = false;
+  $use_ldap = false;
+  foreach ($gui->authCfg['domain'] AS $authDomain => $domainSettings) {
+    $method = $authDomain;
+    if (is_array($gui->authCfg['domain'][$authDomain]) && !empty($gui->authCfg['domain'][$authDomain]['method'])) {
+      $method = $gui->authCfg['domain'][$authDomain]['method'];
+    }
+    if ('DB' == $method ||
+        'MD5' == $method) {
+      $use_db = true;
+    }
+    if ($method == 'LDAP') {
+      $use_ldap = true;
+    }
+  }
+
   $gui->external_password_mgmt = false;
-  $gui->login_disabled = (('LDAP' == $gui->authCfg['method']) && !checkForLDAPExtension()) ? 1 : 0;
+  $gui->login_disabled = ($use_db || ($use_ldap && checkForLDAPExtension())) ? 0 : 1;
 
   switch($args->note)
   {

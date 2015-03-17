@@ -107,7 +107,6 @@ class tlUser extends tlDBObject
   
   /** configuration options */
   protected $usernameFormat;
-  protected $loginMethod;
   protected $maxLoginLength;
   
   /** error codes */
@@ -150,7 +149,7 @@ class tlUser extends tlDBObject
     $this->usernameFormat = config_get('username_format');
     $this->loginRegExp = config_get('validation_cfg')->user_login_valid_regex;
     $this->maxLoginLength = 30; 
-    $this->loginMethod = $authCfg['method'];
+    $this->authentication = $authCfg['method'];
     
     $this->globalRoleID = config_get('default_roleid');
     $this->locale = config_get('default_language');
@@ -203,7 +202,11 @@ class tlUser extends tlDBObject
     {
       $authCfg = config_get('authentication');
       $target = $authCfg['method'];
-    }  
+    }
+    if(is_array($authCfg['domain'][$target]) && !empty($authCfg['domain'][$target]['method']))
+    {
+      $target = $authCfg['domain'][$target]['method'];
+    }
     switch($target)
     {
       case 'LDAP':

@@ -263,19 +263,37 @@ function getSecurityNotes(&$db)
   }
   
   $authCfg = config_get('authentication');
-  if( 'LDAP' == $authCfg['method']  )
+  $use_db = false;
+  $use_ldap = false;
+
+  foreach ($authCfg['domain'] AS $authDomain => $domainSettings)
   {
-    if( !checkForLDAPExtension() )
+    // Make sure to be backward compatible with domain key == method
+    $authMethod = $authDomain;
+    if (is_array($domainSettings) && !empty($domainSettings['method']))
     {
-      $securityNotes[] = lang_get("ldap_extension_not_loaded");
-    }  
-  } 
-  else
-  {
-    if( checkForAdminDefaultPwd($db) )
-    {
-        $securityNotes[] = lang_get("sec_note_admin_default_pwd");
+      $authMethod = $domainSettings['method'];
     }
+
+    if ('DB' == $authMethod ||
+        'MD5' == $authMethod)
+    {
+      $use_db = true;
+    }
+    if ('LDAP' == $authMethod)
+    {
+      $use_ldap = true;
+    }
+  }
+
+  if (($use_ldap) && (!checkForLDAPExtension()))
+  {
+    $securityNotes[] = lang_get("ldap_extension_not_loaded");
+  }
+
+  if (($use_db) && (checkForAdminDefaultPwd($db)))
+  {
+    $securityNotes[] = lang_get("sec_note_admin_default_pwd");
   }
 
   

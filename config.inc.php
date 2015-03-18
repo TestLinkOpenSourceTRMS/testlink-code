@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2014, TestLink community
+ * @copyright   2005-2015, TestLink community
  * @link        http://www.testlink.org
  *
  * @internal revisions
@@ -60,6 +60,7 @@ $tlCfg->diffEngine = new stdClass();
 $tlCfg->tplanDesign = new stdClass();
 
 $tlCfg->notifications = new stdClass();
+$tlCfg->proxy = new stdClass();
 
 
 
@@ -1596,6 +1597,13 @@ $g_tpl = array();
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',
 //                 'tcSearchView' => 'myOwnTCSearchView.tpl',
 //                 'tcEdit' => 'tcEdit_ultraCool.tpl');
+
+// ----------------------------------------------------------------------------
+/* [PROXY] */
+$tlCfg->proxy->host = null;
+$tlCfg->proxy->port = null;
+$tlCfg->proxy->login = null;
+$tlCfg->proxy->password = null;
 
 
 

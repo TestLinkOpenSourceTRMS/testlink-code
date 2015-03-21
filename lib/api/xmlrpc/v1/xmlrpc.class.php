@@ -734,7 +734,7 @@ class TestlinkXMLRPCServer extends IXR_Server
    */         
   protected function _isParamPresent($pname,$messagePrefix='',$setError=false)
   {
-    $status_ok=(isset($this->args[$pname]) ? true : false);
+    $status_ok = (isset($this->args[$pname]) ? true : false);
     if(!$status_ok && $setError)
     {
       $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR,$pname);
@@ -3413,9 +3413,18 @@ public function getTestCaseAttachments($args)
     $operation=__FUNCTION__;
     $msg_prefix="({$operation}) - ";
     $checkFunctions = array('authenticate','checkTestSuiteName','checkTestProjectID');
-    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
-                 $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
-      
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+    // When working on PRIVATE containers, globalRole Admin is ENOUGH
+    // because this is how TestLink works when this action is done on GUI
+    if( $status_ok && $this->user->globalRole->dbID != TL_ROLES_ADMIN)
+    {
+      if( $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR) )
+      {
+        $status_ok = true;
+      }  
+    }  
+
     if( $status_ok )
     {
       // Optional parameters
@@ -3709,14 +3718,14 @@ public function getTestCase($args)
    * @param struct $args
    * @param string $args["devKey"]
    * @param int $args["testplanname"]
-   * @param int $args["testprojectname"]
+   * @param int $args["testprojectname"] use instead of $args["prefix"]
+   * @param int $args["prefix"]          use instead of $args["testprojectname"] 
    * @param string $args["notes"], optional
    * @param string $args["active"], optional default value 1
    * @param string $args["public"], optional default value 1
-     *   
+   *   
    * @return mixed $resultInfo
-   * @internal revision
-   *  20100704 - franciscom - BUGID 3565
+   * @internal revisions
    */
   public function createTestPlan($args)
   {
@@ -3726,35 +3735,93 @@ public function getTestCase($args)
 
     if($this->authenticate())
     {
-      $keys2check = array(self::$testPlanNameParamName,self::$testProjectNameParamName);
-        
+      $keys2check = array(self::$testPlanNameParamName);
       $status_ok = true;
       foreach($keys2check as $key)
       {
-        $names[$key]=$this->_isParamPresent($key,$msg_prefix,self::SET_ERROR) ? trim($this->args[$key]) : '';
-        if($names[$key]=='')
+        $dummy[$key] = $this->_isParamPresent($key,$msg_prefix,self::SET_ERROR) ? 
+                       trim($this->args[$key]) : '';
+        if($dummy[$key]=='')
         {
           $status_ok=false;    
           break;
         }
       }
     }
+    
+    if( $status_ok )
+    {
+      $keys2check = array(self::$testProjectNameParamName,self::$prefixParamName);
+      $status_ok = true;
+      foreach($keys2check as $key)
+      {
+        $target[$key] = $this->_isParamPresent($key,$msg_prefix) ? 
+                        trim($this->args[$key]) : '';
+        if($target[$key] == '')
+        {
+          $status_ok = false;    
+        }
+        else
+        {
+          // first good match is OK
+          $status_ok = true;
+          break;
+        }  
+      }
+
+      if($status_ok == false)
+      {
+        // lazy way to generate error
+        foreach($keys2check as $key)
+        {
+          $dummy[$key] = $this->_isParamPresent($key,$msg_prefix) ? 
+                         trim($this->args[$key]) : '';
+          if($dummy[$key] == '')
+          {
+            $status_ok = false;
+            break;   
+          }
+        }
+      }  
+    }
 
     if( $status_ok )
     {
-      $name = trim($this->args[self::$testProjectNameParamName]);
-      $check_op=$this->tprojectMgr->checkNameExistence($name);
-      $status_ok=!$check_op['status_ok'];     
-      if($status_ok) 
+      $status_ok = false;
+
+      if( isset($target[self::$testProjectNameParamName]) &&
+          $target[self::$testProjectNameParamName] != '' )
       {
-        $tprojectInfo = current($this->tprojectMgr->get_by_name($name));
+        $name = trim($this->args[self::$testProjectNameParamName]);
+        $check_op = $this->tprojectMgr->checkNameExistence($name);
+        $status_ok = !$check_op['status_ok'];     
+        if($status_ok) 
+        {
+          $tprojectInfo = current($this->tprojectMgr->get_by_name($name));
+        }
+        else     
+        {
+          $status_ok=false;
+          $msg = $msg_prefix . sprintf(TESTPROJECTNAME_DOESNOT_EXIST_STR,$name);
+          $this->errors[] = new IXR_Error(TESTPROJECTNAME_DOESNOT_EXIST, $msg);
+        }
       }
-      else     
+      else
       {
-        $status_ok=false;
-        $msg = $msg_prefix . sprintf(TESTPROJECTNAME_DOESNOT_EXIST_STR,$name);
-        $this->errors[] = new IXR_Error(TESTPROJECTNAME_DOESNOT_EXIST, $msg);
-      }
+
+        if( isset($target[self::$prefixParamName]) &&
+            $target[self::$prefixParamName] != '' )
+        {
+          $prefix = trim($this->args[self::$prefixParamName]);
+          $tprojectInfo = $this->tprojectMgr->get_by_prefix($prefix);
+          
+          if( ($status_ok = !is_null($tprojectInfo)) == false )
+          {  
+            $msg = $msg_prefix . sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR,$prefix);
+            $this->errors[] = new IXR_Error(TPROJECT_PREFIX_DOESNOT_EXIST_STR, $msg);
+          }
+        }
+      }  
     }
 
     // Now we need to check if user has rights to do this action
@@ -3763,13 +3830,17 @@ public function getTestCase($args)
       $this->args[self::$testProjectIDParamName] = $tprojectInfo['id'];
       $this->args[self::$testPlanIDParamName] = null;
 
-      $status_ok = $this->userHasRight("mgt_testplan_create",self::CHECK_PUBLIC_PRIVATE_ATTR);
+      // When working on PRIVATE containers, globalRole Admin is ENOUGH
+      // because this is how TestLink works when this action is done on GUI
+      if( $this->user->globalRole->dbID != TL_ROLES_ADMIN)
+      {
+        $status_ok = $this->userHasRight("mgt_testplan_create",self::CHECK_PUBLIC_PRIVATE_ATTR);
+      }
     }  
-
 
     if( $status_ok )
     {
-      $name=trim($names[self::$testPlanNameParamName]);
+      $name = trim($this->args[self::$testPlanNameParamName]);
       $info = $this->tplanMgr->get_by_name($name,$tprojectInfo['id']);
       $status_ok=is_null($info);
             
@@ -6847,7 +6918,6 @@ protected function createAttachmentTempFile()
    *
    * @return mixed $resultInfo
    *         [status]  => true/false of success
-   *         [id]      => result id or error code
    *         [message]  => optional message for error message string
    * @access public
    */
@@ -6870,12 +6940,12 @@ protected function createAttachmentTempFile()
   
     if($status_ok)
     {
-       $status_ok = $this->_isParamPresent('prefix',$msg_prefix,true);
+       $status_ok = $this->_isParamPresent(self::$prefixParamName,$msg_prefix,true);
     }
   
     if($status_ok)
     {
-      if( ($info = $this->tprojectMgr->get_by_prefix($this->args['prefix'])) )
+      if( ($info = $this->tprojectMgr->get_by_prefix($this->args[self::$prefixParamName])) )
       {
         $this->tprojectMgr->delete($info['id']);
         $resultInfo[0]["status"] = true;
@@ -6883,14 +6953,14 @@ protected function createAttachmentTempFile()
       else
       {
         $status_ok = false;
-        $msg = $msg_prefix . sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR,$this->args['prefix']);
+        $msg = $msg_prefix . sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR,
+                             $this->args[self::$prefixParamName]);
         $this->errors[] = new IXR_Error(TPROJECT_PREFIX_DOESNOT_EXIST, $msg);
       }
     }
 
     return $status_ok ? $resultInfo : $this->errors;
   }
-
 
 
   /**

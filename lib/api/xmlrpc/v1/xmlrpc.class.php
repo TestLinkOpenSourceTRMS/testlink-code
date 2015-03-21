@@ -201,7 +201,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $versionNumberParamName = "version";
   public static $estimatedExecDurationParamName = "estimatedexecduration";
 
-
+  public static $prefixParamName = "prefix";
   
   /**#@-*/
   
@@ -564,15 +564,15 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @return boolean
    * @access protected
    */    
-    protected function checkTestProjectID($messagePrefix='')
-    {
+   protected function checkTestProjectID($messagePrefix='')
+   {
       if(!($status=$this->_isTestProjectIDPresent()))
       {
           $this->errors[] = new IXR_Error(NO_TESTPROJECTID, $messagePrefix . NO_TESTPROJECTID_STR);
       }
       else
       {        
-            // See if this Test Project ID exists in the db
+        // See if this Test Project ID exists in the db
         $testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
         $query = "SELECT id FROM {$this->tables['testprojects']} WHERE id={$testprojectid}";
         $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");           
@@ -3757,13 +3757,13 @@ public function getTestCase($args)
       }
     }
 
-    // Now we need to check if user has rights to work on testproject
+    // Now we need to check if user has rights to do this action
     if( $status_ok )
     {
       $this->args[self::$testProjectIDParamName] = $tprojectInfo['id'];
       $this->args[self::$testPlanIDParamName] = null;
 
-      $status_ok = $this->userHasRight("mgt_modify_product",self::CHECK_PUBLIC_PRIVATE_ATTR);
+      $status_ok = $this->userHasRight("mgt_testplan_create",self::CHECK_PUBLIC_PRIVATE_ATTR);
     }  
 
 
@@ -6839,6 +6839,61 @@ protected function createAttachmentTempFile()
   }
 
   /**
+   *  Delete a test project and all related link to other items
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["prefix"]
+   *
+   * @return mixed $resultInfo
+   *         [status]  => true/false of success
+   *         [id]      => result id or error code
+   *         [message]  => optional message for error message string
+   * @access public
+   */
+  public function deleteTestProject($args)
+  {
+    $resultInfo = array();
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+     
+    $this->_setArgs($args);
+    $resultInfo[0]["status"] = false;
+     
+    $checkFunctions = array('authenticate');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+    
+    if($status_ok)
+    {
+      $status_ok = $this->userHasRight("mgt_modify_product");
+    }
+  
+    if($status_ok)
+    {
+       $status_ok = $this->_isParamPresent('prefix',$msg_prefix,true);
+    }
+  
+    if($status_ok)
+    {
+      if( ($info = $this->tprojectMgr->get_by_prefix($this->args['prefix'])) )
+      {
+        $this->tprojectMgr->delete($info['id']);
+        $resultInfo[0]["status"] = true;
+      }  
+      else
+      {
+        $status_ok = false;
+        $msg = $msg_prefix . sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR,$this->args['prefix']);
+        $this->errors[] = new IXR_Error(TPROJECT_PREFIX_DOESNOT_EXIST, $msg);
+      }
+    }
+
+    return $status_ok ? $resultInfo : $this->errors;
+  }
+
+
+
+  /**
    *
    */
   function initMethodYellowPages()
@@ -6854,6 +6909,7 @@ protected function createAttachmentTempFile()
                             'tl.createTestSuite' => 'this:createTestSuite',
                             'tl.deleteTestCaseSteps' => 'this:deleteTestCaseSteps',
                             'tl.deleteTestPlan' => 'this:deleteTestPlan',
+                            'tl.deleteTestProject' => 'this:deleteTestProject',
                             'tl.uploadExecutionAttachment' => 'this:uploadExecutionAttachment',
                             'tl.uploadRequirementSpecificationAttachment' => 'this:uploadRequirementSpecificationAttachment',
                             'tl.uploadRequirementAttachment' => 'this:uploadRequirementAttachment',

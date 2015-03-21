@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.35.2.1 2010/11/20 16:55:53 franciscom Exp $
+ *
  */
 
 /** 
@@ -9,10 +9,9 @@
  * 
  * @author    Asiel Brumfield <asielb@users.sourceforge.net>
  * @package   TestlinkAPI
- * @link      http://testlink.org/api/
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.14
  * 
  */
  
@@ -104,7 +103,6 @@ define('NODEID_INVALID_DATA_TYPE_STR', lang_get('API_NODEID_INVALID_DATA_TYPE',n
 
 define('PLATFORM_NAME_DOESNOT_EXIST', 235);
 define('PLATFORM_NAME_DOESNOT_EXIST_STR', lang_get('API_PLATFORM_NAME_DOESNOT_EXIST',null,1));
-
 
 /**
  * 2000 level - authentication errors
@@ -263,6 +261,9 @@ define('TESTPROJECTNAME_DOESNOT_EXIST_STR',lang_get('API_TESTPROJECTNAME_DOESNOT
 define('TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST',7012);
 define('TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST_STR',lang_get('API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST',null,1));
 
+define('TPROJECT_PREFIX_DOESNOT_EXIST',7012);
+define('TPROJECT_PREFIX_DOESNOT_EXIST_STR',
+       lang_get('API_TPROJECT_PREFIX_DOESNOT_EXIST',null,1));
 
 /**
  * 8000 level - Test Suite errors

@@ -3433,6 +3433,9 @@ $TLS_API_PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK = "Platform (%s) is used by %s t
 $TLS_API_NODEID_INVALID_DATA_TYPE = "Invalid Data Type - Node ID can be Array of Positive Integer, or Positive Integer";
 $TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "Test Project Source Name: %s - does not exist";
 
+$TLS_API_TPROJECT_PREFIX_DOESNOT_EXIST = "There is NO Test Project with Prefix (%s)";
+
+
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
 $TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";

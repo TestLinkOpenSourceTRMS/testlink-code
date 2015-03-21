@@ -5919,18 +5919,7 @@ class testcase extends tlObjectWithAttachments
   function setExecutionType($tcversionID,$value)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    
     $execType = intval($value);
-    switch($execType)
-    {
-      case TESTCASE_EXECUTION_TYPE_MANUAL:
-      case TESTCASE_EXECUTION_TYPE_AUTO:
-      break;
-      
-      default:
-        $execType = TESTCASE_EXECUTION_TYPE_MANUAL;        
-      break;
-    }
     $sql = "/* $debugMsg */ " . 
            " UPDATE {$this->tables['tcversions']} " .
            " SET execution_type=" . $this->db->prepare_int($execType) .  

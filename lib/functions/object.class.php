@@ -329,6 +329,12 @@ abstract class tlObjectWithDB extends tlObject
     tlObject::__construct();
     $this->db = &$db;
   }
+
+  function setDB(&$db)
+  {
+    $this->db = &$db;
+  }
+
 }
 
 /**

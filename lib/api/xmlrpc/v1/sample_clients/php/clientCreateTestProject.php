@@ -21,10 +21,12 @@ $test_num = 0;
 // ------------------------------------------------------------------------------------
 $test_num++;
 $unitTestDescription="Test {$test_num} - {$method}() ::: ";
-$prefix = 'GU-AXECX';
+$prefix = uniqid();
+$devKey = '985978c915f50e47a4b1a54a943d1b76';
+$devKey = isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : $devKey;
 
 $args=array();
-$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["devKey"] = $devKey;
 $args["testcaseprefix"] = $prefix . $test_num;
 $args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
 
@@ -38,6 +40,7 @@ $debug=true;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+die();
 // ------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------------

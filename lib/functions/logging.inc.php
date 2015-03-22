@@ -54,12 +54,33 @@ function logWarningEvent($message,$activityCode = null,$objectID = null,$objectT
  *
  * @since 1.9.8
  */
-function logL18NWarningEvent($message,$activityCode = null,$objectID = null,$objectType = null)
+function logL18NWarningEvent($message,$activityCode = null,$objectID = null,
+  $objectType = null)
 {
   return tLog($message,"L18N","GUI",$objectID,$objectType,$activityCode);
 }
 
+/**
+ *
+ * $event->message
+ * $event->logLevel
+ * $event->source
+ * $event->objectID
+ * $event->objectType
+ * $event->code
+ *
+ */
+function logEvent($event)
+{
+   return tLog($event->message, $event->logLevel, $event->source,
+               $event->objectID, $event->objectType,$event->code);
+}
 
+
+
+/**
+ *
+ */
 function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,
               $objectType = null, $activityCode = null)
 {

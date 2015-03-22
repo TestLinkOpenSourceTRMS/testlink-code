@@ -9,7 +9,7 @@
  * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.14
  * 
  **/
 
@@ -56,7 +56,6 @@ class testproject extends tlObjectWithAttachments
     $this->object_table = $this->tables['testprojects'];
   }
 
-
 /**
  * Create a new Test project
  * 
@@ -75,7 +74,6 @@ class testproject extends tlObjectWithAttachments
  * @internal revisions
  * 
  */
-// function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 function create($item,$opt=null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -132,23 +130,31 @@ function create($item,$opt=null)
                        $this->db->prepare_string($tcPrefix) . "','" .
                        $this->db->prepare_string($api_key) . "')";
   $result = $this->db->exec_query($sql);
-
-  $auditMsg = 'Test project: ' . $item->name; 
+  
+  $evt = new stdClass();
+  $evt->message = TLS("audit_testproject_created", $item->name); 
+  $evt->code = "CREATE";
+  $evt->source = $this->auditCfg->eventSource;
+  $evt->objectType = 'testprojects';
+ 
   if ($result)
   {
-    tLog($auditMsg . ' was succesfully created.', 'INFO');
-    
     // set project to session if not defined (the first project) or update the current
     if (!isset($_SESSION['testprojectID']) && $my['opt']['setSessionProject'])
     {
       $this->setSessionProject($id);
     }
+    $evt->logLevel = 'AUDIT';
   }
   else
   {
-    tLog($auditMsg . ' was not created.', 'INFO');
     $id = 0;
+    $evt->logLevel = 'ERROR';
   }
+  
+  $evt->objectID = $id;
+  // var_dump($evt);
+  logEvent($evt);
 
   return $id;
 }
@@ -1108,7 +1114,9 @@ function setPublicStatus($id,$status)
     $kw->initialize($id,$testprojectID,$keyword,$notes);
     $result = $kw->writeToDB($this->db);
     if ($result >= tl::OK)
+    {  
       logAuditEvent(TLS("audit_keyword_saved",$keyword),"SAVE",$kw->dbID,"keywords");
+    }
     return $result;
   }
 
@@ -1264,7 +1272,9 @@ function setPublicStatus($id,$status)
         if ($kw->readFromCSV(implode($delim,$data)) >= tl::OK)
         {
           if ($kw->writeToDB($this->db) >= tl::OK)
+          {  
             logAuditEvent(TLS("audit_keyword_created",$kw->name),"CREATE",$kw->dbID,"keywords");
+          }
         }
       }
       fclose($handle);
@@ -1808,6 +1818,18 @@ function setPublicStatus($id,$status)
     $error = '';
     $reqspec_mgr = new requirement_spec_mgr($this->db);
     
+    // get some info for audit
+    if($this->auditCfg->logEnabled)
+    {
+      $info = $this->tree_manager->get_node_hierarchy_info($id);
+      $event = new stdClass();
+      $event->message = TLS("audit_testproject_deleted",$info['name']);
+      $event->objectID = $id;
+      $event->objectType = 'testprojects';
+      $event->source = $this->auditCfg->eventSource;
+      $event->logLevel = 'AUDIT';
+      $event->code = 'DELETE';
+    }  
 
     //    
     // Notes on delete related to Foreing Keys
@@ -1934,6 +1956,11 @@ function setPublicStatus($id,$status)
       $this->tree_manager->delete_subtree_objects($id,$id,'',array('testcase' => 'exclude_tcversion_nodes'));
       $sql = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
       $this->db->exec_query($sql);
+
+      if($this->auditCfg->logEnabled)
+      {
+        logEvent($event);
+      }  
     }
     
     if( !empty($error) )

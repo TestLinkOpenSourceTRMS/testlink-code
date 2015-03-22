@@ -104,6 +104,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 
   /** Mapping bewteen external & internal test case ID */
   protected $tcaseE2I = null;
+
+  /** needed in order to manage logs */
+  protected $tlLogger = null;
   
   
   /**#@+
@@ -222,14 +225,24 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->dbObj->db->SetFetchMode(ADODB_FETCH_ASSOC);
     $this->_connectToDB();
     
-    $this->tcaseMgr=new testcase($this->dbObj);
-    $this->tprojectMgr=new testproject($this->dbObj);
+    global $g_tlLogger;
+    $this->tlLogger = &$g_tlLogger;
+    $this->tlLogger->setDB($this->dbObj);
+ 
+    // This close the default transaction that is started
+    // when logger.class.php is included.    
+    $this->tlLogger->endTransaction();
+
+    $this->tcaseMgr = new testcase($this->dbObj);
+    $this->tprojectMgr = new testproject($this->dbObj);
     $this->tplanMgr = new testplan($this->dbObj);
     $this->tplanMetricsMgr = new tlTestPlanMetrics($this->dbObj);
-
-    $this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
-    $this->reqMgr=new requirement_mgr($this->dbObj);
+    $this->reqSpecMgr = new requirement_spec_mgr($this->dbObj);
+    $this->reqMgr = new requirement_mgr($this->dbObj);
     
+    $this->tprojectMgr->setAuditEventSource('API-XMLRPC');
+      
+
     $this->tables = $this->tcaseMgr->getDBTables();
     
     $resultsCfg = config_get('results');
@@ -369,7 +382,9 @@ class TestlinkXMLRPCServer extends IXR_Server
       {
         // Load User
         $this->user = tlUser::getByID($this->dbObj,$this->userID);  
-        $this->authenticated = true;        
+        $this->authenticated = true; 
+
+        $this->tlLogger->startTransaction('DEFAULT',null,$this->userID);
         return true;
       }        
     }
@@ -395,8 +410,12 @@ class TestlinkXMLRPCServer extends IXR_Server
   {
     $status_ok = true;
     $tprojectid = isset($context[self::$testProjectIDParamName]) ? 
-                  $context[self::$testProjectIDParamName] :
-                  $this->args[self::$testProjectIDParamName];
+                  $context[self::$testProjectIDParamName] : 0;
+
+    if($tprojectid == 0 && isset($this->args[self::$testProjectIDParamName]))
+    {
+      $tprojectid = $this->args[self::$testProjectIDParamName];
+    }  
 
     if(isset($context[self::$testPlanIDParamName]))
     {
@@ -1674,7 +1693,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public function createTestProject($args)
   {
     $this->_setArgs($args);
-    $msg_prefix="(" . __FUNCTION__ . ") - ";
+    $msg_prefix = "(" . __FUNCTION__ . ") - ";
     $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
   
     if( $this->$checkRequestMethod($msg_prefix) && 
@@ -1687,7 +1706,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       $item->options->automationEnabled = 1;
       $item->options->inventoryEnabled = 1;
 
-      if( $this->_isParamPresent(self::$optionsParamName,$messagePrefix) )
+      if( $this->_isParamPresent(self::$optionsParamName,$msg_prefix) )
       {
         // has to be an array ?
         $dummy = $this->args[self::$optionsParamName];

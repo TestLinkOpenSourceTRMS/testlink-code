@@ -88,7 +88,7 @@ class tlLogger extends tlObject
   public function __construct(&$db)
   {
     parent::__construct();
-
+    
     $this->loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
     foreach($this->loggerTypeClass as $id => $className)
     {
@@ -180,20 +180,6 @@ class tlLogger extends tlObject
         }
         $ret[$type] = $human;
       }
-      
-      //foreach(self::$logLevels as $code => $verbose)
-      //{
-      //  if($this->logLevelFilter & $code)
-      //  {
-      //    $human[$code] = $verbose; 
-      //  }    
-      //}
-            //
-      //if( !is_null($human) )
-      //{
-      //  asort($human);
-      //}
-      //return $human;
     }     
     return $ret;
   }
@@ -324,6 +310,7 @@ class tlLogger extends tlObject
       $c = __CLASS__;
       self::$s_instance = new $c($db);
     }
+
     return self::$s_instance;
   }
 
@@ -346,7 +333,7 @@ class tlLogger extends tlObject
     {
       $entryPoint = $_SERVER['SCRIPT_NAME'];
     }
-    
+
     if(strlen($entryPoint) > self::ENTRYPOINT_MAX_LEN)
     {
       // Important information is at end of string
@@ -390,6 +377,14 @@ class tlLogger extends tlObject
     
     $this->transactions[$name]->close();
     unset($this->transactions[$name]);
+  }
+
+  /**
+   *
+   */
+  function setDB(&$db)
+  {
+    $this->loggers['db']->setDB($db);
   }
 
 }
@@ -1008,10 +1003,10 @@ class tlDBLogger extends tlObjectWithDB
     $this->logLevelFilter = $filter;
   }
 
-
   public function checkDBConnection()
   {
-    //check if the DB connection is still valid before writing log entries and try to reattach
+    // check if the DB connection is still valid before 
+    // writing log entries and try to reattach
     if (!$this->db)
     {
       global $db;

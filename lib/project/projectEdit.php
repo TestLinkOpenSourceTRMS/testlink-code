@@ -321,7 +321,8 @@ function prepareOptions($argsObj)
 
 /**
  * 
- * 
+ * ATTENTION: logEvent() is done on testproject->create()
+ *
  */
 function doCreate($argsObj,&$tprojectMgr)
 {
@@ -400,9 +401,7 @@ function doCreate($argsObj,&$tprojectMgr)
 
   if( $op->status_ok )
   {
-    logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");
-    $op->reloadType = 'reloadNavBar';
-      
+    $op->reloadType = 'reloadNavBar';      
     if($argsObj->copy_from_tproject_id > 0)
     {
       $options = array('copy_requirements' => $argsObj->optReq);
@@ -497,8 +496,15 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
             $tprojectMgr->addUserRole($argsObj->userID,$argsObj->tprojectID,$argsObj->user->globalRole->dbID);
         }  
       }  
-          
-      logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
+         
+      $event = new stdClass();
+      $event->message = TLS("audit_testproject_saved",$argsObj->tprojectName);
+      $event->logLevel = "AUDIT";
+      $event->source = "GUI";
+      $event->objectID = $argsObj->tprojectID;
+      $event->objectType = "testprojects";
+      $event->code = "UPDATE";
+      logEvent($event);
     }
     else
     {
@@ -649,7 +655,9 @@ function create(&$argsObj,&$tprojectMgr)
 */
 function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 {
+  $tprojectMgr->setAuditLogOn();
   $ope_status = $tprojectMgr->delete($argsObj->tprojectID);
+
   $op = new stdClass();
   $op->status_ok = $ope_status['status_ok'];
   $op->reloadType = 'none';
@@ -658,7 +666,6 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
   {
     $op->reloadType = 'reloadNavBar';
     $op->msg = sprintf(lang_get('test_project_deleted'),$argsObj->tprojectName);
-    logAuditEvent(TLS("audit_testproject_deleted",$argsObj->tprojectName),"DELETE",$argsObj->tprojectID,"testprojects");
   }
   else
   {

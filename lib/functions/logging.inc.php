@@ -28,15 +28,17 @@
   This function fires audit events
 
   @param string $message the message which describes the event in a human readable way (best a tlMetaString) is used
-  @param string $activityCode and shorthand activity code describing the event
+  @param string $eventCode 
   @param int $objectID the id of the object to which the event refers to
   @param string $objectType the type of the object the event refers to (this should be the name of the database table the objet is stored
 
   @return int return tl::OK if all is OK, tl::ERROR else
 */
-function logAuditEvent($message,$activityCode = null,$objectID = null,$objectType = null)
+function logAuditEvent($message,$eventCode = null,$objectID = null,$objectType = null,
+                       $source=null)
 {
-  return tLog($message,"AUDIT","GUI",$objectID,$objectType,$activityCode);
+  $so = is_null($source) ? 'GUI' : $source;
+  return tLog($message,"AUDIT",$so,$objectID,$objectType,$eventCode);
 }
 
 /**
@@ -58,7 +60,8 @@ function logL18NWarningEvent($message,$activityCode = null,$objectID = null,$obj
 }
 
 
-function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$objectType = null, $activityCode = null)
+function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,
+              $objectType = null, $activityCode = null)
 {
   global $g_tlLogger;
   if (!$g_tlLogger)

@@ -353,7 +353,7 @@ function launchInsertStep(step_id)
                target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
               {if $gui->requirement_mgmt}
                 <img class="clickable" src="{$tlImages.item_link}"
-                     onclick="javascript:openReqWindow({$args_testcase.testcase_id});"
+                     onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
                      title="{$tcView_viewer_labels.link_unlink_requirements}" />
               {/if}
               : &nbsp;</span>

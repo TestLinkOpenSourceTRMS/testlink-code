@@ -31,9 +31,20 @@ function check_action_precondition(form_id,action)
 	return true;
 }
 
-function refreshAndClose() 
+/**
+ *
+ */
+function refreshAndClose(tcase_id,callback) 
 {
-  window.opener.location.reload(true);
+  if(callback == 'a')
+  {
+    target = fRoot+'lib/testcases/archiveData.php?tcase_id=' + tcase_id + '&show_mode=';  
+    window.opener.location.href = target;
+  }  
+  else
+  {
+    window.opener.location.reload(true);
+  }  
   window.close();
 }
 </script>
@@ -53,6 +64,11 @@ function refreshAndClose()
   <h2>{$labels.req_title_assign}</h2>
   <form id="SRS_switch" name="SRS_switch" method="post">
     <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
+    {if $gui->tcase_id != 0}
+      <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
+      <input type="hidden" name="callback" id="callback" value="{$gui->callback}" />
+    {/if}
+
     <p><span class="labelHolder">{$labels.req_spec}</span>   
   	<select name="idSRS" id="idSRS" onchange="form.submit()">
   		{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}
@@ -61,7 +77,8 @@ function refreshAndClose()
 {if $gui->showCloseButton}
   <form name="closeMeTop">
     <div class="groupBtn">
-      <input type="button" value="{$labels.btn_close}" onclick="refreshAndClose();" />
+      <input type="button" value="{$labels.btn_close}" 
+        onclick="refreshAndClose({$gui->tcase_id},'{$gui->callback}');" />
     </div>
   </form>
 {/if}
@@ -172,7 +189,8 @@ function refreshAndClose()
 {if $gui->showCloseButton}
 	<form name="closeMe">
 		<div class="groupBtn">
-			<input type="button" value="{$labels.btn_close}" onclick="refreshAndClose();" />
+			<input type="button" value="{$labels.btn_close}" 
+        onclick="refreshAndClose({$gui->tcase_id},'{$gui->callback}');" />
 		</div>
 	</form>
 {/if}

@@ -6,7 +6,7 @@
  * @author Martin Havlat
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  *
 **/
 require_once("../../config.inc.php");
@@ -18,6 +18,7 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($args);
+
 
 $bulkCounter = 0;
 $bulkDone = false;
@@ -103,6 +104,7 @@ function init_args()
                    "unassign" => array(tlInputParameter::STRING_N,0,1),
                    "assign" => array(tlInputParameter::STRING_N,0,1),
                    "form_token" => array(tlInputParameter::INT_N),
+                   "callback" => array(tlInputParameter::STRING_N,0,1),
                    "idSRS" => array(tlInputParameter::INT_N));  
     
   $args = new stdClass();
@@ -344,6 +346,10 @@ function initializeGui($argsObj)
   $guiObj->showCloseButton = $argsObj->showCloseButton;
   $guiObj->selectedReqSpec = $argsObj->idReqSpec;
   $guiObj->form_token = $argsObj->form_token;
+
+  $guiObj->tcase_id = $argsObj->id;
+  $guiObj->callback = $argsObj->callback;
+
   return $guiObj;
 }
 

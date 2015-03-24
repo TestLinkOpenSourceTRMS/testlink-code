@@ -353,7 +353,8 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
   
 
   // $opx = array('addExecInfo' => true, 'specViewFields' => true) + (array)$options;
-  $opx = array_merge( array('addExecInfo' => true, 'specViewFields' => true),
+  $opx = array_merge( array('addExecInfo' => true, 'specViewFields' => true,
+                            'tlFeature' => 'none'),
                       (array)$options );
   
   switch($options['tlFeature'])
@@ -368,11 +369,12 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
     break;
   }
 
-  if(!is_null($argsObj->testcases_to_show))
+  if(isset($argsObj->testcases_to_show) && !is_null($argsObj->testcases_to_show))
   {
     $filters['tcase_id'] = $argsObj->testcases_to_show;
   }  
-  if($argsObj->platform_id > 0)
+
+  if(isset($argsObj->platform_id) && $argsObj->platform_id > 0)
   {
     $filters['platform_id'] = $argsObj->platform_id;
   }

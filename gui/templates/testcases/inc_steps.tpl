@@ -110,7 +110,7 @@ Author : eloff, 2010
     {/if}
    
   </tr>
-  {if $gui->allowStepAttachments}
+  {if $gui->allowStepAttachments && isset($add_exec_info) && $add_exec_info}
     <tr>
       <td colspan=6>
       {include file="attachments_simple.inc.tpl" attach_id=$step_info.id}

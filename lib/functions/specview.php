@@ -553,7 +553,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     $useFilter[$key] = (!is_null($filters[$key]) && ($filters[$key] > 0));
     $applyFilters = $applyFilters || $useFilter[$key];
   }
-  
 
   if( $useFilter['tcase_id'] )
   {
@@ -576,6 +575,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     }
     $tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
   }  
+
 
   if( $applyFilters )
   {
@@ -615,6 +615,14 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
       $options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
 
       $getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
+      $s2h = config_get('tplanDesign')->hideTestCaseWithStatusIn;
+      if( !is_null($s2h) )
+      {
+        $getFilters['status'] = array('not_in' => array_keys($s2h));   
+      }
+      
+
+
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
 
       switch($specViewType)
@@ -1063,6 +1071,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
   $my['opt'] = array('useOptionalArrayFields' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
 
+  $tcStatus2exclude = config_get('tplanDesign')->hideTestCaseWithStatusIn;
   $optionalIntegerFields = array('feature_id','linked_by');
   $optionalArrayFields = array('user_id');
 
@@ -1088,7 +1097,8 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
     // Is not clear (need explanation) why we process in this part ONLY ACTIVE
     // also we need to explain !is_null($out[$parent_idx])
     //
-    if($testCase['active'] == 1 && !is_null($out[$parent_idx]) )
+    if($testCase['active'] == 1 && !isset($tcStatus2exclude[$testCase['status']]) && 
+       !is_null($out[$parent_idx]) )
     {       
       if( !isset($outRef['execution_order']) )
       {
@@ -1477,7 +1487,7 @@ function buildSkeletonFlat($branchRootID,$name,$config,&$test_spec,&$platforms)
           $nameAtLevel[$level] = $current['name'];
         }
 
-        // new dBug($nameAtLevel);
+  
         $whoiam = '';
         for($ldx=$out[$rootIDX]['level']; $ldx <= $level; $ldx++)
         {

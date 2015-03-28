@@ -1792,6 +1792,9 @@ $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not availa
 $TLS_no_right_to_delete_executed_tc = "Your role has no right to delete executed test cases or test case versions";
 $TLS_system_blocks_delete_executed_tc = $TLS_no_right_to_delete_executed_tc;
 $TLS_system_blocks_delete_executed_tc_when = $TLS_no_right_to_delete_executed_tc;
+$TLS_btn_bulk = "Bulk action";
+$TLS_bulk_op = "Bulk actions";
+
 
 
 // ----- gui/templates/planRemoveTC_m1.tpl -----

@@ -14,7 +14,7 @@ viewer for test case in test specification
              btn_create_step,step_number,btn_reorder_steps,step_actions,hint_new_sibling,
              execution_type_short_descr,delete_step,show_hide_reorder,btn_new_sibling,
              test_plan,platform,insert_step,btn_print,btn_print_view,hint_new_version,
-             execution_type,test_importance,importance,none,preconditions,btn_compare_versions,
+             execution_type,test_importance,importance,none,preconditions,btn_compare_versions,btn_bulk,
              show_ghost_string,display_author_updater,onchange_save,
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
              requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
@@ -59,6 +59,8 @@ viewer for test case in test specification
 
 {$execFeatureAction="lib/general/frmWorkArea.php?feature=executeTest"}
 
+{$bulkOpAction="lib/testcases/tcBulkOp.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
+{$bulkOpAction="$basehref$bulkOpAction"}
 
 
 {$author_userinfo=$args_users[$args_testcase.author_id]}
@@ -129,7 +131,6 @@ viewer for test case in test specification
     <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
     <input type="hidden" name="doAction" value="" />
     <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
-
 
     {if $edit_enabled}
          <input type="submit" name="edit_tc" 
@@ -233,6 +234,16 @@ viewer for test case in test specification
   <span>
     <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
            value="{$tcView_viewer_labels.btn_show_exec_history}" />
+  
+
+    {if $edit_enabled}
+      <form style="display: inline;" id="tcbulkact" name="tcbulkact" 
+            method="post" action="{$bulkOpAction}" >
+        <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />
+        <input type="submit" name="bulk_op" value="{$tcView_viewer_labels.btn_bulk}" />
+      </form>
+    {/if}
+
   </span>
   <br/><br/>
 

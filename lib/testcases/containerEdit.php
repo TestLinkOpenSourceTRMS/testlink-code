@@ -206,9 +206,21 @@ switch($action)
   break;
 
   case 'move_testcases_viewer':
-  case 'testcases_table_view':
     moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args);
   break;
+
+  case 'testcases_table_view':
+    $cf = null;
+    $cf_map = $tcase_mgr->get_linked_cfields_at_design(0,null,null,null,$args->tprojectID);    
+    if(!is_null($cf_map))
+    {
+      $cfOpt = array('addCheck' => true, 'forceOptional' => true);
+      $cf = $tcase_mgr->cfield_mgr->html_table_inputs($cf_map,'',null,$cfOpt);
+    }
+
+    moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,null,$cf);
+  break;
+
 
   case 'reorder_testsuites':
     $ret = reorderTestSuiteViewer($smarty,$tree_mgr,$args);
@@ -324,8 +336,17 @@ switch($action)
 
   case 'doBulkSet':
     $args->refreshTree = true;
-    doBulkSet($db,$args,$args->tcaseSet,$tcase_mgr);        
-    moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args);
+    doBulkSet($db,$args,$args->tcaseSet,$tcase_mgr);    
+
+    $cf = null;
+    $cf_map = $tcase_mgr->get_linked_cfields_at_design(0,null,null,null,$args->tprojectID);    
+    if(!is_null($cf_map))
+    {
+      $cfOpt = array('addCheck' => true, 'forceOptional' => true);
+      $cf = $tcase_mgr->cfield_mgr->html_table_inputs($cf_map,'',null,$cfOpt);
+    }
+
+    moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,null,$cf);
   break;
 
 
@@ -856,7 +877,8 @@ args:
 returns: -
 
 */
-function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$argsObj,$feedback='')
+function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
+                             $argsObj,$feedback='',$cf=null)
 {
   $tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
   $testcase_cfg = config_get('testcase_cfg');
@@ -948,8 +970,8 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
   {
     $gui->testCasesTableView = 1;
   }  
-
-
+  $gui->cf = $cf;
+  
   $smartyObj->assign('gui', $gui);
   $smartyObj->assign('op_ok', $op_ok);
   $smartyObj->assign('user_feedback', $user_feedback);
@@ -1327,5 +1349,32 @@ function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
       }  
 
     }
+
+    // second round, on Custom Fields
+    $cf_map = $tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,ENABLED,
+                                                                  NO_FILTER_SHOW_ON_EXEC,'testcase');
+    if( !is_null($cf_map) )
+    {
+      // get checkboxes from $_REQUEST
+      $k2i = array_keys($_REQUEST);
+      $cfval = null;
+      foreach($k2i as $val)
+      { 
+        if(strpos($val,'check_custom_field_') !== FALSE)
+        {
+          $cfid = explode('_',$val);
+          $cfid = end($cfid);
+          $cfval[$cfid] = $cf_map[$cfid];
+        }  
+      } 
+      if(!is_null($cfval))
+      {
+        foreach($tcaseSet as $tcversion_id => $tcase_id)
+        {
+          $tcaseMgr->cfield_mgr->design_values_to_db($_REQUEST,$tcversion_id,$cfval);
+        }
+      }  
+    }  
+
   }
 }

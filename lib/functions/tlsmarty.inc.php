@@ -9,12 +9,12 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2014, TestLink community 
+ * @copyright 	2005-2015, TestLink community 
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  *
  */
 
@@ -328,12 +328,16 @@ class TLSmarty extends Smarty
     return $this->tlImages;
   }
 
+  /**
+   *
+   */
   static function getImageSet()
   {
     $dummy = array('active' => TL_THEME_IMG_DIR . 'flag_green.png',
                    'activity' => TL_THEME_IMG_DIR . 'information.png',
                    'account' => TL_THEME_IMG_DIR . 'user_edit.png',
                    'add' => TL_THEME_IMG_DIR . 'add.png',
+                   'add2set' => TL_THEME_IMG_DIR . 'basket_put.png',
                    'api_info' => TL_THEME_IMG_DIR . 'brick.png',
                    'bug' => TL_THEME_IMG_DIR . 'bug.png',
                    'bug_link_tl_to_bts' => TL_THEME_IMG_DIR . 'bug_link_famfamfam.png',

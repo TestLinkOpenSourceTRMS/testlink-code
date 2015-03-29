@@ -5,13 +5,13 @@
  *
  * @package 	  TestLink
  * @author 		  franciscom
- * @copyright 	2005-2014, TestLink community
+ * @copyright 	2005-2015, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reused from the Mantis project) 
  * @filesource  cfield_mgr.class.php
  * @link 		    http://testlink.sourceforge.net
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.15
  *
 **/
 
@@ -2671,16 +2671,26 @@ function buildHTMLInputName($cf,$name_suffix)
  * 
  *
  */
-function html_table_inputs($cfields_map,$name_suffix='',$input_values=null)
+function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=null)
 {
 	$cf_smarty = '';
   $getOpt = array('name_suffix' => $name_suffix);
 
+  $my['opt'] = array('addCheck' => false, 'addTable' => true, 'forceOptional' => false);
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+
   if(!is_null($cfields_map))
   {
+    $lbl_upd = lang_get('update_hint');
 		$cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
     $NO_WARNING_IF_MISSING=true;
-    $cf_smarty = "<table>";
+    $openTag = $my['opt']['addTable'] ? "<table>" : '';
+    $closeTag = $my['opt']['addTable'] ? "</table>" : '';
+
+    $add_img = "<image title=\"{$lbl_upd}\""  . 
+               'src="' . TL_THEME_IMG_DIR . 'basket_put.png">'; 
+
+    $cf_smarty = '';
     foreach($cf_map as $cf_id => $cf_info)
     {
       $label=str_replace(TL_LOCALIZE_TAG,'',
@@ -2693,15 +2703,30 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null)
 			// extract input html id
 			// Want to give an html id to <td> used as labelHolder, to use it in Javascript
 			// logic to validate CF content
+      if($my['opt']['forceOptional'])
+      {
+        $cf_info['required'] = 0; 
+      } 
+
 			$cf_html_string = $this->string_custom_field_input($cf_info,$getOpt);
-			
+
       $dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
 	    $td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
 
-    	$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
+    	$cf_smarty .= "<tr>";
+      if($my['opt']['addCheck'])
+      {
+        $check_id = str_replace('id="', 'id="check_', $dummy[0]);
+        $check_name = str_replace('id="', 'name="check_', $dummy[0]);
+        $cf_smarty .= "<td> {$add_img}" .         
+                      "<input type=\"checkbox\" {$check_name}> </td>";
+      }  
+
+      $cf_smarty .= "<td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
     			          $this->string_custom_field_input($cf_info,$getOpt) . "</td></tr>\n";
     }
-    $cf_smarty .= "</table>";
+    
+    $cf_smarty = $openTag . $cf_smarty . $closeTag;
   }
   return $cf_smarty;
 }

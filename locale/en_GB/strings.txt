@@ -260,6 +260,9 @@ $TLS_executed  = "executed";
 $TLS_move  = "Move";
 $TLS_remove = "remove";
 $TLS_unassigned = "unassigned";
+$TLS_update = "update";
+$TLS_update_hint = "check to update value when saving";
+
 
 // Buttons (used wide)
 $TLS_btn_apply   = "Apply";

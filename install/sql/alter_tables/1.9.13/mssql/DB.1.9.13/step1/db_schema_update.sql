@@ -28,7 +28,7 @@ CREATE TABLE /*prefix*/testcase_relations (
   relation_type INT NOT NULL DEFAULT '1',
   author_id int NOT NULL,
   creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_testcase_relations_creation_ts DEFAULT (getdate()),
-  CONSTRAINT /*prefix*/PK_req_relations PRIMARY KEY  CLUSTERED 
+  CONSTRAINT /*prefix*/PK_testcase_relations PRIMARY KEY  CLUSTERED 
   (
     id
   )  ON [PRIMARY]

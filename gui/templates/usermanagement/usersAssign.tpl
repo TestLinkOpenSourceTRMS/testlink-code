@@ -2,6 +2,8 @@
 Testlink: smarty template - 
 @filesource usersAssign.tpl
 
+@internal revisions
+@since 1.9.14
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
@@ -87,8 +89,8 @@ $(document).ready(function() {
 {$my_feature_name=''}
 
 {***** TABS *****}
-{assign var="highlight" value=$gui->highlight}
-{assign var="grants" value=$gui->grants}
+{$highlight=$gui->highlight}
+{$grants=$gui->grants}
 
 {include file="usermanagement/tabsmenu.tpl"}
 <div class="workBack">
@@ -118,7 +120,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 				<td class="labelHolder">{$labels.TestPlan}{$gui->accessTypeImg}</td>
     	{/if}
 		    	<td>
-		        <select id="featureSel" onchange="changeFeature('{$gui->featureType}')">
+            <select id="featureSel" onchange="changeFeature('{$gui->featureType}')">
 		    	   {foreach from=$gui->features item=f}
 		    	     <option value="{$f.id}" {if $gui->featureID == $f.id} selected="selected" {/if}>
 		    	     {$f.name|escape}</option>
@@ -183,14 +185,19 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
     		      style="background-color: {$gui->role_colour[$globalRoleName]};" {/if}>
     		    {$user->login|escape} ({$user->firstName|escape} {$user->lastName|escape}) </td>
     		<td>
-          <select name="userRole[{$uID}]" id="userRole_{$uID}">
+          <select name="userRole[{$uID}]" id="userRole_{$uID}"
+            {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}
+             disabled="disabled"
+            {/if}
+          >
 		      {foreach key=role_id item=role from=$gui->optRights}
-		        <option value="{$role_id}"
+            <option value="{$role_id}"
 		          {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
 		               $gui->userFeatureRoles[$uID].is_inherited==0) || 
 		               ($role_id == $smarty.const.TL_ROLES_INHERITED && 
 		                $gui->userFeatureRoles[$uID].is_inherited==1)}
-		            selected="selected" {/if} >
+		            selected="selected" 
+              {/if} >
                 {$role->getDisplayName()|escape}
                 {if $role_id == $smarty.const.TL_ROLES_INHERITED}
                   {$inherited_role_name|escape} 
@@ -198,6 +205,9 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 		        </option>
 		      {/foreach}
 			</select>
+          {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}
+            {$gui->hintImg} 
+          {/if}
 			</td>
     	</tr>
     	{/foreach}

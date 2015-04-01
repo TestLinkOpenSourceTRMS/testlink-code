@@ -382,6 +382,7 @@ class TLSmarty extends Smarty
                    'export_excel' => TL_THEME_IMG_DIR . 'page_excel.png',
                    'export_for_results_import' => TL_THEME_IMG_DIR . 'brick_go.png',
                    'ghost_item' => TL_THEME_IMG_DIR . 'ghost16x16.png',
+                   'heads_up' => TL_THEME_IMG_DIR . 'lightbulb.png',
                    'history' => TL_THEME_IMG_DIR . 'history.png',
                    'history_small' => TL_THEME_IMG_DIR . 'history_small.png',
                    'home' => TL_THEME_IMG_DIR . 'application_home.png',

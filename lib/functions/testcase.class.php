@@ -6363,9 +6363,9 @@ class testcase extends tlObjectWithAttachments
       // and logic used to refresh both frames when user call this
       // method to edit a test case while executing it.
       $goo->dialogName='tcview_dialog';
-      $goo->bodyOnLoad="dialog_onLoad($gui->dialogName)";
-      $goo->bodyOnUnload="dialog_onUnload($gui->dialogName)";
-      $goo->submitCode="return dialog_onSubmit($gui->dialogName)";
+      $goo->bodyOnLoad="dialog_onLoad($guiObj->dialogName)";
+      $goo->bodyOnUnload="dialog_onUnload($guiObj->dialogName)";
+      $goo->submitCode="return dialog_onSubmit($guiObj->dialogName)";
     }
 
     $dummy = getConfigAndLabels('testCaseStatus','code');

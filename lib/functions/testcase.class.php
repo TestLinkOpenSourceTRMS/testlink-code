@@ -411,14 +411,6 @@ class testcase extends tlObjectWithAttachments
               // if name provided on import file does not hit an existent one
               // then I'm going to use it, instead of generating a NEW NAME
               $forceGenerateExternalID = true; 
-              /*
-              $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions); 
-              if( is_null($itemSet) )
-              {
-                $ret['name'] = $name;
-                $ret['update_name'] = true;
-              } 
-              */ 
             break;
           }
         break;    
@@ -433,6 +425,7 @@ class testcase extends tlObjectWithAttachments
       if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
       {
         $ret['has_duplicate'] = true;
+        
         switch($my['options']['action_on_duplicate_name'])
         {
             case 'block':
@@ -452,18 +445,30 @@ class testcase extends tlObjectWithAttachments
               switch($algo_cfg->type)
               {
                 case 'stringPrefix':
-                  $name = $algo_cfg->text . " " . $name ;
-                  $final_len = strlen($name);
-                  if( $final_len > $name_max_len)
+                  $doIt = true;
+                  while($doIt)
                   {
-                    $name = substr($name,0,$name_max_len);
+                    if( $doIt = !is_null($itemSet) )
+                    {
+                      $prefix = strftime($algo_cfg->text,time());
+                      $target = $prefix . " " . $name ;
+                      $final_len = strlen($target);
+                      if( $final_len > $name_max_len)
+                      {
+                        $target = substr($target,0,$name_max_len);
+                      }
+                      
+                      // Check new generated name
+                      $itemSet = $this->getDuplicatesByName($target,$parent_id,$getDupOptions);  
+                    }
                   }
+                  $name = $target;
                 break;
                     
                 case 'counterSuffix':
                   $mask =  !is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
-                  $nameSet = array_flip(array_keys($itemSet));
-                            
+                  $nameSet = array_flip(array_keys($itemSet));          
+                  
                   // 20110109 - franciscom
                   // does not understand why I've choosen time ago
                   // to increment $siblingQty before using it

@@ -917,7 +917,8 @@ $tlCfg->testcase_cfg->duplicated_name_algorithm = new stdClass();
 //                    example: My Test Title 2
 //                    duplicated_name_algorithm->text is used as sprintf format mask
 $tlCfg->testcase_cfg->duplicated_name_algorithm->type = 'stringPrefix';
-$tlCfg->testcase_cfg->duplicated_name_algorithm->text = strftime("%Y%m%d-%H:%M:%S", time());
+$tlCfg->testcase_cfg->duplicated_name_algorithm->text = "%Y%m%d-%H:%M:%S";
+
 // $tlCfg->testcase_cfg->duplicated_name_algorithm->type = 'counterSuffix';
 // $tlCfg->testcase_cfg->duplicated_name_algorithm->text = " (%s)";
 

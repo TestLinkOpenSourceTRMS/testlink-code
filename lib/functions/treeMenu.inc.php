@@ -813,7 +813,8 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     $opt['nodeHelpText'] = isset($opt['nodeHelpText']) ? $opt['nodeHelpText'] : array();
   }
 
-  $name = $node['name'];
+  $name = htmlspecialchars($node['name'], ENT_QUOTES);
+
   
   // custom Property that will be accessed by EXT-JS using node.attributes
   $node['testlink_node_name'] = $name;

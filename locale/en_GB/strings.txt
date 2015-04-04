@@ -45,6 +45,7 @@ $TLS_bad_line_skipped = 'Line has been skipped (unable to import it)';
 $TLS_create_issue = 'Create issue';
 $TLS_add_issue_note = 'Add issue note';
 $TLS_bug_add_note = 'Add issue note';
+$TLS_block_ltcv_hasbeenexecuted = "Not updated - Reason: Latest Test Case version has been executed.";
 
 
 

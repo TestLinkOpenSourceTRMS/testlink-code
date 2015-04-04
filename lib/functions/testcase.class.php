@@ -976,11 +976,15 @@ class testcase extends tlObjectWithAttachments
   function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
                   $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
                   $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2,
-                  $attr=null)
+                  $attr=null,$opt=null)
   {
     $ret['status_ok'] = 1;
     $ret['msg'] = '';
     $ret['reason'] = '';
+
+    $my['opt'] = array('blockIfExecuted' => false);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
 
     $attrib = array('status' => null, 'estimatedExecDuration' => null);
     $attrib = array_merge($attrib,(array)$attr);
@@ -1013,6 +1017,21 @@ class testcase extends tlObjectWithAttachments
   
     if($ret['status_ok'])
     {    
+      if($my['opt']['blockIfExecuted'])
+      {
+        $sql = " SELECT id FROM {$this->tables['executions']} " .
+               " WHERE tcversion_id=" . $this->db->prepare_int($tcversion_id);
+      
+        $rs = $this->db->get_recordset($sql);
+        if(!is_null($rs))
+        {
+          $ret['status_ok'] = false;
+          $ret['msg'] = lang_get('block_ltcv_hasbeenexecuted');
+          $ret['reason'] = 'blockIfExecuted';
+          return $ret;
+        }  
+      }  
+
       $sql=array();
       $sql[] = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
                $this->db->prepare_string($name) . "' WHERE id= {$id}";

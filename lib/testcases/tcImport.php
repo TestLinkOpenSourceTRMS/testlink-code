@@ -343,6 +343,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $doCreate=true;
     if( $duplicatedLogic['actionOnHit'] == 'update_last_version' )
     {
+      $updOpt = array('blockIfExecuted' => true);
       switch($duplicatedLogic['hitCriteria'])
       {
         case 'name':
@@ -368,6 +369,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       if( !is_null($info) )
       {
         $tcase_qty = count($info);
+
         switch($tcase_qty)
         {
            case 1:
@@ -377,7 +379,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
              $tcversion_id = $last_version['id'];
              $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
                                        $preconditions,$steps,$personID,$kwIDs,
-                                       $node_order,$exec_type,$importance,$attr);
+                                       $node_order,$exec_type,$importance,$attr,$updOpt);
 
              $ret['id'] = $tcase_id;
              $ret['tcversion_id'] = $tcversion_id;
@@ -387,9 +389,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
              }
              else
              {
-               $resultMap[] = array($name, sprintf($messages['already_exists_not_updated'], 
-                                                   $tcasePrefix . $glueChar . $externalid,
-                                                   $tcasePrefix . $glueChar . $ret['hit_on']['tc_external_id']));
+               if($ret['reason'] == '')
+               {
+                 $resultMap[] = array($name, sprintf($messages['already_exists_not_updated'], 
+                                                     $tcasePrefix . $glueChar . $externalid,
+                                                     $tcasePrefix . $glueChar . $ret['hit_on']['tc_external_id']));
+               }
+               else
+               {
+                 $resultMap[] = array($name,$ret['msg']);
+               } 
             } 
            break;
            
@@ -401,7 +410,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                $doCreate=false; 
            break;
        }
-     }
+      }
     }
     
     if( $doCreate )

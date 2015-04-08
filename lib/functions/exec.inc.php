@@ -597,7 +597,8 @@ function addIssue($dbHandler,$argsObj,$itsObj)
 
   $opt = new stdClass();
   $opt->reporter = $argsObj->user->login;
-  $p2check = array('issueType','issuePriority','issuePriority','artifactComponent');
+  $p2check = array('issueType','issuePriority','issuePriority',
+                   'artifactComponent','artifactVersion');
   foreach($p2check as $prop)
   {
     if(property_exists($argsObj, $prop) && !is_null($argsObj->$prop))

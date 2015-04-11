@@ -85,7 +85,7 @@ class jirarestInterface extends issueTrackerInterface
     if( property_exists($this->cfg,'attributes') )
     {
       // echo __FUNCTION__ . "::Debug::Step#$step Going To Add attributes <br>";$step++;
-      // $this->processAttributes();
+      $this->processAttributes();
     }    
 	}
 
@@ -316,19 +316,31 @@ class jirarestInterface extends issueTrackerInterface
                            'issuetype' => array( 'id' => (int)$this->cfg->issuetype)
                            ));
 
+      $prio = null;
+      if(property_exists($this->cfg, 'issuepriority'))
+      {
+        $prio = $this->cfg->issuepriority;
+
+      }  
+      if( !is_null($opt) && property_exists($opt, 'issuePriority') )
+      {
+        $prio = $opt->issuePriority;
+      }
+      if( !is_null($prio) )
+      {
+        // CRITIC: if not casted to string, you will get following error from JIRA
+        // "Could not find valid 'id' or 'name' in priority object."
+        $issue['fields']['priority'] = array('id' => (string)$prio);
+      }    
+  
+
       if(!is_null($this->issueAttr))
       {
-        $issue = array_merge($issue,$this->issueAttr);
-      }  
+        $issue['fields'] = array_merge($issue['fields'],$this->issueAttr);
+      }
 
       if(!is_null($opt))
       {
-        if(property_exists($opt, 'issuePriority'))
-        {
-          // CRiTiC: if not casted to string, you will get following error from JIRA
-          // "Could not find valid 'id' or 'name' in priority object."
-          $issue['fields']['priority'] = array('id' => (string)$opt->issuePriority);
-        }
 
         // these can have multiple values
         if(property_exists($opt, 'artifactComponent'))
@@ -365,7 +377,6 @@ class jirarestInterface extends issueTrackerInterface
         
 
       }  
- 
 
       $op = $this->APIClient->createIssue($issue);
       $ret = array('status_ok' => false, 'id' => null, 'msg' => 'ko');
@@ -509,10 +520,34 @@ class jirarestInterface extends issueTrackerInterface
            "<!-- CRITIC - WITH HTTP getIssue() DOES NOT WORK -->\n" .
            "<uriapi>https://testlink.atlassian.net/rest/api/latest/</uriapi>\n" .
            "<uriview>https://testlink.atlassian.net/browse/</uriview>\n" .
+           "<userinteraction>1/0</userinteraction>\n" .
+           "<!-- 1: User will be able to manage following attributes from GUI -->\n" .
+           "<!-- Issue Type, Issue Priority, Affects Versions, Components -->\n" .    
+           "<!-- 0: values for attributes will be taken FROM this config XML from GUI -->\n" .
+           "\n" .       
            "<!-- Configure This if you want be able TO CREATE ISSUES -->\n" .
            "<projectkey>JIRA PROJECT KEY</projectkey>\n" .
-           "<userinteraction>1</userinteraction>\n" .
-           "<issuetype>JIRA ISSUE TYPE</issuetype>\n" .
+           "<issuetype>JIRA ISSUE TYPE ID</issuetype>\n" .
+           "<issuepriority>JIRA ISSUE PRIORITY ID</issuepriority>\n" .
+           "<!-- \n" . 
+           "  <attributes>\n" . 
+           "    <customFieldValues>\n" . 
+           "      <customField>\n" . 
+           "        <customfieldId>customfield_10800</customfieldId>\n" .
+           "        <type>NumberField</type>" .
+           "        <values><value>111</value></values>\n" .
+           "      </customField>\n" . 
+           "\n" .
+           "      <customField>\n" . 
+           "        <customfieldId>customfield_10900</customfieldId>\n" .
+           "        <type>MultiSelect</type>" .
+           "        <values><value>Yamaha Factory Racing</value>\n" .
+           "                <value>Ducati</value></values>\n" .
+           "      </customField>\n" . 
+           "\n" .
+           "    </customFieldValues>\n" .
+           "  </attributes>\n" .
+           "-->\n" .
            "</issuetracker>\n";
 	  return $tpl;
   }
@@ -526,6 +561,156 @@ class jirarestInterface extends issueTrackerInterface
   {
     return (property_exists($this->cfg, 'projectkey') && 
             property_exists($this->cfg, 'issuetype'));
+  }
+
+  /**
+   *
+   **/
+  function processAttributes()
+  {
+    $attr = get_object_vars($this->cfg->attributes);
+    foreach ($attr as $name => $elem) 
+    {
+      //var_dump($name);
+      //var_dump($elem);
+      $name = (string)$name;
+      switch($name)
+      {
+        case 'customFieldValues':
+          $this->getCustomFieldsAttribute($name,$elem);
+        break;
+
+        //case 'affectsVersions':
+        //  $this->getAffectsVersionsAttribute($name,$elem);
+        //break;
+
+        //default:
+        //  $this->getRelaxedAttribute($name,$elem);
+        //break;  
+      }
+    }
+  }
+
+ /**
+  * supported types:
+  * (see https://developer.atlassian.com/jiradev/api-reference/
+  *            jira-rest-apis/jira-rest-api-tutorials/
+  *            jira-rest-api-example-create-issue#
+  *            JIRARESTAPIExample-CreateIssue-Exampleofcreatinganissueusingcustomfields)
+  *
+  * ---------------------------------------------------------  
+  * Single Value (simple) Group:
+  * ---------------------------------------------------------
+  *
+  * DatePickerField
+  * "customfield_10002": "2011-10-03"
+  *
+  * DateTimeField
+  * "customfield_10003": "2011-10-19T10:29:29.908+1100"  *
+  *
+  * FreeTextField
+  * "customfield_10004": "Free text goes here.  Type away!"
+  *
+  * NumberField
+  * "customfield_10010": 42.07
+  *
+  * ---------------------------------------------------------  
+  * Pair Value (simple) Group:
+  * ---------------------------------------------------------
+  *
+  * RadioButtons
+  * "customfield_10012": { "value": "red" }
+  *  
+  * SelectList
+  * "customfield_10013": { "value": "red" }
+  *
+  * ---------------------------------------------------------
+  * Multiple Values (simple) Group:
+  * ---------------------------------------------------------
+  *
+  * Labels  (PHP Array of strings)
+  * "customfield_10006": ["examplelabelnumber1", "examplelabelnumber2"]
+  *
+  *
+  * ---------------------------------------------------------
+  * Multiple Values (COMPLEX) Group:
+  * ---------------------------------------------------------
+  *
+  * MultiGroupPicker (access key -> name)
+  * "customfield_10007": [{ "name": "admins" }, { "name": "jira-dev" }, 
+  *                       { "name": "jira-users" }]
+  *
+  * MultiUserPicker (access key -> name)
+  * "customfield_10009": [ {"name": "jsmith" }, {"name": "bjones" }, {"name": "tdurden" }]
+  * 
+  * MultiSelect (access key -> value)
+  * "customfield_10008": [ {"value": "red" }, {"value": "blue" }, {"value": "green" }]
+  *
+  *
+
+  *
+  * 
+  **/
+  function getCustomFieldsAttribute($name,$objCFSet)
+  {
+    $cfSet = get_object_vars($objCFSet);
+    $cfSet = $cfSet['customField'];    
+
+    foreach ($cfSet as $cf)
+    {
+      $cf = (array)$cf;    
+      $cfJIRAID = $cf['customfield']; 
+      $valueSet = (array)$cf['values'];        
+      $loop2do = count($valueSet);
+
+      $dummy = null;
+      $cfType = strtolower((string)$cf['type']);
+      switch($cfType)
+      {
+        case 'numberfield':
+          $dummy = (float)$valueSet['value'];
+        break;
+
+        case 'datepickerfield':
+        case 'datetimefield':
+        case 'freetextfield':
+          $dummy = (string)$valueSet['value'];
+        break;
+
+        case 'radiobutton':
+        case 'selectlist':
+          // "customfield_10012": { "value": "red" }
+          $dummy = array('value' => (string)$valueSet['value']);
+        break;
+
+        case 'labels':
+          for($vdx=0; $vdx <= $loop2do; $vdx++)
+          {
+            $dummy[] = (string)$valueSet['value'][$vdx];
+          }
+        break;
+      
+        case 'multigrouppicker':
+        case 'multiuserpicker':
+          // access key -> name
+          for($vdx=0; $vdx <= $loop2do; $vdx++)
+          {
+            $dummy[] = array('name' => (string)$valueSet['value'][$vdx]);
+          }
+        break;
+
+        case 'multiselect': 
+          // access key -> value)
+          for($vdx=0; $vdx <= $loop2do; $vdx++)
+          {
+            $dummy[] = array('value' => (string)$valueSet['value'][$vdx]);
+          }
+        break;
+      }      
+
+      $this->issueAttr[$cfJIRAID] = $dummy; 
+      $idx++;
+    } 
   }
 
 }

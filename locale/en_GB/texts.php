@@ -314,7 +314,7 @@ It includes Test cases together with test results.</p>
 The most 'current status' is determined by the most recent build test cases were executed on.  For
 instance, if a test case was executed over multiple builds, only the latest result is taken into account.</p>
 
-<p>'Last Test Result' is a concept used in many reports, and is determined as follows:</p>
+<p>'Latest Test Result' is a concept used in many reports, and is determined as follows:</p>
 <ul>
 <li>The order in which builds are added to a Test Plan determines which build is most recent. The results
 from the most recent build will take precendence over older builds. For example, if you mark a test as
@@ -323,7 +323,7 @@ from the most recent build will take precendence over older builds. For example,
 precedence.  For example, if build 3 is released to your team and tester 1 marks it as 'pass' at 2PM,
 and tester 2 marks it as 'fail' at 3PM - it will appear as 'fail'.</li>
 <li>Test cases listed as 'not run' against a build are not taken into account. For example, if you mark
-a case as 'pass' in build 1, and don't execute it in build 2, it's last result will be considered as
+a case as 'pass' in build 1, and don't execute it in build 2, it's latest result will be considered as
 'pass'.</li>
 </ul>
 <p>The following tables are displayed:</p>
@@ -347,7 +347,7 @@ twice on the same build, the most recent execution will be taken into account.</
 
 
 <h3>Blocked, Failed, and  Not Run Test Case Reports</h3>
-<p>These reports show all of the currently blocked, failing, or not run test cases.  'Last test Result'
+<p>These reports show all of the currently blocked, failing, or not run test cases.  'Latest test Result'
 logic (which is described above under General Test Plan Metrics) is again employed to determine if
 a test case should be considered blocked, failed, or not run.  Blocked and failed test case reports will
 display the associated bugs if the user is using an integrated bug tracking system.</p>
@@ -358,7 +358,7 @@ if a test case was executed multiple times on the same build. It is recommended 
 to Excel format for easier browsing if a large data set is being used.</p>
 
 <h3>Charts - General Test Plan Metrics</h3>
-<p>'Last test Result' logic is used for all four charts that you will see. The graphs are animated to help
+<p>'Latest test Result' logic is used for all four charts that you will see. The graphs are animated to help
 the user visualize the metrics from the current test plan. The four charts provide are :</p>
 <ul><li>Pie chart of overall pass / fail / blocked / and not run test cases</li>
 <li>Bar chart of Results by Keyword</li>

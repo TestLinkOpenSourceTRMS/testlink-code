@@ -1438,8 +1438,8 @@ $TLS_alt_attachment_mgmt = "attachments";
 $TLS_alt_notes = "Notes";
 $TLS_assigned_to = "Assigned to";
 $TLS_attachment_mgmt = "attachments";
-$TLS_btn_history_off = "Show lastest execution";
-$TLS_btn_history_off_any_build = "Show lastest execution (analize all Builds)";
+$TLS_btn_history_off = "Show latest execution";
+$TLS_btn_history_off_any_build = "Show latest execution (analize all Builds)";
 $TLS_btn_history_on = "Show complete execution history";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
@@ -1924,10 +1924,10 @@ $TLS_info_resultsTC_report = "This report shows the last test case execution res
                              "<br /><b>Example:</b><br />Test Case has been executed in this order: " .
                              "<br />Build 1.0 - Passed; Build 1.0 - Failed<br />-> Last Result  for Build 1.0 " .
                              "is Failed because second execution overrides older results.<br /><br />" .
-                             "\"[Lastest (created) Build]\" and \"Latest execution\" column show data according " .
+                             "\"[Latest (created) Build]\" and \"Latest execution\" column show data according " .
                              "to this <b>example:</b><br />Test Case has been executed in this order:<br />" .
                              "Build 1.0 - Passed; Build 1.0 - Failed; Build 2.0 - Blocked; " .
-                             "Build 1.0 - Passed<br>-> [Lastest (created) Build] : Blocked because Build 2.0 is " .
+                             "Build 1.0 - Passed<br>-> [Latest (created) Build] : Blocked because Build 2.0 is " .
                              "the last build created for which a result has been set.<br />-> \"Latest Execution\" : " .
                              "Passed because Build 1.0 has been executed at last.<br /><br />The shown ".
                              "priority is calculated based on the importance of the currently linked test case ".
@@ -3002,7 +3002,7 @@ $TLS_req_rel_is_related_to = "related to";
 
 
 // ----- lib/results/resultsTC.php -----
-$TLS_title_test_report_all_builds = "Test Report: Results of Test Cases for all Builds";
+$TLS_title_test_report_all_builds = "Test result matrix: Results of Test Cases for all Builds";
 $TLS_test_result_matrix_filters = "Test Results Matrix - Filters";
 
 
@@ -3036,7 +3036,7 @@ $TLS_info_testPlanWithCF = "This Report shows all test cases with any custom fie
 
 
 // ----- lib/results/resultsTC.php -----
-$TLS_result_on_last_build = '[Lastest (created) Build]';
+$TLS_result_on_last_build = '[Latest (created) Build]';
 $TLS_tcversion_indicator = ' [v%s]';
 
 

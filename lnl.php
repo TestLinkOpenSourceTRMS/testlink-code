@@ -10,9 +10,9 @@
  * 
  * @package   TestLink
  * @author    franciscom
- * @copyright 2012,2013 TestLink community
- * @link      http://www.teamst.org/index.php
- * @since     1.9.10
+ * @copyright 2012,2015 TestLink community
+ * @link      http://www.testlink.org/
+ * @since     1.9.14
  *
  * @internal revisions
  *
@@ -52,7 +52,7 @@ switch($args->light)
         $param = "&type={$args->type}&level=testproject" .
                  "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
                  "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
-                 "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=0";
+                 "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=" . FORMAT_HTML;
         $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
       break;
 
@@ -60,7 +60,7 @@ switch($args->light)
         $param = "&type={$args->type}&level=testproject" .
                  "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
                  "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
-                 "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=0";
+                 "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=" . FORMAT_HTML;
         $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
       break;
       
@@ -68,36 +68,39 @@ switch($args->light)
         $param = "&type={$args->type}&level=testproject&id={$args->tproject_id}" .
                  "&tproject_id={$args->tproject_id}" .
                  "&header=y&summary=y&toc=y&body=y&cfields=y&author=y".
-                 "&requirement=y&keyword=y&headerNumbering=y&format=0";    
+                 "&requirement=y&keyword=y&headerNumbering=y&format=" . FORMAT_HTML;    
         $what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
       break;
       
       
       case 'metrics_tp_general':
         $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
-                 "&format=0";
+                 "&format=" . FORMAT_HTML;
         $what2launch = $cfg['url'] . "?apikey=$args->apikey{$param}";
       break;
   
       case 'list_tc_failed':
       case 'list_tc_blocked':
       case 'list_tc_not_run':
-        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
+                 "&format={$args->format}";
         $what2launch = $cfg['url'] ."&apikey=$args->apikey{$param}";
       break;
       
       case 'results_matrix';
-        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}";
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
+                 "&format={$args->format}";
         $what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
 
+
       case 'results_by_tester_per_build';
-        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=" . FORMAT_HTML;
         $what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
       
       case 'charts_basic':
-        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+        $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=" . FORMAT_HTML;
         $what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
       
@@ -107,7 +110,8 @@ switch($args->light)
         $nl = strlen($needle);
         if(strpos($key,$needle) !== FALSE)
         {
-          $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&format=0";
+          $param = "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
+                   "&format={$args->format}";
           $what2launch = $cfg['url'] ."&apikey=$args->apikey{$param}";
         }  
         else
@@ -120,7 +124,9 @@ switch($args->light)
   
     if(!is_null($what2launch))
     {
-      redirect(TL_BASE_HREF . $what2launch);
+      // 20150312 - changed to be able to get XLS file using wget
+      // redirect(TL_BASE_HREF . $what2launch);
+      header('Location:' . TL_BASE_HREF . $what2launch);
       exit();
     }
   break;
@@ -144,13 +150,15 @@ function init_args()
   try
   {
     // ATTENTION - give a look to $tlCfg->reports_list
+    // format domain: see reports.cfg.php FORMAT_*
     $typeSize = 30;
     $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                      "tproject_id" => array(tlInputParameter::INT_N),
                      "tplan_id" => array(tlInputParameter::INT_N),
                      "level" => array(tlInputParameter::STRING_N,0,16),
                      "type" => array(tlInputParameter::STRING_N,0,$typeSize),
-                     'id' => array(tlInputParameter::INT_N));  
+                     'id' => array(tlInputParameter::INT_N),
+                     'format' => array(tlInputParameter::STRING_N,0,1));  
   }
   catch (Exception $e)  
   {  
@@ -159,6 +167,9 @@ function init_args()
   }
                   
   R_PARAMS($iParams,$args);
+
+  $args->format = intval($args->format);
+  $args->format = ($args->format <= 0) ? FORMAT_HTML : $args->format;
 
   $args->envCheckMode = $args->type == 'file' ? 'hippie' : 'paranoic';
   $args->light = 'red';
@@ -180,6 +191,6 @@ function init_args()
     {
       $args->light = 'green';
     }  
-  }  
+  }
   return $args;
 }

@@ -707,9 +707,7 @@ class jirarestInterface extends issueTrackerInterface
           }
         break;
       }      
-
       $this->issueAttr[$cfJIRAID] = $dummy; 
-      $idx++;
     } 
   }
 

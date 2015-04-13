@@ -112,19 +112,22 @@ Author : franciscom
         {/if}
   		</table>
 
-      <table style="display:none;" id="issue_summary">
-      {if $gui->addIssueOp != ''}   
+      {if $gui->addIssueOp != ''}  
+      <hr> 
+      <table id="addIssueFeedback">
+      <tr>
+        <td colspan="2" class="label">{$args_labels.create_issue_feedback}</td>
+      </tr>
       <tr>
         <td colspan="2">
           <div class="label">{$gui->addIssueOp.msg}</div>
         </td>
       </tr>
-      <tr>
-        <td colspan="2">&nbsp;</td>
-      </tr>
-
+      </table>
+      <hr>
       {/if}
 
+      <table style="display:none;" id="issue_summary">
       <tr>
         <td colspan="2">
           {* 
@@ -212,8 +215,8 @@ Author : franciscom
       </tr>
 
       </table>
-
-
+      
+      </br>
       <div class="messages" style="align:center;">
       {$args_labels.exec_not_run_result_note}
       </div>

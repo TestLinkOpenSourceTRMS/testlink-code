@@ -32,7 +32,9 @@ if( ($args->user_action == 'create' || $args->user_action == 'doCreate') &&
 
     case 'doCreate':
      $gui->bug_summary = $args->bug_summary;
-     list($gui->issueTrackerCfg->tlCanCreateIssue,$gui->msg) = addIssue($db,$args,$its);
+     $ret = addIssue($db,$args,$its);
+     $gui->issueTrackerCfg->tlCanCreateIssue = $ret['status_ok'];
+     $gui->msg = $ret['msg'];
     break;
 
   }

@@ -38,7 +38,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,bug_summary,bug_description,
   bug_link_tl_to_bts,bug_create_into_bts,execution_duration,execution_duration_short,
   issueType,issuePriority,artifactVersion,artifactComponent,
-  add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback'}
+  add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback,create_issue_feedback'}
 
 
 

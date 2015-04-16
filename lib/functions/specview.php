@@ -357,7 +357,7 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
                             'tlFeature' => 'none'),
                       (array)$options );
   
-  switch($options['tlFeature'])
+  switch($opx['tlFeature'])
   {
     case 'testCaseExecTaskAssignment':
       $method2call = 'getLinkedTCVXmen';
@@ -378,9 +378,7 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
   {
     $filters['platform_id'] = $argsObj->platform_id;
   }
-  //new dBug($argsObj->testcases_to_show);
-  //new dBug($filters);
-  //die();
+
   $tplan_tcases = $tplanMgr->$method2call($argsObj->tplan_id, $filters, $opx);  
   
   if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
@@ -1010,6 +1008,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
     else
     {
       // This node is a Test Suite
+      $the_level = 0;
       if($parent_idx >= 0)
       { 
         $xdx=$out[$parent_idx]['testsuite']['id'];

@@ -181,8 +181,8 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
     $pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
   }
   
-  
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
+
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);
   $idx = 0;
   $a_tcid = array();
@@ -545,6 +545,21 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     $useFilter[$key] = !is_null($filters[$key]);
     $applyFilters = $applyFilters || $useFilter[$key];
   }
+
+  // more specif analisys
+  if( ($useFilter['status']=($filters['status'][0] > 0)) )
+  {
+    $applyFilters = true;
+    $filtersByValue['status'] = array_flip((array)$filters['status']);
+  }
+  
+  if( ($useFilter['importance']=($filters['importance'][0] > 0)) )
+  {
+    $applyFilters = true;
+    $filtersByValue['importance'] = array_flip((array)$filters['importance']);
+  }  
+
+
   foreach($zeroNullCheckFilter as $key => $value)
   {
     // need to check for > 0, because for some items 0 has same meaning that null -> no filter
@@ -619,10 +634,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
         $getFilters['status'] = array('not_in' => array_keys($s2h));   
       }
       
-
-
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
-
+      
       switch($specViewType)
       {
         case 'testPlanLinking':
@@ -655,9 +668,13 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 
             if( !is_null($item) )
             {
-              if( $useFilter['execution_type'] && ($item['execution_type'] != $filters['execution_type']) || 
-                  $useFilter['importance'] && ($item['importance'] != $filters['importance']) || 
-                  $useFilter['status'] && ($item['status'] != $filters['status']))
+              if( $useFilter['execution_type'] && 
+                    ($item['execution_type'] != $filters['execution_type']) || 
+                  $useFilter['importance'] && 
+                    (!isset($filtersByValue['importance'][$item['importance']])) || 
+                  $useFilter['status'] && 
+                    (!isset($filtersByValue['status'][$item['status']])) 
+                )
               {
                 $tspecKey = $itemSet[$targetTestCase];  
                 $test_spec[$tspecKey]=null; 

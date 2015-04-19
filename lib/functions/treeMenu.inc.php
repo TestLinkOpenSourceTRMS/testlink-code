@@ -13,7 +13,7 @@
  * @uses        config.inc.php
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 require_once("execTreeMenu.inc.php");
@@ -27,7 +27,6 @@ require_once("execTreeMenu.inc.php");
  * 
  * @internal revisions
  * @since 1.9.9
- * 20131019 - franciscom - return type changed
  *
  */
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
@@ -2115,7 +2114,8 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
 /**
  * 
  * @internal revisions
- * 20121010 - asimon - TICKET 4217: added filter for importance
+ * @since 1.9.14
+ * importance & status (workflow status) can be array
  */
 function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 {
@@ -2148,14 +2148,18 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
     $flt['execution_type'] = intval($fObj['filter_execution_type']);
   }
 
-  if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) )
+  if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) && 
+      $fObj['filter_importance'][0]>0
+    )
   {
-    $flt['importance'] = intval($fObj['filter_importance']);
+    $flt['importance'] = (array)$fObj['filter_importance'];  
   }
 
-  if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) )
+  if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) && 
+      $fObj['filter_workflow_status'][0]>0
+    )
   {
-    $flt['status'] = intval($fObj['filter_workflow_status']);
+    $flt['status'] = (array)$fObj['filter_workflow_status'];
   }
 
     

@@ -220,6 +220,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
                                // result: no info here, divided into more parts
 
+
+
   /**
    * This array is used as an additional security measure. It maps all available
    * filters to the mode in which they can be used. If a user tries to
@@ -393,28 +395,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // some additional testcase configuration
     $this->configuration->tc_cfg = config_get('testcase_cfg');
     
-    // is choice of advanced filter mode enabled?
-      if (isset($this->configuration->advanced_filter_mode_choice) && 
+    // advanced filter mode enabled?
+    $this->filter_mode_choice_enabled = false;
+    if (isset($this->configuration->advanced_filter_mode_choice) && 
         $this->configuration->advanced_filter_mode_choice == ENABLED) 
-      {
-        $this->filter_mode_choice_enabled = true;
-      } 
-      else 
-      {
-        $this->filter_mode_choice_enabled = false;
-      }
+    {
+      $this->filter_mode_choice_enabled = true;
+    } 
     
     return tl::OK;
   } // end of method
 
   /**
    * Does what init_args() usually does in all scripts: Reads the user input
-   * from request ($_GET and $_POST). Later configuration,
-   * settings and filters get modified according to that user input.
+   * from request ($_GET and $_POST). 
+   * Later configuration, settings and filters get modified according to that user input.
    */
   protected function init_args() 
   {
-    
     // some common user input is already read in parent class
     parent::init_args();
 
@@ -427,6 +425,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
         $params[$name] = $info;
       }
     }
+     
+    // Do first get, to have info that can change config
+    I_PARAMS($params, $this->args);
+
+    if($this->args->advanced_filter_mode)
+    {
+      switch($this->mode)
+      {
+        case 'plan_add_mode':
+          $this->all_filters['filter_workflow_status'] = 
+            array("POST", tlInputParameter::ARRAY_INT);
+
+          $this->all_filters['filter_importance'] = 
+            array("POST", tlInputParameter::ARRAY_INT);
+        break;
+      }
+    }
+
     foreach ($this->all_filters as $name => $info) 
     {
       if (is_array($info)) 
@@ -505,6 +521,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       tLog( __CLASS__ . ' :: Mode:' . $this->mode . ' - Wrong or missing GET argument: feature', 'ERROR');
       exit();
     }
+
 
   } // end of method
 
@@ -1032,6 +1049,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
           $options['nodeHelpText']['testproject'] = lang_get('right_pane_test_plan_tree'); 
           $options['nodeHelpText']['testsuite'] = lang_get('display_tsuite_contents');
 
+          // belongs to treeMenu.inc.php
           $forrest = generateTestSpecTree($this->db,
                                           $this->args->testproject_id,
                                           $this->args->testproject_name,
@@ -1567,9 +1585,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
   /**
    *
-   * This is a special case of filter: the menu items don't get initialized here,
-   * they are available as a global smarty variable. So the only thing to be managed
-   * here is the selection by user.
    */
   private function init_filter_importance() 
   {
@@ -1597,7 +1612,17 @@ class tlTestCaseFilterControl extends tlFilterControl {
         $this->do_filtering = true;
       }
 
+
       $this->filters[$key] = array('selected' => $selection);
+  
+      // Only drawback: no new user defined importance can be managed
+      //                may be is a good design choice
+      $this->filters[$key]['items'] = array(0 => $this->option_strings['any'],
+                                            HIGH => lang_get('high_importance'), 
+                                            MEDIUM => lang_get('medium_importance'), 
+                                            LOW => lang_get('low_importance'));
+    
+      $this->filters[$key]['size'] = sizeof($this->filters[$key]['items']);
       $this->active_filters[$key] = $selection;
     }
   }
@@ -1893,6 +1918,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
   /**
    *
+   *
+   * @internal revisions
+   * @since 1.9.14
+   * allow multiple selection (if advanced mode)
    */
   private function init_filter_workflow_status() 
   {
@@ -1917,9 +1946,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     // load domain
     // add "any" string to these types at index 0 as default selection
-    $this->filters[$key]['items'] = $this->tc_mgr->getWorkFlowStatusDomain();
-    $this->filters[$key]['items'] = array(0 => $this->option_strings['any'])
-                                          + $this->filters[$key]['items'];
+    $this->filters[$key]['items'] = array(0 => $this->option_strings['any']) +
+                                          $this->tc_mgr->getWorkFlowStatusDomain();
+
+    $this->filters[$key]['size'] = min(count($this->filters[$key]['items']),
+                                       self::ADVANCED_FILTER_ITEM_QUANTITY);
     
     $this->active_filters[$key] = $selection;
   }

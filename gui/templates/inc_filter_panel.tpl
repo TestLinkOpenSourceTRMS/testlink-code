@@ -269,10 +269,16 @@
       <tr>
         <td>{$labels.status}</td>
         <td>
-            <select name="filter_workflow_status">
-              {html_options options=$control->filters.filter_workflow_status.items
-              selected=$control->filters.filter_workflow_status.selected}
-            </select>
+          <select id="filter_workflow_status" 
+          {if $control->advanced_filter_mode}
+             name="filter_workflow_status[]" multiple="multiple"
+             size="{$control->filter_item_quantity}">
+          {else}
+             name="filter_workflow_status">
+          {/if}
+            {html_options options=$control->filters.filter_workflow_status.items
+                          selected=$control->filters.filter_workflow_status.selected}
+          </select>
         </td>
       </tr>
     {/if}
@@ -281,10 +287,15 @@
       <tr>
         <td>{$labels.importance}</td>
         <td>
-          <select name="filter_importance">
-            <option value="">{$control->option_strings.any}</option>
-                    {html_options options=$gsmarty_option_importance
-                    selected=$control->filters.filter_importance.selected}
+          <select id="filter_importance"
+          {if $control->advanced_filter_mode}
+             name="filter_importance[]" multiple="multiple"
+             size="{$control->filters.filter_importance.size}">
+          {else}
+             name="filter_importance">
+          {/if}     
+             {html_options options=$control->filters.filter_importance.items
+              selected=$control->filters.filter_importance.selected}
           </select>
         </td>
       </tr>

@@ -645,8 +645,6 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   {
     case 'array_of_map':
       $items = $this->db->get_recordset($sql); //,null,3,1);
-      //$itemsX = $this->db->db->PageExecute($sql, 3, 28);
-      // new dBug($itemsX);
       $parseOpt = true;
     break;
 
@@ -2838,6 +2836,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
   static $tcversionFilter;
   static $childFilterOn;
   static $staticSql;
+  static $inClause;
 
   if (!$my)
   {
@@ -2893,6 +2892,21 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
     $staticSql = " SELECT DISTINCT {$tfields} " .
                  " FROM {$this->tables['nodes_hierarchy']} NH ";
     
+    // Generate IN Clauses
+    $inClause['status'] = $inClause['importance'] = ' ';
+    if( $tcversionFilter['status'] )
+    {
+      $inClause['status'] = 
+        " TCV.status IN (" . implode(',',$my['filters']['status']) . ')';
+    }
+
+    if( $tcversionFilter['importance'] )
+    {
+      $inClause['importance'] = 
+        " TCV.importance IN (" . implode(',',$my['filters']['importance']) . ')';
+    }
+
+
   }
   $sql =  $staticSql . " WHERE NH.parent_id = {$node_id} " .
           " AND (" .
@@ -2969,7 +2983,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
            
       if( $tcversionFilter['importance'] )
       {
-        $ssx .= " TCV.importance = " . $my['filters']['importance'];
+        $ssx .= $inClause['importance'];
         $filterOnTC = true;
         $addAnd = true;
       }
@@ -2993,7 +3007,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
             
       if( $tcversionFilter['status'] )
       {
-        $ssx .= " TCV.status = " . $my['filters']['status'];
+        $ssx .= $inClause['status'];
         $filterOnTC = true;
         $addAnd = true;
       }  

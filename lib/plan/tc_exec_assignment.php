@@ -5,12 +5,12 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -74,7 +74,7 @@ switch($args->doAction)
         }
 
       }
-      
+
       foreach($features2 as $key => $values)
       {
         if( count($features2[$key]) > 0 )
@@ -112,7 +112,6 @@ switch($args->doAction)
           $features2[$op][$feature_id]['type'] = $task_test_execution;
           $features2[$op][$feature_id]['build_id'] = $args->build_id; 
         }
-
       }
       
       foreach($features2 as $key => $values)
@@ -301,6 +300,7 @@ function init_args()
   {
     $args->doAction = 'doBulkRemove';
   }  
+
   return $args;
 }
 
@@ -395,7 +395,11 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
   {
     if($use_testers['new'])
     {
-      $testers['new'][$value['user_id']][$value['tcase_id']]=$value['tcase_id'];              
+      $ty = (array)$value['user_id'];
+      foreach($ty as $user_id)
+      {
+        $testers['new'][$user_id][$value['tcase_id']]=$value['tcase_id'];              
+      }  
     }
   
     if( $use_testers['old'] )
@@ -407,7 +411,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     $tcversionSet[$value['tcversion_id']]=$value['tcversion_id'];
   } 
 
-  $infoSet=$tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
+  $infoSet = $tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
   foreach($infoSet as $value)
   {
     $tcnames[$value['testcase_id']] = $guiObj->testCasePrefix . $value['tc_external_id'] . ' ' . $value['name'];    

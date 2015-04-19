@@ -162,54 +162,66 @@ class assignment_mgr extends tlObjectWithDB
     $ret = array();
     $types = $this->get_available_types();
     $safe = null;
+   
     foreach($feature_map as $feature_id => $elem)
     {
-      // Check if exists before adding
-      $safe['user_id'] = intval($elem['user_id']);
-      $check = "/* $debugMsg */ ";
-      $check .= " SELECT id FROM {$this->tables['user_assignments']} " .
-                " WHERE feature_id = " . intval($feature_id) .
-                " AND build_id = " . intval($elem['build_id']) .
-                " AND type = " . intval($elem['type']) .
-                " AND user_id = " . $safe['user_id'];
+      $safe['feature_id'] = intval($feature_id);
+      $safe['build_id'] = intval($elem['build_id']);
+      $safe['type'] = intval($elem['type']);
+      
+      $uSet = (array)$elem['user_id'];
 
-      $rs = $this->db->get_recordset($check);
-      if( is_null($rs) || count($rs) == 0 )
+      foreach($uSet as $user_id)
       {
-        if($safe['user_id'] > 0)
+        $safe['user_id'] = intval($user_id);
+
+        // Check if exists before adding
+        $check = "/* $debugMsg */ ";
+        $check .= " SELECT id FROM {$this->tables['user_assignments']} " .
+                  " WHERE feature_id = " . $safe['feature_id'] .
+                  " AND build_id = " . $safe['build_id'] .
+                  " AND type = " . $safe['type'] .
+                  " AND user_id = " . $safe['user_id'];
+
+        $rs = $this->db->get_recordset($check);
+        if( is_null($rs) || count($rs) == 0 )
         {
-          $sql = "INSERT INTO {$this->tables['user_assignments']} " .
-                 "(feature_id,user_id,assigner_id,type,status,creation_ts";
+          if($safe['user_id'] > 0)
+          {
+            $sql = "INSERT INTO {$this->tables['user_assignments']} " .
+                   "(feature_id,user_id,assigner_id,type,status,creation_ts";
                       
-          $values = "VALUES({$feature_id},{$elem['user_id']},{$elem['assigner_id']}," .
-                    "{$elem['type']},{$elem['status']},";
-          $values .= (isset($elem['creation_ts']) ? $elem['creation_ts'] : $this->db->db_now());                   
+            $values = "VALUES({$safe['feature_id']},{$safe['user_id']}," .
+                      "{$elem['assigner_id']}," .
+                      "{$safe['type']},{$elem['status']},";
+            $values .= (isset($elem['creation_ts']) ? $elem['creation_ts'] : $this->db->db_now());                   
           
-          if(isset($elem['deadline_ts']) )
-          {
-            $sql .=",deadline_ts";
-            $values .="," . $elem['deadline_ts']; 
-          }     
-          
-          if (isset($elem['build_id'])) 
-          {
-            $sql .= ",build_id";
-            $values .= "," . intval($elem['build_id']);
-          }
-          else
-          {
-            if($elem['type'] == $types['testcase_execution']['id'])
+            if(isset($elem['deadline_ts']) )
             {
-              throw new Exception("Error Processing Request - BUILD ID is Mandatory");
-            }  
-          }  
+              $sql .=",deadline_ts";
+              $values .="," . $elem['deadline_ts']; 
+            }     
           
-          $sql .= ") " . $values . ")";
-          tLog(__METHOD__ . '::' . $sql,"DEBUG");
-          $this->db->exec_query($sql);
-          $ret[] = $sql;
+            if(isset($elem['build_id'])) 
+            {
+              $sql .= ",build_id";
+              $values .= "," . $safe['build_id'];
+            }
+            else
+            {
+              if($safe['type'] == $types['testcase_execution']['id'])
+              {
+                throw new Exception("Error Processing Request - BUILD ID is Mandatory");
+              }  
+            }  
+          
+            $sql .= ") " . $values . ")";
+            tLog(__METHOD__ . '::' . $sql,"DEBUG");
+            $this->db->exec_query($sql);
+            $ret[] = $sql;
+          }   
         }  
-      }  
+      } // loop over users
     }
     return $ret;
   }

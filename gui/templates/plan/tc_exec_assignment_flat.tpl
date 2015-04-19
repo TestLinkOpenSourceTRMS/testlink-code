@@ -5,7 +5,7 @@ generate the list of TC that can be removed from a Test Plan
 
 @filesource tc_exec_assignment.tpl
 @internal revisions
-@since 1.9.12
+@since 1.9.14
 *}
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
@@ -250,9 +250,9 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
                       
                       {if $smarty.foreach.testerSet.iteration == 1}
                         <td align="center">
-                      		  		<select class="chosen-select"
+                      		  		<select class="chosen-select" multiple="multiple" 
                                         data-placeholder="{$labels.chosen_blank_option}"
-                                        name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
+                                        name="tester_for_tcid[{$tcase.id}][{$platform_id}][]" 
                       		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"
                       		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}",1)' >
                                  {html_options options=$gui->testers}

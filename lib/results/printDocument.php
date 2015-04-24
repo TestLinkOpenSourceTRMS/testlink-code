@@ -199,16 +199,15 @@ if ($treeForPlatform)
           $env->user_id = $args->user_id;
           $env->reportType = $doc_info->type;
           
+          // force hidding of execution related info
+          $printingOptions['passfail'] = false;
+          $printingOptions['step_exec_notes'] = false;
+          $printingOptions['step_exec_status'] = false;
+
           $actionContext['level'] = 0;
           $indentLevelStart = 1;
           $docText .= renderTestSpecTreeForPrinting($db,$tree2work,$printingOptions,$env,$actionContext,
                                                     $env->tocPrefix,$indentLevelStart);
-
-          /*
-          $docText .= renderTestSpecTreeForPrinting($db, $_SESSION['basehref'], $tree2work, $doc_info->content_range,
-                                                    $printingOptions, null, 0, 1, $args->user_id,0,null,
-                                                    $args->tproject_id,$platform_id);
-          */
         break;
       
         case DOC_TEST_PLAN_DESIGN:

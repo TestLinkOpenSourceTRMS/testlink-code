@@ -4,6 +4,8 @@
  *
  * @author     Original Author https://github.com/FayP / http://faypickering.com
  * @author     Francisco Mancardi <francisco.mancardi@gmail.com>
+ *
+ * @since TestLink 1.9.4
  */
 
 namespace JiraApi;
@@ -323,7 +325,6 @@ class Jira
         $this->request->openConnect($uri, 'GET');
         $this->request->execute();
         $items = json_decode($this->request->getResponseBody()); 
-
         if(is_array($items))
         {
             return $items;
@@ -331,7 +332,7 @@ class Jira
         else
         {   
             // ATTENTION \Exception in order to use PHP object.
-            $msg = "Error Processing Request - " . __METHOD__;
+            $msg = "Error Processing Request - " . __METHOD__ . ' ' .
                    implode('/', $items->errorMessages);
             throw new \Exception($msg, 999);
         }    
@@ -357,10 +358,36 @@ class Jira
         else
         {   
             // ATTENTION \Exception in order to use PHP object.
-            $msg = "Error Processing Request - " . __METHOD__;
+            $msg = "Error Processing Request - " . __METHOD__ . ' ' .
                    implode('/', $items->errorMessages);
             throw new \Exception($msg, 999);
         }    
     }
+
+    /**
+     * get available versions
+     *
+     * @return mixed
+     */
+    public function getProject($projectKey)
+    {
+        $uri = $this->host . "project/{$projectKey}";
+        $this->request->openConnect($uri, 'GET');
+        $this->request->execute();
+
+        $obj = json_decode($this->request->getResponseBody()); 
+        if(!is_null($obj))
+        {
+            if(property_exists($obj, 'errorMessages'))
+            {
+                // ATTENTION \Exception in order to use PHP object.
+                $msg = "Error Processing Request - " . __METHOD__ . ' ' .
+                       implode('/', $obj->errorMessages);
+                throw new \Exception($msg, 999);
+            }    
+        }
+        return $obj;    
+    }
+
 
 }

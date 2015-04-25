@@ -17,6 +17,7 @@ require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/Jira.php");
 class jirarestInterface extends issueTrackerInterface
 {
+  const NOPROJECTKEY = 'e18b741e13b2b1b09f2ac85615e37bae';
   private $APIClient;
   private $issueDefaults;
   private $issueAttr = null;
@@ -130,6 +131,14 @@ class jirarestInterface extends issueTrackerInterface
   	  $this->APIClient = new JiraApi\Jira($par);
 
       $this->connected = $this->APIClient->testLogin();
+
+      if($this->APIClient->testLogin() && ($this->cfg->projectkey != self::NOPROJECTKEY))
+      {
+        // Now check if can get info about the project, to understand
+        // if at least it exists.
+        $pk = trim((string)$this->cfg->projectkey);
+        $this->APIClient->getProject($pk);
+      }  
     }
   	catch(Exception $e)
   	{
@@ -505,7 +514,6 @@ class jirarestInterface extends issueTrackerInterface
    */
   public function getIssueTypesForHTMLSelect()
   {
-    echo __FUNCTION__ . '<br>';
     return array('items' => $this->objectAttrToIDName($this->getIssueTypes()),
                  'isMultiSelect' => false);
   }
@@ -515,7 +523,6 @@ class jirarestInterface extends issueTrackerInterface
    */
   public function getPrioritiesForHTMLSelect()
   {
-    echo __FUNCTION__ . '<br>';
     return array('items' => $this->objectAttrToIDName($this->getPriorities()),
                  'isMultiSelect' => false); 
   }
@@ -527,9 +534,13 @@ class jirarestInterface extends issueTrackerInterface
   {
     $input = array('items' => null,'isMultiSelect' => true);
     $items = $this->getVersions();
-    if(is_null($items))
+    if(!is_null($items))
     {
       $input['items'] = $this->objectAttrToIDName($items);
+    }
+    else
+    {
+      $input = null; 
     }  
     return $input;
   }
@@ -541,9 +552,13 @@ class jirarestInterface extends issueTrackerInterface
   {
     $items = $this->getComponents();
     $input = array('items' => null,'isMultiSelect' => true);
-    if(is_null($items))
+    if(!is_null($items))
     {
       $input['items'] = $this->objectAttrToIDName($items);
+    }  
+    else
+    {
+      $input = null; 
     }  
     return $input;
   }
@@ -789,13 +804,20 @@ class jirarestInterface extends issueTrackerInterface
    **/
   function checkCfg()
   {
-    $status_ok = false;
-
-    $msg = __CLASS__ . ' - Missing mandatory configuration: <projectKey>';
+    $status_ok = true;
     if( property_exists($this->cfg, 'projectkey') )
     {
       $pk = trim((string)($this->cfg->projectkey));
-      $status_ok = ($pk !== '');
+      if($pk == '')
+      {
+        $status_ok = false;
+        $msg = __CLASS__ . ' - Empty configuration: <projectKey>';
+      }  
+    }  
+    else
+    {
+      // this is oK if user only wants to LINK issues
+      $this->cfg->projectkey = self::NOPROJECTKEY;
     }  
 
     if(!$status_ok)

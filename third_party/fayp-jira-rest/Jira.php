@@ -308,7 +308,7 @@ class Jira
     {
         $this->request->openConnect($this->host . 'priority', 'GET');
         $this->request->execute();
-        $items = json_decode($this->request->getResponseBody());
+        $items = json_decode($this->request->getResponseBody()); 
         return $items;
     }
 
@@ -322,8 +322,19 @@ class Jira
         $uri = $this->host . "project/{$projectKey}/versions";
         $this->request->openConnect($uri, 'GET');
         $this->request->execute();
-        $items = json_decode($this->request->getResponseBody());        
-        return $items;
+        $items = json_decode($this->request->getResponseBody()); 
+
+        if(is_array($items))
+        {
+            return $items;
+        }    
+        else
+        {   
+            // ATTENTION \Exception in order to use PHP object.
+            $msg = "Error Processing Request - " . __METHOD__;
+                   implode('/', $items->errorMessages);
+            throw new \Exception($msg, 999);
+        }    
     }
 
 
@@ -338,7 +349,18 @@ class Jira
         $this->request->openConnect($uri, 'GET');
         $this->request->execute();
         $items = json_decode($this->request->getResponseBody());        
-        return $items;
+
+        if(is_array($items))
+        {
+            return $items;
+        }    
+        else
+        {   
+            // ATTENTION \Exception in order to use PHP object.
+            $msg = "Error Processing Request - " . __METHOD__;
+                   implode('/', $items->errorMessages);
+            throw new \Exception($msg, 999);
+        }    
     }
 
 }

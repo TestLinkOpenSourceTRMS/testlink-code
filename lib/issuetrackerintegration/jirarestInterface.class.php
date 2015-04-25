@@ -37,7 +37,7 @@ class jirarestInterface extends issueTrackerInterface
 
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
-	  if( $this->setCfg($config) )
+	  if($this->setCfg($config) && $this->checkCfg())
     {
       $this->completeCfg();
       $this->connect();
@@ -438,65 +438,130 @@ class jirarestInterface extends issueTrackerInterface
     return $ret;
   }
   
-
+  /**
+   *
+   */
   public function getIssueTypes()
   {
-    return $this->APIClient->getIssueTypes();
+    try
+    {
+      return $this->APIClient->getIssueTypes();
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }
   }
 
+  /**
+   *
+   */
   public function getPriorities()
   {
-    return $this->APIClient->getPriorities();
+    try
+    {
+      return $this->APIClient->getPriorities();
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }
   }
 
+  /**
+   *
+   */
   public function getVersions()
   {
-    return $this->APIClient->getVersions((string)$this->cfg->projectkey);
+    $items = null;
+    try
+    {
+      $items = $this->APIClient->getVersions((string)$this->cfg->projectkey);
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }    
+    return $items;
   }
 
+  /**
+   *
+   */
   public function getComponents()
   {
-    return $this->APIClient->getComponents((string)$this->cfg->projectkey);
+    try
+    {
+      return $this->APIClient->getComponents((string)$this->cfg->projectkey);
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }         
   }
 
+  /**
+   *
+   */
   public function getIssueTypesForHTMLSelect()
   {
+    echo __FUNCTION__ . '<br>';
     return array('items' => $this->objectAttrToIDName($this->getIssueTypes()),
                  'isMultiSelect' => false);
   }
 
+  /**
+   *
+   */
   public function getPrioritiesForHTMLSelect()
   {
+    echo __FUNCTION__ . '<br>';
     return array('items' => $this->objectAttrToIDName($this->getPriorities()),
                  'isMultiSelect' => false); 
   }
 
-
+  /**
+   *
+   */
   public function getVersionsForHTMLSelect()
   {
-    return array('items' => $this->objectAttrToIDName($this->getVersions()),
-                 'isMultiSelect' => true); 
-   }
+    $input = array('items' => null,'isMultiSelect' => true);
+    $items = $this->getVersions();
+    if(is_null($items))
+    {
+      $input['items'] = $this->objectAttrToIDName($items);
+    }  
+    return $input;
+  }
 
+  /**
+   *
+   */
   public function getComponentsForHTMLSelect()
   {
-    return array('items' => $this->objectAttrToIDName($this->getComponents()),
-                 'isMultiSelect' => true); 
+    $items = $this->getComponents();
+    $input = array('items' => null,'isMultiSelect' => true);
+    if(is_null($items))
+    {
+      $input['items'] = $this->objectAttrToIDName($items);
+    }  
+    return $input;
   }
 
  
   /**
    *
+   * 
    */
-  private function objectAttrToIDName($obj)
+  private function objectAttrToIDName($attrSet)
   {
     $ret = null;
-    if(!is_null($obj))
+    if(!is_null($attrSet))
     {
-      $ic = count($obj);
+      $ic = count($attrSet);
       for($idx=0; $idx < $ic; $idx++)
       {
-        $ret[$obj[$idx]->id] = $obj[$idx]->name; 
+        $ret[$attrSet[$idx]->id] = $attrSet[$idx]->name; 
       }  
     }  
     return $ret;    
@@ -559,8 +624,15 @@ class jirarestInterface extends issueTrackerInterface
    **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'projectkey') && 
-            property_exists($this->cfg, 'issuetype'));
+    $status_ok = false;
+    if(property_exists($this->cfg, 'projectkey') && 
+       property_exists($this->cfg, 'issuetype') )
+    {
+      // now check mandatory value
+      $pk = trim((string)($this->cfg->projectkey));
+      $status_ok = ($pk !== '');
+    } 
+    return $status_ok;
   }
 
   /**
@@ -710,5 +782,28 @@ class jirarestInterface extends issueTrackerInterface
       $this->issueAttr[$cfJIRAID] = $dummy; 
     } 
   }
+
+  /**
+   *
+   *
+   **/
+  function checkCfg()
+  {
+    $status_ok = false;
+
+    $msg = __CLASS__ . ' - Missing mandatory configuration: <projectKey>';
+    if( property_exists($this->cfg, 'projectkey') )
+    {
+      $pk = trim((string)($this->cfg->projectkey));
+      $status_ok = ($pk !== '');
+    }  
+
+    if(!$status_ok)
+    {
+      tLog(__METHOD__ . ' / ' . $msg , 'ERROR');
+    }  
+    return $status_ok;
+  }
+
 
 }

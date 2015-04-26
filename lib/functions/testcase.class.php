@@ -207,11 +207,27 @@ class testcase extends tlObjectWithAttachments
    */ 
   function createFromObject($item)
   {
+    static $wkfstatus;
 
+    if(is_null($wkfstatus))
+    {
+      $wkfstatus = config_get('testCaseStatus');
+    }  
     $options = array('check_duplicate_name' => self::CHECK_DUPLICATE_NAME, 
                      'action_on_duplicate_name' => 'block',
-                     'estimatedExecDuration' => $item->estimatedExecDuration,
-                     'status' => $item->status, 'importLogic' => null);
+                     'estimatedExecDuration' => 0,
+                     'status' => $wkfstatus['draft'], 'importLogic' => null);
+
+    if(property_exists($item, 'estimatedExecDuration'))
+    {
+      $options['estimatedExecDuration'] = floatval($item->estimatedExecDuration);
+    }  
+    
+    if(property_exists($item, 'status'))
+    {
+      $options['status'] = intval($item->status);
+    }  
+
 
     if(property_exists($item, 'importLogic'))
     {

@@ -534,8 +534,9 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
                      'format' => 'std', 'add_issuetracker' => false, 'add_reqmgrsystem' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
   
-
-  $my['filters'] = array('name' => null);
+  // key = field name
+  // value = array('op' => Domain ('=','like'), 'value' => the value)
+  $my['filters'] = array('name' => null, 'id' => null, 'prefix' => null);
   $my['filters'] = array_merge($my['filters'],(array)$filters);
 
                      
@@ -573,10 +574,12 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   {
     case 'id':
       $cols = ' TPROJ.id,NHTPROJ.name ';
+      $my['opt']['format'] = 'do not parse';
     break;
 
     case 'prefix':
       $cols = ' TPROJ.id,TPROJ.prefix,TPROJ.active,NHTPROJ.name ';
+      $my['opt']['format'] = 'do not parse';
     break;
 
     case 'full':
@@ -622,13 +625,36 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   {
     if(!is_null($fspec))
     {
-      $sql .= " AND NHTPROJ.$fname";
+      switch($fname)
+      {
+        case 'prefix':
+          $sql .= " AND TPROJ.$fname";
+          $sm = 'prepare_string';
+        break;
 
-      $safe = $this->db->prepare_string($fspec['value']);
+        case 'name':
+          $sql .= " AND NHTPROJ.$fname";
+          $sm = 'prepare_string';
+        break;
+
+        case 'id':
+          $sql .= " AND NHTPROJ.$fname";
+          $sm = 'prepare_int';
+        break;
+      }
+
+      $safe = $this->db->$sm($fspec['value']);
       switch($fspec['op'])
       {
         case '=':
-          $sql .= "='" . $safe ."'";
+          if($sm == 'prepare_string')
+          {
+            $sql .= "='" . $safe . "'";
+          }  
+          else
+          {
+            $sql .= "=" . $safe;
+          }  
         break;
 
         case 'like':
@@ -637,7 +663,8 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
       }
     }  
   }  
-
+  
+ 
   $sql .= str_replace('nodes_hierarchy','NHTPROJ',$my['opt']['order_by']);
   $parseOpt = false;
   $do_post_process = 0;

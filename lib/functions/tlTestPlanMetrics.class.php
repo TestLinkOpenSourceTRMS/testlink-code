@@ -1102,7 +1102,7 @@ class tlTestPlanMetrics extends testplan
           $progress = ($progress / $out[$topItemID][$itemID]['total']) * 100;
           $out[$topItemID][$itemID]['progress'] = number_format($progress,1); 
           $out[$topItemID][$itemID]['total_time'] = 
-              number_format($metrics['total'][$topItemID][$itemID]['total_time'],2); 
+              number_format($metrics['total'][$topItemID][$itemID]['total_time'],2,'.',''); 
         }
       }
     }

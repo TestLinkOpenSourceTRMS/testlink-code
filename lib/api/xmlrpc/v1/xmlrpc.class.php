@@ -1380,7 +1380,70 @@ class TestlinkXMLRPCServer extends IXR_Server
       return $status_ok ? $resultInfo : $this->errors;
     }
 
-
+  /**
+   * Gets the result of LAST EXECUTION for a build or all active builds on a test plan.
+   * If there are no filter criteria regarding build,
+   * result will be get for all active builds.
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["tplanid"]
+   * @param int $args["buildid"]: optional
+   *                              ONLY if not present, then $args["buildname"] will be analized (if exists)
+   * 
+   * @param int $args["buildname"] - optional (see $args["buildid"])
+   * 
+   * @return mixed $resultInfo
+   *                   an array of latest execution results for all platforms.
+   *               embedded with an array of atest execution result for each test case.
+   *               the last inner array contains a map with these keys:
+   *               id (execution id),build_id,status.
+   *               example:
+   *               {'5': {'230534': {'build_id': '52', 'id': '8889', 'status': 'p'},
+   *                                      '230537': {'build_id': '52', 'id': '9244', 'status': 'p'}}}
+   *               
+   *               if test case has not been execute,
+   *               array('id' => 0)
+   *
+   * */
+  public function getLastExecutionResultForTestPlan($args)
+  { 
+ 	 	      $operation=__FUNCTION__;
+ 	 	      $msg_prefix="({$operation}) - ";
+ 	 	        
+ 	 	      $this->_setArgs($args);
+ 	 	      $resultInfo = array();
+ 	 	      $status_ok = true;
+ 	 	 
+ 	 	      // Checks are done in order
+ 	 	      $checkFunctions = array('authenticate','checkTestPlanID');
+ 	 	 
+ 	 	      $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) &&                  
+ 	 	                 $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);       
+ 	 	       
+ 	 	      // Now we can check for Optional parameters
+ 	 	      $build_id = null;
+ 	 	      if ($status_ok)
+ 	 	      {      
+ 	 	          $tplan_id =  $this->args[self::$testPlanIDParamName]; 
+ 	 	              if($this->_isBuildIDPresent() || $this->_isBuildNamePresent())
+ 	 	              {
+ 	 	                if( ($status_ok =  $this->checkBuildID($msg_prefix)) )
+ 	 	                {
+ 	 	                  $build_id = $this->args[self::$buildIDParamName];  
+ 	 	                } 
+ 	 	              }                     
+ 	 	      }
+ 	 	      
+ 	 	      if ($status_ok)
+ 	 	      {
+ 	 	                  $execStatus = $this->tplanMetricsMgr->getExecStatusMatrix($tplan_id, array('buildSet' => $build_id));
+ 	 	                  $resultInfo = $execStatus['latestExec']; //displayMemUsage('Before UNSET');  
+ 	 	                  unset($execStatus);   
+ 	 	      } 
+ 	 	      
+ 	 	          return $status_ok ? $resultInfo : $this->errors;
+ 	 	  }
 
 
    /**
@@ -7025,6 +7088,7 @@ protected function createAttachmentTempFile()
                             'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
                             'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',  
                             'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
+                            'tl.getLastExecutionResultForTestPlan' => 'this:getLastExecutionResultForTestPlan',
                             'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
                             'tl.getTestSuitesForTestSuite' => 'this:getTestSuitesForTestSuite',
                             'tl.getTestCasesForTestSuite'  => 'this:getTestCasesForTestSuite',

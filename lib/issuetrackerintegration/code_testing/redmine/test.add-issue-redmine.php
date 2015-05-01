@@ -18,25 +18,13 @@ $site = array(array('url' => 'http://192.168.1.174',
 			  	    'apiKey' => '058157d55d62b632a665491abcc003aa4554673d')
 			  );
 
-
-// $siteID = 2;
 $siteID = 4;
-$issueID = 4;
 $red = new redmine($site[$siteID]['url'],$site[$siteID]['apiKey']);
-$issueObj = $red->getIssue($issueID);
-// echo '<pre>';
-// var_dump($issueObj);
-// echo '</pre>';
-// die();
 
-echo '<br>';
-echo 'Summary(SUBJECT):' .(string)$issueObj->subject . '<br>';
-echo 'Status: Name/ID' . (string)$issueObj->status['name'] . '/' . (int)$issueObj->status['id'] . '<br>';
-echo '<br><hr><pre>';
-echo '</pre>';
+$xml = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');  
+$xml->addChild('subject', htmlentities('TEST SUBJECT - MAY 1'));
 
-echo '<br>';
-echo 'Trying to add a NOTE';
-$issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
-$issueXmlObj->addChild('notes', htmlspecialchars('ciao Bello!!!'));
-$red->addIssueNoteFromSimpleXML($issueID,$issueXmlObj);
+// As you see we can use the project identifier (string) as project_id!!! Great
+$xml->addChild('project_id', 'quantum-priv');
+$xml->addChild('tracker_id', 1);
+$red->addIssueFromSimpleXML($xml);

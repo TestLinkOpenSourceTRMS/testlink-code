@@ -6,9 +6,10 @@
  *
  * @author   Francisco Mancardi <francisco.mancardi@gmail.com>
  * @created  20120339
- * @link     http://gitorious.org/testlink-ga/testlink-code
+ * @link     http://www.testlink.org
  *
  * @internal revisions
+ * @since 1.9.14
  */
 
 /**
@@ -186,30 +187,28 @@ class redmine
   {
     curl_setopt($this->curl, CURLOPT_URL, $this->url . $cmd);
 
-     // Following Info From http://www.redmine.org/projects/redmine/wiki/Rest_api
-      // Authentication
-      // Most of the time, the API requires authentication. 
-      // To enable the API-style authentication, you have to check Enable REST API in 
-      // Administration -> Settings -> Authentication. 
-      //
-      // Then, authentication can be done in 2 different ways:
-      // 1. using your regular login/password via HTTP Basic authentication.
-      // 2. using your API key which is a handy way to avoid putting a password in a script. 
-      //    The API key may be attached to each request in one of the following way:
-      //    2.1 passed in as a "key" parameter
-      //    2.2 passed in as a username with a random password via HTTP Basic authentication
-      //    2.3 passed in as a "X-Redmine-API-Key" HTTP header (added in Redmine 1.1.0)
-      // You can find your API key on your account page ( /my/account ) when logged in, 
-      // on the right-hand pane of the default layout.
-      // Code From http://tspycher.com/2011/03/using-the-redmine-api-with-php/
-      if(!isset($this->apiKey)) 
-      {
+    // Following Info From http://www.redmine.org/projects/redmine/wiki/Rest_api
+    // Authentication
+    // Most of the time, the API requires authentication. 
+    // To enable the API-style authentication, you have to check Enable REST API in 
+    // Administration -> Settings -> Authentication. 
+    //
+    // Then, authentication can be done in 2 different ways:
+    // 1. using your regular login/password via HTTP Basic authentication.
+    // 2. using your API key which is a handy way to avoid putting a password in a script. 
+    //    The API key may be attached to each request in one of the following way:
+    //    2.1 passed in as a "key" parameter
+    //    2.2 passed in as a username with a random password via HTTP Basic authentication
+    //    2.3 passed in as a "X-Redmine-API-Key" HTTP header (added in Redmine 1.1.0)
+    // You can find your API key on your account page ( /my/account ) when logged in, 
+    // on the right-hand pane of the default layout.
+    // Code From http://tspycher.com/2011/03/using-the-redmine-api-with-php/
+    //
+    if(!isset($this->apiKey) || trim($this->apiKey) == '') 
+    {
       throw new exception(__METHOD__ . " Can not work without redmine apiKey");
-    }     
-    curl_setopt($this->curl, CURLOPT_USERPWD, $this->apiKey . ":" . $this->apiKey);
-    curl_setopt($this->curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    } 
 
-    
     // added after some connection issues
     // CRITIC:
     // Sometimes seems that curl is unable to resolve hostname if
@@ -220,22 +219,29 @@ class redmine
     curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
   
-    
+    // 
+    // 20150501 - I'm having problems with this way to authenticate    
+    //curl_setopt($this->curl, CURLOPT_USERPWD, $this->apiKey . ":" . $this->apiKey);
+    //curl_setopt($this->curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    $header = array();
+    $header[] = "X-Redmine-API-Key: {$this->apiKey}";
+
     if ($method == 'PUT' || $method == 'POST') 
     {
       // Got this info from http://tspycher.com/2011/03/using-the-redmine-api-with-php/
       // For TL I'have added charset=UTF-8, following code I've found on other REST API example
-      curl_setopt($this->curl, CURLOPT_HEADER, 0); 
-      curl_setopt($this->curl, CURLOPT_HTTPHEADER, 
-                               array("Content-Type: text/xml; charset=UTF-8", 
-                                     "Content-length: " . mb_strlen($body))); 
+      $header[] = "Content-Type: text/xml; charset=UTF-8"; 
+      $header[] = "Content-length: " . mb_strlen($body);
+
     }
+    curl_setopt($this->curl, CURLOPT_HEADER, 0); 
+    curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header); 
 
     switch ($method) 
     {
       case 'GET':
         curl_setopt($this->curl, CURLOPT_HTTPGET, TRUE);
-        break;
+      break;
     
       case 'PUT':
         $handle = NULL;
@@ -258,7 +264,7 @@ class redmine
         curl_setopt($this->curl, CURLOPT_PUT, TRUE);
         curl_setopt($this->curl, CURLOPT_INFILE, $handle);
         curl_setopt($this->curl, CURLOPT_INFILESIZE, $size);
-        break;
+      break;
     
       case 'POST':
         curl_setopt($this->curl, CURLOPT_POST, TRUE);
@@ -266,11 +272,11 @@ class redmine
         {
           curl_setopt($this->curl, CURLOPT_POSTFIELDS, $body);
         }
-        break;
+      break;
     
       default:
         throw new exception("Unknown method $method!");
-        break;
+      break;
     }
     
     $content = curl_exec($this->curl);

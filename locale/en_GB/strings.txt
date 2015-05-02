@@ -494,7 +494,7 @@ $TLS_user_cant_be_created_because = "Your account can't be created because:";
 $TLS_user_name_exists = "Login/User name is already in use, please select another one.";
 $TLS_valid_user_name_format = "Login/User name can only contain letters, numbers, spaces, hyphens and underscores.";
 $TLS_warning_empty_pwd = "Your password should not be empty!";
-$TLS_your_info_please = "Enter Your User Information";
+$TLS_your_info_please = "Sign up";
 $TLS_new_account = "TestLink - New Account Created";
 $TLS_invalid_security_token = "Invalid security token";
 
@@ -1399,8 +1399,8 @@ $TLS_timeout_info = "Your session has expired.<br><br>Please log in again to not
 
 
 // ----- gui/templates/loginFirst.tpl -----
-$TLS_btn_add_user_data = "Add User Data";
-$TLS_e_mail = "E-mail address (needed for sending a new password)";
+$TLS_btn_add_user_data = "Sign up";
+$TLS_e_mail = "E-mail address";
 $TLS_first_name = "First name";
 $TLS_last_name = "Last name";
 $TLS_link_back_to_login = "Back to login";

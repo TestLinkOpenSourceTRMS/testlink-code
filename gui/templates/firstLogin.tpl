@@ -1,7 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: firstLogin.tpl,v 1.2 2010/10/02 14:01:39 franciscom Exp $
-Purpose: smarty template - first login
+@filesource: firstLogin.tpl
+Purpose: smarty template - first login / sign up
 
 *}
 {include file="inc_head.tpl" title="TestLink - New Account" openHead='yes'}
@@ -11,7 +11,6 @@ Purpose: smarty template - first login
              password_mgmt_is_external,btn_add_user_data,link_back_to_login'}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
-{literal}
 <script type="text/javascript">
 window.onload=function(){
  Nifty("div#login_div","big");
@@ -19,7 +18,6 @@ window.onload=function(){
  focusInputField('login');
 }
 </script>
-{/literal}
 </head>
 
 <body>
@@ -37,9 +35,11 @@ window.onload=function(){
 
   {if $gui->external_password_mgmt eq 0}
   	<p class="label">{$labels.password}<br />
-  	<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></p>
+  	<input type="password" name="password" size="{#PASSWD_SIZE#}" 
+  	       maxlength="{$gui->pwdInputMaxLength}" required /></p>
   	<p class="label">{$labels.password_again}<br />
-  	<input type="password" name="password2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" required /></p>
+  	<input type="password" name="password2" size="{#PASSWD_SIZE#}" 
+  	       maxlength="{$gui->pwdInputMaxLength}" required /></p>
   {/if}
   
 	<p class="label">{$labels.first_name}<br />

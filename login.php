@@ -8,11 +8,11 @@
  * @filesource  login.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2006,2014 TestLink community 
+ * @copyright   2006,2015 TestLink community 
  * @link        http://www.testlink.org
  * 
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.14
  *              
  **/
 
@@ -83,10 +83,12 @@ if( $doRenderLoginScreen )
  */
 function init_args()
 {
-  // 2010904 - eloff - Why is req and reqURI parameters to the login?
+  $pwdInputLen = config_get('loginPagePasswordMaxLenght');
+
+  // 2010904 - eloff - Why is req and reqURI parameters to the login? 
   $iParams = array("note" => array(tlInputParameter::STRING_N,0,255),
                    "tl_login" => array(tlInputParameter::STRING_N,0,30),
-                   "tl_password" => array(tlInputParameter::STRING_N,0,32),
+                   "tl_password" => array(tlInputParameter::STRING_N,0,$pwdInputLen),
                    "req" => array(tlInputParameter::STRING_N,0,4000),
                    "reqURI" => array(tlInputParameter::STRING_N,0,4000),
                    "action" => array(tlInputParameter::STRING_N,0, 10),
@@ -126,7 +128,7 @@ function init_args()
 function init_gui(&$db,$args)
 {
   $gui = new stdClass();
-  
+
   $secCfg = config_get('config_check_warning_frequence');
   $gui->securityNotes = '';
   if( (strcmp($secCfg, 'ALWAYS') == 0) || 
@@ -171,6 +173,7 @@ function init_gui(&$db,$args)
   }
   $gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
   $gui->destination = $args->destination;
+  $gui->pwdInputMaxLenght = config_get('loginPagePasswordMaxLenght');
   
   return $gui;
 }
@@ -295,4 +298,3 @@ function processAjaxCheck(&$dbHandler)
                           'timeout_info' => lang_get('timeout_info')));
 
 }
-?>

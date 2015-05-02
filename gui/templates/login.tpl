@@ -35,8 +35,8 @@ window.onload=function()
              {if $tlCfg->demoMode} placeholder="{$labels.demo_mode_suggested_user}" {/if} required />
     </p>
       <p class="label">{$labels.password}<br />
-      <input type="password" name="tl_password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" 
-             style="height: 18px;"
+      <input type="password" name="tl_password" style="height: 18px;"
+             size="{#PASSWD_SIZE#}" maxlength="{$gui->pwdInputMaxLenght}" 
              {if $tlCfg->demoMode} placeholder="{$labels.demo_mode_suggested_password}" {/if}
              required />
     </p>

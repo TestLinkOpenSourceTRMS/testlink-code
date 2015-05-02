@@ -5,11 +5,11 @@
  *
  * @filesource  firstLogin.php
  * @package     TestLink
- * @copyright   2004-2014, TestLink community 
+ * @copyright   2004-2015, TestLink community 
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  *
  */
 require_once('config.inc.php');
@@ -91,14 +91,16 @@ $smarty->display($templateCfg->default_template);
  */
 function init_args()
 {
+  $args = new stdClass();
+  $args->pwdInputSize = config_get('loginPagePasswordSize');
+ 
   $iParams = array("doEditUser" => array(tlInputParameter::STRING_N,0,1),
                    "login" => array(tlInputParameter::STRING_N,0,30),
-                   "password" => array(tlInputParameter::STRING_N,0,32),
-                   "password2" => array(tlInputParameter::STRING_N,0,32),
+                   "password" => array(tlInputParameter::STRING_N,0,$args->pwdInputSize),
+                   "password2" => array(tlInputParameter::STRING_N,0,$args->pwdInputSize),
                    "firstName" => array(tlInputParameter::STRING_N,0,30),
                    "lastName" => array(tlInputParameter::STRING_N,0,30),
                    "email" => array(tlInputParameter::STRING_N,0,100));
-  $args = new stdClass();
   P_PARAMS($iParams,$args);
   return $args;
 }

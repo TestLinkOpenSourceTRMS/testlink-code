@@ -313,6 +313,9 @@ $tlCfg->authentication['method'] = 'DB';
 //	                              'capital' => true, 'symbol' => true);
 $tlCfg->passwordChecks = null;
 
+// Applies ONLY to the HTML input.
+// If auth method is DB, password will be stored as MD5 HASH that requires 32 chars (128 bits)
+$tlCfg->loginPagePasswordMaxLenght = 40;
 
 /**
  * Single Sign On authentication

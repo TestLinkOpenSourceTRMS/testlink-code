@@ -270,11 +270,8 @@ $TLS_htmltext['showMetrics'] 		= "<p>Les rapports sont reliés à une campagne d
 de test courante pour l'exécution. Vous pouvez aussi sélectionner un format de rapport:</p>
 <ul>
 <li><b>Normal</b> - le rapport est affiché en une page web;</li>
-<li><b>OpenOffice Writer</b> - le rapport est importé dans OpenOffice Writer;</li>
-<li><b>OpenOffice Calc</b> - le rapport est importé dans OpenOffice Calc;</li>
-<li><b>MS Excel</b> - le rapport est importé dans Microsoft Excel;</li>
-<li><b>HTML Email</b> - le rapport est envoyé par mail à l'adresse de l'utilisateur;</li>
-<li><b>Charts</b> - le rapport inclut des graphiques (technologie flash).</li>
+<li><b>Pseudo MS Word</b> - le rapport est importé dans Word;</li>
+<li><b>Email (HTML)</b> - le rapport est envoyé par mail à l'adresse de l'utilisateur;</li>
 </ul>
 
 <p>Le bouton imprimer active l'impression d'un seul rapport (sans navigation).</p>

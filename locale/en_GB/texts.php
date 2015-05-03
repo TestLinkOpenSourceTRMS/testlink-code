@@ -294,9 +294,7 @@ current Test Plan for execution. You can also select a Report format:</p>
 <ul>
 <li><b>HTML</b> - report is displayed in web page</li>
 <li><b>Pseudo MS Word</b> - report imported to Microsoft Word</li>
-<li><b>Pseudo MS Excel</b> - report imported to Microsoft Excel</li>
-<li><b>HTML Email</b> - report is emailed to user's email address</li>
-<li><b>Charts</b> - report include graphs</li>
+<li><b>Email (HTML)</b> - report is emailed to user's email address</li>
 </ul>
 
 <p>The print button activates printing of a report only (without navigation).</p>

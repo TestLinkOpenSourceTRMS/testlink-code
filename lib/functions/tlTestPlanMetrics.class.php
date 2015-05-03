@@ -6,13 +6,13 @@
  * @filesource  tlTestPlanMetrics.class.php
  * @package     TestLink
  * @author      Kevin Levy, franciscom
- * @copyright   2004-2014, TestLink community 
+ * @copyright   2004-2015, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * @uses        config.inc.php 
  * @uses        common.php 
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.14
  *
  **/
 
@@ -2098,13 +2098,18 @@ class tlTestPlanMetrics extends testplan
     $fullEID = $this->helperConcatTCasePrefix($safe_id);
     // $sqlLEBBP = $sqlStm['LEBBP'];
 
+    // Because we now allow assignment of MULTIPLE testers to same test case
+    // we need to remove UA.user_id, in order to avoid duplication
+    // UA.user_id,
+    // we will need a second step to populate this info.
+    //
     $sql =  "/* {$debugMsg} Not Run */" . 
-        " SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
-        " TPTCV.tcversion_id,TPTCV.platform_id," .
+        " SELECT DISTINCT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
+        " TPTCV.tcversion_id,TPTCV.platform_id,TPTCV.id AS feature_id," .
         " TCV.version AS tcversion_number, B.id AS build_id," . 
         " '{$this->notRunStatusCode}' AS status, " .
         " TCV.version,TCV.tc_external_id AS external_id, " .
-        " $fullEID AS full_external_id,UA.user_id," .
+        " $fullEID AS full_external_id," .
         " (TPTCV.urgency * TCV.importance) AS urg_imp, TCV.summary " .
         " FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
@@ -2143,13 +2148,63 @@ class tlTestPlanMetrics extends testplan
     switch($my['opt']['output'])
     {
       case 'array':
-            $dummy = (array)$this->db->get_recordset($sql);              
+        $dummy = (array)$this->db->get_recordset($sql);              
+        
+        // Second Loop
+        // get features to get testers
+        if(!is_null($dummy))
+        {
+          // will try with a query
+              $sql =  "/* {$debugMsg} Not Run */" . 
+        " SELECT UA.user_id, UA.feature_id,UA.build_id" .
+        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+        " JOIN {$this->tables['builds']} B " .
+        " ON  B.testplan_id = TPTCV.testplan_id " .
+
+        " JOIN {$this->tables['user_assignments']} UA " .
+        " ON  UA.feature_id = TPTCV.id " .
+        " AND UA.build_id = B.id " .
+        " AND UA.type = {$this->execTaskCode} " .
+
+        " LEFT OUTER JOIN {$this->tables['executions']} E " .
+        " ON  E.testplan_id = TPTCV.testplan_id " .
+        " AND E.platform_id = TPTCV.platform_id " .
+        " AND E.tcversion_id = TPTCV.tcversion_id " .
+        " AND E.build_id = B.id ".
+
+        " WHERE TPTCV.testplan_id=" . $safe_id .
+        " AND E.id IS NULL " .
+        " AND B.id IN ({$builds->inClause}) "; 
+
+        $dx = $this->db->get_recordset($sql); 
+
+        $l2do = count($dx);
+        $loop2do = count($dummy);
+        for($vdx=0; $vdx < $l2do; $vdx++)
+        { 
+          for($fdx=0; $fdx < $loop2do; $fdx++)
+          {
+            if($dummy[$fdx]['feature_id'] == $dx[$vdx]['feature_id'] &&
+               $dummy[$fdx]['build_id'] == $dx[$vdx]['build_id'] 
+              )
+            {
+              $dummy[$fdx]['user_id'][$dx[$vdx]['user_id']] = $dx[$vdx]['user_id'];
+              break;
+            }  
+          }  
+        }  
+ 
+        }  
+
+
       break;
 
       case 'map':
       default:
+        throw new Exception("NOT REFACTORED YET for output 'map'", 1);
         $keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
-            $dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
+        $dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
       break;
     }
 

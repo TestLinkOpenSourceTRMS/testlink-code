@@ -75,7 +75,8 @@ if( $doIt )
     $rows = array();
     foreach ($tcase_set as $tcase_platform) 
     {
-      foreach ($tcase_platform as $tcase) {
+      foreach ($tcase_platform as $tcase) 
+      {
       	$current_row = array();
       	$tcase_id = $tcase['testcase_id'];
       	$tcversion_id = $tcase['tcversion_id'];
@@ -127,16 +128,25 @@ if( $doIt )
           $current_row[] = "<!-- " . $tcase['priority'] . " -->" . $gui->priority[priority_to_level($tcase['priority'])];
         }
         
-        $last_execution = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 
-                                                         $tcase['build_id'], 
-                                                         $tcase['platform_id']);
-        $status = $last_execution[$tcversion_id]['status'];
+        $leOptions = array('getSteps' => 0);
+        $lexec = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 
+                                                $tcase['build_id'],$tcase['platform_id'],
+                                                $leOptions);
+        $status = $lexec[$tcversion_id]['status'];
         if (!$status) 
         {
           $status = $statusGui->status_code['not_run'];
         }
         $current_row[] = $statusGui->definition[$status];
-                              
+
+        if ($args->show_user_column) 
+        {
+            $current_row[] = htmlspecialchars($lexec[$tcversion_id]['tester_login']);
+        }
+
+
+                    
+        // need to check if we are using the right timestamp                      
         $current_row[] = htmlspecialchars($tcase['creation_ts']) . 
                          " (" . get_date_diff($tcase['creation_ts']) . ")";
         
@@ -371,6 +381,12 @@ function getColumnsDefinition($dbHandler,$tplan_id,$optionalColumns)
   }
   
   $colDef[] = array('title_key' => 'status', 'width' => 50, 'type' => 'status');
+  if($optionalColumns['user'])
+  {
+    $colDef[] = array('title_key' => 'tester', 'width' => 80);
+  }  
+  
+
   $colDef[] = array('title_key' => 'due_since', 'width' => 100);
   
   return array($colDef, $sortByCol, $show_plat);

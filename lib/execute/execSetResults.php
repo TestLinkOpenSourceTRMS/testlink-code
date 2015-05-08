@@ -962,11 +962,14 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
   foreach($exec_info as $key => $tc_exec) 
   {
     $execution_enabled = 0;  
+
     if($can_execute == 1 && $tc_exec['active'] == 1)
     {
-      $assigned_to_me = $tc_exec['assigned_user_id'] == $tester_id ? 1 : 0;
       $is_free = $tc_exec['assigned_user_id'] == '' ? 1 : 0;
-
+      
+      $testerSet = array_flip(explode(',',$tc_exec['assigned_user_id']));
+      $assigned_to_me = isset($testerSet[$tester_id]) ? 1 : 0;
+      
       switch($execution_mode)
       {
         case 'assigned_to_me':
@@ -989,7 +992,7 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
     $exec_info[$key]['can_be_executed']=$execution_enabled;
   }
   return $exec_info;
-} //function end
+}
 
 
 /*

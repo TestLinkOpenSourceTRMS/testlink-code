@@ -2122,13 +2122,13 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
   
   $flt = array();
   $flt['exclude_branches'] = isset($fObj['filter_toplevel_testsuite']) && is_array($fObj['filter_toplevel_testsuite']) ?
-                           $fObj['filter_toplevel_testsuite'] : null;
+                             $fObj['filter_toplevel_testsuite'] : null;
   
-  // TICKET 4217: added filter for importance
   $flt['testcase_name'] = null;
   $flt['testcase_id'] = null;
   $flt['execution_type'] = null;
-    $flt['filter_importance'] = null;
+  $flt['importance'] = null;
+  $flt['status'] = null;
 
   if( isset($fObj['filter_testcase_name']) && !is_null($fObj['filter_testcase_name']) )
   {
@@ -2148,21 +2148,24 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
     $flt['execution_type'] = intval($fObj['filter_execution_type']);
   }
 
-  if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) && 
-      $fObj['filter_importance'][0]>0
-    )
+  if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) )
   {
-    $flt['importance'] = (array)$fObj['filter_importance'];  
+    $xx = (array)$fObj['filter_importance'];
+    if($xx[0] >0)
+    {
+      $flt['importance'] = $xx;  
+    } 
+  }  
+
+  if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) )
+  {
+    $xx = (array)$fObj['filter_workflow_status'];
+    if($xx[0]>0)
+    {
+      $flt['status'] = $xx;
+    }  
   }
 
-  if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) && 
-      $fObj['filter_workflow_status'][0]>0
-    )
-  {
-    $flt['status'] = (array)$fObj['filter_workflow_status'];
-  }
-
-    
   $opt = array('recursive' => true,'exclude_testcases' => false);
   $items = $tprojectMgr->getTestSpec($tprojectID,$flt,$opt); 
 

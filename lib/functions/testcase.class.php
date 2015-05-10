@@ -4884,7 +4884,8 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = "/* $debugMsg */ " .
-           " SELECT NH_TCASE.id, NH_TCASE.name, TCV.version, TCV.tc_external_id, TCV.id AS tcversion_id " .
+           " SELECT NH_TCASE.id, NH_TCASE.name, TCV.version, TCV.tc_external_id, " .
+           " TCV.id AS tcversion_id, TCV.status " .
            " FROM {$this->tables['nodes_hierarchy']} NH_TCASE " .
            " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TCASE.id" .
            " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id ";
@@ -4900,10 +4901,10 @@ class testcase extends tlObjectWithAttachments
       } 
     }
     $where_clause .= " AND NH_TCASE .id = {$id} ";
-        $sql .= $where_clause;
-        $result = $this->db->get_recordset($sql);
-        return $result;
-    }
+    $sql .= $where_clause;
+    $result = $this->db->get_recordset($sql);
+    return $result;
+  }
 
 
 

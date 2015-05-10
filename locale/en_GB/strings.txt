@@ -3746,6 +3746,10 @@ $TLS_platform_not_on_tproject = "Input file request platform %s be linked to tes
 $TLS_platform_linked = "Platform %s has been linked to test plan.";
 $TLS_tcase_link_updated = "Test Case (%s) - Version (%s) was already linked to Test Plan, only execution order has been updated.";
 
+$TLS_cant_link_to_tplan_feedback = "Test Case with external id %s version %s can not be linked to Test Plan ";
+$TLS_tcversion_status_forbidden = "Status %s is not allowed.";
+
+
                                                                                                         
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Export Execution Set';

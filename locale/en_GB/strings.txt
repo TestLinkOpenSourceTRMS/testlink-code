@@ -584,7 +584,9 @@ $TLS_your_password_is = "Your new TestLink password is:";
 $TLS_password_set = "Password has been set to: ";
 $TLS_password_mgmt_feedback = 'Password management for user %s, does not allow password reset';
 
-
+$TLS_your_apikey_is = "Your new TestLink API key is:";
+$TLS_mail_apikey_subject = "Your new TestLink API key.";
+$TLS_apikey_by_mail = "New API key has been sent via mail";
 
 // ----- login.php -----
 $TLS_bad_user_passwd = "Try again! Wrong login name or password!";

@@ -16,11 +16,11 @@ Testlink: smarty template -
              warning_empty_pwd,warning_different_pwd,empty_email_address,
              title_user_mgmt,title_account_settings,menu_edit_user,menu_new_user,
              menu_view_users,menu_define_roles,menu_view_roles,no_good_email_address,
-             menu_assign_testproject_roles,warning_empty_last_name,
+             menu_assign_testproject_roles,warning_empty_last_name,btn_apikey_generate,
              menu_assign_testplan_roles,caption_user_details,show_event_history,
              th_login,th_first_name,th_last_name,th_password,th_email,authentication_method,
              th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
-             btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled'}
+             btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled,title_api_interface'}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -302,6 +302,8 @@ function managePasswordInputs(oid,targetSetOID)
       {$submitEnabled="0"}
     {/if} 
   {/if}
+
+
   <div class="groupBtn">
   {if $submitEnabled}
     <input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
@@ -317,19 +319,25 @@ function managePasswordInputs(oid,targetSetOID)
 </form>
 
 <br />
-<form method="post" action="lib/usermanagement/usersEdit.php" style="{$reset_password_form_style}" 
+<form method="post" action="lib/usermanagement/usersEdit.php" 
+      style=" {$reset_password_form_style}" 
       id="user_reset_password" name="user_reset_password">
   {if $tlCfg->demoMode}
     {$labels.demo_reset_password_disabled}
   {else}
-    <input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
+    <input type="hidden" name="doAction" id="doReset" value="" />
     <input type="hidden" name="user_id" value="{$user_id}" />
-    <input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
+    <input type="submit" id="do_reset_password" name="do_reset_password" 
+           value="{$labels.button_reset_password}" 
+           onclick="doReset.value='resetPassword'"/>
+
+    {if $tlCfg->api->enabled && $submitEnabled}       
+    <input type="submit" id="genAPIKey" value="{$labels.btn_apikey_generate}" 
+           onclick="doReset.value='genAPIKey'"/>
+    {/if}
   {/if} 
 </form>
-
 </div>
-
 
 {/if}
 </body>

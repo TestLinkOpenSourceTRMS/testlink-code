@@ -7495,7 +7495,24 @@ class testplan extends tlObjectWithAttachments
     return $items;
   }
 
+  /**
+   *
+   */
+  function getExecCountOnBuild($id,$build_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $safe['tplan_id'] = intval($id);
+    $safe['build_id'] = intval($build_id);
+     
+    $sql = "/* debugMsg */ SELECT COUNT(0) AS qty " . 
+           " FROM {$this->tables['executions']} E " .
+           " WHERE E.testplan_id = {$safe['tplan_id']} " .
+           " AND E.build_id = {$safe['build_id']}"; 
 
+    $rs = $this->db->get_recordset($sql);
+
+    return $rs[0]['qty'];
+  }
 
 } // end class testplan
 

@@ -2785,6 +2785,8 @@ $TLS_cannot_add_build = "The build cannot be added!";
 $TLS_cannot_delete_build = "The build cannot be deleted!";
 $TLS_cannot_update_build = "Error while updating build!";
 $TLS_warning_duplicate_build = "There is already a build with this identifier";
+$TLS_cannot_delete_build_no_exec_delete = "Build %s cannot be deleted, because executions exist" .
+                                          " and you do not have right to delete executions";
 
 
 

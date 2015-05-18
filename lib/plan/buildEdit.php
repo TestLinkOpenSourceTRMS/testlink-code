@@ -59,7 +59,7 @@ switch($args->do_action)
   break;
 
   case 'do_delete':
-    $op = doDelete($args,$build_mgr);
+    $op = doDelete($db,$args,$build_mgr,$tplan_mgr);
   break;
 
   case 'do_update':
@@ -101,7 +101,7 @@ $gui->operation_descr = $op->operation_descr;
 $gui->user_feedback = $op->user_feedback;
 $gui->buttonCfg = $op->buttonCfg;
 
-$gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+$gui->mgt_view_events = $args->user->hasRight($db,"mgt_view_events");
 $gui->editorType = $editorCfg['type'];
 
 renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
@@ -170,6 +170,7 @@ function init_args($request_hash, $session_hash,$date_format)
   $args->exec_status_filter = isset($request_hash['exec_status_filter']) ?
                                     $request_hash['exec_status_filter'] : null;
 
+  $args->user = $_SESSION['currentUser'];
   return $args;
 }
 
@@ -266,14 +267,24 @@ function create(&$argsObj)
   returns:
 
 */
-function doDelete(&$argsObj,&$buildMgr)
+function doDelete(&$dbHandler,&$argsObj,&$buildMgr,&$tplanMgr)
 {
   $op = new stdClass();
-    $op->user_feedback = '';
-    $op->operation_descr = '';
-    $op->buttonCfg = null;
+  $op->user_feedback = '';
+  $op->operation_descr = '';
+  $op->buttonCfg = null;
 
   $build = $buildMgr->get_by_id($argsObj->build_id);
+  
+  $qty = $tplanMgr->getExecCountOnBuild($argsObj->tplan_id,$argsObj->build_id);
+  if($qty > 0 && !$argsObj->user->hasRight($dbHandler,'exec_delete'))
+  {
+    // Need to check if user has rigth to delete executions
+    $op->user_feedback = sprintf(lang_get("cannot_delete_build_no_exec_delete"),$build['name']);
+    return $op;
+  }  
+
+ 
   if (!$buildMgr->delete($argsObj->build_id))
   {
     $op->user_feedback = lang_get("cannot_delete_build");
@@ -282,8 +293,8 @@ function doDelete(&$argsObj,&$buildMgr)
   {
     logAuditEvent(TLS("audit_build_deleted",$argsObj->testprojectName,$argsObj->tplan_name,$build['name']),
                   "DELETE",$argsObj->build_id,"builds");
-    }
-    return $op;
+  }
+  return $op;
 }
 
 /*

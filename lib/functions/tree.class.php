@@ -191,10 +191,10 @@ class tree extends tlObject
   {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $opt = array('nodeTypeID' => null, 'nodeType' => null);
+    $opt = array('nodeTypeID' => null, 'nodeType' => null, 
+                 'fields' => 'id,name,parent_id,node_type_id,node_order');
     $opt = array_merge($opt, (array)$options);
-
-    $sql = "SELECT id,name,parent_id,node_type_id,node_order " . 
+    $sql = "SELECT {$opt['fields']} " . 
            "FROM {$this->object_table} WHERE id";
       
     $result=null;

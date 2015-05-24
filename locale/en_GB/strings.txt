@@ -3010,6 +3010,9 @@ $TLS_req_rel_is_related_to = "related to";
 $TLS_title_test_report_all_builds = "Test result matrix: Results of Test Cases for all Builds";
 $TLS_test_result_matrix_filters = "Test Results Matrix - Filters";
 
+// ----- lib/results/resultsTCFlat.php -----
+$TLS_test_result_flat_filters = "Test Results Flat - Filters";
+
 
 
 
@@ -3069,6 +3072,7 @@ $TLS_link_report_overall_build = "Overall Build Status";
 $TLS_link_report_reqs_coverage = "Requirements based Report";
 $TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
 $TLS_link_report_test = "Test result matrix";
+$TLS_link_report_test_flat = "Test Results Flat";
 $TLS_link_report_test_plan = "Test Plan Report";
 $TLS_link_report_test_report = "Test Report";
 $TLS_link_report_test_report_on_build = "Test Report on build";

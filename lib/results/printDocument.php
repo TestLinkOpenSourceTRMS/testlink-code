@@ -128,7 +128,11 @@ switch ($doc_info->type)
     $doc_data->statistics = null;                                            
     if ($printingOptions['metrics'])
     {
-      $doc_data->statistics = timeStatistics($items2use,$args->tplan_id,$decode,$tplan_mgr);
+      $target = new stdClass();
+      $target->tplan_id = $args->tplan_id;
+      $target->build_id = $args->build_id;
+      $target->platform_id = $args->platform_id;
+      $doc_data->statistics = timeStatistics($items2use,$target,$decode,$tplan_mgr);
     }
   break;
 }
@@ -515,7 +519,7 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
  * 
  * 
  **/
-function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
+function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode)
 {
   $min = array();
   $stat = null;
@@ -539,18 +543,26 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
           $executed_qty++;
         }    
       }  
-    }                                   
+    }     
+
     if( $executed_qty > 0)
     { 
       $min['totalMinutes'] = 0;
       $min['totalTestCases'] = 0;
       $min['platform'] = array();
+      $ecx = new stdClass();
+      $ecx = $context;
+
       foreach( $items2use as $platID => $itemsForPlat )
       {  
         $min['platform'][$platID] = null;
         if( !is_null($itemsForPlat) )
         {  
-          $tmp = $tplanMgr->get_execution_time($tplanID,$itemsForPlat,$platID);
+          $ecx->platform_id = $platID; 
+          
+          // $tmp = $tplanMgr->get_execution_time($context,$itemsForPlat,$platID);
+          $tmp = $tplanMgr->getExecutionTime($context,$itemsForPlat);
+
           $min['platform'][$platID] = $tmp['platform'][$platID];
           $min['totalMinutes'] += isset($tmp['totalMinutes']) ? $tmp['totalMinutes'] : 0; 
           $min['totalTestCases'] += $tmp['totalTestCases']; 
@@ -560,7 +572,7 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$tplanID,$decode)
   }
   else
   {
-    $min = $tplanMgr->get_execution_time($tplanID);
+    $min = $tplanMgr->getExecutionTime($context);
   }
 
   // Arrange data for caller
@@ -693,11 +705,13 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$branchRoot,$tplan
 /**
  *
  */
-function timeStatistics($items,$tplanID,$decode,$tplanMgr)
+function timeStatistics($items,$context,$decode,$tplanMgr)
 {
   $stats = array();
-  $stats['estimated_execution'] = getStatsEstimatedExecTime($tplanMgr,$items->estimatedExecTime,$tplanID);
-  $stats['real_execution'] = getStatsRealExecTime($tplanMgr,$items->realExecTime,$tplanID,$decode);
+  $stats['estimated_execution'] = 
+    getStatsEstimatedExecTime($tplanMgr,$items->estimatedExecTime,$context->tplan_id);
+
+  $stats['real_execution'] = getStatsRealExecTime($tplanMgr,$items->realExecTime,$context,$decode);
   return $stats;
 }
 

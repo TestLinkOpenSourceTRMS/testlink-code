@@ -2897,18 +2897,19 @@ class testplan extends tlObjectWithAttachments
     rev: 
     @internal revision
   */
-  function get_execution_time($id,$execIDSet=null,$platformID=null)
+  function get_execution_time($context,$execIDSet=null)
   {
     // check if cf exist and is assigned and active intest plan parent (TEST PROJECT)
     $pinfo = $this->tree_manager->get_node_hierarchy_info($id);
     $cf_info = $this->cfield_mgr->get_linked_to_testproject($pinfo['parent_id'],1,array('name' => 'CF_EXEC_TIME'));
     if( is_null($cf_info) )
     {
-      return $this->getExecutionTime($id,$execIDSet,$platformID);
+      return $this->getExecutionTime($context,$execIDSet);
     }  
     else
     {
-      return $this->getExecutionTimeFromCF($id,$execIDSet,$platformID);
+      return $this->getExecutionTimeFromCF($context->tplan_id,$execIDSet,
+                                           $context->platform_id);
     } 
   }
 
@@ -2916,7 +2917,7 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */ 
-  function getExecutionTime($id,$execIDSet=null,$platformID=null)
+  function getExecutionTime($context,$execIDSet=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -2924,21 +2925,26 @@ class testplan extends tlObjectWithAttachments
     $targetSet = array();
 
     $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => true);
-    $platformSet = array_keys($this->getPlatforms($id,$getOpt));
-
+    $platformSet = array_keys($this->getPlatforms($context->tplan_id,$getOpt));
 
     if( is_null($execIDSet) )
     {
       $filters = null;
-      if( !is_null($platformID) )
+      if( !is_null($context->platform_id) )
       {   
-        $filters = array('platform_id' => $platformID);
+        $filters = array('platform_id' => $context->platform_id);
       }
+
+      if( !is_null($context->build_id) && $context->build_id > 0)
+      {   
+        $filters['build_id'] = $context->build_id;
+      }
+
         
       // we will compute time for ALL linked and executed test cases,
-      // BUT USING ONLY TIME SPEND for LAST executed TCVERSION
+      // BUT USING ONLY TIME SPEND for LATEST executed TCVERSION
       $options = array('addExecInfo' => true);
-      $executed = $this->getLTCVNewGeneration($id,$filters,$options); 
+      $executed = $this->getLTCVNewGeneration($context->tplan_id,$filters,$options); 
 
       if( ($status_ok = !is_null($executed)) )
       {
@@ -2963,11 +2969,11 @@ class testplan extends tlObjectWithAttachments
       // Then we will IGNORE value of argument platformID to avoid
       // run a second (and probably useless query).
       // We will use platformID JUST as index for output result
-      if( is_null($platformID) )
+      if( is_null($context->platform_id) )
       {
-          throw new Exception(__FUNCTION__ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
+        throw new Exception(__FUNCTION__ . ' When you pass $execIDSet an YOU NEED TO PROVIDE a platform ID');
       }  
-      $targetSet[$platformID] = $this->getExecutionDurationForSet($execIDSet);
+      $targetSet[$context->platform_id] = $this->getExecutionDurationForSet($execIDSet);
     }  
 
     foreach($targetSet as $platfID => $itemSet)

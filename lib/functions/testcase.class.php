@@ -98,7 +98,9 @@ class testcase extends tlObjectWithAttachments
 
     $this->cfg = new stdClass();
     $this->cfg->testcase = config_get('testcase_cfg');
-    $this->cfg->execution = config_get('exec_cfg');  // CORTADO
+    $this->cfg->execution = config_get('exec_cfg');
+    $this->cfg->cfield = config_get('custom_fields');
+
     $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
 
 
@@ -4478,12 +4480,12 @@ class testcase extends tlObjectWithAttachments
     if( !is_null($formatOptions) )
     {
       $label_css_style = isset($formatOptions['label_css_style']) ? 
-                     $formatOptions['label_css_style'] : $label_css_style;
+                         $formatOptions['label_css_style'] : $label_css_style;
       $value_css_style = isset($formatOptions['value_css_style']) ? 
-                     $formatOptions['value_css_style'] : $value_css_style;
+                         $formatOptions['value_css_style'] : $value_css_style;
 
-          $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
-          $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
+      $add_table = isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
+      $table_style = isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
     } 
     
     $cf_smarty = '';
@@ -4511,17 +4513,17 @@ class testcase extends tlObjectWithAttachments
                                                          $testplan_id,$tproject_id,$location);
       break;
     }   
-    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
       
     if(!is_null($cf_map))
     {
       foreach($cf_map as $cf_id => $cf_info)
       {
         // if user has assigned a value, then node_id is not null
-        if(isset($cf_info['node_id']) || $show_cf)
+        if(isset($cf_info['node_id']) || 
+           $this->cfg->cfield->show_custom_fields_without_value)
         {
           // true => do not create input in audit log
-          $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+          $label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
   
           $cf_smarty .= "<tr><td {$label_css_style}> " .  htmlspecialchars($label) . ":</td>" . 
                         "<td {$value_css_style}>" .
@@ -4530,7 +4532,7 @@ class testcase extends tlObjectWithAttachments
         }
       }
   
-      if((trim($cf_smarty) != "") && $add_table)
+      if( (trim($cf_smarty) != "") && $add_table)
       {
         $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
       }

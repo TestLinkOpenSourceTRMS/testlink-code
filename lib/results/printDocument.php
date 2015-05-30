@@ -131,7 +131,7 @@ switch ($doc_info->type)
       $target = new stdClass();
       $target->tplan_id = $args->tplan_id;
       $target->build_id = $args->build_id;
-      $target->platform_id = $args->platform_id;
+      $target->platform_id = isset($args->platform_id) ? $args->platform_id : null;
       $doc_data->statistics = timeStatistics($items2use,$target,$decode,$tplan_mgr);
     }
   break;

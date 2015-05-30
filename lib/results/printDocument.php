@@ -532,17 +532,20 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode)
     $p2loop = array_keys($lastExecBy);
     foreach($p2loop as $platfID)
     {                    
-      $i2loop = array_keys($lastExecBy[$platfID]);  
-      $items2use[$platfID] = null;
-      foreach($i2loop as $xdx)
+      if( !is_null($lastExecBy[$platfID]) )
       {
-        $info = &$lastExecBy[$platfID][$xdx]; 
-        if( $info['exec_status'] != $decode['status_descr_code']['not_run'] )
-        {  
-          $items2use[$platfID][] = $info['exec_id'];
-          $executed_qty++;
-        }    
-      }  
+        $i2loop = array_keys($lastExecBy[$platfID]);  
+        $items2use[$platfID] = null;
+        foreach($i2loop as $xdx)
+        {
+          $info = &$lastExecBy[$platfID][$xdx]; 
+          if( $info['exec_status'] != $decode['status_descr_code']['not_run'] )
+          {  
+            $items2use[$platfID][] = $info['exec_id'];
+            $executed_qty++;
+          }    
+        }  
+      }
     }     
 
     if( $executed_qty > 0)
@@ -668,11 +671,20 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$branchRoot,$tplan
     $metrics->realExecTime[$platform_id] = null;
     
     $avalon = $tplanMgr->getLTCVNewGeneration($tplanID, $filters, array('addExecInfo' => true)); 
-    $k2l = array_keys($avalon);
-    foreach($k2l as $key)
+    
+    // 20150530
+    if(!is_null($avalon))
     {
-      $linkedBy[$platform_id][$key] = $avalon[$key][$platform_id];
-    } 
+      $k2l = array_keys($avalon);
+      foreach($k2l as $key)
+      {
+        $linkedBy[$platform_id][$key] = $avalon[$key][$platform_id];
+      } 
+    }  
+    else
+    {
+      $linkedBy[$platform_id] = null;
+    }  
   
     // After architecture changes on how CF design values for Test Cases are
     // managed, we need the test case version ID and not test case ID

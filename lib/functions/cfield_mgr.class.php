@@ -11,7 +11,7 @@
  * @link 		    http://testlink.sourceforge.net
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.14
  *
 **/
 
@@ -196,6 +196,8 @@ class cfield_mgr extends tlObject
     // possible_values column on custom_fields table
     // 0 -> no limit
     var $max_length_possible_values;
+
+    var $decode;
     
     
 	/**
@@ -230,7 +232,11 @@ class cfield_mgr extends tlObject
 
     $this->max_length_value = $cfConfig->max_length;
     $this->max_length_possible_values = $this->max_length_value;
-	}
+	
+    $this->decode['nodes'] = $this->tree_manager->get_available_node_types();
+
+
+  }
 
 
   function getSizeLimit()
@@ -280,13 +286,12 @@ class cfield_mgr extends tlObject
 	 */ 
 	function get_allowed_nodes()
 	{
-		$allowed_nodes=array();
-		$tl_node_types=$this->tree_manager->get_available_node_types();
+		$allowed_nodes = array();
 		foreach($this->node_types as $verbose_type )
 		{
-			$allowed_nodes[$verbose_type]=$tl_node_types[$verbose_type];
+			$allowed_nodes[$verbose_type] = $this->decode['nodes'][$verbose_type];
 		}
-		return($allowed_nodes);
+		return $allowed_nodes;
 	}
 
 	/**
@@ -322,17 +327,17 @@ class cfield_mgr extends tlObject
   */
   function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   {
-    $enabled_mgmt=array();
-    $tl_node_types=$this->tree_manager->get_available_node_types();
+    $enabled_mgmt = array();
+    $tl_node_types = $this->decode['nodes'];
     foreach($this->node_types as $verbose_type)
     {
-        $type_id=$tl_node_types[$verbose_type];
-        if( isset($map_node_id_cfg[$verbose_type]) )
-        {
-          $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
-        }
+      $type_id = $tl_node_types[$verbose_type];
+      if( isset($map_node_id_cfg[$verbose_type]) )
+      {
+        $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
+      }
     }
-    return($enabled_mgmt);
+    return $enabled_mgmt;
   }
 
 
@@ -441,12 +446,11 @@ class cfield_mgr extends tlObject
 
     if( !is_null($node_type) )
     {
-        $hash_descr_id = $this->tree_manager->get_available_node_types();
-        $node_type_id=$hash_descr_id[$node_type];
-
-        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                             " AND CFNT.node_type_id=" . $this->db->prepare_int($node_type_id);
+      $additional_join .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+                          " AND CFNT.node_type_id=" . 
+                          $this->db->prepare_int($this->decode['nodes'][$node_type]);
     }
+
     if( !is_null($node_id) )
     {
       $additional_values .= ",CFDV.value AS value,CFDV.node_id AS node_id";
@@ -489,15 +493,14 @@ class cfield_mgr extends tlObject
          " FROM {$this->object_table} CF " .
          " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
          $additional_join .
-         " WHERE CFTP.testproject_id={$tproject_id} " .
-         " AND   CFTP.active=1     " .
-         " AND   CF.show_on_design=1     " .
+         " WHERE CFTP.testproject_id=" . intval($tproject_id) .
+         " AND   CFTP.active=1 AND CF.show_on_design=1     " .
          " AND   CF.enable_on_design={$enabled} " .
          $additional_filter .
          " ORDER BY display_order,CF.id ";
 
     $map = $this->db->fetchRowsIntoMap($sql,$access_key);
-    return($map);
+    return $map;
   }
 
 
@@ -1580,11 +1583,8 @@ function name_is_unique($id,$name)
 
     if( !is_null($node_type) )
     {
-   		$hash_descr_id = $this->tree_manager->get_available_node_types();
-      $node_type_id=$hash_descr_id[$node_type];
-
-      $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                           " AND CFNT.node_type_id={$node_type_id} ";
+      $additional_join .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+                          " AND CFNT.node_type_id=" . $this->decode['nodes'][$node_type];
     }
     
     if( !is_null($node_id) && !is_null($execution_id) && !is_null($testplan_id) )
@@ -1637,7 +1637,6 @@ function name_is_unique($id,$name)
           $order_clause="ORDER BY EXECU.tcversion_id,exec_status,exec_id";
             
           $fetchMethod='fetchArrayRowsIntoMap';
-    
         }
     }
 
@@ -1646,6 +1645,7 @@ function name_is_unique($id,$name)
     	$additional_filter .= " AND CF.id= " . intval($location) . " ";
     }
 
+    
     $sql = "SELECT {$base_values} CFTP.display_order,CFTP.location,CFTP.required" .
            $additional_values .
            " FROM {$this->tables['custom_fields']} CF " .
@@ -1667,7 +1667,6 @@ function name_is_unique($id,$name)
         $map = $this->db->$fetchMethod($sql,$access_key,'id');
       break;
     }
-    
     return $map;
   }
 

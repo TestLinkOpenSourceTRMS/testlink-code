@@ -6,11 +6,11 @@
  * @filesource  testsuite.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  *
  */
 
@@ -367,15 +367,21 @@ class testsuite extends tlObjectWithAttachments
     rev :
   
   */
-  function get_by_id($id, $opt=null)
+  function get_by_id($id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $my['opt'] = array('orderByClause' => '','renderImageInline' => false);
+    $my['opt'] = array('orderByClause' => '','renderImageInline' => false,
+                       'fields' => null);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-    $sql = "/* $debugMsg */ SELECT TS.*, NH.name, NH.node_type_id, NH.node_order, NH.parent_id " .
-           "  FROM {$this->tables['testsuites']} TS, " .
-           " {$this->tables['nodes_hierarchy']} NH   WHERE TS.id = NH.id AND TS.id "; 
+    $f2g = is_null($my['opt']['fields']) ? 
+           'TS.*, NH.name, NH.node_type_id, NH.node_order, NH.parent_id' :
+           $my['opt']['fields'];
+
+    $sql = "/* $debugMsg */ SELECT {$f2g} " .
+           "  FROM {$this->tables['testsuites']} TS " .
+           "  JOIN {$this->tables['nodes_hierarchy']} NH ON TS.id = NH.id " .
+           "  WHERE TS.id "; 
 
     $sql .= is_array($id) ? " IN (" . implode(',',$id) . ")" : " = {$id} ";
     $sql .= $my['opt']['orderByClause'];

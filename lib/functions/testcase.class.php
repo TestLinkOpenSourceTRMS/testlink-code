@@ -866,7 +866,9 @@ class testcase extends tlObjectWithAttachments
       $cfPlaces = $this->buildCFLocationMap();
       $req_mgr = new requirement_mgr($this->db);
       $allReqs = $req_mgr->get_all_for_tcase($idSet);
-      $allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
+
+      $gkOpt = array('accessKey' => 'testcase_id','orderBy' => 'ORDER BY keyword ASC ');
+      $allTCKeywords = $this->getKeywords($idSet,null,$gkOpt);
 
       $ovx = 0;
       foreach($idSet as $key => $tc_id)
@@ -2880,32 +2882,47 @@ class testcase extends tlObjectWithAttachments
     returns:
   
   */
-  function getKeywords($tcID,$kwID = null,$column = 'keyword_id',$orderByClause = null)
+  // function getKeywords($tcID,$kwID = null,$column = 'keyword_id',$orderByClause = null)
+  function getKeywords($tcID,$kwID = null,$opt = null)
   {
-    $sql = "SELECT keyword_id,keywords.keyword,keywords.notes,testcase_id
-            FROM {$this->tables['testcase_keywords']} testcase_keywords, {$this->tables['keywords']} keywords
-            WHERE keyword_id = keywords.id AND testcase_id ";
-    $bCumulative = 0;
+    $my['opt'] = array('accessKey' => 'keyword_id', 'fields' => null, 'orderBy' => null);
+   
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $f2g = is_null($my['opt']['fields']) ? 
+           ' keyword_id,keywords.keyword,keywords.notes,testcase_id ' : 
+           $my['opt']['fields']; 
+    
+    $sql = " SELECT {$f2g}  
+             FROM {$this->tables['testcase_keywords']} testcase_keywords
+             JOIN {$this->tables['keywords']} keywords 
+             ON keyword_id = keywords.id 
+             WHERE testcase_id ";
+    
+    $cumulative = 0;
     if (is_array($tcID))
     {
       $sql .= " IN (".implode(",",$tcID).")";
-      $bCumulative = 1;
+      $cumulative = 1;
     }
     else
     {
       $sql .=  "= {$tcID}";
     }
+    
     if (!is_null($kwID))
     {
-      $sql .= " AND keyword_id = {$kwID}";
+      $sql .= " AND keyword_id = " . intval($kwID);
     }
-    if (!is_null($orderByClause))
+
+    if (!is_null($my['opt']['orderBy']))
     {
-      $sql .= $orderByClause;
+      $sql .= $my['opt']['orderBy'];
     } 
-    $tcKeywords = $this->db->fetchRowsIntoMap($sql,$column,$bCumulative);
+
+    $items = $this->db->fetchRowsIntoMap($sql,$my['opt']['accessKey'],$cumulative);
   
-    return $tcKeywords;
+    return $items;
   }
   
   

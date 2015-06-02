@@ -2526,6 +2526,46 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
   if( $my['options']['copy_requirements'] )
   {
     $oldNewMappings['requirements'] = $this->copy_requirements($id,$new_id,$user_id);
+  
+    // need to copy relations between requirements
+    $rel = null;
+    foreach ($oldNewMappings['requirements'] as $okey => $nkey) 
+    {
+      $sql = "/* $debugMsg */ SELECT id, source_id, destination_id," .
+             " relation_type, author_id, creation_ts " . 
+             " FROM {$this->tables['req_relations']} " .
+             " WHERE source_id=$okey OR destination_id=$okey ";
+
+      $rel[$okey] = $this->db->get_recordset($sql);
+    }
+
+    if(!is_null($rel))
+    {
+      $totti = $this->db->db_now();
+      foreach($rel as $okey => $ir)
+      {
+        if(!is_null($ir))
+        {
+          foreach ($ir as $rval) 
+          {
+            if( isset($done[$rval['id']]) )
+            {
+              continue;
+            }  
+            
+            $done[$rval['id']] = $rval['id']; 
+            $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_relations']} "  . 
+                   " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+                   " values (" .
+                   $oldNewMappings['requirements'][$rval['source_id']] . "," .
+                   $oldNewMappings['requirements'][$rval['destination_id']] . "," .
+                   $rval['relation_type'] . "," . $rval['author_id'] . "," .
+                   "$totti)";
+            $this->db->exec_query($sql);
+          }
+        }  
+      }  
+    }
   }
 
   // need to get subtree and create a new one
@@ -2762,14 +2802,16 @@ private function copy_requirements($source_id,$target_id,$user_id)
     // Because due to order used to copy different items, when we ask to copy
     // requirements WE DO NOT HAVE TEST CASES on new test project.
     //
-    $options = array('copy_also' => array('testcase_assignments' => false), 'caller' => 'copy_testproject');
+    $options = array('copy_also' => array('testcase_assignments' => false), 
+                     'caller' => 'copy_testproject');
+    
+    $rel = null;
     foreach($elements as $piece)
     {
       $op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
       $mappings += $op['mappings'];
     }
   }
-  
   return (!is_null($mappings) && isset($mappings['req'])) ? $mappings['req'] : null;
 }
 

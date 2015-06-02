@@ -23,7 +23,9 @@ require_once('config.inc.php');
 require_once('./cfg/reports.cfg.php');
 require_once('common.php');
 
-$args = init_args();
+// testlinkInitPage($db,false,true);
+doDBConnect($db);
+$args = init_args($db);
 switch($args->light)
 {
   case 'red':
@@ -37,6 +39,11 @@ switch($args->light)
     
     switch($args->type)
     {
+      case 'exec':
+        $what2launch = "lib/execute/execPrint.php" .
+                       "?id={$args->id}&apikey=$args->apikey";
+      break;
+
       case 'file':
         $what2launch = "lib/attachments/attachmentdownload.php" .
                        "?id={$args->id}&apikey=$args->apikey";
@@ -126,6 +133,8 @@ switch($args->light)
     {
       // 20150312 - changed to be able to get XLS file using wget
       // redirect(TL_BASE_HREF . $what2launch);
+      //echo $what2launch;
+      //die();
       header('Location:' . TL_BASE_HREF . $what2launch);
       exit();
     }
@@ -142,7 +151,7 @@ switch($args->light)
 /**
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $args = new stdClass();
@@ -168,6 +177,7 @@ function init_args()
                   
   R_PARAMS($iParams,$args);
 
+  // new dBug($args);
   $args->format = intval($args->format);
   $args->format = ($args->format <= 0) ? FORMAT_HTML : $args->format;
 
@@ -183,10 +193,34 @@ function init_args()
   }
   else
   {
+    if($args->type == 'exec')
+    {
+      $tex = DB_TABLE_PREFIX . 'executions';
+      $sql = "SELECT testplan_id FROM $tex WHERE id=" . intval($args->id);
+      $rs = $dbHandler->get_recordset($sql);
+      if( is_null($rs) )
+      {
+        die();
+      }  
+
+      $rs = $rs[0];
+      $tpl = DB_TABLE_PREFIX . 'testplans';
+      $sql = "SELECT api_key FROM $tpl WHERE id=" . intval($rs['testplan_id']);
+      $rs = $dbHandler->get_recordset($sql);
+      if( is_null($rs) )
+      {
+        die();
+      }  
+      $rs = $rs[0];
+      $args->apikey = $rs['api_key'];
+      $args->envCheckMode = 'hippie';
+    }  
+
     $args->debug = 'OBJECT-APIKEY';
     $kerberos = new stdClass();
     $kerberos->args = $args;
     $kerberos->method = null;
+    
     if( setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$kerberos,$opt) )
     {
       $args->light = 'green';

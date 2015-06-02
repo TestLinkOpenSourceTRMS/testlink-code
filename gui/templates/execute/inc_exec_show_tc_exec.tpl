@@ -246,7 +246,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
             {$deletedUserString}
   				{/if}  
   				</td>
-  				<td class="{$tlCfg->results.code_status.$tc_status_code}" style="text-align:center">
+  				<td class="{$tlCfg->results.code_status.$tc_status_code}" 
+              style="text-align:center" title="(ID:{$tc_old_exec.execution_id})">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
   				

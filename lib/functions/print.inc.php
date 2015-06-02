@@ -774,7 +774,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
   static $id_descr;
   static $tplan_mgr;
   $code = null;
-   
+
   if(!$tree_mgr)
   { 
     $tplan_mgr = new testplan($db);
@@ -784,7 +784,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
     $k2i = array('tproject_id' => 0, 'tplan_id' => 0, 'platform_id' => 0,  'build_id' => 0, 'prefix' => null);
     $context = array_merge($k2i,$context);
   }
-  
+
   $node_type = $id_descr[intval($node['node_type_id'])];
   switch($node_type)
   {
@@ -810,7 +810,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
     for($idx = 0;$idx < $children_qty ;$idx++)
     {
       $current = $childNodes[$idx];
-      if(is_null($current))
+      if(is_null($current) || $current == REMOVEME)
       {
         continue;
       }
@@ -891,7 +891,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   static $tcase_prefix;
   static $userMap = array();
   static $cfg;
-  static $locationFilters;
   static $tables = null;
   static $force = null;
   static $bugInterfaceOn = false;
@@ -899,6 +898,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   static $buildCfields;  
   static $statusL10N;
   static $docRepo;
+
+  static $st;
 
   $code = null;
   $tcInfo = null;
@@ -917,12 +918,14 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   // init static elements
   if (!$tables)
   {
+    $st = new stdClass();
+
     $tables = tlDBObject::getDBTables(array('executions','builds','execution_tcsteps'));
     $tc_mgr = new testcase($db);
     $tplan_urgency = new testPlanUrgency($db);
     $build_mgr = new build_mgr($db);
     $tplan_mgr = new testplan($db);
-
+    $req_mgr = new requirement_mgr($db);
 
     list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr,$options);
 
@@ -959,10 +962,24 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       }  
     }
     $docRepo = tlAttachmentRepository::create($db);
+
+    $st->locationFilters = $tc_mgr->buildCFLocationMap();
+  
+    // change table style in case of single TC printing to not be indented
+    $st->table_style = "";
+    if (isset($options['docType']) && $options['docType'] == SINGLE_TESTCASE) 
+    {
+      $st->table_style = 'style="margin-left: 0;"';
+    }
+
+    $st->cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 
+                                  'value_css_style' => 
+                                  ' colspan = "' . ($cfg['tableColspan']-1) . '" ' );
+
+    $info = null;
   }
 
-  $cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 
-                            'value_css_style' => ' colspan = "' . ($cfg['tableColspan']-1) . '" ' );
+ 
 
   /** 
    * @TODO THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
@@ -1055,6 +1072,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
     $getByID['tcversion_id'] = $linkedItem[0]['tcversion_id'];
     $getByID['filters'] = null;
+    $linkedItem = null;
+
     if( !is_null($exec_info) )
     {
       $getByID['tcversion_id'] = null;
@@ -1069,9 +1088,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       }  
     }  
   }
-
-  //
-  $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
+ 
+ $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
                                array('renderGhost' => true,'renderImageInline' => true));
   if ($tcInfo)
   {
@@ -1079,36 +1097,31 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   }
   $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
   $name = htmlspecialchars($node['name']);
-  $versionID = $tcInfo['id'];
 
   $cfields = array('specScope' => null, 'execScope' => null);
   if ($options['cfields'])
   {
-    if (!$locationFilters)
-    {
-      $locationFilters = $tc_mgr->buildCFLocationMap();
-    }  
-  
     // Get custom fields that has specification scope
     // Custom Field values at Test Case VERSION Level
-    foreach($locationFilters as $fkey => $fvalue)
+    
+
+    foreach($st->locationFilters as $fkey => $fvalue)
     { 
       $cfields['specScope'][$fkey] = 
           $tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
-                                                         $tprojectID,$cfieldFormatting,$tcInfo['id']);             
+                                                     $tprojectID,
+                                                     $st->cfieldFormatting,$tcInfo['id']);             
     }           
 
     if (!is_null($exec_info))
     {
-      $execution_id = $exec_info[0]['execution_id'];
-      $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
-                                                                         $execution_id, $tplan_id,
-                                                                         $tprojectID,$cfieldFormatting);
+      $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values(
+                                       $tcInfo['id'],'execution',null,
+                                       $exec_info[0]['execution_id'], $tplan_id,
+                                       $tprojectID,$st->cfieldFormatting);
     }  
   }
 
-
-   
   if ($options['toc'])
   {
     // EXTERNAL ID added
@@ -1118,16 +1131,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
   }
     
-  // change table style in case of single TC printing to not be indented
-  $table_style = "";
-  if (isset($options['docType']) && $options['docType'] == SINGLE_TESTCASE) 
-  {
-    $table_style = 'style="margin-left: 0;"';
-  }
   
-   $code .= '<p>&nbsp;</p><div> <table class="tc" width="90%" ' . $table_style . '>';
-   $code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . 
-            htmlspecialchars($external_id) . ": " . $name;
+  $code .= '<p>&nbsp;</p><div> <table class="tc" width="90%" ' . $st->table_style . '>';
+  $code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . 
+           htmlspecialchars($external_id) . ": " . $name;
 
   // add test case version 
   switch($env->reportType)
@@ -1400,8 +1407,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '">' . "</td></tr>";
   $code .= $cfields['specScope']['standard_location'] . $cfields['execScope'];
   
+  // 
+  $cfields = null;
+  $prio_info = null;
 
 
+  // $code = null;
   // 20140813
   $relSet = $tc_mgr->getRelations($id);
   if(!is_null($relSet['relations']))
@@ -1427,16 +1438,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     } 
     $code .= '</td></tr>';
   }  
-
+  $relSet = null;
 
 
   // collect REQ for TC
   if ($options['requirement'])
   {
-    if(!$req_mgr)
-    {
-      $req_mgr = new requirement_mgr($db);
-    }
     $requirements = $req_mgr->get_all_for_tcase($id);
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['reqs'].'</span>'; 
@@ -1455,17 +1462,18 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }
     $code .= "</td></tr>\n";
   }
-    
+  $requirements = null;
+
   // collect keywords for TC
   if ($options['keyword'])
   {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['keywords'].':</span>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
-    $arrKeywords = $tc_mgr->getKeywords($id);
-    if (sizeof($arrKeywords))
+    $kwSet = $tc_mgr->getKeywords($id,null,array('fields' => 'keyword_id,keywords.keyword'));
+    if (sizeof($kwSet))
     {
-      foreach ($arrKeywords as $kw)
+      foreach ($kwSet as $kw)
       {
         $code .= htmlspecialchars($kw['keyword']) . "<br />";
       }
@@ -1476,7 +1484,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }
     $code .= "</td></tr>\n";
   }
-
+  $kwSet = null;
 
   // Attachments
   $attachSet =  (array)$tc_mgr->getAttachmentInfos($id);
@@ -1509,6 +1517,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }
     $code .="</ul></td></tr>";
   }
+  $attachSet = null;
+
 
   // generate test results data for test report 
   if ($options['passfail'])
@@ -1550,9 +1560,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                '<td colspan="' . ($cfg['tableColspan']-1) . '"><b>' . $labels["test_status_not_run"] . 
                "</b></td></tr>\n";
     }
+    $execAttachInfo = null;
+    $exec_info = null;
   }
-
-
 
   $code .= "</table>\n</div>\n";
   return $code;
@@ -1596,9 +1606,12 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   static $l10n;
   static $title_separator;
   static $cfieldFormatting;
+  static $getOpt;
 
   if(is_null($l10n))
   {
+    $tsuite_mgr = new testsuite($db);
+    
     $l10n = array('test_suite' => 'test_suite', 'details' => 'details', 
                   'attached_files' => 'attached_files');
                     
@@ -1606,6 +1619,10 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
 
     $title_separator = config_get('gui_title_separator_1');
     $cfieldFormatting = array('table_css_style' => 'class="cf"');
+
+    $getOpt['getByID'] = array('fields' => ' TS.id,TS.details ',
+                               'renderImageInline' => true);
+    
   }  
 
   $code = null;
@@ -1616,8 +1633,6 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
     
   if ($options['toc'])
   {
-  
-    // echo $env->tocPrefix . '<br>';
     $spacing = ($indentLevel == 2 && $tocPrefix != 1) ? "<br>" : "";
     $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10 * $indentLevel).'px;">' .
                            '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . 
@@ -1640,23 +1655,17 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   // ----- get Test Suite text -----------------
   if ($options['header'])
   {
-    if( !$tsuite_mgr)
-    { 
-      $tsuite_mgr = new testsuite($db);
-    }
-  
-    $tInfo = $tsuite_mgr->get_by_id($node['id'],array('renderImageInline' => true));
+    $tInfo = $tsuite_mgr->get_by_id($node['id'],$getOpt['getByID']);
     if ($tInfo['details'] != '')
     {
       $code .= '<div>' . $tInfo['details'] . '</div>';
     }
-     
-    $attachSet =  (array)$tsuite_mgr->getAttachmentInfos($node['id']);
+    $tInfo = null;
 
+    $attachSet =  (array)$tsuite_mgr->getAttachmentInfos($node['id']);
     if (count($attachSet) > 0)
     {
       $code .= '<table><caption style="text-align:left;">' . $l10n['attached_files'] . '</caption>';
-      // $code .= '<tr><td><span class="label">' . 'UUUU' . $labels['attached_files'] . "</span></td><td><ul>";
       $code .= '<tr><td>&nbsp</td>';
       $code .= '<td><ul>';
       foreach($attachSet as $item)
@@ -1684,7 +1693,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
       $code .="</ul></td></tr>";
       $code .= "</table>";
     }
-
+    $attachSet = null;
 
     // get Custom fields    
     // Attention: for test suites custom fields can not be edited during execution,
@@ -1699,6 +1708,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
         $code .= '<p>' . $cfields[$key] . '</p>';    
       }
     }
+    $cfields = null;
   }
   return $code;
 }
@@ -2046,24 +2056,27 @@ function renderTestPlanItem($info)
  */
 function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null)
 {
+  static $tprojectMgr;
+  static $tcaseMgr;
+  static $st;
+
   $out =  '';
+ 
+  if(!$st)
+  {
+    $st = new stdClass();
+    $st->tables = tlDBObject::getDBTables(array('executions','builds'));
 
-  // $id = $node['id'];
-  // $level = $context['level'];  ===> WRONG
-  // $prefix = isset($context['prefix']) ? $context['prefix'] : null;
-  // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
-  // $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
-  // $platform_id = isset($context['platform_id']) ? $context['platform_id'] : 0;
-  // $build_id = isset($context['build_id']) ? $context['build_id'] : 0;
-
-  $tables = tlDBObject::getDBTables(array('executions','builds'));
+    $tprojectMgr = new testproject($dbHandler);
+    $tcaseMgr = new testcase($dbHandler);
+  }  
 
   $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
          " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
          " E.platform_id,E.execution_duration, " .
          " B.name AS build_name, B.id AS build_id " .
-         " FROM {$tables['executions']} E " .
-         " JOIN {$tables['builds']} B  ON B.id = E.build_id " .
+         " FROM {$st->tables['executions']} E " .
+         " JOIN {$st->tables['builds']} B  ON B.id = E.build_id " .
          " WHERE E.id = " . intval($id); 
 
   $exec_info = $dbHandler->get_recordset($sql);
@@ -2079,7 +2092,6 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
     $context['build_id'] = $exec_info['build_id'];
     $context['level'] = '??'; // ???
 
-    $tprojectMgr = new testproject($dbHandler);
     $node = $tprojectMgr->tree_manager->get_node_hierarchy_info($context['tplan_id']);
     $context['prefix'] = $tprojectMgr->getTestCasePrefix($node['parent_id']);
     $context['tproject_id'] = $node['parent_id'];
@@ -2107,7 +2119,6 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
     // Because here we need to get data for renderTestCaseForPrinting
     //
     // The Cinematic Orchestra: To build a home Incubus: Wish you were here Mau Mau: La ola
-    $tcaseMgr = new testcase($dbHandler);
     $node = $tcaseMgr->tree_manager->get_node_hierarchy_info($exec_info['tcversion_id']);
 
     // get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null)
@@ -2133,8 +2144,8 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
 
     $context['user'] = $userObj;
     $out .= renderTestCaseForPrinting($dbHandler,$tcase,$renderOptions,$env,$context,$indentLevel); 
-
+    $exec_info = null;    
   }  
-  return $out;
 
+  return $out;
 }

@@ -569,10 +569,7 @@ $tlCfg->text_status_labels = array(
     TL_REVIEW_STATUS_FUTURE => 'review_status_future');
 
 /** 
- * @deprecated 1.9
- * @TODO havlatm: obsolete - remove (use consts above) 
- * TL_REQ_STATUS_NOT_TESTABLE -> TL_REQ_TYPE_INFO
- * TL_REQ_STATUS_VALID -> TL_REQ_TYPE_FEATURE
+ *
  **/
 define('TL_REQ_STATUS_VALID',     'V');
 define('TL_REQ_STATUS_NOT_TESTABLE','N');

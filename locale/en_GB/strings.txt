@@ -3799,7 +3799,7 @@ $TLS_buildMetricsFeedback = $TLS_title_metrics_x_build .
 // execHistory.php
 $TLS_btn_show_exec_history = 'Execution History';
 $TLS_tcase_never_executed = 'This Test Case has not been executed';
-
+$TLS_display_only_active_test_plans = 'Display only active test plans';
 
 // issueTrackerView.tpl
 $TLS_th_issuetracker = 'Issue Tracker';

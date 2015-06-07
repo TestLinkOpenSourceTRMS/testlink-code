@@ -8,7 +8,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get var='labels' 
           s='title_test_case,th_test_case_id,version,date_time_run,platform,test_exec_by,
              exec_status,testcaseversion,attachment_mgmt,deleted_user,build,testplan,
-             execution_type_manual,execution_type_auto,run_mode,exec_notes,edit_execution'}
+             execution_type_manual,execution_type_auto,run_mode,exec_notes,
+             edit_execution,display_only_active_test_plans'}
 
 
 {include file="inc_head.tpl" openHead='yes'}
@@ -18,7 +19,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	The array panel_init_functions is filled with init functions (see below)
 	or inc_exec_show_tc_exec.tpl and executed from onReady below *}
 <script>
-{literal}
 panel_init_functions = new Array();
 Ext.onReady(function() {
 	for(var gdx=0; gdx<panel_init_functions.length;gdx++) {
@@ -29,14 +29,13 @@ Ext.onReady(function() {
 function load_notes(panel,exec_id)
 {
   var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
-  panel.load({url:url2load});
+  panel.load({ url:url2load });
 }
-{/literal}
 </script>
 </head>
 
-{assign var="attachment_model" value=$gui->exec_cfg->att_model}
-{assign var="my_colspan" value=$attachment_model->num_cols+2}
+{$attachment_model=$gui->exec_cfg->att_model}
+{$my_colspan=$attachment_model->num_cols+2}
 
 <body onUnload="storeWindowSize('execHistoryPopup')">
 {if $gui->main_descr != ''}
@@ -45,8 +44,17 @@ function load_notes(panel,exec_id)
 {/if}
 <div class="workBack">
 	{if $gui->warning_msg == ''}
+
+    <form name="execHistory" id="execHistory" action="lib/execute/execHistory.php">
+      <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}">
+      {$labels.display_only_active_test_plans}
+      <input type="checkbox"
+             id="onlyActiveTestPlans" name="onlyActiveTestPlans"
+             {if $gui->onlyActiveTestPlans} checked {/if}
+             style="font-size: 90%;" onclick="this.form.submit()"/>
+    </form>
+
 		<table cellspacing="0" class="exec_history">
-			{* Table Header *} 
 			<tr>
 				<th style="text-align:left">{$labels.date_time_run}</th>
 				<th style="text-align:left">{$labels.testplan}</th>

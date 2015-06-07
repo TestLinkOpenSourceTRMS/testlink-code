@@ -232,7 +232,7 @@ viewer for test case in test specification
   {/if}
   </span>
   <span>
-    <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
+    <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id},1);"
            value="{$tcView_viewer_labels.btn_show_exec_history}" />
   
 

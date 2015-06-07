@@ -41,7 +41,9 @@ $gui->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID
 // 
 
 // Need to get all test plans user is able to access.
-$testPlanSet = (array)$args->user->getAccessibleTestPlans($db,$gui->tproject_id);
+$testPlanSet = 
+  (array)$args->user->getAccessibleTestPlans($db,$gui->tproject_id,null,
+                                             array('active' => $args->onlyActiveTestPlans));
 $filters['testplan_id'] = null;
 foreach($testPlanSet as $rx)
 {
@@ -77,28 +79,49 @@ if(!is_null($gui->execSet) )
 $gui->displayPlatformCol = !is_null($gui->execPlatformSet) ? 1 : 0;
 $gui->main_descr = lang_get('execution_history');
 $gui->detailed_descr = lang_get('test_case') . ' ' . $idCard;
+$gui->tcase_id = intval($args->tcase_id);
+$gui->onlyActiveTestPlans = intval($args->onlyActiveTestPlans);
+
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-
+/**
+ *
+ *
+ */
 function init_args()
 {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
-  $iParams = array("tcase_id" => array(tlInputParameter::INT_N));
+
+  $iParams = array("tcase_id" => array(tlInputParameter::INT_N),
+                   'onlyActiveTestPlans' => array(tlInputParameter::INT_N));
   $pParams = R_PARAMS($iParams);
 
   $args = new stdClass();
   $args->tcase_id = intval($pParams["tcase_id"]);
-  
+
+  $args->onlyActiveTestPlans = null;
+  if(intval($pParams["onlyActiveTestPlans"]) > 0  ||  
+     $pParams["onlyActiveTestPlans"] == 'on')
+  {
+    $args->onlyActiveTestPlans = 1;  
+  }  
+
   // not a very good solution but a Quick & Dirty Fix
   $args->user = $_SESSION['currentUser'];
+
   return $args;
 }
 
 
+/**
+ *
+ *
+ */
 function getIssues(&$dbHandler,&$execSet,$tprojectID)
 {
 
@@ -125,7 +148,10 @@ function getIssues(&$dbHandler,&$execSet,$tprojectID)
   return $issues;
 }
 
-
+/**
+ *
+ *
+ */
 function getCustomFields(&$tcaseMgr,&$execSet)
 {
   $cf = array();
@@ -144,6 +170,10 @@ function getCustomFields(&$tcaseMgr,&$execSet)
   return $cf;
 }
 
+/**
+ *
+ *
+ */
 function getAttachments(&$dbHandler,&$execSet)
 {
   $attachmentMgr = tlAttachmentRepository::create($dbHandler);
@@ -165,5 +195,3 @@ function getAttachments(&$dbHandler,&$execSet)
   }
   return $att;
 }
-
-?>

@@ -1478,13 +1478,21 @@ class testplan extends tlObjectWithAttachments
     {
       foreach($rs as $build)
       {
+        $add2sql = '';
+        $fields = 'name,notes,';
+        if(strlen(trim($build['release_date'])) > 0)
+        {
+          $fields .= 'release_date,';
+          $add2sql = "'" . $this->db->prepare_string($build['release_date']) . "',";
+        }       
+        $fields .= 'testplan_id';
+
         $sql = " /* $debugMsg */ INSERT INTO {$this->tables['builds']} " .
-               " (name,notes,release_date,testplan_id) " .
+               " ({$fields}) " .
                "VALUES ('" . $this->db->prepare_string($build['name']) ."'," .
-               "'" . $this->db->prepare_string($build['notes']) . "'," .
-               "'" . $this->db->prepare_string($build['release_date']) . "'," .
-               " {$new_tplan_id})";
+               "'" . $this->db->prepare_string($build['notes']) . "', {$add2sql} {$new_tplan_id})";
         
+        echo $sql;
         $this->db->exec_query($sql);
         $new_id = $this->db->insert_id($this->tables['builds']);
         $id_mapping[$build['id']] = $new_id;

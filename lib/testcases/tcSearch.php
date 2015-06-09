@@ -10,12 +10,12 @@
  * @filesource  tcSearch.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
- *  @internal revisions
- *  @since 1.9.13
+ * @internal revisions
+ * @since 1.9.14
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -27,13 +27,20 @@ $smarty = new TLSmarty();
 
 $tpl = 'tcSearchResults.tpl';
 $tproject_mgr = new testproject($db);
-
+$tcase_mgr = new testcase ($db);
+ 
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $filter = null;
 list($args,$filter) = init_args($tproject_mgr);
 
-$gui = initializeGui($args,$tproject_mgr);
+$ga = initializeGui($args,$tproject_mgr);
+$gx = $tcase_mgr->getTcSearchSkeleton($args);
+$gui = (object)array_merge((array)$ga,(array)$gx);
+
+initSearch($gui,$args,$tproject_mgr);
+
+
 $map = null;
 
 if ($args->tprojectID && $args->doAction == 'doSearch')
@@ -56,7 +63,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
         $args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
       }
         
-      $tcase_mgr = new testcase ($db);
       $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
       $filter['by_tc_id'] = " AND NH_TCV.parent_id = " . intval($tcaseID);
   }
@@ -259,6 +265,7 @@ if (!is_null($table))
   $gui->tableSet[] = $table;
 }
 
+
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
@@ -360,7 +367,7 @@ function init_args(&$tprojectMgr)
 
   $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
-  if(is_null($args->tproject_id))
+  if(is_null($args->tproject_id) || intval($args->tproject_id) <= 0)
   {
     $args->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
     $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
@@ -376,9 +383,6 @@ function init_args(&$tprojectMgr)
   {
     throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
   }   
-
-
-
 
   // convert "creation date from" to iso format for database usage
   $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
@@ -434,32 +438,51 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   
   // ----------------------------------------------------
   $gui->mainCaption = lang_get('testproject') . " " . $argsObj->tprojectName;
+ 
   $gui->creation_date_from = null;
   $gui->creation_date_to = null;
   $gui->modification_date_from = null;
   $gui->modification_date_to = null;
   $gui->search_important_notice = sprintf(lang_get('search_important_notice'),$argsObj->tprojectName);
 
-  $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,cfield_mgr::ENABLED,null,'testcase');
+  // $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,cfield_mgr::ENABLED,null,'testcase');
+  // $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
+  // $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
+  // $gui->filter_by['keyword'] = !is_null($gui->keywords);
+  // $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
+  // $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 
-  $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
-
-  $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
-  $gui->filter_by['keyword'] = !is_null($gui->keywords);
-
-  $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
-  $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
-
-  $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
-                                  LOW => lang_get('low_importance'));
+  // $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
+  //                                LOW => lang_get('low_importance'));
 
  
-  $dummy = getConfigAndLabels('testCaseStatus','code');
-  $gui->domainTCStatus = array(0 => '') + $dummy['lbl'];
+  //$dummy = getConfigAndLabels('testCaseStatus','code');
+  //$gui->domainTCStatus = array(0 => '') + $dummy['lbl'];
 
 
   // need to set values that where used on latest search (if any was done)
   // $gui->importance = config_get('testcase_importance_default');
+
+  return $gui;
+}
+
+/**
+ *
+ */
+function initSearch(&$gui,&$argsObj,&$tprojectMgr)
+{
+  $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,
+                                                                           cfield_mgr::ENABLED,null,'testcase');
+
+  $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
+
+  $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
+  $gui->filter_by['keyword'] = !is_null($gui->keywords);
+
+  $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
+  $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
+  $reqSpecSet = null; 
+
   $gui->importance = intval($argsObj->importance);
   $gui->status = intval($argsObj->status);
   $gui->tcversion = (is_null($argsObj->version) || $argsObj->version == '') ? '' : intval($argsObj->version);
@@ -487,9 +510,5 @@ function initializeGui(&$argsObj,&$tprojectMgr)
       $gui->$key = '';  
     }  
   }  
-                   
 
-
-
-  return $gui;
 }

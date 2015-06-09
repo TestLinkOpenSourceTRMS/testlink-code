@@ -7286,4 +7286,54 @@ class testcase extends tlObjectWithAttachments
   }
 
 
+
+  /**
+   *
+   */
+  function getTcSearchSkeleton($userInput=null)
+  {
+    $sk = new stdClass();
+
+    $sk->creation_date_from = null;
+    $sk->creation_date_to = null;
+    $sk->modification_date_from = null;
+    $sk->modification_date_to = null;
+    $sk->search_important_notice = '';
+    $sk->design_cf = '';
+    $sk->keywords = '';
+    $sk->filter_by['design_scope_custom_fields'] = false;
+    $sk->filter_by['keyword'] = false;
+    $sk->filter_by['requirement_doc_id'] = false;
+    $sk->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
+                                           LOW => lang_get('low_importance'));
+
+    $dummy = getConfigAndLabels('testCaseStatus','code');
+    $sk->domainTCStatus = array(0 => '') + $dummy['lbl'];
+    $sk->importance = null;
+    $sk->status = null;
+    $sk->tcversion = null;
+    $sk->tcasePrefix = '';
+    $sk->targetTestCase = '';
+  
+    $txtin = array("created_by","edited_by","jolly");   
+    $jollyKilled = array("summary","steps","expected_results","preconditions","name");
+    $txtin = array_merge($txtin, $jollyKilled);
+  
+    foreach($txtin as $key )
+    {
+      $sk->$key = !is_null($userInput) ? $userInput->$key : '';
+    }  
+
+    if(!is_null($userInput) && $userInput->jolly != '')
+    {
+      foreach($jollyKilled as $key)
+      {
+        $sk->$key = '';  
+      }  
+    }  
+
+    return $sk;
+  }
+ 
+
 }  

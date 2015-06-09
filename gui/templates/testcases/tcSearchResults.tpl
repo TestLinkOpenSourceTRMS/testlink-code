@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcSearchResults.tpl,v 1.6 2010/09/21 10:03:18 mx-julian Exp $
-Purpose: smarty template - view test case in test specification
-
+tcSearchResults.tpl
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
+
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
   {$tableID="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
@@ -20,6 +20,7 @@ Purpose: smarty template - view test case in test specification
 
 </head>
 
+<body>
 <h1 class="title">{$gui->pageTitle}</h1>
 
 {include file="testcases/tcSearchGUI.inc.tpl"}

@@ -364,10 +364,15 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   else 
   {
     $templateCfg = templateConfiguration();
-    $xbm = new stdClass();
+
+    // need to initialize search fields
+    $xbm = $item_mgr->getTcSearchSkeleton();
     $xbm->warning_msg = lang_get('no_records_found');
     $xbm->pageTitle = lang_get('caption_search_form');
     $xbm->tableSet = null;
+    $xbm->doSearch = false;
+    $xbm->tproject_id = $args->tproject_id;
+
     $tplEngine->assign('gui',$xbm);
     $tplEngine->display($templateCfg->template_dir . 'tcSearchResults.tpl');
   }  

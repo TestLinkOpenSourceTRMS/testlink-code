@@ -1492,7 +1492,6 @@ class testplan extends tlObjectWithAttachments
                "VALUES ('" . $this->db->prepare_string($build['name']) ."'," .
                "'" . $this->db->prepare_string($build['notes']) . "', {$add2sql} {$new_tplan_id})";
         
-        echo $sql;
         $this->db->exec_query($sql);
         $new_id = $this->db->insert_id($this->tables['builds']);
         $id_mapping[$build['id']] = $new_id;

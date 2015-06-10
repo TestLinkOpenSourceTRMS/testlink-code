@@ -877,7 +877,7 @@ class testcase extends tlObjectWithAttachments
       $allTCKeywords = $this->getKeywords($idSet,null,$gkOpt);
 
       $ovx = 0;
-      $gui->linked_versions[] = null;
+      $gui->linked_versions = null;
       foreach($idSet as $key => $tc_id)
       {
         // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
@@ -901,7 +901,7 @@ class testcase extends tlObjectWithAttachments
         {
           $gui->linked_versions[] = $this->get_linked_versions($tc_id);
         }  
-        
+        new dBug($gui->linked_versions);
 
         $gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 

@@ -827,6 +827,12 @@ class testcase extends tlObjectWithAttachments
    */
   function show(&$smarty,$guiObj,$identity,$grants)
   {
+    static $cfg;
+
+    if(!$cfg)
+    {
+      $cfg = config_get('spec_cfg');
+    }  
 
     $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
@@ -871,6 +877,7 @@ class testcase extends tlObjectWithAttachments
       $allTCKeywords = $this->getKeywords($idSet,null,$gkOpt);
 
       $ovx = 0;
+      $gui->linked_versions[] = null;
       foreach($idSet as $key => $tc_id)
       {
         // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
@@ -889,7 +896,13 @@ class testcase extends tlObjectWithAttachments
 
         // status quo of execution and links of tc versions
         $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
-        $gui->linked_versions[] = $this->get_linked_versions($tc_id);
+        
+        if($cfg->show_tplan_usage)
+        {
+          $gui->linked_versions[] = $this->get_linked_versions($tc_id);
+        }  
+        
+
         $gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 
         $tc_current = $tc_array[0];

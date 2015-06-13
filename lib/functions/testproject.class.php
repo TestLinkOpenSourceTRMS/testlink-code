@@ -1179,19 +1179,35 @@ function setPublicStatus($id,$status)
    * @param int $id the keywordID
    * @return int returns 1 on success, 0 else
    *
-   * @todo should we now increment the tcversion also?
    **/
-  function deleteKeyword($id)
+  function deleteKeyword($id, $opt=null)
   {
     $result = tl::ERROR;
-    $keyword = $this->getKeyword($id);
-    if ($keyword)
+    $my['opt'] = array('checkBeforeDelete' => true, 'nameForAudit' => null,
+                       'context' => '');
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $doIt = !$my['opt']['checkBeforeDelete'];
+    $keyword = $my['opt']['nameForAudit'];
+    if($my['opt']['checkBeforeDelete'])
+    {
+      $kw = $this->getKeyword($id);
+      if( $doIt = !is_null($kw) )
+      {
+        $keyword = $kw->name;
+      }  
+    }  
+    
+    if($doIt)
     {
       $result = tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
     }
-    if ($result >= tl::OK)
+
+    if ($result >= tl::OK && $this->auditCfg->logEnabled)
     {
-      logAuditEvent(TLS("audit_keyword_deleted",$keyword->name),"DELETE",$id,"keywords");
+      logAuditEvent(TLS("audit_keyword_deleted",$keyword,$my['opt']['context']),
+                    "DELETE",$id,"keywords");
     }
     return $result;
   }
@@ -1199,15 +1215,26 @@ function setPublicStatus($id,$status)
   /**
    * delete Keywords
    */
-  function deleteKeywords($testproject_id)
+  function deleteKeywords($tproject_id,$tproject_name=null)
   {
     $result = tl::OK;
-    $kwIDs = $this->getKeywordIDsFor($testproject_id);
-    for($i = 0;$i < sizeof($kwIDs);$i++)
+
+    $itemSet = $this->getKeywordSet($tproject_id);
+    $kwIDs = array_keys($itemSet);
+
+    $opt = array('checkBeforeDelete' => false,
+                 'context' => $tproject_name);
+
+    $loop2do = sizeof($kwIDs);
+    for($idx = 0;$idx < $loop2do; $idx++)
     {
-      $resultKw = $this->deleteKeyword($kwIDs[$i]);
+      $opt['nameForAudit'] = $itemSet[$kwIDs[$idx]]['keyword'];
+
+      $resultKw = $this->deleteKeyword($kwIDs[$idx],$opt);
       if ($resultKw != tl::OK)
+      {  
         $result = $resultKw;
+      }  
     }
     return $result;
   }
@@ -1225,6 +1252,20 @@ function setPublicStatus($id,$status)
     $keywordIDs = $this->db->fetchColumnsIntoArray($query,'id');
     return $keywordIDs;
   }
+
+  /**
+   * 
+   *
+   */
+  protected function getKeywordSet($tproject_id)
+  {
+    $sql = " SELECT id,keyword FROM {$this->tables['keywords']}  " .
+           " WHERE testproject_id = {$tproject_id}" .
+           " ORDER BY keyword ASC";
+    $items = $this->db->fetchRowsIntoMap($sql,'id');
+    return $items;
+  }
+
 
   /**
    * 
@@ -1844,6 +1885,7 @@ function setPublicStatus($id,$status)
     $reqspec_mgr = new requirement_spec_mgr($this->db);
     
     // get some info for audit
+    $info['name'] = '';
     if($this->auditCfg->logEnabled)
     {
       $info = $this->tree_manager->get_node_hierarchy_info($id);
@@ -1878,7 +1920,7 @@ function setPublicStatus($id,$status)
     // inventory
     //
     // testproject
-    $this->deleteKeywords($id);
+    $this->deleteKeywords($id,$info['name']);
     $this->deleteAttachments($id);
     
     $reqSpecSet=$reqspec_mgr->get_all_id_in_testproject($id);
@@ -1979,7 +2021,11 @@ function setPublicStatus($id,$status)
     {
       // Delete test project with requirements defined crashed with memory exhausted
       $this->tree_manager->delete_subtree_objects($id,$id,'',array('testcase' => 'exclude_tcversion_nodes'));
-      $sql = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
+      $sql = "/* $debugMsg */ " .
+             " DELETE FROM {$this->tables['nodes_hierarchy']} " .
+             " WHERE id = {$id} AND node_type_id=" .
+             $this->tree_manager->node_descr_id['testproject'];
+
       $this->db->exec_query($sql);
 
       if($this->auditCfg->logEnabled)

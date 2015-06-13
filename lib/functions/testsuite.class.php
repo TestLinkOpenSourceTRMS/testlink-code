@@ -267,9 +267,10 @@ class testsuite extends tlObjectWithAttachments
    * ATTENTION: may be in future this can be refactored, and written better. 
    *
    */
-  function delete($id)
+  function delete($unsafe_id)
   {
-    $tcase_mgr = New testcase($this->db);
+    $tcase_mgr = new testcase($this->db);
+    $id = intval($unsafe_id);
     $tsuite_info = $this->get_by_id($id);
   
     $testcases=$this->get_children_testcases($id);
@@ -289,7 +290,8 @@ class testsuite extends tlObjectWithAttachments
     $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
     $result = $this->db->exec_query($sql);
       
-    $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
+    $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
+           "WHERE id={$id} AND node_type_id=" . $this->my_node_type;
     $result = $this->db->exec_query($sql);
   }
   

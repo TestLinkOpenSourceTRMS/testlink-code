@@ -1855,7 +1855,9 @@ class testplan extends tlObjectWithAttachments
     
     // Finally delete from main table
     $main_sql[]="DELETE FROM {$this->tables['testplans']} WHERE id={$id}";
-    $main_sql[]="DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
+    $main_sql[]="DELETE FROM {$this->tables['nodes_hierarchy']} " . 
+                "WHERE id={$id} AND node_type_id=" . 
+                $this->node_types_descr_id['testplan'];
     
     foreach($main_sql as $sql)
     {

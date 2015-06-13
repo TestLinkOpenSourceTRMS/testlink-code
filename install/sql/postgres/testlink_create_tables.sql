@@ -211,6 +211,7 @@ CREATE TABLE /*prefix*/executions(
 ); 
 CREATE INDEX /*prefix*/executions_idx1 ON /*prefix*/executions ("testplan_id","tcversion_id","platform_id","build_id");
 CREATE INDEX /*prefix*/executions_idx2 ON /*prefix*/executions ("execution_type");
+CREATE INDEX /*prefix*/executions_idx3 ON /*prefix*/executions ("tcversion_id");
 
 --
 -- Table structure for table "execution_tcsteps"
@@ -393,6 +394,7 @@ CREATE TABLE /*prefix*/attachments(  "id" BIGSERIAL NOT NULL ,
   "compression_type" INTEGER NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ); 
+CREATE INDEX /*prefix*/attachments_idx1 ON /*prefix*/attachments ("fk_id");
 
 --
 -- Table structure for table "db_version"

@@ -247,6 +247,10 @@ CREATE NONCLUSTERED INDEX /*prefix*/executions_IX1 ON  /*prefix*/executions
   testplan_id,tcversion_id,platform_id,build_id
 ) ON [PRIMARY];
 
+CREATE NONCLUSTERED INDEX /*prefix*/executions_IX3 ON  /*prefix*/executions 
+(
+  tcversion_id
+) ON [PRIMARY];
 
 --
 -- Table structure for table "execution_tcsteps"
@@ -396,6 +400,13 @@ CREATE TABLE /*prefix*/attachments (
   id ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+
+CREATE NONCLUSTERED INDEX /*prefix*/attachments_IX1 ON  /*prefix*/attachments 
+(
+  fk_id ASC
+) ON [PRIMARY];
+
+
 
 CREATE TABLE /*prefix*/node_types (
   id int IDENTITY(1,1) NOT NULL,

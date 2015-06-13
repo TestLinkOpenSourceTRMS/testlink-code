@@ -69,7 +69,8 @@ CREATE TABLE /*prefix*/attachments (
   `date_added` datetime NOT NULL default '0000-00-00 00:00:00',
   `content` longblob,
   `compression_type` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY /*prefix*/attachments_idx1(fk_id)
 ) DEFAULT CHARSET=utf8; 
 
 
@@ -217,8 +218,8 @@ CREATE TABLE /*prefix*/executions (
   notes text,
   PRIMARY KEY  (id),
   KEY /*prefix*/executions_idx1(testplan_id,tcversion_id,platform_id,build_id),
-  KEY /*prefix*/executions_idx2(execution_type)
-
+  KEY /*prefix*/executions_idx2(execution_type),
+  KEY /*prefix*/executions_idx3(tcversion_id)
 ) DEFAULT CHARSET=utf8;
 
 

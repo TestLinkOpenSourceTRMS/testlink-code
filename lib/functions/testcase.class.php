@@ -5122,10 +5122,13 @@ class testcase extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $sql = array();
-      $whereClause = " WHERE id IN (" . implode(',',(array)$step_id) . ")";
+    $whereClause = " WHERE id IN (" . implode(',',(array)$step_id) . ")";
     
     $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']} {$whereClause} ";
-    $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} {$whereClause} ";
+    $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} " .
+                " {$whereClause} AND node_type_id = " . 
+                $this->node_types_descr_id['testcase_step'];
+
     foreach($sqlSet as $sql)
     {
       $this->db->exec_query($sql);

@@ -56,6 +56,7 @@ $TLS_exec_attachments = 'Execution Attachments';
 $TLS_inactive_click_to_change = 'Inactive (click to set active)';
 
 $TLS_default_auth_method = "Default";
+$TLS_direct_link = 'Direct Link';
 $TLS_authentication_method = 'Authentication method';
 $TLS_type_not_configured = "system message: type not configured";
 $TLS_undefined = "undefined";

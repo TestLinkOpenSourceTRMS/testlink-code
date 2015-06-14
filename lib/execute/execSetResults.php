@@ -92,7 +92,11 @@ if(!is_null($linked_tcversions))
     $gui->bug_summary = $tcase_mgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
     $ts = sprintf(lang_get('execution_ts_iso'), date('Y-m-dTH:i',time()));
     $gui->bug_summary .= (' ' . $ts);
-     
+
+    $lk = current($linked_tcversions);
+    $gui->direct_link = trim($_SESSION['basehref'],'/') . 
+                        "/ltx.php?item=exec&feature_id=" . $lk[0]['feature_id'] .
+                        "&build_id=" . $args->build_id;
   }
   else
   {

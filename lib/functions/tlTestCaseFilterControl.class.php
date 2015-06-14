@@ -279,8 +279,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * @var array
    */
   private $all_settings = array('setting_testplan' => array("REQUEST", tlInputParameter::INT_N),
-                                'setting_build' => array("POST", tlInputParameter::INT_N),
-                                'setting_platform' => array("POST", tlInputParameter::INT_N),
+                                'setting_build' => array("REQUEST", tlInputParameter::INT_N),
+                                'setting_platform' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL));
 
   /**
@@ -418,6 +418,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     // add settings and filters to parameter info array for request parsers
     $params = array();
+
     foreach ($this->all_settings as $name => $info) 
     {
       if (is_array($info)) 

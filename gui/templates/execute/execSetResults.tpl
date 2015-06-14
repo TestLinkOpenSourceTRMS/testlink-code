@@ -248,6 +248,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
     <div class="groupBtn">
       <input type="hidden" id="history_on" name="history_on" value="{$gui->history_on}" />
+      
+      {$tlImages.toggle_direct_link} &nbsp;
+      <div class="direct_link" style='display:none'>
+      <a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 
       <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
       <input type="button" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"

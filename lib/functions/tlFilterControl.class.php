@@ -324,6 +324,13 @@ abstract class tlFilterControl extends tlObjectWithDB
       isset($_REQUEST[self::SIMPLE_FILTER_BUTTON_LABEL]) ? true : false;
     $this->args->advanced_filter_mode = 
       isset($_REQUEST[self::ADVANCED_FILTER_BUTTON_LABEL]) ? true : false;  
+
+    $this->args->loadExecDashboard = true;
+    if( isset($_REQUEST['loadExecDashboard']) )
+    {
+      $this->args->loadExecDashboard = intval($_REQUEST['loadExecDashboard']);
+    }  
+
   } // end of method
 
 

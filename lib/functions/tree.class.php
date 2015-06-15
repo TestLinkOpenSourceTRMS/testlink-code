@@ -480,8 +480,8 @@ class tree extends tlObject
 
     // look up the parent of this node
     $sql = "/* $debugMsg */ " . 
-           " SELECT id,name,parent_id,node_type_id,node_order FROM {$this->object_table} " .
-         " WHERE id = {$node_id} ";
+           " SELECT id,name,parent_id,node_type_id,node_order " .
+           " FROM {$this->object_table} WHERE id = " . intval($node_id);
     
     $result = $this->db->exec_query($sql);
     if( $this->db->num_rows($result) == 0 )
@@ -492,6 +492,12 @@ class tree extends tlObject
     
     while ( $row = $this->db->fetch_array($result) )
     {
+      // check & abort
+      if($row['parent_id'] == $row['id'])
+      {
+        throw new Exception("id = parent_id = " . $row['id'], 1);
+      } 
+
       // only continue if this $node isn't the root node
       // (that's the node with no parent)
       if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 

@@ -340,8 +340,12 @@ function initializeUserProperties(&$userObj,&$argsObj)
       $userObj->login = $argsObj->login;
   }
   $userObj->emailAddress = $argsObj->emailAddress;
-  $userObj->firstName = $argsObj->firstName;
-  $userObj->lastName = $argsObj->lastName;
+
+  // The Black List - Jon Bokenkamp
+  $reddington = array('/','\\',':','*','?','<','>','|');
+  $userObj->firstName = str_replace($reddington,'',$argsObj->firstName);
+  $userObj->lastName = str_replace($reddington,'',$argsObj->lastName);
+
   $userObj->globalRoleID = $argsObj->rights_id;
   $userObj->locale = $argsObj->locale;
   $userObj->isActive = $argsObj->user_is_active;

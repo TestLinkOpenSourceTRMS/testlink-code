@@ -59,6 +59,12 @@ if($args->result != '' && $args->tcvx > 0)
 
 if( $doIt )
 {   
+  $execCfg = config_get('exec_cfg');
+
+  // has logged user right to execute test cases on this test plan?
+  $hasExecRight = 
+    $_SESSION['currentUser']->hasRight($db,'testplan_execute',null,$args->tplan_id);
+
   $tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
   $tplanSet=array_keys($gui->resultSet);
   $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
@@ -73,8 +79,10 @@ if( $doIt )
     list($columns,$sortByColumn,$show_platforms) = getColumnsDefinition($db,$tplan_id,$optColumns);
     
     $rows = array();
+
     foreach ($tcase_set as $tcase_platform) 
     {
+
       foreach ($tcase_platform as $tcase) 
       {
       	$current_row = array();
@@ -97,18 +105,30 @@ if( $doIt )
       	$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
 
         // create linked icons
-        $ekk = sprintf($exec['common'],$tplan_id,$tcase['platform_id'],$tplan_id,$tcase['build_id'],
-                       $tplan_id,$tcversion_id,$tplan_id);
-        $elk = sprintf($exec['passed'],$tplan_id) . $ekk . '&nbsp;' . sprintf($exec['failed'],$tplan_id ) . $ekk . '&nbsp;' . 
-               sprintf($exec['blocked'],$tplan_id) . $ekk;
+        $ekk = $elk = $exec_link = '';
+        $canExec = $hasExecRight == 'yes';
+        if($execCfg->exec_mode->tester == 'assigned_to_me')
+        {
+          $canExec = $canExec && ($tcase['user_id'] == $_SESSION['userID']);
+        }  
 
+        if($canExec)
+        {  
+          $ekk = sprintf($exec['common'],$tplan_id,$tcase['platform_id'],$tplan_id,$tcase['build_id'],
+                         $tplan_id,$tcversion_id,$tplan_id);
+          
+          $elk = sprintf($exec['passed'],$tplan_id) . $ekk . '&nbsp;' . sprintf($exec['failed'],$tplan_id ) . $ekk . '&nbsp;' . 
+                 sprintf($exec['blocked'],$tplan_id) . $ekk;
+
+          $exec_link = "<a href=\"javascript:openExecutionWindow(" .
+                       "{$tcase_id},{$tcversion_id},{$tcase['build_id']}," .
+                       "{$tcase['testplan_id']},{$tcase['platform_id']},'{$whoiam}');\">" .
+                       "<img title=\"{$gui->l18n['execution']}\" src=\"{$imgSet['exec_icon']}\" /></a> ";
+        }
+       
         $exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$tcase_id});\">" .
                              "<img title=\"{$gui->l18n['execution_history']}\" src=\"{$imgSet['history_small']}\" /></a> ";
         
-        $exec_link = "<a href=\"javascript:openExecutionWindow(" .
-                     "{$tcase_id},{$tcversion_id},{$tcase['build_id']}," .
-                     "{$tcase['testplan_id']},{$tcase['platform_id']},'{$whoiam}');\">" .
-                     "<img title=\"{$gui->l18n['execution']}\" src=\"{$imgSet['exec_icon']}\" /></a> ";
         
         $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
                      "<img title=\"{$gui->l18n['design']}\" src=\"{$imgSet['edit_icon']}\" /></a> ";
@@ -266,8 +286,6 @@ function init_args(&$dbHandler)
   $args->user_name = $args->user->login;
   $args->userSet =  $args->user->getNames($dbHandler);                  
 
-  
-                  
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
   $args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 
@@ -279,7 +297,6 @@ function init_args(&$dbHandler)
   {
     $args->show_all_users = (intval($_REQUEST['show_all_users']) == 1);
   }
-  // $args->show_all_users = (isset($_REQUEST['show_all_users']) && (intval($_REQUEST['show_all_users'])) =! 0);
   $args->show_user_column = $args->show_all_users; 
 
 
@@ -314,7 +331,6 @@ function init_args(&$dbHandler)
     $args->show_inactive_and_closed = (intval($_REQUEST['show_inactive_and_closed']) != 0);
   }
 
-
 	$args->priority_enabled = $_SESSION['testprojectOptions']->testPriorityEnabled ? true : false;
 
 
@@ -328,8 +344,6 @@ function init_args(&$dbHandler)
   }  
 	$args->result = isset($_REQUEST['result_' .  $args->tpx]) ? $_REQUEST['result_' .  $args->tpx][0] : '';
 
-
-  new dBug($args);  
 	return $args;
 }
 

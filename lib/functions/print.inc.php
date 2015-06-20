@@ -684,7 +684,12 @@ function renderFirstPage($doc_info)
   // Build Name (if applicable)
   // Test Suite Name (if applicable)
   //
-  $output .= '<div class="doc_title">' . '<p>' . $doc_info->type_name . '</p>' . "</div>\n";
+  $output .= '<div class="doc_title">' . '<p>' . $doc_info->type_name . '</p>';
+  if($doc_info->additional_info != '')
+  {
+     $output .= '<p>' . $doc_info->additional_info . '</p>';
+  }  
+  $output .= "</div>\n";
   $output .= '<div class="doc_title" style="text-align:left;margin: auto;">' . '<p>' . 
              lang_get('testproject') . ": " . $doc_info->tproject_name;
 
@@ -979,7 +984,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $info = null;
   }
 
- 
 
   /** 
    * @TODO THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
@@ -1046,8 +1050,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            " JOIN {$tables['builds']} B ON B.id = E.build_id " .
            " WHERE 1 = 1 ";
 
-
-    // new dBug($context);
     if(isset($context['exec_id']))
     {
       $sql .= " AND E.id=" . intval($context['exec_id']);
@@ -1348,6 +1350,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       }         
     }
   }
+
+
   $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
            '<span class="label">'.$labels['execution_type'].':</span></td>' .
            '<td colspan="' .  ($cfg['tableColspan']-1) . '">';
@@ -1522,10 +1526,64 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
   // generate test results data for test report 
   if ($options['passfail'])
-  {
+  {  
+    $tsp = ($cfg['tableColspan']-1);
+    $code .= '<tr style="' . "font-weight: bold;background: #EEE;text-align: left;" . '">' .
+             '<td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['execution_details'] .'</td>' . 
+             '<td colspan="' . $tsp . '">' . "&nbsp;" . "</b></td></tr>\n";
+
+ 
+    $bn = '';
+    switch($env->reportType)
+    {
+      case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
+        $ib = $build_mgr->get_by_id($build_id);
+        $bn = htmlspecialchars($ib['name']);
+      break;
+
+      case DOC_TEST_PLAN_EXECUTION:
+        if ($exec_info) 
+        {
+          $bn = htmlspecialchars($exec_info[0]['build_name']);
+        }   
+      break;  
+    }
+
+    if( $bn != '' )
+    {
+      $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
+               '<td '  . $tsp . '>' . $bn . "</b></td></tr>\n";
+    }  
+
+    if( isset($node['assigned_to']) )
+    {
+      $crew = explode(',',$node['assigned_to']);
+      $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+               $labels['assigned_to'] . '</td>' .
+               '<td colspan="' .   $tsp . '">';
+
+      $xdx = 0;
+      foreach($crew as $mm)
+      { 
+        if ($xdx != 0)
+        {
+          $code .= ',';
+        }  
+        $xdx = -1;
+        echo $mm .'<br>';
+        $code .= gendocGetUserName($db, $mm);
+      }          
+      $code .= "</td></tr>\n";
+    } 
+
     if ($exec_info) 
     {
-      $code .= buildTestExecResults($db,$its,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,$options['notes'],$buildCfields);
+      $settings['cfg'] = $cfg;
+      $settings['lbl'] = $labels;
+      $settings['opt'] = array('show_notes' => $options['notes']);
+      $settings['colspan'] = $cfg['tableColspan']-1;
+
+      $code .= buildTestExecResults($db,$its,$exec_info,$settings,$buildCfields);
 
       // Get Execution Attachments
       $execAttachInfo = getAttachmentInfos($docRepo,$exec_info[0]['execution_id'],$tables['executions'],true,1);
@@ -1556,7 +1614,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     else
     {
       $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
-               '<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
+               '<span class="label">' . $labels['report_exec_result'] . '</span></td>' . 
                '<td colspan="' . ($cfg['tableColspan']-1) . '"><b>' . $labels["test_status_not_run"] . 
                "</b></td></tr>\n";
     }
@@ -1748,7 +1806,6 @@ function renderTestDuration($statistics,$platform_id=0)
                       !is_null($statistics['real_execution']['platform'][$platform_id]);
   
 
-  // new dBug(array($estimatedTimeAvailable , $realTimeAvailable));
   if( $estimatedTimeAvailable || $realTimeAvailable)
   { 
     if($estimatedTimeAvailable) 
@@ -1880,7 +1937,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance','relations',
                       'estimated_execution_duration','step_exec_notes','step_exec_status',
-                      'exec_attachments','alt_delete_attachment',
+                      'exec_attachments','alt_delete_attachment','assigned_to',
                       'high_importance','medium_importance','low_importance','execution_duration',
                       'priority', 'high_priority','medium_priority','low_priority','attached_files');
                       
@@ -1909,21 +1966,26 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
  *
  *
  */
-function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan,$show_exec_notes = false,$buildCF=null)
+function buildTestExecResults(&$dbHandler,&$its,$exec_info,$opt,$buildCF=null)
 {
-  
   static $testerNameCache;
   $out='';
+
+  $my['opt'] = array('show_notes' => true);
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+  
+  $cfg = &$opt['cfg'];
+  $labels = &$opt['lbl'];
   $testStatus = $cfg['status_labels'][$exec_info[0]['status']];
   
   if(!isset($testerNameCache[$exec_info[0]['tester_id']]))
   {
-    $testerNameCache[$exec_info[0]['tester_id']] = gendocGetUserName($dbHandler, $exec_info[0]['tester_id']);
+    $testerNameCache[$exec_info[0]['tester_id']] = 
+       gendocGetUserName($dbHandler, $exec_info[0]['tester_id']);
   }
   
+  $executionNotes = $my['opt']['show_notes'] ? $exec_info[0]['notes'] : '';
   
-  $executionNotes = $show_exec_notes ? $exec_info[0]['notes'] : '';
-
   switch($exec_info[0]['execution_type'])
   {
     case TESTCASE_EXECUTION_TYPE_AUTO:
@@ -1937,20 +1999,18 @@ function buildTestExecResults(&$dbHandler,&$its,$cfg,$labels,$exec_info,$colspan
   }
 
   $td_colspan = '';
-  if( !is_null($colspan) ) 
+  if( !is_null($opt['colspan']) ) 
   {
-    $td_colspan .= ' colspan="' . $colspan . '" '; 
+    $td_colspan .= ' colspan="' . $opt['colspan'] . '" '; 
   }
 
-  $out .= '<tr style="' . "font-weight: bold;background: #EEE;text-align: left;" . '">' .
-          '<td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['execution_details'] .'</td>' . 
-          '<td '  .$td_colspan . '>' . "&nbsp;" . "</b></td></tr>\n";
-
-  $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
-          '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n";
+  //
+  //$out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
+  //        '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n";
 
   // Check if CF exits for this BUILD
-  if(!is_null($buildCF) && isset($buildCF[$exec_info[0]['build_id']]))
+  if(!is_null($buildCF) && isset($buildCF[$exec_info[0]['build_id']]) && 
+     $buildCF[$exec_info[0]['build_id']] != '')
   {
      $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"></td>' . 
              '<td '  .$td_colspan . '>' . $buildCF[$exec_info[0]['build_id']] . "</td></tr>\n";

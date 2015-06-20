@@ -528,6 +528,17 @@ function tree_getPrintPreferences()
     params.push("build_id="+bx.value);
   }
 
+  var bx = document.getElementById('with_user_assignment');
+  if(bx)
+  {
+    var vv = 0;
+    if(bx.checked)
+    {
+      vv = 1;
+    }  
+    params.push("with_user_assignment=" + vv);
+  }
+
   params = params.join('&');  // from array to string
 
   return params;

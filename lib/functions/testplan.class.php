@@ -6080,7 +6080,8 @@ class testplan extends tlObjectWithAttachments
 
     $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 
                            'allow_empty_build' => 0, 'addTSuiteOrder' => false,
-                           'addImportance' => false, 'addPriority' => false);
+                           'addImportance' => false, 'addPriority' => false,
+                           'ua_');
     $ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
     $ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
 
@@ -6177,7 +6178,8 @@ class testplan extends tlObjectWithAttachments
     }
     
     
-    if( isset($ic['options']['assigned_on_build']) && !is_null($ic['options']['assigned_on_build']) )
+    if( isset($ic['options']['assigned_on_build']) && 
+       !is_null($ic['options']['assigned_on_build']) )
     {
       $ic['join']['ua'] = " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
                           " ON UA.feature_id = TPTCV.id " . 
@@ -6561,8 +6563,8 @@ class testplan extends tlObjectWithAttachments
       default:
       break;
     }
-      $sql = str_replace('%%needle%%',$more_cols,$sql) .    
-         " WHERE TPTCV.testplan_id = {$safe_id['tplan_id']} " .
+    $sql = str_replace('%%needle%%',$more_cols,$sql) .    
+           " WHERE TPTCV.testplan_id = {$safe_id['tplan_id']} " .
            " AND NHTCV.parent_id = {$safe_id['tcase_id']} ";
            
     if( !is_null($platform_id) ) 
@@ -6573,13 +6575,13 @@ class testplan extends tlObjectWithAttachments
         }  
     }          
     
-      $rs = $this->db->get_recordset($sql);  
-      if(!is_null($rs))
-      {
-        $rs = $my['opt']['collapse'] ? $rs[0] : $rs;
-      }
-    return $rs;
+    $rs = $this->db->get_recordset($sql);  
+    if(!is_null($rs))
+    {
+      $rs = $my['opt']['collapse'] ? $rs[0] : $rs;
     }
+    return $rs;
+  }
 
 
 
@@ -6593,12 +6595,12 @@ class testplan extends tlObjectWithAttachments
     $debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
     $my = array('filters' => '', 'options' => '');
 
-    $my['filters'] = array('platform_id' => null,'tsuites_id' => null, 'tcaseSet' => null);
+    $my['filters'] = array('platform_id' => null,'tsuites_id' => null, 
+                           'tcaseSet' => null, 'build_id' => null);
     $my['filters'] = array_merge($my['filters'],(array)$filters);
 
     $my['options'] = array('output' => 'map','order_by' => null, 'detail' => 'full');
     $my['options'] = array_merge($my['options'],(array)$options);
-
 
     $safe['tplan'] = intval($id);
     $io = $this->tree_manager->get_node_hierarchy_info($safe['tplan']);
@@ -6608,7 +6610,7 @@ class testplan extends tlObjectWithAttachments
     $feid = $this->db->db->concat("'{$prefix}'",'TCV.tc_external_id');
 
 
-    $addWhere = array('platform' => '','tsuite' => '', 'tcases' => '');
+    $addWhere = array('platform' => '','tsuite' => '', 'tcases' => '', 'build' => '');
     $platQty = 0;
     if( !is_null($my['filters']['platform_id']) )
     {
@@ -6631,6 +6633,19 @@ class testplan extends tlObjectWithAttachments
       array_walk($dummy,'intval');
       $addWhere['tsuite'] = 'AND NH_TCASE.id IN (' . implode(',',$dummy) . ')';
     }
+ 
+    $join['build'] = '';
+    $addField = '-1 AS assigned_to, ';
+    if( !is_null($my['filters']['build_id']) )
+    {
+      $dummy = intval($my['filters']['build_id']);
+      $addWhere['build'] = 'AND UA.build_id =' . $dummy;
+    
+      $join['build'] = " JOIN {$this->tables['user_assignments']} UA " .
+                       " ON UA.feature_id = TPTCV.id ";
+    
+      $addField = " UA.user_id AS assigned_to,";
+    }
     
 
 
@@ -6642,14 +6657,14 @@ class testplan extends tlObjectWithAttachments
         // $sql = " SELECT NH_TCV.parent_id AS tc_id, {$feid} AS full_external_id,TCV.tc_external_id ";
         // Need to understand why in future  
         $sql = "/* $debugMsg */ " .
-               " SELECT NH_TCV.parent_id AS tc_id, TPTCV.platform_id, TPTCV.id AS feature_id, " .
+               " SELECT {$addField} NH_TCV.parent_id AS tc_id, TPTCV.platform_id, TPTCV.id AS feature_id, " .
                " TCV.tc_external_id AS external_id, {$feid} AS full_external_id, TPTCV.tcversion_id ";
       break;      
 
       case 'full':
       default:
         $sql = "/* $debugMsg */ " .
-               " SELECT NH_TCASE.parent_id AS testsuite_id, NH_TCV.parent_id AS tc_id, " . 
+               " SELECT {$addField} NH_TCASE.parent_id AS testsuite_id, NH_TCV.parent_id AS tc_id, " . 
                " NH_TCASE.node_order AS spec_order, NH_TCASE.name," .
                " TPTCV.platform_id, PLAT.name as platform_name, TPTCV.id AS feature_id, " .
                " TPTCV.tcversion_id AS tcversion_id, " .
@@ -6664,9 +6679,13 @@ class testplan extends tlObjectWithAttachments
            " JOIN {$this->tables['nodes_hierarchy']} NH_TCASE ON NH_TCV.parent_id = NH_TCASE.id " .
            " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NH_TCV.id " .
            " JOIN  {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id " .
+           $join['build'] .
            " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = TPTCV.platform_id ";
 
-    $sql .= " WHERE TPTCV.testplan_id={$safe['tplan']} {$addWhere['platform']} {$addWhere['tsuite']} ";
+    $sql .= " WHERE TPTCV.testplan_id={$safe['tplan']} " . 
+            " {$addWhere['platform']} {$addWhere['tsuite']} {$addWhere['build']}";
+
+
     switch($my['options']['output'])
     {
       case 'array':
@@ -6676,7 +6695,7 @@ class testplan extends tlObjectWithAttachments
       case 'map':
       if($platQty == 1)
       {
-        $rs = $this->db->fetchRowsIntoMap($sql,'tc_id');
+        $rs = $this->db->fetchRowsIntoMap($sql,'tc_id',0,-1,'assigned_to');
       }
       else
       {
@@ -6684,6 +6703,8 @@ class testplan extends tlObjectWithAttachments
       }
       break;
     }
+    
+    new dBug($rs);
     return $rs;
   }
 
@@ -6699,15 +6720,17 @@ class testplan extends tlObjectWithAttachments
     $my = array('filters' => array(),
                 'options' => array('allow_empty_build' => 1,'addPriority' => false,
                                    'accessKeyType' => 'tcase+platform',
-                                   'addImportance' => false,
-                                   'addExecInfo' => true,
-                                   'includeNotRun' => true, 'orderBy' => null));
+                                   'addImportance' => false,'addExecInfo' => true,
+                                   'assigned_on_build' => null, 
+                                   'ua_user_alias' => '', 'includeNotRun' => true,
+                                   'ua_force_join' => false, 
+                                   'orderBy' => null));
     $amk = array('filters','options');
     foreach($amk as $mk)
     {
       $my[$mk] = array_merge($my[$mk], (array)$$mk);
     }
-        
+
     if( !is_null($sql2do = $this->getLinkedTCVersionsSQL($id,$my['filters'],$my['options'])) )
     {
       // need to document better
@@ -6785,11 +6808,14 @@ class testplan extends tlObjectWithAttachments
     $safe['tplan_id'] = intval($id);
     $my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
     
+
     $mop = array('options' => array('addExecInfo' => false,'specViewFields' => false, 
                                     'assigned_on_build' => null, 'testSuiteInfo' => false,
                                     'addPriority' => false,'addImportance' => false,
                                     'ignorePlatformAndBuild' => false,
-                                    'ignoreBuild' => false, 'ignorePlatform' => false));
+                                    'ignoreBuild' => false, 'ignorePlatform' => false,
+                                    'ua_user_alias' => '', 
+                                    'ua_force_join' => false));
 
     $my['options'] = array_merge($mop['options'],$my['options']);
       
@@ -6885,7 +6911,7 @@ class testplan extends tlObjectWithAttachments
     // used on tester assignment feature when working at test suite level
     if( !is_null($my['options']['assigned_on_build']) )
     {
-      $commonFields .= ",UA.user_id";
+      $commonFields .= ",UA.user_id {$my['options']['ua_user_alias']} ";
     }
     
     if($my['options']['addExecInfo'])
@@ -6907,7 +6933,12 @@ class testplan extends tlObjectWithAttachments
                                " ON NH_TSUITE.id = NH_TCASE.parent_id ";
     }
     
-    
+    if($my['options']['ua_force_join'])
+    {
+      $my['join']['ua'] = str_replace('LEFT OUTER',' ', $my['join']['ua']);
+    }  
+    new dBug($my['join']['ua']);
+
     $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" . $commonFields .
                          " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
                          " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id " .
@@ -6963,6 +6994,7 @@ class testplan extends tlObjectWithAttachments
                      " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
                      $my['where']['where'];
 
+    new dBug($union);
     return $union;
   }
 

@@ -293,8 +293,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $status_descr_list[] = 'testcase_count';
     
     $my = array();
-    $my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
-                           'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0,'ignoreActiveTestCases' => 0);
+    $my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 
+                           'viewType' => 'testSpecTree','getExternalTestCaseID' => 1,
+                           'ignoreInactiveTestCases' => 0,'ignoreActiveTestCases' => 0,
+                           'setAssignedTo' => false);
 
     // added importance here because of "undefined" error in event log
     $my['filters'] = array('status' => null, 'assignedTo' => null, 'importance' => null, 'executionType' => null,
@@ -388,7 +390,12 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
           $externalID='';
           $node['tcversion_id'] = $tpNode['tcversion_id'];    
           $node['version'] = $tpNode['version'];    
-          if ($my['options']['getExternalTestCaseID'])
+          if($my['options']['setAssignedTo'])
+          {
+            $node['assigned_to'] = $tplan_tcases[$node['id']]['assigned_to'];    
+          }
+
+          if($my['options']['getExternalTestCaseID'])
           {
             if (!isset($tpNode['external_id']))
             {

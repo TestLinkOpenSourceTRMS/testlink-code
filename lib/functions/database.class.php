@@ -632,7 +632,7 @@ class database
    * @return array an assoc array whose keys are the values from the columns
    *         of the rows
    **/
-  function fetchRowsIntoMap($sql,$column,$cumulative = 0,$limit = -1)
+  function fetchRowsIntoMap($sql,$column,$cumulative = 0,$limit = -1,$col2implode='')
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
@@ -665,7 +665,18 @@ class database
         {
           $items[$row[$column]][] = $row;
         }
-        else
+        else if($col2implode != '')
+        {
+          if(isset($items[$row[$column]]))
+          {
+            $items[$row[$column]][$col2implode] .= ',' . $row[$col2implode]; 
+          }  
+          else
+          {
+            $items[$row[$column]] = $row;
+          }  
+        }  
+        else 
         {
           $items[$row[$column]] = $row;
         } 
@@ -799,7 +810,8 @@ class database
    * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
    * 
    **/
-  function fetchMapRowsIntoMap($sql,$column_main_key,$column_sec_key,$cumulative = 0,$limit = -1)
+  function fetchMapRowsIntoMap($sql,$main_key,$sec_key,
+                               $cumulative = 0,$limit = -1, $col2implode ='')
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
@@ -809,11 +821,23 @@ class database
       {
         if($cumulative)
         {
-          $items[$row[$column_main_key]][$row[$column_sec_key]][] = $row;
+          $items[$row[$main_key]][$row[$sec_key]][] = $row;
         }
+        else if($col2implode !='')
+        {
+          if(isset($items[$row[$main_key]][$row[$sec_key]]))
+          {
+            $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= 
+              ',' . $row[$col2implode];
+          } 
+          else
+          {
+            $items[$row[$main_key]][$row[$sec_key]] = $row;   
+          } 
+        }  
         else
         {
-          $items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
+          $items[$row[$main_key]][$row[$sec_key]] = $row;
         } 
       }
     }

@@ -6080,8 +6080,7 @@ class testplan extends tlObjectWithAttachments
 
     $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 
                            'allow_empty_build' => 0, 'addTSuiteOrder' => false,
-                           'addImportance' => false, 'addPriority' => false,
-                           'ua_');
+                           'addImportance' => false, 'addPriority' => false);
     $ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
     $ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
 

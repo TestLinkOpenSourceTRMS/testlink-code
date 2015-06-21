@@ -48,8 +48,9 @@ var del_action=fRoot+'{$deleteAction}';
 
 <script type="text/javascript" language="javascript" class="init">
 $(document).ready(function() {
-  $('#item_view').DataTable({ "lengthMenu": [ [25, 50, 75, -1], [25, 50, 75, "All"] ] });
+  $('#item_view').DataTable({ "lengthMenu": [ {$tlCfg->gui->projectView->pagination->length} ] });
 } );
+</script>
 </script>
 {/if}
 

@@ -75,9 +75,9 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 
 <script type="text/javascript" language="javascript" class="init">
 $(document).ready(function() {
-  $('#item_view').DataTable({ "lengthMenu": [ [25, 50, 75, -1], [25, 50, 75, "All"] ] });
+  $('#item_view').DataTable({ "lengthMenu": [ {$tlCfg->gui->usersAssign->pagination->length} ] });
 } );
-</script>
+</script></script>
 {/if}
 
 

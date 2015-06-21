@@ -7,7 +7,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 some smarty and javascript variables are created on the inc_*.tpl files.
      
 @internal revisions
-@since 1.9.13
+@since 1.9.14
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -44,6 +44,19 @@ some smarty and javascript variables are created on the inc_*.tpl files.
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'{$deleteAction}';
 </script>
+
+{if $tlCfg->gui->planView->pagination->enabled}
+<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript" language="javascript" class="init">
+$(document).ready(function() {
+  $('#item_view').DataTable({ "lengthMenu": [ {$tlCfg->gui->planView->pagination->length} ] });
+} );
+</script>
+{/if}
+
 
 </head>
 

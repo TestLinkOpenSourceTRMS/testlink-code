@@ -446,10 +446,17 @@ $tlCfg->login_info = ''; // Empty by default
 $tlCfg->gui->projectView = new stdClass();
 $tlCfg->gui->projectView->pagination = new stdClass();
 $tlCfg->gui->projectView->pagination->enabled = true;
+$tlCfg->gui->projectView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 
 $tlCfg->gui->usersAssign = new stdClass();
 $tlCfg->gui->usersAssign->pagination = new stdClass();
 $tlCfg->gui->usersAssign->pagination->enabled = true;
+$tlCfg->gui->usersAssign->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
+
+$tlCfg->gui->planView = new stdClass();
+$tlCfg->gui->planView->pagination = new stdClass();
+$tlCfg->gui->planView->pagination->enabled = true;
+$tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 
 
 /** 

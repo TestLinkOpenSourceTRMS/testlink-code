@@ -292,7 +292,7 @@ function createSpreadsheet($gui,$args)
                            'notes' => null, 'date_time_run' => null, 'execution_duration' => null,
                            'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
                            'result_on_last_build' => null,'last_execution' => null,
-                           'assigned_to' => null));
+                           'assigned_to' => null,'tcexec_result' => null));
 
   $buildIDSet = $args->builds->idSet;
 
@@ -369,6 +369,7 @@ function createSpreadsheet($gui,$args)
   $gui->filterFeedback = null;
   $dataHeader[] = $lbl['build'];
   $dataHeader[] = $lbl['assigned_to'];
+  $dataHeader[] = $lbl['tcexec_result'];
   $dataHeader[] = $lbl['date_time_run'];
   $dataHeader[] = $lbl['test_exec_by'];
   $dataHeader[] = $lbl['notes'];

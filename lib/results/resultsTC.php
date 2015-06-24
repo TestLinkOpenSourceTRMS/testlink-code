@@ -75,8 +75,6 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   $cols = array_flip($tcols);
   $args->cols = $cols;
 
-  // new dBug($metrics);
-
   if( !is_null($execStatus['metrics']) )
   {
     switch($args->format)
@@ -92,15 +90,10 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
 
   }
 
-
-
-
-  //new dBug($gui->matrix);
   switch($args->format)
   {
     case FORMAT_XLS:
-      // new dBug($gui->matrix);      die();
-      createSpreadsheet($gui,$args,$buildIDSet);
+       createSpreadsheet($gui,$args,$buildIDSet);
     break;  
 
     default:
@@ -614,7 +607,6 @@ function buildSpreadsheetData(&$db,&$args,&$gui,&$exec,$labels)
 
   $loop2do = count($metrics);
 
-  new dBug($metrics);
   for($ix=0; $ix < $loop2do; $ix++)
   {
     $rows[$cols['tsuite']] = $metrics[$ix]['suiteName'];
@@ -633,12 +625,7 @@ function buildSpreadsheetData(&$db,&$args,&$gui,&$exec,$labels)
     }
     
     $gui->matrix[] = $rows;
-  }  
-  new dBug($gui->matrix);
-  die();
-
-
-
+  } 
 }
 
 /**
@@ -658,7 +645,6 @@ function buildHTMLData(&$db,&$args,&$gui,&$exec,$labels)
   $edit_img_tag = '<img title="' . $labels['design'] . '"' . ' src="' . $gui->img->edit . '" /></a> ';
 
   $metrics = $exec['metrics'];
-  // new dBug($metrics);
   $latestExecution = $exec['latestExec'];
   $cols = $args->cols;
 

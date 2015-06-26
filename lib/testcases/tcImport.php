@@ -199,6 +199,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   static $userObj;
   static $tcasePrefix;
   static $glueChar;
+  static $userRights;
 
   $ret = null;
   
@@ -221,7 +222,10 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $tproject_mgr = new testproject($db);
     $req_spec_mgr = new requirement_spec_mgr($db);
     $req_mgr = new requirement_mgr($db);
-    $userObj = new tlUser();
+    $userObj = new tlUser($userID);
+    $userObj->readFromDB($db,tlUser::TLOBJ_O_SEARCH_BY_ID);
+    $userRights['can_edit_executed'] = 
+      $userObj->hasRight($db,'testproject_edit_executed_testcases',$tproject_id);
 
     $k2l = array('already_exists_updated','original_name','testcase_name_too_long','already_exists_not_updated',
                  'start_warning','end_warning','testlink_warning','hit_with_same_external_ID');
@@ -343,7 +347,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $doCreate=true;
     if( $duplicatedLogic['actionOnHit'] == 'update_last_version' )
     {
-      $updOpt = array('blockIfExecuted' => true);
+      $updOpt['blockIfExecuted'] = !$userRights['can_edit_executed'];
       switch($duplicatedLogic['hitCriteria'])
       {
         case 'name':
@@ -573,29 +577,29 @@ function nl2p($str)
 */
 function init_args()
 {
-    $args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
+  $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $key='action_on_duplicated_name';
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'generate_new';
+  $key='action_on_duplicated_name';
+  $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'generate_new';
 
-    $key='hit_criteria';
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'name';
+  $key='hit_criteria';
+  $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'name';
        
         
-    $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-    $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : 0;
-    $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
-    $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-    $args->bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
+  $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+  $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : 0;
+  $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
+  $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
+  $args->bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
     
-    $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
-    $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
+  $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
+  $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
     
-    $args->userID = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
-    
-    return $args;
+  $args->userID = $_SESSION['userID'];
+  $args->tproject_id = $_SESSION['testprojectID'];
+  
+  return $args;
 }
 
 

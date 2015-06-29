@@ -52,15 +52,11 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   if($args->format == FORMAT_XLS)
   {
     $opt = array('getExecutionNotes' => true, 'getTester' => true,
-                 'getUserAssignment' => true, 'output' => 'cumulative',
+                 'getUserAssignment' => true, 
                  'getExecutionTimestamp' => true, 'getExecutionDuration' => true);
- 
-    $execStatus = $metricsMgr->getExecStatusMatrixFlat($args->tplan_id,$buildSet,$opt);
-  }
-  else
-  {
-    $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,$buildSet);
-  }  
+  }    
+  $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,$buildSet,$opt);
+
   $metrics = $execStatus['metrics'];
   $latestExecution = $execStatus['latestExec']; 
 
@@ -77,29 +73,20 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
 
   if( !is_null($execStatus['metrics']) )
   {
-    switch($args->format)
-    {
-      case FORMAT_XLS:
-        buildSpreadsheetData($db,$args,$gui,$execStatus,$labels);
-      break;
-
-      default:
-        buildHTMLData($db,$args,$gui,$execStatus,$labels);
-      break;
-    }
-
+    buildDataSet($db,$args,$gui,$execStatus,$labels);
   }
 
   switch($args->format)
   {
     case FORMAT_XLS:
-       createSpreadsheet($gui,$args,$buildIDSet);
+       createSpreadsheet($gui,$args);
     break;  
 
     default:
      $gui->tableSet[] = buildMatrix($gui, $args);
     break;
-  } 
+  }
+
 }  
 else
 {
@@ -401,8 +388,10 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
  *
  *
  */
-function createSpreadsheet($gui,$args,$buildIDSet)
+function createSpreadsheet($gui,$args)
 {
+  $buildIDSet = $args->builds->idSet;
+  $latestBuild = $args->builds->latest;
 
   $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
                            'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
@@ -421,9 +410,6 @@ function createSpreadsheet($gui,$args,$buildIDSet)
       $cellRange[] = $cellRange[$idx] . $cellRange[$jdx];
     }
   }
-
-
-
 
   $styleReportContext = array('font' => array('bold' => true));
   $styleDataHeader = array('font' => array('bold' => true),
@@ -461,12 +447,14 @@ function createSpreadsheet($gui,$args,$buildIDSet)
   //                  IMHO has no sense work without priority
   // 
   // Exec result on Build 1
+  // Assigned To
   // Date
   // Tester
   // Notes
   // Duration
   //
   // Exec result on Build 2
+  // Assigned To
   // ...
   // ...
   // Exec result on Build N
@@ -490,9 +478,7 @@ function createSpreadsheet($gui,$args,$buildIDSet)
   foreach($buildIDSet as $iix)
   {
     $dataHeader[] = $lbl['build'] . ' ' . $gui->buildInfoSet[$iix]['name'];
-    
     $dataHeader[] = $lbl['assigned_to'];
-
     $dataHeader[] = $lbl['date_time_run'];
     $dataHeader[] = $lbl['test_exec_by'];
     $dataHeader[] = $lbl['notes'];
@@ -525,7 +511,7 @@ function createSpreadsheet($gui,$args,$buildIDSet)
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleDataHeader);	
   
   $startingRow++;
-  
+
   $qta_loops = count($gui->matrix);
   for($idx = 0; $idx < $qta_loops; $idx++)
   {
@@ -536,7 +522,7 @@ function createSpreadsheet($gui,$args,$buildIDSet)
 		}
 		$startingRow++;
   }
-
+  
   
   
   // Final step
@@ -592,47 +578,13 @@ function setUpBuilds(&$args,&$gui)
 }
 
 
-/**
- *
- *
- */
-function buildSpreadsheetData(&$db,&$args,&$gui,&$exec,$labels)
-{
-  $userSet = getUsersForHtmlOptions($db,null,null,null,null,
-                                    array('userDisplayFormat' => '%first% %last%'));
 
-  $metrics = $exec['metrics'];
-  $latestExecution = $exec['latestExec'];
-  $cols = $args->cols;
-
-  $loop2do = count($metrics);
-
-  for($ix=0; $ix < $loop2do; $ix++)
-  {
-    $rows[$cols['tsuite']] = $metrics[$ix]['suiteName'];
-    $eid = $args->tcPrefix . $metrics[$ix]['external_id'];
-    $name = htmlspecialchars("{$eid}:{$metrics[$ix]['name']}",ENT_QUOTES);
-
-    if ($gui->show_platforms)
-    {
-      $rows[$cols['platform']] = $gui->platforms[$metrics[$ix]['platform_id']];
-    }
-
-    if($gui->options->testPriorityEnabled) 
-    {
-      // is better to use code to do reorder instead of localized string ???
-      $rows[$cols['priority']] = $metrics[$ix]['priority_level'];
-    }
-    
-    $gui->matrix[] = $rows;
-  } 
-}
 
 /**
  *
  *
  */
-function buildHTMLData(&$db,&$args,&$gui,&$exec,$labels)
+function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
 {
   $userSet = getUsersForHtmlOptions($db,null,null,null,null,
                                     array('userDisplayFormat' => '%first% %last%'));
@@ -666,6 +618,7 @@ function buildHTMLData(&$db,&$args,&$gui,&$exec,$labels)
         $external_id = $args->tcPrefix . $rf[$top]['external_id'];
         $rows[$cols['tsuite']] = $rf[$top]['suiteName'];
 
+
         $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",ENT_QUOTES);
         if($args->format == FORMAT_HTML)
         {
@@ -681,7 +634,7 @@ function buildHTMLData(&$db,&$args,&$gui,&$exec,$labels)
         }
         else
         {
-          $rows[$cols['link']] = $dlink . urlencode($external_id) . '">' . "{$name}</a> ";
+          $rows[$cols['link']] = "{$external_id}:{$rf[$top]['name']}";
         }
 
         if ($gui->show_platforms)
@@ -691,8 +644,17 @@ function buildHTMLData(&$db,&$args,&$gui,&$exec,$labels)
 
         if($gui->options->testPriorityEnabled) 
         {
-          // is better to use code to do reorder instead of localized string ???
-          $rows[$cols['priority']] = $rf[$top]['priority_level'];
+          switch($args->format)
+          {
+            case FORMAT_XLS:
+              $rows[$cols['priority']] = $args->cfg['priority'][$rf[$top]['priority_level']];
+            break;
+              
+            default:
+              // is better to use code to do reorder instead of localized string ???
+              $rows[$cols['priority']] = $rf[$top]['priority_level'];
+            break;
+          }  
         }
 
         // Now loop on result on each build, but following order
@@ -702,25 +664,52 @@ function buildHTMLData(&$db,&$args,&$gui,&$exec,$labels)
         {
           $r4build['text'] = "";
 
+          if( $args->format == FORMAT_XLS)
+          {
+            $r4build = $labels[$rf[$buildID]['status']] .
+                       sprintf($labels['versionTag'],$rf[$buildID]['version']);
+
+            $tester = '';           
+            if(isset($userSet,$rf[$buildID]['tester_id']))
+            {
+              $tester = $userSet[$rf[$buildID]['tester_id']];
+            }
+
+            $assignee = '';
+            if(isset($userSet,$rf[$buildID]['user_id']))
+            {
+              $assignee = $userSet[$rf[$buildID]['user_id']];
+            }
+
+            $bella = array($r4build,$assignee,
+                           $rf[$buildID]['execution_ts'],$tester,
+                           $rf[$buildID]['execution_notes'],
+                           $rf[$buildID]['execution_duration']);            
+            $buildExecStatus = array_merge((array)$buildExecStatus, $bella);
+          }
+          else
+          {
+            $r4build['text'] = "";
+          }  
           if ($args->format == FORMAT_HTML && $args->addOpAccess) 
           {
             $r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
                                "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
                                "{$args->tplan_id}, {$platformID});\">" .
                                 "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
-          }
 
-          $r4build['text'] .= $labels[$rf[$buildID]['status']] .
-                              sprintf($labels['versionTag'],$rf[$buildID]['version']);
+            $r4build['text'] .= $labels[$rf[$buildID]['status']] .
+                                sprintf($labels['versionTag'],$rf[$buildID]['version']);
     
-          $r4build['value'] = $rf[$buildID]['status'];
-          $r4build['cssClass'] = $gui->map_status_css[$rf[$buildID]['status']];
-          $buildExecStatus[] = $r4build;
+            $r4build['value'] = $rf[$buildID]['status'];
+            $r4build['cssClass'] = $gui->map_status_css[$rf[$buildID]['status']];
+            $buildExecStatus[] = $r4build;
+          }
 
           if($gui->matrixCfg->buildColumns['showStatusLastExecuted'] && 
              $args->builds->latest->id == $buildID)
           {
-              $execOnLastBuild = $r4build;  
+            $execOnLastBuild = $r4build;  
           }              
 
           // why we do special reasoning on NOT RUN ???

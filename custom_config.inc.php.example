@@ -3,10 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: custom_config.inc.php.example,v $
- *
- * @version $Revision: 1.9 $
- * @modified $Date: 2011/02/10 22:42:33 $ by $Author: franciscom $
+ * @filesource	custom_config.inc.php.example
+ * @author      franciscom
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -26,8 +24,29 @@
 //
 // *******************************************************************************
 //
-// Uncomment this if you want dBug() display info
+// This configuration has been created to solve:
+// http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/
+// Give a look to:
+// http://mantis.testlink.org/view.php?id=5147
+// http://mantis.testlink.org/view.php?id=5148
+// http://mantis.testlink.org/view.php?id=4977
+// http://mantis.testlink.org/view.php?id=4906
+// 
+// You need to be certain that these folders have correct permissions in order
+// to allow the user/daemon used to run the webserver service/daemon read/write access.
+//
+// $tlCfg->log_path = '/var/testlink-ga-testlink-code/logs/'; /* unix example */
+// $g_repositoryPath = '/var/testlink-ga-testlink-code/upload_area/';  /* unix example */
+//
+// 
+// ********************************************************************************************
+// Uncomment this if you want:
+// 1. dBug() display info
+// 2. debug_print_backtrace() on database.class.php
+//    instead of debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)
 // define('DBUG_ON',1);
+//
+// ********************************************************************************************
 //
 // Example of Logger config
 // After this config:

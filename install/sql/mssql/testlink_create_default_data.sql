@@ -7,13 +7,11 @@
 -- each NEW TABLE added here NEED TO BE DEFINED in object.class.php getDBTables()
 --
 -- Database Type: Microsoft SQL Server
--- @since 1.9.4
--- 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
 --
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.5','Test Link 1.9.4',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.14','Test Link 1.9.14',GETDATE());
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON
@@ -28,6 +26,9 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (11,'requirement_spec_revision');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (12,'build');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (13,'platform');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (14,'user');
 SET IDENTITY_INSERT /*prefix*/node_types OFF
 
 --  Roles -
@@ -75,6 +76,14 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (30,'mgt_unfreeze_req');
 INSERT INTO /*prefix*/rights (id,description) VALUES (31,'issuetracker_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (32,'issuetracker_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (33,'reqmgrsystem_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (34,'reqmgrsystem_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (35,'exec_edit_notes');
+INSERT INTO /*prefix*/rights (id,description) VALUES (36,'exec_delete');
+INSERT INTO /*prefix*/rights (id,description) VALUES (37,'testplan_unlink_executed_testcases');
+INSERT INTO /*prefix*/rights (id,description) VALUES (38,'testproject_delete_executed_testcases');
+INSERT INTO /*prefix*/rights (id,description) VALUES (39,'testproject_edit_executed_testcases');
+
 
 
 
@@ -111,6 +120,13 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,32);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,33);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,34);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,35);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,36);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,37);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,38);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,39);
 
 
 --  Rights for guest role

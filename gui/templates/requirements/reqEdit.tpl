@@ -4,25 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create / edit a req  
 @internal revisions
 
-@since 1.9.3
-20110607 - Julian - BUGID 3953: Checkbox to decide whether to create another requirement or not
-20110304 - asimon - added help icon with a description of some of the "new" features
-20110114 - asimon - simplified checking for editor type by usage of $gui->editorType
-20110110 - Julian - BUGID 4153: Warning message when navigating away from changed requirement without saving
-20110106 - Julian - BUGID 4152: do not set focus on req doc id if log message window is shown
-20101212 - franciscom - BUGID 4056: Requirement Revisioning
-20101130 - Julian - BUGID 4063: "Save" and "Cancel" Button at the top of the page
-20101124 - Julian - BUGID 4049: Ajax login on timeout for requirements to avoid data loss
-20101011 - franciscom - BUGID 3886: CF Types validation
-20101006 - asimon - BUGID 3854
-20100915 - Julian - BUGID 3777: Allow to insert last req doc id when creating requirement
-20100808 - asimon - added logic to refresh filtered tree on changes
-20100502 - franciscom - BUGID 3413: removed debug info
-20100319 - asimon - BUGID 1748: added logic to add and remove requirement relations
-20091231 - franciscom - added logic to display and check expected coverage
-                        attribute based on req type, with configuration
-                        managed using $tlCfg->req_cfg->type_expected_coverage
-
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -42,104 +23,102 @@ Purpose: smarty template - create / edit a req
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-	var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
-	var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
-	var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
-	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
-  var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
-  var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
-  // var confirm_title = "{$labels.warning|escape:'javascript'}";
-  var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
-  var confirm_text = "{$labels.suggest_create_revision_html}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
+var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
+var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
+var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
+var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
+var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
+var confirm_text = "{$labels.suggest_create_revision_html}";
 
-  // To manage hide/show expected coverage logic, depending of req type
-  var js_expected_coverage_cfg = new Array();
+// To manage hide/show expected coverage logic, depending of req type
+var js_expected_coverage_cfg = new Array();
   
-  // DOM Object ID (oid)
-  // associative array with attributes
-  js_attr_cfg = new Array();
+// DOM Object ID (oid)
+// associative array with attributes
+js_attr_cfg = new Array();
   
-  // Configuration for expected coverage attribute
-  js_attr_cfg['expected_coverage'] = new Array();
-  js_attr_cfg['expected_coverage']['oid'] = new Array();
-  js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
-  js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
+// Configuration for expected coverage attribute
+js_attr_cfg['expected_coverage'] = new Array();
+js_attr_cfg['expected_coverage']['oid'] = new Array();
+js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
+js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
 
-  {foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
-    js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
-  {/foreach}
+{foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
+  js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
+{/foreach}
 
-  {literal}
-	function validateForm(f,cfg,check_expected_coverage)
+{literal}
+function validateForm(f,cfg,check_expected_coverage)
+{
+	
+	var cf_designTime = document.getElementById('custom_field_container');
+
+	if (isWhitespace(f.reqDocId.value)) 
+  {
+    alert_message(alert_box_title,warning_empty_req_docid);
+		selectField(f, 'reqDocId');
+		return false;
+	}
+	  
+	if (isWhitespace(f.req_title.value)) 
 	{
+		alert_message(alert_box_title,warning_empty_req_title);
+		selectField(f, 'req_title');
+		return false;
+  }
 	
-	 	var cf_designTime = document.getElementById('custom_field_container');
-
-		if (isWhitespace(f.reqDocId.value)) 
+  if (check_expected_coverage)
+  {
+	  if( cfg['expected_coverage'][f.reqType.value] == 1 )
 	  {
-	    alert_message(alert_box_title,warning_empty_req_docid);
-			selectField(f, 'reqDocId');
-			return false;
-		}
-	  
-		if (isWhitespace(f.req_title.value)) 
-		{
-			alert_message(alert_box_title,warning_empty_req_title);
-			selectField(f, 'req_title');
-			return false;
-	  }
-	
-    if (check_expected_coverage)
-    {
-		  if( cfg['expected_coverage'][f.reqType.value] == 1 )
-		  {
-		    value = parseInt(f.expected_coverage.value);
-		    if (isNaN(value))
-		    {
-		    	alert_message(alert_box_title,warning_expected_coverage);
-		    	selectField(f,'expected_coverage');
-		    	return false;
-		    }
-		    else if( value <= 0)
-		    {
-		    	alert_message(alert_box_title,warning_expected_coverage_range);
-		    	selectField(f,'expected_coverage');
-		    	return false;
-		    }
-		  }
-		  else
-		  {
-		    f.expected_coverage.value = 0;
-		  }
-	  }
-	  
-    /* Validation of a limited type of custom fields */
-	  if (cf_designTime)
- 	  {
- 	  	var cfields_container = cf_designTime.getElementsByTagName('input');
- 	  	var cfieldsChecks = validateCustomFields(cfields_container);
-	  	if(!cfieldsChecks.status_ok)
+	    value = parseInt(f.expected_coverage.value);
+	    if (isNaN(value))
 	    {
-	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	        return false;
-	  	}
+	    	alert_message(alert_box_title,warning_expected_coverage);
+	    	selectField(f,'expected_coverage');
+	    	return false;
+	    }
+	    else if( value <= 0)
+	    {
+	    	alert_message(alert_box_title,warning_expected_coverage_range);
+	    	selectField(f,'expected_coverage');
+	    	return false;
+	    }
+	  }
+	  else
+	  {
+	    f.expected_coverage.value = 0;
+	  }
+  }
+	  
+  /* Validation of a limited type of custom fields */
+  if (cf_designTime)
+  {
+  	var cfields_container = cf_designTime.getElementsByTagName('input');
+  	var cfieldsChecks = validateCustomFields(cfields_container);
+  	if(!cfieldsChecks.status_ok)
+    {
+     	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+      return false;
+  	}
     
-      /* Text area needs a special access */
- 	  	cfields_container = cf_designTime.getElementsByTagName('textarea');
- 	  	cfieldsChecks = validateCustomFields(cfields_container);
-	  	if(!cfieldsChecks.status_ok)
-	    {
-	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	        return false;
-	  	}
-	  }
-    if(f.prompt4log.value == 1)
+    /* Text area needs a special access */
+  	cfields_container = cf_designTime.getElementsByTagName('textarea');
+  	cfieldsChecks = validateCustomFields(cfields_container);
+  	if(!cfieldsChecks.status_ok)
     {
-      Ext.Msg.prompt(log_box_title, log_box_text, function(btn, text){
+     	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+      return false;
+  	}
+  }
+  if(f.prompt4log.value == 1)
+  {
+    Ext.Msg.prompt(log_box_title, log_box_text, function(btn, text){
         if (btn == 'ok'){
             f.goaway.value=1;
             f.prompt4log.value=0;
@@ -320,7 +299,7 @@ function insert_last_doc_id()
   	
 	<div><input type="text" name="reqDocId" id="reqDocId"
   		        size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}"
-  		        value="{$gui->req.req_doc_id|escape}" />
+  		        value="{$gui->req.req_doc_id|escape}" required />
   				{include file="error_icon.tpl" field="reqDocId"}
   				
   				{* BUGID 3777 *}
@@ -337,7 +316,7 @@ function insert_last_doc_id()
  	<div class="labelHolder"> <label for="req_title">{$labels.title}</label></div>
   	<div><input type="text" name="req_title" id="req_title"
   		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}"
-  		        value="{$gui->req.title|escape}" />
+  		        value="{$gui->req.title|escape}" required />
   		    {include file="error_icon.tpl" field="req_title"}
  	 </div>
   	<br />
@@ -382,7 +361,7 @@ function insert_last_doc_id()
   	
   		<input type="text" name="expected_coverage" id="expected_coverage"
   		        size="{#REQ_EXPECTED_COVERAGE_SIZE#}" maxlength="{#REQ_EXPECTED_COVERAGE_MAXLEN#}"
-  		        value="{$coverage_to_display}" />
+  		        value="{$coverage_to_display}" required />
   		{include file="error_icon.tpl" field="expected_coverage"}
   	
  		</div>

@@ -4,32 +4,30 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-@since 1.9.4
-20120820 - franciscom - TICKET 4904: integrate with ITS on test project basis
-20120623 - franciscom - TICKET 4981: When bulk executing test cases, 
-						inactivity of test cases is not taken into account
-
+@since 1.9.11
 *}
-{assign var="attachment_model" value=$cfg->exec_cfg->att_model}
-{assign var="title_sep"  value=$smarty.const.TITLE_SEP}
-{assign var="title_sep_type3"  value=$smarty.const.TITLE_SEP_TYPE3}
+{$attachment_model=$cfg->exec_cfg->att_model}
+{$title_sep=$smarty.const.TITLE_SEP}
+{$title_sep_type3=$smarty.const.TITLE_SEP_TYPE3}
 
-{assign var="input_enabled_disabled" value="disabled"}
-{assign var="att_download_only" value=true}
-{assign var="enable_custom_fields" value=false}
-{assign var="draw_submit_button" value=false}
+{$input_enabled_disabled="disabled"}
+{$att_download_only=true}
+{$enable_custom_fields=false}
+{$draw_submit_button=false}
 
-{assign var="show_current_build" value=0}
+{$show_current_build=0}
 {lang_get s='build' var='build_title'}
 
 {lang_get 
   var='labels'
   s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
-	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
+	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
-	execution_type_short_descr,expected_results,testcase_customfields,
+	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
+  estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
 	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
+  bulk_tc_status_management,access_test_steps_exec,assign_exec_task_to_me,
 	attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
 	img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
 	execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
@@ -37,22 +35,24 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
 	deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
-	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,
-	preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback'}
+	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,bug_summary,bug_description,
+  bug_link_tl_to_bts,bug_create_into_bts,execution_duration,execution_duration_short,
+  issueType,issuePriority,artifactVersion,artifactComponent,
+  add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback,create_issue_feedback'}
 
 
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="exportAction" value="lib/execute/execExport.php?tplan_id="}
+{$exportAction="lib/execute/execExport.php?tplan_id="}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
 {if #ROUND_EXEC_HISTORY# || #ROUND_TC_TITLE# || #ROUND_TC_SPEC#}
-  {assign var="round_enabled" value=1}
+  {$round_enabled=1}
   <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 {/if}
 
@@ -64,19 +64,13 @@ var import_xml_results="{$labels.import_xml_results}";
 {include file="inc_del_onclick.tpl"}
 
 <script language="JavaScript" type="text/javascript">
-{literal}
-
 function load_notes(panel,exec_id)
 {
   // solved ONLY for  $webeditorType == 'none'
   var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
-  panel.load({url:url2load});
+  panel.load({ url:url2load });
 }
-{/literal}
-</script>
 
-<script language="JavaScript" type="text/javascript">
-{literal}
 /*
 Set value for a group of combo (have same prefix).
 */
@@ -98,18 +92,10 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 		}	
 	}
 }
-{/literal}
-</script>
 
-
-
-{literal}
-<script type="text/javascript">
-{/literal}
 // Escape all messages (string)
 var alert_box_title="{$labels.warning|escape:'javascript'}";
 var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved|escape:'javascript'}";
-{literal}
 function validateForm(f)
 {
   var status_ok=true;
@@ -135,9 +121,8 @@ function validateForm(f)
 }
 
 /*
-  function: checkSubmitForStatus
-            if a radio (with a particular id, see code for details)
-            with $statusCode has been checked, then false is returned to block form submit().
+  function: checkSubmitForStatusCombo
+            $statusCode has been checked, then false is returned to block form submit().
             
             Dev. Note - remember this:
             
@@ -153,56 +138,46 @@ function validateForm(f)
   returns: 
 
 */
-function checkSubmitForStatus($statusCode)
+function checkSubmitForStatusCombo(oid,statusCode2block)
 {
-  var button_clicked;
   var access_key;
   var isChecked;
   
-  button_clicked=document.getElementById('save_button_clicked').value;
-  access_key='status_'+button_clicked+'_'+$statusCode; 
- 	isChecked = document.getElementById(access_key).checked;
-  if(isChecked)
+  if(document.getElementById(oid).value == statusCode2block)
   {
-      alert_message(alert_box_title,warning_nothing_will_be_saved);
-      return false;
-  }
+    alert_message(alert_box_title,warning_nothing_will_be_saved);
+    return false;
+  }  
   return true;
 }
 
 
 /**
  * 
- *
+ * IMPORTANT DEVELOPMENT NOTICE
+ * ATTENTION args is a GLOBAL Javascript variable, then be CAREFULL
  */
 function openExportTestCases(windows_title,tsuite_id,tproject_id,tplan_id,build_id,platform_id,tcversion_set) 
 {
-  args = "tsuiteID=" + tsuite_id + "&tprojectID=" + tproject_id + "&tplanID=" + tplan_id; 
-  args += "&buildID=" + build_id + "&platformID=" + platform_id;
-  args += "&tcversionSet=" + tcversion_set;
-	wref = window.open(fRoot+"lib/execute/execExport.php?"+args,
+  wargs = "tsuiteID=" + tsuite_id + "&tprojectID=" + tproject_id + "&tplanID=" + tplan_id; 
+  wargs += "&buildID=" + build_id + "&platformID=" + platform_id;
+  wargs += "&tcversionSet=" + tcversion_set;
+	wref = window.open(fRoot+"lib/execute/execExport.php?"+wargs,
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
 	wref.focus();
 }
-</script>
-{/literal}
 
 
-
-
-
-{* Initialize note panels. The array panel_init_functions is filled with init
-functions from inc_exec_show_tc_exec.tpl and executed from onReady below *}
-<script>
-{literal}
+{* 
+  Initialize note panels. The array panel_init_functions is filled with init
+  functions from inc_exec_show_tc_exec.tpl and executed from onReady below 
+*}
 panel_init_functions = new Array();
 Ext.onReady(function() {
 	for(var i=0;i<panel_init_functions.length;i++) {
 		panel_init_functions[i]();
 	}
 });
-{/literal}
-
 </script>
 
 
@@ -210,11 +185,10 @@ Ext.onReady(function() {
 {*
 IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
 *}
-{assign var="tplan_notes_view_memory_id" value="tpn_view_status"}
-{assign var="build_notes_view_memory_id" value="bn_view_status"}
-{assign var="bulk_controls_view_memory_id" value="bc_view_status"}
-{assign var="platform_notes_view_memory_id" value="platform_notes_view_status"}
-
+{$tplan_notes_view_memory_id="tpn_view_status"}
+{$build_notes_view_memory_id="bn_view_status"}
+{$bulk_controls_view_memory_id="bc_view_status"}
+{$platform_notes_view_memory_id="platform_notes_view_status"}
 
 <body onLoad="show_hide('tplan_notes','{$tplan_notes_view_memory_id}',{$gui->tpn_view_status});
               show_hide('build_notes','{$build_notes_view_memory_id}',{$gui->bn_view_status});
@@ -233,10 +207,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{if $gui->platform_info.name != ""}
 	  {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_info.name|escape}
 	{/if}
-	{include file="inc_help.tpl" helptopic="hlp_executeMain" show_help_icon=true}
 </h1>
-<h1 class="title">
-	{if $gui->ownerDisplayName != ""}
+
+{if $gui->ownerDisplayName != ""}
+  <h1 class="title">
     {$labels.only_test_cases_assigned_to}{$title_sep}
 	  {foreach from=$gui->ownerDisplayName item=assignedUser}
 	    {$assignedUser|escape}
@@ -244,9 +218,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	  {if $gui->include_unassigned}
 	    <br />{$labels.or_unassigned_test_cases}
 	  {/if}
-	{/if}
-</h1>
-
+  </h1>
+{/if}
 
 <div id="main_content" class="workBack">
 	{if $gui->user_feedback != ''}
@@ -262,21 +235,52 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 
 <form method="post" id="execSetResults" name="execSetResults" 
+      enctype="multipart/form-data"
       onSubmit="javascript:return validateForm(this);">
 
   <input type="hidden" id="save_button_clicked"  name="save_button_clicked" value="0" />
   <input type="hidden" id="do_delete"  name="do_delete" value="0" />
   <input type="hidden" id="exec_to_delete"  name="exec_to_delete" value="0" />
+  <input type="hidden" id="form_token"  name="form_token" value="{$gui->treeFormToken}" />
+  <input type="hidden" id="refresh_tree"  name="refresh_tree" value="{$gui->refreshTree}" />
+  <input type="hidden" id="{$gui->history_status_btn_name}" name="{$gui->history_status_btn_name}" value="1" />
+
+  {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
+    <div class="groupBtn">
+      <input type="hidden" id="history_on" name="history_on" value="{$gui->history_on}" />
+      
+      {$tlImages.toggle_direct_link} &nbsp;
+      <div class="direct_link" style='display:none'>
+      <a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
+
+      <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
+      <input type="button" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"
+             value="{lang_get s=$gui->history_status_btn_name}" 
+             onclick="javascript:toogleRequiredOnShowHide('bug_summary');
+                      javascript:toogleRequiredOnShowHide('artifactVersion');
+                      javascript:toogleRequiredOnShowHide('artifactComponent');
+                      execSetResults.submit();"/>
+
+      <input type="button" id="pop_up_import_button" name="import_xml_button"
+             value="{$labels.import_xml_results}"
+             onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
+                                                   {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
+          
+      {if $tlCfg->exec_cfg->enable_test_automation}
+        <input type="submit" id="execute_cases" name="execute_cases"
+                 value="{$labels.execute_and_save_results}"/>
+      {/if}
+    </div>
+  {/if}
+
 
   {* -------------------------------------------------------------------------------- *}
   {* Test Plan notes show/hide management                                             *}
   {* -------------------------------------------------------------------------------- *}
-  {lang_get s='test_plan_notes' var='container_title'}
-  {assign var="div_id" value='tplan_notes'}
-  {assign var="memstatus_id" value=$tplan_notes_view_memory_id}
-
+  {$div_id='tplan_notes'}
+  {$memstatus_id=$tplan_notes_view_memory_id}
   {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
+           show_hide_container_title=$gui->testplan_div_title
            show_hide_container_id=$div_id
            show_hide_container_draw=false
            show_hide_container_class='exec_additional_info'
@@ -292,54 +296,52 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* Platforms notes show/hide management                                                 *}
   {* -------------------------------------------------------------------------------- *}
   {if $gui->platform_info.id > 0}
-  {lang_get s='platform_description' var='container_title'}
-  {assign var="div_id" value='platform_notes'}
-  {assign var="memstatus_id" value=$platform_notes_view_memory_id}
+    {$div_id='platform_notes'}
+    {$memstatus_id=$platform_notes_view_memory_id}
 
-  {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
-           show_hide_container_id=$div_id
-           show_hide_container_view_status_id=$memstatus_id
-           show_hide_container_draw=true
-           show_hide_container_class='exec_additional_info'
-           show_hide_container_html=$gui->platform_info.notes}
+    {include file="inc_show_hide_mgmt.tpl"
+             show_hide_container_title=$gui->platform_div_title
+             show_hide_container_id=$div_id
+             show_hide_container_view_status_id=$memstatus_id
+             show_hide_container_draw=true
+             show_hide_container_class='exec_additional_info'
+             show_hide_container_html=$gui->platform_info.notes}
   {/if}         
   {* -------------------------------------------------------------------------------- *}
 
   {* -------------------------------------------------------------------------------- *}
   {* Build notes show/hide management                                                 *}
   {* -------------------------------------------------------------------------------- *}
-  {lang_get s='builds_notes' var='container_title'}
-  {assign var="div_id" value='build_notes'}
-  {assign var="memstatus_id" value=$build_notes_view_memory_id}
-
+  {$div_id='build_notes'}
+  {$memstatus_id=$build_notes_view_memory_id}
   {include file="inc_show_hide_mgmt.tpl"
-           show_hide_container_title=$container_title
+           show_hide_container_title=$gui->build_div_title
            show_hide_container_id=$div_id
            show_hide_container_view_status_id=$memstatus_id
-           show_hide_container_draw=true
-           show_hide_container_class='exec_additional_info'
-           show_hide_container_html=$gui->build_notes}
+           show_hide_container_draw=false
+           show_hide_container_class='exec_additional_info'}
+
+  <div id="{$div_id}" class="exec_additional_info">
+    {$gui->build_notes}
+    {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
+  </div>
+
   {* -------------------------------------------------------------------------------- *}
-
-
-
   {if $gui->map_last_exec eq ""}
      <div class="messages" style="text-align:center"> {$labels.no_data_available}</div>
   {else}
       {if $gui->grants->execute == 1 and $gui->build_is_open == 1}
-        {assign var="input_enabled_disabled" value=""}
-        {assign var="att_download_only" value=false}
-        {assign var="enable_custom_fields" value=true}
-        {assign var="draw_submit_button" value=true}
+        {$input_enabled_disabled=""}
+        {$att_download_only=false}
+        {$enable_custom_fields=true}
+        {$draw_submit_button=true}
 
 
         {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
-            {lang_get s='bulk_tc_status_management' var='container_title'}
-            {assign var="div_id" value='bulk_controls'}
-            {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
+            {$div_id='bulk_controls'}
+            {$memstatus_id="$bulk_controls_view_memory_id"}
             {include file="inc_show_hide_mgmt.tpl"
-                     show_hide_container_title=$container_title
+                     show_hide_container_title=$labels.bulk_tc_status_management
                      show_hide_container_id=$div_id
                      show_hide_container_draw=false
                      show_hide_container_class='exec_additional_info'
@@ -352,34 +354,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                        args_tcversion_id='bulk'
                        args_webeditor=$gui->bulk_exec_notes_editor
                        args_execution_time_cfields=$gui->execution_time_cfields
+                       args_draw_save_and_exit=$gui->draw_save_and_exit
                        args_labels=$labels}
             </div>
         {/if}
     	{/if}
-
-
-      {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
-          <hr />
-          <div class="groupBtn">
-    	    	  <input type="button" name="print" id="print" value="{$labels.btn_print}"
-    	    	         onclick="javascript:window.print();" />
-    	    	  <input type="submit" id="toggle_history_on_off"
-    	    	         name="{$gui->history_status_btn_name}"
-    	    	         value="{lang_get s=$gui->history_status_btn_name}" />
-    	    	  <input type="button" id="pop_up_import_button" name="import_xml_button"
-    	    	         value="{$labels.import_xml_results}"
-    	    	         onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
-    	    	                                                {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
-          
-		          {if $tlCfg->exec_cfg->enable_test_automation}
-		          <input type="submit" id="execute_cases" name="execute_cases"
-		                 value="{$labels.execute_and_save_results}"/>
-		          {/if}
-    	    	  <input type="hidden" id="history_on"
-    	    	         name="history_on" value="{$gui->history_on}" />
-          </div>
-      {/if}
-      <hr />
 	{/if}
 
   {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
@@ -391,21 +370,26 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     	                                                  '{$gui->tcversionSet}');" />
 
 
+      {if $tlCfg->exec_cfg->enable_test_automation}
+        <input type="submit" id="execute_cases" name="execute_cases" value="{$labels.execute_and_save_results}"/>
+      {/if}
+
  	    <table class="mainTable-x" width="100%">
  	    <tr>
- 	    <th>{$labels.th_testsuite}</th><th>{$labels.title_test_case}</th>
- 	    <th>{$labels.exec_status}</th><th>{$labels.test_exec_result}</th>
+ 	    <th>{$labels.th_testsuite}</th>
+      <th>{$labels.title_test_case}</th>
+ 	    <th>{$labels.exec_status}</th>
+      <th>{$labels.test_exec_result}</th>
  	    </tr>
  	    {foreach item=tc_exec from=$gui->map_last_exec name="tcSet"}
-      	  {if $tc_exec.active == 1}	 {* TICKET 4981 *}
-
-            {assign var="tc_id" value=$tc_exec.testcase_id}
-	        {assign var="tcversion_id" value=$tc_exec.id}
-	        {* IMPORTANT:
-	           Here we use version_number, which is related to tcversion_id SPECIFICATION.
-	           When we need to display executed version number, we use tcversion_number
-	        *}
-	        {assign var="version_number" value=$tc_exec.version}
+      	  {if $tc_exec.active == 1}
+            {$tc_id=$tc_exec.testcase_id}
+	          {$tcversion_id=$tc_exec.id}
+	          {* IMPORTANT:
+	             Here we use version_number, which is related to tcversion_id SPECIFICATION.
+	             When we need to display executed version number, we use tcversion_number
+	          *}
+	          {$version_number=$tc_exec.version}
 	      
 	    	<input type="hidden" id="tc_version_{$tcversion_id}" name="tc_version[{$tcversion_id}]" value='{$tc_id}' />
 	    	<input type="hidden" id="version_number_{$tcversion_id}" name="version_number[{$tcversion_id}]" value='{$version_number}' />
@@ -414,6 +398,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	        <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
 	        <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
 	        <td>
+                  <img class="clickable" src="{$tlImages.history_small}"
+                       onclick="javascript:openExecHistoryWindow({$tc_exec.testcase_id});"
+                       title="{$labels.execution_history}" />
+                  <img class="clickable" src="{$tlImages.exec_icon}"
+                       onclick="javascript:openExecutionWindow({$tc_exec.testcase_id},{$tcversion_id},{$gui->build_id},{$gui->tplan_id},{$gui->platform_id});"
+                       title="{$labels.execution}" />
+                  <img class="clickable" src="{$tlImages.edit}"
+                       onclick="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id});"
+                       title="{$labels.design}" />        
 	        <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')" title="{$labels.show_tcase_spec}">
 	        {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
 	        </a>
@@ -421,11 +414,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	        <td class="{$tlCfg->results.code_status[$tc_exec.status]}">
 	        {$gui->execStatusValues[$tc_exec.status]}
 	        </td>
-	   			<td><select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
+	   			<td>
+	   			    {if $tc_exec.can_be_executed}
+	   			    <select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
 					    {html_options options=$gui->execStatusValues}
-					</select>
-				   </td>
-	        </tr>
+					    </select>
+					    {else}
+					      &nbsp;
+					    {/if}
+				  </td>	        </tr>
 	    {/if}   {* Design only if test case version we want to execute is ACTIVE *}   
       {/foreach}
       </table>
@@ -446,15 +443,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		{/if}
 		<p>
 	{/if}
-	
-    {include file="execute/inc_exec_show_tc_exec.tpl"}
-
-    {* 20090419 - BUGID 2364 - franciscom*}
-    {if isset($gui->refreshTree) && $gui->refreshTree}
-	    {include file="inc_refreshTreeWithFilters.tpl"}
-	    {*include file="inc_refreshTree.tpl"*}
-    {/if}
+  
+  {include file="execute/inc_exec_show_tc_exec.tpl"}
+  {if isset($gui->refreshTree) && $gui->refreshTree}
+    {include file="inc_refreshTreeWithFilters.tpl"}
   {/if}
+{/if}
   
 </form>
 </div>

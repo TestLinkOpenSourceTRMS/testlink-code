@@ -11,11 +11,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @author 		2002 - 2004 Mantis Team (the code is based on mantis BT project code)
- * @copyright 	2003-2012, TestLink community 
+ * @copyright 	2003-2015, TestLink community 
  * @link 		http://www.teamst.org/
  *
  *
  * @internal revisions
+ * @since 1.9.13
  *
  */
 
@@ -41,13 +42,16 @@ $g_phpMailer = null;
  * @param boolean $htmlFormat specify text type true = html, false (default) = plain text
  */
 function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
-                     $p_exit_on_error = false, $htmlFormat = false ) 
+                     $p_exit_on_error = false, $htmlFormat = false, $opt = null ) 
 {
 
 	global $g_phpMailer;
 	$op = new stdClass();
 	$op->status_ok = true;
  	$op->msg = 'ok';
+
+    $options = array('strip_email_links' => true);
+    $options = array_merge($options,(array)$opt);
 
 	// Check fatal Error
 	$smtp_host = config_get( 'smtp_host' );
@@ -60,7 +64,8 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 	$t_recipient = trim( $p_recipient );
 	$t_subject   = string_email( trim( $p_subject ) );
-	$t_message   = string_email_links( trim( $p_message ) );
+	$t_message = trim($p_message);
+	$t_message   = $options['strip_email_links'] ? string_email_links($p_message) : $p_message;
 
 	# short-circuit if no recipient is defined, or email disabled
 	# note that this may cause signup messages not to be sent

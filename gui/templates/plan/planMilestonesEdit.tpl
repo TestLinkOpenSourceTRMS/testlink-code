@@ -2,10 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: planMilestonesEdit.tpl,v 1.13 2010/11/06 11:42:47 amkhullar Exp $
 
-Rev:
-    20110417 - Julian - BUGID 3971 - Help for Milestones 
-    20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
-    20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+@internal revisions
 *}
 {lang_get var='labels' s='show_event_history,warning_empty_milestone_name,
                           warning_empty_low_priority_tcases,warning_empty_medium_priority_tcases,
@@ -137,7 +134,7 @@ function validateForm(f)
 			    <th style="background:none;">{$labels.th_name}</th>
 	        		<td>
 	        			<input type="text" id="milestone_name" name="milestone_name" size="{#MILESTONE_NAME_SIZE#}"
-                	  	 maxlength="{#MILESTONE_NAME_MAXLEN#}"  value="{$gui->milestone.name|escape}"/>
+                	  	 maxlength="{#MILESTONE_NAME_MAXLEN#}"  value="{$gui->milestone.name|escape}" required />
 	              {include file="error_icon.tpl" field="milestone_name"}
 	        		</td>
     	    </tr>
@@ -145,10 +142,9 @@ function validateForm(f)
  	    		<tr>
 			    <th style="background:none;">{$labels.th_date_format}</th>
 			        <td>
-		         	{* BUGID 3716 *}
 	                <input type="text" 
 	                       name="target_date" id="target_date" 
-					       value="{$gui->milestone.target_date}" />
+					       value="{$gui->milestone.target_date}" required />
 					<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 					     onclick="showCal('target_date-cal','target_date','{$gsmarty_datepicker_format}');" >
 					<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
@@ -180,7 +176,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" id="low_priority_tcases" name="low_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.high_percentage|escape}"/>
+		          		       value="{$gui->milestone.high_percentage|escape}" required />
 	                {include file="error_icon.tpl" field="low_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -189,7 +185,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" id="medium_priority_tcases" name="medium_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.medium_percentage|escape}"/>
+		          		       value="{$gui->milestone.medium_percentage|escape}" required />
 	                {include file="error_icon.tpl" field="medium_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -198,7 +194,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" id="high_priority_tcases" name="high_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.low_percentage|escape}"/>
+		          		       value="{$gui->milestone.low_percentage|escape}" required />
 	                {include file="error_icon.tpl" field="high_priority_tcases"}
 		          	</td>
 		          </tr>

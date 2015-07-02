@@ -12,14 +12,13 @@
 	<meta name="copyright" content="TestLink Development Team" />
 	<meta name="robots" content="NOFOLLOW" />
 	<title>TestLink {$tlVersion|escape}</title>
-	<meta name="description" content="TestLink - {$title|default:"Main page"}" />
+	<meta name="description" content="TestLink - {$gui->title|default:"Main page"}" />
 	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
 </head>
 
-{* 20060226 - franciscom - changes in dimensions due to logo on navbar*}
 <frameset rows="70,*" frameborder="0" framespacing="0">
-	<frame src="{$titleframe}" name="titlebar" scrolling="no" noresize="noresize" />
-	<frame src="{$mainframe}" scrolling='auto' name='mainframe' />
+	<frame src="{$gui->titleframe}" name="titlebar" scrolling="no" noresize="noresize" />
+	<frame src="{$gui->mainframe}" scrolling='auto' name='mainframe' />
 	<noframes>
 		<body>TestLink required a frames supporting browser.</body>
 	</noframes>

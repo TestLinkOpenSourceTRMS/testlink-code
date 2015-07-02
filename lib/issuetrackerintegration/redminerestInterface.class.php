@@ -5,15 +5,19 @@
  * @filesource	redminerestInterface.class.php
  * @author Francisco Mancardi
  *
- *
  * @internal revisions
- * @since 1.9.4
- * 20120324 - franciscom - TICKET 4904: integrate with ITS on test project basis 
+ * @since 1.9.12
+ *
 **/
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
 class redminerestInterface extends issueTrackerInterface
 {
-    private $APIClient;
+  private $APIClient;
+  private $issueDefaults;
+  private $issueOtherAttr = null; // see 
+  private $translate = null;
+
+	var $defaultResolvedStatus;
 
 	/**
 	 * Construct and connect to BTS.
@@ -21,14 +25,30 @@ class redminerestInterface extends issueTrackerInterface
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config)
+	function __construct($type,$config,$name)
 	{
+    $this->name = $name;
 		$this->interfaceViaDB = false;
 		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+
+    $this->defaultResolvedStatus = array();
+    $this->defaultResolvedStatus[] = array('code' => 3, 'verbose' => 'resolved');
+    $this->defaultResolvedStatus[] = array('code' => 5, 'verbose' => 'closed');
 		
-	    $this->setCfg($config);
+	  if( !$this->setCfg($config) )
+    {
+      return false;
+    }  
+
+    // http://www.redmine.org/issues/6843
+    // "Target version" is the new display name for this property, 
+    // but it's still named fixed_version internally and thus in the API.
+    // $issueXmlObj->addChild('fixed_version_id', (string)2);
+    $this->translate['targetversion'] = 'fixed_version_id';
+
 		$this->completeCfg();
-	    $this->connect();
+		$this->setResolvedStatusCfg();
+	  $this->connect();
 	}
 
 
@@ -44,102 +64,171 @@ class redminerestInterface extends issueTrackerInterface
 	function completeCfg()
 	{
 		$base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
-	    if( !property_exists($this->cfg,'uriview') )
-	    {
-	    	$this->cfg->uriview = $base . 'issues/show/';
+	  if( !property_exists($this->cfg,'uriview') )
+	  {
+      // $this->cfg->uriview = $base . 'issues/show/'; // seems this is good only for redmine 1
+      // $this->cfg->uriview = $base . 'issues/show/'; // seems this is good only for redmine 2
+      $this->cfg->uriview = $base . 'issues/'; // seems this is good only for redmine 1
 		}
 	    
-	    if( !property_exists($this->cfg,'uricreate') )
-	    {
-	    	$this->cfg->uricreate = $base;
+	  if( !property_exists($this->cfg,'uricreate') )
+	  {
+      $this->cfg->uricreate = $base;
 		}	    
+
+    if( property_exists($this->cfg,'attributes') )
+    {
+      $attr = get_object_vars($this->cfg->attributes);
+      foreach ($attr as $name => $elem) 
+      {
+        $name = (string)$name;
+        if( is_object($elem) )
+        {
+           $elem = get_object_vars($elem);
+           $cc = current($elem);
+           $kk = key($elem); 
+           foreach($cc as $value)
+           {
+              $this->issueOtherAttr[$name][] = array($kk => (string)$value); 
+           }
+        } 
+        else
+        {
+          $this->issueOtherAttr[$name] = (string)$elem;     
+        } 
+      }
+    }     
+
+    // 20140816
+    // All attributes that I do not consider mandatory 
+    // are managed through the issueAdditionalAttributes
+    //
+    // On Redmine 1 seems to be standard for Issues/Bugs
+		$this->issueDefaults = array('trackerid' => 1); 
+    foreach($this->issueDefaults as $prop => $default)
+    {
+      if(!isset($this->issueAttr[$prop]))
+      {
+        $this->issueAttr[$prop] = $default;
+      } 
+      /*
+      if( !property_exists($this->cfg, $prop))
+      {
+        $this->cfg->$prop = $default;
+      } 
+      */ 
+    }   
 	}
 
 	/**
-     * useful for testing 
-     *
-     *
-     **/
+   * useful for testing 
+   *
+   *
+   **/
 	function getAPIClient()
 	{
 		return $this->APIClient;
 	}
 
-    /**
-     * checks id for validity
-     *
-	 * @param string issueID
-     *
-     * @return bool returns true if the bugid has the right format, false else
-     **/
-    function checkBugIDSyntax($issueID)
-    {
-        return $this->checkBugIDSyntaxNumeric($issueID);
-    }
+  /**
+   * checks id for validity
+   *
+   * @param string issueID
+   *
+   * @return bool returns true if the bugid has the right format, false else
+   **/
+  function checkBugIDSyntax($issueID)
+  {
+    return $this->checkBugIDSyntaxNumeric($issueID);
+  }
 
-    /**
-     * establishes connection to the bugtracking system
-     *
-     * @return bool 
-     *
-     **/
-    function connect()
-    {
-		try
-		{
-			// CRITIC NOTICE for developers
-			// $this->cfg is a simpleXML Object, then seems very conservative and safe
-			// to cast properties BEFORE using it.
-			$this->APIClient = new redmine((string)trim($this->cfg->uribase),(string)trim($this->cfg->apikey));
-	       	$this->connected = true;
-        }
-		catch(Exception $e)
-		{
-			$logDetails = '';
-			foreach(array('uribase','apikey') as $v)
-			{
-				$logDetails .= "$v={$this->cfg->$v} / "; 
-			}
-			$logDetails = trim($logDetails,'/ ');
-			$this->connected = false;
-            tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
-		}
-    }
+  /**
+   * establishes connection to the bugtracking system
+   *
+   * @return bool 
+   *
+   **/
+  function connect()
+  {
+    $processCatch = false;
 
-    /**
-     * 
-     *
-     **/
+    try
+    {
+  	  // CRITIC NOTICE for developers
+  	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
+  	  // to cast properties BEFORE using it.
+  	  $this->APIClient = new redmine((string)trim($this->cfg->uribase),(string)trim($this->cfg->apikey));
+
+      // to undestand if connection is OK, I will ask for projects.
+      // I've tried to ask for users but get always ERROR from redmine (not able to understand why).
+      try
+      {
+        $items = $this->APIClient->getProjects();
+        $this->connected = !is_null($items);
+        unset($items);
+      }
+      catch(Exception $e)
+      {
+        $processCatch = true;
+      }
+    }
+  	catch(Exception $e)
+  	{
+  	  $processCatch = true;
+  	}
+  	
+  	if($processCatch)
+  	{
+  		$logDetails = '';
+  		foreach(array('uribase','apikey') as $v)
+  		{
+  			$logDetails .= "$v={$this->cfg->$v} / "; 
+  		}
+  		$logDetails = trim($logDetails,'/ ');
+  		$this->connected = false;
+      tLog(__METHOD__ . " [$logDetails] " . $e->getMessage(), 'ERROR');
+  	}
+  }
+
+  /**
+   * 
+   *
+   **/
 	function isConnected()
 	{
 		return $this->connected;
 	}
 
 
-    /**
-     * 
-     *
-     **/
+  /**
+   * 
+   *
+   **/
 	public function getIssue($issueID)
 	{
 		if (!$this->isConnected())
 		{
-            tLog(__METHOD__ . '/Not Connected ', 'ERROR');
+      tLog(__METHOD__ . '/Not Connected ', 'ERROR');
 			return false;
 		}
 		
 		$issue = null;
-		try
+    try
 		{
 			$xmlObj = $this->APIClient->getIssue((int)$issueID);
-			if( !is_null($xmlObj) && is_object($xmlObj))
+    	
+      if( !is_null($xmlObj) && is_object($xmlObj))
 			{
 				$issue = new stdClass();
-		        $issue->IDHTMLString = "<b>{$issueID} : </b>";
+		    $issue->IDHTMLString = "<b>{$issueID} : </b>";
 				$issue->statusCode = (string)$xmlObj->status['id'];
 				$issue->statusVerbose = (string)$xmlObj->status['name'];;
 				$issue->statusHTMLString = "[$issue->statusVerbose] ";
 				$issue->summary = $issue->summaryHTMLString = (string)$xmlObj->subject;
+				$issue->redmineProject = array('name' => (string)$xmlObj->project['name'], 
+				                               'id' => (int)$xmlObj->project['id'] );
+				                               
+				$issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
 			}
 		}
 		catch(Exception $e)
@@ -174,7 +263,7 @@ class redminerestInterface extends issueTrackerInterface
 	 **/
 	function getIssueStatusVerbose($issueID)
 	{
-        return $this->getIssueStatusCode($issueID);
+    return $this->getIssueStatusCode($issueID);
 	}
 
 	/**
@@ -186,41 +275,186 @@ class redminerestInterface extends issueTrackerInterface
 	 **/
 	function getIssueSummaryHTMLString($issueID)
 	{
-        $issue = $this->getIssue($issueID);
-        return $issue->summaryHTMLString;
+    $issue = $this->getIssue($issueID);
+    return $issue->summaryHTMLString;
 	}
 
-    /**
+  /**
 	 * @param string issueID
-     *
-     * @return bool true if issue exists on BTS
-     **/
-    function checkBugIDExistence($issueID)
+   *
+   * @return bool true if issue exists on BTS
+   **/
+  function checkBugIDExistence($issueID)
+  {
+    if(($status_ok = $this->checkBugIDSyntax($issueID)))
     {
-        if(($status_ok = $this->checkBugIDSyntax($issueID)))
-        {
-            $issue = $this->getIssue($issueID);
-            $status_ok = is_object($issue) && !is_null($issue);
-        }
-        return $status_ok;
+      $issue = $this->getIssue($issueID);
+      $status_ok = is_object($issue) && !is_null($issue);
     }
+    return $status_ok;
+  }
 
-
-
-    /**
-     *
-     * @author francisco.mancardi@gmail.com>
-     **/
-	public static function getCfgTemplate()
+  /**
+   *
+   * From Redmine API documentation (@20130406)
+   * Parameters:
+   *
+   * issue - A hash of the issue attributes:
+   * - subject
+   * - description
+   * - project_id
+   * - tracker_id
+   * - status_id
+   * - category_id
+   * - fixed_version_id - see http://www.redmine.org/issues/6843
+   * - assigned_to_id   - ID of the user to assign the issue to (currently no mechanism to assign by name)
+   * - parent_issue_id  - ID of the parent issue  <= aslo know as Parent Task
+   * - custom_fields    - See Custom fields
+   * - watcher_user_ids - Array of user ids to add as watchers (since 2.3.0)
+   */
+  public function addIssue($summary,$description)
+  {
+  	// Check mandatory info
+  	if( !property_exists($this->cfg,'projectidentifier') )
   	{
-  	
-  		// http://tl.m.remine.org
-		$template = "<!-- Template " . __CLASS__ . " -->\n" .
-					"<issuetracker>\n" .
-					"<apikey>REDMINE API KEY</apikey>\n" .
-					"<uribase>http://tl.m.remine.org</uribase>\n" .
-					"</issuetracker>\n";
-		return $template;
+  	  throw new exception(__METHOD__ . " project identifier is MANDATORY");
   	}
+  	  
+    try
+    {
+       // needs json or xml
+      $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
+
+      // according with user report is better to use htmlspecialchars
+      // TICKET 5703: Create issue with Portuguese characters produces mangled text
+      //
+   		// $issueXmlObj->addChild('subject', htmlentities($summary));
+   		// $issueXmlObj->addChild('description', htmlentities($description));
+
+      // limit size to redmine max => 255 ?
+      $issueXmlObj->addChild('subject', substr(htmlspecialchars($summary),0,255) );
+      $issueXmlObj->addChild('description', htmlspecialchars($description));
+
+      // Got from XML Configuration
+   		$issueXmlObj->addChild('project_id', (string)$this->cfg->projectidentifier);
+
+
+      if( property_exists($this->cfg,'trackerid') )
+      {
+        $issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
+      } 
+
+      // try to be generic
+      if( property_exists($this->cfg,'parent_issue_id') )
+      {
+        $issueXmlObj->addChild('parent_issue_id', (string)$this->cfg->parent_issue_id);
+      } 
+
+
+      // Why issuesAttr is issue ?
+      // Idea was 
+      // on XML config on TestLink provide direct access to a minimun set of MANDATORY
+      // attributes => without it issue can not be created.
+      // After first development/release of this feature people that knows better
+      // Redmine start asking for other attributes.
+      // Then to manage this other set of unknown attributes in a generic way idea was
+      // loop over an object property and blidly add it to request.
+      //
+      // Drawback/limitations
+      // I can not manage type (because I do not request this info) => will treat always as STRING 
+      //
+      // * Special case Target Version
+      // http://www.redmine.org/issues/6843
+      // "Target version" is the new display name for this property, 
+      // but it's still named fixed_version internally and thus in the API.
+      // $issueXmlObj->addChild('fixed_version_id', (string)2);
+      // 
+      if(!is_null($this->issueOtherAttr))
+      {
+        foreach($this->issueOtherAttr as $ka => $kv)
+        {
+          // will treat everything as simple strings or can I check type
+          // see completeCfg()
+          $issueXmlObj->addChild((isset($this->translate[$ka]) ? $this->translate[$ka] : $ka), (string)$kv);
+        }  
+      }  
+
+      $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
+      $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+                   'msg' => sprintf(lang_get('redmine_bug_created'),$summary,$issueXmlObj->project_id));
+     }
+     catch (Exception $e)
+     {
+       $msg = "Create REDMINE Ticket FAILURE => " . $e->getMessage();
+       tLog($msg, 'WARNING');
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+     }
+     return $ret;
+  }  
+
+
+  /**
+   *
+   */
+  public function addNote($issueID,$noteText)
+  {
+    try
+    {
+       // needs json or xml
+      $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
+      $issueXmlObj->addChild('notes', htmlspecialchars($noteText));
+      $op = $this->APIClient->addIssueNoteFromSimpleXML($issueID,$issueXmlObj);
+      $ret = array('status_ok' => true, 'id' => (string)$op->id, 
+                   'msg' => sprintf(lang_get('redmine_bug_created'),$summary,$issueXmlObj->project_id));
+     }
+     catch (Exception $e)
+     {
+       $msg = "REDMINE Add Note to Ticket FAILURE => " . $e->getMessage();
+       tLog($msg, 'WARNING');
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+     }
+     return $ret;
+  }  
+
+
+
+
+  /**
+   *
+   * @author francisco.mancardi@gmail.com>
+   **/
+	public static function getCfgTemplate()
+  {
+    $template = "<!-- Template " . __CLASS__ . " -->\n" .
+				        "<issuetracker>\n" .
+				        "<apikey>REDMINE API KEY</apikey>\n" .
+				        "<uribase>http://tl.m.remine.org</uribase>\n" .
+                "<uriview>http://tl.m.remine.org/issues/</uriview> <!-- for Redmine 1.x add show/ --> \n" .
+				        "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
+				        "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
+                "<!--                                       -->\n" .
+                "<!-- Configure This if you need to provide other attributes, ATTENTION to REDMINE API Docum. -->\n" .
+                "<!-- <attributes> -->\n" .
+                "<!--   <targetversion>10100</targetversion>\n" .
+                "<!--   <parent_issue_id>10100</parent_issue_id>\n" .
+                "<!-- </attributes>  -->\n" .
+                "<!--                                       -->\n" .
+	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
+                "<!--  <resolvedstatus>-->\n" .
+                "<!--    <status><code>3</code><verbose>Resolved</verbose></status> -->\n" .
+                "<!--    <status><code>5</code><verbose>Closed</verbose></status> -->\n" .
+                "<!--  </resolvedstatus> -->\n" .
+				        "</issuetracker>\n";
+	  return $template;
+  }
+
+ /**
+  *
+  **/
+  function canCreateViaAPI()
+  {
+    return (property_exists($this->cfg, 'projectidentifier'));
+  }
+
+
 }
-?>

@@ -1,15 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: show results for requirement specification search.
-
-rev:
-  20100921 - Julian - removed unused code
-  20100920 - Julian - BUGID 3793 - use exttable to display search results
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
+  {$tableID=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -27,7 +23,7 @@ rev:
 <div class="workBack">
 {if $gui->warning_msg == ''}
   {foreach from=$gui->tableSet key=idx item=matrix}
-    {assign var=tableID value=table_$idx}
+    {$tableID="table_$idx"}
     {$matrix->renderBodySection($tableID)}
   {/foreach}
   <br />

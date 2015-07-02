@@ -1,0 +1,15 @@
+Buying TestLink Support
+
+TestLink is a complicated piece of software, and has always been released 
+under an Open Source license, and this will continue into the far future.
+
+It has cost thousands of hours to develop, test and support TestLink. 
+If you find TestLink valuable, we would appreciate if you would consider 
+buying a support agreement.
+
+Disclaimer: 
+There are no SLAs on the support agreements. 
+You're buying the privilege of having your questions looked at first in order of support level. 
+You're doing this, because you find TestLink a valuable tool!
+
+contact: testlink.forum@gmail.com

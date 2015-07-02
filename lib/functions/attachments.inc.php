@@ -5,11 +5,14 @@
  *
  * functions related to attachments
  *
- * @package 	TestLink
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachments.inc.php,v 1.20 2009/12/28 08:52:59 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package     TestLink
+ * @filesource  attachments.inc.php
+ * @copyright   2007-2014, TestLink community 
+ * @link        http://www.testlink.org
  *
+ *
+ * @internal revisions
+ * @since 1.9.10
  **/
 
 /** core functions */
@@ -29,12 +32,12 @@ require_once( dirname(__FILE__) . '/files.inc.php' );
 */
 function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeListInSession = true,$counter = 0)
 {
-	$attachmentInfos = $attachmentRepository->getAttachmentInfosFor($fkid,$fkTableName);
-	if ($storeListInSession)
-	{
-		storeAttachmentsInSession($attachmentInfos,$counter);
-	}
-	return $attachmentInfos;
+  $attachmentInfos = $attachmentRepository->getAttachmentInfosFor($fkid,$fkTableName);
+  if ($storeListInSession)
+  {
+    storeAttachmentsInSession($attachmentInfos,$counter);
+  }
+  return $attachmentInfos;
 }
 
 /**
@@ -49,12 +52,12 @@ function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeList
  */
 function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$counter = 0)
 {
-	$attachmentInfos = $object->getAttachmentInfos($fkid);
-	if ($storeListInSession)
-	{
-		storeAttachmentsInSession($attachmentInfos,$counter);
-	}
-	return $attachmentInfos;
+  $attachmentInfos = $object->getAttachmentInfos($fkid);
+  if ($storeListInSession)
+  {
+    storeAttachmentsInSession($attachmentInfos,$counter);
+  }
+  return $attachmentInfos;
 }
 
 /**
@@ -65,14 +68,25 @@ function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$count
  */
 function storeAttachmentsInSession($attachmentInfos,$counter = 0)
 {
-	if (!$attachmentInfos)
-		$attachmentInfos = array();
-	if (!isset($_SESSION['s_lastAttachmentInfos']) || !$_SESSION['s_lastAttachmentInfos'])
-		$_SESSION['s_lastAttachmentInfos'] = array();
-	if ($counter == 0) 
-		$_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
-	else
-		$_SESSION['s_lastAttachmentInfos'] = array_merge($_SESSION['s_lastAttachmentInfos'],$attachmentInfos);
+  if (!$attachmentInfos)
+  {
+    $attachmentInfos = array();
+  }  
+    
+  if (!isset($_SESSION['s_lastAttachmentInfos']) || !$_SESSION['s_lastAttachmentInfos'])
+  {
+    $_SESSION['s_lastAttachmentInfos'] = array();
+  } 
+    
+  if ($counter == 0) 
+  {
+    $_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
+  }  
+  else
+  {
+    $_SESSION['s_lastAttachmentInfos'] = array_merge($_SESSION['s_lastAttachmentInfos'],$attachmentInfos);
+  }  
+    
 }
 
 /**
@@ -85,20 +99,78 @@ function storeAttachmentsInSession($attachmentInfos,$counter = 0)
  */
 function checkAttachmentID(&$db,$id,$attachmentInfo)
 {
-	$isValid = false;
-	if ($attachmentInfo)
-	{
-		$sLastAttachmentInfos = isset($_SESSION['s_lastAttachmentInfos']) ? $_SESSION['s_lastAttachmentInfos'] : null;
-		for($i = 0;$i < sizeof($sLastAttachmentInfos);$i++)
-		{
-			$info = $sLastAttachmentInfos[$i];
-			if ($info['id'] == $id)
-			{
-				$isValid = true;
-				break;
-			}
-		}
-	}
-	return $isValid;	
+  $isValid = false;
+  if ($attachmentInfo)
+  {
+    $sLastAttachmentInfos = isset($_SESSION['s_lastAttachmentInfos']) ? $_SESSION['s_lastAttachmentInfos'] : null;
+    for($i = 0;$i < sizeof($sLastAttachmentInfos);$i++)
+    {
+      $info = $sLastAttachmentInfos[$i];
+      if ($info['id'] == $id)
+      {
+        $isValid = true;
+        break;
+      }
+    }
+  }
+  return $isValid;  
 }
-?>
+
+
+/**
+ *
+ */
+function fileUploadManagement(&$dbHandler,$id,$title,$table)
+{
+  $retVal = new stdClass();
+  $retVal->uploaded = null;
+  $retVal->msg = null;
+  
+  $fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
+  if ($fInfo && $id)
+  {
+    $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
+    $fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
+
+    if ($fSize && $fTmpName != "")
+    {
+      $repo = tlAttachmentRepository::create($dbHandler);
+      $retVal->uploaded = $repo->insertAttachment($id,$table,$title,$fInfo);
+      if ($retVal->uploaded)
+      {
+        logAuditEvent(TLS("audit_attachment_created",$title,$fInfo['name']),"CREATE",$id,"attachments");
+      } 
+    }
+    else
+    {
+      $retVal->msg  = getFileUploadErrorMessage($fInfo);
+    } 
+  }
+  return $retVal;
+}
+
+/**
+ *
+ */
+function deleteAttachment(&$dbHandler,$fileID,$checkOnSession=true)
+{
+  $repo = tlAttachmentRepository::create($dbHandler);
+  $info = $repo->getAttachmentInfo($fileID);
+  if( $info )
+  {
+    $doIt = true;
+    if( $checkOnSession )
+    {
+      $doIt = checkAttachmentID($dbHandler,$fileID,$info);
+    }
+
+    if( $doIt )
+    {  
+      if($repo->deleteAttachment($fileID,$info))
+      {
+        logAuditEvent(TLS("audit_attachment_deleted",$info['title']),"DELETE",$fileID,"attachments");
+      } 
+    }
+  }
+}
+

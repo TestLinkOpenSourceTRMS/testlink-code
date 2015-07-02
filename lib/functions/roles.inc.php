@@ -7,50 +7,15 @@
  * This script provides the get_rights and has_rights functions for
  * verifying user level permissions.
  *
- * Default Role definition (1.6 version and UP):
- *
- * 'guest' 	- testplan_metrics, mgt_view_tc, mgt_view_key
- * 'tester' - testplan_execute, testplan_metrics
- * 'senior tester' 	- testplan_execute, testplan_metrics, mgt_view_tc, mgt_modify_tc, mgt_view_key
- * 'lead' 	- testplan_execute, testplan_create_build, testplan_metrics, testplan_planning, testplan_assign_rights,
- *				mgt_view_tc, mgt_modify_tc, mgt_view_key, mgt_modify_key
- * 'admin' 	- testplan_execute, testplan_create_build, testplan_metrics, testplan_planning, testplan_assign_rights,
- *				mgt_view_tc, mgt_modify_tc, mgt_view_key, mgt_modify_key,
- *				mgt_modify_product, mgt_users
- *
- * Basic right identifiers:
- * 
- * 	mgt_view_tc, testplan_metrics, mgt_view_key - allow browse basic data
- * 	testplan_execute - edit Test Results
- * 	mgt_modify_tc - edit Test Cases
- * 	mgt_modify_key - edit Keywords
- * 	mgt_modify_req - edit Requirements
- * 	testplan_planning, testplan_create_build, testplan_assign_rights 
- * 			- Test Leader plans/prepares a testing
- * 	mgt_modify_product, mgt_users - just Admin edits Products and Users
- *
- *
- * @filesource	roles.inc.php
- * @package 	TestLink
- * @author 		Martin Havlat, Chad Rosen
- * @copyright 	2006-2011, TestLink community 
+ * @filesource  roles.inc.php
+ * @package     TestLink
+ * @author      Martin Havlat, Chad Rosen
+ * @copyright   2006-2013, TestLink community 
  * 
  *
  * @internal revisions
- * @since 1.9.4
- *	20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis
- * 	20111029 - franciscom - TICKET 4786: Add right to allow UNFREEZE a requirement
- *
- * @since 1.9.?	 
- *	20101112 - franciscom - BUGID 4006: get_tplan_effective_role() fixed bad variable usage -> error on event viewer
- *	20101111 - franciscom - BUGID 4006: test plan is_public
- *	20100930 - franciscom - BUGID 2344: Private test project
- *	20100307 - franciscom - removed wrong right due to copy/paste BUGID 3249
- *	20100220 - franciscom - added inventory rights
- *  20090425 - franciscom - BUGID 2417 - new right for test projects
- *  20081030 - franciscom - added new rights -> system
- *  20070901 - franciscom - BUGID 1016
- *  20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
+ * @since 1.9.10
+ *                                     
  */
 
 /** localization support */ 
@@ -74,75 +39,129 @@ init_global_rights_maps();
  */
 function init_global_rights_maps()
 {
-	// Every array, defines a section in the define role page
-	global $g_rights_tp;
-	global $g_rights_mgttc;
-	global $g_rights_kw;
-	global $g_rights_req;
-	global $g_rights_product;
-	global $g_rights_cf;
-	global $g_rights_users_global;
-	global $g_rights_users;
-	global $g_rights_system;
-	global $g_rights_platforms;
-	global $g_rights_issuetrackers;
+  // Every array, defines a section in the define role page => HAS EFFECTS ONLY ON LAYOUT
+  global $g_rights_tp;
+  global $g_rights_mgttc;
+  global $g_rights_kw;
+  global $g_rights_req;
+  global $g_rights_product;
+  global $g_rights_cf;
+  global $g_rights_users_global;
+  global $g_rights_users;
+  global $g_rights_system;
+  global $g_rights_platforms;
+  global $g_rights_issuetrackers;
+  global $g_rights_executions;
 
-	global $g_propRights_global;
-	global $g_propRights_product;
-	
-	$g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
-							"testplan_create_build" => lang_get('desc_testplan_create_build'),
-							"testplan_metrics" => lang_get('desc_testplan_metrics'),
-							"testplan_planning" => lang_get('desc_testplan_planning'),
-							"testplan_user_role_assignment" => lang_get('desc_user_role_assignment'),
-						);
-						
-	$g_rights_mgttc = array (	"mgt_view_tc" => lang_get('desc_mgt_view_tc'),
-								"mgt_modify_tc" => lang_get('desc_mgt_modify_tc'),
-								"mgt_testplan_create" => lang_get('mgt_testplan_create'),
-							);
-	
-	$g_rights_kw = array (	
-								"mgt_view_key" => lang_get('desc_mgt_view_key'),
-								"mgt_modify_key" => lang_get('desc_mgt_modify_key'),
-							);
-	$g_rights_req = array (	
-								"mgt_view_req" => lang_get('desc_mgt_view_req'),
-								"mgt_modify_req" => lang_get('desc_mgt_modify_req'),
-								"mgt_unfreeze_req" => lang_get('desc_mgt_unfreeze_req')
-							);
-	
-	$g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),
-                              "project_inventory_management" => lang_get('desc_project_inventory_management'),
-                              "project_inventory_view" => lang_get('desc_project_inventory_view') );						
-	
-	$g_rights_cf = array("cfield_view" => lang_get('desc_cfield_view'),
-						 "cfield_management" => lang_get('desc_cfield_management'));
-	
-	
-	$g_rights_platforms = array("platform_view" => lang_get('desc_platforms_view'),
-						        "platform_management" => lang_get('desc_platforms_management'));
+  // global $g_rights_reqmgrsystems;
 
-	$g_rights_issuetrackers = array("issuetracker_view" => lang_get('desc_issuetrackers_view'),
-						        	"issuetracker_management" => lang_get('desc_issuetrackers_management'));
+  global $g_propRights_global;
+  global $g_propRights_product;
+  
+
+  // @since 1.9.7
+  $l18nCfg = array('desc_testplan_execute' => null,'desc_testplan_create_build' => null,
+                   'desc_testplan_metrics' => null,'desc_testplan_planning' => null,
+                   'desc_user_role_assignment' => null,'desc_mgt_view_tc' => null,
+                   'desc_mgt_modify_tc'  => null,'mgt_testplan_create' => null,
+                   'desc_mgt_view_key' => null,'desc_mgt_modify_key' => null,
+                   'desc_keyword_assignment' => null,'desc_mgt_view_req' => null,
+                   'desc_mgt_modify_req' => null,'desc_req_tcase_link_management' => null,
+                   'desc_mgt_modify_product' => null,'desc_project_inventory_management' => null,
+                   'desc_project_inventory_view' => null,
+                   'desc_cfield_view' => null,'desc_cfield_management' => null,
+                   'desc_platforms_view' => null,'desc_platforms_management' => null,
+                   'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
+                   'desc_mgt_modify_users' => null,'desc_role_management' => null,
+                   'desc_user_role_assignment' => null,
+                   'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
+                   'desc_mgt_unfreeze_req' => null,
+                   'right_exec_edit_notes' => null, 'right_exec_delete' => null,
+                   'right_testplan_unlink_executed_testcases' => null, 
+                   'right_testproject_delete_executed_testcases' => null,
+                   'right_testproject_edit_executed_testcases' => null,
+                   'right_testplan_milestone_overview' => null,
+                   'right_exec_testcases_assigned_to_me' => null,
+                   'right_testproject_metrics_dashboard' => null,
+                   'right_testplan_add_remove_platforms' => null,
+                   'right_testplan_update_linked_testcase_versions' => null,
+                   'right_testplan_set_urgent_testcases' => null,
+                   'right_testplan_show_testcases_newest_versions' => null);
 
 
-	// Global means test project independent.
-	$g_rights_users_global = array ( "mgt_users" => lang_get('desc_mgt_modify_users'),
-								     "role_management" => lang_get('desc_role_management'),
-								     "user_role_assignment" => lang_get('desc_user_role_assignment')); 
-	
-	$g_rights_users = $g_rights_users_global;
-							
-	$g_rights_system = array ("mgt_view_events" => lang_get('desc_mgt_view_events'),
-	                          "events_mgt" => lang_get('desc_events_mgt'));
+
+  $l18n = init_labels($l18nCfg);
+
+  $g_rights_executions = array('exec_edit_notes' => $l18n['right_exec_edit_notes'], 
+                               'exec_delete' => $l18n['right_exec_delete']);
 
 
-							
-	$g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
-    unset($g_propRights_global["testproject_user_role_assignment"]);
+  // order is important ?
+  $g_rights_tp = array("mgt_testplan_create" => $l18n['mgt_testplan_create'],
+                       "testplan_create_build" => $l18n['desc_testplan_create_build'],
+                       "testplan_planning" => $l18n['desc_testplan_planning'],
+                       "testplan_execute" => $l18n['desc_testplan_execute'],
+                       "testplan_metrics" => $l18n['desc_testplan_metrics'],
+                       "testplan_user_role_assignment" => $l18n['desc_user_role_assignment'],
+                       "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases'],
+                       "testplan_milestone_overview"  => $l18n['right_testplan_milestone_overview'],
+                       "exec_testcases_assigned_to_me" => $l18n['right_exec_testcases_assigned_to_me'],
+                       'testplan_add_remove_platforms' => $l18n['right_testplan_add_remove_platforms'],
+                       'testplan_update_linked_testcase_versions' => $l18n['right_testplan_update_linked_testcase_versions'],
+                       'testplan_set_urgent_testcases' => $l18n['right_testplan_set_urgent_testcases'],
+                       'testplan_show_testcases_newest_versions' => $l18n['right_testplan_show_testcases_newest_versions']);
+            
+  $g_rights_mgttc = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
+                          "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
+                          "testproject_delete_executed_testcases" => $l18n['right_testproject_delete_executed_testcases'],
+                          "testproject_edit_executed_testcases" => $l18n['right_testproject_edit_executed_testcases']);
+  
+  $g_rights_kw = array("mgt_view_key" => $l18n['desc_mgt_view_key'],
+                       "mgt_modify_key" => $l18n['desc_mgt_modify_key']);
+  
+  $g_rights_req = array("mgt_view_req" => $l18n['desc_mgt_view_req'],
+                        "mgt_modify_req" => $l18n['desc_mgt_modify_req'],
+                        "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req']);
+  
+  $g_rights_product = array("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
+                            "project_inventory_management" => $l18n['desc_project_inventory_management'],
+                            "project_inventory_view" => $l18n['desc_project_inventory_view'] );            
+  
+  $g_rights_cf = array("cfield_view" => $l18n['desc_cfield_view'],
+                       "cfield_management" => $l18n['desc_cfield_management']);
+  
+  
+  $g_rights_platforms = array("platform_view" => $l18n['desc_platforms_view'],
+                              "platform_management" => $l18n['desc_platforms_management']);
+
+  $g_rights_issuetrackers = array("issuetracker_view" => $l18n['desc_issuetrackers_view'],
+                                  "issuetracker_management" => $l18n['desc_issuetrackers_management']);
+
+
+  // $g_rights_reqmgrsystems = array("reqmgrsystem_view" => $l18n['desc_reqmgrsystems_view'],
+  //                                 "reqmgrsystem_management" => $l18n['desc_reqmgrsystems_management']);
+
+
+  // Global means test project independent.
+  //
+  // $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
+  //                                "role_management" => $l18n['desc_role_management'],
+  //                                "user_role_assignment" => $l18n['desc_user_role_assignment']); 
+  
+  $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
+                                 "role_management" => $l18n['desc_role_management']);
+
+  $g_rights_users = $g_rights_users_global;
+              
+  $g_rights_system = array ("mgt_view_events" => $l18n['desc_mgt_view_events'],
+                            "events_mgt" => $l18n['desc_events_mgt']);
+
+
+              
+  $g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
+  unset($g_propRights_global["testproject_user_role_assignment"]);
     
-	$g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
+  $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }
 
 
@@ -159,21 +178,21 @@ function init_global_rights_maps()
  */
 function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 {
-	return $_SESSION['currentUser']->hasRight($db,$roleQuestion,$tprojectID,$tplanID);
+  return $_SESSION['currentUser']->hasRight($db,$roleQuestion,$tprojectID,$tplanID);
 }
 
 
 function propagateRights($fromRights,$propRights,&$toRights)
 {
-	// the mgt_users right isn't test project related so this right is inherited from
-	// the global role (if set)
-	foreach($propRights as $right => $desc)
-	{
-		if (in_array($right,$fromRights) && !in_array($right,$toRights))
-		{
-			$toRights[] = $right;
-		}	
-	}
+  // the mgt_users right isn't test project related so this right is inherited from
+  // the global role (if set)
+  foreach($propRights as $right => $desc)
+  {
+    if (in_array($right,$fromRights) && !in_array($right,$toRights))
+    {
+      $toRights[] = $right;
+    }  
+  }
 }
 
 
@@ -191,33 +210,33 @@ function propagateRights($fromRights,$propRights,&$toRights)
  **/
 function checkForRights($rights,$roleQuestion,$bAND = 1)
 {
-	$ret = null;
-	//check to see if the $roleQuestion variable appears in the $roles variable
-	if (is_array($roleQuestion))
-	{
-		$r = array_intersect($roleQuestion,$rights);
-		if ($bAND)
-		{
-			//for AND all rights must be present
-			if (sizeof($r) == sizeof($roleQuestion))
-			{
-				$ret = 'yes';
-			}	
-		}	
-		else 
-		{
-			//for OR one of all must be present
-			if (sizeof($r))
-			{
-				$ret = 'yes';
-			}	
-		}	
-	}
-	else
-	{
-		$ret = (in_array($roleQuestion,$rights) ? 'yes' : null);
-	}
-	return $ret;
+  $ret = null;
+  //check to see if the $roleQuestion variable appears in the $roles variable
+  if (is_array($roleQuestion))
+  {
+    $r = array_intersect($roleQuestion,$rights);
+    if ($bAND)
+    {
+      //for AND all rights must be present
+      if (sizeof($r) == sizeof($roleQuestion))
+      {
+        $ret = 'yes';
+      }  
+    }  
+    else 
+    {
+      //for OR one of all must be present
+      if (sizeof($r))
+      {
+        $ret = 'yes';
+      }  
+    }  
+  }
+  else
+  {
+    $ret = (in_array($roleQuestion,$rights) ? 'yes' : null);
+  }
+  return $ret;
 }
 
 /**
@@ -244,50 +263,50 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
  */
 function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = null)
 {
-	$effective_role = array();
-	$tproject_id = $tproject['id'];
-	if (!is_null($user_id))
-	{
-		$users = tlUser::getByIDs($db,(array)$user_id);
-	}
-	else if (is_null($users))
-	{
-		$users = tlUser::getAll($db);
-	}
+  $effective_role = array();
+  $tproject_id = $tproject['id'];
+  if (!is_null($user_id))
+  {
+    $users = tlUser::getByIDs($db,(array)$user_id);
+  }
+  else if (is_null($users))
+  {
+    $users = tlUser::getAll($db);
+  }
 
-	if ($users)
-	{
-		foreach($users as $id => $user)
-		{
-			// manage admin exception
-			$isInherited = 1;
-			$effectiveRoleID = $user->globalRoleID;
-			$effectiveRole = $user->globalRole;
-			if( ($user->globalRoleID != TL_ROLES_ADMIN) && !$tproject['is_public'])
-			{
-				$isInherited = $tproject['is_public'];
-				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
-				$effectiveRole = '<no rights>';
-			}
-			
-			if(isset($user->tprojectRoles[$tproject_id]))
-			{
-				$isInherited = 0;
-				$effectiveRoleID = $user->tprojectRoles[$tproject_id]->dbID;
-				$effectiveRole = $user->tprojectRoles[$tproject_id];
-			}  
+  if ($users)
+  {
+    foreach($users as $id => $user)
+    {
+      // manage admin exception
+      $isInherited = 1;
+      $effectiveRoleID = $user->globalRoleID;
+      $effectiveRole = $user->globalRole;
+      if( ($user->globalRoleID != TL_ROLES_ADMIN) && !$tproject['is_public'])
+      {
+        $isInherited = $tproject['is_public'];
+        $effectiveRoleID = TL_ROLES_NO_RIGHTS;
+        $effectiveRole = '<no rights>';
+      }
+      
+      if(isset($user->tprojectRoles[$tproject_id]))
+      {
+        $isInherited = 0;
+        $effectiveRoleID = $user->tprojectRoles[$tproject_id]->dbID;
+        $effectiveRole = $user->tprojectRoles[$tproject_id];
+      }  
 
-			$effective_role[$id] = array('login' => $user->login,
-										 'user' => $user,
-										 'user_role_id' => $user->globalRoleID,
-										 'uplayer_role_id' => $user->globalRoleID,
-										 'uplayer_is_inherited' => 0,
-										 'effective_role_id' => $effectiveRoleID,
-										 'effective_role' => $effectiveRole,
-										 'is_inherited' => $isInherited);
-		}  
-	}
-	return $effective_role;
+      $effective_role[$id] = array('login' => $user->login,
+                     'user' => $user,
+                     'user_role_id' => $user->globalRoleID,
+                     'uplayer_role_id' => $user->globalRoleID,
+                     'uplayer_is_inherited' => 0,
+                     'effective_role_id' => $effectiveRoleID,
+                     'effective_role' => $effectiveRole,
+                     'is_inherited' => $isInherited);
+    }  
+  }
+  return $effective_role;
 }
 
 
@@ -320,79 +339,75 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
  */
 function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$users = null)
 {
-	$tplan_mgr = new testplan($db);
-	$tplan = $tplan_mgr->get_by_id($tplan_id);
-	unset($tplan_mgr);
-	
-	$effective_role = get_tproject_effective_role($db,$tproject,$user_id,$users);
-	foreach($effective_role as $user_id => $row)
-	{
-		$isInherited = 1;
-		$effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
-		$effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
-		
-		// BUGID 4006 
-		// Manage administrator exception
-		if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
-		{
-				$isInherited = $tproject['is_public'];
-				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
-				$effectiveRole = '<no rights>';
-		}
-		// ---------------------------------------------------------------------------
-		
-		if(isset($row['user']->tplanRoles[$tplan_id]))
-		{
-			$isInherited = 0;
-			$effective_role[$user_id]['effective_role_id'] = $row['user']->tplanRoles[$tplan_id]->dbID;  
-			$effective_role[$user_id]['effective_role'] = $row['user']->tplanRoles[$tplan_id];
-		}
+  $tplan_mgr = new testplan($db);
+  $tplan = $tplan_mgr->get_by_id($tplan_id);
+  unset($tplan_mgr);
 
-		$effective_role[$user_id]['is_inherited'] = $isInherited;
-	}
-	return $effective_role;
+  $effective_role = get_tproject_effective_role($db,$tproject,$user_id,$users);
+  foreach($effective_role as $user_id => $row)
+  {
+    $isInherited = 1;
+    $effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
+    $effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
+    
+    // Manage administrator exception DO NOT ENTER HERE
+    if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
+    {
+        $isInherited = 0;
+        $effective_role[$user_id]['effective_role_id'] = TL_ROLES_NO_RIGHTS;
+        $effective_role[$user_id]['effective_role'] = '<no rights>';
+    }
+    if(isset($row['user']->tplanRoles[$tplan_id]))
+    {
+      $isInherited = 0;
+      $effective_role[$user_id]['effective_role_id'] = $row['user']->tplanRoles[$tplan_id]->dbID;  
+      $effective_role[$user_id]['effective_role'] = $row['user']->tplanRoles[$tplan_id];
+    }
+    $effective_role[$user_id]['is_inherited'] = $isInherited;
+  }
+  return $effective_role;
 }
 
 
 function getRoleErrorMessage($code)
 {
-	$msg = 'ok';
-	switch($code)
-	{
-		case tlRole::E_NAMEALREADYEXISTS:
-			$msg = lang_get('error_duplicate_rolename');
-			break;
-		
-		case tlRole::E_NAMELENGTH:
-			$msg = lang_get('error_role_no_rolename');
-			break;
-			
-		case tlRole::E_EMPTYROLE:
-			$msg = lang_get('error_role_no_rights');
-			break;
-		
-		case tl::OK:
-			break;
-		
-		case ERROR:
-		case tlRole::E_DBERROR:
-		default:
-			$msg = lang_get('error_role_not_updated');
-	}
-	return $msg;
+  $msg = 'ok';
+  switch($code)
+  {
+    case tlRole::E_NAMEALREADYEXISTS:
+      $msg = lang_get('error_duplicate_rolename');
+      break;
+    
+    case tlRole::E_NAMELENGTH:
+      $msg = lang_get('error_role_no_rolename');
+      break;
+      
+    case tlRole::E_EMPTYROLE:
+      $msg = lang_get('error_role_no_rights');
+      break;
+    
+    case tl::OK:
+      break;
+    
+    case ERROR:
+    case tlRole::E_DBERROR:
+    default:
+      $msg = lang_get('error_role_not_updated');
+  }
+  return $msg;
 }
 
 
 function deleteRole(&$db,$roleID)
 {
-	$userFeedback = '';
-	$role = new tlRole($roleID);
-	$role->readFromDb($db);
-	if ($role->deleteFromDB($db) < tl::OK)
-		$userFeedback = lang_get("error_role_deletion");
-	else
-		logAuditEvent(TLS("audit_role_deleted",$role->getDisplayName()),"DELETE",$roleID,"roles");
-	
-	return $userFeedback;
+  $userFeedback = '';
+  $role = new tlRole($roleID);
+  $role->readFromDb($db);
+  if ($role->deleteFromDB($db) < tl::OK)
+    $userFeedback = lang_get("error_role_deletion");
+  else
+    logAuditEvent(TLS("audit_role_deleted",$role->getDisplayName()),"DELETE",$roleID,"roles");
+  
+  return $userFeedback;
 }
 ?>

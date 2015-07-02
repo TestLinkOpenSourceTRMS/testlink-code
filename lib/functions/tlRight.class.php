@@ -30,7 +30,9 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	{
 		$this->name = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{	
 			$this->dbID = null;
+    }  
 	}
 	
 	/** 
@@ -79,18 +81,25 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		if ($this->readFromCache() >= tl::OK)
+    {  
 			return tl::OK;
+    }
 
 		$readSucceeded = tl::ERROR;	
 		$this->_clean($options);
 		$query = $this->getReadFromDBQuery($this->dbID,$options);
-		$info = $db->fetchFirstRow($query);
-		if ($info)
-			$readSucceeded = $this->readFromDBRow($info);
 		
+    $info = $db->fetchFirstRow($query);
+		if ($info)
+    {  
+			$readSucceeded = $this->readFromDBRow($info);
+		}
+
 		if ($readSucceeded >= tl::OK)
+    {  
 			$this->addToCache();	
-			
+		}
+
 		return $info ? tl::OK : tl::ERROR;
 	}
 
@@ -119,13 +128,19 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 		{
 			if (!is_array($ids))
+      {  
 				$clauses[] = "id = {$ids}";
-			else		
+			}
+      else
+      {		
 				$clauses[] = "id IN (".implode(",",$ids).")";
+      }  
 		}
+
 		if ($clauses)
+    {  
 			$query .= " WHERE " . implode(" AND ",$clauses);
-			
+		}	
 		return $query;	
 	}
 	
@@ -166,8 +181,9 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 		$tables = tlObject::getDBTables('rights');
 		$sql = " SELECT id FROM {$tables['rights']} ";
 		if (!is_null($whereClause))
-			$sql .= ' '.$whereClause;
-	
+    {  
+			$sql .= ' ' . $whereClause;
+	  } 
 		$sql .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
 		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}

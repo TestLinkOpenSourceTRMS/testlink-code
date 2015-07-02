@@ -10,10 +10,9 @@
  * Functions for installation process
  *
  * internal revisions
- * @since 1.9.4
- * 20120129 - franciscom - TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for 
- *										PHP on WINDOWS version 5.3 and higher
- * ----------------------------------------------------------------------------------- */
+ * @since 1.9.6
+ *
+ */
 
 
 /** 
@@ -445,7 +444,6 @@ $ret = array ('errors' => $errors,
 return ($ret);  
 } // function end
 
-// 20051231 - fm
 function check_db_version($dbhandler)
 {
 
@@ -518,12 +516,11 @@ return ($ret);
 
   rev :
 
-  TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
 */
 function check_db_loaded_extension($db_type)
 {
-	$ext2search = $db_type;  
-    $dbType2PhpExtension = array('postgres' => 'pgsql');
+  $ext2search = $db_type;  
+  $dbType2PhpExtension = array('postgres' => 'pgsql');
 	if(PHP_OS == 'WINNT')
 	{
 		// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express

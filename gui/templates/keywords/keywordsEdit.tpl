@@ -1,17 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsEdit.tpl,v 1.8 2009/04/07 18:55:29 schlundus Exp $
-Purpose: smarty template - View all keywords 
+@filesource keywordsEdit.tpl
 *}
-{assign var="url_args" value="lib/keywords/keywordsEdit.php"}
-{assign var="keyword_edit_url" value="$basehref$url_args"}
+{lang_get var="labels" s='th_keyword,th_notes'}
+
+{$url_args="lib/keywords/keywordsEdit.php"}
+{$keyword_edit_url="$basehref$url_args"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{literal}
 <script type="text/javascript">
-{/literal}
 var warning_empty_keyword = "{lang_get s='warning_empty_keyword'}";
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.keyword.value))
@@ -23,11 +21,10 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$main_descr|escape}</h1>
@@ -48,15 +45,15 @@ function validateForm(f)
 
   	<table class="common" style="width:50%">
   		<tr>
-  			<th>{lang_get s='th_keyword'}</th>
+  			<th>{$labels.th_keyword}</th>
   			<td><input type="text" name="keyword" 
   			           size="{#KEYWORD_SIZE#}" maxlength="{#KEYWORD_MAXLEN#}" 
-  				         value="{$keyword|escape}" />
+  				         value="{$keyword|escape}" required />
 			  		{include file="error_icon.tpl" field="keyword"}
 			  </td>				
   		</tr>
   		<tr>
-  			<th>{lang_get s='th_notes'}</th>
+  			<th>{$labels.th_notes}</th>
   			<td><textarea name="notes" rows="{#NOTES_ROWS#}" cols="{#NOTES_COLS#}">{$notes|escape}</textarea></td>
   		</tr>
   	</table>
@@ -70,7 +67,5 @@ function validateForm(f)
   	</form>
   </div>
 {/if}
-{* --------------------------------------------------------------------------------------   *}
-
 </body>
 </html>

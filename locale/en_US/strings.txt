@@ -2050,9 +2050,8 @@ $TLS_href_my_testcase_assignments="Test Cases Assigned to Me";
 $TLS_href_platform_management = "Platform Management";
 
 
-// ----- contribution by asimon for req/reqspec search BUGID 2976 -----
 $TLS_href_search_req = "Search Requirements";
-$TLS_href_search_req_spec = "Search Requirement Specifiations";
+$TLS_href_search_req_spec = "Search Requirement Specifications";
 $TLS_caption_search_form_req = "Search Requirements";
 $TLS_caption_search_form_req_spec = "Search Requirement Specifications";
 $TLS_title_search_req = "Search";
@@ -2090,7 +2089,7 @@ $TLS_title_test_plan_mgmt = "Test Plan";
 
 
 // ----- gui/templates/metricsDashboard.tpl -----
-$TLS_info_metrics_dashboard_progress = "The project progress is calcaluted by summing up all executions " .
+$TLS_info_metrics_dashboard_progress = "The project progress is calculated by summing up all executions " .
                                        "for a specific execution result for all platforms within all test " .
                                        "plans. This sum is then set into relation to the sum of all active " .
                                        "test cases for all platforms within all test plans.";
@@ -2098,7 +2097,7 @@ $TLS_info_metrics_dashboard = "This Report shows the progress for the whole proj
                               "(or only active) test plans defined within project.<br />" .
                               "\"Overall Progress\" for test plans is calculated based upon " .
                               "the progress of each platform (if in use).<br />" .
-                              "\"Test Project Progress\" is calucated based upon the progress " .
+                              "\"Test Project Progress\" is calculated based upon the progress " .
                               "of all (or only active) test plans.";
 $TLS_overall_progress = "Overall Progress";
 $TLS_progress_absolute = "Progress";
@@ -3271,5 +3270,27 @@ $TLS_issue_status_tested = "Tested";
 $TLS_issue_status_delivered = "Delivered";
 $TLS_issue_status_closed = "Closed";
 $TLS_issue_status_held = "Held";
+
+$TLS_bts_project_does_not_exist = 'Project %s does not exists on Issue Tracker System';
+
+$TLS_execution_ts_iso = " Executed ON (ISO FORMAT): %s";
+$TLS_issue_generated_description = "Execution ID: %s \n Tester: %s \n Test Plan: %s \n";
+$TLS_issue_build = " Build: %s \n";
+$TLS_issue_platform = " Platform: %s \n";
+$TLS_issue_exec_result = " Execution Status: %s \n";
+$TLS_jira_bug_created = "JIRA Issue Created (summary:%s) on project with key:%s";
+$TLS_redmine_bug_created = "REDMINE Issue Created (summary:%s) on project with identifier:%s";
+$TLS_fogbugz_bug_created = "FOGBUGZ Issue Created (summary:%s) on project:%s";
+$TLS_youtrack_bug_created = "YOUTRACK Issue Created (summary:%s) on project with id:%s";
+$TLS_mantis_bug_created = "MANTIS Issue %s - Created (summary:%s) on project with key:%s";
+$TLS_bugzilla_bug_created = "BUGZILLA Issue Created (summary:%s) on product:%s";
+$TLS_bts_check_ok = "Connection is OK";
+$TLS_bts_check_ko = "Connection is KO (detailed messages on TestLink Event Log), check configuration";
+$TLS_check_bts_connection = "Check connection";
+
+$TLS_can_not_create_direct_link = 'You do not have a TestLink API KEY, direct link can not be generated';
+
+$TLS_seems_to_belong_to_other_tproject = "Attention! - Test case have prefix %s that is different than expected prefix %s";
+$TLS_provide_full_external_tcase_id = "Attention! - You need to provide FULL test case id: %s%sNUMBER";
+$TLS_tcase_doesnot_exist = "Attention!! - Can not find test case identified by %s";
 // ----- END ------------------------------------------------------------------
-?>

@@ -3,13 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Andreas Morsing
- * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.22 2010/01/26 22:09:50 havlat Exp $
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
- * @link http://www.teamst.org
- * @since 1.9
+ * @package    TestLink
+ * @author     Andreas Morsing
+ * @copyright  2009, TestLink community 
+ * @filesource inputparameter.class.php
+ * @link       http://www.teamst.org
+ * @since      1.9
  * 
  **/
 
@@ -185,7 +184,7 @@ class tlInputParameter extends tlObject
 		if (!$this->isFetched())
 		{
 			return;
-        }
+    }
         
 		if ($this->validationInfo)
 		{
@@ -347,8 +346,7 @@ class tlStringValidationInfo
 		$minLen = $this->minLen;
 		if ($minLen && tlStringLen($value) < $minLen)
 		{
-			$msg = "Input parameter validation failed [minLen: " . 
-			                    tlStringLen($value)." {$minLen}]";
+			$msg = "Input parameter validation failed [minLen - target: {$minLen} - actual: " . tlStringLen($value) . "]";
 			tLog($msg,'ERROR');
 			throw new Exception($msg);
 		}
@@ -359,8 +357,8 @@ class tlStringValidationInfo
 			$dummy = null;
 			if (!preg_match($regExp,$value,$dummy))
 			{
-				$msg = "Input parameter validation failed [regExp: " . 
-				                    htmlspecialchars($value)." ".htmlspecialchars($regExp)."]";
+				$msg = "Input parameter validation failed " .
+				       "[regExp: " . htmlspecialchars($value) . " " . htmlspecialchars($regExp) . "]";
 				tLog($msg,'ERROR');
 				throw new Exception($msg);
 			}	                    
@@ -419,7 +417,7 @@ class tlIntegerValidationInfo
 	 */
 	public function validate($value)
 	{
-	    $msg = 'Input parameter validation failed';
+	  $msg = 'Input parameter validation failed';
 		if (!is_numeric($value))
 		{
 			$msg = "{$msg} [numeric: " . htmlspecialchars($value)."]";

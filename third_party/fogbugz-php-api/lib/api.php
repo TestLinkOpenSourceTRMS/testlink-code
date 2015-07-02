@@ -127,10 +127,7 @@ class FogBugz {
   public function __call($name, $arguments) {
     // if the anon method is called without arguments, we won't send any
     // along, it $fb->stopWork();
-    $parameters 
-        = isset($arguments[0])
-        ? $arguments[0]
-        : array();
+    $parameters = isset($arguments[0]) ? $arguments[0] : array();
     return $this->_request($name, $parameters);
   }
   
@@ -146,17 +143,15 @@ class FogBugz {
     try {
       // make the initial logon request to get a token
       // that we use in subsequent requests
-      $xml = $this->_request('logon', array(
-          'email'    => $this->user,
-          'password' => $this->pass
-      ));
+      $xml = $this->_request('logon', array('email'    => $this->user,
+                                            'password' => $this->pass));
       // store this token for use later
-      $this->token = (string) $xml->token;
+      $this->token = (string)$xml->token;
     }
     catch (FogBugzAPIError $e) {
       $message = "Login Error. " .
-          		 "Please check the url, username and password. Error: " .
-          		 $e->getMessage();
+          		   "Please check the url, username and password. Error: " .
+          		   $e->getMessage();
       throw new FogBugzLogonError($message, 0);
     }
     return TRUE;
@@ -189,11 +184,10 @@ class FogBugz {
     if ('logon' != $command) {
       $params['token'] = $this->token;
     }
+    
     // add the command to the get request
     $params['cmd'] = $command;
     $url = $this->url . $this->path . '?' . http_build_query($params);
-    
-    // echo $url;
     
     // make the request and throw an api exception if we detect an error
     try {

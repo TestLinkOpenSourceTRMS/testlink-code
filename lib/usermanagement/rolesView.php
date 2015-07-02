@@ -3,10 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: rolesView.php,v $
- *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/08/26 19:10:28 $ by $Author: schlundus $
+ * @filesource  rolesView.php
+ * @internal revisions
+ * @since 1.9.12
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -24,27 +23,40 @@ $role = null;
 
 switch ($args->doAction)
 {
-	case 'delete':
-		$role = tlRole::getByID($db,$args->roleid,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-		if ($role)
-		{
-			$affectedUsers = $role->getAllUsersWithRole($db);
-			$doDelete = (sizeof($affectedUsers) == 0);
-		}
-		break;
+  case 'delete':
+    $role = tlRole::getByID($db,$args->roleid,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+    if ($role)
+    {
+      $affectedUsers = $role->getAllUsersWithRole($db);
+      $doDelete = (sizeof($affectedUsers) == 0);
+    }
+  break;
 
-	case 'confirmDelete':
-		$doDelete = 1;
-		break;
+  default:
+  break;
 }
+
 $userFeedback = null;
 if($doDelete)
 {
-	$userFeedback = deleteRole($db,$args->roleid);
-	//refresh the current user
-	checkSessionValid($db);
+  // CSRF check
+  if( !is_null($args->csrfid) && !is_null($args->csrftoken) && 
+      csrfguard_validate_token($args->csrfid,$args->csrftoken) )
+  {
+    // only NON SYSTEM ROLES CAN be deleted
+    if($args->roleid > TL_LAST_SYSTEM_ROLE)
+    {   
+      $userFeedback = deleteRole($db,$args->roleid);
+      checkSessionValid($db);  //refresh the current user
+    }
+  }
+  else
+  {
+    $msg = lang_get('CSRF_attack');
+    tLog($msg,'ERROR');
+    die($msg);
+  }  
 }
-
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 
 $highlight = initialize_tabsmenu();
@@ -65,17 +77,16 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-	$iParams = array(
-			"roleid" => array(tlInputParameter::INT_N),
-			"doAction" => array(tlInputParameter::STRING_N,0,100),
-		);
+  $iParams = array("roleid" => array(tlInputParameter::INT_N),
+                   "csrfid" => array(tlInputParameter::STRING_N,0,30),
+                   "csrftoken" => array(tlInputParameter::STRING_N,0,128),
+                   "doAction" => array(tlInputParameter::STRING_N,0,15));
 
-	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
-    
-	$args->currentUser = $_SESSION['currentUser'];
-	
-    return $args;
+  $args = new stdClass();
+  $pParams = R_PARAMS($iParams,$args);
+  $args->currentUser = $_SESSION['currentUser'];
+  
+  return $args;
 }
 
 
@@ -87,6 +98,5 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,"role_management");
+  return $user->hasRight($db,"role_management");
 }
-?>

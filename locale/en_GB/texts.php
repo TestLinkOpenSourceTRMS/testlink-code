@@ -215,16 +215,16 @@ with name defined in configuration <i>(default is: \$tlCfg->req_cfg->default_tes
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
 $TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
-<p>From here you can print a single requirement, all the requirements within a requirement specification,
+<p>You can generate document with the requirements within a requirement specification,
 or all the requirements in a test project.</p>
 <h2>Get Started:</h2>
 <ol>
 <li>
-<p>Select the parts of the requirements you want to display, and then click on a requirement, 
+<p>Select the parts of the requirements you want to display, and then click on a  
 requirement specification, or the test project. A printable page will be displayed.</p>
 </li>
 <li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
-the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document. 
+the information displayed as HTML, or in a Pseudo Micosoft Word document. 
 See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> for more information.</p>
 </li>
@@ -292,12 +292,9 @@ $TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
 		"(defined in top of navigator). This Test Plan could differ from the
 current Test Plan for execution. You can also select a Report format:</p>
 <ul>
-<li><b>Normal</b> - report is displayed in web page</li>
-<li><b>OpenOffice Writer</b> - report imported to OpenOffice Writer</li>
-<li><b>OpenOffice Calc</b> - report imported to OpenOffice Calc</li>
-<li><b>MS Excel</b> - report imported to Microsoft Excel</li>
-<li><b>HTML Email</b> - report is emailed to user's email address</li>
-<li><b>Charts</b> - report include graphs (flash technology)</li>
+<li><b>HTML</b> - report is displayed in web page</li>
+<li><b>Pseudo MS Word</b> - report imported to Microsoft Word</li>
+<li><b>Email (HTML)</b> - report is emailed to user's email address</li>
 </ul>
 
 <p>The print button activates printing of a report only (without navigation).</p>
@@ -315,7 +312,7 @@ It includes Test cases together with test results.</p>
 The most 'current status' is determined by the most recent build test cases were executed on.  For
 instance, if a test case was executed over multiple builds, only the latest result is taken into account.</p>
 
-<p>'Last Test Result' is a concept used in many reports, and is determined as follows:</p>
+<p>'Latest Test Result' is a concept used in many reports, and is determined as follows:</p>
 <ul>
 <li>The order in which builds are added to a Test Plan determines which build is most recent. The results
 from the most recent build will take precendence over older builds. For example, if you mark a test as
@@ -324,7 +321,7 @@ from the most recent build will take precendence over older builds. For example,
 precedence.  For example, if build 3 is released to your team and tester 1 marks it as 'pass' at 2PM,
 and tester 2 marks it as 'fail' at 3PM - it will appear as 'fail'.</li>
 <li>Test cases listed as 'not run' against a build are not taken into account. For example, if you mark
-a case as 'pass' in build 1, and don't execute it in build 2, it's last result will be considered as
+a case as 'pass' in build 1, and don't execute it in build 2, it's latest result will be considered as
 'pass'.</li>
 </ul>
 <p>The following tables are displayed:</p>
@@ -346,51 +343,9 @@ a case as 'pass' in build 1, and don't execute it in build 2, it's last result w
 % pass, total fail, % fail, blocked, % blocked, not run, %not run.  If a test case has been executed
 twice on the same build, the most recent execution will be taken into account.</p>
 
-<h3>Query Metrics</h3>
-<p>This report consists of a query form page, and a query results page which contains the queried data.
-The Query Form Page presents with a query page with 4 controls. Each control is set to a default which
-maximizes the number of test cases and builds the query should be performed against. Altering the controls
-allows the user to filter the results and generate specific reports for specific owner, keyword, suite,
-and build combinations.</p>
-
-<ul>
-<li><b>keyword</b> 0->1 keywords can be selected. By default - no keyword is selected. If a keyword is not
-selected, then all test cases will be considered regardless of keyword assignments. Keywords are assigned
-in the test specification or Keyword Management pages.  Keywords assigned to test cases span all test plans,
-and span across all versions of a test case.  If you are interested in the results for a specific keyword
-you would alter this control.</li>
-<li><b>owner</b> 0->1 owners can be selected. By default - no owner is selected. If an owner is not selected,
-then all test cases will be considered regardless of owner assignment.  Currently there is no functionality
-to search for 'unassigned' test cases.  Ownership is assigned through the 'Assign Test Case execution' page,
-and is done on a per test plan basis.  If you are interested in the work done by a specific tester you would
-alter this control.</li>
-<li><b>top level suite</b> 0->n top level suites can be selected. By default - all suites are selected.
-Only suites that are selected will be queried for result metrics.  If you are only intested in the results
-for a specific suite you would alter this control.</li>
-<li><b>Builds</b> 1->n builds can be selected.  By default - all builds are selected.  Only executions
-performed on builds you select will be taken into account when producing metrics.  For example - if you
-wanted to see how many test cases were executed on the last 3 builds - you would alter this control.
-Keyword, owner, and top level suite selections will dictate the number of test cases from your test plan
-are used to computate per suite and per test plan metrics.  For example, if you select owner = 'Greg',
-Keyword='Priority 1', and all available test suites - only Priority 1 test cases assigned to Greg will be
-considered. The '# of Test Cases' totals you will see on the report will be influenced by these 3 controls.
-Build selections will influence if a case is considered 'pass', 'fail', 'blocked', or 'not run'.  Please
-refer to 'Last Test Result' rules as they appear above.</li>
-</ul>
-<p>Click the 'submit' button to proceed with the query and display the output page.</p>
-
-<p>Query Report Page will display: </p>
-<ol>
-<li>the query parameters used to create report</li>
-<li>totals for the entire test plan</li>
-<li>a per suite breakdown of the totals (sum / pass / fail / blocked / not run) and all executions performed
-on that suite.  If a test case has been executed more than once on multiple builds - all executions will be
-displayed that were recorded against the selected builds. However, the summary for that suite will only
-include the 'Last Test Result' for the selected builds.</li>
-</ol>
 
 <h3>Blocked, Failed, and  Not Run Test Case Reports</h3>
-<p>These reports show all of the currently blocked, failing, or not run test cases.  'Last test Result'
+<p>These reports show all of the currently blocked, failing, or not run test cases.  'Latest test Result'
 logic (which is described above under General Test Plan Metrics) is again employed to determine if
 a test case should be considered blocked, failed, or not run.  Blocked and failed test case reports will
 display the associated bugs if the user is using an integrated bug tracking system.</p>
@@ -401,7 +356,7 @@ if a test case was executed multiple times on the same build. It is recommended 
 to Excel format for easier browsing if a large data set is being used.</p>
 
 <h3>Charts - General Test Plan Metrics</h3>
-<p>'Last test Result' logic is used for all four charts that you will see. The graphs are animated to help
+<p>'Latest test Result' logic is used for all four charts that you will see. The graphs are animated to help
 the user visualize the metrics from the current test plan. The four charts provide are :</p>
 <ul><li>Pie chart of overall pass / fail / blocked / and not run test cases</li>
 <li>Bar chart of Results by Keyword</li>

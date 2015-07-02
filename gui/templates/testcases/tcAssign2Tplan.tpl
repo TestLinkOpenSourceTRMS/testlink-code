@@ -1,10 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcAssign2Tplan.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $
+@filesource  tcAssign2Tplan.tpl
 Purpose: manage assignment of A test case version to N test plans 
          while working on test specification 
  
-rev: BUGID 2378
     
 *}
 {lang_get var='labels' 
@@ -17,10 +16,8 @@ rev: BUGID 2378
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
+var check_msg="{$labels.please_select_one_testplan|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 function check_action_precondition(container_id,action)
 {
@@ -32,35 +29,43 @@ function check_action_precondition(container_id,action)
 	return true;
 }
 </script>
-{/literal}
+
+<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript" language="javascript" class="init">
+$(document).ready(function() {
+  $('#item_view').DataTable({ "lengthMenu": [ [25, 50, 75, -1], [25, 50, 75, "All"] ] });
+} );
+</script>
 
 
 </head>
 <body>
 
-<h1 class="title"> {$gui->pageTitle|escape} 
-	{*  {include file="inc_help.tpl" helptopic="hlp_planTcModified" show_help_icon=true} *}
-</h1>
+<h1 class="title"> {$gui->pageTitle|escape}</h1>
 
 <div class="workBack">
 <h1 class="title">{$gui->mainDescription}</h1>
 
 {if $gui->tplans}
 <form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->tcase_id}&tcversion_id={$gui->tcversion_id}">
+  <div>
+  <img class="clickable" src="{$tlImages.history_small}" onclick="javascript:openExecHistoryWindow({$gui->tcase_id});"
+        title="{$labels.execution_history}" />
+  <img class="clickable" src="{$tlImages.edit_icon}" onclick="javascript:openTCaseWindow({$gui->tcase_id});"
+       title="{$labels.design}" />
+  {$gui->tcaseIdentity|escape}
+  </div>
+<br>
+<h1>{$labels.testplan_usage}</h1>
 
-<br />
-<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/history_small.png"
-      onclick="javascript:openExecHistoryWindow({$gui->tcase_id});"
-      title="{$labels.execution_history}" />
-<img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/edit_icon.png"
-     onclick="javascript:openTCaseWindow({$gui->tcase_id});"
-     title="{$labels.design}" />
-{$gui->tcaseIdentity|escape}
-<br /><br />
-{$labels.testplan_usage}:
 <div id='checkboxes'>
-<table class="simple_tableruler" style="width:50%">
+ <table id="item_view" class="simple_tableruler sortable">
+  <tr>
   <th>&nbsp;</th><th>{$labels.version}</th><th>{$labels.test_plan}</th><th>{$labels.platform}</th>
+  </tr>
   {foreach from=$gui->tplans item=link2tplan_platform}
     {foreach from=$link2tplan_platform item=link2tplan key=platform_id}
       <tr>
@@ -76,17 +81,19 @@ function check_action_precondition(container_id,action)
     {/foreach}
 
   {/foreach}
-</table>
+ </table>
 </div>
 
 {if $gui->can_do}
-<input type="hidden" id="doAction" name="doAction" value="doAdd2testplan" />
-<input type="submit" id="add2testplan"  name="add2testplan" value="{$labels.btn_add}"       
-       onclick="return check_action_precondition('checkboxes','default');" />
+  <input type="hidden" id="doAction" name="doAction" value="doAdd2testplan" />
+  <input type="submit" id="add2testplan"  name="add2testplan" value="{$labels.btn_add}"       
+         onclick="return check_action_precondition('checkboxes','default');" />
 {/if}
-<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-  			                   onclick="javascript:history.back();" />  
+
+
+<input type="button" name="cancel" value="{$labels.btn_cancel}" onclick="javascript:{$gui->cancelActionJS};" />  
 </form>
+
 {else}
   {$labels.no_test_plans}
 {/if}

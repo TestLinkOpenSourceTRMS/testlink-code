@@ -8,12 +8,10 @@
  *
  * @package 	TestLink
  * @author 		Erik Eloff
- * @copyright 	2010, TestLink community
- * @version    	CVS: $Id: checkTCaseDuplicateName.php,v 1.3 2010/10/10 13:41:13 franciscom Exp $
+ * @copyright 	2010,2014 TestLink community
+ * @filesource  checkTCaseDuplicateName.php
  *
- * @internal Revisions:
- * 20101010 - franciscom - added testsuite_id as parameter, needed to do checks when creating test case
- * 20100225 - eloff - initial commit
+ * @internal revisions
  *
  **/
 
@@ -35,11 +33,6 @@ if (has_rights($db, 'mgt_view_tc'))
 	// To allow name check when creating a NEW test case => we do not have test case id
 	$args['testcase_id'] = ($args['testcase_id'] > 0 )? $args['testcase_id'] : null;
 	$args['testsuite_id'] = ($args['testsuite_id'] > 0 )? $args['testsuite_id'] : null;
-
-	// for debug - 
-	// $xx = "\$args['testcase_id']:{$args['testcase_id']} - \$args['name']:{$args['name']}" .
-	//       " - \$args['testsuite_id']:{$args['testsuite_id']}";
-	// file_put_contents('c:\checkTCaseDuplicateName.php.ajax', $xx);                            
 
 	$check = $tree_manager->nodeNameExists($args['name'], $node_types_descr_id['testcase'],
 										   $args['testcase_id'],$args['testsuite_id']);

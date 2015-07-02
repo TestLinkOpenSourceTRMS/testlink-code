@@ -2,6 +2,8 @@
 Testlink: smarty template - 
 @filesource usersAssign.tpl
 
+@internal revisions
+@since 1.9.14
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
@@ -11,7 +13,6 @@ Testlink: smarty template -
 {include file="inc_ext_js.tpl" css_only=1}
 
 <script language="JavaScript" type="text/javascript">
-{literal}
 /*
 Set value for a group of combo (have same prefix).
 MUST TO BE PLACED IN COMMON LIBRARY
@@ -34,10 +35,8 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
 		}	
 	}
 }
-{/literal}
 </script>
 
-{literal}
 <script type="text/javascript">
 function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayValue)
 {
@@ -68,34 +67,42 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 
 }
 </script>
-{/literal}
 
+{if $tlCfg->gui->usersAssign->pagination->enabled}
+<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+
+<script type="text/javascript" language="javascript" class="init">
+$(document).ready(function() {
+  $('#item_view').DataTable({ "lengthMenu": [ {$tlCfg->gui->usersAssign->pagination->length} ] });
+} );
+</script></script>
+{/if}
 
 
 </head>
 <body>
 
 <h1 class="title">{$labels.title_user_mgmt} - {$labels.title_assign_roles}</h1>
-{assign var="umgmt" value="lib/usermanagement"}
-{assign var="my_feature_name" value=''}
+{$umgmt="lib/usermanagement"}
+{$my_feature_name=''}
 
 {***** TABS *****}
-{assign var="highlight" value=$gui->highlight}
-{assign var="grants" value=$gui->grants}
+{$highlight=$gui->highlight}
+{$grants=$gui->grants}
 
 {include file="usermanagement/tabsmenu.tpl"}
-
-
 <div class="workBack">
 
-  {include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
+{include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
 
-
-{* 20070227 - franciscom
-   Because this page can be reloaded due to a test project change done by
-   user on navBar.tpl, if method of form below is post we don't get
-   during refresh feature, and then we have a bad refresh on page getting a bug.
+{* 
+Because this page can be reloaded due to a test project change done by
+user on navBar.tpl, if method of form below is post we don't get
+during refresh feature, and then we have a bad refresh on page getting a bug.
 *}
+
 {if $gui->features neq ''}
 <form method="post" action="{$umgmt}/usersAssign.php"
 	{if $tlCfg->demoMode}
@@ -106,19 +113,19 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 	<div>
 		<table border='0'>
     	{if $gui->featureType == 'testproject'}
-    		<tr><td class="labelHolder">{$labels.TestProject}</td><td>&nbsp;</td>
+    		<tr><td class="labelHolder">{$labels.TestProject}{$gui->accessTypeImg}</td><td>&nbsp;</td>
     	{else}
     		<tr><td class="labelHolder">{$labels.TestProject}{$smarty.const.TITLE_SEP}</td><td>{$gui->tproject_name|escape}</td></tr>
     		<tr>
-				<td class="labelHolder">{$labels.TestPlan}</td>
+				<td class="labelHolder">{$labels.TestPlan}{$gui->accessTypeImg}</td>
     	{/if}
 		    	<td>
-		        <select id="featureSel" onchange="changeFeature('{$gui->featureType}')">
+            <select id="featureSel" onchange="changeFeature('{$gui->featureType}')">
 		    	   {foreach from=$gui->features item=f}
 		    	     <option value="{$f.id}" {if $gui->featureID == $f.id} selected="selected" {/if}>
 		    	     {$f.name|escape}</option>
 		    	     {if $gui->featureID == $f.id}
-		    	        {assign var="my_feature_name" value=$f.name}
+		    	        {$my_feature_name=$f.name}
 		    	     {/if}
 		    	   {/foreach}
 		    	   </select>
@@ -129,11 +136,11 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 			</tr>
    		<tr>
    		<td class="labelHolder">{$labels.set_roles_to}</td>{if $gui->featureType == 'testproject'} <td>&nbsp;</td> {/if}
-      <td> 
+      <td>
         <select name="allUsersRole" id="allUsersRole">
 		      {foreach key=role_id item=role from=$gui->optRights}
 		        <option value="{$role_id}">
-                {$role->getDisplayName()|escape}
+            {$role->getDisplayName()|escape}
 		        </option>
 		      {/foreach}
 			  </select>
@@ -145,60 +152,52 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 		  </td>
 			</tr>
 
-    	{if $gui->featureType == 'testproject'}
-   		<tr>
-   		<td class="labelHolder">{$labels.show_only_authorized_users}</td><td>&nbsp;</td>
-      <td> 
-          <input name="show_only_authorized_users" id="show_only_authorized_users" 
-                  type="checkbox" {$checked_hide_inactive_users} 
-           value="on" onclick="toggleRowByClass('show_only_authorized_users','not_authorized_user','none','table-row')">
-      </td>
-			</tr>
-
-    	{/if}
-
-
 		</table>
     </div>
     
     <div id="usersRoleTable">
-	    <table class="common sortable" width="75%">
+	    <table class="common sortable" width="100%" id="item_view">
     	<tr>
     		<th>{$tlImages.sort_hint}{$labels.User}</th>
     		{assign var="featureVerbose" value=$gui->featureType}
     		<th>{$tlImages.sort_hint}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$gui->users item=user}
-    	    {assign var="globalRoleName" value=$user->globalRole->name}
-    			{assign var=uID value=$user->dbID}
+    	    {$globalRoleName=$user->globalRole->name}
+    			{$uID=$user->dbID}
 
           {* get role name to add to inherited in order to give better information to user *}
-          {assign var="effective_role_id" value=$gui->userFeatureRoles[$uID].effective_role_id}
+          {$effective_role_id=$gui->userFeatureRoles[$uID].effective_role_id}
           {if $gui->userFeatureRoles[$uID].is_inherited == 1}
-            {assign var="ikx" value=$effective_role_id}
+            {$ikx=$effective_role_id}
           {else}
-            {assign var="ikx" value=$gui->userFeatureRoles[$uID].uplayer_role_id}
+            {$ikx=$gui->userFeatureRoles[$uID].uplayer_role_id}
           {/if}
-          {assign var="inherited_role_name" value=$gui->optRights[$ikx]->name}
+          {$inherited_role_name=$gui->optRights[$ikx]->name}
 
-          {assign var="user_row_class" value=''}
+          {$user_row_class=''}
           {if $effective_role_id == $smarty.const.TL_ROLES_NO_RIGHTS}
-            {assign var="user_row_class" value='class="not_authorized_user"'}
+            {$user_row_class='class="not_authorized_user"'}
           {/if}
 
     	<tr {$user_row_class} bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
     		<td {if $gui->role_colour != '' && $gui->role_colour[$globalRoleName] != ''}  		
     		      style="background-color: {$gui->role_colour[$globalRoleName]};" {/if}>
-    		    {$user->getDisplayName()|escape}</td>
+    		    {$user->login|escape} ({$user->firstName|escape} {$user->lastName|escape}) </td>
     		<td>
-          <select name="userRole[{$uID}]" id="userRole_{$uID}">
+          <select name="userRole[{$uID}]" id="userRole_{$uID}"
+            {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}
+             disabled="disabled"
+            {/if}
+          >
 		      {foreach key=role_id item=role from=$gui->optRights}
-		        <option value="{$role_id}"
+            <option value="{$role_id}"
 		          {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
 		               $gui->userFeatureRoles[$uID].is_inherited==0) || 
 		               ($role_id == $smarty.const.TL_ROLES_INHERITED && 
 		                $gui->userFeatureRoles[$uID].is_inherited==1)}
-		            selected="selected" {/if} >
+		            selected="selected" 
+              {/if} >
                 {$role->getDisplayName()|escape}
                 {if $role_id == $smarty.const.TL_ROLES_INHERITED}
                   {$inherited_role_name|escape} 
@@ -206,6 +205,9 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 		        </option>
 		      {/foreach}
 			</select>
+          {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}
+            {$gui->hintImg} 
+          {/if}
 			</td>
     	</tr>
     	{/foreach}

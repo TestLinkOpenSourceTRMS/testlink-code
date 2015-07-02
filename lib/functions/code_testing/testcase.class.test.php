@@ -3,18 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: testcase.class.test.php,v $
- *
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/04/11 09:45:02 $ by $Author: franciscom $
+ * Filename testcase.class.test.php
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
  * and have inside view about return type .
  *
- * rev :
+ * @internal revisions
  *
-*/
+ */
 
 require_once('../../../config.inc.php');
 require_once('common.php');
@@ -26,6 +23,46 @@ testlinkInitPage($db);
 echo "<pre> testcase - constructor - testcase(&\$db)";echo "</pre>";
 $tcase_mgr=new testcase($db);
 // new dBug($tcase_mgr);
+
+try 
+{
+  $fullEID = 'PTJ09-1';
+  echo '<br>Testing getInternalID with fullEID<br>';
+  $va = $tcase_mgr->getInternalID($fullEID);
+  new dBug($va);
+}
+catch (Exception $e)
+{
+  echo 'Message: ' .$e->getMessage();
+}
+
+try 
+{
+  $EID = 1;
+  echo '<br>Testing getInternalID with ONLY NUMERIC EID<br>';
+  $va = $tcase_mgr->getInternalID($EID);
+  new dBug($va);
+}
+catch (Exception $e)
+{
+  echo 'Message: ' .$e->getMessage();
+}
+
+try 
+{
+  $EID = 1;
+  echo '<br>Testing getInternalID with ONLY NUMERIC EID<br>';
+  $va = $tcase_mgr->getInternalID($EID, array('tproject_id' => 282));
+  new dBug($va);
+}
+catch (Exception $e)
+{
+  echo 'Message: ' .$e->getMessage();
+}
+
+
+die();
+
 
 $items = array(1628,1626,1616,392,531);
 $va = $tcase_mgr->get_last_active_version($items);

@@ -1,8 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqImport.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
-
-rev:
+@filesource reqImport.tpl
 *}
 
 {lang_get var="labels" 
@@ -17,7 +15,7 @@ rev:
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -62,7 +60,6 @@ rev:
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
   alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
   </script>
 {/if}  

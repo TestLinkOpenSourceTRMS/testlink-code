@@ -3,11 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource	rolesEdit.php
+ * @filesource  rolesEdit.php
  *
  * @internal revisions 
- * @since 1.9.4
- * 20120220 - franciscom - TICKET 4904: integrate with ITS on test project basis
+ * @since 1.9.7
+ * 
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -21,36 +21,37 @@ testlinkInitPage($db,false,false,"checkRights");
 init_global_rights_maps();
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initialize_gui($editorCfg['type']);
+$gui = initialize_gui($args,$editorCfg['type']);
 $op = initialize_op();
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg) ;
 $owebeditor->Value = getItemTemplateContents('role_template', $owebeditor->InstanceName, null);
-$canManage = has_rights($db,"role_management") ? true : false;
+$canManage = $args->user->hasRight($db,"role_management") ? true : false;
 
 switch($args->doAction)
 {
-	case 'create':
-		break;
+  case 'create':
+  break;
 
-	case 'edit':
-	    $op->role = tlRole::getByID($db,$args->roleid);
-		break;
+  case 'edit':
+    $op->role = tlRole::getByID($db,$args->roleid);
+  break;
 
-	case 'doCreate':
-	case 'doUpdate':
-		if($canManage)
-	  	{
-	  	  	$op = doOperation($db,$args,$args->doAction);
-	  	  	$templateCfg->template = $op->template;
-        }
-		break;
-	default:
-		break;
+  case 'doCreate':
+  case 'doUpdate':
+  case 'duplicate':
+    if($canManage)
+    {
+      $op = doOperation($db,$args,$args->doAction);
+      $templateCfg->template = $op->template;
+    }
+  break;
+
+  default:
+  break;
 }
 
 $gui = complete_gui($db,$gui,$args,$op->role,$owebeditor);
-
 $gui->userFeedback = $op->userFeedback;
 
 $smarty = new TLSmarty();
@@ -60,62 +61,79 @@ renderGui($smarty,$args,$templateCfg);
 
 function init_args()
 {
-	$iParams = array(
-			"rolename" => array("POST",tlInputParameter::STRING_N,0,100),
-			"roleid" => array("REQUEST",tlInputParameter::INT_N),
-			"doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
-			"notes" => array("POST",tlInputParameter::STRING_N),
-			"grant" => array("POST",tlInputParameter::ARRAY_STRING_N),
-		);
+  $_REQUEST = strings_stripSlashes($_REQUEST);
 
-	$args = new stdClass();
-	$pParams = I_PARAMS($iParams,$args);
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-	$args->basehref = $_SESSION['basehref'];
-	
-	return $args;
+  $iParams = array("rolename" => array("POST",tlInputParameter::STRING_N,0,100),
+                   "roleid" => array("REQUEST",tlInputParameter::INT_N),
+                   "doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+                   "notes" => array("POST",tlInputParameter::STRING_N),
+                   "grant" => array("POST",tlInputParameter::ARRAY_STRING_N));
+
+  $args = new stdClass();
+  $pParams = I_PARAMS($iParams,$args);
+  $args->basehref = $_SESSION['basehref'];
+  $args->user = $_SESSION['currentUser'];
+
+  return $args;
 }
 
 
 function doOperation(&$dbHandler,$argsObj,$operation)
 {
-	$rights = implode("','",array_keys($argsObj->grant));
 
-	$op = new stdClass();
- 	$op->role = new tlRole();
-	$op->role->rights = tlRight::getAll($dbHandler,"WHERE description IN ('{$rights}')");
-	$op->role->name = $argsObj->rolename;
-	$op->role->description = $argsObj->notes;
-	$op->role->dbID = $argsObj->roleid;
-	$op->userFeedback = null;
-	$op->template = 'rolesEdit.tpl';
+  $op = new stdClass();
+  $op->role = new tlRole();
+  $op->userFeedback = null;
+  $op->template = 'rolesEdit.tpl';
 
-	$result = $op->role->writeToDB($dbHandler);
-	if ($result >= tl::OK)
-	{
-		$auditCfg = null;
-		switch($operation)
-		{
-	    	case 'doCreate':
-				$auditCfg['msg'] = "audit_role_created";
-				$auditCfg['activity'] = "CREATE";
-				break;
-	
-			case 'doUpdate':
-	      		$auditCfg['msg'] = "audit_role_saved";
-				$auditCfg['activity'] = "SAVE";
-				break;
-		}
-		
-		logAuditEvent(TLS($auditCfg['msg'],$argsObj->rolename),$auditCfg['activity'],$op->role->dbID,"roles");
-		$op->template = null;
-	}
-	else
-	{
-    	$op->userFeedback = getRoleErrorMessage($result);
-	}
+  switch($operation)
+  {
 
-	return $op;
+    case 'doCreate':
+    case 'doUpdate':
+      $rights = implode("','",array_keys($argsObj->grant));
+      $op->role->rights = tlRight::getAll($dbHandler,"WHERE description IN ('{$rights}')");
+      $op->role->name = $argsObj->rolename;
+      $op->role->description = $argsObj->notes;
+      $op->role->dbID = $argsObj->roleid;
+    break;
+
+    case 'duplicate':
+      $op->role = tlRole::getByID($dbHandler,$argsObj->roleid);
+      $op->role->dbID = null;
+      $op->role->name = generateUniqueName($op->role->name);
+
+    break;
+  }
+
+
+  $result = $op->role->writeToDB($dbHandler);
+  if ($result >= tl::OK)
+  {
+    $auditCfg = null;
+    switch($operation)
+    {
+      case 'doCreate':
+      case 'duplicate':
+        $auditCfg['msg'] = "audit_role_created";
+        $auditCfg['activity'] = "CREATE";
+      break;
+  
+      case 'doUpdate':
+        $auditCfg['msg'] = "audit_role_saved";
+        $auditCfg['activity'] = "SAVE";
+      break;
+    }
+    
+    logAuditEvent(TLS($auditCfg['msg'],$op->role->name),$auditCfg['activity'],$op->role->dbID,"roles");
+    $op->template = null;
+  }
+  else
+  {
+      $op->userFeedback = getRoleErrorMessage($result);
+  }
+
+  return $op;
 }
 
 
@@ -124,31 +142,36 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     $doRender = false;
     switch($argsObj->doAction)
     {
-		case "edit":
-        case "create":
-        	$doRender = true;
-    		$tpl = $templateCfg->default_template;
-    		break;
+      case "edit":
+      case "create":
+        $doRender = true;
+        $tpl = $templateCfg->default_template;
+      break;
 
-		case "doCreate":
-        case "doUpdate":
-        	if(!is_null($templateCfg->template))
-        	{
-            	$doRender = true;
-            	$tpl = $templateCfg->template;
-        	}
-        	else
-        	{
- 	  			header("Location: rolesView.php");
-	  			exit();
-        	}
-    		break;
-	}
+      case "doCreate":
+      case "doUpdate":
+        if(!is_null($templateCfg->template))
+        {
+          $doRender = true;
+          $tpl = $templateCfg->template;
+        }
+        else
+        {
+          header("Location: rolesView.php");
+          exit();
+        }
+      break;
+
+      case "duplicate":
+        header("Location: rolesView.php");
+        exit();
+      break;   
+    }
 
     if($doRender)
     {
-		$smartyObj->display($templateCfg->template_dir . $tpl);
-	}
+      $smartyObj->display($templateCfg->template_dir . $tpl);
+    }
 }
 
 
@@ -173,11 +196,14 @@ function getRightsCfg()
     $cfg->system_mgmt = config_get('rights_system');
     $cfg->platform_mgmt = config_get('rights_platforms');
     $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
+    $cfg->execution = config_get('rights_executions');
+    // $cfg->reqmgrsystem_mgmt = config_get('rights_reqmgrsystems');
+
     return $cfg;
 }
 
 
-function initialize_gui($editorType)
+function initialize_gui(&$argsObj,$editorType)
 {
     $gui = new stdClass();
     $gui->checkboxStatus = null;
@@ -185,6 +211,7 @@ function initialize_gui($editorType)
     $gui->affectedUsers = null;
     $gui->highlight = initialize_tabsmenu();
     $gui->editorType = $editorType;
+    $gui->roleCanBeEdited = ($argsObj->roleid != TL_ROLES_ADMIN);
 
     return $gui;
 }
@@ -201,51 +228,62 @@ function initialize_op()
 
 function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 {
-    $actionCfg['operation'] = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                                  'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
+  $actionCfg['operation'] = array('create' => 'doCreate', 'edit' => 'doUpdate',
+                                  'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                                  'duplicate' => 'duplicate');
 
-    $actionCfg['highlight'] = array('create' => 'create_role', 'edit' => 'edit_role',
-                                  'doCreate' => 'create_role', 'doUpdate' => 'edit_role');
+  $actionCfg['highlight'] = array('create' => 'create_role', 'edit' => 'edit_role',
+                                  'doCreate' => 'create_role', 'doUpdate' => 'edit_role',
+                                  'duplicate' => 'create_role');
 
 
-    $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
-    $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
-    $guiObj->role = $roleObj;
-    $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
-    $guiObj->rightsCfg = getRightsCfg();
-	$guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+  $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
+  $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
+  $guiObj->role = $roleObj;
+  $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
+  $guiObj->rightsCfg = getRightsCfg();
+  $guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+  
+  $guiObj->disabledAttr = $guiObj->roleCanBeEdited ? ' ' : ' disabled="disabled" '; 
 
-    // Create status for all checkboxes and set to unchecked
-    foreach($guiObj->rightsCfg as $grantDetails)
+  // Create status for all checkboxes and set to unchecked
+  foreach($guiObj->rightsCfg as $grantDetails)
+  {
+    foreach($grantDetails as $grantCode => $grantDescription)
     {
-        foreach($grantDetails as $grantCode => $grantDescription)
-        {
-			$guiObj->checkboxStatus[$grantCode] = "";
-        }
+      $guiObj->checkboxStatus[$grantCode] = "" . $guiObj->disabledAttr;
     }
+  }
 
-    if($roleObj->dbID)
+  if($roleObj->dbID)
+  {
+    $webEditorObj->Value = $roleObj->description;
+
+    // build checked attribute for checkboxes
+    if(sizeof($roleObj->rights))
     {
-    	$webEditorObj->Value = $roleObj->description;
-
-    	// build checked attribute for checkboxes
-    	if(sizeof($roleObj->rights))
-    	{
-    	    foreach($roleObj->rights as $key => $right)
-    	    {
-    	    	$guiObj->checkboxStatus[$right->name] = "checked=\"checked\"";
-    	    }
-    	}
-    	//get all users which are affected by changing the role definition
-		$guiObj->affectedUsers = $roleObj->getAllUsersWithRole($dbHandler);
+      foreach($roleObj->rights as $key => $right)
+      {
+        $guiObj->checkboxStatus[$right->name] = ' checked="checked" ' . $guiObj->disabledAttr;
+      }
     }
+      //get all users which are affected by changing the role definition
+    $guiObj->affectedUsers = $roleObj->getAllUsersWithRole($dbHandler);
+  }
 
-    $guiObj->notes = $webEditorObj->CreateHTML();
-    return $guiObj;
+  $guiObj->notes = $webEditorObj->CreateHTML();
+  return $guiObj;
+}
+
+function generateUniqueName($s)
+{
+  // sorry for the magic, but anyway user has to edit role to provide desired name
+  // IMHO this quick & dirty solution is OK
+  return substr($s . ' - Copy - ' . substr(sha1(rand()), 0, 50),0,100);
 }
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,"role_management");
+  return $user->hasRight($db,"role_management");
 }
 ?>

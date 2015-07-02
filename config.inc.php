@@ -16,23 +16,13 @@
  * replace values of TestLink configuration variables.
  * It saves your changes for the next upgrade in one extra file.
  *
- * @filesource	config.inc.php
- * @package 	TestLink
- * @copyright 	2005-2011, TestLink community
- * @link 		http://www.teamst.org/index.php
+ * @filesource  config.inc.php
+ * @package     TestLink
+ * @copyright   2005-2015, TestLink community
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.4
- *  20120818 - franciscom - TICKET 5152 - changes in custom css management
- *  20120817 - franciscom - Changes on $tlCfg->log_path and $g_repositoryPath due to SECURITY VULNERABILITY
- * 	20120812 - franciscom - TICKET 5138: Possibility to have a mail logger: new config option tl_installation_id
- *	20120707 - franciscom - TICKET 5083: Refactoring - logger.class.php -> $tlCfg->loggerFilter
- *	20120108 - franciscom - TICKET 4821: Bugzilla integration via XMLRPC (BUGZILLAXMLRPC)
- *	20120107 - franciscom - TICKET 4857: Add SOAP integration for Mantis (MANTISSOAP)
- *	20111217 - franciscom - $tlCfg->validation_cfg->user_login_valid_regex updated using mantisbt 1.2.5
- *	20111210 - franciscom - TICKET 4711: Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?)
- *	20111127 - franciscom - demo mode - new config option demoSpecialUsers
- *	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
+ * @since 1.9.13
  *
  *
  **/
@@ -51,6 +41,14 @@ $tlCfg->exec_cfg = new stdClass();
 $tlCfg->exec_cfg->view_mode = new stdClass();
 $tlCfg->exec_cfg->exec_mode = new stdClass();
 
+// allow to define additional execution types other than 
+// defined in testcase.class.php
+// array(code => lblkey)
+// code int value > latest standard execution code defined.
+// lblkey => key to be used on lang_get() call.
+// 
+$tlCfg->custom_execution_types = null;
+
 $tlCfg->gui = new stdClass();
 $tlCfg->gui->custom_fields = new stdClass();
 $tlCfg->testcase_cfg = new stdClass();
@@ -59,6 +57,12 @@ $tlCfg->validation_cfg = new stdClass();
 $tlCfg->custom_fields = new stdClass();
 $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->diffEngine = new stdClass();
+$tlCfg->tplanDesign = new stdClass();
+
+$tlCfg->notifications = new stdClass();
+$tlCfg->proxy = new stdClass();
+
+
 
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -76,14 +80,14 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 // ----------------------------------------------------------------------------
 /** @var string used to have (when needed) a possibility to identify different TL instances
-				@since 1.9.4 used on mail subject when mail logger is used
+    @since 1.9.4 used on mail subject when mail logger is used
  */
 $tlCfg->instance_id = 'Main TestLink Instance';
 
 /* [LOCALIZATION] */
 
 /** @var string Default localization for users */
-// The value must be available in $g_locales (see cfg/const.inc.php).
+// The value must be available in $$tlCfg->locales (see cfg/const.inc.php).
 // Note: An attempt will be done to establish the default locale
 // automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
 $tlCfg->default_language = 'en_GB';
@@ -102,6 +106,7 @@ $tlCfg->charset = 'UTF-8';
  **/
 $tlCfg->gui_separator_open =  '[';
 $tlCfg->gui_separator_close = ']';
+$tlCfg->gui_room = '[ %s ]';
 
 /** @var string Title separators are used when componing an title using several strings */
 $tlCfg->gui_title_separator_1 = ' : '; // object : name (Test Specification : My best product)
@@ -126,6 +131,7 @@ $tlCfg->charts_font_size = 8;
 
 // ----------------------------------------------------------------------------
 /* [SERVER ENVIRONMENT] */
+
 
 /**
  * TICKET 4969: Add Setting to Force HTTPS
@@ -154,6 +160,11 @@ $tlCfg->sessionInactivityTimeout = 9900;
  */
 //ini_set('session.gc_maxlifetime', 54000);
 
+$tlCfg->notifications->userSignUp = new stdClass();
+$tlCfg->notifications->userSignUp->enabled = TRUE;  // @see notifyGlobalAdmins()
+$tlCfg->notifications->userSignUp->to = new stdClass();
+$tlCfg->notifications->userSignUp->to->roles = array(TL_ROLES_ADMIN);
+$tlCfg->notifications->userSignUp->to->users = null; // i.e. array('login01','login02');
 
 // ----------------------------------------------------------------------------
 /* [LOGGING] */
@@ -171,8 +182,8 @@ $tlCfg->smarty_debug = false;
 
 /** 
  *  @var string Path to store logs - 
- *	for security reasons (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
- *	put it out of reach via web or configure access denied.
+ *  for security reasons (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
+ *  put it out of reach via web or configure access denied.
  */
 $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
 
@@ -186,6 +197,18 @@ $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
  * 'SILENT': same that FILE, but user will not receive message on screen.
  */
 $tlCfg->config_check_warning_mode = 'FILE';
+
+/**
+ * ONCE_FOR_SESSION
+ * ALWAYS
+ */
+$tlCfg->config_check_warning_frequence = 'ONCE_FOR_SESSION';
+
+/**
+ *
+ */ 
+$tlCfg->userDocOnDesktop = OFF;
+
 
 /**
  * Configure if individual logging data stores are enabled of disabled
@@ -202,10 +225,14 @@ $g_removeEventsOlderThan = 30;
                             
 
 /**  @var map keys: 'all' + values present on proprety of logger class $loggerTypeDomain
-*			  values can be only these defined on logger.class.php 
+ *                  values can be only these defined on logger.class.php 
  *   @since 1.9.4                                  
  *   example array('all' => array('INFO','AUDIT'),
- *				   'mail' =>  array('ERROR'))
+ *                 'mail' =>  array('ERROR'))
+ *
+ *   $tlCfg->loggerFilter = array('db' => array('DEBUG','AUDIT','WARNING','ERROR'),
+ *                                'file' => array('NONE'));
+ *
  */                            
 $tlCfg->loggerFilter = null; // default defined on logger.class.php ;                            
 
@@ -263,17 +290,38 @@ $g_smtp_port = 25;
 
 /**
  * Login authentication method:
- * 	'MD5' => use password stored on db
- *	'LDAP' => use password from LDAP Server
+ *  'MD5' => use password stored on db => will be deprecated and DB used.
+ *  'DB'  => Same as MD5 use password stored on db
+ *  'LDAP' => use password from LDAP Server
  */
-$tlCfg->authentication['method'] = 'MD5';
+$tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'allowPasswordManagement' => true) ,
+										 'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
 
+
+// $tlCfg->authentication['domain'] = array('DB','LDAP')
+
+/* Default Authentication method */
+$tlCfg->authentication['method'] = 'DB';
+
+// Applies only if authentication methos is DB.
+// Used when:
+// 1. user sign up
+// 
+// null => only check password IS NOT EMPTY
+// 
+// $tlCfg->passwordChecks = array('minlen' => 8,'maxlen' => 20,'number' => true,'letter' => true,
+//	                              'capital' => true, 'symbol' => true);
+$tlCfg->passwordChecks = null;
+
+// Applies ONLY to the HTML input.
+// If auth method is DB, password will be stored as MD5 HASH that requires 32 chars (128 bits)
+$tlCfg->loginPagePasswordMaxLenght = 40;
 
 /**
  * Single Sign On authentication
- * This will be used with $tlCfg->authentication['method']
- * 
- * TICKET 4711	
+ * This will be used with $tlCfg->authentication['method'] <<= INCOMPLETE COMMENT
+ *
+ * This works with apache webserver
  */
 $tlCfg->authentication['SSO_enabled'] = false; 
 $tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
@@ -286,18 +334,48 @@ $tlCfg->authentication['ldap_server'] = 'localhost';
 $tlCfg->authentication['ldap_port'] = '389';
 $tlCfg->authentication['ldap_version'] = '3'; // could be '2' in some cases
 $tlCfg->authentication['ldap_root_dn'] = 'dc=mycompany,dc=com';
-$tlCfg->authentication['ldap_organization']	= '';    // e.g. '(organizationname=*Traffic)'
-$tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
 $tlCfg->authentication['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP binding
 $tlCfg->authentication['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
 $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
+
+// Following configuration parameters are used to build 
+// ldap filter and ldap attributes used by ldap_search()
+//
+// filter => "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
+// attributess => array( $t_ldap_uid_field, 'dn' );
+// 
+// This can be used to manage situation like explained on post on forum:
+// ActiveDirectory + users in AD group
+// 
+$tlCfg->authentication['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
+$tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
+
+
+
+
+// Follows Mantisbt idea.
+// True if user does not exist on DB, but can be get from LDAP, 
+// the user will be created AUTOMATICALLY with default user role.
+// Create user with following data from LDAP
+// mail
+// name
+// surname
+$tlCfg->authentication['ldap_automatic_user_creation'] = false;
+
+// Configure following fields in custom_config.inc.php according your configuration
+$tlCfg->authentication['ldap_email_field'] = 'mail';
+$tlCfg->authentication['ldap_firstname_field'] = 'givenname';
+$tlCfg->authentication['ldap_surname_field'] = 'sn';
+
+
+
 
 /** Enable/disable Users to create accounts on login page */
 $tlCfg->user_self_signup = TRUE;
 
 /** What happens when Administrator push the Reset Password Button 
-	'send_password_by_mail'
-	'display_on_screen'
+  'send_password_by_mail'
+  'display_on_screen'
 */
 $tlCfg->password_reset_send_method = 'send_password_by_mail';
 
@@ -306,7 +384,7 @@ $tlCfg->password_reset_send_method = 'send_password_by_mail';
  * Taken mantisbt version 1.2.5 - www.mantisbt.org and adapted
  *
  * The regular expression to use when validating new user login names
- * The default regular expression allows a-z, A-Z, 0-9, +, -, dot, @ and underscore. 	 
+ * The default regular expression allows a-z, A-Z, 0-9, +, -, dot, @ and underscore.   
  * For testing regular expressions, use http://rubular.com/.
  * For regular expression to englihs, use http://xenon.stanford.edu/~xusch/regexp/analyzer.html
  */
@@ -317,7 +395,7 @@ $tlCfg->validation_cfg->user_login_valid_regex='/^([a-z\d\-.+_@]+(@[a-z\d\-.]+\.
  * Example of other possibilities:
  * <code>
  * $regex = "/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*" .
- * 		 "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i";
+ *     "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i";
  * $regex = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
  * </code>
  **/
@@ -332,8 +410,12 @@ $tlCfg->validation_cfg->user_email_valid_regex_php = "/^([\w]+)(.[\w]+)*@([\w-]+
 // --------------------------------------------------------------------------------------
 /* [API] */
 
-/** XML-RPC API availability (disabled by default) */
-$tlCfg->api->enabled = FALSE;
+/** XML-RPC API availability - do less than promised ;) 
+    FALSE => user are not able to generate and set his/her API key.
+    XML-RPC server do not check this config in order to answer or not a call.
+ */
+
+$tlCfg->api->enabled = TRUE;
 
 // used to display API ID info in the *View pages
 $tlCfg->api->id_format = "[ID: %s ]";
@@ -349,12 +431,50 @@ $tlCfg->theme_dir = 'gui/themes/default/';
 $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . DIRECTORY_SEPARATOR;
 
 /** Company logo (used by navigation bar and login page page) */
-//$tlCfg->company_logo = '<img alt="TestLink" title="TestLink" style="width: 115px; height: 53px;" src="' .
-//                          $tlCfg->theme_dir . 'images/company_logo.png" />';
-$tlCfg->company_logo = 'company_logo.png';
+$tlCfg->logo_login = 'tl-logo-transparent-25.png';
+$tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
+
 
 /** Login page could show an informational text */
 $tlCfg->login_info = ''; // Empty by default
+
+
+
+/** 
+ * controls if pagination (via Javascript) will be enabled
+ */
+$tlCfg->gui->projectView = new stdClass();
+$tlCfg->gui->projectView->pagination = new stdClass();
+$tlCfg->gui->projectView->pagination->enabled = true;
+$tlCfg->gui->projectView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
+
+$tlCfg->gui->usersAssign = new stdClass();
+$tlCfg->gui->usersAssign->pagination = new stdClass();
+$tlCfg->gui->usersAssign->pagination->enabled = true;
+$tlCfg->gui->usersAssign->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
+
+$tlCfg->gui->planView = new stdClass();
+$tlCfg->gui->planView->pagination = new stdClass();
+$tlCfg->gui->planView->pagination->enabled = true;
+$tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
+
+
+/** 
+ * controls if operation area (buttons) starts open ('' or 'inline') or closed ('none') on:
+ * - test suite management
+ * - test case management
+ * - req. spec management
+ * - req. management
+ */
+$tlCfg->gui->op_area_display = new stdClass();
+
+// test_spec_container => test project, test suite
+$tlCfg->gui->op_area_display->test_spec_container = 'none'; // ''
+$tlCfg->gui->op_area_display->test_case = 'none'; // 'inline'
+$tlCfg->gui->op_area_display->req_spec_container = 'none'; // 'inline'
+$tlCfg->gui->op_area_display->req = 'none'; // 'inline'
+
+
 
 /**
  * @var string Availability of Test Project specific background colour
@@ -383,9 +503,9 @@ $tlCfg->gui->round_corners->tc_spec = ENABLED;
 /**
  * Display name definition (used to build a human readable display name for users)
  * Example of values:
- * 		'%first% %last%'          -> John Cook
- * 		'%last%, %first%'          -> Cook John
- * 		'%first% %last% %login%'    -> John Cook [ux555]
+ *    '%first% %last%'          -> John Cook
+ *    '%last%, %first%'          -> Cook John
+ *    '%first% %last% %login%'    -> John Cook [ux555]
  **/
 $tlCfg->username_format = '%login%';
 
@@ -396,12 +516,25 @@ $tlCfg->frame_workarea_default_width = "30%";
 $tlCfg->gui->show_icon_edit = false;
 
 /**
+ * ''       => test project name
+ * 'prefix' => prefix : test project name
+ *
+ * ATTENTION : * is used to indicate test project is INACTIVE
+ *             see also $tlCfg->gui->tprojects_combo_order_by
+ */
+$tlCfg->gui->tprojects_combo_format = 'prefix';
+
+
+/**
  * Order to use when building a testproject combobox (value must be SQL compliant)
  * For example:
- * 		'ORDER BY name'
- * 		'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
+ *    'ORDER BY name'
+ *    'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
  **/
-$tlCfg->gui->tprojects_combo_order_by = 'ORDER BY nodes_hierarchy.id DESC';
+// $tlCfg->gui->tprojects_combo_order_by = 'ORDER BY nodes_hierarchy.id DESC';
+$tlCfg->gui->tprojects_combo_order_by = 'ORDER BY TPROJ.prefix ASC';
+
+
 
 /** Configure the input size of test case search by id on navigation bar.
  *  This value will be added to the length of the prefix to dynamically set input size.
@@ -420,22 +553,25 @@ $tlCfg->dashboard_precision = 2;
  * Every element is a mp with this configuration keys:
  *
  * 'type':
- *        'fckeditor'
- *        'tinymce'
+ *        'fckeditor'  ==> will be deprecated in future versions
+ *        'ckeditor'
+ *        'tinymce'    ==> will be deprecated in future versions
  *        'none' -> use plain text area input field
- * 'toolbar': only applicable for type = 'fckeditor'
- *			name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
- * 			TestLink stores own definitions in <testlink_dir>/cfg/tl_fckeditor_config.js
+ * 'toolbar': only applicable for type = 'fckeditor', 'ckeditor'
+ *      name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
+ *      TestLink stores own definitions in <testlink_dir>/cfg/tl_fckeditor_config.js
+ *      TestLink stores own definitions in <testlink_dir>/cfg/tl_ckeditor_config.js
+ *
  * 'configFile': only applicable for type = 'fckeditor'
- * 			See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath
+ *      See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath
  * 'height': the height in px for FCKEditor
  * 'width': the width in px for FCKEditor
  * 'cols': the number of cols for tinymce and none
  * 'rows': the number of rows for tinymce and none
  *
  * The next keys/areas are supported:
- * 		'all' (default setting),
- * 		'design', 'steps_design', 'testplan', 'build', 'testproject', 'role', 'requirement', 'requirement_spec'.
+ *    'all' (default setting),
+ *    'design', 'steps_design', 'testplan', 'build', 'testproject', 'role', 'requirement', 'requirement_spec'.
  *
  * Examples:
  * <code>
@@ -456,11 +592,27 @@ $tlCfg->dashboard_precision = 2;
  *
  * Hint: After doing configuration changes, clean you Browser's cookies and cache
  */
+/*
 $tlCfg->gui->text_editor = array();
 $tlCfg->gui->text_editor['all'] = array('type' => 'fckeditor',
-                                    	'toolbar' => 'tl_default',
-                                    	'configFile' => 'cfg/tl_fckeditor_config.js',);
+                                      'toolbar' => 'tl_default',
+                                      'configFile' => 'cfg/tl_fckeditor_config.js',);
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
+*/
+
+$tlCfg->gui->text_editor = array();
+$tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor','toolbar' => 'Testlink',
+                                        'configFile' => 'cfg/tl_ckeditor_config.js',
+                                        'height' => 150);
+
+// mini toolbar for test case steps edit
+$tlCfg->gui->text_editor['steps_design'] = array('type' => 'ckeditor','toolbar' => 'TestlinkMini',
+                                                 'configFile' => 'cfg/tl_ckeditor_config.js',
+                                                 'height' => 100);
+
+$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
+$tlCfg->gui->text_editor['edit_execution'] = array( 'type' => 'none', 'cols' => 80, 'rows' => 20);
+$tlCfg->gui->text_editor['display_execution_notes'] = array('type' => 'none', 'cols' => 80, 'rows' => 20);
 
 /** User can choose order of menu areas */
 $tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration' => 2 ,
@@ -481,8 +633,6 @@ $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 
  * Bug in webkit: https://bugs.webkit.org/show_bug.cgi?id=19418
  */
 
-// franciscom -
-// BUGID 0003275 + post on forum: // http://www.teamst.org/phpBB2/viewtopic.php?t=3075
 // seems that with config options that will be used on javascript via smarty template variables
 // we are having problems using FALSE/TRUE => use 0/1 (or our CONSTANT DISABLED/ENABLED)
 $tlCfg->gui->checkNotSaved = ENABLED;
@@ -493,7 +643,7 @@ $tlCfg->gui->checkNotSaved = ENABLED;
 
 /** Default ordering value for new Test Suites and Test Cases to separate them */
 $tlCfg->treemenu_default_testsuite_order = 1;
-$tlCfg->treemenu_default_testcase_order = 100;
+$tlCfg->treemenu_default_testcase_order = 1000;
 
 /** show/hide testcase id on tree menu */
 $tlCfg->treemenu_show_testcase_id = TRUE;
@@ -540,9 +690,21 @@ $tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
 // Show build columns in revers order. The latest build is to the left
 $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
 
+// After having got performance and usability issue, a limit on max qty of builds
+// allowed on data extration has been set.
+// Is absolutely arbitrary
+// 
+$tlCfg->resultMatrixReport->buildQtyLimit = 6;
+
+// ORDER BY sql clause, refers to builds table columns
+$tlCfg->resultMatrixReport->buildOrderByClause = " ORDER BY name ASC";
+
+
 // Show all available status details for test plans on metrics dashboard 
 $tlCfg->metrics_dashboard = new stdClass();
 $tlCfg->metrics_dashboard->show_test_plan_status = false;
+
+
 
 
 // ----------------------------------------------------------------------------
@@ -554,18 +716,14 @@ $tlCfg->metrics_dashboard->show_test_plan_status = false;
  * Leave text values empty if you would like to hide parameters.
  */
 $tlCfg->document_generator->company_name = 'TestLink Community [configure $tlCfg->document_generator->company_name]';
-$tlCfg->document_generator->company_copyright = '2009 &copy; TestLink Community';
+$tlCfg->document_generator->company_copyright = '2012 &copy; TestLink Community';
 $tlCfg->document_generator->confidential_msg = '';
 
 // Logo for generated documents
-$tlCfg->document_generator->company_logo = 'company_logo.png';
+$tlCfg->document_generator->company_logo = $tlCfg->logo_login;
 $tlCfg->document_generator->company_logo_height = '53';
 
 /** CSS used in printed html documents */
-
-// BUGID 3424
-// $tlCfg->document_generator->css_template = $tlCfg->theme_dir . 'css/tl_documents.css';
-// CSS file for Test Specification Document, Test Plan Report, Test Report and Test Case Print View
 $tlCfg->document_generator->css_template = 'css/tl_documents.css';
 
 // CSS file for Requirement Specification Document, Requirement and Requirement Spec Print View
@@ -585,9 +743,6 @@ $tlCfg->document_generator->tc_version_enabled = FALSE;
 // DISABLED -> disable
 $tlCfg->exec_cfg->enable_test_automation = DISABLED;
 
-// 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
-// DISABLED -> no edit allowed [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->edit_notes = DISABLED;
 
 // ASCending   -> last execution at bottom
 // DESCending  -> last execution on top      [STANDARD BEHAVIOUR]
@@ -614,9 +769,6 @@ $tlCfg->exec_cfg->show_history_all_platforms = FALSE;
 // $att_model_m2 ->  hides upload button and title
 $tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 
-// ENABLED -> User can delete an execution result
-// DISABLED -> User can not.  [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->can_delete_execution = DISABLED;
 
 // ENABLED -> test cases will be coloured according to test case status
 $tlCfg->exec_cfg->enable_tree_testcases_colouring = ENABLED;
@@ -632,9 +784,22 @@ $tlCfg->exec_cfg->enable_tree_counters_colouring = ENABLED;
 
 // This can help to avoid performance problems.
 // Controls what happens on right frame when user clicks on a testsuite on tree.
-// ENABLED -> show all test cases presents on test suite and children test suite.
+// ENABLED -> show all test cases 
+//            see $tlCfg->exec_cfg->show_testsuite_contents_deep
+// 
 // DISABLED -> nothing happens, to execute a test case you need to click on test case
 $tlCfg->exec_cfg->show_testsuite_contents = DISABLED;
+
+// @since 1.9.13
+// works in 'team' with $tlCfg->exec_cfg->show_testsuite_contents 
+// children: only direct children.
+// deep: all test cases present in test suite and test suites in any level below 
+//       selected test suite.
+// IMPORTANT NOTICE:
+// selecting deep can create performance issues.
+// 
+$tlCfg->exec_cfg->show_testsuite_contents_deep = 'children';
+
 
 // ENABLED -> enable testcase counters by status on tree
 $tlCfg->exec_cfg->enable_tree_testcase_counters = ENABLED;
@@ -665,6 +830,13 @@ $tlCfg->exec_cfg->view_mode->tester='assigned_to_me';
 // assigned_to_me_or_free: test cases assigned to logged user or not assigned
 $tlCfg->exec_cfg->exec_mode->tester='assigned_to_me';
 
+
+// How to set defaut values for execution fields (standard & custom) 
+// clean => all clean 
+// latest => get as much as possible values from latest execution on
+//           same context => test plan,platform, build
+$tlCfg->exec_cfg->exec_mode->new_exec='clean';
+
 /** User filter in Test Execution navigator - default value */
 // logged_user -> combo will be set to logged user
 // none        -> no filter applied by default
@@ -675,6 +847,17 @@ $tlCfg->exec_cfg->user_filter_default='none';
 // 'vertical'   ->  steps on one row, results in the row bellow
 $tlCfg->exec_cfg->steps_results_layout = 'horizontal';
 
+// true => on single test case execution feature, notes and result
+//         can be provided for each step
+// false => pre 1.9.10 behaviour
+// 
+$tlCfg->exec_cfg->steps_exec = true;
+
+// When textarea is displayed to allow user to write execution notes
+// at step level, choose what to display:
+// 'empty'
+// 'latest' => latest execution notes.
+$tlCfg->exec_cfg->steps_exec_notes_default = 'empty';
 
 // Parameters to show notes/details when entering test execution feature
 // EXPAND: show expanded/open
@@ -687,8 +870,30 @@ $tlCfg->exec_cfg->expand_collapse->build_description = LAST_USER_CHOICE;
 $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 
+
+$tlCfg->exec_cfg->copyLatestExecIssues = new stdClass();
+
+// true => When saving an execution, a new option will be displayed, and user will be
+//         able to do a choice
+//         COPY OR NOT issues linked to latest execution to the new execution
+// DEAFULT false => no option on GUI
+
+$tlCfg->exec_cfg->copyLatestExecIssues->enabled = FALSE;
+
+
+// value to set as default
+$tlCfg->exec_cfg->copyLatestExecIssues->default = FALSE;
+
+// you can choose only between this columns
+// 'execution_id,bug_id,builds.name'
+// (see exec.inc.php, function get_bugs_for_exec())
+$tlCfg->exec_cfg->bugs_order_clause = ' ORDER BY builds.name,bug_id ';
+
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
+
+// TRUE will be displayed when displayed a test case
+$tlCfg->spec_cfg->show_tplan_usage = TRUE;
 
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
@@ -708,21 +913,6 @@ $tlCfg->spec_cfg->show_tsuite_filter = ENABLED;
 $tlCfg->spec_cfg->automatic_tree_refresh = ENABLED;
 
 
-// ENABLED -> user can edit executed tc versions
-// DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
-$tlCfg->testcase_cfg->can_edit_executed = DISABLED;
-
-// ENABLED -> user can removed from a testplan executed tc versions. [STANDARD BEHAVIOUR]
-// DISABLED -> user can NOT remove from a testplan executed tc versions.
-$tlCfg->testcase_cfg->can_remove_executed = ENABLED;
-
-
-// ENABLED -> user can DELETE a TEST CASE that has been executed. 
-// DISABLED -> [STANDARD BEHAVIOUR]
-// IMPORTANT: this is valid for any role => admin is also under this law.
-$tlCfg->testcase_cfg->can_delete_executed = DISABLED;
-
-
 // To avoid perfomance problems on search test case feature,
 // we can decide when to inform user that results can not be displayed
 // due to too many results.
@@ -737,9 +927,58 @@ $tlCfg->testcase_cfg->duplicated_name_algorithm = new stdClass();
 //                    example: My Test Title 2
 //                    duplicated_name_algorithm->text is used as sprintf format mask
 $tlCfg->testcase_cfg->duplicated_name_algorithm->type = 'stringPrefix';
-$tlCfg->testcase_cfg->duplicated_name_algorithm->text = strftime("%Y%m%d-%H:%M:%S", time());
+$tlCfg->testcase_cfg->duplicated_name_algorithm->text = "%Y%m%d-%H:%M:%S";
+
 // $tlCfg->testcase_cfg->duplicated_name_algorithm->type = 'counterSuffix';
 // $tlCfg->testcase_cfg->duplicated_name_algorithm->text = " (%s)";
+
+
+// TICKET 6422: Estimation in Test specification as mandatory field
+// Implemented using HTML5
+$tlCfg->testcase_cfg->estimated_execution_duration = new stdClass();
+// $tlCfg->testcase_cfg->estimated_execution_duration->required = 'required';
+$tlCfg->testcase_cfg->estimated_execution_duration->required = '';
+
+
+
+// There are some preconfigured standard types which you can use,
+// additionally you can configure your own types.
+$tlCfg->testcase_cfg->relations = new stdClass();
+$tlCfg->testcase_cfg->relations->enable = TRUE;
+$tlCfg->testcase_cfg->relations->interproject_linking = FALSE;
+
+
+/** 
+ * Localization identifiers for test cases relation types
+ * Types, which are configured above, have to be configured 
+ * here too with attributes "source" and "destination".
+ *
+ * Last value will be selected in GUI as default.
+ * 
+ * Form has to be like this:
+ * 
+ * ... = array(
+ *    RELATIONNAME => array(
+ *      'source' => 'SOURCE_LOCALIZATION_KEY',
+ *      'destination' => 'DESTINATION_LOCALIZATION_KEY'),
+ *    ...
+ * 
+ * @since TestLink 1.9.12
+ **/
+
+$tlCfg->testcase_cfg->relations->type_labels = array(
+  TL_REL_TYPE_PARENT_CHILD => array('source' => 'parent_of','destination' => 'child_of'),
+  TL_REL_TYPE_BLOCKS_DEPENDS => array('source' => 'blocks','destination' => 'depends'),
+  TL_REL_TYPE_RELATED => array('source' => 'related_to','destination' => 'related_to')
+);
+
+
+
+$tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHILD => 'parent_child',
+                                                          TL_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
+                                                          TL_REL_TYPE_RELATED => 'related_to');
+
+
 
 
 /** text template for a new items:
@@ -756,7 +995,7 @@ $tlCfg->testcase_cfg->duplicated_name_algorithm->text = strftime("%Y%m%d-%H:%M:%
 // string: value of value member is assigned to FCK object
 // string_id: value member is used in a lang_get() call, and return value
 //       is assigned to FCK object. Configure string_id on custom_strings.txt
-// file: value member is used as file name.
+// value: value member is used as file name.
 //       file is readed and it's contains assigned to FCK object
 //
 // any other value for type, results on '' assigned to FCK object
@@ -786,9 +1025,6 @@ $tlCfg->testsuite_template->details = new stdClass();
 $tlCfg->testsuite_template->details->type = 'none';
 $tlCfg->testsuite_template->details->value = '';
 
-
-// Contribution - Julian (Refactore)
-// BUGID 0002968,0002961,0002962,0002963
 $tlCfg->project_template = new stdClass();
 $tlCfg->project_template->notes  = new stdClass();
 $tlCfg->project_template->notes->type = 'none';
@@ -885,14 +1121,12 @@ $g_attachments->action_on_save_empty_title = 'none';
 // 'show_label' -> the value of $g_attachments->access_string will be used .
 $g_attachments->action_on_display_empty_title = 'show_icon';
 
-// martin: @TODO use an image file only
-
-// BUGID 3424  - need to be moved AFTER include of custom_config
+// need to be moved AFTER include of custom_config
 //
 // $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 $g_attachments->access_string = "[*]";
 
-// Set display order of uploaded files - BUGID 1086
+// Set display order of uploaded files 
 $g_attachments->order_by = " ORDER BY date_added DESC ";
 
 
@@ -910,14 +1144,14 @@ $tlCfg->req_cfg->log_message_len = 200;
 
 /**
  * Test Case generation from Requirements - use_req_spec_as_testsuite_name
- *	FALSE => test cases are created and assigned to a test suite
- * 	         with name $tlCfg->req_cfg->default_testsuite_name
- * 	TRUE  => REQuirement Specification Title is used as testsuite name
+ *  FALSE => test cases are created and assigned to a test suite
+ *           with name $tlCfg->req_cfg->default_testsuite_name
+ *  TRUE  => REQuirement Specification Title is used as testsuite name
  */
 $tlCfg->req_cfg->use_req_spec_as_testsuite_name = TRUE;
 $tlCfg->req_cfg->default_testsuite_name = "Auto-created Test cases";
 $tlCfg->req_cfg->testsuite_details = "Test Cases in the Test Suite are generated from Requirements. " .
-		                            "A refinement of test scenario is highly recommended.";
+                                "A refinement of test scenario is highly recommended.";
 $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from the assigned requirement.</b><br />";
 
 
@@ -961,11 +1195,10 @@ $tlCfg->req_cfg->expected_coverage_management = ENABLED;
 // DIABLED: ONLY Requirement Specification is shown
 $tlCfg->req_cfg->show_child_reqs_on_reqspec_print_view = DISABLED;
 
-// 20090111 - franciscom
+// 
 // Order of test cases status in this array, is used to undestand
 // to what status set requirement in the requirements report.
 // Standard algorithm, present in getReqCoverage(), is:
-//
 //
 // if at least one of Test Cases linked to Requirement has status FAILED
 //    Requirement Coverage Status = FAILED
@@ -984,7 +1217,8 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['atLeastOne']=array('faile
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('passed');
 
 // Configure here what status has to get requirement when check of type 'all' fails like
-// in following situation (BUGID 2171)
+// in following situation (Mantis 2171)
+//
 // If particular requirement has assigned more than one test cases, and:
 // - at least one of assigned test cases was not yet executed
 // - the rest of assigned test cases was executed and passed
@@ -1000,7 +1234,7 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('passed');
 
 
 
-// TICKET 4661 - truncate log message to this amount of chars for reqSpecCompareRevisions
+// truncate log message to this amount of chars for reqSpecCompareRevisions
 $tlCfg->req_spec_cfg->log_message_len = 200;
 
 
@@ -1116,17 +1350,17 @@ $tlCfg->req_cfg->duplicated_docid_algorithm->text = " (%s)";
  *
  * For Test Cases:
  * --> execution_mode
- * 		execution of testcases
+ *    execution of testcases
  * --> edit_mode
- * 		create and edit testcases
- * 		assign keywords to testcases
- * 		assign requirements to testcases
+ *    create and edit testcases
+ *    assign keywords to testcases
+ *    assign requirements to testcases
  * --> plan_mode
- * 		assign testcase execution to users
- * 		update linked versions for testplan
- * 		set urgent testcases
+ *    assign testcase execution to users
+ *    update linked versions for testplan
+ *    set urgent testcases
  * --> plan_add_mode
- * 		add/remove testcases to/from testplan
+ *    add/remove testcases to/from testplan
  *
  * For Requirements:
  * There are no modes defined, there is only one filter configuration.
@@ -1164,16 +1398,22 @@ $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_execution_type = ENAB
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_assigned_user = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_result = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->execution_mode->filter_bugs = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->advanced_filter_mode_choice = ENABLED;
 
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_active_inactive = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_workflow_status = ENABLED;
+
 // filter mode choice disabled for this mode because there are no filters benefiting from it
 $tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;
+
 
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_testcase_name = ENABLED;
@@ -1190,8 +1430,10 @@ $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_keywords = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_priority = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_active_inactive = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_execution_type = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_workflow_status = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->advanced_filter_mode_choice = ENABLED;
 
@@ -1211,6 +1453,12 @@ $tlCfg->tree_filter_cfg->requirements->advanced_filter_mode_choice = ENABLED;
 // DISABLED -> The tree will not be updated automatically, but  the user can update it manually.
 //             On graphical user interface any user will is able to change this setting.
 $tlCfg->tree_filter_cfg->requirements->automatic_tree_refresh = ENABLED;
+
+
+
+/* [Assign test cases to test plan] */
+$tlCfg->tplanDesign->hideTestCaseWithStatusIn = array($tlCfg->testCaseStatus['obsolete'] => 'obsolete',
+                            $tlCfg->testCaseStatus['future'] => 'future' );
 
 // ----------------------------------------------------------------------------
 /* [MISC FUNCTIONALITY] */
@@ -1247,9 +1495,9 @@ $tlCfg->custom_fields->sizes = array('string' => 100,
                                      'email' => 100,
                                      'list' => 5,
                                      'multiselection list' => 5,
-		  					         'text area' => array('rows' => 6, 'cols' => 80),
-							         'script' => 100,
-							         'server' => 100);
+                         'text area' => array('rows' => 6, 'cols' => 80),
+                       'script' => 100,
+                       'server' => 100);
 
 // Use this variable (on custom_config.inc.php) to define new Custom Field types.
 // IMPORTANT:
@@ -1301,10 +1549,9 @@ $tlCfg->html_valid_tags_single_line = 'i, b, u, em';
 
 /**
  * Defines the threshold values for filtering TC by a priority according to the formula
- *  ui 		=>	(urgency*importance)
- *  LOW 	=> all Tc's with ui < LOW_Threshold
- *  HIGH 	=> all Tc's with ui >= HIGH_Threshold
- *  MEDIUM  => all Tc's with ui >= LOW_Threshold AND ui < HIGH_Threshold
+ * LOW  => all Tc's with (urgency*importance) < LOW_Threshold
+ * HIGH   => all Tc's with (urgency*importance) >= HIGH_Threshold
+ * MEDIUM  => all Tc's with (urgency*importance) >= LOW_Threshold AND (urgency*importance) < HIGH_Threshold
  */
 $tlCfg->urgencyImportance = new stdClass();
 $tlCfg->urgencyImportance->threshold['low'] = 3;
@@ -1347,6 +1594,30 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 $tlCfg->custom_css = null;
 
 
+/** 
+ * Configurable templates this can help if you want to use a non standard template.
+ * i.e. you want to develop a new one without loosing the original template.
+ * key: original TL template name WITHOUT extension
+ * value: whatever name you want, only constrain you have to copy your template
+ *        ON SAME FOLDER where original template is. 
+ * See example below        
+ */
+$g_tpl = array();
+ 
+// Example 
+// $g_tpl = array('tcView'  => 'custom_tcView.tpl',
+//                 'tcSearchView' => 'myOwnTCSearchView.tpl',
+//                 'tcEdit' => 'tcEdit_ultraCool.tpl');
+
+// ----------------------------------------------------------------------------
+/* [PROXY] */
+$tlCfg->proxy->host = null;
+$tlCfg->proxy->port = null;
+$tlCfg->proxy->login = null;
+$tlCfg->proxy->password = null;
+
+
+
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
 // DO NOT CHANGE NOTHING BELOW
@@ -1369,7 +1640,7 @@ define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https))
 
 if( !isset($g_attachments->access_icon) )
 {
-	$g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+  $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 }
 
 
@@ -1379,25 +1650,27 @@ $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 
 
 /** Support for localization */
-//	@TODO schlundus, move the code out of config and do it only once and not always in any include!
-//	@TODO schlundus, a better parsing function should be include
+//  @TODO schlundus, move the code out of config and do it only once and not always in any include!
+//  @TODO schlundus, a better parsing function should be include
 $serverLanguage = false;
 if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 {
-	@list($code) = explode(",",$_SERVER['HTTP_ACCEPT_LANGUAGE']);
-	@list($a,$b) = explode("-",$code);
-	if ($a && $b)
-	{
-		$a = strtolower($a);
-		$b = strtoupper($a);
-		$serverLanguage = $a."_".$b;
-	}
+  @list($code) = explode(",",$_SERVER['HTTP_ACCEPT_LANGUAGE']);
+  @list($a,$b) = explode("-",$code);
+  if ($a && $b)
+  {
+    $a = strtolower($a);
+    $b = strtoupper($a);
+    $serverLanguage = $a."_".$b;
+  }
 }
 
 if(false !== $serverLanguage)
 {
-	if (array_key_exists($serverLanguage,$g_locales))
-		$tlCfg->default_language = $serverLanguage;
+  if (array_key_exists($serverLanguage,$tlCfg->locales))
+  { 
+    $tlCfg->default_language = $serverLanguage;
+  } 
 }
 define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 
@@ -1408,6 +1681,9 @@ define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 //
 /** Revered list of Test Case execution results */
 $tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
+
+// Enable CSRF global protection
+$tlCfg->csrf_filter_enabled = TRUE;
 
 // --------------------------------------------------------------------------------------
 /** Converted and derived variables (Users should not modify this section) */
@@ -1438,12 +1714,13 @@ $g_role_replace_for_deleted_roles = $tlCfg->default_roleid;
 
 
 /**
-BUGID 0000086: Using "|" in the testsuite name causes malformed URLs
-regexp used to check for chars not allowed in:
-test project, test suite and testcase names.
-@TODO martin: encode harm characters @see http://cz.php.net/urlencode (and remove the parameter)
-*/
-// now is preg pattern
+ * Using "|" in the testsuite name causes malformed URLs
+ * regexp used to check for chars not allowed in:
+ * test project, test suite and testcase names.
+ * @TODO martin: encode harm characters @see http://cz.php.net/urlencode (and remove the parameter)
+ *
+ * now is preg pattern
+ */
 $g_ereg_forbidden = "/[|]/i";
 
 
@@ -1465,4 +1742,3 @@ $tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
 // ----- END OF FILE --------------------------------------------------------------------
-?>

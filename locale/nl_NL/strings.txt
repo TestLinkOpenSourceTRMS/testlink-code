@@ -191,6 +191,8 @@ $TLS_testplan_usage="Test Plan usage";
 
 $TLS_add_tcversion_to_plans = "Add Test Case Version to Test Plans";
 $TLS_please_select_one_testplan = "Please select at least one Test Plan.";
+$TLS_demo_mode_suggested_user='Login als admin';
+$TLS_demo_mode_suggested_password='Gebruik admin als wachtwoord';
 
 
 
@@ -1635,7 +1637,7 @@ $TLS_error_ldap_bind_failed = "LDAP binding is mislukt";
 $TLS_error_ldap_server_connect_failed = "Connectie maken met de LDAP server is mislukt";
 $TLS_error_ldap_update_failed = "Updating LDAP is mislukt";
 $TLS_error_ldap_user_not_found = "LDAP gebruiker niet gevonden";
-
+$TLS_unknown_authentication_method = "Onbekende methode %s voor authenticatie";
 
 
 // ----- lib/functions/product.inc.php -----
@@ -1809,12 +1811,12 @@ $TLS_no_build_warning_part2 = "Creerd dit alstublieft eerst of vraag het uw behe
 
 
 // ----- lib/general/myTPInfo.php -----
-$TLS_no_testplans_available = "Excuses, er zijn geen Testpannen beschikbaar";
+$TLS_no_testplans_available = "Excuses, er zijn geen Testplannen beschikbaar";
 
 
 // ----- lib/general/tlsmarty.inc.php -----
-$TLS_show_hide_api_info = "Show / Hide API Info";
-
+$TLS_show_hide_api_info = "Toon / Verberg API Info";
+$TLS_show_hide_direct_link = "Toon / Verberg directe link";
 
 // ----- lib/keywords/keywords.inc.php -----
 $TLS_empty_keyword_no = "U kunt geen leeg steekwoord invoeren!";

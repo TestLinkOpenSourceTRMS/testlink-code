@@ -16,10 +16,10 @@
  * 	$params = array( 
  *
  *		// input from GET['HelloString3'], 
- *      // type: string,  minLen: 1, maxLen: 15,
- *      // regexp: null 
- *      // checkFunction: applys checks via checkFooOrBar() to ensure its either 'foo' or 'bar' 
- *      // normalization: done via  normFunction() which replaces ',' with '.' 
+ *    // type: string,  minLen: 1, maxLen: 15,
+ *    // regexp: null 
+ *    // checkFunction: applys checks via checkFooOrBar() to ensure its either 'foo' or 'bar' 
+ *    // normalization: done via  normFunction() which replaces ',' with '.' 
  *		"HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,null,'checkFooOrBar','normFunction'),
  *
  *		// string, from POST['HelloString'], minLen 1, maxLen 15
@@ -32,7 +32,7 @@
  *		"HelloString2" => array("POST",tlInputParameter::STRING_N,1,15,'/^aaaa$/'),
  *
  *		// non negativ integer, from POST['HelloInt2'], minValue = 20, maxValue = 40. checked to 	
- *		// ensure it's odd by using a chechkFunction
+ *		// ensure it's odd by using a checkFunction
  *		"HelloInt2" =>  array("POST",tlInputParameter::INT,20,40,'checkOdd'),
  * 	);
  * 
@@ -51,9 +51,9 @@
  * </code> 
  *
  * @package 	TestLink
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: inputparameter.inc.php,v 1.27 2010/01/11 19:16:30 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @copyright 2005-2012, TestLink community 
+ * @version   inputparameter.inc.php
+ * @link 		  http://www.teamst.org/index.php
  * 
  * 
  **/
@@ -216,15 +216,25 @@ function GPR_PARAM_STRING_N($inputSource,$name,$minLen = null,$maxLen = null,$re
 	$vInfo->trim = tlStringValidationInfo::TRIM_BOTH;
 	$vInfo->doStripSlashes = true;
 
-    $parameters = array("minLen","maxLen","regExp","pfnValidation","pfnNormalization");
-    foreach($parameters as $parameter)
+  $parameters = array("minLen","maxLen","regExp","pfnValidation","pfnNormalization");
+  foreach($parameters as $parameter)
+  {
+    if (!is_null($$parameter))
     {
-        if (!is_null($$parameter))
-            $vInfo->$parameter = $$parameter;
-    }
-   
-  	$pInfo = new tlParameterInfo($inputSource,$name);
-	$iParam = new tlInputParameter($pInfo,$vInfo);
+      $vInfo->$parameter = $$parameter;
+    }    
+  }
+  
+  try   
+  {
+    $pInfo = new tlParameterInfo($inputSource,$name);
+	  $iParam = new tlInputParameter($pInfo,$vInfo);
+	}
+  catch (Exception $e)  
+  {  
+    echo 'Input name: ' . $name . ' :: Exception ' . $e->getMessage();
+    exit();
+  }
 	
 	return $iParam->value();
 }
@@ -245,17 +255,17 @@ function GPR_PARAM_INT($inputSource,$name,$minVal = null,$maxVal = null,$pfnVali
 {
 	$vInfo = new tlIntegerValidationInfo();
 
-    $parameters = array("minVal","maxVal","pfnValidation");
+  $parameters = array("minVal","maxVal","pfnValidation");
 	foreach($parameters as $parameter)
+  {
+    if (!is_null($$parameter))
     {
-        if (!is_null($$parameter))
-        {
-            $vInfo->$parameter = $$parameter;
-        }    
-    }
+      $vInfo->$parameter = $$parameter;
+    }    
+  }
 	$pInfo = new tlParameterInfo($inputSource,$name);
 	$iParam = new tlInputParameter($pInfo,$vInfo);
-	
+
 	return $iParam->value();
 }
 

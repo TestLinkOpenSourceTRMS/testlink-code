@@ -3,16 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package 	TestLink
- * @author 		franciscom
- * @copyright 	2005-2009, TestLink community
- * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.9 2011/02/10 21:25:25 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  franciscom
+ * @copyright 	2005-2015, TestLink community
+ * @copyright 	Mantis BT team (some parts of code was reused from the Mantis project) 
+ * @filesource  cfield_mgr.class.php
+ * @link 		    http://testlink.sourceforge.net
  *
- * @internal Revisions:
- * @since 1.9.4
- * 20111230 - franciscom - string_custom_field_value() - fixed warning on event viewer
+ * @internal revisions
+ * @since 1.9.14
  *
 **/
 
@@ -25,10 +24,10 @@ require_once(dirname(__FILE__) . '/string_api.php');
 $cf_files=glob( TL_ABS_PATH . "custom/cf_*.php");
 if( count($cf_files) > 0 )
 {
-    foreach($cf_files as $inc)
-    {
-        require_once($inc);  
-    }   
+  foreach($cf_files as $inc)
+  {
+    require_once($inc);  
+  }   
 }
 
 
@@ -38,19 +37,19 @@ if( count($cf_files) > 0 )
  */
 class cfield_mgr extends tlObject
 {
-    const DEFAULT_INPUT_SIZE = 50;
-    const MULTISELECTIONLIST_WINDOW_SIZE = 5;
-    const LISTBOX_WINDOW_SIZE = 5;
-    const TEXTAREA_MAX_SIZE = 255;
+  const DEFAULT_INPUT_SIZE = 50;
+  const MULTISELECTIONLIST_WINDOW_SIZE = 5;
+  const LISTBOX_WINDOW_SIZE = 5;
+  const TEXTAREA_MAX_SIZE = 255;
 
-    // EDIT HERE IF YOU CUSTOMIZE YOUR DB
-    /** for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size */
-    const TEXTAREA_DEFAULT_COLS = 70;
-    const TEXTAREA_DEFAULT_ROWS = 4;
+  // EDIT HERE IF YOU CUSTOMIZE YOUR DB
+  /** for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size */
+  const TEXTAREA_DEFAULT_COLS = 70;
+  const TEXTAREA_DEFAULT_ROWS = 4;
 
-    const CF_ENABLED = 1;
-    const ENABLED = 1;
-    const DISABLED = 0;
+  const CF_ENABLED = 1;
+  const ENABLED = 1;
+  const DISABLED = 0;
     
 	/** @var resource the database handler */
 	var $db;
@@ -58,42 +57,43 @@ class cfield_mgr extends tlObject
 	/** @var object tree class */
 	var $tree_manager;
 
-    /**
-     *  @var array $application_areas
-     * Holds string keys used on this object and pages that manages CF,
-     * identifying in what areas/features something will be done
-     * 'execution' => mainly on test execution pages,
-     *                identifies TL features/pages to record test results
-     * 'design'    => test suites, test cases creation
-     *                identifies TL features/pages to create test specification
-     * 'testplan_design' => link test cases to test plan (assign testcase option)
-     * 
-     * IMPORTANT: this values are used as access keys in several properties of this object.
-     *            then if you add one here, remember to update other properties.
-     */
-    var $application_areas = array('execution','design','testplan_design');
+  /**
+   *  @var array $application_areas
+   * Holds string keys used on this object and pages that manages CF,
+   * identifying in what areas/features something will be done
+   * 'execution' => mainly on test execution pages,
+   *                identifies TL features/pages to record test results
+   * 'design'    => test suites, test cases creation
+   *                identifies TL features/pages to create test specification
+   * 'testplan_design' => link test cases to test plan (assign testcase option)
+   * 
+   * IMPORTANT: this values are used as access keys in several properties of this object.
+   *            then if you add one here, remember to update other properties.
+   */
+  var $application_areas = array('execution','design','testplan_design');
 
 	/**
 	 * @var array Define type of custom fields managed.
 	 * Values will be displayed in "Custom Field Type" combo box when
 	 * users create custom fields. No localization is applied
-	 */ 
-    // 20080809 - franciscom
-    // Added specific type for test automation related custom fields.
-    // Start at code 500
-    var $custom_field_types = array(0=>'string',
-                                    1=>'numeric',
-                                    2=>'float',
-                                    4=>'email',
-                                    5=>'checkbox',
-                                    6=>'list',
-                                    7=>'multiselection list',
-                                    8=>'date',
-                                    9=>'radio',
-                                    10=>'datetime',
-		  					        20=>'text area',
-							        500=>'script',
-							        501=>'server');
+	 *
+   *
+   * Added specific type for test automation related custom fields.
+   * Start at code 500
+   */ 
+  var $custom_field_types = array(0=>'string',
+                                  1=>'numeric',
+                                  2=>'float',
+                                  4=>'email',
+                                  5=>'checkbox',
+                                  6=>'list',
+                                  7=>'multiselection list',
+                                  8=>'date',
+                                  9=>'radio',
+                                  10=>'datetime',
+		  					                  20=>'text area',
+							                    500=>'script',
+							                    501=>'server');
 
     /** 
      * @var array Configures for what type of CF "POSSIBLE_VALUES" field need to be manage at GUI level
@@ -111,11 +111,11 @@ class cfield_mgr extends tlObject
                                      'radio' => 1,
                                      'datetime' =>0,
                                      'text area' => 0,
-    							     'script'=> 0,
-    							     'server' => 0);
+    							                   'script'=> 0,
+    							                   'server' => 0);
     
     /**  @var array only the types listed here can have custom fields */
-    var $node_types = array('testsuite','testplan','testcase','requirement_spec','requirement');
+    var $node_types = array('build','testsuite','testplan','testcase','requirement_spec','requirement');
 
    /**
      *  @var map of maps $locations
@@ -139,7 +139,7 @@ class cfield_mgr extends tlObject
     var $locations = array( 'testcase' => 
                             array( 1 => 'standard_location', 2 => 'before_steps_results'));
 
-    // 20090523 - changes in configuration
+    // changes in configuration
     //
     // Needed to manage user interface, when creating Custom Fields.
     // When user choose a item type (test case, etc), a javascript logic
@@ -147,40 +147,36 @@ class cfield_mgr extends tlObject
     //
     // 0 => combo will not displayed
     //
-    // BUGID 3707,3708
     // May be need a review, because after the changes, seems a little bit silly.
-    var $enable_on_cfg = array(	'execution' => array('testsuite' => 0,
-                                                    'testplan'  => 0,
-                                                    'testcase'  => 1,
-                                                    'requirement_spec' => 0,
-                                                    'requirement' => 0),
-								'design' => array('testsuite' => 0,	 //	
-                                                  'testplan'  => 0,  //
-                                                  'testcase'  => 1,
-                                                  'requirement_spec' => 0,
-                                                  'requirement' => 0),
-                             	'testplan_design' => array('testsuite' => 0,
-                                                          'testplan'  => 0,
-                                                          'testcase'  => 1,
-                                                          'requirement_spec' => 0,
-                                                          'requirement' => 0));
+    var $enable_on_cfg = array('execution' => array('build' => 0, 'testsuite' => 0,
+                                                    'testplan'  => 0,'testcase'  => 1,
+                                                    'requirement_spec' => 0,'requirement' => 0),
+								               'design' => array('build' => 0,'testsuite' => 0,
+                                                 'testplan'  => 0,'testcase'  => 1,
+                                                 'requirement_spec' => 0,'requirement' => 0),
+                             	 'testplan_design' => array('build' => 0,'testsuite' => 0,
+                                                          'testplan'  => 0,'testcase'  => 1,
+                                                          'requirement_spec' => 0,'requirement' => 0));
 
   // 0 => combo will not displayed
   var $show_on_cfg=array('execution'=>array('testsuite' => 1,
 	                                          'testplan'  => 1,
 	                                          'testcase'  => 1,
+                                            'build'  => 1,
 	                                          'requirement_spec' => 0,
 	                                          'requirement' => 0 ),
                          'design' => array('testsuite' => 1,
 	                                         'testplan'  => 1,
 	                                         'testcase'  => 1,
+                                           'build'  => 0,
 	                                         'requirement_spec' => 0,
 	                                         'requirement' => 0 ),
                          'testplan_design' => array('testsuite' => 1,
-	                                         'testplan'  => 1,
-	                                         'testcase'  => 1,
-	                                         'requirement_spec' => 0,
-	                                         'requirement' => 0 )
+	                                                  'testplan'  => 1,
+	                                                  'testcase'  => 1,
+                                                    'build'  => 0,
+                                                    'requirement_spec' => 0,
+	                                                  'requirement' => 0 )
 	                                         );
 
     // the name of html input will have the following format
@@ -200,6 +196,8 @@ class cfield_mgr extends tlObject
     // possible_values column on custom_fields table
     // 0 -> no limit
     var $max_length_possible_values;
+
+    var $decode;
     
     
 	/**
@@ -209,7 +207,7 @@ class cfield_mgr extends tlObject
 	 */
 	function __construct(&$db)
 	{
-   		parent::__construct();
+   	parent::__construct();
 
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
@@ -217,43 +215,50 @@ class cfield_mgr extends tlObject
 		$cfConfig = config_get('custom_fields');
 		$this->sizes = $cfConfig->sizes;
 		
-        if( property_exists($cfConfig,'types') && 
-		    !is_null($cfConfig->types) )
+
+
+    if( property_exists($cfConfig,'types') && !is_null($cfConfig->types) )
 		{
-		    $this->custom_field_types +=$cfConfig->types;
-		    ksort($this->custom_field_types);
+		  $this->custom_field_types +=$cfConfig->types;
+		  ksort($this->custom_field_types);
 		}
     
-        if( property_exists($cfConfig,'possible_values_cfg') && 
+    if( property_exists($cfConfig,'possible_values_cfg') && 
 		    !is_null($cfConfig->possible_values_cfg) )
 		{
-		    $this->possible_values_cfg +=$cfConfig->possible_values_cfg;
+		  $this->possible_values_cfg +=$cfConfig->possible_values_cfg;
 		}
-        $this->object_table=$this->tables["custom_fields"];
+    $this->object_table=$this->tables["custom_fields"];
 
-        $this->max_length_value = $cfConfig->max_length;
-        $this->max_length_possible_values = $this->max_length_value;
-	}
+    $this->max_length_value = $cfConfig->max_length;
+    $this->max_length_possible_values = $this->max_length_value;
+	
+    $this->decode['nodes'] = $this->tree_manager->get_available_node_types();
 
-    function getSizeLimit()
-    {
-        return $this->max_length_value;    
-    }
+
+  }
+
+
+  function getSizeLimit()
+  {
+    return $this->max_length_value;    
+  }
+
 
 	function get_application_areas()
 	{
-        return($this->application_areas);
-    }
+    return($this->application_areas);
+  }
 
-    /**
-	 * @return hash with available locatipons
+  /**
+   * @return hash with available locatipons
 	 * 
 	 * 
-     */
+   */
 	function getLocations()
 	{
-        return($this->locations);
-    }
+    return($this->locations);
+  }
 
 
 	/**
@@ -281,13 +286,12 @@ class cfield_mgr extends tlObject
 	 */ 
 	function get_allowed_nodes()
 	{
-		$allowed_nodes=array();
-		$tl_node_types=$this->tree_manager->get_available_node_types();
+		$allowed_nodes = array();
 		foreach($this->node_types as $verbose_type )
 		{
-			$allowed_nodes[$verbose_type]=$tl_node_types[$verbose_type];
+			$allowed_nodes[$verbose_type] = $this->decode['nodes'][$verbose_type];
 		}
-		return($allowed_nodes);
+		return $allowed_nodes;
 	}
 
 	/**
@@ -321,20 +325,20 @@ class cfield_mgr extends tlObject
 
 
   */
-function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
-{
-    $enabled_mgmt=array();
-    $tl_node_types=$this->tree_manager->get_available_node_types();
+  function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
+  {
+    $enabled_mgmt = array();
+    $tl_node_types = $this->decode['nodes'];
     foreach($this->node_types as $verbose_type)
     {
-        $type_id=$tl_node_types[$verbose_type];
-        if( isset($map_node_id_cfg[$verbose_type]) )
-        {
-          $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
-        }
+      $type_id = $tl_node_types[$verbose_type];
+      if( isset($map_node_id_cfg[$verbose_type]) )
+      {
+        $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
+      }
     }
-    return($enabled_mgmt);
-}
+    return $enabled_mgmt;
+  }
 
 
 
@@ -419,96 +423,84 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
     rev :
 
-		  20090420 - franciscom
-          added new key cfield_id on filters
-
-          20080811 - franciscom
-          interface changes $show_on_execution -> $filters
-         
-          
-          20070526 - franciscom
-          changed order by clause
-
-          20070101 - franciscom
-          1. added filter on cfield_testprojects.active=1
-          2. added new argument $show_on_execution
-
-
   */
   function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
                                         $node_type=null,$node_id=null,$access_key='id')
   {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   	
     $additional_join="";
     $additional_values="";
     $additional_filter="";
 
+    switch($node_type)
+    {
+      case 'build':
+        $table_key = 'cfield_build_design_values'; 
+      break;
+
+      default:
+        $table_key = 'cfield_design_values'; 
+      break;
+    }
+
     if( !is_null($node_type) )
     {
-        $hash_descr_id = $this->tree_manager->get_available_node_types();
-        $node_type_id=$hash_descr_id[$node_type];
-
-        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                             " AND CFNT.node_type_id={$node_type_id} ";
+      $additional_join .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+                          " AND CFNT.node_type_id=" . 
+                          $this->db->prepare_int($this->decode['nodes'][$node_type]);
     }
+
     if( !is_null($node_id) )
     {
       $additional_values .= ",CFDV.value AS value,CFDV.node_id AS node_id";
-      $additional_join .= " LEFT OUTER JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.field_id=CF.id " .
-                          " AND CFDV.node_id={$node_id} ";
+      $additional_join .= " LEFT OUTER JOIN {$this->tables[$table_key]} CFDV ON CFDV.field_id=CF.id " .
+                          " AND CFDV.node_id=" . $this->db->prepare_int($node_id);
     }
 
-    // 20080811 - franciscom - refactoring for BUGID 1650 (REQ)
     if( !is_null($filters) )
     {
-        if( isset($filters['show_on_execution']) && !is_null($filters['show_on_execution']) )
-        {
-            $additional_filter .= " AND CF.show_on_execution=1 ";
-        }   
+      if( isset($filters['show_on_execution']) && !is_null($filters['show_on_execution']) )
+      {
+        $additional_filter .= " AND CF.show_on_execution=1 ";
+      }   
         
-        // 20090523 - franciscom
-        // Probably this piece need to be changed to act on enable_on_ attribute
-        // due to CF display logic refactoring
-        // if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
-        // {
-        //     $additional_filter .= " AND CF.show_on_testplan_design=1 ";
-        // }   
-        if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
-        {
-            $additional_filter .= " AND CF.enable_on_testplan_design=1 ";
-        }   
+      // Probably this piece need to be changed to act on enable_on_ attribute
+      // due to CF display logic refactoring
+      // if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
+      // {
+      //     $additional_filter .= " AND CF.show_on_testplan_design=1 ";
+      // }   
+      if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
+      {
+        $additional_filter .= " AND CF.enable_on_testplan_design=1 ";
+      }   
            
-        if( isset($filters['cfield_id']) && !is_null($filters['cfield_id']) )
-        {
-            $additional_filter .= " AND CF.id={$filters['cfield_id']} ";
-        }
+      if( isset($filters['cfield_id']) && !is_null($filters['cfield_id']) )
+      {
+        $additional_filter .= " AND CF.id={$filters['cfield_id']} ";
+      }
         
-        // 20090717 - franciscom
-        $filterKey='location';
-        if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
-        {
-            $additional_filter .= " AND CFTP.$filterKey={$filters[$filterKey]} ";
-        }
+      $filterKey='location';
+      if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
+      {
+        $additional_filter .= " AND CFTP.$filterKey={$filters[$filterKey]} ";
+      }
     }
 
-    $sql="/* $debugMsg */ SELECT CF.*,CFTP.display_order,CFTP.location" .
+    $sql="/* $debugMsg */ SELECT CF.*,CFTP.display_order,CFTP.location,CFTP.required " .
          $additional_values .
          " FROM {$this->object_table} CF " .
          " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
          $additional_join .
-         " WHERE CFTP.testproject_id={$tproject_id} " .
-         " AND   CFTP.active=1     " .
-         " AND   CF.show_on_design=1     " .
+         " WHERE CFTP.testproject_id=" . intval($tproject_id) .
+         " AND   CFTP.active=1 AND CF.show_on_design=1     " .
          " AND   CF.enable_on_design={$enabled} " .
          $additional_filter .
          " ORDER BY display_order,CF.id ";
 
-  	// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
-	
     $map = $this->db->fetchRowsIntoMap($sql,$access_key);
-    return($map);
+    return $map;
   }
 
 
@@ -538,42 +530,42 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     returns: html string
 
     rev :
-         20110120 - Julian - BUGID 4164 - lists and multiselection lists do not use more space than
-                                          necessary anymore
-         20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
-         20080816 - franciscom
-         added code to manange user defined (and code developed) Custom Fields.
-         Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
-
-         20071006 - francisco.mancardi@gruppotesi.com
-         Added field_size argument
-
-         20070104 - franciscom - added 'multiselection list'
-
   */
-	function string_custom_field_input($p_field_def,$name_suffix='',$field_size=0,$show_on_filters=false)
+	function string_custom_field_input($p_field_def,$opt = null)
 	{
+    $options = array('name_suffix' => '', 'field_size' => 0, 'show_on_filters' => false, 'remove_required' => false);
+    $options = array_merge($options,(array)$opt);
+    extract($options);
 
 		$str_out='';
-		// $t_id = $p_field_def['id'];
-		// $t_type = $p_field_def['type'];
-    	// $input_name = "{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
 
-	  	$t_custom_field_value = $p_field_def['default_value'];
-	  	if( isset($p_field_def['value']) )
+	  $cfValue = $p_field_def['default_value'];
+	  if( isset($p_field_def['value']) )
 		{
-		  $t_custom_field_value = $p_field_def['value'];
+		  $cfValue = $p_field_def['value'];
 		}
 
-    	$verbose_type=trim($this->custom_field_types[$p_field_def['type']]);
-  		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
-    	$input_name = $this->buildHTMLInputName($p_field_def,$name_suffix);
-    	$size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
+    $verbose_type=trim($this->custom_field_types[$p_field_def['type']]);
+  	$cfValue = htmlspecialchars($cfValue);
+    $input_name = $this->buildHTMLInputName($p_field_def,$name_suffix);
+    $size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
+
+    if($options['remove_required'])
+    {
+      $required = ' class="" ';
+    } 
+    else
+    {
+      $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
+    } 
+
+    $dateOpt = array('default_disable' => false, 'allow_blank' => true, 'required' => $required,
+                     'show_on_filters' => $show_on_filters);
     	
-    	if( $field_size > 0)
-    	{
-    	  $size=$field_size;
-    	}
+    if( $field_size > 0)
+    {
+    	$size=$field_size;
+    }
         
 		switch ($verbose_type)
 		{
@@ -581,45 +573,42 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		case 'multiselection list':
    			$t_values = explode( '|', $p_field_def['possible_values']);
    			$t_values_count = count($t_values);
-        	if( $verbose_type == 'list' )
-        	{
-        	   // get maximum allowed window size for lists
-        	   $window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
-        	   
-        	   $t_multiple=' ';
-        	   
-        	   // 20100701 - asimon - removed single space in next line, 
-        	   // it was causing errors in field names on HTML because it somehow gets replaced
-        	   // by an underscore somwhere and then the field name doesn't match anymore
-        	   //$t_name_suffix=' ';
-        	   $t_name_suffix='';
-        	}
-        	else
-        	{
-        	   // get maximum allowed window size for mutliselection lists
-        	   $window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
-        	   $t_name_suffix='[]';
-        	   $t_multiple=' multiple="multiple" ';
-        	}
+       	if( $verbose_type == 'list' )
+       	{
+        	// get maximum allowed window size for lists
+        	$window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
+        	$t_multiple=' ';
+      	  $t_name_suffix='';
+       	}
+       	else
+       	{
+          // get maximum allowed window size for mutliselection lists
+        	$window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
+        	$t_name_suffix='[]';
+        	$t_multiple=' multiple="multiple" ';
+       	}
         	
-        	// BUGID 4164 lists and multiselection lists do not use more space than necessary
-        	// set the list size to the number of possible values of custom field
-            // but respect the maximum window size
-        	$t_list_size = $t_values_count;
+        // set the list size to the number of possible values of custom field
+        // but respect the maximum window size
+       	$t_list_size = $t_values_count;
 		    if($t_list_size > $window_size)
-        	{
-        	   $t_list_size=$window_size;
-        	}
+       	{
+          $t_list_size=$window_size;
+        }
         	
-        	$html_identity=$input_name . $t_name_suffix;
-  			$str_out .="<select name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
+        $html_identity=$input_name . $t_name_suffix;
+  			$str_out .="<select {$required} name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
   			$str_out .= ' size="' . $t_list_size . '">';
         	
-  			$t_selected_values = explode( '|', $t_custom_field_value );
-   			foreach( $t_values as $t_option ) {
-  				if( in_array( $t_option, $t_selected_values ) ) {
+  			$t_selected_values = explode( '|', $cfValue);
+   			foreach( $t_values as $t_option ) 
+        {
+  				if( in_array( $t_option, $t_selected_values ) ) 
+          {
    					$str_out .='<option value="' . $t_option . '" selected> ' . $t_option . '</option>';
-   				} else {
+   				} 
+          else 
+          {
    					$str_out .='<option value="' . $t_option . '">' . $t_option . '</option>';
    				}
    			}
@@ -628,19 +617,20 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
 		case 'checkbox':
 			$t_values = explode( '|', $p_field_def['possible_values']);
-        	$t_checked_values = explode( '|', $t_custom_field_value );
+      $t_checked_values = explode( '|', $cfValue);
 			foreach( $t_values as $t_option )
 			{
-				$str_out .= '<input type="checkbox" name="' . $input_name . '[]"' . " id=\"{$input_name}\"";
+				$str_out .= '<input ' . $required . ' type="checkbox" name="' . $input_name . '[]"' . 
+                    " id=\"{$input_name}\"";
 				
-				// 20100218 - franciscom - added check $t_option != '' to make check box start NOT CHECKED
+				// added check $t_option != '' to make check box start NOT CHECKED
 				if( $t_option != '' && in_array($t_option, $t_checked_values) )
 				{
-					  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+					$str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
 				}
 				else
 				{
-					  $str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+					$str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
 				}
 				
 			}
@@ -650,7 +640,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		case 'email':
   		case 'float':
   		case 'numeric':
-			$str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
+			 $str_out .= $this->string_input_string($p_field_def,$input_name,$cfValue,$size,$options);
 			break ;
 
 		case 'text area':
@@ -668,36 +658,35 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 			if( $this->max_length_value > 0 )
 			{
 				$counterId = $input_name . '_counter';
-				$cf_current_size = $this->max_length_value - tlStringLen($t_custom_field_value);
+				$cf_current_size = $this->max_length_value - tlStringLen($cfValue);
             	
 				// call JS function for check max. size from validate.js
 				$js_function = '"textCounter(this.form.' . $input_name . 
 				               ',document.getElementById(\''. $counterId.'\'),' . $this->max_length_value .');" ';
 			
-				$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
+				$str_out .= '<textarea ' . $required . ' name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
 					    	'onKeyDown=' . $js_function . ' onKeyUp=' . $js_function . 'cols="' .
-					        $cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
+					        $cols . '" rows="' . $rows . '">' . "{$cfValue}</textarea>\n";
 
-			    // show character counter
-			    $str_out .= '<br><span style="vertical-align: top; padding: 5px;">' .
+			  // show character counter
+			  $str_out .= '<br><span style="vertical-align: top; padding: 5px;">' .
 				    	    sprintf(lang_get('text_counter_feedback'), $this->max_length_value) .
 					        ' <span id="' . $counterId .'">'.$cf_current_size.'</span>.</span><br>';
 			}		
-            else
-            {
-            	// unlimited
-				$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
-					    	'cols="' . $cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
+      else
+      {
+        // unlimited
+				$str_out .= '<textarea ' . $required . ' name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
+					    	    'cols="' . $cols . '" rows="' . $rows . '">' . "{$cfValue}</textarea>\n";
             		
-            }
+      }
 		break;
 
 		case 'date':
-      		$str_out .= create_date_selection_set($input_name,config_get('date_format'),
-                                                  $t_custom_field_value, false, true, $show_on_filters) ;
+      $str_out .= create_date_selection_set($input_name,config_get('date_format'),$cfValue,$dateOpt);
 		break;
       
-      case 'datetime':
+    case 'datetime':
       $cfg=config_get('gui');
       
       // Important
@@ -705,28 +694,27 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
       // and time format from an specific custom field config) because string used 
       // for date_format on strftime() has no problem
       // on date() calls (that are used in create_date_selection_set() ).
-      $datetime_format=config_get('date_format') . " " .$cfg->custom_fields->time_format;
-      $str_out .=create_date_selection_set($input_name,$datetime_format,
-                                           $t_custom_field_value, false, true, $show_on_filters) ;
-      break;
+      $format = config_get('date_format') . " " . $cfg->custom_fields->time_format;
+      $str_out .=create_date_selection_set($input_name,$format,$cfValue,$dateOpt);
+    break;
       
 
-      default:
+    default:
       $dynamic_call='string_input_' . str_replace(' ', '_', $verbose_type);
       if( function_exists($dynamic_call) )
       {
-          $str_out .= $dynamic_call($p_field_def, $input_name, $t_custom_field_value);      
+        $str_out .= $dynamic_call($p_field_def, $input_name, $cfValue);      
       }
       else if( method_exists($this, $dynamic_call) )
       {
-          $str_out .= $this->$dynamic_call($p_field_def, $input_name, $t_custom_field_value);
+        $str_out .= $this->$dynamic_call($p_field_def, $input_name, $cfValue);
       }
       else
       {
-          // treat it as an simple string  
-     		  $str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
+        // treat it as an simple string  
+     		$str_out .= $this->string_input_string($p_field_def,$input_name,$cfValue,$size,$options);
       }
-      break;
+    break;
 
 
   	}
@@ -758,15 +746,10 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
 
     rev:
-         20070525 - franciscom - added [hash_type], to reuse this method on
-                                 class testcase method copy_cfields_design_values()
-         20070501 - franciscom - limiting lenght of value before writting
-         20070105 - franciscom - added $cf_map
-         20070104 - franciscom - need to manage multiselection in a different way
   */
-  function design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
+  function design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null,$node_type=null)
   {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     if( is_null($hash) && is_null($cf_map) )
     {
        return;
@@ -779,15 +762,28 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     {
       $cfield=$hash;
     }
+
     if( !is_null($cfield) )
     {
+      switch($node_type)
+      {
+        case 'build':
+          $table_key = 'cfield_build_design_values'; 
+        break;
+
+        default:
+          $table_key = 'cfield_design_values'; 
+        break;
+      }
+
+      $safeNodeID = intval($node_id);
       foreach($cfield as $field_id => $type_and_value)
       {
         $value = $type_and_value['cf_value'];
 
         // do I need to update or insert this value?
-        $sql = "/* $debugMsg */ SELECT value FROM {$this->tables['cfield_design_values']} " .
-    		   " WHERE field_id={$field_id} AND	node_id={$node_id}";
+        $sql = "/* $debugMsg */ SELECT value FROM {$this->tables[$table_key]} " .
+    		       " WHERE field_id=" . intval($field_id) . " AND	node_id=" . $safeNodeID;
 
         $result = $this->db->exec_query($sql);
 
@@ -796,34 +792,35 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         {
            $value = substr($value,0,$this->max_length_value);
         }
-
-        $safe_value=$this->db->prepare_string($value);
-        if($this->db->num_rows($result) > 0 && $value != "")
+        
+        $safe_value = $this->db->prepare_string($value);
+        $rowCount = $this->db->num_rows($result); 
+        if( $rowCount > 0 ) 
         {
-
-          $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_design_values']} " .
-                 " SET value='{$safe_value}' " .
-    	         " WHERE field_id={$field_id} AND	node_id={$node_id}";
-		  
+          if( $value != "" )
+          {
+            $sql = "/* $debugMsg */ UPDATE {$this->tables[$table_key]} " .
+                   " SET value='{$safe_value}' ";
+          }  
+          else
+          {
+            // bye, bye record
+            $sql = "/* $debugMsg */ DELETE FROM {$this->tables[$table_key]} ";
+          }  
+          $sql .=  " WHERE field_id=" . intval($field_id) . " AND node_id=" . $safeNodeID;
           $this->db->exec_query($sql);
         }
-        else if ($this->db->num_rows( $result ) == 0 && $value != "")
+        else if ($rowCount == 0 && $value != "")
         {
-          	# Remark got from Mantis code:
+          # Remark got from Mantis code:
   		    # Always store the value, even if it's the dafault value
   		    # This is important, as the definitions might change but the
   		    #  values stored with a bug must not change
-  		    $sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_design_values']} " .
-  				   " ( field_id, node_id, value ) " .
-  				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
+  		    $sql = "/* $debugMsg */ INSERT INTO {$this->tables[$table_key]} " .
+  				       " ( field_id, node_id, value ) " .
+  				       " VALUES	( " . intval($field_id) . ", {$safeNodeID}, '{$safe_value}' )";
   		    $this->db->exec_query($sql);
         } 
-        else if ($this->db->num_rows( $result ) > 0 && $value == "") 
-        {
-  			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} " .
-  				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
-  			$this->db->exec_query($sql);
-  		}
       } //foreach($cfield
     } //if( !is_null($cfield) )
 
@@ -844,23 +841,32 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
           20070102 - franciscom - $node_id can be an array
 
   */
-  function remove_all_design_values_from_node($node_id)
+  function remove_all_design_values_from_node($node_id,$node_type=null)
   {
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	
-    $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} ";
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    switch($node_type)
+    {
+      case 'build':
+        $table_key = 'cfield_build_design_values'; 
+      break;
+
+      default:
+        $table_key = 'cfield_design_values'; 
+      break;
+    }
+
+    $sql = "/* $debugMsg */ DELETE FROM {$this->tables[$table_key]} ";
     if( is_array($node_id) )
     {
-
       $sql .= " WHERE node_id IN(" . implode(",",$node_id) . ") ";
     }
     else
     {
-      $sql .= " WHERE node_id={$node_id}";
+      $sql .= " WHERE node_id=" . intval($node_id);
     }
 
     $this->db->exec_query($sql);
-  } //function end
+  }
 
 
   /*
@@ -874,8 +880,17 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
              key: custom field id
 
   */
-  function get_all($id2exclude=null)
+  function get_all($id2exclude=null,$opt=null)
   {
+    static $lbl;
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    if(!$lbl)
+    {
+      $lbl = init_labels(array('context_design' => null,'context_exec' => null,
+                               'context_testplan_design' => null));
+    } 
+
     $not_in_clause="";
     if( !is_null($id2exclude) )
     {
@@ -889,9 +904,30 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          " AND NT.id=CFNT.node_type_id " .
          $not_in_clause .
          " ORDER BY CF.name";
-    // $map = $this->db->fetchArrayRowsIntoMap($sql,'id');
+
     $map = $this->db->fetchRowsIntoMap($sql,'id');
-    return($map);
+    if(!is_null($map) && !is_null($opt))
+    {  
+      $k2l = array_keys($map);
+      foreach($k2l as $key)
+      {
+        $map[$key]['enabled_on_context'] = '';
+        if($map[$key]['enable_on_design'])
+        {
+          $map[$key]['enabled_on_context'] = $lbl['context_design'];
+        }  
+        else if($map[$key]['enable_on_execution'])
+        {
+          $map[$key]['enabled_on_context'] = $lbl['context_exec'];
+        }  
+        else if($map[$key]['enable_on_testplan_design'])
+        {
+          $map[$key]['enabled_on_context'] = $lbl['context_testplan_design'];
+        }  
+      }
+    }
+
+    return $map;
   }
 
   /*
@@ -906,12 +942,17 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
              key: custom field id
 
     internal revision:
-		20090717 - franciscom - added location to result recordset
   */
-  function get_linked_to_testproject($tproject_id,$active=null)
+  function get_linked_to_testproject($tproject_id,$active=null,$opt=null)
   {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $options = array('name' => null);
+    $options = array_merge($options,(array)$opt);
+
+
     $sql="SELECT CF.*,NT.description AS node_description,NT.id AS node_type_id, " .
-         "       CFTP.display_order, CFTP.active, CFTP.location " .
+         "       CFTP.display_order, CFTP.active, CFTP.location,CFTP.required " .
          " FROM {$this->object_table} CF, " .
          "      {$this->tables['cfield_testprojects']} CFTP, " .
          "      {$this->tables['cfield_node_types']} CFNT, " .
@@ -919,20 +960,25 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          " WHERE CF.id=CFNT.field_id " .
          " AND   CF.id=CFTP.field_id " .
          " AND   NT.id=CFNT.node_type_id " .
-         " AND   CFTP.testproject_id={$tproject_id} ";
+         " AND   CFTP.testproject_id=" . $this->db->prepare_int($tproject_id);
 
     if( !is_null($active) )
     {
       $sql .= " AND CFTP.active={$active} ";
     }
-    //$sql .= " ORDER BY display_order, CF.name";
-    // BUGID 3555
-   $sql .= " ORDER BY NT.description,CF.enable_on_design desc, " .
-            "CF.enable_on_execution desc, " .
-                "CF.enable_on_testplan_design desc,".
-                "CFTP.display_order, CF.name";
+
+    if( !is_null($options['name']) )
+    {
+      $sql .= " AND CF.name='" . $this->db->prepare_string($options['name']) . "'";
+    }
+
+    $sql .= " ORDER BY NT.description,CF.enable_on_design desc, " .
+            " CF.enable_on_execution desc, " .
+            " CF.enable_on_testplan_design desc,".
+            " CFTP.display_order, CF.name";
+    
     $map = $this->db->fetchRowsIntoMap($sql,'id');
-    return($map);
+    return $map;
   }
 
 
@@ -951,15 +997,16 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		if(is_null($cfield_ids))
 		{
 			return;
-        }
+    }
 
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
+    $safeID = intval($tproject_id);
+    $tproject_info = $this->tree_manager->get_node_hierarchy_info($safeID);
 		foreach($cfield_ids as $field_id)
 		{
 			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_testprojects']} " .
 			   	   " (testproject_id,field_id) " .
-			   	   " VALUES({$tproject_id},{$field_id})";
+			   	   " VALUES({$safeID},{$field_id})";
 
 			if ($this->db->exec_query($sql))
 			{
@@ -968,10 +1015,10 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				{
 					logAuditEvent(TLS("audit_cfield_assigned",$cf[$field_id]['name'],$tproject_info['name']),
 								            "ASSIGN",$tproject_id,"testprojects");
-			    }					            
+		    }					            
 			}
 		}
-	} //function end
+	}
 
 
   /*
@@ -987,20 +1034,20 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 	function set_active_for_testproject($tproject_id,$cfield_ids,$active_val)
 	{
-  		if(is_null($cfield_ids))
-  		{
+  	if(is_null($cfield_ids))
+  	{
 			return;
 		}
 		
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
+    $tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		$auditMsg = $active_val ? "audit_cfield_activated" : "audit_cfield_deactivated";
 		foreach($cfield_ids as $field_id)
 		{
 			$sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_testprojects']} " .
 				   " SET active={$active_val} " .
-				   " WHERE testproject_id={$tproject_id} " .
-				   " AND field_id={$field_id}";
+				   " WHERE testproject_id=" . $this->db->prepare_int($tproject_id) .
+				   " AND field_id=" . $this->db->prepare_int($field_id);
 
 			if ($this->db->exec_query($sql))
 			{
@@ -1014,7 +1061,46 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		}
 	} //function end
 
+
+  /**
+   *
+   */ 
+  function setRequired($tproject_id,$cfieldSet,$val)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    if(is_null($cfieldSet))
+    {
+      return;
+    }
+    
+    $safe = new stdClass();
+    $safe->tproject_id = intval($tproject_id);
+    $safe->val = (intval($val) > 0) ? 1 : 0;
+
+    $info = $this->tree_manager->get_node_hierarchy_info($safe->tproject_id);
+    $auditMsg = $val ? "audit_cfield_required_on" : "audit_cfield_required_off";
+    foreach($cfieldSet as $field_id)
+    {
+      $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_testprojects']} " .
+           " SET required=" . $safe->val .
+           " WHERE testproject_id=" . $safe->tproject_id .
+           " AND field_id=" . $this->db->prepare_int($field_id);
+
+      if ($this->db->exec_query($sql))
+      {
+        $cf = $this->get_by_id($field_id);
+        if($cf)
+        {
+          logAuditEvent(TLS($auditMsg,$cf[$field_id]['name'],$info['name']),
+                        "SAVE",$safe->tproject_id,"testprojects");
+        }                       
+      }
+    }
+  } //function end
  
+
+
   /**
    * unlink_from_testproject
    * remove custom field links from target test project
@@ -1027,20 +1113,19 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
    *
    */
 	function unlink_from_testproject($tproject_id,$cfield_ids)
-  	{
-	  	if(is_null($cfield_ids))
-	  	{
+  {
+		if(is_null($cfield_ids))
+		{
 			return;
-        }
+    }
         
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        // just for audit porpouses
-		$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
+  	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
-			// BUGID 0000677
 			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testprojects']} " .
-			       " WHERE field_id = {$field_id} AND testproject_id = {$tproject_id} ";
+			       " WHERE field_id = " . $this->db->prepare_int($field_id) .
+             " AND testproject_id = " . $this->db->prepare_int($tproject_id);
 			if ($this->db->exec_query($sql))
 			{
 				$cf = $this->get_by_id($field_id);
@@ -1048,10 +1133,10 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				{
 					logAuditEvent(TLS("audit_cfield_unassigned",$cf[$field_id]['name'],$tproject_info['name']),
 		         					 "ASSIGN",$tproject_id,"testprojects");
-		        } 					 
+	      } 					 
 			}
 		}
-  	} //function end
+  } //function end
 
 
 
@@ -1066,15 +1151,15 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function get_by_name($name)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	  	$my_name=$this->db->prepare_string(trim($name));
+	  $my_name=$this->db->prepare_string(trim($name));
 
-	  	$sql="/* $debugMsg */  SELECT CF.*, CFNT.node_type_id,NT.description AS node_type" .
+	  $sql="/* $debugMsg */  SELECT CF.*, CFNT.node_type_id,NT.description AS node_type" .
 	  	     " FROM {$this->tables['custom_fields']} CF, {$this->tables['cfield_node_types']} CFNT," .
 	  	     " {$this->tables['node_types']} NT" .
 	  	     " WHERE CF.id=CFNT.field_id " .
 	  	     " AND CFNT.node_type_id=NT.id " .
 	  	     " AND name='{$my_name}' ";
-    	return($this->db->fetchRowsIntoMap($sql,'id'));
+    return $this->db->fetchRowsIntoMap($sql,'id');
   }
 
   /*
@@ -1089,11 +1174,11 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function get_by_id($id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	  	$sql="/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
+    $sql = "/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
 	  	     " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
 	  	     " WHERE CF.id=CFNT.field_id " .
-	  	     " AND   CF.id={$id} ";
-    	return($this->db->fetchRowsIntoMap($sql,'id'));
+           " AND CF.id IN (" . implode(',',(array)$id) . ")";
+    return($this->db->fetchRowsIntoMap($sql,'id'));
 	}
 
   /*
@@ -1109,29 +1194,29 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function get_available_item_type($id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	  	$sql="/* $debugMsg */ SELECT CFNT.field_id,CFNT.node_type_id ".
+	  $sql = "/* $debugMsg */ SELECT CFNT.field_id,CFNT.node_type_id ".
 	  	     " FROM {$this->tables['cfield_node_types']} CFNT, " .
 	  	     "      {$this->tables['nodes_types']} NT " .
 	  	     " WHERE NT.id=CFNT.node_type_id " .
-	  	     " CFNt.field_id={$id} ";
+	  	     " CFNt.field_id=" . $this->db->prepare_int($id);
 
-    	return($this->db->fetchRowsIntoMap($sql,'field_id'));
+    return($this->db->fetchRowsIntoMap($sql,'field_id'));
 	}
 
 
 	/*
 	 *
 	 *	keys	name	-> trim will be applied
-     *			label	-> trim will be applied
-     *	   		type	-> intval() wil be applied
-     *	   		possible_values
-     *	   		show_on_design	-> trasformation on 1/0 using intval() [*]
-     *	   		enable_on_design	-> [*]
-     *	   		show_on_execute	-> [*]
-     *	   		enable_on_execute	-> [*]
-     *	   		show_on_testplan_design	-> [*]
-     *	   		enable_on_testplan_design	-> [*]
-     *
+   *			  label	-> trim will be applied
+   *	   		type	-> intval() wil be applied
+   *	   		possible_values
+   *	   		show_on_design	-> trasformation on 1/0 using intval() [*]
+   *	   		enable_on_design	-> [*]
+   *	   		show_on_execute	-> [*]
+   *	   		enable_on_execute	-> [*]
+   *	   		show_on_testplan_design	-> [*]
+   *	   		enable_on_testplan_design	-> [*]
+   *
 	 */
 	function sanitize($cf)
 	{
@@ -1149,18 +1234,18 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		}	    
 		
 		// seems here is better do not touch.
-	    $safe['possible_values'] = $this->db->prepare_string($cf['possible_values']);
+	  $safe['possible_values'] = $this->db->prepare_string($cf['possible_values']);
 
 		$onezero = array('show_on_design','enable_on_design','show_on_testplan_design',
-						 'enable_on_testplan_design','show_on_execution','enable_on_execution');
+						         'enable_on_testplan_design','show_on_execution','enable_on_execution');
 	
 		foreach($onezero as $key)
-	    {
-	    	$safe[$key] = intval($cf[$key]) > 0 ? 1 : 0;
-	    }
+	  {
+	  	$safe[$key] = intval($cf[$key]) > 0 ? 1 : 0;
+	  }
 
-	    $safe['type'] = intval($cf['type']);
-		
+	  $safe['type'] = intval((int)$cf['type']);
+    $safe['node_type_id'] = intval((int)$cf['node_type_id']);
 		return $safe;
 	}	
 	
@@ -1184,47 +1269,55 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
     rev: 
     @internal revision
-    20110205 - franciscom - improve management of 1/0 values to manage missing values
-    						using on import.
-    						
-
   */
 	function create($cf)
-  	{
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	    $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
 	
 		$safecf = $this->sanitize($cf);	
+    
+    // if CF is for BUILD force enable_on_execution ALWAYS FALSE
+    // Node Verbose Code / Node Code Verbose
+    $nvc = $this->tree_manager->get_available_node_types();
+    $ncv = array_flip($nvc);
+    if($ncv[$safecf['node_type_id']] == 'build')
+    {
+      $safecf['enable_on_design'] = 1;
+      $safecf['enable_on_execution'] = 0;
+    }  
 		
-	    $sql="/* $debugMsg */ INSERT INTO {$this->object_table} " .
-	         " (name,label,type,possible_values, " .
-	         "  show_on_design,enable_on_design, " .
-	         "  show_on_testplan_design,enable_on_testplan_design, " .
-	         "  show_on_execution,enable_on_execution) " .
-	         " VALUES('" . $safecf['name'] . "','" . $safecf['label'] . "'," . 
-	         		intval($safecf['type']) . ",'" . $safecf['possible_values'] . "', " .
-	         "		{$safecf['show_on_design']},{$safecf['enable_on_design']}," .
-	         "		{$safecf['show_on_testplan_design']},{$safecf['enable_on_testplan_design']}," .
-	         "		{$safecf['show_on_execution']},{$safecf['enable_on_execution']})";
-	    $result=$this->db->exec_query($sql);
+	  $sql="/* $debugMsg */ INSERT INTO {$this->object_table} " .
+	       " (name,label,type,possible_values, " .
+	       "  show_on_design,enable_on_design, " .
+	       "  show_on_testplan_design,enable_on_testplan_design, " .
+	       "  show_on_execution,enable_on_execution) " .
+	       " VALUES('" . $safecf['name'] . "','" . $safecf['label'] . "'," . 
+	   		 intval($safecf['type']) . ",'" . $safecf['possible_values'] . "', " .
+	       "		{$safecf['show_on_design']},{$safecf['enable_on_design']}," .
+	       "		{$safecf['show_on_testplan_design']},{$safecf['enable_on_testplan_design']}," .
+	       "		{$safecf['show_on_execution']},{$safecf['enable_on_execution']})";
+	  $result=$this->db->exec_query($sql);
 
-	   	if ($result)
-	  	{
-	  	  // at least for Postgres DBMS table name is needed.
-	  	  $field_id=$this->db->insert_id($this->object_table);
+	  if ($result)
+	  {
+      // at least for Postgres DBMS table name is needed.
+	  	$field_id=$this->db->insert_id($this->object_table);
 	
-	      $sql="/* $debugMsg */ INSERT INTO {$this->tables['cfield_node_types']} " .
-	           " (field_id,node_type_id) " .
-	           " VALUES({$field_id},{$safecf['node_type_id']}) ";
-	      $result=$this->db->exec_query($sql);
-	    }
+	    $sql="/* $debugMsg */ INSERT INTO {$this->tables['cfield_node_types']} " .
+	         " (field_id,node_type_id) " .
+	         " VALUES({$field_id},{$safecf['node_type_id']}) ";
+	    $result=$this->db->exec_query($sql);
+	  }
 	
-	    if ($result)
+	  if ($result)
 		{
-	       $ret = array('status_ok' => 1, 'id' => $field_id, 'msg' => 'ok');
-	    }
-	    return $ret;
-	} //function end
+	    $ret = array('status_ok' => 1, 'id' => $field_id, 'msg' => 'ok');
+	  }
+	  return $ret;
+	} 
+
+
 
 
   /*
@@ -1249,29 +1342,39 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	{
 		$safecf = $this->sanitize($cf);
 
+    // if CF is for BUILD force enable_on_execution ALWAYS FALSE
+    // Node Verbose Code / Node Code Verbose
+    $nvc = $this->tree_manager->get_available_node_types();
+    $ncv = array_flip($nvc);
+    if($ncv[$safecf['node_type_id']] == 'build')
+    {
+      $safecf['enable_on_design'] = 1;
+      $safecf['enable_on_execution'] = 0;
+    }  
+
 		$sql =	"UPDATE {$this->tables['custom_fields']}  " .
-			 	" SET	name='" . $safecf['name'] . "'," . 
-			 	"		label='" . $safecf['label'] . "'," .
-			 	"     	type={$safecf['type']}," .
-			 	"		possible_values='" . $safecf['possible_values'] . "'," .
-			 	"     	show_on_design={$safecf['show_on_design']}," .
-			 	"     	enable_on_design={$safecf['enable_on_design']}," .
-			 	"     	show_on_testplan_design={$safecf['show_on_testplan_design']}," .
-			 	"     	enable_on_testplan_design={$safecf['enable_on_testplan_design']}," .
-			 	"     	show_on_execution={$safecf['show_on_execution']}," .
-			 	"     	enable_on_execution={$safecf['enable_on_execution']}" .
-			 	" WHERE id={$safecf['id']}";
+    			 	" SET	name='" . $safecf['name'] . "'," . 
+    			 	"		  label='" . $safecf['label'] . "'," .
+    			 	"     type={$safecf['type']}," .
+    			 	"		  possible_values='" . $safecf['possible_values'] . "'," .
+    			 	"     show_on_design={$safecf['show_on_design']}," .
+    			 	"     enable_on_design={$safecf['enable_on_design']}," .
+    			 	"     show_on_testplan_design={$safecf['show_on_testplan_design']}," .
+    			 	"     enable_on_testplan_design={$safecf['enable_on_testplan_design']}," .
+    			 	"     show_on_execution={$safecf['show_on_execution']}," .
+    			 	"     enable_on_execution={$safecf['enable_on_execution']}" .
+    			 	" WHERE id={$safecf['id']}";
 		$result = $this->db->exec_query($sql);
 
 		if ($result)
 		{
 			$sql = 	"UPDATE {$this->tables['cfield_node_types']} " .
-					" SET node_type_id={$safecf['node_type_id']}" .
-					" WHERE field_id={$safecf['id']}";
+    					" SET node_type_id={$safecf['node_type_id']}" .
+    					" WHERE field_id={$safecf['id']}";
 			$result = $this->db->exec_query($sql);
 		}
 		return $result ? 1 : 0;
-  } //function end
+  }
 
 
   /**
@@ -1282,19 +1385,19 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
    */
 	function delete($id)
 	{
-        // Before deleting definition I need to remove values
-        if( $this->is_used($id) )
-        {
-            $this->remove_all_scopes_values($id);
+    // Before deleting definition I need to remove values
+    if( $this->is_used($id) )
+    {
+      $this->remove_all_scopes_values($id);
 		}
 		$linked_tprojects = $this->get_linked_testprojects($id);
 		if( !is_null($linked_tprojects) && count($linked_tprojects) > 0 )
 		{
-		    $target=array_keys($linked_tprojects);
-		    foreach($target as $tproject_id)
-		    {
-                $this->unlink_from_testproject($tproject_id,(array)$id);
-		    }
+		  $target=array_keys($linked_tprojects);
+		  foreach($target as $tproject_id)
+		  {
+        $this->unlink_from_testproject($tproject_id,(array)$id);
+		  }
 		}
 		
 		$sql="DELETE FROM {$this->tables['cfield_node_types']} WHERE field_id={$id}";
@@ -1315,12 +1418,16 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
     returns: 1/0
     
-    rev: 20080810 - franciscom - BUGID 1650
+    @used by cfieldsEdit.php, cfieldsEdit.tpl
+
   */
 	function is_used($id)
 	{
 	  $sql="SELECT field_id FROM {$this->tables['cfield_design_values']} " .
 	       "WHERE  field_id={$id} " .
+         "UNION " .
+         "SELECT field_id FROM {$this->tables['cfield_build_design_values']} " .
+         "WHERE  field_id={$id} " .
 	       "UNION " .
 	       "SELECT field_id FROM {$this->tables['cfield_testplan_design_values']} " .
 	       "WHERE  field_id={$id} " .
@@ -1330,26 +1437,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	  $result=$this->db->exec_query($sql);
 	  return($this->db->num_rows( $result ) > 0 ? 1 : 0);
 	} //function end
-
-  /*
-    function: whoIsUsingMe
-
-    args: $id: custom field id
-
-    returns:
-  */
-	function whoIsUsingMe($id)
-	{
-	  $sql=" SELECT field_id,name ".
-	       " FROM {$this->tables['cfield_design_values']} CFDV, ".
-	       "      {$this->tables['cfield_node_types']} CFNT, " .
-	       "      {$this->tables['nodes_hierarchy']} NH " .
-	       " WHERE CFDV.field_id=CFNT.field_id " .
-	       " AND NH.id=CFDV.node_id " .
-	       " CFDV.field_id={$id} ";
-	} //function end
-
-
 
 
 /*
@@ -1382,62 +1469,62 @@ function name_is_unique($id,$name)
 	# [$p_value_field]: field id, to point to the field value in $p_field_def
 	function string_custom_field_value( $p_field_def, $p_node_id,$p_value_field='value')
 	{
-
-		// @TODO - 20111230 - fix on 2.0
 		$t_value = isset($p_field_def[$p_value_field]) ? $p_field_def[$p_value_field] : null;
-		$t_custom_field_value = htmlspecialchars($t_value);
+		$cfValue = htmlspecialchars($t_value);
 
-		switch ($this->custom_field_types[$p_field_def['type']])
-  		{
+		switch ($this->custom_field_types[intval($p_field_def['type'])])
+  	{
 			case 'email':
-				return "<a href=\"mailto:$t_custom_field_value\">$t_custom_field_value</a>";
-				break;
+				return "<a href=\"mailto:$cfValue\">$cfValue</a>";
+			break;
 
 			case 'enum':
 			case 'list':
 			case 'multiselection list':
 			case 'checkbox':
-				return str_replace( '|', ', ', $t_custom_field_value );
-				break;
+				return str_replace( '|', ', ', $cfValue );
+			break;
 
 			case 'date':
-				if ($t_custom_field_value != null)
+				if ($cfValue != null)
 				{
 				  // must remove %
 				  $t_date_format=str_replace("%","",config_get( 'date_format'));
-				  $xdate=date( $t_date_format, $t_custom_field_value);
-					return  $xdate;
+				  $xdate=date( $t_date_format, $cfValue);
+					return $xdate;
 				}
-				break ;
+			break ;
 
 			case 'datetime':
-				if ($t_custom_field_value != null)
+				if ($cfValue != null)
 				{
-				    // must remove %
-				    // $t_date_format=str_replace("%","",config_get( 'timestamp_format'));
-                    // $datetime_format=$t_date_format;
-                    $t_date_format=str_replace("%","",config_get( 'date_format'));
-                    $cfg=config_get('gui');
-                    $datetime_format=$t_date_format . " " .$cfg->custom_fields->time_format;
-                    $xdate=date( $datetime_format, $t_custom_field_value);
-					return  $xdate;
+				  // must remove %
+				  // $t_date_format=str_replace("%","",config_get( 'timestamp_format'));
+          // $datetime_format=$t_date_format;
+          $t_date_format=str_replace("%","",config_get( 'date_format'));
+          $cfg=config_get('gui');
+          $datetime_format=$t_date_format . " " . $cfg->custom_fields->time_format;
+          $xdate=date($datetime_format, $cfValue);
+					return $xdate;
 				}
-				break ;
+			break ;
 
 
 		  case 'text area':
-                if ($t_custom_field_value != null)
-			    {
-					return nl2br($t_custom_field_value);
-                }
-        break;
+        if ($cfValue != null)
+        {
+				  return nl2br($cfValue);
+        }
+      break;
+
+      case 'string':
+        return string_display_links($cfValue);
+      break;
 
 			default:
-			  // 20071027 - franciscom
-			  // This code manages URLs
-				return string_display_links( $t_custom_field_value );
-
-				// return($t_custom_field_value);
+        // done this way in order to be able to debug if needed
+				return string_display_links($cfValue);
+      break; 
 		}
 	}
 
@@ -1480,13 +1567,6 @@ function name_is_unique($id,$name)
     returns: hash
              key: custom field id
 
-
-    @internal Revisions:
-   *    20100930 - asimon - added platform id to statement
-        20100825 - eloff - added platform name to output
-        20090717 - franciscom - added location argument
-        20070526 - franciscom - changed order by clause
-
   */
   function get_linked_cfields_at_execution($tproject_id,$enabled,
                                            $node_type=null,$node_id=null,
@@ -1503,58 +1583,60 @@ function name_is_unique($id,$name)
 
     if( !is_null($node_type) )
     {
-   		$hash_descr_id = $this->tree_manager->get_available_node_types();
-        $node_type_id=$hash_descr_id[$node_type];
-
-        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                               " AND CFNT.node_type_id={$node_type_id} ";
+      $additional_join .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+                          " AND CFNT.node_type_id=" . $this->decode['nodes'][$node_type];
     }
     
     if( !is_null($node_id) && !is_null($execution_id) && !is_null($testplan_id) )
     {
         $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
         $additional_join .= " LEFT OUTER JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
-                            " AND CFEV.tcversion_id={$node_id} " .
-                            " AND CFEV.execution_id={$execution_id} " .
-                            " AND CFEV.testplan_id={$testplan_id} ";
+                            " AND CFEV.tcversion_id=" . intval($node_id) . " " .
+                            " AND CFEV.execution_id=" . intval($execution_id) . " " .
+                            " AND CFEV.testplan_id=" . intval($testplan_id) . " ";
     }
+    else if(!is_null($execution_id))
+    {
+      $access_key = 'execution_id';
+      $fetchMethod='fetchMapRowsIntoMap';
+      $additional_values .= ',CFEV.value AS value, CFEV.execution_id ';
+      $additional_join .= " LEFT OUTER JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
+                          " AND CFEV.execution_id IN (" . implode(',', $execution_id) . ") ";
+    }  
     else
     {
-        // This piece is useful for report implementation done by: Amit Khullar - amkhullar@gmail.com
         if( !is_null($testplan_id) )
         {
-            $base_values ='';
+          $base_values = '';
 
-			// MSSQL BLOCKING error on Report "Test Cases with Execution Details" due to reserved word EXEC
-            // asimon - 20100930 - added platform id to statement
-            $additional_values .= ",CF.name,CF.label,CF.id,CFEV.value AS value,CFEV.tcversion_id AS node_id," .
-                                  "EXECU.id AS exec_id, EXECU.tcversion_id,EXECU.tcversion_number," .
-                                  "EXECU.execution_ts,EXECU.status AS exec_status,EXECU.notes AS exec_notes, " .
-                                  "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " .
-                                  "B.id AS builds_id,B.name AS build_name, U.login AS tester, " .
-                                  "PLAT.name AS platform_name, COALESCE(PLAT.id,0) AS platform_id";
+			    // MSSQL BLOCKING error on Report "Test Cases with Execution Details" due to reserved word EXEC
+          $additional_values .= ",CF.type,CF.name,CF.label,CF.id,CFEV.value AS value,CFEV.tcversion_id AS node_id," .
+                                "EXECU.id AS exec_id, EXECU.tcversion_id,EXECU.tcversion_number," .
+                                "EXECU.execution_ts,EXECU.status AS exec_status,EXECU.notes AS exec_notes, " .
+                                "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " .
+                                "B.id AS builds_id,B.name AS build_name, U.login AS tester, " .
+                                "PLAT.name AS platform_name, COALESCE(PLAT.id,0) AS platform_id";
             
-            $additional_join .= " JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
-                                " AND CFEV.testplan_id={$testplan_id} " .
-                                " JOIN {$this->tables['executions']} EXECU ON CFEV.tcversion_id = EXECU.tcversion_id " .
-                                " AND CFEV.execution_id = EXECU.id " ;
+          $additional_join .= " JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
+                              " AND CFEV.testplan_id={$testplan_id} " .
+                              " JOIN {$this->tables['executions']} EXECU ON CFEV.tcversion_id = EXECU.tcversion_id " .
+                              " AND CFEV.execution_id = EXECU.id " ;
             
-            $additional_join .= " JOIN {$this->tables['builds']} B ON B.id = EXECU.build_id " .
-                                " AND B.testplan_id = EXECU.testplan_id " ;
+          $additional_join .= " JOIN {$this->tables['builds']} B ON B.id = EXECU.build_id " .
+                              " AND B.testplan_id = EXECU.testplan_id " ;
 
-            $additional_join .= " JOIN {$this->tables['tcversions']} TCV ON TCV.version = EXECU.tcversion_number " .
-			                          " AND TCV.id = EXECU.tcversion_id " ;
+          $additional_join .= " JOIN {$this->tables['tcversions']} TCV ON TCV.version = EXECU.tcversion_number " .
+	                            " AND TCV.id = EXECU.tcversion_id " ;
             
-            $additional_join .= " JOIN {$this->tables['users']} U ON  U.id = EXECU.tester_id " .
-                                " JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = EXECU.tcversion_id " .
-                                " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
+          $additional_join .= " JOIN {$this->tables['users']} U ON  U.id = EXECU.tester_id " .
+                              " JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = EXECU.tcversion_id " .
+                              " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
 
-            // Use left join, if platforms is not used platform_name will become null
-            $additional_join .= " LEFT JOIN {$this->tables['platforms']} PLAT ON EXECU.platform_id = PLAT.id";
-            $order_clause="ORDER BY EXECU.tcversion_id,exec_status,exec_id";
+          // Use left join, if platforms is not used platform_name will become null
+          $additional_join .= " LEFT JOIN {$this->tables['platforms']} PLAT ON EXECU.platform_id = PLAT.id";
+          $order_clause="ORDER BY EXECU.tcversion_id,exec_status,exec_id";
             
-            $fetchMethod='fetchArrayRowsIntoMap';
-    
+          $fetchMethod='fetchArrayRowsIntoMap';
         }
     }
 
@@ -1563,7 +1645,8 @@ function name_is_unique($id,$name)
     	$additional_filter .= " AND CF.id= " . intval($location) . " ";
     }
 
-    $sql = "SELECT {$base_values} CFTP.display_order,CFTP.location" .
+    
+    $sql = "SELECT {$base_values} CFTP.display_order,CFTP.location,CFTP.required" .
            $additional_values .
            " FROM {$this->tables['custom_fields']} CF " .
            " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
@@ -1573,7 +1656,17 @@ function name_is_unique($id,$name)
            " AND CF.enable_on_execution={$enabled} " .
            " AND CF.show_on_execution=1 {$additional_filter} {$order_clause} ";
    
-    $map = $this->db->$fetchMethod($sql,$access_key);
+    switch ($fetchMethod) 
+    {
+      case 'fetchArrayRowsIntoMap':
+      case 'fetchRowsIntoMap':
+        $map = $this->db->$fetchMethod($sql,$access_key);
+      break;
+      
+      case 'fetchMapRowsIntoMap':
+        $map = $this->db->$fetchMethod($sql,$access_key,'id');
+      break;
+    }
     return $map;
   }
 
@@ -1637,8 +1730,10 @@ function name_is_unique($id,$name)
       {
         $value = $type_and_value['cf_value'];
 
-        $where_clause = " WHERE field_id={$field_id} AND tcversion_id={$node_id} " .
- 			            " AND execution_id={$execution_id} AND testplan_id={$testplan_id}" ;
+        $where_clause = " WHERE field_id=" . $this->db->prepare_int($field_id) . 
+                        " AND tcversion_id=" . $this->db->prepare_int($node_id) .
+ 			                  " AND execution_id=" .$this->db->prepare_int($execution_id) .
+                        " AND testplan_id=" . $this->db->prepare_int($testplan_id);
 
         $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -1655,33 +1750,30 @@ function name_is_unique($id,$name)
         }
         $safe_value=$this->db->prepare_string($value);
 
-		// BUGID 3989
         if( count($rs) > 0 && $value != "")   //$this->db->num_rows($result) > 0 )
         {
-          $sql = "UPDATE {$this->tables['cfield_execution_values']} " .
-                 " SET value='{$safe_value}' " .
-    	         $where_clause;
-    	  $this->db->exec_query($sql);      
+          $sql = " UPDATE {$this->tables['cfield_execution_values']} " .
+                 " SET value='{$safe_value}' " .   $where_clause;
+    	    $this->db->exec_query($sql);      
         }
-        // BUGID 3989
         else if (count($rs) == 0 && $value != "")
         {
 
           # Remark got from Mantis code:
-  		  # Always store the value, even if it's the default value
-  		  # This is important, as the definitions might change but the
-  		  #  values stored with a bug must not change
-  		  $sql = "INSERT INTO {$this->tables['cfield_execution_values']} " .
-  				 " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
-  			     " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
-		  $this->db->exec_query($sql);
+  		    # Always store the value, even if it's the default value
+  		    # This is important, as the definitions might change but the
+  		    #  values stored with a bug must not change
+  		    $sql = "INSERT INTO {$this->tables['cfield_execution_values']} " .
+  				       " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
+  			         " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
+		      $this->db->exec_query($sql);
         
-  		// BUGID 3989
-        } else if (count($rs) > 0 && $value == "") {
-  			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
-  				   $where_clause;
-  			$this->db->exec_query($sql);
-  		}
+        } 
+        else if (count($rs) > 0 && $value == "") 
+        {
+  			  $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " . $where_clause;
+  			  $this->db->exec_query($sql);
+  		  }
         
       } //foreach($cfield
     } //if( !is_null($cfield) )
@@ -1713,8 +1805,8 @@ function name_is_unique($id,$name)
            value: can be an array, or a string depending the <field_type_id>
 
            $cf_map: hash
-           key: cfield_id
-           value: custom field definition data
+                    key: cfield_id
+                    value: custom field definition data
 
 
     returns: hash or null.
@@ -1724,24 +1816,17 @@ function name_is_unique($id,$name)
                           'cf_value' => value)
 
     rev: 
-		20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
-		20080816 - franciscom
-         - added code to manange user defined (and code developed) Custom Fields.
-           Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
-         - added logic to manage datetime custom field type.  
   */
   function _build_cfield($hash,$cf_map)
   {
-  	// BUGID 3930
-	global $g_locales_date_format;
-	$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-	$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
+    $localesDateFormat = config_get('locales_date_format');
+  
+    $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+	  $date_format = str_replace('%', '', $localesDateFormat[$locale]);
   	
     // carved in the stone
-    $html_date_input_suffix = array('input' => true,
-                                    'hour' => true,
-                                    'minute' => true,
-                                    'second' => true);
+    $html_date_input_suffix = array('input' => true,'hour' => true,
+                                    'minute' => true,'second' => true);
 
     $cf_prefix=$this->name_prefix;
     $len_cfp = tlStringLen($cf_prefix);
@@ -1754,8 +1839,7 @@ function name_is_unique($id,$name)
     {
       foreach($cf_map as $key => $value)
       {
-        $cfield[$key]=array("type_id"  => $value['type'],
-                            "cf_value" => '');
+        $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => '');
       }
     }
     // -------------------------------------------------------------------------
@@ -2142,7 +2226,6 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 	{
 	  foreach($cfield as $field_id => $type_and_value)
 	  {
-	  	// echo "DEBUG: \$field_id:$field_id - \$link_id:$link_id<br>";
 	    $value = $type_and_value['cf_value'];
 
 	    // do I need to update or insert this value?
@@ -2158,10 +2241,8 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 	    }
 	
 	    $safe_value=$this->db->prepare_string($value);
-	    // BUGID 3989
 	    if($this->db->num_rows( $result ) > 0 && $value != "")
 	    {
-	
 	      $sql = "UPDATE {$this->tables['cfield_testplan_design_values']} " .
 	             " SET value='{$safe_value}' " .
 			     " WHERE field_id={$field_id} AND	link_id={$link_id}";
@@ -2250,41 +2331,34 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
     if( !is_null($node_type) )
     {
    		$hash_descr_id = $this->tree_manager->get_available_node_types();
-        $node_type_id=$hash_descr_id[$node_type];
+      $node_type_id=$hash_descr_id[$node_type];
 
-        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+      $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
                            " AND CFNT.node_type_id={$node_type_id} ";
     }
-    // }
-    
-    //-amitkhullar - Created this logic to get the linked tcversions for a testplan 
-    //                 that have custom field values at test plan level - BUGID 2410
+
     if( is_null($link_id) && !is_null($testplan_id))
     {
         $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id, " . 
                               "NHB.id AS tcase_id, NHB.name AS tcase_name, " .
                               "TCV.tc_external_id ";
-                               //"TCV.tc_external_id, EXECU.status ";
                                
         $additional_join .= "JOIN {$this->tables['testplan_tcversions']} TPTC" .
-                          " ON TPTC.testplan_id = {$testplan_id}" .
-        				  " JOIN {$this->tables['cfield_testplan_design_values']} CFTDV " .
-                          " ON CFTDV.field_id=CF.id " .
-                          " AND CFTDV.link_id = TPTC.id ";
+                            " ON TPTC.testplan_id = {$testplan_id}" .
+        				            " JOIN {$this->tables['cfield_testplan_design_values']} CFTDV " .
+                            " ON CFTDV.field_id=CF.id " .
+                            " AND CFTDV.link_id = TPTC.id ";
         
         $additional_join .= " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTC.tcversion_id " .
-		                    " AND TCV.id = TPTC.tcversion_id " .
-         					" JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = TPTC.tcversion_id " .
+		                        " AND TCV.id = TPTC.tcversion_id " .
+         					          " JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = TPTC.tcversion_id " .
                             " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
-        
-        //$additional_join .= " JOIN executions EXECU on TPTC.tcversion_id = EXECU.tcversion_id  ";
         
         $order_by_clause = " ORDER BY node_id,display_order,CF.id "; 
         $fetchMethod = 'fetchArrayRowsIntoMap';
         $access_key = 'node_id';
         
     }
-
     elseif( !is_null($link_id) )
     {
         $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id";
@@ -2292,10 +2366,8 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
                             " ON CFTDV.field_id=CF.id " .
                             " AND CFTDV.link_id={$link_id} ";
     }
-
     
-    
-    $sql="SELECT CF.*,CFTP.display_order" .
+    $sql="SELECT CF.*,CFTP.display_order,CFTP.required" .
          $additional_values .
          " FROM {$this->tables['custom_fields']} CF " .
          " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
@@ -2303,13 +2375,10 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
          " WHERE CFTP.testproject_id={$tproject_id} " .
          " AND   CFTP.active=1     " .
          " AND   CF.enable_on_testplan_design={$enabled} " .
-         
-         // 20090523 - franciscom 
-         // missing refactoring when changing custom field management
-         // " AND   CF.show_on_testplan_design=1 " .
          $order_by_clause;
+
     $map = $this->db->$fetchMethod($sql,$access_key);
-    return($map);
+    return $map;
   }
 
   /*
@@ -2332,14 +2401,30 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
          based on Mantis 1.2.0a1 code
          
   */
-  function string_input_radio($p_field_def, $p_input_name, $p_custom_field_value) 
+  private function string_input_radio($p_field_def, $p_input_name, $p_custom_field_value,$opt=null) 
   {
+    $options = array('remove_required' => false);
+    $options = array_merge($options,(array)$opt);
+
     $str_out='';
     $t_values = explode( '|', $p_field_def['possible_values']);                                        
-    $t_checked_values = explode( '|', $p_custom_field_value );                                         
+    $t_checked_values = explode( '|', $p_custom_field_value );  
+
+    if($options['remove_required'])
+    {
+      $required = ' class="" ';
+    } 
+    else
+    {
+      $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
+    } 
+
     foreach( $t_values as $t_option )                                                                  
     {                                                                                                  
-      $str_out .= '<input type="radio" name="' . $p_input_name . '[]"';                               
+      // $str_out .= '<input type="radio" name="' . $p_input_name . '[]"'; 
+      $str_out .= '<input type="radio" ' . $required . 'name="' . $p_input_name . '[]"' .
+                  'id="' . $p_input_name . '[]"' ;
+
       if( in_array( $t_option, $t_checked_values ) )                                                   
       {                                                                                                
     	  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
@@ -2398,23 +2483,33 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
 
     returns: html string
   
-    rev: 20080817 - franciscom
          
   */
-  function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size) 
+  private function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size,$opt=null) 
   {
-  	$str_out='';
+    $options = array('remove_required' => false);
+    $options = array_merge($options,(array)$opt);
+    if($options['remove_required'])
+    {
+      $required = ' class="" ';
+    }  
+    else
+    {
+      $required = $p_field_def['required'] ? ' class="required" required ' : ' class="" ';
+    }  
+
+    $str_out='';
     $size = intval($p_size) > 0 ? $p_size : self::DEFAULT_INPUT_SIZE;
-  	$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" ";
-	if( 0 < $p_field_def['length_max'] )
-	{
-	  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
-	}
-	else
-	{
-	   $str_out .= ' maxlength="255"';
-	}
-	$str_out .= ' value="' . $p_custom_field_value .'"></input>';
+  	$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" {$required} ";
+  	if( 0 < $p_field_def['length_max'] )
+  	{
+  	  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
+  	}
+  	else
+  	{
+  	   $str_out .= ' maxlength="255"';
+  	}
+  	$str_out .= ' value="' . $p_custom_field_value .'"></input>';
     return $str_out;
   }               
 
@@ -2453,16 +2548,15 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
  */
 function remove_all_scopes_values($id)
 {
-    // some sort of blind delete
-    $sql=array();
-    $sql[]="DELETE FROM {$this->tables['cfield_design_values']} WHERE field_id={$id} ";
-    $sql[]="DELETE FROM {$this->tables['cfield_execution_values']} WHERE field_id={$id} ";
-    $sql[]="DELETE FROM {$this->tables['cfield_testplan_design_values']} WHERE field_id={$id} ";
-  
-    foreach($sql as $s)
-    {
-        $this->db->exec_query($s);        
-    }
+  // some sort of blind delete
+  $tables = array('cfield_design_values','cfield_build_design_values',
+                  'cfield_execution_values','cfield_testplan_design_values');
+  $safe_id = intval($id);
+  foreach($tables as $tt)
+  {
+    $sql = "DELETE FROM {$this->tables[$tt]} WHERE field_id={$safe_id} ";
+    $this->db->exec_query($sql);        
+  }
 }
 
 /**
@@ -2514,6 +2608,7 @@ function buildLocationMap($nodeType)
  *                    $options['scope']=testplan_design => feature_id (see testplan_tcversions table)
  *                    $options['scope']=execution => execution_id
  *
+ * @used by testsuite.class.php => copy_cfields_values
  */
 function getByLinkID($linkID, $options=null)
 {
@@ -2575,39 +2670,64 @@ function buildHTMLInputName($cf,$name_suffix)
  * 
  *
  */
-function html_table_inputs($cfields_map,$name_suffix='',$input_values=null)
+function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=null)
 {
 	$cf_smarty = '';
-    if(!is_null($cfields_map))
-    {
+  $getOpt = array('name_suffix' => $name_suffix);
+
+  $my['opt'] = array('addCheck' => false, 'addTable' => true, 'forceOptional' => false);
+  $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+  if(!is_null($cfields_map))
+  {
+    $lbl_upd = lang_get('update_hint');
 		$cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
-    	$NO_WARNING_IF_MISSING=true;
-    	$cf_smarty = "<table>";
-    	foreach($cf_map as $cf_id => $cf_info)
-    	{
-            $label=str_replace(TL_LOCALIZE_TAG,'',
-                               lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
+    $NO_WARNING_IF_MISSING=true;
+    $openTag = $my['opt']['addTable'] ? "<table>" : '';
+    $closeTag = $my['opt']['addTable'] ? "</table>" : '';
+
+    $add_img = "<image title=\"{$lbl_upd}\""  . 
+               'src="' . TL_THEME_IMG_DIR . 'basket_put.png">'; 
+
+    $cf_smarty = '';
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      $label=str_replace(TL_LOCALIZE_TAG,'',
+                         lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
 
-	     	// IMPORTANT NOTICE
-	     	// assigning an ID with this format is CRITIC to Javascript logic used
-	     	// to validate input data filled by user according to CF type
+      // IMPORTANT NOTICE
+	    // assigning an ID with this format is CRITIC to Javascript logic used
+	    // to validate input data filled by user according to CF type
 			// extract input html id
 			// Want to give an html id to <td> used as labelHolder, to use it in Javascript
 			// logic to validate CF content
-			$cf_html_string = $this->string_custom_field_input($cf_info,$name_suffix);
-			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-	     	$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
-    		$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
-    			          $this->string_custom_field_input($cf_info,$name_suffix) .
-    					  "</td></tr>\n";
-    	}
-    	$cf_smarty .= "</table>";
+      if($my['opt']['forceOptional'])
+      {
+        $cf_info['required'] = 0; 
+      } 
+
+			$cf_html_string = $this->string_custom_field_input($cf_info,$getOpt);
+
+      $dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+	    $td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
+
+    	$cf_smarty .= "<tr>";
+      if($my['opt']['addCheck'])
+      {
+        $check_id = str_replace('id="', 'id="check_', $dummy[0]);
+        $check_name = str_replace('id="', 'name="check_', $dummy[0]);
+        $cf_smarty .= "<td> {$add_img}" .         
+                      "<input type=\"checkbox\" {$check_name}> </td>";
+      }  
+
+      $cf_smarty .= "<td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
+    			          $this->string_custom_field_input($cf_info,$getOpt) . "</td></tr>\n";
     }
-    return $cf_smarty;
-
-	
-
+    
+    $cf_smarty = $openTag . $cf_smarty . $closeTag;
+  }
+  return $cf_smarty;
 }
 
 
@@ -2668,6 +2788,71 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 }
 
 
+  /**
+   * 
+   *
+   */
+  function html_inputs($cfields_map,$name_suffix='',$input_values=null)
+  {
+    $inputSet = '';
+    $getOpt = array('name_suffix' => $name_suffix);
 
+    if(!is_null($cfields_map))
+    {
+      $cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
+      $NO_WARNING_IF_MISSING=true;
+      foreach($cf_map as $cf_id => $cf_info)
+      {
+        $label=str_replace(TL_LOCALIZE_TAG,'',
+                           lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
+
+
+        // IMPORTANT NOTICE
+        // assigning an ID with this format is CRITIC to Javascript logic used
+        // to validate input data filled by user according to CF type
+        // extract input html id
+        // Want to give an html id to <td> used as labelHolder, to use it in Javascript
+        // logic to validate CF content
+        $cf_html_string = $this->string_custom_field_input($cf_info,$getOpt);
+        
+        $dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+        $label_id = str_replace('id="', 'id="label_', $dummy[0]);
+
+        $inputSet[] = array('label' => htmlspecialchars($label) ,
+                            'label_id' => $label_id,
+                            'input' => $this->string_custom_field_input($cf_info,$getOpt));
+      }
+    }
+    return $inputSet;
+  }
+
+  /**
+   *
+   *
+   */
+  function getByIDAndEnableOn($id,$enableOn=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql = "/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
+           " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
+           " WHERE CF.id=CFNT.field_id " .
+           " AND CF.id IN (" . implode(',',(array)$id) . ")";
+
+    if(!is_null($enableOn) && is_array($enableOn))
+    {
+      foreach($this->application_areas as $key)
+      {
+        if(isset($enableOn[$key]) && $enableOn[$key])
+        {
+          $sql .= " AND CF.enable_on_{$key}=1 ";
+        }  
+      }  
+    } 
+
+    return($this->db->fetchRowsIntoMap($sql,'id'));
+  }
+
+
+
+    
 } // end class
-?>

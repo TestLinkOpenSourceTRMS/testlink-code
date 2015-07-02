@@ -5,8 +5,6 @@ $Id: tabsmenu.tpl,v 1.6 2010/05/01 20:16:32 franciscom Exp $
 include to generate menu when managing users and roles
 
 @internal revisions
-  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-
 *}
 
 {assign var="action_create_role" value="lib/usermanagement/rolesEdit.php?doAction=create"}

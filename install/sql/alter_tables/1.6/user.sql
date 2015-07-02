@@ -1,1 +1,0 @@
-ALTER TABLE `user` ADD `default_product` INT(10) NULL;

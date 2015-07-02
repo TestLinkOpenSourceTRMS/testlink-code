@@ -1,0 +1,8 @@
+<issuetracker>
+<username>testlink.forum</username>
+<password>forum</password>
+<uribase>https://testlink.atlassian.net/</uribase>
+<uriapi>https://testlink.atlassian.net/rest/api/latest/</uriapi>
+<projectkey>ZOFF</projectkey>
+<issuetype>1</issuetype>
+</issuetracker>

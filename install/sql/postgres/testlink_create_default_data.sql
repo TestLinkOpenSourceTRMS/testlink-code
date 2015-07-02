@@ -1,17 +1,14 @@
+--  -----------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.30.6.2 2010/12/11 17:33:09 franciscom Exp $
+--  @filesource testlink_create_default_data.sql
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
---  @since 1.9.4
---	20110818 - franciscom - TICKET 4661
---	20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server 
 --
---  --------------------------------------------------------
-
+--  -----------------------------------------------------------------
 
 --  Database version -
-INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.5',now(),'TestLink 1.9.4');
+INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.9.14',now(),'TestLink 1.9.14');
 
 
 --  Node types -
@@ -26,6 +23,10 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (11,'requirement_spec_revision');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (12,'build');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (13,'platform');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (14,'user');
+
 
 
 --  Roles -
@@ -72,6 +73,22 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (29,'keyword_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (30,'mgt_unfreeze_req');
 INSERT INTO /*prefix*/rights (id,description) VALUES (31,'issuetracker_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (32,'issuetracker_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (33,'reqmgrsystem_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (34,'reqmgrsystem_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (35,'exec_edit_notes');
+INSERT INTO /*prefix*/rights (id,description) VALUES (36,'exec_delete');
+INSERT INTO /*prefix*/rights (id,description) VALUES (37,'testplan_unlink_executed_testcases');
+INSERT INTO /*prefix*/rights (id,description) VALUES (38,'testproject_delete_executed_testcases');
+INSERT INTO /*prefix*/rights (id,description) VALUES (39,'testproject_edit_executed_testcases');
+
+-- since 1.9.10
+INSERT INTO /*prefix*/rights (id,description) VALUES (40,'testplan_milestone_overview');
+INSERT INTO /*prefix*/rights (id,description) VALUES (41,'exec_testcases_assigned_to_me');
+INSERT INTO /*prefix*/rights (id,description) VALUES (42,'testproject_metrics_dashboard');
+INSERT INTO /*prefix*/rights (id,description) VALUES (43,'testplan_add_remove_platforms');
+INSERT INTO /*prefix*/rights (id,description) VALUES (44,'testplan_update_linked_testcase_versions');
+INSERT INTO /*prefix*/rights (id,description) VALUES (45,'testplan_set_urgent_testcases');
+INSERT INTO /*prefix*/rights (id,description) VALUES (46,'testplan_show_testcases_newest_versions');
 
 
 
@@ -107,6 +124,19 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,31);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,33);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,35);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,36);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,37);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,38);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,39);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,40);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,41);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,42);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,43);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,44);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,45);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,46);
 
 
 --  Rights for guest role

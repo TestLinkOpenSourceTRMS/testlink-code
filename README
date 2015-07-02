@@ -1,15 +1,24 @@
 ===============================================================
-                    TestLink 1.9.4 (Prague Bugfix 4) - Read me
+         TestLink 1.9.13 (Prague Bugfix 13) - Read me
 ===============================================================
 
 Contents
 1. Introduction
-2. Release notes
+2. Release notes / CRITIC Configuration Notes
 3. System Requirements
 4. Installation & SECURITY
 5. Upgrade and Migration
 6. TestLink Team 
 7. Bug Reports and Feedback
+8. Supporting our work
+9. Regarding forum usage www.testlink.org
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10,19,11,12
+11. Testlink & FreeTest
+12. Security
+13. JIRA DB interface changes
+14. People supporting TestLink
+15. Miscelaneous
+
 
 
 1. Introduction
@@ -57,25 +66,34 @@ You allocate tests to staff who carry them out and record the results.
 A wide variety of reports provide information on what has been done and what still needs to be done.
 
 
-2. Release notes
+2. Release notes / CRITIC Configuration Notes
 ===============================================================
 
-This release contains bugfixes for 1.9.3
-   
+This release contains bugfixes for 1.9.12
 See CHANGELOG file for detailed list of issues fixed.
+
+*** CRITIC PHP.INI Settings ***
+max_input_vars, Available since PHP 5.3.9. Default value:1000
+If you are going to have test plans with more that 100 test cases, it will be CRITIC 
+to increase this value in order to avoid issues (CRASH or MALFUNCTIONS) when adding
+test cases to test plan.
+See:
+http://forum.testlink.org/viewtopic.php?f=11&t=7124&p=17284&sid=e3552aca223ac1f6b3676812aa02f04c#p17284
+http://mantis.testlink.org/view.php?id=5372
+
 
 
 3. System Requirements - server
 ===============================================================
 
 Server environment should consists from:
-- web-server: Apache 1.2 , 2.x
-- PHP 5.2, 5.3
-- DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2005/2008
+- web-server: Apache 2.x
+- PHP > 5.4
+- DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2008/2012
 
 Supported client web-browsers: 
-- Firefox 3 - 10
-- Internet Explorer 6.x, 7.x, 8.x
+- Firefox 10 - 32
+- Internet Explorer 9.x
 - Chrome   
 
 
@@ -128,6 +146,12 @@ http://mantis.testlink.org/view.php?id=4906
 
 You should also need to configure write access for logging, upload and template directories.
 
+*** FCKEDITOR UPLOAD ****
+ATTENTION We now use CKEDITOR
+Give a look to:
+http://forum.testlink.org/viewtopic.php?f=22&t=7098&sid=f4012a67d921cf5a2322c52fc38f21d6
+
+
 
 3. Launch web based installer
 We will create the necessary database tables and a basic configuration
@@ -140,7 +164,11 @@ Check Installation manual and TestLink forum if you meet a problem.
 5. Upgrade and Migration
 ===============================================================
 When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
-Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4 )
+Migration HAS TO BE DONE MANUALLY => read below 
+- Upgrade from 1.9.3  to 1.9.4/5/6/7/8/9/10/11/12
+- Upgrade from 1.9.4/5 to 1.9.7
+- Upgrade from 1.9.7 to 1.9.8
+- Migration from other releases that 1.9.3
 
  Steps
  - Make a Backup of your current database.
@@ -156,6 +184,10 @@ Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4 )
  If you are updating a same major version (for example 1.7.0 to 1.7.1) 
  you need to use Upgrade Database.
  
+ PLEASE GIVE A LOOK TO:
+ MANTIS 6594: Migration scripts don't cover testcase steps and expected results, 
+              also testcase ID's are empty in GUI
+
  If you are using a different major version detailed in options,  
  you need to use the specific Migrations.
  
@@ -166,13 +198,77 @@ Migration HAS TO BE DONE MANUALLY => read below (- Upgrade from 1.9.3 to 1.9.4 )
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.3 to 1.9.4
+- Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11/12
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
-a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB1.4/step1/db_schema_update.sql
+a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql
+
+then give a look to sections: 'Upgrade from 1.9.4/5 to 1.9.7'
+                              'Upgrade from 1.9.7 to 1.9.8'
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
+
+- Upgrade from 1.9.4/5 to 1.9.7
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sql
+
+then give a look to section 'Upgrade from 1.9.7 to 1.9.8'
+then give a look to section 'Upgrade from 1.9.8 to 1.9.9'
+then give a look to section 'Upgrade from 1.9.9 to 1.9.10'
+then give a look to section 'Upgrade from 1.9.10 to 1.9.11'
+then give a look to section 'Upgrade from 1.9.11 to 1.9.12'
+then give a look to section 'Upgrade from 1.9.12 to 1.9.13'
+
+- Upgrade from 1.9.7 to 1.9.8
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/stepZ/z_final_step.sql
+
+- Upgrade from 1.9.8 to 1.9.9
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/stepZ/z_final_step.sql
+
+- Upgrade from 1.9.9 to 1.9.10
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/stepZ/z_final_step.sql
+
+- Upgrade from 1.9.10 to 1.9.11
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/stepZ/z_final_step.sql
+
+- Upgrade from 1.9.11 to 1.9.12
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/stepZ/z_final_step.sql
+
+- Upgrade from 1.9.12 to 1.9.13
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/stepZ/z_final_step.sql
+
+Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
+      (open script or use special script tab to execute the whole script at once)
+
+
+
+Migration from other releases that 1.9.3
+
+You have always have to migrate one by one to each version that is newer that yours.
+Extreme example Migration from 1.7.4
+
+1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
+1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 
+1.9.8 => 1.9.9 => 1.9.10 => 1.9.11 => 1.9.12 => 1.9.13
+
+You have to read carefully README and instructions (if any) provided by installer.
+Sometimes version changes do not require actions on DB structure or data. 
+
+
 
 6. TestLink Team 
 ===============================================================
@@ -181,12 +277,14 @@ This list comprise people that has helped
 
 --- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
-* Julian Krien - Leader of testlink-qa group effort on 1.9.1,1.9.2,1.9.3
+                       (well, really the One Man Band ;) )
+* Asiel Brumfield - Infrastructure
 
---- Contributors and developers active  ---
-* Bruno de Paula Kinoshita - some work on API, CSRF, Turn Key Linux
 
 --- Contributors and developers active on older releases ---
+* Maradana Amardeep - Leader of testlink-qa group effort on 1.9.5
+* Bruno de Paula Kinoshita - some work on API, CSRF, Turn Key Linux
+* Julian Krien - Leader of testlink-qa group effort on 1.9.1,1.9.2,1.9.3
 * Andreas Simon
 * Erik Eloff
 * Martin Havlat - Project lead, builds, infrastructure, developer
@@ -248,7 +346,7 @@ This list comprise people that has helped
   Shinichi Sugiyama,    Shinsuke Matsuki,     Shizuka Ban,
   Takahiro Wada,        Toshinori Sawaguchi,  Toshiyuki Kawanishi,
   Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
-  Yukiko Kajino			Yasuharu Nishi
+  Yukiko Kajino			    Yasuharu Nishi
 
 
 
@@ -262,20 +360,132 @@ This list comprise people that has helped
 7. Bug Reports and Feedback
 ===============================================================
 
-You may contact us at the TestLink forum at 
-http://www.teamst.org/
+You may contact TestLink User Community forum at 
+http://www.testlink.org/
 
 If you found this software useful for your company please
 post in forum on section "Companies using TestLink".
 
-To submit a bug or a feature, please use our Mantis installation at 
-http://www.testlink.org/mantis/. 
+To submit a bug or a feature, please use ONLY our Mantis installation at 
+http://www.testlink.org/mantis/
 
 You can follow us on twitter => http://twitter.com/#!/TLOpenSource
 
-Useful mails: testlink.forum@gmail.com, testlink.helpme@gmail.com
+
+8. Supporting our work
+===============================================================
+
+if you find TestLinl useful, think about a donation to support our work.
+contact testlink.forum@gmail.com
+You can donate using PayPal or Flattr
 
 
+9. Regarding forum usage www.testlink.org
+===============================================================
 
+PLEASE: read this short hints before you write a topic:
+
+:!: Use search forum before you add a new question.
+:!: Did you search User or Installation manual before?
+:!: Don't use the forum as a Bug Tracker - use http://mantis.testlink.org/login_page.php. 
+	  Bug issues report done here will be DELETED
+:!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
+10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10,1.9.11,1.9.12,1.9.13
+=======================================================================================
+
+1.9.13
+- new tag to allow inline images in test case summary,preconditions and steps
+- new tag to allow inline images in test suite details
+- new tag to allow inline images in requirement scope
+- Test Step execution - Attachment management 
+- Automatically copy linked bugs from previous execution to the new one
+- Export Test Spec - add option to export external ID WITH PREFIX
+- Improvements on JIRA integration:
+  user can set values on GUI for Components,Priorities,Versions,IssueTypes 
+  getting domain values from JIRA.
+
+... and more (read CHANGELOG file)
+
+
+1.9.12
+Test case relations
+Improvements on Issue Tracker integration (edit notes when linking)
+Requirements Overview performance improvements
+
+1.9.10
+Long waited feature: execution notes & results for test steps
+
+1.9.9
+User can have two different (mutual exclusive) kind of authentication
+
+1.9.6
+10.1 Admin role can not be edit anymore
+
+1.9.7
+10.2 Reports do not use anymore Custom fields:
+     CF_ESTIMATED_EXEC_TIME
+     CF_EXEC_TIME
+     
+     Specific columns have been added to tcversions and executions tables.
+10.3 Smarty 3 is the default.
+
+
+11. Testlink & FreeTest
+===============================================================
+
+There is project on Brazil regarding the development of a method/process
+for testing and delivering, focused on providing a method suitable for
+micro/mini companies.
+
+If you are interested you can get some info on:
+http://www.freetest.net.br
+
+
+12. Security
+===============================================================
+
+1.9.12
+Research team of Portcullis Computer Security Ltd
+cedric (mantis.testlink.org user name)
+
+
+1.9.10
+We want to thanks xistence (xistence@0x90.nl) for his tests.
+
+
+
+
+13. JIRA DB interface changes
+===============================================================
+
+TICKET 6028: Integration with Jira 6.1 broken. - Due to JIRA schema changes
+Contribution by adnkoks
+You need to change you xml configuration on TestLink, to add a new MANDATORY
+property <jiraversion></jiraversion>
+Without this property TestLink WILL CRASH => this is a desired behaviour
+
+
+14. People/Companies supporting TestLink
+===============================================================
+
+- Bitnami
+provided a VM on Cloud to do tests
+
+- Team Cortado (Germany)
+payed custom development of Long waited feature: execution notes & results for test steps,
+donating feature to community (is not the first time they do this!)
+
+
+15. Miscelaneous
+===============================================================
+https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
+
+Hitek School (http://www.hitekschool.com/)
+ - Group of students help to test TestLink
+
+Wellington Institute of Technology (www.weltec.ac.nz)
+ - Group of studente is working on creating automation infrastructure to test TestLink
+
+

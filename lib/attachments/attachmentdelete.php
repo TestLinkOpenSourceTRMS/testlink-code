@@ -3,11 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: attachmentdelete.php,v $
- *
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/08/19 19:56:25 $ by $Author: schlundus $
- *
+ * @filesource  attachmentdelete.php
  * Deletes an attachment by a given id
  */
 require_once('../../config.inc.php');
@@ -15,21 +11,21 @@ require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
-$args = init_args();	
+$args = init_args();  
 $deleteDone = false;
 if ($args->id)
 {
-	$attachmentRepository = tlAttachmentRepository::create($db);
-	$attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
-	if ($attachmentInfo && checkAttachmentID($db,$args->id,$attachmentInfo))
-	{
-		$deleteDone = $attachmentRepository->deleteAttachment($args->id,$attachmentInfo);
-		if ($deleteDone)
-		{
-			logAuditEvent(TLS("audit_attachment_deleted",
-			              $attachmentInfo['title']),"DELETE",$args->id,"attachments");
-		}	
-	}
+  $attachmentRepository = tlAttachmentRepository::create($db);
+  $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
+  if ($attachmentInfo && checkAttachmentID($db,$args->id,$attachmentInfo))
+  {
+    $deleteDone = $attachmentRepository->deleteAttachment($args->id,$attachmentInfo);
+    if ($deleteDone)
+    {
+      logAuditEvent(TLS("audit_attachment_deleted",
+                    $attachmentInfo['title']),"DELETE",$args->id,"attachments");
+    } 
+  }
 }
 
 $smarty = new TLSmarty();
@@ -42,14 +38,14 @@ $smarty->display('attachmentdelete.tpl');
  */
 function init_args()
 {
-	//the id (attachments.id) of the attachment to be deleted
-	$iParams = array(
-		"id" => array(tlInputParameter::INT_N),
-	);
-	$args = new stdClass();
-	G_PARAMS($iParams,$args);
-	
-	return $args;
+  //the id (attachments.id) of the attachment to be deleted
+  $iParams = array(
+    "id" => array(tlInputParameter::INT_N),
+  );
+  $args = new stdClass();
+  G_PARAMS($iParams,$args);
+  
+  return $args;
 }
 
 
@@ -61,6 +57,6 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	return (config_get("attachments")->enabled);
+  return (config_get("attachments")->enabled);
 }
 ?>

@@ -27,9 +27,8 @@ rev:
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 
 function check_action_precondition(form_id,action)
@@ -55,6 +54,7 @@ function check_action_precondition(form_id,action)
     <div class="workBack">
       <h2>{$labels.req_title_bulk_assign}</h2>
       <form id="SRS_switch" name="SRS_switch" method="post">
+        <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
  	      <input type="hidden" name="doAction" id="doAction" value="switchspec" />
  	      <input type="hidden" name="id" id="id" value="{$gui->tsuite_id}" />
         <p><span class="labelHolder">{$labels.req_spec}</span>
@@ -72,6 +72,7 @@ function check_action_precondition(form_id,action)
         {if $gui->tcase_number > 0}
           <h2>{$labels.req_title_available}</h2>
           <form id="reqList" method="post" action="lib/requirements/reqTcAssign.php">
+             <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
              <input type="hidden" name="id" id="id"  value="{$gui->tsuite_id}" />
           
           <div id="div_assigned_req">

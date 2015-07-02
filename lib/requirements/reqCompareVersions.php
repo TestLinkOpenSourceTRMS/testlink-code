@@ -3,18 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package 	TestLink
- * @author asimon
- * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.5.2.8 2011/01/07 13:07:32 asimon83 Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author      asimon
+ * @copyright   2005-2012, TestLink community 
+ * @filesource  reqCompareVersions.php
+ * @link 		    http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
  *
- * @internal Revisions:
- * 20110107 - asimon - added daisydiff (html diff engine which handles tags well)
- * 20101212 - franciscom - BUGID 4056: Requirement Revisioning
- * 20100831 - Julian - added requirement title to page heading
+ * @internal revisions
+ * @since 1.9.6
  */
 
 require_once("../../config.inc.php");
@@ -38,6 +36,7 @@ $reqMgr = new requirement_mgr($db);
 $differ = new diff();
 $args = init_args();
 $gui = initializeGui($db,$args,$labels,$reqMgr);
+
 
 // if already two versions are selected, display diff
 // else display template with versions to select
@@ -269,8 +268,8 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
 {
 	$reqCfg = config_get('req_cfg');
 	$guiObj = new stdClass();
-
-    $guiObj->items = $reqMgr->get_history($argsObj->req_id,array('output' => 'array','decode_user' => true));
+  $guiObj->items = $reqMgr->get_history($argsObj->req_id,array('output' => 'array','decode_user' => true));
+  
 	
 	// Truncate log message
 	if( $reqCfg->log_message_len > 0 )

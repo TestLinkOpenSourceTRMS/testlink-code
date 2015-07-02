@@ -6,7 +6,7 @@
  * @filesource	testPlanWithCF.php
  * @author Amit Khullar - amkhullar@gmail.com
  *
- * For a test plan, list associated Custom Field Data
+ * Scope test plan, analize ONLY CF that have 'Test Plan Design SCOPE'
  *
  * @internal revisions
  */
@@ -14,6 +14,9 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
+
+$smarty = new TLSmarty();
+$imgSet = $smarty->getImages();
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
@@ -32,8 +35,6 @@ $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 
 
 $labels = init_labels(array('design' => null));
-$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
-
 $testCaseSet = array();
 
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
@@ -87,13 +88,12 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	}
 }
 
-$table = buildExtTable($gui,$tcase_mgr, $tplan_mgr, $args->tplan_id,$labels, $edit_icon);
+$table = buildExtTable($gui,$tcase_mgr, $tplan_mgr, $args->tplan_id,$labels, $imgSet['edit_icon']);
 
 if (!is_null($table)) 
 {
 	$gui->tableSet[] = $table;
 }
-$smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 

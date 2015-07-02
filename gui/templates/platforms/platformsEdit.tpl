@@ -4,7 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - View all platforms
 
 @internal revisions
-20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
 *}
 {assign var="url_args" value="lib/platforms/platformsEdit.php"}
 {assign var="platform_edit_url" value="$basehref$url_args"}
@@ -20,18 +19,17 @@ Purpose: smarty template - View all platforms
 {literal}
 <script type="text/javascript">
 {/literal}
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_platform = "{$labels.warning_empty_platform|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {
 	if (isWhitespace(f.name.value))
-  	{
-    	alert_message(alert_box_title,warning_empty_platform);
-      	selectField(f, 'name');
-      	return false;
-  	}
+  {
+    alert_message(alert_box_title,warning_empty_platform);
+    selectField(f, 'name');
+    return false;
+  }
 	return true;
 }
 </script>
@@ -68,7 +66,7 @@ function validateForm(f)
   			{assign var="input_name" value="name"}
   			<td><input type="text" name="{$input_name}"
   			           size="{#PLATFORM_SIZE#}" maxlength="{#PLATFORM_MAXLEN#}"
-  				         value="{$gui->name|escape}" />
+  				         value="{$gui->name|escape}" required />
 			  		{include file="error_icon.tpl" field="$input_name"}
 			  </td>
   		</tr>

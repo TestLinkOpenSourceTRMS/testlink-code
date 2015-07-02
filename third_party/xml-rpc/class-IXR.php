@@ -4,6 +4,10 @@
  * @filesource	class-IXR.php
  *
  * @internal revisions
+ *
+ * 20131220 - moormanm - Adding 'limit' parameter to preg_replace call so to not exceed pcre.backtrack max
+ *                       when processing large xmlrpc messages
+ *
  * 20111022 - franciscom -	due to use of is_a() without checking that object was REALLY an object
  *							and tlAutoload(), result was CRASH trying to creating NON EXISTENT class
  *							when method return type is SIMPLE (string,int)	 
@@ -142,12 +146,15 @@ class IXR_Message {
     var $_currentTagContents;
     // The XML parser
     var $_parser;
+    
     function IXR_Message ($message) {
         $this->message = $message;
     }
+
     function parse() {
         // first remove the XML declaration
-        $this->message = preg_replace('/<\?xml(.*)?\?'.'>/', '', $this->message);
+        $this->message = preg_replace('/<\?xml(.*)?\?'.'>/', '', $this->message,1);
+        
         if (trim($this->message) == '') {
             return false;
         }

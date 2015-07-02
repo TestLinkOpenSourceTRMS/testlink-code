@@ -5,33 +5,33 @@
  *
  * Navigation for installation scripts
  *
- * @package 	TestLink
- * @copyright 	2007, TestLink community
- * @version    	CVS: $Id: index.php,v 1.17.6.3 2011/01/15 18:50:40 franciscom Exp $
+ * @package     TestLink
+ * @copyright   2007,2014 TestLink community
+ * @filesource  index.php
  *
- * @internal Revisions:
- *	20110115 - franciscom - update message to 1.9.1
- *  20091103 - havlatm - Total GUI redesign
- *  20091003 - franciscom - removed option to upgrade/migrate from 1.6.x and 1.7.x
- *	20090127 - franciscom - removed upgrade block
- *	20080120 - franciscom - added link to README
- *	20080103 - franciscom - minor adjustments on link descriptions
+ * @internal revisions
  */
 
+if(!isset($tlCfg))
+{
+  $tlCfg = new stdClass();  
+} 
 require_once("../cfg/const.inc.php");
 
 session_start();
 $_SESSION['session_test'] = 1;
 $_SESSION['testlink_version'] = TL_VERSION;
 
+$prev_ver = '1.9.3/4/5/6/7/8/9/10/11/12';
+$forum_url = 'forum.testlink.org';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<title>Testlink <?php echo $_SESSION['testlink_version'] ?> Installation procedure</title>
-	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-	<link href="../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
-	<style type="text/css">@import url('./css/style.css');</style>
+  <title>Testlink <?php echo $_SESSION['testlink_version'] ?> Installation procedure</title>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <link href="../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
+  <style type="text/css">@import url('./css/style.css');</style>
 </head>
 
 <body>
@@ -40,21 +40,37 @@ $_SESSION['testlink_version'] = TL_VERSION;
     TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</h1>
 <div class="tlLiner">&nbsp;</div>
 <div class="tlStory">
-		<p>You are installing TestLink 1.9.4 </p>
-		<p><b>Migration from 1.9.3 to 1.9.4 has to be done MANUALLY.</b></p> 
-		<p>Please read Section on README file or go to www.teamst.org (Forum: TestLink 1.9.4 News,changes, etc) </p>
-		<p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
-		for more information or troubleshooting. You could also look at
-		<a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>.
-		You are welcome to visit our <a target="_blank" href="http://www.teamst.org">
-		forum</a> to browse or discuss.
-		</p>
-		<p><ul>
-		<li><a href="installIntro.php?type=new">New installation</a></li>
-		</ul></p>
+    <p>You are installing TestLink <?php echo $_SESSION['testlink_version'] ?> </p>
+    <p><b>Migration from <?php echo $prev_ver ?>  to  <?php echo $_SESSION['testlink_version'] ?> require Database changes that has to be done MANUALLY.
+          Please read README file provided with installation.</b></p> 
+    <p><b>For information about Migration from older version please read README file provided with installation.</b></p> 
+    <p><b>Please read Section on README file or go to <?php echo 'http://' .$forum_url ?> (Forum: TestLink 1.9.4 and greater News,changes, etc)</b> </p>
+    <p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
+    for more information or troubleshooting. You could also look at
+    <a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>.
+    You are welcome to visit our <a target="_blank" href="http://forum.testlink.org">
+    forum</a> to browse or discuss.
+    </p>
+    <p><h3>Some user contributed videos (You Tube)</h3></p>
+    <b>
+    <a href="https://www.youtube.com/watch?v=NOvTWZvc2x8" target="#">Installation of "Testlink" & Creating project.</a><br>
+    <a href="https://www.youtube.com/watch?v=P2zWScVjuag" target="#">TestLink Test Management Tool Tutorial</a><br>
+    <a href="https://www.youtube.com/watch?v=7xH1LKQU1TA" target="#">Introduction to TestLink</a><br>
+    <a href="https://www.youtube.com/watch?v=6s48WGuX2WE" target="#">TestLink Walkthrough</a><br>
+    </b>
+
+    <p><ul><li><a href="installIntro.php?type=new">New installation</a></li></ul></p>
+
+    <br>
+    <i>
+    TestLink is a complicated piece of software, and has always been released under 
+    an Open Source license, and this will continue into the far future. 
+    <br>It has cost thousands of hours to develop, test and support TestLink. 
+    <br>If you find TestLink valuable, we would appreciate if you would consider 
+    buying a support agreement or requesting custom development.    
+    </i>
 </div>
 <div class="tlLiner">&nbsp;</div>
-
 </div>
 </body>
 </html>

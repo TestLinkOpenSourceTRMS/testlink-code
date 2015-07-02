@@ -7,227 +7,265 @@
  * Search is done ONLY ON CURRENT test project
  *
  *
- * @filesource	tcSearch.php
- * @package 	TestLink
- * @author 		TestLink community
- * @copyright 	2007-2011, TestLink community 
- * @link 		http://www.teamst.org/index.php
+ * @filesource  tcSearch.php
+ * @package     TestLink
+ * @author      TestLink community
+ * @copyright   2007-2015, TestLink community 
+ * @link        http://www.testlink.org/
  *
  *
- *	@internal revisions
- *	@since 1.9.4
- *  20110706 - Julian - BUGID 4652 - Added link to execution history
- *
+ * @internal revisions
+ * @since 1.9.14
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db);
-$date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
+$smarty = new TLSmarty();
+
 $tpl = 'tcSearchResults.tpl';
 $tproject_mgr = new testproject($db);
-
+$tcase_mgr = new testcase ($db);
+ 
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
-$args = init_args($date_format_cfg);
+$filter = null;
+list($args,$filter) = init_args($tproject_mgr);
 
-$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
-$history_icon = TL_THEME_IMG_DIR . "history_small.png";
+$ga = initializeGui($args,$tproject_mgr);
+$gx = $tcase_mgr->getTcSearchSkeleton($args);
+$gui = (object)array_merge((array)$ga,(array)$gx);
 
-$gui = initializeGui($args);
+initSearch($gui,$args,$tproject_mgr);
+
+
 $map = null;
 
-if ($args->tprojectID)
+if ($args->tprojectID && $args->doAction == 'doSearch')
 {
-	$tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
-								                'requirements','req_coverage','tcsteps',
-								                'testcase_keywords','tcversions'));
-								                
-    $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
-    $gui->tcasePrefix .= $tcase_cfg->glue_character;
+  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
+                                              'requirements','req_coverage','tcsteps',
+                                              'testcase_keywords','tcversions','users'));
+                                
+  $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
+  $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
-    $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
-    $filter = null;
-	$tcaseID = null;
-    
-    if($args->creation_date_from)
-    {
-        $filter['by_creation_date_from'] = " AND TCV.creation_ts >= '{$args->creation_date_from}' ";
-	}
-
-    if($args->creation_date_to)
-    {
-        $filter['by_creation_date_to'] = " AND TCV.creation_ts <= '{$args->creation_date_to}' ";
-	}
-	
-    if($args->modification_date_from)
-    {
-        $filter['by_modification_date_from'] = " AND TCV.modification_ts >= '{$args->modification_date_from}' ";
-	}
-
-    if($args->modification_date_to)
-    {
-        $filter['by_modification_date_to'] = " AND TCV.modification_ts <= '{$args->modification_date_to}' ";
-	}
-    
-    if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
-    {
-     	if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
-     	{
-    		$args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
-   	    }
-   	    
-        $tcase_mgr = new testcase ($db);
-        $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$tcase_cfg->glue_character); 
-        $filter['by_tc_id'] = " AND NH_TCV.parent_id = {$tcaseID} ";
-    }
-    else
-    {
-        $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
-        $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
-    }
-    if($args->version)
-    {
-        $filter['by_version'] = " AND TCV.version = {$args->version} ";
-    }
-    
-    if($args->keyword_id)				
-    {
-        $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
-        $filter['by_keyword_id'] = " AND KW.keyword_id = {$args->keyword_id} ";	
+  $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '', 'users' => '');
+  $tcaseID = null;
+  
+   
+  if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
+  {
+      if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
+      {
+        $args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
+      }
         
-    }
+      $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
+      $filter['by_tc_id'] = " AND NH_TCV.parent_id = " . intval($tcaseID);
+  }
+  else
+  {
+    $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
+    $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
+  }
+  if($args->version)
+  {
+    $filter['by_version'] = " AND TCV.version = {$args->version} ";
+  }
     
-    if($args->name != "")
-    {
-        $args->name =  $db->prepare_string($args->name);
-        $filter['by_name'] = " AND NH_TC.name like '%{$args->name}%' ";
-    }
+  if($args->keyword_id)       
+  {
+  	 $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
+     $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
+  }
     
-    if($args->summary != "")
-    {
-        $args->summary = $db->prepare_string($args->summary);
-        $filter['by_summary'] = " AND TCV.summary like '%{$args->summary}%' ";
-    }    
 
-    if($args->preconditions != "")
-    {
-        $args->preconditions = $db->prepare_string($args->preconditions);
-        $filter['by_preconditions'] = " AND TCV.preconditions like '%{$args->preconditions}%' ";
-    }    
+  $useOr = false;
+  $filterSpecial = null;
+  $feOp = " AND ";
+  $filterSpecial['tricky'] = " 1=1 ";
+  if($args->jolly != "")
+  {
+    // $filterSpecial['trick'] = " 1=1 ";
+    $useOr = true;
+    $feOp = " OR ";
+    $filterSpecial['tricky'] = " 1=0 ";
+    $args->steps = $args->expected_results = $args->jolly;
+  }  
     
-    if($args->steps != "")
-    {
-        $args->steps = $db->prepare_string($args->steps);
-        $filter['by_steps'] = " AND TCSTEPS.actions like '%{$args->steps}%' ";	
-    }    
+  if($args->steps != "")
+  {
+    $args->steps = $db->prepare_string($args->steps);
+    $filterSpecial['by_steps'] = $feOp . " TCSTEPS.actions like '%{$args->steps}%' ";  
+  }    
     
-    if($args->expected_results != "")
+  if($args->expected_results != "")
+  {
+    $args->expected_results = $db->prepare_string($args->expected_results);
+    $filterSpecial['by_expected_results'] = $feOp . " TCSTEPS.expected_results like '%{$args->expected_results}%' "; 
+  }    
+
+  $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
+  $jollyEscaped = $db->prepare_string($args->jolly);
+  foreach($k2w as $kf => $alias)
+  {
+    if($args->$kf != "" || $args->jolly != '')
     {
-		$args->expected_results = $db->prepare_string($args->expected_results);
-        $filter['by_expected_results'] = " AND TCSTEPS.expected_results like '%{$args->expected_results}%' ";	
-    }    
-    
-    if($args->custom_field_id > 0)
-    {
-        $args->custom_field_id = $db->prepare_string($args->custom_field_id);
-        $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-        $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
-                                  //BUGID 2877 - Custom Fields linked to TC versions
-                                  " ON CFD.node_id=NH_TCV.id ";
-        $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-                                     " AND CFD.value like '%{$args->custom_field_value}%' ";
+      if( $args->jolly == '' )
+      {
+        $args->$kf =  $db->prepare_string($args->$kf);
+      }  
+      $filterSpecial[$kf] = " {$feOp} {$alias}.{$kf} like ";
+      $filterSpecial[$kf] .= ($args->jolly == '') ? " '%{$args->$kf}%' " : " '%{$jollyEscaped}%' "; 
     }
+  } 
+ 
+  $otherFilters = '';  
+  if(!is_null($filterSpecial))
+  {
+    $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
+  }  
 
-   	if($args->requirement_doc_id != "")
-    {
-    	$args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
-     	$from['by_requirement_doc_id'] = " JOIN {$tables['req_coverage']} RC" .  
-                                         " ON RC.testcase_id = NH_TC.id " .
-     									 " JOIN {$tables['requirements']} REQ " .
-		                                 " ON REQ.id=RC.req_id " ;
-    	$filter['by_requirement_doc_id'] = " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' ";
-    }   
 
-   	if( $args->importance > 0)
-    {
-        $filter['importance'] = " AND TCV.importance = {$args->importance} ";
-	}  
+  if($args->custom_field_id > 0)
+  {
+    $args->custom_field_id = $db->prepare_string($args->custom_field_id);
+    $args->custom_field_value = $db->prepare_string($args->custom_field_value);
+    $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
+                              " ON CFD.node_id=NH_TCV.id ";
+    $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
+                                 " AND CFD.value like '%{$args->custom_field_value}%' ";
+  }
+
+  if($args->requirement_doc_id != "")
+  {
+    $args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
+    $from['by_requirement_doc_id'] = " JOIN {$tables['req_coverage']} RC" .  
+                                     " ON RC.testcase_id = NH_TC.id " .
+                                     " JOIN {$tables['requirements']} REQ " .
+                                     " ON REQ.id=RC.req_id " ;
+    $filter['by_requirement_doc_id'] = " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' ";
+  }   
+
+  if( $args->importance > 0)
+  {
+    $filter['importance'] = " AND TCV.importance = {$args->importance} ";
+  }  
+
+  if( $args->status > 0)
+  {
+    $filter['status'] = " AND TCV.status = {$args->status} ";
+  }  
+
+
+  $args->created_by = trim($args->created_by);
+  $from['users'] = '';
+  if( $args->created_by != '' )
+  {
+    $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
+    $filter['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
+                        "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
+                        "       AUTHOR.last LIKE '%{$args->created_by}%') ";
+  }  
+
+  $args->edited_by = trim($args->edited_by);
+  if( $args->edited_by != '' )
+  {
+    $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
+    $filter['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
+                        "         UPDATER.first LIKE '%{$args->edited_by}%' OR " .
+                        "         UPDATER.last LIKE '%{$args->edited_by}%') ";
+  }  
     
-    $sqlFields = " SELECT NH_TC.id AS testcase_id,NH_TC.name,TCV.id AS tcversion_id," .
-                 " TCV.summary, TCV.version, TCV.tc_external_id "; 
+  $sqlFields = " SELECT NH_TC.id AS testcase_id,NH_TC.name,TCV.id AS tcversion_id," .
+               " TCV.summary, TCV.version, TCV.tc_external_id "; 
     
-    $sqlCount  = "SELECT COUNT(NH_TC.id) ";
-    
-    // search fails if test case has 0 steps - Added LEFT OUTER
-    $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NH_TC " .
-                " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
-                " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
-                " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NH_TCSTEPS ON NH_TCSTEPS.parent_id = NH_TCV.id " .
-                " LEFT OUTER JOIN {$tables['tcsteps']} TCSTEPS ON NH_TCSTEPS.id = TCSTEPS.id  " .
-                " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']} " .
-                " WHERE 1=1 ";
+  // Count Test Cases NOT Test Case Versions
+  // ATTENTION:
+  // Keywords are stored AT TEST CASE LEVEL, not test case version.
+  $sqlCount  = "SELECT COUNT(DISTINCT(NH_TC.id)) ";
+
+  // search fails if test case has 0 steps - Added LEFT OUTER
+  $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NH_TC " .
+              " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
+              " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
+              " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NH_TCSTEPS ON NH_TCSTEPS.parent_id = NH_TCV.id " .
+              " LEFT OUTER JOIN {$tables['tcsteps']} TCSTEPS ON NH_TCSTEPS.id = TCSTEPS.id  " .
+              " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']} " .
+              " {$from['users']} " .
+              " WHERE 1=1 ";
            
            
-    // if user fill in test case [external] id filter, and we were not able to get tcaseID, do any query is useless
-    $applyFilters = true;
-    if( !is_null($filter) && isset($filter['by_tc_id']) && !is_null($tcaseID) && ($tcaseID <= 0) )
+  // if user fill in test case [external] id filter, and we were not able to get tcaseID, do any query is useless
+  $applyFilters = true;
+  if( !is_null($filter) && isset($filter['by_tc_id']) && !is_null($tcaseID) && ($tcaseID <= 0) )
+  {
+    // get the right feedback message
+    $applyFilters = false;
+    $gui->warning_msg = $tcaseID == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
+  }
+
+  if( $applyFilters )
+  {      
+    if ($filter)
     {
-    	// get the right feedback message
-    	$applyFilters = false;
-    	$gui->warning_msg = $tcaseID == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
+      $sqlPart2 .= implode("",$filter);
     }
-    if( $applyFilters )
-    {      
-    	if ($filter)
-    	{
-    	    $sqlPart2 .= implode("",$filter);
-    	}
- 	
-    	// Count results
-    	$sql = $sqlCount . $sqlPart2;
-    	$gui->row_qty = $db->fetchOneValue($sql); 
-    	if ($gui->row_qty)
-    	{
-    		if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
-    		{
-    	        $sql = $sqlFields . $sqlPart2;
-    			$map = $db->fetchRowsIntoMap($sql,'testcase_id');	
-			}
-			else
-			{
-				$gui->warning_msg = lang_get('too_wide_search_criteria');
-			}	
-		}
-	}
+  
+    $sqlPart2 .= $otherFilters;
+
+
+    // Count results
+    $sql = $sqlCount . $sqlPart2;
+
+    $gui->row_qty = $db->fetchOneValue($sql); 
+    if ($gui->row_qty)
+    {
+      if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
+      {
+        $sql = $sqlFields . $sqlPart2;
+        $map = $db->fetchRowsIntoMap($sql,'testcase_id'); 
+      }
+      else
+      {
+        $gui->warning_msg = lang_get('too_wide_search_criteria');
+      } 
+    }
+  }
 }
 
-$smarty = new TLSmarty();
+if($gui->doSearch)
+{
+  $gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
+}  
+
 if($gui->row_qty > 0)
-{	
-	if ($map)
-	{
-		$tcase_mgr = new testcase($db);   
-	    $tcase_set = array_keys($map);
-	    $options = array('output_format' => 'path_as_string');
-	    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
-		$gui->resultSet = $map;
-	}
+{ 
+  if ($map)
+  {
+    $tcase_mgr = new testcase($db);   
+    $tcase_set = array_keys($map);
+    $options = array('output_format' => 'path_as_string');
+    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
+    $gui->resultSet = $map;
+  }
 }
 else
 {
-	$gui->warning_msg=lang_get('no_records_found');
+  $gui->warning_msg=lang_get('no_records_found');
 }
 
-$table = buildExtTable($gui, $charset, $edit_icon, $history_icon);
-
-if (!is_null($table)) {
-	$gui->tableSet[] = $table;
+$img = $smarty->getImages();
+$table = buildExtTable($gui, $charset, $img['edit_icon'], $img['history_small']);
+if (!is_null($table)) 
+{
+  $gui->tableSet[] = $table;
 }
 
-$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
+
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
@@ -235,136 +273,144 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui, $charset, $edit_icon, $history_icon) {
-	$table = null;
-	if(count($gui->resultSet) > 0) {
-		$labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
-		$columns = array();
-		
-		$columns[] = array('title_key' => 'test_suite');
-		$columns[] = array('title_key' => 'test_case', 'type' => 'text');
-	
-		// Extract the relevant data and build a matrix
-		$matrixData = array();
-		
-		$titleSeperator = config_get('gui_title_separator_1');
-		
-		foreach($gui->resultSet as $result) {
-			$rowData = array();
-			$rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
-			
-			// build test case link
-			$history_link = "<a href=\"javascript:openExecHistoryWindow({$result['testcase_id']});\">" .
-						 "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
-						 "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
-			$tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
-			             htmlentities($result['name'], ENT_QUOTES, $charset);
-		    $tcLink = $history_link . $edit_link . $tcaseName;
-			$rowData[] = $tcLink;
+function buildExtTable($gui, $charset, $edit_icon, $history_icon) 
+{
+  $table = null;
+  if(count($gui->resultSet) > 0) 
+  {
+    $labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
+    $columns = array();
+    
+    $columns[] = array('title_key' => 'test_suite');
+    $columns[] = array('title_key' => 'test_case', 'type' => 'text');
 
-			$matrixData[] = $rowData;
-		}
-		
-		$table = new tlExtTable($columns, $matrixData, 'tl_table_test_case_search');
-		
-		$table->setGroupByColumnName($labels['test_suite']);
-		$table->setSortByColumnName($labels['test_case']);
-		$table->sortDirection = 'DESC';
-		
-		$table->showToolbar = true;
-		$table->allowMultiSort = false;
-		$table->toolbarRefreshButton = false;
-		$table->toolbarShowAllColumnsButton = false;
-		
-		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
-		
-		// dont save settings for this table
-		$table->storeTableState = false;
-	}
-	return($table);
+    $columns[] = array('title_key' => 'summary');
+  
+    // Extract the relevant data and build a matrix
+    $matrixData = array();
+    
+    $titleSeperator = config_get('gui_title_separator_1');
+    
+    foreach($gui->resultSet as $result) 
+    {
+      $rowData = array();
+      $rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
+      
+      // build test case link
+      $history_link = "<a href=\"javascript:openExecHistoryWindow({$result['testcase_id']});\">" .
+                      "<img title=\"". lang_get('execution_history') . "\" src=\"{$history_icon}\" /></a> ";
+      $edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
+                   "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
+      $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . 
+                   " [v" . $result['version'] . "]" . $titleSeperator .
+                   htmlentities($result['name'], ENT_QUOTES, $charset);
+
+      $rowData[] = $history_link . $edit_link . $tcaseName;
+      $rowData[] = $result['summary'];
+
+      $matrixData[] = $rowData;
+    }
+    
+    $table = new tlExtTable($columns, $matrixData, 'tl_table_test_case_search');
+    
+    $table->setGroupByColumnName($labels['test_suite']);
+    $table->setSortByColumnName($labels['test_case']);
+    $table->sortDirection = 'DESC';
+    
+    $table->showToolbar = true;
+    $table->allowMultiSort = false;
+    $table->toolbarRefreshButton = false;
+    $table->toolbarShowAllColumnsButton = false;
+    
+    $table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+    $table->storeTableState = false;
+  }
+  return($table);
 }
 
 
 /**
  *
- *
  */
-function init_args($dateFormat)
+function init_args(&$tprojectMgr)
 {
-	$args = new stdClass();
-	
-	// BUGID 3716
-	$iParams = array("keyword_id" => array(tlInputParameter::INT_N),
-			         "version" => array(tlInputParameter::INT_N,999),
-					 "custom_field_id" => array(tlInputParameter::INT_N),
-					 "name" => array(tlInputParameter::STRING_N,0,50),
-					 "summary" => array(tlInputParameter::STRING_N,0,50),
-					 "steps" => array(tlInputParameter::STRING_N,0,50),
-					 "expected_results" => array(tlInputParameter::STRING_N,0,50),
-					 "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
-					 "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
-					 "preconditions" => array(tlInputParameter::STRING_N,0,50),
-					 "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
-					 "importance" => array(tlInputParameter::INT_N),
-					 "creation_date_from" => array(tlInputParameter::STRING_N),
-					 "creation_date_to" => array(tlInputParameter::STRING_N),
-	                 "modification_date_from" => array(tlInputParameter::STRING_N),
-					 "modification_date_to" => array(tlInputParameter::STRING_N));
-		
-	$args = new stdClass();
-	R_PARAMS($iParams,$args);
-
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
-
-	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
-	// BUGID 3716
-	// convert "creation date from" to iso format for database usage
-    if (isset($args->creation_date_from) && $args->creation_date_from != '') {
-		$date_array = split_localized_date($args->creation_date_from, $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			$args->creation_date_from = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-		}
-	}
-	
-	// convert "creation date to" to iso format for database usage
-    if (isset($args->creation_date_to) && $args->creation_date_to != '') {
-		$date_array = split_localized_date($args->creation_date_to, $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			// date to means end of selected day -> add 23:59:59 to selected date
-			$args->creation_date_to = $date_array['year'] . "-" . $date_array['month'] . "-" .
-			                          $date_array['day'] . " 23:59:59";
-		}
-	}
-	
-	// convert "modification date from" to iso format for database usage
-    if (isset($args->modification_date_from) && $args->modification_date_from != '') {
-		$date_array = split_localized_date($args->modification_date_from, $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			$args->modification_date_from= $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-		}
-	}
-	
-	//$args->modification_date_to = strtotime($args->modification_date_to);
-	// convert "creation date to" to iso format for database usage
-    if (isset($args->modification_date_to) && $args->modification_date_to != '') {
-		$date_array = split_localized_date($args->modification_date_to, $dateFormat);
-		if ($date_array != null) {
-			// set date in iso format
-			// date to means end of selected day -> add 23:59:59 to selected date
-			$args->modification_date_to = $date_array['year'] . "-" . $date_array['month'] . "-" .
-			                          $date_array['day'] . " 23:59:59";
-		}
-	}
+  $args = new stdClass();
+  $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,10),
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "status" => array(tlInputParameter::INT_N),
+                   "keyword_id" => array(tlInputParameter::INT_N),
+                   "version" => array(tlInputParameter::INT_N,999),
+                   "custom_field_id" => array(tlInputParameter::INT_N),
+                   "name" => array(tlInputParameter::STRING_N,0,50),
+                   "created_by" => array(tlInputParameter::STRING_N,0,50),
+                   "edited_by" => array(tlInputParameter::STRING_N,0,50),
+                   "summary" => array(tlInputParameter::STRING_N,0,50),
+                   "steps" => array(tlInputParameter::STRING_N,0,50),
+                   "expected_results" => array(tlInputParameter::STRING_N,0,50),
+                   "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
+                   "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
+                   "preconditions" => array(tlInputParameter::STRING_N,0,50),
+                   "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
+                   "importance" => array(tlInputParameter::INT_N),
+                   "creation_date_from" => array(tlInputParameter::STRING_N),
+                   "creation_date_to" => array(tlInputParameter::STRING_N),
+                   "modification_date_from" => array(tlInputParameter::STRING_N),
+                   "modification_date_to" => array(tlInputParameter::STRING_N),
+                   "jolly" => array(tlInputParameter::STRING_N));
     
-	new dBug($args);
-    return $args;
+
+      
+  $args = new stdClass();
+  R_PARAMS($iParams,$args);
+
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+
+  $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+
+  if(is_null($args->tproject_id) || intval($args->tproject_id) <= 0)
+  {
+    $args->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
+    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+  }  
+  else
+  {
+    $args->tprojectID = intval($args->tproject_id);
+    $info = $tprojectMgr->get_by_id($args->tprojectID);
+    $args->tprojectName = $info['name'];
+  }  
+
+  if($args->tprojectID <= 0)
+  {
+    throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
+  }   
+
+  // convert "creation date from" to iso format for database usage
+  $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
+               'modification_date_from' => '', 'modification_date_to' => " 23:59:59");
+
+
+  $k2f = array('creation_date_from' => ' creation_ts >= ',
+               'creation_date_to' => 'creation_ts <= ',
+               'modification_date_from' => ' modification_ts >= ', 
+               'modification_date_to' => ' modification_ts <= ');
+
+
+  $dateFormat = config_get('date_format');
+  $filter = null;
+  foreach($k2w as $key => $value)
+  {
+    if (isset($args->$key) && $args->$key != '') 
+    {
+      $da = split_localized_date($args->$key, $dateFormat);
+      if ($da != null) 
+      {
+        $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
+        $filter[$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
+      }
+    }
+  } 
+
+  return array($args,$filter);
 }
 
 
@@ -372,25 +418,97 @@ function init_args($dateFormat)
  * 
  *
  */
-function initializeGui(&$argsObj)
+function initializeGui(&$argsObj,&$tprojectMgr)
 {
-	$gui = new stdClass();
+  $gui = new stdClass();
 
-	$gui->pageTitle = lang_get('caption_search_form');
-	$gui->warning_msg = '';
-	$gui->tcasePrefix = '';
-	$gui->path_info = null;
-	$gui->resultSet = null;
-	$gui->tableSet = null;
-	$gui->bodyOnLoad = null;
-	$gui->bodyOnUnload = null;
-	$gui->refresh_tree = false;
-	$gui->hilite_testcase_name = false;
-	$gui->show_match_count = false;
-	$gui->tc_current_version = null;
-	$gui->row_qty = 0;
-	
-    return $gui;
+  $gui->pageTitle = lang_get('caption_search_form');
+  $gui->warning_msg = '';
+  $gui->path_info = null;
+  $gui->resultSet = null;
+  $gui->tableSet = null;
+  $gui->bodyOnLoad = null;
+  $gui->bodyOnUnload = null;
+  $gui->refresh_tree = false;
+  $gui->hilite_testcase_name = false;
+  $gui->show_match_count = false;
+  $gui->row_qty = 0;
+  $gui->doSearch = ($argsObj->doAction == 'doSearch');
+  $gui->tproject_id = intval($argsObj->tprojectID);
+  
+  // ----------------------------------------------------
+  $gui->mainCaption = lang_get('testproject') . " " . $argsObj->tprojectName;
+ 
+  $gui->creation_date_from = null;
+  $gui->creation_date_to = null;
+  $gui->modification_date_from = null;
+  $gui->modification_date_to = null;
+  $gui->search_important_notice = sprintf(lang_get('search_important_notice'),$argsObj->tprojectName);
+
+  // $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,cfield_mgr::ENABLED,null,'testcase');
+  // $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
+  // $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
+  // $gui->filter_by['keyword'] = !is_null($gui->keywords);
+  // $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
+  // $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
+
+  // $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
+  //                                LOW => lang_get('low_importance'));
+
+ 
+  //$dummy = getConfigAndLabels('testCaseStatus','code');
+  //$gui->domainTCStatus = array(0 => '') + $dummy['lbl'];
+
+
+  // need to set values that where used on latest search (if any was done)
+  // $gui->importance = config_get('testcase_importance_default');
+
+  return $gui;
 }
 
-?>
+/**
+ *
+ */
+function initSearch(&$gui,&$argsObj,&$tprojectMgr)
+{
+  $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,
+                                                                           cfield_mgr::ENABLED,null,'testcase');
+
+  $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
+
+  $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
+  $gui->filter_by['keyword'] = !is_null($gui->keywords);
+
+  $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
+  $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
+  $reqSpecSet = null; 
+
+  $gui->importance = intval($argsObj->importance);
+  $gui->status = intval($argsObj->status);
+  $gui->tcversion = (is_null($argsObj->version) || $argsObj->version == '') ? '' : intval($argsObj->version);
+
+  $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . config_get('testcase_cfg')->glue_character;
+
+
+  $gui->targetTestCase = (is_null($argsObj->targetTestCase) || $argsObj->targetTestCase == '') ? 
+                         $gui->tcasePrefix : $argsObj->targetTestCase;
+
+  
+  $txtin = array("created_by","edited_by","jolly");   
+  $jollyKilled = array("summary","steps","expected_results","preconditions","name");
+  $txtin = array_merge($txtin, $jollyKilled);
+  
+  foreach($txtin as $key )
+  {
+    $gui->$key = $argsObj->$key;
+  }  
+
+  if($argsObj->jolly != '')
+  {
+    foreach($jollyKilled as $key)
+    {
+      $gui->$key = '';  
+    }  
+  }  
+
+}

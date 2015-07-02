@@ -1,22 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $
-Purpose: smarty template - assign REQ to one test case
-
-20110811 - franciscom - TICKET 4661: Implement Requirement Specification Revisioning for better traceabilility
-20100403 - franciscom - SCOPE_SHORT_TRUNCATE
-20080512 - franciscom - added new parameter to manage "close window" button display.
-                        Is used when this feature is called on a new window, not from menu.
-                        
-20070617 - franciscom - manage checkboxes as arrays
-                        added js logic to toggle/untoggle all
-
-20070104 - franciscom -
-1. added feedback message when there are not requirements
-2. added control via javascrit on quantity of checked checkboxes
-
+@filesource reqAssign.tpl
+assign REQ to one test case
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
@@ -25,18 +12,15 @@ Purpose: smarty template - assign REQ to one test case
              req_title_assigned,check_uncheck_all_checkboxes,
              req_msg_norequirement,btn_unassign,req_title_unassigned,
              check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign,
-             requirement"}
+             req_doc_id,req,scope,assigned_by,timestamp,requirement"}
           
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-//BUGID 3943: Escape all messages (string)
-	var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
-	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
-
+var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 function check_action_precondition(form_id,action)
 {
 	if(checkbox_count_checked(form_id) <= 0)
@@ -47,32 +31,31 @@ function check_action_precondition(form_id,action)
 	return true;
 }
 
-// Ext.onReady(function()
-// {
-//   // Convert combo idSRS	  
-//   var idx=0;
-//   var gridSet = new Array();
-//   var converted = new Ext.form.ComboBox({
-//    typeAhead: true,
-//    triggerAction: 'all',
-//    transform:'idSRS',
-//    width:135,
-//    forceSelection:true
-//  });
-// 
-// 	alert('AISA');
-// });
-{/literal}
+/**
+ *
+ */
+function refreshAndClose(tcase_id,callback) 
+{
+  if(callback == 'a')
+  {
+    target = fRoot+'lib/testcases/archiveData.php?tcase_id=' + tcase_id + '&show_mode=';  
+    window.opener.location.href = target;
+  }  
+  else
+  {
+    window.opener.location.reload(true);
+  }  
+  window.close();
+}
 </script>
 </head>
 
 <body>
 
 <h1 class="title">
-	{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->tcTitle|escape}
-	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
+{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->tcTitle|escape}
+{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
 </h1>
-
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 {if $gui->arrReqSpec eq "" }
@@ -80,17 +63,33 @@ function check_action_precondition(form_id,action)
 {else}
   <h2>{$labels.req_title_assign}</h2>
   <form id="SRS_switch" name="SRS_switch" method="post">
+    <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
+    {if $gui->tcase_id != 0}
+      <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
+      <input type="hidden" name="callback" id="callback" value="{$gui->callback}" />
+    {/if}
+
     <p><span class="labelHolder">{$labels.req_spec}</span>   
   	<select name="idSRS" id="idSRS" onchange="form.submit()">
   		{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}
   	</select>
   </form>
+{if $gui->showCloseButton}
+  <form name="closeMeTop">
+    <div class="groupBtn">
+      <input type="button" value="{$labels.btn_close}" 
+        onclick="refreshAndClose({$gui->tcase_id},'{$gui->callback}');" />
+    </div>
+  </form>
+{/if}
+
 </div>
 
 <div class="workBack">
   <h2>{$labels.req_title_assigned}</h2>
   {if $gui->arrAssignedReq ne ""}
     <form id="reqList" method="post">
+    <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
     <div id="div_assigned_req">
  	    {* used as memory for the check/uncheck all checkbox javascript logic *}
        <input type="hidden" name="memory_assigned_req"
@@ -104,9 +103,11 @@ function check_action_precondition(form_id,action)
       		             onclick='cs_all_checkbox_in_div("div_assigned_req","assigned_req","memory_assigned_req");'
       		             title="{$labels.check_uncheck_all_checkboxes}" />
       		</th>
-    		<th>{lang_get s="req_doc_id"}</th>
-    		<th>{lang_get s="req"}</th>
-    		<th>{lang_get s="scope"}</th>
+    		<th>{$labels.req_doc_id}</th>
+    		<th>{$labels.req}</th>
+    		<th>{$labels.scope}</th>
+        <th>{$labels.assigned_by}</th>
+        <th>{$labels.timestamp}</th>
     	</tr>
     	{section name=row loop=$gui->arrAssignedReq}
     	<tr>
@@ -116,6 +117,8 @@ function check_action_precondition(form_id,action)
     		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
     			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
     		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
+        <td>{$gui->arrAssignedReq[row].coverageAuthor}</td>
+        <td>{localize_timestamp ts=$gui->arrAssignedReq[row].coverageTS}</td>
     	</tr>
     	{sectionelse}
     	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
@@ -139,6 +142,7 @@ function check_action_precondition(form_id,action)
       <div class="workBack">
       <h2>{$labels.req_title_unassigned}</h2>
       <form id="reqList2" method="post">
+        <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
 
        <div id="div_free_req">
  	     {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -170,7 +174,7 @@ function check_action_precondition(form_id,action)
       		<td>{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
       	</tr>
       	{sectionelse}
-      	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement66}</span></td></tr>
+      	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
       	{/section}
       </table>
 	  </div>
@@ -185,7 +189,8 @@ function check_action_precondition(form_id,action)
 {if $gui->showCloseButton}
 	<form name="closeMe">
 		<div class="groupBtn">
-			<input type="button" value="{$labels.btn_close}" onclick="window.close()" />
+			<input type="button" value="{$labels.btn_close}" 
+        onclick="refreshAndClose({$gui->tcase_id},'{$gui->callback}');" />
 		</div>
 	</form>
 {/if}

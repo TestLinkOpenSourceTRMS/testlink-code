@@ -1,8 +1,12 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.9.6.1 2010/11/21 16:54:44 asimon83 Exp $
+@filesource tcTree.js
 
-Created using EXT JS examples.
+*** Created using EXT JS examples.
+
+Code to save/restore tree state using example found on Ext JS forum
+Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
+
 This code has following features:
 
 - tree will created using a tree loader code, that get tree information
@@ -15,18 +19,10 @@ This code has been used in following TL features
 - Test Specification Tree
 - Test Plan Design (test case assignment/link to test plan)
 
-
 Author: franciscom - 20080525
 
-rev:
-    20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
-    20080628 - franciscom - unclosed comment bug
-    20080607 - franciscom -
-    20080603 - franciscom - drag & drop disabled
-    20080528 - franciscom - added code to save/restore tree state
-                            using example found on Ext JS forum
-    Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
-                            
+@internal revisions
+
                             
 */
 
@@ -189,10 +185,8 @@ Ext.onReady(function(){
     
     tree.setRootNode(root);
 
-    // render the tree
     tree.render();
     
-    // 20080622 - franciscom
     var treeState = new TreePanelState(tree,treeCfg.cookiePrefix);                     
     treeState.init();                                             
     
@@ -215,7 +209,4 @@ Ext.onReady(function(){
     
     // restore last state from tree or to the root node as default
     treeState.restoreState(tree.root.getPath());                  
-    
-    //root.expand();
-    
 });

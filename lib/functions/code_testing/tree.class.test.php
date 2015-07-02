@@ -3,16 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: tree.class.test.php,v $
- *
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @filesource  tree.class.test.php
  * @author Francisco Mancardi
  *
  * 
  *
- * rev :
-*/
+ * @internal revisions
+ *
+ */
 
 require_once('../../../config.inc.php');
 require_once('common.php');
@@ -24,6 +22,13 @@ testlinkInitPage($db);
 echo "<pre> tree - constructor - tree(&\$db)";echo "</pre>";
 $tree_mgr=new tree($db);
 new dBug($tree_mgr);
+
+echo "<pre> tree - getNodeByAttributes()";echo "</pre>";
+$xx = $tree_mgr->getNodeByAttributes(array('type' => 'testproject','name' => 'ISSUE-5429'));
+new dBug($xx);
+
+$xx = $tree_mgr->getNodeByAttributes(array('type' => 'testplan','name' => 'AKA','parent_id' => 5675));
+new dBug($xx);
 
 echo "<pre> tree - get_available_node_types()";echo "</pre>";
 $available_node_types = $tree_mgr->get_available_node_types();
@@ -97,30 +102,4 @@ echo "<pre> tree - get_node_hierarchy_info(\$node_id) ";echo "</pre>";
 echo "<pre> get_node_hierarchy_info($node_id) ";echo "</pre>";
 $node_hierachy_info=$tree_mgr->get_node_hierarchy_info($node_id) ;
 new dBug($node_hierachy_info);
-
-
-/*
-function tree(&$db) 
-function get_available_node_types() 
-function new_root_node($name = '') 
-function new_node($parent_id,$node_type_id,$name='',$node_order=0,$node_id=0) 
-function get_node_hierarchy_info($node_id) 
-function get_subtree_list($node_id)
-function _get_subtree_list($node_id,&$node_list)
-function delete_subtree($node_id)
-function get_path($node_id,$to_node_id = null,$format = 'full') 
-function _get_path($node_id,&$node_list,$to_node_id=null,$format='full') 
-function change_parent($node_id, $parent_id) 
-function get_children($id,$exclude_node_types=null) 
-function change_order_bulk($hash_node_id, $hash_node_order) 
-function change_order_bulk_new($nodes) 
-function get_subtree($node_id,$exclude_node_types=null,
-function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
-function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
-*/
-
-
-
-
-
 ?>

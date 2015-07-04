@@ -43,15 +43,15 @@ Author : franciscom
                 {html_options options=$gui->execStatusValues}
                 </select>
               {/if}
-                
 
-    					  <br />		
+                {if $tlCfg->exec_cfg->features->exec_duration->enabled}	
+                <br />	
                 {$args_labels.execution_duration}&nbsp;
                 <input type="text" name="execution_duration" id="execution_duration"
                        size="{#EXEC_DURATION_SIZE#}" 
                        onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
-                       maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
-
+                       maxlength="{#EXEC_DURATION_MAXLEN#}">  
+                {/if}       		 			
               {if $args_save_type == 'single'}
                 <br />
                 {$addBR=0}

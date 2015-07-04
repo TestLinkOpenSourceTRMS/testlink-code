@@ -56,6 +56,9 @@ Author : eloff, 2010
   {$rowCount=$steps|@count} 
   {$row=0}
 
+  {$att_ena = isset($add_exec_info) && $add_exec_info}
+  {$att_ena = $att_ena && $tlCfg->exec_cfg->steps_exec_attachments}
+
   {foreach from=$steps item=step_info}
   <tr id="step_row_{$step_info.step_number}">
     <td style="text-align:left;">
@@ -110,7 +113,7 @@ Author : eloff, 2010
     {/if}
    
   </tr>
-  {if $gui->allowStepAttachments && isset($add_exec_info) && $add_exec_info}
+  {if $gui->allowStepAttachments && $att_ena}
     <tr>
       <td colspan=6>
       {include file="attachments_simple.inc.tpl" attach_id=$step_info.id}

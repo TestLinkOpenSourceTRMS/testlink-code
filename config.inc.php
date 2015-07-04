@@ -853,6 +853,10 @@ $tlCfg->exec_cfg->steps_results_layout = 'horizontal';
 // 
 $tlCfg->exec_cfg->steps_exec = true;
 
+// this setting will work on AND mode with: 
+// $tlCfg->exec_cfg->steps_exec
+$tlCfg->exec_cfg->steps_exec_attachments = true;
+
 // When textarea is displayed to allow user to write execution notes
 // at step level, choose what to display:
 // 'empty'
@@ -888,6 +892,13 @@ $tlCfg->exec_cfg->copyLatestExecIssues->default = FALSE;
 // 'execution_id,bug_id,builds.name'
 // (see exec.inc.php, function get_bugs_for_exec())
 $tlCfg->exec_cfg->bugs_order_clause = ' ORDER BY builds.name,bug_id ';
+
+$tlCfg->exec_cfg->features = new stdClass();
+$tlCfg->exec_cfg->features->attachments = new stdClass();
+$tlCfg->exec_cfg->features->attachments->enabled = true;
+$tlCfg->exec_cfg->features->exec_duration = new stdClass();
+$tlCfg->exec_cfg->features->exec_duration->enabled = true;
+
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */

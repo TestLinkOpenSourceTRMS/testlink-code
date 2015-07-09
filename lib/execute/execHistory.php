@@ -6,8 +6,7 @@
  * @filesource  execHistory.php
  *
  * @internal revisions
- * @since 1.9.8
- * 20130709 - franciscom - TICKET 5804: Failed Test Cases report shows history on all projects, ignoring Role security
+ * @since 1.9.14
  *
 **/
 require_once('../../config.inc.php');
@@ -44,10 +43,15 @@ $gui->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID
 $testPlanSet = 
   (array)$args->user->getAccessibleTestPlans($db,$gui->tproject_id,null,
                                              array('active' => $args->onlyActiveTestPlans));
+
+$gui->grants = new stdClass();
+$gui->grants->exec_edit_notes = null;   
 $filters['testplan_id'] = null;
 foreach($testPlanSet as $rx)
 {
   $filters['testplan_id'][] = $rx['id'];
+  $gui->grants->exec_edit_notes[$rx['id']] =
+    $args->user->hasRight($db,'exec_edit_notes',$gui->tproject_id,$rx['id']);
 }
 $gui->execSet = $tcase_mgr->getExecutionSet($args->tcase_id,null,$filters);
 
@@ -81,7 +85,6 @@ $gui->main_descr = lang_get('execution_history');
 $gui->detailed_descr = lang_get('test_case') . ' ' . $idCard;
 $gui->tcase_id = intval($args->tcase_id);
 $gui->onlyActiveTestPlans = intval($args->onlyActiveTestPlans);
-
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  

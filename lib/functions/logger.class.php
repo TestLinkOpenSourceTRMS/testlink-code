@@ -15,13 +15,13 @@
  *
  * @package     TestLink
  * @author      Andreas Morsing
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @filesource  logger.class.php
  * @link        http://www.testlink.org
  * @since       1.8
  * 
  * @internal revisions
- *
+ * @since 1.9.14
  **/
  
 /**
@@ -1383,6 +1383,7 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
         ($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
         ($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
         ($errno == E_NOTICE && strpos($errfile,"Config_File.class.php") !== false) ||
+        ($errno == E_WARNING && strpos($errfile,"smarty_internal_write_file.php") !== false) ||
         (strpos($errfile,"Smarty_Compiler.class.php") !== false)
       )
     {

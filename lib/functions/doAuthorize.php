@@ -8,12 +8,12 @@
  * @filesource  doAuthorize.php
  * @package     TestLink
  * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
- * @copyright   2003-2014, TestLink community 
+ * @copyright   2003-2015, TestLink community 
  * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.14
  */
 
 require_once("users.inc.php");
@@ -232,7 +232,7 @@ function auth_does_password_match(&$userObj,$cleartext_password)
       
       $xx = ldap_authenticate($userObj->login, $cleartext_password);
       $ret->status_ok = $xx->status_ok;
-      $ret->msg = $msg[$xx->status_code]; 
+      $ret->msg = $xx->status_ok ? 'ok' : $msg[$xx->status_code]; 
     break;
     
     case 'MD5':

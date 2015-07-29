@@ -12,9 +12,6 @@
  * @internal revisions
  * @since 1.9.14
  *
- * 20141004 - franciscom -added *flat family of functions
- *
- * 
  **/ 
 
 /**
@@ -181,6 +178,16 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
     $pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
   }
   
+  // transform in array to be gentle with getTestSpecFromNode()
+  $t2a = array('importance','status');
+  foreach($t2a as $tortuga)
+  {
+    if(!is_null($pfFilters[$tortuga]))
+    {
+      $pfFilters[$tortuga] = (array)$pfFilters[$tortuga];
+    }  
+  }  
+
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);

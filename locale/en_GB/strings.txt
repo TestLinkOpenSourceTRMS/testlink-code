@@ -3322,6 +3322,7 @@ $TLS_platform_update_failed = "Platform update failed";
 $TLS_warning_empty_platform = "Platform can not be empty!";
 
 // ----- api/TestlinkXMLRPCServerErrors.php -----
+$TLS_API_NO_MATCH = "No match between following parameters (%s)";
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
 $TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key " .
                  "has insufficient rights to perform this action" .
@@ -3355,6 +3356,9 @@ $TLS_API_BUILDNAME_ALREADY_EXISTS = "Build name (%s) already exists (id:%s)";
 $TLS_API_BUILDNAME_DOES_NOT_EXIST = "Build Name (buildname: %s) provided does not exist!";
 $TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
 $TLS_API_TCASEID_NOT_IN_TPLANID = "Test Case (name=%s/id=%s) is not associated with Test Plan (name=%s/id=%s).";
+
+$TLS_API_TCVERSIONID_NOT_IN_TPLANID = "Test Case Version (num=%s/id=%s) is not associated with Test Plan (name=%s/id=%s).";
+
 $TLS_API_GENERAL_SUCCESS = "Success!";
 $TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (%s) provided does not exist!";
 $TLS_API_INVALID_TESTSUITEID = "ID %s do not belongs to a Test Suite present on system!";

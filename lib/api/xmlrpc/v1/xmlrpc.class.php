@@ -56,8 +56,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   const   BUILD_GUESS_DEFAULT_MODE=OFF;
   const   SET_ERROR=true;
   const   CHECK_PUBLIC_PRIVATE_ATTR=true;
-  
-
+ 
   /**
    * The DB object used throughout the class
    * 
@@ -205,6 +204,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $estimatedExecDurationParamName = "estimatedexecduration";
 
   public static $prefixParamName = "prefix";
+  public static $testCaseVersionIDParamName = "tcversionid";
   
   /**#@-*/
   
@@ -4950,7 +4950,7 @@ protected function createAttachmentTempFile()
      *                                if devKey is not valid => abort.
      *
      * @param string $args["customfieldname"]: custom field name
-     * @param int     $args["tprojectid"]: project id
+     * @param int    $args["tprojectid"]: project id
      * @param string $args["nodetype"]: note type (testcase, testsuite, ...)
      * @param int    $args["nodeid"]: node id (test case version id, project id, ...)
      * @param string $args["scope"]: cf scope (execution, design or testplan_design)
@@ -4962,43 +4962,77 @@ protected function createAttachmentTempFile()
      *
      * @access protected
      */
-    protected function getCustomFieldValue($args)
+    protected function getCustomFieldValue($args,$msg_prefix='')
     {
-        $msg_prefix="(" .__FUNCTION__ . ") - ";
-        $this->_setArgs($args);
+      $this->_setArgs($args);
 
-        $checkFunctions = array('authenticate','checkTestProjectID','checkCustomField','checkCustomFieldScope');
-        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+      $checkFunctions = array('authenticate','checkTestProjectID','checkCustomField','checkCustomFieldScope');
+      $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
 
-        if($status_ok && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR))
-        {
-            $cf_name = $this->args[self::$customFieldNameParamName];
-            $tproject_id = $this->args[self::$testProjectIDParamName];
-            $nodetype = $this->args[self::$nodeTypeParamName];
-            $nodeid = $this->args[self::$nodeIDParamName];
-            $scope = $this->args[self::$scopeParamName];
-            $executionid = $this->args[self::$executionIDParamName];
-            $testplanid = $this->args[self::$testPlanIDParamName];
-            $linkid = $this->args[self::$linkIDParamName];
+      $scope = $this->args[self::$scopeParamName];
 
-            $enabled = 1; // returning only enabled custom fields
-
-            $cfield_mgr = $this->tprojectMgr->cfield_mgr;
-            $cfinfo = $cfield_mgr->get_by_name($cf_name);
-            $cfield = current($cfinfo);
-
-          switch($scope)
-          {
-            case 'design':
-              $filters = array( 'cfield_id' => $cfield['id']);
-              $cfieldSpec = $cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-                                          $filters,$nodetype,$nodeid);
-            break;
-            
+      switch($scope)
+      {
         case 'execution': 
-              $cfieldSpec = $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,$nodetype,
-                                             $nodeid,$executionid,$testplanid);
-            break;
+
+          // test plan id is valid ?
+          if( ($status_ok = $this->checkTestPlanID($msg_prefix)) )
+          {
+            // test plan has to belong to test project
+            $tplanid = intval($this->args[self::$testPlanIDParamName]);
+            $tprojectid = intval($this->args[self::$testProjectIDParamName]);
+            
+            $sql = " SELECT id FROM {$this->tables['nodes_hierarchy']} " .
+                   " WHERE id = " . $tplanid .
+                   " AND parent_id = " . $tprojectid;
+            
+            $rs = $this->dbObj->get_recordset($sql);
+            $status_ok = !is_null($rs); 
+            if( $status_ok == FALSE )
+            {
+              $project = $this->tprojectMgr->get_by_id($tprojectid);
+              $plan = $this->tplanMgr->get_by_id($tplanid);
+              $msg = sprintf(TPLAN_TPROJECT_KO_STR,$plan['name'],$tplanid,
+                             $project['name'],$tprojectid);  
+              $this->errors[] = new IXR_Error(TPLAN_TPROJECT_KO,
+                                              $msg_prefix . $msg); 
+            }  
+          }  
+        break;
+
+        case 'design':
+        default:
+        break;
+      }
+
+      if($status_ok && $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR))
+      {
+        $cf_name = $this->args[self::$customFieldNameParamName];
+        $tproject_id = $this->args[self::$testProjectIDParamName];
+        $nodetype = $this->args[self::$nodeTypeParamName];
+        $nodeid = $this->args[self::$nodeIDParamName];
+        $executionid = $this->args[self::$executionIDParamName];
+        $testplanid = $this->args[self::$testPlanIDParamName];
+        $linkid = $this->args[self::$linkIDParamName];
+
+        $enabled = 1; // returning only enabled custom fields
+
+        $cfield_mgr = $this->tprojectMgr->cfield_mgr;
+        $cfinfo = $cfield_mgr->get_by_name($cf_name);
+        $cfield = current($cfinfo);
+
+        switch($scope)
+        {
+          case 'design':
+            $filters = array( 'cfield_id' => $cfield['id']);
+            $cfieldSpec = $cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+                                          $filters,$nodetype,$nodeid);
+          break;
+            
+          case 'execution': 
+            $cfieldSpec = $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,$nodetype,
+                                          $nodeid,$executionid,$testplanid);
+          break;
 
         case 'testplan_design':
              $cfieldSpec = $cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled,$nodetype,
@@ -5018,26 +5052,70 @@ protected function createAttachmentTempFile()
      * Gets a Custom Field of a Test Case in Execution Scope.
      * 
      * @param struct $args
-   * @param string $args["devKey"]: used to check if operation can be done.
-   *                                if devKey is not valid => abort.
-   *
-   * @param string $args["customfieldname"]: custom field name
-   * @param int    $args["tprojectid"]: project id
-   * @param int    $args["version"]: test case version id
-   * @param int    $args["executionid"]: execution id
-   * @param int    $args["testplanid"]: test plan id
-   *
-   * @return mixed $resultInfo
-   *
-   * @access public
+     * @param string $args["devKey"]: used to check if operation can be done.
+     *                               if devKey is not valid => abort.
+     *
+     * @param string $args["customfieldname"]: custom field name
+     * @param int    $args["tprojectid"]: project id
+     * @param int    $args["executionid"]: execution id
+     * @param int    $args["testplanid"]: test plan id
+     *
+     * @return mixed $resultInfo
+     *
+     * @access public
      */
   public function getTestCaseCustomFieldExecutionValue($args)
   {
-      $args[self::$nodeTypeParamName] = 'testcase';
-      $args[self::$nodeIDParamName] = $args[self::$versionNumberParamName];
-      $args[self::$scopeParamName] = 'execution';
+    $msgPrefix = "(" . __FUNCTION__ . ") - ";
+ 
+    $args[self::$nodeTypeParamName] = 'testcase';
+    $args[self::$scopeParamName] = 'execution';
+    
+    $this->_setArgs($args);
+
+    $status_ok = true;
+    $p2c = array(self::$executionIDParamName,self::$versionNumberParamName);
+    foreach($p2c as $prm)
+    {
+      $status_ok = $this->_isParamPresent($prm,$msgPrefix,self::SET_ERROR);
+      if($status_ok == FALSE)
+      {
+        break;
+      }  
+    }
+
+    // version number is related to execution id
+    if($status_ok)
+    {
+      $sql = " SELECT id,tcversion_id FROM {$this->tables['executions']} " .
+             " WHERE id = " . intval($args[self::$executionIDParamName]) .
+             " AND tcversion_number = " . 
+             intval($args[self::$versionNumberParamName]);
       
+      $rs = $this->dbObj->get_recordset($sql);
+
+      //return $sql;
+      if( is_null($rs) )
+      {
+        $status_ok = false;
+        $msg = sprintf(NO_MATCH_STR,
+                       self::$versionNumberParamName . '/' .
+                       self::$executionIDParamName);
+        $this->errors[] = new IXR_Error(NO_MATCH,$msg);      
+      }  
+      else
+      {
+        $args[self::$nodeIDParamName] = $rs[0]['tcversion_id'];
+      }  
+    }
+
+  
+    if($status_ok)
+    {
       return $this->getCustomFieldValue($args);
+    }  
+    return $this->errors;    
+
   }
     
   /**

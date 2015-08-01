@@ -202,6 +202,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $userIDParamName = "userid";
   public static $versionNumberParamName = "version";
   public static $estimatedExecDurationParamName = "estimatedexecduration";
+  public static $executionDurationParamName = "execduration";
 
   public static $prefixParamName = "prefix";
   public static $testCaseVersionIDParamName = "tcversionid";
@@ -1421,15 +1422,25 @@ class TestlinkXMLRPCServer extends IXR_Server
       $notes_field = ",notes";
       $notes_value = ", '{$notes}'";  
     }
-    
+
+    $duration_field = '';
+    $duration_value = '';
+    if( isset($this->args[self::$executionDurationParamName]) )
+    {
+      $duration_field = ',execution_duration';
+      $duration_value = ", " . 
+          floatval($this->args[self::$executionDurationParamName]);  
+    }
+
     $execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
 
     $query = "INSERT INTO {$this->tables['executions']} " .
              " (build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, " .
              " platform_id, tcversion_number," .
-             " execution_type {$notes_field} ) " .
+             " execution_type {$notes_field} {$duration_field}) " .
              " VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
-             " {$tcversion_id},{$platform_id}, {$version_number},{$execution_type} {$notes_value})";
+             " {$tcversion_id},{$platform_id}, {$version_number},{$execution_type} " .
+             " {$notes_value} {$duration_value})";
 
     $this->dbObj->exec_query($query);
     return $this->dbObj->insert_id($this->tables['executions']);    
@@ -2121,8 +2132,10 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @param int $args["buildname"] - optional.
    *                               if not present Build with higher internal ID will be used
    *
-     *
+   *
    * @param string $args["notes"] - optional
+   * @param string $args["execduration"] - optional
+   *
    * @param bool $args["guess"] - optional defining whether to guess optinal params or require them 
    *                               explicitly default is true (guess by default)
    *
@@ -4229,13 +4242,21 @@ public function getTestCase($args)
       
       if(trim($notes) != "")
       {
-          $notes_update = ",notes='{$notes}'";  
+        $notes_update = ",notes='{$notes}'";  
+      }
+
+      $duration_update = '';
+      if( isset($this->args[self::$executionDurationParamName]) )
+      {
+        $duration_update = ",execution_duration=" . 
+          floatval($this->args[self::$executionDurationParamName]);  
       }
         
+
       $sql = " UPDATE {$this->tables['executions']} " .
              " SET tester_id={$tester_id}, execution_ts={$db_now}," . 
              " status='{$status}', execution_type= {$execution_type} " . 
-             " {$notes_update}  WHERE id = {$exec_id}";
+             " {$notes_update} {$duration_update} WHERE id = {$exec_id}";
       
             $this->dbObj->exec_query($sql);
       }

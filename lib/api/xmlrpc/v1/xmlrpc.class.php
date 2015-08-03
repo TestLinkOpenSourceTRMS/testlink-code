@@ -4971,7 +4971,7 @@ protected function createAttachmentTempFile()
      *                                if devKey is not valid => abort.
      *
      * @param string $args["customfieldname"]: custom field name
-     * @param int    $args["tprojectid"]: project id
+     * @param int    $args["testprojectid"]: project id
      * @param string $args["nodetype"]: note type (testcase, testsuite, ...)
      * @param int    $args["nodeid"]: node id (test case version id, project id, ...)
      * @param string $args["scope"]: cf scope (execution, design or testplan_design)
@@ -5077,8 +5077,9 @@ protected function createAttachmentTempFile()
      *                               if devKey is not valid => abort.
      *
      * @param string $args["customfieldname"]: custom field name
-     * @param int    $args["tprojectid"]: project id
+     * @param int    $args["testprojectid"]: project id
      * @param int    $args["executionid"]: execution id
+     * @param int    $args["version"]: test case version NUMBER
      * @param int    $args["testplanid"]: test plan id
      *
      * @return mixed $resultInfo
@@ -5169,12 +5170,12 @@ protected function createAttachmentTempFile()
    * Gets a Custom Field of a Test Suite in Design Scope.
    *
    * @param struct $args
-    * @param string $args["devKey"]: used to check if operation can be done.
-    *                                 if devKey is not valid => abort.
+   * @param string $args["devKey"]: used to check if operation can be done.
+   *                                 if devKey is not valid => abort.
    *
    * @param string $args["customfieldname"]: custom field name
-   * @param int   $args["tprojectid"]: project id
-    * @param int    $args["testsuiteid"]: test suite id
+   * @param int   $args["testprojectid"]: project id
+   * @param int    $args["testsuiteid"]: test suite id
    * 
    * @return mixed $resultInfo
    *
@@ -5197,7 +5198,7 @@ protected function createAttachmentTempFile()
    *                                if devKey is not valid => abort.
    *
    * @param string $args["customfieldname"]: custom field name
-   * @param int    $args["tprojectid"]: project id
+   * @param int    $args["testprojectid"]: project id
    * @param int    $args["testplanid"]: test plan id
    *
    * @return mixed $resultInfo
@@ -5221,7 +5222,7 @@ protected function createAttachmentTempFile()
      *                                if devKey is not valid => abort.
      *
      * @param string $args["customfieldname"]: custom field name
-     * @param int    $args["tprojectid"]: project id
+     * @param int    $args["testprojectid"]: project id
      * @param int    $args["reqspecid"]: requirement specification id
      * 
      * @return mixed $resultInfo
@@ -5245,7 +5246,7 @@ protected function createAttachmentTempFile()
      *                                if devKey is not valid => abort.
      *
      * @param string $args["customfieldname"]: custom field name
-     * @param int    $args["tprojectid"]: project id
+     * @param int    $args["testprojectid"]: project id
      * @param int    $args["requirementid"]: requirement id
      * 
      * @return mixed $resultInfo

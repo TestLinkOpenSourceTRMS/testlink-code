@@ -10,4 +10,4 @@
 --
 --
 CREATE INDEX /*prefix*/executions_idx3 ON  /*prefix*/executions ("tcversion_id");
-CREATE INDEX /*prefix*/attachments_idx1 ON  /*prefix*/executions ("fk_id");
+CREATE INDEX /*prefix*/attachments_idx1 ON  /*prefix*/attachments ("fk_id");

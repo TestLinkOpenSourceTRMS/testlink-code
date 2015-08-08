@@ -178,6 +178,19 @@ Ext.onReady(function() {
 		panel_init_functions[i]();
 	}
 });
+
+/**
+ * Be Carefull this TRUST on existence of $gui->delAttachmentURL
+ */
+function jsCallDeleteFile(btn, text, o_id)
+{ 
+  if( btn == 'yes' )
+  {
+    var windowCfg="width=510,height=150,resizable=yes,dependent=yes";
+    window.open(fRoot+"lib/attachments/attachmentdelete.php?id="+o_id,
+                "Delete",windowCfg);
+  }
+}        
 </script>
 
 

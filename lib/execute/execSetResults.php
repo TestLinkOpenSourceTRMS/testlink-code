@@ -1147,6 +1147,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+
+  // TBD $gui->delAttachmentURL =
+  
   $gui->showExternalAccessString = true;
   $gui->showImgInlineString = false;
   

@@ -261,12 +261,12 @@ CREATE TABLE /*prefix*/execution_tcsteps (
    tcstep_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_tcstep_id DEFAULT ((0)),
    notes nvarchar(max)   NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_notes DEFAULT (NULL),
    status char(1)  NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_status DEFAULT (NULL),
-  CONSTRAINT /*prefix*/PK_executions_tcsteps PRIMARY KEY CLUSTERED 
+  CONSTRAINT /*prefix*/PK_execution_tcsteps PRIMARY KEY CLUSTERED 
   ( 
     id ASC
   ) ON [PRIMARY],
 
-  CONSTRAINT /*prefix*/UIX_executions_tcsteps UNIQUE NONCLUSTERED 
+  CONSTRAINT /*prefix*/UIX_execution_tcsteps UNIQUE NONCLUSTERED 
   ( 
   execution_id,tcstep_id ASC
   ) ON [PRIMARY]

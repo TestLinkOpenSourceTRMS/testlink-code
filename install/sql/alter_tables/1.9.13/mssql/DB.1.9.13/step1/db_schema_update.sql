@@ -21,7 +21,8 @@
 --  -----------------------------------------------------------------------------------
 --
 --- 
-ALTER TABLE /*prefix*/execution_tcsteps DROP CONSTRAINT /*prefix*/PK_execution_tcsteps;
+--- Existent PK has also error on name
+ALTER TABLE /*prefix*/execution_tcsteps DROP CONSTRAINT /*prefix*/PK_executions_tcsteps;
 ALTER TABLE /*prefix*/execution_tcsteps ADD ID INT IDENTITY(1,1);
 ALTER TABLE /*prefix*/execution_tcsteps ADD CONSTRAINT /*prefix*/PK_execution_tcsteps PRIMARY KEY(ID)
 CREATE UNIQUE INDEX /*prefix*/UX1_execution_tcsteps  ON /*prefix*/execution_tcsteps ("execution_id","tcstep_id");

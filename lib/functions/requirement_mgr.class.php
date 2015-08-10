@@ -3824,13 +3824,13 @@ function getCoverageCounterSet($itemSet)
 
     $sqlS = " $debugMsg SELECT COUNT(*) AS qty, source_id AS req_id " .
             " FROM {$this->tables['req_relations']} " .
-            " WHERE source_id IN ({$inSet}) " .
-            ' GROUP BY req_id ';
+            " WHERE source_id IN ({$inSet}) ";
+    $sqlS .= (DB_TYPE == 'mssql') ? ' GROUP BY source_id ' : ' GROUP BY req_id ';
 
     $sqlD = " $debugMsg SELECT COUNT(*) AS qty, destination_id AS req_id " .
             " FROM {$this->tables['req_relations']} " .
-            " WHERE destination_id IN ({$inSet}) " .
-            ' GROUP BY req_id ';
+            " WHERE destination_id IN ({$inSet}) ";
+    $sqlD .= (DB_TYPE == 'mssql') ? ' GROUP BY destination_id ' : ' GROUP BY req_id ';
 
     $sqlT = " SELECT SUM(qty) AS qty, req_id " .
             " FROM ($sqlS UNION ALL $sqlD) D ".

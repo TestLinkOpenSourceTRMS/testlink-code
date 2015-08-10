@@ -67,12 +67,12 @@ class testplan extends tlObjectWithAttachments
 
 
   // Nodes to exclude when do test plan tree traversal
-    var $nt2exclude=array('testplan' => 'exclude_me',
+  var $nt2exclude=array('testplan' => 'exclude_me',
                         'requirement_spec'=> 'exclude_me',
                         'requirement'=> 'exclude_me');
 
-    var $nt2exclude_children=array('testcase' => 'exclude_my_children',
-                     'requirement_spec'=> 'exclude_my_children');
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children',
+                                 'requirement_spec'=> 'exclude_my_children');
 
   /**
    * testplan class constructor
@@ -4215,9 +4215,11 @@ class testplan extends tlObjectWithAttachments
         
         " WHERE TPTCV.testplan_id = " . $safe_id['tplan']  . 
         " AND TPTCV.platform_id " . $safe_id['platform'] .
-        " AND E.status IS NULL " .
-        " GROUP BY tcase_id " .
-        " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
+        " AND E.status IS NULL ";
+
+    $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
+    $sql .= $groupBy .    
+            " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
         
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
@@ -4364,9 +4366,11 @@ class testplan extends tlObjectWithAttachments
         " WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
         " AND TPTCV.platform_id=" . $safe_id['platform'] . 
         " AND E.build_id IN ({$buildsCfg['inClause']}) " .
-        " AND E.status ='" .$this->db->prepare_string($status) . "'" .
-        " GROUP BY tcase_id" .
-        " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
+        " AND E.status ='" .$this->db->prepare_string($status) . "'";
+
+    $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
+    $sql .= $groupBy .    
+            " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
 
     unset($safe_id,$buildsCfg,$sqlLEBBP);
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
@@ -4415,10 +4419,11 @@ class testplan extends tlObjectWithAttachments
 
         " WHERE TPTCV.testplan_id = " . $safe_id['tplan']  . 
         " AND TPTCV.platform_id = " . $safe_id['platform']  .  
-        " AND E.status IS NULL " .
-        " GROUP BY tcase_id " .
-        " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
+        " AND E.status IS NULL ";
 
+    $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
+    $sql .= $groupBy .    
+            " HAVING COUNT(0) = " . intval($buildsCfg['count']) ; 
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
@@ -4500,13 +4505,14 @@ class testplan extends tlObjectWithAttachments
     // if I've requested (Passed or Blocked) on ALL BUILDS
     // Have 2 results for build number.
     //
-        // That logic is wrong when filtering for the SAME STATUS on ALL builds.
-        // Maybe copy/paste-error on refactoring? 
-        // Example: With 3 builds and filtering for FAILED or BLOCKED on ALL builds
-        // we have to get 3 hits for each test case to be shown, not six hits.
-        //$countTarget = intval($buildsCfg['count']) * count($dummy);
-        $countTarget = intval($buildsCfg['count']);
+    // That logic is wrong when filtering for the SAME STATUS on ALL builds.
+    // Maybe copy/paste-error on refactoring? 
+    // Example: With 3 builds and filtering for FAILED or BLOCKED on ALL builds
+    // we have to get 3 hits for each test case to be shown, not six hits.
+    // $countTarget = intval($buildsCfg['count']) * count($dummy);
+    $countTarget = intval($buildsCfg['count']);
 
+    $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
     $sql =   " /* $debugMsg */ " .
         " /* Count() to be used on HAVING */ " .
         " SELECT COUNT(0) AS COUNTER ,NHTCV.parent_id AS tcase_id" .
@@ -4537,8 +4543,7 @@ class testplan extends tlObjectWithAttachments
         " AND TPTCV.platform_id=" . $safe_id['platform'] . 
         " AND E.build_id IN ({$buildsCfg['inClause']}) " .
         " AND E.status IN ('{$statusInClause}')" .
-        " GROUP BY tcase_id" .
-        " HAVING COUNT(0) = " . $countTarget ; 
+        $groupBy . " HAVING COUNT(0) = " . $countTarget ; 
 
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
@@ -4709,8 +4714,10 @@ class testplan extends tlObjectWithAttachments
         " WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
         " AND TPTCV.platform_id=" . $safe_id['platform'] . 
         " AND E.build_id IN ({$buildsCfg['inClause']}) " .
-        " AND E.status IN('{$statusInClause}') " .
-        " GROUP BY tcase_id";
+        " AND E.status IN('{$statusInClause}') ";
+
+    $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
+    $sql .= $groupBy;
 
     unset($safe_id,$buildsCfg,$sqlLEBBP);
 
@@ -4788,9 +4795,11 @@ class testplan extends tlObjectWithAttachments
                    " AND E.tcversion_id = TPTCV.tcversion_id " .
 
                    " WHERE TPTCV.testplan_id = " . $safe_id['tplan']  .
-                   " AND E.status IS NULL " .
-                   " GROUP BY tcase_id " .
-                   " HAVING COUNT(0) = " . intval($buildsCfg['count']) ;
+                   " AND E.status IS NULL ";
+      
+      $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
+      $notRunSQL .= $groupBy .
+                    " HAVING COUNT(0) = " . intval($buildsCfg['count']) ;
 
       $hits['notRun'] = $this->db->fetchRowsIntoMap($notRunSQL,'tcase_id');
 
@@ -4800,21 +4809,21 @@ class testplan extends tlObjectWithAttachments
     $get['otherStatus'] = count($statusSet) > 0;
     if($get['otherStatus'])
     {
-            $statusInClause = implode("','",$statusSet);
+      $statusInClause = implode("','",$statusSet);
             
-            // ATTENTION:
-            // if I've requested (Passed or Blocked) on ALL BUILDS
-            // Have 2 results for build number.
+      // ATTENTION:
+      // if I've requested (Passed or Blocked) on ALL BUILDS
+      // Have 2 results for build number.
 
-            // That logic is wrong when filtering for the SAME STATUS on ALL builds.
-            // Maybe copy/paste-error on refactoring? 
-            // Example: With 3 builds and filtering for FAILED or BLOCKED on ALL builds
-            // we have to get 3 hits for each test case to be shown, not six hits.
-            //$countTarget = intval($buildsCfg['count']) * count($statusSet);
-            $countTarget = intval($buildsCfg['count']);
+      // That logic is wrong when filtering for the SAME STATUS on ALL builds.
+      // Maybe copy/paste-error on refactoring? 
+      // Example: With 3 builds and filtering for FAILED or BLOCKED on ALL builds
+      // we have to get 3 hits for each test case to be shown, not six hits.
+      // $countTarget = intval($buildsCfg['count']) * count($statusSet);
+      $countTarget = intval($buildsCfg['count']);
             
-            $otherStatusSQL =   " /* $debugMsg */ " .
-                    " /* Count() to be used on HAVING - ALOP */ " .
+      $otherStatusSQL = " /* $debugMsg */ " .
+                        " /* Count() to be used on HAVING - ALOP */ " .
                     " SELECT COUNT(0) AS COUNTER ,tcase_id " .
                     " FROM ( " .
                     " SELECT DISTINCT NHTCV.parent_id AS tcase_id, E.build_id " .
@@ -4842,12 +4851,14 @@ class testplan extends tlObjectWithAttachments
                     " WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
                     " AND E.build_id IN ({$buildsCfg['inClause']}) " .
                     " AND E.status IN ('{$statusInClause}')" .
-                    " ) SQX " .
-                    " GROUP BY tcase_id " .
-                    " HAVING COUNT(0) = " . $countTarget ;
+                    " ) SQX ";
+            
+      $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
+      $otherStatusSQL .= $groupBy .
+                         " HAVING COUNT(0) = " . $countTarget ;
     
-            $hits['otherStatus'] = $this->db->fetchRowsIntoMap($otherStatusSQL,'tcase_id');
-        }
+      $hits['otherStatus'] = $this->db->fetchRowsIntoMap($otherStatusSQL,'tcase_id');
+    }
         
     // build results record set
     $hitsFoundOn = array();
@@ -5121,7 +5132,7 @@ class testplan extends tlObjectWithAttachments
     }
     $statusInClause = implode("','",$statusList);
 
-    $sql =   " /* $debugMsg */ " .
+    $sql = " /* $debugMsg */ " .
         " SELECT MAX(LEX.id) AS latest_exec_id ,NHTCV.parent_id AS tcase_id" .
         " FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
@@ -5145,13 +5156,15 @@ class testplan extends tlObjectWithAttachments
 
         " WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
         " AND E.build_id IN ({$buildsCfg['inClause']}) " .
-        " AND E.status IN('{$statusInClause}') " .
-        " GROUP BY tcase_id";
+        " AND E.status IN('{$statusInClause}') ";
+
+    $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
+    $sql .= $groupBy;
 
     unset($safe_id,$buildsCfg,$sqlLEX);
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
-    }
+  }
 
 
 
@@ -5221,13 +5234,15 @@ class testplan extends tlObjectWithAttachments
         " WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
         " AND TPTCV.platform_id=" . $safe_id['platform'] . 
         " AND E.build_id IN ({$buildsCfg['inClause']}) " .
-        " AND E.status IN ('{$statusInClause}') " .
-        " GROUP BY tcase_id";
+        " AND E.status IN ('{$statusInClause}') ";
+
+    $groupBy = ' GROUP BY ' . ((DB_TYPE == 'mssql') ? 'parent_id ':'tcase_id');
+    $sql .= $groupBy;
 
     unset($safe_id,$buildsCfg,$sqlLEBP);
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return is_null($recordset) ? $recordset : array_flip(array_keys($recordset));
-    }
+  }
 
 
 
@@ -5367,7 +5382,7 @@ class testplan extends tlObjectWithAttachments
         " WHERE TPTCV.testplan_id = " . $safe_id['tplan'] . 
         " AND E.build_id IN ({$buildsCfg['inClause']}) " .
         " AND E.status IN ('{$statusInClause}') ";
-        // " GROUP BY tcase_id";
+
 
     unset($safe_id,$buildsCfg,$sqlLEX);
 

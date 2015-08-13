@@ -8119,6 +8119,7 @@ class milestone_mgr extends tlObject
       $additionalFields= ',' . implode(',',$dateFields) ;
       $additionalValues= ',' . implode(',',$dateValues) ;
     }
+    /* for future
     $sql = "INSERT INTO {$this->tables['milestones']} " .
            " (testplan_id,name,platform_id,build_id,a,b,c{$additionalFields}) " .
            " VALUES (" . intval($mi->tplan_id) . "," . 
@@ -8126,6 +8127,14 @@ class milestone_mgr extends tlObject
            intval($mi->platform_id) . "," . intval($mi->build_id) . "," .
            $mi->low_priority . "," .  $mi->medium_priority . "," . $mi->high_priority . 
            $additionalValues . ")";
+    */
+    $sql = "INSERT INTO {$this->tables['milestones']} " .
+           " (testplan_id,name,a,b,c{$additionalFields}) " .
+           " VALUES (" . intval($mi->tplan_id) . "," . 
+           "'{$this->db->prepare_string($mi->name)}'," .
+           $mi->low_priority . "," .  $mi->medium_priority . "," . $mi->high_priority . 
+           $additionalValues . ")";
+
     $result = $this->db->exec_query($sql);
     
     if ($result)

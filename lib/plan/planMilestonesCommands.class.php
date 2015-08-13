@@ -165,12 +165,19 @@ class planMilestonesCommands
 			if (!isset($argsObj->start_date)) {
 				$argsObj->start_date = "";
 			}
+			/*
 	        $argsObj->id = $this->milestone_mgr->create($argsObj->tplan_id,$argsObj->name,
 	                                                    $argsObj->target_date,$argsObj->start_date,
 	                                                    $argsObj->low_priority_tcases,
 	                                                    $argsObj->medium_priority_tcases,
 	                                                    $argsObj->high_priority_tcases);
-	        
+	        */
+            $argsObj->low_priority = $argsObj->low_priority_tcases;
+	        $argsObj->medium_priority = $argsObj->medium_priority_tcases;
+	        $argsObj->high_priority = $argsObj->high_priority_tcases;
+	       
+	        $argsObj->id = $this->milestone_mgr->create($argsObj);
+
 		      $guiObj->user_feedback = 'ok';
 		      if($argsObj->id > 0)
 		      {

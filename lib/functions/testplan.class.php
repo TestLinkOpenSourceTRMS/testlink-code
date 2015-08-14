@@ -8205,17 +8205,18 @@ class milestone_mgr extends tlObject
     $sql=" SELECT M.id, M.name, M.a AS high_percentage, " .
          " M.b AS medium_percentage, M.c AS low_percentage, " .
          " M.target_date, M.start_date, " .
-         " M.testplan_id, NH_TPLAN.name AS testplan_name, " .
-         " M.build_id, B.name AS build_name, " . 
-         " M.platform_id, P.name AS platform_name " .  
+         " M.testplan_id, NH_TPLAN.name AS testplan_name " .
+    //     " M.build_id, B.name AS build_name, " . 
+    //     " M.platform_id, P.name AS platform_name " .  
          " FROM {$this->tables['milestones']} M " .
          " JOIN {$this->tables['nodes_hierarchy']} NH_TPLAN " .
          " ON NH_TPLAN.id=M.testplan_id " .
-         " LEFT OUTER JOIN {$this->tables['builds']} B " .
-         " ON B.id=M.build_id " .
-         " LEFT OUTER JOIN {$this->tables['platforms']} P " .
-         " ON P.id=M.platform_id " .
+    //     " LEFT OUTER JOIN {$this->tables['builds']} B " .
+    //     " ON B.id=M.build_id " .
+    //     " LEFT OUTER JOIN {$this->tables['platforms']} P " .
+    //     " ON P.id=M.platform_id " .
          " WHERE M.id = " . $this->db->prepare_int($id);
+            
     $row = $this->db->fetchRowsIntoMap($sql,'id');
     return $row;
   }

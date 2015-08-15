@@ -40,11 +40,29 @@ $cfg = '' . "\n" .
 '<uribase>' . $site[$targetSite]['url'] . '</uribase>' . "\n" .
 '<projectidentifier>' . $site[$targetSite]['project_id'] . 
 '</projectidentifier>' . "\n" .
-'</issuetracker>';
+ '<custom_fields type="array">' . "\n" .
+ '           <custom_field id="1" name="CF-STRING-OPT">' . "\n" .
+ '               <value>SALAME</value>' . "\n" .
+ '           </custom_field>' . "\n" .
+ '           <custom_field id="2" name="CF-STRING-MANDATORY">' . "\n" .
+ '               <value>STRF</value>' . "\n" .
+ '           </custom_field>' . "\n" .
+ '           <custom_field id="3" name="CF-LIST-OPT" multiple="true">' . "\n" .
+ '               <value type="array">' . "\n" .
+ '                   <value>ALFA</value>' . "\n" .
+ '               </value>' . "\n" .
+ '           </custom_field>' . "\n" .
+ '       </custom_fields>' . "\n" .
+    '</issuetracker>';
 
 echo '<pre><xmp>';var_dump($cfg);echo '</xmp></pre>';
 
 // var_dump($itt);
 $its = new redminerestInterface(15,$cfg);
 var_dump($its->getCfg());
+
+echo 'ADD?';
+
+$its->addIssue('SUMMARY ','TEST DESCR');
+
 

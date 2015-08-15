@@ -953,6 +953,7 @@ $TLS_alt_delete_attachment = "Click here to delete this attachment";
 $TLS_attached_files = "Attached files";
 $TLS_attachment_feature_disabled = "attachment disabled";
 $TLS_button_upload = $TLS_btn_upload;
+$TLS_click_to_get_attachment = 'Click to get attachment';
 $TLS_upload_file_new_file = "Upload new file";
 $TLS_warning_delete_attachment = "Really delete the attachment '%s' ?";
 

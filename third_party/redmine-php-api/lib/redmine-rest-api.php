@@ -117,18 +117,45 @@ class redmine
   /**
    *
    */
+  public function addIssueFromXMLString($XMLString)
+  {
+    $op = $this->_request_xml('POST',"/issues.xml",$XMLString);
+    return $op;
+  }
+
+
+  /**
+   *
+   */
   public function addIssueNoteFromSimpleXML($issueID,$issueXmlObj)
   {
     $op = $this->_request_xml('PUT',"/issues/{$issueID}.xml",$issueXmlObj->asXML());
     return $op;
   }
 
+
+  /**
+   *
+   */
   public function getProjects() 
   {                        
     $items = $this->_get("/projects.xml");
     return $items;
   }                                                   
 
+  /**
+   * @param mixed $id: identifier => string
+   *                   id => int
+   */
+  public function getProjectByIdentity($id) 
+  {                        
+    $item = $this->_get("/projects/{$id}.xml");
+    return $item;
+  }                                                   
+
+  /**
+   *
+   */
   public function getIssueStatuses() 
   {                        
     $items = $this->_get("/issue_statuses.xml");

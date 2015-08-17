@@ -404,9 +404,17 @@ class redminerestInterface extends issueTrackerInterface
       // file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
       $op = $this->APIClient->addIssueFromXMLString($xml);
 
+      if(is_null($op))
+      {
+        $msg = "Error Calling " . __CLASS__ . 
+               "->APIClient->addIssueFromXMLString() " .
+               " check Communication TimeOut ";
+        throw new Exception($msg, 1);
+      }  
+
       $ret = array('status_ok' => true, 'id' => (string)$op->id, 
                    'msg' => sprintf(lang_get('redmine_bug_created'),
-                    $summary,$issueXmlObj->project_id));
+                    $summary,$pid));
      }
      catch (Exception $e)
      {

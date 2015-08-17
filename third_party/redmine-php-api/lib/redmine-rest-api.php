@@ -62,7 +62,7 @@ class redmine
    */
   public function initCurl() 
   {
-    $agent = "TestLink 1.9.10";
+    $agent = "TestLink 1.9.14";
     try
     {
       $this->curl = curl_init();
@@ -79,7 +79,7 @@ class redmine
                                         CURLOPT_FOLLOWLOCATION => TRUE,
                                         CURLOPT_RETURNTRANSFER => TRUE,
                                         CURLOPT_AUTOREFERER => TRUE,
-                                        CURLOPT_TIMEOUT => 30,
+                                        CURLOPT_TIMEOUT => 60,
                                         CURLOPT_SSL_VERIFYPEER => FALSE));
   }
 

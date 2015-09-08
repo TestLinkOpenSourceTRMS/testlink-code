@@ -205,6 +205,7 @@ if ($_SESSION['testprojectOptions']->testPriorityEnabled)
   $gui->priority_labels = init_labels($urgencyCfg["code_label"]);
 }
 
+// Changing to _flat template
 $tpl = $templateCfg->template_dir . $templateCfg->default_template;
 $tpl = str_replace('.tpl', '_flat.tpl', $tpl);
 

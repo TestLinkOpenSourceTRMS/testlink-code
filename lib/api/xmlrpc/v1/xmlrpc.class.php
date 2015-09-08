@@ -1390,17 +1390,20 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @return int
    * @access protected
    */      
-  protected function _insertResultToDB($user_id=null)
+  protected function _insertResultToDB($user_id=null,$exec_ts=null)
   {
     
     $build_id = $this->args[self::$buildIDParamName];
-    $tester_id =  is_null($user_id) ? $this->userID : $user_id;
     $status = $this->args[self::$statusParamName];
     $testplan_id =  $this->args[self::$testPlanIDParamName];
     $tcversion_id =  $this->tcVersionID;
     $version_number =  $this->versionNumber;
 
-    $db_now=$this->dbObj->db_now();
+    $tester_id =  is_null($user_id) ? $this->userID : $user_id;
+    $execTimeStamp = is_null($exec_ts) ? $this->dbObj->db_now() : $exec_ts;
+
+    // return $execTimeStamp;
+
     $platform_id = 0;
     
     if( isset($this->args[self::$platformIDParamName]) )
@@ -1438,7 +1441,8 @@ class TestlinkXMLRPCServer extends IXR_Server
              " (build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, " .
              " platform_id, tcversion_number," .
              " execution_type {$notes_field} {$duration_field}) " .
-             " VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
+             " VALUES({$build_id},{$tester_id},{$execTimeStamp}," .
+             " '{$status}',{$testplan_id}," .
              " {$tcversion_id},{$platform_id}, {$version_number},{$execution_type} " .
              " {$notes_value} {$duration_value})";
 
@@ -2164,6 +2168,9 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @param boolean $args["user"] - optional, if present and user is a valid login 
    *                                (no other check will be done) it will be used when writting execution.
    *
+   * @param string $args["timestamp"] - optional, if not present now is used
+   *                                    format YYYY-MM-DD HH:MM:SS
+   *                                    example 2015-05-22 12:15:45   
    * @return mixed $resultInfo 
    *         [status]  => true/false of success
    *         [id]      => result id or error code
@@ -2219,6 +2226,15 @@ class TestlinkXMLRPCServer extends IXR_Server
       }
     }
 
+    $exec_ts = null;
+    if($status_ok)
+    { 
+      if( $this->_isParamPresent(self::$timeStampParamName) )
+      {
+        $exec_ts = "'" . $this->args[self::$timeStampParamName] . "'";
+      }
+    }
+
     if($status_ok && $this->userHasRight("testplan_execute",self::CHECK_PUBLIC_PRIVATE_ATTR))
     { 
       $executionID = 0;  
@@ -2230,13 +2246,15 @@ class TestlinkXMLRPCServer extends IXR_Server
 
       if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
       {
-        $executionID = $this->_updateResult();
+        $executionID = $this->_updateResult($tester_id,$exec_ts);
         $resultInfo[0]["overwrite"] = true;      
       }
+
       if($executionID == 0)
       {
-        $executionID = $this->_insertResultToDB($tester_id);      
+        $executionID = $this->_insertResultToDB($tester_id,$exec_ts);      
       } 
+      
       $resultInfo[0]["id"] = $executionID;  
       
       // Do we need to insert a bug ?
@@ -4200,10 +4218,12 @@ public function getTestCase($args)
      * @access protected
      */
 
-  protected function _updateResult()
+  protected function _updateResult($user_id=null,$exec_ts=null)
   {
+    $tester_id =  is_null($user_id) ? $this->userID : $user_id;
+    $execTimeStamp = is_null($exec_ts) ? $this->dbObj->db_now() : $exec_ts;
+
     $exec_id = 0;
-    $tester_id =  $this->userID;
     $status = $this->args[self::$statusParamName];
 
     // $platform_id = 0;  // hmm here I think we have an issue
@@ -4217,7 +4237,7 @@ public function getTestCase($args)
                          'platform_id' => $this->args[self::$platformIDParamName],
                          'build_id' => $this->args[self::$buildIDParamName]);
     
-    $db_now=$this->dbObj->db_now();
+    // $db_now=$this->dbObj->db_now();
     
     if( isset($this->args[self::$platformIDParamName]) )
     {
@@ -4254,12 +4274,12 @@ public function getTestCase($args)
         
 
       $sql = " UPDATE {$this->tables['executions']} " .
-             " SET tester_id={$tester_id}, execution_ts={$db_now}," . 
+             " SET tester_id={$tester_id}, execution_ts={$execTimeStamp}," . 
              " status='{$status}', execution_type= {$execution_type} " . 
              " {$notes_update} {$duration_update} WHERE id = {$exec_id}";
       
-            $this->dbObj->exec_query($sql);
-      }
+      $this->dbObj->exec_query($sql);
+    }
     return $exec_id;
   }  
 

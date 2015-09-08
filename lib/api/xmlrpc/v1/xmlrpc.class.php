@@ -1432,13 +1432,19 @@ class TestlinkXMLRPCServer extends IXR_Server
           floatval($this->args[self::$executionDurationParamName]);  
     }
 
+    $timestamp = $db_now;
+    if( isset($this->args[self::$timeStampParamName]) )
+    {
+    	$timestamp = "'" . $this->args[self::$timeStampParamName] . "'";
+    }
+    
     $execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
 
     $query = "INSERT INTO {$this->tables['executions']} " .
              " (build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, " .
              " platform_id, tcversion_number," .
              " execution_type {$notes_field} {$duration_field}) " .
-             " VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
+             " VALUES({$build_id},{$tester_id},{$timestamp},'{$status}',{$testplan_id}," .
              " {$tcversion_id},{$platform_id}, {$version_number},{$execution_type} " .
              " {$notes_value} {$duration_value})";
 
@@ -2135,6 +2141,8 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @param string $args["notes"] - optional
    * @param string $args["execduration"] - optional
+   * @param string $args["timestamp"] - optional, if not present now is used
+   *                                    expects format 2015-05-22 12:15:45
    *
    * @param bool $args["guess"] - optional defining whether to guess optinal params or require them 
    *                               explicitly default is true (guess by default)
@@ -4194,6 +4202,8 @@ public function getTestCase($args)
      * @param int $args["testcaseid"] internal ID
      * @param string $args["status"]
      * @param string $args["notes"]
+     * @param string $args["execduration"]
+     * @param string $args["timestamp"]
      *
      * @return mixed $resultInfo
      * 
@@ -4251,10 +4261,15 @@ public function getTestCase($args)
         $duration_update = ",execution_duration=" . 
           floatval($this->args[self::$executionDurationParamName]);  
       }
-        
+      
+      $timestamp = $db_now;
+      if( isset($this->args[self::$timeStampParamName]) )
+      {
+      	$timestamp = "'" . $this->args[self::$timeStampParamName] . "'";
+      }
 
       $sql = " UPDATE {$this->tables['executions']} " .
-             " SET tester_id={$tester_id}, execution_ts={$db_now}," . 
+             " SET tester_id={$tester_id}, execution_ts={$timestamp}," . 
              " status='{$status}', execution_type= {$execution_type} " . 
              " {$notes_update} {$duration_update} WHERE id = {$exec_id}";
       

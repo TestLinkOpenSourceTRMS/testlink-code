@@ -798,8 +798,9 @@ class TestlinkXMLRPCServer extends IXR_Server
    }
 
 
-    /**
-   * Helper method to see if a timestamp is given as one of the arguments 
+  /**
+   * Helper method to see if:
+   * a timestamp is given as one of the arguments 
    *   
    * @return boolean
    * @access protected
@@ -2185,6 +2186,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     $resultInfo = array();
     $operation=__FUNCTION__;
     $msg_prefix="({$operation}) - ";
+    $this->errors = null;
 
     $this->_setArgs($args);              
     $resultInfo[0]["status"] = true;
@@ -2200,6 +2202,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       $platformSet = $this->tplanMgr->getPlatforms($this->args[self::$testPlanIDParamName],
                                                         array('outputFormat' => 'map'));  
       $targetPlatform = null;
+      
       if( !is_null($platformSet) )
       {       
         $status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],
@@ -2215,6 +2218,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     $tester_id = null;
     if($status_ok)
     { 
+      $this->errors = null;
       if( $this->_isParamPresent(self::$userParamName) )
       {
         $tester_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);          
@@ -2231,7 +2235,21 @@ class TestlinkXMLRPCServer extends IXR_Server
     { 
       if( $this->_isParamPresent(self::$timeStampParamName) )
       {
-        $exec_ts = "'" . $this->args[self::$timeStampParamName] . "'";
+        // Now check if is a valid one
+        $exec_ts = $this->args[self::$timeStampParamName];
+
+        try
+        {
+          checkTimeStamp($exec_ts);
+          $exec_ts = "'{$exec_ts}'";
+        }
+        catch(Exception $e) 
+        {
+          $status_ok = false;
+          $this->errors = null;
+          $msg = $msg_prefix . sprintf(INVALID_TIMESTAMP_STR,$exec_ts);
+          $this->errors[] = new IXR_Error(INVALID_TIMESTAMP, $msg);  
+        }  
       }
     }
 
@@ -4130,7 +4148,6 @@ public function getTestCase($args)
     {
       $status=true;
       $platformID=0;
-      $myErrors=array();
 
       $name_exists = $this->_isParamPresent(self::$platformNameParamName,$messagePrefix);
       $id_exists = $this->_isParamPresent(self::$platformIDParamName,$messagePrefix);
@@ -4142,6 +4159,7 @@ public function getTestCase($args)
         $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
         $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
       }        
+       
         
       if($status)
       {
@@ -4186,7 +4204,7 @@ public function getTestCase($args)
           $this->errors[] = new IXR_Error(PLATFORM_NOT_LINKED_TO_TESTPLAN, $msg);
         }  
       }
-        
+
       if($status)
       {
         if($name_exists)

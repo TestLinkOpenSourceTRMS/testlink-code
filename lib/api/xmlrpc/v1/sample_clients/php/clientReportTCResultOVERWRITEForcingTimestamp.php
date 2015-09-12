@@ -18,7 +18,6 @@ $tcaseStatusCode['failed']='f';
 $tcaseStatusCode['wrong']='w';
 $tcaseStatusCode['departed']='d';
 
-// Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID,userID";
 
 $context = new stdClass();
@@ -44,6 +43,88 @@ $response = executeTestCase($server_url,$context,$exec,$debug);
 echo "<br> Result was: ";
 new dBug($response);
 echo "<br>";
+
+// --------------------------------------
+$unitTestDescription="Test - Call with BAD TIMESTAMP";
+
+$context = new stdClass();
+$context->testplanid=279348;
+// $context->buildid=1;
+$context->buildname='2.0';
+$context->platformname='PLAT01';
+$context->testcaseexternalid='ZQ-3';
+// $context->testcaseid=null;
+
+$exec = new stdClass();
+$exec->status = $tcaseStatusCode['passed'];
+$exec->notes = "OVERWRITE - Call using all EXTERNAL ID ({$context->testcaseexternalid}) - status={$exec->status}";
+$exec->customfields = null;
+$exec->bugid = null;
+$exec->timestamp = '2015-09-07 12:';
+$exec->overwrite = TRUE;
+
+$debug=false;
+echo $unitTestDescription;
+$response = executeTestCase($server_url,$context,$exec,$debug);
+
+echo "<br> Result was: ";
+new dBug($response);
+echo "<br>";
+
+// --------------------------------------
+$unitTestDescription="Test - Call with BAD TIMESTAMP";
+
+$context = new stdClass();
+$context->testplanid=279348;
+// $context->buildid=1;
+$context->buildname='2.0';
+$context->platformname='PLAT01';
+$context->testcaseexternalid='ZQ-3';
+// $context->testcaseid=null;
+
+$exec = new stdClass();
+$exec->status = $tcaseStatusCode['passed'];
+$exec->notes = "OVERWRITE - Call using all EXTERNAL ID ({$context->testcaseexternalid}) - status={$exec->status}";
+$exec->customfields = null;
+$exec->bugid = null;
+$exec->timestamp = '2015-31-10 12:';
+$exec->overwrite = TRUE;
+
+$debug=false;
+echo $unitTestDescription;
+$response = executeTestCase($server_url,$context,$exec,$debug);
+
+echo "<br> Result was: ";
+new dBug($response);
+echo "<br>";
+
+// --------------------------------------
+$unitTestDescription="Test - Call with BAD TIMESTAMP";
+
+$context = new stdClass();
+$context->testplanid=279348;
+// $context->buildid=1;
+$context->buildname='2.0';
+$context->platformname='PLAT01';
+$context->testcaseexternalid='ZQ-3';
+// $context->testcaseid=null;
+
+$exec = new stdClass();
+$exec->status = $tcaseStatusCode['passed'];
+$exec->notes = "OVERWRITE - Call using all EXTERNAL ID ({$context->testcaseexternalid}) - status={$exec->status}";
+$exec->customfields = null;
+$exec->bugid = null;
+$exec->timestamp = '2015-10-10';
+$exec->overwrite = TRUE;
+
+$debug=false;
+echo $unitTestDescription;
+$response = executeTestCase($server_url,$context,$exec,$debug);
+
+echo "<br> Result was: ";
+new dBug($response);
+echo "<br>";
+
 
 
 

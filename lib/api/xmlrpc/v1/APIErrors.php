@@ -107,6 +107,8 @@ define('PLATFORM_NAME_DOESNOT_EXIST_STR', lang_get('API_PLATFORM_NAME_DOESNOT_EX
 define('NO_MATCH', 236);
 define('NO_MATCH_STR', lang_get('API_NO_MATCH',null,1));
 
+define('INVALID_TIMESTAMP', 237);
+define('INVALID_TIMESTAMP_STR', lang_get('API_INVALID_TIMESTAMP',null,1));
 
 /**
  * 2000 level - authentication errors

@@ -205,6 +205,7 @@ if ($_SESSION['testprojectOptions']->testPriorityEnabled)
   $gui->priority_labels = init_labels($urgencyCfg["code_label"]);
 }
 
+// Changing to _flat template
 $tpl = $templateCfg->template_dir . $templateCfg->default_template;
 $tpl = str_replace('.tpl', '_flat.tpl', $tpl);
 
@@ -432,6 +433,12 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
       $email['subject'] = $mail_subject[$tester_type] . ' ' . $guiObj->testPlanName;  
       foreach($tester_set as $user_id => $value)
       {
+        // workaround till solution will be found
+        if($user_id <= 0)
+        {
+          continue;
+        }  
+
         $userObj=$guiObj->all_users[$user_id];
         $email['to_address']=$userObj->emailAddress;
         $email['body'] = $body_first_lines;

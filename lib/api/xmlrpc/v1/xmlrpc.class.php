@@ -51,11 +51,11 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $version = "1.0";
  
     
-  const   OFF=false;
-  const   ON=true;
-  const   BUILD_GUESS_DEFAULT_MODE=OFF;
-  const   SET_ERROR=true;
-  const   CHECK_PUBLIC_PRIVATE_ATTR=true;
+  const OFF=false;
+  const ON=true;
+  const BUILD_GUESS_DEFAULT_MODE=OFF;
+  const SET_ERROR=true;
+  const CHECK_PUBLIC_PRIVATE_ATTR=true;
  
   /**
    * The DB object used throughout the class
@@ -1390,17 +1390,20 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @return int
    * @access protected
    */      
-  protected function _insertResultToDB($user_id=null)
+  protected function _insertResultToDB($user_id=null,$exec_ts=null)
   {
     
     $build_id = $this->args[self::$buildIDParamName];
-    $tester_id =  is_null($user_id) ? $this->userID : $user_id;
     $status = $this->args[self::$statusParamName];
     $testplan_id =  $this->args[self::$testPlanIDParamName];
     $tcversion_id =  $this->tcVersionID;
     $version_number =  $this->versionNumber;
 
-    $db_now=$this->dbObj->db_now();
+    $tester_id =  is_null($user_id) ? $this->userID : $user_id;
+    $execTimeStamp = is_null($exec_ts) ? $this->dbObj->db_now() : $exec_ts;
+
+    // return $execTimeStamp;
+
     $platform_id = 0;
     
     if( isset($this->args[self::$platformIDParamName]) )
@@ -1432,19 +1435,14 @@ class TestlinkXMLRPCServer extends IXR_Server
           floatval($this->args[self::$executionDurationParamName]);  
     }
 
-    $timestamp = $db_now;
-    if( isset($this->args[self::$timeStampParamName]) )
-    {
-    	$timestamp = "'" . $this->args[self::$timeStampParamName] . "'";
-    }
-    
     $execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
 
     $query = "INSERT INTO {$this->tables['executions']} " .
              " (build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, " .
              " platform_id, tcversion_number," .
              " execution_type {$notes_field} {$duration_field}) " .
-             " VALUES({$build_id},{$tester_id},{$timestamp},'{$status}',{$testplan_id}," .
+             " VALUES({$build_id},{$tester_id},{$execTimeStamp}," .
+             " '{$status}',{$testplan_id}," .
              " {$tcversion_id},{$platform_id}, {$version_number},{$execution_type} " .
              " {$notes_value} {$duration_value})";
 
@@ -2141,8 +2139,6 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @param string $args["notes"] - optional
    * @param string $args["execduration"] - optional
-   * @param string $args["timestamp"] - optional, if not present now is used
-   *                                    expects format 2015-05-22 12:15:45
    *
    * @param bool $args["guess"] - optional defining whether to guess optinal params or require them 
    *                               explicitly default is true (guess by default)
@@ -2172,6 +2168,9 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @param boolean $args["user"] - optional, if present and user is a valid login 
    *                                (no other check will be done) it will be used when writting execution.
    *
+   * @param string $args["timestamp"] - optional, if not present now is used
+   *                                    format YYYY-MM-DD HH:MM:SS
+   *                                    example 2015-05-22 12:15:45   
    * @return mixed $resultInfo 
    *         [status]  => true/false of success
    *         [id]      => result id or error code
@@ -2227,6 +2226,15 @@ class TestlinkXMLRPCServer extends IXR_Server
       }
     }
 
+    $exec_ts = null;
+    if($status_ok)
+    { 
+      if( $this->_isParamPresent(self::$timeStampParamName) )
+      {
+        $exec_ts = "'" . $this->args[self::$timeStampParamName] . "'";
+      }
+    }
+
     if($status_ok && $this->userHasRight("testplan_execute",self::CHECK_PUBLIC_PRIVATE_ATTR))
     { 
       $executionID = 0;  
@@ -2238,13 +2246,15 @@ class TestlinkXMLRPCServer extends IXR_Server
 
       if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
       {
-        $executionID = $this->_updateResult();
+        $executionID = $this->_updateResult($tester_id,$exec_ts);
         $resultInfo[0]["overwrite"] = true;      
       }
+
       if($executionID == 0)
       {
-        $executionID = $this->_insertResultToDB($tester_id);      
+        $executionID = $this->_insertResultToDB($tester_id,$exec_ts);      
       } 
+      
       $resultInfo[0]["id"] = $executionID;  
       
       // Do we need to insert a bug ?
@@ -4202,18 +4212,18 @@ public function getTestCase($args)
      * @param int $args["testcaseid"] internal ID
      * @param string $args["status"]
      * @param string $args["notes"]
-     * @param string $args["execduration"]
-     * @param string $args["timestamp"]
      *
      * @return mixed $resultInfo
      * 
      * @access protected
      */
 
-  protected function _updateResult()
+  protected function _updateResult($user_id=null,$exec_ts=null)
   {
+    $tester_id =  is_null($user_id) ? $this->userID : $user_id;
+    $execTimeStamp = is_null($exec_ts) ? $this->dbObj->db_now() : $exec_ts;
+
     $exec_id = 0;
-    $tester_id =  $this->userID;
     $status = $this->args[self::$statusParamName];
 
     // $platform_id = 0;  // hmm here I think we have an issue
@@ -4227,7 +4237,7 @@ public function getTestCase($args)
                          'platform_id' => $this->args[self::$platformIDParamName],
                          'build_id' => $this->args[self::$buildIDParamName]);
     
-    $db_now=$this->dbObj->db_now();
+    // $db_now=$this->dbObj->db_now();
     
     if( isset($this->args[self::$platformIDParamName]) )
     {
@@ -4261,20 +4271,15 @@ public function getTestCase($args)
         $duration_update = ",execution_duration=" . 
           floatval($this->args[self::$executionDurationParamName]);  
       }
-      
-      $timestamp = $db_now;
-      if( isset($this->args[self::$timeStampParamName]) )
-      {
-      	$timestamp = "'" . $this->args[self::$timeStampParamName] . "'";
-      }
+        
 
       $sql = " UPDATE {$this->tables['executions']} " .
-             " SET tester_id={$tester_id}, execution_ts={$timestamp}," . 
+             " SET tester_id={$tester_id}, execution_ts={$execTimeStamp}," . 
              " status='{$status}', execution_type= {$execution_type} " . 
              " {$notes_update} {$duration_update} WHERE id = {$exec_id}";
       
-            $this->dbObj->exec_query($sql);
-      }
+      $this->dbObj->exec_query($sql);
+    }
     return $exec_id;
   }  
 
@@ -5644,10 +5649,10 @@ protected function createAttachmentTempFile()
    * @param string $args["testcaseexternalid"]:  
    * @param string $args["version"]: version number  
    * @param string $args["testprojectid"]: 
-     * @param string $args["executiontype"]: TESTCASE_EXECUTION_TYPE_MANUAL,
-     *                     TESTCASE_EXECUTION_TYPE_AUTOMATIC
-     *
-     * @return mixed null if everything ok, else array of IXR_Error objects
+   * @param string $args["executiontype"]: TESTCASE_EXECUTION_TYPE_MANUAL,
+   *                     TESTCASE_EXECUTION_TYPE_AUTOMATIC
+   *
+   * @return mixed null if everything ok, else array of IXR_Error objects
    *         
    * @access public
    */    
@@ -7097,6 +7102,105 @@ protected function createAttachmentTempFile()
   }
 
 
+ /**
+   * Update value of Custom Field with scope='design' 
+   * for a given Test Suite
+   *
+   * @param struct $args
+   * @param string $args["devKey"]: used to check if operation can be done.
+   *                                if devKey is not valid => abort.
+   *
+   * @param string $args["testsuiteid"]:  
+   * @param string $args["testprojectid"]: 
+   * @param string $args["customfields"]
+   *               contains an map with key:Custom Field Name, value: value for CF.
+   *               VERY IMPORTANT: value must be formatted in the way it's written to db,
+   *               this is important for types like:
+   *
+   *               DATE: strtotime()
+   *               DATETIME: mktime()
+   *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+   *
+   *
+   *               these custom fields must be configured to be writte during execution.
+   *               If custom field do not meet condition value will not be written
+   *
+   * @return mixed null if everything ok, else array of IXR_Error objects
+   *         
+   * @access public
+   */    
+  public function updateTestSuiteCustomFieldDesignValue($args)
+  {
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);  
+    
+    $checkFunctions = array('authenticate','checkTestProjectID',
+                            'checkTestSuiteID');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+
+    if( $status_ok )
+    {
+      if(!$this->_isParamPresent(self::$customFieldsParamName) )
+      {
+        $status_ok = false;
+        $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+      }
+    }
+      
+    if( $status_ok )
+    {
+      // now check if custom fields are ok
+      // For each custom field need to check if:
+      // 1. is linked to test project
+      // 2. is available for Test Suite at design time
+      $cfieldMgr = new cfield_mgr($this->dbObj);
+      
+      // Just ENABLED
+      $linkedSet = $cfieldMgr->get_linked_cfields_at_design($this->args[self::$testProjectIDParamName],
+                                                            cfield_mgr::ENABLED,null,'testsuite',null,'name');
+      if( is_null($linkedSet) )
+      {
+        $status_ok = false;
+        $msg = NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES_STR;
+        $this->errors[] = new IXR_Error(NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES, $msg);              
+      }
+    }
+
+    if( $status_ok )
+    {
+      $cfSet = $args[self::$customFieldsParamName];
+      foreach($cfSet as $cfName => $cfValue)
+      {
+        // $accessKey = "custom_field_" . $item['id'] . <field_type_id>_<cfield_id>
+        //  design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
+        //  
+        // Simple check: if name is not present on set => ignore
+        if( isset($linkedSet[$cfName]) )
+        {
+          $item = $linkedSet[$cfName];
+          $accessKey = "custom_field_" . $item['type'] . '_' . $item['id'];
+          $hash[$accessKey] = $cfValue;
+          $cfieldMgr->design_values_to_db($hash,$itemID);
+          $ret[] = array('status' => 'ok' ,
+                         'msg' => 'Custom Field:' . $cfName . ' processed ');
+        } 
+        else
+        {
+          $ret[] = array('status' => 'ko' ,
+                         'msg' => 'Custom Field:' . $cfName . ' skipped ');
+        } 
+
+        return $ret;
+      }        
+    }
+    else
+    {
+      return $this->errors;
+    }  
+  }
+
+
   /**
    *
    */
@@ -7168,6 +7272,7 @@ protected function createAttachmentTempFile()
                             'tl.unassignTestCaseExecutionTask' => 'this:unassignTestCaseExecutionTask',
                             'tl.addTestCaseKeywords' => 'this:addTestCaseKeywords',
                             'tl.removeTestCaseKeywords' => 'this:removeTestCaseKeywords',
+                            'tl.updateTestSuiteCustomFieldDesignValue' => 'this:updateTestSuiteCustomFieldDesignValue',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

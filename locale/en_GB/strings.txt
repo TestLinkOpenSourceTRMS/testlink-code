@@ -3458,6 +3458,9 @@ $TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "Test Project Source Name: %
 
 $TLS_API_TPROJECT_PREFIX_DOESNOT_EXIST = "There is NO Test Project with Prefix (%s)";
 
+$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES =
+  "There are no custom fields usable at design time linked" . 
+  " to test suites on this test project ";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

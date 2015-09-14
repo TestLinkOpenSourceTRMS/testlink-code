@@ -1436,6 +1436,8 @@ $TLS_password_reset = "Reset password";
 $TLS_no_records_found = "Your search delivered no results!";
 $TLS_other_versions = 'Other versions';
 $TLS_match_count = "Number of matches";
+$TLS_empty_testproject = "Test Project has 0 test cases defined";
+
 
 // ----- gui/templates/execSetResults.tpl -----
 $TLS_access_test_steps_exec = "Test steps exec (print view)";

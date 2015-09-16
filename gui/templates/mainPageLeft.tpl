@@ -29,8 +29,12 @@
 {$display_left_block_5=$tlCfg->userDocOnDesktop}
 
 {if $gui->testprojectID && 
-      ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
-       $gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
+   ($gui->grants.project_edit == "yes" || 
+    $gui->grants.tproject_user_role_assignment == "yes" ||
+    $gui->grants.cfield_management == "yes" || 
+    $gui->grants.platform_management == "yes" || 
+    $gui->grants.keywords_view == "yes")}
+    
     {$display_left_block_1=true}
 
     <script  type="text/javascript">

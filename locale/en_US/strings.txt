@@ -2522,7 +2522,7 @@ $TLS_req_created = "Requirement %s was successfully created";
 // ----- lib/req/reqTcAssign.php -----
 $TLS_req_msg_noselect = "Nothing selected";
 $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements ";
-$TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximun number of) %s test cases' .
+$TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximum number of) %s test cases' .
                          '<br />belonging to test suites present on selected branch.';
 
 $TLS_bulk_req_assign_no_test_cases = 'Operation can not be done because there are no test cases inside selected test suite';

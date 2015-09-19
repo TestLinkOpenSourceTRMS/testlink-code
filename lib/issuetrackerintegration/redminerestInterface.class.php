@@ -157,7 +157,11 @@ class redminerestInterface extends issueTrackerInterface
   	  // CRITIC NOTICE for developers
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
-  	  $this->APIClient = new redmine((string)trim($this->cfg->uribase),(string)trim($this->cfg->apikey));
+      $redUrl = (string)trim($this->cfg->uribase);
+      $redAK = (string)trim($this->cfg->apikey);
+      $pxy = new stdClass();
+      $pxy->proxy = config_get('proxy');
+  	  $this->APIClient = new redmine($redUrl,$redAK,$pxy);
 
       // to undestand if connection is OK, I will ask for projects.
       // I've tried to ask for users but get always ERROR from redmine (not able to understand why).

@@ -29,10 +29,12 @@ class redmine
   public $apiKey = '';
   
   /**
-   * Curl interface with FugB specific settings
+   * Curl interface with specific settings
    * @var string 
    */
   public $curl = '';
+
+  public $proxy = null;
   
   /**
    * Constructor
@@ -40,7 +42,7 @@ class redmine
    *
    * @return void
    */
-  public function __construct($url,$apiKey) 
+  public function __construct($url,$apiKey,$cfg=null) 
   {
     // if the values are not empty, we'll assign them to our matching properties
     $args = array('apiKey','url');
@@ -52,6 +54,26 @@ class redmine
       }
     }
 
+    if(!is_null($cfg))
+    {
+      if(!is_null($cfg->proxy))
+      {
+        $this->proxy = new stdClass();
+        $this->proxy->port = null;
+        $this->proxy->host = null;
+        $this->proxy->login = null;
+        $this->proxy->password = null;
+
+        foreach($cfg->proxy as $prop => $value)
+        {
+          if(isset($cfg->proxy->$prop))
+          {
+            $this->proxy->$prop = $value; 
+          }  
+        }  
+      }  
+    }  
+
     $this->initCurl();
   }
 
@@ -60,9 +82,9 @@ class redmine
    * 
    *
    */
-  public function initCurl() 
+  public function initCurl($cfg=null) 
   {
-    $agent = "TestLink 1.9.14";
+    $agent = "TestLink 1.9.15";
     try
     {
       $this->curl = curl_init();
@@ -74,13 +96,51 @@ class redmine
     
     // set the agent, forwarding, and turn off ssl checking
     // Timeout in Seconds
-    curl_setopt_array($this->curl,array(CURLOPT_USERAGENT => $agent,
-                                        CURLOPT_VERBOSE => 0,
-                                        CURLOPT_FOLLOWLOCATION => TRUE,
-                                        CURLOPT_RETURNTRANSFER => TRUE,
-                                        CURLOPT_AUTOREFERER => TRUE,
-                                        CURLOPT_TIMEOUT => 60,
-                                        CURLOPT_SSL_VERIFYPEER => FALSE));
+    $curlCfg = array(CURLOPT_USERAGENT => $agent,
+                     CURLOPT_VERBOSE => 0,
+                     CURLOPT_FOLLOWLOCATION => TRUE,
+                     CURLOPT_RETURNTRANSFER => TRUE,
+                     CURLOPT_AUTOREFERER => TRUE,
+                     CURLOPT_TIMEOUT => 60,
+                     CURLOPT_SSL_VERIFYPEER => FALSE);
+
+    if(!is_null($this->proxy))
+    {
+      $doProxyAuth = false;
+      $curlCfg[CURLOPT_PROXYTYPE] = 'HTTP';
+
+      foreach($this->proxy as $prop => $value)
+      {
+        switch($prop)
+        {
+          case 'host':
+            $curlCfg[CURLOPT_PROXY] = $value;
+          break;
+
+          case 'port':
+            $curlCfg[CURLOPT_PROXYPORT] = $value;
+          break;
+
+          case 'login':
+          case 'password':
+            $doProxyAuth = true;
+          break;
+        }
+      }
+
+      if($doProxyAuth && !is_null($this->proxy->login) && 
+         !is_null($this->proxy->password) )
+      {
+        $curlCfg[CURLOPT_PROXYUSERPWD] = 
+          $this->proxy->login . ':' . $this->proxy->password;
+      }  
+    } 
+    
+    echo '<br>' . __LINE__ . '<br>';
+    var_dump($curlCfg);
+    echo '<br>' . __LINE__ . '<br>';
+
+    curl_setopt_array($this->curl,$curlCfg);
   }
 
 

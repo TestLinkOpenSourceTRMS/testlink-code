@@ -6,8 +6,139 @@ http://www.testlink.org
 http://forum.testlink.org
 https://twitter.com/TLOpenSource
 
+TestLink - 1.9.14 (2015 Q3) (Released on 2015-09-20)
+====================================================================
+- 7261: [Test Execute] Multiple file upload for EXECUTION 
+- 7258: [Requirement to Test Case Assignment] Spelling error of 'maximum' in 'Assign Requirement' 
+- 7255: [Users and Rights] Unable to create a platform with XMLRPC request if user has not "admin" role 
+- 7254: [Users and Rights] Unable to create a testplan with XMLRPC request without "Test Project management" right 
+- 7160: [Security - XSS] Stored XSS in User Managment (View Users) 
+- 7241: [API - XMLRPC] reportTCResult - optional parameter to provide timestamp 
+- 7248: [API - XMLRPC] API to update testSuite Custom field design value. 
+- 7224: [Assign Test Case Execution] GITHUB CODE - Mail not sent in test case assignment when BULK MODE IS USED 
+- 7222: [GUI] GITHUB - Wrong Alt message on attachment 
+- 7053: [Reports] Possibility to get reports in xls format via wget 
+- 7227: [Test Spec. - Test Case Steps] Reordering Steps results in error message 
+- 7228: [Bug Tracking System - Redmine Integration] Issue creation with custom fields in Redmine is not working 
+- 7089: [Assign Test Case Execution] Bulk TESTER assignment does not work for all test cases when the first level test suite with many child suite is selected 
+- 7214: [Test Execute] GITHUB CODE - could not delete attachment in text execution results 
+- 7202: [API - XMLRPC] Method "tl.getTestCaseCustomFieldExecutionValue" not working as expected 
+- 7209: [API - XMLRPC] reportTCResult - optional parameter to provide execution duration 
+- 7195: [Third party components] E_WARNINGs on Windows from unlink() within Smarty 
+- 7193: [Third party components] Invalid HTML in test case version comparison (diff) 
+- 7194: [Reports] E_NOTICE when viewing test execution history 
+- 7155: [Performance] Test Plan usage - Edit test cases - access to test case data is very slow when test plan links > 30 
+- 7192: [LDAP authentication] E_NOTICE during successful LDAP login 
+- 7187: [Test Specification Import] TestLink installation unusable after importing a test case 
+- 7183: [Test Execute] Test Execute - config options to hide/show input for execution duration 
+- 7184: [Test Execute - Step notes & result] Test Execute - config options to hide/show input for file upload FOR TEST STEP 
+- 7173: [Reports - Test report matrix] Test report matrix - export to spreadsheet stopped working 
+- 7177: [Test Specification Import] LATEST GITHUB CODE - Already executed test case can't be edit by import a modified xml-file 
+- 6915: [Test Plan - Add/Remove Test Cases] Searching by keywork is not working in Add/Remove Test case option 
+- 4214: [Export/Import] Already executed test cases versions can be edited by importing an XML test case file 
+- 7174: [Users and Rights] Users assinged "guest" for a particular Test Project have rights to assign user roles even with rights disabled 
+- 7168: [Assign Test Case Execution] Tester can set test cases on Test Case Assignement Overview page without permission 
+- 7171: [General] Pagination via JQuery DataTables - added pagination length config option 
+- 7170: [Test Plan Management] Test plan table - add pagination 
+- 7127: [Reports] Possibility to include only assigned testcases in "Test report on build" 
+- 7130: [Reports - Test report matrix] In a certain test campaign, test report matrix ends up in a php error. 
+- 7145: [New Feature] direct link to test execution results page 
+- 7146: [Test Execute] Possibility to access Specific Execution Information in Print (Read Only) Mode 
+- 7159: [Database General] Projects disappeared 
+- 7025: [Database MySQL] Execution history is slow because of attachments comparison 
+- 7152: [Test Spec. - Search Test Cases] Test case search accessed by magnifying glass - Search gives no result 
+- 7150: [Test Plan (builds, milestones, test assign)] Copying builds without release date fails (POSTGRES) 
+- 7142: [Requirement Management] Requirement relations are missing when creating new testproject based on existent one 
+- 7148: [Test Specification] TestLink doesn't show Execution History for test cases if those are the part of inactive test plans 
+- 7131: [Reports] Test Results Flat (ONLY Spreadsheet format) - to allow further processing by user 
+- 7126: [Reports] Test report on SPECIFIC build displays wrong execution time 
+- 4669: [Test Project Management] Requirement / TestCase relationship broken when a new project is created from an existing one (1.9.3) 
+- 7123: [Build Management] User with build management able to delete builds (and thus test case execution) without Delete execution rights 
+- 7084: [Test Plan (builds, milestones, test assign)] While creating a new build in a Test Plan, only 'Not Run' test cases of the previous build should be associated with this build 
+- 7106: [Export/Import] Import TestPlan has to follow same logic than GUI (OBSOLETE STATUS issue) 
+- 1893: [API - XMLRPC] Admin should be able to e-mail users their API key 
+- 1422: [API - XMLRPC] Generate user API Key by admin 
+- 7112: [Test Execute] Test Case with multiple users assigned is not able to be executed.BY USERS WITH TESTER ROLE 
+- 7110: [Filters - Test Specification] Test specification - Filter Status shows test cases whose status is different than the selected 
+- 7111: [Test Spec. - Search Test Cases] Test Specification Filter for "Status" and "Importance" is broken 
+- 7085: [Reports] "Results by Tester per Build" - "Execution time" becomes 00:00 when total time exceed 1000 minutes 
+- 7096: [Bug Tracking System - Redmine Integration] Issue creation in Redmine is not working 
+- 2664: [General] FEATURE DEACTIVATE ALL VERSIONS (It should not be possible to add older versions of inactive testcases to testplan) 
+- 7107: [Reports] Report - Test Case Assignment Overview - when exec status <> not run display info about who has executed 
+- 7104: [Reports - Not RunTest Cases] Report - Not Run Test Cases - Assigned to column population needs to be refactored for multiple user exec assignment 
+- 7086: [Assign Test Case Execution] Feature for assigning test cases to multiple users 
+- 7097: [LDAP authentication] Can't login to TestLink when using strong passwords (len > 32) in LDAP 
+- 6938: [Build Management] Create Build from existent one - copy tester assignment filtering by execution status 
+- 7082: [Bug Tracking System - JIRA Integration] Jira Rest - Connection check - added get project data as MANDATORY CONDITION 
+- 7081: [Bug Tracking System - JIRA Integration] Jira Rest Integration - Better check on mandatory config parameter (projectKey) 
+- 7079: [Test Specification] Test suite document shows Last Result as not run for test cases witch has been executed 
+- 7072: [Assign Test Case Execution] Allow multiselect testers in the bulk testcase assignment dropdown list 
+- 7073: [Assign Test Case Execution] Assign Test Case Exec - tester combo multiselect 
+- 7067: [Test Plan - Add/Remove Test Cases] Add/Remove Test Cases - Advanced Filters do nothing 
+- 7060: [Test Plan - Add/Remove Test Cases] Add / Remove Test Cases - Multiselection of Importance 
+- 6996: [Test Specification - Move/Copy Test Cases] Copy Test Suite: can't keep Assigned Requirement 
+- 6997: [Test Specification - Move/Copy Test Cases] Copy TestSuite: add a checkbox to copy or not assigned requirement 
+- 7056: [Bug Tracking System - JIRA Integration] JIRA REST API - No bug is created after clicking on Save button. 
+- 6943: [Bug Tracking System - JIRA Integration] No message showing issue is created successfully or not when clicking "save" in "create issue" page 
+- 7050: [Bug Tracking System - JIRA Integration] JIRA REST - Possibility to specify custom fields on XML configuration 
+- 6955: [Roles] affecting a role on a project make you lose your own role (Pagination enabled) 
+- 7022: [Test Execute - Navigator] Test execution navigator tree doesn't show angle brackets and content in angle brackets for test case name. 
+- 5095: [Export/Import] Testcases with the same name after import from xml file 
+- 7038: [Roles] an user with a global "admin" role, can loose his rights on a project 
+- 7032: [Test Specification] Test Case - possibility to update attributes on ALL versions 
+- 7039: [Roles] Global Admin role will not be demoted/changed on test project or test plan 
+- 6980: [Database MS-SQL] Problem database MSSQL Update from 1.9.9.0 to 1.9.13.0: 
+- 7034: [Test Spec. - Test Case Table View] Bulk value assignment on Custom fields for Test Case set 
+- 7023: [Test Execute] Test execution mode shows "File i Browse... " bar under every test step - unable to disable with $tlCfg->exec_cfg->steps_exec 
+- 7006: [Test Spec. - Test Case Steps] Step is created twice assign a requirement jsut after the test creation 
+- 7004: [Bug Tracking System - JIRA Integration] (Proxy problem)Testlink 1.9.13 cannot connect to JIRA 6.2 using jira interface (SOAP/REST) 
+- 7014: [Test Specification] Create/Change test case with custom execution type, custom value is ignored 
+- 7020: [API - XMLRPC] API - XMLRPC - creatTestPlan() interface improvement 
+- 7019: [API - XMLRPC] API - XMLRPC - deleteTestProject() Method 
+- 7016: [API - XMLRPC] A project leader cannot create a test plan via the XMLRPC API 
+- 6982: [Bug Tracking System - JIRA Integration] Possibility to upload screenshot attachment from Testlink to Jira 
+- 6994: [GUI] Database search queries are displayed in GUI 
+- 6960: [GUI] Setup parameter for height and width of execution notes editor (AFTER EXEC NOTES HAS BEEN CREATED) 
+- 6964: [Test Plan - Assign Test Case Execution] Filter by platform on tree has no effect on right side pane 
+- 6957: [Test Execute] Test report does not show a test summary and duration 
+- 6962: [Communication via mail] Users not receiving password reset emails 
+- 6954: [Communication via mail] "Forgotten password" - email not send 
+- 6944: [Test Plan - Assign Test Case Execution] Test case was assign to "None" user or one user multiple times? 
+- 6934: [API - XMLRPC] Set keywords for a test case or a test case set 
+- 6907: [API - XMLRPC] XML-RPC API - Remove keywords from a test case set 
+- 6942: [Test Execute] Unable to "Copy issues from latest exec" 
+- 6852: [Test Specification] Invisible text after ghost links in TC description (WHEN Version is EMPTY on GHOST) 
+- 6931: [API - XMLRPC] Get keywords changed to support test case set as input 
+- 7234: [Database General] Test Projects disappear from Testlink UI but remain in the database (fman) - closed.
+- 7230: [Test Plan (builds, milestones, test assign)] github - 20150804 - Cannot create milestone. (fman) - closed.
+- 7226: [Req Overview] MSSQL - DB SPECIFIC - Group by issue - 'Requirements Overview (fman) - closed.
+- 7212: [Installer] Alter tables SQL files not updated for MSSQL (fman) - closed.
+- 7188: [Test Execute] fatal error thrown when trying to execute test cases on a project that is linked to a non existing Bugtracker (fman) - closed.
+- 7154: [Documentation (Install, User Manual, help)] BUYING_SUPPORT.TXT should have more information (fman) - closed.
+- 7125: [Reports] Test Report which depicts overall metrics (latest execution) for each user and allows filtering based on execution status (fman) - closed.
+- 5220: [API - XMLRPC] xml-rpc : Error with 0005063 patch, when rights on test project / test plan differ (fman) - closed.
+- 4577: [Export/Import] Unable to import requirement using XML file (fman) - closed.
+- 5568: [Documentation (Install, User Manual, help)] Error in reports formats description in "Description of Test Reports and Metrics" (fman) - closed.
+- 2097: [Reports] automate report (fman) - closed.
+- 0899: [Reports] Improved format of printed Test Specification (fman) - closed.
+- 0477: [Test Specification] Assign Requirements from TC page (fman) - closed.
+- 4188: [API - XMLRPC] feature request - new method - getTestSuiteCustomFieldValue - closed.
+- 7101: [Export/Import] Test Reports section shows feature for results import to MS Excel in general message but feature not available (fman) - closed.
+- 4479: [API - XMLRPC] API - reportTCResult function shall follow a user project right (fman) - closed.
+- 4254: [API - XMLRPC] test suites for project api request (fman) - closed.
+- 5292: [API - XMLRPC] getLastExecutionResult method - changed to use optional argument "platformid" (fman) - closed.
+- 3650: [API - XMLRPC] request for API method getExecutionResult. (fman) - closed.
+- 1840: [Users and Rights] Users page takes extremely long to load with 100+ users (fman) - closed.
+- 7078: [Bug Tracking System - JIRA Integration] Jira Rest causes crash preventing user from seeing execution results (BAD USER CONFIGURATION) (fman) - closed.
+- 7076: [Users and Rights] cannot reset password (fman) - closed.
+- 6920: [Bug Tracking System - JIRA Integration] Allow JIRA REST has similar configuration as JIRA SOAP (fman) - closed.
+- 7009: [Reports] Blank report pages redux (OutOfMemory when generating reports) (fman) - closed.
+- 6891: [Reports] Test Case Execution Reports (ALL) - execution_duration field data value not displayed (fman) - closed.
+
+
+
 TestLink - 1.9.13 (2014 Q4) (Released on 2015-02-07)
-===========================================================================
+====================================================================
 
 6926: [Test Plan - Assign Test Case Execution] Cannot clear assignment in the "Assign to" drop down list 
 6924: [Test Spec. - Ghost Test Case Steps] Ghost string disappeared and overridden by the actual test step description when updating a test case to a new version 

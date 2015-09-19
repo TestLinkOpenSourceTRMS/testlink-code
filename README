@@ -1,5 +1,5 @@
 ===============================================================
-         TestLink 1.9.13 (Prague Bugfix 13) - Read me
+         TestLink 1.9.14 (Prague Bugfix 14) - Read me
 ===============================================================
 
 Contents
@@ -12,12 +12,17 @@ Contents
 7. Bug Reports and Feedback
 8. Supporting our work
 9. Regarding forum usage www.testlink.org
-10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10,19,11,12
+10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14
 11. Testlink & FreeTest
 12. Security
 13. JIRA DB interface changes
 14. People supporting TestLink
 15. Miscelaneous
+16. Use forum.testlink.org
+17. User cries: I WANT HELP !!!
+18. Use Mantis documentation
+19. Link to GITORIOUS COMMITS
+
 
 
 
@@ -69,11 +74,12 @@ A wide variety of reports provide information on what has been done and what sti
 2. Release notes / CRITIC Configuration Notes
 ===============================================================
 
-This release contains bugfixes for 1.9.12
+This release contains bugfixes for 1.9.13
 See CHANGELOG file for detailed list of issues fixed.
 
 *** CRITIC PHP.INI Settings ***
-max_input_vars, Available since PHP 5.3.9. Default value:1000
+
+** max_input_vars, Available since PHP 5.3.9. Default value:1000
 If you are going to have test plans with more that 100 test cases, it will be CRITIC 
 to increase this value in order to avoid issues (CRASH or MALFUNCTIONS) when adding
 test cases to test plan.
@@ -81,7 +87,8 @@ See:
 http://forum.testlink.org/viewtopic.php?f=11&t=7124&p=17284&sid=e3552aca223ac1f6b3676812aa02f04c#p17284
 http://mantis.testlink.org/view.php?id=5372
 
-
+** amount of memory assigned to php
+See http://mantis.testlink.org/view.php?id=7178
 
 3. System Requirements - server
 ===============================================================
@@ -96,6 +103,9 @@ Supported client web-browsers:
 - Internet Explorer 9.x
 - Chrome   
 
+ATTENTION: we have not enough resources to test on all kind
+           of browsers.
+           Righ now development is done using Chrome & Firefox.
 
 4. Installation & SECURITY
 ===============================================================
@@ -165,7 +175,7 @@ Check Installation manual and TestLink forum if you meet a problem.
 ===============================================================
 When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
 Migration HAS TO BE DONE MANUALLY => read below 
-- Upgrade from 1.9.3  to 1.9.4/5/6/7/8/9/10/11/12
+- Upgrade from 1.9.3  to 1.9.4/5/6/7/8/9/10/11/12/13
 - Upgrade from 1.9.4/5 to 1.9.7
 - Upgrade from 1.9.7 to 1.9.8
 - Migration from other releases that 1.9.3
@@ -185,8 +195,7 @@ Migration HAS TO BE DONE MANUALLY => read below
  you need to use Upgrade Database.
  
  PLEASE GIVE A LOOK TO:
- MANTIS 6594: Migration scripts don't cover testcase steps and expected results, 
-              also testcase ID's are empty in GUI
+ MANTIS 6594: Migration scripts don't cover testcase steps and expected results, also testcase ID's are empty in GUI
 
  If you are using a different major version detailed in options,  
  you need to use the specific Migrations.
@@ -198,7 +207,7 @@ Migration HAS TO BE DONE MANUALLY => read below
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11/12
+- Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11/12/13
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql
@@ -220,6 +229,7 @@ then give a look to section 'Upgrade from 1.9.9 to 1.9.10'
 then give a look to section 'Upgrade from 1.9.10 to 1.9.11'
 then give a look to section 'Upgrade from 1.9.11 to 1.9.12'
 then give a look to section 'Upgrade from 1.9.12 to 1.9.13'
+then give a look to section 'Upgrade from 1.9.13 to 1.9.14'
 
 - Upgrade from 1.9.7 to 1.9.8
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
@@ -233,8 +243,8 @@ b) Execute install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/stepZ/z_final_step.
 
 - Upgrade from 1.9.9 to 1.9.10
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
-a) Execute install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/step1/db_schema_update.sql
-b) Execute install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/stepZ/z_final_step.sql
+a) Execute install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/step1/db_data_update.sql
+
 
 - Upgrade from 1.9.10 to 1.9.11
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
@@ -251,9 +261,21 @@ WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/stepZ/z_final_step.sql
 
+- Upgrade from 1.9.13 to 1.9.14
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+a) Execute install/sql/alter_tables/1.9.14/<your_db>/DB.1.9.14/step1/db_schema_update.sql
+b) Execute install/sql/alter_tables/1.9.14/<your_db>/DB.1.9.14/stepZ/z_final_step.sql
+
+
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
 
+
+USE THE FORUM SECTION
+- http://forum.testlink.org/viewforum.php?f=11
+
+USER UPGRADE SECTION
+- http://forum.testlink.org/viewforum.php?f=58
 
 
 Migration from other releases that 1.9.3
@@ -392,8 +414,12 @@ PLEASE: read this short hints before you write a topic:
 :!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
-10. Changes regarding 1.9.6,1.9.7,1.9.8,1.9.9,1.9.10,1.9.11,1.9.12,1.9.13
-=======================================================================================
+10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14
+=====================================================================
+
+1.9.14
+- proxy config available for MANTISSOAP & JIRASOAP Integration
+
 
 1.9.13
 - new tag to allow inline images in test case summary,preconditions and steps
@@ -489,3 +515,58 @@ Wellington Institute of Technology (www.weltec.ac.nz)
  - Group of studente is working on creating automation infrastructure to test TestLink
 
 
+16. Use forum.testlink.org
+===============================================================
+Informantion has been collected with user's help
+
+FAQ & HINTS 
+- http://forum.testlink.org/viewforum.php?f=14
+
+TestLink 1.9.4 and greater , News,changes, etc
+- http://forum.testlink.org/viewforum.php?f=25
+
+How to get the answer (self service)
+- http://forum.testlink.org/viewtopic.php?f=50&t=7798
+
+17. User cries: I WANT HELP !!!
+==============================================================
+Relax, as usual I've to say the resources are limited,
+that this effort is not supported by a company or a foundation
+but is result of usage of free time.
+Guidelines for getting help and/or solving a situation are 
+what I use everyday:
+First try for yourself searching on:
+- mantis.testlink.org
+- forum.testlink.org
+- https://github.com/TestLinkOpenSourceTRMS/testlink-documentation/wiki/Execution-Feature---Configuration
+- https://github.com/TestLinkOpenSourceTRMS/testlink-documentation/wiki/Execution-Feature---Test-Step-Execution-configuration
+
+Please do not operate on lazy mode: just asking.
+First thing will be always asked will be:
+- have you already did some searches ?
+
+When you report a potential issue on a TestLink version,
+first thing that will be requested will be the 30minTest:
+- get latest code from github, do fresh install, retest & provide feedback.
+
+Do not send PRIVATE email to ask for things that have to be PUBLIC
+this is a bad approach.
+Use PRIVATE CHANNELS only on Dev Team Request.
+
+If you need more specialized help, it can be provided paying for it.
+
+18. Use Mantis documentation
+CHANGE LOG
+http://mantis.testlink.org/changelog_page.php
+
+TICKET with available fixes for latest stable version (1.9.14)
+http://mantis.testlink.org/view.php?id=7262
+
+19. Link to GITORIOUS COMMITS
+Time ago we have migrated from Gitorious (thanks a lot for all years
+of free repo) to Github.
+On tickets or documentation that belong to the GITORIOUS ERA you
+will find LINK to commits that are not accessible ANYMORE AS IS.
+But accessing to SAME COMMITS in GITHUB (THE COMMIT ID DO NOT CHANGE)
+is just a matter of understand how to change the URL Part that is
+presente BEFORE the commit ID. => then Nike => Just DO IT

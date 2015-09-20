@@ -127,6 +127,7 @@ if($get_c_data)
   }
 }
 
+
 switch($action)
 {
   case 'fileUpload':
@@ -171,7 +172,6 @@ switch($action)
     keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 
     $smarty->assign('opt_cfg', $opt_cfg);
-
 
     $gui = new stdClass();
     $gui->containerType = $level;
@@ -853,18 +853,18 @@ returns: option transfer configuration
 */
 function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
 {
-    $opt_cfg = opt_transf_empty_cfg();
-    $opt_cfg->js_ot_name='ot';
-    $opt_cfg->global_lbl='';
-    $opt_cfg->from->lbl=lang_get('available_kword');
-    $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tprojectID);
-    $opt_cfg->to->lbl=lang_get('assigned_kword');
+  $opt_cfg = opt_transf_empty_cfg();
+  $opt_cfg->js_ot_name='ot';
+  $opt_cfg->global_lbl='';
+  $opt_cfg->from->lbl=lang_get('available_kword');
+  $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tprojectID);
+  $opt_cfg->to->lbl=lang_get('assigned_kword');
 
-    if($doAction=='edit_testsuite')
-    {
-        $opt_cfg->to->map=$tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
-    }
-    return $opt_cfg;
+  if($doAction=='edit_testsuite')
+  {
+    $opt_cfg->to->map = $tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
+  }
+  return $opt_cfg;
 }
 
 
@@ -1325,6 +1325,9 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
   $guiObj->attachments = getAttachmentInfosFrom($objMgr,$id);
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
+
+  $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
+                           $guiObj->id,$argsObj->tprojectID);
   return $guiObj;
 }
 

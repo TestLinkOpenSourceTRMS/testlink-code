@@ -15,7 +15,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -54,7 +54,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '', 'users' => '');
   $tcaseID = null;
   $emptyTestProject = false;
-   
+
   if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
   {
     if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
@@ -349,6 +349,8 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)
  */
 function init_args(&$tprojectMgr)
 {
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+
   $args = new stdClass();
   $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,10),
                    "tproject_id" => array(tlInputParameter::INT_N), 
@@ -373,12 +375,15 @@ function init_args(&$tprojectMgr)
                    "modification_date_to" => array(tlInputParameter::STRING_N),
                    "jolly" => array(tlInputParameter::STRING_N));
     
-
-      
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
-  $_REQUEST=strings_stripSlashes($_REQUEST);
+  // sanitize targetTestCase against XSS
+  // remove all blanks
+  // remove some html entities
+  // remove ()
+  $tt = array(' ','<','>','(',')');
+  $args->targetTestCase = str_replace($tt,'',$args->targetTestCase);
 
   $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
@@ -402,7 +407,6 @@ function init_args(&$tprojectMgr)
   // convert "creation date from" to iso format for database usage
   $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
                'modification_date_from' => '', 'modification_date_to' => " 23:59:59");
-
 
   $k2f = array('creation_date_from' => ' creation_ts >= ',
                'creation_date_to' => 'creation_ts <= ',

@@ -385,7 +385,7 @@ function init_args(&$tprojectMgr)
   $tt = array(' ','<','>','(',')');
   $args->targetTestCase = str_replace($tt,'',$args->targetTestCase);
 
-  $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  $args->userID = intval(isset($_SESSION['userID']) ? $_SESSION['userID'] : 0);
 
   if(is_null($args->tproject_id) || intval($args->tproject_id) <= 0)
   {

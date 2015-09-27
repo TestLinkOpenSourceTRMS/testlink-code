@@ -13,7 +13,7 @@
  * @author Andreas Simon
  * @internal revisions
  *
- * @since 1.9.11
+ * @since 1.9.15
  *}
 
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
@@ -204,7 +204,7 @@
         <td><input type="text" name="filter_tc_id"
                                size="{#TC_ID_SIZE#}"
                                maxlength="{#TC_ID_MAXLEN#}"
-                               value="{$control->filters.filter_tc_id.selected}" />
+                               value="{$control->filters.filter_tc_id.selected|escape}" />
         </td>
       </tr>
     {/if}
@@ -215,7 +215,7 @@
         <td><input type="text" name="filter_testcase_name"
                                size="{#TC_TITLE_SIZE#}"
                                maxlength="{#TC_TITLE_MAXLEN#}"
-                               value="{$control->filters.filter_testcase_name.selected}" />
+                               value="{$control->filters.filter_testcase_name.selected|escape}" />
         </td>
       </tr>
     {/if}
@@ -375,7 +375,7 @@
         <td><input type="text" name="filter_bugs" size="{#BUGS_FILTER_SIZE#}"
                                maxlength="{#BUGS_FILTER_MAXLEN#}"
                                placeholder="{$labels.hint_list_of_bugs}"
-                               value="{$control->filters.filter_bugs.selected}" />
+                               value="{$control->filters.filter_bugs.selected|escape}" />
         </td>
       </tr>
     {/if}
@@ -529,7 +529,7 @@
       <td><input type="text" name="filter_doc_id"
                              size="{#REQ_DOCID_SIZE#}"
                              maxlength="{#REQ_DOCID_MAXLEN#}"
-                             value="{$control->filters.filter_doc_id.selected}" />
+                             value="{$control->filters.filter_doc_id.selected|escape}" />
       </td>
     </tr>
   {/if}
@@ -540,7 +540,7 @@
       <td><input type="text" name="filter_title"
                              size="{#REQ_NAME_SIZE#}"
                              maxlength="{#REQ_NAME_MAXLEN#}"
-                             value="{$control->filters.filter_title.selected}" />
+                             value="{$control->filters.filter_title.selected|escape}" />
       </td>
     </tr>
   {/if}
@@ -609,7 +609,7 @@
       <td><input type="text" name="filter_coverage"
                              size="{#COVERAGE_SIZE#}"
                              maxlength="{#COVERAGE_MAXLEN#}"
-                             value="{$control->filters.filter_coverage.selected}" />
+                             value="{$control->filters.filter_coverage.selected|escape}" />
       </td>
     </tr>
   {/if}
@@ -639,7 +639,7 @@
       <td><input type="text" name="filter_tc_id"
                              size="{#TC_ID_SIZE#}"
                              maxlength="{#TC_ID_MAXLEN#}"
-                             value="{$control->filters.filter_tc_id.selected}" />
+                             value="{$control->filters.filter_tc_id.selected|escape}" />
       </td>
     </tr>
   {/if}

@@ -22,7 +22,7 @@ rev:
         		 arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
         		 
             <form action="lib/results/tcCreatedPerUser.php" method="post">
-              <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
+              <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id|escape}" />
               <div>
                 <table class="simple" style="text-align: center; margin-left: 0px;">
                     <tr>
@@ -46,7 +46,7 @@ rev:
                                    <td>
                                        <input type="text" 
                                               name="selected_start_date" id="selected_start_date" 
-                                              value="{$gui->selected_start_date}" 
+                                              value="{$gui->selected_start_date|escape}" 
                                               onclick="showCal('selected_start_date-cal','selected_start_date','{$gsmarty_datepicker_format}');" 
                                               readonly="readonly" />
                                        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
@@ -70,7 +70,7 @@ rev:
                                    <td>
                                         <input type="text" 
                                                name="selected_end_date" id="selected_end_date" 
-                                               value="{$gui->selected_end_date}" 
+                                               value="{$gui->selected_end_date|escape}" 
                                                onclick="showCal('selected_end_date-cal','selected_end_date','{$gsmarty_datepicker_format}');" readonly />
                                         <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
                                              onclick="showCal('selected_end_date-cal','selected_end_date','{$gsmarty_datepicker_format}');" >

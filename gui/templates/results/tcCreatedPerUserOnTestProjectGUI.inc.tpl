@@ -8,7 +8,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
     <div class="workBack">
       <form action="lib/results/tcCreatedPerUserOnTestProject.php" method="post">
-        <input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id}" />
+        <input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id|escape}" />
         <input type="hidden" id="do_action" name="do_action" value="result" />
         <div>
           <table class="simple" style="text-align: center; margin-left: 0px;">
@@ -32,7 +32,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                         <td>
                             <input type="text" 
                                    name="selected_start_date" id="selected_start_date" 
-                                   value="{$gui->selected_start_date}" 
+                                   value="{$gui->selected_start_date|escape}" 
                                    onclick="showCal('selected_start_date-cal','selected_start_date','{$gsmarty_datepicker_format}');" 
                                    readonly="readonly" />
                             <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
@@ -56,7 +56,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                            <td>
                                 <input type="text" 
                                        name="selected_end_date" id="selected_end_date" 
-                                       value="{$gui->selected_end_date}" 
+                                       value="{$gui->selected_end_date|escape}" 
                                        onclick="showCal('selected_end_date-cal','selected_end_date','{$gsmarty_datepicker_format}');" readonly />
                                 <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
                                      onclick="showCal('selected_end_date-cal','selected_end_date','{$gsmarty_datepicker_format}');" >

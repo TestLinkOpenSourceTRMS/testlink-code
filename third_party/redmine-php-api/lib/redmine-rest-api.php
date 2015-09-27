@@ -135,10 +135,6 @@ class redmine
           $this->proxy->login . ':' . $this->proxy->password;
       }  
     } 
-    
-    echo '<br>' . __LINE__ . '<br>';
-    var_dump($curlCfg);
-    echo '<br>' . __LINE__ . '<br>';
 
     curl_setopt_array($this->curl,$curlCfg);
   }

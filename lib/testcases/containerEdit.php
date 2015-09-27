@@ -127,6 +127,7 @@ if($get_c_data)
   }
 }
 
+
 switch($action)
 {
   case 'fileUpload':
@@ -171,7 +172,6 @@ switch($action)
     keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 
     $smarty->assign('opt_cfg', $opt_cfg);
-
 
     $gui = new stdClass();
     $gui->containerType = $level;
@@ -506,6 +506,15 @@ function init_args(&$dbHandler,$optionTransferCfg)
 
   // This logic sucks!!!
   $args->containerType = isset($_REQUEST['containerType']) ? $_REQUEST['containerType'] : null;
+  
+  // check againts whitelist
+  $ctWhiteList = array('testproject' => 'OK','testsuite' => 'OK');
+  if(!is_null($args->containerType) && 
+     !isset($ctWhiteList[$args->containerType]))
+  {
+    $args->containerType = null;  
+  }  
+
   if(is_null($args->containerID))
   {
     $args->containerType = is_null($args->containerType) ? 'testproject' : $args->containerType;
@@ -519,7 +528,6 @@ function init_args(&$dbHandler,$optionTransferCfg)
 
   $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $args->testCaseSet = null;
-
 
   if($args->treeFormToken >0)
   {  
@@ -542,13 +550,13 @@ returns:
 */
 function writeCustomFieldsToDB(&$db,$tprojectID,$tsuiteID,&$hash)
 {
-    $ENABLED = 1;
-    $NO_FILTERS = null;
+  $ENABLED = 1;
+  $NO_FILTERS = null;
 
-    $cfield_mgr = new cfield_mgr($db);
-    $cf_map = $cfield_mgr->get_linked_cfields_at_design($tprojectID,$ENABLED,
-                    $NO_FILTERS,'testsuite');
-    $cfield_mgr->design_values_to_db($hash,$tsuiteID,$cf_map);
+  $cfield_mgr = new cfield_mgr($db);
+  $cf_map = $cfield_mgr->get_linked_cfields_at_design($tprojectID,$ENABLED,
+                                                      $NO_FILTERS,'testsuite');
+  $cfield_mgr->design_values_to_db($hash,$tsuiteID,$cf_map);
 }
 
 
@@ -853,18 +861,18 @@ returns: option transfer configuration
 */
 function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
 {
-    $opt_cfg = opt_transf_empty_cfg();
-    $opt_cfg->js_ot_name='ot';
-    $opt_cfg->global_lbl='';
-    $opt_cfg->from->lbl=lang_get('available_kword');
-    $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tprojectID);
-    $opt_cfg->to->lbl=lang_get('assigned_kword');
+  $opt_cfg = opt_transf_empty_cfg();
+  $opt_cfg->js_ot_name='ot';
+  $opt_cfg->global_lbl='';
+  $opt_cfg->from->lbl=lang_get('available_kword');
+  $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tprojectID);
+  $opt_cfg->to->lbl=lang_get('assigned_kword');
 
-    if($doAction=='edit_testsuite')
-    {
-        $opt_cfg->to->map=$tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
-    }
-    return $opt_cfg;
+  if($doAction=='edit_testsuite')
+  {
+    $opt_cfg->to->map = $tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
+  }
+  return $opt_cfg;
 }
 
 
@@ -899,28 +907,12 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
   $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);
   $tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
 
-  // 20081225 - franciscom
   // While testing with PostGres have found this behaivour:
   // No matter is UPPER CASE has used on field aliases, keys on hash returned by
   // ADODB are lower case.
   // Accessing this keys on Smarty template using UPPER CASE fails.
   // Solution: have changed case on Smarty to lower case.
   //
-
-  // $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
-  //        " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
-  //        " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
-  //        " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
-  //        " WHERE NHB.parent_id=NHA.id " .
-  //        " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
-  //        " AND NHA.parent_id={$containerID} " .
-  //        " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id ";
-
-  // $orderClause = " ORDER BY TCORDER,TCNAME";
-
-  // $sql .= $orderClause;
-  // $children = $dbHandler->get_recordset($sql);
-
   $sqlA = " SELECT MAX(TCV.version) AS lvnum, NHTC.node_order, NHTC.name, NHTC.id, TCV.tc_external_id AS tcexternalid" .
           " FROM {$tables['nodes_hierarchy']} NHTC " .
           " JOIN {$tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
@@ -1325,6 +1317,9 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
   $guiObj->attachments = getAttachmentInfosFrom($objMgr,$id);
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
+
+  $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
+                           $guiObj->id,$argsObj->tprojectID);
   return $guiObj;
 }
 

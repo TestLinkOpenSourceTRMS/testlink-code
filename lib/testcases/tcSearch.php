@@ -15,7 +15,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -40,7 +40,6 @@ $gui = (object)array_merge((array)$ga,(array)$gx);
 
 initSearch($gui,$args,$tproject_mgr);
 
-
 $map = null;
 
 if ($args->tprojectID && $args->doAction == 'doSearch')
@@ -54,23 +53,35 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
   $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '', 'users' => '');
   $tcaseID = null;
-  
-   
+  $emptyTestProject = false;
+
   if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
   {
-      if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
-      {
-        $args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
-      }
+    if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
+    {
+      $args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
+    }
         
-      $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
-      $filter['by_tc_id'] = " AND NH_TCV.parent_id = " . intval($tcaseID);
+    $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
+    $filter['by_tc_id'] = " AND NH_TCV.parent_id = " . intval($tcaseID);
   }
   else
   {
     $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
-    $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
+
+    if(!is_null($a_tcid))
+    {
+      $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
+    }  
+    else
+    {
+      // Force Nothing extracted, because test project 
+      // has no test case defined 
+      $emptyTestProject = true;
+      $filter['by_tc_id'] = " AND 1 = 0 ";
+    }  
   }
+
   if($args->version)
   {
     $filter['by_version'] = " AND TCV.version = {$args->version} ";
@@ -253,9 +264,13 @@ if($gui->row_qty > 0)
     $gui->resultSet = $map;
   }
 }
+else if ($emptyTestProject) 
+{
+  $gui->warning_msg = lang_get('empty_testproject');
+}
 else
 {
-  $gui->warning_msg=lang_get('no_records_found');
+  $gui->warning_msg = lang_get('no_records_found');
 }
 
 $img = $smarty->getImages();
@@ -334,6 +349,8 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)
  */
 function init_args(&$tprojectMgr)
 {
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+
   $args = new stdClass();
   $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,10),
                    "tproject_id" => array(tlInputParameter::INT_N), 
@@ -358,14 +375,17 @@ function init_args(&$tprojectMgr)
                    "modification_date_to" => array(tlInputParameter::STRING_N),
                    "jolly" => array(tlInputParameter::STRING_N));
     
-
-      
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
-  $_REQUEST=strings_stripSlashes($_REQUEST);
+  // sanitize targetTestCase against XSS
+  // remove all blanks
+  // remove some html entities
+  // remove ()
+  $tt = array(' ','<','>','(',')');
+  $args->targetTestCase = str_replace($tt,'',$args->targetTestCase);
 
-  $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  $args->userID = intval(isset($_SESSION['userID']) ? $_SESSION['userID'] : 0);
 
   if(is_null($args->tproject_id) || intval($args->tproject_id) <= 0)
   {
@@ -387,7 +407,6 @@ function init_args(&$tprojectMgr)
   // convert "creation date from" to iso format for database usage
   $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
                'modification_date_from' => '', 'modification_date_to' => " 23:59:59");
-
 
   $k2f = array('creation_date_from' => ' creation_ts >= ',
                'creation_date_to' => 'creation_ts <= ',

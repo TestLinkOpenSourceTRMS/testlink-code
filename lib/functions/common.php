@@ -1345,7 +1345,9 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
   }
   
   $sql = "/* $debugMsg */ " .
-         " SELECT id FROM {$target} WHERE api_key = '{$apiKey}'";
+         " SELECT id FROM {$target} " .
+         " WHERE api_key = '" . 
+         $dbHandler->prepare_string($apiKey) . "'";
  
   $rs = $dbHandler->get_recordset($sql);
   return ($rs ? $rs[0] : null);

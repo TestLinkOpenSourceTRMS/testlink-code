@@ -23,8 +23,8 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.14'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Padawan)'); 
+define('TL_VERSION_NUMBER', '1.9.15'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Tauriel)'); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Last Database version that is used to give users feedback about necesssary upgrades

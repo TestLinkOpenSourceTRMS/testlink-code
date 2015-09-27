@@ -8,12 +8,12 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.15
  **/
 
 class testcaseCommands
@@ -1060,6 +1060,10 @@ class testcaseCommands
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     $guiObj->user_feedback = '';
     
+    $guiObj->direct_link = 
+      $this->tcaseMgr->buildDirectWebLink($_SESSION['basehref'],
+                                          $argsObj->tcase_id,
+                                          $argsObj->testproject_id);
 
     if($userFeedback['status_ok'])
     {

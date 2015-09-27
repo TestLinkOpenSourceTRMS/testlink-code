@@ -2441,7 +2441,7 @@ $TLS_req_msg_noselect = "Tak ada yang dipilih";
 
 $TLS_req_msg_notupdated_coverage = "Cakupan tidak diupdate untuk kebutuhan-kebutuhan: ";
 
-$TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximun number of) %s test cases' .
+$TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximum number of) %s test cases' .
                          '<br>belonging to test suites present on selected branch.';
 $TLS_bulk_assigment_done = '%s assignments has been done';
 $TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';

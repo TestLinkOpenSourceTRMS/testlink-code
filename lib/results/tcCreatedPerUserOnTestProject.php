@@ -21,8 +21,6 @@
  * Generates report of test cases created per user within a project. 
  * 
  * @internal revisions
- * @since 1.9.7
- * 20130314 - franciscom - TICKET 5562: Test Cases created per User - toolbar refresh button
  *                                                                   breaks filter behaivour
  */
 require_once("../../config.inc.php");
@@ -292,8 +290,49 @@ function init_args(&$dbHandler)
   $info = $mgr->get_by_id($args->tproject_id);
   $args->tproject_name = $info['name'];
   
+
+  // Sanitize a little bit better
+  //$args->selected_end_date = '--></style></scRipt><scRipt>alert(0x008360)</scRipt>';
+  sanitizeDates($args);
+
   return $args;
 }
+
+/**
+ *
+ * @link http://stackoverflow.com/questions/
+ *              9293483/regular-expression-help-for-date-validation-dd-mm-yyyy-php
+ */
+function sanitizeDates(&$obj)
+{
+  $validLenght = strlen('MM/DD/YYYY');
+  $validFormat = '#^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}$#';
+
+  $p2check = array('selected_end_date','selected_start_date');
+  foreach($p2check as $prop)
+  {
+    if(!is_null($obj->$prop))
+    {
+      // lenght check
+      $val = $obj->$prop;
+      $val = $val[0];
+
+      if( strlen($val) != $validLenght)
+      {
+        $obj->$prop = null;
+      }
+      else
+      {
+        // check if format is valid
+        if(preg_match($validFormat, $val) === 0) 
+        {
+          $obj->$prop = null;
+        }
+      }  
+    } 
+  } // foreach 
+}   
+
 
 
 /**

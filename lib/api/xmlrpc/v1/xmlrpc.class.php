@@ -5772,7 +5772,8 @@ protected function createAttachmentTempFile()
     $status_ok = false;    
     $msg_prefix="(" . __FUNCTION__ . ") - ";
 
-    if($this->authenticate() && $this->userHasRight("mgt_modify_product",self::CHECK_PUBLIC_PRIVATE_ATTR))
+    if($this->authenticate() && 
+       $this->userHasRight("platform_management",self::CHECK_PUBLIC_PRIVATE_ATTR))
     {
       $status_ok = true;
       $keys2check = array(self::$platformNameParamName, self::$testProjectNameParamName);

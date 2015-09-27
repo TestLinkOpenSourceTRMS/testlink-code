@@ -1,11 +1,7 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.14 2010/10/26 20:11:42 franciscom Exp $ *}
-{* Purpose: smarty template - template for attachment upload dialog 
-
-   rev :
-         20101026 - BUGID 3943: Escape all messages (string) that has to be used on Javascript code
-         20070310 - BUGID 732 
-
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+@filesource attachmentupload.tpl
+Purpose: smarty template - template for attachment upload dialog 
 *}
 {lang_get var='labels'
           s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,enter_attachment_title,
@@ -33,13 +29,15 @@ var warning_empty_title = "{$labels.enter_attachment_title|escape:'javascript'}"
 	<form action="lib/attachments/attachmentupload.php" method="post" enctype="multipart/form-data" id="aForm">
 		<p>{$labels.local_file}
 			<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->import_limit}" /> {* restrict file size *}
-			<input type="file" name="uploadedFile" size="{#UPLOAD_FILENAME_SIZE#}" />
+			<input type="file" name="uploadedFile[]" size="{#UPLOAD_FILENAME_SIZE#}" multiple />
 		</p>
+		{* 
 		<p>
 			{$labels.enter_attachment_title}:
 			<input type="text" id="title" name="title" maxlength="{#ATTACHMENT_TITLE_MAXLEN#}" 
 			       size="{#ATTACHMENT_TITLE_SIZE#}" />
 		</p>
+		*}
 		<div class="groupBtn">
 			<input type="submit" value="{$labels.btn_upload_file}" onclick="return attachmentDlg_onSubmit({$gsmarty_attachments->allow_empty_title eq true})" />
 			<input type="button" value="{$labels.btn_cancel}" onclick="window.close()" />

@@ -7189,6 +7189,8 @@ protected function createAttachmentTempFile()
     if( $status_ok )
     {
       $cfSet = $args[self::$customFieldsParamName];
+      $itemID = $argse[self::$testSuiteIDParamName];
+
       foreach($cfSet as $cfName => $cfValue)
       {
         // $accessKey = "custom_field_" . $item['id'] . <field_type_id>_<cfield_id>

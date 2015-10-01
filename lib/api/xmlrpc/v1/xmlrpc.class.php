@@ -7189,7 +7189,7 @@ protected function createAttachmentTempFile()
     if( $status_ok )
     {
       $cfSet = $args[self::$customFieldsParamName];
-      $itemID = $argse[self::$testSuiteIDParamName];
+      $itemID = $args[self::$testSuiteIDParamName];
 
       foreach($cfSet as $cfName => $cfValue)
       {

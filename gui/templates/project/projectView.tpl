@@ -1,13 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.23 2010/10/17 09:46:37 franciscom Exp $
-Purpose: smarty template - edit / delete Test Plan
+@filesource projectView.tpl
+Purpose: smarty template - display Test Project List
 
 Development hint:
 some variables smarty and javascript are created on the inc_*.tpl files.
 
 @internal revisions
-@since 1.9.13
+@since 1.9.15
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -94,11 +94,11 @@ $(document).ready(function() {
 
   <table id="item_view" class="simple_tableruler sortable">
     <tr>
-      <th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_name}</th>
+      <th>{$tlImages.toggle_api_info}
+      {$tlImages.sort_hint}{$labels.th_name}</th>
       <th class="{$noSortableColumnClass}">{$labels.th_notes}</th>
       <th>{$tlImages.sort_hint}{$labels.tcase_id_prefix}</th>
       <th>{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
-      {* <th>{$tlImages.sort_hint}{$labels.th_reqmgrsystem_short}</th> *}
       <th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
       <th class="icon_cell">{$labels.th_active}</th>
       <th class="icon_cell">{$labels.public}</th>
@@ -108,9 +108,11 @@ $(document).ready(function() {
     </tr>
     {foreach item=testproject from=$gui->tprojects}
     <tr>
-      <td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testproject.id}</span>
-          <a href="{$editAction}{$testproject.id}">
+      {*<td>
+      </td> *}
+      <td>    <a href="{$editAction}{$testproject.id}">
              {$testproject.name|escape}
+             <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testproject.id}</span>
              {if $gsmarty_gui->show_icon_edit}
                   <img title="{$labels.testproject_alt_edit}" alt="{$labels.testproject_alt_edit}"
                        src="{$tlImages.edit}"/>

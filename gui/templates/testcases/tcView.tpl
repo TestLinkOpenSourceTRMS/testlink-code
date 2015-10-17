@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.45.2.1 2010/12/06 08:20:59 asimon83 Exp $
+@filesource tcView.tpl
 Purpose: smarty template - view test case in test specification
 
 @internal revisions
+@since 1.9.15
 *}
 
 {config_load file="input_dimensions.conf"}
@@ -162,12 +163,15 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
               args_cf=$gui->cf_other_versions[idx][$tdx] - OK 
               - do not know if there is info on smarty manuals
               *}
+
+              {* Setting args_can_do makes other versions
+                 READONLY *}
               {include file="testcases/tcView_viewer.tpl" 
                        args_testcase=$my_testcase 
                        args_keywords_map=$gui->keywords_map[idx] 
                        args_reqs=$gui->arrReqs[idx]
                        args_status_quo=$gui->status_quo[idx]
-                       args_can_do=$gui->can_do
+                       args_can_do=null
                        args_can_move_copy="no" 
                        args_can_delete_testcase='no'
                        args_can_delete_version="yes"

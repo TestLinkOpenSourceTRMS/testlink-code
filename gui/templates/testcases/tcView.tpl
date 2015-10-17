@@ -89,6 +89,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
              args_keywords_map=$gui->keywords_map[idx] 
              args_reqs=$gui->arrReqs[idx] 
              args_status_quo=$gui->status_quo[idx]
+             args_read_only="no"
              args_can_do=$gui->can_do
              args_can_move_copy="yes"
              args_can_delete_testcase="yes" 
@@ -137,12 +138,12 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                  show_hide_container_view_status_id=$memstatus_id}
                
         <div id="vers_{$vid}" class="workBack">
-        
+
         {foreach from=$gui->testcase_other_versions[idx] item=my_testcase key=tdx}
           {$version_num=$my_testcase.version}
           {$title=$labels.version}
           {$title="$title $version_num"}
-            
+
           {$sep="_"}
           {$div_id="v_$vid"}
           {$div_id="$div_id$sep$version_num"}
@@ -171,11 +172,12 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_keywords_map=$gui->keywords_map[idx] 
                        args_reqs=$gui->arrReqs[idx]
                        args_status_quo=$gui->status_quo[idx]
-                       args_can_do=null
+                       args_can_do=$gui->can_do
                        args_can_move_copy="no" 
                        args_can_delete_testcase='no'
                        args_can_delete_version="yes"
-                       
+                       args_read_only="yes"
+
                        args_show_version="no" 
                        args_show_title="no"
                        args_users=$gui->users

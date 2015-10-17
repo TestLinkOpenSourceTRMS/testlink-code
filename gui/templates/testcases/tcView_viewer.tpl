@@ -86,21 +86,25 @@ viewer for test case in test specification
 {$warning_delete_msg=""}
 {$edit_enabled=0}
 {$delete_enabled=0}
+{$has_been_executed=0}
 
 {if $args_can_do->edit == "yes"}
   {* Seems logical you can disable some you have executed before *}
   {$active_status_op_enabled=1}
+
   {$has_been_executed=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
   {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
 
-  {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
+  {if $args_status_quo == null || 
+      $args_status_quo[$args_testcase.id].executed == null}
       {$edit_enabled=1}
       {$delete_enabled=1}
       {$warning_edit_msg=""}
       {$warning_delete_msg=""}
   {else} 
-    {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
+    {if isset($args_tcase_cfg) && 
+        $args_tcase_cfg->can_edit_executed == 1}
       {$edit_enabled=1} 
       {$has_been_executed=1} 
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
@@ -120,8 +124,12 @@ viewer for test case in test specification
         {/if}  
       {/if}  
     {/if} 
-    
   {/if}
+
+{if $args_read_only == "yes"}
+  {$edit_enabled=0} 
+  {$delete_enabled=0} 
+{/if}
 
 <div style="display:{$tlCfg->gui->op_area_display->test_case};" 
      class="groupBtn" id="tcView_viewer_tcase_control_panel">
@@ -210,7 +218,7 @@ viewer for test case in test specification
   </form>
 {/if} {* user can edit *}
 
-  {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
+{if $args_can_do->add2tplan == "yes" && $args_has_testplans}
   <span>
   <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
     <input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
@@ -322,8 +330,8 @@ function launchInsertStep(step_id)
   {/if}
 </table>
 
+{if $edit_enabled}
 <div {$addInfoDivStyle}>
-  {if $edit_enabled}
   <input type="submit" name="create_step" 
           onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" />
 
@@ -338,8 +346,8 @@ function launchInsertStep(step_id)
           onclick="doAction.value='doReorderSteps';{$gui->submitCode};javascript: return validateStepsReorder('step_number{$args_testcase.id}');"
           value="{$tcView_viewer_labels.btn_reorder_steps}" />
   </span>
-  {/if}
 </div>
+{/if}
 </form>
 
 {include file="testcases/attributesLinearForViewer.inc.tpl"} 

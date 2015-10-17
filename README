@@ -1,5 +1,5 @@
 ===============================================================
-         TestLink 1.9.14 (Prague Bugfix 14) - Read me
+         TestLink 1.9.15 (Prague Bugfix 15) Tauriel - Read me
 ===============================================================
 
 Contents
@@ -471,6 +471,12 @@ http://www.freetest.net.br
 
 12. Security
 ===============================================================
+1.9.15
+Multiple XSS and Blind SQL Injection by 
+Netsparker Web Application Security Scanner.
+
+They have also provided a free account.
+
 
 1.9.12
 Research team of Portcullis Computer Security Ltd

@@ -348,7 +348,7 @@ function launchInsertStep(step_id)
   {/if}
 </table>
 
-{if $edit_enabled}
+{if $edit_enabled && $args_testcase.is_open}
 <div {$addInfoDivStyle}>
   <input type="submit" name="create_step" 
           onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" />

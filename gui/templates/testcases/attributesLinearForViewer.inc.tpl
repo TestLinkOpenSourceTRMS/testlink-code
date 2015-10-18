@@ -15,7 +15,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}">
   {$tcView_viewer_labels.status}{$smarty.const.TITLE_SEP}</span>
-  {if $edit_enabled}
+  {if $edit_enabled && $args_testcase.is_open}
   <select name="status" id="status" onchange="document.getElementById('statusForm_{$args_testcase.id}').submit();">
     {html_options options=$gui->domainTCStatus selected=$args_testcase.status}
   </select>
@@ -35,7 +35,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}"
         style="margin-left:20px;">{$tcView_viewer_labels.importance}{$smarty.const.TITLE_SEP}</span>
-    {if $edit_enabled}
+    {if $edit_enabled && $args_testcase.is_open}
     <select name="importance" onchange="document.getElementById('importanceForm_{$args_testcase.id}').submit();" >
           {html_options options=$gsmarty_option_importance selected=$args_testcase.importance}
     </select>
@@ -54,7 +54,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}" 
         style="margin-left:20px;">{$tcView_viewer_labels.execution_type}{$smarty.const.TITLE_SEP}</span>
-  {if $edit_enabled}
+  {if $edit_enabled && $args_testcase.is_open}
     <select name="exec_type" onchange="document.getElementById('execTypeForm_{$args_testcase.id}').submit();" >
       {html_options options=$gui->execution_types selected=$args_testcase.execution_type}
     </select>
@@ -74,7 +74,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <span class="labelHolder" title="{$tcView_viewer_labels.estimated_execution_duration}"
         style="margin-left:20px;">{$tcView_viewer_labels.estimated_execution_duration_short}{$smarty.const.TITLE_SEP}</span>
 
-  {if $edit_enabled}
+  {if $edit_enabled && $args_testcase.is_open}
   <span>
   <input type="text" name="estimated_execution_duration" id="estimated_execution_duration"
        size="{#EXEC_DURATION_SIZE#}" maxlength="{#EXEC_DURATION_MAXLEN#}"

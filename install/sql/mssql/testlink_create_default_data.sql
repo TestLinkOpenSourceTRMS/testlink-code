@@ -83,6 +83,14 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (36,'exec_delete');
 INSERT INTO /*prefix*/rights (id,description) VALUES (37,'testplan_unlink_executed_testcases');
 INSERT INTO /*prefix*/rights (id,description) VALUES (38,'testproject_delete_executed_testcases');
 INSERT INTO /*prefix*/rights (id,description) VALUES (39,'testproject_edit_executed_testcases');
+INSERT INTO /*prefix*/rights (id,description) VALUES (40,'testplan_milestone_overview');
+INSERT INTO /*prefix*/rights (id,description) VALUES (41,'exec_testcases_assigned_to_me');
+INSERT INTO /*prefix*/rights (id,description) VALUES (42,'testproject_metrics_dashboard');
+INSERT INTO /*prefix*/rights (id,description) VALUES (43,'testplan_add_remove_platforms');
+INSERT INTO /*prefix*/rights (id,description) VALUES (44,'testplan_update_linked_testcase_versions');
+INSERT INTO /*prefix*/rights (id,description) VALUES (45,'testplan_set_urgent_testcases');
+INSERT INTO /*prefix*/rights (id,description) VALUES (46,'testplan_show_testcases_newest_versions');
+INSERT INTO /*prefix*/rights (id,description) VALUES (47,'testcase_freeze');
 
 
 
@@ -127,6 +135,15 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,36);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,37);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,38);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,39);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,40);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,41);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,42);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,43);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,44);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,45);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,46);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,47);
+
 
 
 --  Rights for guest role

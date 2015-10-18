@@ -10,7 +10,7 @@
  * @filesource  roles.inc.php
  * @package     TestLink
  * @author      Martin Havlat, Chad Rosen
- * @copyright   2006-2013, TestLink community 
+ * @copyright   2006-2015, TestLink community 
  * 
  *
  * @internal revisions
@@ -86,7 +86,8 @@ function init_global_rights_maps()
                    'right_testplan_add_remove_platforms' => null,
                    'right_testplan_update_linked_testcase_versions' => null,
                    'right_testplan_set_urgent_testcases' => null,
-                   'right_testplan_show_testcases_newest_versions' => null);
+                   'right_testplan_show_testcases_newest_versions' => null,
+                   'right_testcase_freeze' => null);
 
 
 
@@ -114,7 +115,8 @@ function init_global_rights_maps()
   $g_rights_mgttc = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
                           "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
                           "testproject_delete_executed_testcases" => $l18n['right_testproject_delete_executed_testcases'],
-                          "testproject_edit_executed_testcases" => $l18n['right_testproject_edit_executed_testcases']);
+                          "testproject_edit_executed_testcases" => $l18n['right_testproject_edit_executed_testcases'],
+                          "testcase_freeze" => $l18n['right_testcase_freeze']);
   
   $g_rights_kw = array("mgt_view_key" => $l18n['desc_mgt_view_key'],
                        "mgt_modify_key" => $l18n['desc_mgt_modify_key']);
@@ -410,4 +412,3 @@ function deleteRole(&$db,$roleID)
   
   return $userFeedback;
 }
-?>

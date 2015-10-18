@@ -1806,7 +1806,8 @@ $TLS_system_blocks_delete_executed_tc_when = $TLS_no_right_to_delete_executed_tc
 $TLS_btn_bulk = "Bulk action";
 $TLS_bulk_op = "Bulk actions";
 
-
+$TLS_freeze_this_tcversion = "Freeze this version";
+$TLS_unfreeze_this_tcversion = "Unfreeze this version";
 
 // ----- gui/templates/planRemoveTC_m1.tpl -----
 $TLS_btn_remove_selected_tc = "Remove selected tcs";
@@ -2631,6 +2632,7 @@ $TLS_right_testplan_update_linked_testcase_versions = 'Update Linked Test Case V
 $TLS_right_testplan_set_urgent_testcases = 'Set Urgent Test Cases';
 $TLS_right_testplan_show_testcases_newest_versions = 'Show Test Cases Newest Versions';
 
+$TLS_right_testcase_freeze = 'Freeze/Unfreeze Test Case Version';
 
 
 

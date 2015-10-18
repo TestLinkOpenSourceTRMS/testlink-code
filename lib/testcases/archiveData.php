@@ -18,7 +18,7 @@
  *     System try to get Test Project analising user provided data (test case identification)
  *
  *  @internal revision
- *  @since 1.9.10
+ *  @since 1.9.15
  */
 
 require_once('../../config.inc.php');
@@ -32,6 +32,7 @@ $cfg = array('testcase' => config_get('testcase_cfg'),'testcase_reorder_by' => c
              'spec' => config_get('spec_cfg'));
 
 list($args,$gui,$grants) = initializeEnv($db);
+
 
 // User right at test project level has to be done
 // Because this script can be called requesting an item that CAN BELONG
@@ -197,7 +198,7 @@ function initializeEnv($dbHandler)
   $gui = new stdClass();
 
   $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
-                       'mgt_modify_req', 
+                       'mgt_modify_req','testcase_freeze', 
                        'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
   $grants = new stdClass();
   foreach($grant2check as $right)

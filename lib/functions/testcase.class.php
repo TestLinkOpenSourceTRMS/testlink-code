@@ -303,6 +303,7 @@ class testcase extends tlObjectWithAttachments
       $ix->status = $my['options']['status'];
       $ix->estimatedExecDuration = $my['options']['estimatedExecDuration'];
 
+     
       $op = $this->createVersion($ix);
 
       if($ret['update_name'])
@@ -607,8 +608,10 @@ class testcase extends tlObjectWithAttachments
   
     returns:
   
-    rev: 
- 
+    @internal revisions
+    @since 1.9.15 
+
+
   */
  private function createVersion($item)
  {
@@ -642,7 +645,14 @@ class testcase extends tlObjectWithAttachments
         $sqlValues .= "," . floatval($v);
       }
     }
-      
+    
+    if( property_exists($item,'is_open') && !is_null($item->is_open) )    
+    {
+      $v = intval($item->is_open) > 0 ? 1 : 0;
+      $sql .= ", is_open";
+      $sqlValues .= "," . $v;
+    }
+
     $sql .= " )" . $sqlValues . " )";
 
 
@@ -901,7 +911,7 @@ class testcase extends tlObjectWithAttachments
         {
           $gui->linked_versions[] = $this->get_linked_versions($tc_id);
         }  
-        new dBug($gui->linked_versions);
+        
 
         $gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 
@@ -1713,6 +1723,7 @@ class testcase extends tlObjectWithAttachments
           $ix->version = $tcversion['version'];
           $ix->status = $tcversion['status'];
           $ix->estimatedExecDuration = $tcversion['estimated_exec_duration'];
+          $ix->is_open = $tcversion['is_open'];
 
           $op = $this->createVersion($ix);
 
@@ -1791,12 +1802,16 @@ class testcase extends tlObjectWithAttachments
             map:  id: node id of created tcversion
                   version: version number (i.e. 5)
                   msg
-  
-    rev : 20070701 - franciscom - added version key on return map.
+
+    @internal revisions
+    @since 1.9.15
+
   */
-  // BUGID 3431
   function create_new_version($id,$user_id,$source_version_id=null, $options=null)
   {
+    $opt = array('is_open' => 1);
+    $opt = array_merge($opt,(array)$options);
+
     $tcversion_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
   
     // get last version for this test case (need to get new version number)
@@ -1808,6 +1823,8 @@ class testcase extends tlObjectWithAttachments
     }
     $this->copy_tcversion($id,$from,$tcversion_id,$last_version_info['version']+1,$user_id);
   
+    $this->setIsOpen(null,$tcversion_id,$opt['is_open']);
+
     $ret['id'] = $tcversion_id;
     $ret['version'] = $last_version_info['version']+1;
     $ret['msg'] = 'ok';
@@ -4047,7 +4064,6 @@ class testcase extends tlObjectWithAttachments
     returns: 1 -> everything ok.
              0 -> some error
     rev:
-        BUGID - 3849 -> not completely fixed -> BUGID 4204
   */
   function update_active_status($id,$tcversion_id,$active_status)
   {
@@ -4161,7 +4177,8 @@ class testcase extends tlObjectWithAttachments
     $viewerActions->move='no';
     $viewerActions->copy='no';
     $viewerActions->add2tplan='no';
-  
+    $viewerActions->freeze='no';
+
     switch ($mode) 
     {
       case 'editOnExec':
@@ -6449,6 +6466,11 @@ class testcase extends tlObjectWithAttachments
 
     $goo->can_do = $this->getShowViewerActions($goo->show_mode);
 
+    $key = 'testcase_freeze'; 
+    if(property_exists($grantsObj, $key))
+    {
+      $goo->can_do->freeze = $grantsObj->$key;
+    }  
 
     $path2root = $this->tree_manager->get_path($id);
     $goo->tproject_id = $path2root[0]['parent_id'];
@@ -7350,6 +7372,23 @@ class testcase extends tlObjectWithAttachments
 
     return $sk;
   }
- 
+
+  /**
+   *
+   *
+   */
+  function setIsOpen($id,$tcversion_id,$value)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
+    $bv = (intval($value) > 0) ? 1 : 0;
+    $sql =  " /* $debugMsg */ UPDATE {$this->tables['tcversions']} " .
+            " SET is_open = {$bv}" .
+            " WHERE id = " . intval($tcversion_id) ;
+
+    $this->db->exec_query($sql);
+  }
+
+
 
 }  

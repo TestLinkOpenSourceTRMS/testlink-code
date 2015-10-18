@@ -34,7 +34,6 @@ $tsuite_mgr = new testsuite($db);
 $args = init_args($cfg,$optionTransferName,$tcase_mgr);
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 
-
 $templateCfg = templateConfiguration('tcEdit');
 
 $commandMgr = new testcaseCommands($db,$args->user,$args->tproject_id);
@@ -62,7 +61,6 @@ $pfn = $args->doAction;
 $testCaseEditorKeys = null;
 switch($args->doAction)
 {
-
   case "create":  
   case "edit":  
   case "doCreate":  
@@ -122,6 +120,8 @@ switch($args->doAction)
   case "setExecutionType":
   case "setEstimatedExecDuration":
   case "removeKeyword":
+  case "freeze":
+  case "unfreeze":
     $op = $commandMgr->$pfn($args,$_REQUEST);
     $doRender = true;
   break;
@@ -152,6 +152,7 @@ if( $doRender )
   exit();
 }
 
+// Things that one day will be managed by command file
 if($args->delete_tc_version)
 {
   $status_quo_map = $tcase_mgr->get_versions_status_quo($args->tcase_id);
@@ -294,6 +295,10 @@ else if($args->do_create_new_version)
   {
     $user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);
     $msg = 'ok';
+  
+    // @since 1.9.15
+    // Source version need to be set to FROZEN
+    $tcase_mgr->setIsOpen($args->tcase_id,$args->tcversion_id,0);
   }
 
   $gui->viewerArgs['action'] = $action_result;
@@ -697,7 +702,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
                              'setImportance' => '','setStatus' => '',
                              'setExecutionType' => '', "setEstimatedExecDuration" => '',
                              'doAddRelation' => '', 'doDeleteRelation' => '',
-                             'removeKeyword' => '');
+                             'removeKeyword' => '', 'freeze' => '', 'unfreeze' => '');
 
   $key2work = 'initWebEditorFromTemplate';
   $initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
@@ -785,6 +790,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
         case "doDeleteRelation":
         case "doUpdateStepAndInsert":
         case "removeKeyword":        
+        case "freeze":        
+        case "unfreeze":        
             $renderType = 'template';
             
             // Document this !!!!

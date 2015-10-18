@@ -32,6 +32,7 @@ viewer for test case in test specification
 {$tcversion_id=$args_testcase.id}
 {$showMode=$gui->show_mode} 
 
+
 {* Used on several operations to implement goback *}
 {$tcViewAction="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
              
@@ -91,20 +92,19 @@ viewer for test case in test specification
 {if $args_can_do->edit == "yes"}
   {* Seems logical you can disable some you have executed before *}
   {$active_status_op_enabled=1}
+  {$freeze_op_enabled=1}
 
   {$has_been_executed=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
   {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
 
-  {if $args_status_quo == null || 
-      $args_status_quo[$args_testcase.id].executed == null}
+  {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
       {$edit_enabled=1}
       {$delete_enabled=1}
       {$warning_edit_msg=""}
       {$warning_delete_msg=""}
   {else} 
-    {if isset($args_tcase_cfg) && 
-        $args_tcase_cfg->can_edit_executed == 1}
+    {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
       {$edit_enabled=1} 
       {$has_been_executed=1} 
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
@@ -140,7 +140,7 @@ viewer for test case in test specification
     <input type="hidden" name="doAction" value="" />
     <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
-    {if $edit_enabled}
+    {if $edit_enabled && $args_testcase.is_open}
          <input type="submit" name="edit_tc" 
                 onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
     {/if}
@@ -215,6 +215,24 @@ viewer for test case in test specification
                              value="{lang_get s=$act_deact_value}" />
     {/if}
 
+    {if $freeze_op_enabled==1 && 
+        $args_can_do->freeze=='yes'}
+          {if $args_testcase.is_open eq 0}
+              {$freeze_btn="unfreeze"}
+              {$freeze_value="unfreeze_this_tcversion"}
+              {$version_title_class="unfreeze_version"}
+          {else}
+              {$freeze_btn="freeze"}
+              {$freeze_value="freeze_this_tcversion"}
+              {$version_title_class="freeze_version"}
+          {/if}
+
+         <input type="submit" name="{$freeze_btn}" 
+                onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
+
+    {/if}
+
+
   </form>
 {/if} {* user can edit *}
 
@@ -244,7 +262,7 @@ viewer for test case in test specification
            value="{$tcView_viewer_labels.btn_show_exec_history}" />
   
 
-    {if $edit_enabled}
+    {if $edit_enabled && $args_testcase.is_open}
       <form style="display: inline;" id="tcbulkact" name="tcbulkact" 
             method="post" action="{$bulkOpAction}" >
         <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />

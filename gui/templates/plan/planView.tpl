@@ -7,7 +7,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 some smarty and javascript variables are created on the inc_*.tpl files.
      
 @internal revisions
-@since 1.9.14
+@since 1.9.15
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -98,9 +98,10 @@ $(document).ready(function() {
     <tbody>
     {foreach item=testplan from=$gui->tplans}
     <tr>
-      <td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
-          <a href="{$editAction}{$testplan.id}"> 
-             {$testplan.name|escape} 
+      <td><a href="{$editAction}{$testplan.id}"> 
+             {$testplan.name|escape}
+             <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
+           
              {if $gsmarty_gui->show_icon_edit}
                  <img title="{$labels.testplan_alt_edit_tp}"  alt="{$labels.testplan_alt_edit_tp}" 
                       src="{$tlImages.edit}"/>

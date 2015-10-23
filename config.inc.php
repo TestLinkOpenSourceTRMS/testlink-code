@@ -730,7 +730,9 @@ $tlCfg->document_generator->css_template = 'css/tl_documents.css';
 $tlCfg->document_generator->requirement_css_template = 'css/tl_documents.css';
 
 /** Misc settings */
-// Display test case version when creating test spec document
+// Display test case version when creating:
+// - test spec document
+// - test reports
 $tlCfg->document_generator->tc_version_enabled = FALSE;
 
 

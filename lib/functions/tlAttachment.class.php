@@ -174,10 +174,11 @@ class tlAttachment extends tlDBObject
    * 
    * @return integer returns tl::OK
    */
-  public function create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title)
+  public function create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,
+                         $fSize,$title,$opt=null)
   {
     $this->_clean();
-    
+ 
     $title = trim($title);
     $config = $this->attachmentCfg;
     if($title == "")
@@ -193,7 +194,14 @@ class tlAttachment extends tlDBObject
       }
 
     }
-    if(!$config->allow_empty_title && $title == "")
+
+    $allowEmptyTitle = $config->allow_empty_title;
+    if( isset($opt['allow_empty_title']) )
+    {
+      $allowEmptyTitle = $opt['allow_empty_title'];
+    }  
+
+    if( !$allowEmptyTitle && $title == "")
     {
       return self::E_TITLELENGTH; 
     }

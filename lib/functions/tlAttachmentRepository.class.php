@@ -5,13 +5,12 @@
  *
  * @package   TestLink
  * @author    Andreas Morsing
- * @copyright   2007-2012, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @filesource  tlAttachmentRepository.class.php
- * @link    http://www.teamst.org/index.php
+ * @link    http://www.testlink.org/index.php
  *
  * @internal revisions
- * @since 1.9.4
- * 20120505 - franciscom - TICKET 5001: crash - Create test project from an existing one (has 1900 Requirements)
+ * @since 1.9.15
  *
  */
 
@@ -120,7 +119,7 @@ class tlAttachmentRepository extends tlObjectWithDB
   * @return int returns true if the information was successfully stored, false else
   *
   **/
-  public function insertAttachment($fkid,$fkTableName,$title,$fInfo)
+  public function insertAttachment($fkid,$fkTableName,$title,$fInfo,$opt=null)
   {
     $fName = isset($fInfo['name']) ? $fInfo['name'] : null;
     $fType = isset($fInfo['type']) ? $fInfo['type'] : '';
@@ -145,12 +144,15 @@ class tlAttachmentRepository extends tlObjectWithDB
       if($fileUploaded)
       {
           @unlink($fTmpName); 
-        } 
+      } 
     }
 
     if ($fileUploaded)
     {
-      $fileUploaded = ($this->attmObj->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title) >= tl::OK);
+      $fileUploaded = 
+      ($this->attmObj->create($fkid,$fkTableName,$fName,$destFPath,$fContents,
+                              $fType,$fSize,$title,$opt) >= tl::OK);
+      
       if ($fileUploaded)
       {
         $fileUploaded = $this->attmObj->writeToDb($this->db);

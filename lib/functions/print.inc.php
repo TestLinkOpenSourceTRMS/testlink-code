@@ -1375,10 +1375,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   }
   $code .= "</td></tr>\n";
 
-  // 
+  // estimated execution time
   $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
-             '<span class="label">'. $labels['estimated_execution_duration'].':</span></td>' .
-             '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .  $tcInfo['estimated_exec_duration'];
+           '<span class="label">'. $labels['estimated_execution_duration'].':</span></td>' .
+           '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .  $tcInfo['estimated_exec_duration'];
   $code .= "</td></tr>\n";
 
   if( isset($options['importance']) && $options['importance'] )
@@ -1415,9 +1415,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $cfields = null;
   $prio_info = null;
 
-
-  // $code = null;
-  // 20140813
   $relSet = $tc_mgr->getRelations($id);
   if(!is_null($relSet['relations']))
   {
@@ -1799,12 +1796,28 @@ function renderTestPlanForPrinting(&$db,&$node,&$options,$env,$context)
  */
 function renderTestDuration($statistics,$platform_id=0)
 {
+  static $ecfg;
+
   $output = '';
   $hasOutput = false;
-  $estimatedTimeAvailable = isset($statistics['estimated_execution']) && !is_null($statistics['estimated_execution']);
-  $realTimeAvailable = isset($statistics['real_execution']) && 
-                      !is_null($statistics['real_execution']['platform'][$platform_id]);
   
+  new dBug($statistics);
+  if(!$ecfg)
+  {
+    $ecfg = config_get('exec_cfg');    
+  }  
+  $estimatedTimeAvailable = isset($statistics['estimated_execution']) && !is_null($statistics['estimated_execution']);
+  
+  if($ecfg->features->exec_duration->enabled)
+  {
+     $realTimeAvailable = isset($statistics['real_execution']) && 
+                          !is_null($statistics['real_execution']['platform'][$platform_id]);
+  }  
+  else
+  {
+    $realTimeAvailable = null;
+  }  
+
 
   if( $estimatedTimeAvailable || $realTimeAvailable)
   { 
@@ -1907,6 +1920,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
   $config['gui'] = config_get('gui');
   $config['testcase'] = config_get('testcase_cfg');
   $config['results'] = config_get('results');
+  $config['exec_cfg'] = config_get('exec_cfg');
 
   // Cortado
   $config['tableColspan'] = 4;
@@ -1975,6 +1989,7 @@ function buildTestExecResults(&$dbHandler,&$its,$exec_info,$opt,$buildCF=null)
   $my['opt'] = array_merge($my['opt'],(array)$opt);
   
   $cfg = &$opt['cfg'];
+
   $labels = &$opt['lbl'];
   $testStatus = $cfg['status_labels'][$exec_info[0]['status']];
   
@@ -2004,10 +2019,6 @@ function buildTestExecResults(&$dbHandler,&$its,$exec_info,$opt,$buildCF=null)
     $td_colspan .= ' colspan="' . $opt['colspan'] . '" '; 
   }
 
-  //
-  //$out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
-  //        '<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n";
-
   // Check if CF exits for this BUILD
   if(!is_null($buildCF) && isset($buildCF[$exec_info[0]['build_id']]) && 
      $buildCF[$exec_info[0]['build_id']] != '')
@@ -2025,15 +2036,18 @@ function buildTestExecResults(&$dbHandler,&$its,$exec_info,$opt,$buildCF=null)
 
           '<tr><td width="20%">' .
           '<span class="label">' . $labels['execution_mode'] . ':</span></td>' .
-          '<td '  .$td_colspan . '><b>' . $labels[$etk] . "</b></td></tr>\n" .
+          '<td '  .$td_colspan . '><b>' . $labels[$etk] . "</b></td></tr>\n";
 
-          '<tr><td width="20%">' .
-          '<span class="label">' . $labels['execution_duration'] . ':</span></td>';
+  if($cfg['exec_cfg']->features->exec_duration->enabled)
+  {
+    $out .= '<tr><td width="20%">' .
+            '<span class="label">' . $labels['execution_duration'] . ':</span></td>' .
 
-  $out .= '<td '  .$td_colspan . '><b>' . 
-          (isset($exec_info[0]['execution_duration']) ? $exec_info[0]['execution_duration'] : "&nbsp;") . 
-          "</b></td></tr>\n";
-
+            '<td '  .$td_colspan . '><b>' . 
+            (isset($exec_info[0]['execution_duration']) ? $exec_info[0]['execution_duration'] : "&nbsp;") . 
+            "</b></td></tr>\n";
+  }  
+ 
   if ($executionNotes != '') // show execution notes is not empty
   {
     $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">'.$labels['title_execution_notes'] . '</td>' .

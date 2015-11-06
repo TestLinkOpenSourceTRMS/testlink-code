@@ -9,7 +9,7 @@
 *
 *
 * @internal revisions
-* @since 1.9.14
+* @since 1.9.15
 */
 require('../../config.inc.php');
 require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
@@ -54,12 +54,13 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
  
   $execStatus = $metricsMgr->getExecStatusMatrixFlat($args->tplan_id,$buildSet,$opt);
 
+
   $metrics = $execStatus['metrics'];
   $latestExecution = $execStatus['latestExec']; 
 
   // Every Test suite a row on matrix to display will be created
   // One matrix will be created for every platform that has testcases
-  $tcols = array('tsuite', 'tcase');
+  $tcols = array('tsuite', 'tcase','version');
   if($gui->show_platforms)
   {
     $tcols[] = 'platform';
@@ -243,7 +244,9 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
 
   $l18n = init_labels(array('design' => null, 'execution' => null, 'history' => 'execution_history',
                             'test_result_flat_filters' => null, 'too_much_data' => null,'too_much_builds' => null,
-                            'result_on_last_build' => null, 'versionTag' => 'tcversion_indicator') );
+                            'result_on_last_build' => null, 'versionTag' => 'tcversion_indicator',
+                            'execution_type_manual' => null,
+                            'execution_type_auto' => null) );
 
   $l18n['not_run']=lang_get($cfg['results']['status_label']['not_run']);
 
@@ -292,7 +295,8 @@ function createSpreadsheet($gui,$args)
                            'notes' => null, 'date_time_run' => null, 'execution_duration' => null,
                            'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
                            'result_on_last_build' => null,'last_execution' => null,
-                           'assigned_to' => null,'tcexec_result' => null));
+                           'assigned_to' => null,'tcexec_result' => null,
+                           'version' => null,'execution_type' => null));
 
   $buildIDSet = $args->builds->idSet;
 
@@ -336,6 +340,7 @@ function createSpreadsheet($gui,$args)
   // data is organized with following columns $dataHeader[]
   // Test suite
   // Test case
+  // Test case version (for humans) 
   // [Platform]  => if any exists
   //
   // Priority   ===>  Just discovered that we have choosen to make this column
@@ -354,7 +359,9 @@ function createSpreadsheet($gui,$args)
   // ?? Exec result on ON LATEST CREATED Build
   // ?? Latest Execution result (Hmm need to explain better)
   // 
-  $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title']);
+  $dataHeader = array($lbl['title_test_suite_name'],
+                      $lbl['title_test_case_title'],
+                      $lbl['version']);
 
   if( $showPlatforms = !is_null($gui->platforms) )
   {
@@ -374,6 +381,7 @@ function createSpreadsheet($gui,$args)
   $dataHeader[] = $lbl['test_exec_by'];
   $dataHeader[] = $lbl['notes'];
   $dataHeader[] = $lbl['execution_duration'];
+  $dataHeader[] = $lbl['execution_type'];
 
   $startingRow = count($lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
@@ -465,6 +473,11 @@ function buildSpreadsheetData(&$db,&$args,&$gui,&$exec,$labels)
   $userSet = getUsersForHtmlOptions($db,null,null,null,null,
                                     array('userDisplayFormat' => '%first% %last%'));
 
+  $det = array(TESTCASE_EXECUTION_TYPE_MANUAL => 
+               $labels['execution_type_manual'],
+               TESTCASE_EXECUTION_TYPE_AUTO => 
+               $labels['execution_type_auto']);
+
   $metrics = $exec['metrics'];
   $latestExecution = $exec['latestExec'];
   $cols = $args->cols;
@@ -485,6 +498,7 @@ execution_ts  2015-05-23 16:38:22
 execution_duration  NULL
 user_id 1       => NEED TO DECODE
 urg_imp 4       => NEED TO DECODE
+execution_type => NEED TO DECODE 
 */
 
   $loop2do = count($metrics);
@@ -499,6 +513,8 @@ urg_imp 4       => NEED TO DECODE
     $eid = $args->tcPrefix . $metrics[$ix]['external_id'];
     $rows[$cols['tcase']] = 
       htmlspecialchars("{$eid}:{$metrics[$ix]['name']}",ENT_QUOTES);
+
+    $rows[$cols['version']] = $metrics[$ix]['version'];
 
     if ($gui->show_platforms)
     {
@@ -533,6 +549,11 @@ urg_imp 4       => NEED TO DECODE
 
     $rows[] = $metrics[$ix]['execution_notes'];
     $rows[] = $metrics[$ix]['execution_duration'];
+     
+    $rows[] = 
+      isset($det[$metrics[$ix]['exec_type']]) ?
+      $det[$metrics[$ix]['exec_type']] : 'not configured';
+
     $gui->matrix[] = $rows;
   }  
 }

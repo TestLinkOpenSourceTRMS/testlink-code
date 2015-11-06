@@ -1870,7 +1870,7 @@ class tlTestPlanMetrics extends testplan
 
 
     // Additional Execution fields
-    $moreExecFields = '';
+    $moreExecFields = "";
     if($my['opt']['getExecutionNotes'])
     {
       $moreExecFields .= "E.notes AS execution_notes,";
@@ -1903,7 +1903,10 @@ class tlTestPlanMetrics extends testplan
               " SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
               " TPTCV.tcversion_id,TPTCV.platform_id," .
               " E.build_id,E.tcversion_number AS version,TCV.tc_external_id AS external_id, " .
-              " E.id AS executions_id, E.status AS status, " . $moreExecFields .
+              " E.id AS executions_id, E.status AS status, " . 
+              $moreExecFields .
+              " E.execution_type AS exec_type," .
+
               " (TPTCV.urgency * TCV.importance) AS urg_imp " .
               " FROM {$this->tables['testplan_tcversions']} TPTCV " .
   
@@ -1948,7 +1951,9 @@ class tlTestPlanMetrics extends testplan
               " TPTCV.tcversion_id, TPTCV.platform_id," .
               " BU.id AS build_id,TCV.version,TCV.tc_external_id AS external_id, " .
               " COALESCE(E.id,-1) AS executions_id, " .
-              " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " . $moreExecFields . 
+              " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " . 
+              $moreExecFields .
+              " TCV.execution_type AS exec_type," . 
               " (TPTCV.urgency * TCV.importance) AS urg_imp " .
               " FROM {$this->tables['testplan_tcversions']} TPTCV " .
   

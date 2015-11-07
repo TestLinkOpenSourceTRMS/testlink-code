@@ -7222,7 +7222,7 @@ protected function createAttachmentTempFile()
   }
 
  /**
-  * Return all test suites inside target 
+  * Returns all test suites inside target 
   * test project with target name
   *
   * @param

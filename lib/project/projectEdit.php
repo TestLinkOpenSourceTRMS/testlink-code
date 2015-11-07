@@ -293,7 +293,18 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
     }
   }
   
-  
+  // sanitize output via black list
+  if($args->notes != '')
+  {
+    // The Black List - Jon Bokenkamp
+    $bl = array('<script>','</script>');
+    foreach($bl as $tg)
+    {
+      $cl[] = htmlentities($tg);
+    }  
+    $args->notes = str_replace($bl,$cl,$args->notes);
+  }  
+
   $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
   $args->userID = intval(isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0);
   $args->testprojects = null;

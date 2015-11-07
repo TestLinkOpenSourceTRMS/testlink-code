@@ -3886,7 +3886,7 @@ public function getTestCase($args)
           if( ($status_ok = !is_null($tprojectInfo)) == false )
           {  
             $msg = $msg_prefix . sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR,$prefix);
-            $this->errors[] = new IXR_Error(TPROJECT_PREFIX_DOESNOT_EXIST_STR, $msg);
+            $this->errors[] = new IXR_Error(TPROJECT_PREFIX_DOESNOT_EXIST, $msg);
           }
         }
       }  
@@ -7221,6 +7221,91 @@ protected function createAttachmentTempFile()
     }  
   }
 
+ /**
+  * Return all test suites inside target 
+  * test project with target name
+  *
+  * @param
+  * @param struct $args
+  * @param string $args["devKey"]
+  * @param int $args["testsuitename"]
+  * @param string $args["prefix"]
+  * @return mixed $resultInfo
+  * 
+  * @access public
+  */
+  public function getTestSuite($args)
+  { 
+    $ope = __FUNCTION__;
+    $msg_prefix = "({$ope}) - ";
+
+    $this->_setArgs($args);
+    $status_ok = 
+      $this->_runChecks(array('authenticate'),$msg_prefix);
+
+    if($status_ok)
+    {
+      // Check for mandatory parameters
+      $k2s = array(self::$testSuiteNameParamName,
+                   self::$prefixParamName);
+
+      foreach ($k2s as $target) 
+      {
+        $ok = $this->_isParamPresent($target,$msg_prefix,self::SET_ERROR);
+        $status_ok = $status_ok && $ok; 
+      }
+    }  
+
+    if( $status_ok )
+    {
+      // optionals
+      //$details='simple';
+      //$k2s=self::$detailsParamName;
+      //if( $this->_isParamPresent($k2s) )
+      //{ 
+      //  $details = $this->args[$k2s];
+      //}
+    }  
+    
+    if( $status_ok )
+    {
+      $tprojectMgr = new testproject($this->dbObj);
+      
+      $pfx = $this->args[self::$prefixParamName];
+      $tproj = $tprojectMgr->get_by_prefix($pfx);
+
+      if(is_null($tproj))
+      {
+        $status_ok = false;
+        $msg = $msg_prefix . sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR,$pfx);
+        $this->errors[] = new IXR_Error(TPROJECT_PREFIX_DOESNOT_EXIST, $msg);
+      }  
+      else
+      {
+        $ctx[self::$testProjectIDParamName] = $dummy['id'];
+      }  
+    }  
+    
+    if($status_ok && 
+       $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR,$ctx))
+    { 
+     $opt = array('recursive' => false, 
+                  'exclude_testcases' => true);
+     
+     $tg = $this->args[self::$testSuiteNameParamName];
+     $target = $this->dbObj->prepare_string($tg);
+     $filters['additionalWhereClause'] =
+       " AND name = '{$target}' "; 
+    
+     $items = 
+       $tprojectMgr->get_subtree($tproj['id'],$filters,$opt);
+    }
+
+    return $status_ok ? $items : $this->errors;    
+  }  // function end
+
+
+
 
   /**
    *
@@ -7294,6 +7379,7 @@ protected function createAttachmentTempFile()
                             'tl.addTestCaseKeywords' => 'this:addTestCaseKeywords',
                             'tl.removeTestCaseKeywords' => 'this:removeTestCaseKeywords',
                             'tl.updateTestSuiteCustomFieldDesignValue' => 'this:updateTestSuiteCustomFieldDesignValue',
+                            'tl.getTestSuite' => 'this:getTestSuite',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

@@ -27,6 +27,8 @@
 /** 
  * IXR is the class used for the XML-RPC server 
  */
+define ("TL_APICALL",'XML-RPC');
+
 require_once("../../../../config.inc.php");
 require_once("common.php");
 require_once("xml-rpc/class-IXR.php");
@@ -7292,16 +7294,33 @@ protected function createAttachmentTempFile()
      $opt = array('recursive' => false, 
                   'exclude_testcases' => true);
      
-     $tg = $this->args[self::$testSuiteNameParamName];
-     $target = $this->dbObj->prepare_string($tg);
-     $filters['additionalWhereClause'] =
-       " AND name = '{$target}' "; 
-    
+     // $target = $this->dbObj->prepare_string($tg);
+     // $filters['additionalWhereClause'] =
+     // " AND name = '{$target}' "; 
+     $filters = null;
      $items = 
        $tprojectMgr->get_subtree($tproj['id'],$filters,$opt);
+   
+     $ni = array();
+     if( !is_null($items) && ($l2d = count($items)) > 0)  
+     {
+       $tg = $this->args[self::$testSuiteNameParamName];
+       for($ydx=0; $ydx <= $l2d; $ydx++)
+       {
+         if(strcmp($items[$ydx]['name'],$tg) == 0 )
+         {
+           unset($items[$ydx]['tcversion_id']); 
+           $ni[] = $items[$ydx];   
+         } 
+       } 
+     } 
+     else
+     {
+      $ni = $items;
+     } 
     }
 
-    return $status_ok ? $items : $this->errors;    
+    return $status_ok ? $ni : $this->errors;    
   }  // function end
 
 

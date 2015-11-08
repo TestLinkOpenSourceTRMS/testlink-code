@@ -714,5 +714,6 @@ function initializeGui(&$dbHandler,$argsObj)
 
 function checkRights(&$db,&$user)
 {
+  csrfguard_start();
   return $user->hasRight($db,'mgt_modify_product');
 }

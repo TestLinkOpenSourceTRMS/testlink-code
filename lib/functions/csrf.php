@@ -209,4 +209,4 @@ function csrfguard_start()
 // Need to understand if this is needed
 //  
 doSessionStart(false);
-csrfguard_start();
+// csrfguard_start();

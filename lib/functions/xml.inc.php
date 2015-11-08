@@ -61,6 +61,7 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
     {
       $fm = substr($subject,0,2);
       $content = isset($item[$replacement]) ? $item[$replacement] : null;
+      
       switch($fm)
       {
         case '||':
@@ -75,6 +76,8 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
       $howMany = 0;
       $xmlElemCode = str_replace($subject,$content,$xmlElemCode,$howMany);
     }
+  
+
     $xmlCode .= $xmlElemCode;
   }
   reset($items);

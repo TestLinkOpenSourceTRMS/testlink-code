@@ -109,6 +109,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
   }
 
   $addIssueOp = null;
+  
   foreach ( $item2loop as $tcversion_id => $val)
   {
     $tcase_id=$exec_data['tc_version'][$tcversion_id];
@@ -127,17 +128,20 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
              "{$exec_signature->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
              "{$version_number},{$exec_signature->platform_id}";
 
-      if(trim($exec_data['execution_duration']) == '')
+      $dura = 'NULL ';
+      if(isset($exec_data['execution_duration']))
       {
-        $dura = 'NULL ';  
-      } 
-      else
-      {
-        $dura = floatval($exec_data['execution_duration']);
+        if(trim($exec_data['execution_duration']) == '')
+        {
+          $dura = 'NULL ';  
+        } 
+        else
+        {
+          $dura = floatval($exec_data['execution_duration']);
+        }  
       }  
 
-      $sql .= ',' .$dura . ")";
-
+      $sql .= ',' . $dura . ")";
 
       $db->exec_query($sql);    
       

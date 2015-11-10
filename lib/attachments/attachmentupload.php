@@ -38,6 +38,8 @@ if ($args->bPostBack)
     }  
 
     $l2d = count($fInfo);
+    new dBug($fInfo);
+    
     for($fdx=0; $fdx <= $l2d; $fdx++)
     {
       $fSize = isset($fInfo['size'][$fdx]) ? $fInfo['size'][$fdx] : 0;

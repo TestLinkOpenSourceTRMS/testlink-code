@@ -375,6 +375,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
                              $_REQUEST['relation_source_tcase_id'] : 0);
   }
   
+  echo '<xmp>';
+  echo $_REQUEST['summary'];
+  echo '</xmp>';
 
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
   $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;

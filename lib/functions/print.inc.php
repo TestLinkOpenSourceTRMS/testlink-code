@@ -1282,13 +1282,17 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
               }  
               $code .= '</td>';
             }
-
+  
             if( $opt['step_exec_status'] )
             {
               $code .= '<td>';
               if( $nike )
               {
-                $code .= $statusL10N[$sxni[$tcInfo[$key][$ydx]['id']]['status']];
+                $sk = $sxni[$tcInfo[$key][$ydx]['id']];
+                if(isset($statusL10N[$sk['status']]))
+                {
+                  $code .= $statusL10N[$sk['status']];
+                }  
               }  
               $code .= '</td>';
             }
@@ -1801,7 +1805,6 @@ function renderTestDuration($statistics,$platform_id=0)
   $output = '';
   $hasOutput = false;
   
-  new dBug($statistics);
   if(!$ecfg)
   {
     $ecfg = config_get('exec_cfg');    

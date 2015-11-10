@@ -1263,6 +1263,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
           $code .= '</tr>';     
 
+          new dBug($key);
           $loop2do = count($tcInfo[$key]);
           for($ydx=0 ; $ydx < $loop2do; $ydx++)
           {
@@ -1282,13 +1283,17 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
               }  
               $code .= '</td>';
             }
-
+  
             if( $opt['step_exec_status'] )
             {
               $code .= '<td>';
               if( $nike )
               {
-                $code .= $statusL10N[$sxni[$tcInfo[$key][$ydx]['id']]['status']];
+                $sk = $sxni[$tcInfo[$key][$ydx]['id']];
+                if(isset($statusL10N[$sk['status']]))
+                {
+                  $code .= $statusL10N[$sk['status']];
+                }  
               }  
               $code .= '</td>';
             }

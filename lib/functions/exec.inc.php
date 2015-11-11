@@ -205,6 +205,8 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
             if( isset($_FILES['uploadedFile']['name'][$step_id]) && 
                 !is_null($_FILES['uploadedFile']['name'][$step_id])) 
             {
+              $repOpt = array('allow_empty_title' => TRUE);
+
               // May be we have enabled MULTIPLE on file upload
               if( is_array($_FILES['uploadedFile']['name'][$step_id])) 
               {
@@ -224,7 +226,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
                     {
                       $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id][$moe];
                     }  
-                    $uploaded = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo);
+                    $uploaded = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo,$repOpt);
                   }
                 }  
               } 

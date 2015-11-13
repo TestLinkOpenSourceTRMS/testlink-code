@@ -447,6 +447,14 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
         foreach($value as $tcase_id)
         {
           $email['body'] .= $flat_path[$tcase_id] . '<br />';  
+          $wl = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$tcase_id,
+                                              $argsObj->testproject_id);
+           
+          $email['body'] .= '<a href="' . $wl . '">' . 
+                            'direct link to test case spec ' .
+                            '</a>' .
+                            '<br /><br />';
+
         }  
         $email['body'] .= '<br />' . date(DATE_RFC1123);
         $email_op = email_send($email['from_address'], $email['to_address'], 

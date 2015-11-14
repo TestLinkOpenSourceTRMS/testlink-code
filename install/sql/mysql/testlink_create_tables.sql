@@ -66,7 +66,7 @@ CREATE TABLE /*prefix*/attachments (
   `file_path` varchar(250) default '',
   `file_size` int(11) NOT NULL default '0',
   `file_type` varchar(250) NOT NULL default '',
-  `date_added` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_added` datetime NOT NULL default  CURRENT_TIMESTAMP,
   `content` longblob,
   `compression_type` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
@@ -174,7 +174,7 @@ CREATE TABLE /*prefix*/custom_fields (
 
 CREATE TABLE /*prefix*/db_version (
   `version` varchar(50) NOT NULL default 'unknown',
-  `upgrade_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `upgrade_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
   `notes` text,
   PRIMARY KEY  (`version`)
 ) DEFAULT CHARSET=utf8;
@@ -242,7 +242,7 @@ CREATE TABLE /*prefix*/inventory (
 	`ipaddress` VARCHAR(255)  NOT NULL ,
 	`content` TEXT NULL ,
 	`creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`modification_ts` TIMESTAMP NOT NULL,
+	`modification_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
 	KEY /*prefix*/inventory_idx1 (`testproject_id`)
 ) DEFAULT CHARSET=utf8; 
@@ -263,7 +263,7 @@ CREATE TABLE /*prefix*/milestones (
   id int(10) unsigned NOT NULL auto_increment,
   testplan_id int(10) unsigned NOT NULL default '0',
   target_date date NULL,
-  start_date date NOT NULL default '0000-00-00',
+  start_date date NOT NULL,
   a tinyint(3) unsigned NOT NULL default '0',
   b tinyint(3) unsigned NOT NULL default '0',
   c tinyint(3) unsigned NOT NULL default '0',
@@ -342,7 +342,7 @@ CREATE TABLE /*prefix*/req_versions (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
-  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modification_ts` datetime NOT NULL default CURRENT_TIMESTAMP,
   `log_message` text,
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
@@ -411,7 +411,7 @@ CREATE TABLE /*prefix*/tcversions (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updater_id` int(10) unsigned default NULL,
-  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modification_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
   `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
@@ -607,7 +607,7 @@ CREATE TABLE /*prefix*/req_revisions (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
-  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modification_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/req_revisions_uidx1 (`parent_id`,`revision`)
 ) DEFAULT CHARSET=utf8;
@@ -631,7 +631,7 @@ CREATE TABLE /*prefix*/req_specs_revisions (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
-  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modification_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/req_specs_revisions_uidx1 (`parent_id`,`revision`)
 ) DEFAULT CHARSET=utf8;
@@ -680,7 +680,7 @@ CREATE TABLE /*prefix*/text_templates (
   title varchar(100) NOT NULL,
   template_data text,
   author_id int(10) unsigned default NULL,
-  creation_ts datetime NOT NULL default '1900-00-00 01:00:00',
+  creation_ts datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   is_public tinyint(1) NOT NULL default '0',
   UNIQUE KEY idx_text_templates (type,title)
 ) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';

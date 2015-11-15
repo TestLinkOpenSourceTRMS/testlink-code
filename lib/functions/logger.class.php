@@ -673,6 +673,8 @@ class tlEventManager extends tlObjectWithDB
   
   function deleteEventsFor($logLevels = null,$startTime = null)
   {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
     $clauses = null;
     if (!is_null($logLevels))
     {
@@ -706,9 +708,16 @@ class tlEventManager extends tlObjectWithDB
     // Solution was found on:
     // http://stackoverflow.com/questions/4471277/mysql-delete-from-with-subquery-as-condition
     //
-    $subsql = " SELECT id FROM ( SELECT id FROM {$this->tables['transactions']} t " .
-              " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0) XX";
-    $query = " DELETE FROM {$this->tables['transactions']} WHERE id IN ( {$subsql} )";
+    // $subsql = " SELECT id FROM ( SELECT id FROM {$this->tables['transactions']} t " .
+    //          " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0) XX";
+    // $query = " DELETE FROM {$this->tables['transactions']} WHERE id IN ( {$subsql} )";
+    //
+    // 201501114 - help by TurboP
+    $query = "/* $debugMsg */ " . 
+             " DELETE T FROM {$this->tables['transactions']} T " .
+             " WHERE NOT EXISTS " .
+             " (SELECT EV.id FROM {$this->tables['events']} EV " .
+             "  WHERE EV.transaction_id = T.id) ";
     $this->db->exec_query($query);  
   }
 }

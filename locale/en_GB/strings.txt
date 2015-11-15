@@ -2222,6 +2222,8 @@ $TLS_all_platforms = "All platforms";
 $TLS_assign_to = "Assign to";
 $TLS_btn_do = "Do";
 $TLS_btn_update_selected_tc = "Save";
+$TLS_btn_send_link = "email Assignments";
+
 $TLS_can_not_execute = " (No execution right)";
 $TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (incluing children test suites)";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for build %s in test plan %s";
@@ -2239,7 +2241,8 @@ $TLS_mail_testcase_assigned = "Following Test Cases has been assigned to you %s 
 $TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments HAS BEEN REMOVED  by %s <br /><br />";
 $TLS_send_mail_to_tester = "Send mail notification to tester";
 
-
+$TLS_mail_subject_link_to_assigned = 
+  'TestLink - Link to test assignments summary - Test Plan: %s (%s)';
 
 // ----- gui/templates/tc_exec_unassign_all.tpl -----
 $TLS_btn_remove_all_tester_assignments = "Unassign all testers from selected Build";
@@ -3946,5 +3949,9 @@ $TLS_remove_kw_msgbox_title = "Remove keyword";
 $TLS_remove_kw_msgbox_msg = "Really remove keyword %i?";
 $TLS_img_title_remove_keyword = "Click to remove this keyword.";
 $TLS_display_ea_string ="Display attachement placeholder";
+
+
+$TLS_hint_you_need_to_be_logged = "You need to be logged in order to use link";
+$TLS_security_check_ko = 'Security check failed';
 
 // ----- END ------------------------------------------------------------------

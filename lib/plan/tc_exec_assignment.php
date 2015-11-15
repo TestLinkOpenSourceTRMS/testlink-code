@@ -10,7 +10,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -19,7 +19,6 @@ require_once("treeMenu.inc.php");
 require_once('email_api.php');
 require_once("specview.php");
 
-// Time tracking - $chronos[] = microtime(true);$tnow = end($chronos);
 testlinkInitPage($db,false,false,"checkRights");
 
 $tree_mgr = new tree($db); 
@@ -131,6 +130,13 @@ switch($args->doAction)
                          'feature_id' => $args->targetFeature, 'build_id' => $args->build_id);
     $assignment_mgr->deleteBySignature($signature);
   break; 
+
+  case 'linkByMail':
+    $context = array('tplan_id' => $args->tplan_id,
+                     'build_id' => $args->build_id);
+    $assignment_mgr->emailLinkToExecPlanning($context,$args->userSet);
+  break;
+
 }
 
 
@@ -238,6 +244,17 @@ function init_args()
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
   
+  $args->userSet = null;
+  if(count($_REQUEST['bulk_tester_div']) > 0)
+  {
+    foreach($_REQUEST['bulk_tester_div'] as $uid)
+    {
+      if($uid > 0)
+      {
+        $args->userSet[$uid] = $uid;
+      }  
+    }  
+  }  
 
   // For more information about the data accessed in session here, see the comment
   // in the file header of lib/functions/tlTestCaseFilterControl.class.php.

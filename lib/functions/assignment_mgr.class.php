@@ -12,7 +12,7 @@
  * @link        http://www.testlink.org
  * 
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  */
  
 /**
@@ -484,4 +484,99 @@ class assignment_mgr extends tlObjectWithDB
     return $rs;
   }
   
-}
+
+
+  /**
+   *  Send link with filters to access (after login)
+   *  to testCaseAssignedToMe feature
+   * 
+   */
+  function emailLinkToExecPlanning($context,$targetUsers=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    if(is_null($targetUsers))
+    {
+      $sql = "/* $debugMsg */ " .
+             " SELECT id FROM {$this->tables['users']} ";
+      $targetUsers = $this->db->fetchColumnsIntoArray($sql,'id');
+    } 
+    $uSet = (array)$targetUsers; 
+
+
+    // if user has at least 1 assignment in context
+    // send link
+    $atd = $this->get_available_types();
+
+    $tplan_id = intval($context['tplan_id']);
+    $build_id = intval($context['build_id']);
+    $sql =  "/* $debugMsg */ ".
+            " SELECT UA.user_id, U.email ".
+            " FROM {$this->tables['user_assignments']} UA " .
+            " JOIN {$this->tables['builds']} B " .
+            " ON UA.build_id = B.id " .
+            " LEFT JOIN {$this->tables['users']} U " .
+            " ON U.id = UA.user_id " .
+            " WHERE B.testplan_id = " . $tplan_id .
+            " AND B.id = " . $build_id . 
+            " AND type = " . intval($atd['testcase_execution']['id']);
+            
+    $rs = $this->db->fetchRowsIntoMap($sql,'user_id');
+
+    
+    $bye = true;
+    if( !is_null($rs) && count($rs) > 0)
+    {
+      $bye = false;
+      $sql = " SELECT NHTPRJ.name AS tproject, " .
+             " NHTPL.name AS tplan " .
+             " FROM {$this->tables['nodes_hierarchy']} NHTPRJ " .
+             " JOIN {$this->tables['nodes_hierarchy']} NHTPL " .
+             " ON NHTPRJ.id = NHTPL.parent_id " .
+             " JOIN {$this->tables['node_types']} NT " .
+             " ON NHTPRJ.node_type_id = NT.id " .
+             " WHERE NT.description = 'testproject' " . 
+             " AND NHTPL.id = " . $tplan_id;
+      $names = $this->db->get_recordset($sql);
+      $names = $names[0];
+      $body_flines = lang_get('testproject') . ': ' . $names['tproject'] . '<br />' .
+                     lang_get('testplan') . ': ' . $names['tplan'] .'<br /><br />';
+    }  
+
+    if($bye)
+    {
+      return;  // >>>----> Bye,Bye!!!
+    } 
+
+    $email = array();
+    $email['from_address'] = config_get('from_email');
+
+    $isoTS = date(DATE_RFC1123);
+    $genby = lang_get('generated_by_TestLink_on') . ' ' . $isoTS;
+    $ll = lang_get('mail_subject_link_to_assigned');
+    $email['subject'] = sprintf($ll,$names['tplan'],$isoTS);
+    
+    $ln = $_SESSION['basehref'] . 'ltx.php?item=xta2m&tplan_id=' . 
+          $tplan_id . '&user_id='; 
+
+    $hint = lang_get('hint_you_need_to_be_logged');
+    require_once('email_api.php');
+    foreach($uSet as $user_id)
+    {
+      if(isset($rs[$user_id]))
+      {
+        $email['to_address'] = trim($rs[$user_id]['email']);
+        if($email['to_address'] != '')
+        {
+          $email['body'] = $body_flines;
+          $email['body'] .= $hint . '<br><br>' . $ln . $user_id;
+          $email['body'] .= '<br><br>' . $genby;
+
+          $eop = email_send($email['from_address'],$email['to_address'], 
+                            $email['subject'], $email['body'], '', true, true);
+        }  
+      }  
+    }  
+  }
+
+} // class end

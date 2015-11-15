@@ -6,7 +6,7 @@
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.15
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -248,7 +248,7 @@ function get_date_diff($date)
  */
 function init_args(&$dbHandler)
 {
-  $_REQUEST=strings_stripSlashes($_REQUEST);
+  $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
   
@@ -268,9 +268,11 @@ function init_args(&$dbHandler)
   unset($info);
 
   $args->user_id = isset($_REQUEST['user_id']) ? intval($_REQUEST['user_id']) : 0;
+  
   if( $args->user_id != 0)
   {
     $args->user = new tlUser($args->user_id);
+    $args->user->readFromDB($dbHandler); 
   }
   else 
   {
@@ -282,13 +284,13 @@ function init_args(&$dbHandler)
     $args->user = $_SESSION['currentUser'];
   }	
 
+
   $args->executedBy = $args->user_id;
   $args->user_name = $args->user->login;
   $args->userSet =  $args->user->getNames($dbHandler);                  
 
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
   $args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
-
 
   $args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
 
@@ -440,6 +442,10 @@ function initializeGui(&$dbHandler,$argsObj)
 
   $gui->user_id = $argsObj->user_id;
   $gui->tplan_id = $argsObj->tplan_id;
+
+  $gui->directLink = $_SESSION['basehref'] . 
+                     'ltx.php?item=xta2m&user_id=' . $gui->user_id .
+                     '&tplan_id=' . $gui->tplan_id;
 
   return $gui;  
 }

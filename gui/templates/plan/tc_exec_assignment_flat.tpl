@@ -8,12 +8,14 @@ generate the list of TC that can be removed from a Test Plan
 @since 1.9.14
 *}
 
-{lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
-                          btn_update_selected_tc,show_tcase_spec,can_not_execute,
-                          send_mail_to_tester,platform,no_testcase_available,chosen_blank_option,
-                          exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
-                          th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
-                          check_uncheck_all_tc,execution,design,execution_history,remove,user_bulk_remove'}
+{lang_get var="labels" 
+  s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
+     btn_update_selected_tc,show_tcase_spec,can_not_execute,
+     send_mail_to_tester,platform,no_testcase_available,chosen_blank_option,
+     exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
+     th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
+     check_uncheck_all_tc,execution,design,execution_history,
+     remove,user_bulk_remove,btn_send_link'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -149,6 +151,14 @@ function setComboIfCbx(oid,combo_id_prefix,oid4value)
 
     <div>
       <input type='submit' name='doBulkUserRemove' id='doBulkUserRemove' value='{$labels.user_bulk_remove}' />
+      <input type='button' name='linkByMail' 
+             id='linkByMail' 
+             onclick="doAction.value='linkByMail';tc_exec_assignment.submit();" 
+             value="{$labels.btn_send_link}" />
+      
+      <input type="hidden" name="targetFeature" id="targetFeature" value="0"/>
+      <input type="hidden" name="targetUser" id="targetUser" value="0"/>
+
     </div>
 
 	</div>

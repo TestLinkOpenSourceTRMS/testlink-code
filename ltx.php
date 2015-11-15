@@ -17,7 +17,7 @@
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  */
 
 // use output buffer to prevent headers/data from being sent before 
@@ -33,7 +33,18 @@ testlinkInitPage($db, true);
 
 $smarty = new TLSmarty();
 
+// This process seems to have two steps
+//
+// Step 1
+// Display outer frame, and do a new call 
+// to display the wished content, in inner frame
+//
+// Step 2
+// Here we will get what we need
+// 
 // display outer or inner frame?
+// why I'm asking this question?
+//
 if (!isset($_GET['load'])) 
 {
   // display outer frame, pass parameters to next script call for inner frame
@@ -43,28 +54,25 @@ if (!isset($_GET['load']))
   //
   $args = init_args($db);
   $args->tproject_id = 0;  
+  
   if( $args->status_ok )
   {
-    $user = $_SESSION['currentUser'];
     if($args->tplan_id != '')
     {
-      $hasRight = checkTestPlan($db,$user,$args);
+      $hasRight = checkTestPlan($db,$args->user,$args);
       if( $hasRight )
       {
-        $gui = new stdClass();
-        $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
-        if( $args->tproject_id > 0)
-        {
-          $gui->titleframe .= '&testproject=' . $args->tproject_id;
-        } 
-        $gui->title = lang_get('main_page_title');
-        $gui->mainframe = 'ltx.php?' . buildLink($args);
-
-        $smarty->assign('gui', $gui);
-        $smarty->display('main.tpl');
+        $lof = 'launch_outer_' . $args->item;
+        $lof($smarty,$args);
       }  
     }   
-  }  
+  } 
+  else
+  {
+    echo lang_get('security_check_ko');
+    ob_end_flush();
+    exit();    
+  } 
 } 
 else 
 {
@@ -73,99 +81,14 @@ else
   // figure out what to display 
   //
   // key: item, value: url to tree management page
-  $itemCode = array('exec' => 'lib/execute/execNavigator.php');
-  $op = array('status_ok' => true, 'msg' => '');
-
-  // First check for keys in _GET that MUST EXIST
-  // key: key on _GET, value: labelID defined on strings.txt
-  $mandatoryKeys = array('item' => 'item_not_set',
-                         'build_id' => 'build_id_not_set');
-
-  foreach($mandatoryKeys as $key => $labelID)
+  $driver = isset($_GET['item']) ? $_GET['item'] : null;
+  if(is_null($driver))
   {
-    $op['status_ok'] = isset($_GET[$key]);
-    if( !$op['status_ok'])
-    {
-      $op['msg'] = lang_get($labelID);
-      break;
-    }
-  } 
-
-  if( $op['status_ok'] )
-  {
-    $op['status_ok'] = isset($_GET['feature_id']);
-    if( !$op['status_ok'] )
-    {
-      $keySet = array('tplan_id' => 'testplan_not_set',
-                      'tcversion_id' => 'tcversion_id',
-                      'platform_id' => 'platform_id_not_set');
-
-      foreach($keySet as $key => $labelID)
-      {
-        $op['status_ok'] = isset($_GET[$key]);
-        if( !$op['status_ok'])
-        {
-          $op['msg'] = lang_get($labelID);
-          break;
-        }
-      } 
-    }  
-  }
-
-  $args = init_args($db);
-  if($op['status_ok'])
-  {
-    // Set Environment    
-    $tplan_mgr = new testplan($db);
-    $info = $tplan_mgr->get_by_id($args->tplan_id,array('output' => 'minimun'));
-    
-    if(is_null($info))
-    {
-      die('ltx - tplan info does not exist');
-    }  
-
-    $tproject_mgr = new testproject($db);
-    $tproject_mgr->setSessionProject($info['tproject_id']);
-    $op['status_ok'] = true;
-  } 
-
-  if($op['status_ok'])
-  {
-    // Build  name of function to call for doing the job.
-    $pfn = 'process_' . $args->item;
-
-    $ctx = array();
-    $ctx['setting_testplan'] = $args->tplan_id;
-    $ctx['setting_build'] = $args->build_id;
-    $ctx['setting_platform'] = $args->platform_id;
-    $ctx['tcversion_id'] = $args->tcversion_id;
-    $ctx['tcase_id'] = 0;
-
-    $jump_to = $pfn($db,$ctx);
-    $op['status_ok'] = !is_null($jump_to['url']);
-    $op['msg'] = $jump_to['msg'];
-  }
-
-  if($op['status_ok'])
-  {
-    $treeframe = $itemCode[$args->item] .
-                 '?loadExecDashboard=0' . 
-                 '&setting_testplan=' . $args->tplan_id .
-                 '&setting_build=' . $args->build_id .
-                 '&setting_platform=' . $args->platform_id;
-
-    $smarty->assign('title', lang_get('main_page_title'));
-    $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
-    $smarty->assign('workframe', $jump_to['url']);
-    $smarty->assign('treeframe', $treeframe);
-    $smarty->display('frmInner.tpl');
-  }
-  else
-  {
-    echo $op['msg'];
-    ob_end_flush();
-    exit();
-  }
+    die();
+  }  
+  
+  $lif = 'launch_inner_' . $driver;
+  $lif($db,$smarty);
 }
 ob_end_flush();
 
@@ -177,11 +100,9 @@ ob_end_flush();
 function checkTestPlan(&$db,&$user,&$args)
 {
   $hasRight = false;
-  // $tproject_mgr = new testproject($db);
   $tplan_mgr = new testplan($db);
   
   $item_info = $tplan_mgr->get_by_id($args->tplan_id,array( 'output' => 'minimun'));
-
   if(($op['status_ok'] = !is_null($item_info)))
   {
     $args->tproject_id = intval($item_info['tproject_id']);
@@ -189,6 +110,7 @@ function checkTestPlan(&$db,&$user,&$args)
     switch($args->item)
     {
       case 'exec':
+      case 'xta2m':
         $hasRight = $user->hasRight($db,'testplan_execute',
                                     $args->tproject_id,$args->tplan_id);
       break;
@@ -197,7 +119,6 @@ function checkTestPlan(&$db,&$user,&$args)
       default:
         // need to fail!!
       break;
-
     }
   }
   return $hasRight;
@@ -220,34 +141,42 @@ function init_args(&$dbHandler)
 
   $args->feature_id = isset($_GET['feature_id']) ? $_GET['feature_id'] : null;
 
-  $args->status_ok = ($args->build_id >0);
-  if($args->status_ok)
+
+  $args->target_user_id = intval(isset($_GET['user_id']) ? $_GET['user_id'] : null);
+  $args->user = $_SESSION['currentUser'];
+  $args->user_id = $_SESSION['userID']; 
+
+  // status depends on access request
+  $cfn = 'check_';
+  switch($args->item)
   {
-    if( $args->feature_id >0 )
-    {
-      // get missing data
-      $tb = DB_TABLE_PREFIX . 'testplan_tcversions';
-      $sql = "SELECT testplan_id,platform_id,tcversion_id " .
-             "FROM {$tb} WHERE id=" . $args->feature_id;
+    case 'exec':
+      $cfn .= $args->item;
+      $args->status_ok = ($args->build_id >0);
+    break;
 
-      $rs = $dbHandler->get_recordset($sql);
-      $args->tplan_id = $rs[0]['testplan_id'];
-      $args->tcversion_id = $rs[0]['tcversion_id'];
-      $args->platform_id = $rs[0]['platform_id'];
-    } 
-    else
-    {
-      $args->status_ok = ($args->tplan_id > 0) &&  ($args->tcversion_id >0); 
-    } 
+    case 'xta2m':
+      $cfn .= $args->item;
+      $args->status_ok = ($args->target_user_id >0 && $args->tplan_id >0);
+    break;
+
+    default:
+      $cfn = '';
+      $args->status_ok = false;
+    break;
+  }
+
+  if($args->status_ok && $cfn != '')
+  {
+    $cfn($dbHandler,$args);
   }  
-
   return $args;  
 }
 
 /**
  *
  */
-function buildLink(&$argsObj)
+function build_link_exec(&$argsObj)
 {
   $lk = isset($_GET['item']) ? "item=" . $_GET['item'] : '';
   
@@ -295,7 +224,245 @@ function process_exec(&$dbHandler,$context)
   return $ret;
 }
 
+/**
+ * xta2m: eXecution Tasks Assigned TO Me
+ *
+ */
+function process_xta2m(&$dbHandler,$context)
+{
+  $ret = array();
+  $ret['url'] = null;
+  $ret['msg'] = 'ko';
 
+  $treeMgr = new tree($dbHandler);
+  $info = $treeMgr->get_node_hierarchy_info($context['tcversion_id']);
+
+  $ret['url'] = "lib/execute/execSetResults.php?level=testcase" .
+                "&version_id=" . $context['tcversion_id'] . 
+                "&id=" . $info['parent_id'] . 
+                "&setting_testplan=" . $context['setting_testplan'] .
+                "&setting_build=" . $context['setting_build'] .
+                "&setting_platform=" . $context['setting_platform'];
+
+
+
+  $ret['msg'] = 'ok';
+  return $ret;
+}
+
+/**
+ *
+ *
+ */
+function check_exec(&$dbHandler,&$argsObj)
+{
+
+  if( $argsObj->feature_id >0 )
+  {
+    // get missing data
+    $tb = DB_TABLE_PREFIX . 'testplan_tcversions';
+    $sql = "SELECT testplan_id,platform_id,tcversion_id " .
+           "FROM {$tb} WHERE id=" . $argsObj->feature_id;
+
+    $rs = $dbHandler->get_recordset($sql);
+    $argsObj->tplan_id = $rs[0]['testplan_id'];
+    $argsObj->tcversion_id = $rs[0]['tcversion_id'];
+    $argsObj->platform_id = $rs[0]['platform_id'];
+  } 
+  else
+  {
+    $argsObj->status_ok = ($argsObj->tplan_id > 0) &&  
+                          ($argsObj->tcversion_id >0); 
+  } 
+}
+
+/**
+ *
+ *
+ */
+function check_xta2m(&$dbHandler,&$argsObj)
+{
+  $argsObj->status_ok = ($argsObj->target_user_id > 0 && 
+                         $argsObj->tplan_id >0);
+
+  if($argsObj->target_user_id != $argsObj->user_id)
+  {
+    $argsObj->status_ok = false;
+  }
+}
+
+
+/**
+ * 
+ *
+ */
+function launch_inner_exec(&$dbHandler,&$tplMgr)
+{
+  $itemCode = array('exec' => 'lib/execute/execNavigator.php');
+  $op = array('status_ok' => true, 'msg' => '');
+
+  // First check for keys in _GET that MUST EXIST
+  // key: key on _GET, value: labelID defined on strings.txt
+  $mandatoryKeys = array('item' => 'item_not_set',
+                         'build_id' => 'build_id_not_set');
+
+  foreach($mandatoryKeys as $key => $labelID)
+  {
+    $op['status_ok'] = isset($_GET[$key]);
+    if( !$op['status_ok'])
+    {
+      $op['msg'] = lang_get($labelID);
+      break;
+    }
+  } 
+
+  if( $op['status_ok'] )
+  {
+    $op['status_ok'] = isset($_GET['feature_id']);
+    if( !$op['status_ok'] )
+    {
+      $keySet = array('tplan_id' => 'testplan_not_set',
+                      'tcversion_id' => 'tcversion_id',
+                      'platform_id' => 'platform_id_not_set');
+
+      foreach($keySet as $key => $labelID)
+      {
+        $op['status_ok'] = isset($_GET[$key]);
+        if( !$op['status_ok'])
+        {
+          $op['msg'] = lang_get($labelID);
+          break;
+        }
+      } 
+    }  
+  }
+
+  $args = init_args($dbHandler);
+  if($op['status_ok'])
+  {
+    // Set Environment    
+    $tplan_mgr = new testplan($dbHandler);
+    $info = $tplan_mgr->get_by_id($args->tplan_id,array('output' => 'minimun'));
+    
+    if(is_null($info))
+    {
+      die('ltx - tplan info does not exist');
+    }  
+
+    $tproject_mgr = new testproject($dbHandler);
+    $tproject_mgr->setSessionProject($info['tproject_id']);
+    $op['status_ok'] = true;
+  } 
+
+  if($op['status_ok'])
+  {
+    // Build  name of function to call for doing the job.
+    $pfn = 'process_' . $args->item;
+
+    $ctx = array();
+    $ctx['setting_testplan'] = $args->tplan_id;
+    $ctx['setting_build'] = $args->build_id;
+    $ctx['setting_platform'] = $args->platform_id;
+    $ctx['tcversion_id'] = $args->tcversion_id;
+    $ctx['tcase_id'] = 0;
+    $ctx['user_id'] = $args->user_id;
+
+    $jump_to = $pfn($dbHandler,$ctx);
+    $op['status_ok'] = !is_null($jump_to['url']);
+    $op['msg'] = $jump_to['msg'];
+  }
+
+  if($op['status_ok'])
+  {
+    $treeframe = $itemCode[$args->item] .
+                 '?loadExecDashboard=0' . 
+                 '&setting_testplan=' . $args->tplan_id .
+                 '&setting_build=' . $args->build_id .
+                 '&setting_platform=' . $args->platform_id;
+
+    $tplMgr->assign('title', lang_get('main_page_title'));
+    $tplMgr->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
+    $tplMgr->assign('workframe', $jump_to['url']);
+    $tplMgr->assign('treeframe', $treeframe);
+    $tplMgr->display('frmInner.tpl');
+  }
+  else
+  {
+    echo $op['msg'];
+    ob_end_flush();
+    exit();
+  }
+} // function end
+
+/**
+ * xta2m: eXecution Tasks Assigned TO Me
+ *
+ */
+function launch_inner_xta2m(&$dbHandler,&$tplMgr)
+{
+  $args = init_args($dbHandler);
+
+  //if($args->status_ok == FALSE)
+  //{
+  //  echo 'NOOO';
+  //  ob_end_flush();
+  //  exit();
+  //}  
+
+  $jt = $_SESSION['basehref'] . '/lib/testcases/' .
+        'tcAssignedToUser.php?user_id=' . $args->target_user_id .
+  
+  $k2c = array('tplan_id','build_id');
+  foreach($k2c as $tg)
+  {
+    if( property_exists($args,$tg) && $args->$tg > 0 )
+    {
+      $jt .= "&$tg=" . $args->$tg;
+    }      
+  }  
+
+  $tplMgr->assign('workframe', $jt);
+  $tplMgr->display('workframe.tpl');
+}
+
+/**
+ *
+ */
+function launch_outer_exec(&$tplMgr,$argsObj)
+{
+  $gui = new stdClass();
+  $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
+  if( $argsObj->tproject_id > 0)
+  {
+    $gui->titleframe .= '&testproject=' . $argsObj->tproject_id;
+  } 
+  $gui->title = lang_get('main_page_title');
+  $gui->mainframe = 'ltx.php?' . build_link_exec($argsObj);
+
+  $tplMgr->assign('gui', $gui);
+  $tplMgr->display('main.tpl');
+}
+
+/**
+ *
+ */
+function launch_outer_xta2m(&$tplMgr,$argsObj)
+{
+  $gui = new stdClass();
+  $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
+
+  if( $argsObj->tproject_id > 0)
+  {
+    $gui->titleframe .= '&testproject=' . $argsObj->tproject_id;
+  } 
+  $gui->title = lang_get('main_page_title');
+  $gui->mainframe = 'ltx.php?item=xta2m&load=1' .
+                    '&user_id=' . $argsObj->target_user_id .
+                    '&tplan_id=' . $argsObj->tplan_id;
+  
+  $tplMgr->assign('gui', $gui);
+  $tplMgr->display('main.tpl');
+}
 
 /**
  * 

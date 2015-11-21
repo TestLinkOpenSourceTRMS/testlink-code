@@ -20,7 +20,7 @@
  * 
  *
  * @internal revisions 
- * @since 1.9.14
+ * @since 1.9.15
  *
  */
 
@@ -2288,6 +2288,60 @@ class TestlinkXMLRPCServer extends IXR_Server
       {
         $resultInfo[0]["customfieldstatus"] = $this->_insertCustomFieldExecValues($executionID);   
       }
+
+      //
+      if( $executionID > 0 && !$resultInfo[0]["overwrite"])
+      {
+        // Get steps info
+        // step number, result, notes
+        if( $this->_isParamPresent(self::$stepsParamName) )
+        {
+          $resultInfo[0]["steps"] = 'yes!';
+          
+          $st = &$this->args[self::$stepsParamName];
+          foreach($st as $sp)
+          {
+            $nst[$sp['step_number']] = $sp;
+          } 
+
+          $r2d2 = array('fields2get' => 'TCSTEPS.step_number,TCSTEPS.id', 
+                        'accessKey' => 'step_number', 
+                        'renderGhostSteps' => false, 
+                        'renderImageInline' => false);
+          
+          // return array('tcx' => $this->tcVersionID); //gretel
+          $steps = $this->tcaseMgr->getStepsSimple($this->tcVersionID,0,$r2d2);
+        
+          $target = DB_TABLE_PREFIX . 'execution_tcsteps';
+          $resultsCfg = config_get('results');
+          foreach($nst as $spnum => $spdata)
+          {
+
+            // check if step exists, if not ignore
+            if( isset($steps[$spnum]) )
+            {
+              // if result is not on domain, write it
+              // anyway.
+              $status = strtolower(trim($spdata['result']));
+              $status = $status[0];
+
+              $sql = " INSERT INTO {$target} (execution_id,tcstep_id,notes";
+              $sql .= ",status";
+           
+              $values = " VALUES ( {$executionID}, {$steps[$spnum]['id']}," . 
+                        "'" . $this->dbObj->prepare_string($spdata['notes']) . "'";
+              $values .= ",'" . $this->dbObj->prepare_string($status) . "'";
+              $sql .= ") " . $values . ")";
+              
+              if( $status != $resultsCfg['status_code']['not_run'] )
+              {
+                $this->dbObj->exec_query($sql);
+              }  
+            }  
+          } 
+        } 
+      } 
+
       return $resultInfo;
     }
     else

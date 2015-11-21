@@ -180,7 +180,7 @@ $(document).ready(function() {
     {/foreach}
 
   </table>
-
+  </form>
 {/if}
 </div>
 

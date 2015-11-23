@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-@since 1.9.11
+@since 1.9.15
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -20,7 +20,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get 
   var='labels'
-  s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
+  s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,

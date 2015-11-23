@@ -5,7 +5,7 @@ Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 @internal revisions
-@since 1.9.14 
+@since 1.9.15 
 *}	
       {$ResultsStatusCode=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
@@ -92,6 +92,12 @@ Author : franciscom
     		 			        {$args_input_enable_mgmt}
                       onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};return checkSubmitForStatusCombo('{$ResultsStatusCode.not_run}')"
     		 			        value="{$args_labels.btn_save_exec_and_movetonext}" />
+
+                  <input type="submit" name="move2next[{$args_tcversion_id}]" 
+                      {$args_input_enable_mgmt}
+                      onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};"
+                      value="{$args_labels.btn_next}" />
+
 
     		 			  {else}
      	    	        <input type="submit" id="do_bulk_save" name="do_bulk_save"

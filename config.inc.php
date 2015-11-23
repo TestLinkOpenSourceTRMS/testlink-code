@@ -839,6 +839,14 @@ $tlCfg->exec_cfg->exec_mode->tester='assigned_to_me';
 //           same context => test plan,platform, build
 $tlCfg->exec_cfg->exec_mode->new_exec='clean';
 
+
+// @since 1.9.15
+// Before 1.9.15 save & move to next worked JUST inside
+// a test suite => save_and_move = 'limited'
+// 1.9.15 will move on whole test project
+// save_and_move = 'unlimited'
+$tlCfg->exec_cfg->exec_mode->save_and_move='unlimited';
+
 /** User filter in Test Execution navigator - default value */
 // logged_user -> combo will be set to logged user
 // none        -> no filter applied by default

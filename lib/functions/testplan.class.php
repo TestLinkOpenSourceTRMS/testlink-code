@@ -749,19 +749,38 @@ class testplan extends tlObjectWithAttachments
   function get_linked_tcvid($id,$platformID,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $options = array('addEstimatedExecDuration' => false);
+    $options = array('addEstimatedExecDuration' => false,
+                     'tcase_id' => 0);
     $options = array_merge($options,(array)$opt);
 
-    $sql = " /* $debugMsg */ " . 
-           " SELECT tcversion_id " . 
-           ($options['addEstimatedExecDuration'] ? ",TCV.estimated_exec_duration" : '') . 
-           " FROM {$this->tables['testplan_tcversions']} ";
+    $addFields = '';
+    $addSql = ''; 
+    $addWhere = '';
 
     if($options['addEstimatedExecDuration'])
     {
-      $sql .= " JOIN {$this->tables['tcversions']} TCV ON TCV.id = tcversion_id ";
+      $addFields = ',TCV.estimated_exec_duration '; 
+      $addSql .= " JOIN {$this->tables['tcversions']} TCV ON TCV.id = tcversion_id ";
     }  
-    $sql .= " WHERE testplan_id = " . intval($id) . " AND platform_id = " . intval($platformID) ;
+
+    if($options['tcase_id'] > 0)
+    {
+      $addFields = ', NHTCV.parent_id AS tcase_id ';
+      $addSql .= " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+                 " ON NHTCV.id = tcversion_id ";
+
+      $addWhere = ' AND NHTCV.parent_id = ' . 
+                  intval($options['tcase_id']); 
+    }
+
+    $sql = " /* $debugMsg */ " . 
+           " SELECT tcversion_id {$addFields} " . 
+           " FROM {$this->tables['testplan_tcversions']} " .
+           $addSql;
+
+    $sql .= " WHERE testplan_id = " . intval($id) . 
+            " AND platform_id = " . intval($platformID) . 
+            $addWhere;
 
     $items = $this->db->fetchRowsIntoMap($sql,'tcversion_id');           
     return $items;
@@ -3509,11 +3528,45 @@ class testplan extends tlObjectWithAttachments
    */
   function getTestCaseNextSibling($id,$tcversion_id,$platform_id,$opt=null)
   {
-    $my['opt'] = array_merge(array('move' => 'forward'),(array)$opt);
+    $my['opt'] = array('move' => 'forward', 'scope' => 'local');
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
 
     $sibling = null;
-    $brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$my['opt']);
-    $tcversionSet = array_keys($brothers_and_sisters);
+    switch($my['opt']['scope'])
+    {
+      case 'world':
+        $tptcv = $this->tables['testplan_tcversions'];
+
+        $subq = " SELECT node_order FROM {$this->tables['testplan_tcversions']} TX " .
+                " WHERE TX.testplan_id = {$id} AND " .
+                " TX.tcversion_id = {$tcversion_id} "; 
+
+        if( $platform_id > 0)
+        {
+          $subq .= " AND TX.platform_id = {$platform_id} ";
+        }  
+        $sql= " SELECT tcversion_id,node_order " .
+              " FROM {$tptcv} TZ " .
+              " WHERE TZ.testplan_id = {$id} AND " .
+              " TZ.tcversion_id <> {$tcversion_id} "; 
+        if( $platform_id > 0)
+        {
+          $sql .= " AND TZ.platform_id = {$platform_id} ";
+        }  
+
+        $sql .= " ORDER BY TZ.node_order >= ($subq) ";
+        echo $sql;
+
+
+      break;
+
+      case 'local':
+      default:
+        $sib = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$my['opt']);
+      break;
+    }
+    $tcversionSet = array_keys($sib);
     $elemQty = count($tcversionSet);
     $dummy = array_flip($tcversionSet);
 
@@ -3534,8 +3587,8 @@ class testplan extends tlObjectWithAttachments
     $sibling_tcversion = $pos < $elemQty ? $tcversionSet[$pos] : 0;
     if( $sibling_tcversion > 0 )
     {
-        $sibling = array('tcase_id' => $brothers_and_sisters[$sibling_tcversion]['testcase_id'],
-                         'tcversion_id' => $sibling_tcversion);
+      $sibling = array('tcase_id' => $sib[$sibling_tcversion]['testcase_id'],
+                       'tcversion_id' => $sibling_tcversion);
     }
     return $sibling;
   }
@@ -4001,8 +4054,17 @@ class testplan extends tlObjectWithAttachments
     }
     
     $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
-    $qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
-    return $items;
+    $tcaseSet = array();
+    if($my['options']['recursive'])
+    {
+      $qnum = $this->$method2call($id,$tprojectID,$items,$tcaseSet,
+                                  $my['filters'],$my['options']);
+    }
+    else
+    {
+      $qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
+    }  
+    return array($items,$tcaseSet);
   }
   
   
@@ -4016,7 +4078,7 @@ class testplan extends tlObjectWithAttachments
    * @since 1.9.4
    *
    */
-  function _get_subtree_rec($tplan_id,$node_id,&$pnode,$filters = null, $options = null)
+  function _get_subtree_rec($tplan_id,$node_id,&$pnode,&$itemSet,$filters = null, $options = null)
   {
     static $qnum;
     static $my;
@@ -4148,10 +4210,15 @@ class testplan extends tlObjectWithAttachments
         if($node['node_table'] == 'testcases')
         {
           $node['leaf'] = true; 
-          // $node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : '';
           $node['external_id'] = '';
+          // $itemSet['nodes'][] = $node;
+          //$itemSet['nindex'][] = 
+          //  array('tcase_id' => $node['id'], 
+          //        'tcversion_id'=> $node['tcversion_id']);
+          $itemSet['nindex'][] = $node['id'];
         }      
         
+
         // why we use exclude_children_of ?
         // 1. Sometimes we don't want the children if the parent is a testcase,
         //    due to the version management
@@ -4159,7 +4226,7 @@ class testplan extends tlObjectWithAttachments
         if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
         {
           // Keep walking (Johny Walker Whisky)
-          $this->_get_subtree_rec($tplan_id,$row['id'],$node,$my['filters'],$my['options']);
+          $this->_get_subtree_rec($tplan_id,$row['id'],$node,$itemSet,$my['filters'],$my['options']);
         }
   
            
@@ -6719,6 +6786,7 @@ class testplan extends tlObjectWithAttachments
     }
     
     new dBug($rs);
+
     return $rs;
   }
 

@@ -3877,16 +3877,16 @@ class testcase extends tlObjectWithAttachments
    * @param array [tplan_id] list of test plan id to search.  
    *                         null => all test plans
    *
-   * @param object [options] options->mode='full_path'
+   * @param map [options] mode='full_path'
    *                         testcase name full path will be returned
    *                         Only available when acces_keys ='testplan_testcase'
    *                        
-   *                         options->access_keys
+   *                      access_keys
    *                         possible values: 'testplan_testcase','testcase_testplan'
    *                         changes access key in result map of maps.
    *                         if not defined or null -> 'testplan_testcase' 
    *               
-   * @param object [filters] 'tplan_status' => 'active','inactive','all'
+   * @param map [filters] 'tplan_status' => 'active','inactive','all'
    *                      
    *
    * @return map key: (test plan id or test case id depending on options->access_keys,
@@ -3901,19 +3901,21 @@ class testcase extends tlObjectWithAttachments
   function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null, $filters=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      
-        $my['filters'] = array( 'tplan_status' => 'all');
-      $my['filters'] = array_merge($my['filters'], (array)$filters);
+    
+    $my['opt'] = array('mode' => null, 'order_by' => '', 
+                       'access_keys' => 'testplan_testcase');  
+    $my['opt'] = array_merge($my['opt'],(array)$options);
 
-      // to load assignments for all users OR one given user
-      $user_sql = ($user_id != TL_USER_ANYBODY) ? " AND UA.user_id = {$user_id} " : "";
-      
-      $filters = "";
-      
-      $has_options=!is_null($options);
-      $access_key=array('testplan_id','testcase_id');
+    $my['filters'] = array( 'tplan_status' => 'all');
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-      $sql="/* $debugMsg */ SELECT TPROJ.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
+    // to load assignments for all users OR one given user
+    $user_sql = ($user_id != TL_USER_ANYBODY) ? " AND UA.user_id = {$user_id} " : "";
+      
+    $filters = "";
+    $access_key=array('testplan_id','testcase_id');
+
+    $sql="/* $debugMsg */ SELECT TPROJ.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
            " TCV.version,TCV.tc_external_id, NHTC.id AS testcase_id, NHTC.name, TPROJ.prefix, " .
            " UA.creation_ts ,UA.deadline_ts, UA.user_id as user_id, " . 
            " COALESCE(PLAT.name,'') AS platform_name, COALESCE(PLAT.id,0) AS platform_id, " .
@@ -3930,36 +3932,35 @@ class testcase extends tlObjectWithAttachments
            " JOIN {$this->tables['builds']} BUILDS ON  BUILDS.id = UA.build_id " .
            " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON  PLAT.id = TPTCV.platform_id " .
            " WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
-           //" AND UA.user_id = {$user_id} " .
            " {$user_sql} " .
            " AND TPROJ.id IN (" . implode(',', array($tproject_id)) .") " ;
       
-      if( !is_null($tplan_id) )
-      {
-          $filters .= " AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
-      }     
+    if( !is_null($tplan_id) )
+    {
+      $filters .= " AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
+    }     
       
-    // BUGID 3647
-      if (isset($my['filters']['build_id'])) {
+    if (isset($my['filters']['build_id'])) 
+    {
       $filters .= " AND UA.build_id = {$my['filters']['build_id']} ";
     }
       
-      switch($my['filters']['tplan_status'])
-      {
-        case 'all':
-        break;
+    switch($my['filters']['tplan_status'])
+    {
+      case 'all':
+      break;
         
-        case 'active':
-            $filters .= " AND TPLAN.active = 1 ";
-        break;
+      case 'active':
+        $filters .= " AND TPLAN.active = 1 ";
+      break;
         
-        case 'inactive':
-            $filters .= " AND TPLAN.active = 0 ";
-        break;
-      }
+      case 'inactive':
+        $filters .= " AND TPLAN.active = 0 ";
+      break;
+    }
 
-    // BUGID 3749
-    if(isset($my['filters']['build_status'])) {
+    if(isset($my['filters']['build_status'])) 
+    {
       switch($my['filters']['build_status'])
       {
         case 'open':
@@ -3970,86 +3971,90 @@ class testcase extends tlObjectWithAttachments
           $filters .= " AND BUILDS.is_open = 0 ";
         break;
   
-      case 'all':
-      default:
+        case 'all':
+        default:
         break;
       }
     }
 
-      $sql .= $filters;
+    $sql .= $filters;
       
-      if( $has_options && isset($options->access_keys) )
+    if( isset($my['opt']['access_keys']) )
+    {
+      switch($my['opt']['access_keys'])
       {
-          switch($options->access_keys)
-          {
-              case 'testplan_testcase':
-              break;
+        case 'testplan_testcase':
+        break;
               
-              case 'testcase_testplan':   
-                  $access_key=array('testcase_id','testplan_id');
-              break;
-          }
+        case 'testcase_testplan':   
+          $access_key=array('testcase_id','testplan_id');
+        break;
       }
-      
-      $rs=$this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1],database::CUMULATIVE);
-      if( $has_options && !is_null($rs))
+    }
+    
+    $sql .= $my['opt']['order_by'];
+ 
+    $rs = $this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1],database::CUMULATIVE);
+    
+    if( !is_null($rs) )
+    {
+      if( !is_null($my['opt']['mode']) )
       {
-          if( isset($options->mode) )
-          {
-              switch($options->mode)
+        switch($my['opt']['mode'])
+        {
+          case 'full_path':
+            if($my['opt']['access_keys'] == 'testplan_testcase')
+            { 
+              $tcaseSet=null;
+              $main_keys = array_keys($rs);
+              
+              foreach($main_keys as $maccess_key)
               {
-                  case 'full_path':
-                      if( !isset($options->access_keys) || 
-                          (is_null($options->access_keys) || $options->access_keys='testplan_testcase') )
-                      { 
-                          $tcaseSet=null;
-                          $main_keys = array_keys($rs);
-      foreach($main_keys as $maccess_key)
-      {
-        $sec_keys = array_keys($rs[$maccess_key]);
-        foreach($sec_keys as $saccess_key)
-        {
-          // is enough I process first element
-          $item = $rs[$maccess_key][$saccess_key][0];
-                                  if(!isset($tcaseSet[$item['testcase_id']]))
-                                  {
-                                      $tcaseSet[$item['testcase_id']]=$item['testcase_id'];  
-                                  }  
-        }
-      }
+                $sec_keys = array_keys($rs[$maccess_key]);
+                foreach($sec_keys as $saccess_key)
+                {
+                  // is enough I process first element
+                  $item = $rs[$maccess_key][$saccess_key][0];
+                  if(!isset($tcaseSet[$item['testcase_id']]))
+                  {
+                    $tcaseSet[$item['testcase_id']]=$item['testcase_id'];  
+                  }  
+                }
+              }
 
-                          $path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
+              $path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
 
-                          // Remove test project piece and convert to string
-                          $flat_path=null;
-                          foreach($path_info as $tcase_id => $pieces)
-                          {
-                              unset($pieces[0]);
-                              // 20100813 - asimon - deactivated last slash on path
-                              // to remove it from test suite name in "tc assigned to user" tables
-                              $flat_path[$tcase_id]=implode('/',$pieces);
-                          }
-                          $main_keys = array_keys($rs);
+              // Remove test project piece and convert to string
+              $flat_path=null;
+              foreach($path_info as $tcase_id => $pieces)
+              {
+                unset($pieces[0]);
+                // 20100813 - asimon - deactivated last slash on path
+                // to remove it from test suite name in "tc assigned to user" tables
+                $flat_path[$tcase_id]=implode('/',$pieces);
+              }
+              $main_keys = array_keys($rs);
 
-      foreach($main_keys as $idx)
-      {
-        $sec_keys = array_keys($rs[$idx]);
-        foreach($sec_keys as $jdx)
-        {
+              foreach($main_keys as $idx)
+              {
+                $sec_keys = array_keys($rs[$idx]);
+                foreach($sec_keys as $jdx)
+                {
                   $third_keys = array_keys($rs[$idx][$jdx]);
-          foreach($third_keys as $tdx)
-          {
-            $fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
-                                    $rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
+                  foreach($third_keys as $tdx)
+                  {
+                    $fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
+                    $rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
                   }
-        }
+                }
+              }
+            }
+          break;  
+        }  
       }
-                      }
-                  break;  
-              }  
-          }
-      }
-      return $rs;
+    }
+
+    return $rs;
   }
   
   

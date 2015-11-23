@@ -24,14 +24,13 @@ $statusGui = getStatusGuiCfg();
 
 
 // Get all test cases assigned to user without filtering by execution status
-$options = new stdClass();
-$options->mode = 'full_path';
+$opt = array('mode' => 'full_path');
 $filters = initFilters($args);
 $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;
 
 $tcase_mgr = new testcase($db);
 $gui->resultSet = $tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id,
-                                                   $tplan_param, $options, $filters);
+                                                   $tplan_param, $opt, $filters);
 
 $doIt = !is_null($gui->resultSet);
 

@@ -19,7 +19,7 @@
  * (I think this approach will be simpler).
  * 
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
 **/
 require_once('../../config.inc.php');
@@ -29,7 +29,7 @@ require_once("attachments.inc.php");
 require_once("specview.php");
 require_once("web_editor.php");
 
-$cfg=getCfg();
+$cfg = getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
 
 if( $cfg->exec_cfg->enable_test_automation )
@@ -163,6 +163,38 @@ if(!is_null($linked_tcversions))
     // Need to re-read to update test case status
     if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) 
     {  
+      $nextInChain = -1;
+      if( $cfg->exec_cfg->exec_mode->save_and_move == 'unlimited' )
+      {
+        if( $args->caller ==  'tcAssignedToMe')
+        {
+          $optz = array('order_by' => 'ORDER BY TPTCV.node_order');
+          $filters['build_id'] = $args->build_id;
+
+          $xx = $tcase_mgr->get_assigned_to_user(
+                  $args->user_id, $args->tproject_id,
+                  array($args->tplan_id), $optz, $filters);
+          $xx = current($xx);
+
+          // key test case id
+          // inside an idx array
+          $args->testcases_to_show = array_keys($xx);
+        }
+
+        $chainLen = count($args->testcases_to_show);
+        foreach($args->testcases_to_show as $ix => $val)
+        {
+          if( $val == $args->tc_id)
+          {
+            $nextInChain = $ix+1;
+            if($nextInChain == $chainLen)
+            {
+              $nextInChain = 0;  
+            }  
+            break;
+          }  
+        }
+      }  
         
       // IMPORTANT DEVELOPMENT NOTICE
       // Normally this script is called from the tree.
@@ -188,20 +220,32 @@ if(!is_null($linked_tcversions))
         break;
           
         default:
-          // $opt4sibling = null;
         break;  
       }
-      
-      $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id,$opt4sibling);
-      if(!$doSingleStep)
-      { 
-        while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
-        {
-          $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],
-                                                         $args->platform_id,$opt4sibling);
-        }
-      }
-      
+  
+      switch($cfg->exec_cfg->exec_mode->save_and_move)
+      {
+        case 'unlimited':
+          // get position on chain
+          $opx = array('tcase_id' => 
+                       $args->testcases_to_show[$nextInChain]);
+          $nextItem = $tplan_mgr->get_linked_tcvid($args->tplan_id,$args->platform_id,$opx);
+          $nextItem = current($nextItem);
+        break;
+
+        case 'limited':
+          $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id,$opt4sibling);
+          if(!$doSingleStep)
+          { 
+            while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) 
+            {
+              $nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],
+                                                             $args->platform_id,$opt4sibling);
+            }
+          }
+        break;
+      }  // cfg
+
       if( !is_null($nextItem) )
       {
         $tcase_id = $nextItem['tcase_id'];
@@ -389,15 +433,18 @@ function init_args(&$dbHandler,$cfgObj)
   $args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
   $args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
   
-  $args->doMoveNext = isset($_REQUEST['move2next']) ? $_REQUEST['move2next'] : 0;
+  // $args->doMoveNext = isset($_REQUEST['move2next']) ? $_REQUEST['move2next'] : 0;
+  $args->doMoveNext = isset($_REQUEST['move2next']) ? 1 : 0;
+  
   $args->doMovePrevious = isset($_REQUEST['move2previous']) ? $_REQUEST['move2previous'] : 0;
   $args->moveTowards = $args->doMoveNext ? 'forward' : ($args->doMovePrevious ? 'backward' : null);
 
   // can be a list, will arrive via form POST
   $args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
 
-  $key2loop = array('level' => '','status' => null, 'statusSingle' => null, 'do_bulk_save' => 0, 
-                    'save_results' => 0, 'save_and_next' => 0, 'save_and_exit' => 0);
+  $key2loop = array('level' => '','status' => null, 'statusSingle' => null, 
+                    'do_bulk_save' => 0,'save_results' => 0,'save_and_next' => 0, 
+                    'save_and_exit' => 0);
   foreach($key2loop as $key => $value)
   {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
@@ -516,7 +563,6 @@ function init_args(&$dbHandler,$cfgObj)
 
 
   $args->basehref = $_SESSION['basehref'];
-  
 
   return array($args,$its);
 }
@@ -1062,17 +1108,17 @@ function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
 */
 function getCfg()
 {
-    $cfg = new stdClass();
-    $cfg->exec_cfg = config_get('exec_cfg');
-    $cfg->gui_cfg = config_get('gui');
-    // $cfg->bts_type = config_get('interface_bugs');
+  $cfg = new stdClass();
+  $cfg->exec_cfg = config_get('exec_cfg');
+  $cfg->gui_cfg = config_get('gui');
+  // $cfg->bts_type = config_get('interface_bugs');
     
-    $results = config_get('results');
-    $cfg->tc_status = $results['status_code'];
-    $cfg->testcase_cfg = config_get('testcase_cfg'); 
-    $cfg->editorCfg = getWebEditorCfg('execution');
+  $results = config_get('results');
+  $cfg->tc_status = $results['status_code'];
+  $cfg->testcase_cfg = config_get('testcase_cfg'); 
+  $cfg->editorCfg = getWebEditorCfg('execution');
     
-    return $cfg;
+  return $cfg;
 }
 
 

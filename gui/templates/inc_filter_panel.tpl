@@ -13,7 +13,7 @@
  * @author Andreas Simon
  * @internal revisions
  *
- * @since 1.9.11
+ * @since 1.9.15
  *}
 
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
@@ -204,7 +204,7 @@
         <td><input type="text" name="filter_tc_id"
                                size="{#TC_ID_SIZE#}"
                                maxlength="{#TC_ID_MAXLEN#}"
-                               value="{$control->filters.filter_tc_id.selected}" />
+                               value="{$control->filters.filter_tc_id.selected|escape}" />
         </td>
       </tr>
     {/if}
@@ -215,7 +215,7 @@
         <td><input type="text" name="filter_testcase_name"
                                size="{#TC_TITLE_SIZE#}"
                                maxlength="{#TC_TITLE_MAXLEN#}"
-                               value="{$control->filters.filter_testcase_name.selected}" />
+                               value="{$control->filters.filter_testcase_name.selected|escape}" />
         </td>
       </tr>
     {/if}
@@ -269,10 +269,16 @@
       <tr>
         <td>{$labels.status}</td>
         <td>
-            <select name="filter_workflow_status">
-              {html_options options=$control->filters.filter_workflow_status.items
-              selected=$control->filters.filter_workflow_status.selected}
-            </select>
+          <select id="filter_workflow_status" 
+          {if $control->advanced_filter_mode}
+             name="filter_workflow_status[]" multiple="multiple"
+             size="{$control->filter_item_quantity}">
+          {else}
+             name="filter_workflow_status">
+          {/if}
+            {html_options options=$control->filters.filter_workflow_status.items
+                          selected=$control->filters.filter_workflow_status.selected}
+          </select>
         </td>
       </tr>
     {/if}
@@ -281,10 +287,15 @@
       <tr>
         <td>{$labels.importance}</td>
         <td>
-          <select name="filter_importance">
-            <option value="">{$control->option_strings.any}</option>
-                    {html_options options=$gsmarty_option_importance
-                    selected=$control->filters.filter_importance.selected}
+          <select id="filter_importance"
+          {if $control->advanced_filter_mode}
+             name="filter_importance[]" multiple="multiple"
+             size="{$control->filters.filter_importance.size}">
+          {else}
+             name="filter_importance">
+          {/if}     
+             {html_options options=$control->filters.filter_importance.items
+              selected=$control->filters.filter_importance.selected}
           </select>
         </td>
       </tr>
@@ -364,7 +375,7 @@
         <td><input type="text" name="filter_bugs" size="{#BUGS_FILTER_SIZE#}"
                                maxlength="{#BUGS_FILTER_MAXLEN#}"
                                placeholder="{$labels.hint_list_of_bugs}"
-                               value="{$control->filters.filter_bugs.selected}" />
+                               value="{$control->filters.filter_bugs.selected|escape}" />
         </td>
       </tr>
     {/if}
@@ -518,7 +529,7 @@
       <td><input type="text" name="filter_doc_id"
                              size="{#REQ_DOCID_SIZE#}"
                              maxlength="{#REQ_DOCID_MAXLEN#}"
-                             value="{$control->filters.filter_doc_id.selected}" />
+                             value="{$control->filters.filter_doc_id.selected|escape}" />
       </td>
     </tr>
   {/if}
@@ -529,7 +540,7 @@
       <td><input type="text" name="filter_title"
                              size="{#REQ_NAME_SIZE#}"
                              maxlength="{#REQ_NAME_MAXLEN#}"
-                             value="{$control->filters.filter_title.selected}" />
+                             value="{$control->filters.filter_title.selected|escape}" />
       </td>
     </tr>
   {/if}
@@ -598,7 +609,7 @@
       <td><input type="text" name="filter_coverage"
                              size="{#COVERAGE_SIZE#}"
                              maxlength="{#COVERAGE_MAXLEN#}"
-                             value="{$control->filters.filter_coverage.selected}" />
+                             value="{$control->filters.filter_coverage.selected|escape}" />
       </td>
     </tr>
   {/if}
@@ -628,7 +639,7 @@
       <td><input type="text" name="filter_tc_id"
                              size="{#TC_ID_SIZE#}"
                              maxlength="{#TC_ID_MAXLEN#}"
-                             value="{$control->filters.filter_tc_id.selected}" />
+                             value="{$control->filters.filter_tc_id.selected|escape}" />
       </td>
     </tr>
   {/if}

@@ -6,7 +6,7 @@
  * @author Francisco Mancardi
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
@@ -66,10 +66,10 @@ class redminerestInterface extends issueTrackerInterface
 		$base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
 	  if( !property_exists($this->cfg,'uriview') )
 	  {
-      // $this->cfg->uriview = $base . 'issues/show/'; // seems this is good only for redmine 1
-      // $this->cfg->uriview = $base . 'issues/show/'; // seems this is good only for redmine 2
-      $this->cfg->uriview = $base . 'issues/'; // seems this is good only for redmine 1
-		}
+      // seems this is good only for redmine 1 and 2 ??
+      // $this->cfg->uriview = $base . 'issues/show/'; 
+      $this->cfg->uriview = $base . 'issues/'; 
+  	}
 	    
 	  if( !property_exists($this->cfg,'uricreate') )
 	  {
@@ -99,7 +99,6 @@ class redminerestInterface extends issueTrackerInterface
       }
     }     
 
-    // 20140816
     // All attributes that I do not consider mandatory 
     // are managed through the issueAdditionalAttributes
     //
@@ -111,14 +110,15 @@ class redminerestInterface extends issueTrackerInterface
       {
         $this->issueAttr[$prop] = $default;
       } 
-      /*
-      if( !property_exists($this->cfg, $prop))
-      {
-        $this->cfg->$prop = $default;
-      } 
-      */ 
     }   
-	}
+    
+    if( property_exists($this->cfg,'custom_fields') )
+    {
+      $cf = $this->cfg->custom_fields;
+      $this->cfg->custom_fields = (string)$cf->asXML();
+    }   
+  }
+
 
 	/**
    * useful for testing 
@@ -157,7 +157,11 @@ class redminerestInterface extends issueTrackerInterface
   	  // CRITIC NOTICE for developers
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
-  	  $this->APIClient = new redmine((string)trim($this->cfg->uribase),(string)trim($this->cfg->apikey));
+      $redUrl = (string)trim($this->cfg->uribase);
+      $redAK = (string)trim($this->cfg->apikey);
+      $pxy = new stdClass();
+      $pxy->proxy = config_get('proxy');
+  	  $this->APIClient = new redmine($redUrl,$redAK,$pxy);
 
       // to undestand if connection is OK, I will ask for projects.
       // I've tried to ask for users but get always ERROR from redmine (not able to understand why).
@@ -336,7 +340,17 @@ class redminerestInterface extends issueTrackerInterface
       $issueXmlObj->addChild('description', htmlspecialchars($description));
 
       // Got from XML Configuration
-   		$issueXmlObj->addChild('project_id', (string)$this->cfg->projectidentifier);
+      // improvement
+      $pid = (string)$this->cfg->projectidentifier;
+      if(is_string($pid))
+      {
+        $pinfo = $this->APIClient->getProjectByIdentity($pid);
+        if(!is_null($pinfo))
+        {
+          $pid = (int)$pinfo->id;
+        }  
+      }  
+   		$issueXmlObj->addChild('project_id', (string)$pid);
 
 
       if( property_exists($this->cfg,'trackerid') )
@@ -379,9 +393,32 @@ class redminerestInterface extends issueTrackerInterface
         }  
       }  
 
-      $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
+      // 20150815 
+      // In order to manage custom fields in simple way, 
+      // it seems that is better create here plain XML String
+      //
+      $xml = $issueXmlObj->asXML();
+      if( property_exists($this->cfg,'custom_fields') )
+      {
+        $cf = (string)$this->cfg->custom_fields;
+        $xml = str_replace('</issue>', $cf . '</issue>', $xml);
+      }
+
+      // $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
+      // file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
+      $op = $this->APIClient->addIssueFromXMLString($xml);
+
+      if(is_null($op))
+      {
+        $msg = "Error Calling " . __CLASS__ . 
+               "->APIClient->addIssueFromXMLString() " .
+               " check Communication TimeOut ";
+        throw new Exception($msg, 1);
+      }  
+
       $ret = array('status_ok' => true, 'id' => (string)$op->id, 
-                   'msg' => sprintf(lang_get('redmine_bug_created'),$summary,$issueXmlObj->project_id));
+                   'msg' => sprintf(lang_get('redmine_bug_created'),
+                    $summary,$pid));
      }
      catch (Exception $e)
      {
@@ -425,27 +462,42 @@ class redminerestInterface extends issueTrackerInterface
    **/
 	public static function getCfgTemplate()
   {
-    $template = "<!-- Template " . __CLASS__ . " -->\n" .
-				        "<issuetracker>\n" .
-				        "<apikey>REDMINE API KEY</apikey>\n" .
-				        "<uribase>http://tl.m.remine.org</uribase>\n" .
-                "<uriview>http://tl.m.remine.org/issues/</uriview> <!-- for Redmine 1.x add show/ --> \n" .
-				        "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
-				        "<projectidentifier>REDMINE PROJECT IDENTIFIER</projectidentifier>\n" .
-                "<!--                                       -->\n" .
-                "<!-- Configure This if you need to provide other attributes, ATTENTION to REDMINE API Docum. -->\n" .
-                "<!-- <attributes> -->\n" .
-                "<!--   <targetversion>10100</targetversion>\n" .
-                "<!--   <parent_issue_id>10100</parent_issue_id>\n" .
-                "<!-- </attributes>  -->\n" .
-                "<!--                                       -->\n" .
-	              "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
-                "<!--  <resolvedstatus>-->\n" .
-                "<!--    <status><code>3</code><verbose>Resolved</verbose></status> -->\n" .
-                "<!--    <status><code>5</code><verbose>Closed</verbose></status> -->\n" .
-                "<!--  </resolvedstatus> -->\n" .
-				        "</issuetracker>\n";
-	  return $template;
+    $tpl = "<!-- Template " . __CLASS__ . " -->\n" .
+				   "<issuetracker>\n" .
+				   "<apikey>REDMINE API KEY</apikey>\n" .
+				   "<uribase>http://tl.m.remine.org</uribase>\n" .
+           "<uriview>http://tl.m.remine.org/issues/</uriview> <!-- for Redmine 1.x add show/ --> \n" .
+				   "<!-- Project Identifier is NEEDED ONLY if you want to create issues from TL -->\n" . 
+				   "<projectidentifier>REDMINE PROJECT IDENTIFIER\n" .
+           " You can use numeric id or identifier string \n" .
+           "</projectidentifier>\n" .
+           "\n" .
+           "<!--                                       -->\n" .
+           "<!-- Configure This if you need to provide other attributes, ATTENTION to REDMINE API Docum. -->\n" .
+           "<!-- <attributes> -->\n" .
+           "<!--   <targetversion>10100</targetversion>\n" .
+           "<!--   <parent_issue_id>10100</parent_issue_id>\n" .
+           "<!-- </attributes>  -->\n" .
+           "<!--                                       -->\n" .
+           "<!-- Custom Fields-->\n" .
+           "<!-- Check Redmine API Docs for format -->\n" .
+           '<!-- <custom_fields type="array"> -->' . "\n" .
+           '<!-- <custom_field id="1" name="CF-STRING-OPT"> -->' . "\n" .
+           '<!--   <value>SALT</value> -->' . "\n" .
+           '<!-- </custom_field> -->' . "\n" .
+           '<!-- <custom_field id="3" name="CF-LIST-OPT" multiple="true"> -->' . "\n" .
+           '<!--   <value type="array"> -->' . "\n" .
+           '<!--     <value>ALFA</value> -->' . "\n" .
+           '<!--   </value> -->' . "\n" .
+           '<!-- </custom_field> -->' . "\n" .
+           '<!-- </custom_fields> -->' . "\n" .
+	         "<!-- Configure This if you want NON STANDARD BEHAIVOUR for considered issue resolved -->\n" .
+           "<!--  <resolvedstatus>-->\n" .
+           "<!--    <status><code>3</code><verbose>Resolved</verbose></status> -->\n" .
+           "<!--    <status><code>5</code><verbose>Closed</verbose></status> -->\n" .
+           "<!--  </resolvedstatus> -->\n" .
+				   "</issuetracker>\n";
+	  return $tpl;
   }
 
  /**

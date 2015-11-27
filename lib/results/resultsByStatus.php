@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  * 
  */
 require('../../config.inc.php');
@@ -28,14 +28,6 @@ require_once('exec.inc.php'); // used for bug string lookup
 // Seams that \n are not liked 
 // http://stackoverflow.com/questions/5960242/how-to-make-new-lines-in-a-cell-using-phpexcel
 //
-
-
-// Time tracking
-//$tstart = microtime(true);
-//$chronos[] = $tstart; $tnow = end($chronos);reset($chronos);
-// Memory metrics  
-//$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
-
 
 $templateCfg = templateConfiguration();
 $resultsCfg = config_get('results');
@@ -52,9 +44,6 @@ $gui = initializeGui($statusCode,$args,$tplan_mgr);
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
-// Memory metrics
-//$mem['usage'][] = memory_get_usage(true); $mem['peak'][] = memory_get_peak_usage(true);
-//echo '<br>' . __FUNCTION__ . ' Mem:' . end($mem['usage']) . ' Peak:' . end($mem['peak']) .'<br>';
 
 // get issue tracker config and object to manage TestLink - BTS integration 
 $its = null;
@@ -79,13 +68,6 @@ $gui->tproject_name = $tproject_info['name'];
 $testCaseCfg = config_get('testcase_cfg');
 $mailCfg = buildMailCfg($gui);
 
-// Time tracking
-//$chronos[] = microtime(true);$tnow = end($chronos);$tprev = prev($chronos);
-//$t_elapsed_abs = number_format( $tnow - $tstart, 4);
-//$t_elapsed = number_format( $tnow - $tprev, 4);
-//echo '<br>' . __FUNCTION__ . ' Elapsed relative (sec):' . $t_elapsed . ' Elapsed ABSOLUTE (sec):' . $t_elapsed_abs .'<br>';
-//reset($chronos);  
-
 $gui->report_context = $labels['info_only_with_tester_assignment'];
 $gui->info_msg = '';
 $gui->bugs_msg = '';
@@ -108,6 +90,7 @@ else
   $userAccessKey='tester_id';
 
 }
+
 
 $cfOnExec = $cfSet = null;
 
@@ -222,20 +205,41 @@ if( !is_null($metrics) and count($metrics) > 0 )
 
     // --------------------------------------------------------------------------------------------
     // verbose user  
-    if($exec[$userAccessKey] == 0 )
+    if( $args->type == $statusCode['not_run'] )
     {
-      $out[$odx]['testerName'] = $labels['nobody'];
-    }
-    else
-    {
-      if(isset($users,$exec[$userAccessKey]))
+      natsort($exec[$userAccessKey]);
+      $zux = array();
+      foreach ($exec[$userAccessKey] as $vux) 
       {
-         $out[$odx]['testerName'] = htmlspecialchars($users[$exec[$userAccessKey]]);
+        if(isset($users,$vux))
+        {
+           $zux[] = htmlspecialchars($users[$vux]);
+        }
+        else
+        {
+          // user id has been disable/deleted
+          $zux[] = sprintf($labels['deleted_user'],$vux);
+        }
+      }
+      $out[$odx]['testerName'] = implode(',',$zux);
+    }  
+    else
+    {  
+      if($exec[$userAccessKey] == 0 )
+      {
+        $out[$odx]['testerName'] = $labels['nobody'];
       }
       else
       {
+        if(isset($users,$exec[$userAccessKey]))
+        {
+           $out[$odx]['testerName'] = htmlspecialchars($users[$exec[$userAccessKey]]);
+        }
+        else
+        {
           // user id has been disable/deleted
           $out[$odx]['testerName'] = sprintf($labels['deleted_user'],$exec[$userAccessKey]);
+        }
       }
     }
     $out[$odx]['testerName'] = htmlspecialchars($out[$odx]['testerName']);
@@ -251,7 +255,6 @@ if( !is_null($metrics) and count($metrics) > 0 )
     {
       if(!is_null($cfSet))
       {
-
         // 20130324 - Need to document how important is value of second index on  $out[$odx][SECOND INDEX] 
         foreach($cfSet as $cfID => $cfValue)
         {
@@ -784,9 +787,6 @@ function createSpreadsheet($gui,$args,$customFieldColumns=null)
       $dataHeader[] = $def['label'];
     }  
   }  
-
-  //new dBug($customFieldColumns);
-  //die();
 
   // ATTENTION logic regarding NOT RUN IS MISSING
   // For not run this column and also columns regarding CF on exec are not displayed

@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.35.2.1 2010/11/20 16:55:53 franciscom Exp $
+ *
  */
 
 /** 
@@ -9,10 +9,9 @@
  * 
  * @author    Asiel Brumfield <asielb@users.sourceforge.net>
  * @package   TestlinkAPI
- * @link      http://testlink.org/api/
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.14
  * 
  */
  
@@ -105,6 +104,11 @@ define('NODEID_INVALID_DATA_TYPE_STR', lang_get('API_NODEID_INVALID_DATA_TYPE',n
 define('PLATFORM_NAME_DOESNOT_EXIST', 235);
 define('PLATFORM_NAME_DOESNOT_EXIST_STR', lang_get('API_PLATFORM_NAME_DOESNOT_EXIST',null,1));
 
+define('NO_MATCH', 236);
+define('NO_MATCH_STR', lang_get('API_NO_MATCH',null,1));
+
+define('INVALID_TIMESTAMP', 237);
+define('INVALID_TIMESTAMP_STR', lang_get('API_INVALID_TIMESTAMP',null,1));
 
 /**
  * 2000 level - authentication errors
@@ -161,6 +165,8 @@ define('LINKED_FEATURE_ALREADY_EXISTS_STR', lang_get('API_LINKED_FEATURE_ALREADY
 define('OTHER_VERSION_IS_ALREADY_LINKED', 3046);
 define('OTHER_VERSION_IS_ALREADY_LINKED_STR', lang_get('API_OTHER_VERSION_IS_ALREADY_LINKED',null,1));
 
+define('TCVERSIONID_NOT_IN_TPLANID', 3047);
+define('TCVERSIONID_NOT_IN_TPLANID_STR', lang_get('API_TCVERSIONID_NOT_IN_TPLANID',null,1));
 
 
 /**
@@ -263,6 +269,9 @@ define('TESTPROJECTNAME_DOESNOT_EXIST_STR',lang_get('API_TESTPROJECTNAME_DOESNOT
 define('TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST',7012);
 define('TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST_STR',lang_get('API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST',null,1));
 
+define('TPROJECT_PREFIX_DOESNOT_EXIST',7013);
+define('TPROJECT_PREFIX_DOESNOT_EXIST_STR',
+       lang_get('API_TPROJECT_PREFIX_DOESNOT_EXIST',null,1));
 
 /**
  * 8000 level - Test Suite errors
@@ -300,6 +309,8 @@ define('CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT_STR', lang_get('API_CUSTOMFIELD_
 define('NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES',9004);
 define('NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES_STR', lang_get('API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES',null,1));
 
+define('NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES',9005);
+define('NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES_STR', lang_get('API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES',null,1));
 
 
 

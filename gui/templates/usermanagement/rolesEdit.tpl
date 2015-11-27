@@ -74,7 +74,7 @@ function validateForm(f)
   <table class="common">
     <tr><th>{$labels.th_rolename}
       {if $gui->mgt_view_events eq "yes" && $gui->role->dbID}
-        <img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$gui->role->dbID}','roles')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+        src="{$tlImages.info}" onclick="showEventHistoryFor('{$gui->role->dbID}','roles')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
       {/if}
     </th></tr>
     <tr><td>

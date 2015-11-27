@@ -1,0 +1,13 @@
+These files that can be complete or incomplete examples
+are provided in order to allow you to play a little bit
+with TestLink - Redmine integration.
+I hope this can be useful for you if you got some error or
+doubts during integration, before you run to the web 
+searching/asking for help.
+
+Please try to contribute to improve these examples and 
+documentation.
+
+I use bitnami redmine installer to create a redmine env.
+Using curl and/or postman to run XML examples files 
+can be a very good approach (IMHO).

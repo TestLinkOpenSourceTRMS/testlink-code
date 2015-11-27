@@ -6,13 +6,13 @@
  * @filesource  tlTestPlanMetrics.class.php
  * @package     TestLink
  * @author      Kevin Levy, franciscom
- * @copyright   2004-2014, TestLink community 
+ * @copyright   2004-2015, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * @uses        config.inc.php 
  * @uses        common.php 
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.14
  *
  **/
 
@@ -1102,7 +1102,7 @@ class tlTestPlanMetrics extends testplan
           $progress = ($progress / $out[$topItemID][$itemID]['total']) * 100;
           $out[$topItemID][$itemID]['progress'] = number_format($progress,1); 
           $out[$topItemID][$itemID]['total_time'] = 
-              number_format($metrics['total'][$topItemID][$itemID]['total_time'],2); 
+              number_format($metrics['total'][$topItemID][$itemID]['total_time'],2,'.',''); 
         }
       }
     }
@@ -1454,28 +1454,30 @@ class tlTestPlanMetrics extends testplan
 
     $my = array();
     $my['opt'] = array('getExecutionNotes' => false, 'getTester' => false,
+                       'getUserAssignment' => false, 'output' => null,
                        'getExecutionTimestamp' => false, 'getExecutionDuration' => false);
 
     $my['opt'] = array_merge($my['opt'], (array)$opt);
-
-
-    // displayMemUsage($debugMsg);
     $safe_id = intval($id);
     list($my,$builds,$sqlStm,$union) = $this->helperBuildSQLTestSuiteExecCounters($id, $filters, $my['opt']);
-    // displayMemUsage('AFTER helperBuildSQLTestSuiteExecCounters()');
-    
+
     $sql =  " /* {$debugMsg} UNION WITH ALL CLAUSE */ " .
             " {$union['exec']} UNION ALL {$union['not_run']} ";
+
+    
+    $keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
+    $cumulative = ($my['opt']['output'] == 'cumulative');
+    //switch($my['opt']['output'])
+    //{
+    //  case 
+    // }
+    $dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns,$cumulative);              
 
     unset($sqlStm);
     unset($union);
     unset($my);
     unset($builds);
-    
-    // displayMemUsage('AFTER helperBuildSQLTestSuiteExecCounters()');
-    $keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
-    $dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
-    
+
     // now is time do some decoding
     // Key is a tuple (PARENT tsuite_id, test case id, platform id)
     //
@@ -1556,13 +1558,14 @@ class tlTestPlanMetrics extends testplan
    *   
    *    
    *  @internal revisions
-   *  20120728 - franciscom - added emergency exit if build set is empty  
+   *  
    */    
   function helperGetExecCounters($id, $filters, $opt)
   {
     $sql = array();
     $my = array();
     $my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0, 
+                       'getUserAssignment' => false,
                        'getPlatformSet' => false, 'processClosedBuilds' => true);
     $my['opt'] = array_merge($my['opt'], (array)$opt);
     
@@ -1602,7 +1605,6 @@ class tlTestPlanMetrics extends testplan
       $bi->joinAdd = " AND E.build_id = UA.build_id ";
       $bi->whereAddExec = " AND {$bi->source}.build_id IN ({$bi->inClause}) "; 
       $bi->whereAddNotRun = $bi->whereAddExec; 
-
     }            
     else
     {
@@ -1628,6 +1630,25 @@ class tlTestPlanMetrics extends testplan
       $bi->whereAddNotRun = ""; 
     }               
 
+    $sql['getUserAssignment']['not_run'] = "";
+    $sql['getUserAssignment']['exec'] = "";
+
+    if( $my['opt']['getUserAssignment'] )
+    {
+      $sql['getUserAssignment']['not_run'] = 
+        " LEFT JOIN {$this->tables['user_assignments']} UA " .
+        " ON UA.feature_id = TPTCV.id " .
+        " AND UA.build_id = BU.id " .
+        " AND UA.type = {$this->execTaskCode} ";
+   
+      $sql['getUserAssignment']['exec'] = 
+        " LEFT JOIN {$this->tables['user_assignments']} UA " .
+        " ON UA.feature_id = TPTCV.id " .
+        " AND UA.build_id = E.build_id " .
+        " AND UA.type = {$this->execTaskCode} ";
+    }
+
+
     // Latest Execution IGNORING Build and Platform
     $sql['LE'] = " SELECT EE.tcversion_id,EE.testplan_id,MAX(EE.id) AS id " .
                  " FROM {$this->tables['executions']} EE " . 
@@ -1644,20 +1665,20 @@ class tlTestPlanMetrics extends testplan
                      " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id ";
 
     // Last Executions By Build (LEBB) (ignore platform)
-    $sql['LEBB'] =   " SELECT EE.tcversion_id,EE.testplan_id,EE.build_id,MAX(EE.id) AS id " .
+    $sql['LEBB'] =  " SELECT EE.tcversion_id,EE.testplan_id,EE.build_id,MAX(EE.id) AS id " .
                     " FROM {$this->tables['executions']} EE " . 
-                     " WHERE EE.testplan_id=" . intval($id) . 
+                    " WHERE EE.testplan_id=" . intval($id) . 
                     " AND EE.build_id IN ({$bi->inClause}) " .
-                     " GROUP BY EE.tcversion_id,EE.testplan_id,EE.build_id ";
+                    " GROUP BY EE.tcversion_id,EE.testplan_id,EE.build_id ";
   
 
     // Last Executions By Build and Platform (LEBBP)
     $sql['LEBBP'] = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id," .
                     " MAX(EE.id) AS id " .
                     " FROM {$this->tables['executions']} EE " . 
-                     " WHERE EE.testplan_id=" . intval($id) . 
+                    " WHERE EE.testplan_id=" . intval($id) . 
                     " AND EE.build_id IN ({$bi->inClause}) " .
-                     " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
+                    " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id,EE.build_id ";
 
 
     return array($my,$bi,$sql);
@@ -1837,7 +1858,8 @@ class tlTestPlanMetrics extends testplan
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $my['opt'] = array('getExecutionNotes' => false, 'getTester' => false,
+    $my['opt'] = array('getExecutionNotes' => false, 'getTester' => false, 
+                       'getUserAssignment' => false,
                        'getExecutionTimestamp' => false, 'getExecutionDuration' => false);
     $my['opt'] = array_merge($my['opt'], (array)$opt);
 
@@ -1848,15 +1870,17 @@ class tlTestPlanMetrics extends testplan
 
 
     // Additional Execution fields
-    $moreExecFields = '';
+    $moreExecFields = "";
     if($my['opt']['getExecutionNotes'])
     {
       $moreExecFields .= "E.notes AS execution_notes,";
     }  
+    
     if($my['opt']['getTester'])
     {
       $moreExecFields .= "E.tester_id,";
     } 
+    
     if($my['opt']['getExecutionTimestamp'])
     {
       $moreExecFields .= "E.execution_ts,";
@@ -1866,6 +1890,11 @@ class tlTestPlanMetrics extends testplan
     {
       $moreExecFields .= "E.execution_duration,";
     } 
+
+    if($my['opt']['getUserAssignment'])
+    {
+      $moreExecFields .= "UA.user_id,";
+    } 
   
     // Latest Executions By Build Platform (LEBBP)
     $sqlLEBBP = $sqlStm['LEBBP'];
@@ -1874,12 +1903,15 @@ class tlTestPlanMetrics extends testplan
               " SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
               " TPTCV.tcversion_id,TPTCV.platform_id," .
               " E.build_id,E.tcversion_number AS version,TCV.tc_external_id AS external_id, " .
-              " E.id AS executions_id, E.status AS status, " . $moreExecFields .
+              " E.id AS executions_id, E.status AS status, " . 
+              $moreExecFields .
+              " E.execution_type AS exec_type," .
+
               " (TPTCV.urgency * TCV.importance) AS urg_imp " .
               " FROM {$this->tables['testplan_tcversions']} TPTCV " .
   
               $sqlStm['getAssignedFeatures'] .
-              
+  
               " /* GO FOR Absolute LATEST exec ID On BUILD,PLATFORM */ " .
               " JOIN ({$sqlLEBBP}) AS LEBBP " .
               " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
@@ -1891,7 +1923,10 @@ class tlTestPlanMetrics extends testplan
               " JOIN {$this->tables['executions']} E " .
               " ON  E.id = LEBBP.id " .
               " AND E.build_id = LEBBP.build_id " .
-  
+
+              $sqlStm['getUserAssignment']['exec'] .
+
+
               " /* Get Test Case info from Test Case Version */ " .
               " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
               " ON  NHTCV.id = TPTCV.tcversion_id " .
@@ -1916,15 +1951,19 @@ class tlTestPlanMetrics extends testplan
               " TPTCV.tcversion_id, TPTCV.platform_id," .
               " BU.id AS build_id,TCV.version,TCV.tc_external_id AS external_id, " .
               " COALESCE(E.id,-1) AS executions_id, " .
-              " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " . $moreExecFields . 
+              " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " . 
+              $moreExecFields .
+              " TCV.execution_type AS exec_type," . 
               " (TPTCV.urgency * TCV.importance) AS urg_imp " .
               " FROM {$this->tables['testplan_tcversions']} TPTCV " .
   
               $sqlStm['getAssignedFeatures'] .
-
+         
               " /* Needed to be able to put a value on build_id on output set  */ " .
               " JOIN {$this->tables['builds']} BU " .
               " ON BU.id IN ({$builds->inClause}) " .
+
+              $sqlStm['getUserAssignment']['not_run'] .
               
               " /* GO FOR Absolute LATEST exec ID On BUILD,PLATFORM */ " .
               " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
@@ -2098,13 +2137,18 @@ class tlTestPlanMetrics extends testplan
     $fullEID = $this->helperConcatTCasePrefix($safe_id);
     // $sqlLEBBP = $sqlStm['LEBBP'];
 
+    // Because we now allow assignment of MULTIPLE testers to same test case
+    // we need to remove UA.user_id, in order to avoid duplication
+    // UA.user_id,
+    // we will need a second step to populate this info.
+    //
     $sql =  "/* {$debugMsg} Not Run */" . 
-        " SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
-        " TPTCV.tcversion_id,TPTCV.platform_id," .
+        " SELECT DISTINCT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
+        " TPTCV.tcversion_id,TPTCV.platform_id,TPTCV.id AS feature_id," .
         " TCV.version AS tcversion_number, B.id AS build_id," . 
         " '{$this->notRunStatusCode}' AS status, " .
         " TCV.version,TCV.tc_external_id AS external_id, " .
-        " $fullEID AS full_external_id,UA.user_id," .
+        " $fullEID AS full_external_id," .
         " (TPTCV.urgency * TCV.importance) AS urg_imp, TCV.summary " .
         " FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
@@ -2143,13 +2187,63 @@ class tlTestPlanMetrics extends testplan
     switch($my['opt']['output'])
     {
       case 'array':
-            $dummy = (array)$this->db->get_recordset($sql);              
+        $dummy = (array)$this->db->get_recordset($sql);              
+        
+        // Second Loop
+        // get features to get testers
+        if(!is_null($dummy))
+        {
+          // will try with a query
+              $sql =  "/* {$debugMsg} Not Run */" . 
+        " SELECT UA.user_id, UA.feature_id,UA.build_id" .
+        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+
+        " JOIN {$this->tables['builds']} B " .
+        " ON  B.testplan_id = TPTCV.testplan_id " .
+
+        " JOIN {$this->tables['user_assignments']} UA " .
+        " ON  UA.feature_id = TPTCV.id " .
+        " AND UA.build_id = B.id " .
+        " AND UA.type = {$this->execTaskCode} " .
+
+        " LEFT OUTER JOIN {$this->tables['executions']} E " .
+        " ON  E.testplan_id = TPTCV.testplan_id " .
+        " AND E.platform_id = TPTCV.platform_id " .
+        " AND E.tcversion_id = TPTCV.tcversion_id " .
+        " AND E.build_id = B.id ".
+
+        " WHERE TPTCV.testplan_id=" . $safe_id .
+        " AND E.id IS NULL " .
+        " AND B.id IN ({$builds->inClause}) "; 
+
+        $dx = $this->db->get_recordset($sql); 
+
+        $l2do = count($dx);
+        $loop2do = count($dummy);
+        for($vdx=0; $vdx < $l2do; $vdx++)
+        { 
+          for($fdx=0; $fdx < $loop2do; $fdx++)
+          {
+            if($dummy[$fdx]['feature_id'] == $dx[$vdx]['feature_id'] &&
+               $dummy[$fdx]['build_id'] == $dx[$vdx]['build_id'] 
+              )
+            {
+              $dummy[$fdx]['user_id'][$dx[$vdx]['user_id']] = $dx[$vdx]['user_id'];
+              break;
+            }  
+          }  
+        }  
+ 
+        }  
+
+
       break;
 
       case 'map':
       default:
+        throw new Exception("NOT REFACTORED YET for output 'map'", 1);
         $keyColumns = array('tsuite_id','tcase_id','platform_id','build_id');
-            $dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
+        $dummy = (array)$this->db->fetchRowsIntoMap4l($sql,$keyColumns);              
       break;
     }
 
@@ -2386,7 +2480,7 @@ class tlTestPlanMetrics extends testplan
               $my['where']['where'] .
               " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
               " AND E.id IS NULL AND LEX.id IS NULL";
-    die();    
+    // die();    
     
     
     // executions
@@ -2481,7 +2575,88 @@ class tlTestPlanMetrics extends testplan
 
     return array($ic,$sqlLEX);    
   }
+
+  /** 
+   *    
+   *    
+   */    
+  function getExecStatusMatrixFlat($id, $filters=null, $opt=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $my = array();
+    $my['opt'] = array('getExecutionNotes' => false, 'getTester' => false,
+                       'getUserAssignment' => false, 'output' => null,
+                       'getExecutionTimestamp' => false, 'getExecutionDuration' => false);
+
+    $my['opt'] = array_merge($my['opt'], (array)$opt);
+    $safe_id = intval($id);
+    list($my,$builds,$sqlStm,$union) = $this->helperBuildSQLTestSuiteExecCounters($id, $filters, $my['opt']);
+
+    $sql =  " /* {$debugMsg} UNION WITH ALL CLAUSE */ " .
+            " {$union['exec']} UNION ALL {$union['not_run']} ";
+
+    //echo $sql;
+    $rs = $this->db->get_recordset($sql);              
+    // new dBug($rs);
+
+    $ltx = null;
+    if(!is_null($rs))
+    {
+      $priorityCfg = config_get('urgencyImportance');
+      $cache = array('tsuite' => null, 'tcase' => null);
+
+      $loop2do = count($rs);
+      $gnOpt = array('fields' => 'name');
+
+      for($adx=0; $adx < $loop2do; $adx++)
+      {
+        if(!isset($cache['tsuite'][$rs[$adx]['tsuite_id']]))
+        {
+          $stairway2heaven = $this->tree_manager->get_path($rs[$adx]['tsuite_id'],null,'name');
+          $cache['tsuite'][$rs[$adx]['tsuite_id']] = implode("/",$stairway2heaven);
+        }
+        $rs[$adx]['suiteName'] = $cache['tsuite'][$rs[$adx]['tsuite_id']];
+
+        if($rs[$adx]['urg_imp'] >= $priorityCfg->threshold['high']) 
+        {            
+          $rs[$adx]['priority_level'] = HIGH;
+        } 
+        else if( $rs[$adx]['urg_imp'] < $priorityCfg->threshold['low']) 
+        {
+          $rs[$adx]['priority_level'] = LOW;
+        }        
+        else
+        {
+          $rs[$adx]['priority_level'] = MEDIUM;
+        }
+
+        $kyy = $rs[$adx]['platform_id'] . '-' . $rs[$adx]['tcase_id'];
+      
+        // $keyExists = isset($ltx[$kyy]);
+        $keyExists = isset($ltx[$rs[$adx]['platform_id']][$rs[$adx]['tcase_id']]);
+        $doSet = !$keyExists;
+        if( $keyExists )
+        {
+          $doSet = ($ltx[$rs[$adx]['platform_id']][$rs[$adx]['tcase_id']]['id'] < 
+                    $rs[$adx]['executions_id']);
+        }  
+        if( $doSet )
+        {
+          $ltx[$rs[$adx]['platform_id']][$rs[$adx]['tcase_id']] = 
+             array('id' => $rs[$adx]['executions_id'],'build_id' => $rs[$adx]['build_id'],
+                   'status' => $rs[$adx]['status']);
+        }
+      }  
+    }  
+    //new dBug($cache);
+    //new dBug($rs);
+    //new dBug($ltx);
+ 
+    return array('metrics' => $rs, 'latestExec' => $ltx);
+  }
+
+
   
 
 }
-?>

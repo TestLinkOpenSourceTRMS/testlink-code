@@ -111,8 +111,9 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     
    
   // Document why this is needed, please  
-  $test_spec = $tplan_mgr->getSkeleton($context['tplan_id'],$context['tproject_id'],$my['filters'],$my['options']);
+  $spec = $tplan_mgr->getSkeleton($context['tplan_id'],$context['tproject_id'],$my['filters'],$my['options']);
 
+  $test_spec = $spec[0];
   $test_spec['name'] = $context['tproject_name'] . " / " . $context['tplan_name'];  // To be discussed
   $test_spec['id'] = $context['tproject_id'];
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];
@@ -211,7 +212,22 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     $renderTreeNodeOpt['tc_action_enabled'] = 1;
 
     // CRITIC: renderExecTreeNode() WILL MODIFY $tplan_tcases, can empty it completely
-    $linkedTestCasesSet = array_keys((array)$tplan_tcases);
+    // here filter has been applied
+    $lt = array_keys((array)$tplan_tcases);
+
+    // here test cases are in the right order
+    $ltcs = $spec[1]['nindex'];
+
+    // now need to filter out
+    $tl = array_flip($lt);
+    foreach($ltcs as &$ele)
+    {
+      if( isset($tl[$ele]) )
+      {
+        $linkedTestCasesSet[] = $ele;
+      }  
+    }  
+
     renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,$renderTreeNodeOpt);
   }
   
@@ -243,6 +259,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $menustring = str_ireplace($target,array(':[]',''), $menustring); 
 
   $treeMenu->menustring = $menustring;
+
   return array($treeMenu, $linkedTestCasesSet);
 }
 
@@ -646,9 +663,10 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     }  
   }  
 
- 
-  $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
+  // 20151122
+  $spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
 
+  $test_spec = $spec[0];
   $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
   $test_spec['id'] = $tproject_id;
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];

@@ -247,6 +247,10 @@ CREATE NONCLUSTERED INDEX /*prefix*/executions_IX1 ON  /*prefix*/executions
   testplan_id,tcversion_id,platform_id,build_id
 ) ON [PRIMARY];
 
+CREATE NONCLUSTERED INDEX /*prefix*/executions_IX3 ON  /*prefix*/executions 
+(
+  tcversion_id
+) ON [PRIMARY];
 
 --
 -- Table structure for table "execution_tcsteps"
@@ -257,12 +261,12 @@ CREATE TABLE /*prefix*/execution_tcsteps (
    tcstep_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_tcstep_id DEFAULT ((0)),
    notes nvarchar(max)   NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_notes DEFAULT (NULL),
    status char(1)  NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_status DEFAULT (NULL),
-  CONSTRAINT /*prefix*/PK_executions_tcsteps PRIMARY KEY CLUSTERED 
+  CONSTRAINT /*prefix*/PK_execution_tcsteps PRIMARY KEY CLUSTERED 
   ( 
     id ASC
   ) ON [PRIMARY],
 
-  CONSTRAINT /*prefix*/UIX_executions_tcsteps UNIQUE NONCLUSTERED 
+  CONSTRAINT /*prefix*/UIX_execution_tcsteps UNIQUE NONCLUSTERED 
   ( 
   execution_id,tcstep_id ASC
   ) ON [PRIMARY]
@@ -396,6 +400,13 @@ CREATE TABLE /*prefix*/attachments (
   id ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+
+CREATE NONCLUSTERED INDEX /*prefix*/attachments_IX1 ON  /*prefix*/attachments 
+(
+  fk_id ASC
+) ON [PRIMARY];
+
+
 
 CREATE TABLE /*prefix*/node_types (
   id int IDENTITY(1,1) NOT NULL,
@@ -985,7 +996,7 @@ CREATE TABLE /*prefix*/testcase_relations (
   relation_type INT NOT NULL DEFAULT '1',
   author_id int NOT NULL,
   creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_testcase_relations_creation_ts DEFAULT (getdate()),
-  CONSTRAINT /*prefix*/PK_req_relations PRIMARY KEY  CLUSTERED 
+  CONSTRAINT /*prefix*/PK_testcase_relations PRIMARY KEY  CLUSTERED 
   (
     id
   )  ON [PRIMARY]

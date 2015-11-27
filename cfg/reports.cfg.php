@@ -9,7 +9,7 @@
  * SCOPE: Definition of report/metrics menu 
  * 
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.14
  *
  * 
  */
@@ -37,16 +37,6 @@ $tlCfg->reports_formats = array(FORMAT_HTML => 'format_html',FORMAT_MSWORD => 'f
 								FORMAT_MAIL_HTML => 'format_mail_html');
 
 /** Mime Content Type */
-/*
-$tlCfg->reports_applications = array(
-	FORMAT_HTML => 'text/html',
-	FORMAT_ODT => 'application/vnd.oasis.opendocument.text', 
-	FORMAT_ODS => 'application/vnd.oasis.opendocument.spreadsheet', 
-	FORMAT_XLS => 'application/vnd.ms-excel', 
-	FORMAT_MSWORD => 'application/vnd.ms-word',
-	FORMAT_PDF => 'application/pdf'
-);
-*/
 $tlCfg->reports_applications = array(FORMAT_HTML => 'text/html',FORMAT_XLS => 'application/vnd.ms-excel', 
 									 FORMAT_MSWORD => 'application/vnd.ms-word');
 
@@ -124,6 +114,15 @@ $tlCfg->reports_list['results_matrix'] = array(
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
 	'format' => 'format_html,format_pseudo_ods,format_mail_html'
 );
+
+$tlCfg->reports_list['results_flat'] = array( 
+	'title' => 'link_report_test_flat',
+	'url' => 'lib/results/resultsTCFlat.php',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_flat',
+	'format' => 'format_html,format_mail_html'
+);
+
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['failed'],

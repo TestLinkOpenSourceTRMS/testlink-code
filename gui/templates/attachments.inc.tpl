@@ -24,7 +24,8 @@ $gsmarty_attachments
 *}
 
 {lang_get var='labels'
-          s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,attachment_title,alt_delete_attachment,
+          s='title_upload_attachment,enter_attachment_title,
+             btn_upload_file,warning,attachment_title,alt_delete_attachment,click_to_get_attachment,
              display_inline,local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,display_ea_string,
              max_size_file_upload,display_inline_string'}
 
@@ -86,7 +87,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
     {/if}
 
       <tr>
-      <td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold" title="FFFFF">
+      <td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold" title="{$labels.click_to_get_attachment}">
       {$my_link}</a> 
       {if $info.is_image} 
         <img src="{$tlImages.eye}" style="border:none" title="{$labels.display_inline}" 

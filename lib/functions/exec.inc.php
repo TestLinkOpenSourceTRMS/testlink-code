@@ -109,6 +109,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
   }
 
   $addIssueOp = null;
+  
   foreach ( $item2loop as $tcversion_id => $val)
   {
     $tcase_id=$exec_data['tc_version'][$tcversion_id];
@@ -127,17 +128,20 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
              "{$exec_signature->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
              "{$version_number},{$exec_signature->platform_id}";
 
-      if(trim($exec_data['execution_duration']) == '')
+      $dura = 'NULL ';
+      if(isset($exec_data['execution_duration']))
       {
-        $dura = 'NULL ';  
-      } 
-      else
-      {
-        $dura = floatval($exec_data['execution_duration']);
+        if(trim($exec_data['execution_duration']) == '')
+        {
+          $dura = 'NULL ';  
+        } 
+        else
+        {
+          $dura = floatval($exec_data['execution_duration']);
+        }  
       }  
 
-      $sql .= ',' .$dura . ")";
-
+      $sql .= ',' . $dura . ")";
 
       $db->exec_query($sql);    
       
@@ -201,6 +205,8 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
             if( isset($_FILES['uploadedFile']['name'][$step_id]) && 
                 !is_null($_FILES['uploadedFile']['name'][$step_id])) 
             {
+              $repOpt = array('allow_empty_title' => TRUE);
+
               // May be we have enabled MULTIPLE on file upload
               if( is_array($_FILES['uploadedFile']['name'][$step_id])) 
               {
@@ -220,7 +226,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
                     {
                       $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id][$moe];
                     }  
-                    $uploaded = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo);
+                    $uploaded = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo,$repOpt);
                   }
                 }  
               } 
@@ -597,7 +603,8 @@ function addIssue($dbHandler,$argsObj,$itsObj)
 
   $opt = new stdClass();
   $opt->reporter = $argsObj->user->login;
-  $p2check = array('issueType','issuePriority','issuePriority','artifactComponent');
+  $p2check = array('issueType','issuePriority','issuePriority',
+                   'artifactComponent','artifactVersion');
   foreach($p2check as $prop)
   {
     if(property_exists($argsObj, $prop) && !is_null($argsObj->$prop))

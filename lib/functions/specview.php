@@ -12,9 +12,6 @@
  * @internal revisions
  * @since 1.9.14
  *
- * 20141004 - franciscom -added *flat family of functions
- *
- * 
  **/ 
 
 /**
@@ -181,8 +178,18 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
     $pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
   }
   
-  
+  // transform in array to be gentle with getTestSpecFromNode()
+  $t2a = array('importance','status');
+  foreach($t2a as $tortuga)
+  {
+    if(!is_null($pfFilters[$tortuga]))
+    {
+      $pfFilters[$tortuga] = (array)$pfFilters[$tortuga];
+    }  
+  }  
+
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
+
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);
   $idx = 0;
   $a_tcid = array();
@@ -353,10 +360,11 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
   
 
   // $opx = array('addExecInfo' => true, 'specViewFields' => true) + (array)$options;
-  $opx = array_merge( array('addExecInfo' => true, 'specViewFields' => true),
+  $opx = array_merge( array('addExecInfo' => true, 'specViewFields' => true,
+                            'tlFeature' => 'none'),
                       (array)$options );
   
-  switch($options['tlFeature'])
+  switch($opx['tlFeature'])
   {
     case 'testCaseExecTaskAssignment':
       $method2call = 'getLinkedTCVXmen';
@@ -368,17 +376,16 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
     break;
   }
 
-  if(!is_null($argsObj->testcases_to_show))
+  if(isset($argsObj->testcases_to_show) && !is_null($argsObj->testcases_to_show))
   {
     $filters['tcase_id'] = $argsObj->testcases_to_show;
   }  
-  if($argsObj->platform_id > 0)
+
+  if(isset($argsObj->platform_id) && $argsObj->platform_id > 0)
   {
     $filters['platform_id'] = $argsObj->platform_id;
   }
-  //new dBug($argsObj->testcases_to_show);
-  //new dBug($filters);
-  //die();
+
   $tplan_tcases = $tplanMgr->$method2call($argsObj->tplan_id, $filters, $opx);  
   
   if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
@@ -545,13 +552,27 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     $useFilter[$key] = !is_null($filters[$key]);
     $applyFilters = $applyFilters || $useFilter[$key];
   }
+
+  // more specif analisys
+  if( ($useFilter['status']=($filters['status'][0] > 0)) )
+  {
+    $applyFilters = true;
+    $filtersByValue['status'] = array_flip((array)$filters['status']);
+  }
+  
+  if( ($useFilter['importance']=($filters['importance'][0] > 0)) )
+  {
+    $applyFilters = true;
+    $filtersByValue['importance'] = array_flip((array)$filters['importance']);
+  }  
+
+
   foreach($zeroNullCheckFilter as $key => $value)
   {
     // need to check for > 0, because for some items 0 has same meaning that null -> no filter
     $useFilter[$key] = (!is_null($filters[$key]) && ($filters[$key] > 0));
     $applyFilters = $applyFilters || $useFilter[$key];
   }
-  
 
   if( $useFilter['tcase_id'] )
   {
@@ -574,6 +595,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     }
     $tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
   }  
+
 
   if( $applyFilters )
   {
@@ -613,8 +635,14 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
       $options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
 
       $getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
+      $s2h = config_get('tplanDesign')->hideTestCaseWithStatusIn;
+      if( !is_null($s2h) )
+      {
+        $getFilters['status'] = array('not_in' => array_keys($s2h));   
+      }
+      
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
-
+      
       switch($specViewType)
       {
         case 'testPlanLinking':
@@ -647,9 +675,13 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 
             if( !is_null($item) )
             {
-              if( $useFilter['execution_type'] && ($item['execution_type'] != $filters['execution_type']) || 
-                  $useFilter['importance'] && ($item['importance'] != $filters['importance']) || 
-                  $useFilter['status'] && ($item['status'] != $filters['status']))
+              if( $useFilter['execution_type'] && 
+                    ($item['execution_type'] != $filters['execution_type']) || 
+                  $useFilter['importance'] && 
+                    (!isset($filtersByValue['importance'][$item['importance']])) || 
+                  $useFilter['status'] && 
+                    (!isset($filtersByValue['status'][$item['status']])) 
+                )
               {
                 $tspecKey = $itemSet[$targetTestCase];  
                 $test_spec[$tspecKey]=null; 
@@ -1000,6 +1032,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
     else
     {
       // This node is a Test Suite
+      $the_level = 0;
       if($parent_idx >= 0)
       { 
         $xdx=$out[$parent_idx]['testsuite']['id'];
@@ -1061,6 +1094,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
   $my['opt'] = array('useOptionalArrayFields' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
 
+  $tcStatus2exclude = config_get('tplanDesign')->hideTestCaseWithStatusIn;
   $optionalIntegerFields = array('feature_id','linked_by');
   $optionalArrayFields = array('user_id');
 
@@ -1086,7 +1120,8 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
     // Is not clear (need explanation) why we process in this part ONLY ACTIVE
     // also we need to explain !is_null($out[$parent_idx])
     //
-    if($testCase['active'] == 1 && !is_null($out[$parent_idx]) )
+    if($testCase['active'] == 1 && !isset($tcStatus2exclude[$testCase['status']]) && 
+       !is_null($out[$parent_idx]) )
     {       
       if( !isset($outRef['execution_order']) )
       {
@@ -1475,7 +1510,7 @@ function buildSkeletonFlat($branchRootID,$name,$config,&$test_spec,&$platforms)
           $nameAtLevel[$level] = $current['name'];
         }
 
-        // new dBug($nameAtLevel);
+  
         $whoiam = '';
         for($ldx=$out[$rootIDX]['level']; $ldx <= $level; $ldx++)
         {

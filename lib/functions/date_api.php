@@ -200,3 +200,52 @@ function create_range_option_list($p_value, $p_min, $p_max )
   }
   return $option_list;
 }
+
+/*
+ * @param string $ts timestamp
+ *                   YYYY-MM-DD HH:MM:SS
+ *                   YYYY-MM-DD HH:MM
+ *
+ * @link some help from stackoverflow
+ */
+function checkTimeStamp($ts)
+{
+  // Some MAGIC NUMBERS
+  $preg_str = array();
+  $preg_str[0] = "/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/";
+  $preg_str[1] = "/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/";
+
+  $value = trim($ts);
+  
+  // Check format not content
+  $status_ok =  false;
+  foreach($preg_str as $v)
+  {
+    $status_ok |= preg_match($v, $value);
+  } 
+  
+  if(!$status_ok)
+  {
+    // Bye!
+    throw new Exception("Invalid Timestamp format", 1);
+  } 
+
+  // Check content
+  if( $status_ok )
+  {
+    // Check Domain
+    $status_ok = (strtotime($value) !== FALSE);
+    if( $status_ok )
+    {
+      $yyyymmdd = explode(' ',$value);
+      $dp = explode('-',$yyyymmdd[0]);
+      $status_ok = checkdate($dp[1], $dp[2], $dp[0]);
+    }  
+
+    if( !$status_ok )
+    {
+      // Bye!
+      throw new Exception("Invalid Timestamp", 2);
+    }  
+  }  
+}

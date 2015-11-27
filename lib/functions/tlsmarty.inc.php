@@ -9,12 +9,12 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2014, TestLink community 
+ * @copyright 	2005-2015, TestLink community 
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  *
  */
 
@@ -328,12 +328,16 @@ class TLSmarty extends Smarty
     return $this->tlImages;
   }
 
+  /**
+   *
+   */
   static function getImageSet()
   {
     $dummy = array('active' => TL_THEME_IMG_DIR . 'flag_green.png',
                    'activity' => TL_THEME_IMG_DIR . 'information.png',
                    'account' => TL_THEME_IMG_DIR . 'user_edit.png',
                    'add' => TL_THEME_IMG_DIR . 'add.png',
+                   'add2set' => TL_THEME_IMG_DIR . 'basket_put.png',
                    'api_info' => TL_THEME_IMG_DIR . 'brick.png',
                    'bug' => TL_THEME_IMG_DIR . 'bug.png',
                    'bug_link_tl_to_bts' => TL_THEME_IMG_DIR . 'bug_link_famfamfam.png',
@@ -362,6 +366,7 @@ class TLSmarty extends Smarty
                    'duplicate' => TL_THEME_IMG_DIR . 'application_double.png',
                    'edit' => TL_THEME_IMG_DIR . 'icon_edit.png',
                    'edit_icon' => TL_THEME_IMG_DIR . 'edit_icon.png',
+                   'email' => TL_THEME_IMG_DIR . 'email.png',
                    'events' => TL_THEME_IMG_DIR . 'bell.png',
                    'eye' => TL_THEME_IMG_DIR . 'eye.png',
                    'vorsicht' => TL_THEME_IMG_DIR . 'exclamation.png',
@@ -378,6 +383,8 @@ class TLSmarty extends Smarty
                    'export_excel' => TL_THEME_IMG_DIR . 'page_excel.png',
                    'export_for_results_import' => TL_THEME_IMG_DIR . 'brick_go.png',
                    'ghost_item' => TL_THEME_IMG_DIR . 'ghost16x16.png',
+                   'user_group' => TL_THEME_IMG_DIR . 'group.png',
+                   'heads_up' => TL_THEME_IMG_DIR . 'lightbulb.png',
                    'history' => TL_THEME_IMG_DIR . 'history.png',
                    'history_small' => TL_THEME_IMG_DIR . 'history_small.png',
                    'home' => TL_THEME_IMG_DIR . 'application_home.png',

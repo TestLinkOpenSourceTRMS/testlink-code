@@ -9,12 +9,12 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.15
  **/
 
 /**
@@ -121,7 +121,7 @@ function checkServerLanguageSettings($defaultLanguage)
     }  
   }
 
-  return ($language);
+  return $language;
 }
 
 
@@ -147,8 +147,8 @@ function checkConfiguration()
  **/
 function checkInstallStatus()
 {
-    $status=defined('DB_TYPE') ? true : false;
-    return $status;
+  $status=defined('DB_TYPE') ? true : false;
+  return $status;
 }
 
 
@@ -164,7 +164,8 @@ function checkLibGd()
   {
     $arrLibConf = gd_info();
     $msg = lang_get("error_gd_png_support_disabled");
-    if ($arrLibConf["PNG Support"]){
+    if ($arrLibConf["PNG Support"])
+    {
       $msg = 'OK';
     }  
   }
@@ -410,42 +411,23 @@ function checkForRepositoryDir($the_dir)
   {
     $ret['msg'] .= lang_get('exists') . ' ';
     $ret['status_ok'] = true;
-
-    // There is a note on PHP manual that points that on windows
-    // is_writable() has problems => need a workaround
-    /** @TODO verify if it's valid for PHP5 */
-    // if( isMSWindowsServer() )
-    // {
-    //     $test_dir= $the_dir . '/requirements/';
-    //     if(!is_dir($test_dir))
-    //     {
-    //       // try to make the dir
-    //       $stat = @mkdir($test_dir);
-    //       $ret['status_ok']=$stat;
-    //     }
-    // }
-    // else
-    // {
-    //   $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
-    // }
-    // 20090713 - franciscom - tested on windows XP with PHP 5.2.9 seems OK
     $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
 
     if($ret['status_ok']) 
     {
-           $ret['msg'] .= lang_get('directory_is_writable');
-       }
-         else
-         {
-           $ret['msg'] .= lang_get('but_directory_is_not_writable');
-         }  
+      $ret['msg'] .= lang_get('directory_is_writable');
+    }
+    else
+    {
+      $ret['msg'] .= lang_get('but_directory_is_not_writable');
+    }  
   } 
   else
   {
     $ret['msg'] .= lang_get('does_not_exist');
   }
   
-  return($ret);
+  return $ret;
 }
 
 
@@ -499,6 +481,7 @@ function checkSchemaVersion(&$db)
     case 'DB 1.9.10':
     case 'DB 1.9.11':
     case 'DB 1.9.12':
+    case 'DB 1.9.13':
       $result['msg'] = $manualop_msg;
     break;
 
@@ -658,6 +641,10 @@ function checkPhpExtensions(&$errCounter)
                   'msg' => array('feedback' => 'JSON library', 'ok' => $td_ok, 
                                  'ko' => " not enabled. You MUST install it to use EXT-JS tree component. "));
   
+  $checks[]=array('extension' => 'curl',
+                  'msg' => array('feedback' => 'cURL library', 'ok' => $td_ok, 
+                                 'ko' => " not enabled. You MUST install it to use REST Integration with issue trackers. "));
+
   $out='';
   foreach($checks as $test)
   {
@@ -673,7 +660,7 @@ function checkPhpExtensions(&$errCounter)
     $out .= $msg;
   }
 
-  return ($out);
+  return $out;
 }  
 
 

@@ -98,7 +98,9 @@ class testcase extends tlObjectWithAttachments
 
     $this->cfg = new stdClass();
     $this->cfg->testcase = config_get('testcase_cfg');
-    $this->cfg->execution = config_get('exec_cfg');  // CORTADO
+    $this->cfg->execution = config_get('exec_cfg');
+    $this->cfg->cfield = config_get('custom_fields');
+
     $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
 
 
@@ -207,11 +209,27 @@ class testcase extends tlObjectWithAttachments
    */ 
   function createFromObject($item)
   {
+    static $wkfstatus;
 
+    if(is_null($wkfstatus))
+    {
+      $wkfstatus = config_get('testCaseStatus');
+    }  
     $options = array('check_duplicate_name' => self::CHECK_DUPLICATE_NAME, 
                      'action_on_duplicate_name' => 'block',
-                     'estimatedExecDuration' => $item->estimatedExecDuration,
-                     'status' => $item->status, 'importLogic' => null);
+                     'estimatedExecDuration' => 0,
+                     'status' => $wkfstatus['draft'], 'importLogic' => null);
+
+    if(property_exists($item, 'estimatedExecDuration'))
+    {
+      $options['estimatedExecDuration'] = floatval($item->estimatedExecDuration);
+    }  
+    
+    if(property_exists($item, 'status'))
+    {
+      $options['status'] = intval($item->status);
+    }  
+
 
     if(property_exists($item, 'importLogic'))
     {
@@ -285,6 +303,7 @@ class testcase extends tlObjectWithAttachments
       $ix->status = $my['options']['status'];
       $ix->estimatedExecDuration = $my['options']['estimatedExecDuration'];
 
+     
       $op = $this->createVersion($ix);
 
       if($ret['update_name'])
@@ -411,14 +430,6 @@ class testcase extends tlObjectWithAttachments
               // if name provided on import file does not hit an existent one
               // then I'm going to use it, instead of generating a NEW NAME
               $forceGenerateExternalID = true; 
-              /*
-              $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions); 
-              if( is_null($itemSet) )
-              {
-                $ret['name'] = $name;
-                $ret['update_name'] = true;
-              } 
-              */ 
             break;
           }
         break;    
@@ -433,6 +444,7 @@ class testcase extends tlObjectWithAttachments
       if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
       {
         $ret['has_duplicate'] = true;
+        
         switch($my['options']['action_on_duplicate_name'])
         {
             case 'block':
@@ -452,18 +464,30 @@ class testcase extends tlObjectWithAttachments
               switch($algo_cfg->type)
               {
                 case 'stringPrefix':
-                  $name = $algo_cfg->text . " " . $name ;
-                  $final_len = strlen($name);
-                  if( $final_len > $name_max_len)
+                  $doIt = true;
+                  while($doIt)
                   {
-                    $name = substr($name,0,$name_max_len);
+                    if( $doIt = !is_null($itemSet) )
+                    {
+                      $prefix = strftime($algo_cfg->text,time());
+                      $target = $prefix . " " . $name ;
+                      $final_len = strlen($target);
+                      if( $final_len > $name_max_len)
+                      {
+                        $target = substr($target,0,$name_max_len);
+                      }
+                      
+                      // Check new generated name
+                      $itemSet = $this->getDuplicatesByName($target,$parent_id,$getDupOptions);  
+                    }
                   }
+                  $name = $target;
                 break;
                     
                 case 'counterSuffix':
                   $mask =  !is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
-                  $nameSet = array_flip(array_keys($itemSet));
-                            
+                  $nameSet = array_flip(array_keys($itemSet));          
+                  
                   // 20110109 - franciscom
                   // does not understand why I've choosen time ago
                   // to increment $siblingQty before using it
@@ -584,8 +608,10 @@ class testcase extends tlObjectWithAttachments
   
     returns:
   
-    rev: 
- 
+    @internal revisions
+    @since 1.9.15 
+
+
   */
  private function createVersion($item)
  {
@@ -619,7 +645,14 @@ class testcase extends tlObjectWithAttachments
         $sqlValues .= "," . floatval($v);
       }
     }
-      
+    
+    if( property_exists($item,'is_open') && !is_null($item->is_open) )    
+    {
+      $v = intval($item->is_open) > 0 ? 1 : 0;
+      $sql .= ", is_open";
+      $sqlValues .= "," . $v;
+    }
+
     $sql .= " )" . $sqlValues . " )";
 
 
@@ -804,6 +837,12 @@ class testcase extends tlObjectWithAttachments
    */
   function show(&$smarty,$guiObj,$identity,$grants)
   {
+    static $cfg;
+
+    if(!$cfg)
+    {
+      $cfg = config_get('spec_cfg');
+    }  
 
     $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
@@ -843,9 +882,12 @@ class testcase extends tlObjectWithAttachments
       $cfPlaces = $this->buildCFLocationMap();
       $req_mgr = new requirement_mgr($this->db);
       $allReqs = $req_mgr->get_all_for_tcase($idSet);
-      $allTCKeywords = $this->getKeywords($idSet,null,'testcase_id',' ORDER BY keyword ASC ');
+
+      $gkOpt = array('accessKey' => 'testcase_id','orderBy' => 'ORDER BY keyword ASC ');
+      $allTCKeywords = $this->getKeywords($idSet,null,$gkOpt);
 
       $ovx = 0;
+      $gui->linked_versions = null;
       foreach($idSet as $key => $tc_id)
       {
         // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
@@ -864,7 +906,13 @@ class testcase extends tlObjectWithAttachments
 
         // status quo of execution and links of tc versions
         $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
-        $gui->linked_versions[] = $this->get_linked_versions($tc_id);
+        
+        if($cfg->show_tplan_usage)
+        {
+          $gui->linked_versions[] = $this->get_linked_versions($tc_id);
+        }  
+        
+
         $gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 
         $tc_current = $tc_array[0];
@@ -971,11 +1019,15 @@ class testcase extends tlObjectWithAttachments
   function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
                   $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
                   $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2,
-                  $attr=null)
+                  $attr=null,$opt=null)
   {
     $ret['status_ok'] = 1;
     $ret['msg'] = '';
     $ret['reason'] = '';
+
+    $my['opt'] = array('blockIfExecuted' => false);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
 
     $attrib = array('status' => null, 'estimatedExecDuration' => null);
     $attrib = array_merge($attrib,(array)$attr);
@@ -1008,6 +1060,21 @@ class testcase extends tlObjectWithAttachments
   
     if($ret['status_ok'])
     {    
+      if($my['opt']['blockIfExecuted'])
+      {
+        $sql = " SELECT id FROM {$this->tables['executions']} " .
+               " WHERE tcversion_id=" . $this->db->prepare_int($tcversion_id);
+      
+        $rs = $this->db->get_recordset($sql);
+        if(!is_null($rs))
+        {
+          $ret['status_ok'] = false;
+          $ret['msg'] = lang_get('block_ltcv_hasbeenexecuted');
+          $ret['reason'] = 'blockIfExecuted';
+          return $ret;
+        }  
+      }  
+
       $sql=array();
       $sql[] = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
                $this->db->prepare_string($name) . "' WHERE id= {$id}";
@@ -1656,6 +1723,7 @@ class testcase extends tlObjectWithAttachments
           $ix->version = $tcversion['version'];
           $ix->status = $tcversion['status'];
           $ix->estimatedExecDuration = $tcversion['estimated_exec_duration'];
+          $ix->is_open = $tcversion['is_open'];
 
           $op = $this->createVersion($ix);
 
@@ -1734,12 +1802,16 @@ class testcase extends tlObjectWithAttachments
             map:  id: node id of created tcversion
                   version: version number (i.e. 5)
                   msg
-  
-    rev : 20070701 - franciscom - added version key on return map.
+
+    @internal revisions
+    @since 1.9.15
+
   */
-  // BUGID 3431
   function create_new_version($id,$user_id,$source_version_id=null, $options=null)
   {
+    $opt = array('is_open' => 1);
+    $opt = array_merge($opt,(array)$options);
+
     $tcversion_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
   
     // get last version for this test case (need to get new version number)
@@ -1751,6 +1823,8 @@ class testcase extends tlObjectWithAttachments
     }
     $this->copy_tcversion($id,$from,$tcversion_id,$last_version_info['version']+1,$user_id);
   
+    $this->setIsOpen(null,$tcversion_id,$opt['is_open']);
+
     $ret['id'] = $tcversion_id;
     $ret['version'] = $last_version_info['version']+1;
     $ret['msg'] = 'ok';
@@ -2838,32 +2912,47 @@ class testcase extends tlObjectWithAttachments
     returns:
   
   */
-  function getKeywords($tcID,$kwID = null,$column = 'keyword_id',$orderByClause = null)
+  // function getKeywords($tcID,$kwID = null,$column = 'keyword_id',$orderByClause = null)
+  function getKeywords($tcID,$kwID = null,$opt = null)
   {
-    $sql = "SELECT keyword_id,keywords.keyword,keywords.notes,testcase_id
-            FROM {$this->tables['testcase_keywords']} testcase_keywords, {$this->tables['keywords']} keywords
-            WHERE keyword_id = keywords.id AND testcase_id ";
-    $bCumulative = 0;
+    $my['opt'] = array('accessKey' => 'keyword_id', 'fields' => null, 'orderBy' => null);
+   
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $f2g = is_null($my['opt']['fields']) ? 
+           ' keyword_id,keywords.keyword,keywords.notes,testcase_id ' : 
+           $my['opt']['fields']; 
+    
+    $sql = " SELECT {$f2g}  
+             FROM {$this->tables['testcase_keywords']} testcase_keywords
+             JOIN {$this->tables['keywords']} keywords 
+             ON keyword_id = keywords.id 
+             WHERE testcase_id ";
+    
+    $cumulative = 0;
     if (is_array($tcID))
     {
       $sql .= " IN (".implode(",",$tcID).")";
-      $bCumulative = 1;
+      $cumulative = 1;
     }
     else
     {
       $sql .=  "= {$tcID}";
     }
+    
     if (!is_null($kwID))
     {
-      $sql .= " AND keyword_id = {$kwID}";
+      $sql .= " AND keyword_id = " . intval($kwID);
     }
-    if (!is_null($orderByClause))
+
+    if (!is_null($my['opt']['orderBy']))
     {
-      $sql .= $orderByClause;
+      $sql .= $my['opt']['orderBy'];
     } 
-    $tcKeywords = $this->db->fetchRowsIntoMap($sql,$column,$bCumulative);
+
+    $items = $this->db->fetchRowsIntoMap($sql,$my['opt']['accessKey'],$cumulative);
   
-    return $tcKeywords;
+    return $items;
   }
   
   
@@ -3788,16 +3877,16 @@ class testcase extends tlObjectWithAttachments
    * @param array [tplan_id] list of test plan id to search.  
    *                         null => all test plans
    *
-   * @param object [options] options->mode='full_path'
+   * @param map [options] mode='full_path'
    *                         testcase name full path will be returned
    *                         Only available when acces_keys ='testplan_testcase'
    *                        
-   *                         options->access_keys
+   *                      access_keys
    *                         possible values: 'testplan_testcase','testcase_testplan'
    *                         changes access key in result map of maps.
    *                         if not defined or null -> 'testplan_testcase' 
    *               
-   * @param object [filters] 'tplan_status' => 'active','inactive','all'
+   * @param map [filters] 'tplan_status' => 'active','inactive','all'
    *                      
    *
    * @return map key: (test plan id or test case id depending on options->access_keys,
@@ -3812,19 +3901,21 @@ class testcase extends tlObjectWithAttachments
   function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null, $filters=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      
-        $my['filters'] = array( 'tplan_status' => 'all');
-      $my['filters'] = array_merge($my['filters'], (array)$filters);
+    
+    $my['opt'] = array('mode' => null, 'order_by' => '', 
+                       'access_keys' => 'testplan_testcase');  
+    $my['opt'] = array_merge($my['opt'],(array)$options);
 
-      // to load assignments for all users OR one given user
-      $user_sql = ($user_id != TL_USER_ANYBODY) ? " AND UA.user_id = {$user_id} " : "";
-      
-      $filters = "";
-      
-      $has_options=!is_null($options);
-      $access_key=array('testplan_id','testcase_id');
+    $my['filters'] = array( 'tplan_status' => 'all');
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-      $sql="/* $debugMsg */ SELECT TPROJ.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
+    // to load assignments for all users OR one given user
+    $user_sql = ($user_id != TL_USER_ANYBODY) ? " AND UA.user_id = {$user_id} " : "";
+      
+    $filters = "";
+    $access_key=array('testplan_id','testcase_id');
+
+    $sql="/* $debugMsg */ SELECT TPROJ.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
            " TCV.version,TCV.tc_external_id, NHTC.id AS testcase_id, NHTC.name, TPROJ.prefix, " .
            " UA.creation_ts ,UA.deadline_ts, UA.user_id as user_id, " . 
            " COALESCE(PLAT.name,'') AS platform_name, COALESCE(PLAT.id,0) AS platform_id, " .
@@ -3841,36 +3932,35 @@ class testcase extends tlObjectWithAttachments
            " JOIN {$this->tables['builds']} BUILDS ON  BUILDS.id = UA.build_id " .
            " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON  PLAT.id = TPTCV.platform_id " .
            " WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
-           //" AND UA.user_id = {$user_id} " .
            " {$user_sql} " .
            " AND TPROJ.id IN (" . implode(',', array($tproject_id)) .") " ;
       
-      if( !is_null($tplan_id) )
-      {
-          $filters .= " AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
-      }     
+    if( !is_null($tplan_id) )
+    {
+      $filters .= " AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
+    }     
       
-    // BUGID 3647
-      if (isset($my['filters']['build_id'])) {
+    if (isset($my['filters']['build_id'])) 
+    {
       $filters .= " AND UA.build_id = {$my['filters']['build_id']} ";
     }
       
-      switch($my['filters']['tplan_status'])
-      {
-        case 'all':
-        break;
+    switch($my['filters']['tplan_status'])
+    {
+      case 'all':
+      break;
         
-        case 'active':
-            $filters .= " AND TPLAN.active = 1 ";
-        break;
+      case 'active':
+        $filters .= " AND TPLAN.active = 1 ";
+      break;
         
-        case 'inactive':
-            $filters .= " AND TPLAN.active = 0 ";
-        break;
-      }
+      case 'inactive':
+        $filters .= " AND TPLAN.active = 0 ";
+      break;
+    }
 
-    // BUGID 3749
-    if(isset($my['filters']['build_status'])) {
+    if(isset($my['filters']['build_status'])) 
+    {
       switch($my['filters']['build_status'])
       {
         case 'open':
@@ -3881,86 +3971,90 @@ class testcase extends tlObjectWithAttachments
           $filters .= " AND BUILDS.is_open = 0 ";
         break;
   
-      case 'all':
-      default:
+        case 'all':
+        default:
         break;
       }
     }
 
-      $sql .= $filters;
+    $sql .= $filters;
       
-      if( $has_options && isset($options->access_keys) )
+    if( isset($my['opt']['access_keys']) )
+    {
+      switch($my['opt']['access_keys'])
       {
-          switch($options->access_keys)
-          {
-              case 'testplan_testcase':
-              break;
+        case 'testplan_testcase':
+        break;
               
-              case 'testcase_testplan':   
-                  $access_key=array('testcase_id','testplan_id');
-              break;
-          }
+        case 'testcase_testplan':   
+          $access_key=array('testcase_id','testplan_id');
+        break;
       }
-      
-      $rs=$this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1],database::CUMULATIVE);
-      if( $has_options && !is_null($rs))
+    }
+    
+    $sql .= $my['opt']['order_by'];
+ 
+    $rs = $this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1],database::CUMULATIVE);
+    
+    if( !is_null($rs) )
+    {
+      if( !is_null($my['opt']['mode']) )
       {
-          if( isset($options->mode) )
-          {
-              switch($options->mode)
+        switch($my['opt']['mode'])
+        {
+          case 'full_path':
+            if($my['opt']['access_keys'] == 'testplan_testcase')
+            { 
+              $tcaseSet=null;
+              $main_keys = array_keys($rs);
+              
+              foreach($main_keys as $maccess_key)
               {
-                  case 'full_path':
-                      if( !isset($options->access_keys) || 
-                          (is_null($options->access_keys) || $options->access_keys='testplan_testcase') )
-                      { 
-                          $tcaseSet=null;
-                          $main_keys = array_keys($rs);
-      foreach($main_keys as $maccess_key)
-      {
-        $sec_keys = array_keys($rs[$maccess_key]);
-        foreach($sec_keys as $saccess_key)
-        {
-          // is enough I process first element
-          $item = $rs[$maccess_key][$saccess_key][0];
-                                  if(!isset($tcaseSet[$item['testcase_id']]))
-                                  {
-                                      $tcaseSet[$item['testcase_id']]=$item['testcase_id'];  
-                                  }  
-        }
-      }
+                $sec_keys = array_keys($rs[$maccess_key]);
+                foreach($sec_keys as $saccess_key)
+                {
+                  // is enough I process first element
+                  $item = $rs[$maccess_key][$saccess_key][0];
+                  if(!isset($tcaseSet[$item['testcase_id']]))
+                  {
+                    $tcaseSet[$item['testcase_id']]=$item['testcase_id'];  
+                  }  
+                }
+              }
 
-                          $path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
+              $path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
 
-                          // Remove test project piece and convert to string
-                          $flat_path=null;
-                          foreach($path_info as $tcase_id => $pieces)
-                          {
-                              unset($pieces[0]);
-                              // 20100813 - asimon - deactivated last slash on path
-                              // to remove it from test suite name in "tc assigned to user" tables
-                              $flat_path[$tcase_id]=implode('/',$pieces);
-                          }
-                          $main_keys = array_keys($rs);
+              // Remove test project piece and convert to string
+              $flat_path=null;
+              foreach($path_info as $tcase_id => $pieces)
+              {
+                unset($pieces[0]);
+                // 20100813 - asimon - deactivated last slash on path
+                // to remove it from test suite name in "tc assigned to user" tables
+                $flat_path[$tcase_id]=implode('/',$pieces);
+              }
+              $main_keys = array_keys($rs);
 
-      foreach($main_keys as $idx)
-      {
-        $sec_keys = array_keys($rs[$idx]);
-        foreach($sec_keys as $jdx)
-        {
+              foreach($main_keys as $idx)
+              {
+                $sec_keys = array_keys($rs[$idx]);
+                foreach($sec_keys as $jdx)
+                {
                   $third_keys = array_keys($rs[$idx][$jdx]);
-          foreach($third_keys as $tdx)
-          {
-            $fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
-                                    $rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
+                  foreach($third_keys as $tdx)
+                  {
+                    $fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
+                    $rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
                   }
-        }
+                }
+              }
+            }
+          break;  
+        }  
       }
-                      }
-                  break;  
-              }  
-          }
-      }
-      return $rs;
+    }
+
+    return $rs;
   }
   
   
@@ -3975,7 +4069,6 @@ class testcase extends tlObjectWithAttachments
     returns: 1 -> everything ok.
              0 -> some error
     rev:
-        BUGID - 3849 -> not completely fixed -> BUGID 4204
   */
   function update_active_status($id,$tcversion_id,$active_status)
   {
@@ -4089,7 +4182,8 @@ class testcase extends tlObjectWithAttachments
     $viewerActions->move='no';
     $viewerActions->copy='no';
     $viewerActions->add2tplan='no';
-  
+    $viewerActions->freeze='no';
+
     switch ($mode) 
     {
       case 'editOnExec':
@@ -4438,12 +4532,12 @@ class testcase extends tlObjectWithAttachments
     if( !is_null($formatOptions) )
     {
       $label_css_style = isset($formatOptions['label_css_style']) ? 
-                     $formatOptions['label_css_style'] : $label_css_style;
+                         $formatOptions['label_css_style'] : $label_css_style;
       $value_css_style = isset($formatOptions['value_css_style']) ? 
-                     $formatOptions['value_css_style'] : $value_css_style;
+                         $formatOptions['value_css_style'] : $value_css_style;
 
-          $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
-          $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
+      $add_table = isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
+      $table_style = isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
     } 
     
     $cf_smarty = '';
@@ -4471,17 +4565,17 @@ class testcase extends tlObjectWithAttachments
                                                          $testplan_id,$tproject_id,$location);
       break;
     }   
-    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
       
     if(!is_null($cf_map))
     {
       foreach($cf_map as $cf_id => $cf_info)
       {
         // if user has assigned a value, then node_id is not null
-        if(isset($cf_info['node_id']) || $show_cf)
+        if(isset($cf_info['node_id']) || 
+           $this->cfg->cfield->show_custom_fields_without_value)
         {
           // true => do not create input in audit log
-          $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+          $label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
   
           $cf_smarty .= "<tr><td {$label_css_style}> " .  htmlspecialchars($label) . ":</td>" . 
                         "<td {$value_css_style}>" .
@@ -4490,7 +4584,7 @@ class testcase extends tlObjectWithAttachments
         }
       }
   
-      if((trim($cf_smarty) != "") && $add_table)
+      if( (trim($cf_smarty) != "") && $add_table)
       {
         $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
       }
@@ -4844,7 +4938,8 @@ class testcase extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = "/* $debugMsg */ " .
-           " SELECT NH_TCASE.id, NH_TCASE.name, TCV.version, TCV.tc_external_id, TCV.id AS tcversion_id " .
+           " SELECT NH_TCASE.id, NH_TCASE.name, TCV.version, TCV.tc_external_id, " .
+           " TCV.id AS tcversion_id, TCV.status " .
            " FROM {$this->tables['nodes_hierarchy']} NH_TCASE " .
            " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TCASE.id" .
            " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id ";
@@ -4860,10 +4955,10 @@ class testcase extends tlObjectWithAttachments
       } 
     }
     $where_clause .= " AND NH_TCASE .id = {$id} ";
-        $sql .= $where_clause;
-        $result = $this->db->get_recordset($sql);
-        return $result;
-    }
+    $sql .= $where_clause;
+    $result = $this->db->get_recordset($sql);
+    return $result;
+  }
 
 
 
@@ -5049,10 +5144,13 @@ class testcase extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $sql = array();
-      $whereClause = " WHERE id IN (" . implode(',',(array)$step_id) . ")";
+    $whereClause = " WHERE id IN (" . implode(',',(array)$step_id) . ")";
     
     $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']} {$whereClause} ";
-    $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} {$whereClause} ";
+    $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} " .
+                " {$whereClause} AND node_type_id = " . 
+                $this->node_types_descr_id['testcase_step'];
+
     foreach($sqlSet as $sql)
     {
       $this->db->exec_query($sql);
@@ -5919,18 +6017,7 @@ class testcase extends tlObjectWithAttachments
   function setExecutionType($tcversionID,$value)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    
     $execType = intval($value);
-    switch($execType)
-    {
-      case TESTCASE_EXECUTION_TYPE_MANUAL:
-      case TESTCASE_EXECUTION_TYPE_AUTO:
-      break;
-      
-      default:
-        $execType = TESTCASE_EXECUTION_TYPE_MANUAL;        
-      break;
-    }
     $sql = "/* $debugMsg */ " . 
            " UPDATE {$this->tables['tcversions']} " .
            " SET execution_type=" . $this->db->prepare_int($execType) .  
@@ -6374,9 +6461,9 @@ class testcase extends tlObjectWithAttachments
       // and logic used to refresh both frames when user call this
       // method to edit a test case while executing it.
       $goo->dialogName='tcview_dialog';
-      $goo->bodyOnLoad="dialog_onLoad($gui->dialogName)";
-      $goo->bodyOnUnload="dialog_onUnload($gui->dialogName)";
-      $goo->submitCode="return dialog_onSubmit($gui->dialogName)";
+      $goo->bodyOnLoad="dialog_onLoad($guiObj->dialogName)";
+      $goo->bodyOnUnload="dialog_onUnload($guiObj->dialogName)";
+      $goo->submitCode="return dialog_onSubmit($guiObj->dialogName)";
     }
 
     $dummy = getConfigAndLabels('testCaseStatus','code');
@@ -6384,6 +6471,11 @@ class testcase extends tlObjectWithAttachments
 
     $goo->can_do = $this->getShowViewerActions($goo->show_mode);
 
+    $key = 'testcase_freeze'; 
+    if(property_exists($grantsObj, $key))
+    {
+      $goo->can_do->freeze = $grantsObj->$key;
+    }  
 
     $path2root = $this->tree_manager->get_path($id);
     $goo->tproject_id = $path2root[0]['parent_id'];
@@ -7219,6 +7311,89 @@ class testcase extends tlObjectWithAttachments
 
     return $ly;                    
   }
+
+  /**
+   *
+   */
+  function setIntAttrForAllVersions($id,$attr,$value)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+//    $children =
+
+    $sql = " UPDATE {$this->tables['tcversions']} " .
+           " SET {$attr} = " . $this->db->prepare_int($value) . 
+           " WHERE id IN (" . 
+           "  SELECT NHTCV.id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+           "  WHERE NHTCV.parent_id = " . intval($id) . ")";
+    $this->db->exec_query($sql);
+  }
+
+
+
+  /**
+   *
+   */
+  function getTcSearchSkeleton($userInput=null)
+  {
+    $sk = new stdClass();
+
+    $sk->creation_date_from = null;
+    $sk->creation_date_to = null;
+    $sk->modification_date_from = null;
+    $sk->modification_date_to = null;
+    $sk->search_important_notice = '';
+    $sk->design_cf = '';
+    $sk->keywords = '';
+    $sk->filter_by['design_scope_custom_fields'] = false;
+    $sk->filter_by['keyword'] = false;
+    $sk->filter_by['requirement_doc_id'] = false;
+    $sk->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
+                                           LOW => lang_get('low_importance'));
+
+    $dummy = getConfigAndLabels('testCaseStatus','code');
+    $sk->domainTCStatus = array(0 => '') + $dummy['lbl'];
+    $sk->importance = null;
+    $sk->status = null;
+    $sk->tcversion = null;
+    $sk->tcasePrefix = '';
+    $sk->targetTestCase = '';
+  
+    $txtin = array("created_by","edited_by","jolly");   
+    $jollyKilled = array("summary","steps","expected_results","preconditions","name");
+    $txtin = array_merge($txtin, $jollyKilled);
+  
+    foreach($txtin as $key )
+    {
+      $sk->$key = !is_null($userInput) ? $userInput->$key : '';
+    }  
+
+    if(!is_null($userInput) && $userInput->jolly != '')
+    {
+      foreach($jollyKilled as $key)
+      {
+        $sk->$key = '';  
+      }  
+    }  
+
+    return $sk;
+  }
+
+  /**
+   *
+   *
+   */
+  function setIsOpen($id,$tcversion_id,$value)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
+    $bv = (intval($value) > 0) ? 1 : 0;
+    $sql =  " /* $debugMsg */ UPDATE {$this->tables['tcversions']} " .
+            " SET is_open = {$bv}" .
+            " WHERE id = " . intval($tcversion_id) ;
+
+    $this->db->exec_query($sql);
+  }
+
 
 
 }  

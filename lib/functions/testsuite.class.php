@@ -6,11 +6,11 @@
  * @filesource  testsuite.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  *
  */
 
@@ -267,9 +267,10 @@ class testsuite extends tlObjectWithAttachments
    * ATTENTION: may be in future this can be refactored, and written better. 
    *
    */
-  function delete($id)
+  function delete($unsafe_id)
   {
-    $tcase_mgr = New testcase($this->db);
+    $tcase_mgr = new testcase($this->db);
+    $id = intval($unsafe_id);
     $tsuite_info = $this->get_by_id($id);
   
     $testcases=$this->get_children_testcases($id);
@@ -289,7 +290,8 @@ class testsuite extends tlObjectWithAttachments
     $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
     $result = $this->db->exec_query($sql);
       
-    $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
+    $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
+           "WHERE id={$id} AND node_type_id=" . $this->my_node_type;
     $result = $this->db->exec_query($sql);
   }
   
@@ -367,15 +369,21 @@ class testsuite extends tlObjectWithAttachments
     rev :
   
   */
-  function get_by_id($id, $opt=null)
+  function get_by_id($id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $my['opt'] = array('orderByClause' => '','renderImageInline' => false);
+    $my['opt'] = array('orderByClause' => '','renderImageInline' => false,
+                       'fields' => null);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-    $sql = "/* $debugMsg */ SELECT TS.*, NH.name, NH.node_type_id, NH.node_order, NH.parent_id " .
-           "  FROM {$this->tables['testsuites']} TS, " .
-           " {$this->tables['nodes_hierarchy']} NH   WHERE TS.id = NH.id AND TS.id "; 
+    $f2g = is_null($my['opt']['fields']) ? 
+           'TS.*, NH.name, NH.node_type_id, NH.node_order, NH.parent_id' :
+           $my['opt']['fields'];
+
+    $sql = "/* $debugMsg */ SELECT {$f2g} " .
+           "  FROM {$this->tables['testsuites']} TS " .
+           "  JOIN {$this->tables['nodes_hierarchy']} NH ON TS.id = NH.id " .
+           "  WHERE TS.id "; 
 
     $sql .= is_array($id) ? " IN (" . implode(',',$id) . ")" : " = {$id} ";
     $sql .= $my['opt']['orderByClause'];

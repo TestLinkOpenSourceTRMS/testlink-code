@@ -9,7 +9,7 @@
  * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.14
  * 
  **/
 
@@ -56,7 +56,6 @@ class testproject extends tlObjectWithAttachments
     $this->object_table = $this->tables['testprojects'];
   }
 
-
 /**
  * Create a new Test project
  * 
@@ -75,7 +74,6 @@ class testproject extends tlObjectWithAttachments
  * @internal revisions
  * 
  */
-// function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 function create($item,$opt=null)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -132,23 +130,31 @@ function create($item,$opt=null)
                        $this->db->prepare_string($tcPrefix) . "','" .
                        $this->db->prepare_string($api_key) . "')";
   $result = $this->db->exec_query($sql);
-
-  $auditMsg = 'Test project: ' . $item->name; 
+  
+  $evt = new stdClass();
+  $evt->message = TLS("audit_testproject_created", $item->name); 
+  $evt->code = "CREATE";
+  $evt->source = $this->auditCfg->eventSource;
+  $evt->objectType = 'testprojects';
+ 
   if ($result)
   {
-    tLog($auditMsg . ' was succesfully created.', 'INFO');
-    
     // set project to session if not defined (the first project) or update the current
     if (!isset($_SESSION['testprojectID']) && $my['opt']['setSessionProject'])
     {
       $this->setSessionProject($id);
     }
+    $evt->logLevel = 'AUDIT';
   }
   else
   {
-    tLog($auditMsg . ' was not created.', 'INFO');
     $id = 0;
+    $evt->logLevel = 'ERROR';
   }
+  
+  $evt->objectID = $id;
+  // var_dump($evt);
+  logEvent($evt);
 
   return $id;
 }
@@ -528,8 +534,9 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
                      'format' => 'std', 'add_issuetracker' => false, 'add_reqmgrsystem' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
   
-
-  $my['filters'] = array('name' => null);
+  // key = field name
+  // value = array('op' => Domain ('=','like'), 'value' => the value)
+  $my['filters'] = array('name' => null, 'id' => null, 'prefix' => null);
   $my['filters'] = array_merge($my['filters'],(array)$filters);
 
                      
@@ -567,10 +574,12 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   {
     case 'id':
       $cols = ' TPROJ.id,NHTPROJ.name ';
+      $my['opt']['format'] = 'do not parse';
     break;
 
     case 'prefix':
       $cols = ' TPROJ.id,TPROJ.prefix,TPROJ.active,NHTPROJ.name ';
+      $my['opt']['format'] = 'do not parse';
     break;
 
     case 'full':
@@ -616,13 +625,36 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   {
     if(!is_null($fspec))
     {
-      $sql .= " AND NHTPROJ.$fname";
+      switch($fname)
+      {
+        case 'prefix':
+          $sql .= " AND TPROJ.$fname";
+          $sm = 'prepare_string';
+        break;
 
-      $safe = $this->db->prepare_string($fspec['value']);
+        case 'name':
+          $sql .= " AND NHTPROJ.$fname";
+          $sm = 'prepare_string';
+        break;
+
+        case 'id':
+          $sql .= " AND NHTPROJ.$fname";
+          $sm = 'prepare_int';
+        break;
+      }
+
+      $safe = $this->db->$sm($fspec['value']);
       switch($fspec['op'])
       {
         case '=':
-          $sql .= "='" . $safe ."'";
+          if($sm == 'prepare_string')
+          {
+            $sql .= "='" . $safe . "'";
+          }  
+          else
+          {
+            $sql .= "=" . $safe;
+          }  
         break;
 
         case 'like':
@@ -631,7 +663,8 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
       }
     }  
   }  
-
+  
+ 
   $sql .= str_replace('nodes_hierarchy','NHTPROJ',$my['opt']['order_by']);
   $parseOpt = false;
   $do_post_process = 0;
@@ -639,8 +672,6 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   {
     case 'array_of_map':
       $items = $this->db->get_recordset($sql); //,null,3,1);
-      //$itemsX = $this->db->db->PageExecute($sql, 3, 28);
-      // new dBug($itemsX);
       $parseOpt = true;
     break;
 
@@ -1108,7 +1139,9 @@ function setPublicStatus($id,$status)
     $kw->initialize($id,$testprojectID,$keyword,$notes);
     $result = $kw->writeToDB($this->db);
     if ($result >= tl::OK)
+    {  
       logAuditEvent(TLS("audit_keyword_saved",$keyword),"SAVE",$kw->dbID,"keywords");
+    }
     return $result;
   }
 
@@ -1146,19 +1179,35 @@ function setPublicStatus($id,$status)
    * @param int $id the keywordID
    * @return int returns 1 on success, 0 else
    *
-   * @todo should we now increment the tcversion also?
    **/
-  function deleteKeyword($id)
+  function deleteKeyword($id, $opt=null)
   {
     $result = tl::ERROR;
-    $keyword = $this->getKeyword($id);
-    if ($keyword)
+    $my['opt'] = array('checkBeforeDelete' => true, 'nameForAudit' => null,
+                       'context' => '');
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $doIt = !$my['opt']['checkBeforeDelete'];
+    $keyword = $my['opt']['nameForAudit'];
+    if($my['opt']['checkBeforeDelete'])
+    {
+      $kw = $this->getKeyword($id);
+      if( $doIt = !is_null($kw) )
+      {
+        $keyword = $kw->name;
+      }  
+    }  
+    
+    if($doIt)
     {
       $result = tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
     }
-    if ($result >= tl::OK)
+
+    if ($result >= tl::OK && $this->auditCfg->logEnabled)
     {
-      logAuditEvent(TLS("audit_keyword_deleted",$keyword->name),"DELETE",$id,"keywords");
+      logAuditEvent(TLS("audit_keyword_deleted",$keyword,$my['opt']['context']),
+                    "DELETE",$id,"keywords");
     }
     return $result;
   }
@@ -1166,15 +1215,26 @@ function setPublicStatus($id,$status)
   /**
    * delete Keywords
    */
-  function deleteKeywords($testproject_id)
+  function deleteKeywords($tproject_id,$tproject_name=null)
   {
     $result = tl::OK;
-    $kwIDs = $this->getKeywordIDsFor($testproject_id);
-    for($i = 0;$i < sizeof($kwIDs);$i++)
+
+    $itemSet = $this->getKeywordSet($tproject_id);
+    $kwIDs = array_keys($itemSet);
+
+    $opt = array('checkBeforeDelete' => false,
+                 'context' => $tproject_name);
+
+    $loop2do = sizeof($kwIDs);
+    for($idx = 0;$idx < $loop2do; $idx++)
     {
-      $resultKw = $this->deleteKeyword($kwIDs[$i]);
+      $opt['nameForAudit'] = $itemSet[$kwIDs[$idx]]['keyword'];
+
+      $resultKw = $this->deleteKeyword($kwIDs[$idx],$opt);
       if ($resultKw != tl::OK)
+      {  
         $result = $resultKw;
+      }  
     }
     return $result;
   }
@@ -1192,6 +1252,20 @@ function setPublicStatus($id,$status)
     $keywordIDs = $this->db->fetchColumnsIntoArray($query,'id');
     return $keywordIDs;
   }
+
+  /**
+   * 
+   *
+   */
+  protected function getKeywordSet($tproject_id)
+  {
+    $sql = " SELECT id,keyword FROM {$this->tables['keywords']}  " .
+           " WHERE testproject_id = {$tproject_id}" .
+           " ORDER BY keyword ASC";
+    $items = $this->db->fetchRowsIntoMap($sql,'id');
+    return $items;
+  }
+
 
   /**
    * 
@@ -1264,7 +1338,9 @@ function setPublicStatus($id,$status)
         if ($kw->readFromCSV(implode($delim,$data)) >= tl::OK)
         {
           if ($kw->writeToDB($this->db) >= tl::OK)
+          {  
             logAuditEvent(TLS("audit_keyword_created",$kw->name),"CREATE",$kw->dbID,"keywords");
+          }
         }
       }
       fclose($handle);
@@ -1808,6 +1884,19 @@ function setPublicStatus($id,$status)
     $error = '';
     $reqspec_mgr = new requirement_spec_mgr($this->db);
     
+    // get some info for audit
+    $info['name'] = '';
+    if($this->auditCfg->logEnabled)
+    {
+      $info = $this->tree_manager->get_node_hierarchy_info($id);
+      $event = new stdClass();
+      $event->message = TLS("audit_testproject_deleted",$info['name']);
+      $event->objectID = $id;
+      $event->objectType = 'testprojects';
+      $event->source = $this->auditCfg->eventSource;
+      $event->logLevel = 'AUDIT';
+      $event->code = 'DELETE';
+    }  
 
     //    
     // Notes on delete related to Foreing Keys
@@ -1831,7 +1920,7 @@ function setPublicStatus($id,$status)
     // inventory
     //
     // testproject
-    $this->deleteKeywords($id);
+    $this->deleteKeywords($id,$info['name']);
     $this->deleteAttachments($id);
     
     $reqSpecSet=$reqspec_mgr->get_all_id_in_testproject($id);
@@ -1932,8 +2021,17 @@ function setPublicStatus($id,$status)
     {
       // Delete test project with requirements defined crashed with memory exhausted
       $this->tree_manager->delete_subtree_objects($id,$id,'',array('testcase' => 'exclude_tcversion_nodes'));
-      $sql = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
+      $sql = "/* $debugMsg */ " .
+             " DELETE FROM {$this->tables['nodes_hierarchy']} " .
+             " WHERE id = {$id} AND node_type_id=" .
+             $this->tree_manager->node_descr_id['testproject'];
+
       $this->db->exec_query($sql);
+
+      if($this->auditCfg->logEnabled)
+      {
+        logEvent($event);
+      }  
     }
     
     if( !empty($error) )
@@ -2474,6 +2572,46 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
   if( $my['options']['copy_requirements'] )
   {
     $oldNewMappings['requirements'] = $this->copy_requirements($id,$new_id,$user_id);
+  
+    // need to copy relations between requirements
+    $rel = null;
+    foreach ($oldNewMappings['requirements'] as $okey => $nkey) 
+    {
+      $sql = "/* $debugMsg */ SELECT id, source_id, destination_id," .
+             " relation_type, author_id, creation_ts " . 
+             " FROM {$this->tables['req_relations']} " .
+             " WHERE source_id=$okey OR destination_id=$okey ";
+
+      $rel[$okey] = $this->db->get_recordset($sql);
+    }
+
+    if(!is_null($rel))
+    {
+      $totti = $this->db->db_now();
+      foreach($rel as $okey => $ir)
+      {
+        if(!is_null($ir))
+        {
+          foreach ($ir as $rval) 
+          {
+            if( isset($done[$rval['id']]) )
+            {
+              continue;
+            }  
+            
+            $done[$rval['id']] = $rval['id']; 
+            $sql = "/* $debugMsg */ INSERT INTO {$this->tables['req_relations']} "  . 
+                   " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+                   " values (" .
+                   $oldNewMappings['requirements'][$rval['source_id']] . "," .
+                   $oldNewMappings['requirements'][$rval['destination_id']] . "," .
+                   $rval['relation_type'] . "," . $rval['author_id'] . "," .
+                   "$totti)";
+            $this->db->exec_query($sql);
+          }
+        }  
+      }  
+    }
   }
 
   // need to get subtree and create a new one
@@ -2710,14 +2848,16 @@ private function copy_requirements($source_id,$target_id,$user_id)
     // Because due to order used to copy different items, when we ask to copy
     // requirements WE DO NOT HAVE TEST CASES on new test project.
     //
-    $options = array('copy_also' => array('testcase_assignments' => false), 'caller' => 'copy_testproject');
+    $options = array('copy_also' => array('testcase_assignments' => false), 
+                     'caller' => 'copy_testproject');
+    
+    $rel = null;
     foreach($elements as $piece)
     {
       $op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
       $mappings += $op['mappings'];
     }
   }
-  
   return (!is_null($mappings) && isset($mappings['req'])) ? $mappings['req'] : null;
 }
 
@@ -2811,6 +2951,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
   static $tcversionFilter;
   static $childFilterOn;
   static $staticSql;
+  static $inClause;
 
   if (!$my)
   {
@@ -2866,6 +3007,21 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
     $staticSql = " SELECT DISTINCT {$tfields} " .
                  " FROM {$this->tables['nodes_hierarchy']} NH ";
     
+    // Generate IN Clauses
+    $inClause['status'] = $inClause['importance'] = ' ';
+    if( $tcversionFilter['status'] )
+    {
+      $inClause['status'] = 
+        " TCV.status IN (" . implode(',',$my['filters']['status']) . ')';
+    }
+
+    if( $tcversionFilter['importance'] )
+    {
+      $inClause['importance'] = 
+        " TCV.importance IN (" . implode(',',$my['filters']['importance']) . ')';
+    }
+
+
   }
   $sql =  $staticSql . " WHERE NH.parent_id = {$node_id} " .
           " AND (" .
@@ -2942,7 +3098,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
            
       if( $tcversionFilter['importance'] )
       {
-        $ssx .= " TCV.importance = " . $my['filters']['importance'];
+        $ssx .= $inClause['importance'];
         $filterOnTC = true;
         $addAnd = true;
       }
@@ -2966,7 +3122,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
             
       if( $tcversionFilter['status'] )
       {
-        $ssx .= " TCV.status = " . $my['filters']['status'];
+        $ssx .= $inClause['status'];
         $filterOnTC = true;
         $addAnd = true;
       }  

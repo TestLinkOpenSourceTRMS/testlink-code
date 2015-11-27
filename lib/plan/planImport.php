@@ -201,7 +201,9 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
                               'platform_not_on_tproject' => null, 'platform_linked' => null,
                               'platform_not_linked' => null, 'tcase_doesnot_exist' => null,
                               'tcversion_doesnot_exist' => null, 'not_imported' => null,
-                              'link_to_tplan_feedback' => null, 'link_to_platform' => null ));
+                              'link_to_tplan_feedback' => null, 'link_to_platform' => null,
+                              'tcversion_status_forbidden' => null,
+                              'cant_link_to_tplan_feedback' => null));
 
   // Double Check
   // Check if Test Plan Parent (Test Project) has testcases, if not abort
@@ -260,6 +262,8 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
       $loops2do = count($xmlLinks);
 
       // new dBug($platformSet);
+      $tplanDesignCfg = config_get('tplanDesign');
+      
       for($idx = 0; $idx < $loops2do; $idx++)
       {
         // if Target Test Plan has platforms and importing file NO => Fatal Error
@@ -281,28 +285,28 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
         if($targetHasPlatforms)
         {
           // each link need to have platform or will not be imported
-            if( $linkWithPlatform && isset($platformSet[$targetName]))
-            {
+          if( $linkWithPlatform && isset($platformSet[$targetName]))
+          {
             $platformID = $platformSet[$targetName]['id'];
             $status_ok = true;
             $dummy_msg = null;
+          }
+          else
+          {
+            $import_status = $labels['not_imported'];
+            if( !$platformElementExists )
+            {
+              $dummy_msg = sprintf($labels['link_without_platform_element'],$idx+1);        
+            }
+            else if(!$linkWithPlatform)
+            {
+              $dummy_msg = sprintf($labels['link_without_required_platform'],$idx+1);       
             }
             else
             {
-              $import_status = $labels['not_imported'];
-              if( !$platformElementExists )
-              {
-              $dummy_msg = sprintf($labels['link_without_platform_element'],$idx+1);        
-              }
-              else if(!$linkWithPlatform)
-              {
-              $dummy_msg = sprintf($labels['link_without_required_platform'],$idx+1);       
-              }
-              else
-              {
-                $dummy_msg = sprintf($labels['platform_not_linked'],$idx+1,$targetName,$contextObj->tplan_name);
-              }
-            } 
+              $dummy_msg = sprintf($labels['platform_not_linked'],$idx+1,$targetName,$contextObj->tplan_name);
+            }
+          } 
         }
         else
         {
@@ -338,7 +342,8 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
           if( isset($tcaseSet[$externalID] ) )
           {
             // now need to check if requested version exists
-            $dummy = $tcaseMgr->get_basic_info($tcaseSet[$externalID],array('number' => $version));
+            $dummy = $tcaseMgr->get_basic_info($tcaseSet[$externalID],
+                                               array('number' => $version));
 
             if( count($dummy) > 0 )
             {
@@ -349,15 +354,26 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
               $lvFilters = array('tplan_id' => $contextObj->tplan_id);
               $linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],$lvFilters);
               $updateLink = false;
-              $doUpdateFeedBack = true;  // TICKET 5189: Import a test plan does not import test cases execution order
-              // new dBug($linkedVersions);   
+              $doUpdateFeedBack = true;  
+              
               if( !($createLink = is_null($linkedVersions)) )
               {
                 // Now need to understand if is already linked with this signature.
                 if( !isset($linkedVersions[$dummy[0]['tcversion_id']]) )
                 {
-                  //echo 'CREATE';
-                  $createLink = true;
+                  // need to check if tc version status allows link to test plan
+                  $createLink = !isset($tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']]);
+                  if($createLink == FALSE)
+                  {
+                    // see const.inc.php
+                    $rogue = 'testCaseStatus_' . 
+                             $tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']];
+                  
+                    $dummy_msg = sprintf($labels['cant_link_to_tplan_feedback'], $externalID, $version);
+                                        
+                    $msg[] = array($dummy_msg,
+                                   sprintf($labels['tcversion_status_forbidden'],lang_get($rogue)));
+                  }  
                 }
                 else
                 {
@@ -366,6 +382,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
                   $updateLink = false;
                   $plat_keys = array_keys($linkedVersions[$dummy[0]['tcversion_id']][$contextObj->tplan_id]);
                   $plat_keys = array_flip($plat_keys);
+
                   if( isset($plat_keys[$platformID]) )
                   {
                     $updateLink = true;
@@ -381,10 +398,26 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
                   }
                 }
               }
+
+
               if( $createLink )
               {
-                // Create link
-                // function link_tcversions($id,&$items_to_link,$userId)
+                $createLink = !isset($tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']]);
+                if($createLink == FALSE)
+                {
+                  // see const.inc.php
+                  $rogue = 'testCaseStatus_' . 
+                           $tplanDesignCfg->hideTestCaseWithStatusIn[$dummy[0]['status']];
+                
+                  $dummy_msg = sprintf($labels['cant_link_to_tplan_feedback'], $externalID, $version);
+                                        
+                  $msg[] = array($dummy_msg,
+                                 sprintf($labels['tcversion_status_forbidden'],lang_get($rogue)));
+                }  
+              }
+
+              if( $createLink )
+              {
                 $item2link['items'] = array($dummy[0]['id'] => array($platformID => $dummy[0]['tcversion_id']));
                 $item2link['tcversion'] = array($dummy[0]['id'] => $dummy[0]['tcversion_id']);
                 $tplanMgr->link_tcversions($contextObj->tplan_id,$item2link,$contextObj->userID);

@@ -15,7 +15,10 @@ require_once("../../config.inc.php");
 require_once("../../cfg/reports.cfg.php"); 
 require_once("print.inc.php"); 
 require_once("common.php");
-testlinkInitPage($db);
+
+// This way can be called without _SESSION, this is useful for accessing
+// from external systems without login
+testlinkInitPage($db,false,true);
 $templateCfg = templateConfiguration();
 
 $tree_mgr = new tree($db);

@@ -27,7 +27,8 @@
  * http://<testlink_home>/linkto.php?tprojectPrefix=KAOS&item=testcase&id=KAOS-4&anchor=importantpart
  * 
  * Specials:
- * - tree for requirement specification or test specification are expanded to the level of the item you created the link to
+ * - tree for requirement specification or test specification 
+ *   are expanded to the level of the item you created the link to
  * - if a user has no right to view item he is redirected to main page
  * - if item does not exist an errormessage shows
  * 
@@ -68,58 +69,33 @@ if (!isset($_GET['load']))
   // Because we are going to recreate an URL with paramenters on the URL, we need 
   // to use urlencode() on data we have got.
   //
+
   $args = init_args();
-  $tproject_id = 0;
+  $args->tproject_id = 0;
   if( $args->status_ok )
   {
-    $tproject_mgr = new testproject($db);
-    $item_info = $tproject_mgr->get_by_prefix($args->tprojectPrefix);
-    if(($op['status_ok'] = !is_null($item_info)))
+    $user = $_SESSION['currentUser'];
+    if($args->tprojectPrefix != '')
     {
-      $user = $_SESSION['currentUser'];
-  
-      $tproject_id = intval($item_info['id']);
-
-
-      switch($args->item)
+      $hasRight = checkTestProject($db,$user,$args);
+      if( $hasRight )
       {
-        case 'testcase':
-        case 'testsuite':
-          $hasRight = $user->hasRight($db,'mgt_view_tc',$tproject_id);
-        break;
-
-        case 'req':
-        case 'reqspec':
-          $hasRight = $user->hasRight($db,'mgt_view_req',$tproject_id);
-        break;
-
-        default:
-          // need to fail!!
-        break;
-
-      }
-    }
-
+        $gui = new stdClass();
+        $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
+        if( $args->tproject_id > 0)
+        {
+          $gui->titleframe .= '&testproject=' . $args->tproject_id;
+        } 
+        $gui->title = lang_get('main_page_title');
+        $gui->mainframe = 'linkto.php?' . buildLink($args);
+        $smarty->assign('gui', $gui);
+        $smarty->display('main.tpl');
+      }  
+    }   
   }  
-
-  if( $hasRight )
-  {
-    $gui = new stdClass();
-    $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
-    if( $tproject_id > 0)
-    {
-      $gui->titleframe .= '&testproject=' . $tproject_id;
-    } 
-    $gui->title = lang_get('main_page_title');
-    $gui->mainframe = 'linkto.php?' . buildLink($args);
-    $smarty->assign('gui', $gui);
-    $smarty->display('main.tpl');
-  }  
-  
 } 
 else 
 {
-
   // 
   // inner frame, parameters passed
   // figure out what to display 
@@ -195,6 +171,40 @@ else
 }
 ob_end_flush();
 
+
+/**
+ *
+ *
+ */
+function checkTestProject(&$db,&$user,&$args)
+{
+  $hasRight = false;
+  $tproject_mgr = new testproject($db);
+  $item_info = $tproject_mgr->get_by_prefix($args->tprojectPrefix);
+
+  if(($op['status_ok'] = !is_null($item_info)))
+  {
+    $args->tproject_id = intval($item_info['id']);
+    switch($args->item)
+    {
+      case 'testcase':
+      case 'testsuite':
+        $hasRight = $user->hasRight($db,'mgt_view_tc',$args->tproject_id);
+      break;
+
+      case 'req':
+      case 'reqspec':
+        $hasRight = $user->hasRight($db,'mgt_view_req',$args->tproject_id);
+      break;
+
+      default:
+        // need to fail!!
+      break;
+
+    }
+  }
+  return $hasRight;
+}  
 
 
 /**

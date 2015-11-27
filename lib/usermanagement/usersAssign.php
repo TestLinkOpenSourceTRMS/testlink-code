@@ -42,6 +42,7 @@ $target = new stdClass();
 $target->testprojectID = null;
 $target->testplanID = null;
 
+
 switch($args->featureType)
 {
     case "testproject":
@@ -126,6 +127,8 @@ else
 
 }
 
+$gui->hintImg = '<img src="' . $imgSet['heads_up'] . '" title="' . 
+                lang_get('system_design_blocks_global_admin_change') . '" >';
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

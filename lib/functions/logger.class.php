@@ -15,13 +15,13 @@
  *
  * @package     TestLink
  * @author      Andreas Morsing
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @filesource  logger.class.php
  * @link        http://www.testlink.org
  * @since       1.8
  * 
  * @internal revisions
- *
+ * @since 1.9.14
  **/
  
 /**
@@ -88,7 +88,7 @@ class tlLogger extends tlObject
   public function __construct(&$db)
   {
     parent::__construct();
-
+    
     $this->loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
     foreach($this->loggerTypeClass as $id => $className)
     {
@@ -180,20 +180,6 @@ class tlLogger extends tlObject
         }
         $ret[$type] = $human;
       }
-      
-      //foreach(self::$logLevels as $code => $verbose)
-      //{
-      //  if($this->logLevelFilter & $code)
-      //  {
-      //    $human[$code] = $verbose; 
-      //  }    
-      //}
-            //
-      //if( !is_null($human) )
-      //{
-      //  asort($human);
-      //}
-      //return $human;
     }     
     return $ret;
   }
@@ -324,6 +310,7 @@ class tlLogger extends tlObject
       $c = __CLASS__;
       self::$s_instance = new $c($db);
     }
+
     return self::$s_instance;
   }
 
@@ -346,7 +333,7 @@ class tlLogger extends tlObject
     {
       $entryPoint = $_SERVER['SCRIPT_NAME'];
     }
-    
+
     if(strlen($entryPoint) > self::ENTRYPOINT_MAX_LEN)
     {
       // Important information is at end of string
@@ -390,6 +377,14 @@ class tlLogger extends tlObject
     
     $this->transactions[$name]->close();
     unset($this->transactions[$name]);
+  }
+
+  /**
+   *
+   */
+  function setDB(&$db)
+  {
+    $this->loggers['db']->setDB($db);
   }
 
 }
@@ -678,6 +673,8 @@ class tlEventManager extends tlObjectWithDB
   
   function deleteEventsFor($logLevels = null,$startTime = null)
   {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
     $clauses = null;
     if (!is_null($logLevels))
     {
@@ -711,9 +708,16 @@ class tlEventManager extends tlObjectWithDB
     // Solution was found on:
     // http://stackoverflow.com/questions/4471277/mysql-delete-from-with-subquery-as-condition
     //
-    $subsql = " SELECT id FROM ( SELECT id FROM {$this->tables['transactions']} t " .
-              " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0) XX";
-    $query = " DELETE FROM {$this->tables['transactions']} WHERE id IN ( {$subsql} )";
+    // $subsql = " SELECT id FROM ( SELECT id FROM {$this->tables['transactions']} t " .
+    //          " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0) XX";
+    // $query = " DELETE FROM {$this->tables['transactions']} WHERE id IN ( {$subsql} )";
+    //
+    // 201501114 - help by TurboP
+    $query = "/* $debugMsg */ " . 
+             " DELETE T FROM {$this->tables['transactions']} T " .
+             " WHERE NOT EXISTS " .
+             " (SELECT EV.id FROM {$this->tables['events']} EV " .
+             "  WHERE EV.transaction_id = T.id) ";
     $this->db->exec_query($query);  
   }
 }
@@ -1008,10 +1012,10 @@ class tlDBLogger extends tlObjectWithDB
     $this->logLevelFilter = $filter;
   }
 
-
   public function checkDBConnection()
   {
-    //check if the DB connection is still valid before writing log entries and try to reattach
+    // check if the DB connection is still valid before 
+    // writing log entries and try to reattach
     if (!$this->db)
     {
       global $db;
@@ -1388,6 +1392,7 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
         ($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
         ($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
         ($errno == E_NOTICE && strpos($errfile,"Config_File.class.php") !== false) ||
+        ($errno == E_WARNING && strpos($errfile,"smarty_internal_write_file.php") !== false) ||
         (strpos($errfile,"Smarty_Compiler.class.php") !== false)
       )
     {

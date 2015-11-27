@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2014, TestLink community
+ * @copyright   2005-2015, TestLink community
  * @link        http://www.testlink.org
  *
  * @internal revisions
@@ -60,6 +60,7 @@ $tlCfg->diffEngine = new stdClass();
 $tlCfg->tplanDesign = new stdClass();
 
 $tlCfg->notifications = new stdClass();
+$tlCfg->proxy = new stdClass();
 
 
 
@@ -316,6 +317,9 @@ $tlCfg->authentication['method'] = 'DB';
 //	                              'capital' => true, 'symbol' => true);
 $tlCfg->passwordChecks = null;
 
+// Applies ONLY to the HTML input.
+// If auth method is DB, password will be stored as MD5 HASH that requires 32 chars (128 bits)
+$tlCfg->loginPagePasswordMaxLenght = 40;
 
 /**
  * Single Sign On authentication
@@ -445,10 +449,17 @@ $tlCfg->login_info = ''; // Empty by default
 $tlCfg->gui->projectView = new stdClass();
 $tlCfg->gui->projectView->pagination = new stdClass();
 $tlCfg->gui->projectView->pagination->enabled = true;
+$tlCfg->gui->projectView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 
 $tlCfg->gui->usersAssign = new stdClass();
 $tlCfg->gui->usersAssign->pagination = new stdClass();
 $tlCfg->gui->usersAssign->pagination->enabled = true;
+$tlCfg->gui->usersAssign->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
+
+$tlCfg->gui->planView = new stdClass();
+$tlCfg->gui->planView->pagination = new stdClass();
+$tlCfg->gui->planView->pagination->enabled = true;
+$tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 
 
 /** 
@@ -722,7 +733,9 @@ $tlCfg->document_generator->css_template = 'css/tl_documents.css';
 $tlCfg->document_generator->requirement_css_template = 'css/tl_documents.css';
 
 /** Misc settings */
-// Display test case version when creating test spec document
+// Display test case version when creating:
+// - test spec document
+// - test reports
 $tlCfg->document_generator->tc_version_enabled = FALSE;
 
 
@@ -829,6 +842,14 @@ $tlCfg->exec_cfg->exec_mode->tester='assigned_to_me';
 //           same context => test plan,platform, build
 $tlCfg->exec_cfg->exec_mode->new_exec='clean';
 
+
+// @since 1.9.15
+// Before 1.9.15 save & move to next worked JUST inside
+// a test suite => save_and_move = 'limited'
+// 1.9.15 will move on whole test project
+// save_and_move = 'unlimited'
+$tlCfg->exec_cfg->exec_mode->save_and_move='unlimited';
+
 /** User filter in Test Execution navigator - default value */
 // logged_user -> combo will be set to logged user
 // none        -> no filter applied by default
@@ -844,6 +865,10 @@ $tlCfg->exec_cfg->steps_results_layout = 'horizontal';
 // false => pre 1.9.10 behaviour
 // 
 $tlCfg->exec_cfg->steps_exec = true;
+
+// this setting will work on AND mode with: 
+// $tlCfg->exec_cfg->steps_exec
+$tlCfg->exec_cfg->steps_exec_attachments = true;
 
 // When textarea is displayed to allow user to write execution notes
 // at step level, choose what to display:
@@ -880,6 +905,13 @@ $tlCfg->exec_cfg->copyLatestExecIssues->default = FALSE;
 // 'execution_id,bug_id,builds.name'
 // (see exec.inc.php, function get_bugs_for_exec())
 $tlCfg->exec_cfg->bugs_order_clause = ' ORDER BY builds.name,bug_id ';
+
+$tlCfg->exec_cfg->features = new stdClass();
+$tlCfg->exec_cfg->features->attachments = new stdClass();
+$tlCfg->exec_cfg->features->attachments->enabled = true;
+$tlCfg->exec_cfg->features->exec_duration = new stdClass();
+$tlCfg->exec_cfg->features->exec_duration->enabled = true;
+
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
@@ -919,7 +951,8 @@ $tlCfg->testcase_cfg->duplicated_name_algorithm = new stdClass();
 //                    example: My Test Title 2
 //                    duplicated_name_algorithm->text is used as sprintf format mask
 $tlCfg->testcase_cfg->duplicated_name_algorithm->type = 'stringPrefix';
-$tlCfg->testcase_cfg->duplicated_name_algorithm->text = strftime("%Y%m%d-%H:%M:%S", time());
+$tlCfg->testcase_cfg->duplicated_name_algorithm->text = "%Y%m%d-%H:%M:%S";
+
 // $tlCfg->testcase_cfg->duplicated_name_algorithm->type = 'counterSuffix';
 // $tlCfg->testcase_cfg->duplicated_name_algorithm->text = " (%s)";
 
@@ -1599,6 +1632,16 @@ $g_tpl = array();
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',
 //                 'tcSearchView' => 'myOwnTCSearchView.tpl',
 //                 'tcEdit' => 'tcEdit_ultraCool.tpl');
+
+// ----------------------------------------------------------------------------
+/* [PROXY] */
+/* Used only */ 
+/* mantissoapInterface.class.php */
+/* jirasoapInterface.class.php */
+$tlCfg->proxy->host = null;
+$tlCfg->proxy->port = null;
+$tlCfg->proxy->login = null;
+$tlCfg->proxy->password = null;
 
 
 

@@ -166,10 +166,20 @@ function check_action_precondition(container_id,action,msg)
         </select>
         </span>
       {/if}
+
+      {if $gui->cf != ''}
+        <p>
+        <div id="cfields_design_time" class="custom_field_container">        
+        {$gui->cf}
+        </div>
+      {/if}
+
       <p>
       <input type="submit" name="doBulkSet" id="doBulkSet" value="{$labels.btn_save}"
              onclick="return check_action_precondition('move_copy_checkboxes','doBulkSet','{$check_msg}');"  />      
     </div>
+
+
 
     {else}
 		<div>

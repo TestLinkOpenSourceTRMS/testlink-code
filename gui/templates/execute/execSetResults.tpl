@@ -4,7 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
 @internal revisions
-@since 1.9.11
+@since 1.9.15
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -20,7 +20,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get 
   var='labels'
-  s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
+  s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
@@ -38,7 +38,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,bug_summary,bug_description,
   bug_link_tl_to_bts,bug_create_into_bts,execution_duration,execution_duration_short,
   issueType,issuePriority,artifactVersion,artifactComponent,
-  add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback'}
+  add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback,create_issue_feedback'}
 
 
 
@@ -178,6 +178,19 @@ Ext.onReady(function() {
 		panel_init_functions[i]();
 	}
 });
+
+/**
+ * Be Carefull this TRUST on existence of $gui->delAttachmentURL
+ */
+function jsCallDeleteFile(btn, text, o_id)
+{ 
+  if( btn == 'yes' )
+  {
+    var windowCfg="width=510,height=150,resizable=yes,dependent=yes";
+    window.open(fRoot+"lib/attachments/attachmentdelete.php?id="+o_id,
+                "Delete",windowCfg);
+  }
+}        
 </script>
 
 
@@ -248,6 +261,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
     <div class="groupBtn">
       <input type="hidden" id="history_on" name="history_on" value="{$gui->history_on}" />
+      
+      {$tlImages.toggle_direct_link} &nbsp;
+      <div class="direct_link" style='display:none'>
+      <a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 
       <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
       <input type="button" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"

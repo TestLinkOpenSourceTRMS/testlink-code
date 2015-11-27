@@ -8,12 +8,12 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.15
  **/
 
 class testcaseCommands
@@ -1060,6 +1060,10 @@ class testcaseCommands
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     $guiObj->user_feedback = '';
     
+    $guiObj->direct_link = 
+      $this->tcaseMgr->buildDirectWebLink($_SESSION['basehref'],
+                                          $argsObj->tcase_id,
+                                          $argsObj->testproject_id);
 
     if($userFeedback['status_ok'])
     {
@@ -1209,6 +1213,42 @@ class testcaseCommands
     return $guiObj;
   }
 
+
+  function freeze(&$argsObj,$request)
+  {
+    echo __FUNCTION__;
+    $argsObj->isOpen = 0;
+    return $this->setIsOpen($argsObj,$request);
+  }
+
+  function unfreeze(&$argsObj,$request)
+  {
+    $argsObj->isOpen = 1;
+    return $this->setIsOpen($argsObj,$request);
+  }
+
+  /**
+   *
+   */
+  function setIsOpen(&$argsObj,$request)
+  {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+    $guiObj->step_exec_type = $argsObj->exec_type;
+    $guiObj->tcversion_id = $argsObj->tcversion_id;
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj);
+
+    $this->tcaseMgr->setIsOpen(null,$argsObj->tcversion_id,$argsObj->isOpen);
+    $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
+    $guiObj->user_feedback = '';
+    return $guiObj;
+  }
 
 
 } // end class  

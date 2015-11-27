@@ -5,15 +5,17 @@ generate the list of TC that can be removed from a Test Plan
 
 @filesource tc_exec_assignment.tpl
 @internal revisions
-@since 1.9.12
+@since 1.9.14
 *}
 
-{lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
-                          btn_update_selected_tc,show_tcase_spec,can_not_execute,
-                          send_mail_to_tester,platform,no_testcase_available,chosen_blank_option,
-                          exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
-                          th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
-                          check_uncheck_all_tc,execution,design,execution_history,remove,user_bulk_remove'}
+{lang_get var="labels" 
+  s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
+     btn_update_selected_tc,show_tcase_spec,can_not_execute,
+     send_mail_to_tester,platform,no_testcase_available,chosen_blank_option,
+     exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
+     th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
+     check_uncheck_all_tc,execution,design,execution_history,
+     remove,user_bulk_remove,btn_send_link'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -24,7 +26,6 @@ generate the list of TC that can be removed from a Test Plan
 var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
-// loop2do=0;   // needed for the convert grid logic
 function check_action_precondition(container_id,action)
 {
 	if(checkbox_count_checked(container_id) <= 0)
@@ -36,9 +37,10 @@ function check_action_precondition(container_id,action)
 }
 
 /**
- * Uses JQuery needed if select uses chosen plugin !!!
+ * Uses JQuery.
+ * Needed if select uses chosen plugin !!!
  */
-function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
+function setComboIfCbx(oid,combo_id_prefix,oid4value)
 {
   var f=document.getElementById(oid);
   var all_inputs = f.getElementsByTagName('input');
@@ -49,7 +51,8 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
   var cb_id= new Array();
   var jdx=0;
   var idx=0;
-    
+  var cv;  
+
   // Build an array with the html select ids
   //  
   for(idx = 0; idx < all_inputs.length; idx++)
@@ -77,11 +80,23 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
   // now set the combos
   for(idx = 0; idx < cb_id.length; idx++)
   {
-     // debug - alert(cb_id[idx] + " will be" + value_to_assign);
-     // input_element=document.getElementById(cb_id[idx]);
-     // input_element.value=value_to_assign;
-     jQuery('#' + cb_id[idx]).val(value_to_assign);
-     jQuery('#' + cb_id[idx]).trigger("chosen:updated");  // needed by chosen
+    value_to_assign = String(jQuery('#' + oid4value).val()); 
+
+    if(value_to_assign == 0)
+    {
+      jQuery('#' + cb_id[idx]).val(value_to_assign);
+    }  
+    else
+    {
+      cv = value_to_assign.split(",");
+      var zx = cv.indexOf(0);
+      if(zx != -1) 
+      {
+        cv.splice(zx, 1);
+      }
+      jQuery('#' + cb_id[idx]).val(cv);
+    }  
+    jQuery('#' + cb_id[idx]).trigger("chosen:updated");  // needed by chosen
   }
 }
 </script>
@@ -95,7 +110,7 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
 
   {* --------------------------------------------------------------------------------------------------------------- *}
   {* added z-index to avoid problems with scrolling when using EXT-JS *}
-  <div id="header-wrap" style="z-index:999;height:120px;"> <!-- header-wrap -->
+  <div id="header-wrap" style="z-index:999;height:200px;"> <!-- header-wrap -->
 	<h1 class="title">{$gui->main_descr|escape}</h1>
   {if $gui->has_tc}
     {include file="inc_update.tpl" result=$sqlResult refresh="yes"}
@@ -113,23 +128,37 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
     <br>
 
 		<div>
-			{$labels.user_bulk_assignment}
-			<select name="bulk_tester_div"  id="bulk_tester_div">
+			<img src="{$tlImages.user_group}" title="{$labels.user_bulk_assignment}">
+      {$labels.user_bulk_assignment}<br>
+      <select class="chosen-bulk-select" multiple="multiple"
+              name="bulk_tester_div[]" id="bulk_tester_div" >
 				{html_options options=$gui->testers selected=0}
 			</select>
 			<input type='button' name='bulk_user_assignment' id='bulk_user_assignment'
 				onclick='if(check_action_precondition("tc_exec_assignment","default"))
-						        setComboIfCbx("tc_exec_assignment_cb","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
+						        setComboIfCbx("tc_exec_assignment_cb","tester_for_tcid_",
+                                  "bulk_tester_div")'
 				value="{$labels.btn_do}" />
 			<input type='submit' name='doActionButton' id='doActionButton' value='{$labels.btn_update_selected_tc}' />
       <input type="hidden" name="doAction" id="doAction" value='std' />
-			<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked} />
-			{$labels.send_mail_to_tester}
+
+			<span style="margin-left:20px;">
+        <img src="{$tlImages.email}" title="{$labels.send_mail_to_tester}">
+        <input type="checkbox" title="{$labels.send_mail_to_tester}"
+          name="send_mail" id="send_mail" {$gui->send_mail_checked} />
 			</span>
 		</div>
 
     <div>
       <input type='submit' name='doBulkUserRemove' id='doBulkUserRemove' value='{$labels.user_bulk_remove}' />
+      <input type='button' name='linkByMail' 
+             id='linkByMail' 
+             onclick="doAction.value='linkByMail';tc_exec_assignment.submit();" 
+             value="{$labels.btn_send_link}" />
+      
+      <input type="hidden" name="targetFeature" id="targetFeature" value="0"/>
+      <input type="hidden" name="targetUser" id="targetUser" value="0"/>
+
     </div>
 
 	</div>
@@ -138,6 +167,7 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
   {/if}
 	</div> <!-- header-wrap -->
 
+  <p>&nbsp;<p>&nbsp;<p>
   {if $gui->has_tc}
    <div class="workBack" id="tc_exec_assignment_cb">
     <input type="hidden" name="targetFeature" id="targetFeature" value="0"/>
@@ -250,9 +280,9 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
                       
                       {if $smarty.foreach.testerSet.iteration == 1}
                         <td align="center">
-                      		  		<select class="chosen-select"
+                      		  		<select class="chosen-select" multiple="multiple" 
                                         data-placeholder="{$labels.chosen_blank_option}"
-                                        name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
+                                        name="tester_for_tcid[{$tcase.id}][{$platform_id}][]" 
                       		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"
                       		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}",1)' >
                                  {html_options options=$gui->testers}
@@ -288,6 +318,8 @@ function setComboIfCbx(oid,combo_id_prefix,value_to_assign)
 <script>
 jQuery( document ).ready(function() {
 jQuery(".chosen-select").chosen({ width: "85%", allow_single_deselect: true });
+jQuery(".chosen-bulk-select").chosen({ width: "35%", allow_single_deselect: true });
+
 });
 </script>
 </body>

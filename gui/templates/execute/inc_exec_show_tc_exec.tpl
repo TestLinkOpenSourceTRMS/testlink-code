@@ -246,7 +246,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
             {$deletedUserString}
   				{/if}  
   				</td>
-  				<td class="{$tlCfg->results.code_status.$tc_status_code}" style="text-align:center">
+  				<td class="{$tlCfg->results.code_status.$tc_status_code}" 
+              style="text-align:center" title="(ID:{$tc_old_exec.execution_id})">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
   				
@@ -374,11 +375,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 
 
-  			{* Attachments *}
-			<tr style="background-color: {$bg_color}">
+  		{* Attachments *}
+			{if isset($gui->attachments[$execID]) }
+      <tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
   				{$execID=$tc_old_exec.execution_id}
-
+      
   				{$attach_info=$gui->attachments[$execID]}
           {include file="attachments.inc.tpl"
   				         attach_attachmentInfos=$attach_info
@@ -392,6 +394,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                    attach_tableStyles=null}
   			</td>
   			</tr>
+        {/if}
 
         {* Execution Bugs (if any) *}
         {if isset($gui->bugs[$execID])}

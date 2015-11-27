@@ -13,12 +13,12 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2014 TestLink community 
+ * @Copyright   2005,2015 TestLink community 
  * @link        http://www.testlink.org
  * @since       1.5
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.15
  *
  */
 
@@ -47,7 +47,11 @@ require_once('tlsmarty.inc.php');
 spl_autoload_register('tlAutoload');
 
 /** CSRF security functions. */
-require_once("csrf.php");
+/** TL_APICALL => TICKET 0007190 */
+if( !defined(TL_APICALL) )
+{
+  require_once("csrf.php");
+}  
 
 /** Input data validation */
 require_once("inputparameter.inc.php");
@@ -1345,7 +1349,9 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
   }
   
   $sql = "/* $debugMsg */ " .
-         " SELECT id FROM {$target} WHERE api_key = '{$apiKey}'";
+         " SELECT id FROM {$target} " .
+         " WHERE api_key = '" . 
+         $dbHandler->prepare_string($apiKey) . "'";
  
   $rs = $dbHandler->get_recordset($sql);
   return ($rs ? $rs[0] : null);

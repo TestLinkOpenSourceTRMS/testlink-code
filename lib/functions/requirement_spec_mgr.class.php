@@ -500,9 +500,11 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
              ok if everything is ok
 
   */
-function delete($id)
+function delete($unsafe_id)
 {   
-  
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $id = intval($unsafe_id);
+
   // ATTENTION: CF linked to REVISION 
   $this->cfield_mgr->remove_all_design_values_from_node($id);
   $result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
@@ -522,23 +524,32 @@ function delete($id)
   
   // delete revisions
   $sqlx = array();
-  $sqlx[] = "DELETE FROM {$this->tables['req_specs_revisions']} WHERE parent_id = {$id}";
-  $sqlx[] = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE parent_id = {$id}";
+  $sqlx[] = "DELETE FROM {$this->tables['req_specs_revisions']} " .
+            "WHERE parent_id = {$id}";
+
+  $sqlx[] = "DELETE FROM {$this->tables['nodes_hierarchy']} " . 
+            "WHERE parent_id = {$id} " .
+            "AND node_type_id=" . 
+            $this->node_types_descr_id['requirement_spec_revision'];
+
   foreach($sqlx as $sql)
   {
-    $result = $this->db->exec_query($sql);
+    $result = $this->db->exec_query("/* $debugMsg */" . $sql);
   }
 
   // delete specification itself
   $sqlx = array();
   $sqlx[] = "DELETE FROM {$this->object_table} WHERE id = {$id}";
-  $sqlx[] = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id}";
+  $sqlx[] = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
+            "WHERE id = {$id} AND node_type_id=" .
+            $this->node_types_descr_id['requirement_spec'];
+
   foreach($sqlx as $sql)
   {
-    $result = $this->db->exec_query($sql);
+    $result = $this->db->exec_query("/* $debugMsg */" .$sql);
   }
 
-  // This is a poor implementation (fman 20121228) 
+  // This is a poor implementation
   if($result)
   {
     $result = 'ok';
@@ -559,7 +570,8 @@ function delete($id)
  */
 function delete_deep($id)
 {
-  $exclusion =  ' AND NH.node_type_id <> ' . intval($this->node_types_descr_id['requirement_spec_revision']);
+  $exclusion =  ' AND NH.node_type_id <> ' . 
+                intval($this->node_types_descr_id['requirement_spec_revision']);
   $this->tree_mgr->delete_subtree_objects($id,$id,$exclusion,array('requirement' => 'exclude_my_children'));
   $this->delete($id);
 }

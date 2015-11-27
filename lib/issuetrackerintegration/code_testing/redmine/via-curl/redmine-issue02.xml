@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+Issue with 2 custom fields
+20150815
+-->
+<issue>
+  <subject>ISSUE 01</subject>
+  <project_id>2</project_id>
+  <tracker_id>1</tracker_id>
+  <custom_fields type="array">
+    <custom_field id="1" name="CF-STRING-OPT">
+      <value>SALAME</value>
+    </custom_field>
+    <custom_field id="3" name="CF-LIST-OPT" multiple="true">
+      <value type="array">
+        <value>ALFA</value>
+      </value>
+    </custom_field>
+  </custom_fields>
+</issue>

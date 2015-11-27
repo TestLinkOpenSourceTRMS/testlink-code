@@ -6,12 +6,12 @@
  * Allows editing a user
  *
  * @package     TestLink
- * @copyright   2005-2014, TestLink community
+ * @copyright   2005-2015, TestLink community
  * @filesource  usersEdit.php
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.14
  *
  */
 require_once('../../config.inc.php');
@@ -30,7 +30,8 @@ $highlight = initialize_tabsmenu();
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                          'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                         'resetPassword' => 'doUpdate');
+                         'resetPassword' => 'doUpdate',
+                         'genAPIKey' => 'doUpdate');
 
 switch($args->doAction)
 {
@@ -79,6 +80,13 @@ switch($args->doAction)
     $gui->op = createNewPassword($db,$args,$user,$passwordSendMethod);
   break;
   
+  case "genAPIKey":
+    $highlight->edit_user = 1;
+    $user = new tlUser($args->user_id);
+    $user->readFromDB($db);
+    $gui->op = createNewAPIKey($db,$args,$user);
+  break;
+
   case "create":
   default:
     $highlight->create_user = 1;
@@ -264,6 +272,57 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj,$newPasswordSendMetho
   return $op;
 }
 
+/**
+ * 
+ */
+function createNewAPIKey(&$dbHandler,&$argsObj,&$userObj)
+{
+  $op = new stdClass();
+  $op->user_feedback = '';
+  
+  // Try to validate mail configuration
+  //
+  // From Zend Documentation
+  // You may find you also want to match IP addresses, Local hostnames, or a combination of all allowed types. 
+  // This can be done by passing a parameter to Zend_Validate_Hostname when you instantiate it. 
+  // The paramter should be an integer which determines what types of hostnames are allowed. 
+  // You are encouraged to use the Zend_Validate_Hostname constants to do this.
+  // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
+  // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
+  // 
+  $validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
+  $smtp_host = config_get( 'smtp_host' );
+  $op->status = tl::ERROR;
+
+  // We need to validate at least that user mail is NOT EMPTY
+  if( $validator->isValid($smtp_host) )
+  {
+    $APIKey = new APIKey();
+    if ($APIKey->addKeyForUser($argsObj->user_id) >= tl::OK)
+    {
+      logAuditEvent(TLS("audit_user_apikey_set",$userObj->login),"CREATE",
+                    $userObj->login,"users");
+      $op->user_feedback = lang_get('apikey_by_mail');
+      $op->status = tl::OK;
+
+      // now send by mail
+      $ak = $APIKey->getAPIKey($argsObj->user_id);
+      $msgBody = lang_get('your_apikey_is') . "\n\n" . $ak . 
+                 "\n\n" . lang_get('contact_admin');
+      $mail_op = @email_send(config_get('from_email'), 
+                             $userObj->emailAddress,lang_get('mail_apikey_subject'),$msgBody);
+    }
+  }
+  else
+  {
+    $op->status = tl::ERROR;
+    $op->user_feedback = lang_get('apikey_cannot_be_reseted_invalid_smtp_hostname');
+  }
+  return $op;
+}
+
+
+
 /*
   function: initializeUserProperties
             initialize members for a user object.
@@ -281,8 +340,12 @@ function initializeUserProperties(&$userObj,&$argsObj)
       $userObj->login = $argsObj->login;
   }
   $userObj->emailAddress = $argsObj->emailAddress;
-  $userObj->firstName = $argsObj->firstName;
-  $userObj->lastName = $argsObj->lastName;
+
+  // The Black List - Jon Bokenkamp
+  $reddington = array('/','\\',':','*','?','<','>','|');
+  $userObj->firstName = str_replace($reddington,'',$argsObj->firstName);
+  $userObj->lastName = str_replace($reddington,'',$argsObj->lastName);
+
   $userObj->globalRoleID = $argsObj->rights_id;
   $userObj->locale = $argsObj->locale;
   $userObj->isActive = $argsObj->user_is_active;
@@ -303,6 +366,7 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     case "edit":
     case "create":
     case "resetPassword":
+    case "genAPIKey":
       $doRender = true;
       $tpl = $templateCfg->default_template;
     break;
@@ -330,6 +394,9 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 }
 
 
+/**
+ *
+ */
 function initializeGui()
 {
   $guiObj = new stdClass(); 

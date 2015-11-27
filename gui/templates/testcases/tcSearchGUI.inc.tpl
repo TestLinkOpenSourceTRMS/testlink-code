@@ -32,15 +32,16 @@ Purpose: show form for search through test cases in test specification
     <tr>
       <td>{$labels.th_tcid}</td>
       <td><input type="text" name="targetTestCase" id="TCID"  
-                 size="{#TC_ID_SIZE#}" maxlength="{#TC_ID_MAXLEN#}" value="{$gui->targetTestCase}"/></td>
+                 size="{#TC_ID_SIZE#}" maxlength="{#TC_ID_MAXLEN#}" value="{$gui->targetTestCase|escape}"/></td>
 
       <td>{$labels.th_tcversion}</td>
       <td><input type="text" name="version"
-                 size="{#VERSION_SIZE#}" maxlength="{#VERSION_MAXLEN#}" value="{$gui->tcversion}" /></td>
+                 size="{#VERSION_SIZE#}" maxlength="{#VERSION_MAXLEN#}" value="{$gui->tcversion|escape}" /></td>
       
       <td>{$labels.th_title}</td>
-      <td><input type="text" name="name" id="name" value="{$gui->name}"
-                 size="{#TCNAME_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
+      <td><input type="text" name="name" id="name" 
+           value="{$gui->name|escape}"
+           size="{#TCNAME_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
     </tr>
 
     <tr>
@@ -62,29 +63,30 @@ Purpose: show form for search through test cases in test specification
 
     <tr>
       <td>{$labels.summary}</td>
-      <td><input type="text" name="summary" id="summary" value="{$gui->summary}"
+      <td><input type="text" name="summary" id="summary" value="{$gui->summary|escape}"
                  size="{#SUMMARY_SIZE#}" maxlength="{#SUMMARY_MAXLEN#}" /></td>
 
       <td>{$labels.preconditions}</td>
-      <td><input type="text" name="preconditions" id="preconditions" value="{$gui->preconditions}"
+      <td><input type="text" name="preconditions" id="preconditions" value="{$gui->preconditions|escape}"
                  size="{#PRECONDITIONS_SIZE#}" maxlength="{#PRECONDITIONS_MAXLEN#}" /></td>
 
       <td>{$labels.steps}</td>
-      <td><input type="text" name="steps" id="steps" value="{$gui->steps}"
+      <td><input type="text" name="steps" id="steps" value="{$gui->steps|escape}"
                  size="{#STEPS_SIZE#}" maxlength="{#STEPS_MAXLEN#}" /></td>
  
       <td>{$labels.expected_results}</td>
-      <td><input type="text" name="expected_results" id="expected_results" value="{$gui->expected_results}"
+      <td><input type="text" name="expected_results" id="expected_results" value="{$gui->expected_results|escape}"
                  size="{#RESULTS_SIZE#}" maxlength="{#RESULTS_MAXLEN#}" /></td>
     </tr>
 
     <tr>
       <td>{$labels.created_by}</td>
-      <td><input type="text" name="created_by" id="created_by" value="{$gui->created_by}"
+      <td><input type="text" name="created_by" id="created_by" 
+                 value="{$gui->created_by|escape}"
                  size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
 
       <td>{$labels.edited_by}</td>
-      <td><input type="text" name="edited_by" id ="edited_by" value="{$gui->edited_by}"
+      <td><input type="text" name="edited_by" id ="edited_by" value="{$gui->edited_by|escape}"
                  size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
     </tr>
 
@@ -92,7 +94,7 @@ Purpose: show form for search through test cases in test specification
       <td>{$labels.creation_date_from}</td>
       <td>
         <input type="text" name="creation_date_from" id="creation_date_from" 
-               value="{$gui->creation_date_from}" size="{#DATE_PICKER#}"
+               value="{$gui->creation_date_from|escape}" size="{#DATE_PICKER#}"
                onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" readonly />
         
         <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
@@ -104,7 +106,7 @@ Purpose: show form for search through test cases in test specification
 
       <td>{$labels.creation_date_to}</td>
       <td>
-        <input type="text" name="creation_date_to" id="creation_date_to" value="{$gui->creation_date_to}" 
+        <input type="text" name="creation_date_to" id="creation_date_to" value="{$gui->creation_date_to|escape}" 
                size="{#DATE_PICKER#}"
                onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');" readonly />
         <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
@@ -116,7 +118,8 @@ Purpose: show form for search through test cases in test specification
 
       <td>{$labels.modification_date_from}</td>
       <td>
-        <input type="text" name="modification_date_from" id="modification_date_from" value="{$gui->modification_date_from}" 
+        <input type="text" name="modification_date_from" id="modification_date_from" 
+        value="{$gui->modification_date_from|escape}" 
                size="{#DATE_PICKER#}"
                onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');" readonly />
         <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
@@ -128,7 +131,8 @@ Purpose: show form for search through test cases in test specification
 
       <td>{$labels.modification_date_to}</td>
       <td>
-        <input type="text" name="modification_date_to" id="modification_date_to" value="{$gui->modification_date_to}" 
+        <input type="text" name="modification_date_to" id="modification_date_to" 
+        value="{$gui->modification_date_to|escape}" 
                size="{#DATE_PICKER#}"
                onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');" readonly />
         <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
@@ -141,7 +145,8 @@ Purpose: show form for search through test cases in test specification
 
      <tr>
       <td>{$labels.jolly}<img src="{$tlImages.info}" title="{$labels.jolly_hint}"></td>
-      <td><input type="text" name="jolly" id="jolly" value="{$gui->jolly}"
+      <td><input type="text" name="jolly" id="jolly" 
+      value="{$gui->jolly|escape}"
                  size="{#SUMMARY_SIZE#}" maxlength="{#SUMMARY_MAXLEN#}" /></td>
      </tr>
     

@@ -13,18 +13,16 @@
  *
  * @package TestLink
  * @author TestLink Community
- * @copyright 2012,2014 TestLink community
+ * @copyright 2012,2015 TestLink community
  * @link http://www.testlink.org
  *
  * @internal revisions
- * 
+ * @since 1.9.15
  **/
 
-// start session if not set yet
-if(!isset($_SESSION))
-{
-  session_start();
-}
+// ATTENTION/CRITIC
+// Go to file bottom to see code executed on file include
+
 
 /**
  * Stores key/value in session.
@@ -162,6 +160,19 @@ function csrfguard_replace_forms($form_data_html)
 }
 
 /**
+ * Applies CSRF filter on Smarty template content. Can be 
+ * used as a output filter.
+ *
+ * @param string $source
+ * @param Smarty $smarty
+ * @return CSRF filtered content
+ */
+function smarty_csrf_filter($source, &$smarty) 
+{
+  return csrfguard_replace_forms($source);
+}
+
+/**
  * Validates the CSRF tokens found in $_POST variable. Raoses user 
  * errors if the token is not found or invalid.
  *
@@ -178,9 +189,13 @@ function csrfguard_start()
       redirect($_SESSION['basehref'] . 'error.php?message=No CSRFName found, probable invalid request.');
       exit();
     }
-    $name =$_POST['CSRFName'];
-    $token=$_POST['CSRFToken'];
-    if (!csrfguard_validate_token($name, $token))
+
+    // 20151107 
+    $name = trim($_POST['CSRFName']);
+    $token = trim($_POST['CSRFToken']);
+    $good = (strlen($name) > 0 && strlen($token) > 0);
+
+    if (!$good || !csrfguard_validate_token($name, $token))
     {
       //trigger_error("Invalid CSRF token.",E_USER_ERROR);
       //return false;
@@ -190,15 +205,8 @@ function csrfguard_start()
   }
 }
 
-/**
- * Applies CSRF filter on Smarty template content. Can be 
- * used as a output filter.
- *
- * @param string $source
- * @param Smarty $smarty
- * @return CSRF filtered content
- */
-function smarty_csrf_filter($source, &$smarty) 
-{
-  return csrfguard_replace_forms($source);
-}
+// this way is runned always
+// Need to understand if this is needed
+//  
+doSessionStart(false);
+// csrfguard_start();

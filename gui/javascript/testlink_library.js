@@ -528,6 +528,17 @@ function tree_getPrintPreferences()
     params.push("build_id="+bx.value);
   }
 
+  var bx = document.getElementById('with_user_assignment');
+  if(bx)
+  {
+    var vv = 0;
+    if(bx.checked)
+    {
+      vv = 1;
+    }  
+    params.push("with_user_assignment=" + vv);
+  }
+
   params = params.join('&');  // from array to string
 
   return params;
@@ -1227,12 +1238,12 @@ function showEventHistoryFor(objectID,objectType)
   returns: 
 
 */
-function openReqWindow(tcase_id)
+function openReqWindow(tcase_id,callback)
 { 
   var windowCfg='';                       
   var feature_url = "lib/requirements/reqTcAssign.php";
   
-  feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
+  feature_url +="?edit=testcase&showCloseButton=1&callback="+callback+"&id="+tcase_id;
 
   // second parameter(window name) with spaces generate bug on IE
   windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
@@ -1501,12 +1512,17 @@ function openPrintPreview(type, id, child_id, revision, print_action)
 
 
 
-function openExecHistoryWindow(tc_id) 
+function openExecHistoryWindow(tc_id,tplan_check) 
 {
   var url = "lib/execute/execHistory.php?tcase_id=" + tc_id;
 
   var width = getCookie("execHistoryPopupWidth");
   var height = getCookie("execHistoryPopupHeight");
+
+  if(tplan_check != undefined)
+  {
+    url = url + '&onlyActiveTestPlans=' + tplan_check;    
+  }  
 
   if (width == null)
   {

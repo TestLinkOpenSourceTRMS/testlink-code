@@ -5,12 +5,12 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2015, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.15
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -19,7 +19,6 @@ require_once("treeMenu.inc.php");
 require_once('email_api.php');
 require_once("specview.php");
 
-// Time tracking - $chronos[] = microtime(true);$tnow = end($chronos);
 testlinkInitPage($db,false,false,"checkRights");
 
 $tree_mgr = new tree($db); 
@@ -74,7 +73,7 @@ switch($args->doAction)
         }
 
       }
-      
+
       foreach($features2 as $key => $values)
       {
         if( count($features2[$key]) > 0 )
@@ -112,7 +111,6 @@ switch($args->doAction)
           $features2[$op][$feature_id]['type'] = $task_test_execution;
           $features2[$op][$feature_id]['build_id'] = $args->build_id; 
         }
-
       }
       
       foreach($features2 as $key => $values)
@@ -132,6 +130,13 @@ switch($args->doAction)
                          'feature_id' => $args->targetFeature, 'build_id' => $args->build_id);
     $assignment_mgr->deleteBySignature($signature);
   break; 
+
+  case 'linkByMail':
+    $context = array('tplan_id' => $args->tplan_id,
+                     'build_id' => $args->build_id);
+    $assignment_mgr->emailLinkToExecPlanning($context,$args->userSet);
+  break;
+
 }
 
 
@@ -206,6 +211,7 @@ if ($_SESSION['testprojectOptions']->testPriorityEnabled)
   $gui->priority_labels = init_labels($urgencyCfg["code_label"]);
 }
 
+// Changing to _flat template
 $tpl = $templateCfg->template_dir . $templateCfg->default_template;
 $tpl = str_replace('.tpl', '_flat.tpl', $tpl);
 
@@ -238,6 +244,17 @@ function init_args()
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
   
+  $args->userSet = null;
+  if(count($_REQUEST['bulk_tester_div']) > 0)
+  {
+    foreach($_REQUEST['bulk_tester_div'] as $uid)
+    {
+      if($uid > 0)
+      {
+        $args->userSet[$uid] = $uid;
+      }  
+    }  
+  }  
 
   // For more information about the data accessed in session here, see the comment
   // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
@@ -301,6 +318,7 @@ function init_args()
   {
     $args->doAction = 'doBulkRemove';
   }  
+
   return $args;
 }
 
@@ -395,7 +413,11 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
   {
     if($use_testers['new'])
     {
-      $testers['new'][$value['user_id']][$value['tcase_id']]=$value['tcase_id'];              
+      $ty = (array)$value['user_id'];
+      foreach($ty as $user_id)
+      {
+        $testers['new'][$user_id][$value['tcase_id']]=$value['tcase_id'];              
+      }  
     }
   
     if( $use_testers['old'] )
@@ -407,7 +429,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     $tcversionSet[$value['tcversion_id']]=$value['tcversion_id'];
   } 
 
-  $infoSet=$tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
+  $infoSet = $tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
   foreach($infoSet as $value)
   {
     $tcnames[$value['testcase_id']] = $guiObj->testCasePrefix . $value['tc_external_id'] . ' ' . $value['name'];    
@@ -428,6 +450,12 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
       $email['subject'] = $mail_subject[$tester_type] . ' ' . $guiObj->testPlanName;  
       foreach($tester_set as $user_id => $value)
       {
+        // workaround till solution will be found
+        if($user_id <= 0)
+        {
+          continue;
+        }  
+
         $userObj=$guiObj->all_users[$user_id];
         $email['to_address']=$userObj->emailAddress;
         $email['body'] = $body_first_lines;
@@ -436,6 +464,14 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
         foreach($value as $tcase_id)
         {
           $email['body'] .= $flat_path[$tcase_id] . '<br />';  
+          $wl = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$tcase_id,
+                                              $argsObj->testproject_id);
+           
+          $email['body'] .= '<a href="' . $wl . '">' . 
+                            'direct link to test case spec ' .
+                            '</a>' .
+                            '<br /><br />';
+
         }  
         $email['body'] .= '<br />' . date(DATE_RFC1123);
         $email_op = email_send($email['from_address'], $email['to_address'], 

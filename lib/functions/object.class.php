@@ -5,11 +5,11 @@
  *
  * @filesource  object.class.php
  * @package     TestLink
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2015, TestLink community 
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.14
  **/
  
 /** 
@@ -77,7 +77,7 @@ abstract class tlObject implements iSerialization
    *    value: table name WITH PREFIX
    * @see getDBTables() 
    */
-    protected $tables = null;
+  protected $tables = null;
 
   /**
    * @var array useful to manage DB where TL view names must have a prefix.
@@ -85,8 +85,9 @@ abstract class tlObject implements iSerialization
    *    value: view name WITH PREFIX
    * @see getDBViews()  
    */
-    protected $views = null;
+  protected $views = null;
 
+  protected $auditCfg;
 
   
   /** class constructor */
@@ -99,7 +100,11 @@ abstract class tlObject implements iSerialization
     }
 
     $this->objectID = str_replace(".","",uniqid("", true));
-    
+  
+    $this->auditCfg = new stdClass();
+    $this->auditCfg->eventSource = 'GUI';
+    $this->auditCfg->logEnabled = true;
+  
     /*
       Any supported import/Export Serialization Interface must be prefixed with iSerializationTo 
       so we can automatically detected the interfaces
@@ -125,6 +130,30 @@ abstract class tlObject implements iSerialization
       }
     }
     $this->getSupportedSerializationFormatDescriptions();
+  }
+
+  /**
+   *
+   */ 
+  function setAuditLogOn()
+  {
+    $this->auditCfg->logEnabled = true;
+  }
+
+  /**
+   *
+   */ 
+  function setAuditLogOff()
+  {
+    $this->auditCfg->logEnabled = false;
+  }
+
+  /**
+   *
+   */ 
+  function setAuditEventSource($val)
+  {
+    $this->auditCfg->eventSource = $val;
   }
 
   /**
@@ -329,6 +358,12 @@ abstract class tlObjectWithDB extends tlObject
     tlObject::__construct();
     $this->db = &$db;
   }
+
+  function setDB(&$db)
+  {
+    $this->db = &$db;
+  }
+
 }
 
 /**

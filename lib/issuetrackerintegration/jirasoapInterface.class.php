@@ -13,7 +13,7 @@
  *			     not how is identified internally at DB	level on TestLink
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.14
  *
 **/
 class jirasoapInterface extends issueTrackerInterface
@@ -44,6 +44,19 @@ class jirasoapInterface extends issueTrackerInterface
 		$this->interfaceViaDB = false;
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);
+
+    $proxyCfg = config_get('proxy');
+    if(!is_null($proxyCfg->host))
+    {
+      $key2loop = array('host','port','login','password');
+      foreach($key2loop as $fi)
+      {
+        if(!is_null($proxyCfg->$fi))
+        {
+          $this->soapOpt['proxy_' . $fi] = $proxyCfg->$fi;
+        }
+      }  
+    } 
 
 	  $this->methodOpt = array('buildViewBugLink' => array('addSummary' => true, 'colorByStatus' => true));
     if( $this->setCfg($config) )
@@ -230,6 +243,8 @@ class jirasoapInterface extends issueTrackerInterface
 			// DO CAST any member before using it.
 			// If we do following call WITHOUT (string) CAST, SoapClient() fails
 			// complaining '... wsdl has to be an STRING or null ...'
+      //
+
 			$res['client'] = new SoapClient((string)$this->cfg->uriwsdl,$this->soapOpt);
 			$res['connected'] = true;
 			$res['msg'] = 'iupi!!!';

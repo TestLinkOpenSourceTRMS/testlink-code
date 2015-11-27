@@ -5,7 +5,7 @@ Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 @internal revisions
-@since 1.9.14 
+@since 1.9.15 
 *}	
       {$ResultsStatusCode=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
@@ -43,15 +43,15 @@ Author : franciscom
                 {html_options options=$gui->execStatusValues}
                 </select>
               {/if}
-                
 
-    					  <br />		
+                {if $tlCfg->exec_cfg->features->exec_duration->enabled}	
+                <br />	
                 {$args_labels.execution_duration}&nbsp;
                 <input type="text" name="execution_duration" id="execution_duration"
                        size="{#EXEC_DURATION_SIZE#}" 
                        onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
-                       maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
-
+                       maxlength="{#EXEC_DURATION_MAXLEN#}">  
+                {/if}       		 			
               {if $args_save_type == 'single'}
                 <br />
                 {$addBR=0}
@@ -93,6 +93,12 @@ Author : franciscom
                       onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};return checkSubmitForStatusCombo('{$ResultsStatusCode.not_run}')"
     		 			        value="{$args_labels.btn_save_exec_and_movetonext}" />
 
+                  <input type="submit" name="move2next[{$args_tcversion_id}]" 
+                      {$args_input_enable_mgmt}
+                      onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};"
+                      value="{$args_labels.btn_next}" />
+
+
     		 			  {else}
      	    	        <input type="submit" id="do_bulk_save" name="do_bulk_save"
       	    	             value="{$args_labels.btn_save_tc_exec_results}"/>
@@ -112,19 +118,22 @@ Author : franciscom
         {/if}
   		</table>
 
-      <table style="display:none;" id="issue_summary">
-      {if $gui->addIssueOp != ''}   
+      {if $gui->addIssueOp != ''}  
+      <hr> 
+      <table id="addIssueFeedback">
+      <tr>
+        <td colspan="2" class="label">{$args_labels.create_issue_feedback}</td>
+      </tr>
       <tr>
         <td colspan="2">
           <div class="label">{$gui->addIssueOp.msg}</div>
         </td>
       </tr>
-      <tr>
-        <td colspan="2">&nbsp;</td>
-      </tr>
-
+      </table>
+      <hr>
       {/if}
 
+      <table style="display:none;" id="issue_summary">
       <tr>
         <td colspan="2">
           {* 
@@ -212,8 +221,8 @@ Author : franciscom
       </tr>
 
       </table>
-
-
+      
+      </br>
       <div class="messages" style="align:center;">
       {$args_labels.exec_not_run_result_note}
       </div>

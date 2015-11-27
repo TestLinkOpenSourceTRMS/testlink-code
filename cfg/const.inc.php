@@ -23,13 +23,13 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.14'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Padawan)'); 
+define('TL_VERSION_NUMBER', '1.9.15'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Tauriel)'); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Last Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */
-define('TL_LAST_DB_VERSION', 'DB 1.9.13');
+define('TL_LAST_DB_VERSION', 'DB 1.9.14');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
@@ -569,10 +569,7 @@ $tlCfg->text_status_labels = array(
     TL_REVIEW_STATUS_FUTURE => 'review_status_future');
 
 /** 
- * @deprecated 1.9
- * @TODO havlatm: obsolete - remove (use consts above) 
- * TL_REQ_STATUS_NOT_TESTABLE -> TL_REQ_TYPE_INFO
- * TL_REQ_STATUS_VALID -> TL_REQ_TYPE_FEATURE
+ *
  **/
 define('TL_REQ_STATUS_VALID',     'V');
 define('TL_REQ_STATUS_NOT_TESTABLE','N');

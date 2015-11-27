@@ -21,15 +21,8 @@
 --  -----------------------------------------------------------------------------------
 --
 --- 
-CREATE TABLE /*prefix*/testcase_relations (
-  id int IDENTITY(1,1) NOT NULL,
-  source_id INT NOT NULL DEFAULT '0',
-  destination_id  INT NOT NULL DEFAULT '0',
-  relation_type INT NOT NULL DEFAULT '1',
-  author_id int NOT NULL,
-  creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_testcase_relations_creation_ts DEFAULT (getdate()),
-  CONSTRAINT /*prefix*/PK_req_relations PRIMARY KEY  CLUSTERED 
-  (
-    id
-  )  ON [PRIMARY]
-) ON [PRIMARY];
+--- Existent PK has also error on name
+ALTER TABLE /*prefix*/execution_tcsteps DROP CONSTRAINT /*prefix*/PK_executions_tcsteps;
+ALTER TABLE /*prefix*/execution_tcsteps ADD ID INT IDENTITY(1,1);
+ALTER TABLE /*prefix*/execution_tcsteps ADD CONSTRAINT /*prefix*/PK_execution_tcsteps PRIMARY KEY(ID)
+CREATE UNIQUE INDEX /*prefix*/UX1_execution_tcsteps  ON /*prefix*/execution_tcsteps ("execution_id","tcstep_id");

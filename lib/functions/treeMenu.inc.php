@@ -13,7 +13,7 @@
  * @uses        config.inc.php
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.14
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 require_once("execTreeMenu.inc.php");
@@ -27,7 +27,6 @@ require_once("execTreeMenu.inc.php");
  * 
  * @internal revisions
  * @since 1.9.9
- * 20131019 - franciscom - return type changed
  *
  */
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
@@ -294,8 +293,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $status_descr_list[] = 'testcase_count';
     
     $my = array();
-    $my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
-                           'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0,'ignoreActiveTestCases' => 0);
+    $my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 
+                           'viewType' => 'testSpecTree','getExternalTestCaseID' => 1,
+                           'ignoreInactiveTestCases' => 0,'ignoreActiveTestCases' => 0,
+                           'setAssignedTo' => false);
 
     // added importance here because of "undefined" error in event log
     $my['filters'] = array('status' => null, 'assignedTo' => null, 'importance' => null, 'executionType' => null,
@@ -389,7 +390,12 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
           $externalID='';
           $node['tcversion_id'] = $tpNode['tcversion_id'];    
           $node['version'] = $tpNode['version'];    
-          if ($my['options']['getExternalTestCaseID'])
+          if($my['options']['setAssignedTo'])
+          {
+            $node['assigned_to'] = $tplan_tcases[$node['id']]['assigned_to'];    
+          }
+
+          if($my['options']['getExternalTestCaseID'])
           {
             if (!isset($tpNode['external_id']))
             {
@@ -813,7 +819,8 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     $opt['nodeHelpText'] = isset($opt['nodeHelpText']) ? $opt['nodeHelpText'] : array();
   }
 
-  $name = $node['name'];
+  $name = htmlspecialchars($node['name'], ENT_QUOTES);
+
   
   // custom Property that will be accessed by EXT-JS using node.attributes
   $node['testlink_node_name'] = $name;
@@ -2114,20 +2121,21 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
 /**
  * 
  * @internal revisions
- * 20121010 - asimon - TICKET 4217: added filter for importance
+ * @since 1.9.14
+ * importance & status (workflow status) can be array
  */
 function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 {
   
   $flt = array();
   $flt['exclude_branches'] = isset($fObj['filter_toplevel_testsuite']) && is_array($fObj['filter_toplevel_testsuite']) ?
-                           $fObj['filter_toplevel_testsuite'] : null;
+                             $fObj['filter_toplevel_testsuite'] : null;
   
-  // TICKET 4217: added filter for importance
   $flt['testcase_name'] = null;
   $flt['testcase_id'] = null;
   $flt['execution_type'] = null;
-    $flt['filter_importance'] = null;
+  $flt['importance'] = null;
+  $flt['status'] = null;
 
   if( isset($fObj['filter_testcase_name']) && !is_null($fObj['filter_testcase_name']) )
   {
@@ -2149,15 +2157,22 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 
   if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) )
   {
-    $flt['importance'] = intval($fObj['filter_importance']);
-  }
+    $xx = (array)$fObj['filter_importance'];
+    if($xx[0] >0)
+    {
+      $flt['importance'] = $xx;  
+    } 
+  }  
 
   if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) )
   {
-    $flt['status'] = intval($fObj['filter_workflow_status']);
+    $xx = (array)$fObj['filter_workflow_status'];
+    if($xx[0]>0)
+    {
+      $flt['status'] = $xx;
+    }  
   }
 
-    
   $opt = array('recursive' => true,'exclude_testcases' => false);
   $items = $tprojectMgr->getTestSpec($tprojectID,$flt,$opt); 
 

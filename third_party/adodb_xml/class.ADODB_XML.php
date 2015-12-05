@@ -27,10 +27,11 @@ class ADODB_XML
 	*	@access		public
 	*/
 	var $xml = null; 
-
-  private $rootTagName='ROOT';
-  private $rowTagName='ROW';
+    
+    private $rootTagName='ROOT';
+    private $rowTagName='ROW';
   
+    var $tmpDir = null;
   
 	/**
 	*	Creating the members
@@ -39,9 +40,10 @@ class ADODB_XML
 	*	@param		string		Codification to be used	
 	*	@access		public
 	*/
-	function ADODB_XML($version = "", $encoding = "") 
+	function ADODB_XML($version = "", $encoding = "", $tmpDir = null) 
 	{
 	  $this->xml = new XMLFile($version, $encoding);
+	  $this->tmpDir = is_null(tmpDir) ? sys_get_temp_dir() : $tmpDir; 
 	}
 	
 	/**
@@ -54,7 +56,8 @@ class ADODB_XML
 	*/	
 	function ConvertToXMLString(&$dbConnection,$strSQL,$write_header=1)  
 	{
-	  	$temp_dir = sys_get_temp_dir();
+	  	// $temp_dir = sys_get_temp_dir();
+	    $temp_dir = $this->tmpDir;
 	    $tmpfname = tempnam($temp_dir,'AGS');
 	
 	    $this->ConvertToXML($dbConnection, $strSQL, $tmpfname, $write_header);

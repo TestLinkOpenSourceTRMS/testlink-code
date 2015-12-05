@@ -1506,7 +1506,9 @@ $tlCfg->custom_fields->show_custom_fields_without_value = true;
 $tlCfg->custom_fields->max_length = 255;
 
 // sizes for HTML INPUTS
-// for list, multiselection list => number of items
+// for list, multiselection list 
+//  - MAXIMUM number of items displayed at once
+//  
 // for checkbox,radio is useless
 // Hint: more than 120 produce weird effects on user interface
 //
@@ -1514,11 +1516,11 @@ $tlCfg->custom_fields->sizes = array('string' => 100,
                                      'numeric' => 10,
                                      'float' => 10,
                                      'email' => 100,
-                                     'list' => 5,
+                                     'list' => 1,
                                      'multiselection list' => 5,
-                         'text area' => array('rows' => 6, 'cols' => 80),
-                       'script' => 100,
-                       'server' => 100);
+                                     'text area' => array('rows' => 6, 'cols' => 80),
+                                     'script' => 100,
+                                     'server' => 100);
 
 // Use this variable (on custom_config.inc.php) to define new Custom Field types.
 // IMPORTANT:

@@ -38,8 +38,6 @@ if( count($cf_files) > 0 )
 class cfield_mgr extends tlObject
 {
   const DEFAULT_INPUT_SIZE = 50;
-  const MULTISELECTIONLIST_WINDOW_SIZE = 5;
-  const LISTBOX_WINDOW_SIZE = 5;
   const TEXTAREA_MAX_SIZE = 255;
 
   // EDIT HERE IF YOU CUSTOMIZE YOUR DB
@@ -573,17 +571,21 @@ class cfield_mgr extends tlObject
   		case 'multiselection list':
    			$t_values = explode( '|', $p_field_def['possible_values']);
    			$t_values_count = count($t_values);
+        $window_size = intval($size);
+        if($t_values_count < $window_size)
+        {
+          $window_size = $t_values_count;
+        }  
+
        	if( $verbose_type == 'list' )
        	{
         	// get maximum allowed window size for lists
-        	$window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
-        	$t_multiple=' ';
+        	// $window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
+          $t_multiple=' ';
       	  $t_name_suffix='';
        	}
        	else
        	{
-          // get maximum allowed window size for mutliselection lists
-        	$window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
         	$t_name_suffix='[]';
         	$t_multiple=' multiple="multiple" ';
        	}

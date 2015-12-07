@@ -70,10 +70,15 @@ require_once("exec_cfield_mgr.class.php");
  */
 function tlAutoload($class_name) 
 {
+
   // exceptions
+  // 1. remove prefix and convert lower case
   $tlClasses = null;
   $tlClassPrefixLen = 2;
   $classFileName = $class_name;
+   
+  // 2. add a lower case directory 
+  $addDirToInclude = array('Kint' => true);
 
   // this way Zend_Loader_Autoloader will take care of these classes.
   // Needed in order to make work bugzillaxmlrpc interface
@@ -88,6 +93,11 @@ function tlAutoload($class_name)
     $classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
   }
   
+  if (isset($addDirToInclude[$class_name]))
+  {
+    $classFileName = strtolower($class_name) . "/" . $class_name;
+  }  
+
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 
   // You can reproduce it installing ThinkUp and TestLink applications in the same stack.  

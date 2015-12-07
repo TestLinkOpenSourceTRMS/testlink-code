@@ -124,11 +124,25 @@ Author : franciscom
       <tr>
         <td colspan="2" class="label">{$args_labels.create_issue_feedback}</td>
       </tr>
+      
+      {if $gui->addIssueOp.createIssue != ''}
       <tr>
         <td colspan="2">
-          <div class="label">{$gui->addIssueOp.msg}</div>
+          <div class="label">{$gui->addIssueOp.createIssue.msg}</div>
         </td>
       </tr>
+      {/if}
+
+      {if $gui->addIssueOp.issueForStep != ''}
+      <tr>
+        <td colspan="2">
+          {foreach key=ky item=ufeed from=$gui->addIssueOp.issueForStep}
+          <div class="label">{$ufeed.msg}</div>
+          {/foreach}
+        </td>
+      </tr>
+      {/if}
+
       </table>
       <hr>
       {/if}

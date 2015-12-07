@@ -3953,5 +3953,7 @@ $TLS_display_ea_string ="Display attachement placeholder";
 
 $TLS_hint_you_need_to_be_logged = "You need to be logged in order to use link";
 $TLS_security_check_ko = 'Security check failed';
+$TLS_issue_on_step = "Issue Executing Step number ";
+
 
 // ----- END ------------------------------------------------------------------

@@ -18,6 +18,10 @@
  * instead of recreate the logic to populate $_SESSION 
  * (I think this approach will be simpler).
  * 
+ *
+ * Note about step info
+ * is present in gui->map_last_exec
+ *
  * @internal revisions
  * @since 1.9.15
  *
@@ -89,7 +93,8 @@ if(!is_null($linked_tcversions))
                                                     $tree_mgr,$tcase_mgr,$attachmentRepository);
 
     $dummy = $tree_mgr->get_node_hierarchy_info($args->version_id);
-    $gui->bug_summary = $tcase_mgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
+    
+    $audit = $gui->bug_summary = $tcase_mgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
     $ts = sprintf(lang_get('execution_ts_iso'), date('Y-m-dTH:i',time()));
     $gui->bug_summary .= (' ' . $ts);
 
@@ -97,6 +102,16 @@ if(!is_null($linked_tcversions))
     $gui->direct_link = trim($_SESSION['basehref'],'/') . 
                         "/ltx.php?item=exec&feature_id=" . $lk[0]['feature_id'] .
                         "&build_id=" . $args->build_id;
+
+
+
+    // 20151206 - issue @ test step
+    $yoda = explode('/',$audit);                    
+    $name = ' ' . lang_get('testcase') . ' ' . end($yoda);
+    foreach($gui->issueSummaryForStep as $ele)
+    {
+      $ele .= $name;     
+    }  
   }
   else
   {
@@ -277,11 +292,11 @@ if(!is_null($linked_tcversions))
       $tcase_id = array_intersect($tcase_id, $args->testcases_to_show);
     }  
 
-    $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+    $gui->map_last_exec = getLastestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     $gui->map_last_exec_any_build = null;
     $gui->other_execs=null;
     $testerid = null;
-      
+    
     if($args->level == 'testcase')
     {
       // @TODO 20090815 - franciscom check what to do with platform
@@ -373,6 +388,7 @@ else
 
   // To silence smarty errors
   //  future must be initialized in a right way
+
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
@@ -416,6 +432,7 @@ function init_args(&$dbHandler,$cfgObj)
     $args->refreshTree = isset($_REQUEST['refresh_tree']) ? intval($_REQUEST['refresh_tree']) : 0;  
   }  
 
+  $args->basehref = $_SESSION['basehref'];
   $args->assignTask = isset($_REQUEST['assignTask']) ? 1: 0;
   $args->createIssue = isset($_REQUEST['createIssue']) ? 1: 0;
   $args->copyIssues = isset($_REQUEST['copyIssues']) ? 1: 0;
@@ -544,8 +561,21 @@ function init_args(&$dbHandler,$cfgObj)
     $args->itsCfg = $it_mgr->getLinkedTo($args->tproject_id);
     unset($it_mgr);
   }
- 
+
+  initArgsIssueOnTestCase($args,$bug_summary);
   
+  initArgsIssueOnSteps($args,$bug_summary);
+
+  return array($args,$its);
+}
+
+/**
+ *
+ *
+ */
+function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp)
+{
+
   $inputCfg = array("bug_notes" => array("POST",tlInputParameter::STRING_N),
                     "issueType" => array("POST",tlInputParameter::INT_N),
                     "issuePriority" => array("POST",tlInputParameter::INT_N),
@@ -553,22 +583,53 @@ function init_args(&$dbHandler,$cfgObj)
                     "artifactVersion" => array("POST",tlInputParameter::ARRAY_INT));
 
   $inputCfg["bug_summary"] = array("POST",tlInputParameter::STRING_N);
-  if(!$args->do_bulk_save)
+
+  // hmm this MAGIC needs to be commented 
+  if(!$argsObj->do_bulk_save)
   {
-    $inputCfg["bug_summary"][2] = $bug_summary['minLengh'];
-    $inputCfg["bug_summary"][3] = $bug_summary['maxLengh']; 
+    $inputCfg["bug_summary"][2] = $bugSummaryProp['minLengh'];
+    $inputCfg["bug_summary"][3] = $bugSummaryProp['maxLengh']; 
   } 
 
-  I_PARAMS($inputCfg,$args);
+  I_PARAMS($inputCfg,$argsObj);
 
-
-  $args->basehref = $_SESSION['basehref'];
-
-  return array($args,$its);
 }
 
+/**
+ *
+ *
+ */
+function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp)
+{
+  $arrayOfInt = array("POST",tlInputParameter::ARRAY_INT);
 
+  $cfg = array("issueBodyForStep" => array("POST",tlInputParameter::ARRAY_STRING_N),
+               "issueTypeForStep" => $arrayOfInt,
+               "issuePriorityForStep" => $arrayOfInt);
 
+  $cfg["issueSummaryForStep"] = array("POST",tlInputParameter::ARRAY_STRING_N);
+
+  // hmm this MAGIC needs to be commented 
+  if(!$argsObj->do_bulk_save)
+  {
+    $cfg["issueSummaryForStep"][2] = $bugSummaryProp['minLengh'];
+    $cfg["issueSummaryForStep"][3] = $bugSummaryProp['maxLengh']; 
+  } 
+
+  I_PARAMS($cfg,$argsObj);
+
+  // Special
+  $sk = array('issueForStep','artifactComponentForStep',
+              'artifactVersionForStep');
+  foreach($sk as $kt)
+  {
+    $argsObj->$kt = null;
+    if(isset($_REQUEST[$kt]))
+    {
+      $argsObj->$kt = $_REQUEST[$kt];
+    }  
+  }  
+}
 
 /*
   function: 
@@ -1211,8 +1272,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->treeFormToken = $argsObj->treeFormToken;
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
 
-
-  // CORTADO 
   $gui->execStatusValues = createResultsMenu();
   $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
   if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) )
@@ -1363,10 +1422,16 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     $gui->issueTrackerMetaData = !is_null($issueTracker) ? 
                                  getIssueTrackerMetaData($issueTracker) : null; 
     
-    $gui->issueType = $argsObj->issueType;
-    $gui->issuePriority = $argsObj->issuePriority;
-    $gui->artifactVersion = $argsObj->artifactVersion;
-    $gui->artifactComponent = $argsObj->artifactComponent;   
+  
+    $k2c = array('issueType','issuePriority','artifactVersion',
+                 'artifactComponent');
+    foreach($k2c as $kj)
+    {
+      $gui->$kj = $argsObj->$kj;  
+
+      $kx = $kj . 'ForStep';
+      $gui->$kx = $argsObj->$kx;  
+    }  
   }  
  
   return $gui;
@@ -1383,8 +1448,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 */
 function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tcaseMgr,&$docRepository)
 {     
-
-  
   // IMPORTANT due  to platform feature
   // every element on linked_tcversions will be an array.
   $cf_filters=array('show_on_execution' => 1); 
@@ -1431,6 +1494,20 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
                                                                          'nodes_hierarchy',true,1);
 
+  // needed for issue @ test case step level
+  if(1==1)
+  {
+    $opt = array('fields2get' => 'step_number,id');
+    $steps = $tcaseMgr->get_steps($tcversion_id,0,$opt);
+    if(!is_null($steps))
+    {
+      $lbl = lang_get('issue_on_step');
+      foreach($steps as $elem)
+      {
+        $guiObj->issueSummaryForStep[$elem['id']] = $lbl . $elem['step_number']; 
+      }  
+    } 
+  }  
   return array($tcase_id,$tcversion_id);
 }
 
@@ -1438,15 +1515,16 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 
 
 /*
-  function: getLastExecution
-         Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
+  function: getLastestExec
+            Important Notice: 
+            $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
 
   args :
   
   returns: 
 
 */
-function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
+function getLastestExec(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 { 
   $options=array('getNoExecutions' => 1, 'groupByBuild' => 0, 'getStepsExecInfo' => 1);
 
@@ -1798,8 +1876,6 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
                           'assigned_on_build' => $argsObj->build_id,
                           'exec_type' => $argsObj->execution_type,
                           'urgencyImportance' => $argsObj->priority);
-
-    // var_dump($setOfTestSuites);
 
     // CRITIC / IMPORTANT 
     // With BULK Operation enabled, we prefer to display Test cases tha are ONLY DIRECT CHILDREN

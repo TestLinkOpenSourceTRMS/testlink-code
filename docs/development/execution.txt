@@ -1,0 +1,8 @@
+Test case step exec template
+- testcases/inc_steps.tpl
+
+
+** grep -rl inc_exec_test_spec *
+execute/inc_exec_show_tc_exec.tpl
+execute/inc_exec_test_spec.tpl
+testcases/inc_steps.tpl

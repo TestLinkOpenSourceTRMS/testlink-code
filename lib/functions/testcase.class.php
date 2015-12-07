@@ -10,7 +10,7 @@
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  * 
  */
 
@@ -5010,8 +5010,19 @@ class testcase extends tlObjectWithAttachments
     $step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
     $safe_tcversion_id = $this->db->prepare_int($tcversion_id);
     
+    // build
+    $f2g = "TCSTEPS.{$my['options']['fields2get']}";
+    if($my['options']['fields2get'] != '*')
+    {
+      $sof = explode(',',$my['options']['fields2get']);
+      foreach($sof as &$ele)
+      {
+        $ele = 'TCSTEPS.' . $ele;
+      }  
+      $f2g = implode(',',$sof);
+    }  
     $sql = "/* $debugMsg */ " . 
-           " SELECT TCSTEPS.{$my['options']['fields2get']} " .
+           " SELECT {$f2g} " .
            " FROM {$this->tables['tcsteps']} TCSTEPS " .
            " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .
            " ON NH_STEPS.id = TCSTEPS.id " . 
@@ -5794,8 +5805,14 @@ class testcase extends tlObjectWithAttachments
       foreach($key2check as $item_key)
       {
         $deghosted = false;
-        $start = strpos($rse[$gdx][$item_key],$tlBeginMark);
-        $ghost = $rse[$gdx][$item_key];
+        $start = FALSE;
+
+        if(isset($rse[$gdx][$item_key]))
+        {
+          $start = strpos($rse[$gdx][$item_key],$tlBeginMark);
+          $ghost = $rse[$gdx][$item_key];
+        }  
+        
         if($start !== FALSE)
         {
           $xx = explode($tlBeginMark,$rse[$gdx][$item_key]);

@@ -555,10 +555,13 @@ function init_args(&$dbHandler,$cfgObj)
   if( ($args->issue_tracker_enabled = $info['issue_tracker_enabled']) )
   {
     $it_mgr = new tlIssueTracker($dbHandler);
-    $its = $it_mgr->getInterfaceObject($args->tproject_id);
-    $bug_summary['maxLengh'] = $its->getBugSummaryMaxLength(); 
-
     $args->itsCfg = $it_mgr->getLinkedTo($args->tproject_id);
+    $its = $it_mgr->getInterfaceObject($args->tproject_id);
+    
+    if(!is_null($args->itsCfg) && !is_null($its))
+    {
+      $bug_summary['maxLengh'] = $its->getBugSummaryMaxLength(); 
+    }  
     unset($it_mgr);
   }
 

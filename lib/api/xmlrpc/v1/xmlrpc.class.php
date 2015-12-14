@@ -6930,6 +6930,7 @@ protected function createAttachmentTempFile()
     {
       // Get test projects
       $idSet = $this->args[self::$testCaseIDParamName];
+
       foreach( $idSet as $key => $val ) 
       {
         // indexed by same value than keywords
@@ -6939,7 +6940,7 @@ protected function createAttachmentTempFile()
         // userHasRight() on failure set error to return to caller
         $status_ok = $this->userHasRight("mgt_modify_tc",
                                          self::CHECK_PUBLIC_PRIVATE_ATTR,
-                                         array(self::$testProjectIDParamName => $tprojectSet[$val])
+                                         array(self::$testProjectIDParamName => $tprojectSet[$items[$key]])
                                         );
         if(!$status_ok)
         {

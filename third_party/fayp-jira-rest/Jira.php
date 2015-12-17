@@ -6,6 +6,9 @@
  * @author     Francisco Mancardi <francisco.mancardi@gmail.com>
  *
  * @since TestLink 1.9.4
+ *
+ * @internal revision
+ * @since 1.9.15 - added getMyself() 
  */
 
 namespace JiraApi;
@@ -57,7 +60,7 @@ class Jira
      */
     public function testLogin()
     {
-        $user = $this->getUser($this->request->username);
+        $user = $this->getMyself();
         if (!empty($user) && $this->request->lastRequestStatus()) {
             return true;
         }
@@ -71,6 +74,19 @@ class Jira
     public function getUser($username)
     {
         $this->request->openConnect($this->host . 'user/search/?username=' . $username, 'GET');
+        $this->request->execute();
+        $user = json_decode($this->request->getResponseBody());
+
+        return $user;
+    }
+
+    /**
+     * https://docs.atlassian.com/jira/REST/latest/
+     * https://docs.atlassian.com/jira/REST/latest/#api/2/myself
+     */
+    public function getMyself()
+    {
+        $this->request->openConnect($this->host . 'myself' . $username, 'GET');
         $this->request->execute();
         $user = json_decode($this->request->getResponseBody());
 

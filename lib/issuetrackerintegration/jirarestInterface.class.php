@@ -131,8 +131,7 @@ class jirarestInterface extends issueTrackerInterface
   	  $this->APIClient = new JiraApi\Jira($par);
 
       $this->connected = $this->APIClient->testLogin();
-
-      if($this->APIClient->testLogin() && ($this->cfg->projectkey != self::NOPROJECTKEY))
+      if($this->connected && ($this->cfg->projectkey != self::NOPROJECTKEY))
       {
         // Now check if can get info about the project, to understand
         // if at least it exists.

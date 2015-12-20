@@ -106,11 +106,14 @@ if(!is_null($linked_tcversions))
 
 
     // 20151206 - issue @ test step
-    $yoda = explode('/',$audit);                    
-    $name = ' ' . lang_get('testcase') . ' ' . end($yoda);
-    foreach($gui->issueSummaryForStep as $ele)
+    if(!is_null($gui->issueSummaryForStep))
     {
-      $ele .= $name;     
+      $yoda = explode('/',$audit);                    
+      $name = ' ' . lang_get('testcase') . ' ' . end($yoda);
+      foreach($gui->issueSummaryForStep as $ele)
+      {
+        $ele .= $name;     
+      }  
     }  
   }
   else
@@ -1258,11 +1261,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     
   $gui = new stdClass();
 
-  // TBD $gui->delAttachmentURL =
-  
   $gui->showExternalAccessString = true;
   $gui->showImgInlineString = false;
   
+  $gui->issueSummaryForStep = null;
   $gui->addIssueOp = null;
   $gui->allowStepAttachments = true;
   $gui->tlCanCreateIssue = !is_null($issueTracker) && method_exists($issueTracker,'addIssue');
@@ -1395,6 +1397,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   
   if(!is_null($issueTracker))
   {
+    
     if( $issueTracker->isConnected() )
     {
       $itsCfg = $issueTracker->getCfg();

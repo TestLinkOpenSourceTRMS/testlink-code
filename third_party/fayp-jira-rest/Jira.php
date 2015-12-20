@@ -86,7 +86,7 @@ class Jira
      */
     public function getMyself()
     {
-        $this->request->openConnect($this->host . 'myself' . $username, 'GET');
+        $this->request->openConnect($this->host . 'myself', 'GET');
         $this->request->execute();
         $user = json_decode($this->request->getResponseBody());
 

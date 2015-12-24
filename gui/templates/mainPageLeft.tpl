@@ -148,7 +148,7 @@
     {/if}
     
     {if $gui->grants.keywords_view == "yes"}
-      <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
+      <a href="lib/keywords/keywordsView.php?tproject_id={$gui->testprojectID}">{$labels.href_keywords_manage}</a>
       <br />
     {/if}
     

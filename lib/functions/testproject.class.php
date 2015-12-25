@@ -9,7 +9,7 @@
  * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  * 
  **/
 
@@ -3348,13 +3348,21 @@ function getItemCount()
   return $ret[0]['qty'];
 }
 
+/**
+ *
+ */
 function getPublicAttr($id)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
          " SELECT is_public FROM {$this->object_table} " .
-         " WHERE id =" . intval($id);   
+         " WHERE id =" . intval($id); 
+  
   $ret = $this->db->get_recordset($sql);
+  if(is_null($ret))
+  {
+    throw new Exception("Test Project ID does not exist!", 1);
+  } 
   return $ret[0]['is_public'];
 }
 

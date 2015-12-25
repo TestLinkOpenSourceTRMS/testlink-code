@@ -3,254 +3,272 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: keywordsEdit.php,v $
+ * @filesource: keywordsView.php
  *
- * @version $Revision: 1.32.6.3 $
- * @modified $Date: 2011/01/10 15:38:59 $ by $Author: asimon83 $
+ * Allows users to manage keywords. 
  *
- * allows users to manage keywords. 
- *
- * This is a fully commented model of How I think we need to develop new
- * pages of this kind, and how we need to refactor old pages.
- *
+ * @package    TestLink
+ * @copyright  2005,2015 TestLink community 
+ * @link       http://www.testlink.org/
  *
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-testlinkInitPage($db,false,false,"checkRights");
 
-$smarty = new TLSmarty();
+testlinkInitPage($db);
+$tplCfg = templateConfiguration();
 
-$template_dir = 'keywords/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$tplEngine = new TLSmarty();
 
 $op = new stdClass();
 $op->status = 0;
-$msg = '';
 
-$args = init_args();
-$canManage = has_rights($db,"mgt_modify_key");
+$args = initEnv($db);
+$gui = initializeGui($args);
+
 $tprojectMgr = new testproject($db);
 
 $action = $args->doAction;
+
 switch ($action)
 {
-	case "do_create":
-	case "do_update":
-	case "do_delete":
-		if (!$canManage)
-			break;
-	case "edit":
-	case "create":
-		$op = $action($smarty,$args,$tprojectMgr);
-	break;
+  case "do_create":
+  case "do_update":
+  case "do_delete":
+  case "edit":
+  case "create":
+    $op = $action($args,$gui,$tprojectMgr);
+  break;
 }
+
+
 if($op->status == 1)
 {
-	$default_template = $op->template;
+  $tpl = $op->template;
 }
 else
 {
-	$msg = getKeywordErrorMessage($op->status);
-}
-$keywords = null;
-if ($default_template == 'keywordsView.tpl')
-{
-	$keywords = $tprojectMgr->getKeywords($args->testproject_id);
+  $tpl = $tplCfg->default_template;
+  $gui->user_feedback = getKeywordErrorMessage($op->status);
 }
 
-$smarty->assign('user_feedback',$msg);
-$smarty->assign('canManage',$canManage);
-$smarty->assign('keywords', $keywords);
-$smarty->assign('name',$args->keyword);
-$smarty->assign('keyword',$args->keyword);
-$smarty->assign('notes',$args->notes);
-$smarty->assign('keywordID',$args->keyword_id);
-$smarty->assign('mgt_view_events',has_rights($db,"mgt_view_events"));
-$smarty->display($template_dir . $default_template);
+$gui->keywords = null;
+if ($tpl != $tplCfg->default_template)
+{
+  // I'm going to return to screen that display all keywords
+  $gui->keywords = $tprojectMgr->getKeywords($args->tproject_id);
+}
+
+
+$tplEngine->assign('gui',$gui);
+$tplEngine->display($tplCfg->template_dir . $tpl);
+
 
 
 /**
  * @return object returns the arguments for the page
  */
-function init_args()
+function initEnv(&$dbHandler)
 {
-	$args = new stdClass();
-	
-	$bPostBack = sizeof($_POST);
-	$source = $bPostBack ? "POST" : "GET";
-	$iParams = array(
-			"doAction" => array($source,tlInputParameter::STRING_N,0,50),
-			"id" => array($source, tlInputParameter::INT_N),
-			"keyword" => array($source, tlInputParameter::STRING_N,0,100),
-			"notes" => array($source, tlInputParameter::STRING_N),
-		);
-		
-	$pParams = I_PARAMS($iParams);
+  $args = new stdClass();
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  $source = sizeof($_POST) ? "POST" : "GET";
+  
+  $ipcfg = 
+    array( "doAction" => array($source,tlInputParameter::STRING_N,0,50),
+           "id" => array($source, tlInputParameter::INT_N),
+           "keyword" => array($source, tlInputParameter::STRING_N,0,100),
+           "notes" => array($source, tlInputParameter::STRING_N),
+           "tproject_id" => array($source, tlInputParameter::INT_N));
+    
+  $ip = I_PARAMS($ipcfg);
 
-	$args = new stdClass();
-	$args->doAction = $pParams["doAction"];
-	$args->keyword_id = $pParams["id"];
-	$args->keyword = $pParams["keyword"];
-	$args->notes = $pParams["notes"];
+  $args = new stdClass();
+  $args->doAction = $ip["doAction"];
+  $args->notes = $ip["notes"];
+  $args->keyword = $ip["keyword"];
+  $args->keyword_id = $ip["id"];
+  $args->tproject_id = $ip["tproject_id"];
+ 
+  if( $args->tproject_id <= 0 )
+  {
+    throw new Exception("Error Invalid Test Project ID", 1);
+  }
 
-	if ($args->doAction == "edit")
-		$_SESSION['s_keyword_id'] = $args->keyword_id;
-	else if($args->doAction == "do_update")
-		$args->keyword_id = $_SESSION['s_keyword_id'];
-	
-	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-	
-	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
-	$_REQUEST=strings_stripSlashes($_REQUEST);
+  // Check rights before doing anything else
+  // Abort if rights are not enough 
+  $user = $_SESSION['currentUser'];
+  $env['tproject_id'] = $args->tproject_id;
+  $env['tplan_id'] = 0;
+  
+  $check = new stdClass();
+  $check->items = array('mgt_modify_key','mgt_view_key');
+  $check->mode = 'and';
+  checkAccess($dbHandler,$user,$env,$check);
 
-	return $args;
+  // OK Go ahead
+  $args->canManage = true;
+  $args->mgt_view_events = $user->hasRight($dbHandler,"mgt_view_events",$args->tproject_id);
+
+  $treeMgr = new tree($dbHandler);
+  $dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
+  $args->tproject_name = $dummy['name'];  
+
+  return $args;
 }
 
 /*
- *	initialize variables to launch user interface (smarty template)
- *	to get information to accomplish create task.
+ *  initialize variables to launch user interface (smarty template)
+ *  to get information to accomplish create task.
 */
-function create(&$smarty,&$args)
+function create(&$argsObj,&$guiObj)
 {
-	$ret = new stdClass();
-	$ret->template = 'keywordsEdit.tpl';
-	$ret->status = 1;
+  $guiObj->submit_button_action = 'do_create';
+  $guiObj->submit_button_label = lang_get('btn_save');
+  $guiObj->main_descr = lang_get('keyword_management');
+  $guiObj->action_descr = lang_get('create_keyword');
 
-	$smarty->assign('submit_button_label',lang_get('btn_save'));
-	$smarty->assign('submit_button_action','do_create');
-	$smarty->assign('main_descr',lang_get('keyword_management'));
-	$smarty->assign('action_descr',lang_get('create_keyword'));
-
-	return $ret;
+  $ret = new stdClass();
+  $ret->template = 'keywordsEdit.tpl';
+  $ret->status = 1;
+  return $ret;
 }
 
-
 /*
- *	initialize variables to launch user interface (smarty template)
+ *  initialize variables to launch user interface (smarty template)
  *  to get information to accomplish edit task.
 */
-function edit(&$smarty,&$args,&$tproject_mgr)
+function edit(&$argsObj,&$guiObj,&$tproject_mgr)
 {
-	$ret = new stdClass();
-	$ret->template = 'keywordsEdit.tpl';
-	$ret->status = 1;
+  $guiObj->submit_button_action = 'do_update';
+  $guiObj->submit_button_label = lang_get('btn_save');
+  $guiObj->main_descr = lang_get('keyword_management');
+  $guiObj->action_descr = lang_get('edit_keyword');
 
-	$action_descr = lang_get('edit_keyword');
-	$keyword = $tproject_mgr->getKeyword($args->keyword_id);
-	if ($keyword)
-	{
-		$args->keyword = $keyword->name;
-		$args->notes = $keyword->notes;
-		$action_descr .= TITLE_SEP . $keyword->name;
-	}
-	
-	$smarty->assign('submit_button_label',lang_get('btn_save'));
-	$smarty->assign('submit_button_action','do_update');
-	$smarty->assign('main_descr',lang_get('keyword_management'));
-	$smarty->assign('action_descr',$action_descr);
+  $ret = new stdClass();
+  $ret->template = 'keywordsEdit.tpl';
+  $ret->status = 1;
 
-	return $ret;
+  $keyword = $tproject_mgr->getKeyword($argsObj->keyword_id);
+  if ($keyword)
+  {
+    $guiObj->keyword = $argsObj->keyword = $keyword->name;
+    $guiObj->notes = $argsObj->notes = $keyword->notes;
+    $guiObj->action_descr .= TITLE_SEP . $guiObj->keyword;
+  }
+
+  return $ret;
 }
 
 /*
  * Creates the keyword
  */
-function do_create(&$smarty,&$args,&$tproject_mgr)
+function do_create(&$args,&$guiObj,&$tproject_mgr)
 {
-	$smarty->assign('main_descr',lang_get('keyword_management'));
-	$smarty->assign('action_descr',lang_get('create_keyword'));
-	$smarty->assign('submit_button_label',lang_get('btn_save'));
-	$smarty->assign('submit_button_action','do_create');
+  $guiObj->submit_button_action = 'do_create';
+  $guiObj->submit_button_label = lang_get('btn_save');
+  $guiObj->main_descr = lang_get('keyword_management');
+  $guiObj->action_descr = lang_get('create_keyword');
 
-	$op = $tproject_mgr->addKeyword($args->testproject_id,$args->keyword,$args->notes);
-	$ret = new stdClass();
-	$ret->template = 'keywordsView.tpl';
-	$ret->status = $op['status'];
-	return $ret;
+  $op = $tproject_mgr->addKeyword($args->tproject_id,$args->keyword,$args->notes);
+  $ret = new stdClass();
+  $ret->template = 'keywordsView.tpl';
+  $ret->status = $op['status'];
+  return $ret;
 }
 
 /*
  * Updates the keyword
-*/
-function do_update(&$smarty,&$args,&$tproject_mgr)
+ */
+function do_update(&$argsObj,&$guiObj,&$tproject_mgr)
 {
-	$action_descr = lang_get('edit_keyword');
-	$keyword = $tproject_mgr->getKeyword($args->keyword_id);
-	if ($keyword)
-		$action_descr .= TITLE_SEP . $keyword->name;
+  $guiObj->submit_button_action = 'do_update';
+  $guiObj->submit_button_label = lang_get('btn_save');
+  $guiObj->main_descr = lang_get('keyword_management');
+  $guiObj->action_descr = lang_get('edit_keyword');
 
-	$smarty->assign('submit_button_label',lang_get('btn_save'));
-	$smarty->assign('submit_button_action','do_update');
-	$smarty->assign('main_descr',lang_get('keyword_management'));
-	$smarty->assign('action_descr',$action_descr);
+  $keyword = $tproject_mgr->getKeyword($argsObj->keyword_id);
+  if ($keyword)
+  {
+    $guiObj->action_descr .= TITLE_SEP . $keyword->name;
+  }
+  
+  $ret = new stdClass();
+  $ret->template = 'keywordsView.tpl';
+  $ret->status = $tproject_mgr->updateKeyword($argsObj->tproject_id,$argsObj->keyword_id,
+                          $argsObj->keyword,$argsObj->notes);
 
-	$ret = new stdClass();
-	$ret->template = 'keywordsView.tpl';
-	$ret->status = $tproject_mgr->updateKeyword($args->testproject_id,$args->keyword_id,
-										  $args->keyword,$args->notes);
-
-	return $ret;
+  return $ret;
 }
 
 /*
  * Deletes the keyword 
-*/
-function do_delete(&$smarty,&$args,&$tproject_mgr)
+ */
+function do_delete(&$args,&$guiObj,&$tproject_mgr)
 {
-	$main_descr = lang_get('testproject') . TITLE_SEP . $args->testproject_name;
+  $guiObj->submit_button_action = 'do_update';
+  $guiObj->submit_button_label = lang_get('btn_save');
+  $guiObj->main_descr = lang_get('keyword_management');
+  $guiObj->action_descr = lang_get('delete_keyword');
 
-	$smarty->assign('submit_button_label',lang_get('btn_save'));
-	$smarty->assign('submit_button_action','do_update');
-	$smarty->assign('main_descr',$main_descr);
-	$smarty->assign('action_descr',lang_get('edit_keyword'));
+  $ret = new stdClass();
+  $ret->template = 'keywordsView.tpl';
 
-	$ret = new stdClass();
-	$ret->template = 'keywordsView.tpl';
-	$ret->status = $tproject_mgr->deleteKeyword($args->keyword_id);
+  $dko = array('context' => 'getTestProjectName',
+               'tproject_id' => $args->tproject_id);
+  $ret->status = $tproject_mgr->deleteKeyword($args->keyword_id,$dko);
 
-	return $ret;
+  return $ret;
 }
 
-
+/**
+ *
+ */
 function getKeywordErrorMessage($code)
 {
-	switch($code)
-	{
-		case tlKeyword::E_NAMENOTALLOWED:
-			$msg = lang_get('keywords_char_not_allowed'); 
-			break;
+  switch($code)
+  {
+    case tlKeyword::E_NAMENOTALLOWED:
+      $msg = lang_get('keywords_char_not_allowed'); 
+      break;
 
-		case tlKeyword::E_NAMELENGTH:
-			$msg = lang_get('empty_keyword_no');
-			break;
+    case tlKeyword::E_NAMELENGTH:
+      $msg = lang_get('empty_keyword_no');
+      break;
 
-		case tlKeyword::E_DBERROR:
-		case ERROR: 
-			$msg = lang_get('kw_update_fails');
-			break;
+    case tlKeyword::E_DBERROR:
+    case ERROR: 
+      $msg = lang_get('kw_update_fails');
+      break;
 
-		case tlKeyword::E_NAMEALREADYEXISTS:
-			$msg = lang_get('keyword_already_exists');
-			break;
+    case tlKeyword::E_NAMEALREADYEXISTS:
+      $msg = lang_get('keyword_already_exists');
+      break;
 
-		default:
-			$msg = 'ok';
+    default:
+      $msg = 'ok';
   }
   return $msg;
 }
 
 /**
- * @param $db resource the database connection handle
- * @param $user the current active user
- * 
- * @return boolean returns true if the page can be accessed
+ *
+ *
  */
-function checkRights(&$db,&$user)
+function initializeGui(&$args)
 {
-	return $user->hasRight($db,'mgt_modify_key') && $user->hasRight($db,'mgt_view_key');
+  $gui = new stdClass();
+  $gui->user_feedback = '';
+
+  $gui->tproject_id = $args->tproject_id;
+  $gui->canManage = $args->canManage;
+  $gui->mgt_view_events = $args->mgt_view_events;
+  $gui->notes = $args->notes;
+  $gui->name = $args->keyword;
+  $gui->keyword = $args->keyword;
+  $gui->keywordID = $args->keyword_id;
+
+  return $gui;
 }
-?>

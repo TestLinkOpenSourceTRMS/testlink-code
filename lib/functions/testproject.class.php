@@ -325,8 +325,10 @@ protected function getTestProject($condition = null, $opt=null)
 
   $my = array('options' => array('output' => 'full'));
   $my['options'] = array_merge($my['options'],(array)$opt);
-  $doParse = true;
   
+  $doParse = true;
+  $tprojCols = ' testprojects.* ';
+
   switch($my['options']['output'])
   {
     case 'existsByID':
@@ -346,10 +348,13 @@ protected function getTestProject($condition = null, $opt=null)
              $this->tree_manager->node_descr_id['testproject'];
     break;
   
+    case 'name':
+      $doParse = false;
+      $tprojCols = 'testprojects.id';
+
     case 'full':
     default:
-      $doParse = true;
-      $sql = "/* debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
+      $sql = "/* debugMsg */ SELECT {$tprojCols}, nodes_hierarchy.name ".
              " FROM {$this->object_table} testprojects, " .
              " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
              " WHERE testprojects.id = nodes_hierarchy.id ";
@@ -1184,7 +1189,7 @@ function setPublicStatus($id,$status)
   {
     $result = tl::ERROR;
     $my['opt'] = array('checkBeforeDelete' => true, 'nameForAudit' => null,
-                       'context' => '');
+                       'context' => '', 'tproject_id' => null);
 
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
@@ -1206,6 +1211,14 @@ function setPublicStatus($id,$status)
 
     if ($result >= tl::OK && $this->auditCfg->logEnabled)
     {
+      switch($my['opt']['context'])
+      {
+        case 'getTestProjectName':
+          $dummy = $this->get_by_id($my['opt']['tproject_id'],array('output'=>'name'));
+          $my['opt']['context'] = $dummy['name'];
+        break;
+      }
+
       logAuditEvent(TLS("audit_keyword_deleted",$keyword,$my['opt']['context']),
                     "DELETE",$id,"keywords");
     }

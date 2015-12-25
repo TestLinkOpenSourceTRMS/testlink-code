@@ -1367,3 +1367,49 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
   return ($rs ? $rs[0] : null);
 }
 
+/**
+ *
+ *
+ */
+function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
+{
+  // name of caller script
+  $script = basename($_SERVER['PHP_SELF']); 
+  $doExit = false;
+  $action = 'any';
+  $env = array('tproject_id' => 0, 'tplan_id' => 0);
+  $env = array_merge($env, $context);
+  foreach($env as $key => $val)
+  {
+    $env[$key] = intval($val);
+  }  
+  
+  if( $doExit = (is_null($env) || $env['tproject_id'] == 0) )
+  {
+    logAuditEvent(TLS("audit_security_no_environment",$script), $action,$userObj->dbID,"users");
+  }
+   
+  if( !$doExit )
+  {
+    foreach($rightsToCheck->items as $verboseRight)
+    {
+      $status = $userObj->hasRight($dbHandler,$verboseRight,
+                  $env['tproject_id'],$env['tplan_id']);
+  
+      if( ($doExit = !$status) && ($rightsToCheck->mode == 'and'))
+      { 
+        $action = 'any';
+        logAuditEvent(TLS("audit_security_user_right_missing",$userObj->login,$script,$action),
+                  $action,$userObj->dbID,"users");
+        break;
+      }
+    }
+  }
+
+  if ($doExit)
+  {   
+    redirect($_SESSION['basehref'],"top.location");
+    exit();
+  }
+}
+

@@ -82,12 +82,12 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
     
     {if $gui->canManage != ""}
       <input type="button" name="do_import" value="{$labels.btn_import}" 
-        onclick="location='{$basehref}/lib/keywords/keywordsImport.php'" />
+        onclick="location='{$basehref}/lib/keywords/keywordsImport.php?tproject_id={$gui->tproject_id}'" />
     {/if}
   
       {if $gui->keywords != ''}
       <input type="button" name="do_export" value="{$labels.btn_export}" 
-        onclick="location='{$basehref}/lib/keywords/keywordsExport.php?doAction=export'" />
+        onclick="location='{$basehref}/lib/keywords/keywordsExport.php?doAction=export&tproject_id={$gui->tproject_id}'" />
       {/if}
       </form>
   </div>

@@ -270,5 +270,8 @@ function initializeGui(&$args)
   $gui->keyword = $args->keyword;
   $gui->keywordID = $args->keyword_id;
 
+  $gui->editUrl = "lib/keywords/keywordsEdit.php?" .
+                  "tproject_id={$gui->tproject_id}"; 
+
   return $gui;
 }

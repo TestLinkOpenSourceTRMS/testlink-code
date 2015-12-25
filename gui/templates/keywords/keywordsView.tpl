@@ -14,8 +14,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get s='warning_delete_keyword' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{$editAction = "lib/keywords/keywordsEdit.php"}
-
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tproject_id}&doAction=do_delete&id=';
@@ -42,7 +40,7 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
     <tr>
       <td>
         {if $gui->canManage != ""}
-          <a href="lib/keywords/keywordsEdit.php?doAction=edit&amp;id={$gui->keywords[kwx]->dbID}">
+          <a href="{$gui->editUrl}&doAction=edit&id={$gui->keywords[kwx]->dbID}">
         {/if}
         {$gui->keywords[kwx]->name|escape}
         {if $gui->canManage != ""}

@@ -14,10 +14,10 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args($db);
 $gui = $args;
+$gui->editUrl = "lib/keywords/keywordsEdit.php?" .
+                "tproject_id={$gui->tproject_id}"; 
 
 $smarty = new TLSmarty();
-//$smarty->assign('action',null);
-//$smarty->assign('sqlResult',null);
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 

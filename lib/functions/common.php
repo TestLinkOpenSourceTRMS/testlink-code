@@ -1394,8 +1394,7 @@ function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
     foreach($rightsToCheck->items as $verboseRight)
     {
       $status = $userObj->hasRight($dbHandler,$verboseRight,
-                  $env['tproject_id'],$env['tplan_id']);
-  
+                  $env['tproject_id'],$env['tplan_id'],true);
       if( ($doExit = !$status) && ($rightsToCheck->mode == 'and'))
       { 
         $action = 'any';

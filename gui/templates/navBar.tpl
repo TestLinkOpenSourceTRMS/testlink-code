@@ -12,7 +12,7 @@ title bar + menu
           s="title_events,event_viewer,home,testproject,title_specification,title_execute,
              title_edit_personal_data,th_tcid,link_logout,title_admin,
              search_testcase,title_results,title_user_mgmt"}
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
+{$cfg_section=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -28,7 +28,7 @@ title bar + menu
   <span class="bold">{$gui->whoami|escape}</span>
   <span>&nbsp;&nbsp;&nbsp;<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i"
           tabindex="6"><img src="{$tlImages.account}" title="{$labels.title_edit_personal_data}"></a>
-        <a href="logout.php" target="_parent" accesskey="q">
+        <a href="logout.php?viewer={$gui->viewer}" target="_parent" accesskey="q">
         <img src="{$tlImages.logout}" title="{$labels.link_logout}"></a>
   </span>
   <span style="float:right;">TestLink {$tlVersion|escape}</span>
@@ -37,7 +37,7 @@ title bar + menu
 <div class="menu_bar" style="margin: 0px 5px 0px 135px;">
 {if $gui->TestProjects != ""}
   <div style="display: inline; float: right;">
-    <form style="display:inline" name="productForm" action="lib/general/navBar.php" method="get">
+    <form style="display:inline" name="productForm" action="lib/general/navBar.php?viewer={$gui->viewer}" method="get">
        {$labels.testproject}
       <select style="font-size: 80%;position:relative; top:-1px;" name="testproject" onchange="this.form.submit();">
           {foreach key=tproject_id item=tproject_name from=$gui->TestProjects}

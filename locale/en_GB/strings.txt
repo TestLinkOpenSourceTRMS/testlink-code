@@ -3955,5 +3955,8 @@ $TLS_hint_you_need_to_be_logged = "You need to be logged in order to use link";
 $TLS_security_check_ko = 'Security check failed';
 $TLS_issue_on_step = "Issue Executing Step number ";
 
-
+$TLS_add_link_to_tlexec = "Add Link in Issue Tracker to Test Case Execution Feature";
+$TLS_dl2tl = 'Link to TestLink Execution: ';
+$TLS_old_style_login = 'Well known login screen';
+$TLS_new_style_login = 'Try the new login screen';
 // ----- END ------------------------------------------------------------------

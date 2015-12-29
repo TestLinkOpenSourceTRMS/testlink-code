@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource login.tpl
 smarty template - login page 
 *}
-{lang_get var='labels' s='login_name,password,btn_login,new_user_q,login,demo_usage,
+{lang_get var='labels' s='login_name,password,btn_login,new_user_q,login,demo_usage,new_style_login,
                          lost_password_q,demo_mode_suggested_user,demo_mode_suggested_password'}
 
 {config_load file="input_dimensions.conf" section="login"}
@@ -24,7 +24,9 @@ window.onload=function()
   <form method="post" name="login_form" action="login.php">
     {if $gui->login_disabled eq 0}
       {* can not escape not because sometimes contains valid HTML like HREF *}
+      {if $gui->note != ''}
       <div class="messages_rounded" style="width:100%;text-align:center;border-radius: 5px;">{$gui->note}</div>
+      {/if}
       <input type="hidden" name="reqURI" value="{$gui->reqURI|escape:'url'}"/>
       <input type="hidden" name="destination" value="{$gui->destination|escape:'url'}"/>
       <div class="messages_rounded" style="width:100%;border-radius: 5px;">
@@ -56,6 +58,8 @@ window.onload=function()
     <a href="lostPassword.php">{$labels.lost_password_q}</a>
   </p>
   {/if}
+  
+  <a href="login.php?viewer=new">{$labels.new_style_login}</a><br />
   
   {include file="inc_copyrightnotice.tpl"}
 

@@ -6,7 +6,8 @@
  *
  * This file manages the navigation bar. 
  *
- * internal revisions
+ * @internal revisions
+ * @since 1.9.15
  *
 **/
 require_once('../../config.inc.php');
@@ -106,6 +107,7 @@ if ($args->testproject)
 }
 
 $gui->grants = getGrants($db,$args->user);
+$gui->viewer = $args->viewer;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -125,9 +127,16 @@ function getGrants(&$db,&$userObj)
 function init_args()
 {
 	$iParams = array("testproject" => array(tlInputParameter::INT_N),
-                   "caller" => array(tlInputParameter::STRING_N,1,6));
+                   "caller" => array(tlInputParameter::STRING_N,1,6),
+                   "viewer" => array(tlInputParameter::STRING_N, 0, 3)
+                  );
 	$args = new stdClass();
 	$pParams = G_PARAMS($iParams,$args);
+
+  if( is_null($args->viewer) || $args->viewer == '' )
+  {
+    $args->viewer = isset($_SESSION['viewer']) ? $_SESSION['viewer'] : null;
+  }  
 
   $args->user = $_SESSION['currentUser'];
 	return $args;

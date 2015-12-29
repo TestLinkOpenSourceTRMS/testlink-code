@@ -31,19 +31,19 @@ class jirarestInterface extends issueTrackerInterface
 	 **/
 	function __construct($type,$config,$name)
 	{
-    $this->name = $name;
-		$this->interfaceViaDB = false;
-    $this->support = new jiraCommons();
-    $this->support->guiCfg = array('use_decoration' => true);
+      $this->name = $name;
+	  $this->interfaceViaDB = false;
+      $this->support = new jiraCommons();
+      $this->support->guiCfg = array('use_decoration' => true);
 
-		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+	  $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
-	  if($this->setCfg($config) && $this->checkCfg())
-    {
-      $this->completeCfg();
-      $this->connect();
-      $this->guiCfg = array('use_decoration' => true);
-    }  
+      if($this->setCfg($config) && $this->checkCfg())
+      {
+        $this->completeCfg();
+        $this->connect();
+        $this->guiCfg = array('use_decoration' => true);
+      } 
 	}
 
    /**
@@ -91,10 +91,10 @@ class jirarestInterface extends issueTrackerInterface
 	}
 
 	/**
-   * useful for testing 
-   *
-   *
-   **/
+     * useful for testing 
+     *
+     *
+     **/
 	function getAPIClient()
 	{
 		return $this->APIClient;
@@ -162,15 +162,15 @@ class jirarestInterface extends issueTrackerInterface
    **/
 	public function getIssue($issueID)
 	{
-		if (!$this->isConnected())
-		{
-      tLog(__METHOD__ . '/Not Connected ', 'ERROR');
-			return false;
-		}
+	  if (!$this->isConnected())
+	  {
+        tLog(__METHOD__ . '/Not Connected ', 'ERROR');
+		return false;
+	  }
 		
-		$issue = null;
-    try
-		{
+	  $issue = null;
+      try
+	  {
 
 			$issue = $this->APIClient->getIssue($issueID);
       

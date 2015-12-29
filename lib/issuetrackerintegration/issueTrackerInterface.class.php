@@ -142,6 +142,25 @@ abstract class issueTrackerInterface
     }  
     $this->cfg->userinteraction = intval($this->cfg->userinteraction) > 0 ? 1 : 0;
 
+    // From 
+    // http://php.net/manual/it/function.unserialize.php#112823
+    //
+    // After PHP 5.3 an object made by 
+    // SimpleXML_Load_String() cannot be serialized.  
+    // An attempt to do so will result in a run-time 
+    // failure, throwing an exception.  
+    //
+    // If you store such an object in $_SESSION, 
+    // you will get a post-execution error that says this:
+    // Fatal error: Uncaught exception 'Exception' 
+    // with message 'Serialization of 'SimpleXMLElement' 
+    // is not allowed' in [no active file]:0 
+    // Stack trace: #0 {main} thrown in [no active file] 
+    // on line 0
+    //
+    // !!!!! The entire contents of the session will be lost.
+    // http://stackoverflow.com/questions/1584725/quickly-convert-simplexmlobject-to-stdclass
+    $this->cfg = json_decode(json_encode($this->cfg));
     return $retval;
   }
 

@@ -632,24 +632,32 @@ class tlIssueTracker extends tlObject
   }
 
 
-  /*
+  /**
    *
-     *
+   *
    */
   function getInterfaceObject($tprojectID)
   {
-    $its = null;
     $issueT = $this->getLinkedTo($tprojectID);
-    
+    $name = $issueT['issuetracker_name'];
+    if(isset($_SESSION['its'][$name]))
+    {
+      return $_SESSION['its'][$name]; 
+    }  
+
     try
     {
       if( !is_null($issueT)  )
       {
         $itd = $this->getByID($issueT['issuetracker_id']);
         $iname = $itd['implementation'];
-        $its = new $iname($itd['implementation'],$itd['cfg'],$itd['name']);
+        $_SESSION['its'][$name] = new $iname($iname,$itd['cfg'],$itd['name']);
       }
-      return  $its;
+      else
+      {
+        $_SESSION['its'][$name] = null;
+      }
+      return $_SESSION['its'][$name];
     }
     catch (Exception $e)
     {

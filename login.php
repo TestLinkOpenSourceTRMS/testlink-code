@@ -12,7 +12,7 @@
  * @link        http://www.testlink.org
  * 
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *              
  **/
 
@@ -93,8 +93,9 @@ function init_args()
                    "reqURI" => array(tlInputParameter::STRING_N,0,4000),
                    "action" => array(tlInputParameter::STRING_N,0, 10),
                    "destination" => array(tlInputParameter::STRING_N, 0, 255),
-                   "loginform_token" => array(tlInputParameter::STRING_N, 0, 255)
-  );
+                   "loginform_token" => array(tlInputParameter::STRING_N, 0, 255),
+                   "viewer" => array(tlInputParameter::STRING_N, 0, 3),
+                  );
   $pParams = R_PARAMS($iParams);
 
   $args = new stdClass();
@@ -106,7 +107,10 @@ function init_args()
   $args->destination = urldecode($pParams['destination']);
   $args->loginform_token = urldecode($pParams['loginform_token']);
 
-  if ($pParams['action'] == 'ajaxcheck' || $pParams['action'] == 'ajaxlogin') 
+  $args->viewer = $pParams['viewer']; 
+
+  $k2c = array('ajaxcheck' => 'do','ajaxlogin' => 'do');
+  if (isset($k2c[$pParams['action']])) 
   {
     $args->action = $pParams['action'];
   } 
@@ -118,6 +122,7 @@ function init_args()
   {
     $args->action = 'loginform';
   }
+
   return $args;
 }
 
@@ -128,6 +133,7 @@ function init_args()
 function init_gui(&$db,$args)
 {
   $gui = new stdClass();
+  $gui->viewer = $args->viewer;
 
   $secCfg = config_get('config_check_warning_frequence');
   $gui->securityNotes = '';
@@ -168,7 +174,7 @@ function init_gui(&$db,$args)
     break;
         
     default:
-      $gui->note = lang_get('please_login');
+      $gui->note = '';
     break;
   }
   $gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
@@ -227,7 +233,14 @@ function renderLoginScreen($guiObj)
   
   $smarty = new TLSmarty();
   $smarty->assign('gui', $guiObj);
-  $smarty->display($templateCfg->default_template);
+
+  $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+  if( $guiObj->viewer == 'new' )
+  {
+    $tpl = 'login-model-marcobiedermann.tpl';
+  }  
+  $smarty->display($tpl);
+
 }
 
 
@@ -260,7 +273,8 @@ function authorizePostProcessing($argsObj,$op)
       else
       {
         // ... or show main page
-        redirect($_SESSION['basehref'] . "index.php?caller=login" . 
+        $_SESSION['viewer'] = $argsObj->viewer;
+        redirect($_SESSION['basehref'] . "index.php?caller=login&viewer={$argsObj->viewer}" . 
                  ($argsObj->preqURI ? "&reqURI=".urlencode($argsObj->preqURI) :""));
       
       }

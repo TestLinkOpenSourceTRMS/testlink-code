@@ -18,6 +18,10 @@ require_once('users.inc.php');
 require_once('email_api.php');
 
 $templateCfg = templateConfiguration();
+
+$args = init_args();
+$gui = $args;
+
 if (!config_get('user_self_signup'))
 {
   $smarty = new TLSmarty();
@@ -28,12 +32,10 @@ if (!config_get('user_self_signup'))
   $smarty->display('workAreaSimple.tpl');
   exit();
 }
-$args = init_args();
 doDBConnect($db,database::ONERROREXIT);
 
-
-$message = lang_get('your_info_please');
-if($args->doEditUser)
+$message = ''; //lang_get('your_info_please');
+if( !is_null($args->doEditUser) )
 {
   if(strcmp($args->password,$args->password2))
   {
@@ -60,7 +62,9 @@ if($args->doEditUser)
           notifyGlobalAdmins($db,$user);
         }
         logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
-        redirect(TL_BASE_HREF . "login.php?note=first");
+        
+        $url2go = "login.php?viewer={$gui->viewer}&note=first";
+        redirect(TL_BASE_HREF . $url2go);
         exit();
       }
       else 
@@ -76,13 +80,19 @@ if($args->doEditUser)
 }
 
 $smarty = new TLSmarty();
-$gui = $args;
 
 // we get info about THE DEFAULT AUTHENTICATION METHOD
 $gui->external_password_mgmt = tlUser::isPasswordMgtExternal(); 
 $gui->message = $message;
 $smarty->assign('gui',$gui);
-$smarty->display($templateCfg->default_template);
+
+$tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+if( $args->viewer == 'new' )
+{
+  $tpl='firstLogin-model-marcobiedermann.tpl';
+}  
+
+$smarty->display($tpl);
 
 
 /**
@@ -94,14 +104,17 @@ function init_args()
   $args = new stdClass();
   $args->pwdInputSize = config_get('loginPagePasswordSize');
  
-  $iParams = array("doEditUser" => array(tlInputParameter::STRING_N,0,1),
-                   "login" => array(tlInputParameter::STRING_N,0,30),
-                   "password" => array(tlInputParameter::STRING_N,0,$args->pwdInputSize),
-                   "password2" => array(tlInputParameter::STRING_N,0,$args->pwdInputSize),
-                   "firstName" => array(tlInputParameter::STRING_N,0,30),
-                   "lastName" => array(tlInputParameter::STRING_N,0,30),
-                   "email" => array(tlInputParameter::STRING_N,0,100));
-  P_PARAMS($iParams,$args);
+  $iParams = array("doEditUser" => array('POST',tlInputParameter::STRING_N,0,1),
+                   "login" => array('POST',tlInputParameter::STRING_N,0,30),
+                   "password" => array('POST',tlInputParameter::STRING_N,0,$args->pwdInputSize),
+                   "password2" => array('POST',tlInputParameter::STRING_N,0,$args->pwdInputSize),
+                   "firstName" => array('POST',tlInputParameter::STRING_N,0,30),
+                   "lastName" => array('POST',tlInputParameter::STRING_N,0,30),
+                   "email" => array('POST',tlInputParameter::STRING_N,0,100),
+                   "viewer" => array('GET',tlInputParameter::STRING_N, 0, 3),
+                   );
+  I_PARAMS($iParams,$args);
+
   return $args;
 }
 
@@ -150,13 +163,16 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
     }  
   }
 
-  $mail['to'] = implode(',',$mail['to']); // email_api uses ',' as list separator
-  $mail['subject'] = lang_get('new_account');
-  $mail['body'] = lang_get('new_account') . "\n";
-  $mail['body'] .= " user:$userObj->login\n"; 
-  $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
-  $mail['body'] .= " email:{$userObj->emailAddress}\n";
-    
-  // silence errors
-  @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
+  if($mail['to'] != '')
+  {
+    $mail['to'] = implode(',',$mail['to']); // email_api uses ',' as list separator
+    $mail['subject'] = lang_get('new_account');
+    $mail['body'] = lang_get('new_account') . "\n";
+    $mail['body'] .= " user:$userObj->login\n"; 
+    $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
+    $mail['body'] .= " email:{$userObj->emailAddress}\n";
+      
+    // silence errors
+    @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
+  }  
 }

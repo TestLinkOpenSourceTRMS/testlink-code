@@ -432,9 +432,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     if($this->args->advanced_filter_mode)
     {
+      // 20160106 - fman
+      // it's not clear why we have choosen to do 
+      // this check, because this makes that
+      // config option advanced_filter_mode_choice
+      // does not work as expected.
       switch($this->mode)
       {
         case 'plan_add_mode':
+        case 'edit_mode':
           $this->all_filters['filter_workflow_status'] = 
             array("POST", tlInputParameter::ARRAY_INT);
 
@@ -442,6 +448,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
             array("POST", tlInputParameter::ARRAY_INT);
         break;
       }
+
     }
 
     foreach ($this->all_filters as $name => $info) 

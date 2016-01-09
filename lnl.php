@@ -10,7 +10,7 @@
  * 
  * @package   TestLink
  * @author    franciscom
- * @copyright 2012,2015 TestLink community
+ * @copyright 2012,2016 TestLink community
  * @link      http://www.testlink.org/
  * @since     1.9.15
  *
@@ -199,7 +199,7 @@ function init_args(&$dbHandler)
     break;
 
     default:
-      throw new Exception("Aborting - Bad API Key lenght", 1);
+     throw new Exception("Aborting - Bad API Key lenght", 1);
     break;  
   }
 
@@ -212,6 +212,11 @@ function init_args(&$dbHandler)
   }
   else
   {
+    if(is_null($args->type) || trim($args->type) == '')
+    {
+      throw new Exception("Aborting - Bad type", 1);
+    } 
+
     if($args->type == 'exec')
     {
       $tex = DB_TABLE_PREFIX . 'executions';
@@ -219,7 +224,7 @@ function init_args(&$dbHandler)
       $rs = $dbHandler->get_recordset($sql);
       if( is_null($rs) )
       {
-        die();
+        die(__FILE__ . '-' . __LINE__);
       }  
 
       $rs = $rs[0];
@@ -228,7 +233,7 @@ function init_args(&$dbHandler)
       $rs = $dbHandler->get_recordset($sql);
       if( is_null($rs) )
       {
-        die();
+        die(__FILE__ . '-' . __LINE__);
       }  
       $rs = $rs[0];
       $args->apikey = $rs['api_key'];
@@ -239,7 +244,7 @@ function init_args(&$dbHandler)
     $kerberos = new stdClass();
     $kerberos->args = $args;
     $kerberos->method = null;
-    
+
     if( setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$kerberos,$opt) )
     {
       $args->light = 'green';

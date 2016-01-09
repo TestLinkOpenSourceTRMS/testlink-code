@@ -1288,7 +1288,6 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
       break;
     }  
   }  
-  
 
   $status_ok = false;
   if( !is_null($item) )
@@ -1355,6 +1354,10 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
     
     case 'testplan':
       $target = $tables['testplans'];
+    break;
+
+    default:
+      throw new Exception("Aborting - Bad type", 1);
     break;
   }
   

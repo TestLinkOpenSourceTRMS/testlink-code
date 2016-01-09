@@ -9,13 +9,13 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
  * @internal revisions
  * 
- * @since 1.9.14
+ * @since 1.9.15
  **/
 
 /** related functionality */
@@ -7320,9 +7320,12 @@ class testplan extends tlObjectWithAttachments
     $my['opt'] = array('checkIsValid' => false);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
     $fields2get = $my['opt']['checkIsValid'] ? 'id' : '*';
+    
+    $safe = $this->db->prepare_string($apiKey);
+
     $sql = "/* $debugMsg */ " .
            " SELECT {$fields2get} FROM {$this->tables['testplans']} " .
-           " WHERE api_key = '{$apiKey}'";
+           " WHERE api_key = '{$safe}'";
  
     $rs = $this->db->get_recordset($sql);
     return ($rs ? $rs[0] : null);

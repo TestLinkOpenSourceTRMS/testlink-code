@@ -3543,6 +3543,7 @@ public function getTestCaseAttachments($args)
     // because this is how TestLink works when this action is done on GUI
     if( $status_ok && $this->user->globalRole->dbID != TL_ROLES_ADMIN)
     {
+      $status_ok = FALSE;
       if( $this->userHasRight("mgt_modify_tc",self::CHECK_PUBLIC_PRIVATE_ATTR) )
       {
         $status_ok = true;

@@ -3206,7 +3206,7 @@ $TLS_title_del_tc = "Delete Test Case ";
 
 // ----- lib/usermanagement/rolesview.php -----
 $TLS_error_role_deletion = "The role couldn't be deleted!";
-
+$TLS_role_management = 'Role Management';
 
 // ----- lib/usermanagement/usersassign.php -----
 $TLS_no_test_projects = "There are no Test Projects defined";

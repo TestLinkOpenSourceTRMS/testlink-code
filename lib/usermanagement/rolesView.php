@@ -5,7 +5,7 @@
  *
  * @filesource  rolesView.php
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.15
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -17,7 +17,11 @@ $templateCfg = templateConfiguration();
 init_global_rights_maps();
 $args = init_args();
 
-$affectedUsers = null;
+$gui = initializeGui($db,$args);
+
+
+
+
 $doDelete = false;
 $role = null;
 
@@ -27,8 +31,8 @@ switch ($args->doAction)
     $role = tlRole::getByID($db,$args->roleid,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
     if ($role)
     {
-      $affectedUsers = $role->getAllUsersWithRole($db);
-      $doDelete = (sizeof($affectedUsers) == 0);
+      $gui->affectedUsers = $role->getAllUsersWithRole($db);
+      $doDelete = (sizeof($gui->affectedUsers) == 0);
     }
   break;
 
@@ -57,19 +61,13 @@ if($doDelete)
     die($msg);
   }  
 }
-$roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 
-$highlight = initialize_tabsmenu();
-$highlight->view_roles = 1;
+$gui->roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+
 
 $smarty = new TLSmarty();
-$smarty->assign('highlight',$highlight);
-$smarty->assign('grants',getGrantsForUserMgmt($db,$args->currentUser));
-$smarty->assign('roles',$roles);
-$smarty->assign('id',$args->roleid);
+$smarty->assign('gui',$gui);
 $smarty->assign('sqlResult',$userFeedback);
-$smarty->assign('affectedUsers',$affectedUsers);
-$smarty->assign('role_id_replacement',config_get('role_replace_for_deleted_roles'));
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
@@ -87,6 +85,23 @@ function init_args()
   $args->currentUser = $_SESSION['currentUser'];
   
   return $args;
+}
+
+/**
+ *
+ */
+function initializeGui(&$db,&$args)
+{
+  $gui = new stdClass();
+  $gui->highlight = initialize_tabsmenu();
+  $gui->highlight->view_roles = 1;
+  $gui->grants = getGrantsForUserMgmt($db,$args->currentUser);
+  $gui->affectedUsers = null;
+  $gui->roleid = $args->roleid;
+  $gui->main_title = lang_get('role_management');
+  $gui->role_id_replacement = config_get('role_replace_for_deleted_roles');
+  
+  return $gui;  
 }
 
 

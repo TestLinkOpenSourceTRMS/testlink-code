@@ -1279,6 +1279,8 @@ $TLS_title_user_mgmt = "User Management";
 $TLS_warning_empty_role_name = "Please give a name to Role";
 $TLS_warning_modify_role = "Really modify the role?";
 $TLS_th_reqmgrsystem_rights = 'Req. Management System';
+$TLS_assign_tproject_roles = "Role Management - Assign Test Project roles";
+$TLS_assign_tplan_roles = "Role Management - Assign Test Plan roles";
 
 
 

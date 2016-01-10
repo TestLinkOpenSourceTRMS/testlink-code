@@ -84,15 +84,11 @@ $(document).ready(function() {
 </head>
 <body>
 
-<h1 class="title">{$labels.title_user_mgmt} - {$labels.title_assign_roles}</h1>
+<h1 class="title">{$gui->main_title}</h1>
 {$umgmt="lib/usermanagement"}
 {$my_feature_name=''}
 
-{***** TABS *****}
-{$highlight=$gui->highlight}
-{$grants=$gui->grants}
-
-{include file="usermanagement/tabsmenu.tpl"}
+{include file="usermanagement/menu.inc.tpl"}
 <div class="workBack">
 
 {include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}

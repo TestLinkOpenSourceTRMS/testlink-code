@@ -10,12 +10,12 @@
  * then to change Test Project user need to use main Test Project Combo
  * 
  * @package 	  TestLink
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2016, TestLink community
  * @filesource  usersAssign.php
  * @link 		    http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
  */
 
@@ -38,6 +38,8 @@ $tplanMgr = new testplan($db);
 $args = init_args();
 $gui = initializeGui($db,$args);
 
+$lbl = initLabels();
+
 $target = new stdClass();
 $target->testprojectID = null;
 $target->testplanID = null;
@@ -47,9 +49,11 @@ switch($args->featureType)
 {
     case "testproject":
     	$gui->highlight->assign_users_tproject = 1;
-    	$gui->roles_updated = lang_get("test_project_user_roles_updated");
-    	$gui->not_for_you = lang_get("testproject_roles_assign_disabled");
-    	$assignRolesFor = $args->featureType;
+    	$gui->roles_updated = $lbl["test_project_user_roles_updated"];
+    	$gui->not_for_you = $lbl["testproject_roles_assign_disabled"];
+    	$gui->main_title = $lbl["assign_tproject_roles"];
+
+      $assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->featureID > 0 ? $args->featureID : null;
     	$featureMgr = &$tprojectMgr;
     break;
@@ -58,6 +62,8 @@ switch($args->featureType)
       $gui->highlight->assign_users_tplan = 1;
     	$gui->roles_updated = lang_get("test_plan_user_roles_updated");
     	$gui->not_for_you = lang_get("testplan_roles_assign_disabled");
+      $gui->main_title = $lbl["assign_tplan_roles"];
+
     	$assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->testprojectID;
     	$featureMgr = &$tplanMgr;
@@ -68,10 +74,10 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
 {
     if(checkRightsForUpdate($db,$args->user,$args->testprojectID,$args->featureType,$args->featureID))
     {
-        doUpdate($db,$args,$featureMgr);
-        if( $gui->user_feedback == '' )
-        {
-        	$gui->user_feedback = $gui->roles_updated;
+      doUpdate($db,$args,$featureMgr);
+      if( $gui->user_feedback == '' )
+      {
+        $gui->user_feedback = $gui->roles_updated;
     	}
     }
 }
@@ -85,20 +91,20 @@ $args->user = $_SESSION['currentUser'];
 
 switch($assignRolesFor)
 {
-    case 'testproject':
-        $info = getTestProjectEffectiveRoles($db,$tprojectMgr,$args,$gui->users);
-        list($gui->userFeatureRoles,$gui->features,$gui->featureID) = $info;
-        $target->testprojectID = $gui->featureID;
-    break;
+  case 'testproject':
+    $info = getTestProjectEffectiveRoles($db,$tprojectMgr,$args,$gui->users);
+    list($gui->userFeatureRoles,$gui->features,$gui->featureID) = $info;
+    $target->testprojectID = $gui->featureID;
+  break;
         
-    case 'testplan':
-      $info = getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
-		  if( is_null($info) )
-		  {
-			  $gui->user_feedback = lang_get('no_test_plans_available');
-		  }
-      list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
-    break;
+  case 'testplan':
+    $info = getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
+		if( is_null($info) )
+		{
+			$gui->user_feedback = lang_get('no_test_plans_available');
+		}
+    list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
+  break;
 
 }
 
@@ -124,7 +130,6 @@ else
     $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
   }  
   $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
-
 }
 
 $gui->hintImg = '<img src="' . $imgSet['heads_up'] . '" title="' . 
@@ -611,4 +616,15 @@ function initializeGui(&$dbHandler,$argsObj)
   return $gui;
 }
 
-?>
+/**
+ *
+ */
+function initLabels()
+{
+  $tg = array('test_project_user_roles_updated' => null,
+              'testproject_roles_assign_disabled' => null,
+              'assign_tproject_roles' => null,
+              'assign_tplan_roles' => null);
+  $labels = init_labels($tg);
+  return $labels;
+}

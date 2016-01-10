@@ -11,11 +11,6 @@ users overview
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
 
-{$userActionMgr="lib/usermanagement/usersEdit.php"}
-{$createUserAction="$userActionMgr?doAction=create"}
-{$editUserAction="$userActionMgr?doAction=edit"}
-{$exportUsersAction="lib/usermanagement/usersExport.php"}
-
 <script type="text/javascript">
 var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 </script>
@@ -47,6 +42,10 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 </style>
 </head>
 
+{$userActionMgr="lib/usermanagement/usersEdit.php"}
+{$createUserAction="$userActionMgr?doAction=create"}
+{$editUserAction="$userActionMgr?doAction=edit"}
+{$exportUsersAction="lib/usermanagement/usersExport.php"}
 
 {lang_get var="labels"
           s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,
@@ -58,9 +57,8 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 <body>
 {if $gui->grants->user_mgmt == "yes"}
 
-  <h1 class="title">{$labels.title_user_mgmt}</h1>
-  {$grants=$gui->grants}  {* transitional code *}
-  {include file="usermanagement/tabsmenu.tpl"}
+  <h1 class="title">{$gui->main_title}</h1>
+  {include file="usermanagement/menu.inc.tpl"}
   <div class="workBack">
 
     {include file="inc_update.tpl" result=$gui->result item="user" 
@@ -95,19 +93,16 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
     </div>
   </div>
   
-  {if $update_title_bar == 1}
-  {literal}
+  {if $gui->update_title_bar == 1}
   <script type="text/javascript">
     parent.titlebar.location.reload();
   </script>
-  {/literal}
   {/if}
-  {if $reload == 1}
-  {literal}
+
+  {if $gui->reload == 1}
   <script type="text/javascript">
     top.location.reload();
   </script>
-  {/literal}
   {/if}
 {else}
   {$labels.no_permissions_for_action}<br />

@@ -6,12 +6,12 @@
  * Allows editing a user
  *
  * @package     TestLink
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2016, TestLink community
  * @filesource  usersEdit.php
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
  */
 require_once('../../config.inc.php');
@@ -23,9 +23,9 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initializeGui();
+$gui = initializeGui($db,$args->user);
+$lbl = initLabels();
 
-$user = null;
 $highlight = initialize_tabsmenu();
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
@@ -53,44 +53,51 @@ switch($args->doAction)
     }  
     else
     {  
-      $user = new tlUser(intval($args->user_id));
-      $user->readFromDB($db);
+      $gui->user = new tlUser(intval($args->user_id));
+      $gui->user->readFromDB($db);
     }  
+    $gui->main_title = $lbl["action_{$args->doAction}_user"];
   break;
   
   case "doCreate":
     $highlight->create_user = 1;
     $gui->op = doCreate($db,$args);
-    $user = $gui->op->user;
+    $gui->user = $gui->op->user;
     $templateCfg->template = $gui->op->template;
+    $gui->main_title = $lbl['action_create_user'];
   break;
   
   case "doUpdate":
     $highlight->edit_user = 1;
     $sessionUserID = $_SESSION['currentUser']->dbID;
     $gui->op = doUpdate($db,$args,$sessionUserID);
-    $user = $gui->op->user;
+    $gui->user = $gui->op->user;
+    $gui->main_title = $lbl['action_edit_user'];
   break;
 
   case "resetPassword":
     $highlight->edit_user = 1;
-    $user = new tlUser($args->user_id);
-    $user->readFromDB($db);
     $passwordSendMethod = config_get('password_reset_send_method');
-    $gui->op = createNewPassword($db,$args,$user,$passwordSendMethod);
+
+    $gui->user = new tlUser($args->user_id);
+    $gui->user->readFromDB($db);
+    $gui->op = createNewPassword($db,$args,$gui->user,$passwordSendMethod);
+    $gui->main_title = $lbl['action_edit_user'];
   break;
   
   case "genAPIKey":
     $highlight->edit_user = 1;
-    $user = new tlUser($args->user_id);
-    $user->readFromDB($db);
-    $gui->op = createNewAPIKey($db,$args,$user);
+    $gui->user = new tlUser($args->user_id);
+    $gui->user->readFromDB($db);
+    $gui->op = createNewAPIKey($db,$args,$gui->user);
+    $gui->main_title = $lbl['action_edit_user'];
   break;
 
   case "create":
   default:
     $highlight->create_user = 1;
-    $user = new tlUser();
+    $gui->user = new tlUser();
+    $gui->main_title = $lbl['action_create_user'];
   break;
 }
 
@@ -101,15 +108,12 @@ unset($roles[TL_ROLES_UNDEFINED]);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 
-
 $smarty->assign('highlight',$highlight);
 $smarty->assign('operation',$gui->op->operation);
 $smarty->assign('user_feedback',$gui->op->user_feedback);
-$smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal($user->authentication));
-$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
-$smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
+$smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal($gui->user->authentication));
 $smarty->assign('optRights',$roles);
-$smarty->assign('userData', $user);
+// $smarty->assign('userData', $user);
 renderGui($smarty,$args,$templateCfg);
 
 
@@ -136,6 +140,8 @@ function init_args()
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
+ 
+  $args->user = $_SESSION['currentUser'];
   return $args;
 }
 
@@ -397,9 +403,12 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 /**
  *
  */
-function initializeGui()
+function initializeGui(&$dbHandler,&$userObj)
 {
   $guiObj = new stdClass(); 
+
+  $guiObj->user = null;
+  
   $guiObj->op = new stdClass();
   $guiObj->op->user_feedback = '';
   $guiObj->op->status = tl::OK;
@@ -419,7 +428,23 @@ function initializeGui()
   $guiObj->auth_method_opt = array_flip($guiObj->auth_method_opt);
 
   $guiObj->optLocale = config_get('locales');
+
+  $guiObj->grants = getGrantsForUserMgmt($dbHandler,$userObj);
+
+  $guiObj->grants->mgt_view_events = 
+    $userObj->hasRight($dbHandler,"mgt_view_events");
+
   return $guiObj;  
+}
+
+/**
+ *
+ */
+function initLabels()
+{
+  $tg = array('action_create_user' => null,'action_edit_user' => null);
+  $labels = init_labels($tg);
+  return $labels;
 }
 
 function checkRights(&$db,&$user)

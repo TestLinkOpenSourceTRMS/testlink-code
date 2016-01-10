@@ -4,8 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create/edit user role
 
 @internal revisions
-@since 1.9.10
-20130317 - franciscom - config options transformed in rights
+@since 1.9.15
 *}
 
 {lang_get var="labels"
@@ -13,7 +12,7 @@ Purpose: smarty template - create/edit user role
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
-             th_platform_rights,demo_update_role_disabled,th_issuetracker_rights,
+             th_platform_rights,demo_update_role_disabled,th_issuetracker_rights,show_event_history,
              th_reqmgrsystem_rights,th_execution_rights,
              th_rolename,th_tp_rights,btn_cancel'}
 
@@ -53,11 +52,7 @@ function validateForm(f)
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
-<h1 class="title">{$labels.title_user_mgmt} - {$labels.caption_define_role}</h1>
-
-{***** TABS *****}
-{include file="usermanagement/tabsmenu.tpl" grants=$gui->grants highlight=$gui->highlight}
-
+<h1 class="title">{$gui->main_title}</h1>
 {include file="inc_update.tpl" user_feedback=$gui->userFeedback}
 
 <div class="workBack">
@@ -73,8 +68,10 @@ function validateForm(f)
   <input type="hidden" name="roleid" value="{$gui->role->dbID}" />
   <table class="common">
     <tr><th>{$labels.th_rolename}
-      {if $gui->mgt_view_events eq "yes" && $gui->role->dbID}
-        src="{$tlImages.info}" onclick="showEventHistoryFor('{$gui->role->dbID}','roles')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+      {if $gui->grants->mgt_view_events eq "yes" && $gui->role->dbID}
+        <img src="{$tlImages.info}" alt="{$labels.show_event_history}"
+        title="{$labels.show_event_history}"        
+        onclick="showEventHistoryFor('{$gui->role->dbID}','roles');" />
       {/if}
     </th></tr>
     <tr><td>

@@ -3231,6 +3231,11 @@ $TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Password Reset can not 
 $TLS_password_cannot_be_reseted_reason = 'Password Reset can not be done. Reason: %s ';
 $TLS_login_does_not_exist = "Login %s does not exist";
 
+$TLS_action_create_user = 'User Management - Create User';
+$TLS_action_edit_user = 'User Management - Edit User';
+
+$TLS_action_create_role = 'Role Management - Create Role';
+$TLS_action_edit_role = 'Role Management - Edit Role';
 
 // ----- lib/usermanagement/rolesedit.php -----
 $TLS_error_role_creation = "The role couldn't be created!";

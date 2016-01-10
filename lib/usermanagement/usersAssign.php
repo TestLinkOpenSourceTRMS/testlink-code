@@ -25,6 +25,8 @@ require_once('users.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();
+$imgSet = $smarty->getImages();
+
 $templateCfg = templateConfiguration();
 
 $assignRolesFor = null;
@@ -110,8 +112,9 @@ switch($assignRolesFor)
 
 
 $gui->grants = getGrantsForUserMgmt($db,$args->user,$target->testprojectID,-1);
-
 $gui->accessTypeImg = '';
+
+
 if(is_null($gui->features) || count($gui->features) == 0)
 {
   $gui->features = null;
@@ -122,7 +125,6 @@ if(is_null($gui->features) || count($gui->features) == 0)
 }
 else
 {
-  $imgSet = $smarty->getImages();
   $accessKey = 'vorsicht';
   if( isset($gui->features[$gui->featureID]) )
   {

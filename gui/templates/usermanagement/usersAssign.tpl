@@ -3,7 +3,7 @@ Testlink: smarty template -
 @filesource usersAssign.tpl
 
 @internal revisions
-@since 1.9.14
+@since 1.9.15
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
@@ -11,6 +11,8 @@ Testlink: smarty template -
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl" css_only=1}
+
+{include file="bootstrap.inc.tpl"}
 
 <script language="JavaScript" type="text/javascript">
 /*

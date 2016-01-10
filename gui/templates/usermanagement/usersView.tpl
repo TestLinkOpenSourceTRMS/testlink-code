@@ -4,7 +4,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 users overview
 @filesource usersView.tpl
 @internal revisions
-@since 1.9.9
+@since 1.9.15
 
 *}
 
@@ -40,6 +40,8 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
     background-image: url({$tlImages.demo_mode});
 {rdelim}
 </style>
+
+{include file="bootstrap.inc.tpl"}
 </head>
 
 {$userActionMgr="lib/usermanagement/usersEdit.php"}

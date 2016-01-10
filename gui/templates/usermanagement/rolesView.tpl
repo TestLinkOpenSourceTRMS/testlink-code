@@ -25,6 +25,7 @@ Purpose: smarty template - View defined roles
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 </head>
 
 <body {$body_onload}>

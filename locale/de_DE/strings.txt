@@ -3641,7 +3641,14 @@ $TLS_testCaseStatus_final = 'Finale';
 // printDocument.php
 $TLS_report_test_plan_design = 'Test Plan Design Bericht';	
 $TLS_report_test_plan_execution = 'Test Plan Ausführungs Bericht';	
-$TLS_execution_time_metrics = 'Ausführungs Zeit Metriken';			
-					
+$TLS_execution_time_metrics = 'Ausführungs Zeit Metriken';
+
+// notificationAssignmentConfig.tpl
+$TLS_test_project_names = "Test Projekt";
+$TLS_assign_button_label = "Zuweisen";
+$TLS_assign_table_header_fieldvals = "Feld Werte";
+$TLS_assign_table_header_users = "Benutzernamen";
+$TLS_assign_btn_change = "Zuweisungen ändern";
+$TLS_assign_btn_delete = "Zuweisungen löschen";
 // ----- END ------------------------------------------------------------------
 ?>

@@ -278,6 +278,7 @@ abstract class tlObject implements iSerialization
                     'requirements' => DB_TABLE_PREFIX . 'requirements',
                     'req_versions' => DB_TABLE_PREFIX . 'req_versions',
                     'req_revisions' => DB_TABLE_PREFIX . 'req_revisions',
+					'req_notify_assignments' => DB_TABLE_PREFIX . 'req_notify_assignments',
                     'rights' => DB_TABLE_PREFIX . 'rights',
                     'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
                     'role_rights' => DB_TABLE_PREFIX . 'role_rights',

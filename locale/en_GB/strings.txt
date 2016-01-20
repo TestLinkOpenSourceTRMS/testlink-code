@@ -2406,6 +2406,7 @@ $TLS_build_number_help = 'Number of Builds';
 $TLS_href_assign_user_roles = "Assign User Roles";
 $TLS_href_browse_tc = "Browse Test Cases";
 $TLS_href_cfields_management = "Define Custom Fields";
+$TLS_href_process_step_role_assignment = "Assign Roles to Process Steps";
 $TLS_href_cfields_tproject_assign = "Assign Custom Fields";
 $TLS_href_edit_tc = "Test Specification";
 $TLS_href_inventory = "Inventory";
@@ -3962,6 +3963,15 @@ $TLS_hint_you_need_to_be_logged = "You need to be logged in order to use link";
 $TLS_security_check_ko = 'Security check failed';
 $TLS_issue_on_step = "Issue Executing Step number ";
 
+// notificationAssignmentConfig.tpl
+$TLS_test_project_names = "Test Project";
+$TLS_assign_button_label = "Assign";
+$TLS_assign_table_header_fieldvals = "Field Values";
+$TLS_assign_table_header_users = "User Names";
+$TLS_req_change_notification = "<!doctype html><html><body><p>Requirement '%reqTitle' was updated by %modifier. <br></p><p>The state was changed from '%oldFieldVal' to '%reqState'.</p><p>**********************************</p><p>%scope<br><br><p>**********************************</p><p>This email was generated automatically.</p></body></html>";
+$TLS_assign_btn_change = "Change Assignment";
+$TLS_assign_btn_delete = "Delete Assignment";
+=======
 $TLS_add_link_to_tlexec = "Add Link in Issue Tracker to Test Case Execution Feature";
 $TLS_dl2tl = 'Link to TestLink Execution: ';
 $TLS_old_style_login = 'Well known login screen';

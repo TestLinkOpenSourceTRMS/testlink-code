@@ -10,6 +10,7 @@
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
+require_once("../functions/requirement_mgr.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $cfield_mgr = new cfield_mgr($db);
@@ -75,6 +76,8 @@ switch ($args->do_action)
 
 	case 'do_delete':
 		$op = doDelete($args,$cfield_mgr);
+	  $reqMgr = new requirement_mgr($db);
+	  $reqMgr->deleteNotificationFieldAssignmentsByFieldId($args->tproject_id,$args->cfield_id);
 	  $user_feedback = $op->user_feedback;
    	$operation_descr=$op->operation_descr;
 		$templateCfg->template = $op->template;

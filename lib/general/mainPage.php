@@ -152,7 +152,7 @@ if( (strcmp($secCfg, 'ALWAYS') == 0) ||
 
 $gui->opt_requirements = isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
                          $_SESSION['testprojectOptions']->requirementsEnabled : null; 
-
+$gui->userRole = $_SESSION["currentUser"]->globalRole->name;
 $smarty->assign('gui',$gui);
 $smarty->display('mainPage.tpl');
 

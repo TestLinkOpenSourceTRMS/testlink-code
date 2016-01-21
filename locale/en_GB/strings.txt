@@ -3971,7 +3971,7 @@ $TLS_assign_table_header_users = "User Names";
 $TLS_req_change_notification = "<!doctype html><html><body><p>Requirement '%reqTitle' was updated by %modifier. <br></p><p>The state was changed from '%oldFieldVal' to '%reqState'.</p><p>**********************************</p><p>%scope<br><br><p>**********************************</p><p>This email was generated automatically.</p></body></html>";
 $TLS_assign_btn_change = "Change Assignment";
 $TLS_assign_btn_delete = "Delete Assignment";
-=======
+
 $TLS_add_link_to_tlexec = "Add Link in Issue Tracker to Test Case Execution Feature";
 $TLS_dl2tl = 'Link to TestLink Execution: ';
 $TLS_old_style_login = 'Well known login screen';

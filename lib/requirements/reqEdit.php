@@ -324,6 +324,7 @@ function getStatusIdentifier($statusAbbr) {
 	
 function sendMailOnStatusChange(&$db,&$args)
 {
+	mLog($_POST["req_spec_id"]);
 	if(strcmp($_POST["req_spec_id"],"") !== 0) {
 		$fieldMetadataMgr = new cfield_mgr($db);
 		$reqMgr = new requirement_mgr($db);
@@ -332,7 +333,7 @@ function sendMailOnStatusChange(&$db,&$args)
 		
 		foreach($fieldNames as $fieldName => $fieldData) {
 			if(strcmp($fieldName,"Status") === 0) {
-				$reqState = $args->reqStatus;
+				$reqState = getStatusIdentifier($args->reqStatus);
 				$oldFieldVal = getStatusIdentifier($currentReq["status"]);
 			}
 			else
@@ -352,10 +353,12 @@ function sendMailOnStatusChange(&$db,&$args)
 					}
 				}
 			}
+			
+			mLog("reqState: $reqState, oldFieldVal: $oldFieldVal");
 			if(strcmp($oldFieldVal,$reqState) !== 0 && strlen($reqState)!==0) {
 				//string contains <p> and </p> at the end/start
 				if(strcmp($fieldName,"Status") === 0) {
-					$reqState = getStatusIdentifier($reqState);
+					//$reqState = getStatusIdentifier($reqState);
 					$fieldMetadata["id"] = 0;
 				}
 

@@ -185,7 +185,7 @@ $tlCfg->smarty_debug = false;
  *  for security reasons (see http://itsecuritysolutions.org/2012-08-13-TestLink-1.9.3-multiple-vulnerabilities/)
  *  put it out of reach via web or configure access denied.
  */
-$tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
+$tlCfg->log_path = 'C:\xampp\htdocs\TestlinkNew\logs'; /* unix example */
 
 
 /**
@@ -244,7 +244,7 @@ $tlCfg->loggerFilter = null; // default defined on logger.class.php ;
  * Configure using custom_config.inc.php
  * @uses lib/functions/email_api.php
  */
-$g_smtp_host        = '[smtp_host_not_configured]';  # SMTP server MUST BE configured
+//$g_smtp_host        = 'mail.gmx.de';  # SMTP server MUST BE configured
 
 # Configure using custom_config.inc.php
 $g_tl_admin_email     = '[testlink_sysadmin_email_not_configured]'; # for problem/error notification
@@ -255,7 +255,7 @@ $g_return_path_email  = '[return_path_email_not_configured]';
  * Email notification priority (low by default)
  * Urgent = 1, Not Urgent = 5, Disable = 0
  **/
-$g_mail_priority = 5;
+//$g_mail_priority = 5;
 
 /**
  * Taken from mantis for phpmailer config
@@ -267,22 +267,22 @@ $g_mail_priority = 5;
 $g_phpMailer_method = PHPMAILER_METHOD_SMTP;
 
 /** Configure only if SMTP server requires authentication */
-$g_smtp_username    = '';  # user
-$g_smtp_password    = '';  # password
+//$g_smtp_username    = 'lion_milka@gmx.de';  # user
+//$g_smtp_password    = '!234abcD';  # password
 
 /**
  * This control the connection mode to SMTP server. 
  * Can be '', 'ssl','tls'
  * @global string $g_smtp_connection_mode
  */
-$g_smtp_connection_mode = '';
+$g_smtp_connection_mode = 'tls';
 
 /**
  * The smtp port to use.  The typical SMTP ports are 25 and 587.  The port to use
  * will depend on the SMTP server configuration and hence others may be used.
  * @global int $g_smtp_port
  */
-$g_smtp_port = 25;                        
+$g_smtp_port = 587;                        
 
 
 // ----------------------------------------------------------------------------
@@ -1111,7 +1111,7 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
  * Put it out of reach via web or configure access denied.
  *
  **/
-$g_repositoryPath = '/var/testlink/upload_area/';  /* unix example */
+$g_repositoryPath = 'C:\xampp\htdocs\TestlinkNew\upload_area';  /* unix example */
 
 /**
  * compression used within the repository
@@ -1431,7 +1431,9 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_workflow_status = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = ENABLED;
+
+// filter mode choice disabled for this mode because there are no filters benefiting from it
+$tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;
 
 
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_tc_id = ENABLED;

@@ -65,29 +65,57 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
       $authCfg = config_get('authentication');
       if( $authCfg['ldap_automatic_user_creation'] )
       {
-        $user->authentication = 'LDAP';  // force for auth_does_password_match
-        $check = auth_does_password_match($user,$pwd);
-
-        if( $check->status_ok )
+        // Loop through each domain with LDAP method
+        foreach ($authCfg['domain'] AS $authDomain => $domainSettings)
         {
-          $user = new tlUser(); 
-          $user->login = $login;
-          $user->authentication = 'LDAP';
-          $user->isActive = true;
-          $user->setPassword($pwd);  // write password on DB anyway
+          // Make sure to be backward compatible with domain key == method
+          $authMethod = $authDomain;
+          if (is_array($domainSettings) && !empty($domainSettings['method']))
+          {
+            $authMethod = $domainSettings['method'];
+          }
 
-          $user->emailAddress = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_email_field']));
-          $user->firstName = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_firstname_field']));
-          $user->lastName = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_surname_field']));
+          if ('LDAP' == $authMethod)
+          {
+            $user->authentication = $authDomain;  // force for auth_does_password_match
+            $check = auth_does_password_match($user,$pwd);
 
-          $user->firstName = (is_null($user->firstName) || strlen($user->firstName) == 0) ? $login : $user->firstName;
-          $user->lastName = (is_null($user->lastName) || strlen($user->lastName) == 0) ? $login : $user->lastName;
+            if( $check->status_ok )
+            {
+              $user = new tlUser();
+              $user->login = $login;
+              $user->authentication = $authDomain;
+              $user->isActive = true;
+              $user->setPassword($pwd);  // write password on DB anyway - really!?
+
+              $authDetails = array();
+              if(isset($domainSettings['ldap_server']))
+              {
+                // If ldap_server found, assume new config structure
+                $authDetails = $domainSettings;
+              }
+              else
+              {
+                // Fallback to old config structure
+                $authDetails = $authCfg;
+              }
+
+              $user->emailAddress = ldap_get_field_from_username($authDetails,$user->login,strtolower($authDetails['ldap_email_field']));
+              $user->firstName = ldap_get_field_from_username($authDetails,$user->login,strtolower($authDetails['ldap_firstname_field']));
+              $user->lastName = ldap_get_field_from_username($authDetails,$user->login,strtolower($authDetails['ldap_surname_field']));
+
+              $user->firstName = (is_null($user->firstName) || strlen($user->firstName) == 0) ? $login : $user->firstName;
+              $user->lastName = (is_null($user->lastName) || strlen($user->lastName) == 0) ? $login : $user->lastName;
 
 
-          $doLogin = ($user->writeToDB($db) == tl::OK);
-        }  
-      }  
-    }  
+              $doLogin = ($user->writeToDB($db) == tl::OK);
+
+              break;
+            }
+          }
+        }
+      }
+    }
   }
 
   if( $doLogin )
@@ -206,20 +234,22 @@ function auth_does_password_match(&$userObj,$cleartext_password)
   $ret = new stdClass();
   $ret->status_ok = false;
   $ret->msg = sprintf(lang_get('unknown_authentication_method'),$authCfg['method']);
-  
-  $authMethod = $userObj->authentication;
-  switch($userObj->authentication)
-  {
-    case 'DB':
-    case 'LDAP':
-    break;
 
-    default:
-      $authMethod = $authCfg['method'];
-    break;
+  $authDomain = $userObj->authentication;
+  // Verify that user selected auth is valid, else use default
+  if(empty($authDomain) || !array_key_exists($authDomain, $authCfg['domain']))
+  {
+    $authDomain = $authCfg['method'];
   }
 
-  // switch($authCfg['method'])
+  // Get authentication method
+  // Make sure to be backward compatible (key defined method)
+  $authMethod = $authDomain;
+  if(is_array($authCfg['domain'][$authDomain]) && !empty($authCfg['domain'][$authDomain]['method']))
+  {
+    $authMethod = $authCfg['domain'][$authDomain]['method'];
+  }
+
   switch($authMethod)
   {
     case 'LDAP':
@@ -229,8 +259,22 @@ function auth_does_password_match(&$userObj,$cleartext_password)
       $msg[ERROR_LDAP_USER_NOT_FOUND] = lang_get('error_ldap_user_not_found');
       $msg[ERROR_LDAP_BIND_FAILED] = lang_get('error_ldap_bind_failed');
       $msg[ERROR_LDAP_START_TLS_FAILED] = lang_get('error_ldap_start_tls_failed');
+
+      // Resolv LDAP config
+      // Make sure to be backward compatible with old config files (with "global" LDAP settings)
+      $ldapDetails = array();
+      if (isset($authCfg['domain'][$authDomain]['ldap_server']))
+      {
+        // If ldap_server found, assume new config structure
+        $ldapDetails = $authCfg['domain'][$authDomain];
+      }
+      else
+      {
+        // Fallback to old config structure
+        $ldapDetails = $authCfg;
+      }
       
-      $xx = ldap_authenticate($userObj->login, $cleartext_password);
+      $xx = ldap_authenticate($ldapDetails, $userObj->login, $cleartext_password);
       $ret->status_ok = $xx->status_ok;
       $ret->msg = $xx->status_ok ? 'ok' : $msg[$xx->status_code]; 
     break;

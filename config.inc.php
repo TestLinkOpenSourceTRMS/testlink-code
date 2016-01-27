@@ -289,18 +289,22 @@ $g_smtp_port = 25;
 /* [User Authentication] */
 
 /**
- * Login authentication method:
+ * Authentication objects
+ * Login authentication methods:
  *  'MD5' => use password stored on db => will be deprecated and DB used.
  *  'DB'  => Same as MD5 use password stored on db
  *  'LDAP' => use password from LDAP Server
+ * Method specific settings are defined further down with
+ * $tlCfg->authentication['domain']['<LABEL>'][]
+ * Multiple authentication objects with same method are allowed, for example:
+ * 'LDAP1' => array('method' => 'LDAP', ...),
+ * 'LDAP2' => array('method' => 'LDAP', ...)
  */
-$tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'allowPasswordManagement' => true) ,
-										 'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
+$tlCfg->authentication['domain'] = array('DB' => array('method' => 'DB', 'description' => 'Local DB', 'allowPasswordManagement' => true),
+                                         'LDAP' => array('method' => 'LDAP', 'description' => 'LDAP', 'allowPasswordManagement' => false) );
 
 
-// $tlCfg->authentication['domain'] = array('DB','LDAP')
-
-/* Default Authentication method */
+/** Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';
 
 // Applies only if authentication methos is DB.
@@ -327,16 +331,18 @@ $tlCfg->authentication['SSO_enabled'] = false;
 $tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
 $tlCfg->authentication['SSO_uid_field'] = 'SSL_CLIENT_S_DN_Email';
 
-
-
 /** LDAP authentication credentials */
-$tlCfg->authentication['ldap_server'] = 'localhost';
-$tlCfg->authentication['ldap_port'] = '389';
-$tlCfg->authentication['ldap_version'] = '3'; // could be '2' in some cases
-$tlCfg->authentication['ldap_root_dn'] = 'dc=mycompany,dc=com';
-$tlCfg->authentication['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP binding
-$tlCfg->authentication['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
-$tlCfg->authentication['ldap_tls'] = false; // true -> use tls
+$tlCfg->authentication['domain']['LDAP']['ldap_server'] = 'localhost';
+$tlCfg->authentication['domain']['LDAP']['ldap_port'] = '389';
+$tlCfg->authentication['domain']['LDAP']['ldap_version'] = '3'; // could be '2' in some cases
+$tlCfg->authentication['domain']['LDAP']['ldap_root_dn'] = 'dc=mycompany,dc=com';
+// Left empty for anonymous LDAP binding
+// For dynamic bind account (use the account we are trying to authenticate)
+// use keyword '$login', for example:
+// ...['ldap_bind_dn'] = '$login@COMPANY.DOMAIN.NAME'
+$tlCfg->authentication['domain']['LDAP']['ldap_bind_dn'] = '';
+$tlCfg->authentication['domain']['LDAP']['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
+$tlCfg->authentication['domain']['LDAP']['ldap_tls'] = false; // true -> use tls
 
 // Following configuration parameters are used to build 
 // ldap filter and ldap attributes used by ldap_search()
@@ -347,8 +353,11 @@ $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
 // This can be used to manage situation like explained on post on forum:
 // ActiveDirectory + users in AD group
 // 
-$tlCfg->authentication['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
-$tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
+$tlCfg->authentication['domain']['LDAP']['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
+$tlCfg->authentication['domain']['LDAP']['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
+$tlCfg->authentication['domain']['LDAP']['ldap_firstname_field'] = 'givenname';
+$tlCfg->authentication['domain']['LDAP']['ldap_surname_field'] = 'sN';
+$tlCfg->authentication['domain']['LDAP']['ldap_email_field'] = 'mail';
 
 
 
@@ -361,12 +370,6 @@ $tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Ac
 // name
 // surname
 $tlCfg->authentication['ldap_automatic_user_creation'] = false;
-
-// Configure following fields in custom_config.inc.php according your configuration
-$tlCfg->authentication['ldap_email_field'] = 'mail';
-$tlCfg->authentication['ldap_firstname_field'] = 'givenname';
-$tlCfg->authentication['ldap_surname_field'] = 'sn';
-
 
 
 

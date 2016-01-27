@@ -23,14 +23,13 @@
  */
   
 // Connect and bind to the LDAP directory
-function ldap_connect_bind( $p_binddn = '', $p_password = '', $context = '') 
+function ldap_connect_bind( $authCfg, $p_binddn = '', $p_password = '', $context = '') 
 {
   $ret = new stdClass();
   $ret->status = 0;
   $ret->handler = null;
   $ret->info  = 'LDAP CONNECT OK';
 
-  $authCfg = config_get('authentication');
   $t_message = "Attempting connection to LDAP ";
   $t_ldap_uri = parse_url($authCfg['ldap_server']);
   if(count( $t_ldap_uri ) > 1) 
@@ -135,7 +134,7 @@ function ldap_connect_bind( $p_binddn = '', $p_password = '', $context = '')
 
 // ----------------------------------------------------------------------------
 // Attempt to authenticate the user against the LDAP directory
-function ldap_authenticate( $p_login_name, $p_password ) 
+function ldap_authenticate( $authCfg, $p_login_name, $p_password ) 
 {
   # if password is empty and ldap allows anonymous login, then
   # the user will be able to login, hence, we need to check
@@ -150,8 +149,6 @@ function ldap_authenticate( $p_login_name, $p_password )
   $t_authenticated->status_code = null;
   $t_authenticated->status_verbose = '';
 
-  $authCfg = config_get('authentication');
-
   $t_ldap_organization = $authCfg['ldap_organization'];
   $t_ldap_root_dn = $authCfg['ldap_root_dn'];
   $t_ldap_uid_field = $authCfg['ldap_uid_field']; // 'uid' by default
@@ -161,7 +158,18 @@ function ldap_authenticate( $p_login_name, $p_password )
   $t_search_filter = "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
   // $t_search_attrs = array( $t_ldap_uid_field, 'dn', 'mail','displayName');
   $t_search_attrs = array( $t_ldap_uid_field, 'dn');
-  $t_connect = ldap_connect_bind();
+
+  // Check for special "bind with user credentials config"
+  // e.g. $authCfg['ldap_bind_dn'] contains keyword $login
+  $bind_login = '';
+  $bind_pwd = '';
+  if(strpos($authCfg['ldap_bind_dn'], '$login') !== false)
+  {
+    $bind_login = str_replace('$login', $p_login_name, $authCfg['ldap_bind_dn']);
+    $bind_pwd = $p_password;
+  }
+
+  $t_connect = ldap_connect_bind($authCfg, $bind_login, $bind_pwd);
 
   if( $t_connect->status == 0 )
   {
@@ -249,16 +257,24 @@ function ldap_escape_string( $p_string )
  * @param string $p_field The LDAP field name.
  * @return string The field value or null if not found.
  */
-function ldap_get_field_from_username( $p_username, $p_field ) {
+function ldap_get_field_from_username( $authCfg, $p_username, $p_field ) {
 
-  $authCfg = config_get('authentication');
   $t_ldap_organization = $authCfg['ldap_organization'];
   $t_ldap_root_dn = $authCfg['ldap_root_dn'];
   $t_ldap_uid_field = $authCfg['ldap_uid_field']; // 'uid' by default
 
   $c_username = ldap_escape_string( $p_username );
 
-  $t_connect = @ldap_connect_bind();
+  // Check for special "bind with user credentials config"
+  // e.g. $authCfg['ldap_bind_dn'] contains keyword $login
+  $bind_login = '';
+  $bind_pwd = '';
+  if(strpos($authCfg['ldap_bind_dn'], '$login') !== false)
+  {
+    $bind_login = str_replace('$login', $p_login_name, $authCfg['ldap_bind_dn']);
+    $bind_pwd = $p_password;
+  }
+  $t_connect = @ldap_connect_bind($authCfg, $bind_login, $bind_pwd);
   if ( $t_connect === false ) {
     return null;
   }

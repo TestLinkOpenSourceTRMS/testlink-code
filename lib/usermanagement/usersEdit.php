@@ -415,15 +415,25 @@ function initializeGui(&$dbHandler,&$userObj)
 
 
   $guiObj->authCfg = config_get('authentication');
-  $guiObj->auth_method_opt = array(lang_get('default_auth_method') . 
-                             "(" . $guiObj->authCfg['domain'][$guiObj->authCfg['method']]['description'] . ")" => '');
-
-  $dummy = array_keys($guiObj->authCfg['domain']);
-  foreach($dummy as $xc)
+  $defaultDomainLabel = $guiObj->authCfg['method'];
+  if (array_key_exists('description', $guiObj->authCfg['domain'][$guiObj->authCfg['method']]))
   {
-    // description => html option value
-    $guiObj->auth_method_opt[$xc] = $xc;  
-  }  
+    $defaultDomainLabel = $guiObj->authCfg['domain'][$guiObj->authCfg['method']]['description'];
+  }
+  $guiObj->auth_method_opt = array(lang_get('default_auth_method') . 
+                             " (" . $defaultDomainLabel . ")" => '');
+
+  foreach($guiObj->authCfg['domain'] AS $authDomain => $domainSettings)
+  {
+    if (array_key_exists('description', $domainSettings))
+    {
+      $guiObj->auth_method_opt[$domainSettings['description']] = $authDomain;
+    }
+    else
+    {
+      $guiObj->auth_method_opt[$authDomain] = $authDomain;
+    }
+  }
 
   $guiObj->auth_method_opt = array_flip($guiObj->auth_method_opt);
 

@@ -74,6 +74,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   protected $reqSpecMgr = null;
   protected $reqMgr = null;
   protected $platformMgr = null;
+  protected $itMgr = null;
 
 
   /** Whether the server will run in a testing mode */
@@ -156,6 +157,8 @@ class TestlinkXMLRPCServer extends IXR_Server
   
   public static $importanceParamName = "importance";
   public static $internalIDParamName = "internalid";
+  public static $itsEnabledParamName = "itsenabled";
+  public static $itsNameParamName = "itsname";
   public static $keywordIDParamName = "keywordid";
   public static $keywordNameParamName = "keywords";
   
@@ -242,6 +245,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->tplanMetricsMgr = new tlTestPlanMetrics($this->dbObj);
     $this->reqSpecMgr = new requirement_spec_mgr($this->dbObj);
     $this->reqMgr = new requirement_mgr($this->dbObj);
+    $this->itMgr = new tlIssueTracker($this->dbObj);
     
     $this->tprojectMgr->setAuditEventSource('API-XMLRPC');
       
@@ -1705,6 +1709,8 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @param int $args["active"]  OPTIONAL
    * @param int $args["public"]  OPTIONAL
+   * @param int $args["itsname"]  OPTIONAL
+   * @param boolean $args["itsenabled"]  OPTIONAL
    *   
    * @return mixed $resultInfo
    */
@@ -1713,7 +1719,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->_setArgs($args);
     $msg_prefix = "(" . __FUNCTION__ . ") - ";
     $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
-  
+
     if( $this->$checkRequestMethod($msg_prefix) && 
         $this->userHasRight("mgt_modify_product"))
     {
@@ -1740,10 +1746,19 @@ class TestlinkXMLRPCServer extends IXR_Server
       // other optional parameters (not of complex type)
       // key 2 check with default value is parameter is missing
       $keys2check = array(self::$activeParamName => 1,self::$publicParamName => 1,
-                          self::$noteParamName => '');
+                          self::$noteParamName => '',self::$itsEnabledParamName => 0,
+                          self::$itsNameParamName => '');
       foreach($keys2check as $key => $value)
       {
         $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : $value;
+      }
+
+      $it = null;
+      if ($optional[self::$itsNameParamName] != "") {
+        $it = $this->getIssueTrackerSystem($this->args);
+        if (is_null($it)) {
+          return $this->errors;
+        }
       }
 
       $item->name = htmlspecialchars($this->args[self::$testProjectNameParamName]);
@@ -1753,8 +1768,19 @@ class TestlinkXMLRPCServer extends IXR_Server
       $item->active = ($optional[self::$activeParamName] > 0) ? 1 : 0;
       $item->is_public = ($optional[self::$publicParamName] > 0) ? 1 : 0;
       $item->color = '';
-      
+
       $info=$this->tprojectMgr->create($item);
+
+      // link to an ITS if provided
+      if (! is_null($it))
+        {
+          $this->itMgr->link($it["id"], $info);
+
+          if ($optional[self::$itsEnabledParamName] > 0)
+            {
+              $this->tprojectMgr->enableIssueTracker($info);
+            }
+        }
 
       $resultInfo = array();
       $resultInfo[]= array("operation" => __FUNCTION__,
@@ -6297,6 +6323,34 @@ protected function createAttachmentTempFile()
     return $ret;
   }
 
+  /**
+   * Gets the Issue Tracker System from its name
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param string $args["itsname"] ITS name 
+   * @return mixed $resultInfo      
+   * @access public
+   */
+  public function getIssueTrackerSystem($args)
+  {
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+
+    $this->_setArgs($args);
+
+    if($this->authenticate())
+    {
+      return $this->itMgr->getByName($this->args[self::$itsNameParamName]);
+    } else {
+      $msg = $msg_prefix . sprintf(ITS_NOT_FOUND_STR, $this->args[self::$itsNameParamName]);
+      $this->errors[] = new IXR_Error(ITS_NOT_FOUND, $msg);
+
+      return $this->errors;
+    }
+
+  }
+
 
   /**
     * @param struct $args
@@ -7444,6 +7498,7 @@ protected function createAttachmentTempFile()
                             'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
                             'tl.getUserByLogin' => 'this:getUserByLogin',
                             'tl.getUserByID' => 'this:getUserByID',
+                            'tl.getIssueTrackerSystem' => 'this:getIssueTrackerSystem',
                             'tl.deleteExecution' => 'this:deleteExecution',
                             'tl.doesUserExist' => 'this:doesUserExist',
                             'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',

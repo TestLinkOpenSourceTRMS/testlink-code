@@ -641,7 +641,7 @@ $TLS_tc_deleted = "Le cas de test %s a été supprimé.";
 $TLS_tc_new_version = "La version du cas de test %s a été créée.";
 $TLS_tc_updated = "Le cas de test %s a été modifié.";
 $TLS_tc_update_failed = "La modification du cas de test %s a échoué.";
-$TLS_tc_version_deleted = "La version %d du cas de test %s a été supprimée.";
+$TLS_tc_version_deleted = 'La version %2$d du cas de test %1$s a été supprimée.';
 $TLS_assign_requirements = "Affecter des exigences";
 $TLS_link_unlink_requirements = "Lier/Délier exigences";
 

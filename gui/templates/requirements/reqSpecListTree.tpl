@@ -70,10 +70,8 @@ var req_manager_url = '{$gui->req_manager_url}';
 {* include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
 
-{* BUGID 4042 *}
 {include file="inc_tree_control.tpl"}
 
-{* BUGID 4077 *}
 <div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 </body>
 </html>

@@ -5,11 +5,6 @@ Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
 
-rev :
-     20101006 - asimon - BUGID 3854
-     20100919 - franciscom -BUGID 3787 
-     20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
-     20091223 - franciscom - added checkbox for test case assignment copy
 *}
 {lang_get var='labels'
           s='title_move_cp,title_move_cp_testcases,sorry_further,req_doc_id,
@@ -117,9 +112,8 @@ function check_action_precondition(container_id,action,msg)
 
 	</form>
 
-	{* BUGID 3755: tree not refreshed when copying requirements *}
 	{if isset($gui->refreshTree) && $gui->refreshTree}
-	{include file="inc_refreshTreeWithFilters.tpl"}
+ 	  {include file="inc_refreshTreeWithFilters.tpl"}
 	{/if}
 
 </div>

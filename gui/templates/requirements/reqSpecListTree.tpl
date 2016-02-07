@@ -27,32 +27,32 @@ Ext.onReady(function() {
 
 {if $gui->ajaxTree->loader == ''}
   <script type="text/javascript">
-    treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
   </script>
   
   <script type="text/javascript">
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
-    treeCfg.root_id={$gui->ajaxTree->root_node->id};
-    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-    treeCfg.children={$gui->ajaxTree->children};
+  treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
+  treeCfg.root_id={$gui->ajaxTree->root_node->id};
+  treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+  treeCfg.children={$gui->ajaxTree->children};
   </script>
   <script type="text/javascript" src='gui/javascript/execTree.js'></script>
 
 {else}
   <script type="text/javascript">
-  treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",root_testlink_node_type:'',useBeforeMoveNode:false,loader:"", enableDD:false, dragDropBackEndUrl:''};
+  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",root_testlink_node_type:'',useBeforeMoveNode:false,loader:"", enableDD:false, dragDropBackEndUrl:'' };
   </script>
   
   <script type="text/javascript">
-    treeCfg.loader='{$gui->ajaxTree->loader}';
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
-    treeCfg.root_id={$gui->ajaxTree->root_node->id};
-    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-    treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
-    treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
-    treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
-    treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
-    treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
+  treeCfg.loader='{$gui->ajaxTree->loader}';
+  treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
+  treeCfg.root_id={$gui->ajaxTree->root_node->id};
+  treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+  treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+  treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
+  treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
+  treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
+  treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
   </script>
   <script type="text/javascript" src='gui/javascript/treebyloader.js'>
   </script>

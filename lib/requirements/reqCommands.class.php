@@ -473,7 +473,7 @@ class reqCommands
   * 
   *
   */
-  function copy(&$argsObj,$request)
+  function copy(&$argsObj,$request=NULL)
   {
     $obj = $this->initGuiBean();
     $reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
@@ -536,10 +536,11 @@ class reqCommands
       $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
       logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
 
-      $obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id']);
+
+      $obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id'],$new_req['title']);
       $obj->template = 'reqCopy.tpl';
       $obj->req_id = $ret['id'];
-      $obj->array_of_msg = array($logMsg);  
+      $obj->array_of_msg = array($logMsg); 
     }
     return $obj;  
   }

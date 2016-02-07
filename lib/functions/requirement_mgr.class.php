@@ -2941,6 +2941,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       
       if( !is_null($rs) )
       {
+        $lbl = init_labels(array('undefined' => 'undefined'));
         $key2loop = array_keys($rs);
         foreach($key2loop as $ap)
         {
@@ -2950,21 +2951,21 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
           // each DBMS uses a different (unfortunatelly) way to signal NULL DATE
           //
           // We need to Check with ALL DB types
-        // MySQL    NULL DATE -> "0000-00-00 00:00:00" 
-        // Postgres NULL DATE -> NULL
-        // MSSQL    NULL DATE - ???
-        $key4date = 'creation_ts';
-        $key4user = 'author_id';
-        if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
-        {
-          $key4date = 'modification_ts';
-          $key4user = 'modifier_id';
-        }
+          // MySQL    NULL DATE -> "0000-00-00 00:00:00" 
+          // Postgres NULL DATE -> NULL
+          // MSSQL    NULL DATE - ???
+          $key4date = 'creation_ts';
+          $key4user = 'author_id';
+          if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
+          {
+            $key4date = 'modification_ts';
+            $key4user = 'modifier_id';
+          }
           $rs[$ap]['timestamp'] = $rs[$ap][$key4date];
           $rs[$ap]['last_editor'] = $rs[$ap][$key4user];
           // decode user_id for last_editor
           $user = tlUser::getByID($this->db,$rs[$ap]['last_editor']);
-          $rs[$ap]['last_editor'] = $user ? $user->getDisplayName() : $labels['undefined'];
+          $rs[$ap]['last_editor'] = $user ? $user->getDisplayName() : $lbl['undefined'];
         }
       }
       

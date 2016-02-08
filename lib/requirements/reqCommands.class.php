@@ -6,9 +6,8 @@
  * @filesource  reqCommands.class.php
  * @author      Francisco Mancardi
  * 
- * web command experiment
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.15
  *  
  */
 
@@ -79,6 +78,8 @@ class reqCommands
     $obj->prompt_for_log = false;
     // do not do this -> will desctroy webeditor    
     // $obj->scope = '';
+ 
+    $obj->refreshTree = 0;
  
     return $obj;
   }
@@ -312,6 +313,8 @@ class reqCommands
         $this->reqMgr->values_to_db($request,$argsObj->req_version_id,$cf_map);
 
         logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
+      
+        $obj->refreshTree = $argsObj->refreshTree;
       }
       else
       {
@@ -350,6 +353,7 @@ class reqCommands
     $obj->title=lang_get('delete_req');
     $obj->refreshTree = 1;
     $obj->result = 'ok';  // needed to enable refresh_tree logic
+    $obj->refreshTree = $argsObj->refreshTree;
     return $obj;
   }
   
@@ -473,7 +477,7 @@ class reqCommands
   * 
   *
   */
-  function copy(&$argsObj,$request)
+  function copy(&$argsObj,$request=NULL)
   {
     $obj = $this->initGuiBean();
     $reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
@@ -536,10 +540,12 @@ class reqCommands
       $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
       logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
 
-      $obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id']);
+
+      $obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id'],$new_req['title']);
       $obj->template = 'reqCopy.tpl';
       $obj->req_id = $ret['id'];
-      $obj->array_of_msg = array($logMsg);  
+      $obj->array_of_msg = array($logMsg); 
+      $obj->refreshTree = $argsObj->refreshTree;
     }
     return $obj;  
   }
@@ -605,7 +611,6 @@ class reqCommands
    */
   public function doAddRelation($argsObj,$request) 
   {
-    
     $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
     $op = array('ok' => true, 'msg' => lang_get('new_rel_add_success'));
     $own_id = $argsObj->relation_source_req_id;

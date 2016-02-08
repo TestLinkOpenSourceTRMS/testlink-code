@@ -146,8 +146,16 @@ function init_gui(&$db,$args)
 
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
-
+  
   $gui->external_password_mgmt = false;
+  $domain = $gui->authCfg['domain'];
+  $mm = $gui->authCfg['method'];
+  if( isset($domain[$mm]) )
+  {
+    $ac = $domain[$mm];
+    $gui->external_password_mgmt = !$ac['allowPasswordManagement'];
+  }  
+
   $gui->login_disabled = (('LDAP' == $gui->authCfg['method']) && !checkForLDAPExtension()) ? 1 : 0;
 
   switch($args->note)

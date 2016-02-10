@@ -4178,11 +4178,6 @@ function getCoverageCounterSet($itemSet)
 	foreach($results as $key => $val) {
 		
 		$localizedFieldVal = $val["field_value"];
-		if(strcmp($currentFieldName,"Status")!==0) {
-			$currentFieldName = "Status";
-			$transformedResults[$currentFieldName]["field_value"] = array();
-			$transformedResults[$currentFieldName]["user_name"] = array();
-		}
 		foreach($statusFieldValsEN as $index => $fieldValEN) {
 			if(strcmp($fieldValEN,$localizedFieldVal)==0){
 				$localizedFieldVal = $statusFieldValsLocalized[$index];
@@ -4194,5 +4189,55 @@ function getCoverageCounterSet($itemSet)
 	}
 	
 	return $transformedResults;
+  }
+
+  function getSubedUsers($tproject_id, $requirement_id) {
+	$sql = "SELECT id, login, email"
+	    	." FROM users, req_subscription"
+			." WHERE req_subscription.fk_req_id = $requirement_id"
+			." AND req_subscription.fk_user_id = users.id"
+			." AND req_subscription.tproject_id = $tproject_id;";
+	$results = $this->db->get_recordset($sql);
+	return $results;
+  }
+  
+  function createSubscription($tproject_id, $requirement_id, $userId) {
+	$sql = "SELECT id"
+	       ." FROM requirements"
+		   ." WHERE requirements.id = $requirement_id;";
+	$results = $this->db->get_recordset($sql);
+	if(!isset($results)) {
+		return;
+	}
+	
+	$sql = "SELECT id"
+		  ." FROM users"
+		  ." WHERE users.id = $userId;";
+	$results = $this->db->get_recordset($sql);
+	if(!isset($results)) {
+		return;
+	}
+	
+	$sql = "SELECT fk_req_id"
+		  ." FROM req_subscription"
+		  ." WHERE fk_user_id = $userId"
+		  ." AND fk_req_id = $requirement_id;";
+	$results = $this->db->get_recordset($sql);
+	if(isset($results)) {
+		return;
+	}
+	
+	$sql =   "INSERT INTO req_subscription"
+			." VALUES ($requirement_id,$userId,$tproject_id);";
+	$this->db->exec_query($sql);
+  }
+  
+  function removeSubscription($tproject_id, $requirement_id, $userId) {
+	$sql = "DELETE FROM req_subscription"
+	      ." WHERE req_subscription.fk_req_id = $requirement_id"
+		  ." AND req_subscription.fk_user_id = $userId"
+		  ." AND req_subscription.tproject_id = $tproject_id;";
+			
+	$this->db->exec_query($sql);
   }
 } // class end

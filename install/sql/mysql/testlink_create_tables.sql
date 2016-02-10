@@ -704,3 +704,10 @@ CREATE TABLE `req_notify_assignments` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `req_subscription` (
+  `fk_req_id` int(11) NOT NULL,
+  `fk_user_id` int(11) NOT NULL,
+  `tproject_id` int(11) NOT NULL,
+  PRIMARY KEY (`fk_req_id`,`fk_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -13,7 +13,7 @@ viewer for requirement
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
              revision,btn_view_history,btn_new_revision,btn_print_view,specific_direct_link,
              design,execution_history,btn_unfreeze_this_version,addLinkToTestCase,btn_save,
-             removeLinkToTestCase,requirement,actions"}
+             removeLinkToTestCase,requirement,actions,btn_subscribe,btn_unsubscribe"}
 
 {$hrefReqSpecMgmt="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {$hrefReqSpecMgmt="$basehref$hrefReqSpecMgmt"}
@@ -107,11 +107,29 @@ viewer for requirement
       </form>
   {/if}
 
+  <script>
+  var changeSubLabel = function() {
+  var btn = document.getElementsByName("subscribe")[0];
+  if(btn.value.localeCompare('{$labels.btn_subscribe}')===0)
+  {
+  btn.value = '{$labels.btn_unsubscribe}';
+  }
+  else {
+  btn.value = '{$labels.btn_subscribe}';
+  }
+  };
+  </script>
   {* Option to print single requirement *}
-  <form style="display: inline;" method="post" action="" name="reqPrinterFriendly">
-    <input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
+  <form style="display: inline;" method="post" action="lib/requirements/reqView.php" name="reqPrinterFriendly">
+    <input type="text" name="requirement_id" value="{$req_id}" style="display:none" />
+	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
            onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
                                                 {$args_req.revision},'lib/requirements/reqPrint.php');"/>
+	{if $gui->isSubed == 1}
+	<input type="submit" name="subscribe" value="{$labels.btn_unsubscribe}"/>
+	{elseif $gui->isSubed == 0}
+	<input type="submit" name="subscribe" value="{$labels.btn_subscribe}"/>
+	{/if}
   </form>
   <br/><br/>
 </div> {* class="groupBtn" *}

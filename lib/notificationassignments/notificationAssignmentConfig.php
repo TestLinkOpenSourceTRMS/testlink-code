@@ -58,9 +58,9 @@ function init_gui(&$db, &$args, &$reqMgr)
   $ArrFieldNamesForGUI = array(fieldNamesForGUISize);
   $ArrFieldNamesForGUI[0] = "";
   $ArrFieldNamesForGUI["Status"] = "Status";
-  for($i = 2; $i<=sizeof($linkedCustomfields)+1; $i++) {
-	if($linkedCustomfields[$i-1]["type"] == 6) {
-		$ArrFieldNamesForGUI[$linkedCustomfields[$i-1]["name"]] = $linkedCustomfields[$i-1]["name"];
+  foreach($linkedCustomfields as $customField) {
+	if($customField["type"] == 6) {
+		$ArrFieldNamesForGUI[$customField["name"]] = $customField["name"];
 	}
   }
 

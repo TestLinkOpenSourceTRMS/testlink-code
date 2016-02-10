@@ -930,7 +930,8 @@ $TLS_revision_log_title = "Änderungsprotokoll";
 $TLS_please_add_revision_log = "Bitte protokollieren Sie die Änderung.";
 $TLS_commit_title = "Änderungsprotokoll";
 $TLS_please_add_reason_log = "Bitte geben Sie einen Grund für Änderung an.";
-
+$TLS_btn_subscribe = "Abonnieren";
+$TLS_btn_unsubscribe = "Abo beenden";
 
 
 // gui/templates/buildEdit.tpl

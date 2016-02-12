@@ -35,7 +35,6 @@ $templateCfg = templateConfiguration();
 $commandMgr = new reqCommands($db);
 
 $args = init_args($db);
-sendMailOnStatusChange($db,$args);
 $gui = initialize_gui($db,$args,$commandMgr);
 $pFn = $args->doAction;
 $op = null;
@@ -306,118 +305,5 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 function checkRights(&$db,&$user)
 {
   return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
-}
-	
-function getStatusIdentifier($statusAbbr, $langStr=null) {
-	$fullStatusName = "";
-	switch($statusAbbr) {
-		case "D": $fullStatusName = lang_get("req_status_draft",$langStr); break;
-		case "R": $fullStatusName = lang_get("req_status_review",$langStr); break;
-		case "W": $fullStatusName = lang_get("req_status_rework",$langStr); break;
-		case "F": $fullStatusName = lang_get("req_status_finish",$langStr); break;
-		case "I": $fullStatusName = lang_get("req_status_implemented",$langStr); break;
-		case "V": $fullStatusName = lang_get("review_status_valid",$langStr); break;
-		case "N": $fullStatusName = lang_get("req_status_not_testable",$langStr); break;
-		case "O": $fullStatusName = lang_get("req_status_obsolete",$langStr); break;
-	}
-	return $fullStatusName;
-}
-	
-function sendMailOnStatusChange(&$db,&$args)
-{
-	if(strcmp($_POST["req_spec_id"],"") !== 0) {
-		$fieldMetadataMgr = new cfield_mgr($db);
-		$usersObj = new tlUser($db);
-		$reqMgr = new requirement_mgr($db);
-		$currentReq = $reqMgr->get_by_id($args->requirement_id)[0];
-		$fieldNames = $reqMgr->getAllNotificationFieldAssignments($args->tproject_id);
-		
-		$scope = $args->scope;
-		$reqTitle = $currentReq["title"];
-		$modifier = array_pop($usersObj->getNames($db,$args->user_id))["login"];
-		$from = config_get("from_email");
-		$subbedUsers = $reqMgr->getSubedUsers($args->tproject_id,$args->requirement_id);
-		$req_doc_id = $currentReq["req_doc_id"];
-		
-		foreach($fieldNames as $fieldName => $fieldData) {
-			if(strcmp($fieldName,"Status") === 0) {
-				$reqState = getStatusIdentifier($args->reqStatus);
-				$oldFieldVal = getStatusIdentifier($currentReq["status"]);
-				$fieldMetadata["id"] = 0;
-				$fieldMetadata["name"] = "Status";
-			}
-			else
-			{
-				$fieldMetadata = array_pop($fieldMetadataMgr->get_by_name($fieldName));
-				$customFieldPOSTName = "custom_field_".$fieldMetadata["type"]."_".$fieldMetadata["id"];
-				
-				$reqState = $_POST[$customFieldPOSTName];
-
-				$oldFieldValArr = $reqMgr->get_linked_cfields($currentReq["id"],$currentReq["version_id"]);
-				$oldFieldVal = NULL;
-				//richtiges cfield raussuchen
-				foreach($oldFieldValArr as $oldFieldValEle) {
-					if(strcmp($oldFieldValEle["name"], $fieldName) === 0) {
-						$oldFieldVal = trim($oldFieldValEle["value"]);
-						break;
-					}
-				}
-			}
-			
-			if(strcmp($oldFieldVal,$reqState) !== 0 && strlen($reqState)!==0) {
-				$fieldAssignment = $reqMgr->getNotificationFieldAssignmentByFieldName($args->tproject_id, $fieldMetadata["name"]);
-				if(strcmp($fieldName,"Status") === 0) {
-					$reqState = getStatusIdentifier($args->reqStatus, "en_GB");
-				}
-				$sqlWhere = "WHERE id = (SELECT assigned_user_id"
-									."	FROM req_notify_assignments"
-									."	WHERE test_project_id = {$args->tproject_id}"
-									."	AND field_id = {$fieldMetadata["id"]}"
-									."	AND field_value = \"$reqState\")";
-				if(strcmp($fieldName,"Status") === 0) {
-					$reqState = getStatusIdentifier($args->reqStatus);
-				}
-				
-				$assignedUsers = tlUser::getAll($db, $sqlWhere,null,null,tlDBObject::TLOBJ_O_GET_DETAIL_MINIMUM);
-				$subject = lang_get('req_change_notification_subject');
-				$subject = str_replace("%reqState", $reqState, $subject);
-				$subject = str_replace("%req_doc_id", $req_doc_id, $subject);
-				$subject = str_replace("%reqTitle", $reqTitle, $subject);
-				$body = lang_get('req_change_notification');
-				$body = str_replace("%reqTitle", $reqTitle, $body);
-				$body = str_replace("%modifier", $modifier, $body);
-				$body = str_replace("%oldFieldVal", $oldFieldVal, $body);
-				$body = str_replace("%reqState", $reqState, $body);
-				$body = str_replace("%scope", $scope, $body);
-				
-				foreach($assignedUsers as $assignedUser) {
-					$retVal = email_send($from,$assignedUser->emailAddress,$subject,$body,'',false,true,null);
-					foreach($subbedUsers as $key => $subbedUser) {
-						if(strcmp($subbedUser["login"],$assignedUser->login) == 0) {
-							unset($subbedUsers[$key]);
-							break;
-						}
-					}
-				}
-			}
-		}	
-		
-		mlog($args);
-		//send mail to all subbed users
-		$subject = lang_get("req_change_subscribtion_subject");
-		$subject = str_replace("%reqTitle", $reqTitle, $subject);
-		$subject = str_replace("%req_doc_id", $req_doc_id, $subject);
-		$body =	lang_get("req_change_subscribtion");
-		$body = str_replace("%log_msg", $args->log_message, $body);
-		$body = str_replace("%reqTitle", $reqTitle, $body);
-		$body = str_replace("%modifier", $modifier, $body);
-		$body = str_replace("%scope", $scope, $body);
-
-		if(sizeof($subbedUsers)>0){	
-			foreach($subbedUsers as $subbedUser) {
-				$retVal = email_send($from,$subbedUser["email"],$subject,$body,'',false,true,null);
-			}
-		}
-	}
 }
 ?>

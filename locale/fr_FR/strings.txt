@@ -2209,7 +2209,7 @@ $TLS_doc_opt_guide = "Cliquer sur la racine de l’arborescence pour générer u
 
 $TLS_tr_td_show_as = "Afficher comme";
 $TLS_check_uncheck_all_options = "Cocher/Décocher tout";
-$TLS_test_report_on_build = "Rapport de tests par Build";
+$TLS_test_report_on_build = "Rapport de tests pour un build";
 
 
 // ----- gui/templates/tcReorder.tpl -----
@@ -3079,7 +3079,7 @@ $TLS_info_testCasesWithCF = "Le rapport affiche tous les cas de test avec champ 
 $TLS_link_charts = "Graphiques";
 $TLS_link_report_blocked_tcs = "Cas de test bloqués";
 $TLS_link_report_failed = "Cas de test en échec";
-$TLS_link_report_general_tp_metrics = "Métriques généraux de la Campagne";
+$TLS_link_report_general_tp_metrics = "Métriques générales de la Campagne";
 $TLS_link_report_by_tester_per_build = "Résultats par testeur par Build";
 $TLS_link_assigned_tc_overview = "Récapitulatif de l’affectation des cas de test";
 $TLS_link_report_metrics_active_build = "Métriques des Builds actifs";
@@ -3089,13 +3089,13 @@ $TLS_link_report_not_run_any_platform = "Cas de test non exécuté sur aucune Pl
 $TLS_link_report_overall_build = "Statut global de Build";
 $TLS_link_report_reqs_coverage = "Rapport d’exigences";
 $TLS_link_report_tcases_without_tester = "Cas de test sans affectation de testeur";
-$TLS_link_report_test = "Matrice de résultat de test";
-$TLS_link_report_test_flat = "Matrice de résultat de test à plat";
+$TLS_link_report_test = "Matrice de résultats de test";
+$TLS_link_report_test_flat = "Matrice de résultats de test à plat";
 $TLS_link_report_test_plan = "Rapport de campagne de test";
 $TLS_link_report_test_report = "Rapport de test";
-$TLS_link_report_test_report_on_build = "Rapport de test par build";
-$TLS_link_report_total_bugs = "Anomalies par cas de test";
-$TLS_link_report_total_bugs_all_exec = "Anomalies par cas de test (Toute excécution)";
+$TLS_link_report_test_report_on_build = "Rapport de test pour un build";
+$TLS_link_report_total_bugs = "Anomalies par cas de test (dernière exécution par plateforme et build)";
+$TLS_link_report_total_bugs_all_exec = "Anomalies par cas de test (toute exécution)";
 $TLS_link_report_uncovered_testcases = "Cas de test sans affectation d’exigences";
 $TLS_link_report_reqs_with_cf = "Exigences avec champs personnalisés";
 $TLS_caption_requirementsWithCF = $TLS_link_report_reqs_with_cf;

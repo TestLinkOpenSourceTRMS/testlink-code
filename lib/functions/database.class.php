@@ -7,14 +7,14 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @author      Mantis Team
- * @copyright   2006-2011 TestLink community 
+ * @copyright   2006-2016 TestLink community 
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  *             (Parts of code has been adapted from Mantis BT)
  * @link       http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.12 
-
+ * @since 1.9.15 
+ *
  */
  
 /**
@@ -92,11 +92,17 @@ class database
   }
 
   // TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
-  function __constructor($db_type)
+  function __construct($db_type)
   {
-    $this->dbType = $adodb_driver = $db_type;
     $fetch_mode = ADODB_FETCH_ASSOC;
-    
+
+    $this->dbType = $db_type;
+    if( $this->dbType == 'mysql' && version_compare(phpversion(), "7.0.0", ">=") )
+    {
+      $this->dbType = 'mysqli';
+    }
+    $adodb_driver = $this->dbType;
+  
     // added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
     if($this->dbType == 'mssql')
     {
@@ -211,7 +217,10 @@ class database
       if(defined('DBUG_ON') && DBUG_ON == 1)
       { 
         echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+        die();
       }   
+      echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+        die();
       
       //else
       //{

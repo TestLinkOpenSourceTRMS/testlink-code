@@ -519,8 +519,14 @@ return ($ret);
 */
 function check_db_loaded_extension($db_type)
 {
-  $ext2search = $db_type;  
   $dbType2PhpExtension = array('postgres' => 'pgsql');
+
+  $ext2search = $db_type;  
+  if( $ext2search == 'mysql' && version_compare(phpversion(), "7.0.0", ">=") )
+  {
+    $ext2search = 'mysqli';
+  }
+
 	if(PHP_OS == 'WINNT')
 	{
 		// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
@@ -538,33 +544,33 @@ function check_db_loaded_extension($db_type)
 	}	
 
     
-    if( isset($dbType2PhpExtension[$db_type]) )
-    {
-      $ext2search=$dbType2PhpExtension[$db_type];  
-    }
+  if( isset($dbType2PhpExtension[$db_type]) )
+  {
+    $ext2search=$dbType2PhpExtension[$db_type];  
+  }
       
-    $msg_ko = "<span class='notok'>Failed!</span>";
-    $msg_ok = '<span class="ok">OK!</span>';
-    $tt=array_flip(get_loaded_extensions());
+  $msg_ko = "<span class='notok'>Failed!</span>";
+  $msg_ok = '<span class="ok">OK!</span>';
+  $tt=array_flip(get_loaded_extensions());
     
-    $errors=0;	
-    $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
+  $errors=0;	
+  $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
     
-    if( !isset($tt[$ext2search]) )
-    {
-    	$final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search}- " .
-    	              "without it is IMPOSSIBLE to use Testlink.</span>";
-    	$final_msg .= $msg_ko;
-    	$errors += 1;
-    }
-    else
-    {
-    	$final_msg .= $msg_ok;
-    }
-    $ret = array ('errors' => $errors,
-                  'msg' => $final_msg);
+  if( !isset($tt[$ext2search]) )
+  {
+    $final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search} " .
+    	"without it is IMPOSSIBLE to use Testlink.</span>";
+    $final_msg .= $msg_ko;
+    $errors += 1;
+  }
+  else
+  {
+    $final_msg .= $msg_ok;
+  }
+  $ret = array ('errors' => $errors,
+                'msg' => $final_msg);
     
-    return ($ret);
+  return ($ret);
 }  //function end
 
 

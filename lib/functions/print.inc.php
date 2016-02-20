@@ -1556,7 +1556,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     if( $bn != '' )
     {
       $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
-               '<td '  . $tsp . '>' . $bn . "</b></td></tr>\n";
+               '<td colspan="'  . $tsp . '">' . $bn . "</b></td></tr>\n";
 
       if(is_null($exec_info))
       {
@@ -1564,8 +1564,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            isset($buildCfields[$build_id]) && 
           $buildCfields[$build_id] != '')
         {
-          $code .=  '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"></td>' . 
-                  '<td '  .$td_colspan . '>' . $buildCfields[$build_id] . "</td></tr>\n";
+          $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"></td>' . 
+                   '<td colspan="'  .$tsp . '">' . $buildCfields[$build_id] . "</td></tr>\n";
         }        
       }  
 

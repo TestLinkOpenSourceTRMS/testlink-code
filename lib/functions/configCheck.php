@@ -579,7 +579,13 @@ function checkPhpExtensions(&$errCounter)
 
 
   // Database extensions  
-  $checks[]=array('extension' => 'mysql',
+  $mysqlExt = 'mysql';
+  if( version_compare(phpversion(), "7.0.0", ">=") )
+  {
+    $mysqlExt = 'mysqli';
+  }
+ 
+  $checks[]=array('extension' => $mysqlExt,
                   'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
   $checks[]=array('extension' => 'pgsql',

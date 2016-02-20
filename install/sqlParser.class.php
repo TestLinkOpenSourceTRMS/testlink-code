@@ -19,7 +19,7 @@ class SqlParser {
 	var $db_type;
     var $db_table_prefix;
 
-	function SqlParser(&$db_conn,$db_type,$db_table_prefix='') 
+	function __constructor(&$db_conn,$db_type,$db_table_prefix='') 
 	{
 		$this->db_conn = $db_conn;
 		$this->db_type = $db_type;

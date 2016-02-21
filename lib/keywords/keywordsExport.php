@@ -93,7 +93,7 @@ function do_export(&$db,&$smarty,&$args)
   if ($pfn)
   {
     $tprojectMgr = new testproject($db);
-    $content = $tprojectMgr->$pfn($args->testproject_id);
+    $content = $tprojectMgr->$pfn($args->tproject_id);
     downloadContentsToFile($content,$args->export_filename);
     exit();
   }

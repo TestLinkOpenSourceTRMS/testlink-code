@@ -4240,4 +4240,14 @@ function getCoverageCounterSet($itemSet)
 			
 	$this->db->exec_query($sql);
   }
+  
+  function getAllReqSubbed($tproject_id, $userId) {
+	$sql = "SELECT req_subscription.fk_req_id AS \"reqID\""
+	    	." FROM req_subscription"
+			." WHERE req_subscription.fk_user_id = $userId"
+			." AND req_subscription.tproject_id = $tproject_id;";
+
+	$results = $this->db->get_recordset($sql);
+	return $results;
+  }
 } // class end

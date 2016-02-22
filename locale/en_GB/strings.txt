@@ -2419,6 +2419,7 @@ $TLS_build_number_help = 'Number of Builds';
 $TLS_href_assign_user_roles = "Assign User Roles";
 $TLS_href_browse_tc = "Browse Test Cases";
 $TLS_href_cfields_management = "Define Custom Fields";
+$TLS_href_manage_req_subs = "Manage Requirement Subscribtion";
 $TLS_href_process_step_role_assignment = "Assign Roles to Process Steps";
 $TLS_href_cfields_tproject_assign = "Assign Custom Fields";
 $TLS_href_edit_tc = "Test Specification";
@@ -3988,4 +3989,9 @@ $TLS_add_link_to_tlexec = "Add Link in Issue Tracker to Test Case Execution Feat
 $TLS_dl2tl = 'Link to TestLink Execution: ';
 $TLS_old_style_login = 'Well known login screen';
 $TLS_new_style_login = 'Try the new login screen';
+
+// reqManageSubs.php
+$TLS_req_already_subbed = "End Subscribtion";
+$TLS_req_not_subbed_yet = "Subscribe";
+$TLS_subscribtion_state = "State of Subscribtion";
 // ----- END ------------------------------------------------------------------

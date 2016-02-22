@@ -2230,6 +2230,8 @@ $TLS_href_cfields_management = "Benutzerdefinierte Felder verwalten";
 $TLS_href_cfields_tproject_assign = "Benutzerdefinierte Felder zuweisen";
 $TLS_href_edit_tc = "Testspezifikation";
 $TLS_href_inventory = "Inventar";
+$TLS_href_manage_req_subs = "Requirement Abonnements organisieren";
+$TLS_href_process_step_role_assignment = "Prozessschritten Verantwortliche zuweisen";
 $TLS_href_inventory_management = 'Inventar Verwaltung';
 $TLS_href_keywords_assign = "Testfällen Stichwörter zuweisen";
 $TLS_href_keywords_manage = "Stichwörter verwalten";
@@ -3651,5 +3653,11 @@ $TLS_assign_table_header_fieldvals = "Feld Werte";
 $TLS_assign_table_header_users = "Benutzernamen";
 $TLS_assign_btn_change = "Zuweisungen ändern";
 $TLS_assign_btn_delete = "Zuweisungen löschen";
+
+// reqManageSubs.php
+$TLS_req_already_subbed = "Abo beenden";
+$TLS_req_not_subbed_yet = "Abonnieren";
+$TLS_subscribtion_state = "Status des Abonnements"; 
+
 // ----- END ------------------------------------------------------------------
 ?>

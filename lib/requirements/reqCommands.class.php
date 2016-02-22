@@ -359,7 +359,6 @@ class reqCommands
 	$this->notifySubbedUsers($subject, $body, $argsObj);
 	$subbedUsers = $this->reqMgr->getSubedUsers($argsObj->tproject_id,$argsObj->requirement_id);
 	foreach($subbedUsers as $subbedUser) {
-		mlog($subbedUser);
 		$this->reqMgr->removeSubscription($argsObj->tproject_id, $argsObj->requirement_id,$subbedUser["id"]);
 	}
 	
@@ -628,13 +627,11 @@ class reqCommands
 	$req = array_pop($this->reqMgr->getByDocID($reqversion["req_doc_id"]));
 	$argsObj->requirement_id = $req["id"];
 
-	mlog($argsObj);
 	$modifier = array_pop($usersObj->getNames($this->db,$argsObj->user_id))["login"];
 	$req_doc_id = $reqversion["req_doc_id"];
 	$reqTitle = $reqversion["title"];
 	$scope = $reqversion["scope"];
 	$versionNr = $reqversion["version"];
-	mlog($currentReq);
 	
 	$subject = lang_get('req_version_delete_subscribtion_subject');
 	$subject = str_replace("%req_doc_id", $req_doc_id, $subject);
@@ -1050,7 +1047,6 @@ class reqCommands
 				}
 			}
 			
-			mlog("Status: oldVal = $oldFieldVal | newVal = $reqState");
 			if(strcmp($oldFieldVal,$reqState) !== 0 && strlen($reqState)!==0) {
 				$fieldAssignment = $reqMgr->getNotificationFieldAssignmentByFieldName($args->tproject_id, $fieldMetadata["name"]);
 				if(strcmp($fieldName,"Status") === 0) {
@@ -1089,7 +1085,6 @@ class reqCommands
 			}
 		}	
 		
-		mlog($args);
 		//send mail to all subbed users
 		$subject = lang_get("req_change_subscribtion_subject");
 		$subject = str_replace("%reqTitle", $reqTitle, $subject);

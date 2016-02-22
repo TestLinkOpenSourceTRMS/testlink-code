@@ -38,7 +38,6 @@ $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options'
 $treeForPlatform[0] = &$subtree;
 $doc_info->title = $doc_info->tproject_name;
 $doc_info->outputFormat = $printingOptions['outputFormat'] = $args->format;
- 
 
 switch ($doc_info->type)
 {
@@ -117,9 +116,14 @@ switch ($doc_info->type)
     {
       $ctx->build_id = ($args->build_id > 0) ? $args->build_id : null;
       
-      if($ctx->build_id >0 && $args->with_user_assignment)
+      $opx = array('setAssignedTo' => false);
+      $ctx->with_user_assignment = $args->with_user_assignment;
+      if( $ctx->build_id > 0 )
       {
-        $opx = array('setAssignedTo' => true);
+        if( $args->with_user_assignment )
+        {
+          $opx = array('setAssignedTo' => true);
+        }
       }  
     }  
     
@@ -635,7 +639,13 @@ function buildContentForTestPlan(&$dbHandler,$itemsTree,$ctx,$decode,&$tplanMgr,
   
   $pnOptions['setAssignedTo'] = $my['opt']['setAssignedTo'];
 
+  // 20160222 
   $filters = array('build_id' => $ctx->build_id);
+  if( $ctx->with_user_assignment == 0 )
+  {
+    $filters = null;
+  }
+
   foreach($platformIDSet as $platform_id)  
   {
     $filters['platform_id'] = $platform_id;

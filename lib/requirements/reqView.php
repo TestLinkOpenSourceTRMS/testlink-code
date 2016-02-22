@@ -13,7 +13,6 @@
  *
  */
 require_once('../../config.inc.php');
-require_once('../../custom_config.inc.php');
 require_once('common.php');
 require_once('attachments.inc.php');
 require_once('requirements.inc.php');

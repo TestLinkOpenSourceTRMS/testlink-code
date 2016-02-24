@@ -695,7 +695,7 @@ CREATE TABLE /*prefix*/testcase_relations (
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE `req_notify_assignments` (
+CREATE TABLE /*prefix*/req_notify_assignments (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `test_project_id` int(11) NOT NULL,
   `field_id` int(11) NOT NULL,
@@ -705,9 +705,9 @@ CREATE TABLE `req_notify_assignments` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-CREATE TABLE `req_subscription` (
-  `fk_req_id` int(11) NOT NULL,
-  `fk_user_id` int(11) NOT NULL,
+CREATE TABLE /*prefix*/req_subscription (
+  `req_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `tproject_id` int(11) NOT NULL,
-  PRIMARY KEY (`fk_req_id`,`fk_user_id`)
+  PRIMARY KEY (`req_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

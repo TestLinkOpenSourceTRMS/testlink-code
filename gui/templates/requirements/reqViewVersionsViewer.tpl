@@ -122,14 +122,14 @@ viewer for requirement
   {* Option to print single requirement *}
   <form style="display: inline;" method="post" action="lib/requirements/reqView.php" name="reqPrinterFriendly">
     <input type="text" name="requirement_id" value="{$req_id}" style="display:none" />
-	<input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
-           onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
+  <input type="button" name="printerFriendly" value="{$labels.btn_print_view}"
+            onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
                                                 {$args_req.revision},'lib/requirements/reqPrint.php');"/>
-	{if $gui->isSubed == 1}
-	<input type="submit" name="subscribe" value="{$labels.btn_unsubscribe}"/>
-	{elseif $gui->isSubed == 0}
-	<input type="submit" name="subscribe" value="{$labels.btn_subscribe}"/>
-	{/if}
+  {if $gui->isSubed == 1}
+  <input type="submit" name="subscribe" value="{$labels.btn_unsubscribe}"/>
+  {elseif $gui->isSubed == 0}
+  <input type="submit" name="subscribe" value="{$labels.btn_subscribe}"/>
+  {/if}
   </form>
   <br/><br/>
 </div> {* class="groupBtn" *}

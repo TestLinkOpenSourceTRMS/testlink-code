@@ -168,14 +168,14 @@
     <div id='system_topics'>
     {if $gui->grants.cfield_management == "yes"}
       <a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
-	  <br />
-	{/if}
-	{if $gui->grants.reqs_view == "yes"}
-	  <a href="lib/requirements/reqManageSubs.php">{$labels.href_manage_req_subs}</a>
-      <br />
-    {/if}
-	{if $gui->userRole eq "admin"}
-	  <a href="lib/notificationassignments/notificationAssignmentConfig.php">{$labels.href_process_step_role_assignment}</a>
+  <br />
+  {/if}
+  {if $gui->grants.reqs_view == "yes"}
+  <a href="lib/requirements/reqManageSubs.php">{$labels.href_manage_req_subs}</a>
+    <br />
+  {/if}
+  {if $gui->userRole eq "admin"}
+  <a href="lib/notificationassignments/notificationAssignmentConfig.php">{$labels.href_process_step_role_assignment}</a>
       <br />
     {/if}
      

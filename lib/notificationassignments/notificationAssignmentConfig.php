@@ -14,16 +14,16 @@ $args = init_args($db);
 $reqMgr = new requirement_mgr($db);
 $_realPOST = getRealInput('POST');
 if(array_key_exists("submit",$_realPOST)) {
-	$selectFieldValues = array();
-	foreach($_realPOST as $key => $val) {
-		$selectPos = strpos($key,"select_");
-		if($selectPos !== false) {
-			$selectFieldValues[str_replace("_"," ",substr($key,$selectPos+7))] = $val;
-		}
-	}
-	$reqMgr->createNotificationFieldAssignment($args->tproject_id, $_realPOST["fieldName"], $selectFieldValues);
+  $selectFieldValues = array();
+  foreach($_realPOST as $key => $val) {
+    $selectPos = strpos($key,"select_");
+    if($selectPos !== false) {
+      $selectFieldValues[str_replace("_"," ",substr($key,$selectPos+7))] = $val;
+    }
+  }
+  $reqMgr->createNotificationFieldAssignment($args->tproject_id, $_realPOST["fieldName"], $selectFieldValues);
 }elseif(array_key_exists("delete",$_realPOST)) {
-	$reqMgr->deleteNotificationFieldAssignmentsByFieldName($args->tproject_id,$_realPOST["fieldName"]);
+  $reqMgr->deleteNotificationFieldAssignmentsByFieldName($args->tproject_id,$_realPOST["fieldName"]);
 }
 
 //create GUI
@@ -50,18 +50,18 @@ function init_gui(&$db, &$args, &$reqMgr)
   $linkedCustomfields = $tprojectMgr->get_linked_custom_fields($args->tproject_id,"requirement");
   $fieldNamesForGUISize = 2;
   foreach($linkedCustomfields as $key => $val) {
-	if($val["type"] == 6) {
-		$fieldNamesForGUISize++;
-	}  
+  if($val["type"] == 6) {
+    $fieldNamesForGUISize++;
+  }  
   }
   
   $ArrFieldNamesForGUI = array(fieldNamesForGUISize);
   $ArrFieldNamesForGUI[0] = "";
   $ArrFieldNamesForGUI["Status"] = "Status";
   foreach($linkedCustomfields as $customField) {
-	if($customField["type"] == 6) {
-		$ArrFieldNamesForGUI[$customField["name"]] = $customField["name"];
-	}
+  if($customField["type"] == 6) {
+    $ArrFieldNamesForGUI[$customField["name"]] = $customField["name"];
+  }
   }
 
   $gui->fieldNames = $ArrFieldNamesForGUI;

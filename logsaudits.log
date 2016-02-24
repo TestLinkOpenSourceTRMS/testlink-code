@@ -1,0 +1,96 @@
+	[16/Feb/23 13:32:47][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Login for 'admin' from '::1' succeeded
+	[16/Feb/23 13:33:41][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Test Project 'testlink' was created
+	[16/Feb/23 13:33:51][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		User 'admin' was saved
+	[16/Feb/23 13:34:09][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		User 'lejo' was created
+	[16/Feb/23 13:35:40][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Role 'guest' was saved
+	[16/Feb/23 13:38:58][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Custom field 'SE Prozess' was created
+	[16/Feb/23 13:38:58][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Custom field 'SE Prozess' was assigned to Test Project 'testlink'
+	[16/Feb/23 13:39:17][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Test Project 'testlink' - Requirement specification 'spec 1' was created
+	[16/Feb/23 13:39:31][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was created
+	[16/Feb/23 13:41:01][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/23 13:41:28][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/23 13:43:22][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was created
+	[16/Feb/23 13:52:54][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.4' was created
+	[16/Feb/23 13:53:44][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.5' was created
+	[16/Feb/23 14:00:59][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.6' was created
+	[16/Feb/23 14:08:04][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.6' was deleted
+	[16/Feb/23 14:09:29][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 08:20:01][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Login for 'admin' from '::1' succeeded
+	[16/Feb/24 08:23:59][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 08:25:28][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Logout of 'admin'
+	[16/Feb/24 08:25:34][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Login for 'lejo' from '::1' succeeded
+	[16/Feb/24 08:26:15][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 08:35:46][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 08:38:44][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 09:00:30][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 09:09:13][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 09:10:14][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 09:50:07][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was saved
+	[16/Feb/24 09:56:30][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		 Version 3 of Req 'DOCID:1.1' - anforderung 1 was deleted.
+	[16/Feb/24 09:57:13][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.1' was deleted
+	[16/Feb/24 09:58:41][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Logout of 'lejo'
+	[16/Feb/24 09:58:46][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Login for 'admin' from '::1' succeeded
+	[16/Feb/24 09:59:32][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:12:39][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:15:13][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:23:46][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:25:34][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:27:05][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:29:27][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:31:15][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:32:42][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:54:59][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:56:23][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 10:57:25][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 11:54:23][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 11:55:42][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 11:58:13][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved
+	[16/Feb/24 12:04:20][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
+		Requirement '1.2' was saved

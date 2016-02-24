@@ -3975,279 +3975,290 @@ function getCoverageCounterSet($itemSet)
     }  
   }
 
-	/*
-	  function: createNotificationFieldAssignment
+  /*
+  function: createNotificationFieldAssignment
 
-	  args: t_project_id: current project id as int
-			field_name: the name of the field of which the values should be assigned as string
-			assignment_set: map of values and the user, who will be contacted
-	*/
+  args: t_project_id: current project id as int
+    field_name: the name of the field of which the values should be assigned as string
+    assignment_set: map of values and the user, who will be contacted
+  */
   function createNotificationFieldAssignment($t_project_id, $field_name, &$assignment_set)
   {
-	$t_lang = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
-	//the status field always gets ID 0, because it is not a custom field. for custom fields, the id must be fetched first
-	$fieldId = 0;
-	if(strCmp($field_name,"Status") !== 0) {
-		$sql = "SELECT id FROM custom_fields WHERE name=\"$field_name\"";
-		$results = $this->db->fetchRowsIntoMap($sql,"id");
-		if(isset($results)) {
-			foreach($results as $val) {
-				$fieldId = $val["id"];
-			}
-		} else {
-			$fieldId = -1;
-		}
-	}
-	else {
-		//for reasons of localization the field values of the status field will always be written to the database in english language.
-		$statusFieldValsLocalized = $this->getStatusFieldValsLocaledForAssignment();
-		$statusFieldValsEN = $this->getStatusFieldValsLocaledForAssignment("en_GB");
-		$assignment_set_new = array();
-		foreach($assignment_set as $fieldVal => $userName) {
-			foreach($statusFieldValsLocalized as $index => $fieldValLocalized) {
-				if(strcmp($fieldVal,$fieldValLocalized) == 0) {
-					$assignment_set_new[$statusFieldValsEN[$index]] = $userName;
-				}
-			}
-		}
-		$assignment_set = $assignment_set_new;
-	}
-	
-	//insert the data if the field name is valid
-	if(fieldId >= 0) {
-		$sql =	"SELECT field_id"
-		.	" FROM req_notify_assignments"
-		.	" WHERE test_project_id=$t_project_id"
-		.	" AND field_id=$fieldId";
-		
-		$retValSet = $this->db->fetchRowsIntoMap($sql,"field_id");
-		if(isset($retValSet)) {
-			$sql = 		"DELETE FROM req_notify_assignments"
-					.	" WHERE test_project_id=$t_project_id AND field_id=$fieldId";
-			$this->db->exec_query($sql);
-		}
-		$insertInto = "INSERT INTO req_notify_assignments (test_project_id,field_id,field_value,assigned_user_id) VALUES";
-		$sql=$insertInto;
-		foreach($assignment_set as $key => $val) {
-			if(strlen($val)>0) {
-				$sql .= " ($t_project_id,$fieldId,\"$key\",(SELECT id FROM users WHERE login=\"$val\")),";
-			}
-		}
-		if(strlen($sql)>strlen($insertInto)) {
-			$sql=rtrim($sql, ",");
-			$sql.=";";
-			$this->db->exec_query($sql);
-		}
-	}
+  $t_lang = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+  //the status field always gets ID 0, because it is not a custom field. for custom fields, the id must be fetched first
+  $fieldId = 0;
+  if(strCmp($field_name,"Status") !== 0) {
+    $sql = "SELECT id FROM {$this->tables['custom_fields']} WHERE name=\"$field_name\"";
+    $results = $this->db->fetchRowsIntoMap($sql,"id");
+    if(isset($results)) {
+      foreach($results as $val) {
+        $fieldId = $val["id"];
+      }
+    } else {
+      $fieldId = -1;
+    }
+  }
+  else {
+    //for reasons of localization the field values of the status field will always be written to the database in english language.
+    $statusFieldValsLocalized = $this->getStatusFieldValsLocaledForAssignment();
+    $statusFieldValsEN = $this->getStatusFieldValsLocaledForAssignment("en_GB");
+    $assignment_set_new = array();
+    foreach($assignment_set as $fieldVal => $userName) {
+      foreach($statusFieldValsLocalized as $index => $fieldValLocalized) {
+        if(strcmp($fieldVal,$fieldValLocalized) == 0) {
+          $assignment_set_new[$statusFieldValsEN[$index]] = $userName;
+        }
+      }
+    }
+    $assignment_set = $assignment_set_new;
   }
   
-  	/*
-	  function: deleteNotificationFieldAssignmentsByFieldName
-
-	  args: t_project_id: current project id as int
-			field_name: the name of the field of which the assignments should be deleted
-	*/
+  //insert the data if the field name is valid
+  if(fieldId >= 0) {
+    $sql =	"SELECT field_id"
+    .	" FROM {$this->tables['req_notify_assignments']}"
+    .	" WHERE test_project_id=$t_project_id"
+    .	" AND field_id=$fieldId";
+    
+    $retValSet = $this->db->fetchRowsIntoMap($sql,"field_id");
+    if(isset($retValSet)) {
+      $sql = 		"DELETE FROM req_notify_assignments"
+          .	" WHERE test_project_id=$t_project_id AND field_id=$fieldId";
+      $this->db->exec_query($sql);
+    }
+    $insertInto = "INSERT INTO {$this->tables['req_notify_assignments']} (test_project_id,field_id,field_value,assigned_user_id) VALUES";
+    $sql=$insertInto;
+    foreach($assignment_set as $key => $val) {
+      if(strlen($val)>0) {
+        $sql .= " ($t_project_id,$fieldId,\"$key\",(SELECT id FROM {$this->tables['users']} WHERE login=\"$val\")),";
+      }
+    }
+    if(strlen($sql)>strlen($insertInto)) {
+      $sql=rtrim($sql, ",");
+      $sql.=";";
+      $this->db->exec_query($sql);
+    }
+  }
+  }
+  
+    /*
+    function: deleteNotificationFieldAssignmentsByFieldName
+  
+    args: t_project_id: current project id as int
+      field_name: the name of the field of which the assignments should be deleted
+  */
   function deleteNotificationFieldAssignmentsByFieldName($t_project_id,$fieldName) {
-	//the status field is handeld specificly, because it is not a custom field always gets id=0;
-	if(strCmp($fieldName,"Status")===0){
-		$sql = 	"DELETE FROM req_notify_assignments "
-		.	"WHERE test_project_id=$t_project_id AND field_id=0";
-	} else {
-		$sql = 	"DELETE FROM req_notify_assignments "
-		.	"WHERE test_project_id=$t_project_id AND field_id=(SELECT id FROM custom_fields WHERE name=\"$fieldName\")";
-	}
-	
-	$this->db->exec_query($sql);
+  //the status field is handeld specificly, because it is not a custom field always gets id=0;
+  if(strCmp($fieldName,"Status")===0){
+    $sql = 	"DELETE FROM {$this->tables['req_notify_assignments']} "
+    .	"WHERE test_project_id=$t_project_id AND field_id=0";
+  } else {
+    $sql = 	"DELETE FROM {$this->tables['req_notify_assignments']} "
+    .	"WHERE test_project_id=$t_project_id AND field_id=(SELECT id FROM {$this->tables['custom_fields']} WHERE name=\"$fieldName\")";
+  }
+  
+  $this->db->exec_query($sql);
   }
   
     function deleteNotificationFieldAssignmentsByFieldId($t_project_id,$fieldId) {
-	//the status field is handeld specificly, because it is not a custom field always gets id=0;
-	$sql = 	"DELETE FROM req_notify_assignments "
-	.	"WHERE test_project_id=$t_project_id AND field_id=$fieldId";
-	
-	$this->db->exec_query($sql);
+  //the status field is handeld specificly, because it is not a custom field always gets id=0;
+  $sql = 	"DELETE FROM {$this->tables['req_notify_assignments']} "
+  .	"WHERE test_project_id=$t_project_id AND field_id=$fieldId";
+  
+  $this->db->exec_query($sql);
   }
   
-  	/*
-	  function: getAllNotificationFieldAssignments
-
-	  args: t_project_id: current project id as int
-	*/
+    /*
+    function: getAllNotificationFieldAssignments
+  
+    args: t_project_id: current project id as int
+  */
   function getAllNotificationFieldAssignments($t_project_id) 
   {
-	$sql="SELECT custom_fields.name,field_value,login"
-		." FROM req_notify_assignments,users,custom_fields"
-		." WHERE test_project_id=$t_project_id"
-		." AND users.id = req_notify_assignments.assigned_user_id"
-		." AND custom_fields.id=req_notify_assignments.field_id"
-		." ORDER BY test_project_id, custom_fields.name;";
-	
-	$results = $this->db->get_recordset($sql);
-	
-	$currentFieldName = "";
-	
-	//tansform the results into a datastructure which is better usable
-	foreach($results as $key => $val) {
-		if(strcmp($currentFieldName,$results[$key]["name"])!==0) {
-			$currentFieldName = $results[$key]["name"];
-			$transformedResults[$currentFieldName]["field_value"] = array();
-			$transformedResults[$currentFieldName]["user_name"] = array();
-		}
-		array_push($transformedResults[$currentFieldName]["field_value"],$val["field_value"]);
-		array_push($transformedResults[$currentFieldName]["user_name"],$val["login"]);
-	}
-	
-	//fetch Assignements for "Status"-field seperately, because it is not a custom field
-	$sql="SELECT field_value,login"
-		." FROM req_notify_assignments,users"
-		." WHERE test_project_id=$t_project_id"
-		." AND users.id = req_notify_assignments.assigned_user_id"
-		." AND req_notify_assignments.field_id = 0"
-		." ORDER BY test_project_id;";
-	
-	$results = $this->db->get_recordset($sql);
-	$statusFieldValsLocalized = $this->getStatusFieldValsLocaledForAssignment();
-	$statusFieldValsEN = $this->getStatusFieldValsLocaledForAssignment("en_GB");
-	$localizedFieldVal = "";
-	foreach($results as $key => $val) {
-		$localizedFieldVal = $val["field_value"];
-		if(strcmp($currentFieldName,"Status")!==0) {
-			$currentFieldName = "Status";
-			$transformedResults[$currentFieldName]["field_value"] = array();
-			$transformedResults[$currentFieldName]["user_name"] = array();
-		}
-		foreach($statusFieldValsEN as $index => $fieldValEN) {
-			if(strcmp($fieldValEN,$localizedFieldVal)==0){
-				$localizedFieldVal = $statusFieldValsLocalized[$index];
-				break;
-			}
-		}
-		array_push($transformedResults[$currentFieldName]["field_value"],$localizedFieldVal);
-		array_push($transformedResults[$currentFieldName]["user_name"],$val["login"]);
-	}
-	
-	return $transformedResults;
+  $sql="SELECT {$this->tables['custom_fields']}.name,field_value,login"
+    ." FROM {$this->tables['req_notify_assignments']},{$this->tables['users']},{$this->tables['custom_fields']}"
+    ." WHERE test_project_id=$t_project_id"
+    ." AND {$this->tables['users']}.id = {$this->tables['req_notify_assignments']}.assigned_user_id"
+    ." AND {$this->tables['custom_fields']}.id={$this->tables['req_notify_assignments']}.field_id"
+    ." ORDER BY test_project_id, {$this->tables['custom_fields']}.name;";
+  
+  $results = $this->db->get_recordset($sql);
+  
+  $currentFieldName = "";
+  
+  //tansform the results into a datastructure which is better usable
+  foreach($results as $key => $val) {
+    if(strcmp($currentFieldName,$results[$key]["name"])!==0) {
+      $currentFieldName = $results[$key]["name"];
+      $transformedResults[$currentFieldName]["field_value"] = array();
+      $transformedResults[$currentFieldName]["user_name"] = array();
+    }
+    array_push($transformedResults[$currentFieldName]["field_value"],$val["field_value"]);
+    array_push($transformedResults[$currentFieldName]["user_name"],$val["login"]);
   }
-
+  
+  //fetch Assignements for "Status"-field seperately, because it is not a custom field
+  $sql="SELECT field_value,login"
+    ." FROM {$this->tables['req_notify_assignments']},{$this->tables['users']}"
+    ." WHERE test_project_id=$t_project_id"
+    ." AND {$this->tables['users']}.id = {$this->tables['req_notify_assignments']}.assigned_user_id"
+    ." AND {$this->tables['req_notify_assignments']}.field_id = 0"
+    ." ORDER BY test_project_id;";
+  
+  $results = $this->db->get_recordset($sql);
+  $statusFieldValsLocalized = $this->getStatusFieldValsLocaledForAssignment();
+  $statusFieldValsEN = $this->getStatusFieldValsLocaledForAssignment("en_GB");
+  $localizedFieldVal = "";
+  foreach($results as $key => $val) {
+    $localizedFieldVal = $val["field_value"];
+    if(strcmp($currentFieldName,"Status")!==0) {
+      $currentFieldName = "Status";
+      $transformedResults[$currentFieldName]["field_value"] = array();
+      $transformedResults[$currentFieldName]["user_name"] = array();
+    }
+    foreach($statusFieldValsEN as $index => $fieldValEN) {
+      if(strcmp($fieldValEN,$localizedFieldVal)==0){
+        $localizedFieldVal = $statusFieldValsLocalized[$index];
+        break;
+      }
+    }
+    array_push($transformedResults[$currentFieldName]["field_value"],$localizedFieldVal);
+    array_push($transformedResults[$currentFieldName]["user_name"],$val["login"]);
+  }
+  
+  return $transformedResults;
+  }
+  
   
   function getStatusFieldValsLocaledForAssignment($langStr = null) {
-	  $fieldVals = array(8);
-	  $fieldVals[0] = lang_get("req_status_draft", $langStr);
-	  $fieldVals[1] = lang_get("req_status_review", $langStr);
-	  $fieldVals[2] = lang_get("req_status_rework", $langStr);
-	  $fieldVals[3] = lang_get("req_status_finish", $langStr);
-	  $fieldVals[4] = lang_get("req_status_implemented", $langStr);
-	  $fieldVals[5] = lang_get("req_status_obsolete", $langStr);
-	  $fieldVals[6] = lang_get("req_status_not_testable", $langStr);
-	  $fieldVals[7] = lang_get("review_status_valid", $langStr);
-	  return $fieldVals;
+    $fieldVals = array(8);
+    $fieldVals[0] = lang_get("req_status_draft", $langStr);
+    $fieldVals[1] = lang_get("req_status_review", $langStr);
+    $fieldVals[2] = lang_get("req_status_rework", $langStr);
+    $fieldVals[3] = lang_get("req_status_finish", $langStr);
+    $fieldVals[4] = lang_get("req_status_implemented", $langStr);
+    $fieldVals[5] = lang_get("req_status_obsolete", $langStr);
+    $fieldVals[6] = lang_get("req_status_not_testable", $langStr);
+    $fieldVals[7] = lang_get("review_status_valid", $langStr);
+    return $fieldVals;
   }
-  	/*
-	  function: getNotificationFieldAssignmentByFieldName
-
-	  args: t_project_id: current project id as int
-			field_name: the name of the field of which the values should be fetched
-	*/
+    /*
+    function: getNotificationFieldAssignmentByFieldName
+  
+    args: t_project_id: current project id as int
+      field_name: the name of the field of which the values should be fetched
+  */
   function getNotificationFieldAssignmentByFieldName($t_project_id,$field_name) {
-	if(strCmp($field_name,"Status") === 0) {
-		$sql="SELECT field_value,login"
-		." FROM req_notify_assignments,users"
-		." WHERE test_project_id=$t_project_id"
-		." AND users.id = req_notify_assignments.assigned_user_id"
-		." AND req_notify_assignments.field_id = 0";
-	} else {
-		$sql="SELECT field_value,login"
-		." FROM req_notify_assignments,users,custom_fields"
-		." WHERE test_project_id=$t_project_id"
-		." AND users.id = req_notify_assignments.assigned_user_id"
-		." AND custom_fields.name = \"$field_name\""
-		." AND custom_fields.id=req_notify_assignments.field_id"
-		." ORDER BY test_project_id, custom_fields.name;";
-	}
-	
-	//tansform the results into a datastructure which is better usable
-	$transformedResults = array();
-	$results = $this->db->get_recordset($sql);
-
-	$statusFieldValsLocalized = $this->getStatusFieldValsLocaledForAssignment();
-	$statusFieldValsEN = $this->getStatusFieldValsLocaledForAssignment("en_GB");
-	$localizedFieldVal = "";
-	
-	$transformedResults[$field_name]["field_value"] = array();
-	$transformedResults[$field_name]["user_name"] = array();
-	foreach($results as $key => $val) {
-		
-		$localizedFieldVal = $val["field_value"];
-		foreach($statusFieldValsEN as $index => $fieldValEN) {
-			if(strcmp($fieldValEN,$localizedFieldVal)==0){
-				$localizedFieldVal = $statusFieldValsLocalized[$index];
-				break;
-			}
-		}
-		array_push($transformedResults[$field_name]["field_value"],$localizedFieldVal);
-		array_push($transformedResults[$field_name]["user_name"],$val["login"]);
-	}
-	
-	return $transformedResults;
+  if(strCmp($field_name,"Status") === 0) {
+    $sql="SELECT field_value,login"
+    ." FROM {$this->tables['req_notify_assignments']},{$this->tables['users']}"
+    ." WHERE test_project_id=$t_project_id"
+    ." AND {$this->tables['users']}.id = {$this->tables['req_notify_assignments']}.assigned_user_id"
+    ." AND {$this->tables['req_notify_assignments']}.field_id = 0";
+  } else {
+    $sql="SELECT field_value,login"
+    ." FROM {$this->tables['req_notify_assignments']},{$this->tables['users']},{$this->tables['custom_fields']}"
+    ." WHERE test_project_id=$t_project_id"
+    ." AND {$this->tables['users']}.id = {$this->tables['req_notify_assignments']}.assigned_user_id"
+    ." AND {$this->tables['custom_fields']}.name = \"$field_name\""
+    ." AND {$this->tables['custom_fields']}.id={$this->tables['req_notify_assignments']}.field_id"
+    ." ORDER BY test_project_id, {$this->tables['custom_fields']}.name;";
   }
-
-  function getSubedUsers($tproject_id, $requirement_id) {
-	$sql = "SELECT id, login, email"
-	    	." FROM users, req_subscription"
-			." WHERE req_subscription.fk_req_id = $requirement_id"
-			." AND req_subscription.fk_user_id = users.id"
-			." AND req_subscription.tproject_id = $tproject_id;";
-	$results = $this->db->get_recordset($sql);
-	return $results;
+  
+  //tansform the results into a datastructure which is better usable
+  $transformedResults = array();
+  $results = $this->db->get_recordset($sql);
+  
+  $statusFieldValsLocalized = $this->getStatusFieldValsLocaledForAssignment();
+  $statusFieldValsEN = $this->getStatusFieldValsLocaledForAssignment("en_GB");
+  $localizedFieldVal = "";
+  
+  $transformedResults[$field_name]["field_value"] = array();
+  $transformedResults[$field_name]["user_name"] = array();
+  foreach($results as $key => $val) {
+    
+    $localizedFieldVal = $val["field_value"];
+    foreach($statusFieldValsEN as $index => $fieldValEN) {
+      if(strcmp($fieldValEN,$localizedFieldVal)==0){
+        $localizedFieldVal = $statusFieldValsLocalized[$index];
+        break;
+      }
+    }
+    array_push($transformedResults[$field_name]["field_value"],$localizedFieldVal);
+    array_push($transformedResults[$field_name]["user_name"],$val["login"]);
+  }
+  
+  return $transformedResults;
+  }
+  
+  function getSubscribedUsers($tproject_id, $requirement_id) {
+  $sql = "SELECT id, login, email, {$this->tables['users']}.locale"
+        ." FROM {$this->tables['users']}, {$this->tables['req_subscription']}"
+      ." WHERE {$this->tables['req_subscription']}.req_id = $requirement_id"
+      ." AND {$this->tables['req_subscription']}.user_id = {$this->tables['users']}.id"
+      ." AND {$this->tables['req_subscription']}.tproject_id = $tproject_id;";
+  $results = $this->db->get_recordset($sql);
+  return $results;
   }
   
   function createSubscription($tproject_id, $requirement_id, $userId) {
-	$sql = "SELECT id"
-	       ." FROM requirements"
-		   ." WHERE requirements.id = $requirement_id;";
-	$results = $this->db->get_recordset($sql);
-	if(!isset($results)) {
-		return;
-	}
-	
-	$sql = "SELECT id"
-		  ." FROM users"
-		  ." WHERE users.id = $userId;";
-	$results = $this->db->get_recordset($sql);
-	if(!isset($results)) {
-		return;
-	}
-	
-	$sql = "SELECT fk_req_id"
-		  ." FROM req_subscription"
-		  ." WHERE fk_user_id = $userId"
-		  ." AND fk_req_id = $requirement_id;";
-	$results = $this->db->get_recordset($sql);
-	if(isset($results)) {
-		return;
-	}
-	
-	$sql =   "INSERT INTO req_subscription"
-			." VALUES ($requirement_id,$userId,$tproject_id);";
-	$this->db->exec_query($sql);
+  $sql = "SELECT id"
+        ." FROM {$this->tables['requirements']}"
+      ." WHERE {$this->tables['requirements']}.id = $requirement_id;";
+  $results = $this->db->get_recordset($sql);
+  if(!isset($results)) {
+    return;
+  }
+  
+  $sql = "SELECT id"
+      ." FROM {$this->tables['users']}"
+      ." WHERE {$this->tables['users']}.id = $userId;";
+  $results = $this->db->get_recordset($sql);
+  if(!isset($results)) {
+    return;
+  }
+  
+  $sql = "SELECT req_id"
+      ." FROM {$this->tables['req_subscription']}"
+      ." WHERE user_id = $userId"
+      ." AND req_id = $requirement_id;";
+  $results = $this->db->get_recordset($sql);
+  if(isset($results)) {
+    return;
+  }
+  
+  $sql =   "INSERT INTO {$this->tables['req_subscription']}"
+      ." VALUES ($requirement_id,$userId,$tproject_id);";
+  $this->db->exec_query($sql);
   }
   
   function removeSubscription($tproject_id, $requirement_id, $userId) {
-	$sql = "DELETE FROM req_subscription"
-	      ." WHERE req_subscription.fk_req_id = $requirement_id"
-		  ." AND req_subscription.fk_user_id = $userId"
-		  ." AND req_subscription.tproject_id = $tproject_id;";
-			
-	$this->db->exec_query($sql);
+  $sql = "DELETE FROM {$this->tables['req_subscription']}"
+        ." WHERE {$this->tables['req_subscription']}.req_id = $requirement_id"
+      ." AND {$this->tables['req_subscription']}.user_id = $userId"
+      ." AND {$this->tables['req_subscription']}.tproject_id = $tproject_id;";
+      
+  $this->db->exec_query($sql);
   }
   
-  function getAllReqSubbed($tproject_id, $userId) {
-	$sql = "SELECT req_subscription.fk_req_id AS \"reqID\""
-	    	." FROM req_subscription"
-			." WHERE req_subscription.fk_user_id = $userId"
-			." AND req_subscription.tproject_id = $tproject_id;";
+  function getAllReqSubscribed($tproject_id, $userId) {
+  $sql = "SELECT {$this->tables['req_subscription']}.req_id AS \"reqID\""
+        ." FROM {$this->tables['req_subscription']}"
+      ." WHERE {$this->tables['req_subscription']}.user_id = $userId"
+      ." AND {$this->tables['req_subscription']}.tproject_id = $tproject_id;";
+  
+  $results = $this->db->get_recordset($sql);
+  return $results;
+  }
+  
+  function getAssignedUsers($tproject_id, $field_id, $reqState) {
+    $sqlWhere = "WHERE id = (SELECT assigned_user_id"
+          ."	FROM {$this->tables['req_notify_assignments']}"
+          ."	WHERE test_project_id = $tproject_id"
+          ."	AND field_id = $field_id"
+          ."	AND field_value = \"$reqState\")";
 
-	$results = $this->db->get_recordset($sql);
-	return $results;
+    $assignedUsers = tlUser::getAll($this->db, $sqlWhere,null,null,tlDBObject::TLOBJ_O_GET_DETAIL_MINIMUM);
+    return $assignedUsers;
   }
 } // class end

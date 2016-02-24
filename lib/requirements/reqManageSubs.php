@@ -62,7 +62,7 @@ if(count($gui->reqIDs) > 0)
   // array to gather table data row per row
   $rows = array();    
  
-  $subbedReqs = $req_mgr->getAllReqSubbed($args->tproject_id, $_SESSION["userID"]);
+  $subscribedReqs = $req_mgr->getAllReqSubscribed($args->tproject_id, $_SESSION["userID"]);
   foreach($gui->reqIDs as $id) 
   {
     $req = $reqSet[$id];
@@ -93,10 +93,10 @@ if(count($gui->reqIDs) > 0)
         * the same as column headers are below!!!
         * 
         * should be:
-		* 1. path
-		* 2. title
-		* 3. created_on
-		* 4. subscribed
+    * 1. path
+    * 2. title
+    * 3. created_on
+    * 4. subscribed
         */
         
       $result[] = $pathCache[$req[0]['srs_id']];
@@ -109,21 +109,21 @@ if(count($gui->reqIDs) > 0)
       // use html comment to sort properly by this columns (extjs)
       $result[] = "<!--{$version['creation_ts']}-->" . localizeTimeStamp($version['creation_ts'],$cfg->datetime) . 
                     " ({$version['author']})";
-	  
-	  $isReqSubbed = false;
-      foreach($subbedReqs as $req) {
-		if($version["id"] == $req["reqID"]) {
-			$isReqSubbed = true;
-			break;
-		}
-	  }
-	  if($isReqSubbed) {
-		$result[] = "<!--subscribed-->".lang_get("req_already_subbed");
-	  }
-	  else {
-		$result[] = "<!--subscribed-->".lang_get("req_not_subbed_yet");  
-	  }
-	  
+    
+    $isReqSubscribed = false;
+      foreach($subscribedReqs as $req) {
+    if($version["id"] == $req["reqID"]) {
+      $isReqSubscribed = true;
+      break;
+    }
+    }
+    if($isReqSubscribed) {
+    $result[] = "<!--subscribed-->".lang_get("req_already_subscribed");
+    }
+    else {
+    $result[] = "<!--subscribed-->".lang_get("req_not_subscribed_yet");  
+    }
+    
       $rows[] = $result;
     }
   }
@@ -146,7 +146,7 @@ if(count($gui->reqIDs) > 0)
      * 1. path
      * 2. title
      * 3. created_on
-	 * 4. subscribed
+  * 4. subscribed
      */
     $columns = array();
     $columns[] = array('title_key' => 'req_spec_short', 'width' => 150);

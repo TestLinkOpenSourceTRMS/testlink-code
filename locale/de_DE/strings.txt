@@ -3655,9 +3655,21 @@ $TLS_assign_btn_change = "Zuweisungen ändern";
 $TLS_assign_btn_delete = "Zuweisungen löschen";
 
 // reqManageSubs.php
-$TLS_req_already_subbed = "Abo beenden";
-$TLS_req_not_subbed_yet = "Abonnieren";
+$TLS_req_already_subscribed = "Abo beenden";
+$TLS_req_not_subscribed_yet = "Abonnieren";
 $TLS_subscribtion_state = "Status des Abonnements"; 
+
+// reqCommands.class.php
+$TLS_req_change_notification_subject = "[Statusänderung einer Anforderung] (%reqState) %req_doc_id:%reqTitle";
+$TLS_req_change_notification = "<!doctype html><html><body><p>Anforderung '%reqTitle' wurde von %modifier geändert. <br></p><p>Der Status wurde von '%oldFieldVal' zu '%reqState'.</p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+$TLS_req_change_subscribtion_subject = "[Änderung einer Anforderung] %req_doc_id:%reqTitle";
+$TLS_req_change_subscribtion = "<!doctype html><html><body><p>Anforderung '%reqTitle' wurde von %modifier gändert. <br></p><p>Protokolleintrag:<br/>%log_msg</p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+$TLS_req_delete_subscribtion_subject = "[Löschen einer Anforderung] %req_doc_id:%reqTitle";
+$TLS_req_delete_subscribtion = "<!doctype html><html><body><p>Anforderung '%reqTitle' wurde von %modifier gelöscht. <br></p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+$TLS_req_version_create_subscribtion_subject = "[Neue Anforderungsversion erstellt] %req_doc_id:%reqTitle";
+$TLS_req_version_create_subscribtion = "<!doctype html><html><body><p>Eine neue Version der Anforderung '%reqTitle' wurde von %modifier erstellt. <br></p><p>Protokolleintrag:<br/>%log_msg</p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+$TLS_req_version_delete_subscribtion_subject = "[Anforderungsversion gelöscht] %req_doc_id:%reqTitle";
+$TLS_req_version_delete_subscribtion = "<!doctype html><html><body><p>Version %versionNr der Anforderung '%reqTitle' wurde von %modifier gelöscht. <br></p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
 
 // ----- END ------------------------------------------------------------------
 ?>

@@ -1,9 +1,8 @@
 {* 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: reqOverview.tpl,v 1.8 2010/10/11 07:57:12 mx-julian Exp $
+ * $Id: reqmanagesubs.tpl,v 1.9 2016/22/02
  *
- * Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
- * See BUGID 3227 for a more detailed description of this feature.
+ * Purpose: List requirements in an ExtJS Table, with the ability to subscribe or unsubscribe requirements.
  * 
  * @internal revisions
  *

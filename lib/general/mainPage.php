@@ -77,28 +77,28 @@ $arrPlans = $currentUser->getAccessibleTestPlans($db,$testprojectID);
 
 if($testplanID > 0)
 {
-	// if this test plan is present on $arrPlans
-	//	  OK we will set it on $arrPlans as selected one.
-	// else 
-	//    need to set test plan on session
-	//
-	$index=0;
-	$found=0;
-	$loop2do=count($arrPlans);
-	for($idx=0; $idx < $loop2do; $idx++)
-	{
-  	if( $arrPlans[$idx]['id'] == $testplanID )
-  	{
-     	$found = 1;
-     	$index = $idx;
-     	$break;
+  // if this test plan is present on $arrPlans
+  //	  OK we will set it on $arrPlans as selected one.
+  // else 
+  //    need to set test plan on session
+  //
+  $index=0;
+  $found=0;
+  $loop2do=count($arrPlans);
+  for($idx=0; $idx < $loop2do; $idx++)
+  {
+    if( $arrPlans[$idx]['id'] == $testplanID )
+    {
+        $found = 1;
+        $index = $idx;
+        $break;
     }
   }
   if( $found == 0 )
   {
     // update test plan id
     $testplanID = $arrPlans[0]['id'];
-	  setSessionTestPlan($arrPlans[0]);     	
+    setSessionTestPlan($arrPlans[0]);     	
   } 
   $arrPlans[$index]['selected']=1;
 }
@@ -106,8 +106,8 @@ if($testplanID > 0)
 $gui->testplanRole = null;
 if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
 {
-	$role = $currentUser->tplanRoles[$testplanID];
-	$gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
+  $role = $currentUser->tplanRoles[$testplanID];
+  $gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
 }
 
 $rights2check = array('testplan_execute','testplan_create_build','testplan_metrics','testplan_planning',
@@ -152,7 +152,7 @@ if( (strcmp($secCfg, 'ALWAYS') == 0) ||
 
 $gui->opt_requirements = isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
                          $_SESSION['testprojectOptions']->requirementsEnabled : null; 
-
+$gui->userRole = $_SESSION["currentUser"]->globalRole->name;
 $smarty->assign('gui',$gui);
 $smarty->display('mainPage.tpl');
 
@@ -225,9 +225,9 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   /** redirect admin to create testproject if not found */
   if ($grants['project_edit'] && !isset($_SESSION['testprojectID']))
   {
-	  tLog('No project found: Assume a new installation and redirect to create it','WARNING'); 
-	  redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
-	  exit();
+    tLog('No project found: Assume a new installation and redirect to create it','WARNING'); 
+    redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
+    exit();
   }
   
   foreach($right2check as $humankey => $right)

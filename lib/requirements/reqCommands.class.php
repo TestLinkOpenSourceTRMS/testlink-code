@@ -159,6 +159,7 @@ class reqCommands
     $obj->reqTypeDomain = $this->reqTypeDomain;
     $obj->req_spec_id = $argsObj->req_spec_id;
     $obj->req_id = $argsObj->req_id;
+    $obj->req_id = $argsObj->req_id;
     $obj->req_version_id = $argsObj->req_version_id;
     $obj->expected_coverage = $argsObj->expected_coverage;
     
@@ -200,6 +201,7 @@ class reqCommands
       $dummy = end($siblings);
       $order = $dummy['node_order']+1;
     }
+    
     $ret = $this->reqMgr->create($argsObj->req_spec_id,$argsObj->reqDocId,$argsObj->title,
                                  $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
                                  $argsObj->reqType,$argsObj->expected_coverage,$order);
@@ -235,6 +237,7 @@ class reqCommands
       $obj->req['type'] = $argsObj->reqType;
       $obj->req['req_doc_id'] = $argsObj->reqDocId;
     }
+
     return $obj;  
   }
 
@@ -252,7 +255,9 @@ class reqCommands
     $obj = $this->initGuiBean();
     $descr_prefix = lang_get('req') . TITLE_SEP;
     $ret['msg'] = null;
-      
+    
+    $this->sendMailOnStatusChange($this->db,$argsObj);
+	
     // Before Update want to understand what has changed regarding previous version/revision
     $oldData = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
     $oldCFields = $this->reqMgr->get_linked_cfields(null,$argsObj->req_version_id,$argsObj->tproject_id);
@@ -329,7 +334,8 @@ class reqCommands
     {
       $obj->suggest_revision = true;      
     }
-    return $obj;  
+    
+	return $obj;  
   }
 
   /**
@@ -338,6 +344,25 @@ class reqCommands
    */
   function doDelete(&$argsObj,$request)
   {
+    $usersObj = new tlUser($this->db);
+    $currentReq = $this->reqMgr->get_by_id($argsObj->requirement_id)[0];
+    $modifier = array_pop($usersObj->getNames($this->db,$argsObj->user_id))["login"];
+    $req_doc_id = $currentReq["req_doc_id"];
+    $reqTitle = $currentReq["title"];
+    $scope = $currentReq["scope"];
+    
+    $string_replace_map = array (
+      "%req_doc_id" => $req_doc_id,
+      "%reqTitle" => $reqTitle,
+      "%modifier" => $modifier,
+      "%scope" => $scope
+    );
+    $this->notifySubscribedUsers($argsObj, "req_delete_subscribtion_subject", "req_delete_subscribtion", $string_replace_map);
+    $subscribedUsers = $this->reqMgr->getSubscribedUsers($argsObj->tproject_id,$argsObj->requirement_id);
+    foreach($subscribedUsers as $subscribedUser) {
+      $this->reqMgr->removeSubscription($argsObj->tproject_id, $argsObj->requirement_id,$subscribedUser["id"]);
+    }
+  
     $obj = $this->initGuiBean();
     $obj->display_path = false;
     $reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
@@ -562,6 +587,24 @@ class reqCommands
   */
   function doCreateVersion(&$argsObj,$request)
   {
+    $usersObj = new tlUser($this->db);
+    $currentReq = $this->reqMgr->get_by_id($argsObj->requirement_id)[0];
+    
+    $modifier = array_pop($usersObj->getNames($this->db,$argsObj->user_id))["login"];
+    $req_doc_id = $currentReq["req_doc_id"];
+    $reqTitle = $currentReq["title"];
+    $scope = $currentReq["scope"];
+    $log_msg = $argsObj->log_message;
+    
+    $string_replace_map = array (
+      "%req_doc_id" => $req_doc_id,
+      "%reqTitle" => $reqTitle,
+      "%modifier" => $modifier,
+      "%log_msg" => $log_msg,
+      "%scope" => $scope
+    );
+    $this->notifySubscribedUsers($argsObj, 'req_version_create_subscribtion_subject', 'req_version_create_subscribtion', $string_replace_map);
+    
     $ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,
                                              $argsObj->req_version_id,$argsObj->log_message);
     $obj = $this->initGuiBean();
@@ -579,6 +622,26 @@ class reqCommands
   */
   function doDeleteVersion(&$argsObj,$request)
   {
+    $usersObj = new tlUser($this->db);
+    $reqversion = $this->reqMgr->get_version($argsObj->req_version_id);
+    $req = array_pop($this->reqMgr->getByDocID($reqversion["req_doc_id"]));
+    $argsObj->requirement_id = $req["id"];
+    
+    $modifier = array_pop($usersObj->getNames($this->db,$argsObj->user_id))["login"];
+    $req_doc_id = $reqversion["req_doc_id"];
+    $reqTitle = $reqversion["title"];
+    $scope = $reqversion["scope"];
+    $versionNr = $reqversion["version"];
+    
+    $string_replace_map = array (
+      "%req_doc_id" => $req_doc_id,
+      "%reqTitle" => $reqTitle,
+      "%modifier" => $modifier,
+      "%scope" => $scope,
+      "%versionNr" => $versionNr
+    );
+    $this->notifySubscribedUsers($argsObj, 'req_version_delete_subscribtion_subject', 'req_version_delete_subscribtion', $string_replace_map); 
+  
     $obj = $this->initGuiBean();
     $node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
     $req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
@@ -733,10 +796,6 @@ class reqCommands
     $obj->req_id = $argsObj->req_id;
     return $obj;  
   }
-
-
-
-  
   
   /**
    * 
@@ -942,5 +1001,146 @@ class reqCommands
     return $guiObj;    
   }
 
+  private function sendMailOnStatusChange(&$db,&$args)
+ {
+  if(strcmp($_POST["req_spec_id"],"") !== 0) {
+    $fieldMetadataMgr = new cfield_mgr($db);
+    $usersObj = new tlUser($db);
+    $reqMgr = new requirement_mgr($db);
+    $currentReq = $reqMgr->get_by_id($args->requirement_id)[0];
+    $fieldNames = $reqMgr->getAllNotificationFieldAssignments($args->tproject_id);
+    
+    $scope = $args->scope;
+    $reqTitle = $currentReq["title"];
+    $modifier = array_pop($usersObj->getNames($db,$args->user_id))["login"];
+    $from = config_get("from_email");
+    $subscribedUsers = $reqMgr->getSubscribedUsers($args->tproject_id,$args->requirement_id);
+    $req_doc_id = $currentReq["req_doc_id"];
+    
+    foreach($fieldNames as $fieldName => $fieldData) {
+      if(strcmp($fieldName,"Status") === 0) {
+        $reqState = $this->getStatusIdentifier($args->reqStatus);
+        $oldFieldVal = $this->getStatusIdentifier($currentReq["status"]);
+        $fieldMetadata["id"] = 0;
+        $fieldMetadata["name"] = "Status";
+      }
+      else
+      {
+        $fieldMetadata = array_pop($fieldMetadataMgr->get_by_name($fieldName));
+        $customFieldPOSTName = "custom_field_".$fieldMetadata["type"]."_".$fieldMetadata["id"];
+        
+        $reqState = $_POST[$customFieldPOSTName];
   
+        $oldFieldValArr = $reqMgr->get_linked_cfields($currentReq["id"],$currentReq["version_id"]);
+        $oldFieldVal = NULL;
+        //richtiges cfield raussuchen
+        foreach($oldFieldValArr as $oldFieldValEle) {
+          if(strcmp($oldFieldValEle["name"], $fieldName) === 0) {
+            $oldFieldVal = trim($oldFieldValEle["value"]);
+            break;
+          }
+        }
+      }
+      
+      if(strcmp($oldFieldVal,$reqState) !== 0 && strlen($reqState)!==0) {
+        $fieldAssignment = $reqMgr->getNotificationFieldAssignmentByFieldName($args->tproject_id, $fieldMetadata["name"]);
+        if(strcmp($fieldName,"Status") === 0) {
+          $reqState = $this->getStatusIdentifier($args->reqStatus, "en_GB");
+        }
+        
+        if(strcmp($fieldName,"Status") === 0) {
+          $reqState = $this->getStatusIdentifier($args->reqStatus);
+        }
+
+        $assignedUsers = $reqMgr->getAssignedUsers($args->tproject_id,$fieldMetadata["id"],$reqState);
+        
+        foreach($assignedUsers as $assignedUser) {
+          $subject = lang_get('req_change_notification_subject',$assignedUser->locale);
+          $subject = str_replace("%reqState", $reqState, $subject);
+          $subject = str_replace("%req_doc_id", $req_doc_id, $subject);
+          $subject = str_replace("%reqTitle", $reqTitle, $subject);
+          $body = lang_get('req_change_notification',$assignedUser->locale);
+          $body = str_replace("%reqTitle", $reqTitle, $body);
+          $body = str_replace("%modifier", $modifier, $body);
+          $body = str_replace("%oldFieldVal", $oldFieldVal, $body);
+          $body = str_replace("%reqState", $reqState, $body);
+          $body = str_replace("%scope", $scope, $body);
+          $retVal = email_send($from,$assignedUser->emailAddress,$subject,$body,'',false,true,null);
+          foreach($subscribedUsers as $key => $subscribedUser) {
+            if(strcmp($subscribedUser["login"],$assignedUser->login) == 0) {
+              unset($subscribedUsers[$key]);
+              break;
+            }
+          }
+        }
+      }
+    }	
+    
+    //send mail to all subbed users
+		$subject = lang_get("req_change_subscribtion_subject");
+		$subject = str_replace("%reqTitle", $reqTitle, $subject);
+		$subject = str_replace("%req_doc_id", $req_doc_id, $subject);
+		$body =	lang_get("req_change_subscribtion");
+		$body = str_replace("%log_msg", $args->log_message, $body);
+		$body = str_replace("%reqTitle", $reqTitle, $body);
+		$body = str_replace("%modifier", $modifier, $body);
+		$body = str_replace("%scope", $scope, $body);
+
+		if(sizeof($subscribedUsers)>0){	
+			foreach($subscribedUsers as $subscribedUser) {
+				$retVal = email_send($from,$subscribedUser["email"],$subject,$body,'',false,true,null);
+			}
+		}
+  }
+ }
+  
+  
+  private function getStatusIdentifier($statusAbbr, $langStr=null) {
+    $fullStatusName = "";
+    $req_cfg = config_get('req_cfg');
+    switch($statusAbbr) {
+      case "D": 
+        $fullStatusName = lang_get($req_cfg->status_labels['D'],$langStr);
+        break;
+      case "R":
+        $fullStatusName = lang_get($req_cfg->status_labels['R'],$langStr);
+        break;
+      case "W":
+        $fullStatusName = lang_get($req_cfg->status_labels['W'],$langStr);
+        break;
+      case "F":
+        $fullStatusName = lang_get($req_cfg->status_labels['F'],$langStr);
+        break; 
+      case "I":
+        $fullStatusName = lang_get($req_cfg->status_labels['I'],$langStr);
+        break;
+      case "V":
+        $fullStatusName = lang_get($req_cfg->status_labels['V'],$langStr);
+        break;
+      case "N":
+        $fullStatusName = lang_get($req_cfg->status_labels['N'],$langStr);
+        break;
+      case "O":
+        $fullStatusName = lang_get($req_cfg->status_labels['O'],$langStr);
+        break;
+    }
+    return $fullStatusName;
+  }
+  
+  
+  private function notifySubscribedUsers(&$args, $subject_identifier, $body_identifier, $string_replace_map) {
+  $subscribedUsers = $this->reqMgr->getSubscribedUsers($args->tproject_id,$args->requirement_id);
+  $from = config_get("from_email");
+  if(sizeof($subscribedUsers)>0){	
+    foreach($subscribedUsers as $subscribedUser) {
+      $subject = lang_get($subject_identifier, $subscribedUser["locale"]);
+      $body = lang_get($body_identifier, $subscribedUser["locale"]);
+      foreach($string_replace_map as $identifier => $subjectString) {
+        $subject = str_replace($identifier,$subjectString,$subject);
+        $body = str_replace($identifier,$subjectString,$body);
+      }
+      $retVal = email_send($from,$subscribedUser["email"],$subject,$body,'',false,true,null);
+    }
+  }
+}
 }

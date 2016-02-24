@@ -22,6 +22,9 @@ require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once("configCheck.php");
 require_once("web_editor.php");
+require_once("email_api.php");
+require_once('../functions/lang_api.php');
+require_once('../functions/object.class.php');
 
 $editorCfg = getWebEditorCfg('requirement');
 require_once(require_web_editor($editorCfg['type']));
@@ -33,10 +36,9 @@ $commandMgr = new reqCommands($db);
 
 $args = init_args($db);
 $gui = initialize_gui($db,$args,$commandMgr);
-
-
 $pFn = $args->doAction;
 $op = null;
+
 if(method_exists($commandMgr,$pFn))
 {
   $op = $commandMgr->$pFn($args,$_REQUEST);
@@ -214,16 +216,17 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     case "deleteFile":
       $renderType = 'template';
       $key2loop = get_object_vars($opObj);
+	  
       foreach($key2loop as $key => $value)
       {
         $guiObj->$key = $value;
       }
-
+	
       // exceptions
       $guiObj->askForRevision = $opObj->suggest_revision ? 1 : 0;
       $guiObj->askForLog = $opObj->prompt_for_log ? 1 : 0;
       $guiObj->operation = isset($actionOpe[$argsObj->doAction]) ? $actionOpe[$argsObj->doAction] : $argsObj->doAction;
-          
+      	  
       $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
       $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
 
@@ -295,7 +298,6 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
   $gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
   
   $gui->stay_here = $argsObj->stay_here;
-  
   return $gui;
 }
 

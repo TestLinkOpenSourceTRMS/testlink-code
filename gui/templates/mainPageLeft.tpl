@@ -9,8 +9,8 @@
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,system_config,
                           href_cfields_tproject_assign,href_keywords_manage,
-                          title_user_mgmt,href_user_management,
-                          href_roles_management,title_requirements,
+                          title_user_mgmt,href_user_management,href_process_step_role_assignment,
+                          href_roles_management,title_requirements,href_manage_req_subs,
                           href_req_spec,href_req_assign,link_report_test_cases_created_per_user,
                           title_test_spec,href_edit_tc,href_browse_tc,href_search_tc,
                           href_search_req, href_search_req_spec,href_inventory,
@@ -168,6 +168,14 @@
     <div id='system_topics'>
     {if $gui->grants.cfield_management == "yes"}
       <a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
+  <br />
+  {/if}
+  {if $gui->grants.reqs_view == "yes"}
+  <a href="lib/requirements/reqManageSubs.php">{$labels.href_manage_req_subs}</a>
+    <br />
+  {/if}
+  {if $gui->userRole eq "admin"}
+  <a href="lib/notificationassignments/notificationAssignmentConfig.php">{$labels.href_process_step_role_assignment}</a>
       <br />
     {/if}
      

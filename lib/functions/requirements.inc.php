@@ -34,7 +34,6 @@ function exportReqDataToXML($reqData)
 
 function manageUserSubscribtion(&$db, &$args) {
 	$isSubed = 0;
-	mlog($args);
 	if($args->requirement_id>=0) {
 		$reqMgr = new requirement_mgr($db);
 		if(array_key_exists("subscribe",$_POST)) {
@@ -48,7 +47,7 @@ function manageUserSubscribtion(&$db, &$args) {
 			}
 		}
 		else {
-			$users = $reqMgr->getSubedUsers($args->tproject_id,$args->requirement_id);
+			$users = $reqMgr->getSubscribedUsers($args->tproject_id,$args->requirement_id);
 			foreach($users as $user) {
 				if($user["id"] === $args->userID) {
 					$isSubed = 1;

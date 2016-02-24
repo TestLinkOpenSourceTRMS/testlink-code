@@ -36,15 +36,15 @@ function init_gui(&$db)
   //fetch the possible values of the given field
   if(strcmp($fieldName,"Status") === 0) {
 
-	  $gui->fieldVals = $reqMgr->getStatusFieldValsLocaledForAssignment();
+    $gui->fieldVals = $reqMgr->getStatusFieldValsLocaledForAssignment();
   }
   else
   {
-	$cfield_mgr = new cfield_mgr($db);
-	$selctedCField = $cfield_mgr->get_by_name($fieldName);
-	foreach($selctedCField as $val) {
-		$gui->fieldVals = explode("|",$val["possible_values"]);
-	}
+  $cfield_mgr = new cfield_mgr($db);
+  $selctedCField = $cfield_mgr->get_by_name($fieldName);
+  foreach($selctedCField as $val) {
+    $gui->fieldVals = explode("|",$val["possible_values"]);
+  }
   }
   
   $args = init_args($db);
@@ -56,8 +56,8 @@ function init_gui(&$db)
 }
 
 function init_args(&$db) {
-	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-	return $args;
+  $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  return $args;
 }
 ?>

@@ -25,10 +25,12 @@ $tproject_mgr = new testproject($db);
 $args = init_args();
 $gui = initialize_gui($db,$args,$tproject_mgr);
 
+
 $smarty = new TLSmarty();
 $gui->isSubed = manageUserSubscribtion($db,$args);
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
+
 /**
  *
  */

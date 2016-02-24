@@ -278,7 +278,7 @@ abstract class tlObject implements iSerialization
                     'requirements' => DB_TABLE_PREFIX . 'requirements',
                     'req_versions' => DB_TABLE_PREFIX . 'req_versions',
                     'req_revisions' => DB_TABLE_PREFIX . 'req_revisions',
-					'req_notify_assignments' => DB_TABLE_PREFIX . 'req_notify_assignments',
+          'req_notify_assignments' => DB_TABLE_PREFIX . 'req_notify_assignments',
                     'rights' => DB_TABLE_PREFIX . 'rights',
                     'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
                     'role_rights' => DB_TABLE_PREFIX . 'role_rights',
@@ -299,7 +299,8 @@ abstract class tlObject implements iSerialization
                     'user_group_assign' => DB_TABLE_PREFIX . 'user_group_assign',
                     'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
                     'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-                    'users' => DB_TABLE_PREFIX . 'users'); 
+                    'users' => DB_TABLE_PREFIX . 'users',
+          'req_subscription' => DB_TABLE_PREFIX . 'req_subscription'); 
 
     if ($tableNames != null)
     { 

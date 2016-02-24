@@ -24,40 +24,11 @@ $tproject_mgr = new testproject($db);
 
 $args = init_args();
 $gui = initialize_gui($db,$args,$tproject_mgr);
-$reqMgr = new requirement_mgr($db);
-if(array_key_exists("subscribe",$_POST)) {
-	if(strcmp($_POST["subscribe"],lang_get("btn_subscribe")) === 0) {
-		$reqMgr->createSubscription($args->tproject_id, $args->requirement_id, $args->userID);
-		$gui->isSubed = 1;
-	}
-	elseif (strcmp($_POST["subscribe"],lang_get("btn_unsubscribe")) === 0) {
-		$reqMgr->removeSubscription($args->tproject_id, $args->requirement_id, $args->userID);
-		$gui->isSubed = 0;
-	}
-}
-else {
-	$gui->isSubed = 0;
-	$users = $reqMgr->getSubedUsers($args->tproject_id,$args->requirement_id);
-	foreach($users as $user) {
-		if($user["id"] === $args->userID) {
-			$gui->isSubed = 1;
-			break;
-		}
-	}
-}
-$smarty = new TLSmarty();
 
+$smarty = new TLSmarty();
+$gui->isSubed = manageUserSubscribtion($db,$args);
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
-
-
-function subscribeUser($user_id, $req_id) {
-	
-}
-
-function unsubscribeUser() {
-	
-}
 /**
  *
  */

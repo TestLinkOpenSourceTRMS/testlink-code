@@ -4198,6 +4198,7 @@ function getCoverageCounterSet($itemSet)
 			." AND req_subscription.fk_user_id = users.id"
 			." AND req_subscription.tproject_id = $tproject_id;";
 	$results = $this->db->get_recordset($sql);
+	mlog($sql);
 	return $results;
   }
   

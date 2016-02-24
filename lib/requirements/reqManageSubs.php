@@ -16,6 +16,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
+require_once('requirements.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -27,7 +28,7 @@ $args = init_args($tproject_mgr);
 
 $gui = init_gui($args);
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
-
+manageUserSubscribtion($db,$args);
 $smarty = new TLSmarty();
 if(count($gui->reqIDs) > 0) 
 {
@@ -118,10 +119,10 @@ if(count($gui->reqIDs) > 0)
 		}
 	  }
 	  if($isReqSubbed) {
-		$result[] = "<!--subscribed-->".lang_get("req_already_subbed");
+		$result[] = "<!--subscribed--><form method=\"POST\" action=\"lib/requirements/reqManageSubs.php\"><input type=\"text\" name=\"reqId\" value=\"{$version["id"]}\" style=\"display:none\" /><input type=\"submit\" name=\"subscribe\" value=\"".lang_get("btn_unsubscribe")."\" /></form>";
 	  }
 	  else {
-		$result[] = "<!--subscribed-->".lang_get("req_not_subbed_yet");  
+		$result[] = "<!--subscribed--><form method=\"POST\" action=\"lib/requirements/reqManageSubs.php\"><input type=\"text\" name=\"reqId\" value=\"{$version["id"]}\" style=\"display:none\" /><input type=\"submit\" name=\"subscribe\" value=\"".lang_get("btn_subscribe")."\" /></form>";
 	  }
 	  
       $rows[] = $result;
@@ -204,7 +205,8 @@ function init_args(&$tproject_mgr)
     $args->tproject_name = $tproject_info['name'];
     $args->tproject_description = $tproject_info['notes'];
   }
-  
+  $args->requirement_id = intval(isset($_POST['reqId']) ? $_POST['reqId'] : -1);
+  $args->userID = $_SESSION['currentUser']->dbID;
   return $args;
 }
 

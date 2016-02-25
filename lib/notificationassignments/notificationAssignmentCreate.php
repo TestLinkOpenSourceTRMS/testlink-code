@@ -35,16 +35,15 @@ function init_gui(&$db)
   $gui = $commandMgr->initGuiBean();
   //fetch the possible values of the given field
   if(strcmp($fieldName,"Status") === 0) {
-
     $gui->fieldVals = $reqMgr->getStatusFieldValsLocaledForAssignment();
   }
   else
   {
-  $cfield_mgr = new cfield_mgr($db);
-  $selctedCField = $cfield_mgr->get_by_name($fieldName);
-  foreach($selctedCField as $val) {
-    $gui->fieldVals = explode("|",$val["possible_values"]);
-  }
+    $cfield_mgr = new cfield_mgr($db);
+    $selctedCField = $cfield_mgr->get_by_name($fieldName);
+    foreach($selctedCField as $val) {
+      $gui->fieldVals = explode("|",$val["possible_values"]);
+    }
   }
   
   $args = init_args($db);

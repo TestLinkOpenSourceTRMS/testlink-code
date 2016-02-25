@@ -28,18 +28,22 @@
   </div>
   {if isset($gui->assignments)}
   <div class="workBack">
-    {foreach key=fieldName item=fieldVal from=$gui->assignments}
+    {foreach key=fieldName item=fieldValues from=$gui->assignments}
     <div class="workBack">
       <form method="POST" >
         <h3>{$fieldName}</h3>
-        <table class="common sortable dataTable no-footer">
+        <table class="simple_tableruler">
           <th>{$labels.assign_table_header_fieldvals}</th><th>{$labels.assign_table_header_users}</th>
-          {for $i=0 to sizeof($fieldVal["field_value"])}
+          {foreach key=fieldVal item=assignedUsers from=$fieldValues}
             <tr>
-              <td>{$fieldVal["field_value"][$i]}</td>
-              <td>{$fieldVal["user_name"][$i]}</td>
+              <td>{$fieldVal}</td>
+              <td>
+              {foreach item=user from=$assignedUsers}
+                <a>{$user}<br></a>
+              {/foreach}
+              </td>
             </tr>
-          {/for}
+          {/foreach}
         </table>
         <input type="text" name="fieldName" style="display:none" value="{$fieldName}"/>
         <input type="submit" name="change" value="{$labels.assign_btn_change}" formaction="lib/notificationassignments/notificationAssignmentCreate.php" />

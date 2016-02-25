@@ -585,3 +585,78 @@ Undefined variable: target - in C:\xampp\htdocs\testlinkPrefixTest\lib\functions
 [>>][56cd7ed185bd0349046925][DEFAULT][/testlinkPrefixTest/logout.php][16/Feb/24 09:58:41]
 	[16/Feb/24 09:58:41][AUDIT][4inpv8utgti1g3oaae5fpc8nl5][GUI]
 		Logout of 'lejo'
+	[16/Feb/25 12:23:56][AUDIT][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		Login for 'lejo' from '::1' succeeded
+[<<][56cef25caa01a462203878][DEFAULT][/new_pull/login.php][16/Feb/25 12:23:56][16/Feb/25 12:23:56][took 0.015001 secs]
+[<<][56cef25cc7cb6078970869][DEFAULT][/new_pull/index.php][16/Feb/25 12:23:56][16/Feb/25 12:23:56][took 0.073007 secs]
+[>>][56cef25cd99e5594753639][DEFAULT][/new_pull/index.php][16/Feb/25 12:23:56]
+[<<][56cef25cd99e5594753639][DEFAULT][/new_pull/index.php][16/Feb/25 12:23:56][16/Feb/25 12:23:56][took 0.003 secs]
+[<<][56cef25ced26d438051403][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:23:56][16/Feb/25 12:23:57][took 0.094009 secs]
+[>>][56cef25d10737891858842][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:23:57]
+[<<][56cef25d10737891858842][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:23:57][16/Feb/25 12:23:57][took 0.021002 secs]
+[<<][56cef25cf091f324683237][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:23:56][16/Feb/25 12:23:57][took 0.125012 secs]
+[>>][56cef25d1b704246514968][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:23:57]
+[<<][56cef25d1b704246514968][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:23:57][16/Feb/25 12:23:57][took 0.039003 secs]
+[<<][56cef2618215e696795599][DEFAULT][/new_pull/lib/general/frmWorkArea.php][16/Feb/25 12:24:01][16/Feb/25 12:24:01][took 0.064006 secs]
+[>>][56cef26191b64399949825][DEFAULT][/new_pull/lib/general/frmWorkArea.php][16/Feb/25 12:24:01]
+[<<][56cef26191b64399949825][DEFAULT][/new_pull/lib/general/frmWorkArea.php][16/Feb/25 12:24:01][16/Feb/25 12:24:01][took 0.005 secs]
+[<<][56cef261a05ca434529009][DEFAULT][/lib/requirements/reqSpecListTree.php][16/Feb/25 12:24:01][16/Feb/25 12:24:01][took 0.091009 secs]
+[>>][56cef261b6d33895374451][DEFAULT][/lib/requirements/reqSpecListTree.php][16/Feb/25 12:24:01]
+	[16/Feb/25 12:24:01][L18N][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		string 'hint_list_of_bugs' is not localized for locale 'de_DE'  - using en_GB
+	[16/Feb/25 12:24:01][L18N][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		string 'bugs_on_context' is not localized for locale 'de_DE'  - using en_GB
+	[16/Feb/25 12:24:01][L18N][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		string 'tester_works_with_settings' is not localized for locale 'de_DE'  - using en_GB
+[<<][56cef261b6d33895374451][DEFAULT][/lib/requirements/reqSpecListTree.php][16/Feb/25 12:24:01][16/Feb/25 12:24:01][took 0.042004 secs]
+[<<][56cef261a34ab216628214][DEFAULT][/lib/project/project_req_spec_mgmt.php][16/Feb/25 12:24:01][16/Feb/25 12:24:01][took 0.150015 secs]
+[>>][56cef261c7eaa272233604][DEFAULT][/lib/project/project_req_spec_mgmt.php][16/Feb/25 12:24:01]
+[<<][56cef261c7eaa272233604][DEFAULT][/lib/project/project_req_spec_mgmt.php][16/Feb/25 12:24:01][16/Feb/25 12:24:01][took 0.007001 secs]
+[<<][56cef2621fb61990647366][DEFAULT][/new_pull/lib/ajax/getrequirementnodes.php][16/Feb/25 12:24:02][16/Feb/25 12:24:02][took 0.106011 secs]
+[>>][56cef26239d64224119295][DEFAULT][/new_pull/lib/ajax/getrequirementnodes.php][16/Feb/25 12:24:02]
+[<<][56cef26239d64224119295][DEFAULT][/new_pull/lib/ajax/getrequirementnodes.php][16/Feb/25 12:24:02][16/Feb/25 12:24:02][took 0.008001 secs]
+[<<][56cef26244948275327611][DEFAULT][/new_pull/lib/ajax/getrequirementnodes.php][16/Feb/25 12:24:02][16/Feb/25 12:24:02][took 0.072008 secs]
+[>>][56cef26256290746234848][DEFAULT][/new_pull/lib/ajax/getrequirementnodes.php][16/Feb/25 12:24:02]
+[<<][56cef26256290746234848][DEFAULT][/new_pull/lib/ajax/getrequirementnodes.php][16/Feb/25 12:24:02][16/Feb/25 12:24:02][took 0.005 secs]
+[<<][56cef263612c0381234102][DEFAULT][/new_pull/lib/requirements/reqView.php][16/Feb/25 12:24:03][16/Feb/25 12:24:03][took 0.071007 secs]
+[>>][56cef2637281f747601536][DEFAULT][/new_pull/lib/requirements/reqView.php][16/Feb/25 12:24:03]
+	[16/Feb/25 12:24:03][L18N][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		string 'click_to_get_attachment' is not localized for locale 'de_DE'  - using en_GB
+	[16/Feb/25 12:24:03][L18N][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		string 'display_inline' is not localized for locale 'de_DE'  - using en_GB
+	[16/Feb/25 12:24:03][L18N][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		string 'display_ea_string' is not localized for locale 'de_DE'  - using en_GB
+	[16/Feb/25 12:24:03][L18N][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		string 'display_inline_string' is not localized for locale 'de_DE'  - using en_GB
+[<<][56cef2637281f747601536][DEFAULT][/new_pull/lib/requirements/reqView.php][16/Feb/25 12:24:03][16/Feb/25 12:24:03][took 0.080008 secs]
+[<<][56cef2657d8b4515053666][DEFAULT][/new_pull/index.php][16/Feb/25 12:24:05][16/Feb/25 12:24:05][took 0.073007 secs]
+[>>][56cef2658fdb3240918607][DEFAULT][/new_pull/index.php][16/Feb/25 12:24:05]
+[<<][56cef2658fdb3240918607][DEFAULT][/new_pull/index.php][16/Feb/25 12:24:05][16/Feb/25 12:24:05][took 0.007001 secs]
+[<<][56cef265a8c2d216267286][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:24:05][16/Feb/25 12:24:05][took 0.089009 secs]
+[>>][56cef265be7de672409660][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:24:05]
+[<<][56cef265be7de672409660][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:24:05][16/Feb/25 12:24:05][took 0.026003 secs]
+[<<][56cef265a97e6552715256][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:24:05][16/Feb/25 12:24:05][took 0.138013 secs]
+[>>][56cef265cb303123384918][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:24:05]
+[<<][56cef265cb303123384918][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:24:05][16/Feb/25 12:24:05][took 0.038003 secs]
+[<<][56cef26780c45048827376][DEFAULT][/new_pull/lib/requirements/reqManageSubs.php][16/Feb/25 12:24:07][16/Feb/25 12:24:07][took 0.070007 secs]
+[>>][56cef267921a4564098794][DEFAULT][/new_pull/lib/requirements/reqManageSubs.php][16/Feb/25 12:24:07]
+	[16/Feb/25 12:24:07][WARNING][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		E_NOTICE
+Undefined property: stdClass::$all_versions - in C:\xampp\htdocs\new_pull\lib\requirements\reqManageSubs.php - Line 52
+	[16/Feb/25 12:24:07][WARNING][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		E_NOTICE
+Undefined property: stdClass::$all_versions - in C:\xampp\htdocs\new_pull\lib\requirements\reqManageSubs.php - Line 136
+[<<][56cef267921a4564098794][DEFAULT][/new_pull/lib/requirements/reqManageSubs.php][16/Feb/25 12:24:07][16/Feb/25 12:24:07][took 0.035004 secs]
+[<<][56cef26adbab6020283164][DEFAULT][/new_pull/index.php][16/Feb/25 12:24:10][16/Feb/25 12:24:10][took 0.072007 secs]
+[>>][56cef26aed3fd252697596][DEFAULT][/new_pull/index.php][16/Feb/25 12:24:10]
+[<<][56cef26aed3fd252697596][DEFAULT][/new_pull/index.php][16/Feb/25 12:24:10][16/Feb/25 12:24:10][took 0.004001 secs]
+[<<][56cef26b108c7638289296][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:24:11][16/Feb/25 12:24:11][took 0.083008 secs]
+[>>][56cef26b24d07496886571][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:24:11]
+[<<][56cef26b24d07496886571][DEFAULT][/new_pull/lib/general/navBar.php][16/Feb/25 12:24:11][16/Feb/25 12:24:11][took 0.024003 secs]
+[<<][56cef26b108c7526217888][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:24:11][16/Feb/25 12:24:11][took 0.130013 secs]
+[>>][56cef26b3088c326175831][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:24:11]
+[<<][56cef26b3088c326175831][DEFAULT][/new_pull/lib/general/mainPage.php][16/Feb/25 12:24:11][16/Feb/25 12:24:11][took 0.032003 secs]
+[<<][56cef26c1a56f515431248][DEFAULT][/new_pull/logout.php][16/Feb/25 12:24:12][16/Feb/25 12:24:12][took 0.073007 secs]
+[>>][56cef26c2c686553422136][DEFAULT][/new_pull/logout.php][16/Feb/25 12:24:12]
+	[16/Feb/25 12:24:12][AUDIT][9i2hk1tkj7jp8gfsbnb2s5snd5][GUI]
+		Logout of 'lejo'

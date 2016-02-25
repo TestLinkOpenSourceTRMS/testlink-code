@@ -1043,17 +1043,11 @@ class reqCommands
       }
       
       if(strcmp($oldFieldVal,$reqState) !== 0 && strlen($reqState)!==0) {
-        $fieldAssignment = $reqMgr->getNotificationFieldAssignmentByFieldName($args->tproject_id, $fieldMetadata["name"]);
         if(strcmp($fieldName,"Status") === 0) {
           $reqState = $this->getStatusIdentifier($args->reqStatus, "en_GB");
         }
-        
-        if(strcmp($fieldName,"Status") === 0) {
-          $reqState = $this->getStatusIdentifier($args->reqStatus);
-        }
 
         $assignedUsers = $reqMgr->getAssignedUsers($args->tproject_id,$fieldMetadata["id"],$reqState);
-        
         foreach($assignedUsers as $assignedUser) {
           $subject = lang_get('req_change_notification_subject',$assignedUser->locale);
           $subject = str_replace("%reqState", $reqState, $subject);

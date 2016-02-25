@@ -2,6 +2,10 @@
           s='assign_table_header_fieldvals,assign_table_header_users,btn_cancel,btn_ok'}
 
 <!DOCTYPE html>
+{$selectSize = 10}
+{if count($gui->users) lt 10}
+{$selectSize = count($gui->users)}
+{/if}
 <html>
   <head>
     <link rel="stylesheet" href="../../gui/themes/default/css/testlink.css"/>
@@ -10,23 +14,21 @@
     <div class="workBack">
       <form id="assignmentForm" method="post" action="notificationAssignmentConfig.php" >
         <input hidden type="text" name="fieldName" value="{$gui->fieldName}"/>
-        <table class="common sortable dataTable no-footer">
+        <table class="simple_tableruler">
           <th>{$labels.assign_table_header_fieldvals}</th><th>{$labels.assign_table_header_users}</th>
           {foreach key=fieldValNr item=fieldVal from=$gui->fieldVals}
             <tr>
               <td>{$fieldVal}</td>
               <td>
-                <select name="select_{$fieldVal}">
-                  <option id="empty"/>
+                <select name="select_{$fieldVal}[]" multiple="multiple" size="{$selectSize}">
                   {$addSelectedUser = false}
                   {foreach key=userIndex item=userName from=$gui->users}
-                    {for $i=0 to sizeof($gui->fieldAssignments[$gui->fieldName]["field_value"])-1}
-                      {if strcmp($fieldVal,$gui->fieldAssignments[$gui->fieldName]["field_value"][$i]) === 0
-                      and strcmp($userName,$gui->fieldAssignments[$gui->fieldName]["user_name"][$i]) === 0}
+                    {foreach item=activeUser from=$gui->fieldAssignments[$gui->fieldName][$fieldVal]}
+                      {if strcmp($activeUser,$userName) === 0}
                         {$addSelectedUser = true}
                         {break}
                       {/if}
-                    {/for}
+                    {/foreach}
                     {if $addSelectedUser}
                       <option	selected="selected" id={$userIndex}>{$userName}</option>
                       {$addSelectedUser = false}

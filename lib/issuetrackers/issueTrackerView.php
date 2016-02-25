@@ -45,7 +45,7 @@ function init_args()
 
   if( $args->tproject_id == 0 )
   {
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_SESSION['tproject_id']) : 0;
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   }
   $args->currentUser = $_SESSION['currentUser']; 
   

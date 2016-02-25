@@ -675,7 +675,14 @@ class tlIssueTracker extends tlObject
     $xx = $this->getByID($its);
     $class2create = $xx['implementation'];
     $its = new $class2create($xx['type'],$xx['cfg'],$xx['name']);
-    return $its->isConnected();
+
+    $op = $its->isConnected();
+    
+    // because I've added simple cache on $_SESSION
+    // IMHO is better to update cache after this check
+    $_SESSION['its'][$xx['name']] = $its;
+
+    return $op;
   }
 
   /**

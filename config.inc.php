@@ -1635,6 +1635,7 @@ $g_tpl = array();
 /* Used only */ 
 /* mantissoapInterface.class.php */
 /* jirasoapInterface.class.php */
+/* jirarestInterface.class.php */
 $tlCfg->proxy->host = null;
 $tlCfg->proxy->port = null;
 $tlCfg->proxy->login = null;

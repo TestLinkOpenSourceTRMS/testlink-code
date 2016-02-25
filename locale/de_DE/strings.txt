@@ -930,7 +930,8 @@ $TLS_revision_log_title = "Änderungsprotokoll";
 $TLS_please_add_revision_log = "Bitte protokollieren Sie die Änderung.";
 $TLS_commit_title = "Änderungsprotokoll";
 $TLS_please_add_reason_log = "Bitte geben Sie einen Grund für Änderung an.";
-
+$TLS_btn_subscribe = "Abonnieren";
+$TLS_btn_unsubscribe = "Abo beenden";
 
 
 // gui/templates/buildEdit.tpl
@@ -2229,6 +2230,8 @@ $TLS_href_cfields_management = "Benutzerdefinierte Felder verwalten";
 $TLS_href_cfields_tproject_assign = "Benutzerdefinierte Felder zuweisen";
 $TLS_href_edit_tc = "Testspezifikation";
 $TLS_href_inventory = "Inventar";
+$TLS_href_manage_req_subs = "Requirement Abonnements organisieren";
+$TLS_href_process_step_role_assignment = "Prozessschritten Verantwortliche zuweisen";
 $TLS_href_inventory_management = 'Inventar Verwaltung';
 $TLS_href_keywords_assign = "Testfällen Stichwörter zuweisen";
 $TLS_href_keywords_manage = "Stichwörter verwalten";
@@ -3641,7 +3644,32 @@ $TLS_testCaseStatus_final = 'Finale';
 // printDocument.php
 $TLS_report_test_plan_design = 'Test Plan Design Bericht';	
 $TLS_report_test_plan_execution = 'Test Plan Ausführungs Bericht';	
-$TLS_execution_time_metrics = 'Ausführungs Zeit Metriken';			
-					
+$TLS_execution_time_metrics = 'Ausführungs Zeit Metriken';
+
+// notificationAssignmentConfig.tpl
+$TLS_test_project_names = "Test Projekt";
+$TLS_assign_button_label = "Zuweisen";
+$TLS_assign_table_header_fieldvals = "Feld Werte";
+$TLS_assign_table_header_users = "Benutzernamen";
+$TLS_assign_btn_change = "Zuweisungen ändern";
+$TLS_assign_btn_delete = "Zuweisungen löschen";
+
+// reqManageSubs.php
+$TLS_req_already_subscribed = "Abo beenden";
+$TLS_req_not_subscribed_yet = "Abonnieren";
+$TLS_subscribtion_state = "Status des Abonnements"; 
+
+// reqCommands.class.php
+$TLS_req_change_notification_subject = "[Statusänderung einer Anforderung] (%reqState) %req_doc_id:%reqTitle";
+$TLS_req_change_notification = "<!doctype html><html><body><p>Anforderung '%reqTitle' wurde von %modifier geändert. <br></p><p>Der Status wurde von '%oldFieldVal' zu '%reqState'.</p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+$TLS_req_change_subscribtion_subject = "[Änderung einer Anforderung] %req_doc_id:%reqTitle";
+$TLS_req_change_subscribtion = "<!doctype html><html><body><p>Anforderung '%reqTitle' wurde von %modifier gändert. <br></p><p>Protokolleintrag:<br/>%log_msg</p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+$TLS_req_delete_subscribtion_subject = "[Löschen einer Anforderung] %req_doc_id:%reqTitle";
+$TLS_req_delete_subscribtion = "<!doctype html><html><body><p>Anforderung '%reqTitle' wurde von %modifier gelöscht. <br></p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+$TLS_req_version_create_subscribtion_subject = "[Neue Anforderungsversion erstellt] %req_doc_id:%reqTitle";
+$TLS_req_version_create_subscribtion = "<!doctype html><html><body><p>Eine neue Version der Anforderung '%reqTitle' wurde von %modifier erstellt. <br></p><p>Protokolleintrag:<br/>%log_msg</p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+$TLS_req_version_delete_subscribtion_subject = "[Anforderungsversion gelöscht] %req_doc_id:%reqTitle";
+$TLS_req_version_delete_subscribtion = "<!doctype html><html><body><p>Version %versionNr der Anforderung '%reqTitle' wurde von %modifier gelöscht. <br></p><p>**********************************</p>%scope<p>**********************************</p><p>Diese Email wurde automatisch generiert.</p></body></html>";
+
 // ----- END ------------------------------------------------------------------
 ?>

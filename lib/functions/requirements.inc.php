@@ -32,6 +32,32 @@ function exportReqDataToXML($reqData)
   return exportDataToXML($reqData,$rootElem,$elemTpl,$info);
 }
 
+function manageUserSubscribtion(&$db, &$args) {
+	$isSubed = 0;
+	if($args->requirement_id>=0) {
+		$reqMgr = new requirement_mgr($db);
+		if(array_key_exists("subscribe",$_POST)) {
+			if(strcmp($_POST["subscribe"],lang_get("btn_subscribe")) === 0) {
+				$reqMgr->createSubscription($args->tproject_id, $args->requirement_id, $args->userID);
+				$isSubed = 1;
+			}
+			elseif (strcmp($_POST["subscribe"],lang_get("btn_unsubscribe")) === 0) {
+				$reqMgr->removeSubscription($args->tproject_id, $args->requirement_id, $args->userID);
+				$isSubed = 0;
+			}
+		}
+		else {
+			$users = $reqMgr->getSubscribedUsers($args->tproject_id,$args->requirement_id);
+			foreach($users as $user) {
+				if($user["id"] === $args->userID) {
+					$isSubed = 1;
+					break;
+				}
+			}
+		}
+	}
+	return $isSubed;
+}
 
 /** Process CVS file contents with requirements into TL
  *  and creates an array with reports

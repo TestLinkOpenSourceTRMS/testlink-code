@@ -685,8 +685,6 @@ CREATE TABLE /*prefix*/text_templates (
   UNIQUE KEY idx_text_templates (type,title)
 ) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
 
-
-
 CREATE TABLE /*prefix*/testcase_relations (
   `id` int(10) unsigned NOT NULL auto_increment,
   `source_id` int(10) unsigned NOT NULL,
@@ -696,3 +694,20 @@ CREATE TABLE /*prefix*/testcase_relations (
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/req_notify_assignments (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `test_project_id` int(11) NOT NULL,
+  `field_id` int(11) NOT NULL,
+  `field_value` varchar(64) NOT NULL,
+  `assigned_user_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/req_subscription (
+  `req_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `tproject_id` int(11) NOT NULL,
+  PRIMARY KEY (`req_id`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

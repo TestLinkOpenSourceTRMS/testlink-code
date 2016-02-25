@@ -1,0 +1,2 @@
+Install directory should be removed!
+You should change the default password for the 'admin' account!

@@ -17,16 +17,17 @@ require_once('common.php');
 require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
+
 testlinkInitPage($db,false,false,"checkRights");
-
 $templateCfg = templateConfiguration();
-
 $tproject_mgr = new testproject($db);
 
 $args = init_args();
 $gui = initialize_gui($db,$args,$tproject_mgr);
-$smarty = new TLSmarty();
 
+
+$smarty = new TLSmarty();
+$gui->isSubed = manageUserSubscribtion($db,$args);
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 

@@ -236,7 +236,7 @@ class TLSmarty extends Smarty
     // $this->assign('optLocale',config_get('locales'));
     
     $this->assign('gsmarty_href_keywordsView',
-    			        ' "lib/keywords/keywordsView.php" ' . ' target="mainframe" class="bold" ' .
+    			        ' "lib/keywords/keywordsView.php?tproject_id=%s%" ' . ' target="mainframe" class="bold" ' .
     			        ' title="' . lang_get('menu_manage_keywords') . '"');
     
     $this->assign('gsmarty_html_select_date_field_order',

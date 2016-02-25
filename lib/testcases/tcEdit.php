@@ -623,6 +623,7 @@ function getGrants(&$dbHandler)
 function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 {
   $guiObj = new stdClass();
+  $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->editorType = $cfgObj->webEditorCfg['type'];
   $guiObj->grants = getGrants($dbHandler);
   $guiObj->opt_requirements = $argsObj->opt_requirements; 

@@ -174,6 +174,7 @@ switch($action)
     $smarty->assign('opt_cfg', $opt_cfg);
 
     $gui = new stdClass();
+    $gui->tproject_id = $args->tprojectID;
     $gui->containerType = $level;
     $gui->refreshTree = $args->refreshTree;
     $gui->hasKeywords = (count($opt_cfg->from->map) > 0) || (count($opt_cfg->to->map) > 0);
@@ -471,6 +472,7 @@ function init_args(&$dbHandler,$optionTransferCfg)
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
+  // These lines need to be changed!!
   $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->tprojectName = $_SESSION['testprojectName'];
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
@@ -1310,6 +1312,7 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
 function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 {
   $guiObj = new stdClass();
+
   $guiObj->id = $id;
   $guiObj->refreshTree = $argsObj->refreshTree;
   $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
@@ -1320,6 +1323,8 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 
   $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
                            $guiObj->id,$argsObj->tprojectID);
+  $guiObj->tproject_id = $argsObj->tprojectID;
+
   return $guiObj;
 }
 

@@ -118,7 +118,8 @@ function validateForm(f)
    
      <br />
    <div>
-   <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
+   {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id}
+   <a href={$kwView}>{$labels.tc_keywords}</a>
    {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
    </div>
    <br />

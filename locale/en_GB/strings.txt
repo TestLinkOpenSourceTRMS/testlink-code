@@ -3478,6 +3478,8 @@ $TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES =
 
 $TLS_API_INVALID_TIMESTAMP = "Timestamp provided (%s) is invalid";
 
+$TLS_API_ITS_NOT_FOUND = "Enable to find the ITS %s.";
+
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
 $TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";

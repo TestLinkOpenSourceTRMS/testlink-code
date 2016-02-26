@@ -3523,7 +3523,7 @@ $TLS_API_PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK = "La plateforme (%s) est utilis
                                        			  "Pour supprimer la plateforme de la campagne de test, vous devez d'abord retirer tout " .
                                        			  "les cas de test associés.";
 
-
+$TLS_API_ITS_NOT_FOUND = "ITS %s introuvable.";
 
 
 

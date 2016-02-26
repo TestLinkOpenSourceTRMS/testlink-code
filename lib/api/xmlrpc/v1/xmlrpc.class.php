@@ -74,6 +74,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   protected $reqSpecMgr = null;
   protected $reqMgr = null;
   protected $platformMgr = null;
+  protected $itsMgr = null;
 
 
   /** Whether the server will run in a testing mode */
@@ -209,6 +210,9 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $prefixParamName = "prefix";
   public static $testCaseVersionIDParamName = "tcversionid";
   
+  public static $itsNameParamName = "itsname";
+  public static $itsEnabledParamName = "itsenabled";
+
   /**#@-*/
   
   /**
@@ -1705,7 +1709,10 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @param int $args["active"]  OPTIONAL
    * @param int $args["public"]  OPTIONAL
-   *   
+   * @param string $args["itsname"]  OPTIONAL  
+   * @param boolean $args["itsEnabled"]  OPTIONAL  
+   * 
+   *
    * @return mixed $resultInfo
    */
   public function createTestProject($args)
@@ -1713,10 +1720,13 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->_setArgs($args);
     $msg_prefix = "(" . __FUNCTION__ . ") - ";
     $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
-  
+ 
+    $status_ok = false; 
     if( $this->$checkRequestMethod($msg_prefix) && 
         $this->userHasRight("mgt_modify_product"))
     {
+      $status_ok = true; 
+  
       $item = new stdClass();
       $item->options = new stdClass();
       $item->options->requirementsEnabled = 1;
@@ -1740,7 +1750,9 @@ class TestlinkXMLRPCServer extends IXR_Server
       // other optional parameters (not of complex type)
       // key 2 check with default value is parameter is missing
       $keys2check = array(self::$activeParamName => 1,self::$publicParamName => 1,
-                          self::$noteParamName => '');
+                          self::$noteParamName => '',
+                          self::$itsEnabledParamName => 0,
+                          self::$itsNameParamName => '');
       foreach($keys2check as $key => $value)
       {
         $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : $value;
@@ -1754,19 +1766,48 @@ class TestlinkXMLRPCServer extends IXR_Server
       $item->is_public = ($optional[self::$publicParamName] > 0) ? 1 : 0;
       $item->color = '';
       
-      $info=$this->tprojectMgr->create($item);
+      $its = null;
+      if ($optional[self::$itsNameParamName] != "") 
+      {
+        $this->itsMgr = new tlIssueTracker($this->dbObj);
+        $its = $this->getIssueTrackerSystem($this->args,'internal');
 
-      $resultInfo = array();
-      $resultInfo[]= array("operation" => __FUNCTION__,
-                           "additionalInfo" => null,
-                           "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
-      return $resultInfo;
+        $itsOK = !is_null($its);
+        if( !$itsOK  ) 
+        {
+          $status_ok = false;
+        }
+
+      }
     }
-    else
-    {
-      return $this->errors;
-    }    
-      
+
+    // All checks OK => try to create testproject 
+    if( $status_ok )
+    {  
+      $tproject_id = $this->tprojectMgr->create($item);
+
+      // link & enable its?
+      if( $itsOK && $tproject_id > 0 )
+      {
+        // link 
+        $this->itsMgr->link($its["id"], $tproject_id);
+
+        // enable
+        if ($optional[self::$itsEnabledParamName] > 0)
+        {
+          $this->tprojectMgr->enableIssueTracker($tproject_id);
+        } 
+      }
+
+      $ret = array();
+      $ret[]= array("operation" => __FUNCTION__,
+                    "additionalInfo" => null,
+                    "status" => true, "id" => $tproject_id, 
+                    "message" => GENERAL_SUCCESS_STR);
+      return $ret;
+    }
+
+    return ($status_ok ? $ret : $this->errors);
   }
   
   /**
@@ -7379,7 +7420,51 @@ protected function createAttachmentTempFile()
     return $status_ok ? $ni : $this->errors;    
   }  // function end
 
+   /**
+    * Get Issue Tracker System by name
+    *
+    * @param struct $args
+    * @param string $args["devKey"]
+    * @param string $args["itsname"] ITS name 
+    * @return mixed $itsObject      
+    * @access public
+    */
+    public function getIssueTrackerSystem($args,$call=null)
+    {
+      $operation=__FUNCTION__;
+      $msg_prefix="({$operation}) - ";
 
+      $this->_setArgs($args);
+
+      $extCall = is_null($call); 
+      if( $extCall )
+      {
+        $this->authenticate();
+      }  
+
+      $ret = null;
+      if( is_null($this->itsMgr) )
+      {
+        $this->itsMgr = new tlIssueTracker($this->dbObj);
+      } 
+
+      $ret = $this->itsMgr->getByName($this->args[self::$itsNameParamName]);
+      $status_ok = !is_null($ret);
+      if( !$status_ok )
+      {  
+        $msg = $msg_prefix . sprintf(ITS_NOT_FOUND_STR, $this->args[self::$itsNameParamName]);
+        $this->errors[] = new IXR_Error(ITS_NOT_FOUND, $msg);
+      }  
+  
+      if( $extCall )
+      {
+        if( !$status_ok )
+        {
+          $ret = $this->errors;
+        } 
+      } 
+      return $ret;
+    }
 
 
   /**
@@ -7411,6 +7496,7 @@ protected function createAttachmentTempFile()
                             'tl.addPlatformToTestPlan' => 'this:addPlatformToTestPlan',
                             'tl.removePlatformFromTestPlan' => 'this:removePlatformFromTestPlan',
                             'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
+                            'tl.getIssueTrackerSystem' => 'this:getIssueTrackerSystem',
                             'tl.getProjects' => 'this:getProjects',
                             'tl.getProjectKeywords' => 'this:getProjectKeywords',
                             'tl.getProjectPlatforms' => 'this:getProjectPlatforms',

@@ -97,7 +97,7 @@ class database
     $fetch_mode = ADODB_FETCH_ASSOC;
 
     $this->dbType = $db_type;
-    if( $this->dbType == 'mysql' && version_compare(phpversion(), "7.0.0", ">=") )
+    if( $this->dbType == 'mysql' && version_compare(phpversion(), "5.5.0", ">=") )
     {
       $this->dbType = 'mysqli';
     }
@@ -115,7 +115,7 @@ class database
         // This extension is not available anymore on Windows with PHP 5.3 or later.
         // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
         // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
-          //
+        //
         // PHP_VERSION_ID is available as of PHP 5.2.7
         if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
         {

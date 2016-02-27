@@ -127,6 +127,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   required tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required DEFAULT ((0)),
   required_on_design tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_design DEFAULT ((0)),
   required_on_execution tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_execution DEFAULT ((0)),
+  monitorable tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_monitorable DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_cfield_testprojects PRIMARY KEY CLUSTERED 
  (
   field_id ASC,

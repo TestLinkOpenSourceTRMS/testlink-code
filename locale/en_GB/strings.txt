@@ -389,7 +389,7 @@ $TLS_already_exists_not_updated = "Already exists => not updated";
 $TLS_assign_exec_task_to_me = "Assign task to me";
 $TLS_chosen_blank_option = "   ";
 
-
+$TLS_monitorable = 'Monitorable';
 
 // ----- unsorted (TODO move) -------------------------------------
 $TLS_problems_loading_xml_content = "Unable to load XML data, Check your file.";
@@ -1348,7 +1348,7 @@ $TLS_title_req_import_to = "Import requirements to document";
 
 
 // ----- gui/templates/cfields_tproject_assign.tpl -----
-$TLS_btn_cfields_boolean_mgmt = "Update active and required";
+$TLS_btn_cfields_boolean_mgmt = "Update active,required,monitorable";
 $TLS_btn_cfields_active_mgmt = "Update active status";
 $TLS_btn_cfields_display_order = "Save display order";
 $TLS_btn_cfields_display_attr = "Save display order and location";

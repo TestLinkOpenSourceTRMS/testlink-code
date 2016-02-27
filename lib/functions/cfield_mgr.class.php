@@ -954,7 +954,7 @@ class cfield_mgr extends tlObject
 
 
     $sql="SELECT CF.*,NT.description AS node_description,NT.id AS node_type_id, " .
-         "       CFTP.display_order, CFTP.active, CFTP.location,CFTP.required " .
+         "       CFTP.display_order, CFTP.active, CFTP.location,CFTP.required,CFTP.monitorable " .
          " FROM {$this->object_table} CF, " .
          "      {$this->tables['cfield_testprojects']} CFTP, " .
          "      {$this->tables['cfield_node_types']} CFNT, " .
@@ -2854,6 +2854,45 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
     return($this->db->fetchRowsIntoMap($sql,'id'));
   }
 
+ /**
+   *
+   */ 
+  function setMonitorable($tproject_id,$cfieldSet,$val)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    if(is_null($cfieldSet))
+    {
+      return;
+    }
+    
+    $safe = new stdClass();
+    $safe->tproject_id = intval($tproject_id);
+    $safe->val = (intval($val) > 0) ? 1 : 0;
+
+    $field = 'monitorable';
+
+    $info = $this->tree_manager->get_node_hierarchy_info($safe->tproject_id);
+    $auditMsg = $val ? "audit_cfield_{$field}_on" : "audit_cfield_{$field}_off";
+    foreach($cfieldSet as $field_id)
+    {
+      $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_testprojects']} " .
+           " SET {$field}=" . $safe->val .
+           " WHERE testproject_id=" . $safe->tproject_id .
+           " AND field_id=" . $this->db->prepare_int($field_id);
+
+      if ($this->db->exec_query($sql))
+      {
+        $cf = $this->get_by_id($field_id);
+        if($cf)
+        {
+          logAuditEvent(TLS($auditMsg,$cf[$field_id]['name'],$info['name']),
+                        "SAVE",$safe->tproject_id,"testprojects");
+        }                       
+      }
+    }
+  }
+ 
 
 
     

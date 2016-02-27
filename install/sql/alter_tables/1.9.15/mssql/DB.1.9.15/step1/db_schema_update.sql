@@ -27,3 +27,5 @@ SET IDENTITY_INSERT /*prefix*/rights OFF
 
 --  Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,47);
+
+ALTER TABLE /*prefix*/cfield_testprojects ADD monitorable INT NOT NULL default '0';

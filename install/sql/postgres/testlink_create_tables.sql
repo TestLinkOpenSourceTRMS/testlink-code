@@ -303,6 +303,7 @@ CREATE TABLE /*prefix*/cfield_testprojects(
   "required" INT2 NOT NULL default '0',
   "required_on_design" INT2 NOT NULL default '0',
   "required_on_execution" INT2 NOT NULL default '0',
+  "monitorable" INT2 NOT NULL default '0',
 
   PRIMARY KEY ("field_id","testproject_id")
 ); 

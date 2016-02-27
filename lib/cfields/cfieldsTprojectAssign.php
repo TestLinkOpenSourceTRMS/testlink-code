@@ -39,6 +39,7 @@ switch($args->doAction)
   case 'doBooleanMgmt':
     doActiveMgmt($cfield_mgr,$args);
     doRequiredMgmt($cfield_mgr,$args);
+    doMonitorableMgmt($cfield_mgr,$args);
   break;
 
 }
@@ -61,6 +62,7 @@ foreach($allowed_nodes as $verbose_type => $type_id)
   $gui->cf_allowed_nodes[$type_id] = lang_get($verbose_type);
 }
 
+\Kint::dump($gui);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -75,9 +77,9 @@ function init_args(&$dbHandler)
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $args = new stdClass();
      
-  $key2search = array('doAction','cfield','display_order','location',
-                      'hidden_active_cfield','active_cfield',
-                      'hidden_required_cfield','required_cfield');
+  $key2search = array('doAction','cfield','display_order','location','hidden_active_cfield','active_cfield',
+    'hidden_required_cfield','required_cfield',
+        'hidden_monitorable_cfield','monitorable_cfield');
     
   foreach($key2search as $key)
   {
@@ -108,6 +110,8 @@ function init_args(&$dbHandler)
     }  
     $args->tproject_name = $dummy['name'];
   }
+  
+  \Kint::dump($args);
   return $args;
 }
 
@@ -145,73 +149,86 @@ function createLocationsMenu($locations)
 /**
  *
  */
- function doRequiredMgmt(&$cfieldMgr,$argsObj)
- {
-    $cfSet = array_keys($argsObj->hidden_required_cfield);
-    if(!isset($argsObj->required_cfield))
-    {
-      $cfieldMgr->setRequired($argsObj->tproject_id,$cfSet,0);
-    }
-    else
-    {
-      $on = null;
-      $off = null;
-      foreach($cfSet as $id)
-      {
-        if(isset($argsObj->required_cfield[$id]))
-        {
-          $on[] = $id;
-        }
-        else
-        {
-          $off[] = $id;
-        } 
-      }
+function doRequiredMgmt(&$cfieldMgr,$argsObj)
+{
+  $cfg = array();
+  $cfg['attrKey'] = 'required';
+  $cfg['attr'] = "{$cfg['attrKey']}_cfield";
+  $cfg['m2c'] = 'set' . ucfirst($cfg['attrKey']);
+  $cfg['ha'] = "hidden_{$cfg['attr']}";
 
-      if(!is_null($on))
-      {
-        $cfieldMgr->setRequired($argsObj->tproject_id,$on,1);
-      }
-      if(!is_null($off))
-      {
-        $cfieldMgr->setRequired($argsObj->tproject_id,$off,0);
-      } 
-    }
- } 
+  doSimpleBooleanMgmt($cfieldMgr,$argsObj,$cfg);
+}
 
- /**
+
+/**
  *
  */
- function doActiveMgmt(&$cfieldMgr,$argsObj)
- {
-    $cfSet = array_keys($argsObj->hidden_required_cfield);
-    if(!isset($argsObj->active_cfield))
-    {
-      $cfieldMgr->set_active_for_testproject($argsObj->tproject_id,$cfSet,0);
-    }
-    else
-    {
-      $on = null;
-      $off = null;
-      foreach($cfSet as $id)
-      {
-        if(isset($argsObj->active_cfield[$id]))
-        {
-          $on[] = $id;
-        }
-        else
-        {
-          $off[] = $id;
-        } 
-      }
+function doActiveMgmt(&$cfieldMgr,$argsObj)
+{
+  $cfg = array();
+  $cfg['attrKey'] = 'active';
+  $cfg['attr'] = "{$cfg['attrKey']}_cfield";
+  $cfg['m2c'] = 'set_active_for_testproject';
+  $cfg['ha'] = "hidden_{$cfg['attr']}";
 
-      if(!is_null($on))
+  doSimpleBooleanMgmt($cfieldMgr,$argsObj,$cfg);
+}
+
+/**
+ *
+ */
+function doMonitorableMgmt(&$cfieldMgr,$argsObj)
+{  
+  $cfg = array();
+  $cfg['attrKey'] = 'monitorable';
+  $cfg['attr'] = "{$cfg['attrKey']}_cfield";
+  $cfg['m2c'] = 'set' . ucfirst($cfg['attrKey']);
+  $cfg['ha'] = "hidden_{$cfg['attr']}";
+
+  doSimpleBooleanMgmt($cfieldMgr,$argsObj,$cfg);
+}
+
+/**
+ *
+ *
+ */
+function doSimpleBooleanMgmt(&$cfieldMgr,$argsObj,$cfg)
+{  
+
+  $attrSet = &$argsObj->$cfg['attr'];
+  $cfSet = array_keys($argsObj->$cfg['ha']);
+  $m2c = $cfg['m2c'];
+  if(!isset($argsObj->$cfg['attr']))
+  {
+    $cfieldMgr->$m2c($argsObj->tproject_id,$cfSet,0);
+  }
+  else
+  {
+    $on = null;
+    $off = null;
+    foreach($cfSet as $id)
+    {
+      if(isset($attrSet[$id]))
       {
-        $cfieldMgr->set_active_for_testproject($argsObj->tproject_id,$on,1);
+        $on[] = $id;
       }
-      if(!is_null($off))
+      else
       {
-        $cfieldMgr->set_active_for_testproject($argsObj->tproject_id,$off,0);
+        $off[] = $id;
       } 
     }
- } 
+
+
+    if(!is_null($on))
+    {
+      $cfieldMgr->$m2c($argsObj->tproject_id,$on,1);
+    }
+    
+    if(!is_null($off))
+    {
+      $cfieldMgr->$m2c($argsObj->tproject_id,$off,0);
+    } 
+  }
+} 
+ 

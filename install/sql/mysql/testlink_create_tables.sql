@@ -136,6 +136,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   `required` tinyint(1) NOT NULL default '0',
   `required_on_design` tinyint(1) NOT NULL default '0',
   `required_on_execution` tinyint(1) NOT NULL default '0',
+  `monitorable` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 

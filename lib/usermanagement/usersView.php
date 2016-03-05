@@ -176,13 +176,18 @@ function buildMatrix(&$guiObj,&$argsObj)
                            'th_email' => null));
 
   $loop2do = count($guiObj->matrix);
+ 
+  // login added as workaround for SORTING, because the whole string is used then user_id
+  // in url takes precedence over the login displayed 
+  $actionUrl = '<a href="' . $argsObj->basehref .  'lib/usermanagement/usersEdit.php?doAction=edit&' .
+               'loginJustToFixSort=';
+
   for($zdx = 0; $zdx < $loop2do; $zdx++)
   {
-    $guiObj->matrix[$zdx]['handle'] = '<a href="' . $argsObj->basehref .  
-                                      'lib/usermanagement/usersEdit.php?doAction=edit&user_id=' .
+    $guiObj->matrix[$zdx]['handle'] = $actionUrl . urlencode($guiObj->matrix[$zdx]['login']) . '&user_id=' .
                                       $guiObj->matrix[$zdx]['user_id'] . '">' . $guiObj->matrix[$zdx]['login'] . "</a>";
   }
- 
+  
 
   $matrix = new tlExtTable($columns, $guiObj->matrix, 'tl_users_list');
   

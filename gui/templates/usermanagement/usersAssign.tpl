@@ -164,6 +164,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
     	    {$globalRoleName=$user->globalRole->name}
     			{$uID=$user->dbID}
 
+
           {* get role name to add to inherited in order to give better information to user *}
           {$effective_role_id=$gui->userFeatureRoles[$uID].effective_role_id}
           {if $gui->userFeatureRoles[$uID].is_inherited == 1}
@@ -189,18 +190,30 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
             {/if}
           >
 		      {foreach key=role_id item=role from=$gui->optRights}
-            <option value="{$role_id}"
-		          {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
-		               $gui->userFeatureRoles[$uID].is_inherited==0) || 
-		               ($role_id == $smarty.const.TL_ROLES_INHERITED && 
-		                $gui->userFeatureRoles[$uID].is_inherited==1)}
-		            selected="selected" 
-              {/if} >
-                {$role->getDisplayName()|escape}
-                {if $role_id == $smarty.const.TL_ROLES_INHERITED}
-                  {$inherited_role_name|escape} 
-                {/if}
-		        </option>
+            
+            {$applySelected = ''}
+            {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
+                   $gui->userFeatureRoles[$uID].is_inherited==0) || 
+                   ($role_id == $smarty.const.TL_ROLES_INHERITED && 
+                    $gui->userFeatureRoles[$uID].is_inherited==1)}
+                {$applySelected = ' selected="selected" '} 
+            {/if}
+
+            /* For system consistency we need to remove admin role from selection */
+            {$removeRole = 0}
+            {if $role_id == $smarty.const.TL_ROLES_ADMIN && $applySelected == '' }
+                {$removeRole = 1}
+            {/if}             
+  
+            {if !$removeRole }
+              <option value="{$role_id}" {$applySelected}>
+                  {$role->getDisplayName()|escape}
+                  {if $role_id == $smarty.const.TL_ROLES_INHERITED}
+                    {$inherited_role_name|escape} 
+                  {/if}
+  		        </option>
+            {/if}
+
 		      {/foreach}
 			</select>
           {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}

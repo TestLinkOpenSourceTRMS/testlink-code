@@ -75,8 +75,14 @@ class jiradbInterface extends issueTrackerInterface
   function completeCfg()
   {
     // when working with simpleXML objects is better to use intermediate variables
-    $pieces = explode('.',(string)$this->cfg->jiraversion);
+    $sz = (string)$this->cfg->jiraversion;
+    $pieces = explode('.',$sz);
     $this->cfg->majorVersionNumber = (int)$pieces[0];
+
+    if($this->cfg->majorVersionNumber <= 0)
+    {
+      throw new Exception("Version has to be MAJOR.MINOR" . ' - got : ' . $sz , 1);
+    }  
   }
 
 
@@ -86,6 +92,7 @@ class jiradbInterface extends issueTrackerInterface
    **/
   function getIssue($issueID)
   {
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     if (!$this->isConnected())
     {
@@ -95,6 +102,7 @@ class jiradbInterface extends issueTrackerInterface
     // ATTENTION:
     // Field names on Jira tables seems to be sometimes on CAPITALS
     // TICKET 6028: Integration with Jira 6.1 broken. - Due to JIRA schema changes
+    \Kint::dump($this->dbConnection);
     if(intval($this->cfg->majorVersionNumber) >= 6)
     {  
       $dummy = explode("-",$issueID);

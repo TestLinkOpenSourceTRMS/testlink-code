@@ -626,6 +626,8 @@ class tlIssueTracker extends tlObject
     { 
       $ret = $ret[0];
       $ret['verboseType'] = $this->types[$ret['type']];
+      $spec = $this->systems[$ret['type']];
+      $ret['api'] = $spec['api'];
     }
     
     return $ret;
@@ -640,7 +642,9 @@ class tlIssueTracker extends tlObject
   {
     $issueT = $this->getLinkedTo($tprojectID);
     $name = $issueT['issuetracker_name'];
-    if(isset($_SESSION['its'][$name]))
+    $goodForSession = ($issueT['api'] != 'db');
+
+    if($goodForSession && isset($_SESSION['its'][$name]))
     {
       return $_SESSION['its'][$name]; 
     }  
@@ -651,7 +655,16 @@ class tlIssueTracker extends tlObject
       {
         $itd = $this->getByID($issueT['issuetracker_id']);
         $iname = $itd['implementation'];
-        $_SESSION['its'][$name] = new $iname($iname,$itd['cfg'],$itd['name']);
+
+        if($goodForSession)
+        {
+          $_SESSION['its'][$name] = new $iname($iname,$itd['cfg'],$itd['name']);
+        }
+        else
+        {
+          $ixx = new $iname($iname,$itd['cfg'],$itd['name']);
+          return $ixx;
+        }  
       }
       else
       {

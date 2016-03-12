@@ -405,5 +405,26 @@ function localizeTimeStamp($value,$format)
   return strftime($format, $value);
 }
 
+/**
+ *
+ */
+ function mailBodyGet($key,$locale=null)
+ {
+  
+  if (null === $locale)
+  {
+    $locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+  }
+  
+  $lzds = DIRECTORY_SEPARATOR;
+  $dir_base = TL_ABS_PATH . 'locale' . $lzds . $locale .
+              $lzds . 'text_templates' . $lzds . 'mail';
 
+  $rs = str_replace('/',$lzds,$key);
+  $resource_path = $dir_base . $lzds . $rs; 
+
+  $str = file_get_contents($resource_path);
+
+  return $str;
+ }
 

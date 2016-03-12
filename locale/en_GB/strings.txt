@@ -136,6 +136,8 @@ $TLS_manual = "Manual";
 $TLS_Milestone = "Milestone";
 $TLS_months  = "months";
 $TLS_monitor  = "Monitor";
+$TLS_monitor_set  = "Monitors";
+
 $TLS_name  = "Name";
 $TLS_navigator_add_remove_tcase_to_tplan  = "Add/Remove Test Cases";
 $TLS_navigator_tc_exec_assignment = "Assign Test Case Execution";
@@ -288,7 +290,8 @@ $TLS_btn_find = "Find";
 $TLS_btn_goback = "Go back";
 $TLS_btn_generate_doc = "Generate document";
 $TLS_btn_import = "Import";
-$TLS_btn_monitor   = "Monitor";
+$TLS_btn_monitor_start   = "Start";
+$TLS_btn_monitor_end   = "End";
 $TLS_btn_move = "Move";
 $TLS_btn_move_copy = "Move/Copy";
 $TLS_btn_no = "No";
@@ -2418,6 +2421,7 @@ $TLS_href_print_req = "Generate Requirement Specification Document";
 $TLS_href_req_assign = "Assign Requirements";
 $TLS_href_req_spec = "Requirement Specification";
 $TLS_href_req_overview = "Requirement Overview";
+$TLS_href_req_monitor_overview = "Requirement Monitoring Overview";
 $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Cases";
 $TLS_href_tproject_management = "Test Project Management";
@@ -3969,4 +3973,17 @@ $TLS_add_link_to_tlexec = "Add Link in Issue Tracker to Test Case Execution Feat
 $TLS_dl2tl = 'Link to TestLink Execution: ';
 $TLS_old_style_login = 'Well known login screen';
 $TLS_new_style_login = 'Try the new login screen';
+
+// ----- lib/requirements/reqMonitorOverview.php -----
+$TLS_caption_req_monitor_overview = "Requirement Monitor Overview";
+$TLS_on_turn_off = 'On (click to end monitoring)';
+$TLS_off_turn_on = 'Off (click to start monitoring)';
+
+$TLS_mail_subject_req_delete_version = 'Requirement Version Deleted [%docid%-%title%]';
+
+$TLS_mail_subject_req_delete = 'Requirement Deleted [%docid%-%title%]';
+
+$TLS_mail_subject_req_new_version = 'Requirement New Version [%docid%-%title%]';
+
+
 // ----- END ------------------------------------------------------------------

@@ -29,7 +29,7 @@ Purpose: view requirement with version management
              specific_direct_link,req_does_not_exist,actions'}
 
 
-{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes"} 
 {include file="inc_del_onclick.tpl"}
 
 {config_load file="input_dimensions.conf"}
@@ -214,6 +214,13 @@ var pF_unfreeze_req_version = unfreeze_req_version;
 var {$gui->dialogName} = new std_dialog('&refreshTree');
 </script>  
 {/if}
+
+
+<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+
+
 
 </head>
 
@@ -403,6 +410,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {/if}
   
   {* end req relations *}
+
+  {include file="$this_template_dir/reqMonitors.tpl"} 
          
   {include file="attachments.inc.tpl" 
              attach_id=$reqID  

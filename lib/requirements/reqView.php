@@ -25,8 +25,8 @@ $tproject_mgr = new testproject($db);
 
 $args = init_args();
 $gui = initialize_gui($db,$args,$tproject_mgr);
-$smarty = new TLSmarty();
 
+$smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 
@@ -74,6 +74,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   $commandMgr = new reqCommands($dbHandler);
 
   $gui = $commandMgr->initGuiBean();
+
   $gui->req_cfg = config_get('req_cfg');
   $gui->glueChar = config_get('testcase_cfg')->glue_character;
   $gui->pieceSep = config_get('gui_title_separator_1');
@@ -111,6 +112,16 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
   
   $gui->req = current($gui->req_versions);
+  $gui->reqMonitors = $req_mgr->getReqMonitors($gui->req_id);
+
+  $gui->btn_monitor_mgmt = 'Start Monitoring';
+  $gui->btn_monitor_action = 'startMonitoring';
+  if(isset($gui->reqMonitors[$argsObj->userID]))
+  {
+    $gui->btn_monitor_mgmt = 'Stop Monitoring';
+    $gui->btn_monitor_action = 'stopMonitoring';
+  }  
+
   $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);
   $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
                       urlencode($gui->tcasePrefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);

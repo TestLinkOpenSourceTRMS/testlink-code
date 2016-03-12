@@ -34,7 +34,6 @@ $commandMgr = new reqCommands($db);
 $args = init_args($db);
 $gui = initialize_gui($db,$args,$commandMgr);
 
-
 $pFn = $args->doAction;
 $op = null;
 if(method_exists($commandMgr,$pFn))
@@ -137,7 +136,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
                      'doDeleteVersion' => '', 'doFreezeVersion' => 'doFreezeVersion',
                      'doAddRelation' => 'doAddRelation', 'doDeleteRelation' => 'doDeleteRelation',
                      'doUnfreezeVersion' => 'doUnfreezeVersion',
-                     'fileUpload' => '', 'deleteFile' => '');
+                     'fileUpload' => '', 'deleteFile' => '',
+                     'startMonitoring' => '','stopMonitoring' => '');
 
   $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
   switch($argsObj->doAction)
@@ -149,6 +149,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 
     case "fileUpload":
     case "deleteFile":
+    case "startMonitoring":
+    case "stopMonitoring":
     break;
 
     default:
@@ -212,6 +214,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     case "removeTestCase":
     case "fileUpload":
     case "deleteFile":
+    case "stopMonitoring":
+    case "startMonitoring":
       $renderType = 'template';
       $key2loop = get_object_vars($opObj);
       foreach($key2loop as $key => $value)

@@ -343,7 +343,12 @@ class reqCommands
     $reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
     $req = current($reqVersionSet);
     
-    $this->reqMgr->delete($argsObj->req_id);
+    $this->reqMgr->setNotifyOn(array('delete'=> true) );
+    \Kint::dump($this->reqMgr->getNotifyOn());
+    //die();
+
+    $this->reqMgr->delete($argsObj->req_id,requirement_mgr::ALL_VERSIONS,$argsObj->user_id);
+
     logAuditEvent(TLS("audit_requirement_deleted",$req['req_doc_id']),"DELETE",$argsObj->req_id,"requirements");
   
     $obj->template = 'show_message.tpl';
@@ -562,8 +567,11 @@ class reqCommands
   */
   function doCreateVersion(&$argsObj,$request)
   {
-    $ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,
-                                             $argsObj->req_version_id,$argsObj->log_message);
+    $opt = array('reqVersionID' => $argsObj->req_version_id,
+                 'log_msg' => $argsObj->log_message,
+                 'notify' => true);
+  
+    $ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,$opt);
     $obj = $this->initGuiBean();
     $obj->user_feedback = $ret['msg'];
     $obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
@@ -584,7 +592,10 @@ class reqCommands
     $req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
     $req_version = $req_version[0];
 
-    $this->reqMgr->delete($node['parent_id'],$argsObj->req_version_id);
+    $this->reqMgr->setNotifyOn(array('delete'=> true) );
+    
+    $this->reqMgr->delete($node['parent_id'],$argsObj->req_version_id,$argsObj->user_id);
+
     logAuditEvent(TLS("audit_req_version_deleted",$req_version['version'],
                       $req_version['req_doc_id'],$req_version['title']),
                   "DELETE",$argsObj->req_version_id,"req_version");
@@ -939,8 +950,28 @@ class reqCommands
     $guiObj->req_id = $argsObj->req_id;
     $guiObj->suggest_revision = $guiObj->prompt_for_log = false;
     $guiObj->template = "reqView.php?refreshTree=0&requirement_id={$argsObj->req_id}";
+
     return $guiObj;    
   }
 
+  /**
+   *
+   */ 
+  function stopMonitoring(&$argsObj,$request)
+  {
+    $this->reqMgr->monitorOff($argsObj->req_id,$argsObj->user_id,$argsObj->tproject_id);
+
+    return $this->initGuiObjForAttachmentOperations($argsObj);
+  }
+
+  /**
+   *
+   */ 
+  function startMonitoring(&$argsObj,$request)
+  {
+    $this->reqMgr->monitorOn($argsObj->req_id,$argsObj->user_id,$argsObj->tproject_id);
+
+    return $this->initGuiObjForAttachmentOperations($argsObj);
+  }
   
 }

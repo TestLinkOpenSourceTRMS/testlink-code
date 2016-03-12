@@ -4,7 +4,7 @@
  Purpose: smarty template - main page / site map                 
                                                                  
  @internal revisions
- @since 1.9.10
+ @since 1.9.15
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,system_config,
@@ -17,7 +17,7 @@
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
                           href_print_req, title_documentation,href_issuetracker_management,
-                          href_reqmgrsystem_management'}
+                          href_reqmgrsystem_management,href_req_monitor_overview'}
 
 {$menuLayout=$tlCfg->gui->layoutMainPageLeft}
 
@@ -193,6 +193,9 @@
     {if $gui->grants.reqs_edit == "yes"}
       <a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
       <br />
+      <a href="lib/requirements/reqMonitorOverview.php?tproject_id={$gui->testprojectID}">{$labels.href_req_monitor_overview}</a>
+      <br />
+
       <a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
     {/if}
     </div>

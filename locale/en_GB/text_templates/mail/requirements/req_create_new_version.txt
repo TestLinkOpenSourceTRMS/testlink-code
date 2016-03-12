@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<body>
+<p>A new version of requirement '[%docid%]:%title%' was created by %user%. 
+<br>
+</p>
+<p>Log message:<br/>%logmsg%</p>
+<p></p>
+<p><b>Requirement Scope</b> </p>
+%scope%<p></p>
+<p>This email was generated automatically. (%timestamp%) </p>
+</body>
+</html>

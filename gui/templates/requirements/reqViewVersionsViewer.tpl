@@ -108,10 +108,17 @@ viewer for requirement
   {/if}
 
   {* Option to print single requirement *}
-  <form style="display: inline;" method="post" action="" name="reqPrinterFriendly">
+  <form style="display: inline;" method="post" 
+     action="lib/requirements/reqEdit.php" name="reqPrinterFriendly">
+    <input type="hidden" id="rpfReqID" name="requirement_id" value="{$req_id}" />
+    <input type="hidden" id="rpfAction" name="doAction" value="" />
+
     <input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
            onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
                                                 {$args_req.revision},'lib/requirements/reqPrint.php');"/>
+    <input type="submit" name="monitor" 
+      value="{$gui->btn_monitor_mgmt}" 
+      onclick="doAction.value='{$gui->btn_monitor_action}'"/> 
   </form>
   <br/><br/>
 </div> {* class="groupBtn" *}

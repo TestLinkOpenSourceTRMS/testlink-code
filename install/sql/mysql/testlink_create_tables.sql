@@ -708,7 +708,7 @@ CREATE TABLE /*prefix*/req_notify_assignments (
   PRIMARY KEY (`id`)
 ) AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-CREATE TABLE /*prefix*/req_subscription (
+CREATE TABLE /*prefix*/req_monitor (
   `req_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `testproject_id` int(11) NOT NULL,

@@ -649,6 +649,7 @@ $TLS_service_not_supported = "This service is not supported";
 $TLS_tcexec_notes = "Testing details";
 $TLS_tcexec_result = "Result";
 $TLS_tcexec_results_for = "Result for ";
+$TLS_tcexec_latest_exec_result = "Latest Exec Result";
 
 
 // ----- gui/templates/attachment404.tpl -----

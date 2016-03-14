@@ -3766,6 +3766,9 @@ $TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZE
 $TLS_no_linked_cfields_for_testcase = 'There are no custom fields applicable to Test Cases, linked to Test Project';
 $TLS_no_cfield_with_this_name = 'There is no custom field with requested name (%s)';
 
+$TLS_req_docid_lenght_exceeded = 'Req docid lenght exceeded';
+$TLS_req_title_lenght_exceeded = 'Req title lenght exceeded';
+
 // ----- lib/plan/planExport.php -----
 $TLS_export_test_plan = 'Export Test Plan';
 

@@ -392,9 +392,9 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
   
   $tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id) : $tproject_id;
 
-    $result = array( 'id' => 0, 'status_ok' => 0, 'msg' => 'ko');
+  $result = array( 'id' => 0, 'status_ok' => 0, 'msg' => 'ko');
   $my['options'] = array('quickAndDirty' => false);
-    $my['options'] = array_merge($my['options'], (array)$options);
+  $my['options'] = array_merge($my['options'], (array)$options);
 
   if(!$my['options']['quickAndDirty'])
   {
@@ -1526,7 +1526,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '', 
                     'frozen_req_unable_to_import' => '', 'requirement' => '', 'import_req_new_version_created' => '',
                     'import_req_update_last_version_failed' => '',
-                    'import_req_new_version_failed' => '', 'import_req_skipped_plain' => '');
+                    'import_req_new_version_failed' => '', 'import_req_skipped_plain' => '',
+                    'req_title_lenght_exceeded' => '', 'req_docid_lenght_exceeded' => '');
     foreach($labels as $key => $dummy)
     {
       $labels[$key] = lang_get($key);
@@ -1547,6 +1548,35 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   $has_filters = !is_null($filters);
   $my['options'] = array( 'hitCriteria' => 'docid' , 'actionOnHit' => "update", 'skipFrozenReq' => true);
   $my['options'] = array_merge($my['options'], (array)$options);
+
+  // 20160314
+  // Check data than can create issue when writting to DB due to lenght
+  // 
+  $req['title'] = trim($req['title']);
+  $req['docid'] = trim($req['docid']);
+
+  $checkLengthOK = true;
+  $what2add = '';
+  if( strlen($req['title']) > $fieldSize->req_title )
+  {
+     $checkLengthOK = false;
+     $what2add = $labels['req_title_lenght_exceeded'] . '/';
+  }  
+
+  if( strlen($req['docid']) > $fieldSize->req_docid )
+  {
+     $checkLengthOK = false;
+     $what2add .= $labels['req_docid_lenght_exceeded'];
+  }  
+
+  if( $checkLengthOK == FALSE )
+  {
+    $msgID = 'import_req_skipped_plain';
+    $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
+                             'import_status' => sprintf($labels[$msgID],$what2add));
+
+    return $user_feedback;
+  }  
 
   // Check:
   // If item with SAME DOCID exists inside container
@@ -1576,6 +1606,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   if(is_null($check_in_reqspec))
   {
     $check_in_tproject = $this->getByAttribute($target,$tproject_id,null,$getByAttributeOpt);
+
     if(is_null($check_in_tproject))
     {
       $newReq = $this->create($parent_id,$req['docid'],$req['title'],$req['description'],
@@ -1698,6 +1729,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
       $this->cfield_mgr->design_values_to_db($cf2insert,$req_version_id,null,'simple');
     }  
   }
+
   return $user_feedback;
 }
   

@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * TestLink Open Source Project  http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource  xmlrpc.class.php
@@ -2972,6 +2972,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     * @param args['platformid'] - OPTIONAL Only if  test plan has no platforms
     * @param args['executionorder'] - OPTIONAL
     * @param args['urgency'] - OPTIONAL
+    * @param args['overwrite'] - OPTIONAL
     *
     */
   public function addTestCaseToTestPlan($args)
@@ -3127,7 +3128,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       // 
       $sql = " SELECT TCV.version,TCV.id " . 
              " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " .
-             " WHERE NH.parent_id = {$tcase_id} " .
+             " WHERE NH.parent_id = ". intval($tcase_id) .
              " AND TCV.id = NH.id ";
                  
       $all_tcversions = $this->dbObj->fetchRowsIntoMap($sql,'id');
@@ -3139,52 +3140,89 @@ class TestlinkXMLRPCServer extends IXR_Server
              " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = platform_id " . 
              " WHERE TPTCV.testplan_id={$tplan_id} AND TPTCV.tcversion_id IN({$in_clause}) ";
 
+      if( $hasPlatforms )
+      {
+        $sql .= " AND TPTCV.platform_id=" . intval($platform_id);
+      }  
+
       $rs = $this->dbObj->fetchMapRowsIntoMap($sql,'tcversion_id','platform_id');
       
       $doLink = is_null($rs);
+      
       if( !$doLink )
       {
+        // Are we going to update ?
+        // var_dump($rs);die();
+        // echo $target_tcversion[$version_number]['id']; die();
         if( isset($rs[$target_tcversion[$version_number]['id']]) )
         {
-          $plat_keys = array_flip(array_keys($rs[$target_tcversion[$version_number]['id']]));
-          // need to understand what where the linked platforms.
-          $platform_id = $this->args[self::$platformIDParamName];
-          $linkExists = isset($plat_keys[$platform_id]);
-          $doLink = !$linkExists;
-          if( $linkExists )
+          if( $hasPlatforms )
           {
-            $platform_name = $rs[$target_tcversion[$version_number]['id']][$platform_id]['name'];
-            $msg = sprintf(LINKED_FEATURE_ALREADY_EXISTS_STR,$tplan_info['name'],$tplan_id,
-                           $platform_name, $platform_id);  
-            $this->errors[] = new IXR_Error(LINKED_FEATURE_ALREADY_EXISTS,$msg_prefix . $msg); 
-            $status_ok = false;
-          }
+            $plat_keys = array_flip(array_keys($rs[$target_tcversion[$version_number]['id']]));
+      
+            // need to understand what where the linked platforms.
+            $platform_id = $this->args[self::$platformIDParamName];
+            $linkExists = isset($plat_keys[$platform_id]);
+            $doLink = !$linkExists;
+            if( $linkExists )
+            {
+              $platform_name = $rs[$target_tcversion[$version_number]['id']][$platform_id]['name'];
+              $msg = sprintf(LINKED_FEATURE_ALREADY_EXISTS_STR,$tplan_info['name'],$tplan_id,
+                             $platform_name, $platform_id);  
+              $this->errors[] = new IXR_Error(LINKED_FEATURE_ALREADY_EXISTS,$msg_prefix . $msg); 
+              $status_ok = false;
+            }
+          }  
+          else
+          {
+            // do nothing on silence, and say bye!!!
+            $op_result['operation']=$operation;
+            $op_result['status']=true;
+            $op_result['message']='Nothing to do - already linked';
+            return $op_result;
+          }     
         }  
         else 
         {
           // Other version than requested done is already linked
           $doLink = false;
+          if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
+          {
+            $doLink = $doDeleteLinks = true;
+          }
+
           reset($rs);
           $linked_tcversion = key($rs);          
           $other_version = $all_tcversions[$linked_tcversion]['version'];
-          $msg = sprintf(OTHER_VERSION_IS_ALREADY_LINKED_STR,$other_version,$version_number,
-                         $tplan_info['name'],$tplan_id);
-          $this->errors[] = new IXR_Error(OTHER_VERSION_IS_ALREADY_LINKED,$msg_prefix . $msg); 
-          $status_ok = false;
+          if( !$doLink )
+          {
+            $doLink = false;
+            $msg = sprintf(OTHER_VERSION_IS_ALREADY_LINKED_STR,$other_version,$version_number,
+                           $tplan_info['name'],$tplan_id);
+            $this->errors[] = new IXR_Error(OTHER_VERSION_IS_ALREADY_LINKED,$msg_prefix . $msg); 
+            $status_ok = false;
+          }  
         }
         
       }
+      
       if( $doLink && $hasPlatforms )
       {
        $additional_values[] = $platform_id;
        $additional_fields[] = 'platform_id';              
       }
 
-      if( $doDeleteLinks && count($id_set) > 0 )
+      if( $doDeleteLinks )
       {
-        $in_clause=implode(",",$id_set);
-        $sql=" DELETE FROM {$this->tables['testplan_tcversions']} " .
-             " WHERE testplan_id={$tplan_id}  AND tcversion_id IN({$in_clause}) ";
+        // $in_clause=implode(",",$id_set);
+        $sql = " DELETE FROM {$this->tables['testplan_tcversions']} " .
+               " WHERE testplan_id=" . intval($tplan_id) .
+               " AND tcversion_id=" . intval($linked_tcversion);
+
+        if( $hasPlatforms )
+        {
+          $sql .= " AND platform_id=" . intval($platform_id);
+        }     
         $this->dbObj->exec_query($sql);
       }
           

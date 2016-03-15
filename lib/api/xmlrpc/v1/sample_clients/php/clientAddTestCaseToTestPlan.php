@@ -3,13 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: clientAddTestCaseToTestPlan.php,v $
- *
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/07/11 17:30:25 $ by $Author: franciscom $
+ * @filesource  clientAddTestCaseToTestPlan.php
  * @Author: francisco.mancardi@gmail.com
  *
- * rev: 
+ * @internal revisions
+ *
  */
 require_once 'util.php';
 require_once 'sample.inc.php';
@@ -21,16 +19,21 @@ $unitTestDescription="Test - {$method} - Test Plan WITHOUT Platforms";
 
 $args=array();
 $args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
-$args["testprojectid"] = 521; //188;
-$args["testcaseexternalid"]='SPP-3';
-$args["version"]=1;
-$args["testplanid"]=522;
+$args["devKey"]='985978c915f50e47a4b1a54a943d1b76';
+$args["testprojectid"] = 1; //188;
+$args["testcaseexternalid"]='ZZ-1';
+$args["version"]=2;
+$args["testplanid"]=61;
+$args["platformid"]=2;
+$args["overwrite"]=1;
 
 
 $debug=true;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 $answer = runTest($client,$method,$args);
+
+
 // ---------------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------------

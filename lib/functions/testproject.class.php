@@ -40,6 +40,7 @@ class testproject extends tlObjectWithAttachments
   var $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 
   var $debugMsg;
+  var $tmp_dir;
 
   /** 
    * Class constructor
@@ -48,6 +49,8 @@ class testproject extends tlObjectWithAttachments
    */
   function __construct(&$db)
   {
+    $this->tmp_dir = config_get('temp_dir');
+
     $this->db = &$db;
     $this->tree_manager = new tree($this->db);
     $this->cfield_mgr=new cfield_mgr($this->db);
@@ -1059,15 +1062,46 @@ function count_testcases($id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $ret=null;
-    $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
-           " SET tc_counter=tc_counter+1 WHERE id = {$id}";
-    $recordset = $this->db->exec_query($sql);
+    $retry = 3; 
+    $lockfile = $this->tmp_dir . __FUNCTION__ . '.lock';
+    $lock = fopen($lockfile, 'a');
     
-    $sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$id}";
-    $recordset = $this->db->get_recordset($sql);
-    $ret=$recordset[0]['tc_counter'];
-    return ($ret);
+    $gotLock = false;
+    while( $retry > 0 && !$gotLock )
+    {  
+      if( flock($lock,LOCK_EX) ) 
+      {
+        $gotLock = true;
+      }
+      else
+      {
+        $retry--;
+        usleep(20);
+      }  
+    }
+
+    if( $gotLock || $retry == 0 )
+    {
+      $safeID = intval($id);
+
+      $ret=null;
+      $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
+               " SET tc_counter=tc_counter+1 WHERE id = {$safeID}";
+      $rs = $this->db->exec_query($sql);
+        
+      $sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$safeID}";
+      $rs = $this->db->get_recordset($sql);
+      $ret = $rs[0]['tc_counter'];
+      
+      if( $gotLock )
+      {
+        flock($lock, LOCK_UN);
+      }  
+      fclose($lock);
+
+      return $ret;
+    }  
+
   }
 
   /**

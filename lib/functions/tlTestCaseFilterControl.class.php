@@ -383,8 +383,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
    */
   protected function read_config() 
   {
-    file_put_contents('/development/var/tracer.log',"\n" . __METHOD__,FILE_APPEND);
-
     // some configuration reading already done in parent class
     parent::read_config();
 
@@ -413,14 +411,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
       break;
     }
 
- 
-
-/* 
-$this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
-                                   $this->args->advanced_filter_mode && 
-                                   !$this->args->simple_filter_mode);
-
-*/
     return tl::OK;
   } // end of method
 
@@ -1970,12 +1960,6 @@ $this->advanced_filter_mode = ($this->filter_mode_choice_enabled &&
     if (!$selection || $this->args->reset_filters) 
     {
       $selection = null;
-      $cfx = $this->configuration->{$key . "_values"};
-      if( !is_null($cfx) )
-      {
-        $selection = (array)$cfx;
-        $this->do_filtering = true;
-      }  
     } 
     else 
     {

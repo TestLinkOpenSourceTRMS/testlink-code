@@ -181,7 +181,7 @@
 
   <script>
   jQuery( document ).ready(function() {
-  jQuery(".chosen-select").chosen({ width: "85%" });
+  jQuery(".chosen-select").chosen({ width: "85%" , allow_single_deselect: true});
   });
   </script>
 

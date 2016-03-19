@@ -342,6 +342,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // and does all the remaining necessary method calls,
     // so no further method call is required here for initialization.
     parent::__construct($dbHandler);
+
     $this->cfield_mgr = new cfield_mgr($this->db);
 
     // moved here from parent::__constructor() to be certain that 
@@ -382,6 +383,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
    */
   protected function read_config() 
   {
+    file_put_contents('/development/var/tracer.log',"\n" . __METHOD__,FILE_APPEND);
 
     // some configuration reading already done in parent class
     parent::read_config();
@@ -395,14 +397,30 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // some additional testcase configuration
     $this->configuration->tc_cfg = config_get('testcase_cfg');
     
-    // advanced filter mode enabled?
+    // is switch filter mode enabled?
     $this->filter_mode_choice_enabled = false;
-    if (isset($this->configuration->advanced_filter_mode_choice) && 
-        $this->configuration->advanced_filter_mode_choice == ENABLED) 
+    switch( $this->mode )
     {
-      $this->filter_mode_choice_enabled = true;
-    } 
-    
+      case 'edit_mode':
+      break;
+
+      default:
+        if (isset($this->configuration->advanced_filter_mode_choice) && 
+            $this->configuration->advanced_filter_mode_choice == ENABLED) 
+        {
+          $this->filter_mode_choice_enabled = true;
+        } 
+      break;
+    }
+
+ 
+
+/* 
+$this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
+                                   $this->args->advanced_filter_mode && 
+                                   !$this->args->simple_filter_mode);
+
+*/
     return tl::OK;
   } // end of method
 
@@ -429,6 +447,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
      
     // Do first get, to have info that can change config
     I_PARAMS($params, $this->args);
+
+    switch( $this->mode )
+    {
+      case 'edit_mode':
+        $this->args->advanced_filter_mode = TRUE;
+      break;
+    }
+
 
     if($this->args->advanced_filter_mode)
     {
@@ -1944,6 +1970,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
     if (!$selection || $this->args->reset_filters) 
     {
       $selection = null;
+      $cfx = $this->configuration->{$key . "_values"};
+      if( !is_null($cfx) )
+      {
+        $selection = (array)$cfx;
+        $this->do_filtering = true;
+      }  
     } 
     else 
     {
@@ -2005,5 +2037,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $cf = (array)$cfields['design'] + (array)$cfields['testplan_design'];
     return count($cf) > 0 ? $cf : null;
   }
+
+  /**
+   *
+   */
+  protected function init_advanced_filter_mode() 
+  {
+    switch( $this->mode )
+    {
+      case 'edit_mode': 
+        $this->advanced_filter_mode = TRUE;
+      break;
+ 
+      default:
+        $m2c = __FUNCTION__;
+        parent::$m2c();
+      break;
+    }
+  } // end of method
+
 
 }

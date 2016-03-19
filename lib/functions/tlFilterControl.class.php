@@ -212,7 +212,6 @@ abstract class tlFilterControl extends tlObjectWithDB
    */
   public function __construct(&$dbHandler) 
   {
-
     // call to constructor of parent class tlObjectWithDB
     parent::__construct($dbHandler);
 
@@ -223,10 +222,8 @@ abstract class tlFilterControl extends tlObjectWithDB
     $this->init_args();
 
     // set filter mode to advanced or simple
-    $this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
-                                   $this->args->advanced_filter_mode && 
-                                   !$this->args->simple_filter_mode);
-    
+    $this->init_advanced_filter_mode();
+   
     // init button labels
     if ($this->advanced_filter_mode) 
     {
@@ -243,10 +240,8 @@ abstract class tlFilterControl extends tlObjectWithDB
     $this->filter_mode_button_name = $label;
     $this->filter_item_quantity = $qty;
 
-    // echo __FILE__ . '<br>' . __LINE__ . '<br>';
-
     $this->init_settings();
-    // $this->init_filters();
+
   } // end of method
 
   /**
@@ -267,6 +262,9 @@ abstract class tlFilterControl extends tlObjectWithDB
    */
   protected function read_config() 
   {
+ file_put_contents('/development/var/tracer.log',"\n" . __METHOD__,FILE_APPEND);
+
+
     // opening and closing brackets
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
@@ -453,7 +451,16 @@ abstract class tlFilterControl extends tlObjectWithDB
   } // end of method
 
 
-
+  /**
+   *
+   */
+  protected function init_advanced_filter_mode() 
+  {
+    $this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
+                                   $this->args->advanced_filter_mode && 
+                                   !$this->args->simple_filter_mode);
+ 
+  } // end of method
 
 
   

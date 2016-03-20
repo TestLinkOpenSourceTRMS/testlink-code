@@ -802,6 +802,13 @@ CREATE TABLE /*prefix*/testcase_relations (
 );
 
 
+CREATE TABLE /*prefix*/req_monitor (
+  req_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
+  user_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  PRIMARY KEY (req_id,user_id)
+);
+
 --
 -- TICKET 4914: Create View - tcversions_last_active
 --

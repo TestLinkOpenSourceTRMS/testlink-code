@@ -865,6 +865,7 @@ class database
     switch($this->db->databaseType)
     {
       case 'postgres7':
+      case 'postgres8':
         $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
         break;
         

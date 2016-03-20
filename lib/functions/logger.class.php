@@ -712,13 +712,35 @@ class tlEventManager extends tlObjectWithDB
     //          " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0) XX";
     // $query = " DELETE FROM {$this->tables['transactions']} WHERE id IN ( {$subsql} )";
     //
-    // 201501114 - help by TurboP
-    $query = "/* $debugMsg */ " . 
-             " DELETE T FROM {$this->tables['transactions']} T " .
-             " WHERE NOT EXISTS " .
-             " (SELECT EV.id FROM {$this->tables['events']} EV " .
-             "  WHERE EV.transaction_id = T.id) ";
-    $this->db->exec_query($query);  
+    
+    // 20160320 - it's not clear why sometimes databaseType property does not exist
+    //            this is a quick & dirty fix.
+    if( property_exists($this->db,'databaseType') && 
+        !is_null($this->db->databaseType) )
+    {
+      $alias4del = '';
+      switch($this->db->databaseType)
+      {
+        case 'postgres7':
+        case 'postgres8':
+          $alias4del = '';
+        break;
+
+        case 'mysql':
+        case 'mysqli':
+        default:
+          $alias4del = 'T';
+        break;
+      }
+
+      // 201501114 - help by TurboP
+      $query = "/* $debugMsg */ " . 
+               " DELETE $alias4del FROM {$this->tables['transactions']} $alias4del " .
+               " WHERE NOT EXISTS " .
+               " (SELECT EV.id FROM {$this->tables['events']} EV " .
+               "  WHERE EV.transaction_id = {$alias4del}.id) ";
+      $this->db->exec_query($query);
+    }  
   }
 }
 

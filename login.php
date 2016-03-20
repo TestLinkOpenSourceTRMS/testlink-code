@@ -243,10 +243,10 @@ function renderLoginScreen($guiObj)
   $smarty->assign('gui', $guiObj);
 
   $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-  if( $guiObj->viewer == 'new' )
-  {
-    $tpl = 'login-model-marcobiedermann.tpl';
-  }  
+  //if( $guiObj->viewer == 'new' )
+  //{
+  $tpl = 'login-model-marcobiedermann.tpl';
+  //}  
   $smarty->display($tpl);
 
 }

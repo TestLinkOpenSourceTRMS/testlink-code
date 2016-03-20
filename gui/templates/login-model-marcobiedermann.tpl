@@ -60,8 +60,6 @@
 
       <a href="lostPassword.php?viewer=new">{$labels.lost_password_q}</a> </p>
 
-      <p class="text--center"><a href="login.php?viewer=old">{$labels.old_style_login}</a> &nbsp; &nbsp;
-
     </div>
   </div>
 </body>

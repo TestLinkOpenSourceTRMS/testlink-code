@@ -39,6 +39,8 @@
         onsubmit="return validateForm(this);document.getElementById('filter_result_method').disabled=false;"
       {/if}
         >
+  <input type="hidden" name="caller" value="filter_panel">
+          
 {* hidden input with token to manage transfer of data between left and right frame *}
 {if isset($control->form_token)}
   <input type="hidden" name="form_token" value="{$control->form_token}">

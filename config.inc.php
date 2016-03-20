@@ -1433,6 +1433,8 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_workflow_status = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = ENABLED;
 
+$tlCfg->tree_filter_cfg->testcases->edit_mode
+      ->filter_workflow_status_values = array();
 
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_testcase_name = ENABLED;

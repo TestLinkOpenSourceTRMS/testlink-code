@@ -479,7 +479,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $type = 'filter_keywords_filter_type';
     $this->args->{$type} = (isset($_REQUEST[$type])) ? trim($_REQUEST[$type]) : 'Or';
 
-    $extra_keys = array('filter_result_result','filter_result_method','filter_result_build');
+    // caller is needed for the logic to apply default values to filters when accessing
+    // from desktop/main page
+    $extra_keys = array('caller','filter_result_result','filter_result_method','filter_result_build');
 
     foreach ($extra_keys as $ek) 
     {
@@ -1956,11 +1958,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
 
     // handle filter reset
+    $cfx = $this->configuration->{$key . "_values"};
     $selection = $this->args->{$key};
     if (!$selection || $this->args->reset_filters) 
     {
-      $selection = null;
-    } 
+      if( !is_null($this->args->caller) && !$selection)
+      {
+        $selection = null;
+      }  
+      else if( count($cfx) > 0)
+      {
+        $selection = $cfx;
+        $this->do_filtering = true;
+      }
+      else
+      {
+        $selection = null;
+      }  
+    }  
     else 
     {
       $this->do_filtering = true;

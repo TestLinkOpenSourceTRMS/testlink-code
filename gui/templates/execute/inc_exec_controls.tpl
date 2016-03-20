@@ -124,25 +124,11 @@ Author : franciscom
       <tr>
         <td colspan="2" class="label">{$args_labels.create_issue_feedback}</td>
       </tr>
-      
-      {if $gui->addIssueOp.createIssue != ''}
       <tr>
         <td colspan="2">
-          <div class="label">{$gui->addIssueOp.createIssue.msg}</div>
+          <div class="label">{$gui->addIssueOp.msg}</div>
         </td>
       </tr>
-      {/if}
-
-      {if $gui->addIssueOp.issueForStep != ''}
-      <tr>
-        <td colspan="2">
-          {foreach key=ky item=ufeed from=$gui->addIssueOp.issueForStep}
-          <div class="label">{$ufeed.msg}</div>
-          {/foreach}
-        </td>
-      </tr>
-      {/if}
-
       </table>
       <hr>
       {/if}
@@ -231,6 +217,13 @@ Author : franciscom
           <div class="label">{$args_labels.bug_description}</div>
           <textarea id="bug_notes" name="bug_notes" 
                   rows="{#BUGNOTES_ROWS#}" cols="{$gui->issueTrackerCfg->bugSummaryMaxLength}" ></textarea>          
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="2">
+          <input type="checkbox" name="addLinkToTL"  id="addLinkToTL">
+          <span class="label">{$args_labels.add_link_to_tlexec}</span>
         </td>
       </tr>
 

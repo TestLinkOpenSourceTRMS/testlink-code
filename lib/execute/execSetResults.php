@@ -104,7 +104,8 @@ if(!is_null($linked_tcversions))
                         "&build_id=" . $args->build_id;
 
 
-
+    $args->direct_link = $gui->direct_link;
+     
     // 20151206 - issue @ test step
     if(!is_null($gui->issueSummaryForStep))
     {
@@ -299,7 +300,7 @@ if(!is_null($linked_tcversions))
     $gui->map_last_exec_any_build = null;
     $gui->other_execs=null;
     $testerid = null;
-    
+      
     if($args->level == 'testcase')
     {
       // @TODO 20090815 - franciscom check what to do with platform
@@ -391,7 +392,6 @@ else
 
   // To silence smarty errors
   //  future must be initialized in a right way
-
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
@@ -543,6 +543,9 @@ function init_args(&$dbHandler,$cfgObj)
     $args->tproject_id = $dm['parent_id']; 
   }
 
+
+  $args->addLinkToTL = isset($_REQUEST['addLinkToTL']) ? TRUE : FALSE;
+  
 
   // Do this only on single execution mode
   // get issue tracker config and object to manage TestLink - BTS integration 
@@ -1261,6 +1264,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     
   $gui = new stdClass();
 
+  // TBD $gui->delAttachmentURL =
+  
   $gui->showExternalAccessString = true;
   $gui->showImgInlineString = false;
   
@@ -1454,6 +1459,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 */
 function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tcaseMgr,&$docRepository)
 {     
+
+  
   // IMPORTANT due  to platform feature
   // every element on linked_tcversions will be an array.
   $cf_filters=array('show_on_execution' => 1); 

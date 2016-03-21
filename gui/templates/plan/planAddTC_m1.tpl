@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource planAddTC_m1.tpl
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
-@since 1.9.10
+@since 1.9.15
 *}
 {lang_get var="labels" 
           s='note_keyword_filter, check_uncheck_all_for_remove,
@@ -136,7 +136,7 @@ Ext.onReady(function(){
 		{* ------------------------------------------------------------------------------------- *}
 		
 	  	  
-	  	  <div class="groupBtn">
+	  <div class="groupBtn">
 			<div style="float: left; margin-right: 2em">
 				{$labels.check_uncheck_all_tc}
 				{if $gui->usePlatforms}
@@ -177,12 +177,13 @@ Ext.onReady(function(){
 
 {if $gui->has_tc}
   <div class="workBack" id="workback">
-  	{if $gui->keywords_filter != ''}
-  		<div style="margin-left: 20px; font-size: smaller;">
-  			<br />{$labels.note_keyword_filter}{$gui->keywords_filter|escape}</p>
-  		</div>
+    <div style="margin-left: 20px; font-size: smaller;">
+  	{$gui->status_feeback|escape}<br />
+    {if $gui->keywords_filter_feedback != '' }
+  			<br />{$labels.note_keyword_filter}: {$gui->keywords_filter_feedback|escape}</p>
   	{/if}
-       
+    </div>
+
     {* ======================================== *}
     {* Loop over Test Suites to draw test cases *}
   	{$item_number=0}

@@ -3990,4 +3990,6 @@ $TLS_mail_subject_req_delete = 'Requirement Deleted [%docid%-%title%]';
 $TLS_mail_subject_req_new_version = 'Requirement New Version [%docid%-%title%]';
 
 
+$TLS_hint_add_testcases_to_testplan_status = 'Test cases with Latest Version with status with one of these values (%s) will not be displayed in this screen';
+
 // ----- END ------------------------------------------------------------------

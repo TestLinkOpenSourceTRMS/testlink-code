@@ -166,6 +166,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $nodeTypeParamName = "nodetype";
   public static $noteParamName = "notes";
 
+  public static $openParamName = "open";  
   public static $optionsParamName = "options";
   public static $orderParamName = "order";
   public static $overwriteParamName = "overwrite";
@@ -175,6 +176,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $preconditionsParamName = "preconditions";
   public static $publicParamName = "public";
 
+  public static $releaseDateParamName = "releasedate";
   public static $requirementsParamName = "requirements";
   public static $requirementIDParamName = "requirementid";
   public static $reqSpecIDParamName = "reqspecid";
@@ -1518,6 +1520,9 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @param int $args["testplanid"]
    * @param string $args["buildname"];
    * @param string $args["buildnotes"];
+   * @param string $args["active"];
+   * @param string $args["open"];
+   * @param string $args["releasedate"]: YYYY-MM-DD;
    * @return mixed $resultInfo
    *         
    * @access public
@@ -1559,7 +1564,35 @@ class TestlinkXMLRPCServer extends IXR_Server
       {
         //Build doesn't exist so create one
         // ,$active=1,$open=1);
-        $insertID = $this->tplanMgr->create_build($testPlanID,$buildName,$buildNotes);
+        // ($tplan_id,$name,$notes = '',$active=1,$open=1,$release_date='')
+
+        // key 2 check with default value is parameter is missing
+        $k2check = array(self::$activeParamName => 1,self::$openParamName => 1,
+                         self::$releaseDateParamName => null);
+        foreach($k2check as $key => $value)
+        {
+          $opt[$key] = $this->_isParamPresent($key) ? $this->args[$key] : $value;
+        }
+
+        // check if release date is valid date.
+        // do not check relation with now(), i.e can be <,> or =.
+        //
+        if( !is_null($opt[self::$releaseDateParamName]) )
+        {
+          if( !$this->validateDateISO8601($opt[self::$releaseDateParamName]) )
+          {
+            echo 'KO';
+            $opt[self::$releaseDateParamName] = null;
+          }  
+        }  
+        // var_dump($opt);
+        $bm = new build_mgr($this->dbObj);
+        $insertID = $bm->create($testPlanID,$buildName,$buildNotes,
+                                $opt[self::$activeParamName],
+                                $opt[self::$openParamName],
+                                $opt[self::$releaseDateParamName]);
+      
+
       }
       
       $resultInfo[0]["id"] = $insertID;  
@@ -7504,6 +7537,23 @@ protected function createAttachmentTempFile()
       return $ret;
     }
 
+
+  /**
+   * 
+   */
+  function validateDateISO8601($dateAsString)
+  {
+    return $this->validateDate($dateAsString);
+  }
+
+  /**
+   *
+   */
+  function validateDate($dateAsString, $format = 'Y-m-d')
+  {
+    $d = DateTime::createFromFormat($format, $dateAsString);
+    return $d && $d->format($format) == $dateAsString;
+  }
 
   /**
    *

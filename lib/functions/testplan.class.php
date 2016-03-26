@@ -2351,43 +2351,6 @@ class testplan extends tlObjectWithAttachments
   }
 
 
-  /*
-    function: create_build
-  
-    args :
-          $tplan_id
-          $name
-          $notes
-          [$active]: default: 1
-          [$open]: default: 1
-  
-  
-  
-    returns:
-  
-    rev :
-  */
-  function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
-  {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-    $sql = " /* $debugMsg */ INSERT INTO {$this->tables['builds']} (testplan_id,name,notes,active,is_open) " .
-           " VALUES ('". $tplan_id . "','" .
-           $this->db->prepare_string($name) . "','" .
-           $this->db->prepare_string($notes) . "'," .
-           "{$active},{$open})";
-    
-    $new_build_id = 0;
-    $result = $this->db->exec_query($sql);
-    if ($result)
-    {
-      $new_build_id = $this->db->insert_id($this->tables['builds']);
-    }
-    
-    return $new_build_id;
-  }
-  
-
   // --------------------------------------------------------------------------------------
   // Custom field related methods
   // --------------------------------------------------------------------------------------
@@ -7746,7 +7709,7 @@ class build_mgr extends tlObject
   */
   function create($tplan_id,$name,$notes = '',$active=1,$open=1,$release_date='')
   {
-    $targetDate=trim($release_date);
+    $targetDate = trim($release_date);
     $sql = " INSERT INTO {$this->tables['builds']} " .
            " (testplan_id,name,notes,release_date,active,is_open,creation_ts) " .
            " VALUES ('". $tplan_id . "','" . $this->db->prepare_string($name) . "','" .
@@ -7761,18 +7724,16 @@ class build_mgr extends tlObject
       $sql .= "'" . $this->db->prepare_string($targetDate) . "',";
     }
     
-    // Important: MySQL do not support default values on datetime columns that are functions
-    // that's why we are using db_now().
     $sql .= "{$active},{$open},{$this->db->db_now()})";                        
-    
-    $new_build_id = 0;
+
+    $id = 0;
     $result = $this->db->exec_query($sql);
     if ($result)
     {
-      $new_build_id = $this->db->insert_id($this->tables['builds']);
+      $id = $this->db->insert_id($this->tables['builds']);
     }
     
-    return $new_build_id;
+    return $id;
   }
 
 

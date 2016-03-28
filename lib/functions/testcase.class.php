@@ -888,13 +888,15 @@ class testcase extends tlObjectWithAttachments
 
       $ovx = 0;
       $gui->linked_versions = null;
+
+      $gopt = array('renderGhost' => true, 'withGhostString' => true,
+                    'renderImageInline' => true, 'renderVariables' => true,
+                    'caller' => 'show()');
       foreach($idSet as $key => $tc_id)
       {
         // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
         // if we are working on a set of test cases $version_id will be ALL VERSIONS
-        if(!$tc_array = $this->get_by_id($tc_id,$version_id,null,
-                                         array('renderGhost' => true, 'withGhostString' => true,
-                                               'renderImageInline' => true, 'caller' => 'show()')))
+        if( !$tc_array = $this->get_by_id($tc_id,$version_id,null,$gopt) )
         {
           continue;
         }
@@ -2105,7 +2107,7 @@ class testcase extends tlObjectWithAttachments
 
     $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 'getPrefix' => false,
                            'order_by' => null, 'renderGhost' => false, 'withGhostString' => false,
-                           'renderImageInline' => false);
+                           'renderImageInline' => false, 'renderVariables' => false);
 
     $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -2232,6 +2234,7 @@ class testcase extends tlObjectWithAttachments
     $render['ghost'] = false;
     $render['ghostSteps'] = false;
     $render['imageInline'] = $my['options']['renderImageInline'];
+    $render['variables'] = $my['options']['renderVariables'];
 
     switch($my['options']['output'])
     {
@@ -2248,6 +2251,7 @@ class testcase extends tlObjectWithAttachments
     
       case 'essential':
         $render['imageInline'] = false;
+        $render['variables'] = false;
       break;
     }
 
@@ -2274,6 +2278,18 @@ class testcase extends tlObjectWithAttachments
       $recordset = $this->db->get_recordset($sql);
     }
 
+
+    if( !is_null($recordset) && $render['variables'] )
+    {
+      $key2loop = array_keys($recordset);
+      foreach( $key2loop as $accessKey)
+      { 
+        $this->renderVariables($recordset[$accessKey]);
+      } 
+      reset($recordset);
+    }
+
+
     // ghost on preconditions and summary
     if( !is_null($recordset) && $my['options']['renderGhost'] )
     {
@@ -2285,7 +2301,6 @@ class testcase extends tlObjectWithAttachments
       reset($recordset);
     }
 
-    // 20141128
     if( !is_null($recordset) && $render['imageInline'])
     {
       $key2loop = array_keys($recordset);
@@ -5835,7 +5850,7 @@ class testcase extends tlObjectWithAttachments
                 // "Step":1,"TestCase":"BABA-1","Version":1[/ghost] RIGHT
                 // Then $ydx = trim(str_replace($replaceSet,'',$xx[$xdx]));
                 //
-                // WRONG!!! => "Step":1,"TestCase":"BABA-1","Version":1 RIGHT
+                // WRONG!!! => "Step":1,"TestCase":"BABA-1","Version":1
                 // 
                 // Need to CUT WHERE I have found $tlEndMark
                 //
@@ -7411,6 +7426,101 @@ class testcase extends tlObjectWithAttachments
     $this->db->exec_query($sql);
   }
 
+ /**
+  * render CF values
+  *
+  * <p> </p> added by web rich editor create some layout issues
+  */
+  function renderVariables(&$item2render)
+  {
+    $tcase_id = $item2render['testcase_id'];
+    $tcversion_id = $item2render['id'];
+    $cfSet = $this->get_linked_cfields_at_design($tcase_id,$tcversion_id);
+
+    if( is_null($cfSet) )
+    {
+      return;
+    }  
+
+    $key2check = array('summary','preconditions');
+    $tlBeginTag = '[tlVar]';
+    $tlEndTag = '[/tlVar]';
+    $tlEndMarkLen = strlen($tlEndMark);
+
+    // I've discovered that working with Web Rich Editor generates 
+    // some additional not wanted entities, that disturb a lot
+    // when trying to use json_decode().
+    // Hope this set is enough.
+    // $replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+    // $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
 
 
-}  
+    $rse = &$item2render;
+    foreach($key2check as $item_key)
+    {
+      $start = strpos($rse[$item_key],$tlBeginTag);
+      $ghost = $rse[$item_key];
+
+      // There is at least one request to replace ?
+      if($start !== FALSE)
+      {
+        // This way remove may be the <p> that webrich editor adds
+        $play = substr($rse[$item_key],$start);
+        $xx = explode($tlBeginTag,$play);
+
+        // How many requests to replace ?
+        $xx2do = count($xx);
+        $ghost = '';
+        for($xdx=0; $xdx < $xx2do; $xdx++)
+        {
+          // Hope was not a false request.
+          if( ($es=strpos($xx[$xdx],$tlEndTag)) !== FALSE)
+          {
+            // Separate command string from other text
+            // Theorically can be just ONE, but it depends
+            // is user had not messed things.
+            $yy = explode($tlEndTag,$xx[$xdx]);
+            if( ($elc = count($yy)) > 0)
+            {
+              $cfname = trim($yy[0]);
+              try
+              {
+                // look for the custom field
+                foreach ($cfSet as $cfID => $cfDef) 
+                {
+                  if( $cfDef['name'] === $cfname )
+                  {
+                    $ghost .= 
+                    $this->cfield_mgr->string_custom_field_value($cfDef,$tcversion_id);
+                  }  
+                }
+
+                // reconstruct the contect with the other pieces
+                $lim = $elc-1;
+                for($cpx=1; $cpx <= $lim; $cpx++) 
+                {
+                  $ghost .= $yy[$cpx];
+                }  
+              } 
+              catch (Exception $e)
+              {
+                $ghost .= $rse[$item_key];
+              }
+            }
+          }
+          else
+          {
+            $ghost .= $xx[$xdx];
+          }  
+        }
+      }
+
+      // reconstruct field contents
+      if($ghost != '')
+      {
+        $rse[$item_key] = $ghost;
+      }
+    }   
+  }   
+
+}  // Class end

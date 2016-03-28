@@ -125,9 +125,10 @@ class testcaseCommands
     }
 
 
-    $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,
-                                            array('output' => 'full_without_steps',
-                                                  'renderGhost' => true, 'renderImageInline' => true));
+    $gopt = array('output' => 'full_without_steps','renderGhost' => true,
+                  'renderImageInline' => true,'renderVariables' => true); 
+
+    $tcaseInfo = $this->tcaseMgr->get_by_id($greenCard['tcase_id'],$greenCard['tcversion_id'],null,$gopt);
 
 
     $external = $this->tcaseMgr->getExternalID($greenCard['tcase_id'],$argsObj->testproject_id);
@@ -294,8 +295,11 @@ class testcaseCommands
     $guiObj = $this->initGuiBean($argsObj);
     $otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id,array('orderByClause' =>" ORDER BY keyword ASC "));
     keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
-    $tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,null, 
-                                          array('renderImageInline' => false, 'caller' => __METHOD__));
+
+    $gopt = array('renderImageInline' => false, 'renderImageInline' => false, 
+                  'caller' => __METHOD__);
+    
+    $tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,null,$gopt);
     foreach($oWebEditorKeys as $key)
     {
       $guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
@@ -335,7 +339,7 @@ class testcaseCommands
   {
     $options = array('status' => $argsObj->tc_status,
                      'estimatedExecDuration' => $argsObj->estimated_execution_duration);
-    
+
     $ret = $this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
                                    $argsObj->summary, $argsObj->preconditions, $argsObj->tcaseSteps, 
                                    $argsObj->user_id, $argsObj->assigned_keywords_list,

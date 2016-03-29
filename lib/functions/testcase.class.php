@@ -3604,14 +3604,19 @@ class testcase extends tlObjectWithAttachments
     }
 
     // ghost Test Case processing in summary & preconditions
-    if(!is_null($recordset))
+    if( !is_array($id) )
     {
-      $key2loop = array_keys($recordset);
-      foreach( $key2loop as $accessKey)
-      { 
-        $this->renderGhost($recordset[$accessKey]);
-      } 
-      reset($recordset);
+      if(!is_null($recordset))
+      {
+        $key2loop = array_keys($recordset);
+        foreach( $key2loop as $accessKey)
+        { 
+          $this->renderGhost($recordset[$accessKey]);
+          $this->renderVariables($recordset[$accessKey]);
+          $this->renderImageAttachments($id,$recordset[$accessKey]);
+        } 
+        reset($recordset);
+      }
     }  
 
     return($recordset ? $recordset : null);

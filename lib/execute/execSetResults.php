@@ -296,7 +296,7 @@ if(!is_null($linked_tcversions))
       $tcase_id = array_intersect($tcase_id, $args->testcases_to_show);
     }  
 
-    $gui->map_last_exec = getLastestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+    $gui->map_last_exec = getLatestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     $gui->map_last_exec_any_build = null;
     $gui->other_execs=null;
     $testerid = null;
@@ -1528,7 +1528,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 
 
 /*
-  function: getLastestExec
+  function: getLatestExec
             Important Notice: 
             $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
 
@@ -1537,7 +1537,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   returns: 
 
 */
-function getLastestExec(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
+function getLatestExec(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 { 
   $options=array('getNoExecutions' => 1, 'groupByBuild' => 0, 'getStepsExecInfo' => 1);
 

@@ -526,12 +526,12 @@ CREATE TABLE /*prefix*/user_assignments (
 
 CREATE TABLE /*prefix*/users (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `login` varchar(30) NOT NULL default '',
+  `login` varchar(100) NOT NULL default '',
   `password` varchar(32) NOT NULL default '',
   `role_id` int(10) unsigned NOT NULL default '0',
   `email` varchar(100) NOT NULL default '',
-  `first` varchar(30) NOT NULL default '',
-  `last` varchar(30) NOT NULL default '',
+  `first` varchar(50) NOT NULL default '',
+  `last` varchar(50) NOT NULL default '',
   `locale` varchar(10) NOT NULL default 'en_GB',
   `default_testproject_id` int(10) default NULL,
   `active` tinyint(1) NOT NULL default '1',

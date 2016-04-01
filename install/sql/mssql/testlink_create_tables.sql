@@ -698,12 +698,12 @@ CREATE TABLE /*prefix*/user_testplan_roles (
 
 CREATE TABLE /*prefix*/users (
   id int IDENTITY(1,1) NOT NULL,
-  login varchar(30)  NOT NULL,
+  login varchar(100)  NOT NULL,
   password varchar(32)  NOT NULL,
   role_id int NOT NULL CONSTRAINT /*prefix*/DF_users_role_id DEFAULT ((0)),
   email varchar(100)  NOT NULL,
-  first varchar(30)  NOT NULL,
-  last varchar(30)  NOT NULL,
+  first varchar(50)  NOT NULL,
+  last varchar(50)  NOT NULL,
   locale varchar(10)  NOT NULL CONSTRAINT /*prefix*/DF_users_locale DEFAULT (N'en_US'),
   default_testproject_id int NULL,
   active tinyint NOT NULL CONSTRAINT /*prefix*/DF_users_active DEFAULT ((1)),

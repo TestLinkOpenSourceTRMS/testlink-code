@@ -149,7 +149,7 @@ class tlUser extends tlDBObject
     $authCfg = config_get('authentication');
     $this->usernameFormat = config_get('username_format');
     $this->loginRegExp = config_get('validation_cfg')->user_login_valid_regex;
-    $this->maxLoginLength = 30; 
+    $this->maxLoginLength = 100; 
     $this->loginMethod = $authCfg['method'];
     
     $this->globalRoleID = config_get('default_roleid');

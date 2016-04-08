@@ -84,6 +84,20 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
  */
 $tlCfg->instance_id = 'Main TestLink Instance';
 
+
+/**
+ * Copied from MantisBT
+ *
+ * Specifies the path under which a cookie is visible
+ * All scripts in this directory and its sub-directories will be able
+ * to access MantisBT cookies.
+ * It is recommended to set this to the actual MantisBT path.
+ * @link http://php.net/function.setcookie
+ * @global string $tlCfg->cookie_path
+ */
+ $tlCfg->cookie_path = '/';
+
+
 /* [LOCALIZATION] */
 
 /** @var string Default localization for users */

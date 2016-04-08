@@ -379,7 +379,7 @@ else
       $userSet[] = $value;
     }
   }
-  smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
+  smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id,$cfg);
 
   // Bulk is possible when test suite is selected (and is allowed in config)
   if( $gui->can_use_bulk_op = ($args->level == 'testsuite') )
@@ -731,7 +731,7 @@ function get_ts_name_details(&$db,$tcase_id)
   returns: 
 
 */
-function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
+function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id,$cfgObj)
 {
   if( ($safeTCaseID = intval($tcase_id)) <= 0)
   {
@@ -802,9 +802,10 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
       }
       $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
     }
+
     if( count($a_tsval) > 0 )
     {
-      setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME, '/');
+      setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME,$cfgObj->cookie_path);
     }
       
     $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
@@ -1187,7 +1188,8 @@ function getCfg()
   $cfg->tc_status = $results['status_code'];
   $cfg->testcase_cfg = config_get('testcase_cfg'); 
   $cfg->editorCfg = getWebEditorCfg('execution');
-    
+  
+  $cfg->cookie_path = config_get('cookie_path');  
   return $cfg;
 }
 
@@ -2099,7 +2101,7 @@ function manageCookies(&$argsObj,$cfgObj)
     $argsObj->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
     if( isset($key4cookies[$key]) )
     {
-      setcookie($cookiePrefix . $key,$argsObj->$key,TL_COOKIE_KEEPTIME, '/');
+      setcookie($cookiePrefix . $key,$argsObj->$key,TL_COOKIE_KEEPTIME, $cfgObj->cookie_path);
     }
   }
 }  

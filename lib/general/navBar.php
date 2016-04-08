@@ -103,7 +103,8 @@ if ($args->testproject)
 {
   // set test project ID for the next session
 	$gui->updateMainPage = is_null($args->caller);
-	setcookie('TL_lastTestProjectForUserID_'. $args->user->dbID, $args->testproject, TL_COOKIE_KEEPTIME, '/');
+  $cookie_path = config_get('cookie_path');
+	setcookie('TL_lastTestProjectForUserID_'. $args->user->dbID, $args->testproject, TL_COOKIE_KEEPTIME, $cookie_path);
 }
 
 $gui->grants = getGrants($db,$args->user);

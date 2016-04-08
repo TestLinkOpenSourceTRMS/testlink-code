@@ -261,7 +261,8 @@ function process_testcase(&$dbHandler,$externalID, $tprojectID, $tprojectPrefix,
     $ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
     $ret['msg'] = 'ok';
     $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,'ys-tproject_');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
+    $cookie_path = config_get('cookie_path');
+    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, $cookie_path);
   }
 
   return $ret;
@@ -321,7 +322,8 @@ function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version
     } 
 
     $cookie = buildCookie($dbHandler, $req_id, $tprojectID,'ys-requirement_spec');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
+    $cookie_path = config_get('cookie_path');
+    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, $cookie_path);
   }
 
   return $ret;
@@ -349,7 +351,8 @@ function process_reqspec(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $ver
     $ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}";
 
     $cookie = buildCookie($dbHandler,$id,$tprojectID,'ys-requirement_spec');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
+    $cookie_path = config_get('cookie_path');
+    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, $cookie_path);
   }
   return $ret;
 }
@@ -394,7 +397,8 @@ function process_testsuite(&$dbHandler,$tsuiteID, $tprojectID, $tprojectPrefix)
 
   $ret['msg'] = 'ok';
   $cookie = buildCookie($dbHandler,$tsuiteID,$tprojectID,'ys-tproject_');
-  setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
+  $cookie_path = config_get('cookie_path');
+  setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, $cookie_path);
 
   return $ret;
 }

@@ -189,8 +189,10 @@ function setSessionTestPlan($tplan_info)
   {
     $_SESSION['testplanID'] = $tplan_info['id'];
     $_SESSION['testplanName'] = $tplan_info['name'];
+
     // Save testplan id for next session
-    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, '/');
+    $cookie_path = config_get('cookie_path');
+    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, $cookie_path);
 
     tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
   }
@@ -399,8 +401,12 @@ function initProject(&$db,$hash_user_sel)
   if($user_sel["tplan_id"] != 0)
   {
     $tplan_id = $user_sel["tplan_id"];
-    setcookie($cookieName, $tplan_id, time()+60*60*24*90, '/');
-  } elseif (isset($_COOKIE[$cookieName])) {
+  
+    $cookie_path = config_get('cookie_path');  
+    setcookie($cookieName, $tplan_id, time()+60*60*24*90, $cookie_path);
+  } 
+  elseif (isset($_COOKIE[$cookieName])) 
+  {
     $tplan_id = intval($_COOKIE[$cookieName]);
   }
   

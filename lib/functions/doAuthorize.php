@@ -98,9 +98,10 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     $user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN);
 
     // Need to do set COOKIE following Mantis model
-    $auth_cookie_name = config_get('auth_cookie');
     $expireOnBrowserClose=false;
-    setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');      
+    $auth_cookie_name = config_get('auth_cookie');
+    $cookie_path = config_get('cookie_path');    
+    setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,$cookie_path);      
 
     // Disallow two sessions within one browser
     if ($my['options']['doSessionExistsCheck'] && 
@@ -157,9 +158,10 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
     if( $login_exists && $user->isActive)
     {
       // Need to do set COOKIE following Mantis model
-      $auth_cookie_name = config_get('auth_cookie');
       $expireOnBrowserClose=false;
-      setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');      
+      $auth_cookie_name = config_get('auth_cookie');
+      $cookie_path = config_get('cookie_path');
+      setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,$cookie_path);      
 
       // Disallow two sessions within one browser
       if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))

@@ -2085,6 +2085,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     * @param int    $args["internalid"] - optional - do not use
     * @param string $args["checkduplicatedname"] - optional
     * @param string $args["actiononduplicatedname"] - optional
+    * @param int    $args["status"] - optional - see const.inc.php $tlCfg->testCaseStatus
     *
     * @return mixed $resultInfo
     * @return string $resultInfo['operation'] - verbose operation
@@ -2104,6 +2105,8 @@ class TestlinkXMLRPCServer extends IXR_Server
   {
     $operation=__FUNCTION__;
     $msg_prefix="({$operation}) - ";
+      
+    $wfStatusDomain = config_get('testCaseStatus');
       
     $keywordSet='';
     $this->_setArgs($args);
@@ -2149,7 +2152,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                  self::$internalIDParamName => testcase::AUTOMATIC_ID,
                  self::$checkDuplicatedNameParamName => testcase::DONT_CHECK_DUPLICATE_NAME,
                  self::$actionOnDuplicatedNameParamName => 'generate_new',
-                 self::$preconditionsParamName => '');
+                 self::$preconditionsParamName => '',
+                 self::$statusParamName => $wfStatusDomain['draft']);
         
       foreach($opt as $key => $value)
       {
@@ -2164,8 +2168,9 @@ class TestlinkXMLRPCServer extends IXR_Server
     if( $status_ok )
     {
       $options = array('check_duplicate_name' => $opt[self::$checkDuplicatedNameParamName],
-                       'action_on_duplicate_name' => $opt[self::$actionOnDuplicatedNameParamName]);
-   
+                       'action_on_duplicate_name' => $opt[self::$actionOnDuplicatedNameParamName],
+                       'status' => $opt[self::$statusParamName]);
+
       $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
                                          $this->args[self::$testCaseNameParamName],
                                          $this->args[self::$summaryParamName],

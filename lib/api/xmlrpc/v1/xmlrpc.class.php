@@ -2086,6 +2086,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     * @param string $args["checkduplicatedname"] - optional
     * @param string $args["actiononduplicatedname"] - optional
     * @param int    $args["status"] - optional - see const.inc.php $tlCfg->testCaseStatus
+    * @param number $args["estimatedexecduration"] - optional
     *
     * @return mixed $resultInfo
     * @return string $resultInfo['operation'] - verbose operation
@@ -2153,7 +2154,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                  self::$checkDuplicatedNameParamName => testcase::DONT_CHECK_DUPLICATE_NAME,
                  self::$actionOnDuplicatedNameParamName => 'generate_new',
                  self::$preconditionsParamName => '',
-                 self::$statusParamName => $wfStatusDomain['draft']);
+                 self::$statusParamName => $wfStatusDomain['draft'],
+                 self::$estimatedExecDurationParamName => null);
         
       foreach($opt as $key => $value)
       {
@@ -2169,7 +2171,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
       $options = array('check_duplicate_name' => $opt[self::$checkDuplicatedNameParamName],
                        'action_on_duplicate_name' => $opt[self::$actionOnDuplicatedNameParamName],
-                       'status' => $opt[self::$statusParamName]);
+                       'status' => $opt[self::$statusParamName],
+                       'estimatedExecDuration' => $opt[self::$estimatedExecDurationParamName]);
 
       $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
                                          $this->args[self::$testCaseNameParamName],

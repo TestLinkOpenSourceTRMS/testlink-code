@@ -23,7 +23,7 @@ $args=array();
 $args["devKey"]='985978c915f50e47a4b1a54a943d1b76';
 $args["testprojectid"]=50;
 $args["testsuiteid"]=90;
-$args["testcasename"]='AAATEST CASE NAME IS LONGER ';;
+$args["testcasename"]='ZZ - TEST CASE NAME IS LONGER ';;
 $args["summary"]='Test Case created via API';
 $args["preconditions"]='Test Link API Up & Running';
 $args["authorlogin"]='admin';
@@ -32,6 +32,7 @@ $args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expecte
 
 // $wfd = config_get('testCaseStatus');
 $args["status"] = 4;
+//$args["estimatedexecduration"] = 4.5;
 
 $unitTestDescription = "Test #{$tcCounter}- {$method} - With STATUS:{$args['wfstatus']}";
 

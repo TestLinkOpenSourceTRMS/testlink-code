@@ -3792,6 +3792,7 @@ class testcase extends tlObjectWithAttachments
                 "\t<importance><![CDATA[||IMPORTANCE||]]></importance>\n" .
                 "\t<estimated_exec_duration>||ESTIMATED_EXEC_DURATION||</estimated_exec_duration>\n" .
                 "\t<status>||STATUS||</status>\n" .
+                "\t<is_open>||ISOPEN||</is_open>\n" .
                 "||STEPS||\n" .
                 "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||{$addElemTpl}</testcase>\n";  
   
@@ -3814,6 +3815,7 @@ class testcase extends tlObjectWithAttachments
                     "||IMPORTANCE||" => "importance",
                     "||ESTIMATED_EXEC_DURATION||" => "estimated_exec_duration",
                     "||STATUS||" => "status",
+                    "||ISOPEN||" => "is_open",
                     "||STEPS||" => "xmlsteps",
                     "||KEYWORDS||" => "xmlkeywords",
                     "||CUSTOMFIELDS||" => "xmlcustomfields",

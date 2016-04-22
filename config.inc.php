@@ -1460,6 +1460,9 @@ $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_assigned_user = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->advanced_filter_mode_choice = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_inactive_out = FALSE;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_close_out = FALSE;
+
 
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLED;

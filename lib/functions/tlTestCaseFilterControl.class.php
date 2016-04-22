@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2014, TestLink community
+ * @copyright  2006-2016, TestLink community
  * @link       http://testlink.sourceforge.net/
  * 
  *
@@ -875,7 +875,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
                    '&filter_result_build=' .  $this->active_filters['filter_result_build'];
       }
 
-      // 20131226
       if( !is_null($this->active_filters['filter_bugs']))
       {
         $string .= '&' . http_build_query( array('filter_bugs' => $this->active_filters['filter_bugs']));  
@@ -1210,10 +1209,26 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     $tplan_id = $this->settings['setting_testplan']['selected'];
 
-    // when in plan mode (assigning execution), we want all builds,
-    // otherwise only those which are active and open
-    $active = ($this->mode == 'plan_mode') ? null : testplan::GET_ACTIVE_BUILD;
-    $open = ($this->mode == 'plan_mode') ? null : testplan::GET_OPEN_BUILD;
+    switch( $this->mode )
+    {
+      case 'plan_mode':
+        $active = $open = null;
+        if( $this->configuration->setting_build_inactive_out )
+        {
+          $active = testplan::GET_ACTIVE_BUILD;  
+        }  
+
+        if( $this->configuration->setting_build_close_out )
+        {
+          $open = testplan::GET_OPEN_BUILD;  
+        }  
+      break;
+
+      default:
+        $active = testplan::GET_ACTIVE_BUILD;
+        $open = testplan::GET_OPEN_BUILD;
+      break;
+    }
     
     $this->settings[$key]['items'] = $this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
     $tplan_builds = array_keys((array)$this->settings[$key]['items']);

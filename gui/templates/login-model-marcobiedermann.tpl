@@ -14,7 +14,7 @@
   <body class="align">
     <div class="site__container">
       <div class="grid__container">
-      <img src="http://localhost/development/logo/tl-logo-transparent-25.png"><br>
+      <img src="gui/themes/default/images/{$tlCfg->logo_login}"><br>
       <span style="margin-left:220px;">{$tlVersion|escape} </span>
       </div>
       

@@ -214,6 +214,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   
   public static $itsNameParamName = "itsname";
   public static $itsEnabledParamName = "itsenabled";
+  public static $copyTestersFromBuildParamName = "copytestersfrombuild";
 
   /**#@-*/
   
@@ -1523,6 +1524,9 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @param string $args["active"];
    * @param string $args["open"];
    * @param string $args["releasedate"]: YYYY-MM-DD;
+   * @param int $args["copytestersfrombuild"] OPTIONAL,
+   *        if > 0 and valid buildid tester assignments will be copied.
+   *   
    * @return mixed $resultInfo
    *         
    * @access public
@@ -1543,7 +1547,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     if($this->_checkCreateBuildRequest($messagePrefix) && 
        $this->userHasRight("testplan_create_build",self::CHECK_PUBLIC_PRIVATE_ATTR))
     {
-      $testPlanID = $this->args[self::$testPlanIDParamName];
+      $testPlanID = intval($this->args[self::$testPlanIDParamName]);
       $buildName = $this->args[self::$buildNameParamName];          
       $buildNotes = "";
       if($this->_isBuildNotePresent())
@@ -1568,7 +1572,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 
         // key 2 check with default value is parameter is missing
         $k2check = array(self::$activeParamName => 1,self::$openParamName => 1,
-                         self::$releaseDateParamName => null);
+                         self::$releaseDateParamName => null,
+                         self::$copyTestersFromBuildParamName => 0);
         foreach($k2check as $key => $value)
         {
           $opt[$key] = $this->_isParamPresent($key) ? $this->args[$key] : $value;
@@ -1581,18 +1586,35 @@ class TestlinkXMLRPCServer extends IXR_Server
         {
           if( !$this->validateDateISO8601($opt[self::$releaseDateParamName]) )
           {
-            echo 'KO';
             $opt[self::$releaseDateParamName] = null;
           }  
         }  
-        // var_dump($opt);
+
         $bm = new build_mgr($this->dbObj);
         $insertID = $bm->create($testPlanID,$buildName,$buildNotes,
                                 $opt[self::$activeParamName],
                                 $opt[self::$openParamName],
                                 $opt[self::$releaseDateParamName]);
       
+        if( $insertID > 0)
+        {
+          $sourceBuild = intval($opt[self::$copyTestersFromBuildParamName]);
 
+          if( $sourceBuild > 0 )
+          {
+            // Check if belongs to test plan, otherwise ignore in silence
+            $sql = " SELECT id FROM {$this->tables['builds']} " .
+                   " WHERE id = " . $sourceBuild .
+                   " AND testplan_id = " . $testPlanID;
+            $rs = $this->dbObj->get_recordset($sql);
+
+            if( count($rs) == 1 )
+            {
+              $taskMgr = new assignment_mgr($this->dbObj);
+              $taskMgr->copy_assignments($sourceBuild, $insertID, $this->userID);
+            }  
+          } 
+        }  
       }
       
       $resultInfo[0]["id"] = $insertID;  

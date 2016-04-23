@@ -25,9 +25,10 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
 $args["devKey"]=$devKey;
-$args["testplanid"]=72;
-$args["buildname"]='aaaTEST API BUILD';
-$args["buildnotes"]='Created via API';
+$args["testplanid"]=61;
+$args["buildname"]='Abril 230';
+$args["buildnotes"]='Created via API 3';
+$args["copytestersfrombuild"]='3';
 $additionalInfo='';
 
 $debug=true;
@@ -37,6 +38,7 @@ echo $additionalInfo;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args,$test_num);
+
 // --------------------------------------------------------
 
 // --------------------------------------------------------

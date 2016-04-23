@@ -131,6 +131,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
   public static $checkDuplicatedNameParamName = "checkduplicatedname";
   public static $contentParamName = "content";
+  public static $assignmentsSourceBuildIDParamName = "assignmentssourcebuildid";
   public static $customFieldNameParamName = "customfieldname";
   public static $customFieldsParamName = "customfields";
 
@@ -1523,6 +1524,7 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @param string $args["active"];
    * @param string $args["open"];
    * @param string $args["releasedate"]: YYYY-MM-DD;
+   * @param int $args["assignmentssourcebuildid"];
    * @return mixed $resultInfo
    *         
    * @access public
@@ -1564,11 +1566,11 @@ class TestlinkXMLRPCServer extends IXR_Server
       {
         //Build doesn't exist so create one
         // ,$active=1,$open=1);
-        // ($tplan_id,$name,$notes = '',$active=1,$open=1,$release_date='')
+        // ($tplan_id,$name,$notes = '',$active=1,$open=1,$release_date='',assignment_source_build_id='')
 
         // key 2 check with default value is parameter is missing
         $k2check = array(self::$activeParamName => 1,self::$openParamName => 1,
-                         self::$releaseDateParamName => null);
+                         self::$releaseDateParamName => null,self::$assignmentsSourceBuildIDParamName => null);
         foreach($k2check as $key => $value)
         {
           $opt[$key] = $this->_isParamPresent($key) ? $this->args[$key] : $value;
@@ -1592,7 +1594,11 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 $opt[self::$openParamName],
                                 $opt[self::$releaseDateParamName]);
       
-
+        if( !is_null($opt[self::$assignmentsSourceBuildIDParamName]) )
+        {
+          $assignment_mgr = new assignment_mgr($this->dbObj);
+          $assignment_mgr->copy_assignments($opt[self::$assignmentsSourceBuildIDParamName], $insertID);
+        }
       }
       
       $resultInfo[0]["id"] = $insertID;  

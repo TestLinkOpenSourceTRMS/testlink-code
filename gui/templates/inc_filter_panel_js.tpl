@@ -111,6 +111,21 @@ function delete_testers_from_build(id)
   parent.workframe.location = action_url;
 }
 {/if}
+
+{if $control->draw_tc_assignment_bulk_copy_button}
+/**
+ * Open page in workframe to copy all tester assignments 
+ * from a build (that user will select on GUI) onto build 
+ * (identified by id). 
+ */
+function copy_tester_assignments_from_build(destination) 
+{
+  var action_url = fRoot + 'lib/plan/buildCopyExecTaskAssignment.php' + 
+                   '?confirmed=no&build_id=' + destination;
+  parent.workframe.location = action_url;
+}
+{/if}
+
 </script>
 
 </head>

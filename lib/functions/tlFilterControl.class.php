@@ -96,6 +96,9 @@ abstract class tlFilterControl extends tlObjectWithDB
    */
   public $draw_import_xml_results_button = false;
 
+
+  public $draw_tc_assignment_bulk_copy_button = false;
+
   /**
    * will hold the localized string options (any/none/somebody/...)
    * @var array

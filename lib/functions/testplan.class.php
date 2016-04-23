@@ -1908,7 +1908,7 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my = array();
-    $my['opt'] = array('orderByDir' => null);
+    $my['opt'] = array('orderByDir' => null,'excludeBuild' => 0);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     $sql = " /* $debugMsg */ SELECT id, name " .
@@ -1918,11 +1918,17 @@ class testplan extends tlObjectWithAttachments
     {
       $sql .= " AND active=" . intval($active) . " ";
     }
+    
     if( !is_null($open) )
     {
       $sql .= " AND is_open=" . intval($open) . " ";
     }
     
+    if( $my['opt']['excludeBuild'] > 0)
+    {
+      $sql .= " AND id <> " . intval($my['opt']['excludeBuild']) . " ";      
+    }
+
     $orderClause = " ORDER BY name ASC";
     if( !is_null($my['opt']['orderByDir']) )
     {

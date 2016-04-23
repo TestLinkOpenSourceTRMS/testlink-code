@@ -28,7 +28,7 @@
                         document_id, req_expected_coverage, title,bugs_on_context,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,
                         btn_export_testplan_tree,btn_export_testplan_tree_for_results,
-                        tester_works_with_settings'}
+                        tester_works_with_settings,btn_bulk_remove,btn_bulk_copy'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -47,13 +47,6 @@
 {/if}
 
 {$platformID=0}
-{if $control->draw_tc_unassign_button}
-  <input type="button" 
-         name="removen_all_tester_assignments"
-         value="{$labels.btn_remove_all_tester_assignments}"
-         onclick="javascript:delete_testers_from_build({$control->settings.setting_build.selected});"
-  />
-{/if}
 
 {if $control->draw_bulk_update_button}
     <input type="button" value="{$labels.btn_bulk_update_to_latest_version}"
@@ -690,4 +683,20 @@
   </div> {* filters *}
   </div> {* filter_panel *}
 {/if} {* show requirement filters *}
+
+{if $control->draw_tc_unassign_button}
+  <input type="button" style="font-size: 90%;"
+         name="removen_all_tester_assignments"
+         value="{$labels.btn_bulk_remove}"
+         onclick="javascript:delete_testers_from_build({$control->settings.setting_build.selected});"
+  />
+{/if}
+{if $control->draw_tc_assignment_bulk_copy_button}
+  <input type="button" style="font-size: 90%;"
+         name="copy_tester_assignments"
+         value="{$labels.btn_bulk_copy}"
+         onclick="javascript:copy_tester_assignments_from_build({$control->settings.setting_build.selected});"
+  />
+{/if}
 </form>
+<p>

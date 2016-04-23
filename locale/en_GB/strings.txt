@@ -2252,8 +2252,8 @@ $TLS_mail_subject_link_to_assigned =
 
 // ----- gui/templates/tc_exec_unassign_all.tpl -----
 $TLS_btn_remove_all_tester_assignments = "Unassign all testers from selected Build";
-
-
+$TLS_btn_bulk_remove = "Bulk remove";
+$TLS_btn_bulk_copy = "Bulk copy";
 
 // ----- gui/templates/tc_exec_unassign_all.php -----
 $TLS_number_of_assignments_per_build = "There are %d execution assignments for Build %s";
@@ -3992,4 +3992,8 @@ $TLS_mail_subject_req_new_version = 'Requirement New Version [%docid%-%title%]';
 
 $TLS_hint_add_testcases_to_testplan_status = 'Test cases with Latest Version with status with one of these values (%s) will not be displayed in this screen';
 
+$TLS_copy_done = "Copy done";
+$TLS_copy_tester_assignments_title = "Copy Tester Assignment";
+$TLS_assignments = "Assignments:";
+$TLS_no_builds_available_for_tester_copy = "There are no ACTIVE and OPEN builds to use";
 // ----- END ------------------------------------------------------------------

@@ -367,7 +367,7 @@ $TLS_reserved_system_role_2 = 'reserved system role 2';
 $TLS_req_created_automatic_log = "Requirement Created";
 $TLS_reqspec_created_automatic_log = "Requirement Specification Created";
 
-$TLS_elapsed_seconds = 'Processing time (seconds)'; 
+$TLS_elapsed_seconds = 'Processing time (seconds)';
 
 $TLS_addLinkToTestCase = 'Add link to test case';
 $TLS_removeLinkToTestCase = 'Remove test case link';
@@ -451,10 +451,10 @@ $TLS_demo_update_user_disabled = 'Demo mode enabled => Update User DISABLED';
 $TLS_demo_update_role_disabled = 'Demo mode enabled => Update Role DISABLED';
 $TLS_demo_reset_password_disabled = 'Demo mode enabled => Password Reset DISABLED';
 $TLS_demo_special_user = "Demo mode enabled - user has been configured as special (see config.inc.php demoSpecialUsers)";
-$TLS_demo_login_message = 'This is a DEMO SITE, use it with respect.' . 
+$TLS_demo_login_message = 'This is a DEMO SITE, use it with respect.' .
                           'Site will be re-installed at randmon intervals WITHOUT warning.' .
                           'All data will be deleted at each install.' .
-                          'If you find TestLink useful think about supporting our work.'; 
+                          'If you find TestLink useful think about supporting our work.';
 $TLS_demo_mode_suggested_user='Login as admin';
 $TLS_demo_mode_suggested_password='Use admin as password';
 
@@ -674,10 +674,10 @@ $TLS_testsuite_successfully_deleted = "The Test Suite was successfully deleted";
 $TLS_no_links = "No dependent data.";
 $TLS_linked_and_executed = "Test case was added into a Test Plan and has results.";
 
-// $TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
+// $TLS_system_blocks_tsuite_delete_due_to_exec_tc =
 //  "Test suite can not be deleted, because system configuration blocks delete of executed test cases";
 
-$TLS_system_blocks_tsuite_delete_due_to_exec_tc = 
+$TLS_system_blocks_tsuite_delete_due_to_exec_tc =
 	"Test suite can not be deleted, because it contains one or more executed test cases " .
 	"and your role has no right to delete executed test cases";
 
@@ -1037,7 +1037,7 @@ $TLS_suggest_create_revision = "Do you want to create a new revision?\\n" .
                                "if you made major changes.\\n" .
                                "Click on Cancel if you want update but without\\n" .
                                "creating a new revision";
-                            
+
 $TLS_suggest_create_revision_html = "You changed ONLY the scope. " .
                                     "It is recommended to create a new revision only <br>" .
                                     "if you made major changes. In this situation please add a log message<br>" .
@@ -1045,7 +1045,7 @@ $TLS_suggest_create_revision_html = "You changed ONLY the scope. " .
                                     "creating a new revision<p><b>Log message</b>";
 
 $TLS_warning_suggest_create_revision = "Attention!! - Do you want to create a new revision?";
-                            
+
 $TLS_revision_log_title = "Revision Log";
 $TLS_please_add_revision_log = "Please add a log message";
 $TLS_commit_title = "Log message";
@@ -2247,7 +2247,7 @@ $TLS_mail_testcase_assigned = "Following Test Cases has been assigned to you %s 
 $TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments HAS BEEN REMOVED  by %s <br /><br />";
 $TLS_send_mail_to_tester = "Send mail notification to tester";
 
-$TLS_mail_subject_link_to_assigned = 
+$TLS_mail_subject_link_to_assigned =
   'TestLink - Link to test assignments summary - Test Plan: %s (%s)';
 
 // ----- gui/templates/tc_exec_unassign_all.tpl -----
@@ -2361,6 +2361,12 @@ $TLS_export_with_prefix = 'With Test Case prefix';
 
 $TLS_export_with_keywords = "Export with keywords";
 $TLS_warning_empty_filename = "Please give a file name";
+$TLS_export_steps = "Export Test Case Steps";
+$TLS_export_summary = "Export Test Case Summary";
+$TLS_export_preconditions = "Export Test Case Preconditions";
+$TLS_export_testcase_requirements = "Export Requirements";
+
+
 
 
 // ----- gui/templates/buildView.tpl -----
@@ -3458,7 +3464,7 @@ $TLS_API_ATTACH_FEATURE_DISABLED = 'Attachment feature is disabled';
 $TLS_API_ATTACH_INVALID_FK = "Invalid Foreign Key ID[%s] Table[%s]";
 $TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_NAME [%s] CONTENT_SIZE [%s]";
 
-$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES = "There are no custom fields usable at design time linked" . 
+$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES = "There are no custom fields usable at design time linked" .
                                                   " to test cases on this test project ";
 
 
@@ -3478,7 +3484,7 @@ $TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "Test Project Source Name: %
 $TLS_API_TPROJECT_PREFIX_DOESNOT_EXIST = "There is NO Test Project with Prefix (%s)";
 
 $TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES =
-  "There are no custom fields usable at design time linked" . 
+  "There are no custom fields usable at design time linked" .
   " to test suites on this test project ";
 
 $TLS_API_INVALID_TIMESTAMP = "Timestamp provided (%s) is invalid";
@@ -3537,7 +3543,7 @@ $TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from T
 $TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the Test Case '{%1}'";
 
 $TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
-$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted " . 
+$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted " .
                   "from execution with id: {%2} of Test Case: {%3} " .
                   "from Test Project: {%4} - Test Plan: {%5} - " .
                   "Platform: {%6} - Build: {%7}";
@@ -3707,7 +3713,7 @@ $TLS_use_html_code_comp = "HTML Code Compare";
 
 $TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%s) of testcase %s";
 $TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";
-$TLS_diff_details_req = "Differences between version %s revision %s (v%s r%s) and " . 
+$TLS_diff_details_req = "Differences between version %s revision %s (v%s r%s) and " .
                         "version %s revision %s (v%s r%s) of requirement %s";
 
 $TLS_diff_details_rev = "Differences between revision %s (r%s) and revision %s (r%s)";
@@ -3792,7 +3798,7 @@ $TLS_cant_link_to_tplan_feedback = "Test Case with external id %s version %s can
 $TLS_tcversion_status_forbidden = "Status %s is not allowed.";
 
 
-                                                                                                        
+
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Export Execution Set';
 
@@ -3808,7 +3814,7 @@ $TLS_print_requirement_specification = 'Print Requirement Specification: %s';
 // ----- lib/functions/remote_exec.php
 $TLS_remoteExecServerConfigProblems = 'Remote execution can not be launched due to missing configuration.\n' .
                     'Please check if the required Custom Fields are defined and assigned ' .
-                    'to this test project'; 
+                    'to this test project';
 
 $TLS_remoteExecServerConnectionFailure = 'Remote execution connection failure - check your config';
 
@@ -3829,7 +3835,7 @@ $TLS_issue_status_held = "Held";
 
 
 // this definition has to be placed AFTER $TLS_title_metrics_x_build
-$TLS_buildMetricsFeedback = $TLS_title_metrics_x_build . 
+$TLS_buildMetricsFeedback = $TLS_title_metrics_x_build .
               ' percentages are computed using only test cases that have tester assignment on build';
 
 // execHistory.php
@@ -3916,16 +3922,16 @@ $TLS_testCaseStatus_reviewInProgress = 'Review in progress';
 $TLS_testCaseStatus_rework = 'Rework';
 $TLS_testCaseStatus_obsolete = 'Obsolete';
 $TLS_testCaseStatus_future = 'Future';
-$TLS_testCaseStatus_final = 'Final';		
+$TLS_testCaseStatus_final = 'Final';
 
 // printDocument.php
-$TLS_report_test_plan_design = 'Test Plan Design Report';	
-$TLS_report_test_plan_execution = 'Test Plan Execution Report';	
-$TLS_report_test_plan_execution_on_build = 'Test Plan Execution Report (on specific build)';	
+$TLS_report_test_plan_design = 'Test Plan Design Report';
+$TLS_report_test_plan_execution = 'Test Plan Execution Report';
+$TLS_report_test_plan_execution_on_build = 'Test Plan Execution Report (on specific build)';
 $TLS_only_test_cases_wta = '(only test cases with tester assignment)';
 $TLS_onlywithuser = 'Use only test cases with tester assigned to';
 
-$TLS_execution_time_metrics = 'Execution time metrics';	
+$TLS_execution_time_metrics = 'Execution time metrics';
 $TLS_gen_test_plan_design_report = 'Generate Test Plan Design Report';
 $TLS_right_pane_test_plan_tree = "Click to display Test Plan Tree (on right pane)";
 $TLS_display_tsuite_contents = "Click to display Test Suite Contents (on right pane)";

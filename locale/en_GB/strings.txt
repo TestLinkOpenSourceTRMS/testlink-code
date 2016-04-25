@@ -2769,6 +2769,7 @@ $TLS_text_counter_feedback = "You may enter up to %d characters. Left ";
 $TLS_create_a_build = "Create a new build";
 $TLS_no_build_warning_part1 = "There has to be at least one active and open Build for this Test Plan.";
 $TLS_no_build_warning_part2 = "Please create it first or ask your administrator.";
+$TLS_no_good_build = "At least one Build %s is needed for this Test Plan";
 
 
 // ----- lib/general/myTPInfo.php -----

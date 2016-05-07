@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.63.2.2 2010/12/11 17:25:21 franciscom Exp $
+-- testlink_create_tables.sql
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -806,7 +806,7 @@ CREATE TABLE /*prefix*/req_monitor (
   req_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
   user_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
   testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
-  PRIMARY KEY (req_id,user_id)
+  PRIMARY KEY (req_id,user_id,testproject_id)
 );
 
 --

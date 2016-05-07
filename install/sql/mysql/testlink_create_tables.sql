@@ -712,5 +712,5 @@ CREATE TABLE /*prefix*/req_monitor (
   `req_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `testproject_id` int(11) NOT NULL,
-  PRIMARY KEY (`req_id`,`user_id`)
+  PRIMARY KEY (`req_id`,`user_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8;

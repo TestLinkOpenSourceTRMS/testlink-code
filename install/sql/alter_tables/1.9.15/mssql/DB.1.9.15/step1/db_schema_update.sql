@@ -33,3 +33,13 @@ ALTER TABLE /*prefix*/cfield_testprojects ADD monitorable INT NOT NULL default '
 ALTER TABLE /*prefix*/users ALTER COLUMN "login" VARCHAR(100);
 ALTER TABLE /*prefix*/users ALTER COLUMN "first" VARCHAR(50);
 ALTER TABLE /*prefix*/users ALTER COLUMN "last" VARCHAR(50);
+
+CREATE TABLE /*prefix*/req_monitor (
+  req_id INT NOT NULL DEFAULT '0',
+  user_id  INT NOT NULL DEFAULT '0',
+  testproject_id INT NOT NULL DEFAULT '0',
+  CONSTRAINT /*prefix*/PK_req_monitor PRIMARY KEY  CLUSTERED 
+  (
+    req_id,user_id,testproject_id
+  )  ON [PRIMARY]
+) ON [PRIMARY];

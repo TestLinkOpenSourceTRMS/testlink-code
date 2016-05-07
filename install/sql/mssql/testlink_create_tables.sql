@@ -1002,3 +1002,14 @@ CREATE TABLE /*prefix*/testcase_relations (
     id
   )  ON [PRIMARY]
 ) ON [PRIMARY];
+
+--- 
+CREATE TABLE /*prefix*/req_monitor (
+  req_id INT NOT NULL DEFAULT '0',
+  user_id  INT NOT NULL DEFAULT '0',
+  testproject_id INT NOT NULL DEFAULT '0',
+  CONSTRAINT /*prefix*/PK_req_monitor PRIMARY KEY  CLUSTERED 
+  (
+    req_id,user_id,testproject_id
+  )  ON [PRIMARY]
+) ON [PRIMARY];

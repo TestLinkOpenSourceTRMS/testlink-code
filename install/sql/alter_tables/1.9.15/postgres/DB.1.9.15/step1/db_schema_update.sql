@@ -14,3 +14,10 @@ ALTER TABLE /*prefix*/cfield_testprojects ADD COLUMN "monitorable" INT2 NOT NULL
 ALTER TABLE /*prefix*/users ALTER COLUMN "login" VARCHAR(100);
 ALTER TABLE /*prefix*/users ALTER COLUMN "first" VARCHAR(50);
 ALTER TABLE /*prefix*/users ALTER COLUMN "last" VARCHAR(50);
+
+CREATE TABLE /*prefix*/req_monitor (
+  req_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
+  user_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  PRIMARY KEY (req_id,user_id,testproject_id)
+);

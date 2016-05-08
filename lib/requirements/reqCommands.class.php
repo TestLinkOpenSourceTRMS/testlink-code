@@ -257,6 +257,7 @@ class reqCommands
     $oldData = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
     $oldCFields = $this->reqMgr->get_linked_cfields(null,$argsObj->req_version_id,$argsObj->tproject_id);
     
+   
     $cf_map = $this->reqMgr->get_linked_cfields(null,null,$argsObj->tproject_id);
     $newCFields = $this->reqMgr->cfield_mgr->_build_cfield($request,$cf_map);
  
@@ -286,7 +287,6 @@ class reqCommands
       // Need to preserve Custom Fields values filled in by user
       $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, null, $request);
       
-
     }
     else if( $diff['nochange'] || ( ($createRev = $diff['force'] && !$obj->prompt_for_log) || $argsObj->do_save ) )
     {
@@ -344,9 +344,6 @@ class reqCommands
     $req = current($reqVersionSet);
     
     $this->reqMgr->setNotifyOn(array('delete'=> true) );
-    \Kint::dump($this->reqMgr->getNotifyOn());
-    //die();
-
     $this->reqMgr->delete($argsObj->req_id,requirement_mgr::ALL_VERSIONS,$argsObj->user_id);
 
     logAuditEvent(TLS("audit_requirement_deleted",$req['req_doc_id']),"DELETE",$argsObj->req_id,"requirements");

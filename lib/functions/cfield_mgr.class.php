@@ -5,13 +5,13 @@
  *
  * @package 	  TestLink
  * @author 		  franciscom
- * @copyright 	2005-2015, TestLink community
+ * @copyright 	2005-2016, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reused from the Mantis project) 
  * @filesource  cfield_mgr.class.php
  * @link 		    http://testlink.sourceforge.net
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
 **/
 
@@ -196,8 +196,9 @@ class cfield_mgr extends tlObject
     var $max_length_possible_values;
 
     var $decode;
-    
-    
+    var $html_date_input_suffix = array('input' => true,'hour' => true,
+                                        'minute' => true,'second' => true);
+
 	/**
 	 * Class constructor
 	 * 
@@ -1827,9 +1828,6 @@ function name_is_unique($id,$name)
 	  $date_format = str_replace('%', '', $localesDateFormat[$locale]);
   	
     // carved in the stone
-    $html_date_input_suffix = array('input' => true,'hour' => true,
-                                    'minute' => true,'second' => true);
-
     $cf_prefix=$this->name_prefix;
     $len_cfp = tlStringLen($cf_prefix);
     $cftype_pos=2;
@@ -1858,10 +1856,14 @@ function name_is_unique($id,$name)
           // 
           // When using Custom Fields on Test Spec:
           // key has this format (for every type except date )
-          // custom_field_0_10 for every type except for type date.
+          // custom_field_0_10 for every type except for type date & datetime.
           //
           // For date custom fields:
-          // custom_field_8_10_day, custom_field_8_10_month, custom_field_8_10_year
+          // custom_field_8_10_input
+          //
+          // For datetime custom fields
+          // custom_field_8_10_input
+          // custom_field_8_10_hour, custom_field_8_10_minute, ..._second
           //
           // After explode()
           // Position 2: CF type
@@ -1879,7 +1881,7 @@ function name_is_unique($id,$name)
           $dummy=explode('_',$key);
           $last_idx=count($dummy)-1;
           $the_value=$value;
-          if( isset($html_date_input_suffix[$dummy[$last_idx]]) )
+          if( isset($this->html_date_input_suffix[$dummy[$last_idx]]) )
           {
             $the_value=array();
             if( isset($cfield[$dummy[$cfid_pos]]) )
@@ -1923,19 +1925,18 @@ function name_is_unique($id,$name)
             }
             else
             {
-				$parsed_value = split_localized_date($value['input'], $date_format);
-				if($parsed_value != null) {
-					$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
-					$cfield[$field_id]['cf_value'] = $parsed_value;
-				} else {
-					$cfield[$field_id]['cf_value']='';
-				}
-			}
+      				$parsed_value = split_localized_date($value['input'], $date_format);
+      				if($parsed_value != null) {
+      					$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
+      					$cfield[$field_id]['cf_value'] = $parsed_value;
+      				} else {
+      					$cfield[$field_id]['cf_value']='';
+      				}
+      			}
           break;
           
           case 'datetime':
-          	
-			if ($value['input'] == '') {
+      			if ($value['input'] == '') {
               $cfield[$field_id]['cf_value']='';
             }
             else
@@ -2663,7 +2664,7 @@ function getByLinkID($linkID, $options=null)
  */
 function buildHTMLInputName($cf,$name_suffix)
 {
-	return "{$this->name_prefix}{$cf['type']}_{$cf['id']}{$name_suffix}";
+  return "{$this->name_prefix}{$cf['type']}_{$cf['id']}{$name_suffix}";
 }
 
 
@@ -2684,6 +2685,7 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=
   {
     $lbl_upd = lang_get('update_hint');
 		$cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
+   
     $NO_WARNING_IF_MISSING=true;
     $openTag = $my['opt']['addTable'] ? "<table>" : '';
     $closeTag = $my['opt']['addTable'] ? "</table>" : '';
@@ -2735,16 +2737,37 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=
 
 /**
  * 
- *
+ * @used-by html_inputs(), html_table_inputs()
  */
 function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 {
  	if( !is_null($input_values) )
-    {
+  {
+    $dateFormatDomain = config_get('locales_date_format');
+  
+    // It will be better remove this coupling
+    $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+    $date_format = str_replace('%', '', $dateFormatDomain[$locale]);
+
 		foreach($cf_map as &$cf_info)
 		{
-			$value=null;
-			$cf_info['html_input_name'] = $this->buildHTMLInputName($cf_info,$name_suffix);
+			$value = null;
+      $dtinname = null;
+      $verbose_type = trim($this->custom_field_types[$cf_info['type']]);
+      $cf_info['html_input_name'] = $this->buildHTMLInputName($cf_info,$name_suffix);
+
+      switch($verbose_type)
+      {
+        case 'date':
+          $cf_info['html_input_name'] .= '_input';
+        break;
+
+        case 'datetime':
+          $dtinname = $cf_info['html_input_name'];
+          $cf_info['html_input_name'] .= '_input';
+        break;
+      }
+			
 			if (isset($input_values[$cf_info['html_input_name']])) 
 			{
 				$value = $input_values[$cf_info['html_input_name']];
@@ -2753,40 +2776,59 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 			{
 				$value = $cf_info['value'];
 			}
-			$verbose_type = trim($this->custom_field_types[$cf_info['type']]);
-			if ($verbose_type == 'date') 
+	
+      switch($verbose_type)
 			{
-			    // if cf is a date field, convert the three given values to unixtime format
-				$kd = array();
-				$kd['day'] = array('input' => $cf_info['html_input_name'] . '_day', 'value' => -1);
-				$kd['month'] = array('input' => $cf_info['html_input_name'] . '_month', 'value' => -1);
-				$kd['year'] = array('input' => $cf_info['html_input_name'] . '_year', 'value' => -1);
-				
-				$doIt = true;
-				foreach($kd as &$date_part)
-				{
-					if( !isset($input_values[$date_part['input']]) )
-					{
-						$doIt = false;
-						break;
-					}
-					$date_part['value'] = $input_values[$date_part['input']];
-		
-				}
-			    if ($doIt)
-			    {
-			     	$value = mktime(0, 0, 0, $kd['month']['value'],$kd['day']['value'], $kd['year']['value']);
-			    }
-			}
+        case 'date':
+          if ( ($value != 0) && ($value != '') )
+          {
+            $parsed = split_localized_date($value, $date_format);
+            if($parsed != null) 
+            {
+              $value = mktime(0,0,0,$parsed['month'],$parsed['day'],$parsed['year']);
+            } 
+            else 
+            {
+              $value = '';
+            }
+          }
+        break;
+    
+        case 'datetime':
+          if ( ($value != 0) && ($value != '') )
+          {
+            $parsed = split_localized_date($value, $date_format);
+            if($parsed != null) 
+            {
+              $vtime['hour'] = $input_values[$dtinname . '_hour'];
+              $vtime['minute'] = $input_values[$dtinname . '_minute'];
+              $vtime['second'] = $input_values[$dtinname . '_second'];
+
+              if($vtime['hour'] == -1 || $vtime['minute'] == -1 || 
+                 $vtime['second'] == -1) 
+              {
+                $vtime['hour'] = $vtime['minute'] = $vtime['second'] = 0;
+              }
+              $value = mktime($vtime['hour'], $vtime['minute'],$vtime['second'],
+                              $parsed['month'],$parsed['day'],$parsed['year']);
+            } 
+            else 
+            {
+              $value = '';
+            }
+          }
+        break;
+     	}
 			
-			if (!is_null($value) && is_array($value)){
-			    $value = implode("|", $value);
+			if (!is_null($value) && is_array($value))
+      {
+			  $value = implode("|", $value);
 			}
 			
 			$cf_info['value'] = $value;
 		}
-    }
-    return $cf_map;
+  }
+  return $cf_map;
 }
 
 

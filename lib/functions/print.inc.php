@@ -1711,7 +1711,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
     $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10 * $indentLevel).'px;">' .
                            '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . 
                            $name . "</a></p></b>\n";
-    $code .= "<a name='". prefixToHTMLID($context['prefix']) . "'></a>\n";
+    $code .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
   
   }
 

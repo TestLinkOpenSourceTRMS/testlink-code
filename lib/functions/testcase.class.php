@@ -256,7 +256,7 @@ class testcase extends tlObjectWithAttachments
 
     $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
                             'action_on_duplicate_name' => 'generate_new',
-                            'estimatedExecDuration' => null,'status' => null,
+                            'estimatedExecDuration' => null,'status' => null,'active' => null,'is_open' => null,
                             'importLogic' => null);
 
     $my['options'] = array_merge($my['options'], (array)$options);
@@ -301,6 +301,8 @@ class testcase extends tlObjectWithAttachments
       $ix->executionType = $execution_type;
       $ix->importance = $importance;
       $ix->status = $my['options']['status'];
+	  $ix->active = $my['options']['active'];
+	  $ix->is_open = $my['options']['is_open'];
       $ix->estimatedExecDuration = $my['options']['estimatedExecDuration'];
 
 
@@ -646,7 +648,13 @@ class testcase extends tlObjectWithAttachments
       }
     }
 
-    if( property_exists($item,'is_open') && !is_null($item->is_open) )
+    if( property_exists($item,'active') && !is_null($item->active) )    
+    {
+      $v = intval($item->active) > 0 ? 1 : 0;
+      $sql .= ", active";
+      $sqlValues .= "," . $v;
+    }
+	if( property_exists($item,'is_open') && !is_null($item->is_open) )
     {
       $v = intval($item->is_open) > 0 ? 1 : 0;
       $sql .= ", is_open";
@@ -1031,7 +1039,7 @@ class testcase extends tlObjectWithAttachments
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
 
-    $attrib = array('status' => null, 'estimatedExecDuration' => null);
+    $attrib = array('status' => null, 'is_open' => null, 'active' => null, 'estimatedExecDuration' => null);
     $attrib = array_merge($attrib,(array)$attr);
 
 
@@ -1095,6 +1103,15 @@ class testcase extends tlObjectWithAttachments
         $dummy .= ", status=" . intval($attrib['status']);
       }
 
+	  if( !is_null($attrib['is_open']) )    
+      {
+        $dummy .= ", is_open=" . intval($attrib['is_open']); 
+      }
+	  
+	  if( !is_null($attrib['active']) )    
+      {
+        $dummy .= ", active=" . intval($attrib['active']); 
+      }
       if( !is_null($attrib['estimatedExecDuration']) )
       {
         $dummy .= ", estimated_exec_duration=";

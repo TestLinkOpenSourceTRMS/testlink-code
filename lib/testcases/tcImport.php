@@ -293,6 +293,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       $attr['estimatedExecDuration'] = $attr['estimatedExecDuration']=='' ? null : floatval($attr['estimatedExecDuration']);
     }  
 
+    if(isset($tc['is_open']))
+    {
+      $attr['is_open'] = trim($tc['is_open']);
+    }  
+	
+	if(isset($tc['active']))
+    {
+      $attr['active'] = trim($tc['active']);
+    }  
+	
     if(isset($tc['status']))
     {
       $attr['status'] = trim($tc['status']);
@@ -769,7 +779,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
   // TICKET 4963: Test case / Tes suite XML format, new element to set author
   $tcXML['elements'] = array('string' => array("summary" => null,"preconditions" => null,
                                                "author_login" => null,"estimated_exec_duration" => null),
-                             'integer' => array("node_order" => null,"externalid" => null,"status" => null,
+                             'integer' => array("node_order" => null,"externalid" => null,"is_open" => null,"active" => null,"status" => null,
                                                 "execution_type" => null ,"importance" => null));
   $tcXML['attributes'] = array('string' => array("name" => 'trim'), 
                                'integer' =>array('internalid' => null));

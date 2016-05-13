@@ -126,7 +126,7 @@
 	    
 	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}
 	    	<br />
-       	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
+       	<a href="lib/plan/buildView.php?tplan_id={$gui->testplanID}">{$labels.href_build_new}</a>
       {/if}
 	    
       {if $gui->grants.testplan_milestone_overview == "yes" and $gui->countPlans > 0}

@@ -1421,3 +1421,28 @@ function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
   }
 }
 
+/*
+  function: getWebEditorCfg
+
+  args:-
+
+  returns:
+
+*/
+function getWebEditorCfg($feature='all')
+{
+  $cfg = config_get('gui');
+  $defaultCfg = $cfg->text_editor['all'];
+  $webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
+  
+  foreach($defaultCfg as $key => $value)
+  {
+    if(!isset($webEditorCfg[$key]))
+    {
+      $webEditorCfg[$key] = $defaultCfg[$key];
+    }   
+  } 
+  return $webEditorCfg;
+}
+
+

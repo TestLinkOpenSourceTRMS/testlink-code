@@ -156,7 +156,8 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   
   
   $my['options'] = array('order_by' => " ORDER BY REQV.version DESC ", 
-                         'output_format' => 'array', 'renderImageInline' => false);
+                         'output_format' => 'array', 'renderImageInline' => false,
+                         'decodeUsers' => true, 'outputLevel' => 'std');
 
   $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -210,7 +211,8 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
 
    // added -1 AS revision_id to make some process easier 
-  $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+  /*
+  $sql = " SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
          " REQV.scope,REQV.status,REQV.type,REQV.active," . 
          " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
          " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
@@ -224,9 +226,36 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
          " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
          " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
          $where_clause . $filter_clause . $my['options']['order_by'];
+    */
 
+  switch($my['options']['outputLevel'])
+  {
+    case 'minimal':
+      $outf = " /* $debugMsg */ SELECT REQ.id,REQ.req_doc_id,NH_REQ.name AS title "; 
+    break;
 
-  // echo $sql;
+    case 'std':
+    default:
+      $outf = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+              " REQV.scope,REQV.status,REQV.type,REQV.active," . 
+              " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+              " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+              " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
+              " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+              " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
+    break;
+  }
+
+  // added -1 AS revision_id to make some process easier 
+  $sql = $outf .
+         " FROM {$this->object_table} REQ " .
+         " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+         " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id ".
+         " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
+         " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+         " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+         $where_clause . $filter_clause . $my['options']['order_by'];
+
   $decodeUserMode = 'simple';       
   if ($version_id != self::LATEST_VERSION)
   {
@@ -265,11 +294,6 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
 
   $rs = null;
-  // echo 'IN::' . __FUNCTION__ . '<br>';
-  // new dBug($recordset);
-
-
-  // 20141130 - inline images 
   if(!is_null($recordset) && $my['options']['renderImageInline'])
   {
     $k2l = array_keys($recordset);
@@ -280,12 +304,9 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     reset($recordset);
   }
 
-
-  if(!is_null($recordset))
+  $rs = $recordset;
+  if(!is_null($recordset) && $my['options']['decodeUsers'])
   {
-    // Decode users
-    $rs = $recordset;
-
     switch ($decodeUserMode) 
     {
       case 'complex':
@@ -4172,9 +4193,15 @@ function getCoverageCounterSet($itemSet)
   /**
    *
    */
-  function getMonitoredByUser($user_id,$tproject_id)
+  function getMonitoredByUser($user_id,$tproject_id,$opt=null,$filters=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $my['opt'] = array('reqSpecID' => null);
+    $my['filters'] = array();
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+    $my['filters'] = array_merge($my['opt'],(array)$filters);
 
     // simple checks
     $safe = array();
@@ -4190,18 +4217,36 @@ function getCoverageCounterSet($itemSet)
     }  
     
     $rs = null;
-    try
+
+    if( is_null($my['opt']['reqSpecID']) )
     {
       $sql = "/* $debugMsg */ " .
-             " SELECT * FROM {$this->tables['req_monitor']} " .
-             " WHERE user_id = {$safe['user_id']} " .
-             " AND testproject_id = {$safe['tproject_id']}";
+             " SELECT RQM.* FROM {$this->tables['req_monitor']} RQM " .
+             " WHERE RQM.user_id = {$safe['user_id']} " .
+             " AND RQM.testproject_id = {$safe['tproject_id']}";
+    }
+    else
+    {
+      $sql = "/* $debugMsg */ " .
+             " SELECT RQM.* FROM {$this->tables['req_monitor']} RQM " .
+             " JOIN {$this->tables['nodes_hierarchy']} NH_REQ " .
+             " ON NH_REQ.id = RQM.req_id " .
+             " WHERE RQM.user_id = {$safe['user_id']} " .
+             " AND RQM.testproject_id = {$safe['tproject_id']} " .
+             " AND NH_REQ.parent_id = " . intval($my['opt']['reqSpecID']);
+    } 
+
+    try
+    {
       $rs = $this->db->fetchRowsIntoMap($sql,'req_id');      
     }
     catch (Exception $e)
     {
       echo $e->getMessage();
     }
+ 
+
+
 
     return $rs;
   }
@@ -4216,8 +4261,6 @@ function getCoverageCounterSet($itemSet)
 
     $options = array('tproject_id' => 0, 'output' => 'map');
     $options = array_merge($options,(array)$opt);
-
-    //\Kint::dump($options);
 
     // simple checks
     $safe = array();
@@ -4265,8 +4308,6 @@ function getCoverageCounterSet($itemSet)
 
     // who is monitoring?
     $iuSet = $this->getReqMonitors($safe['req_id']);
-    // \Kint::dump($iuSet);
-        
     if( is_null($iuSet) )
     {
       return;
@@ -4277,8 +4318,6 @@ function getCoverageCounterSet($itemSet)
       $user = new tlUser($this->db);
     }  
 
-    //\Kint::dump($iuSet);
-    //die();
     $author = $user->getNames($this->db,$user_id);
     $author = $author[$user_id];
     $idCard = $author['login'] . 
@@ -4315,8 +4354,6 @@ function getCoverageCounterSet($itemSet)
     $subj['target'] = array_keys($trf);
     $subj['values'] = array_values($trf);
 
-
-    // \Kint::dump($iuSet);
     foreach($iuSet as $ue)
     {
       if( !isset($mailBodyCache[$ue['locale']]) )

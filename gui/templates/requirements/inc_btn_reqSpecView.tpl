@@ -9,7 +9,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              req_select_create_tc,btn_import_req_spec,btn_import_reqs,
              btn_export_reqs,btn_edit_spec,btn_delete_spec,btn_print_view,
              btn_show_direct_link,btn_copy_requirements,btn_copy_req_spec,
-             req_spec_operations, req_operations, btn_freeze_req_spec,btn_new_revision,btn_view_history'}
+             req_spec_operations, req_operations, btn_freeze_req_spec,btn_new_revision,btn_view_history,btn_bulk_mon'}
              
 {$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -91,11 +91,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                onclick="location='{$req_create_from_issue_xml_url}'" />
 
         {if $gui->requirements_count > 0}
-                <input type="button" name="create_tcases" value="{$labels.req_select_create_tc}"
-                       onclick="location='{$req_create_tc_url}'" />
+          <input type="button" name="create_tcases" 
+                 value="{$labels.req_select_create_tc}" onclick="location='{$req_create_tc_url}'" />
         
-                <input type="button" name="copy_req" value="{$labels.btn_copy_requirements}"
-                       onclick="location='{$req_spec_copy_req_url}'" />
+          <input type="button" name="copy_req" value="{$labels.btn_copy_requirements}"
+                 onclick="location='{$req_spec_copy_req_url}'" />
+
+          <input type="button" name="bulk_mon" value="{$labels.btn_bulk_mon}"
+                 onclick="location='{$req_spec_bulk_req_mon_url}'" />
+ 
         {/if}    
       {/if}
 

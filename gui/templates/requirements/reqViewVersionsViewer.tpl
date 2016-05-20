@@ -167,7 +167,7 @@ viewer for requirement
   <tr>
     <td>
       <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.scope}</legend>
-      {$args_req.scope}
+	  {if $gui->reqEditorType == 'none'}{$args_req.scope|nl2br}{else}{$args_req.scope}{/if}
       </fieldset>
     </td>
   </tr>

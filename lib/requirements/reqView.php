@@ -132,7 +132,9 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   $gui->fileUploadMsg = '';
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
 
-
+  $cfg->reqCfg = getWebEditorCfg('requirement');
+  $gui->reqEditorType = $cfg->reqCfg['type'];
+  
   $gui->log_target = null;
   $loop2do = count($gui->req_versions);
   for($rqx = 0; $rqx < $loop2do; $rqx++)

@@ -99,7 +99,9 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->delAttachmentURL = $_SESSION['basehref'] . $req_spec_mgr->getDeleteAttachmentRelativeURL($gui->req_spec_id);
   $gui->fileUploadMsg = '';
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
-
+  
+  $cfg->reqSpecCfg = getWebEditorCfg('requirement_spec');
+  $gui->reqSpecEditorType = $cfg->reqSpecCfg['type'];
 
   $gui->btn_import_req_spec = '';
   $gui->reqMgrSystemEnabled = 0;

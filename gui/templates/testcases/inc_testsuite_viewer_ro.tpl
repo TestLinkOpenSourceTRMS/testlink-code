@@ -13,7 +13,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 		<td colspan="2">
 			<fieldset class="x-fieldset x-form-label-left">
 			<legend class="legend_container">{$labels.details}</legend>
-			{$gui->container_data.details}
+			{if $gui->testDesignEditorType == 'none'}{$gui->container_data.details|nl2br}{else}{$gui->container_data.details}{/if}
+			
 			</fieldset>
 		</td>
 	</tr>

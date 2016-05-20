@@ -108,9 +108,7 @@ $(document).ready(function() {
              {/if}  
           </a>
       </td>
-      <td>
-        {$testplan.notes}
-      </td>
+	  <td>{if $gui->editorType == 'none'}{$testplan.notes|nl2br}{else}{$testplan.notes}{/if}</td>
       <td align="right" style="width:8%;">
         {$testplan.tcase_qty}
       </td>

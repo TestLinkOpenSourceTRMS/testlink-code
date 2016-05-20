@@ -25,7 +25,9 @@ $gui->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
 
 $gui->canManage = $args->currentUser->hasRight($db,"platform_management");
 $gui->user_feedback = null;
-
+$cfg = getWebEditorCfg('platform');
+$gui->editorType = $cfg['type'];
+	  
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

@@ -144,7 +144,7 @@ function jsCallDeleteFile(btn, text, o_id)
       <th>{$labels.th_notes}</th>
     </tr>
     <tr>
-      <td>{$gui->container_data.notes}</td>
+      <td>{if $gui->testProjectEditorType == 'none'}{$gui->container_data.notes|nl2br}{else}{$gui->container_data.notes}{/if}</td>
     </tr>
   </table>
 

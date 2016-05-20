@@ -43,7 +43,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <td>&nbsp;</td>
     <td colspan="2" {if $edit_enabled} style="cursor:pointer;"
         onclick="launchEditStep({$step_info.id})"{/if}
-        style="padding: 0.5em">{$step_info.actions}</td>
+        style="padding: 0.5em">{if $gui->stepDesignEditorType  == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}</td>
     {if $edit_enabled}
     <td class="clickable_icon">
       <img style="border:none;cursor: pointer;"
@@ -67,6 +67,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <tr {if $edit_enabled} style="cursor:pointer;"
       onclick="launchEditStep({$step_info.id})"{/if}>
       <td>&nbsp;</td>
-    <td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em">{$step_info.expected_results}</td>
+    <td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em">{if $gui->stepDesignEditorType  == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>
   </tr>
   {/foreach}

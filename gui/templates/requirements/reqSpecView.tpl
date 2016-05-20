@@ -192,7 +192,7 @@ var pF_freeze_req_spec = freeze_req_spec;
   <tr>
     <td>
       <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.scope}</legend>
-      {$gui->req_spec.scope}
+	  {if $gui->reqSpecEditorType == 'none'}{$gui->req_spec.scope|nl2br}{else}{$gui->req_spec.scope}{/if}
       </fieldset>
     </td>
   </tr>

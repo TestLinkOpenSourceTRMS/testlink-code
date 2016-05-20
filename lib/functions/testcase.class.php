@@ -859,6 +859,10 @@ class testcase extends tlObjectWithAttachments
     $gui->tcase_id = $idCard->tcase_id;
     $gui->tcversion_id = $idCard->tcversion_id;
     $gui->allowStepAttachments = false;
+	$designEditorCfg = getWebEditorCfg('design');
+    $gui->designEditorType = $designEditorCfg['type'];
+	$stepDesignEditorCfg = getWebEditorCfg('steps_design');
+    $gui->stepDesignEditorType = $stepDesignEditorCfg['type'];
 
     $userIDSet = array();
     if($status_ok)

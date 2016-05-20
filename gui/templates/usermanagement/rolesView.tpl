@@ -84,9 +84,7 @@ Purpose: smarty template - View defined roles
                         {/if}
                     </a>
                 </td>
-                <td>
-                    {$role->description|strip_tags|strip}
-                </td>
+				<td>{if $gui->editorType == 'none'}{$role->description|nl2br}{else}{$role->description|strip_tags|strip}{/if}</td>
                 <td>
                     {if $role->dbID > $smarty.const.TL_LAST_SYSTEM_ROLE}
                        <img style="border:none;cursor: pointer;" title="{$labels.alt_delete_role}"

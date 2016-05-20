@@ -120,7 +120,7 @@ $(document).ready(function() {
            </a>
       </td>
       <td>
-        {$testproject.notes}
+        <td>{if $gui->editorType == 'none'}{$testproject.notes|nl2br}{else}{$testproject.notes}{/if}</td>
       </td>
       <td width="10%">
         {$testproject.prefix|escape}

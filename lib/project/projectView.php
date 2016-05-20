@@ -127,6 +127,9 @@ function initializeGui(&$dbHandler,&$argsObj)
                'add_reqmgrsystem' => true);
   $guiObj->tprojects = $tproject_mgr->get_accessible_for_user($argsObj->userID,$opt,$filters);
   $guiObj->pageTitle = lang_get('title_testproject_management');
+  
+  $cfg = getWebEditorCfg('testproject');
+  $guiObj->editorType = $cfg['type'];
 
   $guiObj->itemQty = count($guiObj->tprojects);
 

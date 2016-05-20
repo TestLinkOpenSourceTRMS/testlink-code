@@ -829,6 +829,9 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
   {
     $gui->moddedItem = $this->get_by_id(intval($modded_item_id));
   }
+  $cfg = getWebEditorCfg('testproject');
+  $gui->testProjectEditorType = $cfg['type'];
+  
   $smarty->assign('gui', $gui);  
   $smarty->display($template_dir . 'containerView.tpl');
 }

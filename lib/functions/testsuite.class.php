@@ -492,7 +492,8 @@ class testsuite extends tlObjectWithAttachments
     $gui->id = $id;
     $gui->page_title = lang_get('testsuite');
     $gui->level = $gui->containerType = 'testsuite';
-    
+    $cfg = getWebEditorCfg('design');
+    $gui->testDesignEditorType = $cfg['type'];
     $smarty->assign('gui',$gui);
     $smarty->display($template_dir . 'containerView.tpl');
   }

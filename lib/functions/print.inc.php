@@ -1080,15 +1080,17 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     {
       $getByID['tcversion_id'] = null;
       $getByID['filters'] = array('version_number' => $exec_info[0]['tcversion_number']);
+      $tbuild_id = $exec_info[0]['build_id'];
       if( isset($options['build_cfields']) && $options['build_cfields'] )
       {
-        if( !isset($buildCfields[$exec_info[0]['build_id']]) )
+        if( !isset($buildCfields[$tbuild_id]) )
         {
-          $buildCfields[$exec_info[0]['build_id']] = 
-            $build_mgr->html_table_of_custom_field_values($exec_info[0]['build_id'],$tprojectID);
+          $buildCfields[$tbuild_id] = 
+            $build_mgr->html_table_of_custom_field_values($tbuild_id,$tprojectID);
         }
-      }  
+      }
     }  
+  
   }
  
  $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
@@ -1138,7 +1140,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . 
            htmlspecialchars($external_id) . ": " . $name;
 
-  // add test case version 
+  // add test case version
   switch($env->reportType)
   {
     case DOC_TEST_PLAN_DESIGN:
@@ -1550,10 +1552,23 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       break;  
     }
 
+    /* Build name */
     if( $bn != '' )
     {
       $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
                '<td '  . $tsp . '>' . $bn . "</b></td></tr>\n";
+
+      if(is_null($exec_info))
+      {
+        if(!is_null($buildCfields) && 
+           isset($buildCfields[$build_id]) && 
+          $buildCfields[$build_id] != '')
+        {
+          $code .=  '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"></td>' . 
+                  '<td '  .$td_colspan . '>' . $buildCfields[$build_id] . "</td></tr>\n";
+        }        
+      }  
+
     }  
 
     if( isset($node['assigned_to']) )

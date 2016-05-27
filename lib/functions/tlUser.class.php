@@ -199,23 +199,19 @@ class tlUser extends tlDBObject
   static public function isPasswordMgtExternal($method2check=null)
   {
     $target = $method2check;
+    $authCfg = config_get('authentication');
+ 
     if( is_null($target) || $target=='')
     {
-      $authCfg = config_get('authentication');
       $target = $authCfg['method'];
-    }  
-    switch($target)
-    {
-      case 'LDAP':
-        return true;
-      break;
-
-      case 'DB':
-      case 'MD5':
-      default:
-        return false;
-      break;
     }
+
+    $ret = true;
+    if( isset($authCfg['domain'][$target]) )
+    {
+      $ret = !$authCfg['domain'][$target]['allowPasswordManagement'];
+    }
+    return $ret;
   }
   
   /**

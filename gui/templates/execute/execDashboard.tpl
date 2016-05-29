@@ -42,7 +42,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {$labels.testplan} {$gui->testplan_name|escape}
   </div>
   <div id="testplan_notes" class="exec_additional_info">
-  {$gui->testplan_notes}
+  {if $gui->testPlanEditorType == 'none'}{$gui->testplan_notes|nl2br}{else}{$gui->testplan_notes}{/if}
   {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
   </div>
 
@@ -51,7 +51,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {$labels.platform} {$gui->platform_info.name|escape}
     </div>
     <div id="platform_notes" class="exec_additional_info">
-    {$gui->platform_info.notes}
+	{if $gui->platformEditorType == 'none'}{$gui->platform_info.notes|nl2br}{else}{$gui->platform_info.notes}{/if}
     </div>
   {/if}
 
@@ -59,7 +59,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {$labels.build} {$gui->build_name|escape}
   </div>
   <div id="build_notes" class="exec_additional_info">
-  {$gui->build_notes}
+  {if $gui->buildEditorType == 'none'}{$gui->build_notes|nl2br}{else}{$gui->build_notes}{/if}
   {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
   </div>
 </div>

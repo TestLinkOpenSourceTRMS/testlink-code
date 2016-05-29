@@ -49,7 +49,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       <br />
       <div class="exec_testsuite_details" style="width:95%;">
       <span class="legend_container">{$labels.details}</span><br />
-		  {$tsuite_info[$tc_id].details}
+		  {if $gui->testDesignEditorType == 'none'}{$tsuite_info[$tc_id].details|nl2br}{else}{$tsuite_info[$tc_id].details}{/if}
 		  </div>
 
 		  {if $ts_cf_smarty[$tc_id] != ''}

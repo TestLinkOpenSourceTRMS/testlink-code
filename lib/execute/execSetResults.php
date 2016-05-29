@@ -1302,6 +1302,17 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->ownerDisplayName = null;
     
   $gui->editorType=$cfgObj->editorCfg['type'];
+  $cfgTestPlan = getWebEditorCfg('testplan');
+  $gui->testPlanEditorType = $cfgTestPlan['type'];
+  $cfgPlatform = getWebEditorCfg('platform');
+  $gui->platformEditorType = $cfgPlatform['type'];
+  $cfgBuild = getWebEditorCfg('build');
+  $gui->buildEditorType = $cfgBuild['type'];
+  $cfgDesign = getWebEditorCfg('design');
+  $gui->testDesignEditorType = $cfgDesign['type'];
+  $cfgStepsDesign = getWebEditorCfg('design');
+  $gui->stepDesignEditorType = $cfgStepsDesign['type'];
+  
   $gui->filter_assigned_to=$argsObj->filter_assigned_to;
   $gui->tester_id=$argsObj->user_id;
   $gui->include_unassigned=$argsObj->include_unassigned;

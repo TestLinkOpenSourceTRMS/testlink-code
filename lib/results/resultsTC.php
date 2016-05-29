@@ -4,13 +4,11 @@
 *
 * @filesource   resultsTC.php
 * @author       Francisco Mancardi <francisco.mancardi@gmail.com>
-* @author       Martin Havlat <havlat@users.sourceforge.net>
-* @author       Chad Rosen
 * 
 * Test Results Matrix
 *
 * @internal revisions
-* @since 1.9.14
+* @since 1.9.15
 */
 require('../../config.inc.php');
 require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
@@ -30,8 +28,6 @@ $tplan_mgr  = &$metricsMgr; // displayMemUsage('START' . __FILE__);
 list($gui,$tproject_info,$labels,$cfg) = initializeGui($db,$args,$smarty->getImages(),$tplan_mgr);
 $args->cfg = $cfg;
 $mailCfg = buildMailCfg($gui); 
-
-Kint::dump($gui);
 
 // We have faced a performance block due to an environment with
 // 700 Builds and 1300 Test Cases on Test Plan
@@ -61,7 +57,6 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   $metrics = $execStatus['metrics'];
   $latestExecution = $execStatus['latestExec']; 
 
-  Kint::dump($execStatus);
   // Every Test suite a row on matrix to display will be created
   // One matrix will be created for every platform that has testcases
   $tcols = array('tsuite', 'link');
@@ -73,14 +68,11 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   $cols = array_flip($tcols);
   $args->cols = $cols;
 
-  Kint::dump($args);
-
   if( !is_null($execStatus['metrics']) )
   {
     buildDataSet($db,$args,$gui,$execStatus,$labels);
   }
 
-  Kint::dump($gui);
   switch($args->format)
   {
     case FORMAT_XLS:

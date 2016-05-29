@@ -31,6 +31,7 @@ list($gui,$tproject_info,$labels,$cfg) = initializeGui($db,$args,$smarty->getIma
 $args->cfg = $cfg;
 $mailCfg = buildMailCfg($gui); 
 
+Kint::dump($gui);
 
 // We have faced a performance block due to an environment with
 // 700 Builds and 1300 Test Cases on Test Plan
@@ -60,6 +61,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   $metrics = $execStatus['metrics'];
   $latestExecution = $execStatus['latestExec']; 
 
+  Kint::dump($execStatus);
   // Every Test suite a row on matrix to display will be created
   // One matrix will be created for every platform that has testcases
   $tcols = array('tsuite', 'link');
@@ -71,11 +73,14 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   $cols = array_flip($tcols);
   $args->cols = $cols;
 
+  Kint::dump($args);
+
   if( !is_null($execStatus['metrics']) )
   {
     buildDataSet($db,$args,$gui,$execStatus,$labels);
   }
 
+  Kint::dump($gui);
   switch($args->format)
   {
     case FORMAT_XLS:
@@ -691,13 +696,17 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
           {
             $r4build['text'] = "";
           }  
-          if ($args->format == FORMAT_HTML && $args->addOpAccess) 
-          {
-            $r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
-                               "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
-                               "{$args->tplan_id}, {$platformID});\">" .
-                                "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
 
+          if ($args->format == FORMAT_HTML ) 
+          {
+            if ($args->addOpAccess)
+            {
+              $r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
+                                 "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
+                                 "{$args->tplan_id}, {$platformID});\">" .
+                                  "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
+            }  
+    
             $r4build['text'] .= $labels[$rf[$buildID]['status']] .
                                 sprintf($labels['versionTag'],$rf[$buildID]['version']);
     

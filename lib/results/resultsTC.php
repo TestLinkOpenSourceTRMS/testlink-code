@@ -4,13 +4,11 @@
 *
 * @filesource   resultsTC.php
 * @author       Francisco Mancardi <francisco.mancardi@gmail.com>
-* @author       Martin Havlat <havlat@users.sourceforge.net>
-* @author       Chad Rosen
 * 
 * Test Results Matrix
 *
 * @internal revisions
-* @since 1.9.14
+* @since 1.9.15
 */
 require('../../config.inc.php');
 require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
@@ -30,7 +28,6 @@ $tplan_mgr  = &$metricsMgr; // displayMemUsage('START' . __FILE__);
 list($gui,$tproject_info,$labels,$cfg) = initializeGui($db,$args,$smarty->getImages(),$tplan_mgr);
 $args->cfg = $cfg;
 $mailCfg = buildMailCfg($gui); 
-
 
 // We have faced a performance block due to an environment with
 // 700 Builds and 1300 Test Cases on Test Plan
@@ -691,13 +688,17 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
           {
             $r4build['text'] = "";
           }  
-          if ($args->format == FORMAT_HTML && $args->addOpAccess) 
-          {
-            $r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
-                               "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
-                               "{$args->tplan_id}, {$platformID});\">" .
-                                "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
 
+          if ($args->format == FORMAT_HTML ) 
+          {
+            if ($args->addOpAccess)
+            {
+              $r4build['text'] = "<a href=\"javascript:openExecutionWindow(" .
+                                 "{$tcaseID}, {$rf[$buildID]['tcversion_id']}, {$buildID}, " .
+                                 "{$args->tplan_id}, {$platformID});\">" .
+                                  "<img title=\"{$labels['execution']}\" src=\"{$gui->img->exec}\" /></a> ";
+            }  
+    
             $r4build['text'] .= $labels[$rf[$buildID]['status']] .
                                 sprintf($labels['versionTag'],$rf[$buildID]['version']);
     

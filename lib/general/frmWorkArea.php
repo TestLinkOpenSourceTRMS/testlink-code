@@ -7,7 +7,7 @@
  * @author      Martin Havlat
  * 
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.15
  *
  *
 **/
@@ -97,8 +97,8 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
       case 'tc_exec_assignment':
         $txcfg = config_get('tree_filter_cfg');
         $cfg = $txcfg->testcases->plan_mode;
-        $hasToBe['active'] = $cfg->setting_build_inactive_out;
-        $hasToBe['open'] = $cfg->setting_build_close_out ;
+        $hasToBe['active'] = $cfg->setting_build_inactive_out ? true : null;
+        $hasToBe['open'] = $cfg->setting_build_close_out ? true : null;        
         $featureHint = lang_get('href_tc_exec_assignment');
       break;
 

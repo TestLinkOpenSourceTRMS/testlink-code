@@ -21,13 +21,13 @@ Author : franciscom
       <th colspan="{$tableColspan}" class="title">{$args_labels.test_exec_summary}</th>
     </tr>
     <tr>
-      <td colspan="{$tableColspan}">{$args_tc_exec.summary}</td>
+      <td colspan="{$tableColspan}">{if $gui->testDesignEditorType == 'none'}{$args_tc_exec.summary|nl2br}{else}{$args_tc_exec.summary}{/if}</td>
     </tr>
     <tr>
       <th colspan="{$tableColspan}" class="title">{$args_labels.preconditions}</th>
     </tr>
     <tr>
-      <td colspan="{$tableColspan}">{$args_tc_exec.preconditions}</td>
+      <td colspan="{$tableColspan}">{if $gui->testDesignEditorType == 'none'}{$args_tc_exec.preconditions|nl2br}{else}{$args_tc_exec.preconditions}{/if}</td>
     </tr>
     <tr>
       <td colspan="{$tableColspan}">&nbsp;</td>

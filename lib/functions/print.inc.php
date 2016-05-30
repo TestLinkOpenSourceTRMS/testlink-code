@@ -919,6 +919,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $platform_id = isset($context['platform_id']) ? $context['platform_id'] : 0;
   $build_id = isset($context['build_id']) ? $context['build_id'] : 0;
 
+  $designCfg = getWebEditorCfg('design');
+  $designType = $designCfg['type'];
+  $stepDesignCfg = getWebEditorCfg('steps_design');
+  $stepDesignType = $stepDesignCfg['type'];
 
   // init static elements
   if (!$tables)
@@ -1270,8 +1274,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
           {
             $code .= '<tr>' .
                      '<td width="5">' .  $tcInfo[$key][$ydx]['step_number'] . '</td>' .
-                     '<td>' .  $tcInfo[$key][$ydx]['actions'] . '</td>' .
-                     '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>';
+					 .'<td>' . ($stepDesignType == 'none' ? nl2br($tcInfo[$key][$ydx]['actions']) : $tcInfo[$key][$ydx]['actions'] ) . '</td>' .
+                     '<td>' . ($stepDesignType == 'none' ? nl2br($tcInfo[$key][$ydx]['expected_results']) : $tcInfo[$key][$ydx]['expected_results'] ) . '</td>';
 
             $nike = !is_null($sxni) && isset($sxni[$tcInfo[$key][$ydx]['id']]) && 
                     !is_null($sxni[$tcInfo[$key][$ydx]['id']]);
@@ -1280,7 +1284,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
               $code .= '<td>';
               if( $nike )
               {
-                $code .= $sxni[$tcInfo[$key][$ydx]['id']]['notes'];
+                $code .= nl2br($sxni[$tcInfo[$key][$ydx]['id']]['notes']);
               }  
               $code .= '</td>';
             }
@@ -1351,7 +1355,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
         if ($tcInfo[$key] != '')
         {
           $code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '"><span class="label">' . $labels[$key] .
-                   ':</span><br />' .  $tcInfo[$key] . "</td></tr>";
+                   ':</span><br />' . ($designType == 'none' ? nl2br($tcInfo[$key]) : $tcInfo[$key] ) . "</td></tr>";
         }
       }         
     }
@@ -1681,6 +1685,9 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   static $title_separator;
   static $cfieldFormatting;
   static $getOpt;
+  
+  $designCfg = getWebEditorCfg('design');
+  $designType = $designCfg['type'];
 
   if(is_null($l10n))
   {
@@ -1732,7 +1739,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
     $tInfo = $tsuite_mgr->get_by_id($node['id'],$getOpt['getByID']);
     if ($tInfo['details'] != '')
     {
-      $code .= '<div>' . $tInfo['details'] . '</div>';
+      $code .= '<div>' . ($designType == 'none' ? nl2br($tInfo['details']) : $tInfo['details'] ) . '</div>';
     }
     $tInfo = null;
 
@@ -2098,6 +2105,8 @@ function buildTestExecResults(&$dbHandler,&$its,$exec_info,$opt,$buildCF=null)
  */
 function renderPlatformHeading($tocPrefix, $platform,&$options)
 {
+  $platformCfg = getWebEditorCfg('platform');
+  $platformType = $platformCfg['type'];
   $lbl = lang_get('platform');
   $name = htmlspecialchars($platform['name']);
   $options['tocCode'] .= '<p>&nbsp;</p><b><p><a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $lbl" . ':' . $name . '</a></p></b>';
@@ -2106,7 +2115,7 @@ function renderPlatformHeading($tocPrefix, $platform,&$options)
   // platform description is enabled with test plan description option settings
   if ($options['showPlatformNotes'])
   {
-    $out .= '<div class="txtlevel">' . $platform['notes'] . "</div>\n <br/>";
+    $out .= '<div class="txtlevel">' . ( $platformType == 'none' ? nl2br($platform['notes']) : $platform['notes'] ) . "</div>\n <br/>";
   }
   return $out;
 }
@@ -2123,9 +2132,12 @@ function prefixToHTMLID($string2convert,$anchor_prefix='toc_')
 
 function renderTestProjectItem($info)
 {
+  $testProjectCfg = getWebEditorCfg('testproject');
+  $testProjectType = $testProjectCfg['type'];
   $lbl = init_labels(array('testproject' => null, 'context' => null, 'scope' => null));
   $out = '';
-  $out .= renderSimpleChapter($lbl['testproject'] . ': ' . htmlspecialchars($info->tproject_name),$info->tproject_scope);
+  $out .= renderSimpleChapter($lbl['testproject'] . ': ' . htmlspecialchars($info->tproject_name), 
+							($testProjectType == 'none' ? nl2br($info->tproject_scope) : $info->tproject_scope ) );
   return $out;
 }
 
@@ -2134,10 +2146,12 @@ function renderTestProjectItem($info)
  */
 function renderTestPlanItem($info)
 {
+  $testPlanCfg = getWebEditorCfg('testplan');
+  $testPlanType = $testPlanCfg['type'];
   $lbl = init_labels(array('testplan' => null, 'scope' => null));
   $out = '';
   $out .= renderSimpleChapter($lbl['testplan'] . ': ' . htmlspecialchars($info->testplan_name),
-                              $info->testplan_scope, 'page-break-before: avoid;');
+                              ($testPlanType == 'none' ? nl2br($info->testplan_scope) : $info->testplan_scope ), 'page-break-before: avoid;');
   return $out;
 }
 

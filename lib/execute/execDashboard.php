@@ -182,6 +182,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
   $gui->attachmentInfos=null;
   $gui->refreshTree = 0;
 
+  $cfgTestPlan = getWebEditorCfg('testplan');
+  $gui->testPlanEditorType = $cfgTestPlan['type'];
+  $cfgPlatform = getWebEditorCfg('platform');
+  $gui->platformEditorType = $cfgPlatform['type'];
+  $cfgBuild = getWebEditorCfg('build');
+  $gui->buildEditorType = $cfgBuild['type'];
       
   // Just for the records:  
   // doing this here, we avoid to do on processTestSuite() and processTestCase(),

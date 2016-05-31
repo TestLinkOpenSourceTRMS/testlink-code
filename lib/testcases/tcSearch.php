@@ -291,6 +291,9 @@ $smarty->display($templateCfg->template_dir . $tpl);
 function buildExtTable($gui, $charset, $edit_icon, $history_icon) 
 {
   $table = null;
+  $designCfg = getWebEditorCfg('design');
+  $designType = $designCfg['type'];
+  
   if(count($gui->resultSet) > 0) 
   {
     $labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
@@ -321,7 +324,7 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)
                    htmlentities($result['name'], ENT_QUOTES, $charset);
 
       $rowData[] = $history_link . $edit_link . $tcaseName;
-      $rowData[] = $result['summary'];
+      $rowData[] = ($designType == 'none' ? nl2br($result['summary']) : $result['summary']);
 
       $matrixData[] = $rowData;
     }

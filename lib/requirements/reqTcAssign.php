@@ -349,6 +349,11 @@ function initializeGui($argsObj)
 
   $guiObj->tcase_id = $argsObj->id;
   $guiObj->callback = $argsObj->callback;
+  
+  $cfg->reqCfg = getWebEditorCfg('requirement');
+  $guiObj->reqEditorType = $cfg->reqCfg['type'];
+  $cfg->reqCfg = getWebEditorCfg('requirement_spec');
+  $guiObj->reqSpecEditorType = $cfg->reqCfg['type'];
 
   return $guiObj;
 }

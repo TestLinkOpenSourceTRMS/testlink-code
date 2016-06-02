@@ -13,8 +13,9 @@ require_once("common.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args($db);
+
 $gui = $args;
-$gui->editUrl = "lib/keywords/keywordsEdit.php?" .
+$gui->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" .
                 "tproject_id={$gui->tproject_id}"; 
 
 $smarty = new TLSmarty();

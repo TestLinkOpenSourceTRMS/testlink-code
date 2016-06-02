@@ -60,20 +60,24 @@ if ($args->compare_selected_versions)
   {
     if ($args->use_daisydiff) 
     {
-      // using daisydiff as diffing engine
-      $diff = new HTMLDiffer();
-      list($differences, $diffcount) = $diff->htmlDiff($sbs['left_item'][$key], $sbs['right_item'][$key]);
-      $gui->diff[$key]["diff"] = $differences;
-      $gui->diff[$key]["count"] = $diffcount;
-    } 
-    else 
+	  // using daisydiff as diffing engine
+	  $diff = new HTMLDiffer();
+	  if ($gui->reqType == 'none'){
+		list($differences, $diffcount) = $diff->htmlDiff(nl2br($sbs['left_item'][$key]), nl2br($sbs['right_item'][$key]));
+	  }
+	  else{
+		list($differences, $diffcount) = $diff->htmlDiff($sbs['left_item'][$key], $sbs['right_item'][$key]);
+	  }
+	  $gui->diff[$key]["diff"] = $differences;
+	  $gui->diff[$key]["count"] = $diffcount;
+	}
+    else
     {
       // insert line endings so diff is better readable and makes sense (not everything in one line)
       // then cast to array with \n as separating character, differ needs that
-      $gui->diff[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['left_item'][$key]));
+	  $gui->diff[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['left_item'][$key]));
       $gui->diff[$key]["right"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['right_item'][$key]));
-    
-      $gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID, 
+	  $gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID, 
                                                   $gui->diff[$key]["right"], $gui->rightID,$args->context);
       $gui->diff[$key]["count"] = count($differ->changes);
     }
@@ -87,10 +91,9 @@ if ($args->compare_selected_versions)
     {
       $msg_key = "num_changes";
       $additional = $gui->diff[$key]["count"];
-    }   
-    $gui->diff[$key]["message"] = sprintf($labels[$msg_key], $key, $additional);
+    }
+    $gui->diff[$key]["message"] = (sprintf($labels[$msg_key], $key, $additional));
   }
-
 }
 
 $smarty->assign('gui', $gui);
@@ -294,6 +297,9 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
   $guiObj->context = $argsObj->context;
   $guiObj->version_short = $lbl['version_short'];
   $guiObj->diff = null;
+  $reqCfg = getWebEditorCfg('requirement');
+  $guiObj->reqType = $reqCfg['type'];
+  
   return $guiObj;
 }
 

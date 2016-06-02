@@ -2630,7 +2630,6 @@ class TestlinkXMLRPCServer extends IXR_Server
     }
 
     $options = array('executed_only' => $opt[self::$executedParamName], 
-                     'steps_info' => $opt[self::$getStepsInfoParamName],
                      'details' => $opt[self::$detailsParamName],
                      'output' => 'mapOfMap' );
             
@@ -2643,6 +2642,39 @@ class TestlinkXMLRPCServer extends IXR_Server
                      'platform_id' => $opt[self::$platformIDParamName]);
       
     $recordset = $this->tplanMgr->getLTCVNewGeneration($tplanid,$filters,$options);
+
+    // Do we need to get Test Case Steps?
+    if( !is_null($recordset) && $opt[self::$getStepsInfoParamName] )
+    {
+      $itemSet = array_keys($recordset);
+      switch($options['output'])
+      { 
+        case 'mapOfArray':
+        case 'mapOfMap':
+          foreach($itemSet as $itemKey)
+          {
+            $keySet = array_keys($recordset[$itemKey]);
+            $target = &$recordset[$itemKey];
+            foreach($keySet as $accessKey)
+            {
+              $steps = $this->tcaseMgr->get_steps($target[$accessKey]['tcversion_id']);
+              $target[$accessKey]['steps'] = $steps;
+            }
+          }
+        break;
+        
+        case 'array':
+        case 'map':
+        default:
+          foreach($itemSet as $accessKey)
+          {
+            $sts = $this->tcaseMgr->get_steps($recordset[$accessKey]['tcversion_id']);
+            $recordset[$accessKey]['steps'] = $sts;
+          } 
+        break;
+      }
+    }
+
     return $recordset;
   }
 

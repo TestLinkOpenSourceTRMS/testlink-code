@@ -25,7 +25,6 @@ if ($args->id)
   $attachmentRepository = tlAttachmentRepository::create($db);
   $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
 
-  
   if ($attachmentInfo && 
       ($args->skipCheck || checkAttachmentID($db,$args->id,$attachmentInfo)) )
   {
@@ -121,6 +120,7 @@ function init_args(&$dbHandler)
 
   $args->light = 'green';
   $args->opmode = 'GUI';
+  $args->skipCheck = is_null($args->skipCheck) ? false : $args->skipCheck;
 
   // using apikey lenght to understand apikey type
   // 32 => user api key

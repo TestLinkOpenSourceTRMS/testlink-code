@@ -305,7 +305,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {if $gui->req_cfg->relations->enable && !$frozen_version} {* show this part only if relation feature is enabled *}
   
     {* form to enter a new relation *}
-    <form method="post" action="lib/requirements/reqEdit.php" 
+    <form method="post" action="{$basehref}lib/requirements/reqEdit.php" 
         onSubmit="javascript:return validate_req_docid_input('relation_destination_req_doc_id', 
                                                              '{$labels.relation_destination_doc_id}');">
     

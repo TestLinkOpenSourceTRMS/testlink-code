@@ -22,7 +22,7 @@ Form for searching through requirement specifications.
 <h1 class="title">{$gui->mainCaption|escape}</h1>
 
 <div style="margin: 1px;">
-<form method="post" action="lib/requirements/reqSpecSearch.php" target="workframe">
+<form method="post" action="{$basehref}lib/requirements/reqSpecSearch.php" target="workframe">
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form_req_spec}</caption>
 		<tr>

@@ -128,7 +128,7 @@ function validateForm(f)
 
 <div class="workBack">
 	<form name="reqSpecEdit" id="reqSpecEdit" method="post" 
-		  action="lib/requirements/reqSpecEdit.php"
+		  action="{$basehref}lib/requirements/reqSpecEdit.php"
 		  onSubmit="javascript:return validateForm(this);">
 		  
 	    <input type="hidden" name="parentID" value="{$gui->parentID}" />

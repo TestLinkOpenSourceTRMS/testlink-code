@@ -8,7 +8,7 @@
     <div id="tsuite_control_panel" style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
       <fieldset class="groupBtn">
         <b>{$labels.testsuite_operations}</b>
-        <form method="post" action="lib/testcases/containerEdit.php">
+        <form method="post" action="{$basehref}lib/testcases/containerEdit.php">
           <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
           <input type="hidden" name="doAction" id="doAction" value="" />
           <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
@@ -48,7 +48,7 @@
       {* ----- Work with test cases ----------------------------------------------- *}
       <fieldset class="groupBtn">
         <b>{$labels.testcase_operations}</b>
-        <form method="post" action="lib/testcases/tcEdit.php">
+        <form method="post" action="{$basehref}lib/testcases/tcEdit.php">
           <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
           <input type="hidden" name="doAction" id="doAction" value="" />
           <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
@@ -56,7 +56,7 @@
                  onclick="doAction.value='create'" title="{$labels.btn_new_tc}">
         </form>
 
-        <form method="post" action="lib/testcases/containerEdit.php">
+        <form method="post" action="{$basehref}lib/testcases/containerEdit.php">
           <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
           <input type="hidden" name="doAction" id="doAction" value="" />
           <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
@@ -72,7 +72,7 @@
                  onclick="doAction.value='reorder_testcases'" title="{$gui->btn_reorder_testcases}">
         </form>
 
-        <form method="post" action="lib/testcases/tcEdit.php">
+        <form method="post" action="{$basehref}lib/testcases/tcEdit.php">
           <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
           <input type="hidden" name="doAction" id="doAction" value="" />
           <img src="{$tlImages.import}" onclick="location='{$importTestCasesAction}'" title="{$labels.btn_import_tc}" />

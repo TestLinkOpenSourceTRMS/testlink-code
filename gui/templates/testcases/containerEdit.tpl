@@ -88,7 +88,7 @@ function validateForm(f)
 
 <div class="workBack">
   <h1 class="title">{$labels.title_edit_level} {lang_get s=$level}</h1> 
-  <form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" 
+  <form method="post" action="{$basehref}lib/testcases/containerEdit.php?testsuiteID={$containerID}" 
         name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">
   

@@ -19,7 +19,7 @@ Purpose: show form for search through test cases in test specification
 
 
 <div style="margin: 1px;">
-<form method="post" action="lib/testcases/tcSearch.php">
+<form method="post" action="{$basehref}lib/testcases/tcSearch.php">
   <input type="hidden" name="doAction" id="doAction" value="doSearch">
   <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
   <table class="simple" style="width:100%">

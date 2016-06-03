@@ -181,7 +181,7 @@ viewer for test case in test specification
   </form>
   </span>
 
-    <form style="display: inline;" id="versionControls" name="versionControls" method="post" action="lib/testcases/tcEdit.php">
+    <form style="display: inline;" id="versionControls" name="versionControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
     <input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
     <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
@@ -251,7 +251,7 @@ viewer for test case in test specification
   <span>
   {* compare versions *}
   {if $args_testcase.version > 1}
-    <form style="display: inline;" id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
+    <form style="display: inline;" id="version_compare" name="version_compare" method="post" action="{$basehref}lib/testcases/tcCompareVersions.php">
       <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
       <input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
     </form>
@@ -320,7 +320,7 @@ function launchInsertStep(step_id)
 
 </script>
 
-<form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
+<form id="stepsControls" name="stepsControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
   <input type="hidden" name="goback_url" value="{$goBackAction}" />
   <input type="hidden" id="stepsControls_doAction" name="doAction" value="" />
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />

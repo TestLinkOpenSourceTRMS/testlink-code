@@ -20,7 +20,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <h1 class="title">{$gui->page_title|escape}</h1>
 
 <div class="workBack">
-  <form method="post" id="asgard" action="lib/testcases/tcBulkOp.php">
+  <form method="post" id="asgard" action="{$basehref}lib/testcases/tcBulkOp.php">
 
 <table>
   <tr>

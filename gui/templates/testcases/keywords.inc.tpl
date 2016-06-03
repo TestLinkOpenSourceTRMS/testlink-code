@@ -52,7 +52,7 @@ function remove_keyword(btn, text, item_id, keyword_id)
 var pF_remove_keyword = remove_keyword;
 
 </script>
-<form method="post" id="kwf" name="kwf" action="lib/testcases/tcEdit.php">
+<form method="post" id="kwf" name="kwf" action="{$basehref}lib/testcases/tcEdit.php">
   <input type="hidden" id="kwf_doAction" name="doAction" value="removeKeyword" />
   <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
   <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}" />

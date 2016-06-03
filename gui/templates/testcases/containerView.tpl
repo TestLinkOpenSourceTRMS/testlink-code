@@ -96,7 +96,7 @@ function jsCallDeleteFile(btn, text, o_id)
   <div id="tproject_control_panel" style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
     <fieldset class="groupBtn">
     <b>{$labels.testsuite_operations}</b>
-    <form method="post" action="lib/testcases/containerEdit.php">
+    <form method="post" action="{$basehref}lib/testcases/containerEdit.php">
       <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
       <input type="hidden" name="doAction" id="doAction" value="" />
       <input type="hidden" name="containerID" value="{$gui->container_data.id}" />

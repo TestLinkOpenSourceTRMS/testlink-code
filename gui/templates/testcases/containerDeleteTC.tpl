@@ -61,7 +61,7 @@ function check_action_precondition(container_id,action,msg)
 	{$gui->user_feedback}
 {else}
 	<form id="delete_testcases" name="delete_testcases" method="post"
-	      action="lib/testcases/containerEdit.php?objectID={$gui->objectID}">
+	      action="{$basehref}lib/testcases/containerEdit.php?objectID={$gui->objectID}">
     <input type="hidden" name="do_delete_testcases"  id="do_delete_testcases"  value="1" />
 
     {if $gui->user_feedback != ''}

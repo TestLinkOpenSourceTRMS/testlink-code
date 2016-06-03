@@ -61,7 +61,7 @@ function mirrorCheckbox(sourceOID,targetOID)
 
 {if $gui->do_it eq 1}
   <form method="post" id="export_xml" enctype="multipart/form-data"
-        action="lib/testcases/tcExport.php"
+        action="{$basehref}lib/testcases/tcExport.php"
         onSubmit="javascript:return validateForm(this);">
 
     <table>

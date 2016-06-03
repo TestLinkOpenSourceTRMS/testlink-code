@@ -103,7 +103,7 @@ function validateForm(the_form)
     <div class="messages" align="center">{$warning_edit_msg}</div>
 {/if}
 
-<form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
+<form method="post" action="{$basehref}lib/testcases/tcEdit.php" name="tc_edit"
       onSubmit="return validateForm(this);">
 
   <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->tc.testsuite_id}" />

@@ -88,7 +88,7 @@ function validateForm(f)
                                refresh=$gui->refreshTree}
 
 
-<form method="post" action="lib/testcases/containerEdit.php?containerID={$containerID}"
+<form method="post" action="{$basehref}lib/testcases/containerEdit.php?containerID={$containerID}"
         name="container_new" id="container_new"
         onSubmit="javascript:return validateForm(this);">
 

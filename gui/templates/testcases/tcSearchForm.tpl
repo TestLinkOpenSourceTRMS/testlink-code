@@ -25,7 +25,7 @@ Purpose: show form for search through test cases in test specification
 
 <h1 class="title">{$gui->mainCaption|escape}</h1>
 <div style="margin: 1px;">
-<form method="post" action="lib/testcases/tcSearch.php" target="workframe">
+<form method="post" action="{$basehref}lib/testcases/tcSearch.php" target="workframe">
   <table class="smallGrey" style="width:100%">
     <caption>{$labels.caption_search_form}</caption>
     <tr>

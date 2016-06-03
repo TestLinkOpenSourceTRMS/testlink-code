@@ -133,7 +133,7 @@ viewer for test case in test specification
 
 <div style="display:{$tlCfg->gui->op_area_display->test_case};" 
      class="groupBtn" id="tcView_viewer_tcase_control_panel">
-    <form style="display: inline;" id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
+    <form style="display: inline;" id="topControls" name="topControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
     <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
@@ -420,3 +420,4 @@ function launchInsertStep(step_id)
   <br />
   {include file="testcases/quickexec.inc.tpl" args_edit_enabled=$edit_enabled} 
 {/if}
+

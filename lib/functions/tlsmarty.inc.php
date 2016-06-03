@@ -9,12 +9,12 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2015, TestLink community 
+ * @copyright 	2005-2016, TestLink community 
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
  */
 
@@ -257,12 +257,12 @@ class TLSmarty extends Smarty
     $msg = lang_get('show_hide_api_info');
     $this->tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
     								" onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
-    								" src=\"{$this->tlImages['api_info']}\" align=\"left\" />";
+    								" src=\"{$basehref}{$this->tlImages['api_info']}\" align=\"left\" />";
     
     $msg = lang_get('show_hide_direct_link');
     $this->tlImages['toggle_direct_link'] = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
     						  		                      " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
-    						  		                      " src=\"{$this->tlImages['direct_link']}\" align=\"left\" />";
+    						  		                      " src=\"{$basehref}{$this->tlImages['direct_link']}\" align=\"left\" />";
     
     // Some useful values for Sort Table Engine
     $this->tlImages['sort_hint'] = '';
@@ -272,7 +272,7 @@ class TLSmarty extends Smarty
         $sort_table_by_column = lang_get('sort_table_by_column');
         $this->tlImages['sort_hint'] = "<img title=\"{$sort_table_by_column}\" " .
         						                   " alt=\"{$sort_table_by_column}\" " .
-        						                   " src=\"{$this->tlImages['sort']}\" align=\"left\" />";
+        						                   " src=\"{$basehref}{$this->tlImages['sort']}\" align=\"left\" />";
         
         $this->assign("noSortableColumnClass","sorttable_nosort");
       break;

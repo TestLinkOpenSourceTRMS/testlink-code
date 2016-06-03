@@ -76,7 +76,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
       {/foreach}
       {* <br /> *}
     {/if}
-    <img class="clickable" src="{$basehref}{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel','inline');"
+    <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel','inline');"
          title="{$labels.actions}" />
 
     {if $gui->show_title == 'no'}

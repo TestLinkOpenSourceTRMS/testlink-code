@@ -13,7 +13,7 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2015 TestLink community 
+ * @Copyright   2005,2016 TestLink community 
  * @link        http://www.testlink.org
  * @since       1.5
  *
@@ -42,6 +42,12 @@ require_once('roles.inc.php');
 
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
 require_once('tlsmarty.inc.php');
+
+/** Initialize the Event System */
+require_once('event_api.php' );
+
+/** Testlink Plugin API helper methods */
+require_once('plugin_api.php');
 
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
@@ -470,7 +476,10 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
   {
     checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
   }
-    
+   
+  // Init plugins
+  plugin_init_installed();
+   
   // adjust Product and Test Plan to $_SESSION
   if ($initProject)
   {

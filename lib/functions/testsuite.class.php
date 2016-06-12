@@ -6,17 +6,18 @@
  * @filesource  testsuite.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
  */
 
 /** include support for attachments */
 require_once( dirname(__FILE__) . '/attachments.inc.php');
 require_once( dirname(__FILE__) . '/files.inc.php');
+require_once( dirname(__FILE__) . '/event_api.php');
 
 /**
  * Test Suite CRUD functionality
@@ -196,6 +197,8 @@ class testsuite extends tlObjectWithAttachments
       if ($result)
       {
         $ret['id'] = $tsuite_id;
+        $ctx = array('id' => $tsuite_id,'name' => $name,'details' => $details);
+        event_signal('EVENT_TEST_SUITE_CREATE', $ctx);
       }
     }
     
@@ -239,6 +242,11 @@ class testsuite extends tlObjectWithAttachments
       if (!$result)
       {
         $ret['msg'] = $this->db->error_msg();
+      } 
+      else 
+      {
+        $ctx = array('id' => $id,'name' => $name,'details' => $details);
+        event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
       }
     }
     else
@@ -293,6 +301,11 @@ class testsuite extends tlObjectWithAttachments
     $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
            "WHERE id={$id} AND node_type_id=" . $this->my_node_type;
     $result = $this->db->exec_query($sql);
+    if ($result) 
+    {
+      $ctx = array('id' => $id);
+      event_signal('EVENT_TEST_SUITE_DELETE', $ctx);
+    }
   }
   
   

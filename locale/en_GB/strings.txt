@@ -2443,7 +2443,7 @@ $TLS_href_platform_management = "Platform Management";
 $TLS_href_issuetracker_management = "Issue Tracker Management";
 $TLS_href_reqmgrsystem_management = "Req. Management System Management";
 $TLS_system_config = 'System';
-
+$TLS_title_plugins = 'Plugins';
 
 $TLS_href_search_req = "Search Requirements";
 $TLS_href_search_req_spec = "Search Requirement Specifications";

@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2016, TestLink community
  * @link        http://www.testlink.org/
  *
  * @internal revisions
@@ -19,6 +19,7 @@ require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
+require_once( dirname(__FILE__) . '/event_api.php');
 
 /** list of supported format for Test case import/export */
 $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
@@ -315,22 +316,27 @@ class testcase extends tlObjectWithAttachments
 
       $ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
       $ret['tcversion_id'] = $op['status_ok'] ? $op['id'] : -1;
+
+      $ctx = array('test_suite_id' => $parent_id,'id' => $id,'name' => $name,
+                   'summary' => $summary,'preconditions' => $preconditions,
+                   'steps' => $steps,'author_id' => $author_id,
+                   'keywords_id' => $keywords_id,
+                   'order' => $tc_order, 'exec_type' => $execution_type,
+                   'importance' => $importance,'options' => $options);
+      event_signal('EVENT_TEST_CASE_CREATE', $ctx);
     }
     return $ret;
   }
 
   /*
-  20061008 - franciscom
-             added [$check_duplicate_name]
-                   [$action_on_duplicate_name]
+    [$check_duplicate_name]
+    [$action_on_duplicate_name]
+    [$order]
 
-  20060725 - franciscom - interface changes
-             [$order]
-
-             [$id]
-             0 -> the id will be assigned by dbms
-             x -> this will be the id
-                  Warning: no check is done before insert => can got error.
+    [$id]
+         0 -> the id will be assigned by dbms
+         x -> this will be the id
+              Warning: no check is done before insert => can got error.
 
   return:
          $ret['id']
@@ -1131,6 +1137,14 @@ class testcase extends tlObjectWithAttachments
       {
         $this->updateKeywordAssignment($id,$keywords_id);
       }
+
+      $ctx = array('id' => $id,'version_id' => $tcversion_id,'name' => $name,
+                   'summary' => $summary,'preconditions' => $preconditions,
+                   'steps' => $steps,'user_id' => $user_id,
+                   'keywords_id' => $keywords_id,'order' => $tc_order,
+                   'exec_type' => $execution_type, 'importance' => $importance,
+                   'attr' => $attr,'options' => $opt);
+      event_signal('EVENT_TEST_CASE_UPDATE', $ctx);
     }
 
     return $ret;
@@ -1250,46 +1264,48 @@ class testcase extends tlObjectWithAttachments
   function delete($id,$version_id = self::ALL_VERSIONS)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $children=null;
-      $do_it=true;
+    $children=null;
+    $do_it=true;
 
-      // I'm trying to speedup the next deletes
-      $sql="/* $debugMsg */ " .
+    // I'm trying to speedup the next deletes
+    $sql = "/* $debugMsg */ " .
            " SELECT NH_TCV.id AS tcversion_id, NH_TCSTEPS.id AS step_id " .
            " FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
            " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NH_TCSTEPS " .
            " ON NH_TCSTEPS.parent_id = NH_TCV.id ";
 
-      if($version_id == self::ALL_VERSIONS)
+    if($version_id == self::ALL_VERSIONS)
+    {
+      if( is_array($id) )
       {
-        if( is_array($id) )
-        {
-          $sql .= " WHERE NH_TCV.parent_id IN (" .implode(',',$id) . ") ";
-        }
-        else
-        {
-          $sql .= " WHERE NH_TCV.parent_id={$id} ";
-        }
+        $sql .= " WHERE NH_TCV.parent_id IN (" .implode(',',$id) . ") ";
       }
       else
       {
-          $sql .= " WHERE NH_TCV.parent_id={$id} AND NH_TCV.id = {$version_id}";
+        $sql .= " WHERE NH_TCV.parent_id={$id} ";
       }
+    }
+    else
+    {
+      $sql .= " WHERE NH_TCV.parent_id={$id} AND NH_TCV.id = {$version_id}";
+    }
 
-      $children_rs=$this->db->get_recordset($sql);
-      $do_it = !is_null($children_rs);
-      if($do_it)
+    $children_rs=$this->db->get_recordset($sql);
+    $do_it = !is_null($children_rs);
+    if($do_it)
+    {
+      foreach($children_rs as $value)
       {
-        foreach($children_rs as $value)
-        {
-          $children['tcversion'][]=$value['tcversion_id'];
-          $children['step'][]=$value['step_id'];
-        }
-        $this->_execution_delete($id,$version_id,$children);
-        $this->deleteAllRelations($id);
-        $this->_blind_delete($id,$version_id,$children);
+        $children['tcversion'][]=$value['tcversion_id'];
+        $children['step'][]=$value['step_id'];
       }
+      $this->_execution_delete($id,$version_id,$children);
+      $this->deleteAllRelations($id);
+      $this->_blind_delete($id,$version_id,$children);
+    }
 
+    $ctx = array('id' => $id);
+    event_signal('EVENT_TEST_CASE_DELETE', $ctx);
 
     return 1;
   }

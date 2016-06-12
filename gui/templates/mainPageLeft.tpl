@@ -16,7 +16,7 @@
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
-                          href_print_req, title_documentation,href_issuetracker_management,
+                          href_print_req,title_plugins,title_documentation,href_issuetracker_management,
                           href_reqmgrsystem_management,href_req_monitor_overview'}
 
 {$menuLayout=$tlCfg->gui->layoutMainPageLeft}
@@ -27,6 +27,8 @@
 {$display_left_block_3=false}
 {$display_left_block_4=false}
 {$display_left_block_5=$tlCfg->userDocOnDesktop}
+{$display_left_block_top = false}
+{$display_left_block_bottom = false}
 
 {if $gui->testprojectID && 
    ($gui->grants.project_edit == "yes" || 
@@ -122,12 +124,20 @@
    </script>
 {/if}
 
+{if $gui->plugins.EVENT_LEFTMENU_TOP }
+  {$display_left_block_top=true}
+{/if}
+{if $gui->plugins.EVENT_LEFTMENU_BOTTOM }
+  {$display_left_block_bottom=true}
+{/if}
 
 <div class="vertical_menu" style="float: left">
+  <div id='menu_left_block_top'></div><br />
   <div id='menu_left_block_2'></div><br />
   <div id='menu_left_block_1'></div><br />
   <div id="menu_left_block_3"></div><br />
   <div id="menu_left_block_4"></div><br />
+  <div id='menu_left_block_bottom'></div><br />
   <div id="menu_left_block_5"></div><br />
   
   {if $display_left_block_1}
@@ -235,6 +245,56 @@
     </div>
   {/if}
 
+  {if $display_left_block_top}
+      <script type="text/javascript">
+      function display_left_block_top()
+      {
+        var pt = new Ext.Panel({
+                                title: '{$labels.title_plugins}',
+                                collapsible:false,
+                                collapsed: false,
+                                draggable: false,
+                                contentEl: 'plugin_left_top',
+                                baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;",
+                                renderTo: 'menu_left_block_top',
+                                width:'100%'
+                               });
+      }
+      </script>
+      <div id="plugin_left_top">
+        {foreach from=$gui->plugins.EVENT_LEFTMENU_TOP item=menu_item}
+          {$menu_item}
+          <br />
+        {/foreach}
+      </div>
+  {/if}
+
+
+  {if $display_left_block_bottom}
+      <script type="text/javascript">
+      function display_left_block_bottom()
+      {
+        var pb = new Ext.Panel({
+                                title: '{$labels.title_plugins}',
+                                collapsible:false,
+                                collapsed: false,
+                                draggable: false,
+                                contentEl: 'plugin_left_bottom',
+                                baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;",
+                                renderTo: 'menu_left_block_bottom',
+                                width:'100%'
+                               });
+      }
+      </script>
+      <div id="plugin_left_bottom">
+        {foreach from=$gui->plugins.EVENT_LEFTMENU_BOTTOM item=menu_item}
+          {$menu_item}
+          <br />
+        {/foreach}
+      </div>
+  {/if}
 
   {if $display_left_block_5}
     <script type="text/javascript">
@@ -270,6 +330,4 @@
       </form>
     </div>
   {/if}
-
-
 </div>

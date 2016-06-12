@@ -1661,6 +1661,8 @@ $tlCfg->proxy->login = null;
 $tlCfg->proxy->password = null;
 
 
+/** Plugins feature */
+define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR);
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
@@ -1785,4 +1787,16 @@ $tlCfg->gui->title_separator_1 =  $tlCfg->gui_title_separator_1;
 $tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
+
+
+/**
+ * Globals for Events storage
+ */
+$g_event_cache = array();
+
+/**
+ * Globals for Plugins
+ */
+$g_plugin_config_cache = array();
+
 // ----- END OF FILE --------------------------------------------------------------------

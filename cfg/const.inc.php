@@ -9,7 +9,7 @@
  * @filesource  const.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @see         config.inc.php
  *
  * @internal revisions
@@ -35,7 +35,7 @@ define('TL_LAST_DB_VERSION', 'DB 1.9.14');
 // want to point to root install dir, need to remove fixed part
 if (!defined('TL_ABS_PATH')) 
 {
-    define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
+  define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
 }
 
 /** Setting up the global include path for testlink */
@@ -180,6 +180,24 @@ define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
 define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
 define('REMOVEME', 'd8ba8cfb-ca92-4fa5-83c2-551977d405fb');
+
+/** Constants for plugins */
+/** Plugin configuration types */
+define('CONFIG_TYPE_STRING', 0);
+define('CONFIG_TYPE_INT', 1);
+define('CONFIG_TYPE_FLOAT', 2);
+define('CONFIG_TYPE_COMPLEX', 3);
+
+/** To indicate the plugin configuration belongs to ANY PROJECT */
+define('TL_ANY_PROJECT', -1);
+
+/** Constants for events */
+define('EVENT_TYPE_CREATE', 1);
+define('EVENT_TYPE_UPDATE', 2);
+define('EVENT_TYPE_DELETE', 3);
+define('EVENT_TYPE_OUTPUT', 4);
+
+
 
 
 // --------------------------------------------------------------------------------------

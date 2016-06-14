@@ -16,6 +16,11 @@ The structure inside the plugin folder will be
 +------ pages
 +---------< Smarty Template files >
 +---------< PHP Files to process Smarty templates>
++------< lang
++---------< local name >
++------------< strings.txt >
++---------< local name >
++------------< strings.txt >
 
 Plugin Main Class:
 The plugin main class should reside directly under the plugins/<pluginname>
@@ -57,7 +62,9 @@ Utilities that will help in writing the plugin class and support files:
   available there, then it picks it up from the Global Defaults (Setup through the
   `config` method of the plugin) and then default to the "default" parameter provided
   in the method definition. See `plugin_config_get` in `plugin_api.php` for details
-
+* plugin_lang_get: Get a string value according to the language configured in 
+  TestLink for the current user. See lang directory in TLTest plugin for more info
+  
 Writing Templates that will help in Plugin Configuration:
 The user might want to create pages that will help in configuring a plugin at a
 testproject level or for all projects. These template files will need to reside

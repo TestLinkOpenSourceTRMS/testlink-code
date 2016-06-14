@@ -2514,6 +2514,7 @@ $TLS_href_platform_management = "Gestion de plateformes";
 $TLS_href_issuetracker_management = "Gestion du Gestionnaire d'anomalies";
 $TLS_href_reqmgrsystem_management = "Gestion du Gestionnaire d'exigences";
 $TLS_system_config = "Système";
+$TLS_title_plugins = "Plugins";
 
 
 // ----- contribution by asimon for req/reqspec search BUGID 2976 -----

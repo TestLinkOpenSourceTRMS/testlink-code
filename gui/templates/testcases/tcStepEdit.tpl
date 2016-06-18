@@ -124,6 +124,7 @@ var tc_editor = "{$gui->editorType}";
              inc_tcbody_labels=$labels
              inc_tcbody_author_userinfo=$gui->authorObj
              inc_tcbody_updater_userinfo=$gui->updaterObj
+			 inc_tcbody_editor_type=$gui->editorType
              inc_tcbody_cf=null}
 
 

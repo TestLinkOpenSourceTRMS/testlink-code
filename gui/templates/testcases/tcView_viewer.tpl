@@ -337,6 +337,7 @@ function launchInsertStep(step_id)
              inc_tcbody_labels=$tcView_viewer_labels
              inc_tcbody_author_userinfo=$author_userinfo
              inc_tcbody_updater_userinfo=$updater_userinfo
+             inc_tcbody_editor_type=$gui->designEditorType
              inc_tcbody_cf=$args_cf}
     
   {if $args_testcase.steps != ''}

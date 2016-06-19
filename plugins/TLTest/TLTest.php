@@ -63,27 +63,27 @@ class TLTestPlugin extends TestlinkPlugin
   {
     $arg = func_get_args();   // To get all the arguments
     $db = $this->db;      // To show how to get a Database Connection
-    echo "This is a test";
+    echo plugin_lang_get("testsuite_display_message");
   }
 
   function bottom_link()
   {
-    return "<a href=''>Left Bottom Link</a>";
+    return "<a href=''>".plugin_lang_get('left_bottom_link')."</a>";
   }
 
   function top_link()
   {
-    return "<a href='" . plugin_page('config.php') . "'>Configure My Plugin</a>";
+    return "<a href='" . plugin_page('config.php') . "'>".plugin_lang_get('config')."</a>";
   }
 
   function right_top_link()
   {
-    return "<a href=''>Right Top Link</a>";
+    return "<a href=''>".plugin_lang_get('right_top_link')."</a>";
   }
 
   function right_bottom_link()
   {
-    return "<a href=''>Right Bottom Link</a>";
+    return "<a href=''>".plugin_lang_get('right_bottom_link')."</a>";
   }
 
 }

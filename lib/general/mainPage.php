@@ -160,7 +160,9 @@ foreach(array('EVENT_LEFTMENU_TOP',
               'EVENT_RIGHTMENU_TOP',
               'EVENT_RIGHTMENU_BOTTOM') as $menu_item) 
 {
-  if (!empty($menu_content = event_signal($menu_item))) 
+  # to be compatible with PHP 5.4
+  $menu_content = event_signal($menu_item);
+  if( !empty($menu_content) )
   {
     $gui->plugins[$menu_item] = $menu_content;
   }

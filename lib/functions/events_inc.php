@@ -13,6 +13,10 @@
 
 // Declare supported plugin events.
 event_declare_many(array(
+  // Test Project related events
+  'EVENT_TEST_PROJECT_CREATE' => EVENT_TYPE_CREATE,
+  'EVENT_TEST_PROJECT_UPDATE' => EVENT_TYPE_UPDATE,
+
   // Test Suite related events.
   'EVENT_TEST_SUITE_CREATE' => EVENT_TYPE_CREATE,
   'EVENT_TEST_SUITE_UPDATE' => EVENT_TYPE_UPDATE,
@@ -22,6 +26,9 @@ event_declare_many(array(
   'EVENT_TEST_CASE_CREATE' => EVENT_TYPE_CREATE,
   'EVENT_TEST_CASE_UPDATE' => EVENT_TYPE_UPDATE,
   'EVENT_TEST_CASE_DELETE' => EVENT_TYPE_DELETE,
+
+  // Test Event related events
+  'EVENT_EXECUTE_TEST' => EVENT_TYPE_CREATE,
 
   // UI Related Elements,
   'EVENT_LEFTMENU_TOP' => EVENT_TYPE_OUTPUT,

@@ -32,6 +32,7 @@ require_once('exec.inc.php');
 require_once("attachments.inc.php");
 require_once("specview.php");
 require_once("web_editor.php");
+require_once('event_api.php');
 
 $cfg = getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
@@ -176,7 +177,15 @@ if(!is_null($linked_tcversions))
       if($lexid > 0 && $args->copyIssues && $args->level == 'testcase')
       {
         copyIssues($db,$lexid,$execSet[$args->version_id]);
-      } 
+      }
+
+      // Propagate events
+      $ctx = array('tplan_id' => $args->tplan_id,
+                   'build_id' => $args->build_id,
+                   'tcase_id' => $tcase_id,
+                   'status'   => $args->statusSingle[$args->version_id],
+                   'directLink' => $args->direct_link);
+      event_signal('EVENT_EXECUTE_TEST', $ctx);
     }
 
     // Need to re-read to update test case status

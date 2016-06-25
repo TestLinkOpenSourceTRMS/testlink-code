@@ -15,6 +15,7 @@
 
 /** related functions */ 
 require_once('attachments.inc.php');
+require_once('event_api.php');
 
 /**
  * class is responsible to get project related data and CRUD test project
@@ -148,6 +149,10 @@ function create($item,$opt=null)
       $this->setSessionProject($id);
     }
     $evt->logLevel = 'AUDIT';
+
+    // Send Event
+    $ctx = array('id' => $id, 'name' => $item->name, 'prefix' => $tcPrefix);
+    event_signal('EVENT_TEST_PROJECT_CREATE', $ctx);
   }
   else
   {
@@ -223,6 +228,10 @@ function update($id, $name, $color, $notes,$options,$active=null,
   {
     // update session data
     $this->setSessionProject($safeID);
+
+    // Send Event
+    $ctx = array('id' => $id, 'name' => $name, 'prefix' => $tcprefix);
+    event_signal('EVENT_TEST_PROJECT_UPDATE', $ctx);
   }
   else
   {

@@ -51,6 +51,9 @@ class TLTestPlugin extends TestlinkPlugin
   {
     $hooks = array(
       'EVENT_TEST_SUITE_CREATE' => 'testsuite_create',
+      'EVENT_TEST_PROJECT_CREATE' => 'testproject_create',
+      'EVENT_TEST_PROJECT_UPDATE' => 'testproject_update',
+      'EVENT_EXECUTE_TEST'  => 'testExecute',
       'EVENT_LEFTMENU_TOP' => 'top_link',
       'EVENT_LEFTMENU_BOTTOM' => 'bottom_link',
       'EVENT_RIGHTMENU_TOP' => 'right_top_link',
@@ -64,6 +67,24 @@ class TLTestPlugin extends TestlinkPlugin
     $arg = func_get_args();   // To get all the arguments
     $db = $this->db;      // To show how to get a Database Connection
     echo plugin_lang_get("testsuite_display_message");
+    tLog("Im in testsuite create", "WARNING");
+  }
+
+  function testproject_create() 
+  {
+    $arg = func_get_args();   // To get all the arguments
+    tLog("In TestProject Create with id: " . $arg[1] . ", name: " . $arg[2] . ", prefix: " . $arg[3], "WARNING");
+  }
+
+  function testproject_update() 
+  {
+    $arg = func_get_args();   // To get all the arguments
+    tLog("In TestProject Update with id: " . $arg[1] . ", name: " . $arg[2] . ", prefix: " . $arg[3], "WARNING");
+  }
+
+  function testExecute() {
+    $arg = func_get_args();   // To get all the arguments
+    tLog("In TestRun with planid: " . $arg[1] . ", buildid: " . $arg[2] . ", testcaseid: " . $arg[3] . ", Notes: " . $arg[4] . ", Status: " . $arg[5], "WARNING");
   }
 
   function bottom_link()

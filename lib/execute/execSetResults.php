@@ -405,6 +405,8 @@ else
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
   $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
+
+  Kint::dump($gui);
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 } 
 

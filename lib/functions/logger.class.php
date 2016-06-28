@@ -1404,9 +1404,6 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 
   $el = error_reporting();
   $doIt = (($el & $errno) > 0);
-  Kint::dump($el);
-  Kint::dump($errno);
-  Kint::dump($doIt);
   if ($doIt && isset($errors[$errno]) )
   {
     // suppress some kind of errors
@@ -1432,7 +1429,7 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
     {
       return;
     }
-    logWarningEvent($errors[$errno]."\n".$errstr." - **in** ".$errfile." - Line ".$errline,"PHP");
+    logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
   }
 }
 

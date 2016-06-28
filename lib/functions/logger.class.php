@@ -1395,7 +1395,19 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
                   E_USER_NOTICE => "E_USER_NOTICE",E_ERROR => "E_ERROR",
                   E_WARNING => "E_WARNING",E_NOTICE => "E_NOTICE",E_STRICT => "E_STRICT");
 
-  if (isset($errors[$errno]))
+  /*
+   1 E_ERROR, 2 E_WARNING, 4 E_PARSE, 8 E_NOTICE, 16  E_CORE_ERROR, 
+   32 E_CORE_WARNING, 64 E_COMPILE_ERROR, 128 E_COMPILE_WARNING,
+   256 E_USER_ERROR, 512 E_USER_WARNING, 1024 E_USER_NOTICE, 6143 E_ALL
+   2048 E_STRICT, 4096 E_RECOVERABLE_ERROR
+  */ 
+
+  $el = error_reporting();
+  $doIt = (($el & $errno) > 0);
+  Kint::dump($el);
+  Kint::dump($errno);
+  Kint::dump($doIt);
+  if ($doIt && isset($errors[$errno]) )
   {
     // suppress some kind of errors
     // strftime(),strtotime(),date()
@@ -1420,7 +1432,7 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
     {
       return;
     }
-    logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
+    logWarningEvent($errors[$errno]."\n".$errstr." - **in** ".$errfile." - Line ".$errline,"PHP");
   }
 }
 

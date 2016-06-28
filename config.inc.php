@@ -184,6 +184,9 @@ $tlCfg->notifications->userSignUp->to->users = null; // i.e. array('login01','lo
 /* [LOGGING] */
 
 /** Error reporting - do we want php errors to show up for users */
+/** configure on custom_config.inc.php */
+/** error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_WARNING); */
+/** error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING); */
 error_reporting(E_ALL);
 
 /** @var string Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) 

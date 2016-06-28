@@ -118,7 +118,8 @@ Author : franciscom
         {/if}
   		</table>
 
-      {if $gui->addIssueOp != ''}  
+    
+      {if $gui->addIssueOp != '' && !is_null($gui->addIssueOp)}  
       <hr> 
       <table id="addIssueFeedback">
       <tr>

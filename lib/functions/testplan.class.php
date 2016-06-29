@@ -3834,7 +3834,7 @@ class testplan extends tlObjectWithAttachments
     {
       $item_info['testsuites'] = '<testsuites>' . 
                                  $this->exportTestSuiteDataToXML($tplan_spec,$context['tproject_id'],$id,
-                                                                 $context['platform_id']) . 
+                                                                 $context['platform_id'],$context['build_id']) . 
                                  '</testsuites>';
     } 
     
@@ -3857,7 +3857,7 @@ class testplan extends tlObjectWithAttachments
    * 
    *
    */
-  private function exportTestSuiteDataToXML($container,$tproject_id,$tplan_id,$platform_id)
+  private function exportTestSuiteDataToXML($container,$tproject_id,$tplan_id,$platform_id,$build_id)
   {
     static $keywordMgr;
     static $getLastVersionOpt = array('output' => 'minimun');
@@ -3908,7 +3908,7 @@ class testplan extends tlObjectWithAttachments
         switch($cNode['node_table'])
         {
           case 'testsuites':
-            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id,$tplan_id,$platform_id);
+            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id,$tplan_id,$platform_id,$build_id);
           break;
             
           case 'testcases':
@@ -3918,13 +3918,44 @@ class testplan extends tlObjectWithAttachments
             }
             // testcase::LATEST_VERSION,
             $tcaseExportOptions['EXEC_ORDER'] = $linkedItems[$cNode['id']][$platform_id]['node_order'];
-            $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
+			
+			$filter_lv = array( 'exec_status' => 'ALL', 'active_status' => 'ALL','tplan_id' => $tplan_id, 'platform_id' => $platform_id );
+			$output_lv = array( 'output' => 'simple' );
+			// get tc versions linked in current testplan for current platform
+			$info = $tcaseMgr->get_linked_versions($cNode['id'],$filter_lv,$output_lv);
+			if( !is_null($info) )
+			{
+				$tcversID = key($info);
+			}
+
+			// get users assigned to tc version in current testplan for the current build
+			$versionAssignInfo = $tcaseMgr->get_version_exec_assignment($tcversID, $tplan_id, $build_id );
+			$userList = array();
+			// extract user names
+			if(!is_null($versionAssignInfo))
+			{
+				foreach($versionAssignInfo[$tcversID][$platform_id] as $vaInfo)
+				{
+					$assignedTesterId = intval($vaInfo['user_id']);
+					if($assignedTesterId)
+					{
+					  $user = tlUser::getByID($this->db,$assignedTesterId);
+					  if ($user)
+					  {
+						$userList[] = $user->getDisplayName();
+					  }
+					}
+				}
+			}
+			(count($userList) > 0) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
+			
+			$xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
                                                          $tproject_id,testcase::NOXMLHEADER,
                                                          $tcaseExportOptions);
           break;
         }
       }
-    }   
+    }
 
     if( isset($container['id']) )
     {

@@ -3818,6 +3818,16 @@ class testcase extends tlObjectWithAttachments
       $tc_data[0]['exec_order'] = $optExport['EXEC_ORDER'];
     }
 
+    // TICKET 7513: Export assigned_users into "Export Test Plan" XML content
+    if(isset($optExport['ASSIGNED_USER'])) // table with all users assigned to an execution
+    {
+	  $elemTpl .= "\t<assigned_users>\n";
+	  foreach ($optExport['ASSIGNED_USER'] as $key => $username){
+		$elemTpl .= "\t\t<assigned_user><![CDATA[".$username."]]></assigned_user>\n";
+	  }
+	  $elemTpl .= "\t</assigned_users>\n";
+    }
+
     if(!isset($optExport['EXTERNALID']) || $optExport['EXTERNALID'])
     {
       $elemTpl .= "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n";

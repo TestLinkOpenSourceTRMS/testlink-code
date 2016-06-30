@@ -3823,6 +3823,10 @@ class testcase extends tlObjectWithAttachments
       $elemTpl .= "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n";
     }
 
+	if(!isset($optExport['ADDPREFIX']) || $optExport['ADDPREFIX'])
+    {
+      $elemTpl .= "\t<fullexternalid><![CDATA[||FULLEXTERNALID||]]></fullexternalid>\n";
+    }
     $optElem = '';
     if( !isset($optExport['TCSUMMARY']) || $optExport['TCSUMMARY'] )
     {
@@ -3855,7 +3859,8 @@ class testcase extends tlObjectWithAttachments
                     "{{NAME}}" => "name",
                     "||NODE_ORDER||" => "node_order",
                     "||EXEC_ORDER||" => "exec_order",
-                    "||EXTERNALID||" => ($opt['getPrefix'] ? 'fullExternalID': 'tc_external_id'),
+                    "||EXTERNALID||" => "tc_external_id",
+                    "||FULLEXTERNALID||" => "fullExternalID",
                     "||VERSION||" => "version",
                     "||SUMMARY||" => "summary",
                     "||PRECONDITIONS||" => "preconditions",

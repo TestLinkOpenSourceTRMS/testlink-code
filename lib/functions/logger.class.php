@@ -15,13 +15,13 @@
  *
  * @package     TestLink
  * @author      Andreas Morsing
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @filesource  logger.class.php
  * @link        http://www.testlink.org
  * @since       1.8
  * 
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  **/
  
 /**
@@ -1065,8 +1065,13 @@ class tlDBLogger extends tlObjectWithDB
 class tlFileLogger extends tlObject
 {
   static protected $eventFormatString = "\t[%timestamp][%errorlevel][%sessionid][%source]\n\t\t%description\n";
+
   static protected $openTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime]\n";
+
   static protected $closedTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime][%endTime][took %duration secs]\n";
+
+  static $gmdateMask = "y/M/j H:i:s";
+
   var $logLevelFilter = null;
 
   protected $doLogging = true;
@@ -1099,8 +1104,6 @@ class tlFileLogger extends tlObject
   }
 
 
-
-  //SCHLUNDUS: maybe i dont' write the transaction stuff to the file?
   public function writeTransaction(&$t)
   {
     if ($this->getEnableLoggingStatus() == false)
@@ -1115,11 +1118,14 @@ class tlFileLogger extends tlObject
 
     //build the logfile entry
     $subjects = array("%prefix","%transactionID","%name","%entryPoint","%startTime","%endTime","%duration");
+
     $bFinished = $t->endTime ? 1 : 0;
-    $formatString = $bFinished ? self::$closedTransactionFormatString : self::$openTransactionFormatString;
-    $replacements = array($bFinished ? "<<" :">>", $t->getObjectID(), $t->name, $t->entryPoint,
-                                                   gmdate("y/M/j H:i:s",$t->startTime),
-                          $bFinished ? gmdate("y/M/j H:i:s",$t->endTime) : null,
+    $formatString = $bFinished ? self::$closedTransactionFormatString : 
+                    self::$openTransactionFormatString;
+    $replacements = array($bFinished ? "<<" :">>", 
+                          $t->getObjectID(), $t->name, $t->entryPoint,
+                          gmdate(self::$gmdateMask,$t->startTime),
+                          $bFinished ? gmdate(self::$gmdateMask,$t->endTime) : null,
                           $t->duration,);
     $line = str_replace($subjects,$replacements,$formatString);
     return $this->writeEntry(self::getLogFileName(),$line);
@@ -1147,7 +1153,7 @@ class tlFileLogger extends tlObject
     
     // build the logfile entry
     $subjects = array("%timestamp","%errorlevel","%source","%description","%sessionid");
-    $replacements = array(gmdate("y/M/j H:i:s",$e->timestamp),
+    $replacements = array(gmdate(self::$gmdateMask,$e->timestamp),
                           tlLogger::$logLevels[$e->logLevel],
                           $e->source,$description,
                           $e->sessionID ? $e->sessionID : "<nosession>");
@@ -1320,7 +1326,7 @@ class tlMailLogger extends tlObjectWithDB
     // build the logfile entry
     $subjects = array("%timestamp","%errorlevel","%source","%description","%sessionid");
     
-    $verboseTimeStamp = gmdate("y/M/j H:i:s",$event->timestamp);
+    $verboseTimeStamp = gmdate(self::$gmdateMask,$event->timestamp);
     $replacements = array($verboseTimeStamp,
                           tlLogger::$logLevels[$event->logLevel],
                           $event->source,$description,

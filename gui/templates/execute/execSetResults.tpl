@@ -286,6 +286,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     </div>
   {/if}
 
+  {if $gui->plugins.EVENT_TESTRUN_DISPLAY}
+    <div id="plugin_display">
+      {foreach from=$gui->plugins.EVENT_TESTRUN_DISPLAY item=testrun_item}
+        {$testrun_item}
+        <br />
+      {/foreach}
+    </div>
+  {/if}
 
   {* -------------------------------------------------------------------------------- *}
   {* Test Plan notes show/hide management                                             *}
@@ -457,7 +465,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		{/if}
 		<p>
 	{/if}
-  
+
   {include file="execute/inc_exec_show_tc_exec.tpl"}
   {if isset($gui->refreshTree) && $gui->refreshTree}
     {include file="inc_refreshTreeWithFilters.tpl"}

@@ -57,7 +57,8 @@ class TLTestPlugin extends TestlinkPlugin
       'EVENT_LEFTMENU_TOP' => 'top_link',
       'EVENT_LEFTMENU_BOTTOM' => 'bottom_link',
       'EVENT_RIGHTMENU_TOP' => 'right_top_link',
-      'EVENT_RIGHTMENU_BOTTOM' => 'right_bottom_link'
+      'EVENT_RIGHTMENU_BOTTOM' => 'right_bottom_link',
+      'EVENT_TESTRUN_DISPLAY' => 'testrun_display_block'
     );
     return $hooks;
   }
@@ -84,7 +85,13 @@ class TLTestPlugin extends TestlinkPlugin
 
   function testExecute() {
     $arg = func_get_args();   // To get all the arguments
-    tLog("In TestRun with planid: " . $arg[1] . ", buildid: " . $arg[2] . ", testcaseid: " . $arg[3] . ", Notes: " . $arg[4] . ", Status: " . $arg[5], "WARNING");
+    tLog("In TestRun with testrunid: " . $arg[1] . ", planid: " . $arg[2] . ", buildid: " . $arg[3] . ", testcaseid: " . $arg[4] . ", Notes: " . $arg[5] . ", Status: " . $arg[6], "WARNING");
+  }
+
+  function testrun_display_block() {
+    $args = func_get_args();
+    // $args details: $arg[1] -> Testplan Id, $arg[2] -> Build Id, $arg[3] ->TestCase Id, $arg[4] -> TestCase Version Id
+    return '<img src="http://www.testingexcellence.com/wp-content/uploads/2010/01/testlink-open-source-test-management-tool.jpg" />';
   }
 
   function bottom_link()

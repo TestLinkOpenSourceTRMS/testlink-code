@@ -125,6 +125,14 @@ if(!is_null($linked_tcversions))
     $tcversion_id = $itemSet->tcversion_id;
   }
 
+  // Send Event for Drawing UI from plugins
+ $ctx = array('tplan_id' => $args->tplan_id,
+              'build_id' => $args->build_id,
+              'tcase_id' => $tcase_id,
+              'tcversion_id' => $tcversion_id);
+ $gui->plugins = array();
+ $gui->plugins['EVENT_TESTRUN_DISPLAY'] = event_signal('EVENT_TESTRUN_DISPLAY', $ctx);
+  
   // check if value is an array before calling implode to avoid warnings in event log
   $gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
 
@@ -180,7 +188,8 @@ if(!is_null($linked_tcversions))
       }
 
       // Propagate events
-      $ctx = array('tplan_id' => $args->tplan_id,
+      $ctx = array('id' => $execSet[$tcversion_id],
+                   'tplan_id' => $args->tplan_id,
                    'build_id' => $args->build_id,
                    'tcase_id' => $tcase_id,
                    'status'   => $args->statusSingle[$args->version_id],

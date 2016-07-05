@@ -448,34 +448,51 @@ function saveImportedResultData(&$db,$resultData,$context,$options)
           $db->exec_query($sql); 
           $execution_id = $db->insert_id($tables['executions']);
 
-          // 20150127
-          /*
-          if(isset($tcase_exec['steps']) && !is_null($tcase_exec['steps']))
-          {
-            $stepSet = $tcase_mgr->getStepsSimple($tcversion_id,0,
-                                                  array('fields2get' => 'TCSTEPS.step_number,TCSTEPS.id',
-                                                        'accessKey' => 'step_number'));
-            $sc = count($tcase_exec['steps']);
-            for($sx=0; $sx < $sc; $sx++)
-            {
-              $snum = $$tcase_exec['steps'][$sx];
-              // assumption: all data is valid
-              if(isset($stepSet[$snum]))
-              {
-                
-              }  
-            }  
-          }  
-          new dBug($tcase_exec);
-          die();
-          */
-
-
-
           if($lexid > 0 && $options->copyIssues)
           {
             copyIssues($db,$lexid,$execution_id);
-          } 
+          }
+		
+		if(isset($tcase_exec['steps']) && !is_null($tcase_exec['steps']) && $execution_id > 0 )
+		{
+			$stepSet = $tcase_mgr->getStepsSimple($tcversion_id,0,
+					  array('fields2get' => 'TCSTEPS.step_number,TCSTEPS.id',
+							'accessKey' => 'step_number'));
+			$sc = count($tcase_exec['steps']);
+
+			for($sx=0; $sx < $sc; $sx++)
+			{
+			  $snum = $tcase_exec['steps'][$sx]['step_number'];
+			  
+			  if(isset($stepSet[$snum]))
+			  {	
+				$tcstep_id = $stepSet[$snum]['id'];
+				$target = DB_TABLE_PREFIX . 'execution_tcsteps';
+				
+				$doIt = (!is_null($tcase_exec['steps'][$sx]['result']) && 
+						   trim($tcase_exec['steps'][$sx]['result']) != '') || 
+						  $tcase_exec['steps'][$sx]['result'] != $resultsCfg['status_code']['not_run'];
+
+				if( $doIt )
+				{
+					$sql = " INSERT INTO {$target} (execution_id,tcstep_id,notes";
+					$values = " VALUES ( {$execution_id},  {$tcstep_id} , " . 
+							  "'" . $db->prepare_string($tcase_exec['steps'][$sx]['notes']) . "'";
+
+					$status = strtolower(trim($tcase_exec['steps'][$sx]['result']));
+					$status = $status[0];
+					$sql .= ",status";
+					$values .= ",'" . $db->prepare_string($tcase_exec['steps'][$sx]['result']) . "'";
+					  
+					$sql .= ") " . $values . ")";
+					$db->exec_query($sql);
+
+					$execution_tcsteps_id = $db->insert_id($target);
+				  } 
+			  }
+			}
+		}
+
           if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
           { 
             foreach($tcase_exec['bug_id'] as $bug_id)

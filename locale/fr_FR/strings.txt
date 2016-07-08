@@ -2956,7 +2956,7 @@ $TLS_tproject_import_requirements = "%s : Importer des exigences";
 $TLS_reqspec_import_requirements = "%s : Importer des exigences";
 $TLS_tproject_import_req_spec = "%s : Importer des dossiers d’exigences";
 $TLS_reqspec_import_req_spec = "%s : Importer des dossiers d’exigences";
-$TLS_import_failed_xml_load_failed = "Le chargemet de l’import XML a échoué.";
+$TLS_import_failed_xml_load_failed = "Le chargement de l’import XML a échoué.";
 
 $TLS_same_docid = "a le même DOC ID";
 $TLS_same_title = "a le même titre";

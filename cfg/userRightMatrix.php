@@ -2,18 +2,10 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * Filename $RCSfile: userRightMatrix.php,v $
- *
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/03/07 10:06:28 $  $Author: franciscom $
- *
+ * @filesource	userRightMatrix.php
  * @author Andreas Morsing
  *
  * Configuration of the access rights needed for executing pages
- *
- * rev:
- *      20080120 - franciscom - buildnew -> buildedit 
- *      20071206 - franciscom - page name changes
  *
  * 
 **/
@@ -39,8 +31,6 @@ $reports_url='lib/result';
 $tc_admin_url='lib/testcases';
 $cf_admin_url='lib/cfields';
 $print_url='lib/print';
-
-
 
 // 
 $user_admin=array("$user_admin_url/usersassign.php"  => array ("user_role_assignment",));														

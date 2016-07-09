@@ -64,7 +64,7 @@ Purpose: smarty template - View all platforms
 				{/if}
 			</td>
 			{* when using rich webeditor strip_tags is needed - franciscom *}
-			<td>{$gui->platforms[platform].notes|strip_tags|strip|truncate:#PLATFORM_NOTES_TRUNCATE_LEN#}</td>
+			 <td>{if $gui->editorType == 'none'}{$gui->platforms[platform].notes|nl2br}{else}{$gui->platforms[platform].notes|strip_tags|strip|truncate:#PLATFORM_NOTES_TRUNCATE_LEN#}{/if}</td>
 
 			{if $gui->canManage != ""}
 			<td class="clickable_icon">

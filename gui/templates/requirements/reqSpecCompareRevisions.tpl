@@ -200,7 +200,7 @@ function validateForm(f)
 	
 	<div class="workBack" style="width:97%;">
 	
-	<form target="diffwindow" method="post" action="lib/requirements/reqSpecCompareRevisions.php" 
+	<form target="diffwindow" method="post" action="{$basehref}lib/requirements/reqSpecCompareRevisions.php" 
 		  name="cmp" id="cmp"  
 		  onsubmit="return validateForm(this);" />			
 	

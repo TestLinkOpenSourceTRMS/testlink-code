@@ -11,11 +11,10 @@
  *
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2010, TestLink community
- * @version    	CVS: $Id: checkNodeDuplicateName.php,v 1.2 2010/10/10 14:15:56 franciscom Exp $
+ * @copyright 	2010,2014 TestLink community
+ * @filesource  checkNodeDuplicateName.php
  *
- * @internal Revisions:
- * 20101010 - franciscom - created using as starting point checkDuplicateName.php by eloff
+ * @internal revisions
  *
  **/
 
@@ -36,11 +35,6 @@ $node_types_descr_id=$tree_manager->get_available_node_types();
 // To allow name check when creating a NEW NODE => we do not have node id
 $args['node_id'] = ($args['node_id'] > 0 )? $args['node_id'] : null;
 $args['parent_id'] = ($args['parent_id'] > 0 )? $args['parent_id'] : null;
-
-// for debug - 
-// $xx = "\$args['node_id']:{$args['node_id']} - \$args['name']:{$args['name']}" .
-//       " - \$args['parent_id']:{$args['parent_id']}";
-// file_put_contents('c:\checkTCaseDuplicateName.php.ajax', $xx);                            
 
 $check = $tree_manager->nodeNameExists($args['node_name'], $node_types_descr_id[$args['node_type']],
 									   $args['node_id'],$args['parent_id']);

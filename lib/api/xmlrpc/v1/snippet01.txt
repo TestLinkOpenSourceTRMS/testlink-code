@@ -1,0 +1,14 @@
+    if( $status_ok )
+    {
+      // Check test suite belongs to test project
+      $itemID = $this->args[self::$testSuiteIDParamName];
+      $dummy = 
+        $this->tprojectMgr->tree_manager->getTreeRoot($itemID);
+      
+      $status_ok = ($dummy == $this->args[self::$testProjectIDParamName])
+ 
+      if(!$status_ok)
+      {
+        
+      }  
+    }    

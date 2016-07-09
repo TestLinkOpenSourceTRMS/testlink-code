@@ -46,9 +46,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function initializeGui(&$dbHandler,$args)
 {
-	global $g_locales_date_format;
 	$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-	$date_format = $g_locales_date_format[$locale];
+	$localesDateFormat = config_get('locales_date_format');
+	$date_format = $localesDateFormat[$locale];
 
 	$gui = new stdClass();
 	$tplan_mgr = new testplan($dbHandler);

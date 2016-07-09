@@ -1,0 +1,9 @@
+<issuetracker>
+  <username>testlink.forum</username>
+  <password>forum</password>
+  <uribase>http://testlink.atlassian.net/</uribase>
+  <uriwsdl>http://testlink.atlassian.net/rpc/soap/jirasoapservice-v2?wsdl</uriwsdl>
+  <uriview>http://testlink.atlassian.net/browse/</uriview>
+  <uricreate>http://testlink.atlassian.net/secure/CreateIssue!default.jspa</uricreate>
+  <projectkey>ZOFF</projectkey>
+</issuetracker>

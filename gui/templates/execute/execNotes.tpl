@@ -2,6 +2,8 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: execNotes.tpl,v 1.3 2008/08/27 06:20:06 franciscom Exp $
 Purpose: smarty template - template for show execution notes 
+
+CHECK NEEDED - Probably this code is OBSOLETE and not used anymore.
 *}
 {include file="inc_head.tpl" editorType=$editorType}
 <body>

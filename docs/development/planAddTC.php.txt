@@ -1,0 +1,41 @@
+planAddTC.php.txt
+
+This does filter on keywords ALWAYS in OR mode.
+
+CRITIC:
+We have arrived after clicking in a node of Test Spec Tree where we have two classes of filters
+1. filters on attribute COMMON to all test case versions => TEST CASE attribute like keyword_id
+2. filters on attribute that can change on each test case version => execution type.
+
+For attributes at Version Level, filter is done ON LAST ACTIVE version, that can be NOT the VERSION
+already linked to test plan.
+This can produce same weird effects like this:
+ 1. Test Suite A - create TC1 - Version 1 - exec type MANUAL
+ 2. Test Suite A - create TC2 - Version 1 - exec type AUTO
+ 3. Test Suite A - create TC3 - Version 1 - exec type MANUAL
+ 4. Use feature ADD/REMOVE test cases from test plan.
+ 5. Add TC1 - Version 1 to test plan
+ 6. Apply filter on exec type AUTO
+ 7. Tree will display (Folder) Test Suite A with 1 element
+ 8. click on folder, then on RIGHT pane:
+    TC2 - Version 1 NOT ASSIGNED TO TEST PLAN is displayed
+ 9. Use feature edits test cases, to create a new version for TC1 -> Version 2 - exec type AUTO
+10. Use feature ADD/REMOVE test cases from test plan.
+11. Apply filter on exec type AUTO
+12. Tree will display (Folder) Test Suite A with 2 elements
+13. click on folder, then on RIGHT pane:
+    TC2 - Version 1 NOT ASSIGNED TO TEST PLAN is displayed
+    TC1 - Version 2 NOT ASSIGNED TO TEST PLAN is displayed  ----> THIS IS RIGHT but WRONG
+    Only one TC version can be linked to test plan, and TC1 already is LINKED BUT with VERSION 1.
+    Version 2 is displayed because it has EXEC TYPE AUTO
+
+How to solve ?
+Filters regarding this kind of attributes WILL BE NOT APPLIEDED to get linked items
+In this way counters on Test Spec Tree and amount of TC displayed on right pane will be coherent.
+
+
+20130426
+Hmm. But if I do as explained in ' How to solve ?'
+I need to apply this filters on a second step or this filters will not work
+Need to check what I've done
+

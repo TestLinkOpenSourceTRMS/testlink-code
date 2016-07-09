@@ -3,7 +3,7 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Localization: Frech (fr_FR) descriptions
+ * Localization: French (fr_FR) descriptions
  *
  * 
  * The file contains global variables with html text. These variables are used as 
@@ -35,7 +35,7 @@ $TLS_hlp_generateDocOptions = "<h2>Options pour un document généré</h2>
 
 <p><b>Corps de cas de test:</b> Les utilisateurs peuvent filtrer les informations du corps du cas de test. Les informations du corps de cas de test comprennent: le résumé, les pas de test, les résultats attendus, et les mots-clés.</p>
 
-<p><b>Résumé de cas de test:</b> Les utilisateurs peuvent filtrer les informations du résumé de cas de test depuis le titre du cas de test, mais ils ne peuvent pas filtrer les informations de résumé de cas de test du corps de cas de test. Le résumé du cas de test a été partiellement séparé du corps du cas de test afin de permettre la visualisation des tires avec un bref résumé et sans les pas de test, les résultats attendus, et les mots-clés. Si un utilisateur décide de visualiser le corps de cas de test, le résumé de cas de test est inclus.</p>
+<p><b>Résumé de cas de test:</b> Les utilisateurs peuvent filtrer les informations du résumé de cas de test depuis le titre du cas de test, mais ils ne peuvent pas filtrer les informations de résumé de cas de test du corps de cas de test. Le résumé du cas de test a été partiellement séparé du corps du cas de test afin de permettre la visualisation des titres avec un bref résumé et sans les pas de test, les résultats attendus, et les mots-clés. Si un utilisateur décide de visualiser le corps de cas de test, le résumé de cas de test est inclus.</p>
 
 <p><b>Table des matières:</b> TestLink insère la liste des tous les titres avec un lien hypertexte interne si coché.</p>
 
@@ -45,7 +45,7 @@ $TLS_hlp_generateDocOptions = "<h2>Options pour un document généré</h2>
 $TLS_hlp_testPlan = "<h2>Campagne de test</h2>
 
 <h3>Général</h3>
-<p>Une campagne de test est une approche systèmatique pour test un système comme un logiciel. Il est possible d’organiser l’activité de test avec des Builds particuliers du produit à temps et tracer les résultats.</p>
+<p>Une campagne de test est une approche systématique pour test un système comme un logiciel. Il est possible d’organiser l’activité de test avec des Builds particuliers du produit à temps et tracer les résultats.</p>
 
 <h3>Exécution de test</h3>
 <p>Cette section est celle où les utilisateurs peuvent exécuter les cas de test (écrire des résultats de test) et imprime la séquence de test de la campagne de test. Cette section est où les utilisateurs peuvent tracer les résultats de leur exécution de cas de test.</p> 
@@ -54,7 +54,7 @@ $TLS_hlp_testPlan = "<h2>Campagne de test</h2>
 <p>Cette section, accessible uniquement par les test leaders, permet les utilisateurs d’administrer les campagnes de test. Administrer les campagnes de test implique la création/modification/suppression de campagnes, l’ajout/modification/suppression/mise à jour des cas de test dans les campagnes, la création de Builds aussi bien que la définition des droits de lecture des campagnes.<br />
 Les utilisateurs avec les permissions de leader peuvent aussi définir la priorité/risques et la propriété des séquences de cas de test (catégories) et créer des jalons de test.</p> 
 
-<p>Remarque: Il est possible que les utilisateurs puissent ne pas voir de liste déroulante avec les campagnes de test. Dans ce cas, tous les liens (sauf ceux actifs pour le test leader) seront indisponibles. Si tel est le cas, veuillez contacter le test leader ou l’administrateur pour vous donner les droits du projet qui conviennt ou pour vous créer une campagne de test.</p>"; 
+<p>Remarque: Il est possible que les utilisateurs puissent ne pas voir de liste déroulante avec les campagnes de test. Dans ce cas, tous les liens (sauf ceux actifs pour le test leader) seront indisponibles. Si tel est le cas, veuillez contacter le test leader ou l’administrateur pour vous donner les droits du projet qui convienne ou pour vous créer une campagne de test.</p>"; 
 
 // custom_fields.html
 $TLS_hlp_customFields = "<h2>Champs personnalisés</h2>
@@ -64,7 +64,7 @@ $TLS_hlp_customFields = "<h2>Champs personnalisés</h2>
 <li>Les champs personnalisés sont liés à un type d’élément (séquence de test, cas de test);</li>
 <li>Les champs personnalisés peuvent être liés à plusieurs projet de test;</li>
 <li>L’ordre d’affichage des champs personnalisés peuvent être différent par projet de test;</li>
-<li>Les champs personnalisés peuvnet être désactivés sur des projets de test particuliers;</li>
+<li>Les champs personnalisés peuvent être désactivés sur des projets de test particuliers;</li>
 <li>Le nombre de champs personnalisés n’est pas limité.</li>
 </ul>
 
@@ -79,9 +79,9 @@ $TLS_hlp_customFields = "<h2>Champs personnalisés</h2>
 <li>Valeur par défaut; pas encore implémenté;</li>
 <li>longueur minimale/maximale pour la valeur du champ personnalisé (utiliser 0 pour désactiver); pas encore implémenté;</li>
 <li>Expression régulière pour utiliser pour valider l’entrée utilisateur (voir la syntaxe <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>). <b>(pas encore implémenté)</b></li>
-<li>Tous les champs personnalisés sont actuellement enregistrés dans un champs de type VARCHAR(255) dans la base de données;</li>
+<li>Tous les champs personnalisés sont actuellement enregistrés dans un champ de type VARCHAR(255) dans la base de données;</li>
 <li>Affichage sur la conception de cas de test;</li>
-<li>Activer sur le cahier de test: l’utilisateur peut changer la velur pendant la conception de cas de test</li>
+<li>Activer sur le cahier de test: l’utilisateur peut changer la valeur pendant la conception de cas de test</li>
 <li>Affichage sur l’exécution de test;</li>
 <li>Activer sur l’exécution de test; l’utilisateur peut modifier la valeur pendant l’exécution de test;</li>
 <li>Affichage sur la conception de campagne de test;</li>
@@ -92,20 +92,20 @@ $TLS_hlp_customFields = "<h2>Champs personnalisés</h2>
 
 // execMain.html
 $TLS_hlp_executeMain = "<h2>Exécution de cas de test</h2>
-<p>Permet aux utilisateurs d’exécter les cas de test. L’exécution en elle-même n’est qu’une assignation au cas de test d’un résultat (réussi, en échec, bloqué) pour un Build (livraison) donné.</p>
-<p>L’accès à un système de gestion d’anomalie peut être configuré. L’utilisateur peut alors ajouté directement de nouvelles anomalies et rechercher celles existantes. Voir le manuel d’installation pour d’avantage de détails.</p>";
+<p>Permet aux utilisateurs d’exécuter les cas de test. L’exécution en elle-même n’est qu’une assignation au cas de test d’un résultat (réussi, en échec, bloqué) pour un Build (livraison) donné.</p>
+<p>L’accès à un système de gestion d’anomalie peut être configuré. L’utilisateur peut alors ajouter directement de nouvelles anomalies et rechercher celles existantes. Voir le manuel d’installation pour d’avantage de détails.</p>";
 
 //bug_add.html
 $TLS_hlp_btsIntegration = "<h2>Ajout d’anomalie au cas de test</h2>
 <p><i>(Seulement si c’est configuré)</i>
-TestLink a une intégration très simple avec les système de gestion d’anomalies, qui n’est ni capable d’envoyer de requête de création au système, ni récupérer le bug id. L’intégration est fait par des liens aux pages du système de gestion d’anomalie, qui appelle les fonctionnalités suivantes:
+TestLink a une intégration très simple avec les systèmes de gestion d’anomalies, qui n’est ni capable d’envoyer de requête de création au système, ni récupérer le bug id. L’intégration est faite par des liens aux pages du système de gestion d’anomalie, qui appelle les fonctionnalités suivantes:
 <ul>
 	<li>Insertion d’une nouvelle anomalie;</li>
 	<li>Affichage des informations de l’anomalie. </li>
 </ul>
 </p>  
 
-<h3>Processur d’ajout d’anomalie</h3>
+<h3>Processus d’ajout d’anomalie</h3>
 <p>
    <ul>
    <li>Etape 1: utiliser le lien pour ouvrir le gestionnaire d’anomalies pour insérer la nouvelle anomalie;</li>
@@ -132,7 +132,7 @@ $TLS_hlp_executeFilter = "<h2>Propriétés</h2>
 <p>Il est possible de choisir le Build pour en exécuter les cas de test.</p>
 
 <h2>Filtres</h2>
-<p>Les filtres fournissent la possibilité de modifier la série de cas de test affichés avant exécution, et d’en réduire la liste en applicant les filtres avec le bouton \"Appliquer\".</p>
+<p>Les filtres fournissent la possibilité de modifier la série de cas de test affichés avant exécution, et d’en réduire la liste en appliquant les filtres avec le bouton \"Appliquer\".</p>
 
 <p> Les filtres avancés permet de spécifier une liste de valeurs pour les filtres en utilisant CTRL-Clic dans la liste multi-sélection.</p>
 
@@ -162,20 +162,20 @@ $TLS_hlp_requirementsCoverage = "<h3>Couverture des exigences</h3>
 <p>La fonctionnalité permet de cartographier la couverture des exigences utilisateur ou système par cas de test.</p>
 
 <h3>Dossier d’exigences</h3>
-<p>Les exigences sont regroupés dans un cahier d’exigences qui est liée au projet de test.<br /> TestLink ne supporte pas les versions des dossier d’exigences et en même temps des exigences: il faut d’abord faire une version d’exigence avec d’effecter celle du dossier.<b>Titre</b>. Un utilisateur peut ajouter une simple description ou des notes au champ de <b>Contexte</b>.</p> 
+<p>Les exigences sont regroupés dans un cahier d’exigences qui est liée au projet de test.<br /> TestLink ne supporte pas les versions des dossiers d’exigences et en même temps des exigences: il faut d’abord faire une version d’exigence avec d’effectuer celle du dossier.<b>Titre</b>. Un utilisateur peut ajouter une simple description ou des notes au champ de <b>Contexte</b>.</p> 
 
 <p><b><a name=’total_count’>Le comptage surchargé d’exigences</a></b> sert d’évaluation à la couverture d’exigences dans le cas où toutes les exigences ne sont pas ajoutées (importées). La valeur <b>0</b> signifie que le comptage courant d’exigences est utilisé pour les métriques.</p> 
 <p><i>Par exemple: le cahier d’exigences compte 200 exigences mais seulement 50 sont ajoutées dans Testlink. La couverture est de 25% (si toutes les exigences ajoutées sont testées).</i></p>
 
 <h3><a name=\"req\">Exigences</a></h3>
-<p>Cliquer sur le titre des dossiers d’exigences créés. il est possible de créer, modifier, supprimer ou importer les exigences du cahier de test.Chaque exigence a un titre, un contexte et un statut. Le statut peut être \"Normal\" ou \"Non testable\". Les exigences non testables ne sont pas comptées dans les métriques. Ce paramètre peut être utilisé pour des fonctionnalités non implémentées et des exigences mal conçues.</p> 
+<p>Cliquer sur le titre des dossiers d’exigences créés. il est possible de créer, modifier, supprimer ou importer les exigences du cahier de test. Chaque exigence a un titre, un contexte et un statut. Le statut peut être \"Normal\" ou \"Non testable\". Les exigences non testables ne sont pas comptées dans les métriques. Ce paramètre peut être utilisé pour des fonctionnalités non implémentées et des exigences mal conçues.</p> 
 
 <p>Il est possible de créer de nouveaux cas de test pour les exigences en utilisant l’action multiple avec les exigences sélectionnées dans l’écran du cahier. Les cas de test sont créés dans la séquence de test avec le nom défini en configuration <i>(par défaut: &#36;tlCfg->req_cfg->default_testsuite_name = 
 \"Test suite created by Requirement - Auto\";)</i>. Le titre et le contexte sont copiés dans le cas de test.</p>
 ";
 
 $TLS_hlp_req_coverage_table = "<h3>Couverture:</h3>
-Une valeur de, par exemple, \"40% (8/20)\" signifie que 20 cas de test doivent être créés pour l’exigence pour la tester entièrement, 8 de ces cas sont déjà créés et liés à l’exigences, ce qui fait une couverture de 40%.
+Une valeur de, par exemple, \"40% (8/20)\" signifie que 20 cas de test doivent être créés pour l’exigence pour la tester entièrement, 8 de ces cas sont déjà créés et liés à l’exigence, ce qui fait une couverture de 40%.
 ";
 
 
@@ -193,7 +193,7 @@ Lien vers des dossiers d’exigences: [req_spec]req_spec_doc_id[/req_spec]</p>
 Cette syntaxe fonctionne également pour les dossiers d’exigences.</p>
 
 <h3>Message de log pour modifications:</h3>
-<p>Pour toute modification, Testlink demande un message de logservant à la tracabilité. Si uniquement le contexte de l’exigence a été modifié, vous être libre de choisir de créer ou non une nouvelle révision. Quand toute autre modification est apportée, la création d’une nouvelle révision est obligatoire.</p>
+<p>Pour toute modification, Testlink demande un message de log servant à la traçabilité. Si uniquement le contexte de l’exigence a été modifié, vous être libre de choisir de créer ou non une nouvelle révision. Quand toute autre modification est apportée, la création d’une nouvelle révision est obligatoire.</p>
 ";
 
 
@@ -202,13 +202,13 @@ $TLS_hlp_req_view = "<h3>Liens directs:</h3>
 <p>Pour facilement partager le document avec d’autres personnes, cliquer tout simplement sur l’icône globe en haut du document pour créer un lien direct.</p>
 
 <h3>Historique:</h3>
-<p>La fonctionnalité permet de comparer les révisions/versions d’exigences si plusieurs révisions/versions de l’exigence existe. Le récapitulatif forunit le message de log pour chaque révision/version, un horodatage et l’auteur de la dernière modification.</p>
+<p>La fonctionnalité permet de comparer les révisions/versions d’exigences si plusieurs révisions/versions de l’exigence existe. Le récapitulatif fournit le message de log pour chaque révision/version, un horodatage et l’auteur de la dernière modification.</p>
 
 <h3>Couverture:</h3>
 <p>Affiche tous les cas de test liés à l’exigence courante.</p>
 
 <h3>Relations:</h3>
-<p>Les relations d’exigence sont utilisées pour modéliser les relatiosn entre les exigences. Les relations personnalisées et l’option pour autoriser les relations entre exigences de différents projets de test peuvent être configurées dans le fichier de configuration. Si vous définissez une relation \"Exigence A est parent de Exigence B\", Testlink définit implicitement la relation \"Exigence B est enfant de Exigence A\".</p>
+<p>Les relations d’exigence sont utilisées pour modéliser les relations entre les exigences. Les relations personnalisées et l’option pour autoriser les relations entre exigences de différents projets de test peuvent être configurées dans le fichier de configuration. Si vous définissez une relation \"Exigence A est parent de Exigence B\", Testlink définit implicitement la relation \"Exigence B est enfant de Exigence A\".</p>
 ";
 
 
@@ -233,7 +233,7 @@ $TLS_hlp_planAddTC = "<h2>Concernant ’Enregistrer les champs personnalisés’
 Si des champs personnalisés ont été définis et affectés au projet de test, avec:<br /> 
  ’Afficher sur la conception de campagne de test=true’ et <br />
  ’Activer sur la conception de campagne de test=true’<br />
-Les champs ne sont visible sur la page uniquement pour les cas de test liés à la campagne de test.
+Les champs sont visibles sur la page uniquement pour les cas de test liés à la campagne de test.
 ";
 
 

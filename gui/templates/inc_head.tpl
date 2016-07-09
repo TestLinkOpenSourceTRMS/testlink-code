@@ -8,17 +8,8 @@ Critic Smarty Global Variables expected
 
 editorType: used to understand if code for tinymce need to be loaded 
 
-rev :
-     20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
-     20090801 - franciscom - moved include of prototype.js here because
-                             is not anymore included on EXT-JS distribution
-                             
-     20080326 - franciscom - restored $testproject_coloring logic
-     20080109 - franciscom - added sort table engine management
-     20071201 - franciscom - tinymce support
 *}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset={$pageCharset}" />
@@ -48,7 +39,7 @@ rev :
 {* ----- load javascripts libraries -------------------------------------------------- *} 
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
-	<script type="text/javascript" src="{$basehref}third_party/prototype/prototype.js" language="javascript"></script>
+	
 	{if $jsValidate == "yes"} 
 	<script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
     {include file="inc_jsCfieldsValidation.tpl"}
@@ -64,6 +55,13 @@ rev :
 	<script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" 
 		language="javascript"></script>
 	{/if}
+
+
+  	<link rel="stylesheet" href="{$basehref}third_party/chosen/chosen.css">
+	<script type="text/javascript" src="{$basehref}third_party/jquery/jquery-2.0.3.min.js" language="javascript"></script>
+	<script type="text/javascript" src="{$basehref}third_party/chosen/chosen.jquery.js"></script>
+
+	<script type="text/javascript" src="{$basehref}third_party/prototype/prototype.js" language="javascript"></script>
 
 	<script type="text/javascript" language="javascript">
 	<!--

@@ -3,16 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	overallPieChart.php
- * @package 	TestLink
- * @author 		franciscom
- * @copyright 	2005-2012, TestLink community
- * @copyright 	
- * @link 		http://www.teamst.org/index.php
+ * @filesource  overallPieChart.php
+ * @package     TestLink
+ * @author      franciscom
+ * @copyright   2005-2013, TestLink community
+ * @copyright   
+ * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.4
- * 20120531 - franciscom - refactored to use tlTestPlanMetrics class
+ * @since 1.9.10
  *
 **/
 require_once('../../config.inc.php');
@@ -20,12 +19,11 @@ require_once('common.php');
 define('PCHART_PATH','../../third_party/pchart');
 include(PCHART_PATH . "/pChart/pData.class");   
 include(PCHART_PATH . "/pChart/pChart.class");   
-testlinkInitPage($db,true,false,"checkRights");
 
 $resultsCfg = config_get('results');
 $chart_cfg = $resultsCfg['charts']['dimensions']['overallPieChart'];
 
-$args = init_args();
+$args = init_args($db);
 $tplan_mgr = new testplan($db);
 
 $metricsMgr = new tlTestPlanMetrics($db);
@@ -36,12 +34,12 @@ $values = array();
 $labels = array();
 foreach($totals as $key => $value)
 {
-    $values[] = $value;
-    $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ($value)"; 
-    if( isset($resultsCfg['charts']['status_colour'][$key]) )
-    {
-    	$series_color[] = $resultsCfg['charts']['status_colour'][$key];
-    }	
+  $values[] = $value;
+  $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ($value)"; 
+  if( isset($resultsCfg['charts']['status_colour'][$key]) )
+  {
+    $series_color[] = $resultsCfg['charts']['status_colour'][$key];
+  } 
 }
 
 // Dataset definition    
@@ -70,8 +68,8 @@ $graph->description = $DataSet->GetDataDescription();
 $Test = new pChart($pChartCfg->XSize,$pChartCfg->YSize);
 foreach($series_color as $key => $hexrgb)
 {
-    $rgb = str_split($hexrgb,2);
-    $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
+  $rgb = str_split($hexrgb,2);
+  $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
 }
  
 // Draw the pie chart   
@@ -89,7 +87,7 @@ $Test->Stroke();
  */
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'testplan_metrics');
+  return $user->hasRight($db,'testplan_metrics');
 }
 
 
@@ -97,12 +95,41 @@ function checkRights(&$db,&$user)
  * 
  *
  */
-function init_args()
+function init_args(&$dbHandler)
 {
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-    $args->tplan_id = $_REQUEST['tplan_id'];
-    $args->tproject_id = $_SESSION['testprojectID'];
-    return $args;
+  $iParams = array("apikey" => array(tlInputParameter::STRING_N,0,64),
+                   "tproject_id" => array(tlInputParameter::INT_N), 
+                   "tplan_id" => array(tlInputParameter::INT_N));
+  $args = new stdClass();
+  R_PARAMS($iParams,$args);
+
+  if( !is_null($args->apikey) )
+  {
+    $cerbero = new stdClass();
+    $cerbero->args = new stdClass();
+    $cerbero->args->tproject_id = $args->tproject_id;
+    $cerbero->args->tplan_id = $args->tplan_id;
+    
+    if(strlen($args->apikey) == 32)
+    {
+      $cerbero->args->getAccessAttr = true;
+      $cerbero->method = 'checkRights';
+      $cerbero->redirect_target = "../../login.php?note=logout";
+      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    }
+    else
+    {
+      $args->addOpAccess = false;
+      $cerbero->method = null;
+      $cerbero->args->getAccessAttr = false;
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    }  
+  }
+  else
+  {
+    testlinkInitPage($dbHandler,true,false,"checkRights");  
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+  }
+
+  return $args;
 }
-?>

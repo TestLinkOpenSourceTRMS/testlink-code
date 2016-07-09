@@ -22,27 +22,14 @@ of columns present on custom fields tables.
 This is done to simplify logic.
 
 
-rev :
-		 20110108 - franciscom - BUGID 4000
-     20100829 - franciscom - BUGID 3707 - Things that works with Firefox, 
-                                          BUT NOT with Chrome and Internet Explorer
-                                          added body on load event, to initialize when
-                                          accessing in edit mode.
-
-     20100121 - franciscom - BUGID - layout change
-     20090524 - franciscom - Refactoring to have a better picture on User Interface of
-                             Custom Field application area usage
-     20090503 - franciscom - BUGID 2425
-     20090408 - franciscom - BUGID 2352 - removed delete block.
-                             BUGID 2359 - display test projects where custom field is assigned
-     20080810 - franciscom - BUGID 1650 (REQ)
+@internal revisions
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="managerURL" value="lib/cfields/cfieldsEdit.php"}
-{assign var="viewAction" value="lib/cfields/cfieldsView.php"}
+{$managerURL="lib/cfields/cfieldsEdit.php"}
+{$viewAction="lib/cfields/cfieldsView.php"}
 
 {lang_get s='warning_delete_cf' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
@@ -52,7 +39,7 @@ rev :
              warning_empty_cfield_name,warning_empty_cfield_label,testproject,assigned_to_testprojects,
              enable_on_design,show_on_exec,enable_on_exec,enable_on_testplan_design,
              available_on,btn_upd,btn_delete,warning_no_type_change,enable_on,
-             btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
+             btn_add,btn_cancel,show_on_design,show_on_testplan_design,btn_add_and_assign_to_current,"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -62,10 +49,7 @@ rev :
 var del_action=fRoot+'{$managerURL}'+'?do_action=do_delete&cfield_id=';
 </script>
 
-{literal}
 <script type="text/javascript">
-{/literal}
-// BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_cfield_name = "{$labels.warning_empty_cfield_name|escape:'javascript'}";
 var warning_empty_cfield_label = "{$labels.warning_empty_cfield_label|escape:'javascript'}";
@@ -108,7 +92,6 @@ js_show_on_cfg['testplan_design'] = new Array();  // BUGID 1650 (REQ)
   js_enable_on_cfg['design'][{$node_type}]={$cfg_def};
 {/foreach}
 
-// BUGID 1650 (REQ)
 {foreach key=node_type item=cfg_def from=$gui->cfieldCfg->enable_on_cfg.testplan_design}
   js_enable_on_cfg['testplan_design'][{$node_type}]={$cfg_def};
 {/foreach}
@@ -134,22 +117,20 @@ var js_possible_values_cfg = new Array();
 {/foreach}
 
 
-
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.cf_name.value))
   {
-      alert_message(alert_box_title,warning_empty_cfield_name);
-      selectField(f, 'cf_name');
-      return false;
+    alert_message(alert_box_title,warning_empty_cfield_name);
+    selectField(f, 'cf_name');
+    return false;
   }
 
   if (isWhitespace(f.cf_label.value))
   {
-      alert_message(alert_box_title,warning_empty_cfield_label);
-      selectField(f, 'cf_label');
-      return false;
+    alert_message(alert_box_title,warning_empty_cfield_label);
+    selectField(f, 'cf_label');
+    return false;
   }
   return true;
 }
@@ -190,7 +171,6 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   keys2loop[1]='design';
   keys2loop[2]='testplan_design'; // BUGID 1650 - 20080809 - franciscom
 
-  // 20090524 - franciscom - refactoring
   style_display='';
   for(idx=0;idx < keys2loop.length; idx++)
   {
@@ -331,14 +311,12 @@ function initShowOnExec(id_master,show_on_cfg)
   }
 }
 </script>
-{/literal}
 </head>
 
-{* <body {$body_onload}> *}
 <body onload="configure_cf_attr('combo_cf_node_type_id',js_enable_on_cfg,js_show_on_cfg);">
 
 <h1 class="title">
-  	{$labels.title_cfields_mgmt} 
+ 	{$labels.title_cfields_mgmt} 
 	{include file="inc_help.tpl" helptopic="hlp_customFields" show_help_icon=true}
 </h1>
 
@@ -369,7 +347,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			<td><input type="text" name="cf_name"
 			                       size="{#CFIELD_NAME_SIZE#}"
 			                       maxlength="{#CFIELD_NAME_MAXLEN#}"
-    			 value="{$gui->cfield.name|escape}" />
+    			 value="{$gui->cfield.name|escape}" required />
            {include file="error_icon.tpl" field="cf_name"}
     	</td>
 		</tr>
@@ -378,7 +356,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			<td><input type="text" name="cf_label"
 			                       size="{#CFIELD_LABEL_SIZE#}"
 			                       maxlength="{#CFIELD_LABEL_MAXLEN#}"
-			           value="{$gui->cfield.label|escape}"/>
+			           value="{$gui->cfield.label|escape}" required />
 		           {include file="error_icon.tpl" field="cf_label"}
     	</td>
 	  </tr>
@@ -388,7 +366,6 @@ function initShowOnExec(id_master,show_on_cfg)
 			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$gui->cfield.node_type_id}
 			    {$gui->cfieldCfg->cf_allowed_nodes.$idx}
-			    {hidden_cf_node_type_id}
 			    <input type="hidden" id="combo_cf_node_type_id"
 			           value={$gui->cfield.node_type_id} name="cf_node_type_id" />
 			  {else}
@@ -407,7 +384,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			<th style="background:none;">{$labels.type}</th>
 			<td>
 			  {if $gui->cfield_is_used}
-			    {assign var="idx" value=$gui->cfield.type}
+			    {$idx=$gui->cfield.type}
 			    {$gui->cfield_types.$idx}
 			    <input type="hidden" id="hidden_cf_type"
 			           value={$gui->cfield.type} name="cf_type" />
@@ -424,9 +401,9 @@ function initShowOnExec(id_master,show_on_cfg)
 		</tr>
 
     {if $gui->show_possible_values }
-      {assign var="display_style" value=""}
+      {$display_style=""}
     {else}
-      {assign var="display_style" value="none"}
+      {$display_style="none"}
 		{/if}
 		<tr id="possible_values" style="display:{$display_style};">
 			<th style="background:none;">{$labels.possible_values}</th>
@@ -504,6 +481,9 @@ function initShowOnExec(id_master,show_on_cfg)
 	{else}
 		<input type="submit" name="do_update" value="{$labels.btn_add}"
 		       onclick="do_action.value='do_add'"/>
+
+    <input type="submit" name="do_add_and_assign" id="do_add_and_assign" value="{$labels.btn_add_and_assign_to_current}"
+           onclick="do_action.value='do_add_and_assign'"/>
 	{/if}
 		<input type="button" name="cancel" value="{$labels.btn_cancel}"
 			onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php';" />

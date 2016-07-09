@@ -37,10 +37,6 @@
 # 
 # ---------------------------------------------------------------------------------------
 # @internal revisions
-# @since 1.9.4
-# 20120209 - franciscom - TICKET 4914: Create View - tcversions_last_active
-# 20110813 - franciscom - TICKET 4342: Security problem with multiple Testlink installations on the same server
-# 20110810 - franciscom - Requirement Specification Revisions feature
 #
 # ---------------------------------------------------------------------------------------
 
@@ -70,10 +66,11 @@ CREATE TABLE /*prefix*/attachments (
   `file_path` varchar(250) default '',
   `file_size` int(11) NOT NULL default '0',
   `file_type` varchar(250) NOT NULL default '',
-  `date_added` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_added` datetime NOT NULL default  CURRENT_TIMESTAMP,
   `content` longblob,
   `compression_type` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY /*prefix*/attachments_idx1(fk_id)
 ) DEFAULT CHARSET=utf8; 
 
 
@@ -92,6 +89,15 @@ CREATE TABLE /*prefix*/builds (
   UNIQUE KEY /*prefix*/name (`testplan_id`,`name`),
   KEY /*prefix*/testplan_id (`testplan_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='Available builds';
+
+
+CREATE TABLE /*prefix*/cfield_build_design_values (
+  `field_id` int(10) NOT NULL default '0',
+  `node_id` int(10) NOT NULL default '0',
+  `value` varchar(4000) NOT NULL default '',
+  PRIMARY KEY  (`field_id`,`node_id`),
+  KEY /*prefix*/idx_cfield_build_design_values (`node_id`)
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE /*prefix*/cfield_design_values (
@@ -127,8 +133,10 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   `display_order` smallint(5) unsigned NOT NULL default '1',
   `location` smallint(5) unsigned NOT NULL default '1',
   `active` tinyint(1) NOT NULL default '1',
+  `required` tinyint(1) NOT NULL default '0',
   `required_on_design` tinyint(1) NOT NULL default '0',
   `required_on_execution` tinyint(1) NOT NULL default '0',
+  `monitorable` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
@@ -167,8 +175,9 @@ CREATE TABLE /*prefix*/custom_fields (
 
 CREATE TABLE /*prefix*/db_version (
   `version` varchar(50) NOT NULL default 'unknown',
-  `upgrade_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-  `notes` text
+  `upgrade_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
+  `notes` text,
+  PRIMARY KEY  (`version`)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -190,7 +199,7 @@ CREATE TABLE /*prefix*/events (
 
 CREATE TABLE /*prefix*/execution_bugs (
   `execution_id` int(10) unsigned NOT NULL default '0',
-  `bug_id` varchar(16) NOT NULL default '0',
+  `bug_id` varchar(64) NOT NULL default '0',
   PRIMARY KEY  (`execution_id`,`bug_id`)
 ) DEFAULT CHARSET=utf8;
 
@@ -206,11 +215,23 @@ CREATE TABLE /*prefix*/executions (
   tcversion_number smallint(5) unsigned NOT NULL default '1',
   platform_id int(10) unsigned NOT NULL default '0',
   execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  execution_duration decimal(6,2) NULL COMMENT 'NULL will be considered as NO DATA Provided by user',
   notes text,
   PRIMARY KEY  (id),
   KEY /*prefix*/executions_idx1(testplan_id,tcversion_id,platform_id,build_id),
-  KEY /*prefix*/executions_idx2(execution_type)
+  KEY /*prefix*/executions_idx2(execution_type),
+  KEY /*prefix*/executions_idx3(tcversion_id)
+) DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE /*prefix*/execution_tcsteps (
+   id int(10) unsigned NOT NULL auto_increment,
+   execution_id int(10) unsigned NOT NULL default '0',
+   tcstep_id int(10) unsigned NOT NULL default '0',
+   notes text,
+   status char(1) default NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY /*prefix*/execution_tcsteps_idx1(`execution_id`,`tcstep_id`)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -222,7 +243,7 @@ CREATE TABLE /*prefix*/inventory (
 	`ipaddress` VARCHAR(255)  NOT NULL ,
 	`content` TEXT NULL ,
 	`creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`modification_ts` TIMESTAMP NOT NULL,
+	`modification_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
 	KEY /*prefix*/inventory_idx1 (`testproject_id`)
 ) DEFAULT CHARSET=utf8; 
@@ -243,7 +264,7 @@ CREATE TABLE /*prefix*/milestones (
   id int(10) unsigned NOT NULL auto_increment,
   testplan_id int(10) unsigned NOT NULL default '0',
   target_date date NULL,
-  start_date date NOT NULL default '0000-00-00',
+  start_date date NOT NULL,
   a tinyint(3) unsigned NOT NULL default '0',
   b tinyint(3) unsigned NOT NULL default '0',
   c tinyint(3) unsigned NOT NULL default '0',
@@ -285,27 +306,13 @@ CREATE TABLE /*prefix*/platforms (
 CREATE TABLE /*prefix*/req_coverage (
   `req_id` int(10) NOT NULL,
   `testcase_id` int(10) NOT NULL,
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `review_requester_id` int(10) unsigned default NULL,
+  `review_request_ts` TIMESTAMP NULL DEFAULT NULL,
   KEY /*prefix*/req_testcase (`req_id`,`testcase_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
 
-
-## CREATE TABLE /*prefix*/req_specs (
-##   `id` int(10) unsigned NOT NULL,
-##   `testproject_id` int(10) unsigned NOT NULL,
-##   `doc_id` varchar(64) NOT NULL,
-##   `scope` text,
-##   `total_req` int(10) NOT NULL default '0',
-##   `type` char(1) default 'n',
-##   `author_id` int(10) unsigned default NULL,
-##    creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-##   `modifier_id` int(10) unsigned default NULL,
-##   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-##   PRIMARY KEY  (`id`),
-##   KEY /*prefix*/testproject_id (`testproject_id`),
-##   UNIQUE KEY /*prefix*/req_spec_uk1(`doc_id`,`testproject_id`)
-## ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
-
-# TICKET 4661
 CREATE TABLE /*prefix*/req_specs (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
@@ -314,10 +321,6 @@ CREATE TABLE /*prefix*/req_specs (
   KEY /*prefix*/testproject_id (`testproject_id`),
   UNIQUE KEY /*prefix*/req_spec_uk1(`doc_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
-
-
-
-
 
 CREATE TABLE /*prefix*/requirements (
   `id` int(10) unsigned NOT NULL,
@@ -340,7 +343,7 @@ CREATE TABLE /*prefix*/req_versions (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
-  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modification_ts` datetime NOT NULL default CURRENT_TIMESTAMP,
   `log_message` text,
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
@@ -397,7 +400,6 @@ CREATE TABLE /*prefix*/testcase_keywords (
   PRIMARY KEY  (`testcase_id`,`keyword_id`)
 ) DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE /*prefix*/tcversions (
   `id` int(10) unsigned NOT NULL,
   `tc_external_id` int(10) unsigned NULL,
@@ -410,10 +412,11 @@ CREATE TABLE /*prefix*/tcversions (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updater_id` int(10) unsigned default NULL,
-  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modification_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
   `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  `estimated_exec_duration` decimal(6,2) NULL COMMENT 'NULL will be considered as NO DATA Provided by user',
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
@@ -450,8 +453,10 @@ CREATE TABLE /*prefix*/testplans (
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
   `is_public` tinyint(1) NOT NULL default '1',
+  `api_key` varchar(64) NOT NULL default '829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235bc',
   PRIMARY KEY  (`id`),
-  KEY /*prefix*/testplans_testproject_id_active (`testproject_id`,`active`)
+  KEY /*prefix*/testplans_testproject_id_active (`testproject_id`,`active`),
+  UNIQUE KEY /*prefix*/testplans_api_key (`api_key`) 
 ) DEFAULT CHARSET=utf8;
 
 
@@ -477,10 +482,12 @@ CREATE TABLE /*prefix*/testprojects (
   `tc_counter` int(10) unsigned NOT NULL default '0',
   `is_public` tinyint(1) NOT NULL default '1',
   `issue_tracker_enabled` tinyint(1) NOT NULL default '0',
+  `reqmgr_integration_enabled` tinyint(1) NOT NULL default '0',
+  `api_key` varchar(64) NOT NULL default '0d8ab81dfa2c77e8235bc829a2ded3edfa2c78235bc829a27eded3ed0d8ab81d',
   PRIMARY KEY  (`id`),
   KEY /*prefix*/testprojects_id_active (`id`,`active`),
-  UNIQUE KEY /*prefix*/testprojects_prefix (`prefix`)
-  
+  UNIQUE KEY /*prefix*/testprojects_prefix (`prefix`),
+  UNIQUE KEY /*prefix*/testprojects_api_key (`api_key`) 
 ) DEFAULT CHARSET=utf8;
 
 
@@ -519,17 +526,18 @@ CREATE TABLE /*prefix*/user_assignments (
 
 CREATE TABLE /*prefix*/users (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `login` varchar(30) NOT NULL default '',
+  `login` varchar(100) NOT NULL default '',
   `password` varchar(32) NOT NULL default '',
   `role_id` int(10) unsigned NOT NULL default '0',
   `email` varchar(100) NOT NULL default '',
-  `first` varchar(30) NOT NULL default '',
-  `last` varchar(30) NOT NULL default '',
+  `first` varchar(50) NOT NULL default '',
+  `last` varchar(50) NOT NULL default '',
   `locale` varchar(10) NOT NULL default 'en_GB',
   `default_testproject_id` int(10) default NULL,
   `active` tinyint(1) NOT NULL default '1',
   `script_key` varchar(32) NULL,
   `cookie_string` varchar(64) NOT NULL default '',
+  `auth_method` varchar(10) NULL default '',
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/users_login (`login`),
   UNIQUE KEY /*prefix*/users_cookie_string (`cookie_string`)
@@ -600,7 +608,7 @@ CREATE TABLE /*prefix*/req_revisions (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
-  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modification_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/req_revisions_uidx1 (`parent_id`,`revision`)
 ) DEFAULT CHARSET=utf8;
@@ -624,7 +632,7 @@ CREATE TABLE /*prefix*/req_specs_revisions (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
-  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modification_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/req_specs_revisions_uidx1 (`parent_id`,`revision`)
 ) DEFAULT CHARSET=utf8;
@@ -645,57 +653,74 @@ CREATE TABLE /*prefix*/testproject_issuetracker
 (
   `testproject_id` int(10) unsigned NOT NULL,
   `issuetracker_id` int(10) unsigned NOT NULL,
-  UNIQUE KEY /*prefix*/testproject_issuetracker_uidx1 (`testproject_id`)
+  PRIMARY KEY (`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
 
-# ----------------------------------------------------------------------------------
-# TICKET 4914: Create View - tcversions_last_active
-# ----------------------------------------------------------------------------------
-CREATE VIEW /*prefix*/tcversions_last_active_bare_bones AS
+CREATE TABLE /*prefix*/reqmgrsystems
 (
-	  SELECT NHTCV.parent_id AS tcase_id, max(TCV.id) AS tcversion_id
-	  FROM /*prefix*/nodes_hierarchy NHTCV
-	  JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id
-	  WHERE TCV.active = 1
-	  GROUP BY NHTCV.parent_id, TCV.tc_external_id
-); 
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `type` int(10) default 0,
+  `cfg` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/reqmgrsystems_uidx1 (`name`)
+) DEFAULT CHARSET=utf8;
 
 
-CREATE VIEW /*prefix*/tcversions_last_active AS 
+CREATE TABLE /*prefix*/testproject_reqmgrsystem
 (
-  SELECT TCV.id, TCV.tc_external_id, TCV.version, TCV.layout, TCV.status, 
-  		 TCV.summary, TCV.preconditions, TCV.importance, TCV.author_id, TCV.creation_ts, 
-  		 TCV.updater_id, TCV.modification_ts, TCV.active, TCV.is_open, TCV.execution_type, 
-  		 BB.tcase_id
-  FROM /*prefix*/tcversions TCV
-  JOIN /*prefix*/tcversions_last_active_bare_bones BB
-  ON TCV.id = BB.tcversion_id
-);
+  `testproject_id` int(10) unsigned NOT NULL,
+  `reqmgrsystem_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`testproject_id`)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/text_templates (
+  id int(10) unsigned NOT NULL,
+  type smallint(5) unsigned NOT NULL,
+  title varchar(100) NOT NULL,
+  template_data text,
+  author_id int(10) unsigned default NULL,
+  creation_ts datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  is_public tinyint(1) NOT NULL default '0',
+  UNIQUE KEY idx_text_templates (type,title)
+) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
 
 
 
-CREATE VIEW /*prefix*/tcases_active AS 
-(
-	SELECT DISTINCT NHTCV.parent_id AS tcase_id, TCV.tc_external_id
-	FROM /*prefix*/nodes_hierarchy NHTCV 
-	JOIN /*prefix*/tcversions TCV ON TCV.id = NHTCV.id 
-	WHERE TCV.active = 1
-);
+CREATE TABLE /*prefix*/testcase_relations (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `source_id` int(10) unsigned NOT NULL,
+  `destination_id` int(10) unsigned NOT NULL,
+  `relation_type` smallint(5) unsigned NOT NULL default '1',
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) DEFAULT CHARSET=utf8;
 
+CREATE TABLE /*prefix*/req_monitor (
+  `req_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `testproject_id` int(11) NOT NULL,
+  PRIMARY KEY (`req_id`,`user_id`,`testproject_id`)
+) DEFAULT CHARSET=utf8;
 
-CREATE VIEW /*prefix*/last_executions AS
-(
-	SELECT tcversion_id,testplan_id,platform_id,build_id, MAX(id) AS id 
-	FROM /*prefix*/executions 
-	GROUP by tcversion_id,testplan_id,platform_id,build_id
-); 
+CREATE TABLE /*prefix*/plugins (
+   `id` int(11) NOT NULL auto_increment,
+   `basename`  varchar(100) NOT NULL,
+   `enabled` tinyint(1) NOT NULL default '0',
+   `author_id` int(10) unsigned default NULL,
+   `creation_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8;
 
-CREATE VIEW /*prefix*/last_executions_by_platform AS
-(
-	SELECT E.tcversion_id,E.testplan_id,E.platform_id,MAX(E.id) AS id 
-	FROM /*prefix*/executions E 
-	JOIN /*prefix*/builds B ON B.active = 1	AND B.testplan_id = E.testplan_id  
-	GROUP by tcversion_id,testplan_id,platform_id
-); 
-
+CREATE TABLE /*prefix*/plugins_configuration (
+  `id` int(11) NOT NULL auto_increment,
+  `testproject_id` int(11) NOT NULL,
+  `config_key` varchar(255) NOT NULL,
+  `config_type` int(11) NOT NULL,
+  `config_value` varchar(255) NOT NULL,
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8;

@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * @filesource  TLTest.php
+ * @copyright   2005-2016, TestLink community
+ * @link        http://www.testlink.org/
+ *
+ */
+
+$TLS_plugin_TLTest_description = "Plugin de test";
+$TLS_plugin_TLTest_config = "Configurer Mon Plugin";
+$TLS_plugin_TLTest_left_bottom_link = "Lien en bas à gauche";
+$TLS_plugin_TLTest_right_bottom_link = "Lien en bas à droite";
+$TLS_plugin_TLTest_left_top_link = "Lien en haut à gauche";
+$TLS_plugin_TLTest_right_top_link = "Lien en haut à droite";
+$TLS_plugin_TLTest_testsuite_display_message = "Ceci est un test";
+$TLS_plugin_TLTest_config_page_saved = "Configuration Sauvegardée";
+$TLS_plugin_TLTest_config_page_header_message = "Exemple de configuration";
+$TLS_plugin_TLTest_config_page_title = "Configuration du plugin TLTest";
+$TLS_plugin_TLTest_config_label_config1 = "Configuration Item 1";
+$TLS_plugin_TLTest_config_label_config2 = "Configuration Item 2";
+$TLS_plugin_TLTest_config_label_save_button = "Enregistrer";

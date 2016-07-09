@@ -1,13 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.6 2009/02/27 20:25:34 schlundus Exp $
-Purpose: smarty template - assign keywords to one or more test cases
+@filesource keywordsAssign.tpl
 *}
+{lang_get var="labels" s='keyword_assignment,keyword_assignment_empty_tsuite,
+                          btn_save,assignToFilteredTestCases'}
+
+
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-{if $can_do} 
+{if $gui->can_do} 
 <script type="text/javascript" language="JavaScript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
 {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
@@ -21,42 +24,37 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 </head>
 
 <body 
-{if $can_do} 
+{if $gui->can_do} 
 	onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])"
 {/if}	
 >
 
-{* improved feedback *}
 <div class="workBack">
-    <h1 class="title">{lang_get s='title_keywords'}</h1>
-    {* tabs *}
-    <div class="tabMenu">
-    	<span class="unselected"><a href="lib/keywords/keywordsView.php"
-    			target='mainframe'>{lang_get s='menu_manage_keywords'}</a></span> 
-    	<span class="selected">{lang_get s='menu_assign_kw_to_tc'}</span> 
-    </div>
+ {include file="inc_update.tpl" result=$sqlResult item=$level action='updated'}
 
-	{if $can_do} 
-     {if $keyword_assignment_subtitle neq ''}
-      <h2>{$keyword_assignment_subtitle|escape}</h2>
-     {/if}
-    
-    {include file="inc_update.tpl" result=$sqlResult item=$level action='updated'}
-  
-    
-    {* data form *}
+  <h1 class="title">{$labels.keyword_assignment}</h1>
+  {if $gui->keyword_assignment_subtitle neq ''}
+    <h2>{$gui->keyword_assignment_subtitle|escape}</h2>
+  {/if}
+
+	{if $gui->can_do} 
     <div style="margin-top: 25px;">
-    	<form method="post" action="lib/keywords/keywordsAssign.php?id={$data}&amp;edit={$level}">
+    	<form method="post" action="lib/keywords/keywordsAssign.php?id={$gui->id}&amp;edit={$gui->level}">
+        <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}"> 
+
+      {if $gui->level == 'testsuite'}
+        {$labels.assignToFilteredTestCases}
+        <input type="checkbox" name="useFilteredSet" id="useFilteredSet" value="1" 
+               {if $gui->useFilteredSet} checked {/if} />
+      {/if}
+
       {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	    <br />
-    	<input type="submit" name="assign{$level}" value="{lang_get s='btn_save'}" />
+    	<input type="submit" name="assign{$gui->level}" id="assign{$gui->level}" value="{$labels.btn_save}" />
     	</form>
     </div>
   {else}
-     {if $keyword_assignment_subtitle neq ''}
-      <h2> {$keyword_assignment_subtitle}</h2>
-     {/if}
-    {lang_get s="keyword_assignment_empty_tsuite"}
+    {$labels.keyword_assignment_empty_tsuite}
   {/if}  
 </div>
 </body>

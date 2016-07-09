@@ -1,12 +1,10 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * @filesource $RCSfile: diff.php,v $
- * @version $Revision: 1.1.6.1 $
- * @modified $Date: 2010/11/28 16:08:12 $  $Author: franciscom $
+ * @filesource diff.php
  * 
  * @internal revision
- * 20101128 - franciscom - declare missing $maxlen variable
+ * @since 1.9.14
 */
 
 /*
@@ -99,7 +97,7 @@ class diff {
 	function inline($left, $leftversion, $right, $rightversion, $linepadding=null){
 		$this->linepadding = $linepadding;
 		$ret = '<pre><table width="100%" border="0" cellspacing="0" cellpadding="0" class="code">';
-		$ret.= '<tr><td>' . $leftversion . '</td><td>' . $rightversion . '</td><td></td><rd></tr>';
+		$ret.= '<tr><td>' . $leftversion . '</td><td>' . $rightversion . '</td><td></td><td></tr>';
 		$count_old = 1;
 		$count_new = 1;
 		

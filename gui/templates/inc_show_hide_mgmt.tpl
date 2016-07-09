@@ -5,12 +5,9 @@ Purpose: manage show/hide contanier logics
 Author : franciscom
 
 Rev:
-  20090905 - franciscom - removed escape on show_hide_container_title, because
-                          it can contains html with javascript
-                          escaping on name has to be done on php page
 *}
-{assign var="show_hide_container_draw" value=$show_hide_container_draw|default:false}
-{assign var="show_hide_container_class" value=$show_hide_container_class|default:"exec_additional_info"}
+{$show_hide_container_draw=$show_hide_container_draw|default:false}
+{$show_hide_container_class=$show_hide_container_class|default:"exec_additional_info"}
 
 {*  franciscom - implementation note -
 	1. save the status when user saves executiosn.

@@ -1,0 +1,20 @@
+HTTP/1.1 201 Created
+Server: nginx
+Date: Sun, 01 Dec 2013 10:26:28 GMT
+Content-Type: application/json;charset=UTF-8
+Connection: keep-alive
+X-AREQUESTID: 266x3296x1
+X-ASEN: SEN-2189926
+Set-Cookie: JSESSIONID=1D28E5855BC2FCE7575C6A4988CC2836; Path=/; HttpOnly
+Set-Cookie: studio.crowd.tokenkey=""; Domain=.testlink.atlassian.net; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/; HttpOnly
+X-Seraph-LoginReason: OUT
+Set-Cookie: studio.crowd.tokenkey=3k9kWywdooU5OWyAh4IWgA00; Domain=.testlink.atlassian.net; Path=/; HttpOnly
+X-Seraph-LoginReason: OK
+Set-Cookie: atlassian.xsrf.token=B8LB-E4GP-M7D3-HF6A|403afd07cf71c2e5d9a6a9700b22c95e0de82f29|lin; Path=/
+X-ASESSIONID: 176wdqv
+X-AUSERNAME: testlink.forum
+Cache-Control: no-cache, no-store, no-transform
+Content-Length: 99
+Vary: Accept-Encoding
+
+{"id":"12505","key":"ZOFF-186","self":"https://testlink.atlassian.net/rest/api/latest/issue/12505"}

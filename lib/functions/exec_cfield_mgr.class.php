@@ -5,20 +5,13 @@
  *
  * Custom fields for Test execution 
  *
- * @package 	TestLink
- * @author 		jbarchibald
- * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.15 2010/09/27 08:15:23 amkhullar Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	  TestLink
+ * @author 		  jbarchibald
+ * @copyright 	2006,2013 TestLink community 
+ * @filesource  exec_cfield_mgr.class.php
+ * @link 		    http://www.teamst.org/index.php
  *
- * @internal Revisions:
- *      20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
- *      20100316 - Julian - cosmetical changes for input field sizes of custom fields
- *      20090514 - franciscom - localize label
- *      20071006 - franciscom - exec_cfield_mgr() interface change
- *                              get_linked_cfields() interface change
- *                              solved bug on get_linked_cfields() when
- *                              no custom field is assigned to test project
+ * @internal revisions
  */
 
 /**
@@ -28,7 +21,7 @@
 class exec_cfield_mgr extends cfield_mgr
 {
 	var $db;
-    var $cf_map;
+  var $cf_map;
 
 	/**
 	 * Class constructor
@@ -58,32 +51,31 @@ class exec_cfield_mgr extends cfield_mgr
  */
 function html_table_of_custom_field_inputs($htmlInputSize=0)
 {
-    $cf_smarty = '';
-	$inputSize = 0;
-	
-	$custom_field_types_id=array_flip($this->custom_field_types);
-	
-    if( !is_null($this->cf_map) )
+  $cf_smarty = '';
+	$cfTypeIDSet = array_flip($this->custom_field_types);
+	$defaultSize = array($cfTypeIDSet['list'] => 3, $cfTypeIDSet['multiselection list'] => 3);
+
+  $inputOpt = array('name_suffix' => '', 'field_size' => $htmlInputSize);
+
+  if( !is_null($this->cf_map) )
+  {
+    foreach($this->cf_map as $cf_id => $cf_info)
     {
-        foreach($this->cf_map as $cf_id => $cf_info)
-        {
 			// special input size for list and multiselect list
-			if ($cf_info['type'] == $custom_field_types_id['list']) { 
-				$inputSize = 3; 
-			} else if ($cf_info['type'] == $custom_field_types_id['multiselection list']) {
-				$inputSize = 3;
-			} else { 
-				$inputSize = $htmlInputSize; 
-			}
+			if( $cf_info['type'] == $cfTypeIDSet['list'] || 
+          $cf_info['type'] == $cfTypeIDSet['multiselection list']) 
+      { 
+				$inputOpt['field_size'] = $defaultSize[$cf_info['type']]; 
+			} 
 			
-            // true => do not create input in audit log
-            $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
-            $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-                          $this->string_custom_field_input($cf_info,'',$inputSize) . "</td></tr>\n";
-        }
+      // true => do not create input in audit log
+      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+      $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
+                    $this->string_custom_field_input($cf_info,$inputOpt) .  "</td></tr>\n";
     }
+  }
     
-    return($cf_smarty);
+  return $cf_smarty;
 }
 
     /**

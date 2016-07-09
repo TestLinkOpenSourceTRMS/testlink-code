@@ -1,17 +1,17 @@
 <?php
 /** 
-* 	TestLink Open Source Project - http://testlink.sourceforge.net/
+* TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: dragdroptprojectnodes.php,v 1.2 2008/09/02 16:39:48 franciscom Exp $
-* 	@author 	Francisco Mancardi
+* @filesource dragdroptprojectnodes.php
+* @author 	  Francisco Mancardi
 * 
-*   manage drag and drop on test project tree
+* manage drag and drop on test project tree
 *
-*   Development Notes:
-*   This code is called by javascript function writeNodePositionToDB() present
-*   in javascript file with all function used to manage EXTJS tree.
-*
-*   rev: 20080605 - franciscom
+* Development Notes:
+* This code is called by javascript function writeNodePositionToDB() present
+* in javascript file with all function used to manage EXTJS tree.
+* This means that when this code is called ALL NEEDED CHECKS to understand
+* if operation is allowed HAVE BEEN DONE (at least in theory)
 *        
 */
 require_once('../../config.inc.php');
@@ -37,22 +37,15 @@ switch($args->doAction)
     break;
 }
 
-
-
-
 function init_args()
 {
     $args=new stdClass();
     
-    $key2loop=array('nodeid','newparentid','doAction',
-                    'top_or_bottom','nodeorder','nodelist');
-    
+    $key2loop=array('nodeid','newparentid','doAction','top_or_bottom','nodeorder','nodelist');
     foreach($key2loop as $key)
     {
-        $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;   
+      $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;   
     }
     return $args;
 }
-?>
-
-                                                                                              
+?>                                                                                             

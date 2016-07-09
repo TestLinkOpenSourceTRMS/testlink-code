@@ -72,7 +72,7 @@ $TLS_htmltext['editTc'] 		= "<h2>Objectif:</h2>
 	"du projet. Les séquences de tests peuvent être importées ou exportées (incluant les cas de tests).
 	<li>Sélectionnez votre nouvelle séquence de test dans l'arborescence et créer " .
 	"un nouveau cas de test en cliquant sur <b>Créer Cas de Test</b>. Un cas de test spécifie " .
-	" des de test particulier, les résultats attendus et la définition des champs personnalisés " .
+	" un cas de test particulier, les résultats attendus et la définition des champs personnalisés " .
 	"dans le projet (se référer au manuel utilisateur pour plus d'information). Il est également possible " .
 	"d'affecter des <b>mots clés</b> pour améliorer la traçabilité.</li>
 	<li>Naviguez via l'arborescence sur le côté gauche et éditer les données. Les cas de tests stockent leur propre historique.</li>
@@ -113,7 +113,7 @@ $TLS_htmltext['searchReq'] 		= "<h2>Objectif:</h2>
 
 <ol>
 	<li>Ecrire une phrase dans le champ approprié. Laissez les champs non utilisés du formulaire vide.</li>
-	<li>Choisir le mot clé requit ou laisser la valeur 'Non appliqué'.</li>
+	<li>Choisir le mot clé requis ou laisser la valeur 'Non appliqué'.</li>
 	<li>Cliquer sur le bouton Rechercher.</li>
 	<li>Toutes les exigences remplissant les conditions sont affichées. Vous pouvez modifier les exigences via le lien 'Titre'.</li>
 </ol>";
@@ -130,7 +130,7 @@ $TLS_htmltext['searchReqSpec'] 		= "<h2>Objectif:</h2>
 <ol>
 <ol>
 	<li>Ecrire une phrase dans le champ approprié. Laissez les champs non utilisés du formulaire vide.</li>
-	<li>Choisir le mot clé requit ou laisser la valeur 'Non appliqué'.</li>
+	<li>Choisir le mot clé requis ou laisser la valeur 'Non appliqué'.</li>
 	<li>Cliquer sur le bouton Rechercher.</li>
 	<li>Tous les dossiers d'exigences remplissant les conditions sont affichées. Vous pouvez modifier les dossiers d'exigences via le lien 'Titre'.</li>
 </ol>";
@@ -141,7 +141,7 @@ $TLS_htmltext['searchReqSpec'] 		= "<h2>Objectif:</h2>
 $TLS_htmltext_title['printTestSpec']	= "Imprimer un cahier de test"; //printTC.html
 $TLS_htmltext['printTestSpec'] 			= "<h2>Objectif:</h2>
 <p>D'ici vous pouvez imprimer un cas de test seul, tous les cas de tests d'une séquence de tests,
-ou tous les cas de test du projet ou du campagne de test.</p>
+ou tous les cas de test du projet ou de la campagne de test.</p>
 <h2>Commencement:</h2>
 <ol>
 <li>
@@ -182,7 +182,7 @@ de test est de 25% (en considérant que les 50 exigences ajoutées seront actuel
 
 <p>Cliquer sur le titre d'une exigence existante. Si aucune n'existe, cliquez sur le noeud du projet pour en créer une. Vous pouvez créer, éditer, supprimer
 ou importer des exigences pour le cahier. Chaque exigence a un titre, un contexte et un statut.
-Un statut peut être soit 'Normal' ou 'Non testatble'. Une exigence non testable n'est pas comptée
+Un statut peut être soit 'Normal' ou 'Non testable'. Une exigence non testable n'est pas comptée
 pour les métriques. Ce paramètre peut être utilisé pour les fonctionnalités non implémentées et
 les exigences mal conçues.</p>
 
@@ -231,15 +231,15 @@ par lot les mots clés à une séquence de test ou un cas de test existant.</p>
 </ol>
 
 <h2>Information importante concernant l'affectation des mots-clés dans une campagne de tests:</h2>
-<p>L'affectation des mots-clés faites à une campagne de test sera effective seulement sur les cas de test
+<p>L'affectation des mots-clés faite à une campagne de test sera effective seulement sur les cas de test
 dans votre campagne de test si et seulement si la campagne de test contient la dernière version du cas de test.
-Sinon si une campagne de test contient une ancienne version du cas de test, l'affection que vous avez faites
+Sinon si une campagne de test contient une ancienne version du cas de test, l'affection que vous avez faite
 n'apparaît pas dans la campagne de test.
 </p>
 <p>TestLink utilise cette approche afin que les anciennes versions des cas de test dans les campagnes de test ne soient pas impactées
-par l'affectation des mots-clés faites sur la version la plus récente du cas de test. Si vous voulez que vos
+par l'affectation des mots-clés faite sur la version la plus récente du cas de test. Si vous voulez que vos
 cas de tests dans votre campagne de test soient mis à jour, vérifier d'abord que les cas de tests ont été mis à jour en utilisant la fonctionnalité
-'Mettre à jour les cas de test' AVANT de faire l'affectation des mos clés.</p>";
+'Mettre à jour les cas de test' AVANT de faire l'affectation des mots clés.</p>";
 
 
 // ------------------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ $TLS_htmltext['executeTest'] 		= "<h2>Objectif:</h2>
 	<li>Sélectionner un Build à partir de la box en bas et le bouton \"Appliquer\" dans le cadre de navigation.</li>
 	<li>Si vous voulez voir que quelques cas de test à l'a place de toute l'arborescence, il est possible d'appliquer un filtre. Cliquer sur le bouton \"Apply\" après avoir renseigné les filtres.</li>	
 	<li>Cliquer sur un cas de test dans l'arborescence.</li>
-	<li>Remplir le résultat du cas de test et n'importe quelles notes pertinantes et anomalies.</li>
+	<li>Remplir le résultat du cas de test et n'importe quelles notes pertinentes et anomalies.</li>
 	<li>Sauvegarder les résultats.</li>
 </ol>
 <p><i>Remarque: TestLink doit être configuré pour interagir avec votre gestionnaire d'anomalie 
@@ -270,11 +270,8 @@ $TLS_htmltext['showMetrics'] 		= "<p>Les rapports sont reliés à une campagne d
 de test courante pour l'exécution. Vous pouvez aussi sélectionner un format de rapport:</p>
 <ul>
 <li><b>Normal</b> - le rapport est affiché en une page web;</li>
-<li><b>OpenOffice Writer</b> - le rapport est importé dans OpenOffice Writer;</li>
-<li><b>OpenOffice Calc</b> - le rapport est importé dans OpenOffice Calc;</li>
-<li><b>MS Excel</b> - le rapport est importé dans Microsoft Excel;</li>
-<li><b>HTML Email</b> - le rapport est envoyé par mail à l'adresse de l'utilisateur;</li>
-<li><b>Charts</b> - le rapport inclut des graphiques (technologie flash).</li>
+<li><b>Pseudo MS Word</b> - le rapport est importé dans Word;</li>
+<li><b>Email (HTML)</b> - le rapport est envoyé par mail à l'adresse de l'utilisateur;</li>
 </ul>
 
 <p>Le bouton imprimer active l'impression d'un seul rapport (sans navigation).</p>
@@ -297,7 +294,7 @@ l'instance, si un cas de test a été exécuté pour de multiples Builds, seulem
 <li>L'ordre dans lequel les Builds sont ajoutés à une campagne de test détermine quel Build est le plus récent. Les résultats
 du Build le plus récent ont préséance sur les Builds plus anciens. Par exemple, si vous marquez un test comme
 'échoué' dans le Build 1, et marqué à 'réussi' dans le Build 2, c'est le dernier résultat qui sera à 'réussi'.</li>
-<li>Si un cas de test est exécuté de multiple fois sr le même Build, l'exécution la plus récente aura
+<li>Si un cas de test est exécuté de multiple fois sur le même Build, l'exécution la plus récente aura
 préséance. Par exemple, si le Build 3 est affecté à votre équipe et que le testeur 1 marque cela à 'réussi' à 2PM,
 et que le testeur 2 marque cela à 'échoué' à 3PM - cela apparaît à 'échoué'.</li>
 <li>Les cas de tests listés à 'non exécuté' dans un Build ne sont pas pris en compte. Par exemple, si vous marquez
@@ -344,13 +341,13 @@ changer ce contrôle.</li>
 <li><b>Séquence de haut niveau</b> 0->n séquences de haut niveau peuvent être sélectionnées. Par défaut - toutes les séquences sont sélectionnées.
 Seules les séquences sélectionnées sont utilisées pour les métriques des résultats. Si vous êtes seulement intéressé par les résultats
 pour une séquence spécifique vous devrez changer ce contrôle.</li>
-<li><b>Builds</b> 1->n Builds peuvent être sélectionnés. Par défaut - touts les Builds sont sélectionnés. Seules les exécutions
+<li><b>Builds</b> 1->n Builds peuvent être sélectionnés. Par défaut - tous les Builds sont sélectionnés. Seules les exécutions
 jouées sur les Builds que vous avez sélectionnés sont prises en compte lors des métriques de production. Par exemple - si vous
 voulez voir combien de cas de tests ont été exécutés sur les trois derniers Builds - vous devrez changer ce contrôle.
-Les sélections des mots-clés, propriétaires, et séquence sde haut niveau dicte le nombre de cas de tests de votre campagne de test
+Les sélections des mots-clés, propriétaires, et séquences de haut niveau dicte le nombre de cas de tests de votre campagne de test
 utilisés pour calculer par séquence et par métriques de campagne de test. Par exemple, si vous sélectionnez le propriétaire = 'Greg',
 mot-clé='Priorité 1', et toutes les séquences de test disponibles - seulement les cas de test de priorité 1 affectés à Greg sont
-pris en compte. Le '# de cas de tests' totals que vous verrez sur le rapport sera influencé par ces 3 contrôles.
+pris en compte. Le '# de cas de tests' total que vous verrez sur le rapport sera influencé par ces 3 contrôles.
 Les Builds sélectionnés influencent si un cas est considéré 'réussi', 'échoué', 'bloqué' ou 'non exécuté'. Veuillez
 vous référer aux règles de 'Dernier résultat de test' comme elles apparaissent ci-dessus.</li>
 </ul>
@@ -375,7 +372,7 @@ affichent les anomalies associées si l'utilisateur utilise un gestionnaire d'an
 <h3>Rapport de test</h3>
 <p>Afficher les statuts de chaque cas de tests pour chaque Build. Le résultat d'exécution le plus récent sera utilisé
 Si un cas de test a été exécuté plusieurs fois dans le même Build. Il est recommandé d'exporter ce rapport
-dans un format Excel pour facilité le survol si un ensemble important de données est utilisé.</p>
+dans un format Excel pour faciliter le survol si un ensemble important de données est utilisé.</p>
 
 <h3>Graphiques - Métriques générales de la campagne de test</h3>
 <p>'Dernier résultat du test' logique est utilisé pour les quatre graphiques que vous verrez. Les graphiques sont animés pour aider
@@ -400,7 +397,7 @@ $TLS_htmltext['planAddTC'] 			= "<h2>Objectif:</h2>
 
 <h2>Pour ajouter ou supprimer des cas de tests:</h2>
 <ol>
-	<li>Cliquez sur une suite de test pour voir tout ses suites de tests et tout ses cas de tests.</li>
+	<li>Cliquez sur une suite de test pour voir toutes ses suites de tests et tous ses cas de tests.</li>
 	<li>Lorsque c'est fait, cliquez sur le bouton 'ajouter/supprimer cas de tests' pour ajouter ou supprimer les cas de tests.
 		Remarque: Ce n'est pas possible d'ajouter le même cas de test plusieurs fois.</li>
 </ol>";

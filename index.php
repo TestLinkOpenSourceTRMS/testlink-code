@@ -3,17 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource index.php
- * @package TestLink
- * @copyright 2006-2011, TestLink community
- * @link http://www.teamst.org/index.php*
+ * @filesource  index.php
+ * @package     TestLink
+ * @copyright   2006-2013, TestLink community
+ * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.4
- * 20111210 - franciscom -	TICKET 4711: Apache Webserver - SSL Client Certificate Authentication (Single Sign-on?) 
- *							minor change needed when $redir2login == true
- *	
- * 20110813 - franciscom - 	TICKET 4342: Security problem with multiple Testlink installations on the same server
  *
 **/
 require_once('lib/functions/configCheck.php');
@@ -24,64 +19,79 @@ doSessionStart();
 
 unset($_SESSION['basehref']);  // will be very interesting understand why we do this
 setPaths();
-$args = init_args();
+list($args,$gui) = initEnv();
 
-//verify the session during a work
+// verify the session during a work
 $redir2login = true;
 if( isset($_SESSION['currentUser']) )
 {
-	// Session exists we need to do other checks.
-	//
-	// we use/copy Mantisbt approach
-	$securityCookie = tlUser::auth_get_current_user_cookie();
-	$redir2login = is_null($securityCookie);
+  // Session exists we need to do other checks.
+  //
+  // we use/copy Mantisbt approach
+  $securityCookie = tlUser::auth_get_current_user_cookie();
+  $redir2login = is_null($securityCookie);
 
-	if(!$redir2login)
-	{
-		// need to get fresh info from db, before asking for securityCookie
-		doDBConnect($db,database::ONERROREXIT);
-		$user = new tlUser();
-		$user->dbID = $_SESSION['currentUser']->dbID;
-		$user->readFromDB($db);
-		$dbSecurityCookie = $user->getSecurityCookie();
-		$redir2login = ( $securityCookie !=	$dbSecurityCookie );
-	}	
+  if(!$redir2login)
+  {
+    // need to get fresh info from db, before asking for securityCookie
+    doDBConnect($db,database::ONERROREXIT);
+    $user = new tlUser();
+    $user->dbID = $_SESSION['currentUser']->dbID;
+    $user->readFromDB($db);
+    $dbSecurityCookie = $user->getSecurityCookie();
+    $redir2login = ( $securityCookie != $dbSecurityCookie );
+  } 
 }
 
 if($redir2login)
 {
-	// destroy user in session as security measure
-	unset($_SESSION['currentUser']);
+  // destroy user in session as security measure
+  unset($_SESSION['currentUser']);
 
-	// 20111120 - franciscom
-	// redirect(TL_BASE_HREF ."login.php?note=expired");
-	//
-	// If session does not exists I think is better in order to
-	// manage other type of authentication method/schemas
-	// to understand that this is a sort of FIRST Access.
-	//
-	// When TL undertand that session existed but has expired
-	// is OK to call login with expired indication, but is not this case
-	redirect(TL_BASE_HREF ."login.php");
-	exit;
+  // If session does not exists I think is better in order to
+  // manage other type of authentication method/schemas
+  // to understand that this is a sort of FIRST Access.
+  //
+  // When TL undertand that session exists but has expired
+  // is OK to call login with expired indication, but is not this case
+  //
+  // Dev Notes:
+  // may be we are going to login.php and it will call us again!
+  redirect(TL_BASE_HREF ."login.php");
+  exit;
 }
 
-$smarty = new TLSmarty();
-$smarty->assign('title', lang_get('main_page_title'));
-$smarty->assign('titleframe', 'lib/general/navBar.php');
-$smarty->assign('mainframe', $args->reqURI);
-$smarty->display('main.tpl');
+
+// We arrive to these lines only if we are logged in
+// 
+// Calling testlinkInitPage() I'm doing what we do on navBar.php
+// navBar.php is called via main.tpl
+// testlinkInitPage($db,('initProject' == 'initProject'));
+
+$tplEngine = new TLSmarty();
+$tplEngine->assign('gui', $gui);
+$tplEngine->display('main.tpl');
 
 
-
-function init_args()
+/**
+ *
+ *
+ */
+function initEnv()
 {
-	$iParams = array("reqURI" => array(tlInputParameter::STRING_N,0,4000));
-	$pParams = G_PARAMS($iParams);
-	
-	$args = new stdClass();
-	$args->reqURI = ($pParams["reqURI"] != '') ? $pParams["reqURI"] : 'lib/general/mainPage.php';
-	
-	return $args;
+  $iParams = array("reqURI" => array(tlInputParameter::STRING_N,0,4000));
+  $pParams = G_PARAMS($iParams);
+  
+  $args = new stdClass();
+  $args->reqURI = ($pParams["reqURI"] != '') ? $pParams["reqURI"] : 'lib/general/mainPage.php';
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+  $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+
+  $gui = new stdClass();
+  $gui->title = lang_get('main_page_title');
+  $gui->titleframe = "lib/general/navBar.php?tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
+                     "&updateMainPage=1";
+  $gui->mainframe = $args->reqURI;
+
+  return array($args,$gui);
 }
-?>

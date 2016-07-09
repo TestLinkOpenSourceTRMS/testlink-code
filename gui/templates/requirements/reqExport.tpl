@@ -17,6 +17,17 @@
 {assign var="url_args" value="reqSpecView.php?req_spec_id="}
 {assign var="req_spec_view_url" value="$basehref$req_module$url_args"}
 
+{if $gui->req_spec_id == 0}
+  {assign var="dummy" value=$gui->tproject_id}
+  {assign var="targetUrl" value="lib/project/project_req_spec_mgmt.php?id="}
+  {assign var="xurl" value="$basehref$targetUrl"}
+  {assign var="cancelUrl" value="$xurl$dummy"}
+{else}
+  {assign var="req_spec_view_url" value="$basehref$req_module$url_args"}
+  {assign var="dummy" value=$gui->req_spec_id}
+  {assign var="cancelUrl" value="$req_spec_view_url$dummy"}
+{/if}
+
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 
@@ -77,8 +88,13 @@ function validateForm(f)
 		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="submit" id="export" name="export" value="{$labels.btn_export}" 
 		       onclick="doAction.value='doExport'" />
+    {*       
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			onclick="javascript: location.href='{$req_spec_view_url}{$gui->req_spec_id}';" />
+    *} 
+    <input type="button" name="cancel" value="{$labels.btn_cancel}" 
+      onclick="javascript: location.href='{$cancelUrl}';" />
+      
 	 </div>
 </form>
 

@@ -8,9 +8,9 @@ internal revisions
 *}
 {lang_get var="labels" 
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
-             view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
+             view_file_format_doc,export_with_keywords,btn_export,btn_cancel,view_file_format_doc'} 
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -18,18 +18,16 @@ internal revisions
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
   {
-      alert_message(alert_box_title,warning_empty_filename);
-      selectField(f, 'export_filename');
-      return false;
+    alert_message(alert_box_title,warning_empty_filename);
+    selectField(f, 'export_filename');
+    return false;
   }
   return true;
 }
-{/literal}
 </script>
 </head>
 
@@ -47,6 +45,7 @@ function validateForm(f)
     <input type="hidden" name="platform_id" id="platform_id" value="{$gui->platform_id}">
     <input type="hidden" name="build_id" id="build_id" value="{$gui->build_id}">
     <input type="hidden" name="exportContent" id="exportContent" value="{$gui->exportContent}">
+    <input type="hidden" name="form_token" id="form_token" value="{$gui->treeFormToken}">
     <table>
     <tr>
     <td>
@@ -63,7 +62,7 @@ function validateForm(f)
   	<select name="exportType">
   		{html_options options=$gui->exportTypes}
   	</select>
-	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
+	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
   	</td>
   	</tr>
   	</table>
@@ -72,6 +71,7 @@ function validateForm(f)
   		<input type="submit" name="export" value="{$labels.btn_export}" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+             {elseif $gui->closeOnCancel} onclick="window.close();"
     		     {else}  onclick="javascript:history.back();" {/if} />
   	</div>
   </form>

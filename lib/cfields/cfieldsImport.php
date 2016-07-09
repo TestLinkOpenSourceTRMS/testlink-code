@@ -5,17 +5,15 @@
  *  
  * Custom Fields definition import management
  *
- * @package 	TestLink
- * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: cfieldsImport.php,v 1.5 2010/03/15 20:22:42 franciscom Exp $
- * @link 		http://www.teamst.org/index.php
- * @uses 		config.inc.php
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright 	2005-2013, TestLink community 
+ * @filesource  cfieldsImport.php,v 1.5 2010/03/15 20:22:42 franciscom Exp $
+ * @link 		    http://www.teamst.org/index.php
+ * @uses 		    config.inc.php
  *
- * @internal Revisions:
- * 20100315 - franciscom - added tlInputParameter() on init_args
- * 20090719 - franciscom - db table prefix management		
- *
+ * @internal revisions
+ * @since 1.9.9
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -103,29 +101,29 @@ function doImport(&$dbHandler)
 		$file_check['status_ok'] = 1;
 		if (move_uploaded_file($source, $dest))
 		{
-        	$file_check['status_ok']=!(($xml=@simplexml_load_file($dest)) === FALSE);
+      $file_check['status_ok']=!(($xml=@simplexml_load_file_wrapper($dest)) === FALSE);
 		}
-        if( $file_check['status_ok'] )
+    if( $file_check['status_ok'] )
+    {
+      $file_check['show_results']=1;
+      $cfield_mgr = new cfield_mgr($dbHandler);
+      foreach($xml as $cf)
+      {
+        if( is_null($cfield_mgr->get_by_name($cf->name)) )
         {
-            $file_check['show_results']=1;
-            $cfield_mgr = new cfield_mgr($dbHandler);
-            foreach($xml as $cf)
-            {
-                if( is_null($cfield_mgr->get_by_name($cf->name)) )
-                {
-                    $cfield_mgr->create((array) $cf);
-                    $import_msg['ok'][]=sprintf(lang_get('custom_field_imported'),$cf->name);              
-                }
-                else
-                {
-                    $import_msg['ko'][]=sprintf(lang_get('custom_field_already_exists'),$cf->name);              
-                }
-            }      
+          $cfield_mgr->create((array) $cf);
+          $import_msg['ok'][]=sprintf(lang_get('custom_field_imported'),$cf->name);              
         }
         else
         {
-            $file_check['msg']=lang_get('problems_loading_xml_content');  
+          $import_msg['ko'][]=sprintf(lang_get('custom_field_already_exists'),$cf->name);              
         }
+      }      
+    }
+    else
+    {
+      $file_check['msg']=lang_get('problems_loading_xml_content');  
+    }
  	}
 	else
 	{
@@ -133,8 +131,8 @@ function doImport(&$dbHandler)
 		                    'msg' => lang_get('please_choose_file_to_import'));
 	}
   
-  	$file_check['import_msg']=$import_msg;
-  	return $file_check;
+  $file_check['import_msg']=$import_msg;
+  return $file_check;
 }
 
 /**

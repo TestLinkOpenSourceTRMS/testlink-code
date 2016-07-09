@@ -7,14 +7,13 @@
  * Define urgency of a Test Suite. 
  * It requires "prioritization" feature enabled.
  *
- * @package 	TestLink
- * @author Francisco Mancardi
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planMilestonesView.php,v 1.10 2010/10/18 07:53:22 mx-julian Exp $
- * @link 		http://www.teamst.org/index.php
+ * @package 	 TestLink
+ * @author     Francisco Mancardi
+ * @copyright  2003-2009, TestLink community 
+ * @filesoruce planMilestonesView.php
+ * @link 		   http://www.testlink.org
  * 
- * @internal Revisions:
- *	20100427 - franciscom - added standard documentation file header
+ * @internal revision
  **/
 
 require_once("../../config.inc.php");
@@ -25,9 +24,12 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initialize_gui($db,$args);
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
 
 /*
   function: 
@@ -58,18 +60,26 @@ function init_args()
 */
 function initialize_gui(&$dbHandler,&$argsObj)
 {
-    $manager = new milestone_mgr($dbHandler);
-    $gui = new stdClass();
+  $manager = new milestone_mgr($dbHandler);
+  $gui = new stdClass();
     
-    $gui->user_feedback = null;
-    $gui->main_descr = lang_get('title_milestones') . " " . $argsObj->tplan_name;
-    $gui->action_descr = null;
-    $gui->tplan_name = $argsObj->tplan_name;
-    $gui->tplan_id = $argsObj->tplan_id;
+  $gui->user_feedback = null;
+  $gui->main_descr = lang_get('title_milestones') . " " . $argsObj->tplan_name;
+  $gui->action_descr = null;
+  $gui->tplan_name = $argsObj->tplan_name;
+  $gui->tplan_id = $argsObj->tplan_id;
 	$gui->items = $manager->get_all_by_testplan($argsObj->tplan_id);
+  $gui->itemsLive = null;
+
+  if(!is_null($gui->items))
+  {
+    $metrics = new tlTestPlanMetrics($dbHandler);
+    $gui->itemsLive = $metrics->getMilestonesMetrics($argsObj->tplan_id,$gui->items);
+  }  
+
 	
 	$gui->grants = new stdClass();
-    $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
+  $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
 	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
 	
 	return $gui;

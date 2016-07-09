@@ -9,21 +9,21 @@
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.7
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
+$smarty = new TLSmarty();
+$imgSet = $smarty->getImages(); 
+
 $templateCfg = templateConfiguration();
 $charset = config_get('charset');
 $labels = init_labels(array('design' => null, 'execution' => null, 'no_linked_tc_cf' => null,
                             'execution_history' => null));
 
-$history_img = TL_THEME_IMG_DIR . "history_small.png";
-$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
-$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $tcase_mgr = new testcase($db);
 $args = init_args($db);
@@ -31,8 +31,8 @@ $gui = initializeGui($db,$args);
 
 if( $args->doIt )
 {
-   	// Get executions with custom field values
-   	buildResultSet($db,$gui,$args->tproject_id,$args->tplan_id);
+  // Get executions with custom field values
+  buildResultSet($db,$gui,$args->tproject_id,$args->tplan_id);
 
 	// Create column headers
 	$columns = getColumnsDefinition($args->showPlatforms,$gui->cfields,$args->platforms);
@@ -50,26 +50,22 @@ if( $args->doIt )
 
 		// create linked icons
 		$exec_history_link = "<a href=\"javascript:openExecHistoryWindow({$item['tcase_id']});\">" .
-		                     "<img title=\"{$labels['execution_history']}\" src=\"{$history_img}\" /></a> ";
+		                     "<img title=\"{$labels['execution_history']}\" src=\"{$imgSet['history_small']}\" /></a> ";
 		
 		$exec_link = "<a href=\"javascript:openExecutionWindow(" .
 		             "{$item['tcase_id']}, {$item['tcversion_id']}, {$item['builds_id']}, " .
 		             "{$args->tplan_id}, {$item['platform_id']});\">" .
-		             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
+		             "<img title=\"{$labels['execution']}\" src=\"{$imgSet['exec_icon']}\" /></a> ";
 
 		$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tcase_id']});\">" .
-					 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
+					 "<img title=\"{$labels['design']}\" src=\"{$imgSet['edit_icon']}\" /></a> ";
 
-		$tcaseName = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
-					 ' : ' . $item['tcase_name'];
+		$tcaseName = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) . ' : ' . $item['tcase_name'];
 
 		$tcLink = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $exec_history_link .
 		          $exec_link . $edit_link . $tcaseName;
 		$rowData[] = $tcLink;
 
-		//$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $item['tcase_id'] . '">' .
-		//			 buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
-		//			 ' : ' . $item['tcase_name'] . '</a>';
 		$rowData[] = $item['tcversion_number'];
 		if ($args->showPlatforms)
 		{
@@ -81,11 +77,6 @@ if( $args->doIt )
 		// use html comment to be able to sort table by timestamp and not by link
 		// only link is visible in table but comment is used for sorting
 		$dummy = null;
-//		$rowData[] = "<!--{$item['execution_ts']}--><a href=\"lib/execute/execSetResults.php?" .
-//					 "level=testcase&build_id={$item['builds_id']}&id={$item['tcase_id']}" .
-//					 "&version_id={$item['tcversion_id']}&tplan_id={$gui->tplan_id}\">" .
-//					 localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $item['execution_ts']) . '</a>';
-
 		$rowData[] = "<!--{$item['execution_ts']}-->" .
 		             localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $item['execution_ts']);
 
@@ -116,7 +107,8 @@ if( $args->doIt )
 		}
 	}
 
-	if (count($matrixData) > 0) {
+	if (count($matrixData) > 0) 
+	{
 		$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 
@@ -233,8 +225,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     	}
 	}
 
-    $cf_map = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',
-                                                          null,null,$tplan_id,'exec_id');
+    $cf_map = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,$tplan_id,'exec_id');
      
     // need to transform in structure that allow easy display
     // Every row is an execution with exec data plus a column that contains following map:
@@ -258,7 +249,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
             $guiObj->resultSet[$exec_id] += $cf_place_holder;
             foreach($exec_info as $cfield_data)
             {
-                $guiObj->resultSet[$exec_id]['cfields'][$cfield_data['name']]=$cfield_data['value'];
+                $guiObj->resultSet[$exec_id]['cfields'][$cfield_data['name']] = $cfieldMgr->string_custom_field_value($cfield_data,null);
             }
         }
     }
@@ -297,10 +288,16 @@ function getColumnsDefinition($showPlatforms,$customFields,$platforms)
 	foreach ($customFields as $cfield)
 	{
 		// if custom field is time for computing execution time do not waste space
-		$dummy = array('title' => $cfield['label'], 'col_id' => 'id_cf_' . $cfield['name']);
-		if($cfield['name'] == 'CF_EXEC_TIME') {
+		// $cfield['id'] is used instead of $cfield['name'] to fix the issue regarding dot on CF name
+		// 20130324 - need to understand if col_id is really needed
+		//
+		$dummy = array('title' => $cfield['label'], 'col_id' => 'id_cf_' . $cfield['id']);
+		if($cfield['name'] == 'CF_EXEC_TIME') 
+		{
 			$dummy['width'] = 20;
-		} else {
+		} 
+		else
+		{
 			$dummy['type'] = 'text';
 		}
 		$colDef[] = $dummy;

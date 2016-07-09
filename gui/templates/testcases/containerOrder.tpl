@@ -18,7 +18,7 @@ rev :
 	{if $arraySelect eq ''}
 		{lang_get s='no_nodes_to_reorder'}
 	{else}
-	<form method="post" action="lib/testcases/containerEdit.php?containerID={$objectID}">
+	<form method="post" action="{$basehref}lib/testcases/containerEdit.php?containerID={$objectID}">
 	
 		<table class="common" style="width: 70%">
 			<tr>

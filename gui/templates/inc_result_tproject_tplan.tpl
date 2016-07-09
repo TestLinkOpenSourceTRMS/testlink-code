@@ -1,8 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_result_tproject_tplan.tpl,v 1.3 2008/11/09 16:25:05 franciscom Exp $ 
+@filesource inc_result_tproject_tplan.tpl
 
-rev: 20081109 - franciscom - added logic to hide testplan name if empty
 *}
 <table>
 	<tr>
@@ -18,5 +17,21 @@ rev: 20081109 - franciscom - added logic to hide testplan name if empty
 			<span style="color:black; font-weight:bold; text-decoration:underline;">{$arg_tplan_name|escape}</span>
 		</td>
 	</tr>
-	{/if}
+  {/if}
+
+  {if (isset($arg_build_set) && $arg_build_set != '') }
+	{foreach key=idx item=name from=$arg_build_set}
+	<tr>
+		{if $idx == 0}
+		<td>{lang_get s="builds"}</td><td>{$smarty.const.TITLE_SEP}</td>
+		{else}
+		<td>&nbsp;</td><td>&nbsp;</td>
+		{/if}
+		<td> 
+			<span style="color:black; font-weight:bold; text-decoration:underline;">{$name|escape}</span>
+		</td>
+	</tr>
+	{/foreach}
+  {/if}
+
 </table>

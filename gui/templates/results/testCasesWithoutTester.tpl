@@ -4,9 +4,6 @@ $Id: testCasesWithoutTester.tpl,v 1.5 2010/11/06 14:07:57 mx-julian Exp $
 
 Purpose: For a test plan, list test cases that has no tester assigned
 
-rev: 
-	20100830 - Julian - added information for users about report
-	20081227 - franciscom - BUGID
 *}
 
 {lang_get var="labels" 
@@ -36,7 +33,7 @@ rev:
 {if $gui->warning_msg == ''}
 	{if $gui->tableSet}
 		{foreach from=$gui->tableSet key=idx item=matrix}
-			{assign var=tableID value=table_$idx}
+			{assign var=tableID value="table_$idx"}
    			{$matrix->renderBodySection($tableID)}
 		{/foreach}
 		

@@ -3,10 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: freeTestCases.tpl,v 1.5 2010/09/20 13:33:33 mx-julian Exp $
 
 For a test project, list FREE test cases, i.e. not assigned to a test plan.
-
-rev: 
-	20100920 - Julian - use exttable
-	20090414 - franciscom - BUGID 2363
 *}
 
 {lang_get var="labels" 
@@ -34,7 +30,7 @@ rev:
 
 {if $gui->warning_msg == ''}
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var=tableID value="table_$idx"}
 		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	<br />

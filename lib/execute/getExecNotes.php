@@ -6,7 +6,7 @@
  * @filesource	getExecNotes.php
  *
  * @internal revisions
- * @since 1.9.4
+ * @since 1.9.14
  *
  *
  */
@@ -25,13 +25,14 @@ $templateCfg = templateConfiguration();
 $tcase_mgr = new testcase($db);
 $args = init_args();
 
-$webeditorCfg = getWebEditorCfg('execution');
+$webeditorCfg = getWebEditorCfg('display_execution_notes');
 $map = get_execution($db,$args->exec_id);
 $notesContent = $map[0]['notes'];
 
 $readonly = $args->readonly > 0 ? 'readonly="readonly"' : ''; 
 $smarty = new TLSmarty();
 $smarty->assign('notes',$notesContent);
+$smarty->assign('webeditorCfg',$webeditorCfg);
 $smarty->assign('webeditorType',$webeditorCfg['type']);
 $smarty->assign('readonly',$readonly);
 $smarty->assign('editor_instance','exec_notes_' . $args->exec_id);

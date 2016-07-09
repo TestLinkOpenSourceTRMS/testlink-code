@@ -1,0 +1,5 @@
+<issuetracker>
+  <username>testlink.helpme@gmail.com</username>
+  <password>testlink.helpme</password>
+  <uribase>http://bugzilla.mozilla.org/</uribase>
+</issuetracker>

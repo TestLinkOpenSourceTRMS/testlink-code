@@ -54,8 +54,15 @@ function FCKeditor_IsCompatibleBrowser()
 	}
 	else if ( strpos($sAgent, 'Gecko/') !== false )
 	{
+    $start = strpos($sAgent, 'Gecko/') + 6;
+    $end = strpos($sAgent,' Firefox/');
+    $fVersion = -1;
+    if($start !== FALSE && $end !== FALSE)
+    {
+      $fVersion = (float) substr($sAgent,$start,$end-$start);
+    }
 		$iVersion = (int)substr($sAgent, strpos($sAgent, 'Gecko/') + 6, 8) ;
-		return ($iVersion >= 20030210) ;
+		return ($iVersion >= 20030210 || $fVersion >= 17.0) ;
 	}
 	else if ( strpos($sAgent, 'Opera/') !== false )
 	{

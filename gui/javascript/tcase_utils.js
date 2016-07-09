@@ -2,12 +2,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package TestLink
- * @author Francisco Mancardi
- * @copyright 2009, TestLink community
- * @version CVS: $Id: tcase_utils.js,v 1.2 2010/10/10 13:34:14 franciscom Exp $
- * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
- * @link http://www.teamst.org
+ * @package    TestLink
+ * @author     Francisco Mancardi
+ * @copyright  2009,2014 TestLink community
+ * @filesource tcase_utils.js
+ * @link       http://www.testlink.org
  *
  *
  * Utilities for certain test case actions / operations
@@ -15,10 +14,8 @@
  * ----- Development Notes --------------------------------------------------------------
  *
  * @global variables:
- * 	fRoot  -> url to TestLink installation home
+ *  fRoot  -> url to TestLink installation home
  *
- * @internal revisions:
- * 20101010 - franciscom - creation
  **/
 
 /**
@@ -42,20 +39,23 @@
  *
  * returns: -
  */
-function checkTCaseDuplicateName(tcase_id,tcase_name,tsuite_id,warningOID) {
-	Ext.Ajax.request({
-		url: fRoot+'lib/ajax/checkTCaseDuplicateName.php',
-		method: 'GET',
-		params: {
-			name: tcase_name,
-			testcase_id: tcase_id,
-			testsuite_id: tsuite_id
-		},
-		success: function(result, request) {
-			var obj = Ext.util.JSON.decode(result.responseText);
-			$(warningOID).innerHTML = obj['message'];
-		},
-		failure: function (result, request) {
-		}
-	});
+function checkTCaseDuplicateName(tcase_id,tcase_name,tsuite_id,warningOID) 
+{
+  Ext.Ajax.request({
+    url: fRoot+'lib/ajax/checkTCaseDuplicateName.php',
+    method: 'GET',
+    params: {
+      name: tcase_name,
+      testcase_id: tcase_id,
+      testsuite_id: tsuite_id
+    },
+    success: function(result, request) {
+      var obj = Ext.util.JSON.decode(result.responseText);
+      // After upgrading prototype and adding jQuery (to use chosen)
+      // $() does not work anymore
+      document.getElementById(warningOID).innerHTML = obj['message'];
+    },
+    failure: function (result, request) {
+    }
+  });
 }

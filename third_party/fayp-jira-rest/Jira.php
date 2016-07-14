@@ -89,11 +89,11 @@ class Jira
     }
 
     /**
-     *
+     * https://docs.atlassian.com/jira/REST/latest/#api/2/user-getUser
      */
     public function getUser($username)
     {
-        $this->request->openConnect($this->host . 'user/search/?username=' . $username, 'GET');
+        $this->request->openConnect($this->host . 'user/?username=' . $username, 'GET');
         $this->request->execute();
         $user = json_decode($this->request->getResponseBody());
 

@@ -19,6 +19,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
+require_once('event_api.php');
 $editorCfg=getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
 
@@ -682,6 +683,10 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
             $tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));
         }
         writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$ret['id'],$hash);
+
+        // Send Events to plugins 
+        $ctx = array('id' => $ret['id'],'name' => $container['container_name'],'details' => $container['details']);
+        event_signal('EVENT_TEST_SUITE_CREATE', $ctx);
     }
     return $op;
 }
@@ -771,6 +776,10 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
       $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
     }
     writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
+
+    /* Send events to plugins */
+    $ctx = array('id' => $argsObj->testsuiteID,'name' => $container['container_name'],'details' => $container['details']);
+    event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
   }
   else
   {

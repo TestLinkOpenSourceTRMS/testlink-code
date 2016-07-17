@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
@@ -62,23 +62,26 @@ switch($args->doAction)
           $feature_id = $args->feature_id[$key_tc][$platform_id];
 
           $op='ins';
-          $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
-          $features2[$op][$feature_id]['type'] = $task_test_execution;
-          $features2[$op][$feature_id]['status'] = $open;
-          $features2[$op][$feature_id]['creation_ts'] = $db_now;
-          $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-          $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-          $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-          $features2[$op][$feature_id]['build_id'] = $args->build_id; 
+          $features2[$op][$platform_id][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
+          $features2[$op][$platform_id][$feature_id]['type'] = $task_test_execution;
+          $features2[$op][$platform_id][$feature_id]['status'] = $open;
+          $features2[$op][$platform_id][$feature_id]['creation_ts'] = $db_now;
+          $features2[$op][$platform_id][$feature_id]['assigner_id'] = $args->user_id;
+          $features2[$op][$platform_id][$feature_id]['tcase_id'] = $key_tc;
+          $features2[$op][$platform_id][$feature_id]['tcversion_id'] = $tcversion_id;
+          $features2[$op][$platform_id][$feature_id]['build_id'] = $args->build_id; 
         }
 
       }
 
-      foreach($features2 as $key => $values)
+      foreach($features2 as $key => $featByPlatform)
       {
         if( count($features2[$key]) > 0 )
         {
-          $assignment_mgr->assign($values);
+          foreach($featByPlatform as $plat => $values)
+          {
+            $assignment_mgr->assign($values);
+          }  
           $called[$key]=true;
         }  
       }
@@ -381,6 +384,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 /**
  * send_mail_to_testers
  *
+ * @param hash $features main key platform_id
  *
  * @return void
  */
@@ -388,6 +392,10 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 {
   $testers['new']=null;
   $testers['old']=null;
+  $lb = array('platform' => null, 'testplan' => null, 'testproject' => null, 
+              'build' =>null);
+  $lbl = init_labels($lb);
+
   $mail_details['new']=lang_get('mail_testcase_assigned') . "<br /><br />";
   $mail_details['old']=lang_get('mail_testcase_assignment_removed'). "<br /><br />";
   $mail_subject['new']=lang_get('mail_subject_testcase_assigned');
@@ -396,6 +404,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
   $use_testers['old']= ($operation == 'ins') ? false : true ;
    
 
+ 
   $tcaseSet=null;
   $tcnames=null;
   $email=array();
@@ -404,31 +413,46 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
             $guiObj->all_users[$argsObj->user_id]->lastName ;
               
   $email['from_address']=config_get('from_email');
-  $body_first_lines = lang_get('testproject') . ': ' . $argsObj->tproject_name . '<br />' .
-                      lang_get('testplan') . ': ' . $guiObj->testPlanName .'<br /><br />';
+ 
+  $body_header = $lbl['testproject'] . ': ' . $argsObj->tproject_name . '<br />' .
+                 $lbl['testplan'] . ': ' . $guiObj->testPlanName .'<br />' .
+                 $lbl['build'] . ': ' . $guiObj->buildName .'<br /><br />';
 
 
-  // Get testers id
-  foreach($features as $feature_id => $value)
+  // Do we really have platforms?
+  $pset = array_flip(array_keys($features));
+  if( $hasPlat = !isset($pset[0]) )
   {
-    if($use_testers['new'])
+    $platMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
+    $platSet = $platMgr->getAllAsMap();
+  }  
+   
+  // Get testers id                 
+  foreach($features as $platform_id => $items)
+  {
+    $plat[$platform_id] = $platform_id;
+    foreach($items as $feature_id => $value)
     {
-      $ty = (array)$value['user_id'];
-      foreach($ty as $user_id)
+      if($use_testers['new'])
       {
-        $testers['new'][$user_id][$value['tcase_id']]=$value['tcase_id'];              
-      }  
-    }
-  
-    if( $use_testers['old'] )
-    {
-      $testers['old'][$value['previous_user_id']][$value['tcase_id']]=$value['tcase_id'];              
-    }
-        
-    $tcaseSet[$value['tcase_id']]=$value['tcase_id'];
-    $tcversionSet[$value['tcversion_id']]=$value['tcversion_id'];
-  } 
-
+        $ty = (array)$value['user_id'];
+        foreach($ty as $user_id)
+        {
+          // $testers['new'][$user_id][$value['tcase_id']]=$value['tcase_id'];              
+          $testers['new'][$user_id][$platform_id][$feature_id]=$value['tcase_id'];              
+        }  
+      }
+    
+      if( $use_testers['old'] )
+      {
+        $testers['old'][$value['previous_user_id']][$platform_id][$feature_id]=$value['tcase_id'];              
+      }
+          
+      $tcaseSet[$value['tcase_id']]=$value['tcase_id'];
+      $tcversionSet[$value['tcversion_id']]=$value['tcversion_id'];
+    }    
+  }  
+ 
   $infoSet = $tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
   foreach($infoSet as $value)
   {
@@ -448,7 +472,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     if( !is_null($tester_set) )
     {
       $email['subject'] = $mail_subject[$tester_type] . ' ' . $guiObj->testPlanName;  
-      foreach($tester_set as $user_id => $value)
+      foreach($tester_set as $user_id => $set2work)
       {
         // workaround till solution will be found
         if($user_id <= 0)
@@ -458,21 +482,32 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 
         $userObj=$guiObj->all_users[$user_id];
         $email['to_address']=$userObj->emailAddress;
-        $email['body'] = $body_first_lines;
+        $email['body'] = $body_header;
         $email['body'] .= sprintf($mail_details[$tester_type],
                           $userObj->firstName . ' ' .$userObj->lastName,$assigner);
-        foreach($value as $tcase_id)
-        {
-          $email['body'] .= $flat_path[$tcase_id] . '<br />';  
-          $wl = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$tcase_id,
-                                              $argsObj->testproject_id);
-           
-          $email['body'] .= '<a href="' . $wl . '">' . 
-                            'direct link to test case spec ' .
-                            '</a>' .
-                            '<br /><br />';
+        
 
-        }  
+        foreach ($set2work as $pid => $value) 
+        {
+          if( $pid != 0 )
+          {
+            $email['body'] .= $lbl['platform'] . ': ' . $platSet[$pid]['name'] . '<br />';  
+          }  
+  
+          foreach($value as $tcase_id)
+          {
+            $email['body'] .= $flat_path[$tcase_id] . '<br />';  
+            $wl = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$tcase_id,
+                                                $argsObj->testproject_id);
+           
+            $email['body'] .= '<a href="' . $wl . '">' . 
+                              'direct link to test case spec ' .
+                              '</a>' .
+                              '<br /><br />';
+
+          }  
+        }
+
         $email['body'] .= '<br />' . date(DATE_RFC1123);
         $email_op = email_send($email['from_address'], $email['to_address'], 
         $email['subject'], $email['body'], '', true, true);

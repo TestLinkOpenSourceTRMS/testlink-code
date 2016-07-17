@@ -411,6 +411,7 @@ class TLSmarty extends Smarty
                    'on' => $imgLoc . 'lightbulb.png',
                    'off' => $imgLoc . 'lightbulb_off.png',
                    'order_alpha' => $imgLoc . 'style.png',
+                   'plugins' => $imgLoc . 'connect.png',
                    'public' => $imgLoc . 'door_open.png',
                    'private' => $imgLoc . 'door.png',
                    'remove' => $imgLoc . 'delete.png',

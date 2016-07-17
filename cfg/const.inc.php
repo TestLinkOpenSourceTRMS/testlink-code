@@ -871,6 +871,11 @@ $tlCfg->guiTopMenu[7] = array('label' => 'title_events',
                               'url' => 'lib/events/eventviewer.php',
                               'right' => array('events_mgt', 'mgt_view_events'),'condition'=>'',
                               'shortcut'=>'v','target'=>'mainframe'); 
+$tlCfg->guiTopMenu[8] = array('label' => 'title_plugins',
+                              'imgKey' => 'plugins',
+                              'url' => 'lib/plugins/pluginView.php',
+                              'right' => array('mgt_plugins'),'condition'=>'',
+                              'shortcut'=>'p','target'=>'mainframe');
 
 
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',  'docs/tl-file-formats.pdf');

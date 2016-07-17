@@ -62,6 +62,23 @@ abstract class TestlinkPlugin extends tlObjectWithDB
   }
 
   /**
+   * This function allows for the plugins to do any specific install activities.
+   * Return false if u want to stop installation
+   */
+  public function install()
+  {
+    return true;
+  }
+
+  /**
+   * This function allows for the plugins to do any specific uninstall activities that maybe required to cleanup
+   */
+  public function uninstall()
+  {
+    
+  }
+  
+  /**
    * return an array of default configuration name/value pairs
    */
   public function config()

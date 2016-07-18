@@ -2612,6 +2612,7 @@ $TLS_desc_mgt_view_key = "Keyword view (read only access)";
 $TLS_desc_mgt_view_req = "Requirement view (read only access)";
 $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
 $TLS_desc_mgt_view_events = "Event viewer (read only access)";
+$TLS_desc_mgt_plugins = "Plugins Management";
 
 $TLS_desc_platforms_view="Platform view (read only access)";
 $TLS_desc_platforms_management="Platform Management";
@@ -3711,6 +3712,21 @@ $TLS_empty_log_message = "<i>Log Message is empty</i>";
 $TLS_diff_method = "Select a comparison mode:";
 $TLS_use_html_comp = "HTML Compare";
 $TLS_use_html_code_comp = "HTML Code Compare";
+
+// ----- pluginView.php -----
+$TLS_title_plugins = "Plugins";
+$TLS_title_plugin_mgmt = "Manage Plugins";
+$TLS_th_plugin = "Plugin Name";
+$TLS_th_plugin_description = "Description";
+$TLS_th_plugin_version = "Version";
+$TLS_installed_plugins = "Installed Plugins";
+$TLS_available_plugins = "Available Plugins";
+$TLS_plugin_uninstalled = "%s Plugin uninstalled successfully";
+$TLS_plugin_installed = "%s Plugin installed successfully";
+$TLS_confirm_install_header = "Confirm Install";
+$TLS_confirm_install_text = "Are you sure you want to install";
+$TLS_confirm_uninstall_header = "Confirm Uninstall";
+$TLS_confirm_uninstall_text = "Are you sure you want to uninstall";
 
 $TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%s) of testcase %s";
 $TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";

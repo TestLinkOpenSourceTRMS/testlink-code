@@ -1,8 +1,10 @@
 /* mysql */
 INSERT INTO /*prefix*/rights  (id,description) VALUES (47,'testcase_freeze');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (48,'mgt_plugins');
 
 # Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,47);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,48);
 
 ALTER TABLE /*prefix*/cfield_testprojects ADD COLUMN monitorable tinyint(1) NOT NULL default '0';
 

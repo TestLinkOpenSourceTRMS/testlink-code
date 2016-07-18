@@ -313,7 +313,7 @@ function plugin_is_installed($p_basename)
   $sql = " SELECT COUNT(*) count FROM {$tables['plugins']} " . 
          " WHERE basename='" . $dbHandler->prepare_string($p_basename) . "'";
 
-  $t_result = $dbHandler->exec_query($sql);
+  $t_result = $dbHandler->fetchFirstRow($sql);
   return (0 < $t_result['count']);
 }
 
@@ -333,7 +333,7 @@ function plugin_install($p_plugin)
 
   plugin_push_current($p_plugin->basename);
 
-  if (!$p_plugin->install()) 
+  if (!$p_plugin->install())
   {
     plugin_pop_current($p_plugin->basename);
     return null;
@@ -352,26 +352,32 @@ function plugin_install($p_plugin)
  * Uninstall a plugin from the database.
  * @param string Plugin basename
  */
-function plugin_uninstall($p_plugin)
+function plugin_uninstall($plugin_id)
 {
+  global $g_plugin_cache;
   $debugMsg = "Function: " . __FUNCTION__;
-  
-  if (!plugin_is_installed($p_plugin->basename)) 
-  {
-    return;
-  }
 
   doDBConnect($dbHandler);
   $tables = tlObjectWithDB::getDBTables(array('plugins'));
+  $sql = "/* debugMsg */ " .
+      " SELECT basename FROM {$tables['plugins']} WHERE id=" . $plugin_id;
+
+  $t_row = $dbHandler->fetchFirstRow($sql);
+
+  // Check that teh plugin is actually available and loaded
+  if (!$t_row)
+  {
+    return;
+  }
+  $t_basename = $t_row['basename'];
+
   $sql = "/* $debugMsg */ DELETE FROM {$tables['plugins']} " .
-         " WHERE basename='" . $dbHandler->prepare_string($p_plugin->basename) . "'";  
+         " WHERE id=" . $plugin_id;
   $dbHandler->exec_query($sql);
 
-  plugin_push_current($p_plugin->basename);
-
+  $p_plugin = $g_plugin_cache[$t_basename];
   $p_plugin->uninstall();
-
-  plugin_pop_current();
+  return $t_basename;
 }
 
 # ## Core usage only.
@@ -540,4 +546,80 @@ function plugin_init($p_basename)
     $ret = true;
   } 
   return $ret;
+}
+
+function get_all_installed_plugins()
+{
+  doDBConnect($dbHandler);
+
+  // Store all the available plugins (Enabled + Disabled + Just Available)
+  $installed_plugins = array();
+
+  $tables = tlObjectWithDB::getDBTables(array('plugins'));
+  $sql = "/* debugMsg */ " .
+      " SELECT id, basename, enabled FROM {$tables['plugins']}";
+
+  $t_result = $dbHandler->exec_query($sql);
+  while ($t_row = $dbHandler->fetch_array($t_result)) {
+    $t_basename = $t_row['basename'];
+    $t_enabled = $t_row['enabled'];
+    $t_pluginid = $t_row['id'];
+
+    if (plugin_include($t_basename)) {
+      $t_classname = $t_basename . 'Plugin';
+      $t_plugin = new $t_classname($dbHandler, $t_basename);
+
+      $installed_plugins[] = array(
+          'id' => $t_pluginid,
+          'name' => $t_basename,
+          'enabled' => $t_enabled,
+          'description' => $t_plugin->description,
+          'version' => $t_plugin->version);
+    }
+  }
+
+  return $installed_plugins;
+}
+
+function get_plugin_name($arr)
+{
+  if (array_key_exists('name', $arr))
+  {
+    return $arr['name'];
+  }
+  return false;
+}
+
+function get_all_available_plugins($existing_plugins)
+{
+  $registered_plugin_names = array_map("get_plugin_name", $existing_plugins);
+  $available_plugins = array();
+  // Find all plugins that are newly available (And not already registered)
+  if ($t_dir = opendir(TL_PLUGIN_PATH))
+  {
+    while (($t_file = readdir($t_dir)) !== false)
+    {
+      if ('.' == $t_file || '..' == $t_file)
+      {
+        continue;
+      }
+      if (!in_array($t_file, $registered_plugin_names) &&
+          is_dir(TL_PLUGIN_PATH. $t_file) && plugin_include($t_file))
+      {
+        $t_classname = $t_file . 'Plugin';
+        if (class_exists($t_classname) && is_subclass_of($t_classname, 'TestlinkPlugin'))
+        {
+          $t_plugin = new $t_classname($dbHandler, $t_file);
+
+          $available_plugins[] = array('name' => $t_plugin->name,
+              'enabled' => 0,
+              'description' => $t_plugin->description,
+              'version' => $t_plugin->version);
+        }
+      }
+    }
+    closedir($t_dir);
+  }
+
+  return $available_plugins;
 }

@@ -758,7 +758,7 @@ class jirarestInterface extends issueTrackerInterface
     foreach ($cfSet as $cf)
     {
       $cf = (array)$cf;    
-      $cfJIRAID = $cf['customfield']; 
+      $cfJIRAID = $cf['customfieldId']; 
       $valueSet = (array)$cf['values'];        
       $loop2do = count($valueSet);
 

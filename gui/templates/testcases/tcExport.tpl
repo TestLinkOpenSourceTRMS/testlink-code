@@ -119,7 +119,7 @@ function mirrorCheckbox(sourceOID,targetOID)
     </tr>
     <tr>
     <td>{$labels.export_with_keywords}</td>
-    <td><input type="checkbox" name="exportKeywords" value="0" /></td>
+    <td><input type="checkbox" name="exportKeywords" value="1" /></td>
     </tr>
 
 

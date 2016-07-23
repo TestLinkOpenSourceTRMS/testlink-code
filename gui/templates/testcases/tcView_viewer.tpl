@@ -52,8 +52,8 @@ viewer for test case in test specification
 {$url_args="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
 {$hrefEditStep="$basehref$module$url_args"}
 
-
-{$tcExportAction="lib/testcases/tcExport.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
+{$tproject_id = $gui->tproject_id}
+{$tcExportAction="lib/testcases/tcExport.php?tproject_id=$tproject_id&goback_url=$goBackActionURLencoded&show_mode=$showMode"}
 {$exportTestCaseAction="$basehref$tcExportAction"}
 
 {$printTestCaseAction="lib/testcases/tcPrint.php?show_mode=$showMode"}

@@ -819,6 +819,7 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
   }
 
   $safeID = intval($id);
+  $gui->tproject_id = $safeID;
   $gui->container_data = $this->get_by_id($safeID);
   $gui->moddedItem = $gui->container_data;
   $gui->level = 'testproject';
@@ -841,7 +842,7 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
   $cfg = getWebEditorCfg('testproject');
   $gui->testProjectEditorType = $cfg['type'];
   
-  $smarty->assign('gui', $gui);  
+  $smarty->assign('gui', $gui); 
   $smarty->display($template_dir . 'containerView.tpl');
 }
 

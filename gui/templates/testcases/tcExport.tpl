@@ -128,6 +128,7 @@ function mirrorCheckbox(sourceOID,targetOID)
   	</table>
 
   	<div class="groupBtn">
+      <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
   		<input type="hidden" name="testcase_id" value="{$gui->tcID}" />
   		<input type="hidden" name="tcversion_id" value="{$gui->tcVersionID}" />
   		<input type="hidden" name="containerID" value="{$gui->containerID}" />

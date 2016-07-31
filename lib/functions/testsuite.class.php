@@ -197,6 +197,12 @@ class testsuite extends tlObjectWithAttachments
       if ($result)
       {
         $ret['id'] = $tsuite_id;
+
+        if (defined(TL_APICALL))
+        {
+            $ctx = array('id' => $tsuite_id,'name' => $name,'details' => $details);     
+            event_signal('EVENT_TEST_SUITE_CREATE', $ctx);
+        }
       }
     }
     
@@ -241,6 +247,14 @@ class testsuite extends tlObjectWithAttachments
       {
         $ret['msg'] = $this->db->error_msg();
       } 
+      else
+      {
+        if (defined(TL_APICALL))
+        {
+          $ctx = array('id' => $id,'name' => $name,'details' => $details);
+          event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
+        }
+      }
     }
     else
     {

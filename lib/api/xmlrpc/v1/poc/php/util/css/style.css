@@ -1,0 +1,261 @@
+body {
+	/* text-align: center; */
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+}
+
+.w22 {
+	width: 22%;
+}
+
+.mainTable { 
+	border-top: 1px solid #003399;
+	border-left: 1px solid #003399;
+	border-right: 1px solid #003399;
+	width: 740px;
+	background: #fff url(./img/section.jpg) no-repeat top right ;
+	margin: 0px auto;
+	text-align: left;
+}
+
+.mainTable tr td { 
+	padding: 4px;
+}
+
+body,td,th {
+	/* font-family: Verdana, Arial, Helvetica, sans-serif; */
+	font-size: 11px;
+	color: #000;
+}
+
+a,a:hover { 
+	text-decoration: underline;
+}
+
+a { 
+	color: #821517; 
+	text-decoration: none;
+}
+
+a:hover {
+	color: #821517; 
+	text-decoration: underline;
+}
+
+.navigation { 
+	padding: 0px;
+	margin:	0px;
+	height: 100%; 
+	border:	1px solid #003399;
+	background: #fff url(./img/section.jpg) no-repeat top right;
+}
+
+.navigation a,.navigation a:hover {
+	padding: 4px;
+	margin: 6px;
+	margin-bottom: 2px;
+	margin-top: 2px;
+	display: block;
+	color: #000000;
+	border: 1px solid #FFFFFF;
+	background: #fff url(./img/section.jpg) no-repeat top right;
+}
+
+.navigation a:hover {
+	padding: 4px;
+	text-decoration: none; 
+	color: #821517;
+	background: #fff url(./img/buttonbar.gif) repeat-x top ;
+	border: 1px solid #003399;
+}
+
+.headers {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.headers a, .headers a:hover { 
+	color: #000000;
+	text-decoration: none;
+}
+
+.highLight { 
+	background: #fff url(./img/buttonbar.gif) repeat-x top ;
+	font-weight: bold;
+	border: solid 1px #000000; 
+}
+
+.fancyRow {
+	background: #fff url(./img/buttonbar_gs.gif) repeat-x top;
+}
+
+.fancyRow2 {
+	background: #fff url(./img/buttonbar.gif) repeat-x top;
+}
+
+body {
+	background: #fff url(./img/treeback.jpg) repeat-x top;
+}
+
+.border-top-bottom {
+	border-top: 1px solid #003399;
+	border-bottom: 1px solid #003399;
+}
+
+.navigationHead {
+	/* text-align:	center; */
+	font-weight: bold;
+	border-top:	1px solid #003399;
+	border-left: 1px solid #003399;
+	border-right: 1px solid #003399;
+}
+
+.smallText {
+	font-size: 9px;
+}
+
+.text { 
+	width: 154px; 
+}
+
+img { 
+	border: 0px;
+}
+
+li {
+	padding: 0px;
+	margin: 6px 0px 0px 15px;
+	list-style: disc outside url("./img/li.gif");
+}
+
+ul {
+	margin: 0px 0px 0px 20px;
+}
+
+.silent { 
+	color: #000000; 
+	text-decoration: none; 
+}
+
+.silent:hover { 
+	color: #000000 !important; 
+	text-decoration: none !important; 
+}
+
+.logoBox {
+	padding: 4px;
+	margin: 4px;
+	border:	1px solid #003399;
+	background: #fff url(./img/section.jpg) no-repeat top right;
+}
+
+fieldset { 
+	padding: 5px; 
+}
+
+legend {  
+	font-weight: bold
+}
+
+legend a,legend a:hover { 
+	display: block; 
+	text-decoration: none;
+}
+
+.u { 
+	text-decoration: underline;
+}
+
+.strike {
+	text-decoration:line-through;
+}
+
+.content { 
+	width: 84%; 
+	height: 206px;
+}
+
+.mono {
+	font-family:"Courier New", Courier, mono, sans-serif;
+}
+
+/* FORM ELEMENTS */
+
+.textbox, .textarea {
+}
+
+td.basic {background-color: #FFFFFF; vertical-align:top;} 
+
+.fauxbutton {
+	font: 11px Verdana, Tahoma, Arial, Trebuchet MS, Sans-Serif, Georgia, Courier, Times New Roman, Serif;
+	border: 1px solid #003399;
+	background-color: #F7CC76;
+	padding: 2px;
+	color: #000000;
+}
+
+.boldtext {font-weight: bold;}
+
+h1 {
+	font-size: 13px;
+	color: #003399;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 6px;
+}
+
+.boldtitle {
+	font-size: 12px;
+font-weight: bold;
+	color: #003399;
+	margin-left: 0px;
+	margin-top: 4px;
+	margin-right: 0px;
+	margin-bottom: 4px;
+}
+
+p.notop{
+margin-top: 0px;
+}
+
+acronym { cursor: hand; border-bottom: dashed 1px #000000; }
+
+#countdown1{
+font-weight: bold;
+font-size: 16px;}
+
+
+/* 20050803 */
+.ok {
+	color : green;
+}
+
+.notok {
+	color : red;
+}
+	 
+.labelHolder {
+	width : 180px;
+	float : left;
+	font-weight: bold;
+}
+
+
+.fancy{
+	background: #fff url(./img/buttonbar_gs.gif);
+}
+
+.fancy_2{
+	background: #fff url(./img/buttonbar.gif);
+}
+
+li.type2  {
+	padding: 0px;
+	list-style: disc outside url("./img/li.gif");
+}
+
+ul.type2 {
+	margin: 0px 0px 0px 0px;
+}

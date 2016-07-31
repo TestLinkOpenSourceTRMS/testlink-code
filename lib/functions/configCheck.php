@@ -423,7 +423,7 @@ function checkForRepositoryDir($the_dir)
 function checkSchemaVersion(&$db)
 {
   $result = array('status' => tl::ERROR, 'msg' => null, 'kill_session' => true);
-  $last_version = TL_LAST_DB_VERSION; 
+  $latest_version = TL_LATEST_DB_VERSION; 
   $db_version_table = DB_TABLE_PREFIX . 'db_version';
   
   $sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
@@ -435,10 +435,10 @@ function checkSchemaVersion(&$db)
     
   $myrow = $db->fetch_array($res);
   
-  $upgrade_msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
+  $upgrade_msg = "You need to upgrade your Testlink Database to {$latest_version} - <br>" .
                  '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 
-  $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$last_version} - Read README file!";
+  $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$latest_version} - Read README file!";
 
   switch (trim($myrow['version']))
   {
@@ -468,14 +468,14 @@ function checkSchemaVersion(&$db)
       $result['msg'] = $manualop_msg;
     break;
 
-    case $last_version:
+    case $latest_version:
       $result['status'] = tl::OK;
       $result['kill_session'] = 'false';
     break;
     
     default:
       $result['msg'] = "Unknown Schema version " .  trim($myrow['version']) . 
-                       ", please upgrade your Testlink Database to " . $last_version;
+                       ", please upgrade your Testlink Database to " . $latest_version;
       break;
   }
   

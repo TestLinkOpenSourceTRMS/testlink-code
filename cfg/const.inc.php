@@ -27,9 +27,9 @@ define('TL_VERSION_NUMBER', '1.9.15');
 define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Tauriel)'); 
 define('TL_FACE_DIR', 'prague'); 
 
-/** Last Database version that is used to give users feedback about necesssary upgrades
+/** Latest Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */
-define('TL_LAST_DB_VERSION', 'DB 1.9.14');
+define('TL_LATEST_DB_VERSION', 'DB ' . TL_VERSION_NUMBER);
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part

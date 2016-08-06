@@ -616,6 +616,66 @@ class TestlinkXMLRPCServer extends IXR_Server
     }  
 
   /**
+   * Helper method to see if the testproject identity provided is valid 
+   * Identity can be specified in one of these modes:
+   *
+   * - internal id (DB)
+   * - prefix 
+   * 
+   *   
+   * If everything OK, test project internal ID is setted.
+   *
+   * @param string $messagePrefix used to be prepended to error message
+   *
+   * @return boolean
+   * @access protected
+   */    
+   protected function checkTestProjectIdentity($messagePrefix='')
+   {
+      $status=false;
+      $fromExternal=false;
+      $fromInternal=false;
+
+      if( $this->_isTestProjectIDPresent() )
+      {
+        $fromInternal=true;
+        $status = $this->checkTestProjectID($messagePrefix);
+      }
+      else if( $this->_isParamPresent(self::$prefixParamName,$messagePrefix,true) )
+      {  
+        // Go for the prefix
+        $fromExternal=true;
+  
+        $target = $this->dbObj->prepare_string($this->args[self::$prefixParamName]);
+        $sql = " SELECT id FROM {$this->tables['testprojects']} WHERE prefix='{$target}' ";
+
+        $fieldValue = $this->dbObj->fetchFirstRowSingleColumn($sql, "id"); 
+        $status = (!is_null($fieldValue) && (intval($fieldValue) > 0));
+        if( $status )
+        {
+          $this->args[self::$testProjectIDParamName] = $fieldValue;
+        }  
+        else
+        {
+          $status = false;            
+          $msg = $messagePrefix . sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR,$target);
+          $this->errors[] = new IXR_Error(TPROJECT_PREFIX_DOESNOT_EXIST, $msg);
+        }
+      }  
+      else
+      {
+        $status = false;
+      } 
+
+      return $status;
+    }   
+
+
+
+
+
+
+  /**
    * Helper method to see if the TestSuiteID provided is valid
    * 
    * This is the only method that should be called directly to check the TestSuiteID
@@ -1660,13 +1720,13 @@ class TestlinkXMLRPCServer extends IXR_Server
    */    
   public function getProjectTestPlans($args)
   {
-        $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
         
     $this->_setArgs($args);
     // check the tplanid
     //TODO: NEED associated RIGHT
-        $checkFunctions = array('authenticate','checkTestProjectID');       
-        $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
+    $checkFunctions = array('authenticate','checkTestProjectID');       
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
   
     if($status_ok)
     {
@@ -6063,7 +6123,7 @@ protected function createAttachmentTempFile()
     $messagePrefix="(" .__FUNCTION__ . ") - ";
         
     $this->_setArgs($args);
-    $checkFunctions = array('authenticate','checkTestProjectID');       
+    $checkFunctions = array('authenticate','checkTestProjectIdentity');       
     $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
   
     if($status_ok)

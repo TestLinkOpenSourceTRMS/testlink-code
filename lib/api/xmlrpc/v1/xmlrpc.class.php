@@ -3746,6 +3746,25 @@ public function getTestCaseAttachments($args)
 
 
   /**
+   * update a test suite
+   * 
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["testprojectid"] OR string $args["prefix"] 
+   * @param string $args["testsuitename"] optional
+   * @param string $args["details"] optional
+   * @param int $args["parentid"] optional, if do not provided means test suite must be top level.
+   * @param int $args["order"] optional. Order inside parent container
+   *   
+   * @return mixed $resultInfo
+   */
+  public function updateTestSuite($args)
+  {
+    $args[self::$actionParamName] = 'update';
+    return $this->createTestSuite($args);
+  } 
+
+  /**
    * create a test suite
    * 
    * @param struct $args
@@ -3768,11 +3787,35 @@ public function getTestCaseAttachments($args)
   {
     $result=array();
     $this->_setArgs($args);
-    $operation=__FUNCTION__;
-    $msg_prefix="({$operation}) - ";
-    $checkFunctions = array('authenticate','checkTestSuiteName','checkTestProjectID');
-    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+    $action = isset($this->args,self::$actionParamName) ? 
+              $this->args[self::$actionParamName] : 'create'; 
 
+    $checkFunctions = array('authenticate','checkTestProjectIdentity');
+
+    switch($action)
+    {
+      case 'update':
+        $operation='updateTestSuite';
+        $opt = array(self::$detailsParamName => null,
+                     self::$testSuiteNameParamName => null,
+                     self::$orderParamName => testsuite::DEFAULT_ORDER,
+                     self::$checkDuplicatedNameParamName => testsuite::CHECK_DUPLICATE_NAME,
+                     self::$actionOnDuplicatedNameParamName => 'block');
+      break;
+    
+      case 'create';
+      default:
+        $operation=__FUNCTION__;
+        $opt = array(self::$orderParamName => testsuite::DEFAULT_ORDER,
+                     self::$checkDuplicatedNameParamName => testsuite::CHECK_DUPLICATE_NAME,
+                     self::$actionOnDuplicatedNameParamName => 'block');
+        $checkFunctions[] = 'checkTestSuiteName';
+      break;
+    }
+
+    $msg_prefix="({$operation}) - ";
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+    
     // When working on PRIVATE containers, globalRole Admin is ENOUGH
     // because this is how TestLink works when this action is done on GUI
     if( $status_ok && $this->user->globalRole->dbID != TL_ROLES_ADMIN)
@@ -3786,11 +3829,11 @@ public function getTestCaseAttachments($args)
 
     if( $status_ok )
     {
+      // Needed After refactoring to use checkTestProjectIdentity()
+      $key = self::$testProjectIDParamName; 
+      $args[$key] = $this->args[$key];  
+
       // Optional parameters
-      $opt=array(self::$orderParamName => testsuite::DEFAULT_ORDER,
-                 self::$checkDuplicatedNameParamName => testsuite::CHECK_DUPLICATE_NAME,
-                 self::$actionOnDuplicatedNameParamName => 'block');
-            
       foreach($opt as $key => $value)
       {
         if($this->_isParamPresent($key))
@@ -3803,7 +3846,8 @@ public function getTestCaseAttachments($args)
     if($status_ok)
     {
       $parent_id = $args[self::$testProjectIDParamName];  
-      $tprojectInfo=$this->tprojectMgr->get_by_id($args[self::$testProjectIDParamName]);
+      $tprojectInfo = $this->tprojectMgr->get_by_id($args[self::$testProjectIDParamName]);
+      
       $tsuiteMgr = new testsuite($this->dbObj);
       if( $this->_isParamPresent(self::$parentIDParamName) )
       {
@@ -3833,14 +3877,34 @@ public function getTestCaseAttachments($args)
         }
       } 
     }
-      
+     
     if($status_ok)
     {
-      $op=$tsuiteMgr->create($parent_id,$args[self::$testSuiteNameParamName],
-                             $args[self::$detailsParamName],$opt[self::$orderParamName],
-                             $opt[self::$checkDuplicatedNameParamName],
-                             $opt[self::$actionOnDuplicatedNameParamName]);
-          
+      switch($action)
+      {
+        case 'update':
+          $op=$tsuiteMgr->update($args[self::$testSuiteIDParamName],
+                                 $args[self::$testSuiteNameParamName],
+                                 $args[self::$detailsParamName],
+                                 $parent_id,
+                                 $opt[self::$orderParamName]);
+
+          /*
+                                 $opt[self::$checkDuplicatedNameParamName],
+                                 $opt[self::$actionOnDuplicatedNameParamName]);
+           */
+        break;
+
+        case 'create':
+        default:
+          $op=$tsuiteMgr->create($parent_id,$args[self::$testSuiteNameParamName],
+                                 $args[self::$detailsParamName],$opt[self::$orderParamName],
+                                 $opt[self::$checkDuplicatedNameParamName],
+                                 $opt[self::$actionOnDuplicatedNameParamName]);
+        break;  
+      }
+
+
       if( ($status_ok = $op['status_ok']) )
       {
         $op['status'] = $op['status_ok'] ? true : false;
@@ -3853,7 +3917,8 @@ public function getTestCaseAttachments($args)
       }
       else
       {
-        $op['msg']=sprintf($op['msg'],$args[self::$testSuiteNameParamName]);
+        // @TODO needs refactoring for UPDATE action
+        $op['msg'] = sprintf($op['msg'],$args[self::$testSuiteNameParamName]);
         $this->errors=$op;   
       }
     }
@@ -7751,6 +7816,7 @@ protected function createAttachmentTempFile()
                             'tl.removeTestCaseKeywords' => 'this:removeTestCaseKeywords',
                             'tl.updateTestSuiteCustomFieldDesignValue' => 'this:updateTestSuiteCustomFieldDesignValue',
                             'tl.getTestSuite' => 'this:getTestSuite',
+                            'tl.updateTestSuite' => 'this:updateTestSuite',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

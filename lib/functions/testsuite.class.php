@@ -221,23 +221,35 @@ class testsuite extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $ret['status_ok']=0;
     $ret['msg']='';
-    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,intval($id),$parent_id);
+
+    $safeID = intval($id);
+    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$safeID,$parent_id);
+    
     if($check['status']==0)
     {
-      $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
-             " SET details = '" . $this->db->prepare_string($details) . "'" .
-             " WHERE id = {$id}";
-      $result = $this->db->exec_query($sql);
-        
-      if ($result)
+      $where = " WHERE id = {$safeID} ";
+    
+      // Work on enity table 
+      if( !is_null($details) )
       {
-        $sql = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-             " SET name='" .  $this->db->prepare_string($name) . "' ";
-        if( !is_null($node_order) && intval($node_order) > 0 )
-        {
-          $sql .= ', node_order=' . $this->db->prepare_int(intval($node_order));     
-        }    
-        $sql .= " WHERE id= {$id}";
+        $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
+               " SET details = '" . $this->db->prepare_string($details) . "'" . $where;
+        $result = $this->db->exec_query($sql);
+      }  
+   
+      // Work on nodes hierarchy table
+      $sqlUpd = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} ";
+      if( !is_null($name) )
+      {
+        $sql = " SET name='" .  $this->db->prepare_string($name) . "' ";
+        $sql = $sqlUpd . $sql . $where;       
+        $result = $this->db->exec_query($sql);
+      }  
+      
+      if( !is_null($node_order) && intval($node_order) > 0 )
+      {
+        $sql .= ' SET node_order=' . $this->db->prepare_int(intval($node_order));     
+        $sql = $sqlUpd . $sql . $where;       
         $result = $this->db->exec_query($sql);
       }
       
@@ -251,6 +263,7 @@ class testsuite extends tlObjectWithAttachments
       {
         if (defined(TL_APICALL))
         {
+          // @TODO this need some refactoring due to conditional update added on 20160806
           $ctx = array('id' => $id,'name' => $name,'details' => $details);
           event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
         }

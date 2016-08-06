@@ -3,13 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: clientCreateTestSuite.php,v $
+ * @filesource  clientCreateTestSuite.php,v $
+ * @Author      francisco.mancardi@gmail.com
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/05/01 20:36:56 $ by $Author: franciscom $
- * @Author: francisco.mancardi@gmail.com
- *
- * rev: 
  */
  
 require_once 'util.php';
@@ -25,13 +21,23 @@ show_api_db_sample_msg();
 //
 
 $method='createTestSuite';
-$unitTestDescription="Test - $method";
 
+
+$unitTestDescription="Test - $method";
+$test_num = 0;
+$tlDevKey = '985978c915f50e47a4b1a54a943d1b76';
+$tlDevKey = isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : $tlDevKey;
+
+// -------------------------------------------------------------
+$test_num++;
+$additionalInfo = 'Using Test Project PREFIX';
 $args=array();
-$args["devKey"]=DEV_KEY;
-$args["testprojectid"]=1;
-$args["testsuitename"]='TS API 2';
+$args["devKey"]=$tlDevKey;
+
+$args["prefix"]='ZTZ';
+$args["testsuitename"]='TS API 200.0';
 $args["details"]='This has been created by XMLRPC API Call';
+
 // $args["parentid"]=16;
 $args["checkduplicatedname"]=1;
 $args["actiononduplicatedname"]='generate_new';
@@ -40,7 +46,31 @@ $args["order"]=1;
 
 $debug=true;
 echo $unitTestDescription;
+echo $additionalInfo;
+
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
-runTest($client,$method,$args);
-?>
+runTest($client,$method,$args,$test_num);
+// -------------------------------------------------------------
+$test_num++;
+$additionalInfo = 'Using Test Project ID';
+$args=array();
+$args["devKey"]=$tlDevKey;
+
+$args["testprojectid"]=1046;
+$args["testsuitename"]='TS API 2';
+$args["details"]='This has been created by XMLRPC API Call';
+
+// $args["parentid"]=16;
+$args["checkduplicatedname"]=1;
+$args["actiononduplicatedname"]='generate_new';
+$args["order"]=1;
+
+
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args,$test_num);

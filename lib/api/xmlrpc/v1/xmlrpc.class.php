@@ -7520,6 +7520,7 @@ protected function createAttachmentTempFile()
     if( $status_ok )
     {
       $cfSet = $args[self::$customFieldsParamName];
+      $ret = array();
       foreach($cfSet as $cfName => $cfValue)
       {
         // $accessKey = "custom_field_" . $item['id'] . <field_type_id>_<cfield_id>
@@ -7532,17 +7533,18 @@ protected function createAttachmentTempFile()
           $accessKey = "custom_field_" . $item['type'] . '_' . $item['id'];
           $hash[$accessKey] = $cfValue;
           $cfieldMgr->design_values_to_db($hash,$args[self::$buildIDParamName],null,null,'build');
-          $ret[] = array('status' => 'ok' ,
-                         'msg' => 'Custom Field:' . $cfName . ' processed ');
+          // Add the result for each custom field to the returned array
+          array_push($ret, array('status' => 'ok' ,
+                                 'msg' => 'Custom Field:' . $cfName . ' processed '));
         }
         else
         {
-          $ret[] = array('status' => 'ko' ,
-                         'msg' => 'Custom Field:' . $cfName . ' skipped ');
+          array_push($ret, array('status' => 'ko' ,
+                                 'msg' => 'Custom Field:' . $cfName . ' skipped '));
         }
-
-        return $ret;
       }
+      // Return the result after all of the fields have been processed
+      return $ret;
     }
     else
     {

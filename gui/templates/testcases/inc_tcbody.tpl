@@ -30,7 +30,7 @@ rev:
   </tr>
   {/if}
   
- {if $inc_tcbody_testcase.updater_id != ''}
+ {if $inc_tcbody_testcase.updater_id != '' && $inc_tcbody_author_userinfo != ''}
 	<tr class="time_stamp_creation">
   		<td colspan="{$inc_tcbody_tableColspan}">
     		{$inc_tcbody_labels.title_last_mod}&nbsp;{localize_timestamp ts=$inc_tcbody_testcase.modification_ts}

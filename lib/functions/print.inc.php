@@ -13,7 +13,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
  */ 
 
@@ -392,9 +392,9 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
      
   if ($options['toc'])
   {
-    $spacing = ($reLevel == 2) ? "<br>" : "";
-    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10 * $reLevel).'px;">' .
-                          '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></p></b>\n";
+    $spacing = ($reLevel == 2) ? "<br/>" : "";
+    $options['tocCode'] .= $spacing.'<p style="padding-left: '.(10 * $reLevel).'px;"><b>' .
+                          '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></b></p>\n";
     $output .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
   }
   $output .=  '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
@@ -612,9 +612,14 @@ function renderHTMLHeader($title,$base_href,$doc_type,$jsSet=null)
     break;
   }
 
-  $output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
+  $output = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\" [\n";
+  $output .= "  <!ENTITY copy \"&#169;\">\n";
+  $output .= "]>\n";
+
+
   $output .= "<html>\n<head>\n";
-  $output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '">';
+  $output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '"/>';
+
   $output .= '<title>' . htmlspecialchars($title). "</title>\n";
   $output .= '<link type="text/css" rel="stylesheet" href="'. $cssFile ."\" />\n";
   
@@ -673,7 +678,7 @@ function renderFirstPage($doc_info)
     
     $output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
                'title="configure using $tlCfg->document_generator->company_logo" ' . $height .
-               ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" />';
+               ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" /></p>';
   }
   $output .= "</div>\n";
 
@@ -696,18 +701,18 @@ function renderFirstPage($doc_info)
   if($doc_info->type == DOC_TEST_PLAN_DESIGN || $doc_info->type == DOC_TEST_PLAN_EXECUTION || 
      $doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD)
   {
-    $output .= '<br>' . lang_get('testplan') . ": " . $doc_info->testplan_name;
+    $output .= '<br/>' . lang_get('testplan') . ": " . $doc_info->testplan_name;
   }  
 
   if($doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD)
   {
-    $output .= '<br>' . lang_get('build') . ": " . $doc_info->build_name;
+    $output .= '<br/>' . lang_get('build') . ": " . $doc_info->build_name;
   }  
 
 
   if($doc_info->content_range == 'testsuite')
   {
-    $output .= '<br>' . lang_get('testsuite') . ": " . $doc_info->title;
+    $output .= '<br/>' . lang_get('testsuite') . ": " . $doc_info->title;
   }  
   $output .= '</p>' . "</div>\n";
   
@@ -1315,7 +1320,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                 if( !is_null($attachInfo) )
                 {
                   $code .= '<tr><td colspan="' . $td_colspan . '">';
-                  $code .= '<b>' . $labels['exec_attachments'] . '</b><br>';
+                  $code .= '<b>' . $labels['exec_attachments'] . '</b><br/>';
 
                   foreach($attachInfo as $fitem)
                   {
@@ -1445,7 +1450,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       }
       $code .= htmlspecialchars($relSet['relations'][$rdx][$ak]) . ' - ' .
                htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['fullExternalID']) . ':' .
-               htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['name']) .  '<br>';
+               htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['name']) .  '<br/>';
     } 
     $code .= '</td></tr>';
   }  
@@ -1479,7 +1484,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   if ($options['keyword'])
   {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
-             $labels['keywords'].':</span>';
+             $labels['keywords'].':</span></td>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
     $kwSet = $tc_mgr->getKeywords($id,null,array('fields' => 'keyword_id,keywords.keyword'));
     if (sizeof($kwSet))
@@ -1491,7 +1496,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }
     else
     {
-      $code .= '&nbsp;' . $labels['none'] . '<br>';
+      $code .= '&nbsp;' . $labels['none'] . '<br/>';
     }
     $code .= "</td></tr>\n";
   }
@@ -1537,7 +1542,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $tsp = ($cfg['tableColspan']-1);
     $code .= '<tr style="' . "font-weight: bold;background: #EEE;text-align: left;" . '">' .
              '<td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['execution_details'] .'</td>' . 
-             '<td colspan="' . $tsp . '">' . "&nbsp;" . "</b></td></tr>\n";
+             '<td colspan="' . $tsp . '">' . "&nbsp;" . "</td></tr>\n";
 
  
     $bn = '';
@@ -1560,7 +1565,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     if( $bn != '' )
     {
       $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
-               '<td colspan="'  . $tsp . '">' . $bn . "</b></td></tr>\n";
+               '<td colspan="'  . $tsp . '">' . $bn . "</td></tr>\n";
 
       if(is_null($exec_info))
       {
@@ -1590,7 +1595,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
           $code .= ',';
         }  
         $xdx = -1;
-        echo $mm .'<br>';
+        echo $mm .'<br/>';
         $code .= gendocGetUserName($db, $mm);
       }          
       $code .= "</td></tr>\n";
@@ -1611,7 +1616,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       if( !is_null($execAttachInfo) )
       {
         $code .= '<tr><td colspan="' . $cfg['tableColspan'] . '">';
-        $code .= '<b>' . $labels['exec_attachments'] . '</b><br>';
+        $code .= '<b>' . $labels['exec_attachments'] . '</b><br/>';
         foreach($execAttachInfo as $fitem)
         {
           if($fitem['is_image']) // && $options['outputFormat'] == FORMAT_HTML)
@@ -1714,10 +1719,10 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
     
   if ($options['toc'])
   {
-    $spacing = ($indentLevel == 2 && $tocPrefix != 1) ? "<br>" : "";
-    $options['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10 * $indentLevel).'px;">' .
+    $spacing = ($indentLevel == 2 && $tocPrefix != 1) ? "<br/>" : "";
+    $options['tocCode'] .= $spacing.'<p style="padding-left: '.(10 * $indentLevel).'px;"><b>' .
                            '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . 
-                           $name . "</a></p></b>\n";
+                           $name . "</a></b></p>\n";
     $code .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
   
   }
@@ -2052,7 +2057,7 @@ function buildTestExecResults(&$dbHandler,&$its,$exec_info,$opt,$buildCF=null)
              '<td '  .$td_colspan . '>' . $buildCF[$exec_info[0]['build_id']] . "</td></tr>\n";
   }        
   $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
-          '<td '  .$td_colspan . '>' . $testerNameCache[$exec_info[0]['tester_id']] . "</b></td></tr>\n";
+          '<td '  .$td_colspan . '>' . $testerNameCache[$exec_info[0]['tester_id']] . "</td></tr>\n";
 
 
   $out .= '<tr><td width="20%" valign="top">' .
@@ -2109,7 +2114,7 @@ function renderPlatformHeading($tocPrefix, $platform,&$options)
   $platformType = $platformCfg['type'];
   $lbl = lang_get('platform');
   $name = htmlspecialchars($platform['name']);
-  $options['tocCode'] .= '<p>&nbsp;</p><b><p><a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $lbl" . ':' . $name . '</a></p></b>';
+  $options['tocCode'] .= '<p>&nbsp;</p><p><b><a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $lbl" . ':' . $name . '</a></b></p>';
   
   $out = '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) . "\">$tocPrefix. $lbl: $name</h1>";
   // platform description is enabled with test plan description option settings
@@ -2251,8 +2256,8 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
     $context['user'] = $userObj;
     $out .= renderTestCaseForPrinting($dbHandler,$tcase,$renderOptions,$env,$context,$indentLevel); 
 
-    $out .= '<br>' . lang_get('direct_link') . ':' .
-            $env->base_href . 'lnl.php?type=exec&id=' . intval($id) . '<br>';
+    $out .= '<br/>' . lang_get('direct_link') . ':' .
+            $env->base_href . 'lnl.php?type=exec&id=' . intval($id) . '<br/>';
     $exec_info = null;    
   }  
 

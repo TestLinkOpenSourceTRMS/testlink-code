@@ -8,7 +8,7 @@
  * @filesource  print.inc.php
  *
  * @package   TestLink
- * @copyright 2007-2015, TestLink community 
+ * @copyright 2007-2016, TestLink community 
  * @uses      printDocument.php
  *
  *
@@ -612,9 +612,8 @@ function renderHTMLHeader($title,$base_href,$doc_type,$jsSet=null)
     break;
   }
 
-  $output = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\" [\n";
-  $output .= "  <!ENTITY copy \"&#169;\">\n";
-  $output .= "]>\n";
+  $output = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"" .
+            "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 
 
   $output .= "<html>\n<head>\n";

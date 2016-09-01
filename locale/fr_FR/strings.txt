@@ -2768,7 +2768,9 @@ $TLS_testnotes = "Notes d’exécution";
 $TLS_last_exec_result = "Dernier résultat";
 $TLS_test_project_notes = "Description du projet de test";
 $TLS_undefined_req_spec_type = "Le type du dossier d’exigences (%s) n’est pas défini.";
-
+$TLS_report_exec_result = "Résultats d’exécution";
+$TLS_execution_details = "Détails d’exécution";
+$TLS_execution_mode = "Mode d’exécution";
 
 // ----- lib/functions/users.inc.php -----
 $TLS_duplicate_login = "Login utilisateur existant.";

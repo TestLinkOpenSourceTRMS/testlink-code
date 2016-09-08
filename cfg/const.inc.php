@@ -23,13 +23,14 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.15'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' (Tauriel)'); 
+define('TL_VERSION_NUMBER', '1.9.16'); 
+define('TL_VERSION', TL_VERSION_NUMBER . '[DEV] (Moka pot)'); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Latest Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */
-define('TL_LATEST_DB_VERSION', 'DB ' . TL_VERSION_NUMBER);
+// define('TL_LATEST_DB_VERSION', 'DB ' . TL_VERSION_NUMBER);
+define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.15');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part

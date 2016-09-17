@@ -550,6 +550,9 @@ $tlCfg->testcase_urgency_default = MEDIUM;
 $tlCfg->urgency['code_label'] = array(HIGH => 'urgency_high',MEDIUM => 'urgency_medium',LOW => 'urgency_low');
 
 
+/* priority is calculated using importance and urgency */
+$tlCfg->priority['code_label'] = array(HIGH => 'high_priority',MEDIUM => 'medium_priority',LOW => 'low_priority');
+
 // --------------------------------------------------------------------------------------
 /* [States & Review] */
 

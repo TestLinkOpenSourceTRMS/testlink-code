@@ -210,8 +210,8 @@ $gui->support_array = array_keys($gui->items);
 
 if ($_SESSION['testprojectOptions']->testPriorityEnabled) 
 {
-  $urgencyCfg = config_get('urgency');
-  $gui->priority_labels = init_labels($urgencyCfg["code_label"]);
+  $cfg = config_get('priority');
+  $gui->priority_labels = init_labels($cfg["code_label"]);
 }
 
 // Changing to _flat template

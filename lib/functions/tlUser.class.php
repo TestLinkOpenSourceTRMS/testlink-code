@@ -193,12 +193,16 @@ class tlUser extends tlDBObject
   
   /** 
    * Checks if password management is external (like LDAP)...
-   * 
+   *
+   * @param  string $method2check must be one of the keys of configuration $tlCfg->authentication['domain']
+   *           
    * @return boolean return true if password management is external, else false
    */
   static public function isPasswordMgtExternal($method2check=null)
   {
     $target = $method2check;
+
+    // Contains Domain and Default Method  
     $authCfg = config_get('authentication');
  
     if( is_null($target) || $target=='')
@@ -1163,7 +1167,7 @@ class tlUser extends tlDBObject
       }    
       
       $sql = "UPDATE {$this->tables['users']} " .
-                " SET password = ". "'" . $db->prepare_string($this->password) . "'";
+             " SET password = ". "'" . $db->prepare_string($this->password) . "'";
       
       if(!is_null($t_cookie_string) )
       {        

@@ -3525,9 +3525,6 @@ class testplan extends tlObjectWithAttachments
         }  
 
         $sql .= " ORDER BY TZ.node_order >= ($subq) ";
-        echo $sql;
-
-
       break;
 
       case 'local':
@@ -7645,6 +7642,32 @@ class testplan extends tlObjectWithAttachments
 
     return $rs[0]['qty'];
   }
+
+  /**
+   *
+   */
+  function getFeatureByID($feature_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $target = (array)$feature_id;
+    foreach($target as $idx => $tg)
+    {
+      $target[$idx] = intval($tg);
+    }  
+    $inSet = implode(',', $target);
+
+    $sql = " /* $debugMsg */ ". 
+           " SELECT parent_id AS tcase_id,tcversion_id,platform_id,TPTCV.id " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+           " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+           " ON TPTCV.tcversion_id = NHTC.id " .
+           " WHERE TPTCV.id IN (" . $inSet . ")";
+         
+    $items = $this->db->fetchRowsIntoMap($sql,'id');           
+    return $items;
+  }
+
 
 } // end class testplan
 

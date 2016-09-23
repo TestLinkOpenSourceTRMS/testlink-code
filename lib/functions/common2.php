@@ -48,7 +48,7 @@ spl_autoload_register('tlAutoload');
 
 /** CSRF security functions. */
 /** TL_APICALL => TICKET 0007190 */
-if( !defined(TL_APICALL) )
+if( !defined('TL_APICALL') )
 {
   require_once("csrf.php");
 }  

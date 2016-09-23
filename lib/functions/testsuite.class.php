@@ -198,7 +198,7 @@ class testsuite extends tlObjectWithAttachments
       {
         $ret['id'] = $tsuite_id;
 
-        if (defined(TL_APICALL))
+        if (defined('TL_APICALL'))
         {
             $ctx = array('id' => $tsuite_id,'name' => $name,'details' => $details);     
             event_signal('EVENT_TEST_SUITE_CREATE', $ctx);
@@ -261,7 +261,7 @@ class testsuite extends tlObjectWithAttachments
       } 
       else
       {
-        if (defined(TL_APICALL))
+        if (defined('TL_APICALL'))
         {
           // @TODO this need some refactoring due to conditional update added on 20160806
           $ctx = array('id' => $id,'name' => $name,'details' => $details);

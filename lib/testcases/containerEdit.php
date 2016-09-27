@@ -8,11 +8,11 @@
  * @filesource  containerEdit.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2016, TestLink community
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  * 
  */
 require_once("../../config.inc.php");
@@ -1323,6 +1323,7 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
   $guiObj = new stdClass();
 
   $guiObj->id = $id;
+  $guiObj->tproject_id = $argsObj->tprojectID;
   $guiObj->refreshTree = $argsObj->refreshTree;
   $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
   $guiObj->page_title = $lbl['container_title_testsuite'];
@@ -1330,9 +1331,11 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
 
-  $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
-                           $guiObj->id,$argsObj->tprojectID);
-  $guiObj->tproject_id = $argsObj->tprojectID;
+  if( strcasecmp($objMgr->object_table, 'testsuites') == 0 )
+  {
+    $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
+                                             $guiObj->id,$argsObj->tprojectID);
+  }  
 
   return $guiObj;
 }

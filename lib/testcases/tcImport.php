@@ -343,8 +343,15 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       $xx = $messages['start_feedback'];
       $xx .= sprintf($messages['testcase_name_too_long'],$name_len, $fieldSizeCfg->testcase_name) . "\n";
       $xx .= $messages['original_name'] . "\n" . $name. "\n" . $messages['end_warning'] . "\n";
-      $summary = nl2br($xx) . $summary;
-      $name = tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
+	  $tcCfg = getWebEditorCfg('design');
+	  $tcType = $tcCfg['type'];
+	  if ($tcType == 'none'){
+		$summary = $xx . $summary ;
+      }
+	  else{
+		$summary = nl2br($xx) . $summary ;
+	  }
+	  $name = tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
     }
         
     

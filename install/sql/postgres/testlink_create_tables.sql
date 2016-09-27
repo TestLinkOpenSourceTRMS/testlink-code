@@ -839,10 +839,10 @@ CREATE OR REPLACE VIEW /*prefix*/tcases_active AS
 );
 
 CREATE TABLE /*prefix*/plugins (
-   plugin_id BIGSERIAL NOT NULL,
+   id BIGSERIAL NOT NULL,
    basename  VARCHAR(100) NOT NULL,
    enabled INT2 NOT NULL DEFAULT '0',
-   PRIMARY KEY (`plugin_id`)
+   PRIMARY KEY (plugin_id)
 );
 
 CREATE TABLE /*prefix*/plugins_configuration (
@@ -853,5 +853,5 @@ CREATE TABLE /*prefix*/plugins_configuration (
    config_value varchar(255) NOT NULL,
    author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
    creation_ts TIMESTAMP NOT NULL DEFAULT now(),
-   PRIMARY KEY (`plugin_config_id`)
+   PRIMARY KEY (plugin_config_id)
 );

@@ -91,7 +91,7 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (45,'testplan_set_urgent_te
 INSERT INTO /*prefix*/rights (id,description) VALUES (46,'testplan_show_testcases_newest_versions');
 INSERT INTO /*prefix*/rights (id,description) VALUES (47,'testcase_freeze');
 
-# since 1.9.15
+-- since 1.9.15
 INSERT INTO /*prefix*/rights (id,description) VALUES (48,'mgt_plugins');
 
 

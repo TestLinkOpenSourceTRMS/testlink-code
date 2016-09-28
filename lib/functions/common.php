@@ -18,13 +18,16 @@
  * @since       1.5
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  *
  */
 
 /** core and parenthal classes */
 require_once('object.class.php');
 require_once('metastring.class.php');
+
+/** Testlink Plugin API helper methods, must be included before lang_api.php */
+require_once('plugin_api.php');
 
 /** library for localization */
 require_once('lang_api.php');
@@ -45,9 +48,6 @@ require_once('tlsmarty.inc.php');
 
 /** Initialize the Event System */
 require_once('event_api.php' );
-
-/** Testlink Plugin API helper methods */
-require_once('plugin_api.php');
 
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
@@ -103,6 +103,14 @@ function tlAutoload($class_name)
   {
     $classFileName = strtolower($class_name) . "/" . $class_name;
   }  
+
+  // Plugin special processing, class name ends with Plugin (see plugin_register())
+  // Does not use autoload
+  if( preg_match('/Plugin$/', $class_name) == 1 )
+  {
+    return;
+  }  
+
 
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 

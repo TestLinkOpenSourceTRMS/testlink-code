@@ -642,7 +642,7 @@ class tlIssueTracker extends tlObject
   {
     $issueT = $this->getLinkedTo($tprojectID);
     $name = $issueT['issuetracker_name'];
-    $goodForSession = ($issueT['api'] != 'db');
+    $goodForSession = ($issueT['api'] != 'db' && $issueT['api'] != 'rest');
 
     if($goodForSession && isset($_SESSION['its'][$name]))
     {

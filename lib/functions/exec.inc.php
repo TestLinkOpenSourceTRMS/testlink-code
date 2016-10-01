@@ -109,8 +109,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     $execStatusKey = 'statusSingle';
   }
 
-  $addIssueOp = array('createIssue' => null,
-                      'issueForStep' => null);
+  $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
   
   foreach ( $item2loop as $tcversion_id => $val)
   {
@@ -258,12 +257,9 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
                    method_exists($issueTracker,'addIssue');
       
       // re-init
-      $addIssueOp = array('createIssue' => null,
-                          'issueForStep' => null);
-  
+      $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
       if($itCheckOK)
       {
-
         $execContext = new stdClass();
         $execContext->exec_id = $execution_id;
         $execContext->tcversion_id = $tcversion_id;
@@ -278,8 +274,8 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         if( isset($exec_data['createIssue']) )
         {
           completeCreateIssue($execContext,$exec_signature);
-          $addIssueOp['createIssue'] = 
-            addIssue($db,$execContext,$issueTracker);
+          $addIssueOp['createIssue'] = addIssue($db,$execContext,$issueTracker);
+          $addIssueOp['type'] = 'createIssue';
         }  
         
         // Issues at step level
@@ -291,6 +287,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
                                  $exec_data,$stepID);
             $addIssueOp['issueForStep'][$stepID] = 
               addIssue($db,$execContext,$issueTracker,$stepID);
+            $addIssueOp['type'] = 'issueForStep'; 
           }  
         }  
       } // $itCheckOK

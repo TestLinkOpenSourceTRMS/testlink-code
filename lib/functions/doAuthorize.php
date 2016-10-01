@@ -58,7 +58,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
       if( !$doLogin )
       {
         logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
-      } 
+      }
     }
     else
     {
@@ -67,7 +67,6 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
       {
         $user->authentication = 'LDAP';  // force for auth_does_password_match
         $check = auth_does_password_match($user,$pwd);
-
         if( $check->status_ok )
         {
           $user = new tlUser(); 
@@ -76,14 +75,10 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
           $user->isActive = true;
           $user->setPassword($pwd);  // write password on DB anyway
 
-          $user->emailAddress = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_email_field']));
-          $user->firstName = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_firstname_field']));
-          $user->lastName = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_surname_field']));
-
-          $user->firstName = (is_null($user->firstName) || strlen($user->firstName) == 0) ? $login : $user->firstName;
-          $user->lastName = (is_null($user->lastName) || strlen($user->lastName) == 0) ? $login : $user->lastName;
-
-
+          $uf = getUserFieldsFromLDAP($user->login,$authCfg['ldap'][$check->ldap_index]);
+          $user->emailAddress = $uf->emailAddress;
+          $user->firstName = $uf->firstName;
+          $user->lastName = $uf->lastName;
           $doLogin = ($user->writeToDB($db) == tl::OK);
         }  
       }  
@@ -101,6 +96,14 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     $expireOnBrowserClose=false;
     $auth_cookie_name = config_get('auth_cookie');
     $cookie_path = config_get('cookie_path');    
+
+    // IMPORTANT DEVELOPMENT DEBUG NOTICE
+    // From PHP Manual
+    // setcookie() defines a cookie to be sent along with the rest of the HTTP headers. 
+    // Like other headers, cookies must be sent BEFORE ANY OUTPUT from your script 
+    // (this is a protocol restriction). This requires that you place calls to this function 
+    // prior to any output, including <html> and <head> tags as well as any whitespace.
+    //
     setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,$cookie_path);      
 
     // Disallow two sessions within one browser
@@ -221,7 +224,6 @@ function auth_does_password_match(&$userObj,$cleartext_password)
     break;
   }
 
-  // switch($authCfg['method'])
   switch($authMethod)
   {
     case 'LDAP':
@@ -234,7 +236,8 @@ function auth_does_password_match(&$userObj,$cleartext_password)
       
       $xx = ldap_authenticate($userObj->login, $cleartext_password);
       $ret->status_ok = $xx->status_ok;
-      $ret->msg = $xx->status_ok ? 'ok' : $msg[$xx->status_code]; 
+      $ret->msg = $xx->status_ok ? 'ok' : $msg[$xx->status_code];
+      $ret->ldap_index = $xx->ldap_index;
     break;
     
     case 'MD5':
@@ -247,3 +250,32 @@ function auth_does_password_match(&$userObj,$cleartext_password)
 
   return $ret;
 }
+
+
+/**
+ *
+ *
+ */
+function getUserFieldsFromLDAP($login,$ldapCfg)
+{
+  $k2l = array('emailAddress' => 'email', 'firstName' => 'firstname', 'lastName' => 'surname'); 
+  $ret = new stdClass();
+  
+  foreach($k2l as $p => $ldf)
+  {
+    $ret->$p = ldap_get_field_from_username($ldapCfg,$login,
+                                            strtolower($ldapCfg['ldap_' . $ldf . '_field']));
+  }  
+
+  // Defaults
+  $k2l = array('firstName' => $login,'lastName' => $login, 'emailAddress' => 'no_mail_configured@on_ldapserver.org');
+  foreach($k2l as $prop => $val)
+  {
+    if( is_null($ret->$prop) || strlen($ret->$prop) == 0 )
+    {
+      $ret->$prop = $val;  
+    }
+  }  
+
+  return $ret;
+} 

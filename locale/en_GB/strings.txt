@@ -3173,6 +3173,8 @@ $TLS_req_not_in_req_spec_on_tcimport = "Requirement DOCID=%s can not be linked t
 
 $TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not be " .
                                "linked to testcase";
+$TLS_req_not_in_DB_on_tcimport = "Requirement DOCID=%s can not be linked to testcase," .
+                                 "because does not exist.";
 
 $TLS_update_last_testcase_version='Update data on Latest version';
 $TLS_create_new_testcase_version='Create a new version';

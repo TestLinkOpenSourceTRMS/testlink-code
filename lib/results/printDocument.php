@@ -8,12 +8,12 @@
  *
  * @filesource  printDocument.php
  * @author      Martin Havlat
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.16
  *
  */
 require_once('../../config.inc.php');
@@ -639,9 +639,12 @@ function buildContentForTestPlan(&$dbHandler,$itemsTree,$ctx,$decode,&$tplanMgr,
   
   $pnOptions['setAssignedTo'] = $my['opt']['setAssignedTo'];
 
-  // 20160222 
-  $filters = array('build_id' => $ctx->build_id);
-  if( $ctx->with_user_assignment == 0 )
+  $filters = null;
+  if( property_exists($ctx, 'build_id') )
+  {
+    $filters = array('build_id' => $ctx->build_id);
+  }  
+  if( property_exists($ctx, 'with_user_assignment') && $ctx->with_user_assignment == 0 )
   {
     $filters = null;
   }

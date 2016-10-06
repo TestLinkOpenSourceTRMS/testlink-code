@@ -279,6 +279,12 @@ function doSessionStart($setPaths=false)
   session_set_cookie_params(99999);
   if(!isset($_SESSION))
   {
+    if (config_get('session_path') !== NULL) {
+        if (!file_exists(config_get('session_path'))) {
+            mkdir(config_get('session_path'));
+        }
+        session_save_path(config_get('session_path'));
+    }
     session_start();
   }
   

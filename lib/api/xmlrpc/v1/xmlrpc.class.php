@@ -7578,6 +7578,105 @@ protected function createAttachmentTempFile()
     }  
   }
 
+  /**
+   * Update value of Custom Field with scope='design'
+   * for a given Build
+   *
+   * @param struct $args
+   * @param string $args["devKey"]: used to check if operation can be done.
+   *                                if devKey is not valid => abort.
+   *
+   * @param string $args["buildid"]:
+   * @param string $args["testprojectid"]:
+   * @param string $args["customfields"]
+   *               contains an map with key:Custom Field Name, value: value for CF.
+   *               VERY IMPORTANT: value must be formatted in the way it's written to db,
+   *               this is important for types like:
+   *
+   *               DATE: strtotime()
+   *               DATETIME: mktime()
+   *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+   *
+   *
+   *               these custom fields must be configured to be writte during execution.
+   *               If custom field do not meet condition value will not be written
+   *
+   * @return mixed null if everything ok, else array of IXR_Error objects
+   *
+   * @access public
+   */
+  public function updateBuildCustomFieldsValues($args)
+  {
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+
+    $checkFunctions = array('authenticate','checkTestProjectID', 'checkBuildID');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+    if( $status_ok )
+    {
+      if(!$this->_isParamPresent(self::$customFieldsParamName) )
+      {
+        $status_ok = false;
+        $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);
+      }
+    }
+
+    if( $status_ok )
+    {
+      // now check if custom fields are ok
+      // For each custom field need to check if:
+      // 1. is linked to test project
+      // 2. is available for Build at design time
+      $cfieldMgr = new cfield_mgr($this->dbObj);
+
+      // Just ENABLED
+      $linkedSet = $cfieldMgr->get_linked_cfields_at_design($this->args[self::$testProjectIDParamName],
+                                                            cfield_mgr::ENABLED,null,'build',null,'name');
+      if( is_null($linkedSet) )
+      {
+        $status_ok = false;
+        $msg = NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS_STR;
+        $this->errors[] = new IXR_Error(NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS, $msg);
+      }
+    }
+
+    if( $status_ok )
+    {
+      $cfSet = $args[self::$customFieldsParamName];
+      $ret = array();
+      foreach($cfSet as $cfName => $cfValue)
+      {
+        // $accessKey = "custom_field_" . $item['id'] . <field_type_id>_<cfield_id>
+        //  design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
+        //
+        // Simple check: if name is not present on set => ignore
+        if( isset($linkedSet[$cfName]) )
+        {
+          $item = $linkedSet[$cfName];
+          $accessKey = "custom_field_" . $item['type'] . '_' . $item['id'];
+          $hash[$accessKey] = $cfValue;
+          $cfieldMgr->design_values_to_db($hash,$args[self::$buildIDParamName],null,null,'build');
+          // Add the result for each custom field to the returned array
+          array_push($ret, array('status' => 'ok' ,
+                                 'msg' => 'Custom Field:' . $cfName . ' processed '));
+        }
+        else
+        {
+          array_push($ret, array('status' => 'ko' ,
+                                 'msg' => 'Custom Field:' . $cfName . ' skipped '));
+        }
+      }
+      // Return the result after all of the fields have been processed
+      return $ret;
+    }
+    else
+    {
+        return $this->errors;
+    }
+  }
+
  /**
   * Returns all test suites inside target 
   * test project with target name
@@ -7815,6 +7914,7 @@ protected function createAttachmentTempFile()
                             'tl.addTestCaseKeywords' => 'this:addTestCaseKeywords',
                             'tl.removeTestCaseKeywords' => 'this:removeTestCaseKeywords',
                             'tl.updateTestSuiteCustomFieldDesignValue' => 'this:updateTestSuiteCustomFieldDesignValue',
+                            'tl.updateBuildCustomFieldsValues' => 'this:updateBuildCustomFieldsValues',
                             'tl.getTestSuite' => 'this:getTestSuite',
                             'tl.updateTestSuite' => 'this:updateTestSuite',
                             'tl.checkDevKey' => 'this:checkDevKey',

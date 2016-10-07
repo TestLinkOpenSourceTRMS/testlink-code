@@ -48,7 +48,7 @@
 
             <div class="form__field">
               <label for="tl_password"><i class="fa fa-lock"></i></label>
-              <input name="tl_password" id="tl_password" type="password" class="form__input" placeholder="{$labels.password}" required>
+              <input name="tl_password" size="{#PASSWD_SIZE#}" id="tl_password" type="password" class="form__input" placeholder="{$labels.password}" required>
             </div>
 
             <div class="form__field">

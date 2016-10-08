@@ -15,7 +15,7 @@
     <div class="site__container">
       <div class="grid__container">
       <img src="gui/themes/default/images/{$tlCfg->logo_login}"><br>
-      <span style="margin-left:220px;">{$tlVersion|escape} </span>
+      <span>{$tlVersion|escape} </span>
       </div>
       
       {if $gui->note != ''}
@@ -43,7 +43,7 @@
 
             <div class="form__field">
               <label for="tl_login"><i class="fa fa-user"></i></label>
-              <input maxlength="{#LOGIN_MAXLEN#}" size="{#LOGIN_SIZE#}" name="tl_login" id="tl_login" type="text" class="form__input" placeholder="{$labels.login_name}" required>
+              <input maxlength="{#LOGIN_MAXLEN#}" name="tl_login" id="tl_login" type="text" class="form__input" placeholder="{$labels.login_name}" required>
             </div>
 
             <div class="form__field">

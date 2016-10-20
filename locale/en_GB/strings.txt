@@ -4031,4 +4031,7 @@ $TLS_monitoring = 'Monitoring';
 $TLS_btn_toogle_mon = 'Toogle Monitoring';
 $TLS_btn_start_mon = 'Start Monitoring';
 $TLS_btn_stop_mon = 'Stop Monitoring';
+
+$TLS_search_items = "Search";
+$TLS_search_title = "Search";
 // ----- END ------------------------------------------------------------------

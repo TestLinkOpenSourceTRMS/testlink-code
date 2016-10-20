@@ -2268,12 +2268,32 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
   /**
    *
    */
-	function get_all_id_in_testproject($tproject_id)
+	function get_all_id_in_testproject($tproject_id,$options=null)
 	{
-	   	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$sql = "/* $debugMsg */ " . 
+	  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$my['options'] = array('output' => 'classic');
+    $my['options'] = array_merge($my['options'], (array)$options);
+
+
+    $sql = "/* $debugMsg */ " . 
 		       " SELECT RSPEC.id FROM {$this->object_table} RSPEC WHERE testproject_id={$tproject_id}";
-		return $this->db->get_recordset($sql);
+
+    $rs = $this->db->get_recordset($sql);
+    switch($my['options']['output'])
+    {
+      case 'id':
+        $rx = array();
+        foreach($rs as $elem)
+        {
+          $rx[] = $elem['id'];
+        }  
+        return $rx;
+      break;
+
+      default:
+        return $rs;
+      break;      
+    }
 	}
 
 

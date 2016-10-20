@@ -71,6 +71,20 @@ title bar + menu
     <input type="hidden" name="allow_edit" value="0"/>
     </form>
   {/if}
+
+  {if $gui->grants->view_testcase_spec == "yes"}
+    <form style="display:inline" target="mainframe" name="search" id="search"
+          action="lib/search/searchMgmt.php" method="get">
+    <input style="font-size: 80%; position:relative; top:-1px;" type="text" size="50"
+           title="{$labels.search_testcase}" name="target" value="" />
+
+    <img src="{$tlImages.magnifier}"
+         title="{$labels.search_testcase}" alt="{$labels.search_testcase}"
+         onclick="document.getElementById('search').submit()" class="clickable" 
+         style="position:relative; top:2px;" />
+    </form>
+  {/if}
+
 {/if}
 </div>
 

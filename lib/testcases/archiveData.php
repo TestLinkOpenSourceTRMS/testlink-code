@@ -76,6 +76,8 @@ switch($args->feature)
   break;
 }
 
+
+
 /**
  * 
  *
@@ -366,6 +368,8 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   {
     $templateCfg = templateConfiguration();
 
+    var_dump($templateCfg);
+    
     // need to initialize search fields
     $xbm = $item_mgr->getTcSearchSkeleton();
     $xbm->warning_msg = lang_get('no_records_found');

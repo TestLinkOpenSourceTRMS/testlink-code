@@ -1082,11 +1082,18 @@ class testcase extends tlObjectWithAttachments
     {
       if($my['opt']['blockIfExecuted'])
       {
-        $sql = " SELECT id FROM {$this->tables['executions']} " .
+        // When tcversion is updated on test plan after an executio exists
+        // execution tcversion_number keeps the version of test case executed
+        // will EX.tcversion_id is updated with id requested by user.
+        // That's why when importing we need to check HUMAN READEABLE version numbers.
+        $sql = " SELECT EX.id, EX.tcversion_number,TCV.version " .  
+               " FROM {$this->tables['executions']} EX " .
+               " JOIN {$this->tables['tcversions']} TCV " .
+               " ON TCV.id = EX.id " .
                " WHERE tcversion_id=" . $this->db->prepare_int($tcversion_id);
 
         $rs = $this->db->get_recordset($sql);
-        if(!is_null($rs))
+        if(!is_null($rs) && ($rs['tcversion_number'] == $rs['version']) )
         {
           $ret['status_ok'] = false;
           $ret['msg'] = lang_get('block_ltcv_hasbeenexecuted');
@@ -1113,7 +1120,7 @@ class testcase extends tlObjectWithAttachments
         $dummy .= ", status=" . intval($attrib['status']);
       }
 
-	  if( !is_null($attrib['is_open']) )    
+	    if( !is_null($attrib['is_open']) )    
       {
         $dummy .= ", is_open=" . intval($attrib['is_open']); 
       }

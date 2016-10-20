@@ -1089,7 +1089,7 @@ class testcase extends tlObjectWithAttachments
         $sql = " SELECT EX.id, EX.tcversion_number,TCV.version " .  
                " FROM {$this->tables['executions']} EX " .
                " JOIN {$this->tables['tcversions']} TCV " .
-               " ON TCV.id = EX.id " .
+               " ON TCV.id = EX.tcversion_id " .
                " WHERE tcversion_id=" . $this->db->prepare_int($tcversion_id);
 
         $rs = $this->db->get_recordset($sql);

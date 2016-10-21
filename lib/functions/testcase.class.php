@@ -10,7 +10,7 @@
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  *
  */
 
@@ -1093,12 +1093,18 @@ class testcase extends tlObjectWithAttachments
                " WHERE tcversion_id=" . $this->db->prepare_int($tcversion_id);
 
         $rs = $this->db->get_recordset($sql);
-        if(!is_null($rs) && ($rs['tcversion_number'] == $rs['version']) )
+        if(!is_null($rs))
         {
-          $ret['status_ok'] = false;
-          $ret['msg'] = lang_get('block_ltcv_hasbeenexecuted');
-          $ret['reason'] = 'blockIfExecuted';
-          return $ret;
+          foreach($rs as $rwx)
+          {
+            if( $rwx['tcversion_number'] == $rwx['version'] )
+            {
+              $ret['status_ok'] = false;
+              $ret['msg'] = lang_get('block_ltcv_hasbeenexecuted');
+              $ret['reason'] = 'blockIfExecuted';
+              return $ret;
+            }
+          }  
         }
       }
 

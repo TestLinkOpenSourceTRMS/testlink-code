@@ -34,6 +34,8 @@ $charset = config_get('charset');
 $filter = null;
 list($args,$filter) = init_args($tproject_mgr);
 
+//Kint::dump($_REQUEST);die();
+
 $ga = initializeGui($args,$tproject_mgr);
 $gx = $tcase_mgr->getTcSearchSkeleton($args);
 $gui = (object)array_merge((array)$ga,(array)$gx);

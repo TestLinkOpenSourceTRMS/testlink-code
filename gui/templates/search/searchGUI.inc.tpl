@@ -34,17 +34,30 @@ Purpose: show form
     
     <td style="width: 30%" colspan="1"> 
       TEST CASE<br>
-      <input type="checkbox" name="tc" value="tc_title">Title<br>
-      <input type="checkbox" name="tc" value="tc_summary">Summary<br>
-      <input type="checkbox" name="tc" value="tc_preconditions">Preconditions<br>
-      <input type="checkbox" name="tc" value="tc_steps">Steps<br>
-      <input type="checkbox" name="tc" value="tc_expected_results">Expected results<br>
-      <input type="checkbox" name="tc" value="tc_id">id<br>
+      <input type="checkbox" name="tc_title" value="1">Title<br>
+      <input type="checkbox" name="tc_summary" value="1">Summary<br>
+      <input type="checkbox" name="tc_preconditions" value="1">Preconditions<br>
+      <input type="checkbox" name="tc_steps" value="1">Steps<br>
+      <input type="checkbox" name="tc_expected_results" value="1">Expected results<br>
+      <input type="checkbox" name="tc_id" value="1">id<br>
     </td>
     <td style="width: 30%" colspan="1"> 
       TEST SUITE<br>
-      <input type="checkbox" name="ts" value="tc_title">Title<br>
-      <input type="checkbox" name="ts" value="tc_summary">Details<br>
+      <input type="checkbox" name="ts_title" value="1">Title<br>
+      <input type="checkbox" name="ts_summary" value="1">Details<br>
+    </td>
+    
+    <td style="width: 30%" colspan="1"> 
+      Requirement Spec<br>
+      <input type="checkbox" name="rs_title" value="1">Title<br>
+      <input type="checkbox" name="rs_scope" value="1">Scope<br>
+    </td>
+
+    <td style="width: 30%" colspan="1"> 
+      Requirement Spec<br>
+      <input type="checkbox" name="rq_title" value="1">Title<br>
+      <input type="checkbox" name="rq_scope" value="1">Scope<br>
+      <input type="checkbox" name="rq_doc_id" value="1">Scope<br>
     </td>
     
     </tr>

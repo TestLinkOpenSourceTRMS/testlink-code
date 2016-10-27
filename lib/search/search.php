@@ -33,6 +33,8 @@ $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $filter = null;
 list($args,$filter) = init_args($tproject_mgr);
+Kint::dump($_REQUEST);
+Kint::dump($args);
 
 $ga = initializeGui($args,$tproject_mgr);
 $gx = $tcase_mgr->getTcSearchSkeleton($args);
@@ -41,6 +43,7 @@ $gui = (object)array_merge((array)$ga,(array)$gx);
 initSearch($gui,$args,$tproject_mgr);
 
 
+echo __FILE__;
 
 $map = null;
 
@@ -48,7 +51,8 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 {
   $tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
                                               'requirements','req_coverage','tcsteps',
-                                              'testcase_keywords','tcversions','users'));
+                                              'testcase_keywords','req_specs_revisions',
+                                              'testsuites','tcversions','users'));
                                 
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
   $gui->tcasePrefix .= $tcase_cfg->glue_character;
@@ -63,10 +67,17 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
   $reqspec_mgr = new requirement_spec_mgr($db);
   $reqSpecSet = $reqspec_mgr->get_all_id_in_testproject($args->tprojectID,array('output' => 'id'));
-  $reqSet = $tproject_mgr->get_all_requirement_ids($args->tprojectID);
+   
 
 
-  $nt2exclude = array('testcase' => 'exclude_me',
+
+
+
+
+   $reqSet = $tproject_mgr->get_all_requirement_ids($args->tprojectID);
+
+
+    $nt2exclude = array('testcase' => 'exclude_me',
                         'testplan' => 'exclude_me',
                         'requirement_spec'=> 'exclude_me',
                         'requirement'=> 'exclude_me');
@@ -94,62 +105,131 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
   }
         
+  //echo __LINE__; die();
+  // search has to be done only on latest version
 
-  $useOr = false;
-  $filterSpecial = null;
-  $feOp = " AND ";
-  $filterSpecial['tricky'] = " 1=1 ";
-  if($args->jolly != "")
+  $doFilterOnTestCase = false;
+  $filterSpecial['tricky'] = " 1=0 ";
+  
+  Kint::dump($args->target); 
+  // Multiple space clean up
+  $s = preg_replace("/ {2,}/", " ", $args->target);
+  $targetSet = explode(' ',$s);
+  foreach($targetSet as $idx => $val)
   {
-    $useOr = true;
-    $feOp = " OR ";
+    $targetSet[$id] = $db->prepare_string($val);
+  } 
+
+  Kint::dump($_REQUEST);
+
+  // REQSPEC
+  if( $args->rs_scope || $args->rs_title )
+  {
+    $sql = "SELECT RSRV.name, RSRV.scope, LRSR.req_spec_id, RSRV.id,LRSR.revision " . 
+           "FROM latest_rspec_revision LRSR " .
+           "JOIN {$tables['req_specs_revisions']} RSRV " .
+           "ON RSRV.parent_id = LRSR.req_spec_id " .
+           "AND RSRV.revision = LRSR.revision " .
+           "WHERE LRSR.testproject_id = " . $args->tprojectID;
+
     $filterSpecial['tricky'] = " 1=0 ";
-    $args->steps = $args->expected_results = $args->jolly;
-  }  
-    
-  if($args->steps != "")
+  
+    $filterSpecial['scope'] = ' OR ( ';
+    $filterSpecial['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['scope'] .= $args->and_or . " RSRV.scope like '%{$target}%' ";  
+    }  
+    $filterSpecial['scope'] .= ')';
+  
+    $filterSpecial['name'] = ' OR ( ';
+    $filterSpecial['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['name'] .= $args->and_or . " RSRV.name like '%{$target}%' ";  
+    }  
+    $filterSpecial['name'] .= ')';
+
+    $otherFilters = '';  
+    if(!is_null($filterSpecial))
+    {
+      $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
+    }  
+
+    $sql .= $otherFilters;
+    $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
+    Kint::dump($mapRS);
+   
+
+  } 
+
+  //$target = $db->prepare_string($args->target);
+ 
+  $from['tc_steps'] = "";
+  if($args->tc_steps || $args->tc_expected_results)
   {
-    $args->steps = $db->prepare_string($args->steps);
-    $filterSpecial['by_steps'] = $feOp . " TCSTEPS.actions like '%{$args->steps}%' ";  
+    $doFilterOnTestCase = true;
+    $from['tc_steps'] = " LEFT OUTER JOIN {$tables['nodes_hierarchy']} " .
+                        " NH_TCSTEPS ON NH_TCSTEPS.parent_id = NH_TCV.id " .
+                        " LEFT OUTER JOIN {$tables['tcsteps']} TCSTEPS " .
+                        " ON NH_TCSTEPS.id = TCSTEPS.id  ";
+  }
+
+  if($args->tc_steps)
+  {
+    $filterSpecial['by_steps'] = ' OR ( ';
+    $filterSpecial['by_steps'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['by_steps'] .= $args->and_or . " TCSTEPS.actions like '%{$target}%' ";  
+    }  
+    $filterSpecial['by_steps'] .= ')';
   }    
     
-  if($args->expected_results != "")
+  if($args->tc_expected_results)
   {
-    $args->expected_results = $db->prepare_string($args->expected_results);
-    $filterSpecial['by_expected_results'] = $feOp . " TCSTEPS.expected_results like '%{$args->expected_results}%' "; 
+    $filterSpecial['by_expected_results'] = ' OR ( ';
+    $filterSpecial['by_expected_results'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['by_expected_results'] .= $args->and_or . 
+                   " TCSTEPS.expected_results like '%{$target}%' "; 
+    }  
+    $filterSpecial['by_expected_results'] .= ')';
   }    
 
   $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
-  $jollyEscaped = $db->prepare_string($args->jolly);
+  $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary', 
+               'preconditions' => 'tc_preconditions');
   foreach($k2w as $kf => $alias)
   {
-    if($args->$kf != "" || $args->jolly != '')
+    $in = $i2s[$kf];
+    echo $args->$in . '<br>';
+    if($args->$in)
     {
-      if( $args->jolly == '' )
+      $doFilterOnTestCase = true;
+ 
+      $filterSpecial[$kf] = ' OR ( ';
+      $filterSpecial[$kf] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+ 
+      foreach($targetSet as $target)
       {
-        $args->$kf =  $db->prepare_string($args->$kf);
+        echo $target . '<br>';
+        $filterSpecial[$kf] .= " {$args->and_or} {$alias}.{$kf} like ";
+        $filterSpecial[$kf] .= " '%{$target}%' "; 
       }  
-      $filterSpecial[$kf] = " {$feOp} {$alias}.{$kf} like ";
-      $filterSpecial[$kf] .= ($args->jolly == '') ? " '%{$args->$kf}%' " : " '%{$jollyEscaped}%' "; 
+      $filterSpecial[$kf] .= ' )';
     }
   } 
- 
+
+  Kint::dump($filterSpecial);
   $otherFilters = '';  
   if(!is_null($filterSpecial))
   {
     $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
   }  
-
-
-  if($args->custom_field_id > 0)
-  {
-    $args->custom_field_id = $db->prepare_string($args->custom_field_id);
-    $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-    $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
-                              " ON CFD.node_id=NH_TCV.id ";
-    $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-                                 " AND CFD.value like '%{$args->custom_field_value}%' ";
-  }
 
 
 /*
@@ -167,49 +247,143 @@ JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = LVN.testcase_id
 JOIN tcversions TCV ON NH_TCV.id = TCV.id AND LVN.version = TCV.version
 WHERE 1=1 AND NH_TCV.parent_id IN (7945) AND ( 1=1 AND TCV.summary like '%three%' )
 
+create view latest_rspec_revision AS
+SELECT parent_id AS req_spec_id,testproject_id, max(revision) AS revision
+FROM req_specs_revisions RSR
+JOIN req_specs RS ON RS.id = RSR.parent_id 
+group by parent_id,testproject_id
+
+
+
 */
 
   // Search on latest test case version using view    
   $sqlFields = " SELECT LVN.testcase_id, NH_TC.name, TCV.id AS tcversion_id," .
                " TCV.summary, TCV.version, TCV.tc_external_id "; 
     
-
-
   // search fails if test case has 0 steps - Added LEFT OUTER
   $sqlPart2 = " FROM latest_version_number LVN " .
-              " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = LVN.testacase_id " .
+              " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = LVN.testcase_id " .
               " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
-              " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id ";
-  
+              " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
+              " AND TCV.version = LVN.version " . 
+              $from['tc_steps'] . 
+              " WHERE LVN.testcase_id IN (" . implode(',', $tcaseSet) . ")";
 
-echo $sql;
+  if($doFilterOnTestCase)
+  {
+    $sql = $sqlFields . $sqlPart2 . $otherFilters;
+    echo $sql;
+    $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
+    Kint::dump($mapTC);   
+  }  
 
-if($gui->row_qty > 0)
-{ 
-  if ($map)
+  // Search on Test Suites
+  // Search on latest test case version using view    
+  $filterSpecial = null;
+  $filterSpecial['tricky'] = " 1=0 ";
+
+  if($args->ts_summary)
+  {
+    $filterSpecial['ts_summary'] = ' OR ( ';
+    $filterSpecial['ts_summary'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['ts_summary'] .= $args->and_or . " TS.details like '%{$target}%' ";
+    }  
+    $filterSpecial['ts_summary'] .= ')';
+  }  
+
+  if($args->ts_title)
+  {
+    $filterSpecial['ts_title'] = ' OR ( ';
+    $filterSpecial['ts_title'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['ts_title'] .= $args->and_or . " NH_TS.name like '%{$target}%' ";
+    }  
+    $filterSpecial['ts_title'] .= ')';
+  }  
+
+  $otherFilters = '';  
+  if(!is_null($filterSpecial))
+  {
+    $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
+  }  
+
+  $mapTS = null;
+  if($args->ts_title || $args->ts_summary)
+  {
+    $sqlFields = " SELECT NH_TS.name, TS.id, TS.details " .
+                 " FROM {$tables['nodes_hierarchy']} NH_TS " .
+                 " JOIN {$tables['testsuites']} TS ON TS.id = NH_TS.id " .
+                 " WHERE TS.id IN (" . implode(',', $tsuiteSet) . ")";
+    
+    $sql = $sqlFields . $otherFilters;
+    $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
+
+    Kint::dump($mapTS);
+  }  
+
+  if ($mapTC)
   {
     $tcase_mgr = new testcase($db);   
-    $tcase_set = array_keys($map);
+    $tcase_set = array_keys($mapTC);
     $options = array('output_format' => 'path_as_string');
     $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
-    $gui->resultSet = $map;
+    $gui->resultSet = $mapTC;
   }
-}
-else if ($emptyTestProject) 
-{
-  $gui->warning_msg = lang_get('empty_testproject');
-}
-else
-{
-  $gui->warning_msg = lang_get('no_records_found');
-}
+  else if ($emptyTestProject) 
+  {
+    $gui->warning_msg = lang_get('empty_testproject');
+  }
+  else
+  {
+    $gui->warning_msg = lang_get('no_records_found');
+  }
 
-$img = $smarty->getImages();
-$table = buildExtTable($gui, $charset, $img['edit_icon'], $img['history_small']);
-if (!is_null($table)) 
-{
-  $gui->tableSet[] = $table;
-}
+  $img = $smarty->getImages();
+  $table = buildTCExtTable($gui, $charset, $img['edit_icon'], $img['history_small']);
+
+  if (!is_null($table)) 
+  {
+    $gui->tableSet[] = $table;
+  }
+
+  // TS
+  $table = null;
+  if( !is_null($mapTS))
+  {
+    $gui->resultTestSuite = $mapTS;
+    $table = buildTSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
+  }  
+  
+  $gui->warning_msg = '';
+  if(!is_null($table))
+  {
+    $gui->tableSet[] = $table;
+  }  
+
+  // RSPEC
+  $table = null;
+  if( !is_null($mapRS))
+  {
+    $gui->resultReqSpec = $mapRS;
+    $table = buildRSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
+  }  
+  
+  $gui->warning_msg = '';
+  if(!is_null($table))
+  {
+    $gui->tableSet[] = $table;
+  }  
+
+
+
+ 
+
 
 
 $smarty->assign('gui',$gui);
@@ -219,7 +393,7 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui, $charset, $edit_icon, $history_icon) 
+function buildTCExtTable($gui, $charset, $edit_icon, $history_icon) 
 {
   $table = null;
   $designCfg = getWebEditorCfg('design');
@@ -277,6 +451,117 @@ function buildExtTable($gui, $charset, $edit_icon, $history_icon)
   return($table);
 }
 
+/**
+ * 
+ *
+ */
+function buildTSExtTable($gui, $charset, $edit_icon, $history_icon) 
+{
+  $table = null;
+  $designCfg = getWebEditorCfg('design');
+  $designType = $designCfg['type'];
+  
+  if(count($gui->resultTestSuite) > 0) 
+  {
+    $labels = array('test_suite' => lang_get('test_suite'), 
+                    'details' => lang_get('details'));
+    $columns = array();
+    
+    $columns[] = array('title_key' => 'test_suite', 'type' => 'text');
+    $columns[] = array('title_key' => 'details');
+  
+    // Extract the relevant data and build a matrix
+    $matrixData = array();
+    
+    $titleSeperator = config_get('gui_title_separator_1');
+    
+    foreach($gui->resultTestSuite as $result) 
+    {
+     $edit_link = "<a href=\"javascript:openTSEditWindow({$result['id']});\">" .
+                   "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
+  
+      $rowData = array();
+      
+      $rowData[] = $edit_link . htmlentities($result['name'], ENT_QUOTES, $charset);
+  
+      $rowData[] = ($designType == 'none' ? nl2br($result['details']) : $result['details']);
+
+      $matrixData[] = $rowData;
+    }
+    
+    $table = new tlExtTable($columns, $matrixData, 'tl_table_test_suite_search');
+    
+    $table->setSortByColumnName($labels['test_suite']);
+    $table->sortDirection = 'DESC';
+    
+    $table->showToolbar = true;
+    $table->allowMultiSort = false;
+    $table->toolbarRefreshButton = false;
+    $table->toolbarShowAllColumnsButton = false;
+    
+    $table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+    $table->storeTableState = false;
+  }
+  return $table;
+}
+
+/**
+ * 
+ *
+ */
+function buildRSExtTable($gui, $charset, $edit_icon, $history_icon) 
+{
+  $table = null;
+  $designCfg = getWebEditorCfg('design');
+  $designType = $designCfg['type'];
+  
+  if(count($gui->resultReqSpec) > 0) 
+  {
+    $labels = array('req_spec' => lang_get('req_spec'), 
+                    'scope' => lang_get('scope'));
+    $columns = array();
+    
+    $columns[] = array('title_key' => 'req_spec', 'type' => 'text');
+    $columns[] = array('title_key' => 'scope');
+  
+    // Extract the relevant data and build a matrix
+    $matrixData = array();
+    
+    $titleSeperator = config_get('gui_title_separator_1');
+    
+    foreach($gui->resultReqSpec as $result) 
+    {
+     $edit_link = "<a href=\"javascript:openRSEditWindow({$result['id']});\">" .
+                   "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
+  
+      $rowData = array();
+      
+      $rowData[] = $edit_link . 
+                   htmlentities($result['name'] . "[r{$result['revision']}]", ENT_QUOTES, $charset);
+  
+      $rowData[] = ($designType == 'none' ? nl2br($result['scope']) : $result['scope']);
+
+      $matrixData[] = $rowData;
+    }
+    
+    $table = new tlExtTable($columns, $matrixData, 'tl_table_req_spec_search');
+    
+    $table->setSortByColumnName($labels['req_spec']);
+    $table->sortDirection = 'DESC';
+    
+    $table->showToolbar = true;
+    $table->allowMultiSort = false;
+    $table->toolbarRefreshButton = false;
+    $table->toolbarShowAllColumnsButton = false;
+    
+    $table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+    $table->storeTableState = false;
+  }
+  return $table;
+}
+
+
+
 
 /**
  *
@@ -286,28 +571,33 @@ function init_args(&$tprojectMgr)
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
-  $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,10),
+  $iParams = array("target" => array(tlInputParameter::STRING_N),
+                   "doAction" => array(tlInputParameter::STRING_N,0,10),
                    "tproject_id" => array(tlInputParameter::INT_N), 
                    "status" => array(tlInputParameter::INT_N),
                    "keyword_id" => array(tlInputParameter::INT_N),
-                   "version" => array(tlInputParameter::INT_N,999),
                    "custom_field_id" => array(tlInputParameter::INT_N),
-                   "name" => array(tlInputParameter::STRING_N,0,50),
                    "created_by" => array(tlInputParameter::STRING_N,0,50),
                    "edited_by" => array(tlInputParameter::STRING_N,0,50),
-                   "summary" => array(tlInputParameter::STRING_N,0,50),
-                   "steps" => array(tlInputParameter::STRING_N,0,50),
-                   "expected_results" => array(tlInputParameter::STRING_N,0,50),
+
+                   "rq_scope" => array(tlInputParameter::CB_BOOL),
+                   "rq_title" => array(tlInputParameter::CB_BOOL),
+                   "rq_doc_id" => array(tlInputParameter::CB_BOOL),
+
+                   "rs_scope" => array(tlInputParameter::CB_BOOL),
+                   "rs_title" => array(tlInputParameter::CB_BOOL),
+                   "tc_summary" => array(tlInputParameter::CB_BOOL),
+                   "tc_title" => array(tlInputParameter::CB_BOOL),
+                   "tc_steps" => array(tlInputParameter::CB_BOOL),
+                   "tc_expected_results" => array(tlInputParameter::CB_BOOL),
+                   "ts_summary" => array(tlInputParameter::CB_BOOL),
+                   "ts_title" => array(tlInputParameter::CB_BOOL),
+
                    "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
-                   "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
-                   "preconditions" => array(tlInputParameter::STRING_N,0,50),
-                   "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
-                   "importance" => array(tlInputParameter::INT_N),
                    "creation_date_from" => array(tlInputParameter::STRING_N),
                    "creation_date_to" => array(tlInputParameter::STRING_N),
                    "modification_date_from" => array(tlInputParameter::STRING_N),
-                   "modification_date_to" => array(tlInputParameter::STRING_N),
-                   "jolly" => array(tlInputParameter::STRING_N));
+                   "modification_date_to" => array(tlInputParameter::STRING_N));
     
   $args = new stdClass();
   R_PARAMS($iParams,$args);
@@ -363,6 +653,8 @@ function init_args(&$tprojectMgr)
     }
   } 
 
+  // 
+  $args->and_or = isset($_REQUEST['and_or']) ? $_REQUEST['and_or'] : 'or'; 
   return array($args,$filter);
 }
 
@@ -397,21 +689,6 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->modification_date_from = null;
   $gui->modification_date_to = null;
   $gui->search_important_notice = sprintf(lang_get('search_important_notice'),$argsObj->tprojectName);
-
-  // $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,cfield_mgr::ENABLED,null,'testcase');
-  // $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
-  // $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
-  // $gui->filter_by['keyword'] = !is_null($gui->keywords);
-  // $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
-  // $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
-
-  // $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
-  //                                LOW => lang_get('low_importance'));
-
- 
-  //$dummy = getConfigAndLabels('testCaseStatus','code');
-  //$gui->domainTCStatus = array(0 => '') + $dummy['lbl'];
-
 
   // need to set values that where used on latest search (if any was done)
   // $gui->importance = config_get('testcase_importance_default');

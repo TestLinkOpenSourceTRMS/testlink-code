@@ -1331,7 +1331,7 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
 
-  if( strcasecmp($objMgr->object_table, 'testsuites') == 0 )
+  if( $objMgr->my_node_type == $objMgr->node_types_descr_id['testsuite'] )
   {
     $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
                                              $guiObj->id,$argsObj->tprojectID);

@@ -158,8 +158,31 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   } 
 
   // REQ
+  $doFilterOnReq = false;
   if( $args->rq_scope || $args->rq_title || $args->rq_doc_id)
   {
+    $fi = null;
+    $doFilterOnReq = true;
+    $args->created_by = trim($args->created_by);
+    $from['users'] = '';
+    if( $args->created_by != '' )
+    {
+      $from['users'] .= " JOIN {$tables['users']} AUTHOR ON RQAUTHOR.id = RQV.author_id ";
+      $fi['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
+                      "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
+                      "       AUTHOR.last LIKE '%{$args->created_by}%') ";
+    }  
+  
+    $args->edited_by = trim($args->edited_by);
+    if( $args->edited_by != '' )
+    {
+      $doFilterOnTestCase = true;
+      $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = RQV.modifier_id ";
+      $fi['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
+                            "       UPDATER.first LIKE '%{$args->edited_by}%' OR " .
+                            "       UPDATER.last LIKE '%{$args->edited_by}%') ";
+    }  
+
 
     $sql = " select RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
            " from nodes_hierarchy NHRQV " .
@@ -167,6 +190,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
            " JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
            " JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id " .
            " JOIN requirements RQ on RQ.id = LV.req_id " .
+           $from['users'] .
            " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
 
     $filterSpecial['tricky'] = " 1=0 ";
@@ -202,7 +226,13 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
     }  
 
-    $sql .= $otherFilters;
+    $xfil = ''; 
+    if(!is_null($fi))
+    {
+      $xfil = implode("",$fi);
+    }  
+
+    $sql .= $xfil . $otherFilters;
     $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
     Kint::dump($mapRQ);
   } 
@@ -212,7 +242,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
 
   //$target = $db->prepare_string($args->target);
- 
+  $doFilterOnTestCase = false;
   $from['tc_steps'] = "";
   if($args->tc_steps || $args->tc_expected_results)
   {

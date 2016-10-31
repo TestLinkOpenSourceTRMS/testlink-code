@@ -320,17 +320,49 @@ JOIN requirements RQ on RQ.id = LV.req_id
   $sqlFields = " SELECT LVN.testcase_id, NH_TC.name, TCV.id AS tcversion_id," .
                " TCV.summary, TCV.version, TCV.tc_external_id "; 
     
+
+
+  if($doFilterOnTestCase)
+  {
+    $args->created_by = trim($args->created_by);
+    $from['users'] = '';
+    if( $args->created_by != '' )
+    {
+      $doFilterOnTestCase = true;
+      $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
+      $filter['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
+                          "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
+                          "       AUTHOR.last LIKE '%{$args->created_by}%') ";
+    }  
+  
+    $args->edited_by = trim($args->edited_by);
+    if( $args->edited_by != '' )
+    {
+      $doFilterOnTestCase = true;
+      $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
+      $filter['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
+                          "         UPDATER.first LIKE '%{$args->edited_by}%' OR " .
+                          "         UPDATER.last LIKE '%{$args->edited_by}%') ";
+    }  
+  }
+
+
   // search fails if test case has 0 steps - Added LEFT OUTER
   $sqlPart2 = " FROM latest_version_number LVN " .
               " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = LVN.testcase_id " .
               " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
               " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
               " AND TCV.version = LVN.version " . 
-              $from['tc_steps'] . 
+              $from['tc_steps'] . $from['users'] .
               " WHERE LVN.testcase_id IN (" . implode(',', $tcaseSet) . ")";
 
   if($doFilterOnTestCase)
   {
+    if ($filter)
+    {
+      $sqlPart2 .= implode("",$filter);
+    }
+ 
     $sql = $sqlFields . $sqlPart2 . $otherFilters;
     echo $sql;
     $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
@@ -688,21 +720,6 @@ function buildRQExtTable($gui, $charset)
                htmlentities($rfx['name'], ENT_QUOTES, $charset);
 
       $matches = '';
-      //echo $rfx['scope'];
-      /*
-      foreach($itemSet as $rx) 
-      {
-        if($rx['revision_id'] > 0)
-        {
-          $dummy = sprintf($reqRevHref,$rx['revision_id'],$rx['version'],$rx['revision']);
-        }
-        else
-        {
-          $dummy = sprintf($reqVerHref,$req_id,$rx['version_id'],$rx['version'],$rx['revision']);
-        } 
-        $matches .= $dummy;
-      }
-      */
       $rowData[] = $edit_link . $title . ' ' . $matches;
       $rowData[] = ($designType == 'none' ? nl2br($rfx['scope']) : $rfx['scope']);
       $matrixData[] = $rowData;

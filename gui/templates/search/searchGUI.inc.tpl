@@ -10,7 +10,8 @@ Purpose: show form
 {$cfg_section=$smarty.template|basename|replace:".inc.tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{lang_get var="labels" s='search_items,btn_find,logical_or,logical_and'}
+{lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
+                          edited_by'}
 <div style="margin: 1px;">
 <form method="post" action="{$basehref}lib/search/search.php">
   <input type="hidden" name="doAction" id="doAction" value="doSearch">
@@ -62,6 +63,17 @@ Purpose: show form
     
     </tr>
 
+    <tr>
+      <td>&nbsp;</td>
+      <td>{$labels.created_by}
+      <input type="text" name="created_by" id="created_by" 
+                 value="{$gui->created_by|escape}"
+                 size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" />
+
+      <br>{$labels.edited_by}
+      <input type="text" name="edited_by" id ="edited_by" value="{$gui->edited_by|escape}"
+                 size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
+    </tr>
   </table>
   
   <p style="padding-left: 20px;">

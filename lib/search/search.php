@@ -10,7 +10,7 @@
  * @filesource  tcSearch.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
@@ -67,12 +67,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
   $reqspec_mgr = new requirement_spec_mgr($db);
   $reqSpecSet = $reqspec_mgr->get_all_id_in_testproject($args->tprojectID,array('output' => 'id'));
-   
-
-
-
-
-
 
    $reqSet = $tproject_mgr->get_all_requirement_ids($args->tprojectID);
 
@@ -162,6 +156,60 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
    
 
   } 
+
+  // REQ
+  if( $args->rq_scope || $args->rq_title || $args->rq_doc_id)
+  {
+
+    $sql = " select RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
+           " from nodes_hierarchy NHRQV " .
+           " JOIN latest_req_version LV on LV.req_id = NHRQV.parent_id " .
+           " JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
+           " JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id " .
+           " JOIN requirements RQ on RQ.id = LV.req_id " .
+           " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
+
+    $filterSpecial['tricky'] = " 1=0 ";
+  
+    $filterSpecial['scope'] = ' OR ( ';
+    $filterSpecial['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' ";  
+    }  
+    $filterSpecial['scope'] .= ')';
+  
+    $filterSpecial['name'] = ' OR ( ';
+    $filterSpecial['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' ";  
+    }  
+    $filterSpecial['name'] .= ')';
+
+    $filterSpecial['req_doc_id'] = ' OR ( ';
+    $filterSpecial['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    foreach($targetSet as $target)
+    {
+      $filterSpecial['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
+    }  
+    $filterSpecial['req_doc_id'] .= ')';
+
+
+    $otherFilters = '';  
+    if(!is_null($filterSpecial))
+    {
+      $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
+    }  
+
+    $sql .= $otherFilters;
+    $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
+    Kint::dump($mapRQ);
+  } 
+
+
+
+
 
   //$target = $db->prepare_string($args->target);
  
@@ -253,7 +301,18 @@ FROM req_specs_revisions RSR
 JOIN req_specs RS ON RS.id = RSR.parent_id 
 group by parent_id,testproject_id
 
+CREATE VIEW latest_req_version AS
+SELECT RQ.id as req_id, MAX(RQV.version) vresion FROM nodes_hierarchy NHRQV
+JOIN requirements RQ on RQ.id = NHRQV.parent_id
+JOIN req_versions RQV on RQV.id = NHRQV.id
+GROUP BY RQ.id
 
+
+select RQV.scope,RQ.req_doc_id,NHRQ.name  from nodes_hierarchy NHRQV
+JOIN latest_req_version LV on LV.req_id = NHRQV.parent_id
+JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version
+JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id
+JOIN requirements RQ on RQ.id = LV.req_id 
 
 */
 
@@ -380,7 +439,23 @@ group by parent_id,testproject_id
     $gui->tableSet[] = $table;
   }  
 
+  $table = null;
+  if( !is_null($mapRQ))
+  {
 
+    $gui->resultReq = $mapRQ;
+    $req_set = array_keys($mapRQ);
+    $options = array('output_format' => 'path_as_string');
+    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
+
+    $table = buildRQExtTable($gui, $charset);
+
+  }
+  $gui->warning_msg = '';
+   if(!is_null($table))
+  {
+    $gui->tableSet[] = $table;
+  }  
 
  
 
@@ -561,6 +636,94 @@ function buildRSExtTable($gui, $charset, $edit_icon, $history_icon)
 }
 
 
+
+/**
+ * 
+ *
+ */
+function buildRQExtTable($gui, $charset)
+{
+  $table = null;
+  $designCfg = getWebEditorCfg('design');
+  $designType = $designCfg['type'];
+
+  $lbl = array('edit' => 'requirement', 'req_spec' => 'req_spec', 
+               'requirement' => 'requirement','scope' => 'scope');
+
+  $labels = init_labels($lbl);
+  $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
+  
+  //Kint::dump($gui->resultReq);die();
+
+  if(count($gui->resultReq) > 0) 
+  {
+    $columns = array();
+    
+    $columns[] = array('title_key' => 'req_spec');
+    $columns[] = array('title_key' => 'requirement', 'type' => 'text');
+  
+    $columns[] = array('title_key' => 'scope');
+
+    // Extract the relevant data and build a matrix
+    $matrixData = array();
+    
+    $key2loop = array_keys($gui->resultReq);
+    $img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
+    $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
+    // req_revision_id
+    $reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 
+  
+    Kint::dump($gui->resultReq);
+    foreach($key2loop as $req_id)
+    {
+      $rowData = array();
+      $itemSet = $gui->resultReq[$req_id];
+      $rfx = $itemSet;
+      
+      // We Group by Requirement path
+      $rowData[] = htmlentities($gui->path_info[$rfx['req_id']], ENT_QUOTES, $charset);
+
+      $edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $rfx['req_id'] . ")\">" . "{$img}</a> ";
+      $title = htmlentities($rfx['req_doc_id'], ENT_QUOTES, $charset) . ":" .
+               htmlentities($rfx['name'], ENT_QUOTES, $charset);
+
+      $matches = '';
+      //echo $rfx['scope'];
+      /*
+      foreach($itemSet as $rx) 
+      {
+        if($rx['revision_id'] > 0)
+        {
+          $dummy = sprintf($reqRevHref,$rx['revision_id'],$rx['version'],$rx['revision']);
+        }
+        else
+        {
+          $dummy = sprintf($reqVerHref,$req_id,$rx['version_id'],$rx['version'],$rx['revision']);
+        } 
+        $matches .= $dummy;
+      }
+      */
+      $rowData[] = $edit_link . $title . ' ' . $matches;
+      $rowData[] = ($designType == 'none' ? nl2br($rfx['scope']) : $rfx['scope']);
+      $matrixData[] = $rowData;
+    }
+  
+    $table = new tlExtTable($columns, $matrixData, 'tl_table_req_search');
+    
+    $table->setGroupByColumnName($labels['req_spec']);
+    $table->setSortByColumnName($labels['requirement']);
+    $table->sortDirection = 'DESC';
+    
+    $table->showToolbar = true;
+    $table->allowMultiSort = false;
+    $table->toolbarRefreshButton = false;
+    $table->toolbarShowAllColumnsButton = false;
+    $table->storeTableState = false;
+    
+    $table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+  }
+  return($table);
+}
 
 
 /**

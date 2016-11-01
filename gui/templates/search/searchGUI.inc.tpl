@@ -12,7 +12,7 @@ Purpose: show form
 
 {lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
                           edited_by,modification_date_to,modification_date_from,
-                          creation_date_to,creation_date_from,keyword'}
+                          creation_date_to,creation_date_from,keyword,type,status'}
 <div style="margin: 1px;">
 <form method="post" action="{$basehref}lib/search/search.php">
   <input type="hidden" name="doAction" id="doAction" value="doSearch">
@@ -36,13 +36,14 @@ Purpose: show form
     
     <td style="width: 30%" colspan="1"> 
       TEST CASE<br>
-      <input type="checkbox" name="tc_title" value="1">Title<br>
-      <input type="checkbox" name="tc_summary" value="1">Summary<br>
-      <input type="checkbox" name="tc_preconditions" value="1">Preconditions<br>
-      <input type="checkbox" name="tc_steps" value="1">Steps<br>
-      <input type="checkbox" name="tc_expected_results" value="1">Expected results<br>
-      <input type="checkbox" name="tc_id" value="1">id<br>
+      <input type="checkbox" name="tc_title" value="1" {if $gui->tc_title}checked{/if}>Title<br>
+      <input type="checkbox" name="tc_summary" value="1" {if $gui->tc_summary}checked{/if}>Summary<br>
+      <input type="checkbox" name="tc_preconditions" value="1" {if $gui->tc_preconditions}checked{/if}>Preconditions<br>
+      <input type="checkbox" name="tc_steps" value="1" {if $gui->tc_steps}checked{/if}>Steps<br>
+      <input type="checkbox" name="tc_expected_results" value="1" {if $gui->tc_expected_results}checked{/if}>Expected results<br>
+      <input type="checkbox" name="tc_id" value="1" {if $gui->tc_id}checked{/if}>id<br>
     </td>
+
     <td style="width: 30%" colspan="1"> 
       TEST SUITE<br>
       <input type="checkbox" name="ts_title" value="1">Title<br>
@@ -85,7 +86,10 @@ Purpose: show form
         {/section}
         </select>
       </td>
+    {else}
+      <td>&nbsp</td>  
     {/if}
+
 
    </tr>
    
@@ -140,6 +144,22 @@ Purpose: show form
              onclick="javascript:var x = document.getElementById('modification_date_to'); x.value = '';" >
         <div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
       </td>
+
+      <td>
+      {$labels.type}
+        <select name="rType" id="rType">
+          <option value="">&nbsp;</option>
+            {html_options options=$gui->rtypes  selected=$gui->rType}
+          </select>
+
+       <br>   
+       {$labels.status}
+        <select name="reqStatus">
+        <option value="">&nbsp;</option>
+        {html_options options=$gui->reqStatusDomain selected=$gui->reqStatus}
+        </select>
+      </td>
+
     </tr>
 
   </table>

@@ -277,6 +277,21 @@ function processSearch(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   $xbm->keywords = $tproject_mgr->getKeywords($args->tproject_id);
   $xbm->filter_by['keyword'] = !is_null($xbm->keywords);
 
+  $reqCfg = config_get('req_cfg');
+  $xbm->rtypes = array_flip(init_labels($reqCfg->type_labels));
+  foreach ($xbm->rtypes as $key => $value) 
+  {
+    $xbm->rtypes[$key] = 'RQ' . $value;  
+  }
+  $xbm->rtypes = array_flip($xbm->rtypes);
+  $reqSpecCfg = config_get('req_spec_cfg');
+  $rsTypes = init_labels($reqSpecCfg->type_labels);
+  $xbm->rtypes = $rsTypes+$xbm->rtypes;
+
+  $xbm->reqStatusDomain = init_labels($reqCfg->status_labels);
+
+
+
   $tplEngine->assign('gui',$xbm);
 
   // var_dump($templateCfg->template_dir);die();

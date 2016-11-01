@@ -33,9 +33,7 @@ $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $filter = null;
 list($args,$mixedFilter) = init_args($tproject_mgr);
-// Kint::dump($_REQUEST);
-// Kint::dump($args);
-Kint::dump($mixedFilter);
+Kint::dump($args);
 
 $ga = initializeGui($args,$tproject_mgr);
 $gx = $tcase_mgr->getTcSearchSkeleton($args);
@@ -47,6 +45,22 @@ initSearch($gui,$args,$tproject_mgr);
 echo __FILE__;
 
 $map = null;
+
+
+$rspecType = null;
+$reqType = null;
+if($args->rType != '')
+{
+  if(strpos($args->rType, 'RQ') === FALSE)
+  {
+    $rspecType = $args->rType;
+  }  
+  else
+  {
+    $reqType = str_replace('RQ','', $args->rType);
+  }  
+}  
+
 
 if ($args->tprojectID && $args->doAction == 'doSearch')
 {
@@ -109,7 +123,22 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   
   $doFilterOnTestCase = ($args->tc_summary || $args->tc_title );
 
-  Kint::dump($args->target); 
+
+  $reqCfg = config_get('req_cfg');
+  $gui->reqStatusDomain = init_labels($reqCfg->status_labels);
+  Kint::dump($gui->reqStatusDomain);
+
+
+  $gui->rtypes = array_flip(init_labels($reqCfg->type_labels));
+  foreach ($gui->rtypes as $key => $value) 
+  {
+    $gui->rtypes[$key] = 'RQ' . $value;  
+  }
+  $gui->rtypes = array_flip($gui->rtypes);
+  $reqSpecCfg = config_get('req_spec_cfg');
+  $rsTypes = init_labels($reqSpecCfg->type_labels);
+  $gui->rtypes = $rsTypes+$gui->rtypes;
+
   // Multiple space clean up
   $s = preg_replace("/ {2,}/", " ", $args->target);
   $targetSet = explode(' ',$s);
@@ -129,6 +158,12 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
            "ON RSRV.parent_id = LRSR.req_spec_id " .
            "AND RSRV.revision = LRSR.revision " .
            "WHERE LRSR.testproject_id = " . $args->tprojectID;
+
+    if(!is_null($rspecType))
+    {
+      $sql .= " AND RSRV.type='" . $db->prepare_string($rspecType) . "' ";
+    }  
+
 
     $filterSpecial['tricky'] = " 1=0 ";
   
@@ -155,6 +190,8 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
 
     $sql .= $otherFilters;
+    echo $sql;
+
     $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
     Kint::dump($mapRS);
    
@@ -195,6 +232,16 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
            " JOIN requirements RQ on RQ.id = LV.req_id " .
            $from['users'] .
            " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
+
+    if(!is_null($reqType))
+    {
+      $sql .= " AND RQV.type ='" . $db->prepare_string($reqType) . "' ";
+    }  
+
+    if($args->reqStatus != '')
+    {
+      $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
+    }  
 
     $filterSpecial['tricky'] = " 1=0 ";
   
@@ -700,7 +747,7 @@ function buildRSExtTable($gui, $charset, $edit_icon, $history_icon)
     
     foreach($gui->resultReqSpec as $result) 
     {
-     $edit_link = "<a href=\"javascript:openRSEditWindow({$result['id']});\">" .
+     $edit_link = "<a href=\"javascript:openLinkedReqSpecWindow({$result['req_spec_id']});\">" .
                    "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
   
       $rowData = array();
@@ -816,7 +863,9 @@ function init_args(&$tprojectMgr)
   $iParams = array("target" => array(tlInputParameter::STRING_N),
                    "doAction" => array(tlInputParameter::STRING_N,0,10),
                    "tproject_id" => array(tlInputParameter::INT_N), 
-                   "status" => array(tlInputParameter::INT_N),
+                   "reqStatus" => array(tlInputParameter::STRING_N,0,1),
+                   "rType" => array(tlInputParameter::STRING_N),
+                   
                    "keyword_id" => array(tlInputParameter::INT_N),
                    "custom_field_id" => array(tlInputParameter::INT_N),
                    "created_by" => array(tlInputParameter::STRING_N,0,50),
@@ -832,6 +881,9 @@ function init_args(&$tprojectMgr)
                    "tc_title" => array(tlInputParameter::CB_BOOL),
                    "tc_steps" => array(tlInputParameter::CB_BOOL),
                    "tc_expected_results" => array(tlInputParameter::CB_BOOL),
+                   "tc_preconditions" => array(tlInputParameter::CB_BOOL),
+                   "tc_id" => array(tlInputParameter::CB_BOOL),
+
                    "ts_summary" => array(tlInputParameter::CB_BOOL),
                    "ts_title" => array(tlInputParameter::CB_BOOL),
 
@@ -911,6 +963,9 @@ function initializeGui(&$argsObj,&$tprojectMgr)
 {
   $gui = new stdClass();
 
+  $gui->rType = $argsObj->rType;
+  $gui->reqStatus = $argsObj->reqStatus;
+
   $gui->pageTitle = lang_get('caption_search_form');
   $gui->warning_msg = '';
   $gui->path_info = null;
@@ -937,6 +992,13 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   // need to set values that where used on latest search (if any was done)
   // $gui->importance = config_get('testcase_importance_default');
 
+  $gui->tc_steps = $argsObj->tc_steps;
+  $gui->tc_title = $argsObj->tc_title;
+  $gui->tc_summary = $argsObj->tc_summary;
+  $gui->tc_preconditions = $argsObj->tc_preconditions;
+  $gui->tc_expected_results = $argsObj->tc_expected_results;
+  $gui->tc_id = $argsObj->tc_id;
+
   return $gui;
 }
 
@@ -962,13 +1024,8 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
 
   $gui->importance = intval($argsObj->importance);
   $gui->status = intval($argsObj->status);
-  $gui->tcversion = (is_null($argsObj->version) || $argsObj->version == '') ? '' : intval($argsObj->version);
 
-  $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . config_get('testcase_cfg')->glue_character;
-
-
-  $gui->targetTestCase = (is_null($argsObj->targetTestCase) || $argsObj->targetTestCase == '') ? 
-                         $gui->tcasePrefix : $argsObj->targetTestCase;
+  $gui->target = $argsObj->target;
 
   
   $txtin = array("created_by","edited_by","jolly");   

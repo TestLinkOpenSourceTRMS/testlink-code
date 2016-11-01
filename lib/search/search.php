@@ -32,9 +32,10 @@ $tcase_mgr = new testcase ($db);
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $filter = null;
-list($args,$filter) = init_args($tproject_mgr);
-Kint::dump($_REQUEST);
-Kint::dump($args);
+list($args,$mixedFilter) = init_args($tproject_mgr);
+// Kint::dump($_REQUEST);
+// Kint::dump($args);
+Kint::dump($mixedFilter);
 
 $ga = initializeGui($args,$tproject_mgr);
 $gx = $tcase_mgr->getTcSearchSkeleton($args);
@@ -52,7 +53,8 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
                                               'requirements','req_coverage','tcsteps',
                                               'testcase_keywords','req_specs_revisions',
-                                              'testsuites','tcversions','users'));
+                                              'testsuites','tcversions','users',
+                                              'object_keywords'));
                                 
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
   $gui->tcasePrefix .= $tcase_cfg->glue_character;
@@ -105,13 +107,15 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $doFilterOnTestCase = false;
   $filterSpecial['tricky'] = " 1=0 ";
   
+  $doFilterOnTestCase = ($args->tc_summary || $args->tc_title );
+
   Kint::dump($args->target); 
   // Multiple space clean up
   $s = preg_replace("/ {2,}/", " ", $args->target);
   $targetSet = explode(' ',$s);
   foreach($targetSet as $idx => $val)
   {
-    $targetSet[$id] = $db->prepare_string($val);
+    $targetSet[$idx] = $db->prepare_string($val);
   } 
 
   Kint::dump($_REQUEST);
@@ -165,7 +169,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $doFilterOnReq = true;
     $args->created_by = trim($args->created_by);
     $from['users'] = '';
-    if( $args->created_by != '' )
+    if($doFilterOnTestCase &&  $args->created_by != '' )
     {
       $from['users'] .= " JOIN {$tables['users']} AUTHOR ON RQAUTHOR.id = RQV.author_id ";
       $fi['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
@@ -174,9 +178,8 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
   
     $args->edited_by = trim($args->edited_by);
-    if( $args->edited_by != '' )
+    if( $doFilterOnTestCase && $args->edited_by != '' )
     {
-      $doFilterOnTestCase = true;
       $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = RQV.modifier_id ";
       $fi['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
                             "       UPDATER.first LIKE '%{$args->edited_by}%' OR " .
@@ -232,17 +235,23 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       $xfil = implode("",$fi);
     }  
 
+
     $sql .= $xfil . $otherFilters;
     $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
     Kint::dump($mapRQ);
   } 
 
 
-
-
+  if($doFilterOnTestCase && $args->keyword_id)       
+  {
+     $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
+     $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
+  }
+  
+  Kint::dump($filter);
 
   //$target = $db->prepare_string($args->target);
-  $doFilterOnTestCase = false;
+  //$doFilterOnTestCase = false;
   $from['tc_steps'] = "";
   if($args->tc_steps || $args->tc_expected_results)
   {
@@ -383,7 +392,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
               " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
               " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
               " AND TCV.version = LVN.version " . 
-              $from['tc_steps'] . $from['users'] .
+              $from['tc_steps'] . $from['users'] . $from['by_keyword_id'] .
               " WHERE LVN.testcase_id IN (" . implode(',', $tcaseSet) . ")";
 
   if($doFilterOnTestCase)
@@ -392,6 +401,13 @@ JOIN requirements RQ on RQ.id = LV.req_id
     {
       $sqlPart2 .= implode("",$filter);
     }
+    
+    if ($mixedFilter['dates4tc'])
+    {
+      $sqlPart2 .= implode("",$mixedFilter['dates4tc']);
+    }
+
+    
  
     $sql = $sqlFields . $sqlPart2 . $otherFilters;
     echo $sql;
@@ -416,6 +432,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
     $filterSpecial['ts_summary'] .= ')';
   }  
 
+  Kint::dump($targetSet);
   if($args->ts_title)
   {
     $filterSpecial['ts_title'] = ' OR ( ';
@@ -434,15 +451,30 @@ JOIN requirements RQ on RQ.id = LV.req_id
     $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
   }  
 
+  // echo $otherFilters;
+
   $mapTS = null;
   if($args->ts_title || $args->ts_summary)
   {
+
+    $fromTS['by_keyword_id']= '';
+    $filterTS['by_keyword_id']='';
+    if($args->keyword_id)
+    {
+     $fromTS['by_keyword_id'] = " JOIN {$tables['object_keywords']} KW ON KW.fk_id = NH_TS.id ";
+     $filterTS['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
+    }  
+  
+
     $sqlFields = " SELECT NH_TS.name, TS.id, TS.details " .
                  " FROM {$tables['nodes_hierarchy']} NH_TS " .
                  " JOIN {$tables['testsuites']} TS ON TS.id = NH_TS.id " .
+                 $fromTS['by_keyword_id'] .
                  " WHERE TS.id IN (" . implode(',', $tsuiteSet) . ")";
     
-    $sql = $sqlFields . $otherFilters;
+    $sql = $sqlFields . $filterTS['by_keyword_id'] . $otherFilters;
+    Kint::dump($sql);
+
     $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
 
     Kint::dump($mapTS);
@@ -849,7 +881,8 @@ function init_args(&$tprojectMgr)
 
 
   $dateFormat = config_get('date_format');
-  $filter = null;
+  $filter['dates4tc'] = null;
+  $filter['dates4rq'] = null;
   foreach($k2w as $key => $value)
   {
     if (isset($args->$key) && $args->$key != '') 
@@ -858,7 +891,8 @@ function init_args(&$tprojectMgr)
       if ($da != null) 
       {
         $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
-        $filter[$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
+        $filter['dates4tc'][$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
+        $filter['dates4rq'][$key] = " AND RQV.{$k2f[$key]} '{$args->$key}' ";
       }
     }
   } 
@@ -911,6 +945,8 @@ function initializeGui(&$argsObj,&$tprojectMgr)
  */
 function initSearch(&$gui,&$argsObj,&$tprojectMgr)
 {
+
+
   $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,
                                                                            cfield_mgr::ENABLED,null,'testcase');
 
@@ -918,6 +954,7 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
 
   $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
   $gui->filter_by['keyword'] = !is_null($gui->keywords);
+  Kint::dump($gui->keywords);
 
   $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
   $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);

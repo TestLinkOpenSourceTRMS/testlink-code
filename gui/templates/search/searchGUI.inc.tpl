@@ -11,7 +11,8 @@ Purpose: show form
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
-                          edited_by'}
+                          edited_by,modification_date_to,modification_date_from,
+                          creation_date_to,creation_date_from,keyword'}
 <div style="margin: 1px;">
 <form method="post" action="{$basehref}lib/search/search.php">
   <input type="hidden" name="doAction" id="doAction" value="doSearch">
@@ -58,7 +59,7 @@ Purpose: show form
       Requirement Spec<br>
       <input type="checkbox" name="rq_title" value="1">Title<br>
       <input type="checkbox" name="rq_scope" value="1">Scope<br>
-      <input type="checkbox" name="rq_doc_id" value="1">Scope<br>
+      <input type="checkbox" name="rq_doc_id" value="1">Req Doc ID<br>
     </td>
     
     </tr>
@@ -73,7 +74,74 @@ Purpose: show form
       <br>{$labels.edited_by}
       <input type="text" name="edited_by" id ="edited_by" value="{$gui->edited_by|escape}"
                  size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
+   
+
+    {if $gui->filter_by.keyword}
+      <td>{$labels.keyword}
+         <select name="keyword_id">
+          <option value="0">&nbsp;</option>
+          {section name=Row loop=$gui->keywords}
+          <option value="{$gui->keywords[Row]->dbID}">{$gui->keywords[Row]->name|escape}</option>
+        {/section}
+        </select>
+      </td>
+    {/if}
+
+   </tr>
+   
+      <tr>
+      <td>&nbsp;</td>      
+      <td>{$labels.creation_date_from}
+        <input type="text" name="creation_date_from" id="creation_date_from" 
+               value="{$gui->creation_date_from|escape}" size="{#DATE_PICKER#}"
+               onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" readonly />
+        
+        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+             onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" >
+        <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+               onclick="javascript:var x = document.getElementById('creation_date_from'); x.value = '';" >
+        <div id="creation_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+
+       <br> 
+      {$labels.creation_date_to}
+  
+        <input type="text" name="creation_date_to" id="creation_date_to" value="{$gui->creation_date_to|escape}" 
+               size="{#DATE_PICKER#}"
+               onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');" readonly />
+        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+             onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');" >
+        <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+               onclick="javascript:var x = document.getElementById('creation_date_to'); x.value = '';" >
+        <div id="creation_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+  
+      <br>
+      {$labels.modification_date_from}
+      
+        <input type="text" name="modification_date_from" id="modification_date_from" 
+        value="{$gui->modification_date_from|escape}" 
+               size="{#DATE_PICKER#}"
+               onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');" readonly />
+        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+             onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');" >
+        <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+             onclick="javascript:var x = document.getElementById('modification_date_from'); x.value = '';" >
+        <div id="modification_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+      <br>
+
+      {$labels.modification_date_to}
+      
+        <input type="text" name="modification_date_to" id="modification_date_to" 
+        value="{$gui->modification_date_to|escape}" 
+               size="{#DATE_PICKER#}"
+               onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');" readonly />
+        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+             onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');" >
+        <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+             onclick="javascript:var x = document.getElementById('modification_date_to'); x.value = '';" >
+        <div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+      </td>
     </tr>
+
   </table>
   
   <p style="padding-left: 20px;">

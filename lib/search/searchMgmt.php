@@ -273,6 +273,10 @@ function processSearch(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   $xbm->tproject_id = $args->tproject_id;
   $xbm->target = $args->target;
 
+  $tproject_mgr = new testproject($dbHandler);
+  $xbm->keywords = $tproject_mgr->getKeywords($args->tproject_id);
+  $xbm->filter_by['keyword'] = !is_null($xbm->keywords);
+
   $tplEngine->assign('gui',$xbm);
 
   // var_dump($templateCfg->template_dir);die();

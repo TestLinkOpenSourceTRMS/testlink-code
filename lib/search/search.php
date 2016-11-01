@@ -35,14 +35,8 @@ $filter = null;
 list($args,$mixedFilter) = init_args($tproject_mgr);
 Kint::dump($args);
 
-$ga = initializeGui($args,$tproject_mgr);
-$gx = $tcase_mgr->getTcSearchSkeleton($args);
-$gui = (object)array_merge((array)$ga,(array)$gx);
-
+$gui = initializeGui($args,$tproject_mgr);
 initSearch($gui,$args,$tproject_mgr);
-
-
-echo __FILE__;
 
 $map = null;
 
@@ -180,31 +174,31 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
 
 
-    $filterSpecial['tricky'] = " 1=0 ";
+    $filterRS['tricky'] = " 1=0 ";
   
-    $filterSpecial['scope'] = ' OR ( ';
-    $filterSpecial['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    $filterRS['scope'] = ' OR ( ';
+    $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
     foreach($targetSet as $target)
     {
-      $filterSpecial['scope'] .= $args->and_or . " RSRV.scope like '%{$target}%' ";  
+      $filterRS['scope'] .= $args->and_or . " RSRV.scope like '%{$target}%' ";  
     }  
-    $filterSpecial['scope'] .= ')';
+    $filterRS['scope'] .= ')';
   
-    $filterSpecial['name'] = ' OR ( ';
-    $filterSpecial['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    $filterRS['name'] = ' OR ( ';
+    $filterRS['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
     foreach($targetSet as $target)
     {
-      $filterSpecial['name'] .= $args->and_or . " RSRV.name like '%{$target}%' ";  
+      $filterRS['name'] .= $args->and_or . " RSRV.name like '%{$target}%' ";  
     }  
-    $filterSpecial['name'] .= ')';
+    $filterRS['name'] .= ')';
 
-    $otherFilters = '';  
-    if(!is_null($filterSpecial))
+    $otherFRS = '';  
+    if(!is_null($filterRS))
     {
-      $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
+      $otherFRS = " AND (" . implode("",$filterRS) . ")";
     }  
 
-    $sql .= $otherFilters;
+    $sql .= $otherFRS;
     echo $sql;
 
     $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
@@ -287,37 +281,37 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
     }  
 
-    $filterSpecial['tricky'] = " 1=0 ";
+    $filterRQ['tricky'] = " 1=0 ";
   
-    $filterSpecial['scope'] = ' OR ( ';
-    $filterSpecial['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    $filterRQ['scope'] = ' OR ( ';
+    $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
     foreach($targetSet as $target)
     {
-      $filterSpecial['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' ";  
+      $filterRQ['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' ";  
     }  
-    $filterSpecial['scope'] .= ')';
+    $filterRQ['scope'] .= ')';
   
-    $filterSpecial['name'] = ' OR ( ';
-    $filterSpecial['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    $filterRQ['name'] = ' OR ( ';
+    $filterRQ['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
     foreach($targetSet as $target)
     {
-      $filterSpecial['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' ";  
+      $filterRQ['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' ";  
     }  
-    $filterSpecial['name'] .= ')';
+    $filterRQ['name'] .= ')';
 
-    $filterSpecial['req_doc_id'] = ' OR ( ';
-    $filterSpecial['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+    $filterRQ['req_doc_id'] = ' OR ( ';
+    $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
     foreach($targetSet as $target)
     {
-      $filterSpecial['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
+      $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
     }  
-    $filterSpecial['req_doc_id'] .= ')';
+    $filterRQ['req_doc_id'] .= ')';
 
 
-    $otherFilters = '';  
-    if(!is_null($filterSpecial))
+    $otherFRQ = '';  
+    if(!is_null($filterRQ))
     {
-      $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
+      $otherFRQ = " AND (" . implode("",$filterRQ) . ")";
     }  
 
     $xfil = ''; 
@@ -326,8 +320,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       $xfil = implode("",$fi);
     }  
 
-
-    $sql .= $xfil . $otherFilters;
+    $sql .= $xfil . $otherFRQ;
 
     echo $sql;
     $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
@@ -671,7 +664,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
 
  
 
-
+Kint::dump($gui);
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
@@ -993,6 +986,8 @@ function init_args(&$tprojectMgr)
     throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
   }   
 
+  // convert according local
+
   // convert "creation date from" to iso format for database usage
   $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
                'modification_date_from' => '', 'modification_date_to' => " 23:59:59");
@@ -1008,6 +1003,9 @@ function init_args(&$tprojectMgr)
   $filter['dates4rq'] = null;
   foreach($k2w as $key => $value)
   {
+    $lk = 'loc_' . $key;
+    $args->$lk = '';
+    
     if (isset($args->$key) && $args->$key != '') 
     {
       $da = split_localized_date($args->$key, $dateFormat);
@@ -1016,9 +1014,13 @@ function init_args(&$tprojectMgr)
         $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
         $filter['dates4tc'][$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
         $filter['dates4rq'][$key] = " AND RQV.{$k2f[$key]} '{$args->$key}' ";
+
+        $args->$lk = implode("/",$da);
       }
     }
   } 
+
+  Kint::dump($args);
 
   // 
   $args->and_or = isset($_REQUEST['and_or']) ? $_REQUEST['and_or'] : 'or'; 
@@ -1054,10 +1056,9 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   // ----------------------------------------------------
   $gui->mainCaption = lang_get('testproject') . " " . $argsObj->tprojectName;
  
-  $gui->creation_date_from = null;
-  $gui->creation_date_to = null;
-  $gui->modification_date_from = null;
-  $gui->modification_date_to = null;
+
+  
+ 
   $gui->search_important_notice = sprintf(lang_get('search_important_notice'),$argsObj->tprojectName);
 
   // need to set values that where used on latest search (if any was done)
@@ -1070,9 +1071,25 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->tc_expected_results = $argsObj->tc_expected_results;
   $gui->tc_id = $argsObj->tc_id;
 
+  $gui->ts_title = $argsObj->ts_title;
+  $gui->ts_summary = $argsObj->ts_summary;
+
+  $gui->rs_title = $argsObj->rs_title;
+  $gui->rs_scope = $argsObj->rs_scope;
+
+  $gui->rq_title = $argsObj->rq_title;
+  $gui->rq_scope = $argsObj->rq_scope;
+  $gui->rq_doc_id = $argsObj->rq_doc_id;
+
 
   $gui->custom_field_id = $argsObj->custom_field_id;
   $gui->custom_field_value = $argsObj->custom_field_value;
+  $gui->creation_date_from = $argsObj->loc_creation_date_from;
+  $gui->creation_date_to = $argsObj->loc_creation_date_to;
+  $gui->modification_date_from = $argsObj->loc_modification_date_from;
+  $gui->modification_date_to = $argsObj->loc_modification_date_to;
+
+  Kint::dump($gui);
   
   return $gui;
 }
@@ -1091,17 +1108,11 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
                           $argsObj->tprojectID,
                           cfield_mgr::ENABLED,null,'requirement');
 
-  Kint::dump($gui->design_cf_tc);
-  Kint::dump($gui->design_cf_req);
   $gui->cf = $gui->design_cf_tc+$gui->design_cf_req;
-  Kint::dump($gui->cf);
-
-
   $gui->filter_by['custom_fields'] = !is_null($gui->cf);
 
   $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
   $gui->filter_by['keyword'] = !is_null($gui->keywords);
-  Kint::dump($gui->keywords);
 
   $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
   $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
@@ -1111,23 +1122,5 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
   $gui->status = intval($argsObj->status);
 
   $gui->target = $argsObj->target;
-
-  
-  $txtin = array("created_by","edited_by","jolly");   
-  $jollyKilled = array("summary","steps","expected_results","preconditions","name");
-  $txtin = array_merge($txtin, $jollyKilled);
-  
-  foreach($txtin as $key )
-  {
-    $gui->$key = $argsObj->$key;
-  }  
-
-  if($argsObj->jolly != '')
-  {
-    foreach($jollyKilled as $key)
-    {
-      $gui->$key = '';  
-    }  
-  }  
 
 }

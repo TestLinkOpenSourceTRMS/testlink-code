@@ -46,21 +46,21 @@ Purpose: show form
 
     <td style="width: 30%" colspan="1"> 
       TEST SUITE<br>
-      <input type="checkbox" name="ts_title" value="1">Title<br>
-      <input type="checkbox" name="ts_summary" value="1">Details<br>
+      <input type="checkbox" name="ts_title" value="1" {if $gui->ts_title}checked{/if}>Title<br>
+      <input type="checkbox" name="ts_summary" value="1" {if $gui->ts_summary}checked{/if}>Details<br>
     </td>
     
     <td style="width: 30%" colspan="1"> 
       Requirement Spec<br>
-      <input type="checkbox" name="rs_title" value="1">Title<br>
-      <input type="checkbox" name="rs_scope" value="1">Scope<br>
+      <input type="checkbox" name="rs_title" value="1" {if $gui->rs_title}checked{/if} >Title<br>
+      <input type="checkbox" name="rs_scope" value="1" {if $gui->rs_scope}checked{/if}>Scope<br>
     </td>
 
     <td style="width: 30%" colspan="1"> 
-      Requirement Spec<br>
-      <input type="checkbox" name="rq_title" value="1">Title<br>
-      <input type="checkbox" name="rq_scope" value="1">Scope<br>
-      <input type="checkbox" name="rq_doc_id" value="1">Req Doc ID<br>
+      Requirement<br>
+      <input type="checkbox" name="rq_title" value="1" {if $gui->rq_title}checked{/if}>Title<br>
+      <input type="checkbox" name="rq_scope" value="1" {if $gui->rq_scope}checked{/if}>Scope<br>
+      <input type="checkbox" name="rq_doc_id" value="1" {if $gui->rq_doc_id}checked{/if}>Req Doc ID<br>
     </td>
     
     </tr>

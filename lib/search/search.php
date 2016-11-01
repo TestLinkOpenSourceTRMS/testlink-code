@@ -46,6 +46,21 @@ echo __FILE__;
 
 $map = null;
 
+// CF belongs to ?
+$tc_cf_id = null;
+$req_cf_id = null;
+if( $args->custom_field_id > 0)
+{
+  if ( isset( $gui->design_cf_tc[$args->custom_field_id] ) )
+  {
+    $tc_cf_id = $args->custom_field_id;
+  }
+
+  if ( isset( $gui->design_cf_req[$args->custom_field_id] ) )
+  {
+    $req_cf_id = $args->custom_field_id;
+  }  
+}
 
 $rspecType = null;
 $reqType = null;
@@ -203,6 +218,35 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   if( $args->rq_scope || $args->rq_title || $args->rq_doc_id)
   {
     $fi = null;
+    $from['by_custom_field'] = ''; 
+    echo 'ggg';
+    echo $req_cf_id;
+
+    if($req_cf_id >0)
+    {
+      
+      $cf_def = $gui->design_cf_rq[$req_cf_id];
+
+      $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
+                                " ON CFD.node_id=RQV.id ";
+      $fi['by_custom_field'] = " AND CFD.field_id=" . intval($req_cf_id);
+
+      switch($gui->cf_types[$cf_def['type']])
+      {
+        case 'date':
+          $args->custom_field_value = $tproject_mgr->cfield_mgr->cfdate2mktime($args->custom_field_value);
+          
+          $fi['by_custom_field'] .= " AND CFD.value = {$args->custom_field_value}";
+        break;
+
+        default:
+          $args->custom_field_value = $db->prepare_string($args->custom_field_value);
+          $fi['by_custom_field'] .= " AND CFD.value like '%{$args->custom_field_value}%' ";
+        break;
+      }
+    }  
+
+
     $doFilterOnReq = true;
     $args->created_by = trim($args->created_by);
     $from['users'] = '';
@@ -230,7 +274,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
            " JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
            " JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id " .
            " JOIN requirements RQ on RQ.id = LV.req_id " .
-           $from['users'] .
+           $from['users'] . $from['by_custom_field'] .
            " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
 
     if(!is_null($reqType))
@@ -284,6 +328,8 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
 
     $sql .= $xfil . $otherFilters;
+
+    echo $sql;
     $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
     Kint::dump($mapRQ);
   } 
@@ -295,6 +341,30 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
      $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
   }
   
+  if($doFilterOnTestCase && $tc_cf_id > 0)
+  {
+    $cf_def = $gui->design_cf_tc[$tc_cf_id];
+
+    $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
+                              " ON CFD.node_id=NH_TCV.id ";
+    $filter['by_custom_field'] = " AND CFD.field_id=" . intval($tc_cf_id);
+
+    switch($gui->cf_types[$cf_def['type']])
+    {
+      case 'date':
+        $args->custom_field_value = $tproject_mgr->cfield_mgr->cfdate2mktime($args->custom_field_value);
+        
+        $filter['by_custom_field'] .= " AND CFD.value = {$args->custom_field_value}";
+      break;
+
+      default:
+        $args->custom_field_value = $db->prepare_string($args->custom_field_value);
+        $filter['by_custom_field'] .= " AND CFD.value like '%{$args->custom_field_value}%' ";
+      break;
+    }
+  }
+
+
   Kint::dump($filter);
 
   //$target = $db->prepare_string($args->target);
@@ -440,6 +510,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
               " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
               " AND TCV.version = LVN.version " . 
               $from['tc_steps'] . $from['users'] . $from['by_keyword_id'] .
+              $from['by_custom_field'] .
               " WHERE LVN.testcase_id IN (" . implode(',', $tcaseSet) . ")";
 
   if($doFilterOnTestCase)
@@ -999,6 +1070,10 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->tc_expected_results = $argsObj->tc_expected_results;
   $gui->tc_id = $argsObj->tc_id;
 
+
+  $gui->custom_field_id = $argsObj->custom_field_id;
+  $gui->custom_field_value = $argsObj->custom_field_value;
+  
   return $gui;
 }
 
@@ -1009,10 +1084,20 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
 {
 
 
-  $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,
+  $gui->design_cf_tc = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,
                                                                            cfield_mgr::ENABLED,null,'testcase');
 
-  $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
+  $gui->design_cf_req = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design(
+                          $argsObj->tprojectID,
+                          cfield_mgr::ENABLED,null,'requirement');
+
+  Kint::dump($gui->design_cf_tc);
+  Kint::dump($gui->design_cf_req);
+  $gui->cf = $gui->design_cf_tc+$gui->design_cf_req;
+  Kint::dump($gui->cf);
+
+
+  $gui->filter_by['custom_fields'] = !is_null($gui->cf);
 
   $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
   $gui->filter_by['keyword'] = !is_null($gui->keywords);

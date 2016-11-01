@@ -12,7 +12,7 @@ Purpose: show form
 
 {lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
                           edited_by,modification_date_to,modification_date_from,
-                          creation_date_to,creation_date_from,keyword,type,status'}
+                          custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status'}
 <div style="margin: 1px;">
 <form method="post" action="{$basehref}lib/search/search.php">
   <input type="hidden" name="doAction" id="doAction" value="doSearch">
@@ -90,6 +90,21 @@ Purpose: show form
       <td>&nbsp</td>  
     {/if}
 
+    {if $gui->filter_by.custom_fields}
+          <td colspan="2">{$labels.custom_field}
+          <select name="custom_field_id">
+              <option value="0">&nbsp;</option>
+              {foreach from=$gui->cf key=cf_id item=cf}
+                <option value="{$cf_id}" {if $cf_id == $gui->custom_field_id} selected {/if}>{$cf.label|escape}
+                </option>
+              {/foreach}
+            </select>
+          <br>
+          {$labels.custom_field_value}
+            <input type="text" name="custom_field_value" value="{$gui->custom_field_value}"
+                   size="{#CFVALUE_SIZE#}" maxlength="{#CFVALUE_MAXLEN#}"/>
+          </td>
+    {/if}
 
    </tr>
    

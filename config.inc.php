@@ -1133,7 +1133,7 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
  * Put it out of reach via web or configure access denied.
  *
  **/
-$g_repositoryPath = TL_ABS_PATH . DIRECTORY_SEPARATOR . 'upload_area' . DIRECTORY_SEPARATOR;  /* unix example */
+$g_repositoryPath = TL_ABS_PATH . 'upload_area' . DIRECTORY_SEPARATOR;  /* unix example */
 
 /**
  * compression used within the repository

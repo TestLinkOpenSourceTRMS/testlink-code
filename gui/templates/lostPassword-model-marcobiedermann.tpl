@@ -10,7 +10,7 @@
     <title>{$labels.password_reset}</title>
     <link rel="stylesheet" href="gui/icons/font-awesome-4.5.0/css/font-awesome.min.css">
 
-    <link rel="stylesheet" href="gui/themes/default/login/codepen.io/marcobiedermann/css/style.css">
+    <link rel="stylesheet" href="{$tlCfg->theme_dir}login/codepen.io/marcobiedermann/css/style.css">
   </head>
   <body class="align">
     <div class="site__container">

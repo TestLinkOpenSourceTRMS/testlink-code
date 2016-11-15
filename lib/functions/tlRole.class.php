@@ -331,7 +331,7 @@ class tlRole extends tlDBObject
   protected function getUserIDsWithGlobalRole(&$db)
   {
     $sql = "SELECT id FROM {$this->tables['users']} " .
-           " WHERE role_id = {$this->dbID}";
+           " WHERE role_id = {$this->dbID} AND active = 1";
     $idSet = $db->fetchColumnsIntoArray($sql,"id");
     
     return $idSet; 

@@ -32,7 +32,7 @@ $tcase_mgr = new testcase ($db);
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $filter = null;
-list($args,$mixedFilter) = init_args($tproject_mgr);
+list($args,$mixedFilter) = init_args($db,$tproject_mgr);
 Kint::dump($args);
 
 $gui = initializeGui($args,$tproject_mgr);
@@ -919,7 +919,7 @@ function buildRQExtTable($gui, $charset)
 /**
  *
  */
-function init_args(&$tprojectMgr)
+function init_args(&$dbHandler,&$tprojectMgr)
 {
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
@@ -1024,6 +1024,18 @@ function init_args(&$tprojectMgr)
 
   // 
   $args->and_or = isset($_REQUEST['and_or']) ? $_REQUEST['and_or'] : 'or'; 
+  
+
+  $args->user = $_SESSION['currentUser'];
+
+  $args->canAccessTestSpec = $args->user->hasRight($dbHandler,'mgt_view_tc',$args->tproject_id);
+
+  $args->canAccessReqSpec = $args->user->hasRight($dbHandler,'mgt_view_req',$args->tproject_id);
+
+  Kint::dump($args->canAccessTestSpec);
+  Kint::dump($args->canAccessReqSpec);
+
+
   return array($args,$filter);
 }
 

@@ -109,12 +109,14 @@ function event_signal($p_name, $p_params = null) {
     case EVENT_TYPE_CREATE:
     case EVENT_TYPE_UPDATE:
     case EVENT_TYPE_DELETE:
-      tLog('Received event signal for: ' . $p_name . '.', 'WARNING');
+      tLog('Received event signal for: ' . $p_name . '.', 'DEBUG');
       event_type_execute($p_name, $t_callbacks, $p_params);
       return null;
+
     case EVENT_TYPE_OUTPUT:
-      tLog('Received output event signal for: ' . $p_name . '.', 'WARNING');
+      tLog('Received output event signal for: ' . $p_name . '.', 'DEBUG');
       return event_type_output( $p_name, $t_callbacks, $p_params );
+    
     default:
       trigger_error('Unknown type: ' . $t_type, E_USER_NOTICE);
       return null;

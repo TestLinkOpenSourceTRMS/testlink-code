@@ -22,6 +22,8 @@ require_once('config.inc.php');
 require_once('common.php');
 require_once('doAuthorize.php');
 
+header("X-UA-Compatible: IE=Edge");
+
 $templateCfg = templateConfiguration();
 $doRenderLoginScreen = false;
 $doAuthPostProcess = false;

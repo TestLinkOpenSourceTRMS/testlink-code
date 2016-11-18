@@ -12,6 +12,8 @@ require_once('users.inc.php');
 require_once('email_api.php');
 $templateCfg = templateConfiguration();
 
+header("X-UA-Compatible: IE=Edge");
+
 $args = init_args();
 $gui = new stdClass();
 

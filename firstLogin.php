@@ -17,6 +17,8 @@ require_once('common.php');
 require_once('users.inc.php');
 require_once('email_api.php');
 
+header("X-UA-Compatible: IE=Edge");
+
 $templateCfg = templateConfiguration();
 
 $args = init_args();

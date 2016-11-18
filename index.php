@@ -17,6 +17,8 @@ require_once('config.inc.php');
 require_once('common.php');
 doSessionStart();
 
+header("X-UA-Compatible: IE=Edge");
+
 unset($_SESSION['basehref']);  // will be very interesting understand why we do this
 setPaths();
 list($args,$gui) = initEnv();

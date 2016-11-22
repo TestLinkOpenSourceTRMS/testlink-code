@@ -2935,14 +2935,17 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       
       $new_rev = $current_rev+1;
       $db_now = $this->db->db_now();
-      $sql =   " /* $debugMsg */ " .
-          " UPDATE {$this->tables['req_versions']} " .
-          " SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," .
-              " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL, " .
-              " modification_ts = ";
+      $sql = " /* $debugMsg */ " .
+             " UPDATE {$this->tables['req_versions']} " .
+             " SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," .
+             " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL";
               
       $nullTS = $this->db->db_null_timestamp();
-      $sql .= is_null($nullTS) ? " NULL " : " {$nullTS} ";
+      if(!is_null($nullTS))
+      {
+        $sql .= ",modification_ts = {$nullTS} ";
+      }  
+      
       $sql .=  " WHERE id = {$parent_id} ";
       $this->db->exec_query($sql);
       return $ret;

@@ -16,8 +16,6 @@ testlinkInitPage($db);
 $smarty = new TLSmarty();
 $smarty->tlTemplateCfg = $templateCfg = templateConfiguration();
 
-var_dump($smarty->tlTemplateCfg);
-
 $cfg = array('testcase' => config_get('testcase_cfg'),'testcase_reorder_by' => config_get('testcase_reorder_by'),
              'spec' => config_get('spec_cfg'));
 
@@ -34,22 +32,12 @@ function init_args(&$dbHandler)
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
   $iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
-                   "id" => array(tlInputParameter::INT_N),
-                   "tcase_id" => array(tlInputParameter::INT_N),
-                   "tcversion_id" => array(tlInputParameter::INT_N),
                    "target" => array(tlInputParameter::STRING_N,0,200),
-                   "show_path" => array(tlInputParameter::INT_N),
-                   "show_mode" => array(tlInputParameter::STRING_N,0,50),
-                   "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),
-                   "tcaseExternalID" => array(tlInputParameter::STRING_N,0,16),
-                   "tcaseVersionNumber" => array(tlInputParameter::INT_N),
-                   "add_relation_feedback_msg" => array(tlInputParameter::STRING_N,0,255),
                    "caller" => array(tlInputParameter::STRING_N,0,10));               
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
-  Kint::dump($args);
   $tprojectMgr = new testproject($dbHandler);
   
   $cfg = config_get('testcase_cfg');
@@ -71,37 +59,6 @@ function init_args(&$dbHandler)
   // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
   $args->refreshTree = getSettingFromFormNameSpace('edit_mode','setting_refresh_tree_on_action');
 
-  // Try to understan how this script was called.
-  switch($args->caller)
-  {
-    case 'navBar':
-      systemWideTestCaseSearch($dbHandler,$args,$cfg->glue_character);
-    break;
-
-    case 'openTCW':
-      // all data come in
-      // tcaseExternalID   DOM-22
-      // tcaseVersionNumber  1
-      $args->targetTestCase = $args->tcaseExternalID; // trick for systemWideTestCaseSearch
-      systemWideTestCaseSearch($dbHandler,$args,$cfg->glue_character);
-    break;
-
-    default:
-      if (!$args->tcversion_id)
-      {
-        $args->tcversion_id = testcase::ALL_VERSIONS;
-      }
-    break;
-
-  }
-
-
-  // used to manage goback  
-  if(intval($args->tcase_id) > 0)
-  {
-    $args->feature = 'testcase';
-    $args->id = intval($args->tcase_id);
-  }
     
   switch($args->feature)
   {
@@ -180,6 +137,7 @@ function initializeEnv($dbHandler)
   $gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
   $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
   $gui->viewerArgs = $args->viewerArgs;
+  $gui->caller = $args->caller;
 
 
   return array($args,$gui,$grants);
@@ -290,7 +248,17 @@ function processSearch(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
 
   $xbm->reqStatusDomain = init_labels($reqCfg->status_labels);
 
+  if( strlen(trim($args->target)) > 0)
+  {
+    $xbm->rs_scope = $xbm->rs_title = 1;
+    $xbm->tc_summary = $xbm->tc_title = 1;
+    $xbm->tc_steps = $xbm->tc_expected_results = $xbm->tc_id = 1;
+    $xbm->tc_preconditions = $xbm->ts_summary = $xbm->ts_title = 1;
+    $xbm->rq_scope = $xbm->rq_title = $xbm->rq_doc_id = 1;
 
+    $xbm->or_checked = ' checked="checked" ';
+    $xbm->and_checked = '';
+  }
 
   $tplEngine->assign('gui',$xbm);
 

@@ -5,7 +5,7 @@ title bar + menu
 
 @filesource navBar.tpl
 @internal revisions
-@since 1.9.7
+@since 1.9.16
 
 *}
 {lang_get var="labels"
@@ -74,7 +74,8 @@ title bar + menu
 
   {if $gui->grants->view_testcase_spec == "yes"}
     <form style="display:inline" target="mainframe" name="search" id="search"
-          action="lib/search/searchMgmt.php" method="get">
+          action="lib/search/searchMgmt.php" method="post">
+    <input type="hidden" name="caller" value="navBar">
     <input style="font-size: 80%; position:relative; top:-1px;" type="text" size="50"
            title="{$labels.search_testcase}" name="target" value="" />
 

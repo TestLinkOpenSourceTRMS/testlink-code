@@ -248,6 +248,7 @@ function processSearch(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
 
   $xbm->reqStatusDomain = init_labels($reqCfg->status_labels);
 
+  $xbm->forceSearch = false;
   if( strlen(trim($args->target)) > 0)
   {
     $xbm->rs_scope = $xbm->rs_title = 1;
@@ -258,6 +259,7 @@ function processSearch(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
 
     $xbm->or_checked = ' checked="checked" ';
     $xbm->and_checked = '';
+    $xbm->forceSearch = true;
   }
 
   $tplEngine->assign('gui',$xbm);

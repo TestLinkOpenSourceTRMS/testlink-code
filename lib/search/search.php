@@ -33,7 +33,6 @@ $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $filter = null;
 list($args,$mixedFilter) = init_args($db,$tproject_mgr);
-Kint::dump($args);
 
 $gui = initializeGui($args,$tproject_mgr);
 initSearch($gui,$args,$tproject_mgr);
@@ -124,9 +123,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
   }
         
-  //echo __LINE__; die();
-  // search has to be done only on latest version
-
   $doFilterOnTestCase = false;
   $filterSpecial['tricky'] = " 1=0 ";
   
@@ -135,8 +131,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
   $reqCfg = config_get('req_cfg');
   $gui->reqStatusDomain = init_labels($reqCfg->status_labels);
-  Kint::dump($gui->reqStatusDomain);
-
 
   $gui->rtypes = array_flip(init_labels($reqCfg->type_labels));
   foreach ($gui->rtypes as $key => $value) 
@@ -155,8 +149,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   {
     $targetSet[$idx] = $db->prepare_string($val);
   } 
-
-  Kint::dump($_REQUEST);
 
   // REQSPEC
   if( $args->rs_scope || $args->rs_title )
@@ -199,12 +191,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
 
     $sql .= $otherFRS;
-    echo $sql;
-
     $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
-    Kint::dump($mapRS);
-   
-
   } 
 
   // REQ
@@ -213,9 +200,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   {
     $fi = null;
     $from['by_custom_field'] = ''; 
-    echo 'ggg';
-    echo $req_cf_id;
-
     if($req_cf_id >0)
     {
       
@@ -261,70 +245,71 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
                             "       UPDATER.last LIKE '%{$args->edited_by}%') ";
     }  
 
+    if(!is_null($reqSet) && count($reqSet) >0)
+    {  
+      $sql = " select RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
+             " from nodes_hierarchy NHRQV " .
+             " JOIN latest_req_version LV on LV.req_id = NHRQV.parent_id " .
+             " JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
+             " JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id " .
+             " JOIN requirements RQ on RQ.id = LV.req_id " .
+             $from['users'] . $from['by_custom_field'] .
+             " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
 
-    $sql = " select RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
-           " from nodes_hierarchy NHRQV " .
-           " JOIN latest_req_version LV on LV.req_id = NHRQV.parent_id " .
-           " JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
-           " JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id " .
-           " JOIN requirements RQ on RQ.id = LV.req_id " .
-           $from['users'] . $from['by_custom_field'] .
-           " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
+      if(!is_null($reqType))
+      {
+        $sql .= " AND RQV.type ='" . $db->prepare_string($reqType) . "' ";
+      }  
 
-    if(!is_null($reqType))
-    {
-      $sql .= " AND RQV.type ='" . $db->prepare_string($reqType) . "' ";
-    }  
+      if($args->reqStatus != '')
+      {
+        $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
+      }  
 
-    if($args->reqStatus != '')
-    {
-      $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
-    }  
-
-    $filterRQ['tricky'] = " 1=0 ";
+      $filterRQ['tricky'] = " 1=0 ";
+    
+      $filterRQ['scope'] = ' OR ( ';
+      $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+      foreach($targetSet as $target)
+      {
+        $filterRQ['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' ";  
+      }  
+      $filterRQ['scope'] .= ')';
   
-    $filterRQ['scope'] = ' OR ( ';
-    $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-    foreach($targetSet as $target)
-    {
-      $filterRQ['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' ";  
+      $filterRQ['name'] = ' OR ( ';
+      $filterRQ['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+      foreach($targetSet as $target)
+      {
+        $filterRQ['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' ";  
+      }  
+      $filterRQ['name'] .= ')';
+
+      $filterRQ['req_doc_id'] = ' OR ( ';
+      $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+      foreach($targetSet as $target)
+      {
+        $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
+      }  
+      $filterRQ['req_doc_id'] .= ')';
+
+
+      $otherFRQ = '';  
+      if(!is_null($filterRQ))
+      {
+        $otherFRQ = " AND (" . implode("",$filterRQ) . ")";
+      }  
+
+      $xfil = ''; 
+      if(!is_null($fi))
+      {
+        $xfil = implode("",$fi);
+      }  
+
+      $sql .= $xfil . $otherFRQ;
+
+      $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
     }  
-    $filterRQ['scope'] .= ')';
   
-    $filterRQ['name'] = ' OR ( ';
-    $filterRQ['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-    foreach($targetSet as $target)
-    {
-      $filterRQ['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' ";  
-    }  
-    $filterRQ['name'] .= ')';
-
-    $filterRQ['req_doc_id'] = ' OR ( ';
-    $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-    foreach($targetSet as $target)
-    {
-      $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
-    }  
-    $filterRQ['req_doc_id'] .= ')';
-
-
-    $otherFRQ = '';  
-    if(!is_null($filterRQ))
-    {
-      $otherFRQ = " AND (" . implode("",$filterRQ) . ")";
-    }  
-
-    $xfil = ''; 
-    if(!is_null($fi))
-    {
-      $xfil = implode("",$fi);
-    }  
-
-    $sql .= $xfil . $otherFRQ;
-
-    echo $sql;
-    $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
-    Kint::dump($mapRQ);
   } 
 
 
@@ -357,11 +342,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }
   }
 
-
-  Kint::dump($filter);
-
-  //$target = $db->prepare_string($args->target);
-  //$doFilterOnTestCase = false;
   $from['tc_steps'] = "";
   if($args->tc_steps || $args->tc_expected_results)
   {
@@ -403,7 +383,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   foreach($k2w as $kf => $alias)
   {
     $in = $i2s[$kf];
-    echo $args->$in . '<br>';
     if($args->$in)
     {
       $doFilterOnTestCase = true;
@@ -413,7 +392,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
  
       foreach($targetSet as $target)
       {
-        echo $target . '<br>';
         $filterSpecial[$kf] .= " {$args->and_or} {$alias}.{$kf} like ";
         $filterSpecial[$kf] .= " '%{$target}%' "; 
       }  
@@ -421,7 +399,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }
   } 
 
-  Kint::dump($filterSpecial);
   $otherFilters = '';  
   if(!is_null($filterSpecial))
   {
@@ -521,9 +498,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
     
  
     $sql = $sqlFields . $sqlPart2 . $otherFilters;
-    echo $sql;
     $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
-    Kint::dump($mapTC);   
   }  
 
   // Search on Test Suites
@@ -543,7 +518,6 @@ JOIN requirements RQ on RQ.id = LV.req_id
     $filterSpecial['ts_summary'] .= ')';
   }  
 
-  Kint::dump($targetSet);
   if($args->ts_title)
   {
     $filterSpecial['ts_title'] = ' OR ( ';
@@ -561,8 +535,6 @@ JOIN requirements RQ on RQ.id = LV.req_id
   {
     $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
   }  
-
-  // echo $otherFilters;
 
   $mapTS = null;
   if($args->ts_title || $args->ts_summary)
@@ -584,11 +556,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
                  " WHERE TS.id IN (" . implode(',', $tsuiteSet) . ")";
     
     $sql = $sqlFields . $filterTS['by_keyword_id'] . $otherFilters;
-    Kint::dump($sql);
-
     $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
-
-    Kint::dump($mapTS);
   }  
 
   if ($mapTC)
@@ -661,10 +629,6 @@ JOIN requirements RQ on RQ.id = LV.req_id
   {
     $gui->tableSet[] = $table;
   }  
-
- 
-
-Kint::dump($gui);
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
@@ -858,8 +822,6 @@ function buildRQExtTable($gui, $charset)
   $labels = init_labels($lbl);
   $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
   
-  //Kint::dump($gui->resultReq);die();
-
   if(count($gui->resultReq) > 0) 
   {
     $columns = array();
@@ -875,10 +837,8 @@ function buildRQExtTable($gui, $charset)
     $key2loop = array_keys($gui->resultReq);
     $img = "<img title=\"{$labels['edit']}\" src=\"{$edit_icon}\" />";
     $reqVerHref = '<a href="javascript:openLinkedReqVersionWindow(%s,%s)">' . $labels['version_revision_tag'] . ' </a>'; 
-    // req_revision_id
     $reqRevHref = '<a href="javascript:openReqRevisionWindow(%s)">' . $labels['version_revision_tag'] . ' </a>'; 
   
-    Kint::dump($gui->resultReq);
     foreach($key2loop as $req_id)
     {
       $rowData = array();
@@ -1020,21 +980,13 @@ function init_args(&$dbHandler,&$tprojectMgr)
     }
   } 
 
-  Kint::dump($args);
-
-  // 
   $args->and_or = isset($_REQUEST['and_or']) ? $_REQUEST['and_or'] : 'or'; 
   
-
   $args->user = $_SESSION['currentUser'];
 
   $args->canAccessTestSpec = $args->user->hasRight($dbHandler,'mgt_view_tc',$args->tproject_id);
 
   $args->canAccessReqSpec = $args->user->hasRight($dbHandler,'mgt_view_req',$args->tproject_id);
-
-  Kint::dump($args->canAccessTestSpec);
-  Kint::dump($args->canAccessReqSpec);
-
 
   return array($args,$filter);
 }
@@ -1051,7 +1003,7 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->rType = $argsObj->rType;
   $gui->reqStatus = $argsObj->reqStatus;
 
-  $gui->pageTitle = lang_get('caption_search_form');
+  $gui->pageTitle = lang_get('search_title');
   $gui->warning_msg = '';
   $gui->path_info = null;
   $gui->resultSet = null;
@@ -1101,8 +1053,21 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->modification_date_from = $argsObj->loc_modification_date_from;
   $gui->modification_date_to = $argsObj->loc_modification_date_to;
 
-  Kint::dump($gui);
+  $gui->forceSearch = false;
   
+  $gui->and_checked = $gui->or_checked = '';
+  switch($argsObj->and_or)
+  {
+    case 'and':
+      $gui->and_checked = ' checked="checked" ';
+    break;
+
+    case 'or':
+    default:
+      $gui->or_checked = ' checked="checked" ';
+    break;
+  }
+
   return $gui;
 }
 

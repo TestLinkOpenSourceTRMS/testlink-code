@@ -14,7 +14,8 @@ Purpose: show form
                           edited_by,modification_date_to,modification_date_from,
                           custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status'}
 <div style="margin: 1px;">
-<form method="post" action="{$basehref}lib/search/search.php">
+<form method="post" name="fullTextSearch" id="fullTextSearch" 
+      action="{$basehref}lib/search/search.php">
   <input type="hidden" name="doAction" id="doAction" value="doSearch">
   <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
 
@@ -183,5 +184,8 @@ Purpose: show form
     <input type="hidden" name="caller" value="searchGui" />
     <input type="submit" name="doSearch" value="{$labels.btn_find}" />
   </p>
+  {if $gui->forceSearch}
+    <script type="text/javascript">document.getElementById("fullTextSearch").submit();</script>
+  {/if}
 </form>
 </div>

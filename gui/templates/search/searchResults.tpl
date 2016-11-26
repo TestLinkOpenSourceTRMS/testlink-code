@@ -22,8 +22,6 @@ searchResults.tpl
 
 <body>
 <h1 class="title">{$gui->pageTitle}</h1>
-
-DDD:{$gui->target}
 {include file="search/searchGUI.inc.tpl"}
 
 {if $gui->doSearch}

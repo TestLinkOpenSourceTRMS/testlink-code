@@ -268,6 +268,13 @@ class redmine
   **/
   protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0) 
   {
+    // this can happens because if I save object on _SESSION PHP is not able to
+    // save resources.
+    if( !is_resource($this->curl) )
+    {
+      $this->initCurl();
+    }  
+
     curl_setopt($this->curl, CURLOPT_URL, $this->url . $cmd);
 
     // Following Info From http://www.redmine.org/projects/redmine/wiki/Rest_api

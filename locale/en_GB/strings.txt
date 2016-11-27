@@ -4034,4 +4034,8 @@ $TLS_btn_stop_mon = 'Stop Monitoring';
 
 $TLS_search_items = "Search";
 $TLS_search_title = "Search";
+$TLS_req_document_id = "Req. Doc. ID";
+$TLS_id = 'ID';
+
+
 // ----- END ------------------------------------------------------------------

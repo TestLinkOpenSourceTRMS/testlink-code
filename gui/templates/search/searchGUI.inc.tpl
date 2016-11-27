@@ -12,7 +12,9 @@ Purpose: show form
 
 {lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
                           edited_by,modification_date_to,modification_date_from,
-                          custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status'}
+                          custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,testcase,testsuite,title,
+                          summary,preconditions,steps,expected_results,details,
+                          scope,requirement,req_specification,req_document_id,id'}
 <div style="margin: 1px;">
 <form method="post" name="fullTextSearch" id="fullTextSearch" 
       action="{$basehref}lib/search/search.php">
@@ -36,32 +38,32 @@ Purpose: show form
     <td style="width: 2%"></td> 
     
     <td style="width: 30%" colspan="1"> 
-      TEST CASE<br>
-      <input type="checkbox" name="tc_title" value="1" {if $gui->tc_title}checked{/if}>Title<br>
-      <input type="checkbox" name="tc_summary" value="1" {if $gui->tc_summary}checked{/if}>Summary<br>
-      <input type="checkbox" name="tc_preconditions" value="1" {if $gui->tc_preconditions}checked{/if}>Preconditions<br>
-      <input type="checkbox" name="tc_steps" value="1" {if $gui->tc_steps}checked{/if}>Steps<br>
-      <input type="checkbox" name="tc_expected_results" value="1" {if $gui->tc_expected_results}checked{/if}>Expected results<br>
-      <input type="checkbox" name="tc_id" value="1" {if $gui->tc_id}checked{/if}>id<br>
+      {$labels.testcase}<br>
+      <input type="checkbox" name="tc_title" value="1" {if $gui->tc_title}checked{/if}>{$labels.title}<br>
+      <input type="checkbox" name="tc_summary" value="1" {if $gui->tc_summary}checked{/if}>{$labels.summary}<br>
+      <input type="checkbox" name="tc_preconditions" value="1" {if $gui->tc_preconditions}checked{/if}>{$labels.preconditions}<br>
+      <input type="checkbox" name="tc_steps" value="1" {if $gui->tc_steps}checked{/if}>{$labels.steps}<br>
+      <input type="checkbox" name="tc_expected_results" value="1" {if $gui->tc_expected_results}checked{/if}>{$labels.expected_results}<br>
+      <input type="checkbox" name="tc_id" value="1" {if $gui->tc_id}checked{/if}>{$labels.id}<br>
     </td>
 
     <td style="width: 30%" colspan="1"> 
-      TEST SUITE<br>
-      <input type="checkbox" name="ts_title" value="1" {if $gui->ts_title}checked{/if}>Title<br>
-      <input type="checkbox" name="ts_summary" value="1" {if $gui->ts_summary}checked{/if}>Details<br>
+      {$labels.testsuite}<br>
+      <input type="checkbox" name="ts_title" value="1" {if $gui->ts_title}checked{/if}>{$labels.title}<br>
+      <input type="checkbox" name="ts_summary" value="1" {if $gui->ts_summary}checked{/if}>{$labels.details}<br>
     </td>
     
     <td style="width: 30%" colspan="1"> 
-      Requirement Spec<br>
-      <input type="checkbox" name="rs_title" value="1" {if $gui->rs_title}checked{/if} >Title<br>
-      <input type="checkbox" name="rs_scope" value="1" {if $gui->rs_scope}checked{/if}>Scope<br>
+      {$labels.req_specification}<br>
+      <input type="checkbox" name="rs_title" value="1" {if $gui->rs_title}checked{/if} >{$labels.title}<br>
+      <input type="checkbox" name="rs_scope" value="1" {if $gui->rs_scope}checked{/if}>{$labels.scope}<br>
     </td>
 
     <td style="width: 30%" colspan="1"> 
-      Requirement<br>
-      <input type="checkbox" name="rq_title" value="1" {if $gui->rq_title}checked{/if}>Title<br>
-      <input type="checkbox" name="rq_scope" value="1" {if $gui->rq_scope}checked{/if}>Scope<br>
-      <input type="checkbox" name="rq_doc_id" value="1" {if $gui->rq_doc_id}checked{/if}>Req Doc ID<br>
+      {$labels.requirement}<br>
+      <input type="checkbox" name="rq_title" value="1" {if $gui->rq_title}checked{/if}>{$labels.title}<br>
+      <input type="checkbox" name="rq_scope" value="1" {if $gui->rq_scope}checked{/if}>{$labels.scope}<br>
+      <input type="checkbox" name="rq_doc_id" value="1" {if $gui->rq_doc_id}checked{/if}>{$labels.req_document_id}<br>
     </td>
     
     </tr>

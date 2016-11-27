@@ -110,7 +110,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $tsuiteSet = $tproject_mgr->tree_manager->get_subtree(
                               $args->tprojectID,$my['filters'],$my['options']);
     
-    if(!is_null($tcaseSet))
+    if(!is_null($tcaseSet) && count($tcaseSet) > 0)
     {
       $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$tcaseSet) . ") ";
     }  
@@ -123,9 +123,10 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
   }
         
-  $doFilterOnTestCase = false;
+  $hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
   $filterSpecial['tricky'] = " 1=0 ";
   
+  $doFilterOnTestCase = false;
   $doFilterOnTestCase = ($args->tc_summary || $args->tc_title );
 
 
@@ -228,7 +229,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $doFilterOnReq = true;
     $args->created_by = trim($args->created_by);
     $from['users'] = '';
-    if($doFilterOnTestCase &&  $args->created_by != '' )
+    if($args->created_by != '' )
     {
       $from['users'] .= " JOIN {$tables['users']} AUTHOR ON RQAUTHOR.id = RQV.author_id ";
       $fi['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
@@ -237,7 +238,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
   
     $args->edited_by = trim($args->edited_by);
-    if( $doFilterOnTestCase && $args->edited_by != '' )
+    if( $args->edited_by != '' )
     {
       $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = RQV.modifier_id ";
       $fi['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
@@ -313,13 +314,13 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   } 
 
 
-  if($doFilterOnTestCase && $args->keyword_id)       
+  if($args->keyword_id)       
   {
      $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
      $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
   }
   
-  if($doFilterOnTestCase && $tc_cf_id > 0)
+  if($tc_cf_id > 0)
   {
     $cf_def = $gui->design_cf_tc[$tc_cf_id];
 
@@ -483,6 +484,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
               $from['by_custom_field'] .
               " WHERE LVN.testcase_id IN (" . implode(',', $tcaseSet) . ")";
 
+  $mapTC = NULL;
   if($doFilterOnTestCase)
   {
     if ($filter)
@@ -498,7 +500,11 @@ JOIN requirements RQ on RQ.id = LV.req_id
     
  
     $sql = $sqlFields . $sqlPart2 . $otherFilters;
-    $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
+    if($hasTestCases)
+    {  
+      echo __LINE__;
+      $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
+    }
   }  
 
   // Search on Test Suites
@@ -556,7 +562,11 @@ JOIN requirements RQ on RQ.id = LV.req_id
                  " WHERE TS.id IN (" . implode(',', $tsuiteSet) . ")";
     
     $sql = $sqlFields . $filterTS['by_keyword_id'] . $otherFilters;
-    $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
+  
+    if(!is_null($tsuiteSet) && count($tsuiteSet) > 0)
+    {
+      $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
+    }  
   }  
 
   if ($mapTC)

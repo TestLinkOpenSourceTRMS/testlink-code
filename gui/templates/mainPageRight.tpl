@@ -74,10 +74,13 @@
 
 {/if}
 
-{if $gui->plugins.EVENT_RIGHTMENU_TOP }
+{$display_right_block_top=false}
+{$display_right_block_bottom=false}
+
+{if isset($gui->plugins.EVENT_RIGHTMENU_TOP) &&  $gui->plugins.EVENT_RIGHTMENU_TOP}
   {$display_right_block_top=true}
 {/if}
-{if $gui->plugins.EVENT_RIGHTMENU_BOTTOM }
+{if isset($gui->plugins.EVENT_RIGHTMENU_BOTTOM) &&  $gui->plugins.EVENT_RIGHTMENU_BOTTOM}
   {$display_right_block_bottom=true}
 {/if}
 
@@ -220,12 +223,14 @@
                              });
     }
     </script>
-    <div id="plugin_right_top">
-      {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
-        {$menu_item}
-        <br/>
-      {/foreach}
-    </div>
+    {if isset($gui->plugins.EVENT_RIGHTMENU_TOP)}
+      <div id="plugin_right_top">
+        {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
+          {$menu_item}
+          <br/>
+        {/foreach}
+      </div>
+    {/if}
   {/if}
 
   {if $display_right_block_bottom}
@@ -245,12 +250,14 @@
                              });
     }
     </script>
+    {if isset($gui->plugins.EVENT_RIGHTMENU_BOTTOM)}
       <div id="plugin_right_bottom">
         {foreach from=$gui->plugins.EVENT_RIGHTMENU_BOTTOM item=menu_item}
           {$menu_item}
           <br/>
         {/foreach}
       </div>
+    {/if}  
   {/if}
   {* ------------------------------------------------------------------------------------------ *}
 

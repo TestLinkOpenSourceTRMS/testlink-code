@@ -7876,14 +7876,62 @@ class build_mgr extends tlObject
 
     $safe_id = intval($id);
     $where = " WHERE build_id={$safe_id}";
+    $execIDSetSQL = " SELECT id FROM {$this->tables['executions']} {$where} ";
 
+
+    // Attachments NEED special processing.
+  
+    // get test step exec attachments if any exists
+    $dummy = " SELECT id FROM {$this->tables['execution_tcsteps']} " . 
+             " WHERE execution_id IN ({$execIDSetSQL}) ";
+     
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // execution attachments
+    $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
+             " WHERE fk_table = 'executions' " .
+             " AND fk_id IN ({$execIDSetSQL}) ";
+  
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // Execution Bugs
     $sql = " DELETE FROM {$this->tables['execution_bugs']} " .
-           " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} {$where}) ";
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
     $result = $this->db->exec_query($sql);
 
+    // Execution tcsteps results
+    $sql = "DELETE FROM {$this->tables['execution_tcsteps']} " .
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
+    $result = $this->db->exec_query($sql);
+
+    $sql = "DELETE FROM {$this->tables['cfield_execution_values']} " .
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
+    $result = $this->db->exec_query($sql);
+
+
+    // Finally Executions table
     $sql = " DELETE FROM {$this->tables['executions']} {$where}";
     $result = $this->db->exec_query($sql);
 
+
+    // Build ID is the Access Key 
+    // User Task Assignment
     $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where}";
     $result=$this->db->exec_query($sql);
 

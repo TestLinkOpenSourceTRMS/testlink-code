@@ -280,6 +280,14 @@ function doSessionStart($setPaths=false)
   if(!isset($_SESSION))
   {
     session_start();
+    if(defined('KINT_ON') && KINT_ON)
+    {
+      Kint::enabled(true);      
+    }  
+    else
+    {
+      Kint::enabled(false);      
+    }  
   }
   
   if($setPaths)

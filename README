@@ -95,7 +95,7 @@ See http://mantis.testlink.org/view.php?id=7178
 
 Server environment should consists from:
 - web-server: Apache 2.x
-- PHP > 5.4
+- PHP > 5.4: php5-common, php5-cli, php5-mysql, libapache2-mod-php5, php5-gd, php5-ldap (if needed)
 - DBMS: MySQL 5.6.x , Postgres 9.x , MS-SQL 2008/2012
 
 Supported client web-browsers: 
@@ -169,6 +169,39 @@ or similar URL and follow instructions.
 
 Check Installation manual and TestLink forum if you meet a problem.
 
+4.1 LDAP
+===============================================================
+
+Create or modify your `custom_config.inc.php` and fill with (for example):
+
+    <?php
+    /* [User Authentication] */
+    $tlCfg->authentication['method'] = 'LDAP'
+    $tlCfg->authentication['ldap'][1]['ldap_server'] = 'ldap.company.com' ;
+    $tlCfg->authentication['ldap'][1]['ldap_port'] = '389' ;
+    $tlCfg->authentication['ldap'][1]['ldap_version'] = '3';
+    $tlCfg->authentication['ldap'][1]['ldap_root_dn'] = 'dc=company,dc=com' ;
+    $tlCfg->authentication['ldap'][1]['ldap_bind_dn'] = 'domain.account@company.com' ;
+    $tlCfg->authentication['ldap'][1]['ldap_bind_passwd'] = 'PassWorD' ;
+    ?>
+
+For ldaps, you need to specify it like this:
+
+    $tlCfg->authentication['ldap'][1]['ldap_server'] = 'ldaps:/ldap.company.com' ;
+    $tlCfg->authentication['ldap'][1]['ldap_port'] = '636' ;
+
+4.2 SMTP
+===============================================================
+
+Create or modify your `custom_config.inc.php` and fill with (for example):
+
+    <?php
+    /* [SMTP] */
+    $g_smtp_host         = 'smtp.company.com' ;
+    $g_tl_admin_email    = 'admin.testlink@company.com' ;
+    $g_from_email        = 'testlink@company.com' ;
+    $g_return_path_email = 'noreply.testlink@company.com' ;
+    ?>
 
 5. Upgrade and Migration
 ===============================================================

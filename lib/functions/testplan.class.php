@@ -1834,6 +1834,8 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+    $id = intval($id);
+
     $the_sql=array();
     $main_sql=array();
     
@@ -1855,12 +1857,48 @@ class testplan extends tlObjectWithAttachments
     $the_sql[]="DELETE FROM {$this->tables['cfield_execution_values']} WHERE testplan_id={$id}";
     $the_sql[]="DELETE FROM {$this->tables['user_testplan_roles']} WHERE testplan_id={$id}";
     
+
     
     // When deleting from executions, we need to clean related tables
+    $execIDSetSQL = " SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id} ";
+
+    // get test step exec attachments if any exists
+    $dummy = " SELECT id FROM {$this->tables['execution_tcsteps']} " . 
+             " WHERE execution_id IN ({$execIDSetSQL}) ";
+     
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // execution attachments
+    $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
+             " WHERE fk_table = 'executions' " .
+             " AND fk_id IN ({$execIDSetSQL}) ";
+  
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+    
+
     $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
-           "IN (SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id})";
+           "IN ($execIDSetSQL)";
+    
+    $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps']} WHERE execution_id ".
+           "IN ($execIDSetSQL) ";           
     $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";
-    $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; //BUGID 3845    
+    $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; 
+
     
     foreach($the_sql as $sql)
     {

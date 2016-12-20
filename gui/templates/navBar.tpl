@@ -11,7 +11,7 @@ title bar + menu
 {lang_get var="labels"
           s="title_events,event_viewer,home,testproject,title_specification,title_execute,
              title_edit_personal_data,th_tcid,link_logout,title_admin,
-             search_testcase,title_results,title_user_mgmt"}
+             search_testcase,title_results,title_user_mgmt,full_text_search"}
 {$cfg_section=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -73,15 +73,15 @@ title bar + menu
   {/if}
 
   {if $gui->grants->view_testcase_spec == "yes"}
-    <form style="display:inline" target="mainframe" name="search" id="search"
+    <form style="display:inline" target="mainframe" name="fullTextSearch" id="fullTextSearch"
           action="lib/search/searchMgmt.php" method="post">
     <input type="hidden" name="caller" value="navBar">
     <input style="font-size: 80%; position:relative; top:-1px;" type="text" size="50"
-           title="{$labels.search_testcase}" name="target" value="" />
+           title="{$labels.full_text_search}" name="target" value="" />
 
     <img src="{$tlImages.magnifier}"
-         title="{$labels.search_testcase}" alt="{$labels.search_testcase}"
-         onclick="document.getElementById('search').submit()" class="clickable" 
+         title="{$labels.full_text_search}" alt="{$labels.full_text_search}"
+         onclick="document.getElementById('fullTextSearch').submit()" class="clickable" 
          style="position:relative; top:2px;" />
     </form>
   {/if}

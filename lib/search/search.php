@@ -72,12 +72,20 @@ if($args->rType != '')
 
 if ($args->tprojectID && $args->doAction == 'doSearch')
 {
-  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
-                                              'requirements','req_coverage','tcsteps',
-                                              'testcase_keywords','req_specs_revisions',
-                                              'testsuites','tcversions','users',
+  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values',
+                                              'nodes_hierarchy',
+                                              'requirements','tcsteps',
+                                              'testcase_keywords',
+                                              'req_specs_revisions',
+                                              'testsuites','tcversions',
+                                              'users',
                                               'object_keywords'));
                                 
+  $views = tlObjectWithDB::getDBViews(array('latest_rspec_revision',
+                                             'latest_req_version',
+                                             'latest_tcase_version_number'));
+
+
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
   $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
@@ -155,7 +163,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   if( $args->rs_scope || $args->rs_title )
   {
     $sql = "SELECT RSRV.name, RSRV.scope, LRSR.req_spec_id, RSRV.id,LRSR.revision " . 
-           "FROM latest_rspec_revision LRSR " .
+           "FROM {$views['latest_rspec_revision']} LRSR " .
            "JOIN {$tables['req_specs_revisions']} RSRV " .
            "ON RSRV.parent_id = LRSR.req_spec_id " .
            "AND RSRV.revision = LRSR.revision " .
@@ -249,11 +257,11 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     if(!is_null($reqSet) && count($reqSet) >0)
     {  
       $sql = " select RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
-             " from nodes_hierarchy NHRQV " .
-             " JOIN latest_req_version LV on LV.req_id = NHRQV.parent_id " .
-             " JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
-             " JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id " .
-             " JOIN requirements RQ on RQ.id = LV.req_id " .
+             " from {$tables['nodes_hierarchy']} NHRQV " .
+             " JOIN {$views['latest_req_version']} LV on LV.req_id = NHRQV.parent_id " .
+             " JOIN {$tables['req_versions']} RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
+             " JOIN {$tables['nodes_hierarchy']} NHRQ on NHRQ.id = LV.req_id " .
+             " JOIN {$tables['requirements']} RQ on RQ.id = LV.req_id " .
              $from['users'] . $from['by_custom_field'] .
              " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
 
@@ -408,7 +416,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
 
 /*
-create view latest_version_number  AS
+create view latest_tcase_version_number  AS
 SELECT NH_TC.id AS testcase_id,max(TCV.version) AS version
 FROM nodes_hierarchy NH_TC 
 JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = NH_TC.id 
@@ -417,7 +425,7 @@ group by testcase_id
 ===========
 
 SELECT LVN.testcase_id, TCV.id,TCV.version 
-FROM latest_version_number LVN 
+FROM latest_tcase_version_number LVN 
 JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = LVN.testcase_id 
 JOIN tcversions TCV ON NH_TCV.id = TCV.id AND LVN.version = TCV.version
 WHERE 1=1 AND NH_TCV.parent_id IN (7945) AND ( 1=1 AND TCV.summary like '%three%' )
@@ -475,7 +483,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
 
 
   // search fails if test case has 0 steps - Added LEFT OUTER
-  $sqlPart2 = " FROM latest_version_number LVN " .
+  $sqlPart2 = " FROM {$views['latest_tcase_version_number']} LVN " .
               " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = LVN.testcase_id " .
               " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
               " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
@@ -502,7 +510,6 @@ JOIN requirements RQ on RQ.id = LV.req_id
     $sql = $sqlFields . $sqlPart2 . $otherFilters;
     if($hasTestCases)
     {  
-      echo __LINE__;
       $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
     }
   }  

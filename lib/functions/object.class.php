@@ -320,9 +320,14 @@ abstract class tlObject implements iSerialization
 
   static public function getDBViews($itemNames = null)
   {
-    $items = array('tcversions_last_active' => DB_TABLE_PREFIX . 'tcversions_last_active',
-             'last_executions' => DB_TABLE_PREFIX . 'last_executions',
-             'last_executions_by_platforms' => DB_TABLE_PREFIX . 'last_executions_by_platforms'); 
+    $dbp = DB_TABLE_PREFIX;
+    $items = array('tcversions_last_active' => $dbp . ' tcversions_last_active',
+                   'last_executions' => $dbp . 'last_executions',
+                   'last_executions_by_platforms' => $dbp . 'last_executions_by_platforms',
+                   'latest_tcase_version_number' => $dbp . 'latest_tcase_version_number',
+                   'latest_req_version' => $dbp . 'latest_req_version',
+                   'latest_rspec_revision' => $dbp . 'latest_rspec_revision',             
+             ); 
 
     if ($itemNames != null)
     { 

@@ -1542,6 +1542,7 @@ $TLS_title_results = "Test Reports";
 $TLS_title_specification = "Test Specification";
 $TLS_title_requirements = "Requirements";
 $TLS_session_inactivity_timeout_at = "Session idle timeout at";
+$TLS_full_text_search = "Full Text Search";
 
 
 

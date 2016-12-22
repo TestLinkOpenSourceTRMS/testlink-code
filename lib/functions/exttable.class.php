@@ -223,9 +223,12 @@ class tlExtTable extends tlTable
       // only checking for 'hidden' attribute, we will generate an issue
       //
       $isGroupable = isset($column['groupable']) ? $column['groupable'] : false;
-	    if( (isset($column['hidden']) && $column['hidden']) && !$isGroupable )
+      if( (isset($column['hidden']) && $column['hidden']) && !$isGroupable )
       {
-      	continue;  // just an experiment
+        // Not sure who added this as for experiment
+        // But this removes the column instead of simple hidding it
+        // Affects the basic functionality while being grouped or not grouped
+      	//continue;  // just an experiment
       }
       
 

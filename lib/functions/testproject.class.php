@@ -5,11 +5,11 @@
  * 
  * @filesource  testproject.class.php
  * @package     TestLink
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  * 
  **/
 
@@ -42,6 +42,8 @@ class testproject extends tlObjectWithAttachments
 
   var $debugMsg;
   var $tmp_dir;
+  var $node_types_descr_id;
+  var $my_node_type;
 
   /** 
    * Class constructor
@@ -58,6 +60,9 @@ class testproject extends tlObjectWithAttachments
     $this->debugMsg = 'Class:' . __CLASS__ . ' - Method: ';
     tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
     $this->object_table = $this->tables['testprojects'];
+
+    $this->node_types_descr_id = &$this->tree_manager->node_descr_id;
+    $this->my_node_type = $this->tree_manager->node_descr_id['testproject'];
   }
 
 /**

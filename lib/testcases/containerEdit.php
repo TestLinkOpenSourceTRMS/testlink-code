@@ -1328,6 +1328,7 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
   $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
   $guiObj->page_title = $lbl['container_title_testsuite'];
   $guiObj->attachments = getAttachmentInfosFrom($objMgr,$id);
+  $guiObj->form_token = $argsObj->treeFormToken;
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
 

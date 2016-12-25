@@ -609,7 +609,7 @@ function addIssue($dbHandler,$argsObj,$itsObj,$stepID=0)
     $issueType = intval($argsObj->issueType);  
   }  
   
-  if(method_exists($itsObj,'getCreateIssueFields')
+  if(method_exists($itsObj,'getCreateIssueFields'))
   {
     $issueFields = $itsObj->getCreateIssueFields(); 
     if(!is_null($issueFields))

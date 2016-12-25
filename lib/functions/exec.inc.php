@@ -8,12 +8,12 @@
  *
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  * 
  *
  **/
@@ -596,12 +596,41 @@ function addIssue($dbHandler,$argsObj,$itsObj,$stepID=0)
   $ret['status_ok'] = true;             
   $ret['msg'] = '';
 
-
   $issueText = generateIssueText($dbHandler,$argsObj,$itsObj);  
 
+  $issueTrackerCfg = $itsObj->getCfg();
+  if(property_exists($issueTrackerCfg, 'issuetype'))
+  {
+    $issueType = intval($issueTrackerCfg->issuetype);  
+  }  
+
+  if(property_exists($argsObj, 'issueType'))
+  {
+    $issueType = intval($argsObj->issueType);  
+  }  
+  
+  if(method_exists($itsObj,'getCreateIssueFields')
+  {
+    $issueFields = $itsObj->getCreateIssueFields(); 
+    if(!is_null($issueFields))
+    {
+      $issueFields = current($issueFields); 
+    }
+    $setReporter = isset($issueFields[$issueType]['reporter']);
+  }  
+  else
+  {
+     $setReporter = true;
+  }  
+
+
   $opt = new stdClass();
-  $opt->reporter = $argsObj->user->login;
-  $p2check = array('issueType','issuePriority','issuePriority',
+  if( $setReporter )
+  {
+    $opt->reporter = $argsObj->user->login;
+  }
+
+  $p2check = array('issueType','issuePriority',
                    'artifactComponent','artifactVersion');
   foreach($p2check as $prop)
   {

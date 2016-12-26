@@ -34,6 +34,12 @@
       </div>
       {/if}
 
+      {if $tlCfg->login_info != ""}
+      <div class="text--center">
+      {$tlCfg->login_info}
+      </div>
+      {/if}
+      
       {if $gui->draw}  
         <div class="grid__container">
           <form name="login" id="login" action="login.php?viewer={$gui->viewer}" method="post" class="form form--login">

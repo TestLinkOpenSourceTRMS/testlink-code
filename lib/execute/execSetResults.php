@@ -1477,6 +1477,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     }  
   }  
  
+  $gui->bug_summary = '';
   return $gui;
 }
 

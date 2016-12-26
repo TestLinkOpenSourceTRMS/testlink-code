@@ -1973,7 +1973,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
 
     // handle filter reset
-    $cfx = $this->configuration->{$key . "_values"};
+    $ak = $key . "_values";
+    $cfx = array();
+    if( property_exists($this->configuration, $ak) )
+    {  
+      $cfx = $this->configuration->{$key . "_values"};
+    }
+
     $selection = $this->args->{$key};
     if (!$selection || $this->args->reset_filters) 
     {

@@ -1686,6 +1686,11 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
   require_once( TL_ABS_PATH . 'custom_config.inc.php' );
 }
 
+if( !defined('TL_JQUERY') )
+{
+    define('TL_JQUERY','jquery-2.2.4.min.js' );
+}
+
 /** root of testlink directory location seen through the web server */
 /*  20070106 - franciscom - this statement it's not 100% right
     better use $_SESSION['basehref'] in the scripts. */

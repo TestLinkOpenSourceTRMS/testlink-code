@@ -388,6 +388,7 @@ class TLSmarty extends Smarty
                    'ghost_item' => $imgLoc . 'ghost16x16.png',
                    'user_group' => $imgLoc . 'group.png',
                    'heads_up' => $imgLoc . 'lightbulb.png',
+                   'help' => $imgLoc . 'question.gif',
                    'history' => $imgLoc . 'history.png',
                    'history_small' => $imgLoc . 'history_small.png',
                    'home' => $imgLoc . 'application_home.png',

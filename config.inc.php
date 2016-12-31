@@ -920,10 +920,9 @@ $tlCfg->exec_cfg->copyLatestExecIssues->enabled = FALSE;
 // value to set as default
 $tlCfg->exec_cfg->copyLatestExecIssues->default = FALSE;
 
-// you can choose only between this columns
-// 'execution_id,bug_id,builds.name'
+// you can choose only between columns present on
 // (see exec.inc.php, function get_bugs_for_exec())
-$tlCfg->exec_cfg->bugs_order_clause = ' ORDER BY builds.name,bug_id ';
+$tlCfg->exec_cfg->bugs_order_clause = ' ORDER BY builds.name,step_number,bug_id ';
 
 $tlCfg->exec_cfg->features = new stdClass();
 $tlCfg->exec_cfg->features->attachments = new stdClass();

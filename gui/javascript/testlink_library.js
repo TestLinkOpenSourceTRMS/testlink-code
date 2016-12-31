@@ -561,11 +561,11 @@ function tree_getCheckBox(id)
 /**
  *
  */
-function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,user_action)
+function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,tcstep_id,user_action)
 {
   l2l = "lib/execute/bugAdd.php?user_action=" + user_action + 
         "&tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + 
-        "&tplan_id=" + tplan_id + "&exec_id="+exec_id;
+        "&tplan_id=" + tplan_id + "&exec_id="+exec_id + "&tcstep_id="+tcstep_id;
 
   switch(user_action)  
   {
@@ -660,13 +660,15 @@ function dialog_onUnload(odialog)
  * 
  * @param btn string id of the button clicked
  * @param text string not used
- * @param combinedBugID string like <executionID-bugID>
+ * @param combinedBugID string like <executionID-tcStepID-bugID>
  */
 function deleteBug(btn,text,combinedBugID)
 {
   var idx;
   var executionID;
+  var tcStepID;
   var bugID;
+  var target;
   
   if (btn != 'yes')
   {
@@ -679,14 +681,18 @@ function deleteBug(btn,text,combinedBugID)
     return;
   }
   
-  executionID = combinedBugID.substr(0,idx)
+  executionID = combinedBugID.substr(0,idx);
+  
+  target = combinedBugID.substr(idx+1);
+  idx = target.indexOf('-');
+  tcStepID = target.substr(0,idx)
 
   // TICKET 4814: bug deletion may fails if bugID string contains special characters ('#', '&' , ...)
   // bugID string may contain special characters : 
   // must escape it to get correct bugID value in bugDelete.php
-  bugID = escape(combinedBugID.substr(idx+1));
+  bugID = escape(target.substr(idx+1));
   
-  window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&bug_id="+bugID,
+  window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&tcstep_id="+tcStepID+"&bug_id="+bugID,
                 "DeleteBug","width=510,height=150,resizable=yes,dependent=yes");
 }
 

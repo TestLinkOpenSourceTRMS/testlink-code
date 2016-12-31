@@ -66,7 +66,7 @@ CREATE TABLE /*prefix*/attachments (
   `file_path` varchar(250) default '',
   `file_size` int(11) NOT NULL default '0',
   `file_type` varchar(250) NOT NULL default '',
-  `date_added` datetime NOT NULL default  CURRENT_TIMESTAMP,
+  `date_added` TIMESTAMP NOT NULL default  CURRENT_TIMESTAMP,
   `content` longblob,
   `compression_type` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
@@ -175,7 +175,7 @@ CREATE TABLE /*prefix*/custom_fields (
 
 CREATE TABLE /*prefix*/db_version (
   `version` varchar(50) NOT NULL default 'unknown',
-  `upgrade_ts` datetime NOT NULL default  CURRENT_TIMESTAMP,
+  `upgrade_ts` TIMESTAMP NOT NULL default  CURRENT_TIMESTAMP,
   `notes` text,
   PRIMARY KEY  (`version`)
 ) DEFAULT CHARSET=utf8;
@@ -200,7 +200,8 @@ CREATE TABLE /*prefix*/events (
 CREATE TABLE /*prefix*/execution_bugs (
   `execution_id` int(10) unsigned NOT NULL default '0',
   `bug_id` varchar(64) NOT NULL default '0',
-  PRIMARY KEY  (`execution_id`,`bug_id`)
+  `tcstep_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`execution_id`,`bug_id`,`tcstep_id`)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -681,7 +682,7 @@ CREATE TABLE /*prefix*/text_templates (
   title varchar(100) NOT NULL,
   template_data text,
   author_id int(10) unsigned default NULL,
-  creation_ts datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   is_public tinyint(1) NOT NULL default '0',
   UNIQUE KEY idx_text_templates (type,title)
 ) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
@@ -710,7 +711,7 @@ CREATE TABLE /*prefix*/plugins (
    `basename`  varchar(100) NOT NULL,
    `enabled` tinyint(1) NOT NULL default '0',
    `author_id` int(10) unsigned default NULL,
-   `creation_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;
 
@@ -721,6 +722,6 @@ CREATE TABLE /*prefix*/plugins_configuration (
   `config_type` int(11) NOT NULL,
   `config_value` varchar(255) NOT NULL,
   `author_id` int(10) unsigned default NULL,
-  `creation_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;

@@ -151,6 +151,7 @@ $TLS_notes = "Notes";
 $TLS_latest_exec_notes = "Notes (latest exec)";
 $TLS_step_exec_notes = "Execution notes";
 $TLS_step_exec_status = "Execution Status";
+$TLS_step = "Step";
 
 
 
@@ -3555,6 +3556,11 @@ $TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted " .
                   "from Test Project: {%4} - Test Plan: {%5} - " .
                   "Platform: {%6} - Build: {%7}";
 
+$TLS_audit_executionbug_deleted_no_platform = "Bug '{%1}' was deleted " .
+                  "from execution with id: {%2} of Test Case: {%3} " .
+                  "from Test Project: {%4} - Test Plan: {%5} - Build: {%6}";
+
+
 $TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
 $TLS_audit_attachment_created = "Attachment '{%1}' - file '{%2}' was created";
 
@@ -3749,6 +3755,7 @@ $TLS_warning_selected_revisions = "You have to select two revisions from the lis
 $TLS_warning_same_selected_revisions = "You have to select two different revisions from the list.";
 
 // ----- grab from not-systematic developers -----
+$TLS_step = 'Test Case Step';
 $TLS_step_actions = "Step actions";
 $TLS_step_details="Step details";
 $TLS_step_number="#";

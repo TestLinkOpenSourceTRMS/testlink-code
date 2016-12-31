@@ -1976,7 +1976,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
     $labelsKeys=array('last_exec_result', 'report_exec_result','execution_details','execution_mode',
                       'title_execution_notes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
-                      'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
+                      'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions','step',
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance','relations',
                       'estimated_execution_duration','step_exec_notes','step_exec_status',
@@ -2086,11 +2086,16 @@ function buildTestExecResults(&$dbHandler,&$its,$exec_info,$opt,$buildCF=null)
   if( !is_null($its) ) 
   {
     $bugs = get_bugs_for_exec($dbHandler,$its,$exec_info[0]['execution_id']);
+
     if ($bugs) 
     {
       $bugString = '';
       foreach($bugs as $bugID => $bugInfo) 
       {
+        if($bugInfo['step_number'] != '')
+        {
+          $bugString .= $labels['step'] . ' ' . $bugInfo['step_number'] . ' - '; 
+        }  
         $bugString .= $bugInfo['link_to_bts']."<br />";
       }
       $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 

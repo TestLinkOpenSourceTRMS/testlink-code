@@ -876,6 +876,7 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
         }  
       }
 
+
       // Custom fields
       $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values($tcversion_id,'execution',null,
                                                                                $exec_id,$tplan_id,$tproject_id);

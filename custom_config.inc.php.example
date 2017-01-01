@@ -96,9 +96,9 @@
 // Your reports WILL BE ON TOP OF standard TL Reports on left frame
 //
 //
-// $tlCfg->gui->text_editor['all'] = array( 'type' => 'fckeditor', 
+// $tlCfg->gui->text_editor['all'] = array( 'type' => 'ckeditor', 
 //                                          'toolbar' => 'tl_default', 
-//                                          'configFile' => 'cfg/tl_fckeditor_config.js');
+//                                          'configFile' => 'cfg/tl_ckeditor_config.js');
 //
 // Copy this to custom_config.inc.php if you want use 'tinymce' as default.
 //$tlCfg->gui->text_editor['all'] = array( 'type' => 'tinymce');

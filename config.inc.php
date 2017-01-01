@@ -575,21 +575,13 @@ $tlCfg->dashboard_precision = 2;
  * Every element is a mp with this configuration keys:
  *
  * 'type':
- *        'fckeditor'  ==> will be deprecated in future versions
  *        'ckeditor'
  *        'tinymce'    ==> will be deprecated in future versions
  *        'none' -> use plain text area input field
  * 'toolbar': only applicable for type = 'fckeditor', 'ckeditor'
  *      name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
- *      TestLink stores own definitions in <testlink_dir>/cfg/tl_fckeditor_config.js
  *      TestLink stores own definitions in <testlink_dir>/cfg/tl_ckeditor_config.js
  *
- * 'configFile': only applicable for type = 'fckeditor'
- *      See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath
- * 'height': the height in px for FCKEditor
- * 'width': the width in px for FCKEditor
- * 'cols': the number of cols for tinymce and none
- * 'rows': the number of rows for tinymce and none
  *
  * The next keys/areas are supported:
  *    'all' (default setting),
@@ -618,7 +610,7 @@ $tlCfg->dashboard_precision = 2;
 $tlCfg->gui->text_editor = array();
 $tlCfg->gui->text_editor['all'] = array('type' => 'fckeditor',
                                       'toolbar' => 'tl_default',
-                                      'configFile' => 'cfg/tl_fckeditor_config.js',);
+                                      'configFile' => 'cfg/tl_ckeditor_config.js',);
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 */
 

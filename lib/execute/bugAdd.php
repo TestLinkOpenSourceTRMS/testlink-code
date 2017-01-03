@@ -78,7 +78,9 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
 
                 if( $args->addLinkToTL || $hasNotes )
                 {
-                  $its->addNote($args->bug_id,$gui->bug_notes);
+                  $opt = new stdClass();
+                  $opt->reporter = $args->user->login;
+                  $its->addNote($args->bug_id,$gui->bug_notes,$opt);
                 }
               }  
             }
@@ -95,7 +97,9 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
         $gui->msg = '';
         if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
         {
-          $its->addNote($args->bug_id,$gui->bug_notes);
+          $opt = new stdClass();
+          $opt->reporter = $args->user->login;
+          $its->addNote($args->bug_id,$gui->bug_notes,$opt);
         }  
       break;
     }

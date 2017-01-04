@@ -6442,6 +6442,7 @@ protected function createAttachmentTempFile()
     * @param int    $args["executiontype"] - optional - see ... for domain
     * @param int    $args["status'] - optional
     * @param int    $args["estimatedexecduration'] - optional
+    * @param int    $args["testsuiteid"] - optional - update test case parent test suite id
     * @param string $args["user'] - login name used as updater - optional
     *                               if not provided will be set to user that request update
     */
@@ -6558,6 +6559,15 @@ protected function createAttachmentTempFile()
       {      
         $this->tcaseMgr->update_tcversion_steps($tcversion_id,$this->args[self::$stepsParamName]);
       }    
+    }
+
+    if($status_ok)
+    {
+      // if exist proceed with test suite update
+      if ($this->_isParamPresent(self::$testSuiteIDParamName))
+      {
+        $this->tprojectMgr->tree_manager->change_parent($tcaseID,$this->args[self::$testSuiteIDParamName]);
+      }
     }
 
     if($status_ok)

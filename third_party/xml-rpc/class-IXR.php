@@ -5,12 +5,6 @@
  *
  * @internal revisions
  *
- * 20131220 - moormanm - Adding 'limit' parameter to preg_replace call so to not exceed pcre.backtrack max
- *                       when processing large xmlrpc messages
- *
- * 20111022 - franciscom -	due to use of is_a() without checking that object was REALLY an object
- *							and tlAutoload(), result was CRASH trying to creating NON EXISTENT class
- *							when method return type is SIMPLE (string,int)	 
  */
 
 /*
@@ -290,11 +284,11 @@ class IXR_Server {
     }
     function serve($data = false) {
         if (!$data) {
-            global $HTTP_RAW_POST_DATA;
-            if (!$HTTP_RAW_POST_DATA) {
+            $postdata = file_get_contents("php://input");
+            if (!$postdata) {
                die('XML-RPC server accepts POST requests only.');
             }
-            $data = $HTTP_RAW_POST_DATA;
+            $data = $postdata;
         }
         $this->message = new IXR_Message($data);
         if (!$this->message->parse()) {

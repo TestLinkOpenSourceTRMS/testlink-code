@@ -48,6 +48,10 @@ if( $cfg->exec_cfg->enable_test_automation )
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
+echo '<pre>';
+var_dump($_REQUEST);
+echo '</pre>';
+
 $tcversion_id = null;
 $submitResult = null;
 list($args,$its) = init_args($db,$cfg);
@@ -147,9 +151,16 @@ if(!is_null($linked_tcversions))
   // because in some situations args->save_results is a number (0) an in other is an array
   // with just one element with key => test case version ID executed.
   //
-  if ($args->save_results || $args->do_bulk_save || $args->save_and_next || 
-      $args->save_and_exit || 
-      $args->doMoveNext || $args->doMovePrevious)
+
+  $saveCondition = $args->save_results || $args->do_bulk_save || 
+                   $args->save_and_next || $args->save_and_exit || 
+                   $args->doMoveNext || $args->doMovePrevious;
+
+  echo '<pre>';
+  var_dump($saveCondition);
+  echo '</pre>';
+  
+  if ($saveCondition)
   {
     // this has to be done to do not break logic present on write_execution()
     $args->save_results = $args->save_and_next ? $args->save_and_next : 
@@ -1304,6 +1315,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->treeFormToken = $argsObj->treeFormToken;
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
 
+
+  $gui->execStatusIcons = getResultsIcons();
+  $gui->execStatusIconsNext = getResultsIconsNext();
+
   $gui->execStatusValues = createResultsMenu();
   $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
   if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) )
@@ -2137,3 +2152,44 @@ function manageCookies(&$argsObj,$cfgObj)
     }
   }
 }  
+
+/**
+ *
+ */
+function getResultsIcons()
+{
+  $resultsCfg = config_get('results');
+  // loop over status for user interface, because these are the statuses
+  // user can assign while executing test cases
+  foreach($resultsCfg['status_icons_for_exec_ui'] as $verbose_status => $ele)
+  {
+    if( $verbose_status != 'not_run' )
+    {  
+      $code = $resultsCfg['status_code'][$verbose_status];
+      $items[$code] = $ele;
+      $items[$code]['title'] = lang_get($items[$code]['title']);
+    } 
+  }
+  return $items;
+}
+
+/**
+ *
+ */
+function getResultsIconsNext()
+{
+  $resultsCfg = config_get('results');
+  // loop over status for user interface, because these are the statuses
+  // user can assign while executing test cases
+  foreach($resultsCfg['status_icons_for_exec_next_ui'] as $verbose_status => $ele)
+  {
+    if( $verbose_status != 'not_run' )
+    {  
+      $code = $resultsCfg['status_code'][$verbose_status];
+      $items[$code] = $ele;
+      $items[$code]['title'] = lang_get($items[$code]['title']);
+    } 
+  }
+  return $items;
+}
+

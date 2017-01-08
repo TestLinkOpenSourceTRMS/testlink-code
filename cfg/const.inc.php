@@ -427,6 +427,24 @@ $tlCfg->results['status_label_for_exec_ui'] = array('not_run' => 'test_status_no
                                                     'failed'  => 'test_status_failed',
                                                     'blocked' => 'test_status_blocked');
 
+
+$tlCfg->results['status_icons_for_exec_ui'] = 
+  array('passed' => array('img' => 'test_status_passed',
+                          'title' => 'click_passed'),
+        'failed' => array('img' => 'test_status_failed',
+                          'title' => 'click_failed'),
+        'blocked' => array('img' => 'test_status_blocked',
+                           'title' => 'click_blocked'));
+
+$tlCfg->results['status_icons_for_exec_next_ui'] = 
+  array('passed' => array('img' => 'test_status_passed_next',
+                          'title' => 'click_passed_next'),
+        'failed' => array('img' => 'test_status_failed_next',
+                          'title' => 'click_failed_next'),
+        'blocked' => array('img' => 'test_status_blocked_next',
+                           'title' => 'click_blocked_next'));
+
+
 /** 
  * Selected execution result by default. Values is key from $tlCfg->results['status_label']
  * @var string 

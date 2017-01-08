@@ -48,10 +48,6 @@ if( $cfg->exec_cfg->enable_test_automation )
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
-echo '<pre>';
-var_dump($_REQUEST);
-echo '</pre>';
-
 $tcversion_id = null;
 $submitResult = null;
 list($args,$its) = init_args($db,$cfg);
@@ -156,10 +152,6 @@ if(!is_null($linked_tcversions))
                    $args->save_and_next || $args->save_and_exit || 
                    $args->doMoveNext || $args->doMovePrevious;
 
-  echo '<pre>';
-  var_dump($saveCondition);
-  echo '</pre>';
-  
   if ($saveCondition)
   {
     // this has to be done to do not break logic present on write_execution()

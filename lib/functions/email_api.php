@@ -23,7 +23,7 @@
 
 /** @uses class.phpmailer.php */
 define( 'PHPMAILER_PATH', dirname(__FILE__). '/../../third_party/phpmailer' . DIRECTORY_SEPARATOR );
-require_once( PHPMAILER_PATH . 'class.phpmailer.php' );
+require_once( PHPMAILER_PATH . 'PHPMailerAutoload.php' );
 
 require_once( 'lang_api.php' );
 require_once( 'common.php');
@@ -76,6 +76,8 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 	$mail = new PHPMailer(true);
 
 
+    $mail->SMTPAutoTLS = config_get('SMTPAutoTLS');
+    
 	$mail->PluginDir = PHPMAILER_PATH;
 
   	// Need to get strings file for php mailer

@@ -277,6 +277,7 @@ $TLS_btn_add_to_testplans = "Add to Test Plans";
 $TLS_btn_assign  = "Assign";
 $TLS_btn_cancel  = "Cancel";
 $TLS_btn_check   = "Check";
+$TLS_btn_check_connection   = "Check connection";
 $TLS_btn_close   = "Close";
 $TLS_btn_cp = "Copy";
 $TLS_btn_copy_ghost_zone = "Copy (ghost steps)";
@@ -4038,4 +4039,8 @@ $TLS_monitoring = 'Monitoring';
 $TLS_btn_toogle_mon = 'Toogle Monitoring';
 $TLS_btn_start_mon = 'Start Monitoring';
 $TLS_btn_stop_mon = 'Stop Monitoring';
+
+$TLS_issueTracker_connection_ok = 'Test Connection OK';
+$TLS_issueTracker_connection_ko = 'Test Connection KO';
+
 // ----- END ------------------------------------------------------------------

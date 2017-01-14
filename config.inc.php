@@ -1647,8 +1647,10 @@ $tlCfg->custom_css = null;
  *        ON SAME FOLDER where original template is. 
  * See example below        
  */
-$g_tpl = array();
+$g_tpl = array('inc_exec_controls' => 'inc_exec_img_controls.tpl');
+//$g_tpl = array('inc_exec_controls' => 'inc_exec_controls.tpl');
  
+
 // Example 
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',
 //                 'tcSearchView' => 'myOwnTCSearchView.tpl',

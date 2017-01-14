@@ -893,6 +893,11 @@ $tlCfg->exec_cfg->steps_exec_attachments = true;
 // 'latest' => latest execution notes.
 $tlCfg->exec_cfg->steps_exec_notes_default = 'empty';
 
+
+// 'empty'
+// 'latest' => latest execution notes.
+$tlCfg->exec_cfg->steps_exec_status_default = 'empty';
+
 // Parameters to show notes/details when entering test execution feature
 // EXPAND: show expanded/open
 // COLLAPSE: show collapsed/closede

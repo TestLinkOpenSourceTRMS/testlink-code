@@ -3621,9 +3621,11 @@ class testcase extends tlObjectWithAttachments
     // Multiple Test Case Steps Feature
     if( !is_null($recordset) && $localOptions['getSteps'] )
     {
-      $exec_cfg =
       $xx = null;
-      if($localOptions['getStepsExecInfo'] && $this->cfg->execution->steps_exec_notes_default == 'latest')
+      if( $localOptions['getStepsExecInfo'] && 
+          ($this->cfg->execution->steps_exec_notes_default == 'latest' ||
+           $this->cfg->execution->steps_exec_status_default == 'latest') 
+        )
       {
         $tg = current($recordset);
         $xx = $this->getStepsExecInfo($tg['execution_id']);
@@ -3641,9 +3643,21 @@ class testcase extends tlObjectWithAttachments
             foreach($key_set as $kyx)
             {
               $step_set[$kyx]['execution_notes'] = '';
+              $step_set[$kyx]['execution_status'] = '';
+         
               if( isset($xx[$step_set[$kyx]['id']]) )
               {
-                $step_set[$kyx]['execution_notes'] = $xx[$step_set[$kyx]['id']]['notes'];
+                if($this->cfg->execution->steps_exec_notes_default == 'latest')
+                {
+                  $step_set[$kyx]['execution_notes'] = 
+                     $xx[$step_set[$kyx]['id']]['notes'];
+                }
+
+                if($this->cfg->execution->steps_exec_status_default == 'latest')
+                {
+                  $step_set[$kyx]['execution_status'] = 
+                     $xx[$step_set[$kyx]['id']]['status'];
+                }
               }
             }
           }

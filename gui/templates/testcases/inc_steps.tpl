@@ -13,7 +13,7 @@ Author : eloff, 2010
 @internal revisions
 *}
 {lang_get var="inc_steps_labels" 
-          s="show_hide_reorder, step_number, 
+          s="show_hide_reorder, step_number,clear_all_status, 
              step_actions,expected_results,
              latest_exec_notes,exec_result,
              clear_all_notes,step_exec_notes,

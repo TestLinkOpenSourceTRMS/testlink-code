@@ -424,6 +424,7 @@ class TLSmarty extends Smarty
                    'report_word' => $imgLoc . 'page_word.png',
                    'requirements' => $imgLoc . 'cart.png',
                    'resequence' => $imgLoc . 'control_equalizer.png',
+                   'reset' => $imgLoc . 'arrow_undo.png',
                    'summary_small' => $imgLoc . 'information_small.png',
                    'sort' => $imgLoc . 'sort_hint.png',
                    'steps' => $imgLoc . 'bricks.png',

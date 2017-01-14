@@ -1708,6 +1708,20 @@ function clearTextAreaByClassName(cssClassName)
 /**
  *
  */
+function clearSelectByClassName(cssClassName)
+{
+  var ol = document.getElementsByClassName(cssClassName);
+  for (var idx= 0;idx < ol.length;idx++)
+  {
+    ol[idx].value = '';
+  }   
+}
+
+
+
+/**
+ *
+ */
 function validateStepsReorder(cssClassName)
 {
   var ol = document.getElementsByClassName(cssClassName);

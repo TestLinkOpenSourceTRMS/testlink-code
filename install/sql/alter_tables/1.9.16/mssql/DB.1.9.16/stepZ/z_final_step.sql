@@ -9,4 +9,4 @@
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.16','Test Link 1.9.16',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.16','Test Link 1.9.16 Moka Pot',GETDATE());

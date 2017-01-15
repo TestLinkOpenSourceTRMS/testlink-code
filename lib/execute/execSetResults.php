@@ -23,7 +23,7 @@
  * is present in gui->map_last_exec
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  *
 **/
 require_once('../../config.inc.php');
@@ -147,17 +147,13 @@ if(!is_null($linked_tcversions))
   // because in some situations args->save_results is a number (0) an in other is an array
   // with just one element with key => test case version ID executed.
   //
-
-  $saveCondition = $args->save_results || $args->do_bulk_save || 
-                   $args->save_and_next || $args->save_and_exit || 
-                   $args->doMoveNext || $args->doMovePrevious;
-
-  if ($saveCondition)
+ if ($args->doSave || $args->doNavigate)
   {
     // this has to be done to do not break logic present on write_execution()
     $args->save_results = $args->save_and_next ? $args->save_and_next : 
                           ($args->save_results ? $args->save_results : $args->save_and_exit);
 
+     
     if( $args->save_results || $args->do_bulk_save)
     {  
       // Need to get Latest execution ID before writing
@@ -491,6 +487,12 @@ function init_args(&$dbHandler,$cfgObj)
   {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
+
+ $args->doSave = $args->save_results || $args->save_and_next || 
+                 $args->save_and_exit || $args->do_bulk_save;
+ 
+ $args->doNavigate =  $args->doMoveNext || $args->doMovePrevious;
+
 
   // See details on: "When nullify filter_status - 20080504" in this file
   if( $args->level == 'testcase' || is_null($args->filter_status) || 

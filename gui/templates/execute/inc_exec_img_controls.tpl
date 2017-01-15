@@ -78,9 +78,8 @@ Author : franciscom
                 {/if}
 
                  <input type="hidden" name="statusSingle[{$tcversion_id}]" 
-                        id="statusSingle_{$tcversion_id}" value="0">
-                 <input type="hidden" name="save_results[{$tcversion_id}]" 
-                        id="save_results_{$tcversion_id}" value="0">
+                        id="statusSingle_{$tcversion_id}" value="">
+                 <input type="hidden" name="save_results" id="save_results" value="0">
                  <br />
                  <br />
                  {foreach key=kode item=ikval from=$gui->execStatusIcons}
@@ -88,25 +87,24 @@ Author : franciscom
                    <img src="{$tlImages.$in}" title="{$ikval.title}"
                         name="fastExec{$kode}[{$tcversion_id}]"
                         id="fastExec{$kode}_{$tcversion_id}"
-                        onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};
+                        onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
                         document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
-                        document.getElementById('save_results_{$tcversion_id}').value='{$kode}';
+                        document.getElementById('save_results').value=1;
                         submit();">&nbsp;
                  {/foreach}  
                  <br />
                  <br />
 
-                 <input type="hidden" name="save_and_next[{$tcversion_id}]" 
-                        id="save_and_next_{$tcversion_id}" value="0">
-
+                 <input type="hidden" name="save_and_next" 
+                                      id="save_and_next" value="0">
                  {foreach key=kode item=ikval from=$gui->execStatusIconsNext}
                    {$in = $ikval.img}
                    <img src="{$tlImages.$in}" title="{$ikval.title}"
                         name="fastExecNext{$kode}[{$tcversion_id}]"
                         id="fastExecNext{$kode}_{$tcversion_id}"
-                        onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};
+                        onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
                         document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
-                        document.getElementById('save_and_next_{$tcversion_id}').value='{$kode}';                        
+                        document.getElementById('save_and_next').value=1;                        
                         submit();">&nbsp;
                  {/foreach}  
                  <br />

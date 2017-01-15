@@ -60,16 +60,17 @@ function createResultsMenu()
 function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
 {
   static $docRepo;
-
+  static $resultsCfg;
+  static $execCfg;
+  static $executions_table;
    
   if(is_null($docRepo))
   {
     $docRepo = tlAttachmentRepository::create($db);
-  }  
-
-  $executions_table = DB_TABLE_PREFIX . 'executions';
-  $resultsCfg = config_get('results');
-  $execCfg = config_get('exec_cfg');
+    $resultsCfg = config_get('results');
+    $execCfg = config_get('exec_cfg');
+    $executions_table = DB_TABLE_PREFIX . 'executions';
+ }  
 
   $db_now = $db->db_now();
   $cfield_mgr = New cfield_mgr($db);
@@ -100,13 +101,12 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     $is_bulk_save=1;
     $bulk_notes = $db->prepare_string(trim($exec_data['bulk_exec_notes']));   
     $execStatusKey = 'status';
-
   } 
   else
   {
-    $item2loop= $exec_data['save_results'];
-    $is_bulk_save=0;
     $execStatusKey = 'statusSingle';
+    $item2loop= $exec_data[$execStatusKey];
+    $is_bulk_save=0;
   }
 
   $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
@@ -119,7 +119,6 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     $has_been_executed = ($current_status != $resultsCfg['status_code']['not_run'] ? TRUE : FALSE);
     if($has_been_executed)
     { 
-      
       $my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(trim($exec_data['notes'][$tcversion_id])); 
 
       $sql = "INSERT INTO {$executions_table} ".

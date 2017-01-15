@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2016, TestLink community
+ * @copyright   2005-2017, TestLink community
  * @link        http://www.testlink.org/
  *
  * @internal revisions
@@ -7543,13 +7543,13 @@ class testcase extends tlObjectWithAttachments
     $key2check = array('summary','preconditions');
     $tlBeginTag = '[tlVar]';
     $tlEndTag = '[/tlVar]';
-    $tlEndMarkLen = strlen($tlEndMark);
+    $tlEndTagLen = strlen($tlEndTag);
 
     // I've discovered that working with Web Rich Editor generates
     // some additional not wanted entities, that disturb a lot
     // when trying to use json_decode().
     // Hope this set is enough.
-    // $replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+    // $replaceSet = array($tlEndTag, '</p>', '<p>','&nbsp;');
     // $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
 
 

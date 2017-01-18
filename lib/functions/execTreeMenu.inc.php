@@ -11,7 +11,7 @@
  * @filesource  execTreeMenu.inc.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2013,2014 TestLink community 
+ * @copyright   2013,2017 TestLink community 
  * @link        http://testlink.sourceforge.net/ 
  * @uses        config.inc.php
  * @uses        const.inc.php
@@ -423,7 +423,14 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
 
       if( isset($tpNode['exec_status']) )
       {
-        $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        if( isset($resultsCfg['code_status'][$tpNode['exec_status']]) )
+        {
+          $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        }  
+        else
+        {
+          throw new Exception("Config Issue - exec status code: {$tpNode['exec_status']}", 1);
+        }  
       }
       else
       {

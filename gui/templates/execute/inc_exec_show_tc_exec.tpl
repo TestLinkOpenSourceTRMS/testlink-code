@@ -480,7 +480,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_cfg=$cfg}
 
     {if $tc_exec.can_be_executed}
-      {include file="execute/inc_exec_controls.tpl"
+      {include file="execute/{$tplConfig.inc_exec_controls}"
                args_save_type='single'
                args_input_enable_mgmt=$input_enabled_disabled
                args_tcversion_id=$tcversion_id

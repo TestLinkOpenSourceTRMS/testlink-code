@@ -302,6 +302,12 @@ $g_smtp_connection_mode = '';
 $g_smtp_port = 25;                        
 
 
+/**
+ * @see https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting
+ *      Opportunistic TLS
+ */
+$g_SMTPAutoTLS = false;
+
 // ----------------------------------------------------------------------------
 /* [User Authentication] */
 
@@ -886,6 +892,11 @@ $tlCfg->exec_cfg->steps_exec_attachments = true;
 // 'empty'
 // 'latest' => latest execution notes.
 $tlCfg->exec_cfg->steps_exec_notes_default = 'empty';
+
+
+// 'empty'
+// 'latest' => latest execution notes.
+$tlCfg->exec_cfg->steps_exec_status_default = 'empty';
 
 // Parameters to show notes/details when entering test execution feature
 // EXPAND: show expanded/open
@@ -1641,8 +1652,10 @@ $tlCfg->custom_css = null;
  *        ON SAME FOLDER where original template is. 
  * See example below        
  */
-$g_tpl = array();
+$g_tpl = array('inc_exec_controls' => 'inc_exec_img_controls.tpl');
+//$g_tpl = array('inc_exec_controls' => 'inc_exec_controls.tpl');
  
+
 // Example 
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',
 //                 'tcSearchView' => 'myOwnTCSearchView.tpl',

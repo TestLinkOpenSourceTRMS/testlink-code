@@ -1,6 +1,8 @@
 <?php
 /**
-* @version V5.15 19 Jan 2012 (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
+* @version   v5.20.9  21-Dec-2016
+* @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
+* @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 * Released under both BSD license and Lesser GPL library license.
 * Whenever there is any discrepancy between the two licenses,
 * the BSD license will take precedence.
@@ -22,7 +24,7 @@ class ADODB_informix extends ADODB_informix72 {
 	var $databaseType = "informix";
 	var $hasTop = 'FIRST';
 	var $ansiOuter = true;
-	
+
 	function IfNull( $field, $ifNull )
 	{
 		return " NVL($field, $ifNull) "; // if Informix 9.X or 10.X
@@ -31,10 +33,9 @@ class ADODB_informix extends ADODB_informix72 {
 
 class ADORecordset_informix extends ADORecordset_informix72 {
 	var $databaseType = "informix";
-	
-	function ADORecordset_informix($id,$mode=false)
+
+	function __construct($id,$mode=false)
 	{
-		$this->ADORecordset_informix72($id,$mode);
+		parent::__construct($id,$mode);
 	}
 }
-?>

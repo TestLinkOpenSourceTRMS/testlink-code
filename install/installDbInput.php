@@ -120,7 +120,7 @@ include 'installHead.inc';
       <label for="databasetype">Database Type</label>
     </div>
     <select id="databasetype" name="databasetype">
-      <option value="mysql" selected>MySQL (5.1.x and later)</option>
+      <option value="mysql" selected>MySQL/MariaDB (5.6+ / 10.+)</option>
       <option value="postgres" >Postgres (9.1 and later)</option>
       <option value="mssql" >Microsoft SQL Server 2008 and later (Experimental)</option>
     </select> 

@@ -24,7 +24,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
-  estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,
+  estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,btn_next_tcase,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
 	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
   bulk_tc_status_management,access_test_steps_exec,assign_exec_task_to_me,
@@ -358,7 +358,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {$enable_custom_fields=true}
         {$draw_submit_button=true}
 
-
         {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
             {$div_id='bulk_controls'}
             {$memstatus_id="$bulk_controls_view_memory_id"}
@@ -370,7 +369,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                      show_hide_container_view_status_id=$memstatus_id}
 
             <div id="{$div_id}" name="{$div_id}">
-              {include file="execute/inc_exec_controls.tpl"
+              {include file="execute/{$tplConfig.inc_exec_controls}"
                        args_save_type='bulk'
                        args_input_enable_mgmt=$input_enabled_disabled
                        args_tcversion_id='bulk'

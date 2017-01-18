@@ -9,11 +9,9 @@
  * @filesource  const.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @see         config.inc.php
  *
- * @internal revisions
- * No revisions logged here but each parameter must be described!
  *
  **/
  
@@ -30,7 +28,7 @@ define('TL_FACE_DIR', 'prague');
 /** Latest Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */
 // define('TL_LATEST_DB_VERSION', 'DB ' . TL_VERSION_NUMBER);
-define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.15');
+define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.16');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
@@ -426,6 +424,24 @@ $tlCfg->results['status_label_for_exec_ui'] = array('not_run' => 'test_status_no
                                                     'passed'  => 'test_status_passed',
                                                     'failed'  => 'test_status_failed',
                                                     'blocked' => 'test_status_blocked');
+
+
+$tlCfg->results['status_icons_for_exec_ui'] = 
+  array('passed' => array('img' => 'test_status_passed',
+                          'title' => 'click_passed'),
+        'failed' => array('img' => 'test_status_failed',
+                          'title' => 'click_failed'),
+        'blocked' => array('img' => 'test_status_blocked',
+                           'title' => 'click_blocked'));
+
+$tlCfg->results['status_icons_for_exec_next_ui'] = 
+  array('passed' => array('img' => 'test_status_passed_next',
+                          'title' => 'click_passed_next'),
+        'failed' => array('img' => 'test_status_failed_next',
+                          'title' => 'click_failed_next'),
+        'blocked' => array('img' => 'test_status_blocked_next',
+                           'title' => 'click_blocked_next'));
+
 
 /** 
  * Selected execution result by default. Values is key from $tlCfg->results['status_label']

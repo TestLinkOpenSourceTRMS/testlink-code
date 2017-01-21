@@ -21,8 +21,8 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.16'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' (Moka pot)'); 
+define('TL_VERSION_NUMBER', '1.9.17'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [Dev](Alan Turing)'); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Latest Database version that is used to give users feedback about necesssary upgrades

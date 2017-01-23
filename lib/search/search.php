@@ -77,6 +77,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
                                               'requirements','tcsteps',
                                               'testcase_keywords',
                                               'req_specs_revisions',
+                                              'req_versions',
                                               'testsuites','tcversions',
                                               'users',
                                               'object_keywords'));

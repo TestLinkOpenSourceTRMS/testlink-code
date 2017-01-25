@@ -6,6 +6,57 @@ http://www.testlink.org
 http://forum.testlink.org
 https://twitter.com/TLOpenSource
 
+TestLink - 1.9.16 - Moka Pot (Released 2017-01-21)
+==================================================
+- 7814: [User Authentication Methods] Unable to Reset Passwords For Users with DB Authentication In System Using Mixed LDAP/DB Authentication
+- 7701: [API - XMLRPC] XMLRPC API returns "XML-RPC server accepts POST requests only" for any request
+- 7676: [GUI] Password reset does not work
+- 2842: [Integration with Other Systems] Mutliple LDAP authentication
+- 7278: [Bug Tracking System - Redmine Integration] Customise Testlink Username to Equal Redmine Username
+- 7799: [Bug Tracking System - Redmine Integration] Request for Redmine Integration : Redmine API Key for each user
+- 7757: [Bug Tracking System - JIRA Integration] Jira issues updated with Jira integration user instead of the actual testlink user
+- 7765: [Test Project Management] deleting test projects with execution step results raise fatale db error
+- 7761: [Bug Tracking System - JIRA Integration] Issue add failure versions FIELD
+- 7813: [Test Execute - Step notes & result] New config option to set as default latest exec result on each step
+- 7812: [Bug Tracking System - JIRA Integration] Lack of "save execution" button
+- 7805: [Database Postgres] upgrade to 1.9.15 failed with errror: DB Access Error
+- 7806: [Database General] Upgrade ADODB to 5.20.LATEST (@20170106)
+- 7801: [Third party components] CKeditor upgrade to 4.6
+- 7803: [Third party components] PHPmailer security update
+- 7800: [Database General] Execution Bug will be contain step id info
+- 7773: [User Interface Customization] The new login page doesn't display login_info from custom_config.inc.php
+- 5817: [Requirement Revisioning] Changes made in requirements aren't saved
+- 7737: [Requirement Revisioning] DB Access Error - debug_print_backtrace() OUTPUT START - creating req revision
+- 7774: [User Interface General] Kint Dump information is displayed in stable release
+- 7794: [Database MySQL] Critical error while editing a requirement.
+- 7786: [General] source map file not sent along with jquery
+- 7793: [Test Specification] Pressing 'Sort alphabetically' button generates errors in log
+- 7656: [API - XMLRPC] tl.updateTestCase updates executed testcase allthough user does not have permission
+- 7719: [GUI] Class Details are shown on screen, when test execution page is accessed
+- 7756: [Bug Tracking System - Redmine Integration] Unable to link created/existing issue from Redmine to TestLink
+- 7746: [Available Fixes] Notification mails sent to inactive users (globalRole)
+- 7772: [Test Execute] Attachements are not deleted if related build isremoved.
+- 7777: [Build Management] Fatal error when aborting creation of new build
+- 7709: [Custom fields] The system is not accepting the imposed customizations in custom_config.inc.php file.
+- 7738: [Test Spec. - Search Test Cases] Missing test cases while applying a filter on a test suite created as another test suite copy
+- 7750: [Event viewer] unknown warnings after update in event viewer
+- 7706: [Test Specification Import] Fail to Import a XML files to update a Testcase executed in a older version
+- 7725: [Test Specification] Renaming test suite fails
+- 7708: [Localization] PHP Fatal error: Call to undefined function plugin_get_current() in /var/www/testlink/lib/functions/lang_api.php on line 67
+- 7710: [General] Customization "$tlCfg->user_self_signup" does not work
+- 7696: [Test Specification Import] testsuite.class.php has incorrect code on importing whole testsuite specification
+- 7688: [Database Postgres] Multiple errors in Postgres SQL scripts
+- 7687: [Export/Import] Testcases Import : testcases too long, warning in summary always encoded in HTML format
+- 7685: [Test Specification] Fatal error on uploading/deleting an attachment to the Top Level Project
+- 7638: [Test Plan - Assign Test Case Execution] No mail notification when removing test case assignment
+- 7675: [Test Plan - Assign Test Case Execution] Urgency is shown in Priority column on Assign Test Case Execution page
+- 7683: [Installer] Error 500 after license agreement
+- 6055: [LDAP authentication] Regarding Multiple LDAP confiiguration in TestLink
+- 6383: [Test Project Management] The 'Create a new project' page crahes after clicking 'Cancel' button
+- 7714: [Bug Tracking System - Redmine Integration] failure to report issue
+- 7667: [Plugins] Fatal error after Testlink upgrade to 1.9.15 - missing plugin_get_current()
+
+[47 issues]
 
 TestLink - 1.9.15 - Tauriel (Released 2016-09-08)
 =================================================

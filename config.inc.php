@@ -378,6 +378,11 @@ $tlCfg->authentication['ldap'][1]['ldap_tls'] = false; // true -> use tls
 $tlCfg->authentication['ldap'][1]['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
 $tlCfg->authentication['ldap'][1]['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
 
+// Configure following fields in custom_config.inc.php according your configuration
+$tlCfg->authentication['ldap'][1]['ldap_email_field'] = 'mail';
+$tlCfg->authentication['ldap'][1]['ldap_firstname_field'] = 'givenname';
+$tlCfg->authentication['ldap'][1]['ldap_surname_field'] = 'sn';
+
 
 // Follows Mantisbt idea.
 // True if user does not exist on DB, but can be get from LDAP, 
@@ -387,15 +392,6 @@ $tlCfg->authentication['ldap'][1]['ldap_uid_field'] = 'uid'; // Use 'sAMAccountN
 // name
 // surname
 $tlCfg->authentication['ldap_automatic_user_creation'] = false;
-
-// Configure following fields in custom_config.inc.php according your configuration
-// IMPORTANT NOTICE
-// Same for all LDAP Servers if you are using MULTIPLE LDAP Servers configuration 
-$tlCfg->authentication['ldap_email_field'] = 'mail';
-$tlCfg->authentication['ldap_firstname_field'] = 'givenname';
-$tlCfg->authentication['ldap_surname_field'] = 'sn';
-
-
 
 
 /** Enable/disable Users to create accounts on login page */

@@ -318,7 +318,7 @@ $g_SMTPAutoTLS = false;
  *  'LDAP' => use password from LDAP Server
  */
 $tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'allowPasswordManagement' => true) ,
-										 'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
+                     'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
 
 
 // $tlCfg->authentication['domain'] = array('DB','LDAP')
@@ -333,7 +333,7 @@ $tlCfg->authentication['method'] = 'DB';
 // null => only check password IS NOT EMPTY
 // 
 // $tlCfg->passwordChecks = array('minlen' => 8,'maxlen' => 20,'number' => true,'letter' => true,
-//	                              'capital' => true, 'symbol' => true);
+//                                'capital' => true, 'symbol' => true);
 $tlCfg->passwordChecks = null;
 
 // Applies ONLY to the HTML input.
@@ -1688,8 +1688,14 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
 
 if( !defined('TL_JQUERY') )
 {
-    define('TL_JQUERY','jquery-2.2.4.min.js' );
+  define('TL_JQUERY','jquery-2.2.4.min.js' );
 }
+
+if( !defined('TL_DATATABLES_DIR') )
+{
+  define('TL_DATATABLES_DIR','DataTables-1.10.4' );
+}
+
 
 /** root of testlink directory location seen through the web server */
 /*  20070106 - franciscom - this statement it's not 100% right

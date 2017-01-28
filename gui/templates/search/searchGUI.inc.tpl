@@ -85,7 +85,11 @@ Purpose: show form
          <select name="keyword_id">
           <option value="0">&nbsp;</option>
           {section name=Row loop=$gui->keywords}
-          <option value="{$gui->keywords[Row]->dbID}">{$gui->keywords[Row]->name|escape}</option>
+          <option value="{$gui->keywords[Row]->dbID}"
+           {if $gui->keywords[Row]->dbID== $gui->keyword_id}
+             selected
+           {/if}
+          >{$gui->keywords[Row]->name|escape}</option>
         {/section}
         </select>
       </td>

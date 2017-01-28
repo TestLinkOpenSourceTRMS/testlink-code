@@ -201,6 +201,8 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
 
     $sql .= $otherFRS;
+
+    // echo __LINE__ . '-' . $sql . '<br>';
     $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
   } 
 
@@ -316,6 +318,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       }  
 
       $sql .= $xfil . $otherFRQ;
+    //echo __LINE__ . '-' . $sql . '<br>';
 
       $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
     }  
@@ -511,6 +514,8 @@ JOIN requirements RQ on RQ.id = LV.req_id
     $sql = $sqlFields . $sqlPart2 . $otherFilters;
     if($hasTestCases)
     {  
+       //   echo __LINE__ . '-' . $sql . '<br>';
+
       $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
     }
   }  
@@ -573,6 +578,8 @@ JOIN requirements RQ on RQ.id = LV.req_id
   
     if(!is_null($tsuiteSet) && count($tsuiteSet) > 0)
     {
+        //  echo __LINE__ . '-' . $sql . '<br>';
+
       $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
     }  
   }  
@@ -1070,6 +1077,11 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->creation_date_to = $argsObj->loc_creation_date_to;
   $gui->modification_date_from = $argsObj->loc_modification_date_from;
   $gui->modification_date_to = $argsObj->loc_modification_date_to;
+
+  $gui->created_by = trim($argsObj->created_by);
+  $gui->edited_by =  trim($argsObj->edited_by);
+  $gui->keyword_id = intval($argsObj->keyword_id);
+
 
   $gui->forceSearch = false;
   

@@ -87,13 +87,8 @@ if($args->rType != '')
   }  
 }  
 
-if ($args->tprojectID && $args->doAction == 'doSearch')
-{
 
-}
-
-
-if ($args->tprojectID && $args->doAction == 'doSearch')
+if($args->tprojectID && $args->doAction == 'doSearch')
 {
   list($tables,$views) = getSchema();
 
@@ -123,10 +118,10 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $nt2exclude_children = array('testcase' => 'exclude_my_children',
                                'requirement_spec'=> 'exclude_my_children');
 
-    $my['options'] = array('recursive' => 0, 'output' => 'id');
-    $my['filters'] = array('exclude_node_types' => $nt2exclude,
+  $my['options'] = array('recursive' => 0, 'output' => 'id');
+  $my['filters'] = array('exclude_node_types' => $nt2exclude,
                            'exclude_children_of' => $nt2exclude_children);
-    $tsuiteSet = $tproject_mgr->tree_manager->get_subtree(
+  $tsuiteSet = $tproject_mgr->tree_manager->get_subtree(
                               $args->tprojectID,$my['filters'],$my['options']);
     
   if(!is_null($tcaseSet) && count($tcaseSet) > 0)
@@ -140,9 +135,10 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       $emptyTestProject = true;
       $filter['by_tc_id'] = " AND 1 = 0 ";
   }  
- }
+}
         
-  $hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
+  
+$hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
   $filterSpecial['tricky'] = " 1=0 ";
   
   $doFilterOnTestCase = false;
@@ -152,6 +148,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $canDoSearch = false;
 
   // REQSPEC
+  $doFilterOnReqSpec = false;
   if( $args->rs_scope || $args->rs_title )
   {
     $sql = "SELECT RSRV.name, RSRV.scope, LRSR.req_spec_id, RSRV.id,LRSR.revision " . 
@@ -163,9 +160,9 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
     if(!is_null($rspecType))
     {
+      $doFilterOnReqSpec = true;
       $sql .= " AND RSRV.type='" . $db->prepare_string($rspecType) . "' ";
     }  
-
 
     $filterRS = null;
     if( $canUseTarget )
@@ -196,7 +193,10 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
 
     $sql .= $otherFRS;
-    $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
+    if($doFilterOnReqSpec)
+    {
+      $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
+    }  
   } 
 
   // REQ
@@ -207,7 +207,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $from['by_custom_field'] = ''; 
     if($req_cf_id >0)
     {
-      
       $cf_def = $gui->design_cf_rq[$req_cf_id];
 
       $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
@@ -229,12 +228,11 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       }
     }  
 
-
-    $doFilterOnReq = true;
     $args->created_by = trim($args->created_by);
     $from['users'] = '';
     if($args->created_by != '' )
     {
+      $doFilterOnReq = true;
       $from['users'] .= " JOIN {$tables['users']} RQAUTHOR ON RQAUTHOR.id = RQV.author_id ";
       $fi['author'] = " AND ( RQAUTHOR.login LIKE '%{$args->created_by}%' OR " .
                       "       RQAUTHOR.first LIKE '%{$args->created_by}%' OR " .
@@ -244,6 +242,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $args->edited_by = trim($args->edited_by);
     if( $args->edited_by != '' )
     {
+      $doFilterOnReq = true;
       $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = RQV.modifier_id ";
       $fi['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
                             "       UPDATER.first LIKE '%{$args->edited_by}%' OR " .
@@ -264,17 +263,20 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
       if(!is_null($reqType))
       {
+        $doFilterOnReq = true;
         $sql .= " AND RQV.type ='" . $db->prepare_string($reqType) . "' ";
       }  
 
       if($args->reqStatus != '')
       {
+        $doFilterOnReq = true;
         $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
       }  
 
       $filterRQ = null;
       if( $canUseTarget )
       {
+        $doFilterOnReq = true;
         $filterRQ['tricky'] = " 1=0 ";
   
         $filterRQ['scope'] = ' OR ( ';
@@ -316,7 +318,10 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       }  
 
       $sql .= $xfil . $otherFRQ;
-      $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
+      if( $doFilterOnReq ) 
+      {
+        $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
+      }
     }  
   
   } 
@@ -636,17 +641,16 @@ JOIN requirements RQ on RQ.id = LV.req_id
   $table = null;
   if( !is_null($mapRQ))
   {
-
     $gui->resultReq = $mapRQ;
     $req_set = array_keys($mapRQ);
     $options = array('output_format' => 'path_as_string');
     $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
 
     $table = buildRQExtTable($gui, $charset);
-
   }
+
   $gui->warning_msg = '';
-   if(!is_null($table))
+  if(!is_null($table))
   {
     $gui->tableSet[] = $table;
   }  

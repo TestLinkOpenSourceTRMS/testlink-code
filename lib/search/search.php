@@ -154,11 +154,16 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
   // Multiple space clean up
   $s = preg_replace("/ {2,}/", " ", $args->target);
-  $targetSet = explode(' ',$s);
-  foreach($targetSet as $idx => $val)
+  $theSet = explode(' ',$s);
+  $targetSet = array();
+  foreach($theSet as $idx => $val)
   {
-    $targetSet[$idx] = $db->prepare_string($val);
+    if(trim($val) != '')
+    {
+      $targetSet[] = $db->prepare_string($val);
+    }  
   } 
+  $canUseTarget = (count($targetSet) > 0);
 
   // REQSPEC
   if( $args->rs_scope || $args->rs_title )
@@ -176,23 +181,27 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
 
 
-    $filterRS['tricky'] = " 1=0 ";
-  
-    $filterRS['scope'] = ' OR ( ';
-    $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-    foreach($targetSet as $target)
+    $filterRS = null;
+    if( $canUseTarget )
     {
-      $filterRS['scope'] .= $args->and_or . " RSRV.scope like '%{$target}%' ";  
-    }  
-    $filterRS['scope'] .= ')';
+      $filterRS['tricky'] = " 1=0 ";
+      
+      $filterRS['scope'] = ' OR ( ';
+      $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+      foreach($targetSet as $target)
+      {
+        $filterRS['scope'] .= $args->and_or . " RSRV.scope like '%{$target}%' ";  
+      }  
+      $filterRS['scope'] .= ')';
   
-    $filterRS['name'] = ' OR ( ';
-    $filterRS['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-    foreach($targetSet as $target)
-    {
-      $filterRS['name'] .= $args->and_or . " RSRV.name like '%{$target}%' ";  
+      $filterRS['name'] = ' OR ( ';
+      $filterRS['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+      foreach($targetSet as $target)
+      {
+        $filterRS['name'] .= $args->and_or . " RSRV.name like '%{$target}%' ";  
+      }  
+      $filterRS['name'] .= ')';
     }  
-    $filterRS['name'] .= ')';
 
     $otherFRS = '';  
     if(!is_null($filterRS))
@@ -201,8 +210,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
 
     $sql .= $otherFRS;
-
-    // echo __LINE__ . '-' . $sql . '<br>';
     $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
   } 
 
@@ -242,10 +249,10 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $from['users'] = '';
     if($args->created_by != '' )
     {
-      $from['users'] .= " JOIN {$tables['users']} AUTHOR ON RQAUTHOR.id = RQV.author_id ";
-      $fi['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
-                      "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
-                      "       AUTHOR.last LIKE '%{$args->created_by}%') ";
+      $from['users'] .= " JOIN {$tables['users']} RQAUTHOR ON RQAUTHOR.id = RQV.author_id ";
+      $fi['author'] = " AND ( RQAUTHOR.login LIKE '%{$args->created_by}%' OR " .
+                      "       RQAUTHOR.first LIKE '%{$args->created_by}%' OR " .
+                      "       RQAUTHOR.last LIKE '%{$args->created_by}%') ";
     }  
   
     $args->edited_by = trim($args->edited_by);
@@ -259,8 +266,9 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
     if(!is_null($reqSet) && count($reqSet) >0)
     {  
-      $sql = " select RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
-             " from {$tables['nodes_hierarchy']} NHRQV " .
+      $sql = " /* " . __LINE__ . " */ " . 
+             " SELECT RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
+             " FROM {$tables['nodes_hierarchy']} NHRQV " .
              " JOIN {$views['latest_req_version']} LV on LV.req_id = NHRQV.parent_id " .
              " JOIN {$tables['req_versions']} RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
              " JOIN {$tables['nodes_hierarchy']} NHRQ on NHRQ.id = LV.req_id " .
@@ -278,32 +286,36 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
         $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
       }  
 
-      $filterRQ['tricky'] = " 1=0 ";
-    
-      $filterRQ['scope'] = ' OR ( ';
-      $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-      foreach($targetSet as $target)
+      $filterRQ = null;
+      if( $canUseTarget )
       {
-        $filterRQ['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' ";  
-      }  
-      $filterRQ['scope'] .= ')';
+        $filterRQ['tricky'] = " 1=0 ";
   
-      $filterRQ['name'] = ' OR ( ';
-      $filterRQ['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-      foreach($targetSet as $target)
-      {
-        $filterRQ['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' ";  
-      }  
-      $filterRQ['name'] .= ')';
+        $filterRQ['scope'] = ' OR ( ';
+        $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+        foreach($targetSet as $target)
+        {
+          $filterRQ['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' ";  
+        }  
+        $filterRQ['scope'] .= ')';
+    
+        $filterRQ['name'] = ' OR ( ';
+        $filterRQ['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
 
-      $filterRQ['req_doc_id'] = ' OR ( ';
-      $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-      foreach($targetSet as $target)
-      {
-        $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
-      }  
-      $filterRQ['req_doc_id'] .= ')';
+        foreach($targetSet as $target)
+        {
+          $filterRQ['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' "; 
+        }  
+        $filterRQ['name'] .= ')';
 
+        $filterRQ['req_doc_id'] = ' OR ( ';
+        $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+        foreach($targetSet as $target)
+        {
+          $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
+        }  
+        $filterRQ['req_doc_id'] .= ')';
+      } 
 
       $otherFRQ = '';  
       if(!is_null($filterRQ))
@@ -318,8 +330,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
       }  
 
       $sql .= $xfil . $otherFRQ;
-    //echo __LINE__ . '-' . $sql . '<br>';
-
       $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
     }  
   
@@ -365,7 +375,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
                         " ON NH_TCSTEPS.id = TCSTEPS.id  ";
   }
 
-  if($args->tc_steps)
+  if($args->tc_steps && $canUseTarget)
   {
     $filterSpecial['by_steps'] = ' OR ( ';
     $filterSpecial['by_steps'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
@@ -377,7 +387,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $filterSpecial['by_steps'] .= ')';
   }    
     
-  if($args->tc_expected_results)
+  if($args->tc_expected_results && $canUseTarget)
   {
     $filterSpecial['by_expected_results'] = ' OR ( ';
     $filterSpecial['by_expected_results'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
@@ -390,26 +400,30 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $filterSpecial['by_expected_results'] .= ')';
   }    
 
-  $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
-  $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary', 
-               'preconditions' => 'tc_preconditions');
-  foreach($k2w as $kf => $alias)
+
+  if($canUseTarget)
   {
-    $in = $i2s[$kf];
-    if($args->$in)
+    $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
+    $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary', 
+                 'preconditions' => 'tc_preconditions');
+    foreach($k2w as $kf => $alias)
     {
-      $doFilterOnTestCase = true;
- 
-      $filterSpecial[$kf] = ' OR ( ';
-      $filterSpecial[$kf] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
- 
-      foreach($targetSet as $target)
+      $in = $i2s[$kf];
+      if($args->$in)
       {
-        $filterSpecial[$kf] .= " {$args->and_or} {$alias}.{$kf} like ";
-        $filterSpecial[$kf] .= " '%{$target}%' "; 
-      }  
-      $filterSpecial[$kf] .= ' )';
-    }
+        $doFilterOnTestCase = true;
+   
+        $filterSpecial[$kf] = ' OR ( ';
+        $filterSpecial[$kf] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
+   
+        foreach($targetSet as $target)
+        {
+          $filterSpecial[$kf] .= " {$args->and_or} {$alias}.{$kf} like ";
+          $filterSpecial[$kf] .= " '%{$target}%' "; 
+        }  
+        $filterSpecial[$kf] .= ' )';
+      }
+    }     
   } 
 
   $otherFilters = '';  
@@ -514,8 +528,6 @@ JOIN requirements RQ on RQ.id = LV.req_id
     $sql = $sqlFields . $sqlPart2 . $otherFilters;
     if($hasTestCases)
     {  
-       //   echo __LINE__ . '-' . $sql . '<br>';
-
       $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
     }
   }  
@@ -525,7 +537,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
   $filterSpecial = null;
   $filterSpecial['tricky'] = " 1=0 ";
 
-  if($args->ts_summary)
+  if($args->ts_summary && $canUseTarget)
   {
     $filterSpecial['ts_summary'] = ' OR ( ';
     $filterSpecial['ts_summary'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
@@ -537,7 +549,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
     $filterSpecial['ts_summary'] .= ')';
   }  
 
-  if($args->ts_title)
+  if($args->ts_title && $canUseTarget)
   {
     $filterSpecial['ts_title'] = ' OR ( ';
     $filterSpecial['ts_title'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
@@ -578,8 +590,6 @@ JOIN requirements RQ on RQ.id = LV.req_id
   
     if(!is_null($tsuiteSet) && count($tsuiteSet) > 0)
     {
-        //  echo __LINE__ . '-' . $sql . '<br>';
-
       $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
     }  
   }  
@@ -1081,6 +1091,7 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->created_by = trim($argsObj->created_by);
   $gui->edited_by =  trim($argsObj->edited_by);
   $gui->keyword_id = intval($argsObj->keyword_id);
+
 
   $gui->forceSearch = false;
   

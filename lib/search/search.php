@@ -941,7 +941,7 @@ function init_args(&$dbHandler,&$tprojectMgr)
                    "creation_date_to" => array(tlInputParameter::STRING_N),
                    "modification_date_from" => array(tlInputParameter::STRING_N),
                    "modification_date_to" => array(tlInputParameter::STRING_N));
-    
+
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
@@ -1082,7 +1082,6 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->edited_by =  trim($argsObj->edited_by);
   $gui->keyword_id = intval($argsObj->keyword_id);
 
-
   $gui->forceSearch = false;
   
   $gui->and_checked = $gui->or_checked = '';
@@ -1108,8 +1107,8 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
 {
 
 
-  $gui->design_cf_tc = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,
-                                                                           cfield_mgr::ENABLED,null,'testcase');
+  $gui->design_cf_tc = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design(
+                          $argsObj->tprojectID,cfield_mgr::ENABLED,null,'testcase');
 
   $gui->design_cf_req = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design(
                           $argsObj->tprojectID,
@@ -1118,9 +1117,9 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
   $gui->cf = $gui->design_cf_tc+$gui->design_cf_req;
   $gui->filter_by['custom_fields'] = !is_null($gui->cf);
 
-  $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
+  $gui->keywords = $tprojectMgr->getKeywordSet($argsObj->tprojectID);
   $gui->filter_by['keyword'] = !is_null($gui->keywords);
-
+ 
   $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
   $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
   $reqSpecSet = null; 
@@ -1129,5 +1128,4 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
   $gui->status = intval($argsObj->status);
 
   $gui->target = $argsObj->target;
-
 }

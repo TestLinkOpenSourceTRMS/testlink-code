@@ -1317,7 +1317,7 @@ function setPublicStatus($id,$status)
    * 
    *
    */
-  protected function getKeywordSet($tproject_id)
+  function getKeywordSet($tproject_id)
   {
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']}  " .
            " WHERE testproject_id = {$tproject_id}" .

@@ -33,7 +33,7 @@ function init_args(&$dbHandler)
 
   $iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
                    "target" => array(tlInputParameter::STRING_N,0,200),
-                   "caller" => array(tlInputParameter::STRING_N,0,10));               
+                   "caller" => array(tlInputParameter::STRING_N,0,20));               
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
@@ -50,7 +50,7 @@ function init_args(&$dbHandler)
   $args->automationEnabled = 0;
   $args->requirementsEnabled = 0;
   $args->testPriorityEnabled = 0;
-  $args->tcasePrefix = trim($args->tcasePrefix);
+  // $args->tcasePrefix = trim($args->tcasePrefix);
   $args->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 
 
@@ -86,9 +86,22 @@ function init_args(&$dbHandler)
   {  
     $args->tcaseTestProject = $tprojectMgr->get_by_id($args->tproject_id);
   }
+
   $args->requirementsEnabled = $args->tcaseTestProject['opt']->requirementsEnabled;
   $args->automationEnabled = $args->tcaseTestProject['opt']->automationEnabled;
   $args->testPriorityEnabled = $args->tcaseTestProject['opt']->testPriorityEnabled;
+
+  $args->design_cf_req = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design(
+                           $args->tproject_id,cfield_mgr::ENABLED,null,'requirement');
+
+
+  $args->design_cf_tc = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design(
+                          $args->tproject_id,
+                          cfield_mgr::ENABLED,null,'testcase');
+
+  $args->cf = $args->design_cf_tc + $args->design_cf_req;
+
+  $args->keywords = $tprojectMgr->getKeywordSet($args->tproject_id);
 
   return $args;
 }
@@ -122,7 +135,7 @@ function initializeEnv($dbHandler)
   $gui->requirementsEnabled = $args->requirementsEnabled; 
   $gui->automationEnabled = $args->automationEnabled; 
   $gui->testPriorityEnabled = $args->testPriorityEnabled;
-  $gui->show_mode = $args->show_mode;
+  //$gui->show_mode = $args->show_mode;
   $lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
   $gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 
@@ -137,53 +150,11 @@ function initializeEnv($dbHandler)
   $gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
   $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
   $gui->viewerArgs = $args->viewerArgs;
-  $gui->caller = $args->caller;
-
+  $gui->caller = trim($args->caller);
 
   return array($args,$gui,$grants);
 }
 
-
-/**
- *
- *
- */
-function systemWideTestCaseSearch(&$dbHandler,&$argsObj,$glue)
-{
-  // Attention: 
-  // this algorithm has potential flaw (IMHO) because we can find the glue character
-  // in situation where it's role is not this.
-  // Anyway i will work on this in the future (if I've time)
-  //
-  if (strpos($argsObj->targetTestCase,$glue) === false)
-  {
-    // We suppose user was lazy enough to do not provide prefix,
-    // then we will try to help him/her
-    $argsObj->targetTestCase = $argsObj->tcasePrefix . $argsObj->targetTestCase;
-  }
-
-  if( !is_null($argsObj->targetTestCase) )
-  {
-    // parse to get JUST prefix, find the last glue char.
-    // This useful because from navBar, user can request search of test cases that belongs
-    // to test project DIFFERENT to test project setted in environment
-    if( ($gluePos = strrpos($argsObj->targetTestCase, $glue)) !== false)
-    {
-      $tcasePrefix = substr($argsObj->targetTestCase, 0, $gluePos);
-    }
-
-    $tprojectMgr = new testproject($dbHandler);
-    $argsObj->tcaseTestProject = $tprojectMgr->get_by_prefix($tcasePrefix);
-
-    $tcaseMgr = new testcase($dbHandler);
-    $argsObj->tcase_id = $tcaseMgr->getInternalID($argsObj->targetTestCase);
-    $dummy = $tcaseMgr->get_basic_info($argsObj->tcase_id,array('number' => $argsObj->tcaseVersionNumber));
-    if(!is_null($dummy))
-    {
-      $argsObj->tcversion_id = $dummy[0]['tcversion_id'];
-    }
-  }
-}
 
 /**
  *
@@ -231,6 +202,15 @@ function processSearch(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   $xbm->tproject_id = $args->tproject_id;
   $xbm->target = $args->target;
 
+  $xbm->keyword_id = 0;
+  $xbm->custom_field_id = 0;
+  $xbm->custom_field_value = null;
+  $xbm->creation_date_from = $xbm->creation_date_to = null;
+  $xbm->modification_date_from = $xbm->modification_date_to = null;
+  $xbm->created_by = $xbm->edited_by = null;
+  $xbm->tcasePrefix = null;
+
+
   $tproject_mgr = new testproject($dbHandler);
   $xbm->keywords = $tproject_mgr->getKeywords($args->tproject_id);
   $xbm->filter_by['keyword'] = !is_null($xbm->keywords);
@@ -245,27 +225,29 @@ function processSearch(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   $reqSpecCfg = config_get('req_spec_cfg');
   $rsTypes = init_labels($reqSpecCfg->type_labels);
   $xbm->rtypes = $rsTypes+$xbm->rtypes;
+  $xbm->rType = 0;
 
   $xbm->reqStatusDomain = init_labels($reqCfg->status_labels);
+  $xbm->reqStatus = 0;
 
-  $xbm->forceSearch = false;
-  if( strlen(trim($args->target)) > 0)
-  {
-    $xbm->rs_scope = $xbm->rs_title = 1;
-    $xbm->tc_summary = $xbm->tc_title = 1;
-    $xbm->tc_steps = $xbm->tc_expected_results = $xbm->tc_id = 1;
-    $xbm->tc_preconditions = $xbm->ts_summary = $xbm->ts_title = 1;
-    $xbm->rq_scope = $xbm->rq_title = $xbm->rq_doc_id = 1;
+  $xbm->rs_scope = $xbm->rs_title = 1;
+  $xbm->tc_summary = $xbm->tc_title = 1;
+  $xbm->tc_steps = $xbm->tc_expected_results = $xbm->tc_id = 1;
+  $xbm->tc_preconditions = $xbm->ts_summary = $xbm->ts_title = 1;
+  $xbm->rq_scope = $xbm->rq_title = $xbm->rq_doc_id = 1;
 
-    $xbm->or_checked = ' checked="checked" ';
-    $xbm->and_checked = '';
-    $xbm->forceSearch = true;
-  }
+  $xbm->or_checked = ' checked="checked" ';
+  $xbm->and_checked = '';
+  $xbm->forceSearch = (strlen(trim($args->target)) > 0);
+  $xbm->caller = basename(__FILE__);
+
+  $xbm->filter_by['custom_fields'] = !is_null($args->cf);
+  $xbm->cf = $args->cf;
+
+  $xbm->filter_by['keyword'] = !is_null($args->keywords);
+  $xbm->keywords = $args->keywords; 
 
   $tplEngine->assign('gui',$xbm);
-
-  // var_dump($templateCfg->template_dir);die();
-
   $tplEngine->display($templateCfg->template_dir . 'searchResults.tpl');
 }
 

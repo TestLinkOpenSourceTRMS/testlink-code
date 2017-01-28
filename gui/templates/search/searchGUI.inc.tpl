@@ -12,7 +12,7 @@ Purpose: show form
 
 {lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
                           edited_by,modification_date_to,modification_date_from,
-                          custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,testcase,testsuite,title,
+                          custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,testcase,testsuite,title,clear_date,show_calendar,id,
                           summary,preconditions,steps,expected_results,details,
                           scope,requirement,req_specification,req_document_id,id'}
 <div style="margin: 1px;">
@@ -20,6 +20,7 @@ Purpose: show form
       action="{$basehref}lib/search/search.php">
   <input type="hidden" name="doAction" id="doAction" value="doSearch">
   <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
+  <input type="hidden" name="caller" id="caller" value="{$gui->caller}">
 
   <table class="simple" border="1" style="width:90%">     
     <tr>
@@ -84,14 +85,12 @@ Purpose: show form
       <td>{$labels.keyword}
          <select name="keyword_id">
           <option value="0">&nbsp;</option>
-          {section name=Row loop=$gui->keywords}
-          <option value="{$gui->keywords[Row]->dbID}"
-           {if $gui->keywords[Row]->dbID== $gui->keyword_id}
-             selected
-           {/if}
-          >{$gui->keywords[Row]->name|escape}</option>
-        {/section}
-        </select>
+          {foreach from=$gui->keywords key=kw_id item=kw_name}
+            <option value="{$kw_id}" {if $kw_id == $gui->keyword_id} selected {/if}>
+              {$gui->keywords[$kw_id].keyword|escape}
+            </option>
+          {/foreach}
+         </select>
       </td>
     {else}
       <td>&nbsp</td>  
@@ -122,9 +121,10 @@ Purpose: show form
                value="{$gui->creation_date_from|escape}" size="{#DATE_PICKER#}"
                onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" readonly />
         
-        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+        <img title="{$labels.show_calendar}" src="{$tlImages.calendar}"
              onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" >
-        <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+
+        <img title="{$labels.clear_date}" src="{$tlImages.clear}"
                onclick="javascript:var x = document.getElementById('creation_date_from'); x.value = '';" >
         <div id="creation_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 
@@ -134,9 +134,9 @@ Purpose: show form
         <input type="text" name="creation_date_to" id="creation_date_to" value="{$gui->creation_date_to|escape}" 
                size="{#DATE_PICKER#}"
                onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');" readonly />
-        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+        <img title="{$labels.show_calendar}" src="{$tlImages.calendar}"
              onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');" >
-        <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+        <img title="{$labels.clear_date}" src="{$tlImages.clear}"
                onclick="javascript:var x = document.getElementById('creation_date_to'); x.value = '';" >
         <div id="creation_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
   
@@ -147,9 +147,9 @@ Purpose: show form
         value="{$gui->modification_date_from|escape}" 
                size="{#DATE_PICKER#}"
                onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');" readonly />
-        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+        <img title="{$labels.show_calendar}" src="{$tlImages.calendar}"
              onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');" >
-        <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+        <img title="{$labels.clear_date}" src="{$tlImages.clear}"
              onclick="javascript:var x = document.getElementById('modification_date_from'); x.value = '';" >
         <div id="modification_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
       <br>
@@ -160,9 +160,9 @@ Purpose: show form
         value="{$gui->modification_date_to|escape}" 
                size="{#DATE_PICKER#}"
                onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');" readonly />
-        <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+        <img title="{$labels.show_calendar}" src="{$tlImages.calendar}"
              onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');" >
-        <img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+        <img title="{$labels.clear_date}" src="{$tlImages.clear}"
              onclick="javascript:var x = document.getElementById('modification_date_to'); x.value = '';" >
         <div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
       </td>

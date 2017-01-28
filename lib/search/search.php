@@ -10,7 +10,7 @@
  * @filesource  tcSearch.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
@@ -36,6 +36,24 @@ list($args,$mixedFilter) = init_args($db,$tproject_mgr);
 
 $gui = initializeGui($args,$tproject_mgr);
 initSearch($gui,$args,$tproject_mgr);
+
+$targetSet = cleanUpTarget($db,$args->target);
+$canUseTarget = (count($targetSet) > 0);
+
+if($args->oneCheck == false)
+{
+  $smarty->assign('gui',$gui);
+  $smarty->display($templateCfg->template_dir . $tpl);
+  exit();
+}  
+
+if($canUseTarget == false && $args->oneValueOK == false)
+{
+  $smarty->assign('gui',$gui);
+  $smarty->display($templateCfg->template_dir . $tpl);
+  exit();
+}  
+
 
 $map = null;
 
@@ -69,23 +87,15 @@ if($args->rType != '')
   }  
 }  
 
+if ($args->tprojectID && $args->doAction == 'doSearch')
+{
+
+}
+
 
 if ($args->tprojectID && $args->doAction == 'doSearch')
 {
-  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values',
-                                              'nodes_hierarchy',
-                                              'requirements','tcsteps',
-                                              'testcase_keywords',
-                                              'req_specs_revisions',
-                                              'req_versions',
-                                              'testsuites','tcversions',
-                                              'users',
-                                              'object_keywords'));
-                                
-  $views = tlObjectWithDB::getDBViews(array('latest_rspec_revision',
-                                             'latest_req_version',
-                                             'latest_tcase_version_number'));
-
+  list($tables,$views) = getSchema();
 
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
   $gui->tcasePrefix .= $tcase_cfg->glue_character;
@@ -101,16 +111,16 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $reqspec_mgr = new requirement_spec_mgr($db);
   $reqSpecSet = $reqspec_mgr->get_all_id_in_testproject($args->tprojectID,array('output' => 'id'));
 
-   $reqSet = $tproject_mgr->get_all_requirement_ids($args->tprojectID);
+  $reqSet = $tproject_mgr->get_all_requirement_ids($args->tprojectID);
 
 
-    $nt2exclude = array('testcase' => 'exclude_me',
-                        'testplan' => 'exclude_me',
-                        'requirement_spec'=> 'exclude_me',
-                        'requirement'=> 'exclude_me');
+  $nt2exclude = array('testcase' => 'exclude_me',
+                      'testplan' => 'exclude_me',
+                      'requirement_spec'=> 'exclude_me',
+                      'requirement'=> 'exclude_me');
                                                   
 
-    $nt2exclude_children=array('testcase' => 'exclude_my_children',
+  $nt2exclude_children = array('testcase' => 'exclude_my_children',
                                'requirement_spec'=> 'exclude_my_children');
 
     $my['options'] = array('recursive' => 0, 'output' => 'id');
@@ -119,18 +129,18 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $tsuiteSet = $tproject_mgr->tree_manager->get_subtree(
                               $args->tprojectID,$my['filters'],$my['options']);
     
-    if(!is_null($tcaseSet) && count($tcaseSet) > 0)
-    {
-      $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$tcaseSet) . ") ";
-    }  
-    else
-    {
+  if(!is_null($tcaseSet) && count($tcaseSet) > 0)
+  {
+    $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$tcaseSet) . ") ";
+  }  
+  else
+  {
       // Force Nothing extracted, because test project 
       // has no test case defined 
       $emptyTestProject = true;
       $filter['by_tc_id'] = " AND 1 = 0 ";
-    }  
-  }
+  }  
+ }
         
   $hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
   $filterSpecial['tricky'] = " 1=0 ";
@@ -139,31 +149,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $doFilterOnTestCase = ($args->tc_summary || $args->tc_title );
 
 
-  $reqCfg = config_get('req_cfg');
-  $gui->reqStatusDomain = init_labels($reqCfg->status_labels);
-
-  $gui->rtypes = array_flip(init_labels($reqCfg->type_labels));
-  foreach ($gui->rtypes as $key => $value) 
-  {
-    $gui->rtypes[$key] = 'RQ' . $value;  
-  }
-  $gui->rtypes = array_flip($gui->rtypes);
-  $reqSpecCfg = config_get('req_spec_cfg');
-  $rsTypes = init_labels($reqSpecCfg->type_labels);
-  $gui->rtypes = $rsTypes+$gui->rtypes;
-
-  // Multiple space clean up
-  $s = preg_replace("/ {2,}/", " ", $args->target);
-  $theSet = explode(' ',$s);
-  $targetSet = array();
-  foreach($theSet as $idx => $val)
-  {
-    if(trim($val) != '')
-    {
-      $targetSet[] = $db->prepare_string($val);
-    }  
-  } 
-  $canUseTarget = (count($targetSet) > 0);
+  $canDoSearch = false;
 
   // REQSPEC
   if( $args->rs_scope || $args->rs_title )
@@ -916,44 +902,71 @@ function buildRQExtTable($gui, $charset)
  */
 function init_args(&$dbHandler,&$tprojectMgr)
 {
-  $_REQUEST=strings_stripSlashes($_REQUEST);
+  $cb = array("rq_scope" => array(tlInputParameter::CB_BOOL),
+              "rq_title" => array(tlInputParameter::CB_BOOL),
+              "rq_doc_id" => array(tlInputParameter::CB_BOOL),
+              "rs_scope" => array(tlInputParameter::CB_BOOL),
+              "rs_title" => array(tlInputParameter::CB_BOOL),
+              "tc_summary" => array(tlInputParameter::CB_BOOL),
+              "tc_title" => array(tlInputParameter::CB_BOOL),
+              "tc_steps" => array(tlInputParameter::CB_BOOL),
+              "tc_expected_results" => array(tlInputParameter::CB_BOOL),
+              "tc_preconditions" => array(tlInputParameter::CB_BOOL),
+              "tc_id" => array(tlInputParameter::CB_BOOL),
+              "ts_summary" => array(tlInputParameter::CB_BOOL),
+              "ts_title" => array(tlInputParameter::CB_BOOL));
 
-  $args = new stdClass();
+
+  $strIn = array("reqStatus" => array(tlInputParameter::STRING_N,0,1),
+                 "rType" => array(tlInputParameter::STRING_N),
+                 "created_by" => array(tlInputParameter::STRING_N,0,50),
+                 "edited_by" => array(tlInputParameter::STRING_N,0,50),
+                 "creation_date_from" => array(tlInputParameter::STRING_N),
+                 "creation_date_to" => array(tlInputParameter::STRING_N),
+                 "modification_date_from" => array(tlInputParameter::STRING_N),
+                 "modification_date_to" => array(tlInputParameter::STRING_N));
+
+  $numIn = array("keyword_id" => array(tlInputParameter::INT_N),
+                "custom_field_id" => array(tlInputParameter::INT_N));
+
   $iParams = array("target" => array(tlInputParameter::STRING_N),
                    "doAction" => array(tlInputParameter::STRING_N,0,10),
-                   "tproject_id" => array(tlInputParameter::INT_N), 
-                   "reqStatus" => array(tlInputParameter::STRING_N,0,1),
-                   "rType" => array(tlInputParameter::STRING_N),
-                   
-                   "keyword_id" => array(tlInputParameter::INT_N),
-                   "custom_field_id" => array(tlInputParameter::INT_N),
-                   "created_by" => array(tlInputParameter::STRING_N,0,50),
-                   "edited_by" => array(tlInputParameter::STRING_N,0,50),
-
-                   "rq_scope" => array(tlInputParameter::CB_BOOL),
-                   "rq_title" => array(tlInputParameter::CB_BOOL),
-                   "rq_doc_id" => array(tlInputParameter::CB_BOOL),
-
-                   "rs_scope" => array(tlInputParameter::CB_BOOL),
-                   "rs_title" => array(tlInputParameter::CB_BOOL),
-                   "tc_summary" => array(tlInputParameter::CB_BOOL),
-                   "tc_title" => array(tlInputParameter::CB_BOOL),
-                   "tc_steps" => array(tlInputParameter::CB_BOOL),
-                   "tc_expected_results" => array(tlInputParameter::CB_BOOL),
-                   "tc_preconditions" => array(tlInputParameter::CB_BOOL),
-                   "tc_id" => array(tlInputParameter::CB_BOOL),
-
-                   "ts_summary" => array(tlInputParameter::CB_BOOL),
-                   "ts_title" => array(tlInputParameter::CB_BOOL),
-
                    "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
-                   "creation_date_from" => array(tlInputParameter::STRING_N),
-                   "creation_date_to" => array(tlInputParameter::STRING_N),
-                   "modification_date_from" => array(tlInputParameter::STRING_N),
-                   "modification_date_to" => array(tlInputParameter::STRING_N));
-
+                   "tproject_id" => array(tlInputParameter::INT_N));
+                   
   $args = new stdClass();
+  $iParams = $iParams + $cb + $strIn + $numIn;
+
   R_PARAMS($iParams,$args);
+
+  // At least one checkbox need to be checked
+  $args->oneCheck = false;
+  foreach($cb as $key => $vx)
+  {
+    $args->oneCheck = $oneCheck || $args->$key; 
+  } 
+
+  $args->oneValueOK = false; 
+  foreach($numIn as $key => $vx)
+  {
+    $args->oneValueOK = (intval($args->$key) > 0);
+    if($args->oneValueOK)
+    {
+      break;
+    }  
+  } 
+
+  if($args->oneValueOK == false)
+  {
+    foreach($strIn as $key => $vx)
+    {
+      $args->oneValueOK = (trim($args->$key) != ''); 
+      if($args->oneValueOK)
+      {
+        break;
+      }  
+    }     
+  }  
 
   // sanitize targetTestCase against XSS
   // remove all blanks
@@ -1108,6 +1121,20 @@ function initializeGui(&$argsObj,&$tprojectMgr)
     break;
   }
 
+  $reqCfg = config_get('req_cfg');
+  $gui->reqStatusDomain = init_labels($reqCfg->status_labels);
+
+  $gui->rtypes = array_flip(init_labels($reqCfg->type_labels));
+  foreach ($gui->rtypes as $key => $value) 
+  {
+    $gui->rtypes[$key] = 'RQ' . $value;  
+  }
+  $gui->rtypes = array_flip($gui->rtypes);
+  $reqSpecCfg = config_get('req_spec_cfg');
+  $rsTypes = init_labels($reqSpecCfg->type_labels);
+  $gui->rtypes = $rsTypes+$gui->rtypes;
+
+
   return $gui;
 }
 
@@ -1135,8 +1162,49 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
   $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
   $reqSpecSet = null; 
 
-  $gui->importance = intval($argsObj->importance);
+  // $gui->importance = intval($argsObj->importance);
   $gui->status = intval($argsObj->status);
 
   $gui->target = $argsObj->target;
+}
+
+/**
+ *
+ */
+function getSchema()
+{
+  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values',
+                                              'nodes_hierarchy',
+                                              'requirements','tcsteps',
+                                              'testcase_keywords',
+                                              'req_specs_revisions',
+                                              'req_versions',
+                                              'testsuites','tcversions',
+                                              'users',
+                                              'object_keywords'));
+                                
+  $views = tlObjectWithDB::getDBViews(array('latest_rspec_revision',
+                                             'latest_req_version',
+                                             'latest_tcase_version_number'));
+
+
+  return array($tables,$views);
+}
+
+/**
+ *
+ */
+function cleanUpTarget(&$dbHandler,$target)
+{
+  $s = preg_replace("/ {2,}/", " ", $args->target);
+  $theSet = explode(' ',$s);
+  $targetSet = array();
+  foreach($theSet as $idx => $val)
+  {
+    if(trim($val) != '')
+    {
+      $targetSet[] = $db->prepare_string($val);
+    }  
+  } 
+  return $targetSet;
 }

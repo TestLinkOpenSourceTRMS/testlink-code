@@ -947,7 +947,11 @@ function init_args(&$dbHandler,&$tprojectMgr)
   $args->oneCheck = false;
   foreach($cb as $key => $vx)
   {
-    $args->oneCheck = $oneCheck || $args->$key; 
+    $args->oneCheck = $args->$key;
+    if($args->oneCheck)
+    {
+      break;
+    }       
   } 
 
   $args->oneValueOK = false; 
@@ -1200,14 +1204,14 @@ function getSchema()
  */
 function cleanUpTarget(&$dbHandler,$target)
 {
-  $s = preg_replace("/ {2,}/", " ", $args->target);
+  $s = preg_replace("/ {2,}/", " ", $target);
   $theSet = explode(' ',$s);
   $targetSet = array();
   foreach($theSet as $idx => $val)
   {
     if(trim($val) != '')
     {
-      $targetSet[] = $db->prepare_string($val);
+      $targetSet[] = $dbHandler->prepare_string($val);
     }  
   } 
   return $targetSet;

@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.36 2010/08/28 14:47:54 franciscom Exp $
+@filesource inc_head.tpl
 Purpose: smarty template - HTML Common Header
 
 
@@ -9,8 +9,7 @@ Critic Smarty Global Variables expected
 editorType: used to understand if code for tinymce need to be loaded 
 
 *}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset={$pageCharset}" />
 	<meta http-equiv="Content-language" content="en" />

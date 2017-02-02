@@ -66,7 +66,7 @@ function chk_memory($limit=9, $recommended=16) {
 return $msg;
 }
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML>
 <html>
 <head>
 <title>TestLink - System Information</title>

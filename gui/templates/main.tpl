@@ -1,9 +1,8 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: main.tpl,v 1.8 2009/06/29 10:45:24 havlat Exp $ *}
+{* @filesource main.tpl *}
 {* Purpose: smarty template - main frame *}
 {*******************************************************************}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset={$pageCharset}" />
 	<meta http-equiv="Content-language" content="en" />

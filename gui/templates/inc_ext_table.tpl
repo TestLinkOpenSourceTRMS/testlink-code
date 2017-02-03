@@ -148,7 +148,7 @@ var sorters = [];
 Ext.onReady(function() {
 {/literal}
   Ext.QuickTips.init();
-	Ext.state.Manager.setProvider(new Ext.ux.JsonCookieProvider());
+	Ext.state.Manager.setProvider(new Ext.ux.LocalStorageProvider());
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value=$matrix->tableID}
 

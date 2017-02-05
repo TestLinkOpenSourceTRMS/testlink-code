@@ -1338,7 +1338,7 @@ class tlMailLogger extends tlObjectWithDB
     try
     {
       $mail_subject = $verboseTimeStamp . lang_get('mail_logger_email_subject');
-      $mail_subject .= isset($_SESSION['basehref']) ?  $_SESSION['basehref'] : config_get('instance_id');
+      $mail_subject .= isset($_SESSION['basehref']) ?  $_SESSION['basehref'] : config_get('instance_name');
       email_send($this->from_email, $this->sendto_email, $mail_subject, $email_body);
     }
     catch (Exception $exceptionObj)

@@ -82,7 +82,10 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 /** @var string used to have (when needed) a possibility to identify different TL instances
     @since 1.9.4 used on mail subject when mail logger is used
  */
-$tlCfg->instance_id = 'Main TestLink Instance';
+$tlCfg->instance_name = 'Main TestLink Instance';
+
+// do not use blanks or special characters, use a short string
+$tlCfg->instance_id = 'TLM';
 
 
 /**

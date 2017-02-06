@@ -464,7 +464,7 @@ function testlinkInitPage(&$db,
     checkSessionValid($db);
   }
   
-  if ($my['opt']['rightsCheckFn'])) 
+  if ($my['opt']['rightsCheckFn']) 
   {
     checkUserRightsFor($db,$my['opt']['rightsCheckFn'],
                        $my['opt']['onFailureGoToLogin']);

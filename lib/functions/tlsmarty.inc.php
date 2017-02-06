@@ -335,8 +335,7 @@ class TLSmarty extends Smarty
    */
   static function getImageSet()
   {
-    $burl = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
-    $imgLoc = $burl . TL_THEME_IMG_DIR;
+    $imgLoc = TL_THEME_IMG_DIR;
 
     $dummy = array('active' => $imgLoc . 'flag_green.png',
                    'activity' => $imgLoc . 'information.png',

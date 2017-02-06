@@ -27,7 +27,7 @@
 /** 
  * IXR is the class used for the XML-RPC server 
  */
-define ("TL_APICALL",'XML-RPC');
+define ('TL_APICALL','XML-RPC');
 
 require_once("../../../../config.inc.php");
 require_once("common.php");

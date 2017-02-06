@@ -163,6 +163,12 @@ $tlCfg->force_https = false;
 $tlCfg->sessionInactivityTimeout = 9900;
 
 /**
+ * @var string Set the session path.
+ * Default webserver config is used
+ */
+//$tlCfg->session_path = "D:\\xampp\\htdocs\\testlink\\php_sessions";
+
+/**
  * Set the session timeout value (in minutes).
  * This will prevent sessions timing out after very short periods of time
  * Warning: your server could block this settings

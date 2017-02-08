@@ -83,8 +83,8 @@ $TLS_htmltext['editTc'] = "<p>De <i>Testspecificatie </i> stelt gebruikers in st
 "In het testproject (zie de handleiding voor meer informatie). Het is ook mogelijk ".
 "<b>trefwoorden</b> toe te wijzen voor een betere traceerbaarheid. </li>
 <li>Navigeer via de boomstructuur aan de linkerkant en bewerk de data. Elke testcase heeft zijn eigen geschiedenis.</li>
-<li>Wijs uw gecreëerde testspecificatie voor <span class = \ "help \" onclick =
-\. "Javascript: open_help_window ( 'glosary', '$locale'); \">Testplan </span> wanneer uw testcases klaar zijn.</li>
+<li>Wijs uw gecreëerde testspecificatie voor <span class=\"help\" onclick=
+	\"Javascript: open_help_window ( 'glosary', '$locale'); \">Testplan </span> wanneer uw testcases klaar zijn.</li>
 </ol>
 
 <p>Met TestLink kunt u testcases in testsuites organiseren. ".
@@ -157,7 +157,7 @@ of alle testcases in een testproject of testplan.</p>
 <p>Selecteer de onderdelen van de testcases die u wilt weergeven, en klik vervolgens op een test case, 
 testsuite of het testproject. Een afdrukbare pagina wordt getoond. </P>
 </li>
-<li><p>Met de \ "Toon als \" dropbox in het navigatiepaneel kunt u kiezen of u 
+<li><p>Met de \"Toon als \" dropbox in het navigatiepaneel kunt u kiezen of u 
 de informatie wilt weergegeven als HTML, OpenOffice Writer of in een Micosoft Word document. 
 Zie <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> voor meer informatie </p>.
@@ -198,11 +198,10 @@ verkeerd ontworpen vereisten. </p>
 <p>U kunt nieuwe testcases voor de vereisten aanmaken door het gebruik van multi actie met gecontroleerde
 vereisten in het specificatie scherm. Deze testcases worden gemaakt in een testsuite
 met de naam opgegeven in configuratie <i>(standaard is: \$tlCfg->req_cfg->default_testsuite_name =
-'Test suite created by Requirement - Auto';) </i>. Titel en bereik worden gekopieerd naar deze testcases.</p>
+'Test suite created by Requirement - Auto';) </i>. Titel en bereik worden gekopieerd naar deze testcases.</p>";
 
 
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printReqSpec'] = "Print vereisten specificatie"; //printReq
+$TLS_htmltext_title['printReqSpec'] = "Print vereisten specificatie"; 
 $TLS_htmltext['printReqSpec'] = "<h2>Doel: </h2>
 <p>Vanaf hier kunt u een enkele vereiste af te drukken, alle vereisten binnen een vereisten specificatie,
 of alle vereisten in een testproject. </p>
@@ -303,7 +302,7 @@ Het omvat testcases samen met de testresultaten.</p>
 De meest 'actuele status' wordt bepaald door de meest recente build waarop testcases werden uitgevoerd.
 Bijvoorbeeld, als een testcase over meerdere builds werd uitgevoerd, wordt alleen het laatste resultaat meegenomen.</p>
 
-<p>'Laatste testresultaat" is een concept dat in vele rapporten gebruikt wordt en wordt als volgt bepaald:</p>
+<p>'Laatste testresultaat' is een concept dat in vele rapporten gebruikt wordt en wordt als volgt bepaald:</p>
 <ul>
 <li>De volgorde waarin builds worden toegevoegd aan een testplan bepaalt welke build de meest recente is. De resultaten
 uit de meest recente build hebben voorrang ten opzichte van oudere builds. Bijvoorbeeld, als een test

@@ -12,7 +12,7 @@ Purpose: show form
 
 {lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
                           edited_by,modification_date_to,modification_date_from,
-                          custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,testcase,testsuite,title,clear_date,show_calendar,id,
+                          custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,req_status,reqspec_type,testcase,testsuite,title,clear_date,show_calendar,id,
                           summary,preconditions,steps,expected_results,details,
                           scope,requirement,req_specification,req_document_id,id'}
 <div style="margin: 1px;">
@@ -167,15 +167,15 @@ Purpose: show form
         <div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
       </td>
 
-      <td>
-      {$labels.type}
+      <td colspan="2">
+      {$labels.reqspec_type}
         <select name="rType" id="rType">
           <option value="">&nbsp;</option>
             {html_options options=$gui->rtypes  selected=$gui->rType}
           </select>
 
        <br>   
-       {$labels.status}
+       {$labels.req_status}
         <select name="reqStatus">
         <option value="">&nbsp;</option>
         {html_options options=$gui->reqStatusDomain selected=$gui->reqStatus}

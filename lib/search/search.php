@@ -111,20 +111,23 @@ $mapRS = null;
 $mapRQ = null;
 
 // Search on Test Suites
-if($args->ts_summary || $args->ts_title)
+if( $canUseTarget && ($args->ts_summary || $args->ts_title) )
 {
+  //DEBUGecho 'going for TestSuites<br>';
   $mapTS = $cmdMgr->searchTestSuites($targetSet,$canUseTarget);
 }
 
 // Requirment SPECification
-if( $args->rs_scope || $args->rs_title )
+if( $canUseTarget && ($args->rs_scope || $args->rs_title) )
 {
+  //DEBUGecho 'going for Req Spec<br>';
   $mapRS = $cmdMgr->searchReqSpec($targetSet,$canUseTarget);
 } 
 
 // REQuirements
 if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) )
 {
+  //DEBUGecho 'going for Requirements<br>';
   $mapRQ = $cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);  
 } 
 

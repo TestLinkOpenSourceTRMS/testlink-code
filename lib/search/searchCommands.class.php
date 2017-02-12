@@ -467,11 +467,14 @@ class searchCommands
            "AND RSRV.revision = LRSR.revision " .
            "WHERE LRSR.testproject_id = " . $args->tproject_id;
 
+    //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
     $doFilter = true;
     if(!is_null($args->rspecType))
     {
       $doFilter = true;
       $sql .= " AND RSRV.type='" . $db->prepare_string($args->rspecType) . "' ";
+
+      //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
     }  
 
     $filterRS = null;
@@ -504,6 +507,8 @@ class searchCommands
     }  
 
     $sql .= $otherFRS;
+    //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
+
     if($doFilter)
     {
       $mapRSpec = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
@@ -524,6 +529,7 @@ class searchCommands
     $views = &$this->views;
 
     $reqSet = $this->getReqIDSet($args->tproject_id);
+
     if(is_null($reqSet) || count($reqSet) == 0)
     {  
       return null;
@@ -582,6 +588,8 @@ class searchCommands
 
     if( $doSql )
     {  
+      $doFilter = true;
+  
       $sql = " /* " . __LINE__ . " */ " . 
              " SELECT RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
              " FROM {$tables['nodes_hierarchy']} NHRQV " .
@@ -592,16 +600,25 @@ class searchCommands
              $from['users'] . $from['by_custom_field'] .
              " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
 
+      //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
+ 
+
       if(!is_null($args->reqType))
       {
         $doFilter = true;
         $sql .= " AND RQV.type ='" . $db->prepare_string($args->reqType) . "' ";
+
+        //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
+
       }  
 
       if($args->reqStatus != '')
       {
-        $doFilterOnReq = true;
+        $doFilter = true;
         $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
+
+        //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
+
       }  
 
       $filterRQ = null;
@@ -660,6 +677,7 @@ class searchCommands
       $sql .= $xfil . $otherFRQ;
       if( $doFilter ) 
       {
+        //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
         $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
       }
 
@@ -673,6 +691,7 @@ class searchCommands
    */
   function searchTestSuites($targetSet,$canUseTarget)
   {
+
     // shortcuts
     $args = &$this->args;
     $gui = &$this->gui;

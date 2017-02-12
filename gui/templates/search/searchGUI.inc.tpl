@@ -187,7 +187,6 @@ Purpose: show form
   </table>
   
   <p style="padding-left: 20px;">
-    <input type="hidden" name="caller" value="searchGui" />
     <input type="submit" name="doSearch" value="{$labels.btn_find}" />
   </p>
   {if $gui->forceSearch}

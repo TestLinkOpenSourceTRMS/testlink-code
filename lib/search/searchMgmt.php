@@ -2,7 +2,7 @@
 /** 
  *  TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- *  @filesource   search.php
+ *  @filesource   searchMgmt.php
  *  @author       Francisco Mancardi
  * 
  *  @internal revision
@@ -50,7 +50,6 @@ function init_args(&$dbHandler)
   $args->automationEnabled = 0;
   $args->requirementsEnabled = 0;
   $args->testPriorityEnabled = 0;
-  // $args->tcasePrefix = trim($args->tcasePrefix);
   $args->form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 
 
@@ -124,8 +123,8 @@ function initializeEnv($dbHandler)
   $grants = new stdClass();
   foreach($grant2check as $right)
   {
-      $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
-      $gui->$right = $grants->$right;
+    $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);
+    $gui->$right = $grants->$right;
   }
   
   $gui->target = $args->target;
@@ -135,7 +134,6 @@ function initializeEnv($dbHandler)
   $gui->requirementsEnabled = $args->requirementsEnabled; 
   $gui->automationEnabled = $args->automationEnabled; 
   $gui->testPriorityEnabled = $args->testPriorityEnabled;
-  //$gui->show_mode = $args->show_mode;
   $lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
   $gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 

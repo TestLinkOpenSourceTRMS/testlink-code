@@ -3,19 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Display test cases search results. 
+ * Execute Search. 
  * Search is done ONLY ON CURRENT test project
  *
  *
- * @filesource  tcSearch.php
+ * @filesource  search.php
  * @package     TestLink
  * @author      TestLink community
  * @copyright   2007-2017, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
- * @internal revisions
- * @since 1.9.16
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -24,24 +22,27 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $smarty = new TLSmarty();
-
 $tpl = 'searchResults.tpl';
-$tproject_mgr = new testproject($db);
-$tcase_mgr = new testcase ($db);
- 
-$tcase_cfg = config_get('testcase_cfg');
+
 $charset = config_get('charset');
 $filter = null;
-list($args,$mixedFilter) = init_args($db,$tproject_mgr);
 
-$gui = initializeGui($args,$tproject_mgr);
-initSearch($gui,$args,$tproject_mgr);
+$cmdMgr = new searchCommands($db);
+$cmdMgr->initEnv();
+
+$args = $cmdMgr->getArgs();
+$gui = $cmdMgr->getGui();
+$cmdMgr->initSchema();
+$treeMgr = new tree($db);
+$cfieldMgr = new cfield_mgr($db);
+
 
 $targetSet = cleanUpTarget($db,$args->target);
 $canUseTarget = (count($targetSet) > 0);
 
 if($args->oneCheck == false)
 {
+  $gui->caller = 'search';
   $smarty->assign('gui',$gui);
   $smarty->display($templateCfg->template_dir . $tpl);
   exit();
@@ -55,6 +56,8 @@ if($canUseTarget == false && $args->oneValueOK == false)
 }  
 
 
+
+// Processing
 $map = null;
 
 // CF belongs to ?
@@ -73,556 +76,108 @@ if( $args->custom_field_id > 0)
   }  
 }
 
-$rspecType = null;
-$reqType = null;
+$args->rspecType = null;
+$args->reqType = null;
 if($args->rType != '')
 {
   if(strpos($args->rType, 'RQ') === FALSE)
   {
-    $rspecType = $args->rType;
+    $args->rspecType = $args->rType;
   }  
   else
   {
-    $reqType = str_replace('RQ','', $args->rType);
+    $args->reqType = str_replace('RQ','', $args->rType);
   }  
 }  
 
-
-if($args->tprojectID && $args->doAction == 'doSearch')
+if( ($args->tproject_id > 0) && $args->doAction == 'doSearch')
 {
-  list($tables,$views) = getSchema();
+  $tables = $cmdMgr->getTables();
+  $views = $cmdMgr->getViews();
 
-  $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
-  $gui->tcasePrefix .= $tcase_cfg->glue_character;
-
-  $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '', 'users' => '');
+  $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 
+                'by_requirement_doc_id' => '', 'users' => '');
   $tcaseID = null;
-  $emptyTestProject = false;
+
+  $emptyTestProject = true;
 
   // Need to get all test cases to filter
-  $tcaseSet = array();
-  $tproject_mgr->get_all_testcases_id($args->tprojectID,$tcaseSet);
-
-  $reqspec_mgr = new requirement_spec_mgr($db);
-  $reqSpecSet = $reqspec_mgr->get_all_id_in_testproject($args->tprojectID,array('output' => 'id'));
-
-  $reqSet = $tproject_mgr->get_all_requirement_ids($args->tprojectID);
-
-
-  $nt2exclude = array('testcase' => 'exclude_me',
-                      'testplan' => 'exclude_me',
-                      'requirement_spec'=> 'exclude_me',
-                      'requirement'=> 'exclude_me');
-                                                  
-
-  $nt2exclude_children = array('testcase' => 'exclude_my_children',
-                               'requirement_spec'=> 'exclude_my_children');
-
-  $my['options'] = array('recursive' => 0, 'output' => 'id');
-  $my['filters'] = array('exclude_node_types' => $nt2exclude,
-                           'exclude_children_of' => $nt2exclude_children);
-  $tsuiteSet = $tproject_mgr->tree_manager->get_subtree(
-                              $args->tprojectID,$my['filters'],$my['options']);
-    
-  if(!is_null($tcaseSet) && count($tcaseSet) > 0)
-  {
-    $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$tcaseSet) . ") ";
-  }  
-  else
-  {
-      // Force Nothing extracted, because test project 
-      // has no test case defined 
-      $emptyTestProject = true;
-      $filter['by_tc_id'] = " AND 1 = 0 ";
-  }  
+  $tcaseSet = $cmdMgr->getTestCaseIDSet($args->tproject_id);
 }
         
+// 
+$mapTS = null;
+$mapRS = null;
+$mapRQ = null;
+
+// Search on Test Suites
+if($args->ts_summary || $args->ts_title)
+{
+  $mapTS = $cmdMgr->searchTestSuites($targetSet,$canUseTarget);
+}
+
+// Requirment SPECification
+if( $args->rs_scope || $args->rs_title )
+{
+  $mapRS = $cmdMgr->searchReqSpec($targetSet,$canUseTarget);
+} 
+
+// REQuirements
+if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) )
+{
+  $mapRQ = $cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);  
+} 
+
   
 $hasTestCases = (!is_null($tcaseSet) && count($tcaseSet) > 0);
-  $filterSpecial['tricky'] = " 1=0 ";
-  
-  $doFilterOnTestCase = false;
-  $doFilterOnTestCase = ($args->tc_summary || $args->tc_title );
+if( $hasTestCases )
+{
+  $emptyTestProject = false;
+  $mapTC = $cmdMgr->searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id);
+}  
 
 
-  $canDoSearch = false;
-
-  // REQSPEC
-  $doFilterOnReqSpec = false;
-  if( $args->rs_scope || $args->rs_title )
-  {
-    $sql = "SELECT RSRV.name, RSRV.scope, LRSR.req_spec_id, RSRV.id,LRSR.revision " . 
-           "FROM {$views['latest_rspec_revision']} LRSR " .
-           "JOIN {$tables['req_specs_revisions']} RSRV " .
-           "ON RSRV.parent_id = LRSR.req_spec_id " .
-           "AND RSRV.revision = LRSR.revision " .
-           "WHERE LRSR.testproject_id = " . $args->tprojectID;
-
-    if(!is_null($rspecType))
-    {
-      $doFilterOnReqSpec = true;
-      $sql .= " AND RSRV.type='" . $db->prepare_string($rspecType) . "' ";
-    }  
-
-    $filterRS = null;
-    if( $canUseTarget )
-    {
-      $filterRS['tricky'] = " 1=0 ";
-      
-      $filterRS['scope'] = ' OR ( ';
-      $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-      foreach($targetSet as $target)
-      {
-        $filterRS['scope'] .= $args->and_or . " RSRV.scope like '%{$target}%' ";  
-      }  
-      $filterRS['scope'] .= ')';
-  
-      $filterRS['name'] = ' OR ( ';
-      $filterRS['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-      foreach($targetSet as $target)
-      {
-        $filterRS['name'] .= $args->and_or . " RSRV.name like '%{$target}%' ";  
-      }  
-      $filterRS['name'] .= ')';
-    }  
-
-    $otherFRS = '';  
-    if(!is_null($filterRS))
-    {
-      $otherFRS = " AND (" . implode("",$filterRS) . ")";
-    }  
-
-    $sql .= $otherFRS;
-    if($doFilterOnReqSpec)
-    {
-      $mapRS = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
-    }  
-  } 
-
-  // REQ
-  $doFilterOnReq = false;
-  if( $args->rq_scope || $args->rq_title || $args->rq_doc_id)
-  {
-    $fi = null;
-    $from['by_custom_field'] = ''; 
-    if($req_cf_id >0)
-    {
-      $cf_def = $gui->design_cf_rq[$req_cf_id];
-
-      $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
-                                " ON CFD.node_id=RQV.id ";
-      $fi['by_custom_field'] = " AND CFD.field_id=" . intval($req_cf_id);
-
-      switch($gui->cf_types[$cf_def['type']])
-      {
-        case 'date':
-          $args->custom_field_value = $tproject_mgr->cfield_mgr->cfdate2mktime($args->custom_field_value);
-          
-          $fi['by_custom_field'] .= " AND CFD.value = {$args->custom_field_value}";
-        break;
-
-        default:
-          $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-          $fi['by_custom_field'] .= " AND CFD.value like '%{$args->custom_field_value}%' ";
-        break;
-      }
-    }  
-
-    $args->created_by = trim($args->created_by);
-    $from['users'] = '';
-    if($args->created_by != '' )
-    {
-      $doFilterOnReq = true;
-      $from['users'] .= " JOIN {$tables['users']} RQAUTHOR ON RQAUTHOR.id = RQV.author_id ";
-      $fi['author'] = " AND ( RQAUTHOR.login LIKE '%{$args->created_by}%' OR " .
-                      "       RQAUTHOR.first LIKE '%{$args->created_by}%' OR " .
-                      "       RQAUTHOR.last LIKE '%{$args->created_by}%') ";
-    }  
-  
-    $args->edited_by = trim($args->edited_by);
-    if( $args->edited_by != '' )
-    {
-      $doFilterOnReq = true;
-      $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = RQV.modifier_id ";
-      $fi['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
-                            "       UPDATER.first LIKE '%{$args->edited_by}%' OR " .
-                            "       UPDATER.last LIKE '%{$args->edited_by}%') ";
-    }  
-
-    if(!is_null($reqSet) && count($reqSet) >0)
-    {  
-      $sql = " /* " . __LINE__ . " */ " . 
-             " SELECT RQ.id AS req_id, RQV.scope,RQ.req_doc_id,NHRQ.name  " .
-             " FROM {$tables['nodes_hierarchy']} NHRQV " .
-             " JOIN {$views['latest_req_version']} LV on LV.req_id = NHRQV.parent_id " .
-             " JOIN {$tables['req_versions']} RQV on NHRQV.id = RQV.id AND RQV.version = LV.version " .
-             " JOIN {$tables['nodes_hierarchy']} NHRQ on NHRQ.id = LV.req_id " .
-             " JOIN {$tables['requirements']} RQ on RQ.id = LV.req_id " .
-             $from['users'] . $from['by_custom_field'] .
-             " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
-
-      if(!is_null($reqType))
-      {
-        $doFilterOnReq = true;
-        $sql .= " AND RQV.type ='" . $db->prepare_string($reqType) . "' ";
-      }  
-
-      if($args->reqStatus != '')
-      {
-        $doFilterOnReq = true;
-        $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
-      }  
-
-      $filterRQ = null;
-      if( $canUseTarget )
-      {
-        $doFilterOnReq = true;
-        $filterRQ['tricky'] = " 1=0 ";
-  
-        $filterRQ['scope'] = ' OR ( ';
-        $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-        foreach($targetSet as $target)
-        {
-          $filterRQ['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' ";  
-        }  
-        $filterRQ['scope'] .= ')';
-    
-        $filterRQ['name'] = ' OR ( ';
-        $filterRQ['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-
-        foreach($targetSet as $target)
-        {
-          $filterRQ['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' "; 
-        }  
-        $filterRQ['name'] .= ')';
-
-        $filterRQ['req_doc_id'] = ' OR ( ';
-        $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-        foreach($targetSet as $target)
-        {
-          $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
-        }  
-        $filterRQ['req_doc_id'] .= ')';
-      } 
-
-      $otherFRQ = '';  
-      if(!is_null($filterRQ))
-      {
-        $otherFRQ = " AND (" . implode("",$filterRQ) . ")";
-      }  
-
-      $xfil = ''; 
-      if(!is_null($fi))
-      {
-        $xfil = implode("",$fi);
-      }  
-
-      $sql .= $xfil . $otherFRQ;
-      if( $doFilterOnReq ) 
-      {
-        $mapRQ = $db->fetchRowsIntoMap($sql,'req_id'); 
-      }
-    }  
-  
-  } 
-
-
-  if($args->keyword_id)       
-  {
-     $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
-     $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
-  }
-  
-  if($tc_cf_id > 0)
-  {
-    $cf_def = $gui->design_cf_tc[$tc_cf_id];
-
-    $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
-                              " ON CFD.node_id=NH_TCV.id ";
-    $filter['by_custom_field'] = " AND CFD.field_id=" . intval($tc_cf_id);
-
-    switch($gui->cf_types[$cf_def['type']])
-    {
-      case 'date':
-        $args->custom_field_value = $tproject_mgr->cfield_mgr->cfdate2mktime($args->custom_field_value);
-        
-        $filter['by_custom_field'] .= " AND CFD.value = {$args->custom_field_value}";
-      break;
-
-      default:
-        $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-        $filter['by_custom_field'] .= " AND CFD.value like '%{$args->custom_field_value}%' ";
-      break;
-    }
-  }
-
-  $from['tc_steps'] = "";
-  if($args->tc_steps || $args->tc_expected_results)
-  {
-    $doFilterOnTestCase = true;
-    $from['tc_steps'] = " LEFT OUTER JOIN {$tables['nodes_hierarchy']} " .
-                        " NH_TCSTEPS ON NH_TCSTEPS.parent_id = NH_TCV.id " .
-                        " LEFT OUTER JOIN {$tables['tcsteps']} TCSTEPS " .
-                        " ON NH_TCSTEPS.id = TCSTEPS.id  ";
-  }
-
-  if($args->tc_steps && $canUseTarget)
-  {
-    $filterSpecial['by_steps'] = ' OR ( ';
-    $filterSpecial['by_steps'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-    
-    foreach($targetSet as $target)
-    {
-      $filterSpecial['by_steps'] .= $args->and_or . " TCSTEPS.actions like '%{$target}%' ";  
-    }  
-    $filterSpecial['by_steps'] .= ')';
-  }    
-    
-  if($args->tc_expected_results && $canUseTarget)
-  {
-    $filterSpecial['by_expected_results'] = ' OR ( ';
-    $filterSpecial['by_expected_results'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-    
-    foreach($targetSet as $target)
-    {
-      $filterSpecial['by_expected_results'] .= $args->and_or . 
-                   " TCSTEPS.expected_results like '%{$target}%' "; 
-    }  
-    $filterSpecial['by_expected_results'] .= ')';
-  }    
-
-
-  if($canUseTarget)
-  {
-    $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
-    $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary', 
-                 'preconditions' => 'tc_preconditions');
-    foreach($k2w as $kf => $alias)
-    {
-      $in = $i2s[$kf];
-      if($args->$in)
-      {
-        $doFilterOnTestCase = true;
-   
-        $filterSpecial[$kf] = ' OR ( ';
-        $filterSpecial[$kf] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-   
-        foreach($targetSet as $target)
-        {
-          $filterSpecial[$kf] .= " {$args->and_or} {$alias}.{$kf} like ";
-          $filterSpecial[$kf] .= " '%{$target}%' "; 
-        }  
-        $filterSpecial[$kf] .= ' )';
-      }
-    }     
-  } 
-
-  $otherFilters = '';  
-  if(!is_null($filterSpecial))
-  {
-    $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
-  }  
-
-
-/*
-create view latest_tcase_version_number  AS
-SELECT NH_TC.id AS testcase_id,max(TCV.version) AS version
-FROM nodes_hierarchy NH_TC 
-JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = NH_TC.id 
-JOIN tcversions TCV ON NH_TCV.id = TCV.id 
-group by testcase_id
-===========
-
-SELECT LVN.testcase_id, TCV.id,TCV.version 
-FROM latest_tcase_version_number LVN 
-JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = LVN.testcase_id 
-JOIN tcversions TCV ON NH_TCV.id = TCV.id AND LVN.version = TCV.version
-WHERE 1=1 AND NH_TCV.parent_id IN (7945) AND ( 1=1 AND TCV.summary like '%three%' )
-
-create view latest_rspec_revision AS
-SELECT parent_id AS req_spec_id,testproject_id, max(revision) AS revision
-FROM req_specs_revisions RSR
-JOIN req_specs RS ON RS.id = RSR.parent_id 
-group by parent_id,testproject_id
-
-CREATE VIEW latest_req_version AS
-SELECT RQ.id as req_id, MAX(RQV.version) vresion FROM nodes_hierarchy NHRQV
-JOIN requirements RQ on RQ.id = NHRQV.parent_id
-JOIN req_versions RQV on RQV.id = NHRQV.id
-GROUP BY RQ.id
-
-
-select RQV.scope,RQ.req_doc_id,NHRQ.name  from nodes_hierarchy NHRQV
-JOIN latest_req_version LV on LV.req_id = NHRQV.parent_id
-JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version
-JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id
-JOIN requirements RQ on RQ.id = LV.req_id 
-
-*/
-
-  // Search on latest test case version using view    
-  $sqlFields = " SELECT LVN.testcase_id, NH_TC.name, TCV.id AS tcversion_id," .
-               " TCV.summary, TCV.version, TCV.tc_external_id "; 
-    
-
-
-  if($doFilterOnTestCase)
-  {
-    $args->created_by = trim($args->created_by);
-    $from['users'] = '';
-    if( $args->created_by != '' )
-    {
-      $doFilterOnTestCase = true;
-      $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
-      $filter['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
-                          "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
-                          "       AUTHOR.last LIKE '%{$args->created_by}%') ";
-    }  
-  
-    $args->edited_by = trim($args->edited_by);
-    if( $args->edited_by != '' )
-    {
-      $doFilterOnTestCase = true;
-      $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
-      $filter['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
-                          "         UPDATER.first LIKE '%{$args->edited_by}%' OR " .
-                          "         UPDATER.last LIKE '%{$args->edited_by}%') ";
-    }  
-  }
-
-
-  // search fails if test case has 0 steps - Added LEFT OUTER
-  $sqlPart2 = " FROM {$views['latest_tcase_version_number']} LVN " .
-              " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = LVN.testcase_id " .
-              " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
-              " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
-              " AND TCV.version = LVN.version " . 
-              $from['tc_steps'] . $from['users'] . $from['by_keyword_id'] .
-              $from['by_custom_field'] .
-              " WHERE LVN.testcase_id IN (" . implode(',', $tcaseSet) . ")";
-
-  $mapTC = NULL;
-  if($doFilterOnTestCase)
-  {
-    if ($filter)
-    {
-      $sqlPart2 .= implode("",$filter);
-    }
-    
-    if ($mixedFilter['dates4tc'])
-    {
-      $sqlPart2 .= implode("",$mixedFilter['dates4tc']);
-    }
-
-    
- 
-    $sql = $sqlFields . $sqlPart2 . $otherFilters;
-    if($hasTestCases)
-    {  
-      $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
-    }
-  }  
-
-  // Search on Test Suites
-  // Search on latest test case version using view    
-  $filterSpecial = null;
-  $filterSpecial['tricky'] = " 1=0 ";
-
-  if($args->ts_summary && $canUseTarget)
-  {
-    $filterSpecial['ts_summary'] = ' OR ( ';
-    $filterSpecial['ts_summary'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-    
-    foreach($targetSet as $target)
-    {
-      $filterSpecial['ts_summary'] .= $args->and_or . " TS.details like '%{$target}%' ";
-    }  
-    $filterSpecial['ts_summary'] .= ')';
-  }  
-
-  if($args->ts_title && $canUseTarget)
-  {
-    $filterSpecial['ts_title'] = ' OR ( ';
-    $filterSpecial['ts_title'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-
-    foreach($targetSet as $target)
-    {
-      $filterSpecial['ts_title'] .= $args->and_or . " NH_TS.name like '%{$target}%' ";
-    }  
-    $filterSpecial['ts_title'] .= ')';
-  }  
-
-  $otherFilters = '';  
-  if(!is_null($filterSpecial))
-  {
-    $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
-  }  
-
-  $mapTS = null;
-  if($args->ts_title || $args->ts_summary)
-  {
-
-    $fromTS['by_keyword_id']= '';
-    $filterTS['by_keyword_id']='';
-    if($args->keyword_id)
-    {
-     $fromTS['by_keyword_id'] = " JOIN {$tables['object_keywords']} KW ON KW.fk_id = NH_TS.id ";
-     $filterTS['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
-    }  
-  
-
-    $sqlFields = " SELECT NH_TS.name, TS.id, TS.details " .
-                 " FROM {$tables['nodes_hierarchy']} NH_TS " .
-                 " JOIN {$tables['testsuites']} TS ON TS.id = NH_TS.id " .
-                 $fromTS['by_keyword_id'] .
-                 " WHERE TS.id IN (" . implode(',', $tsuiteSet) . ")";
-    
-    $sql = $sqlFields . $filterTS['by_keyword_id'] . $otherFilters;
-  
-    if(!is_null($tsuiteSet) && count($tsuiteSet) > 0)
-    {
-      $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
-    }  
-  }  
-
-  if ($mapTC)
-  {
+// -------------------------------------------------------------
+// Render Results
+if ($mapTC)
+{
     $tcase_mgr = new testcase($db);   
     $tcase_set = array_keys($mapTC);
     $options = array('output_format' => 'path_as_string');
-    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
+    $gui->path_info = $treeMgr->get_full_path_verbose($tcase_set, $options);
     $gui->resultSet = $mapTC;
-  }
-  else if ($emptyTestProject) 
-  {
-    $gui->warning_msg = lang_get('empty_testproject');
-  }
-  else
-  {
-    $gui->warning_msg = lang_get('no_records_found');
-  }
 
-  $img = $smarty->getImages();
-  $table = buildTCExtTable($gui, $charset, $img['edit_icon'], $img['history_small']);
+}
+else if ($emptyTestProject) 
+{
+  $gui->warning_msg = lang_get('empty_testproject');
+}
+else
+{
+  $gui->warning_msg = lang_get('no_records_found');
+}
 
-  if (!is_null($table)) 
-  {
-    $gui->tableSet[] = $table;
-  }
+$img = $smarty->getImages();
+$table = buildTCExtTable($gui, $charset, $img['edit_icon'], $img['history_small']);
 
-  // TS
-  $table = null;
-  if( !is_null($mapTS))
-  {
-    $gui->resultTestSuite = $mapTS;
-    $table = buildTSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
-  }  
+if (!is_null($table)) 
+{
+  $gui->tableSet[] = $table;
+}
+
+// TS
+$table = null;
+if( !is_null($mapTS))
+{
+  $gui->resultTestSuite = $mapTS;
+  $table = buildTSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
+}  
   
-  $gui->warning_msg = '';
-  if(!is_null($table))
-  {
-    $gui->tableSet[] = $table;
-  }  
+$gui->warning_msg = '';
+if(!is_null($table))
+{
+  $gui->tableSet[] = $table;
+}  
 
   // RSPEC
   $table = null;
@@ -644,7 +199,7 @@ JOIN requirements RQ on RQ.id = LV.req_id
     $gui->resultReq = $mapRQ;
     $req_set = array_keys($mapRQ);
     $options = array('output_format' => 'path_as_string');
-    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($req_set,$options);
+    $gui->path_info = $treeMgr->get_full_path_verbose($req_set,$options);
 
     $table = buildRQExtTable($gui, $charset);
   }
@@ -842,7 +397,8 @@ function buildRQExtTable($gui, $charset)
   $designType = $designCfg['type'];
 
   $lbl = array('edit' => 'requirement', 'req_spec' => 'req_spec', 
-               'requirement' => 'requirement','scope' => 'scope');
+               'requirement' => 'requirement','scope' => 'scope', 
+               'version_revision_tag' => 'version_revision_tag');
 
   $labels = init_labels($lbl);
   $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
@@ -901,303 +457,7 @@ function buildRQExtTable($gui, $charset)
 }
 
 
-/**
- *
- */
-function init_args(&$dbHandler,&$tprojectMgr)
-{
-  $cb = array("rq_scope" => array(tlInputParameter::CB_BOOL),
-              "rq_title" => array(tlInputParameter::CB_BOOL),
-              "rq_doc_id" => array(tlInputParameter::CB_BOOL),
-              "rs_scope" => array(tlInputParameter::CB_BOOL),
-              "rs_title" => array(tlInputParameter::CB_BOOL),
-              "tc_summary" => array(tlInputParameter::CB_BOOL),
-              "tc_title" => array(tlInputParameter::CB_BOOL),
-              "tc_steps" => array(tlInputParameter::CB_BOOL),
-              "tc_expected_results" => array(tlInputParameter::CB_BOOL),
-              "tc_preconditions" => array(tlInputParameter::CB_BOOL),
-              "tc_id" => array(tlInputParameter::CB_BOOL),
-              "ts_summary" => array(tlInputParameter::CB_BOOL),
-              "ts_title" => array(tlInputParameter::CB_BOOL));
 
-
-  $strIn = array("reqStatus" => array(tlInputParameter::STRING_N,0,1),
-                 "rType" => array(tlInputParameter::STRING_N),
-                 "created_by" => array(tlInputParameter::STRING_N,0,50),
-                 "edited_by" => array(tlInputParameter::STRING_N,0,50),
-                 "creation_date_from" => array(tlInputParameter::STRING_N),
-                 "creation_date_to" => array(tlInputParameter::STRING_N),
-                 "modification_date_from" => array(tlInputParameter::STRING_N),
-                 "modification_date_to" => array(tlInputParameter::STRING_N));
-
-  $numIn = array("keyword_id" => array(tlInputParameter::INT_N),
-                "custom_field_id" => array(tlInputParameter::INT_N));
-
-  $iParams = array("target" => array(tlInputParameter::STRING_N),
-                   "doAction" => array(tlInputParameter::STRING_N,0,10),
-                   "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
-                   "tproject_id" => array(tlInputParameter::INT_N));
-                   
-  $args = new stdClass();
-  $iParams = $iParams + $cb + $strIn + $numIn;
-
-  R_PARAMS($iParams,$args);
-
-  // At least one checkbox need to be checked
-  $args->oneCheck = false;
-  foreach($cb as $key => $vx)
-  {
-    $args->oneCheck = $args->$key;
-    if($args->oneCheck)
-    {
-      break;
-    }       
-  } 
-
-  $args->oneValueOK = false; 
-  foreach($numIn as $key => $vx)
-  {
-    $args->oneValueOK = (intval($args->$key) > 0);
-    if($args->oneValueOK)
-    {
-      break;
-    }  
-  } 
-
-  if($args->oneValueOK == false)
-  {
-    foreach($strIn as $key => $vx)
-    {
-      $args->oneValueOK = (trim($args->$key) != ''); 
-      if($args->oneValueOK)
-      {
-        break;
-      }  
-    }     
-  }  
-
-  // sanitize targetTestCase against XSS
-  // remove all blanks
-  // remove some html entities
-  // remove ()
-  $tt = array(' ','<','>','(',')');
-  $args->targetTestCase = str_replace($tt,'',$args->targetTestCase);
-
-  $args->userID = intval(isset($_SESSION['userID']) ? $_SESSION['userID'] : 0);
-
-  if(is_null($args->tproject_id) || intval($args->tproject_id) <= 0)
-  {
-    $args->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
-    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-  }  
-  else
-  {
-    $args->tprojectID = intval($args->tproject_id);
-    $info = $tprojectMgr->get_by_id($args->tprojectID);
-    $args->tprojectName = $info['name'];
-  }  
-
-  if($args->tprojectID <= 0)
-  {
-    throw new Exception("Error Processing Request - Invalid Test project id " . __FILE__);
-  }   
-
-  // convert according local
-
-  // convert "creation date from" to iso format for database usage
-  $k2w = array('creation_date_from' => '','creation_date_to' => " 23:59:59",
-               'modification_date_from' => '', 'modification_date_to' => " 23:59:59");
-
-  $k2f = array('creation_date_from' => ' creation_ts >= ',
-               'creation_date_to' => 'creation_ts <= ',
-               'modification_date_from' => ' modification_ts >= ', 
-               'modification_date_to' => ' modification_ts <= ');
-
-
-  $dateFormat = config_get('date_format');
-  $filter['dates4tc'] = null;
-  $filter['dates4rq'] = null;
-  foreach($k2w as $key => $value)
-  {
-    $lk = 'loc_' . $key;
-    $args->$lk = '';
-    
-    if (isset($args->$key) && $args->$key != '') 
-    {
-      $da = split_localized_date($args->$key, $dateFormat);
-      if ($da != null) 
-      {
-        $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
-        $filter['dates4tc'][$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
-        $filter['dates4rq'][$key] = " AND RQV.{$k2f[$key]} '{$args->$key}' ";
-
-        $args->$lk = implode("/",$da);
-      }
-    }
-  } 
-
-  $args->and_or = isset($_REQUEST['and_or']) ? $_REQUEST['and_or'] : 'or'; 
-  
-  $args->user = $_SESSION['currentUser'];
-
-  $args->canAccessTestSpec = $args->user->hasRight($dbHandler,'mgt_view_tc',$args->tproject_id);
-
-  $args->canAccessReqSpec = $args->user->hasRight($dbHandler,'mgt_view_req',$args->tproject_id);
-
-  return array($args,$filter);
-}
-
-
-/**
- * 
- *
- */
-function initializeGui(&$argsObj,&$tprojectMgr)
-{
-  $gui = new stdClass();
-
-  $gui->rType = $argsObj->rType;
-  $gui->reqStatus = $argsObj->reqStatus;
-
-  $gui->pageTitle = lang_get('search_title');
-  $gui->warning_msg = '';
-  $gui->path_info = null;
-  $gui->resultSet = null;
-  $gui->tableSet = null;
-  $gui->bodyOnLoad = null;
-  $gui->bodyOnUnload = null;
-  $gui->refresh_tree = false;
-  $gui->hilite_testcase_name = false;
-  $gui->show_match_count = false;
-  $gui->row_qty = 0;
-  $gui->doSearch = ($argsObj->doAction == 'doSearch');
-  $gui->tproject_id = intval($argsObj->tprojectID);
-  
-  // ----------------------------------------------------
-  $gui->mainCaption = lang_get('testproject') . " " . $argsObj->tprojectName;
- 
-
-  
- 
-  $gui->search_important_notice = sprintf(lang_get('search_important_notice'),$argsObj->tprojectName);
-
-  // need to set values that where used on latest search (if any was done)
-  // $gui->importance = config_get('testcase_importance_default');
-
-  $gui->tc_steps = $argsObj->tc_steps;
-  $gui->tc_title = $argsObj->tc_title;
-  $gui->tc_summary = $argsObj->tc_summary;
-  $gui->tc_preconditions = $argsObj->tc_preconditions;
-  $gui->tc_expected_results = $argsObj->tc_expected_results;
-  $gui->tc_id = $argsObj->tc_id;
-
-  $gui->ts_title = $argsObj->ts_title;
-  $gui->ts_summary = $argsObj->ts_summary;
-
-  $gui->rs_title = $argsObj->rs_title;
-  $gui->rs_scope = $argsObj->rs_scope;
-
-  $gui->rq_title = $argsObj->rq_title;
-  $gui->rq_scope = $argsObj->rq_scope;
-  $gui->rq_doc_id = $argsObj->rq_doc_id;
-
-
-  $gui->custom_field_id = $argsObj->custom_field_id;
-  $gui->custom_field_value = $argsObj->custom_field_value;
-  $gui->creation_date_from = $argsObj->loc_creation_date_from;
-  $gui->creation_date_to = $argsObj->loc_creation_date_to;
-  $gui->modification_date_from = $argsObj->loc_modification_date_from;
-  $gui->modification_date_to = $argsObj->loc_modification_date_to;
-
-  $gui->created_by = trim($argsObj->created_by);
-  $gui->edited_by =  trim($argsObj->edited_by);
-  $gui->keyword_id = intval($argsObj->keyword_id);
-
-
-  $gui->forceSearch = false;
-  
-  $gui->and_checked = $gui->or_checked = '';
-  switch($argsObj->and_or)
-  {
-    case 'and':
-      $gui->and_checked = ' checked="checked" ';
-    break;
-
-    case 'or':
-    default:
-      $gui->or_checked = ' checked="checked" ';
-    break;
-  }
-
-  $reqCfg = config_get('req_cfg');
-  $gui->reqStatusDomain = init_labels($reqCfg->status_labels);
-
-  $gui->rtypes = array_flip(init_labels($reqCfg->type_labels));
-  foreach ($gui->rtypes as $key => $value) 
-  {
-    $gui->rtypes[$key] = 'RQ' . $value;  
-  }
-  $gui->rtypes = array_flip($gui->rtypes);
-  $reqSpecCfg = config_get('req_spec_cfg');
-  $rsTypes = init_labels($reqSpecCfg->type_labels);
-  $gui->rtypes = $rsTypes+$gui->rtypes;
-
-
-  return $gui;
-}
-
-/**
- *
- */
-function initSearch(&$gui,&$argsObj,&$tprojectMgr)
-{
-
-
-  $gui->design_cf_tc = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design(
-                          $argsObj->tprojectID,cfield_mgr::ENABLED,null,'testcase');
-
-  $gui->design_cf_req = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design(
-                          $argsObj->tprojectID,
-                          cfield_mgr::ENABLED,null,'requirement');
-
-  $gui->cf = $gui->design_cf_tc+$gui->design_cf_req;
-  $gui->filter_by['custom_fields'] = !is_null($gui->cf);
-
-  $gui->keywords = $tprojectMgr->getKeywordSet($argsObj->tprojectID);
-  $gui->filter_by['keyword'] = !is_null($gui->keywords);
- 
-  $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
-  $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
-  $reqSpecSet = null; 
-
-  // $gui->importance = intval($argsObj->importance);
-  $gui->status = intval($argsObj->status);
-
-  $gui->target = $argsObj->target;
-}
-
-/**
- *
- */
-function getSchema()
-{
-  $tables = tlObjectWithDB::getDBTables(array('cfield_design_values',
-                                              'nodes_hierarchy',
-                                              'requirements','tcsteps',
-                                              'testcase_keywords',
-                                              'req_specs_revisions',
-                                              'req_versions',
-                                              'testsuites','tcversions',
-                                              'users',
-                                              'object_keywords'));
-                                
-  $views = tlObjectWithDB::getDBViews(array('latest_rspec_revision',
-                                             'latest_req_version',
-                                             'latest_tcase_version_number'));
-
-
-  return array($tables,$views);
-}
 
 /**
  *
@@ -1216,3 +476,41 @@ function cleanUpTarget(&$dbHandler,$target)
   } 
   return $targetSet;
 }
+
+
+
+/*
+create view latest_tcase_version_number  AS
+SELECT NH_TC.id AS testcase_id,max(TCV.version) AS version
+FROM nodes_hierarchy NH_TC 
+JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = NH_TC.id 
+JOIN tcversions TCV ON NH_TCV.id = TCV.id 
+group by testcase_id
+===========
+
+SELECT LVN.testcase_id, TCV.id,TCV.version 
+FROM latest_tcase_version_number LVN 
+JOIN nodes_hierarchy NH_TCV ON NH_TCV.parent_id = LVN.testcase_id 
+JOIN tcversions TCV ON NH_TCV.id = TCV.id AND LVN.version = TCV.version
+WHERE 1=1 AND NH_TCV.parent_id IN (7945) AND ( 1=1 AND TCV.summary like '%three%' )
+
+create view latest_rspec_revision AS
+SELECT parent_id AS req_spec_id,testproject_id, max(revision) AS revision
+FROM req_specs_revisions RSR
+JOIN req_specs RS ON RS.id = RSR.parent_id 
+group by parent_id,testproject_id
+
+CREATE VIEW latest_req_version AS
+SELECT RQ.id as req_id, MAX(RQV.version) vresion FROM nodes_hierarchy NHRQV
+JOIN requirements RQ on RQ.id = NHRQV.parent_id
+JOIN req_versions RQV on RQV.id = NHRQV.id
+GROUP BY RQ.id
+
+
+select RQV.scope,RQ.req_doc_id,NHRQ.name  from nodes_hierarchy NHRQV
+JOIN latest_req_version LV on LV.req_id = NHRQV.parent_id
+JOIN req_versions RQV on NHRQV.id = RQV.id AND RQV.version = LV.version
+JOIN nodes_hierarchy NHRQ on NHRQ.id = LV.req_id
+JOIN requirements RQ on RQ.id = LV.req_id 
+
+*/

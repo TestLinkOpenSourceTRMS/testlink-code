@@ -1497,6 +1497,8 @@ $TLS_run_mode = "Run mode";
 
 $TLS_reqspec_type = 'Req. Spec. Type';
 $TLS_req_status = 'Req. Status';
+$TLS_tcase_wkf_status = 'Test Case Status';
+
 
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";

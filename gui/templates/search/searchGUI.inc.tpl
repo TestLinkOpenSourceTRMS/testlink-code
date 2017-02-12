@@ -13,7 +13,7 @@ Purpose: show form
 {lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
                           edited_by,modification_date_to,modification_date_from,
                           custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,req_status,reqspec_type,testcase,testsuite,title,clear_date,show_calendar,id,
-                          summary,preconditions,steps,expected_results,details,
+                          summary,preconditions,steps,expected_results,details,tcase_wkf_status,
                           scope,requirement,req_specification,req_document_id,id'}
 <div style="margin: 1px;">
 <form method="post" name="fullTextSearch" id="fullTextSearch" 
@@ -168,6 +168,15 @@ Purpose: show form
       </td>
 
       <td colspan="2">
+
+      {$labels.tcase_wkf_status}
+        <select name="tcWKFStatus" id="tcWKFStatus">
+          <option value="">&nbsp;</option>
+            {html_options options=$gui->tcWKFStatusDomain  selected=$gui->tcWKFStatus}
+          </select>
+
+       <br>   
+
       {$labels.reqspec_type}
         <select name="rType" id="rType">
           <option value="">&nbsp;</option>

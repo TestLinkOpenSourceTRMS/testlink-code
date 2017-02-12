@@ -245,6 +245,12 @@ function processSearch(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   $xbm->filter_by['keyword'] = !is_null($args->keywords);
   $xbm->keywords = $args->keywords; 
 
+
+  $xbm->tcWKFStatus = 0;
+  $xbm->tcWKFStatusDomain = searchCommands::getTestCaseWKFStatusDomain();
+
+
+
   $tplEngine->assign('gui',$xbm);
   $tplEngine->display($templateCfg->template_dir . 'searchResults.tpl');
 }

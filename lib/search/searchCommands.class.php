@@ -28,6 +28,7 @@ class searchCommands
   private $views;
 
   private $reqSpecCfg;
+  private $tcaseCfg;
 
 
   
@@ -196,7 +197,8 @@ class searchCommands
                 "ts_title" => array(tlInputParameter::CB_BOOL));
 
 
-    $strIn = array("reqStatus" => array(tlInputParameter::STRING_N,0,1),
+    $strIn = array("tcWKFStatus" => array(tlInputParameter::STRING_N,0,1),
+                   "reqStatus" => array(tlInputParameter::STRING_N,0,1),
                    "rType" => array(tlInputParameter::STRING_N),
                    "created_by" => array(tlInputParameter::STRING_N,0,50),
                    "edited_by" => array(tlInputParameter::STRING_N,0,50),
@@ -340,6 +342,7 @@ class searchCommands
 
     $this->gui->rType = $this->args->rType;
     $this->gui->reqStatus = $this->args->reqStatus;
+    $this->gui->tcWKFStatus = $this->args->tcWKFStatus;
 
     $this->gui->pageTitle = lang_get('search_title');
     $this->gui->warning_msg = '';
@@ -420,6 +423,8 @@ class searchCommands
     $this->reqSpecCfg = config_get('req_spec_cfg');
     $this->rsTypes = init_labels($this->reqSpecCfg->type_labels);
     $this->gui->rtypes = $this->rsTypes+$this->gui->rtypes;
+
+    $this->gui->tcWKFStatusDomain = $this->getTestCaseWKFStatusDomain();
   }
 
 
@@ -530,7 +535,9 @@ class searchCommands
 
     $reqSet = $this->getReqIDSet($args->tproject_id);
 
-    if(is_null($reqSet) || count($reqSet) == 0)
+    $bye = is_null($reqSet) || count($reqSet) == 0;
+    $bye = $bye || !$canUseTarget || $req_cf_id <= 0; 
+    if( $bye )
     {  
       return null;
     }
@@ -609,7 +616,6 @@ class searchCommands
         $sql .= " AND RQV.type ='" . $db->prepare_string($args->reqType) . "' ";
 
         //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
-
       }  
 
       if($args->reqStatus != '')
@@ -618,7 +624,6 @@ class searchCommands
         $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
 
         //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
-
       }  
 
       $filterRQ = null;
@@ -782,6 +787,7 @@ class searchCommands
     $from['by_custom_field'] = "";
 
     $filter = null;
+    $filterSpecial = null;
 
 
     if( is_null($tcaseSet) || count($tcaseSet) == 0)
@@ -882,9 +888,10 @@ class searchCommands
 
 
     $otherFilters = '';  
-    if(!is_null($filterSpecial))
+    if(!is_null($filterSpecial) && count($filterSpecial) > 1)
     {
-      $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
+      $otherFilters = " AND (/* filterSpecial */ " . 
+                      implode("",$filterSpecial) . ")";
     }  
 
     // Search on latest test case version using view    
@@ -893,6 +900,12 @@ class searchCommands
     
     if($doFilter)
     {
+      if($args->tcWKFStatus > 0)       
+      {
+        $tg = intval($args->tcWKFStatus);
+        $filter['by_tcWKFStatus'] = " AND TCV.status = {$tg} "; 
+      }
+
       if($args->keyword_id)       
       {
          $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
@@ -903,7 +916,7 @@ class searchCommands
       $from['users'] = '';
       if( $args->created_by != '' )
       {
-        $doFilterOnTestCase = true;
+        $doFilter = true;
         $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
         $filter['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
                             "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
@@ -913,7 +926,7 @@ class searchCommands
       $args->edited_by = trim($args->edited_by);
       if( $args->edited_by != '' )
       {
-        $doFilterOnTestCase = true;
+        $doFilter = true;
         $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
         $filter['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
                             "         UPDATER.first LIKE '%{$args->edited_by}%' OR " .
@@ -948,10 +961,26 @@ class searchCommands
       }
    
       $sql = $sqlFields . $sqlPart2 . $otherFilters;
+
+      //DEBUGecho __FUNCTION__ . '-' . __LINE__ . '-' . $sql .'<br>';
       $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
     }  
 
     return $mapTC;
+  }
+
+  /**
+   *
+   */
+  static function getTestCaseWKFStatusDomain()
+  {
+    $cv = array_flip(config_get('testCaseStatus'));
+    foreach($cv as $cc => $vv)
+    {
+      $lbl = lang_get('testCaseStatus_' . $vv);
+      $cv[$cc] = lang_get('testCaseStatus_' . $vv);
+    }  
+    return $cv;
   }
 
 

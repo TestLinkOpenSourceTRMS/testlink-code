@@ -127,7 +127,7 @@ if( $canUseTarget && ($args->rs_scope || $args->rs_title) )
 // REQuirements
 if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) )
 {
-  //DEBUGecho 'going for Requirements<br>';
+  //DEBUGtecho 'going for Requirements<br>';
   $mapRQ = $cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);  
 } 
 

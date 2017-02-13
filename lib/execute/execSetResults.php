@@ -1506,10 +1506,11 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   
   // IMPORTANT due  to platform feature
   // every element on linked_tcversions will be an array.
-  $cf_filters=array('show_on_execution' => 1); 
-  $locationFilters=$tcaseMgr->buildCFLocationMap();
-  $guiObj->design_time_cfields='';
-  $guiObj->testplan_design_time_cfields='';
+  $cf_filters = array('show_on_execution' => 1); 
+  $locationFilters = $tcaseMgr->buildCFLocationMap();
+  
+  $guiObj->design_time_cfields = array();
+  $guiObj->testplan_design_time_cfields = array();
   
   $tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
 
@@ -1527,6 +1528,8 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   $tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
     
   $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
+
+
   foreach($locationFilters as $locationKey => $filterValue)
   {
     $finalFilters=$cf_filters+$filterValue;

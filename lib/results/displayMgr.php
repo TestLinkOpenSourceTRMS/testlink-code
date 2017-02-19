@@ -44,7 +44,7 @@ function generateHtmlEmail(&$smarty, $template_file, $mailCfg)
     // TICKET 6905: Link to test case is still raw link (no title) in email(HTML) type of test report
     // array('strip_email_links' => false)
     $op = email_send( $mailCfg->from, $mailCfg->to, $mailCfg->subject, 
-                      $html_report, $mailCfg->cc, false,true,
+                      $html_report, $mailCfg->cc, null,false,true,
                       array('strip_email_links' => false));
 
     if($op->status_ok)

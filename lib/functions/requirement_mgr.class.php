@@ -4381,9 +4381,17 @@ function getCoverageCounterSet($itemSet)
                   ' using address:' . $ue["email"];
       try
       {
+        $xmail = array();
+        $xmail['cc'] = '';
+        $xmail['attachment'] = null;
+        $xmail['exit_on_error'] = false;
+        $xmail['htmlFormat'] = true; 
 
+      
        $rmx = @email_send($from,$ue["email"],
-              $mailSubjectCache[$ue['locale']],$mailBodyCache[$ue['locale']],'',false,true,null);
+              $mailSubjectCache[$ue['locale']],$mailBodyCache[$ue['locale']],
+              $xmail['cc'],$xmail['attachment'],$xmail['exit_on_error'],
+              $xmail['htmlFormat'],null);
        $apx = $rmx->status_ok ? 'Succesful - ' : 'ERROR -'; 
       }
       catch (Exception $e)

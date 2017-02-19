@@ -563,7 +563,8 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
           
         $email['body'] .= '<br />' . date(DATE_RFC1123);
         $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'], '', true, true);
+                               $email['subject'], $email['body'], null, 
+                               '', true, true);
       } // foreach($tester_set as $user_id => $value)
     }                       
   }

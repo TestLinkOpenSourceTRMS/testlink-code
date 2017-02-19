@@ -4053,4 +4053,5 @@ $TLS_click_passed_next = "Click to set to passed and move to next";
 $TLS_click_failed_next = "Click to set to failed and move to next";
 $TLS_click_blocked_next = "Click to set to blocked and move to next";
 
+$TLS_send_spreadsheet_by_email = 'Send Spreadsheet by email to myself';
 // ----- END ------------------------------------------------------------------

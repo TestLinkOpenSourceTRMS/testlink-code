@@ -1470,4 +1470,24 @@ function getWebEditorCfg($feature='all')
   return $webEditorCfg;
 }
 
+/**
+ *
+ */
+function downloadXls($fname,$xlsType,$gui,$filePrefix)
+{
+  $sets = array();
+  $sets['Excel2007'] = array('ext' => '.xlsx', 
+                             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  $sets['Excel5'] = array('ext' => '.xls', 
+                          'Content-Type' => 'application/vnd.ms-excel');
 
+
+  $dct = array('Content-Type' =>  $sets[$xlsType]['Content-Type']);
+  $content = file_get_contents($fname);
+  $f2d = $filePrefix . $gui->tproject_name . '_' . $gui->tplan_name . 
+         $sets[$xlsType]['ext'];
+
+  downloadContentsToFile($content,$f2d,$dct);
+  unlink($fname);
+  exit();    
+}

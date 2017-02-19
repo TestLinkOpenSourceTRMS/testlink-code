@@ -82,7 +82,5 @@ show Test Results and Metrics
 <!-- To avoid refresh when sending mail --> 
 <iframe name="avoidPageRefreshWhenSendindMail" style="display:none;"></iframe>
 
-
-
 </body>
 </html>

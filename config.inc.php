@@ -461,6 +461,8 @@ $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . D
 $tlCfg->logo_login = 'tl-logo-transparent-25.png';
 $tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
 
+/** Height of the navbar always displayed  */
+$tlCfg->navbar_height = 70;
 
 /** Login page could show an informational text */
 $tlCfg->login_info = ''; // Empty by default

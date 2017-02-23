@@ -110,6 +110,17 @@ if ($args->testproject)
 $gui->grants = getGrants($db,$args->user);
 $gui->viewer = $args->viewer;
 
+$gui->plugins = array();
+foreach(array('EVENT_TITLE_BAR') as $menu_item) 
+{
+  # to be compatible with PHP 5.4
+  $menu_content = event_signal($menu_item);
+  if( !empty($menu_content) )
+  {
+	$gui->plugins[$menu_item] = $menu_content;
+  }
+}
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display('navBar.tpl');

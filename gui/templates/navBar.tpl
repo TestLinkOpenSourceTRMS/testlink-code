@@ -74,6 +74,14 @@ title bar + menu
 {/if}
 </div>
 
+{if $gui->plugins.EVENT_TITLE_BAR}
+	<div align="center" >
+	{foreach from=$gui->plugins.EVENT_TITLE_BAR item=menu_item}
+	  {$menu_item}
+	{/foreach}
+	</div>
+{/if}
+  
 {if $gui->updateMainPage == 1}
   <script type="text/javascript">
   parent.mainframe.location = "{$basehref}lib/general/mainPage.php";

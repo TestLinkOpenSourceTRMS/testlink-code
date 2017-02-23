@@ -89,6 +89,7 @@ function initEnv()
 
   $gui = new stdClass();
   $gui->title = lang_get('main_page_title');
+  $gui->navbar_height = config_get('navbar_height');
   $gui->titleframe = "lib/general/navBar.php?tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
                      "&updateMainPage=1";
   $gui->mainframe = $args->reqURI;

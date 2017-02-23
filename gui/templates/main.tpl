@@ -15,7 +15,7 @@
 	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
 </head>
 
-<frameset rows="70,*" frameborder="0" framespacing="0">
+<frameset rows="{$gui->navbar_height},*" frameborder="0" framespacing="0">
 	<frame src="{$gui->titleframe}" name="titlebar" scrolling="no" noresize="noresize" />
 	<frame src="{$gui->mainframe}" scrolling='auto' name='mainframe' />
 	<noframes>

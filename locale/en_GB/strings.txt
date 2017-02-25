@@ -3506,6 +3506,8 @@ $TLS_API_ITS_NOT_FOUND = "Unable to find the ITS %s.";
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
 $TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
+$TLS_audit_login_failed_silence = "Login from '{%1}' failed";
+$TLS_audit_login_sso_failed_multiple_matches = "Login from '{%1}' failed - Reason: multiple accounts matches:{%2} - Looking for:{%3} in user attribute {%4}";
 $TLS_audit_role_saved = "Role '{%1}' was saved";
 $TLS_audit_role_created = "Role '{%1}' was created";
 $TLS_audit_role_deleted = "Role '{%1}' was deleted";
@@ -4054,4 +4056,5 @@ $TLS_click_failed_next = "Click to set to failed and move to next";
 $TLS_click_blocked_next = "Click to set to blocked and move to next";
 
 $TLS_send_spreadsheet_by_email = 'Send Spreadsheet by email to myself';
+$TLS_send_by_email_to_me = 'Send by email to myself';
 // ----- END ------------------------------------------------------------------

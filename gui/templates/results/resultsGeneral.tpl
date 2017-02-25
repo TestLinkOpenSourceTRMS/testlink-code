@@ -4,8 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - show Test Results and Metrics
 
 @filesource	resultsGeneral.tpl
-@internal revisions
-
 *}
 
 {lang_get var="labels"
@@ -17,17 +15,34 @@ Purpose: smarty template - show Test Results and Metrics
          title_metrics_x_build,title_res_by_platform,th_platform,important_notice,
          report_tcase_platorm_relationship, th_tc_total, th_completed, th_goal,
          th_build, th_tc_assigned, th_perc_completed, from, until,
-         info_res_by_top_level_suites, info_report_tc_priorities, info_res_by_platform,
-         info_report_milestones_prio, info_report_milestones_no_prio, info_res_by_kw,
+         info_res_by_top_level_suites, info_report_tc_priorities, info_res_by_platform,send_by_email_to_me,
+         info_report_milestones_prio, info_report_milestones_no_prio, info_res_by_kw,send_test_report,
          info_gen_test_rep'}
 
 {include file="inc_head.tpl"}
 <body>
 <h1 class="title">{$gui->title}</h1>
 
+
+<form name="send_by_email_to_me" id="send_by_email_to_me"
+      action="{$gui->actionSendMail}" method="POST">
+  &nbsp;&nbsp;
+  <input hidden name="sendByEmail" value="1">
+  
+  <input type="image" name="reportByMail" id="reportByMail" 
+         src="{$tlImages.email}" title="{$labels.send_by_email_to_me}"
+         onclick="submit();">
+</form>
+
+{if $mailFeedBack->msg != ""}
+  <p class='info'>{$mailFeedBack->msg}</p>
+{/if}
+
+
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
+
 
 {if $gui->do_report.status_ok}
 

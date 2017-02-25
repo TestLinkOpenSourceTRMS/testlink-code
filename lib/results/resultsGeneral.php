@@ -7,9 +7,6 @@
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
- *
- * @internal revisions
- * @since 1.9.6
  * 
  */
 require('../../config.inc.php');
@@ -17,9 +14,10 @@ require_once('common.php');
 require_once('displayMgr.php');
 
 $timerOn = microtime(true);
-$templateCfg = templateConfiguration();
+$tplCfg = templateConfiguration();
 
 $args = init_args($db);
+
 $tplan_mgr = new testplan($db);
 $gui = initializeGui($db,$args,$tplan_mgr);
 $mailCfg = buildMailCfg($gui);
@@ -99,9 +97,10 @@ else
 
 $timerOff = microtime(true);
 $gui->elapsed_time = round($timerOff - $timerOn,2);
+
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
-displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format,$mailCfg);
+displayReport($tplCfg->tpl, $smarty, $args->format,$mailCfg);
 
 
 
@@ -115,7 +114,8 @@ function init_args(&$dbHandler)
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                    "tproject_id" => array(tlInputParameter::INT_N), 
 	                 "tplan_id" => array(tlInputParameter::INT_N),
-                   "format" => array(tlInputParameter::INT_N));
+                   "format" => array(tlInputParameter::INT_N),
+                   "sendByMail" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
@@ -159,6 +159,8 @@ function init_args(&$dbHandler)
 	}
 	
 	$args->user = $_SESSION['currentUser'];
+
+  $args->format = $args->sendByMail ? FORMAT_MAIL_HTML : $args->format;
 
   return $args;
 }
@@ -207,6 +209,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
 
   $info = $tplanMgr->get_by_id($argsObj->tplan_id);
   $gui->tplan_name = $info['name'];
+  $gui->tplan_id = intval($argsObj->tplan_id);
 
   $gui->platformSet = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
   if( is_null($gui->platformSet) )
@@ -215,10 +218,19 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
   	$gui->showPlatforms = false;
   }
 
+  $gui->basehref = $_SESSION['basehref'];
+  $gui->actionSendMail = $gui->basehref . 
+                         "lib/results/resultsGeneral.php?format=" . 
+                         FORMAT_MAIL_HTML . "&tplan_id={$gui->tplan_id}"; 
+
+  $gui->mailFeedBack = new stdClass();
+  $gui->mailFeedBack->msg = '';
   return $gui;
 }
 
-
+/**
+ *
+ */
 function checkRights(&$db,&$user,$context = null)
 {
   if(is_null($context))

@@ -3358,9 +3358,15 @@ $TLS_warning_empty_platform = "Platform can not be empty!";
 // ----- api/TestlinkXMLRPCServerErrors.php -----
 $TLS_API_NO_MATCH = "No match between following parameters (%s)";
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
-$TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key " .
+$TLS_API_INSUFFICIENT_RIGHTS = "User %s, corresponding to Developer Key " .
                  "has insufficient rights to perform this action" .
-                 "- Details: right %s, test project id: %s, test plan id: %s";
+                 " - Details: right %s, test project id: %s, test plan id: %s";
+
+$TLS_API_UPDATER_INSUFFICIENT_RIGHTS = "User %s " .
+                 "has insufficient rights to perform this action" .
+                 " - Details: right %s, test project id: %s, test plan id: %s";
+
+
 $TLS_API_NO_DEV_KEY = "No devKey provided.";
 $TLS_API_NO_TCASEID = "No Test Case ID (internal id) provided.";
 $TLS_API_NO_TCASEEXTERNALID = "No Test Case External ID provided.";

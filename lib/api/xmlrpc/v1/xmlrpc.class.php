@@ -18,10 +18,6 @@
  * @example sample_clients/ruby/clientSample.rb ruby client sample
  * @example sample_clients/python/clientSample.py python client sample
  * 
- *
- * @internal revisions 
- * @since 1.9.15
- *
  */
 
 /** 
@@ -50,7 +46,7 @@ require_once("APIErrors.php");
  */
 class TestlinkXMLRPCServer extends IXR_Server
 {
-  public static $version = "1.0";
+  public static $version = "1.1";
  
     
   const OFF=false;
@@ -411,16 +407,13 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @return boolean
    * @access protected
    *
-   * @internal revisions
-   * @since 1.9.14
-   *
    */
   protected function userHasRight($rightToCheck,$checkPublicPrivateAttr=false,
                                   $context=null)
   {
     $status_ok = true;
-    $tprojectid = isset($context[self::$testProjectIDParamName]) ? 
-                  $context[self::$testProjectIDParamName] : 0;
+    $tprojectid = intval(isset($context[self::$testProjectIDParamName]) ? 
+                  $context[self::$testProjectIDParamName] : 0);
 
     if($tprojectid == 0 && isset($this->args[self::$testProjectIDParamName]))
     {
@@ -437,20 +430,42 @@ class TestlinkXMLRPCServer extends IXR_Server
                  $this->args[self::$testPlanIDParamName] : null;
     } 
 
-    if( intval($tprojectid) <= 0 && !is_null($tplanid) )
+    $tprojectid = intval($tprojectid);
+    $tplanid = !is_null($tplanid) ? intval($tplanid) : -1;
+
+    if( $tprojectid <= 0 && $tplanid > 0 )
     {
       // get test project from test plan
-      $dummy = $this->tplanMgr->get_by_id($tplanid,array('output' => 'minimun'));  
-      $tprojectid = $dummy['tproject_id'];
+      $ox = array('output' => 'minimun'); 
+      $dummy = $this->tplanMgr->get_by_id($tplanid,$ox);  
+      $tprojectid = intval($dummy['tproject_id']);
     }
 
     if(!$this->user->hasRight($this->dbObj,$rightToCheck,
                               $tprojectid, $tplanid,$checkPublicPrivateAttr))
     {
       $status_ok = false;
-      $msg = sprintf(INSUFFICIENT_RIGHTS_STR,$rightToCheck,intval($tprojectid), $tplanid);
+      $msg = sprintf(INSUFFICIENT_RIGHTS_STR,$this->user->login,
+                     $rightToCheck,$tprojectid,$tplanid);
       $this->errors[] = new IXR_Error(INSUFFICIENT_RIGHTS, $msg);
     }
+
+    if( isset($context['updaterID']) )
+    {
+      $updUser = tlUser::getByID($this->dbObj,intval($context['updaterID']));
+      
+      
+      $sk = $updUser->hasRight($this->dbObj,$rightToCheck,
+                               $tprojectid, $tplanid,$checkPublicPrivateAttr);
+      if( !$sk )
+      {
+        $status_ok = false;
+        $msg = sprintf(UPDATER_INSUFFICIENT_RIGHTS_STR,$updUser->login,
+                       $rightToCheck,$tprojectid,$tplanid);
+        $this->errors[] = new IXR_Error(UPDATER_INSUFFICIENT_RIGHTS, $msg);
+      } 
+    }
+
     return $status_ok;
   }
 
@@ -5958,16 +5973,18 @@ protected function createAttachmentTempFile()
     $msg_prefix="(" .__FUNCTION__ . ") - ";
     $this->_setArgs($args);  
     
-    $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
-                            'checkTestCaseVersionNumber');
-    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
+    $checkFunc = array('authenticate','checkTestProjectID',
+                       'checkTestCaseIdentity',
+                       'checkTestCaseVersionNumber');
+    $status_ok = $this->_runChecks($checkFunc,$msg_prefix);       
+
     if( $status_ok )
     {
       if(!$this->_isParamPresent(self::$customFieldsParamName) )
       {
         $status_ok = false;
         $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
-        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);              
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);
       }
     }
       
@@ -6445,18 +6462,19 @@ protected function createAttachmentTempFile()
     * @param string $args["user'] - login name used as updater - optional
     *                               if not provided will be set to user that request update
     */
-   public function updateTestCase($args)
-   {
+  public function updateTestCase($args)
+  {
     // Check test case identity
     // Check if user (devkey) has grants to do operation
     //
     // Check that configuration allow changes on Test Case
     // Check that new test case name do not collide with existent one
-
+    //
     // translate args key to column name
-    $updKeys = array("summary" => null,"preconditions" => null,"importance" => null,
+    $updKeys = array("summary" => null,"preconditions" => null,
+                     "importance" => null,"status" => null,
                      "executiontype" => "execution_type",
-                     "status" => null, "estimatedexecduration" => "estimated_exec_duration");
+                     "estimatedexecduration" => "estimated_exec_duration");
 
     $resultInfo = array();
     $operation=__FUNCTION__;
@@ -6465,95 +6483,86 @@ protected function createAttachmentTempFile()
 
     $this->_setArgs($args);              
     $checkFunctions = array('authenticate','checkTestCaseIdentity');
-    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
-
-    // try to understand who will be the updater
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+    
+    $tprojectID = 0;
     if($status_ok)
     {
-      // user has been provided ?
-      $updaterID = $this->userID;
-      if ($this->_isParamPresent(self::$userParamName))
+      $tcaseID = $this->args[self::$testCaseIDParamName];
+      $tprojectID = $this->tcaseMgr->getTestProjectFromTestCase($tcaseID,null);
+    }
+
+    if($status_ok)
+    {
+      $updaterID = $this->updateTestCaseGetUpdater($msg_prefix);
+      $status_ok = ($updaterID > 0);      
+    }  
+
+    // We will check that:
+    // updater has right to update
+    // user doing call has also has right to update
+    if($status_ok)
+    {
+      $ctx[self::$testProjectIDParamName] = $tprojectID;
+      if( $updaterID != $this->userID )
       {
-        $updaterID = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);
-        if ( !($status_ok = !is_null($updaterID)) )
+        $ctx['updaterID'] = $updaterID;
+      }  
+
+      $ck = self::CHECK_PUBLIC_PRIVATE_ATTR;
+      
+      $r2c = array('mgt_modify_tc','testproject_edit_executed_testcases');
+      foreach($r2c as $right)
+      {
+        $status_ok = $this->userHasRight($right,$ck,$ctx);
+        if(!$status_ok)
         {
-          $msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,$this->args[self::$userParamName]);
-          $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);
+          break;
+        }  
+      } 
+    }  
+
+    if($status_ok)
+    {
+      // we have got internal test case ID on checkTestCaseIdentity
+      list($status_ok,$tcversion_id) = $this->updateTestCaseGetTCVID($tcaseID);
+    }
+
+    // if name update requested, it will be first thing to be udpated
+    // because if we got duplicate name, we will not do update
+    if($status_ok)
+    {
+      if(isset($this->args[self::$testCaseNameParamName]))
+      {
+        $ret = $this->tcaseMgr->updateName($tcaseID,
+                        trim($this->args[self::$testCaseNameParamName]));
+        if( !($status_ok = $ret['status_ok']) )
+        {
+            $this->errors[] = new IXR_Error(constant($ret['API_error_code']),$msg_prefix . $ret['msg']); 
         }
       }
     }  
     
     if($status_ok)
     {
-      // we have got internal test case ID on checkTestCaseIdentity
-      $tcaseID = $this->args[self::$testCaseIDParamName];
-                    
-      // if user has not provided version number, get last version
-      // no matter if active or not
-      if(isset($this->args[self::$versionNumberParamName]))
+      $fv = null;
+      foreach($updKeys as $k2s => $field2update)
       {
-        if( ($status_ok = $this->checkTestCaseVersionNumber()) )
+        if(isset($this->args[$k2s]))
         {
-          // Check if version number exists for Test Case
-          $ret = $this->checkTestCaseVersionNumberAncestry();
-          if( !($status_ok = $ret['status_ok']) )
-          {
-            $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
-          }
-        }
-        if( $status_ok )
-        {
-          $dummy = $this->tcaseMgr->get_basic_info($tcaseID,array('number' => $this->args[self::$versionNumberParamName]));
-          $tcversion_id = $dummy[0]['tcversion_id'];
+          $fv[(is_null($field2update) ? $k2s : $field2update)] = $this->args[$k2s];
         }
       }
-      else
-      {
-        // get latest version info
-        $dummy = $this->tcaseMgr->get_last_version_info($tcaseID);
-        $dummy['tcversion_id'] = $dummy['id'];
-        $tcversion_id = $dummy['tcversion_id'];
-        $status_ok = true;
-      }
-
-      if($status_ok)
-      {
-        // if name update requested, it will be first thing to be udpated
-        // because if we got duplicate name, we will not do update
-        if(isset($this->args[self::$testCaseNameParamName]))
-        {
-          $ret = $this->tcaseMgr->updateName($tcaseID,trim($this->args[self::$testCaseNameParamName]));
-          if( !($status_ok = $ret['status_ok']) )
-          {
-            $this->errors[] = new IXR_Error(constant($ret['API_error_code']),$msg_prefix . $ret['msg']); 
-          }
-        }
-      }
-      
-      if($status_ok)
-      {
-        $fv = null;
-        // $fv['updater_id'] = $updaterID;  // Audit Trial Information (partial)
-        foreach($updKeys as $k2s => $field2update)
-        {
-          if(isset($this->args[$k2s]))
-          {
-            $fv[(is_null($field2update) ? $k2s : $field2update)] = $this->args[$k2s];
-          }
-        }
-        // $debug_info = array('sql' => $sql, 'fv' => $fv);
         
-        if(!is_null($fv))
-        {
-          $sql = $this->tcaseMgr->updateSimpleFields($tcversion_id,$fv);
-        }
+      if(!is_null($fv))
+      {
+        $sql = $this->tcaseMgr->updateSimpleFields($tcversion_id,$fv);
       }
     }
 
-
+    // if exist proceed with steps actions / expected results update.
     if($status_ok)
     {
-      // if exist proceed with steps actions / expected results update.
       if ($this->_isParamPresent(self::$stepsParamName) && !is_null($this->args[self::$stepsParamName]))
       {      
         $this->tcaseMgr->update_tcversion_steps($tcversion_id,$this->args[self::$stepsParamName]);
@@ -6562,21 +6571,82 @@ protected function createAttachmentTempFile()
 
     if($status_ok)
     {
-      // $this->args['debug'] = $debug_info;
-      // missing
       // update updater and modification time stamp
       $this->tcaseMgr->updateChangeAuditTrial($tcversion_id,$updaterID);
-      return array('status_ok' => true, 'msg' => 'ok', 'operation' => __FUNCTION__);
+      return array('status_ok' => true, 'msg' => 'ok', 
+                   'operation' => __FUNCTION__);
+    }
+       
+    return $this->errors;
+  }    
+
+  /**
+   *
+   */
+  function updateTestCaseGetUpdater($msg_prefix)
+  {
+    $status_ok = true;
+    $updaterID = $this->userID;
+    if ($this->_isParamPresent(self::$userParamName))
+    {
+      $updaterID = tlUser::doesUserExist($this->dbObj,
+                          $this->args[self::$userParamName]);
+      if ( !($status_ok = !is_null($updaterID)) )
+      {
+        $msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,
+                                     $this->args[self::$userParamName]);
+        $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);
+      }
+    }
+    return $status_ok ? $updaterID : -1;
+  }
+
+  /**
+   *
+   */
+  function updateTestCaseGetTCVID($tcaseID)
+  {
+    $status_ok = true;
+    $tcversion_id = -1;
+
+    // if user has not provided version number, get last version
+    // no matter if active or not
+    if(isset($this->args[self::$versionNumberParamName]))
+    {
+      if( ($status_ok = $this->checkTestCaseVersionNumber()) )
+      {
+        // Check if version number exists for Test Case
+        $ret = $this->checkTestCaseVersionNumberAncestry();
+        if( !($status_ok = $ret['status_ok']) )
+        {
+          $this->errors[] = new IXR_Error($ret['error_code'], 
+                                $msg_prefix . $ret['error_msg']); 
+        }
+      }
+      
+      if( $status_ok )
+      {
+        $opt = array('number' => $this->args[self::$versionNumberParamName]);
+        $dummy = $this->tcaseMgr->get_basic_info($tcaseID,$opt);
+        $tcversion_id = $dummy[0]['tcversion_id'];
+      }
     }
     else
     {
-      return $this->errors;     
+      // get latest version info
+      $dummy = $this->tcaseMgr->get_last_version_info($tcaseID);
+      $dummy['tcversion_id'] = $dummy['id'];
+      $tcversion_id = $dummy['tcversion_id'];
     }
     
-   }    
+    return array($status_ok,$tcversion_id);
+  }
 
 
 
+  /**
+   *
+   */
   private function helperGetTestProjectByName($msgPrefix = '')
   {                           
     $ret = array('status_ok' => true, 'info' => null);

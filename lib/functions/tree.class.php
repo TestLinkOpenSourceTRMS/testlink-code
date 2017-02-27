@@ -902,7 +902,7 @@ class tree extends tlObject
     // Cast to array to handle $options = null
     $my['filters'] = array_merge($my['filters'], (array)$filters);
     $my['options'] = array_merge($my['options'], (array)$options);
-       
+
     switch($my['options']['order_cfg']['type'])
     {
       case 'spec_order':
@@ -911,7 +911,15 @@ class tree extends tlObject
                " WHERE parent_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
                " ORDER BY node_order,id";
         break;
-
+	   //BEGIN - Add - DGA - MM/DD/YYYY
+        case 'req_order':
+        	$sql = " SELECT NH_TC.id,NH_TC.name,NH_TC.parent_id,NH_TC.node_type_id,NH_TC.node_order {$my['options']['addFields']}" .
+        	" FROM {$this->object_table} AS NH_TC {$my['options']['addJoin']} " .
+			" JOIN {$this->tables['req_coverage']} RC ON RC.testcase_id = id " .
+        	" WHERE RC.req_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
+        	" ORDER BY node_order,id";
+        	break;
+        //END - Add
         case 'rspec':
           $sql = " SELECT OBT.id,name,parent_id,node_type_id,node_order,RSPEC.doc_id " .
                  " FROM {$this->object_table} AS OBT " .

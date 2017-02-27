@@ -1505,6 +1505,119 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
   return $treeMenu;
 }
 
+//BEGIN - Add - DGA - MM/DD/YYYY
+/**
+ * Generate the necessary data object for the filtered requirement specification tree.
+ * 
+ * @author Andreas Simon
+ * @param Database $db reference to database handler object
+ * @param testproject $testproject_mgr reference to testproject manager object
+ * @param int $testproject_id ID of the project for which the tree shall be generated
+ * @param string $testproject_name Name of the test project
+ * @param array $filters Filter settings which shall be applied to the tree, possible values are:
+ *                       'filter_doc_id',
+ *                       'filter_title',
+ *                       'filter_status',
+ *                       'filter_type',
+ *                       'filter_spec_type',
+ *                        'filter_coverage',
+ *                       'filter_relation',
+ *                       'filter_tc_id',
+ *                       'filter_custom_fields'
+ * @param array $options Further options which shall be applied on generating the tree
+ * @return stdClass $treeMenu object with which ExtJS can generate the graphical tree
+ */
+function generateTestReqCoverageTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
+{
+
+  $tables = tlObjectWithDB::getDBTables(array('requirements', 'req_versions', 
+                                              'req_specs', 'req_relations', 
+                                              'req_specs_revisions',
+                                              'req_coverage', 'nodes_hierarchy'));
+  
+  $tproject_mgr = new testproject($db);
+  $tree_manager = &$tproject_mgr->tree_manager;
+  
+  $glue_char = config_get('testcase_cfg')->glue_character;
+  $tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id) . $glue_char;
+  
+  $req_node_type = $tree_manager->node_descr_id['testcase'];
+  $req_spec_node_type = $tree_manager->node_descr_id['testsuite'];
+  
+  $map_nodetype_id = $tree_manager->get_available_node_types();
+  $map_id_nodetype = array_flip($map_nodetype_id);
+  
+  $my = array();
+  
+  $my['options'] = array('for_printing' => 0,
+                         'exclude_branches' => null,
+                         'recursive' => true,
+                         'order_cfg' => array('type' => 'spec_order'));
+  
+  $my['filters'] = array('exclude_node_types' =>  array('testplan' => 'exclude me',
+                                                        'testsuite' => 'exclude me',
+                                                        'testcase' => 'exclude me',
+                                                        'requirement_spec_revision' => 'exclude me'),
+                         'exclude_children_of' => array('testcase' => 'exclude my children',
+                                                        'requirement' => 'exclude my children',
+                                                        'testsuite' => 'exclude my children'),
+                         'filter_doc_id' => null,
+                         'filter_title' => null,
+                         'filter_status' => null,
+                         'filter_type' => null,
+                         'filter_spec_type' => null,
+                         'filter_coverage' => null,
+                         'filter_relation' => null,
+                         'filter_tc_id' => null,
+                         'filter_custom_fields' => null);
+  
+  // merge with given parameters
+  $my['options'] = array_merge($my['options'], (array) $options);
+  $my['filters'] = array_merge($my['filters'], (array) $filters);
+  
+  $req_spec = $tree_manager->get_subtree($tproject_id, $my['filters'], $my['options']);
+  
+  $req_spec['name'] = $tproject_name;
+  $req_spec['id'] = $tproject_id;
+  $req_spec['node_type_id'] = $map_nodetype_id['testproject'];
+  
+  $filtered_map = get_filtered_req_map($db, $tproject_id, $tproject_mgr,
+                                       $my['filters'], $my['options']);
+  
+  $level = 1;
+  $req_spec = prepare_reqspeccoverage_treenode($db, $level, $req_spec, $filtered_map, $map_id_nodetype,
+                                       $map_nodetype_id, $my['filters'], $my['options']);
+    
+  $menustring = null;
+  $treeMenu = new stdClass();
+  $treeMenu->rootnode = new stdClass();
+  $treeMenu->rootnode->total_req_count = $req_spec['total_req_count'];
+  $treeMenu->rootnode->name = $req_spec['name'];
+  $treeMenu->rootnode->id = $req_spec['id'];
+  $treeMenu->rootnode->leaf = isset($req_spec['leaf']) ? $req_spec['leaf'] : false;
+  //$treeMenu->rootnode->text = $req_spec['name']; //not needed, accidentally duplicated
+  $treeMenu->rootnode->position = $req_spec['position'];      
+  $treeMenu->rootnode->href = $req_spec['href'];
+    
+  // replace key ('childNodes') to 'children'
+  if (isset($req_spec['childNodes']))
+  {
+    $menustring = str_ireplace('childNodes', 'children', 
+                               json_encode($req_spec['childNodes'])); 
+  }
+
+  if (!is_null($menustring))
+  {
+    // delete null elements for Ext JS
+    $menustring = str_ireplace(array(':null',',null','null,','null'),
+                               array(':[]','','',''),
+                               $menustring); 
+  }
+  $treeMenu->menustring = $menustring; 
+  
+  return $treeMenu;
+}
+//END - Add
 
 /**
  * Generate a filtered map with all fitting requirements in it.

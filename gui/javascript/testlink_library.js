@@ -278,6 +278,53 @@ function TPROJECT_PRS(id)
 }
 
 
+//BEGIN - Add - DGA - MM/DD/YYYY
+/*
+function: Edit Rec Spec or launch print
+
+args :
+
+returns:
+
+rev :
+*/
+function ERS(id)
+{
+// get checkboxes status
+	var _FUNCTION_NAME_="ERS";
+	var pParams = tree_getPrintPreferences();
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=reqspeccoverage&level=reqspec&id="+id+args+"&"+pParams;
+
+	// alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+
+}
+
+/*
+function: Edit Rec or launch print
+
+args :
+
+returns:
+
+rev :
+*/
+function ER(id)
+{
+// get checkboxes status
+	var _FUNCTION_NAME_="ER";
+	var pParams = tree_getPrintPreferences();
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=reqcoverage&level=requirement&id="+id+args+"&"+pParams;
+
+	// alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+
+}
+
+// END DGA
+
 /*
   function: TPLAN_PTS
             Test PLAN Print Test Suite

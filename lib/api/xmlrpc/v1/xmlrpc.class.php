@@ -6498,6 +6498,12 @@ protected function createAttachmentTempFile()
       $status_ok = ($updaterID > 0);      
     }  
 
+    if($status_ok)
+    {
+      // we have got internal test case ID on checkTestCaseIdentity
+      list($status_ok,$tcversion_id) = $this->updateTestCaseGetTCVID($tcaseID);
+    }
+
     // We will check that:
     // updater has right to update
     // user doing call has also has right to update
@@ -6511,7 +6517,7 @@ protected function createAttachmentTempFile()
 
       $ck = self::CHECK_PUBLIC_PRIVATE_ATTR;
       
-      $r2c = array('mgt_modify_tc','testproject_edit_executed_testcases');
+      $r2c = array('mgt_modify_tc');
       foreach($r2c as $right)
       {
         $status_ok = $this->userHasRight($right,$ck,$ctx);
@@ -6522,11 +6528,35 @@ protected function createAttachmentTempFile()
       } 
     }  
 
+    // If test case version has been executed, need to check another right
     if($status_ok)
     {
-      // we have got internal test case ID on checkTestCaseIdentity
-      list($status_ok,$tcversion_id) = $this->updateTestCaseGetTCVID($tcaseID);
+      $xc = $this->tcaseMgr->get_versions_status_quo($tcaseID, $tcversion_id);
+      $checkRight = false;
+      foreach($xc as $ele)
+      {
+        if($ele['executed'])
+        {
+          $checkRight = true;
+          break;
+        }  
+      }  
+
+      if( $checkRight )
+      {
+        $r2c = array('testproject_edit_executed_testcases');
+        foreach($r2c as $right)
+        {
+          $status_ok = $this->userHasRight($right,$ck,$ctx);
+          if(!$status_ok)
+          {
+            break;
+          }  
+        } 
+      }
+
     }
+
 
     // if name update requested, it will be first thing to be udpated
     // because if we got duplicate name, we will not do update

@@ -883,6 +883,9 @@ $TLS_btn_hide_cf = "Hide Custom Fields";
 $TLS_btn_show_cf = "Show Custom Fields";
 $TLS_btn_export_testplan_tree = 'Export Test Plan';
 $TLS_btn_export_testplan_tree_for_results = 'Export for results import';
+$TLS_test_grouped_by_label = "Tests Grouped By";
+$TLS_mode_test_suite = 'Test Suite';
+$TLS_mode_req_coverage = 'Req.coverage';
 
 $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";

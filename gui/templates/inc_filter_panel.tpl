@@ -28,7 +28,7 @@
                         document_id, req_expected_coverage, title,bugs_on_context,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,
                         btn_export_testplan_tree,btn_export_testplan_tree_for_results,
-                        tester_works_with_settings,btn_bulk_remove,btn_bulk_copy'}
+                        tester_works_with_settings,btn_bulk_remove,btn_bulk_copy, test_grouped_by_label'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -119,6 +119,18 @@
           </td>
         </tr>
       {/if}
+	  
+	  {if $control->settings.setting_testsgroupby}
+		<tr>
+			<td>{$labels.test_grouped_by_label}</td>
+			<td>
+				<select name="setting_testsgroupby" class="chosen-select" onchange="this.form.submit()">
+				{html_options options=$control->settings.setting_testsgroupby.items
+							  selected=$control->settings.setting_testsgroupby.selected}
+				 </select>
+			</td>
+		</tr>
+	  {/if}
 
       {if $control->settings.setting_refresh_tree_on_action}
         <tr>

@@ -281,7 +281,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
   private $all_settings = array('setting_testplan' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_build' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_platform' => array("REQUEST", tlInputParameter::INT_N),
-                                'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL));
+                                'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL),
+								'setting_testsgroupby' => array("REQUEST", tlInputParameter::INT_N));
 
   /**
    * This array is used to map the modes to their available settings.
@@ -587,6 +588,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->settings['setting_build'] = false;
       $this->settings['setting_platform'] = false;
     }
+	
+	$this->init_setting_testsgroupedby();
   
     // if at least one active setting is left to display, switch settings panel on
     if ($at_least_one_active) 
@@ -910,7 +913,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $drag_and_drop->enabled = false;
     $drag_and_drop->BackEndUrl = '';
     $drag_and_drop->useBeforeMoveNode = FALSE;
-        
     if (!$this->testproject_mgr) 
     {
       $this->testproject_mgr = new testproject($this->db);
@@ -1046,6 +1048,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // values in $filters->setting_xyz
         $cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 
+		//BEGIN - Add - DGA - MM/DD/YYYY
+        $key = 'setting_testsgroupby';
+        $mode = $this->args->$key;
+		
+        //END - Add
+		
         if ($this->do_filtering)
         {
           // TICKET 4496: added active/inactive filter
@@ -1071,34 +1079,68 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
       
+		  //BEGIN - Modify - DGA - MM/DD/YYYY
+
+          if ($mode == 'mode_test_suite')
+          {
+			
+         	 $tree_menu = generateTestSpecTree($this->db,
+                                            $this->args->testproject_id,
+                                            $this->args->testproject_name,
+                                            $gui->menuUrl,$filters,$options);
+          }
+          elseif ($mode == 'mode_req_coverage')
+          {
+			$options = array('for_printing' => NOT_FOR_PRINTING,'exclude_branches' => null);
+        
+			$tree_menu = generateTestReqCoverageTree($this->db,
+											 $this->args->testproject_id,
+											 $this->args->testproject_name,
+											 $filters, $options);
+          }
+          //END - Modify
+	  
           $options['nodeHelpText']['testproject'] = lang_get('right_pane_test_plan_tree'); 
           $options['nodeHelpText']['testsuite'] = lang_get('display_tsuite_contents');
 
           // belongs to treeMenu.inc.php
-          $forrest = generateTestSpecTree($this->db,
-                                          $this->args->testproject_id,
-                                          $this->args->testproject_name,
-                                          $gui->menuUrl,$filters,$options);
+          //$forrest = generateTestSpecTree($this->db,
+          //                              $this->args->testproject_id,
+          //                                $this->args->testproject_name,
+          //                              $gui->menuUrl,$filters,$options);
           $tree_menu = $forrest['menu'];  
           $root_node = $tree_menu->rootnode;
           $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
         else 
         {
-          $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                    "root_node={$this->args->testproject_id}&show_tcases=0" .
-                    "&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
-
-          $root_node = new stdClass();
-          $root_node->href = "javascript:EP({$this->args->testproject_id})";
-          $root_node->id = $this->args->testproject_id;
-          $root_node->name = $this->args->testproject_name;
-
-          $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
-          $root_node->wrapClose = '</span>';
-
-          $root_node->testlink_node_type = 'testproject';
-        }
+			  //BEGIN - Add - DGA - MM/DD/YYYY
+		      if ($mode == 'mode_test_suite')
+			  {
+				  $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+									  "root_node={$this->args->testproject_id}&show_tcases=0";
+				
+				  $root_node = new stdClass();
+				  $root_node->href = "javascript:EP({$this->args->testproject_id})";
+				  $root_node->id = $this->args->testproject_id;
+				  $root_node->name = $this->args->testproject_name;
+				  $root_node->testlink_node_type = 'testproject';
+			  }
+			  elseif ($mode == 'mode_req_coverage')
+			  {
+				  $loader = $gui->basehref . 'lib/ajax/getreqcoveragenodes.php?mode=reqspec&' .
+						 "root_node={$this->args->testproject_id}";
+      
+				  $req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
+				
+				  $root_node = new stdClass();
+				  $root_node->href = "javascript:EP({$this->args->testproject_id})";
+				  $root_node->id = $this->args->testproject_id;
+				  $root_node->name = $this->args->testproject_name . " ($req_qty)";
+				  $root_node->testlink_node_type = 'testproject';
+			}
+			//END - Modify
+		}
       break;
       
       case 'execution_mode':
@@ -2076,5 +2118,21 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
   } // end of method
 
+  
+  // BEGIN DGA
+  private function init_setting_testsgroupedby()
+  {
+	$key = 'setting_testsgroupby';
+	
+	// now load info from session
+	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
+	$this->args->testsgroupedby_mode = $mode;
+	$this->args->{$key} = $mode;
+	$this->settings[$key]['selected'] = $mode;
+	
+	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
+	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
+  } // end of method
+  // END - Add
 
 }

@@ -53,6 +53,11 @@ function initializeGui($control)
   $gui = new stdClass();
   $gui->formAction = '';
 
+	// ADD DGA
+    $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
+	$gui->req_manager_url = "lib/requirements/reqView.php";
+	// END DGA
+  
   // This logic is managed from frmWorkArea.php and planAddTC.php
   $gui->loadRightPaneAddTC = isset($_REQUEST['loadRightPaneAddTC']) ? $_REQUEST['loadRightPaneAddTC'] : true;
   if( isset($_SESSION['loadRightPaneAddTC'][$control->form_token]) )
@@ -71,5 +76,6 @@ function initializeGui($control)
                         "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
   
   $gui->title_navigator = lang_get('navigator_add_remove_tcase_to_tplan');
+	
   return $gui;
 }

@@ -1882,6 +1882,86 @@ function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id
   return $node;
 }
 
+//BEGIN - Add - DGA - MM/DD/YYYY
+/**
+ * Prepares nodes for the filtered requirement tree.
+ * Filters out those nodes which are not in the given map and counts the remaining subnodes.
+ * @author Andreas Simn
+ * @param Database $db reference to database handler object
+ * @param int $level gets increased by one for each sublevel in recursion
+ * @param array $node the tree structure to traverse
+ * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
+ * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
+ * @param array $map_nodetype_id array with node type descriptions as keys, node type IDs as values
+ * @param array $filters
+ * @param array $options
+ * @return array tree structure after filtering out unneeded nodes
+ */
+function prepare_reqspeccoverage_treenode(&$db, $level, &$node, &$filtered_map, &$map_id_nodetype,
+		&$map_nodetype_id, &$filters, &$options) {
+	$child_req_count = 0;
+
+	if (isset($node['childNodes']) && is_array($node['childNodes'])) {
+		// node has childs, must be a specification (or testproject)
+		foreach ($node['childNodes'] as $key => $childnode) {
+			$current_childnode = &$node['childNodes'][$key];
+			$current_childnode = prepare_reqspeccoverage_treenode($db, $level + 1, $current_childnode,
+					$filtered_map, $map_id_nodetype,
+					$map_nodetype_id,
+					$filters, $options);
+
+			// now count childnodes that have not been deleted and are requirements
+			if (!is_null($current_childnode)) {
+				switch ($current_childnode['node_type_id']) {
+					case $map_nodetype_id['requirement']:
+						$child_req_count ++;
+						break;
+
+					case $map_nodetype_id['requirement_spec']:
+						$child_req_count += $current_childnode['child_req_count'];
+						break;
+				}
+			}
+		}
+	}
+
+	$node_type = $map_id_nodetype[$node['node_type_id']];
+
+	$delete_node = false;
+
+	switch ($node_type) {
+		case 'testproject':
+			$node['total_req_count'] = $child_req_count;
+			break;
+
+		case 'requirement_spec':
+			// add requirement count
+			$node['child_req_count'] = $child_req_count;
+			// delete empty specs
+			if (!$child_req_count) {
+				$delete_node = true;
+			}
+			break;
+
+		case 'requirement':
+			// delete node from tree if it is not in $filtered_map
+			if (is_null($filtered_map) || !array_key_exists($node['id'], $filtered_map)) {
+				$delete_node = true;
+			}
+			break;
+	}
+
+	if ($delete_node) {
+		unset($node);
+		$node = null;
+	} else {
+		$node = render_reqspeccoverage_treenode($db, $node, $filtered_map, $map_id_nodetype);
+	}
+
+	return $node;
+}
+//END - Add
+
 /**
  * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
  * @author Andreas Simon
@@ -1968,6 +2048,97 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
   
   return $node;       
 }
+
+
+
+//BEGIN - Add - DGA - MM/DD/YYYY
+/**
+ * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
+ * @author Andreas Simon
+ * @param Database $db reference to database handler object
+ * @param array $node the object to prepare
+ * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
+ * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
+ * @return array tree object with all needed data for ExtJS tree
+ */
+function render_reqspeccoverage_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype) {
+	static $js_functions;
+	static $forbidden_parents;
+
+	if (!$js_functions)
+	{
+		$js_functions = array('testproject' => 'EP',
+				'requirement_spec' =>'ERS',
+				'requirement' => 'ER');
+
+		$req_cfg = config_get('req_cfg');
+		$forbidden_parents['testproject'] = 'none';
+		$forbidden_parents['requirement'] = 'testproject';
+
+		// Hmm is ok ? (see next lines, may be it's time to remove this code)
+		$forbidden_parents['requirement_spec'] = 'requirement_spec';
+		if($req_cfg->child_requirements_mgmt)
+		{
+			$forbidden_parents['requirement_spec'] = 'none';
+		}
+	}
+
+	$node_type = $map_id_nodetype[$node['node_type_id']];
+	$node_id = $node['id'];
+
+	$node['href'] = "javascript:{$js_functions[$node_type]}({$node_id});";
+	$node['text'] = htmlspecialchars($node['name']);
+	$node['leaf'] = false; // will be set to true later for requirement nodes
+	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
+	$node['cls'] = 'folder';
+
+	// custom Properties that will be accessed by EXT-JS using node.attributes
+	$node['testlink_node_type'] = $node_type;
+	$node['forbidden_parent'] = $forbidden_parents[$node_type];
+	$node['testlink_node_name'] = $node['text'];
+
+	switch ($node_type) {
+		case 'testproject':
+			break;
+
+		case 'requirement_spec':
+			// get doc id from filtered array, it's already stored in there
+			$doc_id = '';
+			foreach($node['childNodes'] as $child) {
+				if (!is_null($child)) {
+					$child_id = $child['id'];
+					if (isset($filtered_map[$child_id])) {
+						$doc_id = htmlspecialchars($filtered_map[$child_id]['req_spec_doc_id']);
+					}
+					break; // only need to get one child for this
+				}
+			}
+			// BUGID 3765: load doc ID with  if this req spec has no direct req child nodes.
+			// Reason: in these cases we do not have a parent doc ID in $filtered_map
+			if ($doc_id == '') {
+				static $req_spec_mgr = null;
+				if (!$req_spec_mgr) {
+					$req_spec_mgr = new requirement_spec_mgr($db);
+				}
+				$tmp_spec = $req_spec_mgr->get_by_id($node_id);
+				$doc_id = $tmp_spec['doc_id'];
+				unset($tmp_spec);
+			}
+
+			$count = $node['child_req_count'];
+			$node['text'] = "{$doc_id}:{$node['text']} ({$count})";
+			break;
+
+		case 'requirement':
+			$node['leaf'] = true;
+			$doc_id = htmlspecialchars($filtered_map[$node_id]['req_doc_id']);
+			$node['text'] = "{$doc_id}:{$node['text']}";
+			break;
+	}
+
+	return $node;
+}
+//END - Add
 
 
 /**

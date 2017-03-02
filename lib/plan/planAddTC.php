@@ -229,6 +229,8 @@ if($do_display)
 		$requirement_data = $req_mgr->get_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
 		
 		$requirement_data_name = $requirement_data[0]['req_doc_id'] . ' : ' . $requirement_data[0]['title'];
+		// get child testCase
+		$requirements_child = $req_spec_mgr->get_requirement_child_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
 	}
 	elseif($args->item_level == 'reqspeccoverage')
 	{
@@ -309,9 +311,38 @@ if($do_display)
 	
 	if($args->item_level == 'reqcoverage')
 	{
+		$out = array();
 	  $out = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$requirement_data_name,
  	  $tplan_linked_tcversions,null,$filters,$opt);
 	  
+
+		// if requirement, has a child requirement.
+		if(!is_null($requirements_child)){
+
+			foreach($requirements_child as $key => $req){
+				$requirement_data_name = $req['req_doc_id'] . ' : ' . $req['name'];
+				$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['destination_id'],$requirement_data_name,
+				$tplan_linked_tcversions,null,$filters,$opt);
+				// First requirement without test cases
+				if (empty($tmp['spec_view']))
+					continue;
+				//END - Add
+				
+				if(empty($out))
+				{
+					$out = $tmp;
+				}
+				else
+				{	
+					
+					$tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
+					array_push($out['spec_view'], $tmp['spec_view'][1]);
+					
+					
+				}
+
+			}
+		}
 	}
 	elseif($args->item_level == 'reqspeccoverage')
 	{

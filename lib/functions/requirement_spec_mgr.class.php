@@ -33,6 +33,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   var $field_size;
   var $req_mgr;
   var $relationsCfg;
+  var $requirement_child_ids = array();
 
   /*
     contructor
@@ -768,6 +769,30 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
 	// END DGA
 	return $rs;
 }
+
+// BEGIN DGA
+// get child requirements for get all testcase associate.
+function get_requirement_child_by_id($id){
+
+	$children = $this->get_requirement_child_by_id_req($id);
+	foreach($children as $key => $child){
+		array_push($this->requirement_child_ids, $child);
+		$this->get_requirement_child_by_id($child["destination_id"]);
+	}
+	return $this->requirement_child_ids;
+}
+
+/**
+* get child requirements by id.
+*/
+function get_requirement_child_by_id_req($id){
+	$sql = "/* $debugMsg */ SELECT REQ_REL.destination_id, REQ.req_doc_id, NH.name FROM req_relations REQ_REL INNER 
+	JOIN nodes_hierarchy NH ON REQ_REL.destination_id = NH.id
+	JOIN {$this->tables['requirements']} REQ ON REQ_REL.destination_id = REQ.id where REQ_REL.source_id={$id}";
+	$child = $this->db->get_recordset($sql);
+	return $child;
+}
+// END DGA
 
   /*
     function: get_by_title

@@ -1098,19 +1098,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 											 $this->args->testproject_name,
 											 $filters, $options);
           }
-          //END - Modify
-	  
-          $options['nodeHelpText']['testproject'] = lang_get('right_pane_test_plan_tree'); 
-          $options['nodeHelpText']['testsuite'] = lang_get('display_tsuite_contents');
-
-          // belongs to treeMenu.inc.php
-          //$forrest = generateTestSpecTree($this->db,
-          //                              $this->args->testproject_id,
-          //                                $this->args->testproject_name,
-          //                              $gui->menuUrl,$filters,$options);
-          $tree_menu = $forrest['menu'];  
-          $root_node = $tree_menu->rootnode;
-          $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
+         	if ($mode == 'mode_test_suite')
+			{
+				 $tree_menu = $tree_menu['menu']; 
+			}
+			  //END - Modify
+         	 $root_node = $tree_menu->rootnode;
+          	 $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
         else 
         {

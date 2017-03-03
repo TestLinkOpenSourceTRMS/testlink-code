@@ -59,7 +59,7 @@ switch($args->item_level)
     $do_display_coverage = 1;
   break;
   case 'testproject':
-    redirect($_SESSION['basehref'] . "lib/results/printDocOptions.php?activity=$args->activity");
+    show_instructions('planAddTcDocumentation');
     exit();
   break;
 }
@@ -152,7 +152,6 @@ $smarty = new TLSmarty();
 if($do_display)
 {
   $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
-    
   // see development documentation on [INSTALL DIR]/docs/development/planAddTC.php.txt
   $tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr,array('addImportance' => true));
 
@@ -227,7 +226,6 @@ if($do_display)
 	if($args->item_level == 'reqcoverage')
 	{
 		$requirement_data = $req_mgr->get_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
-		
 		$requirement_data_name = $requirement_data[0]['req_doc_id'] . ' : ' . $requirement_data[0]['title'];
 		// get child testCase
 		$requirements_child = $req_spec_mgr->get_requirement_child_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
@@ -311,36 +309,63 @@ if($do_display)
 	
 	if($args->item_level == 'reqcoverage')
 	{
-		$out = array();
+	
+	  $out = array();
+
 	  $out = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$requirement_data_name,
  	  $tplan_linked_tcversions,null,$filters,$opt);
+	
+	  // if requirement, has a child requirement.
+	  if(!is_null($requirements_child)){
 	  
-
-		// if requirement, has a child requirement.
-		if(!is_null($requirements_child)){
-
-			foreach($requirements_child as $key => $req){
-				$requirement_data_name = $req['req_doc_id'] . ' : ' . $req['name'];
-				$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['destination_id'],$requirement_data_name,
-				$tplan_linked_tcversions,null,$filters,$opt);
-				// First requirement without test cases
-				if (empty($tmp['spec_view']))
-					continue;
-				//END - Add
+		foreach($requirements_child as $key => $req){
+			$requirement_data_name = $req['req_doc_id'] . ' : ' . $req['name'];
+			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['destination_id'],$requirement_data_name,
+			$tplan_linked_tcversions,null,$filters,$opt);
+			// First requirement without test cases
+			if (empty($tmp['spec_view']))
+				continue;
+			//END - Add
+			
+			if(empty($out))
+			{
+				$out = $tmp;
+			}
+			else
+			{	
 				
-				if(empty($out))
+				$tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
+				array_push($out['spec_view'], $tmp['spec_view'][1]);
+				
+				/*if(empty($out['spec_view'][0]['testcases']))
 				{
-					$out = $tmp;
+				
+					//array_push($out['spec_view'][0]['testsuite'], $tmp['spec_view'][0]['testsuite']);
+					$out['spec_view'][0]['testcases'] = $tmp['spec_view'][0]['testcases'];
 				}
-				else
-				{	
-					
-					$tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
-					array_push($out['spec_view'], $tmp['spec_view'][1]);
-					
-					
+				else 
+				{
+					$tmp_merged = array_merge_recursive($out['spec_view'][0]['testcases'],$tmp['spec_view'][0]['testcases']);
+					if(!empty($tmp_merged))
+					{
+						$out['spec_view'][0]['testcases'] = $tmp_merged;
+					}
 				}
-
+				if(empty($out['spec_view'][1]['testcases']))
+				{
+					$out['spec_view'][1]['testcases'] = $tmp['spec_view'][1]['testcases'];
+				}
+				else 
+				{
+					$tmp_merged = array_merge_recursive($out['spec_view'][1]['testcases'],$tmp['spec_view'][1]['testcases']);
+					if(!empty($tmp_merged))
+					{
+						$out['spec_view'][1]['testcases'] = $tmp_merged;
+					}
+				}*/
+			}
+			
+			//array_push($out['spec_view'], $out_child['spec_view']);
 			}
 		}
 	}
@@ -348,10 +373,10 @@ if($do_display)
 	{
 		$out = array();
 		foreach($requirements as $key => $req)
-		{	
+		{
 			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['id'],$requirement_spec_data_name,
 					$tplan_linked_tcversions,null,$filters,$opt);
-			
+
 			//BEGIN - Add - DGA - 08/19/2013
 			// First requirement without test cases
 			if (empty($tmp['spec_view']))
@@ -392,13 +417,12 @@ if($do_display)
 		}
 	}
 
-
   $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
   $gui->items = $out['spec_view'];
   $gui->has_linked_items = $out['has_linked_items'];
   $gui->add_custom_fields = $opt['add_custom_fields'];
-    $gui->drawSavePlatformsButton = false;
-    $gui->drawSaveCFieldsButton = false;
+  $gui->drawSavePlatformsButton = false;
+  $gui->drawSaveCFieldsButton = false;
 
     if( !is_null($gui->items) )
     {
@@ -894,15 +918,8 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
           $email['body'] .= $flat_path[$tcase_id] . '<br />';  
         }  
         $email['body'] .= '<br />' . date(DATE_RFC1123);
-  		$email['cc'] = '';
-        $email['attachment'] = null;
-        $email['exit_on_error'] = true;
-        $email['htmlFormat'] = true; 
-
         $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'],
-                               $email['cc'],$email['attachment'],
-                               $email['exit_on_error'],$email['htmlFormat']);
+                               $email['subject'], $email['body'], '', true, true);
       } 
     }                       
   }
@@ -1055,8 +1072,9 @@ function addToTestPlan(&$dbHandler,&$argsObj,&$guiObj,&$tplanMgr,&$tcaseMgr)
       $items_to_link['items'][$tcase_id][$platform_id] = $tcversion_id;
     }
   }
-           
+
   $linked_features=$tplanMgr->link_tcversions($argsObj->tplan_id,$items_to_link,$argsObj->userID);
+
   if( $argsObj->testerID > 0 )
   {
     $features2add = null;

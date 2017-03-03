@@ -464,5 +464,6 @@ podnieść dla znaczących części.</li>
 
 
 // ------------------------------------------------------------------------------------------
-
+$TLS_htmltext_title['planAddTcDocumentation']	= "Plan add testcase documentation";
+$TLS_htmltext['planAddTcDocumentation'] = "<h2>@TODO Plan add testcase documentation</h2>";
 ?>

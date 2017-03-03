@@ -282,7 +282,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                 'setting_build' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_platform' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL),
-								'setting_testsgroupby' => array("REQUEST", tlInputParameter::INT_N));
+				'setting_testsgroupby' => array("REQUEST", tlInputParameter::INT_N));
 
   /**
    * This array is used to map the modes to their available settings.
@@ -376,7 +376,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     unset($this->platform_mgr);
     unset($this->cfield_mgr);
   }
-
+  
   /**
    * Reads the configuration from the configuration file specific for test cases,
    * additionally to those parts of the config which were already loaded by parent class.
@@ -1009,7 +1009,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'exclude_branches' => null,
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
-            
+
           $forrest = generateTestSpecTree($this->db, $this->args->testproject_id,
                                           $this->args->testproject_name,
                                           $gui->menuUrl, $filters, $options);
@@ -1053,7 +1053,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         $mode = $this->args->$key;
 		
         //END - Add
-		
+
         if ($this->do_filtering)
         {
           // TICKET 4496: added active/inactive filter
@@ -1088,53 +1088,56 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                             $this->args->testproject_id,
                                             $this->args->testproject_name,
                                             $gui->menuUrl,$filters,$options);
+
           }
           elseif ($mode == 'mode_req_coverage')
-          {
-			$options = array('for_printing' => NOT_FOR_PRINTING,'exclude_branches' => null);
-        
-			$tree_menu = generateTestReqCoverageTree($this->db,
-											 $this->args->testproject_id,
-											 $this->args->testproject_name,
-											 $filters, $options);
+          {			
+                $options = array('for_printing' => NOT_FOR_PRINTING,'exclude_branches' => null);
+
+                $tree_menu = generateTestReqCoverageTree($this->db,
+                                                    $this->args->testproject_id,
+                                                    $this->args->testproject_name,
+                                                    $filters, $options);
           }
-         	if ($mode == 'mode_test_suite')
-			{
-				 $tree_menu = $tree_menu['menu']; 
-			}
-			  //END - Modify
-         	 $root_node = $tree_menu->rootnode;
-          	 $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
+
+	  
+        if ($mode == 'mode_test_suite')
+        {
+                 $tree_menu = $tree_menu['menu']; 
+        }
+        //END - Modify
+          $root_node = $tree_menu->rootnode;
+          $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
         else 
         {
-			  //BEGIN - Add - DGA - MM/DD/YYYY
-		      if ($mode == 'mode_test_suite')
-			  {
-				  $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-									  "root_node={$this->args->testproject_id}&show_tcases=0";
-				
-				  $root_node = new stdClass();
-				  $root_node->href = "javascript:EP({$this->args->testproject_id})";
-				  $root_node->id = $this->args->testproject_id;
-				  $root_node->name = $this->args->testproject_name;
-				  $root_node->testlink_node_type = 'testproject';
-			  }
-			  elseif ($mode == 'mode_req_coverage')
-			  {
-				  $loader = $gui->basehref . 'lib/ajax/getreqcoveragenodes.php?mode=reqspec&' .
-						 "root_node={$this->args->testproject_id}";
-      
-				  $req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
-				
-				  $root_node = new stdClass();
-				  $root_node->href = "javascript:EP({$this->args->testproject_id})";
-				  $root_node->id = $this->args->testproject_id;
-				  $root_node->name = $this->args->testproject_name . " ($req_qty)";
-				  $root_node->testlink_node_type = 'testproject';
-			}
-			//END - Modify
-		}
+            //BEGIN - Add - DGA - MM/DD/YYYY
+              if ($mode == 'mode_test_suite')
+                  {
+                          $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+                                                                  "root_node={$this->args->testproject_id}&show_tcases=0";
+
+                          $root_node = new stdClass();
+                          $root_node->href = "javascript:EP({$this->args->testproject_id})";
+                          $root_node->id = $this->args->testproject_id;
+                          $root_node->name = $this->args->testproject_name;
+                          $root_node->testlink_node_type = 'testproject';
+                  }
+                  elseif ($mode == 'mode_req_coverage')
+                  {
+                          $loader = $gui->basehref . 'lib/ajax/getreqcoveragenodes.php?mode=reqspec&' .
+                                         "root_node={$this->args->testproject_id}";
+
+                          $req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
+
+                          $root_node = new stdClass();
+                          $root_node->href = "javascript:EP({$this->args->testproject_id})";
+                          $root_node->id = $this->args->testproject_id;
+                          $root_node->name = $this->args->testproject_name . " ($req_qty)";
+                          $root_node->testlink_node_type = 'testproject';
+                }
+                //END - Modify
+        }
       break;
       
       case 'execution_mode':
@@ -2010,12 +2013,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     // handle filter reset
     $ak = $key . "_values";
-    $cfx = array();
-    if( property_exists($this->configuration, $ak) )
-    {  
-      $cfx = $this->configuration->{$key . "_values"};
-    }
-
+-   $cfx = array();
+-   if( property_exists($this->configuration, $ak) )
+-   {  
+-     $cfx = $this->configuration->{$key . "_values"};
+-   }
     $selection = $this->args->{$key};
     if (!$selection || $this->args->reset_filters) 
     {

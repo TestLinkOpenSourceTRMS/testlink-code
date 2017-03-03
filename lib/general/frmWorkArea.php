@@ -52,7 +52,8 @@ $aa_tfp = array(
      'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
      'planAddTC'    => array('lib/plan/planAddTCNavigator.php?loadRightPaneAddTC=0',
-                             'lib/results/printDocOptions.php?activity=addTC'),
+                             //'lib/results/printDocOptions.php?activity=addTC'
+                                'lib/general/staticPage.php?key=planAddTcDocumentation'),
      'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
      'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
      'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  

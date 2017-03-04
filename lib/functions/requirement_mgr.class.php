@@ -1422,7 +1422,7 @@ function exportReqToXML($id,$tproject_id=null)
              "\n\t\t" . "<version>||VERSION||</version>" .
              "\n\t\t" . "<revision>||REVISION||</revision>" .
              "\n\t\t" . "<node_order>||NODE_ORDER||</node_order>".
-             "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
+             "\n\t\t" . "<description><![CDATA[||DESCRIPTION||]]></description>".
              "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
              "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
              "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .         

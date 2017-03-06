@@ -7943,6 +7943,78 @@ protected function createAttachmentTempFile()
 
   /**
    *
+   * get set of requirements
+   *
+   * @param args['recspecid'] 
+   *
+   * @return array of requirements related to this specification
+   *
+   */
+   public function getRequirements($args)
+   {
+        $msg_prefix="(" .__FUNCTION__ . ") - ";
+      $status_ok=true;
+      $this->_setArgs($args);
+
+        $checkFunctions = array('authenticate');
+        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);
+
+        if( $status_ok )
+        {
+            $result = $this->reqSpecMgr->get_requirements($this->args[self::$reqSpecIDParamName]);
+            if( is_null($result) )
+            {
+                $status_ok=false;
+                $trecspec_info = $this->reqSpecMgr->get_by_id($this->args[self::$reqSpecIDParamName]);
+                $msg=$msg_prefix . sprintf(REQSPEC_KO_STR,$trecspec_info['name']);
+                $this->errors[] = new IXR_ERROR(REQSPEC_KO,$msg); 
+            } 
+        }
+
+        return $status_ok ? $result : $this->errors;  
+   }
+   
+   
+   
+   
+    
+  /**
+   * get set of requirement specifications
+   *
+   * @param args['testprojectid']
+   * @param args['reqspecid']
+   *  
+   * @return array of requirement specifications related to this project
+   *
+   */
+   public function getRequirementSpecifications($args)
+   {
+        $msg_prefix="(" .__FUNCTION__ . ") - ";
+      $status_ok=true;
+      $this->_setArgs($args);
+
+        $checkFunctions = array('authenticate','checkTestProjectID');
+        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);
+
+        if( $status_ok )
+        {
+
+
+			if ($this->args[self::$reqSpecIDParamName] == 0)
+				$id = null;
+			else
+				$id = $this->args[self::$reqSpecIDParamName];
+        //  var_dump($this->tprojectMgr);
+            $result = $this->tprojectMgr->getReqSpec($this->args[self::$testProjectIDParamName], $id);  
+        }
+		
+        return $result;       
+   }
+ 
+  
+  
+  /**
+   *
    */
   function initMethodYellowPages()
   {
@@ -8001,6 +8073,8 @@ protected function createAttachmentTempFile()
                             'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
                             'tl.getTestCase' => 'this:getTestCase',
                             'tl.getFullPath' => 'this:getFullPath',
+							'tl.getRequirementSpecifications' => 'this:getRequirementSpecifications',
+							'tl.getRequirements' => 'this:getRequirements',							
                             'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
                             'tl.getUserByLogin' => 'this:getUserByLogin',
                             'tl.getUserByID' => 'this:getUserByID',

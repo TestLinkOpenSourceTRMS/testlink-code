@@ -800,13 +800,25 @@ class searchCommands
     }  
 
 
-    $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . 
+    $filter['by_tc_internal_id'] = " AND NH_TCV.parent_id IN (" . 
                           implode(",",$tcaseSet) . ") ";
 
+
     $filterSpecial['tricky'] = " 1=0 ";
-    
+
+    if($args->tc_id)
+    {
+      $filterSpecial['by_tc_id'] = '';
+      foreach($targetSet as $tgx)
+      {
+        $target = trim($tgx);
+        $filterSpecial['by_tc_id'] .= $args->and_or . 
+                                      " TCV.tc_external_id like '%{$target}%' ";  
+      }  
+    }  
+
     $doFilter = false;
-    $doFilter = ($args->tc_summary || $args->tc_title );
+    $doFilter = ($args->tc_summary || $args->tc_title || $args->tc_id);
 
     if($tc_cf_id > 0)
     {
@@ -966,7 +978,8 @@ class searchCommands
    
       $sql = $sqlFields . $sqlPart2 . $otherFilters;
 
-      //DEBUGecho __FUNCTION__ . '-' . __LINE__ . '-' . $sql .'<br>';
+      //DEBUG
+      echo __FUNCTION__ . '-' . __LINE__ . '-' . $sql .'<br>';
       $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
     }  
 

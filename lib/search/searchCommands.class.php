@@ -259,8 +259,11 @@ class searchCommands
     // remove all blanks
     // remove some html entities
     // remove ()
-    $tt = array(' ','<','>','(',')');
-    $args->target = str_replace($tt,'',$args->target);
+    // Need to give a look
+    //$tt = array('<','>','(',')');
+    //$args->target = str_replace($tt,'',$args->target);
+    $ts = preg_replace("/ {2,}/", " ", $args->target);
+    $args->target = trim($ts);
 
     $args->userID = intval(isset($_SESSION['userID']) ? $_SESSION['userID'] : 0);
 
@@ -498,8 +501,9 @@ class searchCommands
   
       $filterRS['name'] = ' OR ( ';
       $filterRS['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-      foreach($targetSet as $target)
+      foreach($targetSet as $trgt)
       {
+        $target = trim($trgt);
         $filterRS['name'] .= $args->and_or . " RSRV.name like '%{$target}%' ";  
       }  
       $filterRS['name'] .= ')';

@@ -978,8 +978,7 @@ class searchCommands
    
       $sql = $sqlFields . $sqlPart2 . $otherFilters;
 
-      //DEBUG
-      echo __FUNCTION__ . '-' . __LINE__ . '-' . $sql .'<br>';
+      //DEBUGecho __FUNCTION__ . '-' . __LINE__ . '-' . $sql .'<br>';
       $mapTC = $db->fetchRowsIntoMap($sql,'testcase_id'); 
     }  
 

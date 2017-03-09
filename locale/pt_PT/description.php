@@ -32,8 +32,8 @@
 // printFilter.html
 $TLS_hlp_generateDocOptions = "<h2>Opções para a produção do documento</h2>
 
-<p>Esta tabela permite ao utilizador filtrar os casos de teste antes de serem visualizados. 
-Se selecionado (marcado) os dados serão exibidos. Para alterar os dados 
+<p>Esta tabela permite ao utilizador filtrar os Casos de Teste antes de serem visualizados. 
+Se selecionado (marcado) os dados serão mostrados. Para alterar os dados 
 apresentados, marque ou desmarque clicando no Filtro, e selecione o nível 
 desejado na árvore de dados.</p>
 
@@ -65,123 +65,122 @@ $TLS_hlp_testPlan = "<h2>Plano de Teste</h2>
 
 <h3>Execução do Teste</h3>
 <p>Esta é a secção onde os utilizadores podem executar os Casos de Teste (escrever os resultados dos testes) 
-e imprimir a Suíte de Casos de Teste do Plano de Teste. Nesta secção os utilizadores podem 
+e imprimir a Suite de Casos de Teste do Plano de Teste. Nesta secção os utilizadores podem 
 acompanhar os resultados da sua execução dos Casos de Teste.</p> 
 
 <h2>Gestão do Plano de Teste</h2>
-<p>Esta secção, apenas acessível aos líderes, permite que os utilizadores possam administrar os planos de teste. 
-A administração de planos de teste envolve a criação/edição/exclusão de planos, acréscimo/edição 
-/exclusão/actualização dos casos de teste dos planos, criando versões, bem como definindo quem pode 
-ver qual plano.<br />
+<p>Esta secção, apenas acessível aos líderes, permite que os utilizadores possam administrar os Planos de Teste. 
+A administração de Planos de Teste envolve a criação/edição/eliminação de Planos, acréscimo/edição 
+/eliminação/atualização dos Casos de Teste dos Planos, criando versões, bem como definindo quem pode 
+ver qual Plano.<br />
 Utilizadores com permissão de líder poderão também definir a prioridade/risco e a propriedade das 
-Suítes de Caso de Teste (categorias) e criar marcos de teste.</p> 
+Suites de Caso de Teste (categorias) e criar marcos de teste.</p> 
 
-<p>Nota: É possível que os utilizadores não possam ver uma lista suspensa que contenha os planos de teste. 
-Nesta situação, todos os links (excepto para os líderes ativos) estarão desactivados. Se você 
+<p>Nota: É possível que os utilizadores não possam ver uma lista suspensa que contenha os Planos de Teste. 
+Nesta situação, todos os links (exceto para os líderes ativos) estarão desativados. Se você 
 estiver nesta situação, contacte a administração do TestLink para lhe conceder os 
-direitos de projecto adequado ou criar um Plano de Teste para você.</p>"; 
+direitos de Projecto adequado ou criar um Plano de Teste para você.</p>"; 
 
 // custom_fields.html
 $TLS_hlp_customFields = "<h2>Campos Personalizados</h2>
-<p>Seguem alguns factos sobre a implementação de campos personalizados:</p>
+<p>Seguem alguns factos sobre a implementação de Campos Personalizados:</p>
 <ul>
-<li>Campos personalizados são definidos para todo o sistema.</li>
-<li>Campos personalizados são associados ao tipo do elemento (Suíte de Teste, Caso de Teste).</li>
-<li>Campos personalizados podem ser associados a múltiplos Projectos de Teste.</li>
-<li>A sequência em que os campos personalizados serão exibidos pode ser diferente para cada Projecto de Teste.</li>
-<li>Campos personalizados podem ser inactivados para um Projecto de Teste específico.</li>
-<li>O número de Campos personalizados não é restrito.</li>
+<li>Campos Personalizados são definidos para todo o sistema.</li>
+<li>Campos Personalizados são associados ao tipo do elemento (Suite de Teste, Caso de Teste).</li>
+<li>Campos Personalizados podem ser associados a múltiplos Projectos de Teste.</li>
+<li>A sequência em que os Campos Personalizados serão mostrados pode ser diferente para cada Projecto de Teste.</li>
+<li>Campos Personalizados podem ser inativados para um Projecto de Teste específico.</li>
+<li>O número de Campos Personalizados não é restrito.</li>
 </ul>
 
-<p>A definição de um campo personalizado inclui os seguintes
+<p>A definição de um Campo Personalizado inclui os seguintes
 atributos:</p>
 <ul>
-<li>Nome do Campo personalizado.</li>
+<li>Nome do Campo Personalizado.</li>
 <li>Capturar o nome da variável (ex: Este é o valor que é fornecido para a API lang_get(), 
-ou exibido como se não for encontrado no ficheiro de linguagem).</li>
-<li>Tipo do Campo personalizado (texto, numérico, decimal, enumeração, email).</li>
+ou mostrado como se não for encontrado no ficheiro de linguagem).</li>
+<li>Tipo do Campo Personalizado (texto, numérico, decimal, enumeração, email).</li>
 <li>Possibilidade de enumerar os valores (ex: RED|YELLOW|BLUE), aplicável a uma lista, lista de multiseleção 
 e tipos de combo.<br />
 <i>Utilize o caractere pipe ('|') para
 separar os possíveis valores para uma enumeração. Um dos possíveis valores pode ser 
-uma string vazia.</i>
+um texto vazio.</i>
 </li>
-<li>Valor default: NÃO IMPLEMENTADO AINDA.</li>
-<li>Tamanho Mínimo/máximo para o valor do campo personalizado (utilize 0 para desactivar). (NÃO IMPLEMENTADO AINDA).</li>
+<li>Valor por omissão: NÃO IMPLEMENTADO AINDA.</li>
+<li>Tamanho Mínimo/Máximo para o valor do Campo Personalizado (utilize 0 para desativar). (NÃO IMPLEMENTADO AINDA).</li>
 <li>Utilizar uma expressão regular para validar a entrada do utilizador
 (use <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
 syntax). <b>(NÃO IMPLEMENTADO AINDA)</b></li>
-<li>Todos os campos personalizados são salvos como VARCHAR(255) na base de dados.</li>
-<li>Exibição na Especificação do Teste.</li>
-<li>Activado na Especificação do Teste. O utilizador pode alterar o valor durante a Especificação do Caso de Teste.</li>
-<li>Exibição na Execução do Teste.</li>
-<li>Activado na Execução do Teste. O utilizador pode alterar o valor durante a Execução do Caso de Teste.</li>
-<li>Exibição no Planeamento do Plano de Teste.</li>
-<li>Activado no Planeamento do Plano de Teste. O utilizador pode alterar o valor durante o planejamento do Plano de Teste (adicionar Casos de Teste ao Plano de Teste).</li>
+<li>Todos os Campos Personalizados são salvos como VARCHAR(255) na base de dados.</li>
+<li>Mostrado na Especificação do Teste.</li>
+<li>Ativado na Especificação do Teste. O utilizador pode alterar o valor durante a Especificação do Caso de Teste.</li>
+<li>Mostrado na Execução do Teste.</li>
+<li>Ativado na Execução do Teste. O utilizador pode alterar o valor durante a Execução do Caso de Teste.</li>
+<li>Mostrado no Planeamento do Plano de Teste.</li>
+<li>Ativado no Planeamento do Plano de Teste. O utilizador pode alterar o valor durante o planeamento do Plano de Teste (adicionar Casos de Teste ao Plano de Teste).</li>
 <li>Disponível para o utilizador escolher o tipo de campo.</li>
 </ul>
 ";
 
 // execMain.html
 $TLS_hlp_executeMain = "<h2>Executar Casos de Teste</h2>
-<p>Permite aos utilizadores 'executar' os Casos de Teste. Execução propriamente 
+<p>Permite aos utilizadores 'Executar' os Casos de Teste. Uma Execução propriamente 
 dita é apenas a atribuição do resultado de um Caso de Teste (Passou, 
-Com Falha ou Bloqueado) de uma compilação selecionada.</p>
-<p>O acesso a um Bugtracking pode ser configurado. O utilizador pode adicionar directamente novos bugs e navegar pelos existentes. Consulte o manual de instalação para maiores detalhes.</p>";
+Falhado ou Bloqueado) de uma compilação selecionada.</p>
+<p>O acesso a um Gestor de Ocorrências (Bugtracker) pode ser configurado. O utilizador pode adicionar diretamente novas Ocorrências e navegar pelas existentes. Consulte o manual de instalação para mais detalhes.</p>";
 
 //bug_add.html
-$TLS_hlp_btsIntegration = "<h2>Adicionar Bugs ao Caso de Teste</h2>
+$TLS_hlp_btsIntegration = "<h2>Adicionar Ocorrências ao Caso de Teste</h2>
 <p><i>(apenas se estiver configurado)</i>
-O TestLink possui uma integração muito simples com os sistemas de Bugtracking, 
-mas não é capaz de enviar um pedido de abertura de bug ao Bugtracking ou receber de volta o ID do Bug. 
-A integração é feita utilizando um link para a página do Bugtracking, com as seguintes características:
+O TestLink possui uma integração muito simples com os sistemas de Gestão de Ocorrências, 
+mas não é capaz de enviar um pedido de abertura de Ocorrência ao Gestor de Ocorrências ou receber de volta o ID da Ocorrência. 
+A integração é feita utilizando um link para a página do Gestor de Ocorrências, com as seguintes características:
 <ul>
-	<li>Inserir novo Bug.</li>
-	<li>Exibição das informações do bug. </li>
+	<li>Inserir nova Ocorrência.</li>
+	<li>Exibição das informações da Ocorrência. </li>
 </ul>
 </p>  
 
-<h3>Processo para adicionar um novo bug</h3>
+<h3>Processo para adicionar uma nova Ocorrência</h3>
 <p>
    <ul>
-   <li>Passo 1: Utilize o link para abrir o Bugtracking e inserir um novo bug. </li>
-   <li>Passo 2: Anote o ID do Bug gerado pelo Bugtracking.</li>
-   <li>Passo 3: Escreva o ID do Bug no campo de entrada.</li>
-   <li>Passo 4: Clique no botão Adicionar Bug</li>
+   <li>Passo 1: Utilize o link para abrir o Gestor de Ocorrências e inserir uma nova Ocorrência. </li>
+   <li>Passo 2: Anote o ID da Ocorrência gerada pelo Gestor de Ocorrências.</li>
+   <li>Passo 3: Escreva o ID da Ocorrência no campo de entrada.</li>
+   <li>Passo 4: Clique no botão Adicionar Ocorrência</li>
    </ul>  
 
-Depois de fechar a página de Adição de Bug, os dados relevantes do bug serão exibidos na página de execução.
+Depois de fechar a página de Adição de Ocorrência, os dados relevantes da Ocorrência serão mostrados na página de execução.
 </p>";
 
 // execFilter.html
 $TLS_hlp_executeFilter = "<h2>Configurações</h2>
 
-<p>Em Configurações é possível que você selecione o plano de teste, a build e 
-a plataforma (se disponível) para ser executado.</p>
+<p>Em Configurações é possível que você selecione o Plano de Teste, a Build e 
+a Plataforma (se disponível) para ser executado.</p>
 
 <h3>Plano de Teste</h3>
-<p>Você pode escolher o Plano de Teste necessário. De acordo com o plano de teste escolhido, as apropriadas 
-builds serão exibidas. Depois de escolher um plano de teste, os filtros serão reiniciados.</p>
+<p>Você pode escolher o Plano de Teste necessário. De acordo com o Plano de Teste escolhido, serão mostradas as Builds apropriadas. Depois de escolher um Plano de Teste, os filtros serão reiniciados.</p>
 
 <h3>Plataformas</h3>
-<p>Se o recurso de plataformas é usado, você deve selecionar a plataforma apropriada antes da execução.</p>
+<p>Se o recurso de Plataformas é usado, você deve selecionar a Plataforma apropriada antes da execução.</p>
 
-<h3>Execução do Build</h3>
-<p>Você pode escolher o Build em que deseja executar os Casos de Teste.</p>
+<h3>Execução da Build</h3>
+<p>Você pode escolher a Build em que deseja executar os Casos de Teste.</p>
 
 <h2>Filtros</h2>
-<p>Filtros proporcionam a oportunidade de influenciar ainda mais o conjunto de casos de teste mostrados.
-Através dos Filtros é possível diminuir o conjunto de Casos de Teste exibidos. Selecione 
+<p>Os Filtros proporcionam a oportunidade de influenciar ainda mais o conjunto de Casos de Teste mostrados.
+Através dos Filtros é possível diminuir o conjunto de Casos de Teste mostrados. Selecione 
 os filtros desejados e clique no botão \"Aplicar\".</p>
 
 <p>Os Filtros Avançados permitem que você especifique um conjunto de valores para filtros aplicáveis 
 ​​usando Ctrl + Clique dentro de cada ListBox.</p>
 
 
-<h3>Filtro de Palavra-chave</h3>
+<h3>Filtro de Palavra Chave</h3>
 <p>Você pode filtrar os Casos de Teste pelas Palavras Chave que foram atribuídas. Você pode escolher " .
-"múltiplas Palavras Chave utilizando Ctrl + Clique. Se você escolher mais que uma palavra-chave, você pode " .
-"decidir se apenas serão exibidos os Casos de Teste que contêm todas as Palavras Chave selecionadas " .
+"múltiplas Palavras Chave utilizando Ctrl + Clique. Se você escolher mais que uma Palavra Chave, você pode " .
+"decidir se apenas serão mostrados os Casos de Teste que contêm todas as Palavras Chave selecionadas " .
 "(botão \"E\") ou pelo menos uma das Palavras Chave escolhidas (botão \"OU\").</p>
 
 <h3>Filtro de Prioridade</h3>
@@ -190,28 +189,28 @@ os filtros desejados e clique no botão \"Aplicar\".</p>
 
 <h3>Filtro de Utilizador</h3>
 <p>Você pode filtrar os Casos de Teste que não estão atribuídos (\"Ninguém\") ou atribuídos a \"Alguém\". " .
-"Você também pode filtrar os Casos de Teste que são atribuídos a um testador específico. Se você escolheu um testador " .
+"Você também pode filtrar os Casos de Teste que são atribuídos a um Testador específico. Se você escolheu um Testador " .
 "específico, também existe a possibilidade de mostrar os Casos de Teste que estão por serem atribuídos " .
 "(Filtros avançados estão disponíveis).</p>
 
 <h3>Filtro de Resultado</h3>
 <p>Você pode filtrar os Casos de Teste pelos resultados (Filtros avançados estão disponíveis). Você pode filtrar por " .
-"resultado \"na build escolhida para a execução\", \"na última execução\", \"em TODAS as Builds\", " .
-"\"em QUALQUER build\" e \"em uma build específica\". Se \"uma build específica\" for escolhida, então você pode " .
-"especificar a build. </p>";
+"resultado \"na Build escolhida para a execução\", \"na última execução\", \"em TODAS as Builds\", " .
+"\"em QUALQUER Build\" e \"em uma Build específica\". Se \"uma Build específica\" for escolhida, então você pode " .
+"especificar a Build. </p>";
 
 
 // newest_tcversions.html
 $TLS_hlp_planTcModified = "<h2>Versões mais recentes do Caso de Teste</h2>
 <p>Todo o conjunto de Casos de Teste ligados ao Plano de Teste é analisado, e uma lista de Casos 
-de Teste que têm uma versão mais recente é exibida (contra o conjunto atual do Plano de Teste).
+de Teste que têm uma versão mais recente é mostrada (contra o conjunto atual do Plano de Teste).
 </p>";
 
 
 // requirementsCoverage.html
 $TLS_hlp_requirementsCoverage = "<h3>Cobertura de Requisitos</h3>
 <br />
-<p>Este recurso permite mapear uma cobertura de utilizador ou requisitos do sistema 
+<p>Este recurso permite mapear uma cobertura de utilizador ou Requisitos do sistema 
 por Casos de Teste. Navegue através do link \"Especificar Requisitos\" na tela principal.</p>
 
 <h3>Especificação de Requisitos</h3>
@@ -221,21 +220,21 @@ também para os Requisitos. Assim, a versão do documento deve ser adicionada de
 <b>Título</b> da Especificação.
 O utilizador pode adicionar uma descrição simples ou uma nota no campo <b>Âmbito</b>.</p> 
 
-<p>Sobrescrever o contador de Requisitos serve para avaliar a cobertura dos requisitos no caso 
-de nem todos os requisitos estarem adicionados ao TestLink.
-<p>O valor <b>0</b> significa que a contagem atual de requisitos é usado para métricas.</p> 
-<p><i>Ex: SRS inclui 200 requisitos, mas somente 50 são adicionados ao Plano de Teste. A cobertura de testes 
-é de 25% (se todos estes requisitos forem testados).</i></p>
+<p>Sobrescrever o contador de Requisitos serve para avaliar a cobertura dos Requisitos no caso 
+de nem todos os Requisitos estarem adicionados ao TestLink.
+<p>O valor <b>0</b> significa que a contagem atual de Requisitos é usado para métricas.</p> 
+<p><i>Ex: SRS inclui 200 Requisitos, mas somente 50 são adicionados ao Plano de Teste. A cobertura de testes 
+é de 25% (se todos estes Requisitos forem testados).</i></p>
 
 <h3>Requisitos</h3>
 <p>Clique no título para criar uma Especificação de Requisitos. Você pode criar, editar, apagar 
-ou importar requisitos para este documento. Cada Requisito tem título, âmbito e status.
+ou importar Requisitos para este documento. Cada Requisito tem título, âmbito e status.
 O status deve ser \"Válido\" ou \"Não testado\". Requisitos não testados não são contabilizados
 para as métricas. Este parâmetro deve ser utilizado para características não implementadas 
-e requisitos modelados incorretamente.</p> 
+e Requisitos modelados incorretamente.</p> 
 
-<p>Você pode criar novos Casos de Teste para os requisitos utilizando multi ações para os requisitos 
-ativos na tela de especificação de requisitos. Estes Casos de Teste são criados dentro da Suíte de 
+<p>Você pode criar novos Casos de Teste para os Requisitos utilizando multi ações para os Requisitos 
+ativos na tela de especificação de Requisitos. Estes Casos de Teste são criados dentro da Suite de 
 Teste com nome definido na configuração <i>(padrão é: &#36;tlCfg->req_cfg->default_testsuite_name = 
 \"Test suite created by Requirement - Auto\";)</i>. Título e Âmbito são copiados destes Casos de Teste.</p>
 ";
@@ -249,7 +248,7 @@ a cobertura de 40 %.
 
 // req_edit
 $TLS_hlp_req_edit = "<h3>Links internos no Âmbito:</h3>
-<p>Links internos servem ao propósito da criação de links a outros requisitos / especificações de requisitos 
+<p>Links internos servem ao propósito da criação de links a outros Requisitos / especificações de Requisitos 
 com uma sintaxe especial. O comportamento dos Links internos pode ser alterado no ficheiro de configuração.
 <br /><br />
 <b>Uso:</b>
@@ -260,8 +259,8 @@ Link para Especificação de Requisitos: [req_spec]req_spec_doc_id[/req_spec]</p
 <p>O Projecto de Teste do Requisito / Especificação de Requisitos, uma versão e uma âncora 
 também podem ser especificados:<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
-Esta sintaxe também funciona para as especificações de requisito (atributos de versão não tem nenhum efeito).<br />
-Se você não especificar a versão do Requisito completo, todas as versões serão exibidas.</p>
+Esta sintaxe também funciona para as especificações de Requisito (atributos de versão não tem nenhum efeito).<br />
+Se você não especificar a versão do Requisito completo, todas as versões serão mostradas.</p>
 
 <h3>Log para mudanças:</h3>
 <p>Sempre que uma alteração é feita, o Testlink irá pedir uma mensagem de log. Esta mensagem de log serve como rastreabilidade.
@@ -275,15 +274,15 @@ $TLS_hlp_req_view = "<h3>Links Diretos:</h3>
 <p>É fácil compartilhar este documento com outros, basta clicar no ícone do globo no topo deste documento para criar um link direto.</p>
 
 <h3>Ver Histórico:</h3>
-<p>Este recurso permite comparar revisões/versões de requisitos, se mais de uma revisão/versão de requisitos existir.
+<p>Este recurso permite comparar revisões/versões de Requisitos, se mais de uma revisão/versão de Requisitos existir.
 A visão geral fornece uma mensagem de log para cada revisão/versão, um timestamp e autor da última alteração.</p>
 
 <h3>Cobertura:</h3>
 <p>Exibir todos os Casos de Teste associados para este Requisito.</p>
 
 <h3>Relações:</h3>
-<p>Relações de Requisitos são usados ​​para relacionamentos de modelos entre os requisitos.
-Relações personalizadas e a opção de permitir relações entre os requisitos de
+<p>Relações de Requisitos são usados ​​para relacionamentos de modelos entre os Requisitos.
+Relações personalizadas e a opção de permitir relações entre os Requisitos de
 diferentes projectos de teste podem ser configurados no ficheiro de configuração.
 Se você definir a relação \"Requisito A é pai do Requisito B\", 
 o Testlink irá definir a relação \"Requisito B é filho do Requisito A\" implicitamente.</p>
@@ -292,7 +291,7 @@ o Testlink irá definir a relação \"Requisito B é filho do Requisito A\" impl
 
 // req_spec_edit
 $TLS_hlp_req_spec_edit = "<h3>Links internos no Âmbito:</h3>
-<p>Links internos servem ao propósito da criação de links a outros requisitos / especificações de requisitos 
+<p>Links internos servem ao propósito da criação de links a outros Requisitos / especificações de Requisitos 
 com uma sintaxe especial. O comportamento dos Links internos pode ser alterado no ficheiro de configuração.
 <br /><br />
 <b>Uso:</b>
@@ -303,28 +302,28 @@ Link para Especificação de Requisitos: [req_spec]req_spec_doc_id[/req_spec]</p
 <p>O Projecto de Teste do Requisito / Especificação de Requisitos, uma versão e uma âncora 
 também podem ser especificados:<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
-Esta sintaxe também funciona para as especificações de requisito (atributos de versão não tem nenhum efeito).<br />
-Se você não especificar a versão do Requisito completo, todas as versões serão exibidas.</p>
+Esta sintaxe também funciona para as especificações de Requisito (atributos de versão não tem nenhum efeito).<br />
+Se você não especificar a versão do Requisito completo, todas as versões serão mostradas.</p>
 ";
 
 
 // planAddTC_m1.tpl
-$TLS_hlp_planAddTC = "<h2>Sobre 'Campos personalizados salvos'</h2>
+$TLS_hlp_planAddTC = "<h2>Sobre 'Campos Personalizados salvos'</h2>
 Se você tiver definido e atribuído ao Projecto de Teste,<br /> 
 Campos Personalizados com:<br />
- 'Exibição no desenho do Plano de Teste=true' e <br />
+ 'Mostrar no desenho do Plano de Teste=true' e <br />
  'Activar no desenho do Plano de Teste=true'<br />
 você irá ver nesta página APENAS os Casos de Teste ligados ao Plano de Teste.
 ";
 
 
 // resultsByTesterPerBuild.tpl
-$TLS_hlp_results_by_tester_per_build_table = "<b>Mais informações sobre os testadores</b><br />
-Se você clicar no nome do testador nesta tabela, você irá ter uma visão mais detalhada
+$TLS_hlp_results_by_tester_per_build_table = "<b>Mais informações sobre os Testadores</b><br />
+Se você clicar no nome do Testador nesta tabela, você irá ter uma visão mais detalhada
 sobre todos os Casos de Teste atribuídos para esse utilizador e o seu progresso de teste.<br /><br />
 <b>Nota:</b><br />
-Este relatório mostra os casos de teste, que são atribuídos a um utilizador específico e foram executados
-com base em cada build ativo. Mesmo se um Caso de Teste foi executado por outro utilizador que não o utilizador atribuído,
+Este relatório mostra os Casos de Teste, que são atribuídos a um utilizador específico e foram executados
+com base em cada Build ativa. Mesmo se um Caso de Teste foi executado por outro utilizador que não o utilizador atribuído,
 o Caso de Teste irá aparecer como executado pelo utilizador atribuído.
 ";
 

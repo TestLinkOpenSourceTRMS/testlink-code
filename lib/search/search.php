@@ -55,8 +55,6 @@ if($canUseTarget == false && $args->oneValueOK == false)
   exit();
 }  
 
-
-
 // Processing
 $map = null;
 
@@ -97,7 +95,8 @@ if( ($args->tproject_id > 0) && $args->doAction == 'doSearch')
   $tcaseSet = $cmdMgr->getTestCaseIDSet($args->tproject_id);
 }
         
-// 
+
+$mapTC = null;
 $mapTS = null;
 $mapRS = null;
 $mapRQ = null;
@@ -105,21 +104,18 @@ $mapRQ = null;
 // Search on Test Suites
 if( $canUseTarget && ($args->ts_summary || $args->ts_title) )
 {
-  //DEBUGecho 'going for TestSuites<br>';
   $mapTS = $cmdMgr->searchTestSuites($targetSet,$canUseTarget);
 }
 
 // Requirment SPECification
 if( $canUseTarget && ($args->rs_scope || $args->rs_title) )
 {
-  //DEBUGecho 'going for Req Spec<br>';
   $mapRS = $cmdMgr->searchReqSpec($targetSet,$canUseTarget);
 } 
 
 // REQuirements
 if( $args->rq_scope || $args->rq_title || $args->rq_doc_id || ($req_cf_id > 0) )
 {
-  //DEBUGtecho 'going for Requirements<br>';
   $mapRQ = $cmdMgr->searchReq($targetSet,$canUseTarget,$req_cf_id);  
 } 
 
@@ -131,17 +127,14 @@ if( $hasTestCases )
   $mapTC = $cmdMgr->searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id);
 }  
 
-
-// -------------------------------------------------------------
 // Render Results
-if ($mapTC)
+if( !is_null($mapTC) )
 {
-    $tcase_mgr = new testcase($db);   
-    $tcase_set = array_keys($mapTC);
-    $options = array('output_format' => 'path_as_string');
-    $gui->path_info = $treeMgr->get_full_path_verbose($tcase_set, $options);
-    $gui->resultSet = $mapTC;
-
+  $tcase_mgr = new testcase($db);   
+  $tcase_set = array_keys($mapTC);
+  $options = array('output_format' => 'path_as_string');
+  $gui->path_info = $treeMgr->get_full_path_verbose($tcase_set, $options);
+  $gui->resultSet = $mapTC;
 }
 else if ($emptyTestProject) 
 {
@@ -160,7 +153,6 @@ if (!is_null($table))
   $gui->tableSet[] = $table;
 }
 
-// TS
 $table = null;
 if( !is_null($mapTS))
 {
@@ -174,39 +166,39 @@ if(!is_null($table))
   $gui->tableSet[] = $table;
 }  
 
-  // RSPEC
-  $table = null;
-  if( !is_null($mapRS))
-  {
-    $gui->resultReqSpec = $mapRS;
-    $table = buildRSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
-  }  
+$table = null;
+if( !is_null($mapRS))
+{
+  $gui->resultReqSpec = $mapRS;
+  $table = buildRSExtTable($gui, $charset, $img['edit_icon'], $img['history_small']); 
+}  
   
-  $gui->warning_msg = '';
-  if(!is_null($table))
-  {
-    $gui->tableSet[] = $table;
-  }  
+$gui->warning_msg = '';
+if(!is_null($table))
+{
+  $gui->tableSet[] = $table;
+}  
 
-  $table = null;
-  if( !is_null($mapRQ))
-  {
-    $gui->resultReq = $mapRQ;
-    $req_set = array_keys($mapRQ);
-    $options = array('output_format' => 'path_as_string');
-    $gui->path_info = $treeMgr->get_full_path_verbose($req_set,$options);
+$table = null;
+if( !is_null($mapRQ))
+{
+  $gui->resultReq = $mapRQ;
+  $req_set = array_keys($mapRQ);
+  $options = array('output_format' => 'path_as_string');
+  $gui->path_info = $treeMgr->get_full_path_verbose($req_set,$options);
 
-    $table = buildRQExtTable($gui, $charset);
-  }
+  $table = buildRQExtTable($gui, $charset);
+}
 
-  $gui->warning_msg = '';
-  if(!is_null($table))
-  {
-    $gui->tableSet[] = $table;
-  }  
+$gui->warning_msg = '';
+if(!is_null($table))
+{
+  $gui->tableSet[] = $table;
+}  
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
+
 
 /**
  * 

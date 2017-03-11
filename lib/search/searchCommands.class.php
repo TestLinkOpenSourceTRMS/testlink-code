@@ -26,6 +26,7 @@ class searchCommands
   private $filters;
   private $tables;
   private $views;
+  private $likeOp;
 
   private $reqSpecCfg;
   private $tcaseCfg;
@@ -45,6 +46,13 @@ class searchCommands
     $this->reqSpecMgr = new requirement_spec_mgr($this->db);
 
     $this->tcaseCfg = config_get('testcase_cfg');
+    $dbt = strtolower($this->db->db->databaseType);
+    
+    $this->likeOp = 'LIKE';
+    if(stristr($dbt, 'postgres') !== FALSE)
+    {
+      $this->likeOp = 'I' . $this->likeOp;
+    }  
   }
 
 
@@ -532,7 +540,7 @@ class searchCommands
       $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       foreach($targetSet as $target)
       {
-        $filterRS['scope'] .= $args->and_or . " RSRV.scope like '%{$target}%' ";  
+        $filterRS['scope'] .= $args->and_or . " RSRV.scope $this->likeOp '%{$target}%' ";  
       }  
       $filterRS['scope'] .= ')';
   
@@ -541,7 +549,7 @@ class searchCommands
       foreach($targetSet as $trgt)
       {
         $target = trim($trgt);
-        $filterRS['name'] .= $args->and_or . " RSRV.name like '%{$target}%' ";  
+        $filterRS['name'] .= $args->and_or . " RSRV.name $this->likeOp '%{$target}%' ";  
       }  
       $filterRS['name'] .= ')';
     }  
@@ -608,7 +616,7 @@ class searchCommands
 
         default:
           $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-          $fi['by_custom_field'] .= " AND CFD.value like '%{$args->custom_field_value}%' ";
+          $fi['by_custom_field'] .= " AND CFD.value $this->likeOp '%{$args->custom_field_value}%' ";
         break;
       }
     }  
@@ -619,9 +627,9 @@ class searchCommands
     {
       $doFilter = true;
       $from['users'] .= " JOIN {$tables['users']} RQAUTHOR ON RQAUTHOR.id = RQV.author_id ";
-      $fi['author'] = " AND ( RQAUTHOR.login LIKE '%{$args->created_by}%' OR " .
-                      "       RQAUTHOR.first LIKE '%{$args->created_by}%' OR " .
-                      "       RQAUTHOR.last LIKE '%{$args->created_by}%') ";
+      $fi['author'] = " AND ( RQAUTHOR.login $this->likeOp '%{$args->created_by}%' OR " .
+                      "       RQAUTHOR.first $this->likeOp '%{$args->created_by}%' OR " .
+                      "       RQAUTHOR.last $this->likeOp '%{$args->created_by}%') ";
     }  
   
     $args->edited_by = trim($args->edited_by);
@@ -629,9 +637,9 @@ class searchCommands
     {
       $doFilter = true;
       $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = RQV.modifier_id ";
-      $fi['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
-                            "       UPDATER.first LIKE '%{$args->edited_by}%' OR " .
-                            "       UPDATER.last LIKE '%{$args->edited_by}%') ";
+      $fi['modifier'] = " AND ( UPDATER.login $this->likeOp '%{$args->edited_by}%' OR " .
+                            "       UPDATER.first $this->likeOp '%{$args->edited_by}%' OR " .
+                            "       UPDATER.last $this->likeOp '%{$args->edited_by}%') ";
     }  
 
     if( $doSql )
@@ -679,7 +687,7 @@ class searchCommands
           $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
           foreach($targetSet as $target)
           {
-            $filterRQ['scope'] .= $args->and_or . " RQV.scope like '%{$target}%' "; 
+            $filterRQ['scope'] .= $args->and_or . " RQV.scope $this->likeOp '%{$target}%' "; 
           }  
           $filterRQ['scope'] .= ')';
         }  
@@ -691,7 +699,7 @@ class searchCommands
 
           foreach($targetSet as $target)
           {
-            $filterRQ['name'] .= $args->and_or . " NHRQ.name like '%{$target}%' "; 
+            $filterRQ['name'] .= $args->and_or . " NHRQ.name $this->likeOp '%{$target}%' "; 
           }  
           $filterRQ['name'] .= ')';
         }  
@@ -702,7 +710,7 @@ class searchCommands
           $filterRQ['req_doc_id'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
           foreach($targetSet as $target)
           {
-            $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id like '%{$target}%' ";  
+            $filterRQ['req_doc_id'] .= $args->and_or . " RQ.req_doc_id $this->likeOp '%{$target}%' ";  
           }  
           $filterRQ['req_doc_id'] .= ')';
         } 
@@ -762,7 +770,7 @@ class searchCommands
       
       foreach($targetSet as $target)
       {
-        $filterSpecial['ts_summary'] .= $args->and_or . " TS.details like '%{$target}%' ";
+        $filterSpecial['ts_summary'] .= $args->and_or . " TS.details $this->likeOp '%{$target}%' ";
       }  
       $filterSpecial['ts_summary'] .= ')';
     }  
@@ -774,7 +782,7 @@ class searchCommands
 
       foreach($targetSet as $target)
       {
-        $filterSpecial['ts_title'] .= $args->and_or . " NH_TS.name like '%{$target}%' ";
+        $filterSpecial['ts_title'] .= $args->and_or . " NH_TS.name $this->likeOp '%{$target}%' ";
       }  
       $filterSpecial['ts_title'] .= ')';
     }  
@@ -846,11 +854,16 @@ class searchCommands
     if($args->tc_id)
     {
       $filterSpecial['by_tc_id'] = '';
+
+      // Remember that test case id is a number!
       foreach($targetSet as $tgx)
       {
         $target = trim($tgx);
-        $filterSpecial['by_tc_id'] .= $args->and_or . 
-                                      " TCV.tc_external_id like '%{$target}%' ";  
+        if( is_numeric($target) )
+        {
+          $filterSpecial['by_tc_id'] .= $args->and_or . 
+                                      " TCV.tc_external_id = $target ";  
+        }  
       }  
     }  
 
@@ -875,7 +888,7 @@ class searchCommands
 
         default:
           $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-          $filter['by_custom_field'] .= " AND CFD.value like '%{$args->custom_field_value}%' ";
+          $filter['by_custom_field'] .= " AND CFD.value $this->likeOp '%{$args->custom_field_value}%' ";
         break;
       }
     }
@@ -896,7 +909,7 @@ class searchCommands
       
       foreach($targetSet as $target)
       {
-        $filterSpecial['by_steps'] .= $args->and_or . " TCSTEPS.actions like '%{$target}%' ";  
+        $filterSpecial['by_steps'] .= $args->and_or . " TCSTEPS.actions $this->likeOp '%{$target}%' ";  
       }  
       $filterSpecial['by_steps'] .= ')';
     }    
@@ -909,7 +922,7 @@ class searchCommands
       foreach($targetSet as $target)
       {
         $filterSpecial['by_expected_results'] .= $args->and_or . 
-                     " TCSTEPS.expected_results like '%{$target}%' "; 
+                     " TCSTEPS.expected_results $this->likeOp '%{$target}%' "; 
       }  
       $filterSpecial['by_expected_results'] .= ')';
     }    
@@ -931,7 +944,7 @@ class searchCommands
      
           foreach($targetSet as $target)
           {
-            $filterSpecial[$kf] .= " {$args->and_or} {$alias}.{$kf} like ";
+            $filterSpecial[$kf] .= " {$args->and_or} {$alias}.{$kf} $this->likeOp ";
             $filterSpecial[$kf] .= " '%{$target}%' "; 
           }  
           $filterSpecial[$kf] .= ' )';
@@ -971,9 +984,9 @@ class searchCommands
       {
         $doFilter = true;
         $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
-        $filter['author'] = " AND ( AUTHOR.login LIKE '%{$args->created_by}%' OR " .
-                            "       AUTHOR.first LIKE '%{$args->created_by}%' OR " .
-                            "       AUTHOR.last LIKE '%{$args->created_by}%') ";
+        $filter['author'] = " AND ( AUTHOR.login $this->likeOp '%{$args->created_by}%' OR " .
+                            "       AUTHOR.first $this->likeOp '%{$args->created_by}%' OR " .
+                            "       AUTHOR.last $this->likeOp '%{$args->created_by}%') ";
       }  
     
       $edited_by_on_tc = $args->edited_by = trim($args->edited_by);
@@ -981,9 +994,9 @@ class searchCommands
       {
         $doFilter = true;
         $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";
-        $filter['modifier'] = " AND ( UPDATER.login LIKE '%{$args->edited_by}%' OR " .
-                            "         UPDATER.first LIKE '%{$args->edited_by}%' OR " .
-                            "         UPDATER.last LIKE '%{$args->edited_by}%') ";
+        $filter['modifier'] = " AND ( UPDATER.login $this->likeOp '%{$args->edited_by}%' OR " .
+                            "         UPDATER.first $this->likeOp '%{$args->edited_by}%' OR " .
+                            "         UPDATER.last $this->likeOp '%{$args->edited_by}%') ";
       }  
     }
 

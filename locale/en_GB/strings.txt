@@ -4044,5 +4044,11 @@ $TLS_search_title = "Search";
 $TLS_req_document_id = "Req. Doc. ID";
 $TLS_id = 'ID';
 
+$TLS_search_words_or = 'Search must match at least ONE word (OR)';
+$TLS_search_words_and = 'Search has to match ALL words (AND)';
+$TLS_search_words_placeholder = 'write here the words you want search for';
+$TLS_search_words_on_attr = "Word/Words will be searched among one or more attributes you will select below";
+
+$TLS_search_other_attr = "You can set search criteria that do not use words. But This search criteria will be added on AND mode";
 
 // ----- END ------------------------------------------------------------------

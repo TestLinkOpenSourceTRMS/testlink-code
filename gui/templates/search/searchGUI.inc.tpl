@@ -1,10 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-@filesource searchForm.tpl
+@filesource searchGUI.inc.tpl
 Purpose: show form 
 
-@internal revisions
-@since 1.9.16
+@since 1.9.17
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".inc.tpl":""}
@@ -13,8 +12,10 @@ Purpose: show form
 {lang_get var="labels" s='search_items,btn_find,logical_or,logical_and,created_by,
                           edited_by,modification_date_to,modification_date_from,
                           custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,req_status,reqspec_type,testcase,testsuite,title,clear_date,show_calendar,id,
-                          summary,preconditions,steps,expected_results,details,tcase_wkf_status,
+                          summary,preconditions,steps,expected_results,details,tcase_wkf_status,search_words_or,search_words_and,
+                          search_words_placeholder,search_words_on_attr,search_other_attr,req_type,
                           scope,requirement,req_specification,req_document_id,id'}
+
 <div style="margin: 1px;">
 <form method="post" name="fullTextSearch" id="fullTextSearch" 
       action="{$basehref}lib/search/search.php">
@@ -24,17 +25,22 @@ Purpose: show form
 
   <table class="simple" border="1" style="width:90%">     
     <tr>
-     <td style="width: 2%">{$labels.search_items|escape}</td>
-     <td style="width: 10%"><input style="width: 20rem" type="text" name="target" id="target" 
-                value="{$gui->target|escape}"></td>
-     <td style="width: 30%">
-        <fieldset style="width: 20%">
-        <input type="radio" name="and_or"
-               value="or" {$gui->or_checked} />{$labels.logical_or}
-        <input type="radio" name="and_or"
-               value="and" {$gui->and_checked} />{$labels.logical_and}
-        </fieldset>
-      </tr>
+     <td style="width: 20%" colspan="5">
+         <select name="and_or" id="and_or">
+          <option value="or" {$gui->or_selected} >{$labels.search_words_or|escape}
+          </option>
+          <option value="and" {$gui->and_selected} >{$labels.search_words_and|escape}</option>
+         </select>
+         <input style="width: 20rem" type="text" name="target" id="target" 
+                value="{$gui->target|escape}" 
+                placeholder="{$labels.search_words_placeholder|escape}">
+     </td>
+    </tr>
+
+    <tr>
+    <td style="width: 2%" colspan="5">{$labels.search_words_on_attr|escape}</td> 
+    </tr>
+
     <tr>
     <td style="width: 2%"></td> 
     
@@ -55,18 +61,26 @@ Purpose: show form
     </td>
     
     <td style="width: 30%" colspan="1"> 
-      {$labels.req_specification}<br>
-      <input type="checkbox" name="rs_title" value="1" {if $gui->rs_title}checked{/if} >{$labels.title}<br>
-      <input type="checkbox" name="rs_scope" value="1" {if $gui->rs_scope}checked{/if}>{$labels.scope}<br>
+      {if $gui->reqEnabled}
+        {$labels.req_specification}<br>
+        <input type="checkbox" name="rs_title" value="1" {if $gui->rs_title}checked{/if} >{$labels.title}<br>
+        <input type="checkbox" name="rs_scope" value="1" {if $gui->rs_scope}checked{/if}>{$labels.scope}<br>
+      {/if}
     </td>
 
     <td style="width: 30%" colspan="1"> 
-      {$labels.requirement}<br>
-      <input type="checkbox" name="rq_title" value="1" {if $gui->rq_title}checked{/if}>{$labels.title}<br>
-      <input type="checkbox" name="rq_scope" value="1" {if $gui->rq_scope}checked{/if}>{$labels.scope}<br>
-      <input type="checkbox" name="rq_doc_id" value="1" {if $gui->rq_doc_id}checked{/if}>{$labels.req_document_id}<br>
+      {if $gui->reqEnabled}
+        {$labels.requirement}<br>
+        <input type="checkbox" name="rq_title" value="1" {if $gui->rq_title}checked{/if}>{$labels.title}<br>
+        <input type="checkbox" name="rq_scope" value="1" {if $gui->rq_scope}checked{/if}>{$labels.scope}<br>
+        <input type="checkbox" name="rq_doc_id" value="1" {if $gui->rq_doc_id}checked{/if}>{$labels.req_document_id}<br>
+      {/if}    
     </td>
     
+    </tr>
+
+    <tr>
+    <td style="width: 2%" colspan="5">{$labels.search_other_attr|escape}</td> 
     </tr>
 
     <tr>
@@ -167,28 +181,30 @@ Purpose: show form
         <div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
       </td>
 
-      <td colspan="2">
+      <td colspan="1">
 
       {$labels.tcase_wkf_status}
         <select name="tcWKFStatus" id="tcWKFStatus">
           <option value="">&nbsp;</option>
             {html_options options=$gui->tcWKFStatusDomain  selected=$gui->tcWKFStatus}
           </select>
+      </td>
 
-       <br>   
+      <td colspan="1">
+        {if $gui->reqEnabled}
+          {$labels.req_type}
+          <select name="reqType" id="reqType">
+            <option value="">&nbsp;</option>
+              {html_options options=$gui->reqTypes  selected=$gui->reqType}
+            </select>
 
-      {$labels.reqspec_type}
-        <select name="rType" id="rType">
+         <br>   
+         {$labels.req_status}
+          <select name="reqStatus">
           <option value="">&nbsp;</option>
-            {html_options options=$gui->rtypes  selected=$gui->rType}
+          {html_options options=$gui->reqStatusDomain selected=$gui->reqStatus}
           </select>
-
-       <br>   
-       {$labels.req_status}
-        <select name="reqStatus">
-        <option value="">&nbsp;</option>
-        {html_options options=$gui->reqStatusDomain selected=$gui->reqStatus}
-        </select>
+        {/if}
       </td>
 
     </tr>

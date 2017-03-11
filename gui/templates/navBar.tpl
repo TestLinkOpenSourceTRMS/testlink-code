@@ -4,9 +4,6 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 title bar + menu
 
 @filesource navBar.tpl
-@internal revisions
-@since 1.9.16
-
 *}
 {lang_get var="labels"
           s="title_events,event_viewer,home,testproject,title_specification,title_execute,
@@ -76,6 +73,8 @@ title bar + menu
     <form style="display:inline" target="mainframe" name="fullTextSearch" id="fullTextSearch"
           action="lib/search/searchMgmt.php" method="post">
     <input type="hidden" name="caller" value="navBar">
+    <input type="hidden" name="tproject_id" value="{$gui->tproject_id}">
+
     <input style="font-size: 80%; position:relative; top:-1px;" type="text" size="50"
            title="{$labels.full_text_search}" name="target" value="" />
 

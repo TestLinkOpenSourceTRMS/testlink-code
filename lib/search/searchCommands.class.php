@@ -44,8 +44,18 @@ class searchCommands
     $this->cfieldMgr = &$this->tprojectMgr->cfield_mgr;
     $this->reqSpecMgr = new requirement_spec_mgr($this->db);
 
-
     $this->tcaseCfg = config_get('testcase_cfg');
+  }
+
+
+  /**
+   *
+   */
+  function isReqFeatureEnabled($tproject_id)
+  {
+    $info = $this->tprojectMgr->get_by_id($tproject_id);
+    return isset($info['opt']->requirementsEnabled) 
+            ? $info['opt']->requirementsEnabled : 0;
   }
 
 
@@ -199,16 +209,17 @@ class searchCommands
 
     $strIn = array("tcWKFStatus" => array(tlInputParameter::STRING_N,0,1),
                    "reqStatus" => array(tlInputParameter::STRING_N,0,1),
-                   "rType" => array(tlInputParameter::STRING_N),
+                   "reqType" => array(tlInputParameter::STRING_N),
                    "created_by" => array(tlInputParameter::STRING_N,0,50),
                    "edited_by" => array(tlInputParameter::STRING_N,0,50),
                    "creation_date_from" => array(tlInputParameter::STRING_N),
                    "creation_date_to" => array(tlInputParameter::STRING_N),
                    "modification_date_from" => array(tlInputParameter::STRING_N),
-                   "modification_date_to" => array(tlInputParameter::STRING_N));
+                   "modification_date_to" => array(tlInputParameter::STRING_N),
+                   "and_or" => array(tlInputParameter::STRING_N,2,3) );
 
     $numIn = array("keyword_id" => array(tlInputParameter::INT_N),
-                  "custom_field_id" => array(tlInputParameter::INT_N));
+                   "custom_field_id" => array(tlInputParameter::INT_N));
 
     $iParams = array("target" => array(tlInputParameter::STRING_N),
                      "doAction" => array(tlInputParameter::STRING_N,0,10),
@@ -318,7 +329,7 @@ class searchCommands
       }
     } 
 
-    $args->and_or = isset($_REQUEST['and_or']) ? $_REQUEST['and_or'] : 'or';   
+    // $args->and_or = isset($_REQUEST['and_or']) ? $_REQUEST['and_or'] : 'or';   
     $args->user = $_SESSION['currentUser'];
 
     $args->canAccessTestSpec = $args->user->hasRight($this->db,'mgt_view_tc',$args->tproject_id);
@@ -343,7 +354,7 @@ class searchCommands
 
 
 
-    $this->gui->rType = $this->args->rType;
+    $this->gui->reqType = $this->args->reqType;
     $this->gui->reqStatus = $this->args->reqStatus;
     $this->gui->tcWKFStatus = $this->args->tcWKFStatus;
 
@@ -401,32 +412,28 @@ class searchCommands
 
     $this->gui->forceSearch = false;
     
-    $this->gui->and_checked = $this->gui->or_checked = '';
+    $this->gui->and_selected = $this->gui->or_selected = '';
     switch($this->args->and_or)
     {
       case 'and':
-        $this->gui->and_checked = ' checked="checked" ';
+        $this->gui->and_selected = ' selected ';
       break;
 
       case 'or':
       default:
-        $this->gui->or_checked = ' checked="checked" ';
+        $this->gui->or_selected = ' selected ';
       break;
     }
 
     $reqCfg = config_get('req_cfg');
     $this->gui->reqStatusDomain = init_labels($reqCfg->status_labels);
 
-    $this->gui->rtypes = array_flip(init_labels($reqCfg->type_labels));
-    foreach ($this->gui->rtypes as $key => $value) 
+    $this->gui->reqTypes = array_flip(init_labels($reqCfg->type_labels));
+    foreach ($this->gui->reqTypes as $key => $value) 
     {
-      $this->gui->rtypes[$key] = 'RQ' . $value;  
+      $this->gui->reqTypes[$key] = 'RQ' . $value;  
     }
-    $this->gui->rtypes = array_flip($this->gui->rtypes);
-    $this->reqSpecCfg = config_get('req_spec_cfg');
-    $this->rsTypes = init_labels($this->reqSpecCfg->type_labels);
-    $this->gui->rtypes = $this->rsTypes+$this->gui->rtypes;
-
+    $this->gui->reqTypes = array_flip($this->gui->reqTypes);
     $this->gui->tcWKFStatusDomain = $this->getTestCaseWKFStatusDomain();
   }
 
@@ -443,8 +450,25 @@ class searchCommands
                             $this->args->tproject_id,
                             cfield_mgr::ENABLED,null,'requirement');
 
-    $this->gui->cf = $this->gui->design_cf_tc+$this->gui->design_cf_req;
-    $this->gui->filter_by['custom_fields'] = !is_null($this->gui->cf);
+    $this->gui->cf = null;
+    if(!is_null($this->gui->design_cf_tc))
+    {
+      $this->gui->cf = $this->gui->design_cf_tc;
+    }  
+    
+    if(!is_null($this->gui->design_cf_req))
+    {
+      if(is_null($this->gui->cf))
+      {
+        $this->gui->cf = $this->gui->design_cf_req;
+      }  
+      else
+      {
+        $this->gui->cf += $this->gui->design_cf_req;        
+      }  
+    }
+
+    $this->gui->filter_by['custom_fields'] = !is_null($this->gui->cf) && count($this->gui->cf) > 0;
 
     $this->gui->keywords = $this->tprojectMgr->getKeywordSet($this->args->tproject_id);
     $this->gui->filter_by['keyword'] = !is_null($this->gui->keywords);
@@ -539,8 +563,8 @@ class searchCommands
 
     $reqSet = $this->getReqIDSet($args->tproject_id);
 
-    $bye = is_null($reqSet) || count($reqSet) == 0;
-    $bye = $bye || !$canUseTarget || $req_cf_id <= 0; 
+    $noItems = is_null($reqSet) || count($reqSet) == 0;
+    $bye = $noItems || (!$canUseTarget && $req_cf_id <= 0); 
     if( $bye )
     {  
       return null;

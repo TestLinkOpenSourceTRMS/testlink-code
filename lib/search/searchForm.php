@@ -3,16 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Form to set test cases search criteria
+ * Form to set search criteria
  *
- * @filesource  tcSearchForm.php
- * @package         TestLink
- * @author          TestLink community
- * @copyright   2007-2013, TestLink community 
- * @link                http://www.teamst.org/index.php
+ * @filesource  searchForm.php
+ * @package     TestLink
+ * @author      TestLink community
+ * @copyright   2007-2017, TestLink community 
+ * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.7
  *
 **/
 require_once("../../config.inc.php");

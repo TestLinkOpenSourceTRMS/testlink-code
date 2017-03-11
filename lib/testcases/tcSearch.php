@@ -34,11 +34,15 @@ $charset = config_get('charset');
 $filter = null;
 list($args,$filter) = init_args($tproject_mgr);
 
+//Kint::dump($_REQUEST);die();
+
 $ga = initializeGui($args,$tproject_mgr);
 $gx = $tcase_mgr->getTcSearchSkeleton($args);
 $gui = (object)array_merge((array)$ga,(array)$gx);
 
 initSearch($gui,$args,$tproject_mgr);
+
+
 
 $map = null;
 
@@ -67,6 +71,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   }
   else
   {
+    echo 'RRR';
     $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
 
     if(!is_null($a_tcid))
@@ -272,6 +277,8 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }
   }
 }
+
+echo $sql;
 
 if($gui->doSearch)
 {

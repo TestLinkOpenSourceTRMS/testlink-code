@@ -4,7 +4,7 @@
  *
  * @filesource  navBar.php
  *
- * This file manages the navigation bar. 
+ * Manages the navigation bar. 
  *
  *
 **/
@@ -14,7 +14,6 @@ testlinkInitPage($db,('initProject' == 'initProject'));
 
 $args = init_args();
 $gui = initializeGui($db,$args);
-
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -32,7 +31,7 @@ function getGrants(&$db,&$userObj)
 }
 
 /**
- *
+ * 
  */
 function init_args()
 {
@@ -57,41 +56,46 @@ function init_args()
  */
 function initializeGui(&$db,&$args)
 {
-  $gui = new stdClass();
   $tproject_mgr = new testproject($db);
-
   $guiCfg = config_get("gui");
 
+  $gui = new stdClass();  
   $gui->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
+  $gui->tproject_id = $gui->tprojectID;
+
+  if($gui->tproject_id <= 0)
+  {
+    throw new Exception("Can't work without Test Project ID", 1);
+  }  
+
   $gui->tcasePrefix = '';
   $gui->searchSize = 8;
-  if($gui->tprojectID > 0)
-  {
-    $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($gui->tprojectID) . config_get('testcase_cfg')->glue_character;
-    $gui->searchSize = tlStringLen($gui->tcasePrefix) + $guiCfg->dynamic_quick_tcase_search_input_size;
-  }
+  $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($gui->tproject_id) .
+                      config_get('testcase_cfg')->glue_character;
+  $gui->searchSize = tlStringLen($gui->tcasePrefix) + 
+                     $guiCfg->dynamic_quick_tcase_search_input_size;
+
 
   $opx = array('output' => 'map_name_with_inactive_mark',
                'field_set' => $guiCfg->tprojects_combo_format,
                'order_by' => $guiCfg->tprojects_combo_order_by);
 
-  $gui->TestProjects = $tproject_mgr->get_accessible_for_user(
-                         $args->user->dbID,$opx);
+  $gui->TestProjects = $tproject_mgr->get_accessible_for_user($args->user->dbID,$opx);
 
   $gui->TestProjectCount = sizeof($gui->TestProjects);
   $gui->TestPlanCount = 0; 
 
-  $tprojectQty = $tproject_mgr->getItemCount();
+  $tprojectQty = $tproject_mgr->getItemCount();  
   if($gui->TestProjectCount == 0 && $tprojectQty > 0)
   {
     // User rights configurations does not allow access to ANY test project
     $_SESSION['testprojectTopMenu'] = '';
-    $gui->tprojectID = 0;
+    $gui->tproject_id = 0;
   }
 
-  if($gui->tprojectID)
+  if($gui->tproject_id)
   {
-    $testPlanSet = $args->user->getAccessibleTestPlans($db,$gui->tprojectID);
+    $testPlanSet = $args->user->getAccessibleTestPlans($db,$gui->tproject_id);
     $gui->TestPlanCount = sizeof($testPlanSet);
 
     $tplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : null;
@@ -124,7 +128,7 @@ function initializeGui(&$db,&$args)
     }
   } 
 
-  if ($gui->tprojectID && isset($args->user->tprojectRoles[$gui->tprojectID]))
+  if ($gui->tproject_id && isset($args->user->tprojectRoles[$gui->tproject_id]))
   {
     // test project specific role applied
     $role = $args->user->tprojectRoles[$gui->tprojectID];
@@ -138,7 +142,7 @@ function initializeGui(&$db,&$args)
   $gui->whoami = $args->user->getDisplayName() . ' ' . 
                  $guiCfg->role_separator_open . 
                  $testprojectRole . $guiCfg->role_separator_close;
-
+                   
 
   // only when the user has changed project using the combo the _GET has this key.
   // Use this clue to launch a refresh of other frames present on the screen
@@ -162,5 +166,8 @@ function initializeGui(&$db,&$args)
     $gui->plugins[$menu_item] = !empty($menu_content) ? $menu_content : null;
   }
 
+
+  // to do not break logic
+  $gui->testprojectID = $gui->tproject_id;
   return $gui;
 }

@@ -1322,7 +1322,7 @@ function setPublicStatus($id,$status)
    * 
    *
    */
-  protected function getKeywordSet($tproject_id)
+  function getKeywordSet($tproject_id)
   {
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']}  " .
            " WHERE testproject_id = {$tproject_id}" .
@@ -1677,22 +1677,34 @@ function setPublicStatus($id,$status)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title";
-    
+    $fields2get = " RSPEC.id, RSPEC.testproject_id, RSPECREV.scope, RSPECREV.doc_id," . 
+                  " RSPECREV.total_req, RSPECREV.type, RSPECREV.author_id, RSPECREV.creation_ts, " .
+                  " RSPECREV.modifier_id, RSPECREV.modification_ts, RSPECREV.name AS title, NH.parent_id";    
+
     $fields = is_null($fields) ? $fields2get : implode(',',$fields);
-    $sql = "  /* $debugMsg */ SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
-           " {$this->tables['nodes_hierarchy']} NH , {$this->tables['requirements']} REQ " .
-           " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id AND REQ.srs_id = RSPEC.id" ;
-           
+    $sql = " /* $debugMsg */ " .
+           " SELECT {$fields} FROM {$this->tables['req_specs_revisions']} RSPECREV, " .
+           " {$this->tables['req_specs']} RSPEC, {$this->tables['nodes_hierarchy']} NH, " .
+           " {$this->tables['requirements']} REQ " .
+           " WHERE RSPECREV.parent_id=RSPEC.id " . 
+           " AND NH.id=RSPEC.id AND REQ.srs_id = RSPEC.id " .
+           " AND RSPEC.testproject_id={$testproject_id} ";
+
+
     if (!is_null($id))
-      {
-          $sql .= " AND RSPEC.id=" . $id;
-      }
-      $sql .= "  ORDER BY RSPEC.id,title";
-      $rs = is_null($access_key) ? $this->db->get_recordset($sql) : $this->db->fetchRowsIntoMap($sql,$access_key);
+    {
+      $sql .= " AND RSPEC.id=" . $id;
+    }
+
+    $sql .= " GROUP BY RSPEC.id" ;
+    $sql .= " ORDER BY RSPEC.id,title";
+
+    echo $sql;
+    die();
+    $rs = is_null($access_key) ? $this->db->get_recordset($sql) 
+                               : $this->db->fetchRowsIntoMap($sql,$access_key);
         
+    echo $sql;    
     return $rs;
   }
 

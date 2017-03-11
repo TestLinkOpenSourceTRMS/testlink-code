@@ -1498,6 +1498,12 @@ $TLS_no_data_available = "No data available";
 $TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
 $TLS_or_unassigned_test_cases = " Or without tester assignment";
 $TLS_run_mode = "Run mode";
+
+$TLS_reqspec_type = 'Req. Spec. Type';
+$TLS_req_status = 'Req. Status';
+$TLS_tcase_wkf_status = 'Test Case Status';
+
+
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";
 $TLS_show_hide_reorder = "Show / Hide reorder ";
@@ -1546,6 +1552,7 @@ $TLS_title_results = "Test Reports";
 $TLS_title_specification = "Test Specification";
 $TLS_title_requirements = "Requirements";
 $TLS_session_inactivity_timeout_at = "Session idle timeout at";
+$TLS_full_text_search = "Full Text Search";
 
 
 
@@ -4063,4 +4070,19 @@ $TLS_click_blocked_next = "Click to set to blocked and move to next";
 
 $TLS_send_spreadsheet_by_email = 'Send Spreadsheet by email to myself';
 $TLS_send_by_email_to_me = 'Send by email to myself';
+
+$TLS_search_items = "Search";
+$TLS_search_title = "Search";
+$TLS_req_document_id = "Req. Doc. ID";
+$TLS_id = 'ID';
+
+$TLS_search_words_or = 'Search must match at least ONE word (OR)';
+$TLS_search_words_and = 'Search has to match ALL words (AND)';
+$TLS_search_words_placeholder = 'write here the words you want search for';
+$TLS_search_words_on_attr = "Word/Words will be searched among one or more attributes you will select below";
+
+$TLS_search_other_attr = "You can set search criteria that does not use words. But This search criteria will be added on AND mode";
+
+$TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
+$TLS_multiple_entities_search = 'Search on multiple entities';
 // ----- END ------------------------------------------------------------------

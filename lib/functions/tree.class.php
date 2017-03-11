@@ -973,6 +973,10 @@ class tree extends tlObject
         
         switch($my['options']['output'])
         {
+          case 'id':
+            $node_list[] = $row['id'];
+          break;  
+          
           case 'essential':
             $node_list[] = array('id' => $row['id'],
                                  'parent_id' => $row['parent_id'],

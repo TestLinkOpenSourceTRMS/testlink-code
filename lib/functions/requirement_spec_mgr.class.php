@@ -73,8 +73,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	*/
 	function get_export_file_types()
 	{
-    return $this->export_file_types;
-  }
+      return $this->export_file_types;
+    }
 
 	/*
 	  function: get_impor_file_types
@@ -2240,12 +2240,31 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   /**
    *
    */
-	function get_all_id_in_testproject($tproject_id)
+	function get_all_id_in_testproject($tproject_id,$options=null)
 	{
 	  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$sql = "/* $debugMsg */ " . 
+    $my['options'] = array('output' => 'classic');
+    $my['options'] = array_merge($my['options'], (array)$options);
+
+    $sql = "/* $debugMsg */ " . 
 		       " SELECT RSPEC.id FROM {$this->object_table} RSPEC WHERE testproject_id={$tproject_id}";
-		return $this->db->get_recordset($sql);
+
+    $rs = $this->db->get_recordset($sql);
+    switch($my['options']['output'])
+    {
+      case 'id':
+        $rx = array();
+        foreach($rs as $elem)
+        {
+          $rx[] = $elem['id'];
+        }  
+        return $rx;
+      break;
+
+      default:
+        return $rs;
+      break;      
+    }
 	}
 
 

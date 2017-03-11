@@ -95,8 +95,6 @@ function processSearch(&$dbHandler)
   // need to initialize search fields
   $xbm = $cmdMgr->getGui();
   $xbm->warning_msg = lang_get('no_records_found');
-  $xbm->pageTitle = lang_get('search_title');
-
 
   $xbm->forceSearch = (strlen(trim($args->target)) > 0);
   $xbm->caller = basename(__FILE__);

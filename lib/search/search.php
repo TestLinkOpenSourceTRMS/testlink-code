@@ -231,7 +231,7 @@ function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)
     // Extract the relevant data and build a matrix
     $matrixData = array();
     
-    $titleSeperator = config_get('gui_title_separator_1');
+    $titleSeparator = config_get('gui_title_separator_1');
     
     foreach($gui->resultSet as $result) 
     {
@@ -244,7 +244,7 @@ function buildTCExtTable($gui, $charset, $edit_icon, $history_icon)
       $edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
                    "<img title=\"". lang_get('design') . "\" src=\"{$edit_icon}\" /></a> ";
       $tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . 
-                   " [v" . $result['version'] . "]" . $titleSeperator .
+                   " [v" . $result['version'] . "]" . $titleSeparator .
                    htmlentities($result['name'], ENT_QUOTES, $charset);
 
       $rowData[] = $history_link . $edit_link . $tcaseName;
@@ -291,8 +291,6 @@ function buildTSExtTable($gui, $charset, $edit_icon, $history_icon)
   
     // Extract the relevant data and build a matrix
     $matrixData = array();
-    
-    $titleSeperator = config_get('gui_title_separator_1');
     
     foreach($gui->resultTestSuite as $result) 
     {
@@ -345,8 +343,6 @@ function buildRSExtTable($gui, $charset, $edit_icon, $history_icon)
   
     // Extract the relevant data and build a matrix
     $matrixData = array();
-    
-    $titleSeperator = config_get('gui_title_separator_1');
     
     foreach($gui->resultReqSpec as $result) 
     {

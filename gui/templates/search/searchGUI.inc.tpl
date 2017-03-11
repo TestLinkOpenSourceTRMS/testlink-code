@@ -13,7 +13,7 @@ Purpose: show form
                           edited_by,modification_date_to,modification_date_from,
                           custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,req_status,reqspec_type,testcase,testsuite,title,clear_date,show_calendar,id,
                           summary,preconditions,steps,expected_results,details,tcase_wkf_status,search_words_or,search_words_and,
-                          search_words_placeholder,search_words_on_attr,search_other_attr,req_type,search_created_by_ph,
+                          search_words_placeholder,search_words_on_attr,search_other_attr,req_type,search_created_by_ph,check_uncheck_all_checkboxes,
                           scope,requirement,req_specification,req_document_id,id'}
 
 <div style="margin: 1px;">
@@ -23,7 +23,15 @@ Purpose: show form
   <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
   <input type="hidden" name="caller" id="caller" value="{$gui->caller}">
 
-  <table class="simple" border="1" style="width:90%">     
+  {* used as memory for the check/uncheck all checkbox javascript logic *}
+  <input type="hidden" name="mmTestCaseCell" id="mmTestCaseCell"  value="1" />
+  <input type="hidden" name="mmTestSuiteCell" id="mmTestSuiteCell"  value="1" />
+  <input type="hidden" name="mmReqSpecCell" id="mmReqSpecCell"  value="1" />
+  <input type="hidden" name="mmReqCell" id="mmReqCell"  value="1" />
+
+
+
+  <table class="simple" style="width:99%">     
     <tr>
      <td style="width: 20%" colspan="5">
          <select name="and_or" id="and_or">
@@ -38,45 +46,69 @@ Purpose: show form
     </tr>
 
     <tr>
+    <td style="width: 2%" colspan="5">&nbsp;&nbsp;</td> 
+    </tr>
+
+    <tr>
     <td style="width: 2%" colspan="5">{$labels.search_words_on_attr|escape}</td> 
     </tr>
 
     <tr>
     <td style="width: 2%"></td> 
     
-    <td style="width: 30%" colspan="1"> 
-      {$labels.testcase}<br>
-      <input type="checkbox" name="tc_title" value="1" {if $gui->tc_title}checked{/if}>{$labels.title}<br>
-      <input type="checkbox" name="tc_summary" value="1" {if $gui->tc_summary}checked{/if}>{$labels.summary}<br>
-      <input type="checkbox" name="tc_preconditions" value="1" {if $gui->tc_preconditions}checked{/if}>{$labels.preconditions}<br>
-      <input type="checkbox" name="tc_steps" value="1" {if $gui->tc_steps}checked{/if}>{$labels.steps}<br>
-      <input type="checkbox" name="tc_expected_results" value="1" {if $gui->tc_expected_results}checked{/if}>{$labels.expected_results}<br>
-      <input type="checkbox" name="tc_id" value="1" {if $gui->tc_id}checked{/if}>{$labels.id}<br>
+    <td style="width: 30%" colspan="1" id="testCaseCell"> 
+      <img src="{$tlImages.toggle_all}" 
+           title="{$labels.check_uncheck_all_checkboxes}"
+           onclick='cs_all_checkbox_in_div("testCaseCell","tc_","mmTestCaseCell");'>
+      <b>{$labels.testcase}</b><br>
+      <input type="checkbox" name="tc_title" id="tc_title" value="1" {if $gui->tc_title}checked{/if}>{$labels.title}<br>
+      <input type="checkbox" name="tc_summary" id="tc_summary" value="1" {if $gui->tc_summary}checked{/if}>{$labels.summary}<br>
+      <input type="checkbox" name="tc_preconditions" id="tc_preconditions" 
+             value="1" {if $gui->tc_preconditions}checked{/if}>{$labels.preconditions}<br>
+      <input type="checkbox" name="tc_steps" id="tc_steps" 
+             value="1" {if $gui->tc_steps}checked{/if}>{$labels.steps}<br>
+      <input type="checkbox" name="tc_expected_results" id="tc_expected_results"
+             value="1" {if $gui->tc_expected_results}checked{/if}>{$labels.expected_results}<br>
+      <input type="checkbox" name="tc_id" id="tc_id" 
+             value="1" {if $gui->tc_id}checked{/if}>{$labels.id}<br>
     </td>
 
-    <td style="width: 30%" colspan="1"> 
-      {$labels.testsuite}<br>
-      <input type="checkbox" name="ts_title" value="1" {if $gui->ts_title}checked{/if}>{$labels.title}<br>
-      <input type="checkbox" name="ts_summary" value="1" {if $gui->ts_summary}checked{/if}>{$labels.details}<br>
+    <td style="width: 30%" colspan="1" id="testSuiteCell"> 
+      <img src="{$tlImages.toggle_all}" 
+           title="{$labels.check_uncheck_all_checkboxes}"
+           onclick='cs_all_checkbox_in_div("testSuiteCell","ts_","mmTestSuiteCell");'>
+      <b>{$labels.testsuite}</b><br>
+      <input type="checkbox" name="ts_title" id="ts_title" value="1" {if $gui->ts_title}checked{/if}>{$labels.title}<br>
+      <input type="checkbox" name="ts_summary" id="ts_summary" value="1" {if $gui->ts_summary}checked{/if}>{$labels.details}<br>
     </td>
     
-    <td style="width: 30%" colspan="1"> 
+    <td style="width: 20%" colspan="1" id="reqSpecCell"> 
       {if $gui->reqEnabled}
-        {$labels.req_specification}<br>
-        <input type="checkbox" name="rs_title" value="1" {if $gui->rs_title}checked{/if} >{$labels.title}<br>
-        <input type="checkbox" name="rs_scope" value="1" {if $gui->rs_scope}checked{/if}>{$labels.scope}<br>
+      <img src="{$tlImages.toggle_all}" 
+           title="{$labels.check_uncheck_all_checkboxes}"
+           onclick='cs_all_checkbox_in_div("reqSpecCell","rs_","mmReqSpecCell");'>
+        <b>{$labels.req_specification}</b><br>
+        <input type="checkbox" name="rs_title" id="rs_title" value="1" {if $gui->rs_title}checked{/if} >{$labels.title}<br>
+        <input type="checkbox" name="rs_scope" id="rs_scope" value="1" {if $gui->rs_scope}checked{/if}>{$labels.scope}<br>
       {/if}
     </td>
 
-    <td style="width: 30%" colspan="1"> 
+    <td style="width: 30%" colspan="1" id="reqCell"> 
       {if $gui->reqEnabled}
-        {$labels.requirement}<br>
-        <input type="checkbox" name="rq_title" value="1" {if $gui->rq_title}checked{/if}>{$labels.title}<br>
-        <input type="checkbox" name="rq_scope" value="1" {if $gui->rq_scope}checked{/if}>{$labels.scope}<br>
-        <input type="checkbox" name="rq_doc_id" value="1" {if $gui->rq_doc_id}checked{/if}>{$labels.req_document_id}<br>
+      <img src="{$tlImages.toggle_all}" 
+           title="{$labels.check_uncheck_all_checkboxes}"
+           onclick='cs_all_checkbox_in_div("reqCell","rq_","mmReqCell");'>
+        <b>{$labels.requirement}</b><br>
+        <input type="checkbox" name="rq_title" id="rq_title"  value="1" {if $gui->rq_title}checked{/if}>{$labels.title}<br>
+        <input type="checkbox" name="rq_scope" id="rq_scope"  value="1" {if $gui->rq_scope}checked{/if}>{$labels.scope}<br>
+        <input type="checkbox" name="rq_doc_id" id="rq_doc_id" value="1" {if $gui->rq_doc_id}checked{/if}>{$labels.req_document_id}<br>
       {/if}    
     </td>
     
+    </tr>
+
+    <tr>
+    <td style="width: 2%" colspan="5">&nbsp;&nbsp;</td> 
     </tr>
 
     <tr>
@@ -131,6 +163,9 @@ Purpose: show form
     {/if}
 
    </tr>
+    <tr>
+    <td style="width: 2%" colspan="5">&nbsp;&nbsp;</td> 
+    </tr>
    
       <tr>
       <td>&nbsp;</td>      
@@ -194,7 +229,7 @@ Purpose: show form
           </select>
       </td>
 
-      <td colspan="1">
+      <td colspan="2">
         {if $gui->reqEnabled}
           {$labels.req_type}
           <select name="reqType" id="reqType">

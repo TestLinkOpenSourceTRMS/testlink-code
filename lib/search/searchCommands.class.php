@@ -358,7 +358,7 @@ class searchCommands
     $this->gui->reqStatus = $this->args->reqStatus;
     $this->gui->tcWKFStatus = $this->args->tcWKFStatus;
 
-    $this->gui->pageTitle = lang_get('search_title');
+    $this->gui->pageTitle = lang_get('multiple_entities_search');
     $this->gui->warning_msg = '';
     $this->gui->path_info = null;
     $this->gui->resultSet = null;

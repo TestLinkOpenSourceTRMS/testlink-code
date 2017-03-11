@@ -13,7 +13,7 @@ Purpose: show form
                           edited_by,modification_date_to,modification_date_from,
                           custom_field,custom_field_value,creation_date_to,creation_date_from,keyword,type,status,req_status,reqspec_type,testcase,testsuite,title,clear_date,show_calendar,id,
                           summary,preconditions,steps,expected_results,details,tcase_wkf_status,search_words_or,search_words_and,
-                          search_words_placeholder,search_words_on_attr,search_other_attr,req_type,
+                          search_words_placeholder,search_words_on_attr,search_other_attr,req_type,search_created_by_ph,
                           scope,requirement,req_specification,req_document_id,id'}
 
 <div style="margin: 1px;">
@@ -88,11 +88,15 @@ Purpose: show form
       <td>{$labels.created_by}
       <input type="text" name="created_by" id="created_by" 
                  value="{$gui->created_by|escape}"
-                 size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" />
+                 size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}"/>
+      <img src="{$tlImages.info_small}" title="{$labels.search_created_by_ph|escape}">
 
       <br>{$labels.edited_by}
       <input type="text" name="edited_by" id ="edited_by" value="{$gui->edited_by|escape}"
-                 size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" /></td>
+                 size="{#AUTHOR_SIZE#}" maxlength="{#TCNAME_MAXLEN#}" />
+<img src="{$tlImages.info_small}" title="{$labels.search_created_by_ph|escape}">
+
+      </td>
    
 
     {if $gui->filter_by.keyword}

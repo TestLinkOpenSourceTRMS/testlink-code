@@ -4051,4 +4051,6 @@ $TLS_search_words_on_attr = "Word/Words will be searched among one or more attri
 
 $TLS_search_other_attr = "You can set search criteria that do not use words. But This search criteria will be added on AND mode";
 
+$TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
+
 // ----- END ------------------------------------------------------------------

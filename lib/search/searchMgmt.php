@@ -97,43 +97,6 @@ function processSearch(&$dbHandler)
   $xbm->warning_msg = lang_get('no_records_found');
   $xbm->pageTitle = lang_get('search_title');
 
-  /*
-  $xbm->doSearch = false;
-  $xbm->tproject_id = $args->tproject_id;
-  $xbm->target = $args->target;
-  $xbm->keyword_id = 0;
-  $xbm->custom_field_id = 0;
-  $xbm->custom_field_value = null;
-  $xbm->creation_date_from = $xbm->creation_date_to = null;
-  $xbm->modification_date_from = $xbm->modification_date_to = null;
-  $xbm->created_by = $xbm->edited_by = null;
-  $xbm->tcasePrefix = null;
-  $tproject_mgr = new testproject($dbHandler);
-  $xbm->keywords = $tproject_mgr->getKeywords($args->tproject_id);
-  $xbm->filter_by['keyword'] = !is_null($xbm->keywords);
-
-  $reqCfg = config_get('req_cfg');
-  $xbm->rtypes = array_flip(init_labels($reqCfg->type_labels));
-  foreach ($xbm->rtypes as $key => $value) 
-  {
-    $xbm->rtypes[$key] = 'RQ' . $value;  
-  }
-  $xbm->rtypes = array_flip($xbm->rtypes);
-  $reqSpecCfg = config_get('req_spec_cfg');
-  $rsTypes = init_labels($reqSpecCfg->type_labels);
-  $xbm->rtypes = $rsTypes+$xbm->rtypes;
-  $xbm->rType = 0;
-
-  $xbm->reqStatusDomain = init_labels($reqCfg->status_labels);
-  $xbm->reqStatus = 0;
-
-  $xbm->or_checked = ' checked="checked" ';
-  $xbm->and_checked = '';
-
-  */
-
-  /*
-  */
 
   $xbm->forceSearch = (strlen(trim($args->target)) > 0);
   $xbm->caller = basename(__FILE__);
@@ -142,7 +105,6 @@ function processSearch(&$dbHandler)
   $xbm->tc_steps = $xbm->tc_expected_results = $xbm->tc_id = 1;
   $xbm->tc_preconditions = $xbm->ts_summary = $xbm->ts_title = 1;
 
-  $xbm->reqEnabled = $cmdMgr->isReqFeatureEnabled($args->tproject_id);
   if($xbm->reqEnabled)
   {
     $xbm->rs_scope = $xbm->rs_title = 1;

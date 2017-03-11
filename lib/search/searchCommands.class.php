@@ -321,8 +321,8 @@ class searchCommands
         if ($da != null) 
         {
           $args->$key = $da['year'] . "-" . $da['month'] . "-" . $da['day'] . $value; // set date in iso format
-          $this->filter['dates4tc'][$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
-          $this->filter['dates4rq'][$key] = " AND RQV.{$k2f[$key]} '{$args->$key}' ";
+          $this->filters['dates4tc'][$key] = " AND TCV.{$k2f[$key]} '{$args->$key}' ";
+          $this->filters['dates4rq'][$key] = " AND RQV.{$k2f[$key]} '{$args->$key}' ";
 
           $args->$lk = implode("/",$da);
         }
@@ -443,14 +443,23 @@ class searchCommands
    */
   function initSearch()
   {
+
+    $this->gui->reqEnabled = $this->isReqFeatureEnabled($this->args->tproject_id);
+
+
+    $this->gui->cf = null;
+    $this->gui->design_cf_req = null;
+
     $this->gui->design_cf_tc = $this->cfieldMgr->get_linked_cfields_at_design(
                             $this->args->tproject_id,cfield_mgr::ENABLED,null,'testcase');
 
-    $this->gui->design_cf_req = $this->cfieldMgr->get_linked_cfields_at_design(
-                            $this->args->tproject_id,
-                            cfield_mgr::ENABLED,null,'requirement');
+    if($this->gui->reqEnabled)
+    {
+      $this->gui->design_cf_req = $this->cfieldMgr->get_linked_cfields_at_design(
+                              $this->args->tproject_id,
+                              cfield_mgr::ENABLED,null,'requirement');
+    }  
 
-    $this->gui->cf = null;
     if(!is_null($this->gui->design_cf_tc))
     {
       $this->gui->cf = $this->gui->design_cf_tc;
@@ -501,13 +510,17 @@ class searchCommands
 
     //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
     $doFilter = true;
+    
+    /*
     if(!is_null($args->rspecType))
     {
       $doFilter = true;
       $sql .= " AND RSRV.type='" . $db->prepare_string($args->rspecType) . "' ";
 
       //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
-    }  
+    } 
+    */
+
 
     $filterRS = null;
     if( $canUseTarget )
@@ -952,9 +965,9 @@ class searchCommands
          $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
       }
 
-      $args->created_by = trim($args->created_by);
+      $created_by_on_tc = $args->created_by = trim($args->created_by);
       $from['users'] = '';
-      if( $args->created_by != '' )
+      if( $created_by_on_tc != '' )
       {
         $doFilter = true;
         $from['users'] .= " JOIN {$tables['users']} AUTHOR ON AUTHOR.id = TCV.author_id ";
@@ -963,8 +976,8 @@ class searchCommands
                             "       AUTHOR.last LIKE '%{$args->created_by}%') ";
       }  
     
-      $args->edited_by = trim($args->edited_by);
-      if( $args->edited_by != '' )
+      $edited_by_on_tc = $args->edited_by = trim($args->edited_by);
+      if( $edited_by_on_tc != '' )
       {
         $doFilter = true;
         $from['users'] .= " JOIN {$tables['users']} UPDATER ON UPDATER.id = TCV.updater_id ";

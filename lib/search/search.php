@@ -76,18 +76,10 @@ if( $args->custom_field_id > 0)
   }  
 }
 
-$args->rspecType = null;
 $args->reqType = null;
-if($args->rType != '')
+if($args->reqType != '')
 {
-  if(strpos($args->rType, 'RQ') === FALSE)
-  {
-    $args->rspecType = $args->rType;
-  }  
-  else
-  {
-    $args->reqType = str_replace('RQ','', $args->rType);
-  }  
+  $args->reqType = str_replace('RQ','', $args->reqTypes);
 }  
 
 if( ($args->tproject_id > 0) && $args->doAction == 'doSearch')

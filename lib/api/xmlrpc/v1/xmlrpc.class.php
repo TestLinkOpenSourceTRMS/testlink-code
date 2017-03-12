@@ -6181,9 +6181,9 @@ protected function createAttachmentTempFile()
    * 
    * @param struct $args
    * @param string $args["devKey"]
-   * @param int $args["testprojectname"]
-   * @param map $args["platformname"]
-   * @param map $args["notes"]
+   * @param string $args["testprojectname"]
+   * @param string $args["platformname"]
+   * @param string $args["notes"]
    * @return mixed $resultInfo
    * @internal revisions
    */

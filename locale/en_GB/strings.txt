@@ -3515,6 +3515,7 @@ $TLS_API_INVALID_TIMESTAMP = "Timestamp provided (%s) is invalid";
 
 $TLS_API_ITS_NOT_FOUND = "Unable to find the ITS %s.";
 
+$TLS_API_TSUITE_NOT_ON_TCASE_TPROJ = "Test Suite does not belong to Test Case's Test Project";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

@@ -1258,51 +1258,53 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->_setArgs($args);
     $resultInfo=array();
 
-        $checkFunctions = array('authenticate','checkTestPlanID');       
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+    $checkFunctions = array('authenticate','checkTestPlanID');       
+    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
 
-        if( $status_ok )
-        {
-            $testPlanID = $this->args[self::$testPlanIDParamName];
-            $build_id = $this->tplanMgr->get_max_build_id($testPlanID);
+    if( $status_ok )
+    {
+      $testPlanID = $this->args[self::$testPlanIDParamName];
+      $build_id = $this->tplanMgr->get_max_build_id($testPlanID);
          
-            if( ($status_ok=$build_id > 0) )
-            {
-                $builds = $this->tplanMgr->get_builds($testPlanID);  
-                $build_info = $builds[$build_id];
-            }
-            else
-            {
-                $tplan_info=$this->tplanMgr->get_by_id($testPlanID);
-                $msg = $msg_prefix . sprintf(TPLAN_HAS_NO_BUILDS_STR,$tplan_info['name'],$tplan_info['id']);
-                $this->errors[] = new IXR_Error(TPLAN_HAS_NO_BUILDS,$msg);
-            }
-        }
+      if( ($status_ok=$build_id > 0) )
+      {
+        $builds = $this->tplanMgr->get_builds($testPlanID);  
+        $build_info = $builds[$build_id];
+      }
+      else
+      {
+        $tplan_info=$this->tplanMgr->get_by_id($testPlanID);
+        $msg = $msg_prefix . sprintf(TPLAN_HAS_NO_BUILDS_STR,$tplan_info['name'],
+                                     $tplan_info['id']);
+        $this->errors[] = new IXR_Error(TPLAN_HAS_NO_BUILDS,$msg);
+      }
+    }
         
-        return $status_ok ? $build_info : $this->errors;
+    return $status_ok ? $build_info : $this->errors;
   }
 
 
 
 
 
-    /**
-     * _getLatestBuildForTestPlan
+  /**
+   * _getLatestBuildForTestPlan
    *
    * @param struct $args
-     *
-     */
-    protected function _getLatestBuildForTestPlan($args)
+   *
+   */
+  protected function _getLatestBuildForTestPlan($args)
   {
-        $builds = $this->_getBuildsForTestPlan($args);
-        $maxid = -1;
+    $builds = $this->_getBuildsForTestPlan($args);
+    $maxid = -1;
     $maxkey = -1;
-    foreach ($builds as $key => $build) {
-        if ($build['id'] > $maxid)
-        {
-          $maxkey = $key;
-          $maxid = $build['id'];
-        }
+    foreach ($builds as $key => $build) 
+    {
+      if ($build['id'] > $maxid)
+      {
+        $maxkey = $key;
+        $maxid = $build['id'];
+      }
     }
     $maxbuild = array();
     $maxbuild[] = $builds[$maxkey];
@@ -7989,6 +7991,80 @@ protected function createAttachmentTempFile()
     return $d && $d->format($format) == $dateAsString;
   }
 
+
+   /**
+    * 
+    * @param struct $args
+    * @param string $args["devKey"]
+    * @param string $args["testcaseexternalid"] format PREFIX-NUMBER
+    * @param int    $args["testsuiteid"] 
+    * 
+    */
+  public function setTestCaseTestSuite($args)
+  {
+    // Check test case identity
+    // Check if user (devkey) has grants to do operation
+    //
+    $ret[] = array("operation" => __FUNCTION__, "status" => true, 
+                   "message" => GENERAL_SUCCESS_STR);
+
+    $operation = $ret['operation'];
+    $msgPrefix = "({$operation}) - ";
+    $debug_info = null;
+
+    $this->_setArgs($args);  
+    $checkFunctions = 
+      array('authenticate','checkTestCaseIdentity','checkTestSuiteID');
+
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+    if( $status_ok )
+    {
+      // Test Case & Test Suite belongs to same Test Project?
+      $tcaseTProj = $this->args[self::$testProjectIDParamName] = 
+        intval($this->tcaseMgr->getTestProjectFromTestCase(
+                            $this->args[self::$testCaseIDParamName],null));
+
+      $tsuiteMgr = new testsuite($this->dbObj);
+      $tsuite_id = $this->args[self::$testSuiteIDParamName];
+      $tsuiteTProj = 
+        intval($tsuiteMgr->getTestProjectFromTestSuite($tsuite_id,null));
+   
+      $status_ok = ($tcaseTProj == $tsuiteTProj);
+      if(!$status_ok)
+      {
+        $msg = $msgPrefix . TSUITE_NOT_ON_TCASE_TPROJ_STR;
+        $this->errors[] = new IXR_Error(TSUITE_NOT_ON_TCASE_TPROJ, $msg);
+      }  
+    } 
+
+    if( $status_ok )
+    {
+      $ctx[self::$testProjectIDParamName] = $tcaseTProj;
+      $ck = self::CHECK_PUBLIC_PRIVATE_ATTR;
+      $r2c = array('mgt_modify_tc');
+      foreach($r2c as $right)
+      {
+        $status_ok = $this->userHasRight($right,$ck,$ctx);
+        if(!$status_ok)
+        {
+          break;
+        }  
+      } 
+    } 
+
+    if( $status_ok )
+    {
+
+      $sql = "/* " . __FUNCTION__ . " */" . 
+             " UPDATE " . $this->tables['nodes_hierarchy'] . 
+             " SET parent_id=" . $tsuite_id .
+             " WHERE id=" . $this->args['testcaseid'];
+      $this->dbObj->exec_query($sql);
+    }  
+
+    return $status_ok ? $ret : $this->errors;    
+  }
+
   /**
    *
    */
@@ -8066,6 +8142,7 @@ protected function createAttachmentTempFile()
                             'tl.updateBuildCustomFieldsValues' => 'this:updateBuildCustomFieldsValues',
                             'tl.getTestSuite' => 'this:getTestSuite',
                             'tl.updateTestSuite' => 'this:updateTestSuite',
+                            'tl.setTestCaseTestSuite' => 'this:setTestCaseTestSuite',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

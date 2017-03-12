@@ -3707,6 +3707,54 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
 
 
+  /**
+   * Gets attachments for specified test suite.
+   * The attachment file content is Base64 encoded. To save the file to disk in client,
+   * Base64 decode the content and write file in binary mode.
+   *
+   * @param struct $args
+   * @param string $args["devKey"] Developer key
+   * @param int $args["testsuiteid"]: id of the testsuite
+   *
+   * @return mixed $resultInfo
+   * @author dennis@etern-it.de
+   */
+  public function getTestSuiteAttachments($args)
+  {
+    $this->_setArgs($args);
+    $attachments=null;
+    $checkFunctions = array('authenticate','checkTestSuiteID');
+    $status_ok = $this->_runChecks($checkFunctions) &&
+                 $this->userHasRight("mgt_view_tc",self::CHECK_PUBLIC_PRIVATE_ATTR);
+
+    if($status_ok)
+    {
+      $tsuite_id = $this->args[self::$testSuiteIDParamName];
+      $attachmentRepository = tlAttachmentRepository::create($this->dbObj);
+      $attachmentInfos = $attachmentRepository->getAttachmentInfosFor($tsuite_id,"nodes_hierarchy");
+
+      if ($attachmentInfos)
+      {
+        foreach ($attachmentInfos as $attachmentInfo)
+        {
+          $aID = $attachmentInfo["id"];
+          $content = $attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+
+          if ($content != null)
+          {
+            $attachments[$aID]["id"] = $aID;
+            $attachments[$aID]["name"] = $attachmentInfo["file_name"];
+            $attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+            $attachments[$aID]["title"] = $attachmentInfo["title"];
+            $attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+            $attachments[$aID]["content"] = base64_encode($content);
+          }
+        }
+      }
+    }
+    return $status_ok ? $attachments : $this->errors;
+  }
+
 
 /**
  * Gets attachments for specified test case.
@@ -7999,6 +8047,7 @@ protected function createAttachmentTempFile()
                             'tl.getRequirementCustomFieldDesignValue' => 'this:getRequirementCustomFieldDesignValue',
                             'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
                             'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
+                            'tl.getTestSuiteAttachments' => 'this:getTestSuiteAttachments',
                             'tl.getTestCase' => 'this:getTestCase',
                             'tl.getFullPath' => 'this:getFullPath',
                             'tl.getTestSuiteByID' => 'this:getTestSuiteByID',

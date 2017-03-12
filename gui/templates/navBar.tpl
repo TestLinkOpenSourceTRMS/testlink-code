@@ -25,7 +25,7 @@ title bar + menu
   <span class="bold">{$gui->whoami|escape}</span>
   <span>&nbsp;&nbsp;&nbsp;<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i"
           tabindex="6"><img src="{$tlImages.account}" title="{$labels.title_edit_personal_data}"></a>
-        <a href="logout.php?viewer={$gui->viewer}" target="_parent" accesskey="q">
+        <a href="{$gui->logout}" target="_parent" accesskey="q">
         <img src="{$tlImages.logout}" title="{$labels.link_logout}"></a>
   </span>
   <span style="float:right;">TestLink {$tlVersion|escape}</span>

@@ -47,7 +47,9 @@ function init_args()
     $args->viewer = isset($_SESSION['viewer']) ? $_SESSION['viewer'] : null;
   }  
 
+  $args->ssodisable = getSSODisable();
   $args->user = $_SESSION['currentUser'];
+
 	return $args;
 }
 
@@ -166,6 +168,9 @@ function initializeGui(&$db,&$args)
     $gui->plugins[$menu_item] = !empty($menu_content) ? $menu_content : null;
   }
 
+  $gui->ssodisable = $args->ssodisable;
+  $sso = ($args->ssodisable ? '&ssodisable' : '');  
+  $gui->logout = 'logout.php?viewer=' . $sso;
 
   // to do not break logic
   $gui->testprojectID = $gui->tproject_id;

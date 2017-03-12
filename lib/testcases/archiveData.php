@@ -367,8 +367,6 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   else 
   {
     $templateCfg = templateConfiguration();
-
-    var_dump($templateCfg);
     
     // need to initialize search fields
     $xbm = $item_mgr->getTcSearchSkeleton();

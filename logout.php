@@ -5,8 +5,6 @@
  * 
  * @filesource	logout.php
  *
- * @internal revisions
- * @since 1.9.4
  *
 **/
 require_once('config.inc.php');
@@ -20,10 +18,28 @@ if ($args->userID)
 }
 session_unset();
 session_destroy();
-redirect("login.php?note=logout&viewer={$args->viewer}");
+
+$authCfg = config_get('authentication');
+if(isset($authCfg['SSO_enabled']) && $authCfg['SSO_enabled'] 
+   && $args->ssodisable == FALSE)
+{
+  redirect($authCfg['SSO_logout_destination']);
+}
+else
+{
+  $std = "login.php?note=logout&viewer={$args->viewer}";
+  $std .= $args->ssodisable ? "&ssodisable" : '';
+
+  $xx = config_get('logoutUrl');
+  $lo = is_null($xx) || trim($xx) == '' ? $std : $xx;
+  redirect($lo);
+}
 exit();
 
 
+/**
+ *
+ */
 function init_args()
 {
 	$args = new stdClass();
@@ -32,5 +48,7 @@ function init_args()
 	$args->userName = $args->userID ? $_SESSION['currentUser']->getDisplayName() : "";
 	
 	$args->viewer = isset($_GET['viewer']) ? $_GET['viewer'] : '';
-	return $args;
+    $args->ssodisable = getSSODisable();
+	
+    return $args;
 }

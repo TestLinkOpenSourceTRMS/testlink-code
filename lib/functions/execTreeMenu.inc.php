@@ -16,8 +16,6 @@
  * @uses        config.inc.php
  * @uses        const.inc.php
  *
- * @internal revisions
- * @since 1.9.13
  */
 
 /**
@@ -216,19 +214,24 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     $lt = array_keys((array)$tplan_tcases);
 
     // here test cases are in the right order
-    $ltcs = $spec[1]['nindex'];
-
-    // now need to filter out
-    $tl = array_flip($lt);
-    foreach($ltcs as &$ele)
+    $linkedTestCasesSet = null;
+    if( isset($spec[1]['nindex']) )
     {
-      if( isset($tl[$ele]) )
+      $ltcs = $spec[1]['nindex'];
+
+      // now need to filter out
+      $tl = array_flip($lt);
+      foreach($ltcs as &$ele)
       {
-        $linkedTestCasesSet[] = $ele;
+        if( isset($tl[$ele]) )
+        {
+          $linkedTestCasesSet[] = $ele;
+        }  
       }  
     }  
 
-    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,$renderTreeNodeOpt);
+    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,
+                       $tcase_prefix,$renderTreeNodeOpt);
   }
   
   $treeMenu->rootnode=new stdClass();
@@ -670,7 +673,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     }  
   }  
 
-  // 20151122
   $spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
 
   $test_spec = $spec[0];

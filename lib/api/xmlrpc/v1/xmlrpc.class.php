@@ -4073,7 +4073,7 @@ public function getTestCaseAttachments($args)
                 if($names[$key]=='')
                 {
                     $status_ok=false;    
-                    breack;
+                    break;
                 }
             }
         }

@@ -8066,6 +8066,149 @@ protected function createAttachmentTempFile()
   }
 
   /**
+   * Gets a set of EXECUTIONS for a particular testcase on a test plan.
+   * If there are no filter criteria regarding platform and build,
+   * result will be get WITHOUT checking for a particular platform and build.
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["tplanid"]
+   * @param int $args["testcaseid"]: Pseudo optional.
+   *                 if is not present then testcaseexternalid MUST BE present
+   *
+   * @param int $args["testcaseexternalid"]: Pseudo optional.
+   *                 if is not present then testcaseid MUST BE present
+   *
+   * @param string $args["platformid"]: optional. 
+   *                    ONLY if not present, then $args["platformname"] 
+   *                    will be analized (if exists)
+   *
+   * @param string $args["platformname"]: optional (see $args["platformid"])
+   * @param int $args["buildid"]: optional
+   *        ONLY if not present, $args["buildname"] will be analized (if exists)
+   *
+   * @param int $args["buildname"] - optional (see $args["buildid"])
+   * @param int $args["options"] - optional 
+   *                               options['getOrderDescending'] 
+   *                               false(=ascending,default)
+   * @return mixed $resultInfo
+   *               if execution found
+   *               array that contains a map with these keys:
+   *               id (execution id),build_id,tester_id,execution_ts,
+   *               status,testplan_id,tcversion_id,tcversion_number,
+   *               execution_type,notes.
+   *
+   *               if test case has not been executed,
+   *               array('id' => -1)
+   * @access public
+   */
+  public function getExecutionSet($args)
+  {
+    $operation=__FUNCTION__;
+    $msg_prefix="({$operation}) - ";
+        
+    $this->_setArgs($args);
+    $resultInfo = array();
+    $status_ok=true;
+
+    $opt = new stdClass();
+    $opt->getOrderDescending = 0;
+
+    // Checks are done in order
+    $checkFunctions = array('authenticate','checkTestPlanID',
+                            'checkTestCaseIdentity');
+
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix) && 
+                 $this->_checkTCIDAndTPIDValid(null,$msg_prefix) && 
+                 $this->userHasRight("mgt_view_tc",
+                     self::CHECK_PUBLIC_PRIVATE_ATTR);       
+
+    $tplan_id = $this->args[self::$testPlanIDParamName];
+    $tcase_id = $this->args[self::$testCaseIDParamName];
+    $execContext = array('tplan_id' => $tplan_id,
+                         'platform_id' => null,'build_id' => null);
+
+    if( $status_ok )
+    {
+      if( $this->_isParamPresent(self::$optionsParamName,$msg_prefix) )
+      {
+        $dummy = $this->args[self::$optionsParamName];
+        if( is_array($dummy) )
+        {
+          foreach($dummy as $key => $value)
+          {
+            $opt->$key = ($value > 0) ? 1 : 0;
+          }
+        }
+      }
+
+      // Now we can check for Optional parameters
+      if($this->_isBuildIDPresent() || $this->_isBuildNamePresent())
+      {
+        if( ($status_ok =  $this->checkBuildID($msg_prefix)) )
+        {
+          $execContext['build_id'] = $this->args[self::$buildIDParamName];  
+        }  
+      }  
+
+      if( $status_ok )
+      {
+        if( $this->_isParamPresent(self::$platformIDParamName,$msg_prefix) ||
+            $this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
+        {
+          $status_ok = $this->checkPlatformIdentity($tplan_id]);
+          if( $status_ok)
+          {
+            $execContext['platform_id'] = 
+              $this->args[self::$platformIDParamName];  
+          }  
+        }  
+      }  
+    }  
+
+    if( $status_ok )
+    {
+      $sql = " SELECT * FROM  {$this->tables['executions']} WHERE id " .
+             " IN (SELECT id AS exec_id FROM {$this->tables['executions']} ";
+             "     WHERE testplan_id = {$tplan_id} " .
+             "     AND tcversion_id " .
+             "     IN ( SELECT id FROM {$this->tables['nodes_hierarchy']} " .
+             "          WHERE parent_id = {$tcase_id} )";
+            
+      if(!is_null($execContext['build_id']))
+      {
+        $sql .= " AND build_id = " . intval($execContext['build_id']);
+      }  
+            
+      if(!is_null($execContext['platform_id']))
+      {
+        $sql .= " AND platform_id = " . intval($execContext['platform_id']);
+      }  
+
+      // closing bracket for 1st level SELECT
+      $sql .= ")"; 
+
+      $sql .= " ORDER BY id ";
+      $sql .= ($opt->getOrderDescending) ? " DESC" : " ASC";
+
+      $rs = $this->dbObj->fetchRowsIntoMap($sql,'id');
+      if( is_null($rs) )
+      {
+        // has not been executed
+        // execution id = -1 => test case has not been runned.
+        $resultInfo[]=array('id' => -1);
+      }  
+      else
+      {
+        $resultInfo = $rs;
+      }  
+    }
+      
+    return $status_ok ? $resultInfo : $this->errors;
+  }
+
+
+  /**
    *
    */
   function initMethodYellowPages()
@@ -8143,6 +8286,7 @@ protected function createAttachmentTempFile()
                             'tl.getTestSuite' => 'this:getTestSuite',
                             'tl.updateTestSuite' => 'this:updateTestSuite',
                             'tl.setTestCaseTestSuite' => 'this:setTestCaseTestSuite',
+                            'tl.getExecutionSet' => 'this:getExecutionSet',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

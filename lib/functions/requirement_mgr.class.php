@@ -11,8 +11,6 @@
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * @internal revisions
- * @since 1.9.15
  * 
  */
 
@@ -636,7 +634,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
       $rs = current($rs);
-      if($rs['VQTY'] > 1)
+      if(isset($rs['VQTY']) && $rs['VQTY'] > 1)
       {
         $action4notify = 'delete_version';
       }  
@@ -720,7 +718,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
       foreach($rs as $el)
       {
-        if($el['VQTY'] == 1)
+        if(isset($el['VQTY']) && $el['VQTY'] == 1)
         {
           $target[] = $el['parent_id'];
         }  

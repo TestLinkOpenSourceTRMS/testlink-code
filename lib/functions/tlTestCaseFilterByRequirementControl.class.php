@@ -153,7 +153,7 @@
  * It contains logic to be used at GUI level to manage
  * a common set of settings and filters for testcases.
  *
- * @author Andreas Simon
+ * @author Tanguy Oger
  * @package TestLink
  * @uses testplan
  * @uses exec_cf_mgr
@@ -904,11 +904,11 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
         // values in $filters->setting_xyz
         $cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 
-		//BEGIN - Add - DGA - MM/DD/YYYY
+		// get filter mode
         $key = 'setting_testsgroupby';
         $mode = $this->args->$key;
 		
-        //END - Add
+
         if ($this->do_filtering)
         {
           // TICKET 4496: added active/inactive filter
@@ -933,19 +933,8 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
                            'viewType' => 'testSpecTreeForTestPlan',
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
-      
-		  //BEGIN - Modify - DGA - MM/DD/YYYY
 
-			if ($mode == 'mode_test_suite')
-			{
-
-			$tree_menu = generateTestSpecTree($this->db,
-										$this->args->testproject_id,
-										$this->args->testproject_name,
-										$gui->menuUrl,$filters,$options);
-										
-			}
-			elseif ($mode == 'mode_req_coverage')
+			if ($mode == 'mode_req_coverage')
 			{			
 
 			$options = array('for_printing' => NOT_FOR_PRINTING,'exclude_branches' => null);
@@ -956,44 +945,25 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
 												$gui->menuUrl, $filters, $options);
 												
 			}
-
-
-			if ($mode == 'mode_test_suite')
-			{
-				 $tree_menu = $tree_menu['menu']; 
-			}
-			//END - Modify
+			
 			$root_node = $tree_menu->rootnode;
 			$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
         else 
         {
-            //BEGIN - Add - DGA - MM/DD/YYYY
-              if ($mode == 'mode_test_suite')
-                  {
-                          $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                                                                  "root_node={$this->args->testproject_id}&show_tcases=0";
+			  if ($mode == 'mode_req_coverage')
+			  {
+					  $loader = $gui->basehref . 'lib/ajax/getreqcoveragenodes.php?mode=reqspec&' .
+									 "root_node={$this->args->testproject_id}";
 
-                          $root_node = new stdClass();
-                          $root_node->href = "javascript:EP({$this->args->testproject_id})";
-                          $root_node->id = $this->args->testproject_id;
-                          $root_node->name = $this->args->testproject_name;
-                          $root_node->testlink_node_type = 'testproject';
-                  }
-                  elseif ($mode == 'mode_req_coverage')
-                  {
-                          $loader = $gui->basehref . 'lib/ajax/getreqcoveragenodes.php?mode=reqspec&' .
-                                         "root_node={$this->args->testproject_id}";
+					  $req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
 
-                          $req_qty = count($this->testproject_mgr->get_all_requirement_ids($this->args->testproject_id));
-
-                          $root_node = new stdClass();
-                          $root_node->href = "javascript:EP({$this->args->testproject_id})";
-                          $root_node->id = $this->args->testproject_id;
-                          $root_node->name = $this->args->testproject_name . " ($req_qty)";
-                          $root_node->testlink_node_type = 'testproject';
-                }
-                //END - Modify
+					  $root_node = new stdClass();
+					  $root_node->href = "javascript:EP({$this->args->testproject_id})";
+					  $root_node->id = $this->args->testproject_id;
+					  $root_node->name = $this->args->testproject_name . " ($req_qty)";
+					  $root_node->testlink_node_type = 'testproject';
+			}
         }
       break;
       
@@ -2166,8 +2136,11 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
   
   
   
-  // BEGIN DGA
-  private function init_setting_testsgroupedby()
+
+  /**
+   *
+   */ 
+  protected function init_setting_testsgroupedby()
   {
 	$key = 'setting_testsgroupby';
 	
@@ -2180,6 +2153,5 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
 	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
 	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
   } // end of method
-  // END - Add
 
 }

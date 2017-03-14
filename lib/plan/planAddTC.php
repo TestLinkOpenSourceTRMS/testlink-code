@@ -26,10 +26,8 @@ $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
-//BEGIN - Add - DGA - 08/19/2013
 $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
-//END - Add
 
 $templateCfg = templateConfiguration();
 $args = init_args($tproject_mgr);
@@ -44,7 +42,6 @@ if(is_array($args->keyword_id))
 }
 
 $do_display = 0;
-//BEGIN - Add - DGA - 08/19/2013
 $do_display_coverage = 0;
 
 switch($args->item_level)
@@ -59,11 +56,10 @@ switch($args->item_level)
     $do_display_coverage = 1;
   break;
   case 'testproject':
-    show_instructions('planAddTcDocumentation');
+	redirect($_SESSION['basehref'] . "lib/results/printDocOptions.php?activity=$args->activity");
     exit();
   break;
 }
-//END - Modify
 
 switch($args->doAction)
 {
@@ -93,8 +89,6 @@ switch($args->doAction)
     }
   
     doReorder($args,$tplan_mgr);
-    $do_display = 1;
-	//BEGIN - Add - DGA - 08/19/2013
     if($args->item_level == 'testsuite')
     {
     		$do_display = 1;
@@ -140,7 +134,7 @@ switch($args->doAction)
 			$do_display_coverage = 1;
 	}
   break;
-// END DGA
+
   default:
   break;
 }
@@ -222,7 +216,6 @@ if($do_display)
   $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 } elseif ($do_display_coverage)
 {
-
 	if($args->item_level == 'reqcoverage')
 	{
 		$requirement_data = $req_mgr->get_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
@@ -323,49 +316,18 @@ if($do_display)
 			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['destination_id'],$requirement_data_name,
 			$tplan_linked_tcversions,null,$filters,$opt);
 			// First requirement without test cases
-			if (empty($tmp['spec_view']))
-				continue;
-			//END - Add
-			
-			if(empty($out))
-			{
-				$out = $tmp;
-			}
-			else
-			{	
+				if (empty($tmp['spec_view']))
+					continue;
 				
-				$tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
-				array_push($out['spec_view'], $tmp['spec_view'][1]);
-				
-				/*if(empty($out['spec_view'][0]['testcases']))
+				if(empty($out))
 				{
-				
-					//array_push($out['spec_view'][0]['testsuite'], $tmp['spec_view'][0]['testsuite']);
-					$out['spec_view'][0]['testcases'] = $tmp['spec_view'][0]['testcases'];
+					$out = $tmp;
 				}
-				else 
-				{
-					$tmp_merged = array_merge_recursive($out['spec_view'][0]['testcases'],$tmp['spec_view'][0]['testcases']);
-					if(!empty($tmp_merged))
-					{
-						$out['spec_view'][0]['testcases'] = $tmp_merged;
-					}
+				else
+				{	
+					$tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
+					array_push($out['spec_view'], $tmp['spec_view'][1]);
 				}
-				if(empty($out['spec_view'][1]['testcases']))
-				{
-					$out['spec_view'][1]['testcases'] = $tmp['spec_view'][1]['testcases'];
-				}
-				else 
-				{
-					$tmp_merged = array_merge_recursive($out['spec_view'][1]['testcases'],$tmp['spec_view'][1]['testcases']);
-					if(!empty($tmp_merged))
-					{
-						$out['spec_view'][1]['testcases'] = $tmp_merged;
-					}
-				}*/
-			}
-			
-			//array_push($out['spec_view'], $out_child['spec_view']);
 			}
 		}
 	}
@@ -377,11 +339,9 @@ if($do_display)
 			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['id'],$requirement_spec_data_name,
 					$tplan_linked_tcversions,null,$filters,$opt);
 
-			//BEGIN - Add - DGA - 08/19/2013
 			// First requirement without test cases
 			if (empty($tmp['spec_view']))
 				continue;
-			//END - Add
 			
 			if(empty($out))
 			{
@@ -427,7 +387,7 @@ if($do_display)
     if( !is_null($gui->items) )
     {
     initDrawSaveButtons($gui);
-}
+	}
 
 // This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
 setAdditionalGuiData($gui);
@@ -438,12 +398,12 @@ switch ($args->doAction)
 	case 'doReorder':
 	case 'doSavePlatforms':
 	case 'doSaveCustomFields':
-case 'doAddRemove':
-$gui->refreshTree = $args->refreshTree;
-break;
+	case 'doAddRemove':
+	$gui->refreshTree = $args->refreshTree;
+	break;
 
-default:
-$gui->refreshTree = false;
+	default:
+	$gui->refreshTree = false;
 	break;
   }
 
@@ -918,8 +878,16 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
           $email['body'] .= $flat_path[$tcase_id] . '<br />';  
         }  
         $email['body'] .= '<br />' . date(DATE_RFC1123);
+
+        $email['cc'] = '';
+        $email['attachment'] = null;
+        $email['exit_on_error'] = true;
+        $email['htmlFormat'] = true; 
+
         $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'], '', true, true);
+                               $email['subject'], $email['body'],
+                               $email['cc'],$email['attachment'],
+                               $email['exit_on_error'],$email['htmlFormat']);
       } 
     }                       
   }

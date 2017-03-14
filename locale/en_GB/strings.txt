@@ -883,9 +883,6 @@ $TLS_btn_hide_cf = "Hide Custom Fields";
 $TLS_btn_show_cf = "Show Custom Fields";
 $TLS_btn_export_testplan_tree = 'Export Test Plan';
 $TLS_btn_export_testplan_tree_for_results = 'Export for results import';
-$TLS_test_grouped_by_label = "Tests Grouped By";
-$TLS_mode_test_suite = 'Test Suite';
-$TLS_mode_req_coverage = 'Req.coverage';
 
 $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";
@@ -893,7 +890,9 @@ $TLS_filter_active_inactive = "Active/Inactive";
 $TLS_show_only_active_testcases = "At least ONE version is ACTIVE";
 $TLS_show_only_inactive_testcases = "ALL versions are INACTIVE";
 $TLS_show_whole_spec_on_right_panel = 'Show Full (on right pane)';
-
+$TLS_test_grouped_by_label = "Tests Grouped By";
+$TLS_mode_test_suite = "Test Suite";
+$TLS_mode_req_coverage = "Requirements";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -1501,6 +1500,12 @@ $TLS_no_data_available = "No data available";
 $TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
 $TLS_or_unassigned_test_cases = " Or without tester assignment";
 $TLS_run_mode = "Run mode";
+
+$TLS_reqspec_type = 'Req. Spec. Type';
+$TLS_req_status = 'Req. Status';
+$TLS_tcase_wkf_status = 'Test Case Status';
+
+
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";
 $TLS_show_hide_reorder = "Show / Hide reorder ";
@@ -1549,6 +1554,7 @@ $TLS_title_results = "Test Reports";
 $TLS_title_specification = "Test Specification";
 $TLS_title_requirements = "Requirements";
 $TLS_session_inactivity_timeout_at = "Session idle timeout at";
+$TLS_full_text_search = "Full Text Search";
 
 
 
@@ -3511,6 +3517,7 @@ $TLS_API_INVALID_TIMESTAMP = "Timestamp provided (%s) is invalid";
 
 $TLS_API_ITS_NOT_FOUND = "Unable to find the ITS %s.";
 
+$TLS_API_TSUITE_NOT_ON_TCASE_TPROJ = "Test Suite does not belong to Test Case's Test Project";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
@@ -4066,4 +4073,24 @@ $TLS_click_blocked_next = "Click to set to blocked and move to next";
 
 $TLS_send_spreadsheet_by_email = 'Send Spreadsheet by email to myself';
 $TLS_send_by_email_to_me = 'Send by email to myself';
+
+$TLS_search_items = "Search";
+$TLS_search_title = "Search";
+$TLS_req_document_id = "Req. Doc. ID";
+$TLS_id = 'ID';
+
+$TLS_search_words_or = 'Search must match at least ONE word (OR)';
+$TLS_search_words_and = 'Search has to match ALL words (AND)';
+$TLS_search_words_placeholder = 'write here the words you want search for';
+$TLS_search_words_on_attr = "Word/Words will be searched among one or more attributes you will select below";
+
+$TLS_search_other_attr = "You can set search criteria that does not use words. But This search criteria will be added on AND mode";
+
+$TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
+$TLS_multiple_entities_search = 'Search on multiple entities';
+
+$TLS_test_grouped_by_label = "Tests Grouped By";
+$TLS_mode_test_suite = 'Test Suite';
+$TLS_mode_req_coverage = 'Coverage';
+
 // ----- END ------------------------------------------------------------------

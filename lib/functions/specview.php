@@ -133,6 +133,7 @@
 function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
                        $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 {
+
   $out = array(); 
   $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 
@@ -153,7 +154,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   $write_status = $my['options']['write_button_only_if_linked'] ? 'no' : 'yes';
   $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
   $is_uncovered_view_type = ($spec_view_type == 'uncoveredtestcases') ? 1 : 0;
-
+  
   if( !$is_tplan_view_type && is_null($tproject_id) )
   {
     $tproject_id = $tobj_id;
@@ -197,7 +198,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   {
     $cfg = array('node_types' => $hash_id_descr, 'write_status' => $write_status,
                  'is_uncovered_view_type' => $is_uncovered_view_type);
-				 
+                 
     // $a_tsuite_idx
     // key: test case version id
     // value: index inside $out, where parent test suite of test case version id is located.
@@ -238,7 +239,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 
     $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI);
     $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items,$options);
-
   }
 
   // Try to prune empty test suites, to reduce memory usage and to remove elements
@@ -297,123 +297,9 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   return $result;
 }
 
-//BEGIN - Add - DGA - MM/DD/YYYY
 /**
- * Generate data for Test Specification
- *
- * @param string $spec_view_type can get one of the following values:
- *                        'testproject','testplan','uncoveredtestcases'
- *
- *                        This setting change the processing done
- *                        to get the keywords.
- *                        And indicates the type of id (testproject/testplan)
- *                        contained in the argument tobj_id.
- *                        when using uncoveredtestcases tobj_id = testproject id
- * @param integer $tobj_id can be a testproject id, or testplan id.
- * @param integer $id node id, that we are using as root for the view we want to build
- * @param string $name
- * @param array $linked_items  map where key=testcase_id
- *    value map with following keys:
- *                              [testsuite_id] => 2732
- *                              [tc_id] => 2733
- *                              [z] => 100  ---> nodes_hierarchy.order
- *                              [name] => TC1
- *                              [tcversion_id] => 2734
- *                              [feature_id] => 9      --->> testplan_tcversions.ID
- *                              [execution_order] => 10
- *                              [version] => 1
- *                              [active] => 1
- *                              [external_id] => 1
- *                              [exec_id] => 1
- *                              [tcversion_number] => 1
- *                              [executed] => 2734
- *                              [exec_on_tplan] => 2735
- *                              [user_id] =>
- *                              [type] =>
- *                              [status] =>
- *                              [assigner_id] =>
- *                              [urgency] => 2    IMPORTANT: exists ONLY FOR LINKED TEST CASES
- *                              [exec_status] => b
- *                              [priority] => 4 // urgency*importance IMPORTANT: exists ONLY FOR LINKED TEST CASES
- *
- * @param array $map_node_tccount
- * @TODO probably this argument ($map_node_tccount) is not needed, but it will depend
- *      of how this feature (gen_spec_view) will be used on other TL areas.
- *
- * @param map $filters keys
- *                     [keyword_id] default 0
- *                     [tcase_id] default null, can be an array
- *
- * @param map $options keys
- *             [write_button_only_if_linked] default 0
- *                   [prune_unlinked_tcversions]: default 0.
- *                        Useful when working on spec_view_type='testplan'.
- *                        1 -> will return only linked tcversion
- *                      0 -> returns all test cases specs.
- *                   [add_custom_fields]: default=0
- *              useful when working on spec_view_type='testproject'
- *              when doing test case assign to test plans.
- *                            1 -> for every test case cfields of area 'testplan_design'
- *                                 will be fetched and displayed.
- *                            0 -> do nothing
- *
- *    [$tproject_id]: default = null
- *        useful to improve performance in custom field method calls
- *        when add_custom_fields=1.
- *
- *
- * @return array every element is an associative array with the following
- *       structure: (to get last updated info add debug code and print_r returned value)
- *       [testsuite] => Array( [id] => 28
- *                             [name] => TS1 )
- *       [testcases] => Array(  [2736] => Array
- *                              (
- *                                  [id] => 2736
- *                                  [name] => TC2
- *                                  [tcversions] => Array
- *                                      (
- *                                          [2738] => 2   // key=tcversion id,value=version
- *                                          [2737] => 1
- *                                      )
- *                                  [tcversions_active_status] => Array
- *                                      (
- *                                          [2738] => 1  // key=tcversion id,value=active status
- *                                          [2737] => 1
- *                                      )
- *                                  [tcversions_execution_type] => Array
- *                                      (
- *                                          [2738] => 1
- *                                          [2737] => 2
- *                                      )
- *                                  [tcversions_qty] => 2
- *                                  [linked_version_id] => 2737
- *                                  [executed] => no
- *                                  [user_id] => 0       ---> !=0 if execution has been assigned
- *                                  [feature_id] => 12   ---> testplan_tcversions.id
- *                                  [execution_order] => 20
- *                                  [external_id] => 2
- *                                  [linked_ts] => 2009-06-10 23:00
- *                                  [linked_by] => 2
- *                                  [priority] => HIGH, MEDIUM or LOW
- *                              )
- *                                [81] => Array( [id] => 81
- *                                           [name] => TC88)
- *                                           ...
- *                                           )
- *        [level] =
- *     [write_buttons] => yes or no
- *     level and write_buttons are used to generate the user interface
- *
- *     Warning:
- *     if the root element of the spec_view, has 0 test => then the default
- *     structure is returned ( $result = array('spec_view'=>array(), 'num_tc' => 0))
- *
- * @internal Revisions:
- *
- *  20100721 - asimon - BUGID 3406 - added user_assignments_per_build to options
- *
- */
-
+*
+*/
 function gen_coverage_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
 $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 {
@@ -490,15 +376,14 @@ $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 	//
 	if(!is_null($map_node_tccount))
 	{
-	foreach($out as $key => $elem)
+		foreach($out as $key => $elem)
 		{
-		if(isset($map_node_tccount[$elem['testsuite']['id']]) &&
-		$map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0)
-		{
-		// why not unset ?
+			if(isset($map_node_tccount[$elem['testsuite']['id']]) &&
+			$map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0)
+			{
 				$out[$key]=null;
+			}
 		}
-	}
 	}
 
 	// Collect information related to linked testcase versions
@@ -568,7 +453,6 @@ $result['spec_view']= array_values($result['spec_view']);
 return $result;
 }
 
-
 /**
  * get linked versions filtered by Keyword ID
  * Filter is done ONLY on attributes THAT ARE COMMON to ALL test case versions,
@@ -586,6 +470,7 @@ return $result;
  * @param ref $tplanMgr: test plan manager object
  * @param ref $tcaseMgr: test case manager object
  * @param map $options:  default null   (at today 20110820 seems not be used).
+ * @param boolean $isTestSuite: filter testGroupBy, default true 
  *  
  * 
  *
@@ -593,12 +478,9 @@ return $result;
  * @since 1.9.14
  * 
  */
- // BEGIN DGA
 function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr, 
                                    $options = null, $isTestSuite=true)
 {
-// END DGA
-
   static $tsuite_mgr;
   $doFilterByKeyword = (!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
   
@@ -618,24 +500,22 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
   }
   
   // get test suites in branch to limit search
-  // BEGIN DGA
   if($isTestSuite) {
 	  $itemID = property_exists($argsObj,'object_id') ? $argsObj->object_id : $argsObj->id;
 	  if( !is_null($itemID) )
 	  {
-		// will get all test suites in this branch, in order to limit amount of data returned by 
-		// get_*_tcversions
-		if(!$tsuite_mgr)
-		{
-		  $tsuite_mgr = new testsuite($dbHandler);
-		}
-		$xx = $tsuite_mgr->get_branch($itemID);
-		$xx .= ($xx == '') ? $itemID : ',' . $itemID;
-		$filters['tsuites_id'] = explode(',',$xx);
+	    // will get all test suites in this branch, in order to limit amount of data returned by 
+	    // get_*_tcversions
+	    if(!$tsuite_mgr)
+	    {
+	      $tsuite_mgr = new testsuite($dbHandler);
+	    }
+	    $xx = $tsuite_mgr->get_branch($itemID);
+	    $xx .= ($xx == '') ? $itemID : ',' . $itemID;
+	    $filters['tsuites_id'] = explode(',',$xx);
 	  }
+  }
 
-	}	
-	// END DGA
   // $opx = array('addExecInfo' => true, 'specViewFields' => true) + (array)$options;
   $opx = array_merge( array('addExecInfo' => true, 'specViewFields' => true,
                             'tlFeature' => 'none'),
@@ -677,6 +557,7 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
   }
   return $tplan_tcases; 
 }
+
 
 /**
  * 
@@ -792,6 +673,7 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  *          filters['cfields']: 
  *          filters['tcase_name']: 
  *
+ * @param string $type: request selected for create tree
  * 
  * @return array map with view (test cases subtree)
  * 
@@ -805,7 +687,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   $tck_map = null;
   $tobj_mgr = new testproject($dbHandler);
 
-  $opt = array('order_cfg' => array("type" =>$type));
+  $opt = array('order_cfg' => array("type" =>$type)); 
   if($specViewType =='testplan')
   {
     $opt['order_cfg']=array("type" =>'exec_order', 'tplan_id' => $masterContainerId);  
@@ -870,7 +752,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
       break;  
     }
     $tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
-  }
+  }  
+
 
   if( $applyFilters )
   {
@@ -917,7 +800,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
       }
       
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
-
+      
       switch($specViewType)
       {
         case 'testPlanLinking':
@@ -1391,7 +1274,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
     
     // Reference to make code reading more human friendly       
     $outRef = &$out[$parent_idx]['testcases'][$tc_id];
-
+    
     // Is not clear (need explanation) why we process in this part ONLY ACTIVE
     // also we need to explain !is_null($out[$parent_idx])
     //

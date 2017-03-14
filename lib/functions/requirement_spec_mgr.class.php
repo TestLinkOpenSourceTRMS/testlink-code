@@ -1056,10 +1056,6 @@ function get_requirement_child_by_id_req($id){
   	return $xmlData;
   }
 
-
-      return $req_spec;
-  }
-
   /**
    * xmlToReqSpec
    *

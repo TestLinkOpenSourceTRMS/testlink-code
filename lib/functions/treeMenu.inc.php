@@ -1505,7 +1505,6 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
   return $treeMenu;
 }
 
-//BEGIN - Add - DGA - MM/DD/YYYY
 /**
  * Generate the necessary data object for the filtered requirement specification tree.
  * 
@@ -1574,7 +1573,7 @@ function generateTestReqCoverageTree(&$db,$tproject_id, $tproject_name,$linkto,$
   // merge with given parameters
   $my['options'] = array_merge($my['options'], (array) $options);
   $my['filters'] = array_merge($my['filters'], (array) $filters);
-  
+
   $req_spec = $tree_manager->get_subtree($tproject_id, $my['filters'], $my['options']);
   
   $req_spec['name'] = $tproject_name;
@@ -1587,7 +1586,7 @@ function generateTestReqCoverageTree(&$db,$tproject_id, $tproject_name,$linkto,$
   $level = 1;
   $req_spec = prepare_reqspeccoverage_treenode($db, $level, $req_spec, $filtered_map, $map_id_nodetype,
                                        $map_nodetype_id, $my['filters'], $my['options']);
-    
+
   $menustring = null;
   $treeMenu = new stdClass();
   $treeMenu->rootnode = new stdClass();
@@ -1617,7 +1616,6 @@ function generateTestReqCoverageTree(&$db,$tproject_id, $tproject_name,$linkto,$
   
   return $treeMenu;
 }
-//END - Add
 
 /**
  * Generate a filtered map with all fitting requirements in it.
@@ -1882,7 +1880,6 @@ function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id
   return $node;
 }
 
-//BEGIN - Add - DGA - MM/DD/YYYY
 /**
  * Prepares nodes for the filtered requirement tree.
  * Filters out those nodes which are not in the given map and counts the remaining subnodes.
@@ -1960,7 +1957,6 @@ function prepare_reqspeccoverage_treenode(&$db, $level, &$node, &$filtered_map, 
 
 	return $node;
 }
-//END - Add
 
 /**
  * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
@@ -2050,8 +2046,6 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
 }
 
 
-
-//BEGIN - Add - DGA - MM/DD/YYYY
 /**
  * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
  * @author Andreas Simon
@@ -2138,9 +2132,6 @@ function render_reqspeccoverage_treenode(&$db, &$node, &$filtered_map, &$map_id_
 
 	return $node;
 }
-//END - Add
-
-
 /**
  * 
  * 

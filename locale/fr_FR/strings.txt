@@ -949,9 +949,9 @@ $TLS_collapse_tree = "Replier";
 $TLS_filter_active_inactive = "Actif/Inactif";
 $TLS_show_only_active_testcases = "Au moins UNE version est ACTIVÉ";
 $TLS_show_only_inactive_testcases = "TOUTES les versions sont DÉSACTIVÉES.";
-$TLS_test_grouped_by_label = "Tests trier par";
-$TLS_mode_test_suite = 'Test Suite';
-$TLS_mode_req_coverage = 'Req.coverage';
+$TLS_test_grouped_by_label = "Tests regroupés par";
+$TLS_mode_test_suite = "Suite de tests";
+$TLS_mode_req_coverage = "Exigences";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

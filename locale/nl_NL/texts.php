@@ -472,6 +472,5 @@ belangrijke wijzigingen. </li>
 <p><i>Bijvoorbeeld een testcase met een groot belang in een testsuite met een lage urgentie ".
 "zal Medium prioriteit krijgen.</i>";
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTcDocumentation']	= "Plan add testcase documentation";
-$TLS_htmltext['planAddTcDocumentation'] = "<h2>@TODO Plan add testcase documentation</h2>";
+
 ?>

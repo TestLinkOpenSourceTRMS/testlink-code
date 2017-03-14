@@ -278,6 +278,7 @@ function TPROJECT_PRS(id)
 }
 
 
+//BEGIN - Add - DGA - MM/DD/YYYY
 /*
 function: Edit Rec Spec or launch print
 
@@ -322,12 +323,9 @@ function ER(id)
 
 }
 
-/* Generate doc: a selected Test Suite from Test Specification
-function TPROJECT_PRS(id)
-{
-	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testsuite&id="+id+args+"&"+pParams;
-}
+// END DGA
+
+/*
   function: TPLAN_PTS
             Test PLAN Print Test Suite
 
@@ -1848,30 +1846,4 @@ function toogleRequiredOnShowHide(oid,display_type)
     obj.style.display = 'none';
     obj.removeAttribute('required'); 
   }
-}
-
-/**
- * Open testcase description in a popup window.
- * @author Andreas Simon
- * @param tc_id
- */
-function openTSEditWindow(tsuite_id) 
-{
-
-  var url = "lib/testcases/archiveData.php?edit=testsuite&id=" + tsuite_id 
-  var width = getCookie("TSEditPopupWidth");
-  var height = getCookie("TSEditPopupHeight");
-  
-  if (width == null)
-  {
-    var width = "800";
-  }
-  
-  if (height == null)
-  {
-    var height = "600";
-  }
-  
-  var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
-  window.open(fRoot+url, '_blank', windowCfg);
 }

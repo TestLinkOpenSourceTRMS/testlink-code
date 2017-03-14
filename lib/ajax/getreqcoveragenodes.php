@@ -1,8 +1,9 @@
 <?php
+//BEGIN - Add - DGA - MM/DD/YYYY
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@author Tanguy Oger
+* 	@author 	DGA
 *
 * 	Is the tree loader, will be called via AJAX.
 *   Ext JS automatically will pass $_REQUEST['node']   
@@ -141,4 +142,5 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     }	// foreach	
   }
 	return $nodes;                                                                             
-}                                                                                           
+}
+//END - Add                                                                                               

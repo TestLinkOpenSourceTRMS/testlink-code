@@ -26,19 +26,18 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
-
+// BEGIN DGA
 // selection of a controller according groupBy mode choice.
 $key = 'setting_testsgroupby';
-
 // now load info from session
 $mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : "mode_test_suite";
-
 if($mode == "mode_req_coverage"){
     $control = new tlTestCaseFilterByRequirementControl($db, 'plan_add_mode');
 } else {
    $control = new tlTestCaseFilterControl($db, 'plan_add_mode');
 }
-
+$args = init_args($mode, $control);
+// END DGA
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
 $control->formAction = $_SESSION['basehref'] . "lib/plan/planAddTCNavigator.php";
@@ -51,6 +50,22 @@ $smarty->assign('menuUrl', $gui->menuUrl);
 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+
+function init_args($mode, $control)
+{
+    if($mode == "mode_req_coverage"){
+        $args = new stdClass();
+        $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
+        $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
+        $args->basehref = $_SESSION['basehref'];
+    } else {
+        $args = $control->get_argument_string() . '&activity=addTC'; 
+    }
+    
+ 
+    
+  return $args;
+}
 
 /**
  * Initialize gui object for use in templates.
@@ -65,8 +80,10 @@ function initializeGui($control)
   $gui = new stdClass();
   $gui->formAction = '';
 
-  $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
-  $gui->req_manager_url = "lib/requirements/reqView.php";
+    // ADD DGA
+    $gui->req_spec_manager_url = "lib/requirements/reqSpecView.php";
+    $gui->req_manager_url = "lib/requirements/reqView.php";
+    // END DGA
   
   // This logic is managed from frmWorkArea.php and planAddTC.php
   $gui->loadRightPaneAddTC = isset($_REQUEST['loadRightPaneAddTC']) ? $_REQUEST['loadRightPaneAddTC'] : true;
@@ -80,7 +97,7 @@ function initializeGui($control)
 
   // DEV NOTES - CRITIC
   // activity has to be coherent with login on frmWorkArea.php and printDocOptions.php
-  $gui->args = $args = $control->get_argument_string() . '&activity=addTC';
+  $gui->args = $args;
   $gui->additional_string = '';
   $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
                         "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;

@@ -119,7 +119,7 @@
           </td>
         </tr>
       {/if}
-
+	  
 	  {if $control->settings.setting_testsgroupby}
 		<tr>
 			<td>{$labels.test_grouped_by_label}</td>
@@ -131,7 +131,7 @@
 			</td>
 		</tr>
 	  {/if}
-	  
+
       {if $control->settings.setting_refresh_tree_on_action}
         <tr>
             <td>{$labels.do_auto_update}</td>

@@ -480,7 +480,8 @@ class assignment_mgr extends tlObjectWithDB
             " AND UA.feature_id IN(" . implode(",",(array)$featureSet)  . " )" .       
             " AND type = " . intval($assignmentType);
             
-    $rs = $this->db->fetchRowsIntoMap($sql,'feature_id');
+    $rs = $this->db->fetchMapRowsIntoMap($sql,'feature_id','user_id');
+
     return $rs;
   }
   

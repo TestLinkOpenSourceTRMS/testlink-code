@@ -5,9 +5,7 @@ Edit test specification: containers
 
 @filesource containerEdit.tpl
 @internal revisions
-@since 1.9.6
-20121222 - franciscom - TICKET 5439 - added logic to check for session expiration and request login again
-
+@since 1.9.15
 *}
 {lang_get var="labels"
           s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,
@@ -90,7 +88,7 @@ function validateForm(f)
 
 <div class="workBack">
   <h1 class="title">{$labels.title_edit_level} {lang_get s=$level}</h1> 
-  <form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" 
+  <form method="post" action="{$basehref}lib/testcases/containerEdit.php?testsuiteID={$containerID}" 
         name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">
   
@@ -114,9 +112,10 @@ function validateForm(f)
      <p>
    {/if}
   
-  {if $gui->hasKeywords} 
+  {if $gui->hasKeywords}
+  {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id} 
   <div>
-   <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
+   <a href={$kwView}>{$labels.tc_keywords}</a>
    {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
   </div>
   {/if}

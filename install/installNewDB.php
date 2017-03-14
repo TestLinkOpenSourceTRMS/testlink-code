@@ -143,6 +143,8 @@ echo "<br /><b>Creating connection to Database Server:</b>";
 // Connect to DB Server without choosing an specific database
 $db = new database($db_type);
 define('NO_DSN',FALSE);
+//var_dump($db);
+//die();
 @$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
 
 if( $conn_result['status'] == 0 ) 

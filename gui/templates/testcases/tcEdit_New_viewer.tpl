@@ -14,14 +14,14 @@ Purpose: smarty template - create new testcase
              execution_type,test_importance,tc_keywords,assign_requirements'}
 
 {* Steps and results Layout management *}
-{assign var="layout1" value="<br />"}
-{assign var="layout2" value="<br />"}
-{assign var="layout3" value="<br />"}
+{$layout1="<br />"}
+{$layout2="<br />"}
+{$layout3="<br />"}
 
 {if $gsmarty_spec_cfg->steps_results_layout == 'horizontal'}
-  {assign var="layout1" value='<br /><table width="100%"><tr><td width="50%">'}
-  {assign var="layout2" value='</td><td width="50%">'}
-  {assign var="layout3" value="</td></tr></table><br />"}
+  {$layout1='<br /><table width="100%"><tr><td width="50%">'}
+  {$layout2='</td><td width="50%">'}
+  {$layout3="</td></tr></table><br />"}
 {/if}
 {* ---------------------------------------------------------------- *}
   <p />
@@ -51,7 +51,7 @@ Purpose: smarty template - create new testcase
     <div class="labelHolder">{$labels.preconditions}</div>
     <div>{$preconditions}</div>
     
-    {* Custom fields - with before steps & results location - 20090718 - franciscom *}
+    {* Custom fields - with before steps & results location *}
     <br />
     {if $gui->cf.before_steps_results neq ""}
          <br/>
@@ -80,7 +80,8 @@ Purpose: smarty template - create new testcase
 
   <br />
   <div>
-  <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
+  {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id}
+  <a href={$kwView}>{$labels.tc_keywords}</a>
   {include file="opt_transfer.inc.tpl" option_transfer=$gui->opt_cfg}
   </div>
   

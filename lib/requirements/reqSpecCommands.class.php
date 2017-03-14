@@ -6,8 +6,9 @@
  * @filesource  reqSpecCommands.class.php
  * @author      Francisco Mancardi
  * 
- *  @internal revisions
- *  @since 1.9.10
+ * @internal revisions
+ * @since 1.9.15
+ *
  */
 class reqSpecCommands
 {
@@ -171,7 +172,7 @@ class reqSpecCommands
       $argsObj->scope = $guiObj->req_spec['scope'];
     }
     
-        return $guiObj;  
+    return $guiObj;  
   }
 
   /*
@@ -245,15 +246,15 @@ class reqSpecCommands
   */
   function doUpdate(&$argsObj,$request)
   {
-      $descr_prefix = lang_get('req_spec_short') . TITLE_SEP;
+    $descr_prefix = lang_get('req_spec_short') . TITLE_SEP;
 
-        $guiObj = $this->initGuiBean(); 
-     $guiObj->submit_button_label=$this->submit_button_label;
-      $guiObj->template = null;
+    $guiObj = $this->initGuiBean(); 
+    $guiObj->submit_button_label=$this->submit_button_label;
+    $guiObj->template = null;
     $guiObj->req_spec_id = $argsObj->req_spec_id;
   
-        $guiObj = $this->edit($argsObj,null,!self::OVERWRITESCOPE);
-        $guiObj->user_feedback = '';
+    $guiObj = $this->edit($argsObj,null,!self::OVERWRITESCOPE);
+    $guiObj->user_feedback = '';
     $guiObj->template = null;
     $guiObj->askForRevision = false;      
     
@@ -304,7 +305,7 @@ class reqSpecCommands
   */
   function doDelete(&$argsObj)
   {
-        $guiObj = $this->initGuiBean(); 
+    $guiObj = $this->initGuiBean(); 
 
     $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
     $this->reqSpecMgr->delete_deep($argsObj->req_spec_id);
@@ -334,16 +335,16 @@ class reqSpecCommands
   */
   function reorder(&$argsObj)
   {
-        $guiObj = $this->initGuiBean(); 
-      $guiObj->template = 'reqSpecReorder.tpl';
+    $guiObj = $this->initGuiBean(); 
+    $guiObj->template = 'reqSpecReorder.tpl';
     $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
     $guiObj->action_descr = lang_get('title_change_req_spec_order');
 
     $order_by = ' ORDER BY NH.node_order,REQ_SPEC.id ';
     $guiObj->all_req_spec = $this->reqSpecMgr->get_all_in_testproject($argsObj->tproject_id,$order_by);
-        $guiObj->tproject_name=$argsObj->tproject_name;
-        $guiObj->tproject_id=$argsObj->tproject_id;
-      return $guiObj;
+    $guiObj->tproject_name=$argsObj->tproject_name;
+    $guiObj->tproject_id=$argsObj->tproject_id;
+    return $guiObj;
   }
 
 
@@ -358,19 +359,19 @@ class reqSpecCommands
   */
   function doReorder(&$argsObj)
   {
-        $guiObj = $this->initGuiBean(); 
-        $guiObj->tproject_name=$argsObj->tproject_name;
-        $guiObj->tproject_id=$argsObj->tproject_id;
-      $guiObj->template = 'project_req_spec_mgmt.tpl';
-      $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
+    $guiObj = $this->initGuiBean(); 
+    $guiObj->tproject_name=$argsObj->tproject_name;
+    $guiObj->tproject_id=$argsObj->tproject_id;
+    $guiObj->template = 'project_req_spec_mgmt.tpl';
+    $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
       
     $nodes_in_order = transform_nodes_order($argsObj->nodes_order);
 
     // need to remove first element, is testproject
     array_shift($nodes_in_order);
     $this->reqSpecMgr->set_order($nodes_in_order);
-        $guiObj->refreshTree=1;
-      return $guiObj;
+    $guiObj->refreshTree=1;
+    return $guiObj;
   }
 
 
@@ -418,8 +419,8 @@ class reqSpecCommands
     $my['options'] = array_merge($my['options'], (array)$options);
     if( $my['options']['get_items'] )
     {
-      $obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,'all',null,
-                                                        $this->getRequirementsOptions);
+      $opt = $this->getRequirementsOptions + array('output' => 'minimal');
+      $obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,'all',null,$opt);
     }
     $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
     $obj->action_descr = lang_get('copy_several_reqs');
@@ -841,5 +842,102 @@ class reqSpecCommands
     $guiObj->template = "reqSpecView.php?refreshTree=0&req_spec_id={$argsObj->req_spec_id}";
     return $guiObj;    
   }
+
+  /*
+    function: copyRequirements
+
+    args:
+    
+    returns: 
+
+  */
+  function bulkReqMon(&$argsObj,$options=null)
+  {
+    $obj = $this->initGuiBean(); 
+    $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+    
+    $my['options'] = array( 'get_items' => true);
+    $my['options'] = array_merge($my['options'], (array)$options);
+
+
+    if( $my['options']['get_items'] )
+    {
+      $opt = $this->getRequirementsOptions + 
+             array('outputLevel' => 'minimal', 'decodeUsers' => false);
+      $obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,'all',null,$opt);    
+    }
+
+    $opx = array('reqSpecID' => $argsObj->req_spec_id);
+    $monSet = $this->reqMgr->getMonitoredByUser($argsObj->user_id,$argsObj->tproject_id,$opx);
+    
+    $obj->enable_start_btn = false;
+    $obj->enable_stop_btn = false;
+    foreach($obj->items as $xdx => &$itx)
+    {
+      $onOff = isset($monSet[$itx['id']]) ? true : false;
+      $itx['monitor'] = $onOff ? 'On' : 'Off';
+      $obj->enable_start_btn |= !$onOff;
+      $obj->enable_stop_btn |= $onOff;
+    }  
+
+    $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+    $obj->action_descr = lang_get('bulk_monitoring');
+    $obj->template = 'reqBulkMon.tpl';
+    $obj->containers = null;
+    $obj->page2call = 'lib/requirements/reqSpecEdit.php';
+    $obj->array_of_msg = '';
+    $obj->doActionButton = 'do' . ucfirst(__FUNCTION__);
+    $obj->req_spec_id = $argsObj->req_spec_id;
+    $obj->refreshTree = 0;
+    
+    return $obj;
+  }
+
+ /**
+   * 
+   *
+   */
+  function doBulkReqMon(&$argsObj)
+  {
+    $obj = $this->initGuiBean(); 
+    $obj->req = null;
+    $obj->req_spec_id = $argsObj->req_spec_id;
+    $obj->array_of_msg = '';
+  
+    $m2r = null;
+    switch($argsObj->op)
+    {
+      case 'toogleMon':
+        $opx = array('reqSpecID' => $argsObj->req_spec_id);
+        $monSet = $this->reqMgr->getMonitoredByUser($argsObj->user_id,$argsObj->tproject_id,$opx);
+
+        foreach($argsObj->itemSet as $req_id)
+        {
+          $f2r = isset($monSet[$req_id]) ? 'monitorOff' : 'monitorOn';
+          $this->reqMgr->$f2r($req_id,$argsObj->user_id,$argsObj->tproject_id);
+        }  
+      break;
+
+      case 'startMon':
+        $m2r = 'monitorOn';
+      break;
+
+      case 'stopMon':
+        $m2r = 'monitorOff';
+      break;
+    }     
+
+    if( !is_null($m2r) )
+    {
+      foreach($argsObj->itemSet as $req_id)
+      {
+        $this->reqMgr->$m2r($req_id,$argsObj->user_id,$argsObj->tproject_id);
+      }  
+    } 
+
+    return $this->bulkReqMon($argsObj);
+  }
+
+
 
 }

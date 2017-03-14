@@ -21,6 +21,8 @@ class jirarestInterface extends issueTrackerInterface
   private $APIClient;
   private $issueDefaults;
   private $issueAttr = null;
+  private $jiraCfg;
+
   var $support;
 
 	/**
@@ -31,19 +33,19 @@ class jirarestInterface extends issueTrackerInterface
 	 **/
 	function __construct($type,$config,$name)
 	{
-      $this->name = $name;
+    $this->name = $name;
 	  $this->interfaceViaDB = false;
-      $this->support = new jiraCommons();
-      $this->support->guiCfg = array('use_decoration' => true);
+    $this->support = new jiraCommons();
+    $this->support->guiCfg = array('use_decoration' => true);
 
 	  $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
-      if($this->setCfg($config) && $this->checkCfg())
-      {
-        $this->completeCfg();
-        $this->connect();
-        $this->guiCfg = array('use_decoration' => true);
-      } 
+    if($this->setCfg($config) && $this->checkCfg())
+    {
+      $this->completeCfg();
+      $this->connect();
+      $this->guiCfg = array('use_decoration' => true);
+    } 
 	}
 
    /**
@@ -125,10 +127,21 @@ class jirarestInterface extends issueTrackerInterface
   	  // CRITIC NOTICE for developers
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
-      $par = array('username' => (string)trim($this->cfg->username),
+      $this->jiraCfg = array('username' => (string)trim($this->cfg->username),
                    'password' => (string)trim($this->cfg->password),
                    'host' => (string)trim($this->cfg->uriapi));
-  	  $this->APIClient = new JiraApi\Jira($par);
+  	  
+      $this->jiraCfg['proxy'] = config_get('proxy');
+      if( !is_null($this->jiraCfg['proxy']) )
+      {
+        if( is_null($this->jiraCfg['proxy']->host) )
+        {
+          $this->jiraCfg['proxy'] = null;
+        }  
+      }  
+
+
+      $this->APIClient = new JiraApi\Jira($this->jiraCfg);
 
       $this->connected = $this->APIClient->testLogin();
       if($this->connected && ($this->cfg->projectkey != self::NOPROJECTKEY))
@@ -169,7 +182,7 @@ class jirarestInterface extends issueTrackerInterface
 	  }
 		
 	  $issue = null;
-      try
+    try
 	  {
 
 			$issue = $this->APIClient->getIssue($issueID);
@@ -745,7 +758,7 @@ class jirarestInterface extends issueTrackerInterface
     foreach ($cfSet as $cf)
     {
       $cf = (array)$cf;    
-      $cfJIRAID = $cf['customfield']; 
+      $cfJIRAID = $cf['customfieldId']; 
       $valueSet = (array)$cf['values'];        
       $loop2do = count($valueSet);
 

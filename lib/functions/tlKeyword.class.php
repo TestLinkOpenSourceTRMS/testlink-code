@@ -5,16 +5,15 @@
  * 
  * Management and assignment of keywords
  *
- * @package   TestLink
- * @copyright   2007-2013, TestLink community 
- * @filesourec  tlKeyword.class.php
- * @link    http://www.testlink.org 
+ * @package     TestLink
+ * @copyright   2007-2015, TestLink community 
+ * @filesource  tlKeyword.class.php
+ * @link        http://www.testlink.org 
  *
  * @internal revisions
- *
+ * @since 1.9.15
  **/
 
-/** parenthal classes */
 require_once('object.class.php');
 
 /** export/import */
@@ -146,7 +145,6 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
       $query .= " WHERE " . implode(" AND ",$clauses);
     }
     
-    // BUGID 4270 - Keywords are not ordered by name
     $query .= " ORDER BY keyword ASC ";
     
     return $query;
@@ -265,7 +263,6 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 
   /**
    * currently not implemented
-   * @TODO schlundus, comment if implemented
    * 
    * @param resource $db 
    * @param string $whereClause
@@ -281,7 +278,6 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
   }
 
   //END interface iDBSerialization
-  //@TODO schlundus, remove - for legacy purposes only 
   /*
    * returns information about the keyword 
    * 
@@ -337,7 +333,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
            "' AND testproject_id = " . $tprojectID ;
     
     if ($kwID)
+    {
       $query .= " AND id <> " .$kwID;
+    }  
     
     if ($db->fetchFirstRow($query))
     {
@@ -366,7 +364,6 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    */
   public function writeToXML(&$xml,$noHeader = false)
   {
-    //@TODO schlundus, maybe written with SimpleXML ?
     $keywords = array($this->getInfo());
     $keywordElemTpl = '<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>" . 
                       '</notes></keyword>'."\n";
@@ -473,5 +470,34 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
     return sizeof($data) ? tl::OK : tl::ERROR;
   }
   //END interface iSerializationToCSV
+
+  
+  /**
+   *
+   */
+  static public function getSimpleSet(&$db,$opt=null)
+  {
+    $options = array('tproject_id' => 0, 'cols' => '*', 'accessKey' => null);
+    $options = array_merge($options,(array)$opt);
+    $tables = tlObjectWithDB::getDBTables("keywords");
+
+    $sql = " SELECT {$options['cols']} FROM {$tables['keywords']} ";
+    $where = ''; 
+    if( $options['tproject_id'] > 0 )
+    {
+      $where = " WHERE testproject_id = " . intval($options['tproject_id']);
+    } 
+    $sql .= $where;
+    if( is_null($options['accessKey']) )
+    {
+      $rs = $db->get_recordset($sql);
+    }  
+    else
+    {
+      $rs = $db->fetchRowsIntoMap($sql,$options['accessKey']);
+    }  
+
+    return $rs;
+  }
+
 }
-?>

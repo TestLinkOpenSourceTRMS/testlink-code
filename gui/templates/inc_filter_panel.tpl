@@ -4,7 +4,7 @@
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
- * Inspired by idea in discussion regarding BUGID 3301.
+ * Inspired by idea in discussion regarding TICKET 3301.
  *
  * Naming conventions for variables are based on the names
  * used in plan/planTCNavigator.tpl.
@@ -28,7 +28,7 @@
                         document_id, req_expected_coverage, title,bugs_on_context,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,
                         btn_export_testplan_tree,btn_export_testplan_tree_for_results,
-                        tester_works_with_settings'}
+                        tester_works_with_settings,btn_bulk_remove,btn_bulk_copy'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -39,19 +39,14 @@
         onsubmit="return validateForm(this);document.getElementById('filter_result_method').disabled=false;"
       {/if}
         >
+  <input type="hidden" name="caller" value="filter_panel">
+          
 {* hidden input with token to manage transfer of data between left and right frame *}
 {if isset($control->form_token)}
   <input type="hidden" name="form_token" value="{$control->form_token}">
 {/if}
 
 {$platformID=0}
-{if $control->draw_tc_unassign_button}
-  <input type="button" 
-         name="removen_all_tester_assignments"
-         value="{$labels.btn_remove_all_tester_assignments}"
-         onclick="javascript:delete_testers_from_build({$control->settings.setting_build.selected});"
-  />
-{/if}
 
 {if $control->draw_bulk_update_button}
     <input type="button" value="{$labels.btn_bulk_update_to_latest_version}"
@@ -181,7 +176,7 @@
 
   <script>
   jQuery( document ).ready(function() {
-  jQuery(".chosen-select").chosen({ width: "85%" });
+  jQuery(".chosen-select").chosen({ width: "85%" , allow_single_deselect: true});
   });
   </script>
 
@@ -194,7 +189,7 @@
       {$labels.caption_nav_filters}
     </div>
 
-  <div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
+  <div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;overflow: visible;">
     
     <table class="smallGrey" style="width:98%;">
 
@@ -224,7 +219,7 @@
       <tr>
           <td>{$labels.testsuite}</td>
           <td>
-            <select name="filter_toplevel_testsuite">
+            <select class="chosen-select" name="filter_toplevel_testsuite">
               {html_options options=$control->filters.filter_toplevel_testsuite.items
                             selected=$control->filters.filter_toplevel_testsuite.selected}
             </select>
@@ -235,7 +230,7 @@
     {if $control->filters.filter_keywords}
       <tr>
         <td>{$labels.keyword}</td>
-        <td><select name="filter_keywords[]"
+        <td><select class="chosen-select" name="filter_keywords[]"
                     title="{$labels.keywords_filter_help}"
                     multiple="multiple"
                     size="{$control->filters.filter_keywords.size}">
@@ -269,7 +264,7 @@
       <tr>
         <td>{$labels.status}</td>
         <td>
-          <select id="filter_workflow_status" 
+          <select class="chosen-select" id="filter_workflow_status" 
           {if $control->advanced_filter_mode}
              name="filter_workflow_status[]" multiple="multiple"
              size="{$control->filter_item_quantity}">
@@ -287,7 +282,7 @@
       <tr>
         <td>{$labels.importance}</td>
         <td>
-          <select id="filter_importance"
+          <select class="chosen-select" id="filter_importance"
           {if $control->advanced_filter_mode}
              name="filter_importance[]" multiple="multiple"
              size="{$control->filters.filter_importance.size}">
@@ -305,7 +300,7 @@
       <tr>
         <td>{$labels.priority}</td>
         <td>
-          <select name="filter_priority">
+          <select class="chosen-select" name="filter_priority">
           <option value="">{$control->option_strings.any}</option>
           {html_options options=$gsmarty_option_importance
                                   selected=$control->filters.filter_priority.selected}
@@ -318,7 +313,7 @@
       <tr>
         <td>{$labels.execution_type}</td>
           <td>
-        <select name="filter_execution_type">
+        <select class="chosen-select" name="filter_execution_type">
           {html_options options=$control->filters.filter_execution_type.items
                         selected=$control->filters.filter_execution_type.selected}
           </select>
@@ -332,7 +327,7 @@
       <td>
 
       {if $control->advanced_filter_mode}
-        <select name="filter_assigned_user[]"
+        <select class="chosen-select" name="filter_assigned_user[]"
                 id="filter_assigned_user"
                 multiple="multiple"
                 size="{$control->filter_item_quantity}" >
@@ -340,7 +335,7 @@
                       selected=$control->filters.filter_assigned_user.selected}
         </select>
         {else}
-        <select name="filter_assigned_user" 
+        <select class="chosen-select" name="filter_assigned_user" 
                 id="filter_assigned_user"
                 onchange="javascript: triggerAssignedBox('filter_assigned_user',
                                                                'filter_assigned_user_include_unassigned',
@@ -397,7 +392,7 @@
         <tr>
         <td>{$labels.filter_result}</td>
         <td>
-        <select id="filter_result_result" 
+        <select class="chosen-select" id="filter_result_result" 
         {if $control->advanced_filter_mode}
               name="filter_result_result[]" multiple="multiple"
                 size="{$control->filter_item_quantity}">
@@ -413,7 +408,7 @@
       <tr>
         <td>{$labels.filter_on}</td>
         <td>
-            <select name="filter_result_method" id="filter_result_method"
+            <select class="chosen-select" name="filter_result_method" id="filter_result_method"
                     onchange="javascript: triggerBuildChooser('filter_result_build_row',
                                                             'filter_result_method',
                   {$control->configuration->filter_methods.status_code.specific_build});">
@@ -425,7 +420,7 @@
 
       <tr id="filter_result_build_row">
         <td>{$labels.build}</td>
-        <td><select id="filter_result_build" name="filter_result_build">
+        <td><select class="chosen-select" id="filter_result_build" name="filter_result_build">
           {html_options options=$control->filters.filter_result.filter_result_build.items
                         selected=$control->filters.filter_result.filter_result_build.selected}
           </select>
@@ -549,13 +544,13 @@
     <tr>
       <td>{$labels.status}</td>
       <td>
+         <select class="chosen-select" id="filter_status"
         {if $control->advanced_filter_mode}
-          <select id="filter_status" 
                   name="filter_status[]"
                   multiple="multiple"
                   size="{$control->filter_item_quantity}" >
         {else}
-          <select id="filter_status" name="filter_status">
+                  name="filter_status">
         {/if}
           {html_options options=$control->filters.filter_status.items
                         selected=$control->filters.filter_status.selected}
@@ -569,13 +564,13 @@
     <tr>
       <td>{$labels.req_type}</td>
       <td>
+        <select class="chosen-select" id="filter_type" 
         {if $control->advanced_filter_mode}
-          <select id="filter_type" 
                   name="filter_type[]"
                   multiple="multiple"
                   size="{$control->filter_item_quantity}" >
         {else}
-          <select id="filter_type" name="filter_type">
+                  name="filter_type">
         {/if}
           {html_options options=$control->filters.filter_type.items
                         selected=$control->filters.filter_type.selected}
@@ -588,13 +583,13 @@
     <tr>
       <td>{$labels.req_spec_type}</td>
       <td>
+        <select class="chosen-select" id="filter_spec_type" 
         {if $control->advanced_filter_mode}
-          <select id="filter_spec_type" 
                   name="filter_spec_type[]"
                   multiple="multiple"
                   size="{$control->filter_item_quantity}" >
         {else}
-          <select id="filter_spec_type" name="filter_spec_type">
+                  name="filter_spec_type">
         {/if}
           {html_options options=$control->filters.filter_spec_type.items
                         selected=$control->filters.filter_spec_type.selected}
@@ -618,13 +613,13 @@
     <tr>
       <td>{$labels.has_relation_type}</td>
       <td>
+        <select class="chosen-select" id="filter_relation"
         {if $control->advanced_filter_mode}
-          <select id="filter_relation" 
                   name="filter_relation[]"
                   multiple="multiple"
                   size="{$control->filter_item_quantity}" >
         {else}
-          <select id="filter_relation" name="filter_relation">
+              name="filter_relation">
         {/if}
           {html_options options=$control->filters.filter_relation.items
                         selected=$control->filters.filter_relation.selected}
@@ -688,4 +683,20 @@
   </div> {* filters *}
   </div> {* filter_panel *}
 {/if} {* show requirement filters *}
+
+{if $control->draw_tc_unassign_button}
+  <input type="button" style="font-size: 90%;"
+         name="removen_all_tester_assignments"
+         value="{$labels.btn_bulk_remove}"
+         onclick="javascript:delete_testers_from_build({$control->settings.setting_build.selected});"
+  />
+{/if}
+{if $control->draw_tc_assignment_bulk_copy_button}
+  <input type="button" style="font-size: 90%;"
+         name="copy_tester_assignments"
+         value="{$labels.btn_bulk_copy}"
+         onclick="javascript:copy_tester_assignments_from_build({$control->settings.setting_build.selected});"
+  />
+{/if}
 </form>
+<p>

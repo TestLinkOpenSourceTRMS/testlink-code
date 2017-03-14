@@ -3,13 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: clientCreateTestCase.php,v $
+ * @filesource clientCreateTestCase.php
+ * @Author francisco.mancardi@gmail.com
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/08/31 19:59:48 $ by $Author: franciscom $
- * @Author: francisco.mancardi@gmail.com
- *
- * rev: 
+ * @internal revisions 
  */
  
 require_once 'util.php';
@@ -17,6 +14,35 @@ require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
 $tcCounter = 1;
+
+// -------------------------------------------------------------------------------
+$method='createTestCase';
+$tcCounter++;
+
+$args=array();
+$args["devKey"]='985978c915f50e47a4b1a54a943d1b76';
+$args["testprojectid"]=50;
+$args["testsuiteid"]=90;
+$args["testcasename"]='ZZ - TEST CASE NAME IS LONGER ';;
+$args["summary"]='Test Case created via API';
+$args["preconditions"]='Test Link API Up & Running';
+$args["authorlogin"]='admin';
+$args["checkduplicatedname"]=0;
+$args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expected_results' => 'green light');
+
+// $wfd = config_get('testCaseStatus');
+$args["status"] = 4;
+//$args["estimatedexecduration"] = 4.5;
+
+$unitTestDescription = "Test #{$tcCounter}- {$method} - With STATUS:{$args['wfstatus']}";
+
+$debug=true;
+echo $unitTestDescription;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+
+// ---------------------------------------------------------------------------------
 $method='createTestCase';
 $unitTestDescription = "Test #{$tcCounter}- {$method} - With NAME exceeding limit";
 $tcCounter++;

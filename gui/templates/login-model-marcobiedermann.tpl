@@ -14,8 +14,8 @@
   <body class="align">
     <div class="site__container">
       <div class="grid__container">
-      <img src="http://localhost/development/logo/tl-logo-transparent-25.png"><br>
-      <span style="margin-left:220px;">{$tlVersion|escape} </span>
+      <img src="gui/themes/default/images/{$tlCfg->logo_login}"><br>
+      <span>{$tlVersion|escape} </span>
       </div>
       
       {if $gui->note != ''}
@@ -33,36 +33,42 @@
       {$labels.demo_usage}
       </div>
       {/if}
-  
-      <div class="grid__container">
-      <form name="login" id="login" action="login.php?viewer={$gui->viewer}" method="post" class="form form--login">
-        <input type="hidden" name="reqURI" value="{$gui->reqURI|escape:'url'}"/>
-        <input type="hidden" name="destination" value="{$gui->destination|escape:'url'}"/>
+
+      {if $gui->draw}  
+        <div class="grid__container">
+          <form name="login" id="login" action="login.php?viewer={$gui->viewer}" method="post" class="form form--login">
+            <input type="hidden" name="reqURI" value="{$gui->reqURI|escape:'url'}"/>
+            <input type="hidden" name="destination" value="{$gui->destination|escape:'url'}"/>
 
 
-        <div class="form__field">
-          <label for="tl_login"><i class="fa fa-user"></i></label>
-          <input maxlength="{#LOGIN_MAXLEN#}" size="{#LOGIN_SIZE#}" name="tl_login" id="tl_login" type="text" class="form__input" placeholder="{$labels.login_name}" required>
+            <div class="form__field">
+              <label for="tl_login"><i class="fa fa-user"></i></label>
+              <input maxlength="{#LOGIN_MAXLEN#}" name="tl_login" id="tl_login" type="text" class="form__input" placeholder="{$labels.login_name}" required>
+            </div>
+
+            <div class="form__field">
+              <label for="tl_password"><i class="fa fa-lock"></i></label>
+              <input name="tl_password" id="tl_password" type="password" class="form__input" placeholder="{$labels.password}" required>
+            </div>
+
+            <div class="form__field">
+              <input type="submit" value="{$labels.btn_login}">
+            </div>
+
+          </form>
+
+          <p class="text--center">
+          {if $gui->user_self_signup}
+            <a href="firstLogin.php?viewer=new">{$labels.new_user_q}</a> &nbsp; &nbsp;
+          {/if}
+
+          {* the configured authentication method don't allow users to reset his/her password *}    
+          {if $gui->external_password_mgmt eq 0 && $tlCfg->demoMode eq 0}
+            <a href="lostPassword.php?viewer=new">{$labels.lost_password_q}</a>
+          {/if}
+          </p> 
         </div>
-
-        <div class="form__field">
-          <label for="tl_password"><i class="fa fa-lock"></i></label>
-          <input name="tl_password" id="tl_password" type="password" class="form__input" placeholder="{$labels.password}" required>
-        </div>
-
-        <div class="form__field">
-          <input type="submit" value="{$labels.btn_login}">
-        </div>
-
-      </form>
-
-      <p class="text--center"><a href="firstLogin.php?viewer=new">{$labels.new_user_q}</a> &nbsp; &nbsp;
-
-      <a href="lostPassword.php?viewer=new">{$labels.lost_password_q}</a> </p>
-
-      <p class="text--center"><a href="login.php?viewer=old">{$labels.old_style_login}</a> &nbsp; &nbsp;
-
-    </div>
+      {/if}
   </div>
 </body>
 </html>

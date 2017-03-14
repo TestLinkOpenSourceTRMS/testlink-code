@@ -8,7 +8,7 @@
 {lang_get var="labels"
           s="current_test_plan,ok,testplan_role,msg_no_rights_for_tp,
              title_test_execution,href_execute_test,href_rep_and_metrics,
-             href_update_tplan,href_newest_tcversions,
+             href_update_tplan,href_newest_tcversions,title_plugins,
              href_my_testcase_assignments,href_platform_assign,
              href_tc_exec_assignment,href_plan_assign_urgency,
              href_upd_mod_tc,title_test_plan_mgmt,title_test_case_suite,
@@ -21,6 +21,8 @@
 {$display_right_block_1=false}
 {$display_right_block_2=false}
 {$display_right_block_3=false}
+{$display_left_block_top = false}
+{$display_left_block_bottom = false}
 
 {if $gui->grants.testplan_planning == "yes" || $gui->grants.mgt_testplan_create == "yes" ||
 	  $gui->grants.testplan_user_role_assignment == "yes" or $gui->grants.testplan_create_build == "yes"}
@@ -72,6 +74,13 @@
 
 {/if}
 
+{if $gui->plugins.EVENT_RIGHTMENU_TOP }
+  {$display_right_block_top=true}
+{/if}
+{if $gui->plugins.EVENT_RIGHTMENU_BOTTOM }
+  {$display_right_block_bottom=true}
+{/if}
+
 {* ----- Right Column begin ---------------------------------------------------------- *}
 <div class="vertical_menu" style="float: right; margin:10px 10px 10px 10px">
 {* ----------------------------------------------------------------------------------- *}
@@ -112,10 +121,12 @@
   {/if}
 	<br />
 
+  <div id='menu_right_block_top'></div><br />
   <div id='menu_right_block_1'></div><br />
   <div id='menu_right_block_2'></div><br />
   <div id="menu_right_block_3"></div><br />
-  
+  <div id='menu_right_block_bottom'></div><br />
+
   {* ----------------------------------------------------------------------------------- *}
 	{if $display_right_block_1}
     <div id='test_plan_mgmt_topics'>
@@ -126,7 +137,7 @@
 	    
 	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}
 	    	<br />
-       	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
+       	<a href="lib/plan/buildView.php?tplan_id={$gui->testplanID}">{$labels.href_build_new}</a>
       {/if}
 	    
       {if $gui->grants.testplan_milestone_overview == "yes" and $gui->countPlans > 0}
@@ -190,6 +201,56 @@
     {/if} 
 
     </div>
+  {/if}
+
+  {if $display_right_block_top}
+    <script type="text/javascript">
+    function display_right_block_top() 
+    {
+      var pt = new Ext.Panel({
+                              title: '{$labels.title_plugins}',
+                              collapsible: false,
+                              collapsed: false,
+                              draggable: false,
+                              contentEl: 'plugin_right_top',
+                              baseCls: 'x-tl-panel',
+                              bodyStyle: "background:#c8dce8;padding:3px;",
+                              renderTo: 'menu_right_block_top',
+                              width: '100%'
+                             });
+    }
+    </script>
+    <div id="plugin_right_top">
+      {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
+        {$menu_item}
+        <br/>
+      {/foreach}
+    </div>
+  {/if}
+
+  {if $display_right_block_bottom}
+    <script type="text/javascript">
+    function display_right_block_bottom() 
+    {
+      var pb = new Ext.Panel({
+                              title: '{$labels.title_plugins}',
+                              collapsible: false,
+                              collapsed: false,
+                              draggable: false,
+                              contentEl: 'plugin_right_bottom',
+                              baseCls: 'x-tl-panel',
+                              bodyStyle: "background:#c8dce8;padding:3px;",
+                              renderTo: 'menu_right_block_bottom',
+                              width: '100%'
+                             });
+    }
+    </script>
+      <div id="plugin_right_bottom">
+        {foreach from=$gui->plugins.EVENT_RIGHTMENU_BOTTOM item=menu_item}
+          {$menu_item}
+          <br/>
+        {/foreach}
+      </div>
   {/if}
   {* ------------------------------------------------------------------------------------------ *}
 

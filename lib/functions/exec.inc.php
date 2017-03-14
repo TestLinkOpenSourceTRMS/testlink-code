@@ -13,7 +13,7 @@
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  * 
  *
  **/
@@ -61,6 +61,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
 {
   static $docRepo;
 
+   
   if(is_null($docRepo))
   {
     $docRepo = tlAttachmentRepository::create($db);
@@ -108,8 +109,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     $execStatusKey = 'statusSingle';
   }
 
-  $addIssueOp = array('createIssue' => null,
-                      'issueForStep' => null);
+  $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
   
   foreach ( $item2loop as $tcversion_id => $val)
   {
@@ -257,9 +257,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
                    method_exists($issueTracker,'addIssue');
       
       // re-init
-      $addIssueOp = array('createIssue' => null,
-                          'issueForStep' => null);
-  
+      $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
       if($itCheckOK)
       {
         $execContext = new stdClass();
@@ -269,13 +267,15 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
         $execContext->basehref = $exec_signature->basehref;
         $execContext->tplan_apikey = $exec_signature->tplan_apikey;
 
+        $execContext->addLinkToTL = $exec_signature->addLinkToTL;
+        $execContext->direct_link = $exec_signature->direct_link;
       
         // Issue on Test Case
         if( isset($exec_data['createIssue']) )
         {
           completeCreateIssue($execContext,$exec_signature);
-          $addIssueOp['createIssue'] = 
-            addIssue($db,$execContext,$issueTracker);
+          $addIssueOp['createIssue'] = addIssue($db,$execContext,$issueTracker);
+          $addIssueOp['type'] = 'createIssue';
         }  
         
         // Issues at step level
@@ -287,6 +287,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
                                  $exec_data,$stepID);
             $addIssueOp['issueForStep'][$stepID] = 
               addIssue($db,$execContext,$issueTracker,$stepID);
+            $addIssueOp['type'] = 'issueForStep'; 
           }  
         }  
       } // $itCheckOK
@@ -604,13 +605,11 @@ function addIssue($dbHandler,$argsObj,$itsObj,$stepID=0)
                    'artifactComponent','artifactVersion');
   foreach($p2check as $prop)
   {
-    if(property_exists($argsObj, $prop) && 
-       !is_null($argsObj->$prop))
+    if(property_exists($argsObj, $prop) && !is_null($argsObj->$prop))
     {
       $opt->$prop = $argsObj->$prop;    
     }   
   }  
-
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
   
   $ret['msg'] = $rs['msg'];
@@ -715,6 +714,8 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
                     $exec['statusVerbose'],
                     $exec['execution_notes']);
 
+
+ 
     $ret->description = str_replace($tags,$values,$argsObj->bug_notes);
    
     // @since 1.9.14
@@ -763,6 +764,11 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
     $ret->summary = $argsObj->bug_summary;
   }
 
+  if( $argsObj->addLinkToTL )
+  {
+    $ret->description .= "\n\n" . lang_get('dl2tl') . $argsObj->direct_link;
+  }  
+
   return $ret;
 
 }
@@ -800,6 +806,7 @@ function getIssueTrackerMetaData($itsObj)
   return $_SESSION['issueTrackerCfg'][$itsObj->name];
 }
 
+
 /**
  *
  *
@@ -809,7 +816,6 @@ function completeCreateIssue(&$execContext,$exsig)
   $p2i = array('bug_summary','bug_notes','issueType',
                'issuePriority','artifactVersion',
                'artifactComponent');
-
   foreach($p2i as $key)
   {
     if(property_exists($exsig,$key))
@@ -818,19 +824,16 @@ function completeCreateIssue(&$execContext,$exsig)
     }  
   }  
 }
-
 /**
  *
  *
  */
 function completeIssueForStep(&$execContext,$exsig,$exData,$stepID)
 {
-
   $p2i = array('issueSummaryForStep','issueBodyForStep',
                'issueTypeForStep','issuePriorityForStep',
                'artifactVersionForStep',
                'artifactComponentForStep');
-
   foreach($p2i as $key)
   {
     if( isset($exData,$key) && isset($exData[$key],$stepID) )
@@ -843,14 +846,12 @@ function completeIssueForStep(&$execContext,$exsig,$exData,$stepID)
       $ref[$stepID] = $exData[$key][$stepID];
     }  
   }
-
   $p2i = array('issueSummaryForStep' => 'bug_summary',
                'issueBodyForStep' => 'bug_notes',
                'issueTypeForStep' => 'issueType',
                'issuePriorityForStep' => 'issuePriority',
                'artifactVersionForStep' => 'artifactVersion',
                'artifactComponentForStep' => 'artifactComponent');
-
   foreach($p2i as $from => $to)
   {
     if(property_exists($execContext,$from) )
@@ -860,3 +861,4 @@ function completeIssueForStep(&$execContext,$exsig,$exData,$stepID)
     }  
   }
 }
+

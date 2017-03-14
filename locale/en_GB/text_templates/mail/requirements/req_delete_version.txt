@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<body>
+<p>Version %version% of Requirement '[%docid%]:%title%' has been deleted by %user%. 
+<br>
+</p>
+<p><b>Requirement Scope</b> </p>
+%scope%<p></p>
+<hr>
+<p>
+<p><i>This email was generated automatically. (%timestamp%) </i></p>
+</body>
+</html>

@@ -9,7 +9,7 @@
  * @filesource  const.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @see         config.inc.php
  *
  * @internal revisions
@@ -23,19 +23,20 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.15'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Tauriel)'); 
+define('TL_VERSION_NUMBER', '1.9.16'); 
+define('TL_VERSION', TL_VERSION_NUMBER . '[DEV] (Moka pot)'); 
 define('TL_FACE_DIR', 'prague'); 
 
-/** Last Database version that is used to give users feedback about necesssary upgrades
+/** Latest Database version that is used to give users feedback about necesssary upgrades
  * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */
-define('TL_LAST_DB_VERSION', 'DB 1.9.14');
+// define('TL_LATEST_DB_VERSION', 'DB ' . TL_VERSION_NUMBER);
+define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.15');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
 if (!defined('TL_ABS_PATH')) 
 {
-    define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
+  define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
 }
 
 /** Setting up the global include path for testlink */
@@ -180,6 +181,24 @@ define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
 define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
 define('REMOVEME', 'd8ba8cfb-ca92-4fa5-83c2-551977d405fb');
+
+/** Constants for plugins */
+/** Plugin configuration types */
+define('CONFIG_TYPE_STRING', 0);
+define('CONFIG_TYPE_INT', 1);
+define('CONFIG_TYPE_FLOAT', 2);
+define('CONFIG_TYPE_COMPLEX', 3);
+
+/** To indicate the plugin configuration belongs to ANY PROJECT */
+define('TL_ANY_PROJECT', -1);
+
+/** Constants for events */
+define('EVENT_TYPE_CREATE', 1);
+define('EVENT_TYPE_UPDATE', 2);
+define('EVENT_TYPE_DELETE', 3);
+define('EVENT_TYPE_OUTPUT', 4);
+
+
 
 
 // --------------------------------------------------------------------------------------
@@ -531,6 +550,9 @@ $tlCfg->testcase_urgency_default = MEDIUM;
 $tlCfg->urgency['code_label'] = array(HIGH => 'urgency_high',MEDIUM => 'urgency_medium',LOW => 'urgency_low');
 
 
+/* priority is calculated using importance and urgency */
+$tlCfg->priority['code_label'] = array(HIGH => 'high_priority',MEDIUM => 'medium_priority',LOW => 'low_priority');
+
 // --------------------------------------------------------------------------------------
 /* [States & Review] */
 
@@ -853,6 +875,11 @@ $tlCfg->guiTopMenu[7] = array('label' => 'title_events',
                               'url' => 'lib/events/eventviewer.php',
                               'right' => array('events_mgt', 'mgt_view_events'),'condition'=>'',
                               'shortcut'=>'v','target'=>'mainframe'); 
+$tlCfg->guiTopMenu[8] = array('label' => 'title_plugins',
+                              'imgKey' => 'plugins',
+                              'url' => 'lib/plugins/pluginView.php',
+                              'right' => array('mgt_plugins'),'condition'=>'',
+                              'shortcut'=>'p','target'=>'mainframe');
 
 
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',  'docs/tl-file-formats.pdf');

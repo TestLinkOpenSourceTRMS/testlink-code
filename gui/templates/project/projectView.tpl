@@ -108,8 +108,6 @@ $(document).ready(function() {
     </tr>
     {foreach item=testproject from=$gui->tprojects}
     <tr>
-      {*<td>
-      </td> *}
       <td>    <a href="{$editAction}{$testproject.id}">
              {$testproject.name|escape}
              <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testproject.id}</span>
@@ -120,7 +118,7 @@ $(document).ready(function() {
            </a>
       </td>
       <td>
-        {$testproject.notes}
+        {if $gui->editorType == 'none'}{$testproject.notes|nl2br}{else}{$testproject.notes}{/if}</td>
       </td>
       <td width="10%">
         {$testproject.prefix|escape}

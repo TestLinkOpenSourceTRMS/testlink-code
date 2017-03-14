@@ -8,17 +8,18 @@
  * @filesource  containerEdit.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2016, TestLink community
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  * 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
+require_once('event_api.php');
 $editorCfg=getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
 
@@ -174,6 +175,7 @@ switch($action)
     $smarty->assign('opt_cfg', $opt_cfg);
 
     $gui = new stdClass();
+    $gui->tproject_id = $args->tprojectID;
     $gui->containerType = $level;
     $gui->refreshTree = $args->refreshTree;
     $gui->hasKeywords = (count($opt_cfg->from->map) > 0) || (count($opt_cfg->to->map) > 0);
@@ -471,6 +473,7 @@ function init_args(&$dbHandler,$optionTransferCfg)
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
+  // These lines need to be changed!!
   $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->tprojectName = $_SESSION['testprojectName'];
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
@@ -680,6 +683,10 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
             $tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));
         }
         writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$ret['id'],$hash);
+
+        // Send Events to plugins 
+        $ctx = array('id' => $ret['id'],'name' => $container['container_name'],'details' => $container['details']);
+        event_signal('EVENT_TEST_SUITE_CREATE', $ctx);
     }
     return $op;
 }
@@ -769,6 +776,10 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
       $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
     }
     writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
+
+    /* Send events to plugins */
+    $ctx = array('id' => $argsObj->testsuiteID,'name' => $container['container_name'],'details' => $container['details']);
+    event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
   }
   else
   {
@@ -1310,7 +1321,9 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
 function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 {
   $guiObj = new stdClass();
+
   $guiObj->id = $id;
+  $guiObj->tproject_id = $argsObj->tprojectID;
   $guiObj->refreshTree = $argsObj->refreshTree;
   $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
   $guiObj->page_title = $lbl['container_title_testsuite'];
@@ -1318,8 +1331,12 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
 
-  $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
-                           $guiObj->id,$argsObj->tprojectID);
+  if( strcasecmp($objMgr->object_table, 'testsuites') == 0 )
+  {
+    $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
+                                             $guiObj->id,$argsObj->tprojectID);
+  }  
+
   return $guiObj;
 }
 

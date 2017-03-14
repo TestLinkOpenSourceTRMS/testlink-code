@@ -6,13 +6,13 @@
  * @package     TestLink
  * @filesource  requirement_mgr.class.php
  * @author      Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * @internal revisions
- * @since 1.9.13
+ * @since 1.9.15
  * 
  */
 
@@ -42,6 +42,7 @@ class requirement_mgr extends tlObjectWithAttachments
   var $reqCfg;
   var $internal_links;
   var $relationsCfg;
+  var $notifyOn;
 
   
   
@@ -82,6 +83,8 @@ class requirement_mgr extends tlObjectWithAttachments
     $this->relationsCfg->interProjectLinking = $this->reqCfg->relations->interproject_linking;
     
     $this->internal_links = config_get('internal_links');
+    
+    $this->notifyOn = null;
   }
 
   /*
@@ -153,7 +156,8 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   
   
   $my['options'] = array('order_by' => " ORDER BY REQV.version DESC ", 
-                         'output_format' => 'array', 'renderImageInline' => false);
+                         'output_format' => 'array', 'renderImageInline' => false,
+                         'decodeUsers' => true, 'outputLevel' => 'std');
 
   $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -207,7 +211,8 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
 
    // added -1 AS revision_id to make some process easier 
-  $sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+  /*
+  $sql = " SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
          " REQV.scope,REQV.status,REQV.type,REQV.active," . 
          " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
          " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
@@ -221,9 +226,36 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
          " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
          " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
          $where_clause . $filter_clause . $my['options']['order_by'];
+    */
 
+  switch($my['options']['outputLevel'])
+  {
+    case 'minimal':
+      $outf = " /* $debugMsg */ SELECT REQ.id,REQ.req_doc_id,NH_REQ.name AS title "; 
+    break;
 
-  // echo $sql;
+    case 'std':
+    default:
+      $outf = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+              " REQV.scope,REQV.status,REQV.type,REQV.active," . 
+              " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+              " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+              " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
+              " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+              " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
+    break;
+  }
+
+  // added -1 AS revision_id to make some process easier 
+  $sql = $outf .
+         " FROM {$this->object_table} REQ " .
+         " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+         " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id ".
+         " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
+         " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+         " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+         $where_clause . $filter_clause . $my['options']['order_by'];
+
   $decodeUserMode = 'simple';       
   if ($version_id != self::LATEST_VERSION)
   {
@@ -262,11 +294,6 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
   }
 
   $rs = null;
-  // echo 'IN::' . __FUNCTION__ . '<br>';
-  // new dBug($recordset);
-
-
-  // 20141130 - inline images 
   if(!is_null($recordset) && $my['options']['renderImageInline'])
   {
     $k2l = array_keys($recordset);
@@ -277,12 +304,9 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     reset($recordset);
   }
 
-
-  if(!is_null($recordset))
+  $rs = $recordset;
+  if(!is_null($recordset) && $my['options']['decodeUsers'])
   {
-    // Decode users
-    $rs = $recordset;
-
     switch ($decodeUserMode) 
     {
       case 'complex':
@@ -389,9 +413,9 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
   
   $tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id) : $tproject_id;
 
-    $result = array( 'id' => 0, 'status_ok' => 0, 'msg' => 'ko');
+  $result = array( 'id' => 0, 'status_ok' => 0, 'msg' => 'ko');
   $my['options'] = array('quickAndDirty' => false);
-    $my['options'] = array_merge($my['options'], (array)$options);
+  $my['options'] = array_merge($my['options'], (array)$options);
 
   if(!$my['options']['quickAndDirty'])
   {
@@ -566,7 +590,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
              we need to delete the requirement.
 
   */
-  function delete($id,$version_id = self::ALL_VERSIONS)
+  function delete($id,$version_id = self::ALL_VERSIONS,$user_id=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $children = null;
@@ -578,8 +602,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     $kaboom = false;
 
     if(is_array($id))
-    {
-    
+    {    
       $id_list = implode(',',$id);
       $where['coverage'] = " WHERE req_id IN ({$id_list})";
       $where['this'] = " WHERE id IN ({$id_list})";
@@ -592,7 +615,51 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       $where['this'] = " WHERE id = " . $safeID;
       $where['iam_parent'] = " WHERE parent_id = " . $safeID;
     }
+
+    $set2del = null;    
     
+    // if we are trying to delete ONE SPECIFIC VERSION
+    // of ONE REQ, and is the ONLY VERSION on DB
+    // then we are going to delete the req.
+    $checkNotify = true;
+    $action4notify = 'delete';
+    if( $version_id != self::ALL_VERSIONS )
+    {
+      echo 'ONE VERSION';
+      // we use version id when working on ONE REQ,
+      // then I'm going to trust this.
+      // From GUI if only one version exists,
+      // the operation available is DELETE REQ,
+      // not delete version
+      $sql = "SELECT COUNT(0) AS VQTY, parent_id FROM {$this->tables['nodes_hierarchy']} " . 
+             $where['iam_parent'] . ' GROUP BY parent_id';
+
+      $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
+      $rs = current($rs);
+      if($rs['VQTY'] > 1)
+      {
+        $action4notify = 'delete_version';
+      }  
+    } 
+    
+    if( $checkNotify && $this->notifyOn[__FUNCTION__] )
+    {
+      // Need to save data before delete
+      $set2del = $this->getByIDBulkLatestVersionRevision($id);
+      if( !is_null($set2del) )
+      {
+        foreach($set2del as $rk => $r2d)
+        {
+          echo $rk;
+          $this->notifyMonitors($rk,$action4notify,$user_id);
+          if($action4notify == 'delete')
+          {
+            $this->monitorOff($rk);  
+          }  
+        }  
+      }  
+    }  
+
     // When deleting only one version, we need to check if we need to delete  requirement also.
     $children[] = $version_id;
     if( $version_id == self::ALL_VERSIONS)
@@ -641,6 +708,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     }        
 
     // Delete version info
+    $target = null;
     if( $doIt )
     {
       // 20130928 - As usual working with MySQL makes easier to be lazy and forget that
@@ -1479,7 +1547,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '', 
                     'frozen_req_unable_to_import' => '', 'requirement' => '', 'import_req_new_version_created' => '',
                     'import_req_update_last_version_failed' => '',
-                    'import_req_new_version_failed' => '', 'import_req_skipped_plain' => '');
+                    'import_req_new_version_failed' => '', 'import_req_skipped_plain' => '',
+                    'req_title_lenght_exceeded' => '', 'req_docid_lenght_exceeded' => '');
     foreach($labels as $key => $dummy)
     {
       $labels[$key] = lang_get($key);
@@ -1500,6 +1569,35 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   $has_filters = !is_null($filters);
   $my['options'] = array( 'hitCriteria' => 'docid' , 'actionOnHit' => "update", 'skipFrozenReq' => true);
   $my['options'] = array_merge($my['options'], (array)$options);
+
+  // 20160314
+  // Check data than can create issue when writting to DB due to lenght
+  // 
+  $req['title'] = trim($req['title']);
+  $req['docid'] = trim($req['docid']);
+
+  $checkLengthOK = true;
+  $what2add = '';
+  if( strlen($req['title']) > $fieldSize->req_title )
+  {
+     $checkLengthOK = false;
+     $what2add = $labels['req_title_lenght_exceeded'] . '/';
+  }  
+
+  if( strlen($req['docid']) > $fieldSize->req_docid )
+  {
+     $checkLengthOK = false;
+     $what2add .= $labels['req_docid_lenght_exceeded'];
+  }  
+
+  if( $checkLengthOK == FALSE )
+  {
+    $msgID = 'import_req_skipped_plain';
+    $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
+                             'import_status' => sprintf($labels[$msgID],$what2add));
+
+    return $user_feedback;
+  }  
 
   // Check:
   // If item with SAME DOCID exists inside container
@@ -1529,6 +1627,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   if(is_null($check_in_reqspec))
   {
     $check_in_tproject = $this->getByAttribute($target,$tproject_id,null,$getByAttributeOpt);
+
     if(is_null($check_in_tproject))
     {
       $newReq = $this->create($parent_id,$req['docid'],$req['title'],$req['description'],
@@ -1585,7 +1684,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
         break;
       
         case 'create_new_version':
-          $newItem = $this->create_new_version($reqID,$author_id);
+          $newItem = $this->create_new_version($reqID,$author_id,array('notify' => true));
                 
           // Set always new version to NOT Frozen
           $this->updateOpen($newItem['id'],1);        
@@ -1651,6 +1750,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
       $this->cfield_mgr->design_values_to_db($cf2insert,$req_version_id,null,'simple');
     }  
   }
+
   return $user_feedback;
 }
   
@@ -2230,10 +2330,21 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   
     @internal revisions
   */
-  function create_new_version($id,$user_id,$reqVersionID=null,$log_msg=null)
+  function create_new_version($id,$user_id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   
+    $my['opt'] = array('reqVersionID' => null,'log_msg' => null, 
+                       'notify' => false);
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $reqVersionID = $my['opt']['reqVersionID'];
+    $log_msg = $my['opt']['log_msg'];
+    $notify = $my['opt']['notify'];
+    
+    // $tproject_id = $my['opt']['tproject_id'];
+
     // get a new id
     $version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
     
@@ -2243,6 +2354,15 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     {
       throw new Exception($debugMsg . ' $this->get_last_child_info() RETURNED NULL !!! - WRONG - Open Issue on mantis.testlink.org');
     }
+
+    // Till now everything is OK
+    if( $notify )
+    {
+      // be optimistic send email before doing nothing
+      $this->notifyMonitors($id,__FUNCTION__,$user_id,$log_msg);
+    } 
+
+
     $newVersionNumber = $sourceVersionInfo['version']+1; 
 
     $ret = array();
@@ -2941,6 +3061,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       
       if( !is_null($rs) )
       {
+        $lbl = init_labels(array('undefined' => 'undefined'));
         $key2loop = array_keys($rs);
         foreach($key2loop as $ap)
         {
@@ -2950,21 +3071,21 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
           // each DBMS uses a different (unfortunatelly) way to signal NULL DATE
           //
           // We need to Check with ALL DB types
-        // MySQL    NULL DATE -> "0000-00-00 00:00:00" 
-        // Postgres NULL DATE -> NULL
-        // MSSQL    NULL DATE - ???
-        $key4date = 'creation_ts';
-        $key4user = 'author_id';
-        if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
-        {
-          $key4date = 'modification_ts';
-          $key4user = 'modifier_id';
-        }
+          // MySQL    NULL DATE -> "0000-00-00 00:00:00" 
+          // Postgres NULL DATE -> NULL
+          // MSSQL    NULL DATE - ???
+          $key4date = 'creation_ts';
+          $key4user = 'author_id';
+          if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
+          {
+            $key4date = 'modification_ts';
+            $key4user = 'modifier_id';
+          }
           $rs[$ap]['timestamp'] = $rs[$ap][$key4date];
           $rs[$ap]['last_editor'] = $rs[$ap][$key4user];
           // decode user_id for last_editor
           $user = tlUser::getByID($this->db,$rs[$ap]['last_editor']);
-          $rs[$ap]['last_editor'] = $user ? $user->getDisplayName() : $labels['undefined'];
+          $rs[$ap]['last_editor'] = $user ? $user->getDisplayName() : $lbl['undefined'];
         }
       }
       
@@ -3974,7 +4095,350 @@ function getCoverageCounterSet($itemSet)
     }  
   }
 
+  /**
+   *
+   */
+  function monitorOn($req_id,$user_id,$tproject_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    // simple checks
+    // key = column name!!
+    $safe = array();
+    $safe['req_id'] = intval($req_id);
+    $safe['user_id'] = intval($user_id);
+    $safe['testproject_id'] = intval($tproject_id);
+
+    $fields = implode(',',array_keys($safe));
+
+    foreach($safe as $key => $val)
+    {
+      if( $val <= 0 )
+      {
+        throw new Exception("$key invalid value", 1);
+      }  
+    }  
+    
+    try
+    {
+      // check before insert
+      $sql = "/* $debugMsg */ " .
+             " SELECT req_id FROM {$this->tables['req_monitor']} " .
+             " WHERE req_id = {$safe['req_id']} " .
+             " AND user_id = {$safe['user_id']} " .
+             " AND testproject_id = {$safe['testproject_id']}";
+      $rs = $this->db->get_recordset($sql);
+
+      if( is_null($rs) )
+      {
+        $sql = "/* $debugMsg */ " .
+               " INSERT INTO {$this->tables['req_monitor']} ($fields) " . 
+               " VALUES ({$safe['req_id']},{$safe['user_id']},{$safe['testproject_id']})";
+        $this->db->exec_query($sql);      
+      }  
+    }
+    catch (Exception $e)
+    {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   *
+   */
+  function monitorOff($req_id,$user_id=null,$tproject_id=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    // simple checks
+    $safe = array();
+    $safe['req_id'] = intval($req_id);
+    $safe['user_id'] = intval($user_id);
+    $safe['tproject_id'] = intval($tproject_id);
+
+    $key2check = array('req_id');
+    foreach($key2check as $key)
+    {
+      $val = $safe[$key];
+      if( $val <= 0 )
+      {
+        throw new Exception("$key invalid value", 1);
+      }  
+    }  
+    
+    // Blind delete
+    try
+    {
+      $sql = "/* $debugMsg */ " .
+             " DELETE FROM {$this->tables['req_monitor']} " .
+             " WHERE req_id = {$safe['req_id']} ";
+
+      if($safe['user_id'] >0)
+      {
+        $sql .= " AND user_id = {$safe['user_id']} ";
+      }
+
+      if($safe['tproject_id'] >0)
+      {
+        $sql .= " AND testproject_id = {$safe['tproject_id']}";
+      }       
+      $this->db->exec_query($sql);      
+    }
+    catch (Exception $e)
+    {
+      echo $e->getMessage();
+    }
+  }
+
+  /**
+   *
+   */
+  function getMonitoredByUser($user_id,$tproject_id,$opt=null,$filters=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $my['opt'] = array('reqSpecID' => null);
+    $my['filters'] = array();
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+    $my['filters'] = array_merge($my['opt'],(array)$filters);
+
+    // simple checks
+    $safe = array();
+    $safe['user_id'] = intval($user_id);
+    $safe['tproject_id'] = intval($tproject_id);
+
+    foreach($safe as $key => $val)
+    {
+      if( $val <= 0 )
+      {
+        throw new Exception("$key invalid value", 1);
+      }  
+    }  
+    
+    $rs = null;
+
+    if( is_null($my['opt']['reqSpecID']) )
+    {
+      $sql = "/* $debugMsg */ " .
+             " SELECT RQM.* FROM {$this->tables['req_monitor']} RQM " .
+             " WHERE RQM.user_id = {$safe['user_id']} " .
+             " AND RQM.testproject_id = {$safe['tproject_id']}";
+    }
+    else
+    {
+      $sql = "/* $debugMsg */ " .
+             " SELECT RQM.* FROM {$this->tables['req_monitor']} RQM " .
+             " JOIN {$this->tables['nodes_hierarchy']} NH_REQ " .
+             " ON NH_REQ.id = RQM.req_id " .
+             " WHERE RQM.user_id = {$safe['user_id']} " .
+             " AND RQM.testproject_id = {$safe['tproject_id']} " .
+             " AND NH_REQ.parent_id = " . intval($my['opt']['reqSpecID']);
+    } 
+
+    try
+    {
+      $rs = $this->db->fetchRowsIntoMap($sql,'req_id');      
+    }
+    catch (Exception $e)
+    {
+      echo $e->getMessage();
+    }
+ 
 
 
+
+    return $rs;
+  }
+
+  /**
+   * 
+   *
+   */
+  function getReqMonitors($req_id,$opt=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $options = array('tproject_id' => 0, 'output' => 'map');
+    $options = array_merge($options,(array)$opt);
+
+    // simple checks
+    $safe = array();
+    $safe['req_id'] = intval($req_id);
+    $safe['tproject_id'] = intval($options['tproject_id']);
+
+    $sql = "/* $debugMsg */ " .
+             " SELECT RMON.user_id,U.login,U.email,U.locale " .
+             " FROM {$this->tables['req_monitor']} RMON " .
+             " JOIN {$this->tables['users']} U " .
+             " ON U.id = RMON.user_id ".
+             " WHERE req_id = {$safe['req_id']} ";
+
+    if($safe['tproject_id'] > 0)
+    {
+      $sql .= " AND testproject_id = {$safe['tproject_id']}";
+    }         
+  
+    switch($options['output'])
+    {
+      case 'array':
+        $rs = $this->db->get_recordset($sql);
+      break;
+
+      case 'map':
+      default:
+        $rs = $this->db->fetchRowsIntoMap($sql,'user_id');
+      break;
+    }
+    return $rs;
+  }
+
+  /**
+   *
+   */
+  function notifyMonitors($req_id,$action,$user_id,$log_msg=null)
+  {
+    static $user;
+    $mailBodyCache = '';
+    $mailSubjectCache = '';
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $safe = array();
+    $safe['req_id'] = intval($req_id);
+
+    // who is monitoring?
+    $iuSet = $this->getReqMonitors($safe['req_id']);
+    if( is_null($iuSet) )
+    {
+      return;
+    }  
+
+    if( !$user )
+    {
+      $user = new tlUser($this->db);
+    }  
+
+    $author = $user->getNames($this->db,$user_id);
+    $author = $author[$user_id];
+    $idCard = $author['login'] . 
+              " ({$author['first']} {$author['last']})";
+    
+    // use specific query because made things simpler
+    $sql = "/* $debugMsg */ " .
+           " SELECT REQ.id,REQ.req_doc_id,REQV.scope," .
+           " NH_REQ.name AS title, REQV.version " .
+           " FROM {$this->object_table} REQ " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id ".
+           " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .
+           " WHERE REQ.id = {$safe['req_id']} " .
+           " ORDER BY REQV.version DESC ";
+
+    if( !is_null($rs = $this->db->get_recordset($sql)) )
+    {
+      $req = $rs[0];
+    }  
+
+    $mailCfg = $this->getMonitorMailCfg($action);
+
+    $from = config_get('from_email');
+    $trf = array("%docid%" => $req['req_doc_id'],
+                 "%title%" => $req['title'],
+                 "%scope%" => $req['scope'],
+                 "%user%" => $idCard,
+                 "%logmsg%" => $log_msg,
+                 "%version%" => $req['version'],
+                 "%timestamp%" => date("D M j G:i:s T Y"));
+    $body['target'] = array_keys($trf);
+    $body['values'] = array_values($trf);
+    $subj['target'] = array_keys($trf);
+    $subj['values'] = array_values($trf);
+
+    foreach($iuSet as $ue)
+    {
+      if( !isset($mailBodyCache[$ue['locale']]) )
+      {
+        $lang = $ue['locale'];
+        $mailBodyCache[$lang] = mailBodyGet($mailCfg['bodyAccessKey']);
+      
+        // set values
+        $mailBodyCache[$lang] = 
+          str_replace($body['target'],$body['values'],$mailBodyCache[$lang]);
+    
+        $mailSubjectCache[$lang] = 
+          lang_get($mailCfg['subjectAccessKey'],$lang);
+      
+        $mailSubjectCache[$lang] = 
+          str_replace($subj['target'],$subj['values'],$mailSubjectCache[$lang]);
+    
+      }  
+    
+      // send mail
+      $auditMsg = 'Requirement - ' . $action . ' - mail to user: ' . $ue["login"] .
+                  ' using address:' . $ue["email"];
+      try
+      {
+
+       $rmx = @email_send($from,$ue["email"],
+              $mailSubjectCache[$ue['locale']],$mailBodyCache[$ue['locale']],'',false,true,null);
+       $apx = $rmx->status_ok ? 'Succesful - ' : 'ERROR -'; 
+      }
+      catch (Exception $e)
+      {
+        $apx = 'ERROR - ';    
+      }
+      $auditMsg = $apx . $auditMsg;
+      logAuditEvent($auditMsg);
+    } 
+  }
+
+  /**
+   *
+   */
+  function getMonitorMailCfg($action)
+  {
+    $cfg = null;
+    switch( $action )
+    {
+      case 'create_new_version':
+        $cfg['subjectAccessKey'] = 'mail_subject_req_new_version';
+        $cfg['bodyAccessKey'] = 'requirements/req_create_new_version.txt';
+      break;
+
+      case 'delete':
+        $cfg['subjectAccessKey'] = 'mail_subject_req_delete';
+        $cfg['bodyAccessKey'] = 'requirements/req_delete.txt';
+      break;
+
+      case 'delete_version':
+        $cfg['subjectAccessKey'] = 'mail_subject_req_delete_version';
+        $cfg['bodyAccessKey'] = 'requirements/req_delete_version.txt';
+      break;
+    }
+    return $cfg;
+  }
+
+  /**
+   *
+   */
+  function setNotifyOn($cfg)
+  {
+    foreach($cfg as $key => $val)
+    {
+      $this->notifyOn[$key] = $val;
+    }  
+  }
+
+ /**
+   *
+   */
+  function getNotifyOn($key=null)
+  {
+    if( !is_null($key) && isset($this->notifyOn['key']) ) 
+    {
+      return $this->notifyOn['key'];
+    }  
+    return $this->notifyOn;
+  }
 
 } // class end

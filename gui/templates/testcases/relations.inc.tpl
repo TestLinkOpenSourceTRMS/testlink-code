@@ -54,7 +54,7 @@ function delete_relation(btn, text, item_id, relation_id)
 var pF_delete_relation = delete_relation;
 
 </script>
-    <form method="post" action="lib/testcases/tcEdit.php">
+    <form method="post" action="{$basehref}lib/testcases/tcEdit.php">
         <input type="hidden" name="doAction" value="doAddRelation" />
         <input type="hidden" name="relation_source_tcase_id" id="relation_source_tcase_id" value="{$gui->tcase_id}" />
         <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />

@@ -103,7 +103,7 @@ function check_action_precondition(form_id,action)
           			     title="{$labels.requirement}" />
           			{$gui->requirements[row].title|escape}
           		</td>
-          	  <td>{$gui->requirements[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
+				<td>{if $gui->reqSpecEditorType == 'none'}{$gui->requirements[row].scope|nl2br}{else}{$gui->requirements[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}{/if}</td>	
           	</tr>
           	{sectionelse}
           	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>

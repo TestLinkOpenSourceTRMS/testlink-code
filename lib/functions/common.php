@@ -13,18 +13,21 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2015 TestLink community 
+ * @Copyright   2005,2016 TestLink community 
  * @link        http://www.testlink.org
  * @since       1.5
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  *
  */
 
 /** core and parenthal classes */
 require_once('object.class.php');
 require_once('metastring.class.php');
+
+/** Testlink Plugin API helper methods, must be included before lang_api.php */
+require_once('plugin_api.php');
 
 /** library for localization */
 require_once('lang_api.php');
@@ -43,12 +46,15 @@ require_once('roles.inc.php');
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
 require_once('tlsmarty.inc.php');
 
+/** Initialize the Event System */
+require_once('event_api.php' );
+
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
 
 /** CSRF security functions. */
 /** TL_APICALL => TICKET 0007190 */
-if( !defined(TL_APICALL) )
+if( !defined('TL_APICALL') )
 {
   require_once("csrf.php");
 }  
@@ -97,6 +103,14 @@ function tlAutoload($class_name)
   {
     $classFileName = strtolower($class_name) . "/" . $class_name;
   }  
+
+  // Plugin special processing, class name ends with Plugin (see plugin_register())
+  // Does not use autoload
+  if( preg_match('/Plugin$/', $class_name) == 1 )
+  {
+    return;
+  }  
+
 
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 
@@ -189,8 +203,10 @@ function setSessionTestPlan($tplan_info)
   {
     $_SESSION['testplanID'] = $tplan_info['id'];
     $_SESSION['testplanName'] = $tplan_info['name'];
+
     // Save testplan id for next session
-    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, '/');
+    $cookie_path = config_get('cookie_path');
+    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, $cookie_path);
 
     tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
   }
@@ -399,8 +415,12 @@ function initProject(&$db,$hash_user_sel)
   if($user_sel["tplan_id"] != 0)
   {
     $tplan_id = $user_sel["tplan_id"];
-    setcookie($cookieName, $tplan_id, time()+60*60*24*90, '/');
-  } elseif (isset($_COOKIE[$cookieName])) {
+  
+    $cookie_path = config_get('cookie_path');  
+    setcookie($cookieName, $tplan_id, time()+60*60*24*90, $cookie_path);
+  } 
+  elseif (isset($_COOKIE[$cookieName])) 
+  {
     $tplan_id = intval($_COOKIE[$cookieName]);
   }
   
@@ -464,7 +484,10 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
   {
     checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
   }
-    
+   
+  // Init plugins
+  plugin_init_installed();
+   
   // adjust Product and Test Plan to $_SESSION
   if ($initProject)
   {
@@ -1414,4 +1437,29 @@ function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
     exit();
   }
 }
+
+/*
+  function: getWebEditorCfg
+
+  args:-
+
+  returns:
+
+*/
+function getWebEditorCfg($feature='all')
+{
+  $cfg = config_get('gui');
+  $defaultCfg = $cfg->text_editor['all'];
+  $webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
+  
+  foreach($defaultCfg as $key => $value)
+  {
+    if(!isset($webEditorCfg[$key]))
+    {
+      $webEditorCfg[$key] = $defaultCfg[$key];
+    }   
+  } 
+  return $webEditorCfg;
+}
+
 

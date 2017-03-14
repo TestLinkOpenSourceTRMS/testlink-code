@@ -5,11 +5,11 @@
  *
  * @filesource  object.class.php
  * @package     TestLink
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  **/
  
 /** 
@@ -269,6 +269,8 @@ abstract class tlObject implements iSerialization
                     'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
                     'object_keywords' => DB_TABLE_PREFIX . 'object_keywords',
                     'platforms' => DB_TABLE_PREFIX . 'platforms',
+                    'plugins' => DB_TABLE_PREFIX . 'plugins',
+                    'plugins_configuration' => DB_TABLE_PREFIX . 'plugins_configuration', 
                     'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
                     'req_relations' => DB_TABLE_PREFIX . 'req_relations',
                     'req_specs' => DB_TABLE_PREFIX . 'req_specs',
@@ -278,6 +280,8 @@ abstract class tlObject implements iSerialization
                     'requirements' => DB_TABLE_PREFIX . 'requirements',
                     'req_versions' => DB_TABLE_PREFIX . 'req_versions',
                     'req_revisions' => DB_TABLE_PREFIX . 'req_revisions',
+                    'req_notify_assignments' => DB_TABLE_PREFIX . 'req_notify_assignments',
+                    'req_monitor' => DB_TABLE_PREFIX . 'req_monitor',
                     'rights' => DB_TABLE_PREFIX . 'rights',
                     'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
                     'role_rights' => DB_TABLE_PREFIX . 'role_rights',

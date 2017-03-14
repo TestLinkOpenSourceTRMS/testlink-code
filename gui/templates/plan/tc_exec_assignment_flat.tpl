@@ -156,8 +156,8 @@ function setComboIfCbx(oid,combo_id_prefix,oid4value)
              onclick="doAction.value='linkByMail';tc_exec_assignment.submit();" 
              value="{$labels.btn_send_link}" />
       
-      <input type="hidden" name="targetFeature" id="targetFeature" value="0"/>
-      <input type="hidden" name="targetUser" id="targetUser" value="0"/>
+      <input type="hidden" name="targetFeatureBulk" id="targetFeatureBulk" value="0"/>
+      <input type="hidden" name="targetUserBulk" id="targetUserBulk" value="0"/>
 
     </div>
 
@@ -188,7 +188,7 @@ function setComboIfCbx(oid,combo_id_prefix,oid4value)
     	  {if $ts.write_buttons eq 'yes'}
           {if $ts.testcase_qty gt 0}
 	          {$table_counter=$table_counter+1}
-            <table cellspacing="0" style="font-size:small;" width="100%" id="the-table-{$table_counter}">
+            <table cellspacing="0" style="font-size:small;" width="100%" id="the-table-{$table_counter}" class="tableruler">
             {* ---------------------------------------------------------------------------------------------------- *}
 			      {* Heading *}
 			      <thead>

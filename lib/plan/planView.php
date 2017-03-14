@@ -108,7 +108,9 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->grants->testplan_create = $argsObj->user->hasRight($dbHandler,"mgt_testplan_create",$argsObj->tproject_id);
   $gui->main_descr = lang_get('testplan_title_tp_management'). " - " . 
                      lang_get('testproject') . ' ' . $argsObj->tproject_name;
-
+  $cfg = getWebEditorCfg('testplan');
+  $gui->editorType = $cfg['type'];
+  
   return $gui;
 }
 

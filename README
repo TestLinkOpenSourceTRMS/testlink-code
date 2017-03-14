@@ -1,5 +1,5 @@
 ===============================================================
-         TestLink 1.9.15 (Prague Bugfix 15) Tauriel - Read me
+         TestLink 1.9.16 (Prague Bugfix 16) Tauriel - Read me
 ===============================================================
 
 Contents
@@ -12,7 +12,7 @@ Contents
 7. Bug Reports and Feedback
 8. Supporting our work
 9. Regarding forum usage www.testlink.org
-10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14
+10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14,1.9.15
 11. Testlink & FreeTest
 12. Security
 13. JIRA DB interface changes
@@ -74,7 +74,7 @@ A wide variety of reports provide information on what has been done and what sti
 2. Release notes / CRITIC Configuration Notes
 ===============================================================
 
-This release contains bugfixes for 1.9.13
+This release contains bugfixes for 1.9.14
 See CHANGELOG file for detailed list of issues fixed.
 
 *** CRITIC PHP.INI Settings ***
@@ -96,15 +96,14 @@ See http://mantis.testlink.org/view.php?id=7178
 Server environment should consists from:
 - web-server: Apache 2.x
 - PHP > 5.4
-- DBMS: MySQL 5.x , Postgres 8.x,9.x , MS-SQL 2008/2012
+- DBMS: MySQL 5.6.x , Postgres 9.x , MS-SQL 2008/2012
 
 Supported client web-browsers: 
-- Firefox 10 - 32
-- Internet Explorer 9.x
+- Firefox
+- Internet Explorer 9.x or greater
 - Chrome   
 
-ATTENTION: we have not enough resources to test on all kind
-           of browsers.
+ATTENTION: we have not enough resources to test on all kind of browsers.
            Righ now development is done using Chrome & Firefox.
 
 4. Installation & SECURITY
@@ -293,7 +292,7 @@ Extreme example Migration from 1.7.4
 
 1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
 1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 
-1.9.8 => 1.9.9 => 1.9.10 => 1.9.11 => 1.9.12 => 1.9.13 => 1.9.14
+1.9.8 => 1.9.9 => 1.9.10 => 1.9.11 => 1.9.12 => 1.9.13 => 1.9.14 => 1.9.15
 
 You have to read carefully README and instructions (if any) provided by installer.
 Sometimes version changes do not require actions on DB structure or data. 
@@ -425,6 +424,10 @@ PLEASE: read this short hints before you write a topic:
 10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14
 =====================================================================
 
+1.9.15
+- plugin system by Collabnet
+  ... and more (read CHANGELOG file)
+
 1.9.14
 - proxy config available for MANTISSOAP & JIRASOAP Integration
 
@@ -547,8 +550,8 @@ How to get the answer (self service)
 Relax, as usual I've to say the resources are limited,
 that this effort is not supported by a company or a foundation
 but is result of usage of free time.
-Guidelines for getting help and/or solving a situation are 
-what I use everyday:
+
+Guidelines for getting help and/or solving a situation are what I use everyday:
 First try for yourself searching on:
 - mantis.testlink.org
 - forum.testlink.org
@@ -577,10 +580,7 @@ TICKET with available fixes for latest stable version (1.9.14)
 http://mantis.testlink.org/view.php?id=7262
 
 19. Link to GITORIOUS COMMITS
-Time ago we have migrated from Gitorious (thanks a lot for all years
-of free repo) to Github.
-On tickets or documentation that belong to the GITORIOUS ERA you
-will find LINK to commits that are not accessible ANYMORE AS IS.
+Time ago we have migrated from Gitorious (thanks a lot for all years  of free repo) to Github.
+On tickets or documentation that belong to the GITORIOUS ERA you will find LINK to commits that are not accessible ANYMORE AS IS.
 But accessing to SAME COMMITS in GITHUB (THE COMMIT ID DO NOT CHANGE)
-is just a matter of understand how to change the URL Part that is
-presente BEFORE the commit ID. => then Nike => Just DO IT
+is just a matter of understand how to change the URL Part that is present BEFORE the commit ID. => then Nike => Just DO IT

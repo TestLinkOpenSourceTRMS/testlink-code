@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * TestLink Open Source Project  http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource  xmlrpc.class.php
@@ -74,6 +74,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   protected $reqSpecMgr = null;
   protected $reqMgr = null;
   protected $platformMgr = null;
+  protected $itsMgr = null;
 
 
   /** Whether the server will run in a testing mode */
@@ -165,6 +166,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $nodeTypeParamName = "nodetype";
   public static $noteParamName = "notes";
 
+  public static $openParamName = "open";  
   public static $optionsParamName = "options";
   public static $orderParamName = "order";
   public static $overwriteParamName = "overwrite";
@@ -174,6 +176,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $preconditionsParamName = "preconditions";
   public static $publicParamName = "public";
 
+  public static $releaseDateParamName = "releasedate";
   public static $requirementsParamName = "requirements";
   public static $requirementIDParamName = "requirementid";
   public static $reqSpecIDParamName = "reqspecid";
@@ -209,6 +212,10 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $prefixParamName = "prefix";
   public static $testCaseVersionIDParamName = "tcversionid";
   
+  public static $itsNameParamName = "itsname";
+  public static $itsEnabledParamName = "itsenabled";
+  public static $copyTestersFromBuildParamName = "copytestersfrombuild";
+
   /**#@-*/
   
   /**
@@ -607,6 +614,66 @@ class TestlinkXMLRPCServer extends IXR_Server
       }
       return $status;
     }  
+
+  /**
+   * Helper method to see if the testproject identity provided is valid 
+   * Identity can be specified in one of these modes:
+   *
+   * - internal id (DB)
+   * - prefix 
+   * 
+   *   
+   * If everything OK, test project internal ID is setted.
+   *
+   * @param string $messagePrefix used to be prepended to error message
+   *
+   * @return boolean
+   * @access protected
+   */    
+   protected function checkTestProjectIdentity($messagePrefix='')
+   {
+      $status=false;
+      $fromExternal=false;
+      $fromInternal=false;
+
+      if( $this->_isTestProjectIDPresent() )
+      {
+        $fromInternal=true;
+        $status = $this->checkTestProjectID($messagePrefix);
+      }
+      else if( $this->_isParamPresent(self::$prefixParamName,$messagePrefix,true) )
+      {  
+        // Go for the prefix
+        $fromExternal=true;
+  
+        $target = $this->dbObj->prepare_string($this->args[self::$prefixParamName]);
+        $sql = " SELECT id FROM {$this->tables['testprojects']} WHERE prefix='{$target}' ";
+
+        $fieldValue = $this->dbObj->fetchFirstRowSingleColumn($sql, "id"); 
+        $status = (!is_null($fieldValue) && (intval($fieldValue) > 0));
+        if( $status )
+        {
+          $this->args[self::$testProjectIDParamName] = $fieldValue;
+        }  
+        else
+        {
+          $status = false;            
+          $msg = $messagePrefix . sprintf(TPROJECT_PREFIX_DOESNOT_EXIST_STR,$target);
+          $this->errors[] = new IXR_Error(TPROJECT_PREFIX_DOESNOT_EXIST, $msg);
+        }
+      }  
+      else
+      {
+        $status = false;
+      } 
+
+      return $status;
+    }   
+
+
+
+
+
 
   /**
    * Helper method to see if the TestSuiteID provided is valid
@@ -1514,6 +1581,12 @@ class TestlinkXMLRPCServer extends IXR_Server
    * @param int $args["testplanid"]
    * @param string $args["buildname"];
    * @param string $args["buildnotes"];
+   * @param string $args["active"];
+   * @param string $args["open"];
+   * @param string $args["releasedate"]: YYYY-MM-DD;
+   * @param int $args["copytestersfrombuild"] OPTIONAL,
+   *        if > 0 and valid buildid tester assignments will be copied.
+   *   
    * @return mixed $resultInfo
    *         
    * @access public
@@ -1534,7 +1607,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     if($this->_checkCreateBuildRequest($messagePrefix) && 
        $this->userHasRight("testplan_create_build",self::CHECK_PUBLIC_PRIVATE_ATTR))
     {
-      $testPlanID = $this->args[self::$testPlanIDParamName];
+      $testPlanID = intval($this->args[self::$testPlanIDParamName]);
       $buildName = $this->args[self::$buildNameParamName];          
       $buildNotes = "";
       if($this->_isBuildNotePresent())
@@ -1555,7 +1628,53 @@ class TestlinkXMLRPCServer extends IXR_Server
       {
         //Build doesn't exist so create one
         // ,$active=1,$open=1);
-        $insertID = $this->tplanMgr->create_build($testPlanID,$buildName,$buildNotes);
+        // ($tplan_id,$name,$notes = '',$active=1,$open=1,$release_date='')
+
+        // key 2 check with default value is parameter is missing
+        $k2check = array(self::$activeParamName => 1,self::$openParamName => 1,
+                         self::$releaseDateParamName => null,
+                         self::$copyTestersFromBuildParamName => 0);
+        foreach($k2check as $key => $value)
+        {
+          $opt[$key] = $this->_isParamPresent($key) ? $this->args[$key] : $value;
+        }
+
+        // check if release date is valid date.
+        // do not check relation with now(), i.e can be <,> or =.
+        //
+        if( !is_null($opt[self::$releaseDateParamName]) )
+        {
+          if( !$this->validateDateISO8601($opt[self::$releaseDateParamName]) )
+          {
+            $opt[self::$releaseDateParamName] = null;
+          }  
+        }  
+
+        $bm = new build_mgr($this->dbObj);
+        $insertID = $bm->create($testPlanID,$buildName,$buildNotes,
+                                $opt[self::$activeParamName],
+                                $opt[self::$openParamName],
+                                $opt[self::$releaseDateParamName]);
+      
+        if( $insertID > 0)
+        {
+          $sourceBuild = intval($opt[self::$copyTestersFromBuildParamName]);
+
+          if( $sourceBuild > 0 )
+          {
+            // Check if belongs to test plan, otherwise ignore in silence
+            $sql = " SELECT id FROM {$this->tables['builds']} " .
+                   " WHERE id = " . $sourceBuild .
+                   " AND testplan_id = " . $testPlanID;
+            $rs = $this->dbObj->get_recordset($sql);
+
+            if( count($rs) == 1 )
+            {
+              $taskMgr = new assignment_mgr($this->dbObj);
+              $taskMgr->copy_assignments($sourceBuild, $insertID, $this->userID);
+            }  
+          } 
+        }  
       }
       
       $resultInfo[0]["id"] = $insertID;  
@@ -1601,13 +1720,13 @@ class TestlinkXMLRPCServer extends IXR_Server
    */    
   public function getProjectTestPlans($args)
   {
-        $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
         
     $this->_setArgs($args);
     // check the tplanid
     //TODO: NEED associated RIGHT
-        $checkFunctions = array('authenticate','checkTestProjectID');       
-        $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
+    $checkFunctions = array('authenticate','checkTestProjectID');       
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
   
     if($status_ok)
     {
@@ -1705,7 +1824,10 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @param int $args["active"]  OPTIONAL
    * @param int $args["public"]  OPTIONAL
-   *   
+   * @param string $args["itsname"]  OPTIONAL  
+   * @param boolean $args["itsEnabled"]  OPTIONAL  
+   * 
+   *
    * @return mixed $resultInfo
    */
   public function createTestProject($args)
@@ -1713,10 +1835,13 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->_setArgs($args);
     $msg_prefix = "(" . __FUNCTION__ . ") - ";
     $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
-  
+ 
+    $status_ok = false; 
     if( $this->$checkRequestMethod($msg_prefix) && 
         $this->userHasRight("mgt_modify_product"))
     {
+      $status_ok = true; 
+  
       $item = new stdClass();
       $item->options = new stdClass();
       $item->options->requirementsEnabled = 1;
@@ -1740,7 +1865,9 @@ class TestlinkXMLRPCServer extends IXR_Server
       // other optional parameters (not of complex type)
       // key 2 check with default value is parameter is missing
       $keys2check = array(self::$activeParamName => 1,self::$publicParamName => 1,
-                          self::$noteParamName => '');
+                          self::$noteParamName => '',
+                          self::$itsEnabledParamName => 0,
+                          self::$itsNameParamName => '');
       foreach($keys2check as $key => $value)
       {
         $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : $value;
@@ -1754,19 +1881,48 @@ class TestlinkXMLRPCServer extends IXR_Server
       $item->is_public = ($optional[self::$publicParamName] > 0) ? 1 : 0;
       $item->color = '';
       
-      $info=$this->tprojectMgr->create($item);
+      $its = null;
+      if ($optional[self::$itsNameParamName] != "") 
+      {
+        $this->itsMgr = new tlIssueTracker($this->dbObj);
+        $its = $this->getIssueTrackerSystem($this->args,'internal');
 
-      $resultInfo = array();
-      $resultInfo[]= array("operation" => __FUNCTION__,
-                           "additionalInfo" => null,
-                           "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
-      return $resultInfo;
+        $itsOK = !is_null($its);
+        if( !$itsOK  ) 
+        {
+          $status_ok = false;
+        }
+
+      }
     }
-    else
-    {
-      return $this->errors;
-    }    
-      
+
+    // All checks OK => try to create testproject 
+    if( $status_ok )
+    {  
+      $tproject_id = $this->tprojectMgr->create($item);
+
+      // link & enable its?
+      if( $itsOK && $tproject_id > 0 )
+      {
+        // link 
+        $this->itsMgr->link($its["id"], $tproject_id);
+
+        // enable
+        if ($optional[self::$itsEnabledParamName] > 0)
+        {
+          $this->tprojectMgr->enableIssueTracker($tproject_id);
+        } 
+      }
+
+      $ret = array();
+      $ret[]= array("operation" => __FUNCTION__,
+                    "additionalInfo" => null,
+                    "status" => true, "id" => $tproject_id, 
+                    "message" => GENERAL_SUCCESS_STR);
+      return $ret;
+    }
+
+    return ($status_ok ? $ret : $this->errors);
   }
   
   /**
@@ -2011,6 +2167,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     * @param int    $args["internalid"] - optional - do not use
     * @param string $args["checkduplicatedname"] - optional
     * @param string $args["actiononduplicatedname"] - optional
+    * @param int    $args["status"] - optional - see const.inc.php $tlCfg->testCaseStatus
+    * @param number $args["estimatedexecduration"] - optional
     *
     * @return mixed $resultInfo
     * @return string $resultInfo['operation'] - verbose operation
@@ -2030,6 +2188,8 @@ class TestlinkXMLRPCServer extends IXR_Server
   {
     $operation=__FUNCTION__;
     $msg_prefix="({$operation}) - ";
+      
+    $wfStatusDomain = config_get('testCaseStatus');
       
     $keywordSet='';
     $this->_setArgs($args);
@@ -2075,7 +2235,9 @@ class TestlinkXMLRPCServer extends IXR_Server
                  self::$internalIDParamName => testcase::AUTOMATIC_ID,
                  self::$checkDuplicatedNameParamName => testcase::DONT_CHECK_DUPLICATE_NAME,
                  self::$actionOnDuplicatedNameParamName => 'generate_new',
-                 self::$preconditionsParamName => '');
+                 self::$preconditionsParamName => '',
+                 self::$statusParamName => $wfStatusDomain['draft'],
+                 self::$estimatedExecDurationParamName => null);
         
       foreach($opt as $key => $value)
       {
@@ -2090,8 +2252,10 @@ class TestlinkXMLRPCServer extends IXR_Server
     if( $status_ok )
     {
       $options = array('check_duplicate_name' => $opt[self::$checkDuplicatedNameParamName],
-                       'action_on_duplicate_name' => $opt[self::$actionOnDuplicatedNameParamName]);
-   
+                       'action_on_duplicate_name' => $opt[self::$actionOnDuplicatedNameParamName],
+                       'status' => $opt[self::$statusParamName],
+                       'estimatedExecDuration' => $opt[self::$estimatedExecDurationParamName]);
+
       $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
                                          $this->args[self::$testCaseNameParamName],
                                          $this->args[self::$summaryParamName],
@@ -2526,7 +2690,6 @@ class TestlinkXMLRPCServer extends IXR_Server
     }
 
     $options = array('executed_only' => $opt[self::$executedParamName], 
-                     'steps_info' => $opt[self::$getStepsInfoParamName],
                      'details' => $opt[self::$detailsParamName],
                      'output' => 'mapOfMap' );
             
@@ -2539,6 +2702,39 @@ class TestlinkXMLRPCServer extends IXR_Server
                      'platform_id' => $opt[self::$platformIDParamName]);
       
     $recordset = $this->tplanMgr->getLTCVNewGeneration($tplanid,$filters,$options);
+
+    // Do we need to get Test Case Steps?
+    if( !is_null($recordset) && $opt[self::$getStepsInfoParamName] )
+    {
+      $itemSet = array_keys($recordset);
+      switch($options['output'])
+      { 
+        case 'mapOfArray':
+        case 'mapOfMap':
+          foreach($itemSet as $itemKey)
+          {
+            $keySet = array_keys($recordset[$itemKey]);
+            $target = &$recordset[$itemKey];
+            foreach($keySet as $accessKey)
+            {
+              $steps = $this->tcaseMgr->get_steps($target[$accessKey]['tcversion_id']);
+              $target[$accessKey]['steps'] = $steps;
+            }
+          }
+        break;
+        
+        case 'array':
+        case 'map':
+        default:
+          foreach($itemSet as $accessKey)
+          {
+            $sts = $this->tcaseMgr->get_steps($recordset[$accessKey]['tcversion_id']);
+            $recordset[$accessKey]['steps'] = $sts;
+          } 
+        break;
+      }
+    }
+
     return $recordset;
   }
 
@@ -2931,6 +3127,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     * @param args['platformid'] - OPTIONAL Only if  test plan has no platforms
     * @param args['executionorder'] - OPTIONAL
     * @param args['urgency'] - OPTIONAL
+    * @param args['overwrite'] - OPTIONAL
     *
     */
   public function addTestCaseToTestPlan($args)
@@ -3086,7 +3283,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       // 
       $sql = " SELECT TCV.version,TCV.id " . 
              " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " .
-             " WHERE NH.parent_id = {$tcase_id} " .
+             " WHERE NH.parent_id = ". intval($tcase_id) .
              " AND TCV.id = NH.id ";
                  
       $all_tcversions = $this->dbObj->fetchRowsIntoMap($sql,'id');
@@ -3098,52 +3295,89 @@ class TestlinkXMLRPCServer extends IXR_Server
              " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = platform_id " . 
              " WHERE TPTCV.testplan_id={$tplan_id} AND TPTCV.tcversion_id IN({$in_clause}) ";
 
+      if( $hasPlatforms )
+      {
+        $sql .= " AND TPTCV.platform_id=" . intval($platform_id);
+      }  
+
       $rs = $this->dbObj->fetchMapRowsIntoMap($sql,'tcversion_id','platform_id');
       
       $doLink = is_null($rs);
+      
       if( !$doLink )
       {
+        // Are we going to update ?
+        // var_dump($rs);die();
+        // echo $target_tcversion[$version_number]['id']; die();
         if( isset($rs[$target_tcversion[$version_number]['id']]) )
         {
-          $plat_keys = array_flip(array_keys($rs[$target_tcversion[$version_number]['id']]));
-          // need to understand what where the linked platforms.
-          $platform_id = $this->args[self::$platformIDParamName];
-          $linkExists = isset($plat_keys[$platform_id]);
-          $doLink = !$linkExists;
-          if( $linkExists )
+          if( $hasPlatforms )
           {
-            $platform_name = $rs[$target_tcversion[$version_number]['id']][$platform_id]['name'];
-            $msg = sprintf(LINKED_FEATURE_ALREADY_EXISTS_STR,$tplan_info['name'],$tplan_id,
-                           $platform_name, $platform_id);  
-            $this->errors[] = new IXR_Error(LINKED_FEATURE_ALREADY_EXISTS,$msg_prefix . $msg); 
-            $status_ok = false;
-          }
+            $plat_keys = array_flip(array_keys($rs[$target_tcversion[$version_number]['id']]));
+      
+            // need to understand what where the linked platforms.
+            $platform_id = $this->args[self::$platformIDParamName];
+            $linkExists = isset($plat_keys[$platform_id]);
+            $doLink = !$linkExists;
+            if( $linkExists )
+            {
+              $platform_name = $rs[$target_tcversion[$version_number]['id']][$platform_id]['name'];
+              $msg = sprintf(LINKED_FEATURE_ALREADY_EXISTS_STR,$tplan_info['name'],$tplan_id,
+                             $platform_name, $platform_id);  
+              $this->errors[] = new IXR_Error(LINKED_FEATURE_ALREADY_EXISTS,$msg_prefix . $msg); 
+              $status_ok = false;
+            }
+          }  
+          else
+          {
+            // do nothing on silence, and say bye!!!
+            $op_result['operation']=$operation;
+            $op_result['status']=true;
+            $op_result['message']='Nothing to do - already linked';
+            return $op_result;
+          }     
         }  
         else 
         {
           // Other version than requested done is already linked
           $doLink = false;
+          if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
+          {
+            $doLink = $doDeleteLinks = true;
+          }
+
           reset($rs);
           $linked_tcversion = key($rs);          
           $other_version = $all_tcversions[$linked_tcversion]['version'];
-          $msg = sprintf(OTHER_VERSION_IS_ALREADY_LINKED_STR,$other_version,$version_number,
-                         $tplan_info['name'],$tplan_id);
-          $this->errors[] = new IXR_Error(OTHER_VERSION_IS_ALREADY_LINKED,$msg_prefix . $msg); 
-          $status_ok = false;
+          if( !$doLink )
+          {
+            $doLink = false;
+            $msg = sprintf(OTHER_VERSION_IS_ALREADY_LINKED_STR,$other_version,$version_number,
+                           $tplan_info['name'],$tplan_id);
+            $this->errors[] = new IXR_Error(OTHER_VERSION_IS_ALREADY_LINKED,$msg_prefix . $msg); 
+            $status_ok = false;
+          }  
         }
         
       }
+      
       if( $doLink && $hasPlatforms )
       {
        $additional_values[] = $platform_id;
        $additional_fields[] = 'platform_id';              
       }
 
-      if( $doDeleteLinks && count($id_set) > 0 )
+      if( $doDeleteLinks )
       {
-        $in_clause=implode(",",$id_set);
-        $sql=" DELETE FROM {$this->tables['testplan_tcversions']} " .
-             " WHERE testplan_id={$tplan_id}  AND tcversion_id IN({$in_clause}) ";
+        // $in_clause=implode(",",$id_set);
+        $sql = " DELETE FROM {$this->tables['testplan_tcversions']} " .
+               " WHERE testplan_id=" . intval($tplan_id) .
+               " AND tcversion_id=" . intval($linked_tcversion);
+
+        if( $hasPlatforms )
+        {
+          $sql .= " AND platform_id=" . intval($platform_id);
+        }     
         $this->dbObj->exec_query($sql);
       }
           
@@ -3512,6 +3746,25 @@ public function getTestCaseAttachments($args)
 
 
   /**
+   * update a test suite
+   * 
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["testprojectid"] OR string $args["prefix"] 
+   * @param string $args["testsuitename"] optional
+   * @param string $args["details"] optional
+   * @param int $args["parentid"] optional, if do not provided means test suite must be top level.
+   * @param int $args["order"] optional. Order inside parent container
+   *   
+   * @return mixed $resultInfo
+   */
+  public function updateTestSuite($args)
+  {
+    $args[self::$actionParamName] = 'update';
+    return $this->createTestSuite($args);
+  } 
+
+  /**
    * create a test suite
    * 
    * @param struct $args
@@ -3534,11 +3787,35 @@ public function getTestCaseAttachments($args)
   {
     $result=array();
     $this->_setArgs($args);
-    $operation=__FUNCTION__;
-    $msg_prefix="({$operation}) - ";
-    $checkFunctions = array('authenticate','checkTestSuiteName','checkTestProjectID');
-    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+    $action = isset($this->args,self::$actionParamName) ? 
+              $this->args[self::$actionParamName] : 'create'; 
 
+    $checkFunctions = array('authenticate','checkTestProjectIdentity');
+
+    switch($action)
+    {
+      case 'update':
+        $operation='updateTestSuite';
+        $opt = array(self::$detailsParamName => null,
+                     self::$testSuiteNameParamName => null,
+                     self::$orderParamName => testsuite::DEFAULT_ORDER,
+                     self::$checkDuplicatedNameParamName => testsuite::CHECK_DUPLICATE_NAME,
+                     self::$actionOnDuplicatedNameParamName => 'block');
+      break;
+    
+      case 'create';
+      default:
+        $operation=__FUNCTION__;
+        $opt = array(self::$orderParamName => testsuite::DEFAULT_ORDER,
+                     self::$checkDuplicatedNameParamName => testsuite::CHECK_DUPLICATE_NAME,
+                     self::$actionOnDuplicatedNameParamName => 'block');
+        $checkFunctions[] = 'checkTestSuiteName';
+      break;
+    }
+
+    $msg_prefix="({$operation}) - ";
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+    
     // When working on PRIVATE containers, globalRole Admin is ENOUGH
     // because this is how TestLink works when this action is done on GUI
     if( $status_ok && $this->user->globalRole->dbID != TL_ROLES_ADMIN)
@@ -3552,11 +3829,11 @@ public function getTestCaseAttachments($args)
 
     if( $status_ok )
     {
+      // Needed After refactoring to use checkTestProjectIdentity()
+      $key = self::$testProjectIDParamName; 
+      $args[$key] = $this->args[$key];  
+
       // Optional parameters
-      $opt=array(self::$orderParamName => testsuite::DEFAULT_ORDER,
-                 self::$checkDuplicatedNameParamName => testsuite::CHECK_DUPLICATE_NAME,
-                 self::$actionOnDuplicatedNameParamName => 'block');
-            
       foreach($opt as $key => $value)
       {
         if($this->_isParamPresent($key))
@@ -3569,7 +3846,8 @@ public function getTestCaseAttachments($args)
     if($status_ok)
     {
       $parent_id = $args[self::$testProjectIDParamName];  
-      $tprojectInfo=$this->tprojectMgr->get_by_id($args[self::$testProjectIDParamName]);
+      $tprojectInfo = $this->tprojectMgr->get_by_id($args[self::$testProjectIDParamName]);
+      
       $tsuiteMgr = new testsuite($this->dbObj);
       if( $this->_isParamPresent(self::$parentIDParamName) )
       {
@@ -3599,14 +3877,34 @@ public function getTestCaseAttachments($args)
         }
       } 
     }
-      
+     
     if($status_ok)
     {
-      $op=$tsuiteMgr->create($parent_id,$args[self::$testSuiteNameParamName],
-                             $args[self::$detailsParamName],$opt[self::$orderParamName],
-                             $opt[self::$checkDuplicatedNameParamName],
-                             $opt[self::$actionOnDuplicatedNameParamName]);
-          
+      switch($action)
+      {
+        case 'update':
+          $op=$tsuiteMgr->update($args[self::$testSuiteIDParamName],
+                                 $args[self::$testSuiteNameParamName],
+                                 $args[self::$detailsParamName],
+                                 $parent_id,
+                                 $opt[self::$orderParamName]);
+
+          /*
+                                 $opt[self::$checkDuplicatedNameParamName],
+                                 $opt[self::$actionOnDuplicatedNameParamName]);
+           */
+        break;
+
+        case 'create':
+        default:
+          $op=$tsuiteMgr->create($parent_id,$args[self::$testSuiteNameParamName],
+                                 $args[self::$detailsParamName],$opt[self::$orderParamName],
+                                 $opt[self::$checkDuplicatedNameParamName],
+                                 $opt[self::$actionOnDuplicatedNameParamName]);
+        break;  
+      }
+
+
       if( ($status_ok = $op['status_ok']) )
       {
         $op['status'] = $op['status_ok'] ? true : false;
@@ -3619,7 +3917,8 @@ public function getTestCaseAttachments($args)
       }
       else
       {
-        $op['msg']=sprintf($op['msg'],$args[self::$testSuiteNameParamName]);
+        // @TODO needs refactoring for UPDATE action
+        $op['msg'] = sprintf($op['msg'],$args[self::$testSuiteNameParamName]);
         $this->errors=$op;   
       }
     }
@@ -5889,7 +6188,7 @@ protected function createAttachmentTempFile()
     $messagePrefix="(" .__FUNCTION__ . ") - ";
         
     $this->_setArgs($args);
-    $checkFunctions = array('authenticate','checkTestProjectID');       
+    $checkFunctions = array('authenticate','checkTestProjectIdentity');       
     $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
   
     if($status_ok)
@@ -7279,6 +7578,105 @@ protected function createAttachmentTempFile()
     }  
   }
 
+  /**
+   * Update value of Custom Field with scope='design'
+   * for a given Build
+   *
+   * @param struct $args
+   * @param string $args["devKey"]: used to check if operation can be done.
+   *                                if devKey is not valid => abort.
+   *
+   * @param string $args["buildid"]:
+   * @param string $args["testprojectid"]:
+   * @param string $args["customfields"]
+   *               contains an map with key:Custom Field Name, value: value for CF.
+   *               VERY IMPORTANT: value must be formatted in the way it's written to db,
+   *               this is important for types like:
+   *
+   *               DATE: strtotime()
+   *               DATETIME: mktime()
+   *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+   *
+   *
+   *               these custom fields must be configured to be writte during execution.
+   *               If custom field do not meet condition value will not be written
+   *
+   * @return mixed null if everything ok, else array of IXR_Error objects
+   *
+   * @access public
+   */
+  public function updateBuildCustomFieldsValues($args)
+  {
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+
+    $checkFunctions = array('authenticate','checkTestProjectID', 'checkBuildID');
+    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+
+    if( $status_ok )
+    {
+      if(!$this->_isParamPresent(self::$customFieldsParamName) )
+      {
+        $status_ok = false;
+        $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$customFieldsParamName);
+        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);
+      }
+    }
+
+    if( $status_ok )
+    {
+      // now check if custom fields are ok
+      // For each custom field need to check if:
+      // 1. is linked to test project
+      // 2. is available for Build at design time
+      $cfieldMgr = new cfield_mgr($this->dbObj);
+
+      // Just ENABLED
+      $linkedSet = $cfieldMgr->get_linked_cfields_at_design($this->args[self::$testProjectIDParamName],
+                                                            cfield_mgr::ENABLED,null,'build',null,'name');
+      if( is_null($linkedSet) )
+      {
+        $status_ok = false;
+        $msg = NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS_STR;
+        $this->errors[] = new IXR_Error(NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS, $msg);
+      }
+    }
+
+    if( $status_ok )
+    {
+      $cfSet = $args[self::$customFieldsParamName];
+      $ret = array();
+      foreach($cfSet as $cfName => $cfValue)
+      {
+        // $accessKey = "custom_field_" . $item['id'] . <field_type_id>_<cfield_id>
+        //  design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
+        //
+        // Simple check: if name is not present on set => ignore
+        if( isset($linkedSet[$cfName]) )
+        {
+          $item = $linkedSet[$cfName];
+          $accessKey = "custom_field_" . $item['type'] . '_' . $item['id'];
+          $hash[$accessKey] = $cfValue;
+          $cfieldMgr->design_values_to_db($hash,$args[self::$buildIDParamName],null,null,'build');
+          // Add the result for each custom field to the returned array
+          array_push($ret, array('status' => 'ok' ,
+                                 'msg' => 'Custom Field:' . $cfName . ' processed '));
+        }
+        else
+        {
+          array_push($ret, array('status' => 'ko' ,
+                                 'msg' => 'Custom Field:' . $cfName . ' skipped '));
+        }
+      }
+      // Return the result after all of the fields have been processed
+      return $ret;
+    }
+    else
+    {
+        return $this->errors;
+    }
+  }
+
  /**
   * Returns all test suites inside target 
   * test project with target name
@@ -7379,8 +7777,69 @@ protected function createAttachmentTempFile()
     return $status_ok ? $ni : $this->errors;    
   }  // function end
 
+   /**
+    * Get Issue Tracker System by name
+    *
+    * @param struct $args
+    * @param string $args["devKey"]
+    * @param string $args["itsname"] ITS name 
+    * @return mixed $itsObject      
+    * @access public
+    */
+    public function getIssueTrackerSystem($args,$call=null)
+    {
+      $operation=__FUNCTION__;
+      $msg_prefix="({$operation}) - ";
+
+      $this->_setArgs($args);
+
+      $extCall = is_null($call); 
+      if( $extCall )
+      {
+        $this->authenticate();
+      }  
+
+      $ret = null;
+      if( is_null($this->itsMgr) )
+      {
+        $this->itsMgr = new tlIssueTracker($this->dbObj);
+      } 
+
+      $ret = $this->itsMgr->getByName($this->args[self::$itsNameParamName]);
+      $status_ok = !is_null($ret);
+      if( !$status_ok )
+      {  
+        $msg = $msg_prefix . sprintf(ITS_NOT_FOUND_STR, $this->args[self::$itsNameParamName]);
+        $this->errors[] = new IXR_Error(ITS_NOT_FOUND, $msg);
+      }  
+  
+      if( $extCall )
+      {
+        if( !$status_ok )
+        {
+          $ret = $this->errors;
+        } 
+      } 
+      return $ret;
+    }
 
 
+  /**
+   * 
+   */
+  function validateDateISO8601($dateAsString)
+  {
+    return $this->validateDate($dateAsString);
+  }
+
+  /**
+   *
+   */
+  function validateDate($dateAsString, $format = 'Y-m-d')
+  {
+    $d = DateTime::createFromFormat($format, $dateAsString);
+    return $d && $d->format($format) == $dateAsString;
+  }
 
   /**
    *
@@ -7411,6 +7870,7 @@ protected function createAttachmentTempFile()
                             'tl.addPlatformToTestPlan' => 'this:addPlatformToTestPlan',
                             'tl.removePlatformFromTestPlan' => 'this:removePlatformFromTestPlan',
                             'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
+                            'tl.getIssueTrackerSystem' => 'this:getIssueTrackerSystem',
                             'tl.getProjects' => 'this:getProjects',
                             'tl.getProjectKeywords' => 'this:getProjectKeywords',
                             'tl.getProjectPlatforms' => 'this:getProjectPlatforms',
@@ -7454,7 +7914,9 @@ protected function createAttachmentTempFile()
                             'tl.addTestCaseKeywords' => 'this:addTestCaseKeywords',
                             'tl.removeTestCaseKeywords' => 'this:removeTestCaseKeywords',
                             'tl.updateTestSuiteCustomFieldDesignValue' => 'this:updateTestSuiteCustomFieldDesignValue',
+                            'tl.updateBuildCustomFieldsValues' => 'this:updateBuildCustomFieldsValues',
                             'tl.getTestSuite' => 'this:getTestSuite',
+                            'tl.updateTestSuite' => 'this:updateTestSuite',
                             'tl.checkDevKey' => 'this:checkDevKey',
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',

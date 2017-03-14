@@ -29,7 +29,7 @@ Purpose: view requirement with version management
              specific_direct_link,req_does_not_exist,actions'}
 
 
-{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes"} 
 {include file="inc_del_onclick.tpl"}
 
 {config_load file="input_dimensions.conf"}
@@ -215,6 +215,13 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 </script>  
 {/if}
 
+
+<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
+<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
+
+
+
 </head>
 
 {$my_style=""}
@@ -298,7 +305,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {if $gui->req_cfg->relations->enable && !$frozen_version} {* show this part only if relation feature is enabled *}
   
     {* form to enter a new relation *}
-    <form method="post" action="lib/requirements/reqEdit.php" 
+    <form method="post" action="{$basehref}lib/requirements/reqEdit.php" 
         onSubmit="javascript:return validate_req_docid_input('relation_destination_req_doc_id', 
                                                              '{$labels.relation_destination_doc_id}');">
     
@@ -403,6 +410,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {/if}
   
   {* end req relations *}
+
+  {include file="$this_template_dir/reqMonitors.tpl"} 
          
   {include file="attachments.inc.tpl" 
              attach_id=$reqID  

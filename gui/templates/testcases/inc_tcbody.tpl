@@ -57,14 +57,14 @@ viewer for test case in test specification
 	  <th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">{$inc_tcbody_labels.summary}</td>
 	</tr>
 	<tr>
-		<td colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_testcase.summary}<p></td>
+		<td colspan="{$inc_tcbody_tableColspan}">{if $inc_tcbody_editor_type == 'none'}{$inc_tcbody_testcase.summary|nl2br}{else}{$inc_tcbody_testcase.summary}{/if}<p></td>
 	</tr>
 
 	<tr>
 		<th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">{$inc_tcbody_labels.preconditions}</td>
 	</tr>
 	<tr>
-		<td colspan="{$inc_tcbody_tableColspan}">{$inc_tcbody_testcase.preconditions}<p></td>
+		<td colspan="{$inc_tcbody_tableColspan}">{if $inc_tcbody_editor_type == 'none'}{$inc_tcbody_testcase.preconditions|nl2br}{else}{$inc_tcbody_testcase.preconditions}{/if}<p></td>
 	</tr>
 
 	{if $inc_tcbody_cf.before_steps_results neq ''}

@@ -335,12 +335,27 @@ class tlRestApi
   public function createTestProject()
   {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+
+    
     try 
     {
-      $request = $this->app->request();
-      $item = json_decode($request->getBody());
-      $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
-      $op = array('status' => 'ok', 'message' => 'ok');
+      // file_put_contents('/var/testlink/rest-api.log', json_encode($this->user));
+      
+      // Check user grants for requested operation
+      // This is a global right
+      $rightToCheck="mgt_modify_product";
+      if( $this->userHasRight($rightToCheck) )
+      {
+        $request = $this->app->request();
+        $item = json_decode($request->getBody());
+        $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
+        $op = array('status' => 'ok', 'message' => 'ok');
+      } 
+      else
+      {
+        $msg = lang_get('API_INSUFFICIENT_RIGHTS');
+        $op['message'] = sprintf($msg,$rightToCheck,0,0);
+      } 
     } 
     catch (Exception $e) 
     {
@@ -853,6 +868,61 @@ class tlRestApi
     {
       throw new Exception("Test Suite does not belong to Test Project ID");
     }  
+  }
+
+
+  /**
+   * checks if a user has requested right on test project, test plan pair.
+   * 
+   * @param string $rightToCheck  one of the rights defined in rights table
+   * @param boolean $checkPublicPrivateAttr (optional)
+   * @param map $context (optional)
+   *            keys tproject_id,tplan_id  (both are also optional)
+   *
+   * @return boolean
+   * @access protected
+   *
+   * @internal revisions
+   * @since 1.9.15
+   *
+   */
+  protected function userHasRight($rightToCheck,$checkPublicPrivateAttr=false,
+                                  $context=null)
+  {
+    $status_ok = true;
+
+    // for global rights context is NULL
+    if( is_null($context) )
+    {
+      $tproject_id = 0;
+      $tplan_id = null;      
+    }  
+    else
+    {
+      $tproject_id = intval(isset($context['tproject_id']) ? 
+                    $context['tproject_id'] : 0);
+
+      $tplan_id = null;
+      if(isset($context['tplan_id']))
+      {
+        $tplan_id = intval($context['tplan_id']);
+      } 
+
+      if( $tproject_id <= 0 && !is_null($tplan_id) )
+      {
+        // get test project from test plan
+        $dummy = $this->tplanMgr->get_by_id($tplanid,array('output' => 'minimun'));  
+        $tproject_id = intval($dummy['tproject_id']);
+      }
+    }
+
+    // echo $rightToCheck;
+    if(!$this->user->hasRight($this->db,$rightToCheck,
+                              $tproject_id, $tplan_id,$checkPublicPrivateAttr))
+    {
+      $status_ok = false;
+    }
+    return $status_ok;
   }
 
 

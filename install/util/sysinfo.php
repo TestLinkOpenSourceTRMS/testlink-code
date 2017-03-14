@@ -21,64 +21,6 @@ require_once('..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib' .
 $root = dirname(__FILE__);
 define('ROOT_PATH', $root);
 
-function check_php_version2($sys_php_version = '') 
-{
-
-	$retval = 0;
-
-	$sys_php_version = empty($sys_php_version) ? constant('PHP_VERSION') : $sys_php_version;
-
-	// versions below $min_considered_php_version considered invalid by default,
-	// versions equal to or above this ver will be considered depending
-	// on the rules that follow
-	$min_considered_php_version = '5.2.0';
-
-	// only the supported versions,
-	// should be mutually exclusive with $invalid_php_versions
-	$supported_php_versions = array('5.0.1', '5.0.2', '5.0.3', '5.0.4',
-									'5.1.0', '5.1.1', '5.1.2', '5.1.3',
-									'5.1.4', '5.1.5', '5.1.6', '5.1.7',
-									'5.2.0', '5.2.1', '5.2.2');
-	sort($supported_php_versions);
-
-	// invalid versions above the $min_considered_php_version,
-	// should be mutually exclusive with $supported_php_versions
-	$invalid_php_versions = array('5.0.0', '5.0.5');
-
-
-	// versions below $min_considered_php_version are invalid
-	if(1 == version_compare($sys_php_version, $min_considered_php_version, '<')) 
-	{
-		$retval = -1;
-	}
-
-	// supported version check overrides default unsupported
-	foreach($supported_php_versions as $ver) 
-	{
-		if(1 == version_compare($sys_php_version, $ver, 'eq')) 
-		{
-			$retval = 1;
-			break;
-		}
-	}
-
-	if (($retval != 1) && (1 == version_compare($sys_php_version, $ver, '>'))) 
-	{
-		$retval = 1;
-	}
-
-	// invalid version check overrides default unsupported
-	foreach($invalid_php_versions as $ver) 
-	{
-		if(1 == version_compare($sys_php_version, $ver, 'eq')) 
-		{
-			$retval = -1;
-			break;
-		}
-	}
-
-	return $retval;
-}
 
 function chk_memory($limit=9, $recommended=16) {
 
@@ -123,15 +65,6 @@ function chk_memory($limit=9, $recommended=16) {
 
 return $msg;
 }
-
-#$ohrmVersion = "2.4.1";
-#if (@include_once ROOT_PATH . "/lib/confs/Conf.php-distribution") 
-#{
-#	$conf = new Conf();
-#	$ohrmVersion = $conf->version;
-#}
-
-
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>

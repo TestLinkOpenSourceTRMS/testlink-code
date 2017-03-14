@@ -27,12 +27,14 @@ View test specification containers
   {$ft=$gui->form_token}
 {/if}
 
-{$container_id=$gui->container_data.id}
+{$container_id = $gui->container_data.id}
+{$tproject_id = $gui->tproject_id}
+
 {$tcImportAction="lib/testcases/tcImport.php?containerID=$container_id"}
 {$importToTProjectAction="$basehref$tcImportAction&amp;bIntoProject=1&amp;useRecursion=1&amp;"}
 {$importToTSuiteAction="$basehref$tcImportAction&amp;useRecursion=1"}
 {$importTestCasesAction="$basehref$tcImportAction"}
-{$tcExportAction="lib/testcases/tcExport.php?containerID=$container_id&amp;form_token=$ft"}
+{$tcExportAction="lib/testcases/tcExport.php?tproject_id=$tproject_id&containerID=$container_id&amp;form_token=$ft"}
 {$exportTestCasesAction="$basehref$tcExportAction"}
 
 {$testSpecFullDocAction="lib/results/printDocument.php?type=testspec&level=testproject&allOptionsOn=1&format=0&id=$container_id&form_token=$ft"}
@@ -96,7 +98,7 @@ function jsCallDeleteFile(btn, text, o_id)
   <div id="tproject_control_panel" style="display:{$tlCfg->gui->op_area_display->test_spec_container};">
     <fieldset class="groupBtn">
     <b>{$labels.testsuite_operations}</b>
-    <form method="post" action="lib/testcases/containerEdit.php">
+    <form method="post" action="{$basehref}lib/testcases/containerEdit.php">
       <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
       <input type="hidden" name="doAction" id="doAction" value="" />
       <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
@@ -144,7 +146,7 @@ function jsCallDeleteFile(btn, text, o_id)
       <th>{$labels.th_notes}</th>
     </tr>
     <tr>
-      <td>{$gui->container_data.notes}</td>
+      <td>{if $gui->testProjectEditorType == 'none'}{$gui->container_data.notes|nl2br}{else}{$gui->container_data.notes}{/if}</td>
     </tr>
   </table>
 

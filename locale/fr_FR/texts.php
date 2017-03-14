@@ -17,7 +17,8 @@
  * 
  * @package 	TestLink
  * @author 		Martin Havlat
- * @copyright 	2003-2009, TestLink community 
+ * @copyright 	2003-2009, TestLink community
+ * @version    	CVS: $Id: texts.php,v 1.29 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -110,7 +111,8 @@ sensible à la casse. Le résultat inclut seulement les cas de tests du projet a
 $TLS_htmltext_title['searchReq']	= "Page de recherche d'exigences";
 $TLS_htmltext['searchReq'] 		= "<h2>Objectif :</h2>
 
-<p>Navigation conformément aux mots-clés et/ou chaînes recherchées. La recherche n'est pas sensible à la casse. Le résultat inclut juste les exigences du projet de test actuel.</p>
+<p>Navigation conformément aux mots-clés et/ou chaînes recherchées. La recherche n'est pas
+sensible à la casse. Le résultat inclut juste les exigences du projet de test actuel.</p>
 
 <h2>Pour rechercher :</h2>
 
@@ -135,7 +137,8 @@ $TLS_htmltext['searchReq'] 		= "<h2>Objectif :</h2>
 $TLS_htmltext_title['searchReqSpec']	= "Pas de recherche de dossier d'exigence";
 $TLS_htmltext['searchReqSpec'] 		= "<h2>Objectif :</h2>
 
-<p>Navigation conformément aux mots-clés et/ou chaînes recherchées. La recherche n'est pas sensible à la casse. Le résultat inclut juste les dossiers d'exigences du projet de test actuel.</p>
+<p>Navigation conformément aux mots-clés et/ou chaînes recherchées. La recherche n'est pas
+sensible à la casse. Le résultat inclut juste les dossiers d'exigences du projet de test actuel.</p>
 
 <h2>Pour rechercher :</h2>
 
@@ -212,7 +215,8 @@ avec un nom configuré de la sorte <i>(default is: \$tlCfg->req_cfg->default_tes
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printReqSpec'] = "Imprimer le cahier d'exigences"; //printReq
 $TLS_htmltext['printReqSpec'] = "<h2>Objectif :</h2>
-<p>Il est possible d'imprimer une seule exigence, toutes les exigences d'un dossier d'exigence, ou toutes les exigences d'un projet de test.</p>
+<p>Il est possible d'imprimer une seule exigence, toutes les exigences d'un dossier d'exigence, ou
+toutes les exigences d'un projet de test.</p>
 <h2>Pour commencer :</h2>
 <ol>
 <li>
@@ -272,7 +276,9 @@ $TLS_htmltext['executeTest'] 		= "<h2>Objectif :</h2>
 <ol>
 	<li>L'utilisateur doit avoir défini un build pour la campagne de test.</li>
 	<li>Sélectionner un build à partir de la box en bas et le bouton \"Appliquer\" dans le cadre de navigation.</li>
-	<li>Si vous voulez voir que quelques cas de test à l'a place de toute l'arborescence, il est possible d'appliquer un filtre. Cliquer sur le bouton \"Apply\" après avoir renseigné les filtres.</li>	
+	<li>Si vous voulez voir que quelques cas de test à la place de toute l'arborescence,
+      il est possible d'appliquer un filtre. Cliquer sur le bouton \"Apply\"
+      après avoir renseigné les filtres.</li>	
 	<li>Cliquer sur un cas de test dans l'arborescence.</li>
 	<li>Remplir le résultat du cas de test et n'importe quelles notes pertinentes et anomalies.</li>
 	<li>Sauvegarder les résultats.</li>
@@ -418,7 +424,8 @@ $TLS_htmltext['test_urgency'] 		= "<h2>Objectif</h2>
 
 <h2>Pour commencer :</h2>
 <ol>
-	<li>Choisissez une suite de test avec l'urgence à changer pour un produit/composant sur la partie gauche de la fenêtre</li>
+	<li>Choisissez une suite de test avec l'urgence à changer pour un produit/composant
+      sur la partie gauche de la fenêtre</li>
 	<li>Choisissez un niveau d'urgence (haute, moyenne, basse). Moyenne est la valeur par défaut. Vous pouvez
 	descendre la priorité pour une partie non touchée du produit et l'augmenter pour des composants avec
 	des changements significatifs.</li>

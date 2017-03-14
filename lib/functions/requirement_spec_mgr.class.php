@@ -597,7 +597,8 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $my['options'] = array( 'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id", 
-                          'output' => 'standard');
+                          'output' => 'standard', 'outputLevel' => 'std', 'decodeUsers' => true);
+  
   $my['options'] = array_merge($my['options'], (array)$options);
 
   // null => do not filter
@@ -655,11 +656,18 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
 		$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
 	  $reqVersionSet = array_keys($latestVersionSet);
 
+    /*
 	  $getOptions = null;
 	  if( !is_null($my['options']['order_by']) )
 	  {
 			$getOptions = array('order_by' => $my['options']['order_by']);
 		}
+    */
+    
+    $getOptions['order_by'] = $my['options']['order_by'];
+    $getOptions['outputLevel'] = $my['options']['outputLevel'];
+    $getOptions['decodeUsers'] = $my['options']['decodeUsers'];
+
 
 		$rs = $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
     switch($my['options']['output'])

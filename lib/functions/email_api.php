@@ -72,7 +72,8 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 	# Visit http://phpmailer.sourceforge.net
 	# if you have problems with phpMailer
-	$mail = new PHPMailer;
+	# true => throw exceptions
+	$mail = new PHPMailer(true);
 
 
 	$mail->PluginDir = PHPMAILER_PATH;

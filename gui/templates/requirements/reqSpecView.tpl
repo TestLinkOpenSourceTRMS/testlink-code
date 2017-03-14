@@ -55,6 +55,9 @@ Purpose: view a requirement specification
 {$url_args="reqCreateFromIssueMantisXML.php?scope=branch&req_spec_id="}
 {$req_create_from_issue_xml_url="$basehref$req_module$url_args$reqSpecID"}
 
+{$url_args="reqSpecEdit.php?doAction=bulkReqMon&req_spec_id="}
+{$req_spec_bulk_req_mon_url="$basehref$req_module$url_args$reqSpecID"}
+
 
 {* used on inc_btn_reqSpecView.tpl *}
 {lang_get s='warning_delete_req_spec' var="warning_msg" }
@@ -189,7 +192,7 @@ var pF_freeze_req_spec = freeze_req_spec;
   <tr>
     <td>
       <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.scope}</legend>
-      {$gui->req_spec.scope}
+	  {if $gui->reqSpecEditorType == 'none'}{$gui->req_spec.scope|nl2br}{else}{$gui->req_spec.scope}{/if}
       </fieldset>
     </td>
   </tr>

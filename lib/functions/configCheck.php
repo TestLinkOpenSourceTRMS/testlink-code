@@ -9,7 +9,7 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
@@ -423,7 +423,7 @@ function checkForRepositoryDir($the_dir)
 function checkSchemaVersion(&$db)
 {
   $result = array('status' => tl::ERROR, 'msg' => null, 'kill_session' => true);
-  $last_version = TL_LAST_DB_VERSION; 
+  $latest_version = TL_LATEST_DB_VERSION; 
   $db_version_table = DB_TABLE_PREFIX . 'db_version';
   
   $sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
@@ -435,10 +435,10 @@ function checkSchemaVersion(&$db)
     
   $myrow = $db->fetch_array($res);
   
-  $upgrade_msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
+  $upgrade_msg = "You need to upgrade your Testlink Database to {$latest_version} - <br>" .
                  '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 
-  $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$last_version} - Read README file!";
+  $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$latest_version} - Read README file!";
 
   switch (trim($myrow['version']))
   {
@@ -464,17 +464,18 @@ function checkSchemaVersion(&$db)
     case 'DB 1.9.11':
     case 'DB 1.9.12':
     case 'DB 1.9.13':
+    case 'DB 1.9.14':
       $result['msg'] = $manualop_msg;
     break;
 
-    case $last_version:
+    case $latest_version:
       $result['status'] = tl::OK;
       $result['kill_session'] = 'false';
     break;
     
     default:
       $result['msg'] = "Unknown Schema version " .  trim($myrow['version']) . 
-                       ", please upgrade your Testlink Database to " . $last_version;
+                       ", please upgrade your Testlink Database to " . $latest_version;
       break;
   }
   
@@ -579,7 +580,13 @@ function checkPhpExtensions(&$errCounter)
 
 
   // Database extensions  
-  $checks[]=array('extension' => 'mysql',
+  $mysqlExt = 'mysql';
+  if( version_compare(phpversion(), "5.5.0", ">=") )
+  {
+    $mysqlExt = 'mysqli';
+  }
+ 
+  $checks[]=array('extension' => $mysqlExt,
                   'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
   $checks[]=array('extension' => 'pgsql',
@@ -726,6 +733,7 @@ function checkDbType(&$errCounter, $type)
   switch ($type)
   {
       case 'mysql':
+      case 'mysqli':
       case 'mssql':
       case 'postgres':
         $out .= '<td><span class="tab-success">'.$type.'</span></td></tr>';
@@ -733,7 +741,7 @@ function checkDbType(&$errCounter, $type)
         
       default:
         $out .= '<td><span class="tab-warning">Unsupported type: '.$type.
-                '. MySQL,Postgres and MsSql 2000 are supported DB types. Of course' .
+                '. MySQL,Postgres and MSSQL are supported DB types. Of course' .
                 ' you can use also other ones without migration support.</span></td></tr>';
       break;
   }
@@ -764,9 +772,7 @@ function checkServerOs()
  */
 function checkPhpVersion(&$errCounter)
 {
-  // 5.2 is required because json is used in ext-js component
-  // 20131001 - 5.4 to avoid the issue with issuetracker interface
-  $min_version = '5.4.0'; 
+  $min_version = '5.5.0'; 
   $my_version = phpversion();
 
   // version_compare:
@@ -790,7 +796,7 @@ function checkPhpVersion(&$errCounter)
     $final_msg .= " ) </span></td></tr>";
   }
 
-  return ($final_msg);
+  return $final_msg;
 }  
 
 

@@ -127,6 +127,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   required tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required DEFAULT ((0)),
   required_on_design tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_design DEFAULT ((0)),
   required_on_execution tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_execution DEFAULT ((0)),
+  monitorable tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_monitorable DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_cfield_testprojects PRIMARY KEY CLUSTERED 
  (
   field_id ASC,
@@ -697,12 +698,12 @@ CREATE TABLE /*prefix*/user_testplan_roles (
 
 CREATE TABLE /*prefix*/users (
   id int IDENTITY(1,1) NOT NULL,
-  login varchar(30)  NOT NULL,
+  login varchar(100)  NOT NULL,
   password varchar(32)  NOT NULL,
   role_id int NOT NULL CONSTRAINT /*prefix*/DF_users_role_id DEFAULT ((0)),
   email varchar(100)  NOT NULL,
-  first varchar(30)  NOT NULL,
-  last varchar(30)  NOT NULL,
+  first varchar(50)  NOT NULL,
+  last varchar(50)  NOT NULL,
   locale varchar(10)  NOT NULL CONSTRAINT /*prefix*/DF_users_locale DEFAULT (N'en_US'),
   default_testproject_id int NULL,
   active tinyint NOT NULL CONSTRAINT /*prefix*/DF_users_active DEFAULT ((1)),
@@ -1000,4 +1001,41 @@ CREATE TABLE /*prefix*/testcase_relations (
   (
     id
   )  ON [PRIMARY]
+) ON [PRIMARY];
+
+--- 
+CREATE TABLE /*prefix*/req_monitor (
+  req_id INT NOT NULL DEFAULT '0',
+  user_id  INT NOT NULL DEFAULT '0',
+  testproject_id INT NOT NULL DEFAULT '0',
+  CONSTRAINT /*prefix*/PK_req_monitor PRIMARY KEY  CLUSTERED 
+  (
+    req_id,user_id,testproject_id
+  )  ON [PRIMARY]
+) ON [PRIMARY];
+
+CREATE TABLE /*prefix*/plugins (
+  plugin_id int NOT NULL IDENTITY(1,1) CONSTRAINT /*prefix*/DF_plugins_plugin_id DEFAULT ((0)),
+  basename VARCHAR(100) NOT NULL,
+  enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_plugins_enabled DEFAULT ((0)),
+  author_id int NOT NULL,
+  creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_plugins_creation_ts DEFAULT (getdate()),
+ CONSTRAINT /*prefix*/PK_plugins PRIMARY KEY CLUSTERED
+ (
+  plugin_id ASC
+ ) ON [PRIMARY]
+) ON [PRIMARY];
+
+CREATE TABLE /*prefix*/plugins_configuration (
+  plugin_config_id int IDENTITY(1,1) NOT NULL CONSTRAINT /*prefix*/DF_plugins_configuration_plugin_config_id DEFAULT ((0)),
+  testproject_id int NOT NULL CONSTRAINT /*prefix*/DF_plugins_configuration__testproject_id DEFAULT ((0)),
+  config_key VARCHAR(255) NOT NULL,
+  config_type int NOT NULL,
+  config_value VARCHAR(255) NOT NULL,
+  author_id int NOT NULL,
+  creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_plugins_configuration__creation_ts DEFAULT (getdate()),
+ CONSTRAINT /*prefix*/PK_plugins_configuration PRIMARY KEY CLUSTERED
+ (
+  plugin_config_id ASC
+ ) ON [PRIMARY]
 ) ON [PRIMARY];

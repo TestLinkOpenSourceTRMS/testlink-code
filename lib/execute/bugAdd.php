@@ -5,7 +5,7 @@
  *
  * @filesource	bugAdd.php
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  * 
  */
 require_once('../../config.inc.php');
@@ -31,7 +31,11 @@ if( ($args->user_action == 'create' || $args->user_action == 'doCreate') &&
     break;
 
     case 'doCreate':
+     $args->direct_link = getDirectLinkToExec($db,$args->exec_id);
+
+     $dummy = generateIssueText($db,$args,$its); 
      $gui->bug_summary = $args->bug_summary;
+  
      $ret = addIssue($db,$args,$its);
      $gui->issueTrackerCfg->tlCanCreateIssue = $ret['status_ok'];
      $gui->msg = $ret['msg'];
@@ -61,10 +65,21 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
               logAuditEvent(TLS("audit_executionbug_added",$args->bug_id),"CREATE",$args->exec_id,"executions");
 
               // blank notes will not be added :).
-              if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
+              if($gui->issueTrackerCfg->tlCanAddIssueNote) 
               {
+                $hasNotes = (strlen($gui->bug_notes) > 0);
                 // will do call to update issue Notes
-                $its->addNote($args->bug_id,$gui->bug_notes);
+                if($args->addLinkToTL) 
+                {
+                  $args->direct_link = getDirectLinkToExec($db,$args->exec_id);
+                  $dummy = generateIssueText($db,$args,$its); 
+                  $gui->bug_notes = $dummy->description;
+                }  
+
+                if( $args->addLinkToTL || $hasNotes )
+                {
+                  $its->addNote($args->bug_id,$gui->bug_notes);
+                }
               }  
             }
           }
@@ -119,8 +134,8 @@ function initEnv(&$dbHandler)
                    "artifactComponent" => array("POST",tlInputParameter::ARRAY_INT),
                    "artifactVersion" => array("POST",tlInputParameter::ARRAY_INT),
 		               "user_action" => array("REQUEST",tlInputParameter::STRING_N,
-                                          $user_action['minLengh'],$user_action['maxLengh']));
-		             
+                                          $user_action['minLengh'],$user_action['maxLengh']),
+                   "addLinkToTL" => array("POST",tlInputParameter::CB_BOOL));
 	
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
@@ -137,6 +152,7 @@ function initEnv(&$dbHandler)
   $args->user = $_SESSION['currentUser'];
 
   $gui = new stdClass();
+  $gui->addLinkToTL = $args->addLinkToTL;
   switch($args->user_action)
   {
     case 'create':
@@ -253,8 +269,30 @@ function getIssueTracker(&$dbHandler,$argsObj,&$guiObj)
   return array($its,$issueTrackerCfg); 
 }
 
+/**
+ *
+ */
+function getDirectLinkToExec(&$dbHandler,$execID)
+{
+  $tbk = array('executions','testplan_tcversions');
+  $tbl = tlObjectWithDB::getDBTables($tbk);
+  $sql = " SELECT EX.id,EX.build_id,EX.testplan_id," .
+         " EX.tcversion_id,TPTCV.id AS feature_id " .
+         " FROM {$tbl['executions']} EX " .
+         " JOIN {$tbl['testplan_tcversions']} TPTCV " .
+         " ON TPTCV.testplan_id=EX.testplan_id " .
+         " AND TPTCV.tcversion_id=EX.tcversion_id " .
+         " AND TPTCV.platform_id=EX.platform_id " .
+         " WHERE EX.id=" . intval($execID);
 
-
+  $rs = $dbHandler->get_recordset($sql);
+  $rs = $rs[0];
+  $dlk = trim($_SESSION['basehref'],'/') . 
+         "/ltx.php?item=exec&feature_id=" . $rs['feature_id'] .
+         "&build_id=" . $rs['build_id'];
+  
+  return $dlk;
+}
 
 /**
  * Checks the user rights for viewing the page

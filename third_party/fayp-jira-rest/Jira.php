@@ -17,18 +17,38 @@ class Jira
 {
 
     protected $host;
+    protected $username;
+    protected $password;
+    protected $proxy;
 
-    public function __construct(array $config = array())
+    /**
+     * Having properties for saving connection config
+     * is needed because on TestLink I've implemented
+     * poor's man caching on $_SESSION, and then I need
+     * to save connection info in THIS OBJECT, because
+     * is not recreated.
+     *
+     */
+    public function __construct(array $cfg = array())
     {
-        // Check config before do nothing
-        $this->request = new RestRequest();
-        $this->request->username = (isset($config['username'])) ? trim($config['username']) : null;
-        $this->request->password = (isset($config['password'])) ? trim($config['password']) : null;
-        $this->host = (isset($config['host'])) ? trim($config['host']) : null; 
-        
-        $this->configCheck();
-        $this->host = trim($this->host,"/") . '/'; 
+        if( !is_null($cfg) )
+        {
+            $k2trim = array('username','password','host');
+            foreach( $k2trim as $tg )
+            {
+              $this->$tg = (isset($cfg[$tg])) ? trim($cfg[$tg]) : null;
+            }    
+            $this->proxy = isset($cfg['proxy']) ? $cfg['proxy'] : null;
 
+        }    
+        $this->request = new RestRequest();
+        $this->request->username = $this->username; 
+        $this->request->password = $this->password;
+        $this->request->proxy = $this->proxy;
+
+        $this->configCheck();
+    
+        $this->host = trim($this->host,"/") . '/'; 
         if( ($last = $this->host[strlen($this->host)-1]) != '/' )
         {
             $this->host .= '/';
@@ -69,11 +89,11 @@ class Jira
     }
 
     /**
-     *
+     * https://docs.atlassian.com/jira/REST/latest/#api/2/user-getUser
      */
     public function getUser($username)
     {
-        $this->request->openConnect($this->host . 'user/search/?username=' . $username, 'GET');
+        $this->request->openConnect($this->host . 'user/?username=' . $username, 'GET');
         $this->request->execute();
         $user = json_decode($this->request->getResponseBody());
 

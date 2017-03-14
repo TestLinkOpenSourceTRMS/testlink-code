@@ -75,7 +75,7 @@ function saveMyTree_byForm()
 	  </ul>
 
 	<form method="post" name="containerOrder"
-	      action="lib/testcases/containerEdit.php?containerID={$objectID}">
+	      action="{$basehref}lib/testcases/containerEdit.php?containerID={$objectID}">
 	      
 	  <input type="hidden" name="nodes_order">
 	  <input type="hidden" name="do_testsuite_reorder" disabled="disabled">

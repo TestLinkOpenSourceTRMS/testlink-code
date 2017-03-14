@@ -75,7 +75,7 @@ function init_global_rights_maps()
                    'desc_mgt_modify_users' => null,'desc_role_management' => null,
                    'desc_user_role_assignment' => null,
                    'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
-                   'desc_mgt_unfreeze_req' => null,
+                   'desc_mgt_unfreeze_req' => null,'desc_mgt_plugins' => null,
                    'right_exec_edit_notes' => null, 'right_exec_delete' => null,
                    'right_testplan_unlink_executed_testcases' => null, 
                    'right_testproject_delete_executed_testcases' => null,
@@ -156,7 +156,8 @@ function init_global_rights_maps()
   $g_rights_users = $g_rights_users_global;
               
   $g_rights_system = array ("mgt_view_events" => $l18n['desc_mgt_view_events'],
-                            "events_mgt" => $l18n['desc_events_mgt']);
+                            "events_mgt" => $l18n['desc_events_mgt'],
+                            "mgt_plugins" => $l18n['desc_mgt_plugins']);
 
 
               

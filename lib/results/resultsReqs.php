@@ -11,7 +11,7 @@
  * 
  * 
  * internal revisions
- * @since 1.9.13
+ * @since 1.9.16
  */
 
 require_once("../../config.inc.php");
@@ -43,12 +43,6 @@ $args = init_args($tproject_mgr,$tplan_mgr,$req_cfg);
 $images = $smarty->getImages();
 $gui = init_gui($args,$tplan_mgr);
 $i2u = array('edit_icon','exec_icon','history_small');
-foreach($i2u as $ik)
-{
-  $images[$ik] = $gui->baseHref . $images[$ik]; 
-} 
-
-
 
 
 $reqContext = array('tproject_id' => $args->tproject_id, 'tplan_id' => $args->tplan_id, 

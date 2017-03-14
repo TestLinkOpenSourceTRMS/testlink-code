@@ -142,7 +142,7 @@ function validateForm() {
 	
 	<div class="workBack" style="width:97%;">
 	
-	<form target="diffwindow" method="post" action="lib/testcases/tcCompareVersions.php" name="tc_compare_versions" 
+	<form target="diffwindow" method="post" action="{$basehref}lib/testcases/tcCompareVersions.php" name="tc_compare_versions" 
 			onsubmit="return validateForm();" />
 	
 	<p><input type="submit" name="compare_selected_versions" value="{$labels.btn_compare_selected_versions}" /></p><br/>

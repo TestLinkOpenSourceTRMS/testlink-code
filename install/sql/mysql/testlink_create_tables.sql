@@ -136,6 +136,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   `required` tinyint(1) NOT NULL default '0',
   `required_on_design` tinyint(1) NOT NULL default '0',
   `required_on_execution` tinyint(1) NOT NULL default '0',
+  `monitorable` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
@@ -525,12 +526,12 @@ CREATE TABLE /*prefix*/user_assignments (
 
 CREATE TABLE /*prefix*/users (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `login` varchar(30) NOT NULL default '',
+  `login` varchar(100) NOT NULL default '',
   `password` varchar(32) NOT NULL default '',
   `role_id` int(10) unsigned NOT NULL default '0',
   `email` varchar(100) NOT NULL default '',
-  `first` varchar(30) NOT NULL default '',
-  `last` varchar(30) NOT NULL default '',
+  `first` varchar(50) NOT NULL default '',
+  `last` varchar(50) NOT NULL default '',
   `locale` varchar(10) NOT NULL default 'en_GB',
   `default_testproject_id` int(10) default NULL,
   `active` tinyint(1) NOT NULL default '1',
@@ -695,4 +696,31 @@ CREATE TABLE /*prefix*/testcase_relations (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/req_monitor (
+  `req_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `testproject_id` int(11) NOT NULL,
+  PRIMARY KEY (`req_id`,`user_id`,`testproject_id`)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/plugins (
+   `id` int(11) NOT NULL auto_increment,
+   `basename`  varchar(100) NOT NULL,
+   `enabled` tinyint(1) NOT NULL default '0',
+   `author_id` int(10) unsigned default NULL,
+   `creation_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/plugins_configuration (
+  `id` int(11) NOT NULL auto_increment,
+  `testproject_id` int(11) NOT NULL,
+  `config_key` varchar(255) NOT NULL,
+  `config_type` int(11) NOT NULL,
+  `config_value` varchar(255) NOT NULL,
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;

@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.63.2.2 2010/12/11 17:25:21 franciscom Exp $
+-- testlink_create_tables.sql
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -97,12 +97,12 @@ CREATE UNIQUE INDEX /*prefix*/roles_uidx1 ON /*prefix*/roles ("description");
 --
 CREATE TABLE /*prefix*/users(  
   "id" BIGSERIAL NOT NULL ,
-  "login" VARCHAR(30) NOT NULL DEFAULT '',
+  "login" VARCHAR(100) NOT NULL DEFAULT '',
   "password" VARCHAR(32) NOT NULL DEFAULT '',
   "role_id" SMALLINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id),
   "email" VARCHAR(100) NOT NULL DEFAULT '',
-  "first" VARCHAR(30) NOT NULL DEFAULT '',
-  "last" VARCHAR(30) NOT NULL DEFAULT '',
+  "first" VARCHAR(50) NOT NULL DEFAULT '',
+  "last" VARCHAR(50) NOT NULL DEFAULT '',
   "locale" VARCHAR(10) NOT NULL DEFAULT 'en_GB',
   "default_testproject_id" INTEGER NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
@@ -303,6 +303,7 @@ CREATE TABLE /*prefix*/cfield_testprojects(
   "required" INT2 NOT NULL default '0',
   "required_on_design" INT2 NOT NULL default '0',
   "required_on_execution" INT2 NOT NULL default '0',
+  "monitorable" INT2 NOT NULL default '0',
 
   PRIMARY KEY ("field_id","testproject_id")
 ); 
@@ -801,6 +802,13 @@ CREATE TABLE /*prefix*/testcase_relations (
 );
 
 
+CREATE TABLE /*prefix*/req_monitor (
+  req_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
+  user_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  PRIMARY KEY (req_id,user_id,testproject_id)
+);
+
 --
 -- TICKET 4914: Create View - tcversions_last_active
 --
@@ -828,4 +836,24 @@ CREATE OR REPLACE VIEW /*prefix*/tcases_active AS
 	FROM /*prefix*/nodes_hierarchy nhtcv
 	JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
 	WHERE tcv.active = 1
-);				
+);
+
+CREATE TABLE /*prefix*/plugins (
+   id BIGSERIAL NOT NULL,
+   basename  VARCHAR(100) NOT NULL,
+   enabled INT2 NOT NULL DEFAULT '0',
+   author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+   creation_ts TIMESTAMP NOT NULL DEFAULT now(),
+   PRIMARY KEY (id)
+);
+
+CREATE TABLE /*prefix*/plugins_configuration (
+   id BIGSERIAL NOT NULL,
+   testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+   config_key VARCHAR(255) NOT NULL,
+   config_type INTEGER NOT NULL,
+   config_value varchar(255) NOT NULL,
+   author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+   creation_ts TIMESTAMP NOT NULL DEFAULT now(),
+   PRIMARY KEY (id)
+);

@@ -5,14 +5,6 @@ Form for requirement search.
 
 @internal revisions
 
-@since 1.9.4
-20110815 - franciscom - TICKET 4700: Req Search Improvements
-
-@since 1.9.3
-20101026 - Julian - no validation for dates -> no manual input - input only via datepicker
-20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
-20100707 - Julian - BUGID 3584: replaced cf names by cf labels
-20100323 - asimon - added searching for req relation types (BUGID 1748)
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -35,7 +27,7 @@ Form for requirement search.
 <h1 class="title">{$gui->mainCaption|escape}</h1>
 
 <div style="margin: 1px;">
-<form method="post" action="lib/requirements/reqSearch.php" target="workframe">
+<form method="post" action="{$basehref}lib/requirements/reqSearch.php" target="workframe">
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form_req}</caption>
 		<tr>

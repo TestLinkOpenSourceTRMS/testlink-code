@@ -508,6 +508,9 @@ table.simple_tableruler tr:hover{
     background-color: #CDDEF3 !important;
 }
 
+table.tableruler tr:hover{
+    background-color: #FFF !important;
+}
 
 /* Used for filters and options settings */
 table.smallGrey {

@@ -32,6 +32,7 @@ require_once('exec.inc.php');
 require_once("attachments.inc.php");
 require_once("specview.php");
 require_once("web_editor.php");
+require_once('event_api.php');
 
 $cfg = getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
@@ -104,7 +105,8 @@ if(!is_null($linked_tcversions))
                         "&build_id=" . $args->build_id;
 
 
-
+    $args->direct_link = $gui->direct_link;
+     
     // 20151206 - issue @ test step
     if(!is_null($gui->issueSummaryForStep))
     {
@@ -123,6 +125,14 @@ if(!is_null($linked_tcversions))
     $tcversion_id = $itemSet->tcversion_id;
   }
 
+  // Send Event for Drawing UI from plugins
+ $ctx = array('tplan_id' => $args->tplan_id,
+              'build_id' => $args->build_id,
+              'tcase_id' => $tcase_id,
+              'tcversion_id' => $tcversion_id);
+ $gui->plugins = array();
+ $gui->plugins['EVENT_TESTRUN_DISPLAY'] = event_signal('EVENT_TESTRUN_DISPLAY', $ctx);
+  
   // check if value is an array before calling implode to avoid warnings in event log
   $gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
 
@@ -175,7 +185,16 @@ if(!is_null($linked_tcversions))
       if($lexid > 0 && $args->copyIssues && $args->level == 'testcase')
       {
         copyIssues($db,$lexid,$execSet[$args->version_id]);
-      } 
+      }
+
+      // Propagate events
+      $ctx = array('id' => $execSet[$tcversion_id],
+                   'tplan_id' => $args->tplan_id,
+                   'build_id' => $args->build_id,
+                   'tcase_id' => $tcase_id,
+                   'status'   => $args->statusSingle[$args->version_id],
+                   'directLink' => $args->direct_link);
+      event_signal('EVENT_EXECUTE_TEST', $ctx);
     }
 
     // Need to re-read to update test case status
@@ -295,11 +314,11 @@ if(!is_null($linked_tcversions))
       $tcase_id = array_intersect($tcase_id, $args->testcases_to_show);
     }  
 
-    $gui->map_last_exec = getLastestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+    $gui->map_last_exec = getLatestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     $gui->map_last_exec_any_build = null;
     $gui->other_execs=null;
     $testerid = null;
-    
+      
     if($args->level == 'testcase')
     {
       // @TODO 20090815 - franciscom check what to do with platform
@@ -378,7 +397,7 @@ else
       $userSet[] = $value;
     }
   }
-  smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
+  smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id,$cfg);
 
   // Bulk is possible when test suite is selected (and is allowed in config)
   if( $gui->can_use_bulk_op = ($args->level == 'testsuite') )
@@ -391,11 +410,12 @@ else
 
   // To silence smarty errors
   //  future must be initialized in a right way
-
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
   $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
+
+  Kint::dump($gui);
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 } 
 
@@ -543,6 +563,9 @@ function init_args(&$dbHandler,$cfgObj)
     $args->tproject_id = $dm['parent_id']; 
   }
 
+
+  $args->addLinkToTL = isset($_REQUEST['addLinkToTL']) ? TRUE : FALSE;
+  
 
   // Do this only on single execution mode
   // get issue tracker config and object to manage TestLink - BTS integration 
@@ -728,7 +751,7 @@ function get_ts_name_details(&$db,$tcase_id)
   returns: 
 
 */
-function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
+function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id,$cfgObj)
 {
   if( ($safeTCaseID = intval($tcase_id)) <= 0)
   {
@@ -799,9 +822,10 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
       }
       $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
     }
+
     if( count($a_tsval) > 0 )
     {
-      setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME, '/');
+      setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME,$cfgObj->cookie_path);
     }
       
     $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
@@ -1184,7 +1208,8 @@ function getCfg()
   $cfg->tc_status = $results['status_code'];
   $cfg->testcase_cfg = config_get('testcase_cfg'); 
   $cfg->editorCfg = getWebEditorCfg('execution');
-    
+  
+  $cfg->cookie_path = config_get('cookie_path');  
   return $cfg;
 }
 
@@ -1261,6 +1286,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     
   $gui = new stdClass();
 
+  // TBD $gui->delAttachmentURL =
+  
   $gui->showExternalAccessString = true;
   $gui->showImgInlineString = false;
   
@@ -1295,6 +1322,17 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->ownerDisplayName = null;
     
   $gui->editorType=$cfgObj->editorCfg['type'];
+  $cfgTestPlan = getWebEditorCfg('testplan');
+  $gui->testPlanEditorType = $cfgTestPlan['type'];
+  $cfgPlatform = getWebEditorCfg('platform');
+  $gui->platformEditorType = $cfgPlatform['type'];
+  $cfgBuild = getWebEditorCfg('build');
+  $gui->buildEditorType = $cfgBuild['type'];
+  $cfgDesign = getWebEditorCfg('design');
+  $gui->testDesignEditorType = $cfgDesign['type'];
+  $cfgStepsDesign = getWebEditorCfg('design');
+  $gui->stepDesignEditorType = $cfgStepsDesign['type'];
+  
   $gui->filter_assigned_to=$argsObj->filter_assigned_to;
   $gui->tester_id=$argsObj->user_id;
   $gui->include_unassigned=$argsObj->include_unassigned;
@@ -1454,6 +1492,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 */
 function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tcaseMgr,&$docRepository)
 {     
+
+  
   // IMPORTANT due  to platform feature
   // every element on linked_tcversions will be an array.
   $cf_filters=array('show_on_execution' => 1); 
@@ -1521,7 +1561,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
 
 
 /*
-  function: getLastestExec
+  function: getLatestExec
             Important Notice: 
             $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
 
@@ -1530,7 +1570,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   returns: 
 
 */
-function getLastestExec(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
+function getLatestExec(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 { 
   $options=array('getNoExecutions' => 1, 'groupByBuild' => 0, 'getStepsExecInfo' => 1);
 
@@ -2092,7 +2132,7 @@ function manageCookies(&$argsObj,$cfgObj)
     $argsObj->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
     if( isset($key4cookies[$key]) )
     {
-      setcookie($cookiePrefix . $key,$argsObj->$key,TL_COOKIE_KEEPTIME, '/');
+      setcookie($cookiePrefix . $key,$argsObj->$key,TL_COOKIE_KEEPTIME, $cfgObj->cookie_path);
     }
   }
 }  

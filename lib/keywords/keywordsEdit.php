@@ -8,9 +8,9 @@
  * Allows users to manage keywords. 
  *
  * @package    TestLink
- * @copyright  2005,2015 TestLink community 
+ * @copyright  2005,2016 TestLink community 
  * @link       http://www.testlink.org/
- *
+ *  
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -60,7 +60,6 @@ if ($tpl != $tplCfg->default_template)
   // I'm going to return to screen that display all keywords
   $gui->keywords = $tprojectMgr->getKeywords($args->tproject_id);
 }
-
 
 $tplEngine->assign('gui',$gui);
 $tplEngine->display($tplCfg->template_dir . $tpl);
@@ -270,7 +269,7 @@ function initializeGui(&$args)
   $gui->keyword = $args->keyword;
   $gui->keywordID = $args->keyword_id;
 
-  $gui->editUrl = "lib/keywords/keywordsEdit.php?" .
+  $gui->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" .
                   "tproject_id={$gui->tproject_id}"; 
 
   return $gui;

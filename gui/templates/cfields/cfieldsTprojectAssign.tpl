@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsTprojectAssign.tpl,v 1.9 2010/10/05 06:50:21 amkhullar Exp $
+@filesource cfieldsTprojectAssign.tpl
 Purpose: management Custom fields assignment to a test project
 
 @internal revisions
-@since 1.9.8
+@since 1.9.15
 
 *}
 {include file="inc_head.tpl" openHead="yes"}
@@ -16,10 +16,10 @@ Purpose: management Custom fields assignment to a test project
              cfields_tproject_assign,title_assigned_cfields,check_uncheck_all_checkboxes,
              available_on,type,required,
              manage_cfield,btn_unassign,btn_cfields_boolean_mgmt,btn_cfields_display_order,
-             btn_cfields_display_attr,title_available_cfields'}
+             btn_cfields_display_attr,title_available_cfields,monitorable'}
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">
@@ -52,6 +52,7 @@ Purpose: management Custom fields assignment to a test project
       		<th width="15%">{$labels.location}</th>
       		<th width="5%">{$labels.cfields_active}</th>
           <th width="5%">{$labels.required}</th>
+          <th width="5%">{$labels.monitorable}</th>
       	</tr>
       	{foreach key=cf_id item=cf from=$gui->my_cf}
       	<tr>
@@ -86,6 +87,11 @@ Purpose: management Custom fields assignment to a test project
           <td><input type="checkbox" name="required_cfield[{$cf.id}]" 
                                      {if $cf.required eq 1} checked="checked" {/if} /> 
               <input type="hidden" name="hidden_required_cfield[{$cf.id}]"  value="{$cf.required}" /> 
+          </td>
+
+          <td><input type="checkbox" name="monitorable_cfield[{$cf.id}]" 
+                                     {if $cf.monitorable eq 1} checked="checked" {/if} /> 
+              <input type="hidden" name="hidden_monitorable_cfield[{$cf.id}]"  value="{$cf.monitorable}" /> 
           </td>
 
       	</tr>

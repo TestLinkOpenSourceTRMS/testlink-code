@@ -43,7 +43,7 @@ class ADODB_XML
 	function ADODB_XML($version = "", $encoding = "", $tmpDir = null) 
 	{
 	  $this->xml = new XMLFile($version, $encoding);
-	  $this->tmpDir = is_null(tmpDir) ? sys_get_temp_dir() : $tmpDir; 
+	  $this->tmpDir = is_null($tmpDir) ? sys_get_temp_dir() : $tmpDir; 
 	}
 	
 	/**

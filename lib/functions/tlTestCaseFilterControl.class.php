@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterControl.class.php
  * @package    TestLink
  * @author     Andreas Simon
- * @copyright  2006-2014, TestLink community
+ * @copyright  2006-2016, TestLink community
  * @link       http://testlink.sourceforge.net/
  * 
  *
@@ -342,6 +342,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // and does all the remaining necessary method calls,
     // so no further method call is required here for initialization.
     parent::__construct($dbHandler);
+
     $this->cfield_mgr = new cfield_mgr($this->db);
 
     // moved here from parent::__constructor() to be certain that 
@@ -382,7 +383,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
    */
   protected function read_config() 
   {
-
     // some configuration reading already done in parent class
     parent::read_config();
 
@@ -395,14 +395,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // some additional testcase configuration
     $this->configuration->tc_cfg = config_get('testcase_cfg');
     
-    // advanced filter mode enabled?
+    // is switch filter mode enabled?
     $this->filter_mode_choice_enabled = false;
-    if (isset($this->configuration->advanced_filter_mode_choice) && 
-        $this->configuration->advanced_filter_mode_choice == ENABLED) 
+    switch( $this->mode )
     {
-      $this->filter_mode_choice_enabled = true;
-    } 
-    
+      case 'edit_mode':
+      break;
+
+      default:
+        if (isset($this->configuration->advanced_filter_mode_choice) && 
+            $this->configuration->advanced_filter_mode_choice == ENABLED) 
+        {
+          $this->filter_mode_choice_enabled = true;
+        } 
+      break;
+    }
+
     return tl::OK;
   } // end of method
 
@@ -429,6 +437,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
      
     // Do first get, to have info that can change config
     I_PARAMS($params, $this->args);
+
+    switch( $this->mode )
+    {
+      case 'edit_mode':
+        $this->args->advanced_filter_mode = TRUE;
+      break;
+    }
+
 
     if($this->args->advanced_filter_mode)
     {
@@ -463,7 +479,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $type = 'filter_keywords_filter_type';
     $this->args->{$type} = (isset($_REQUEST[$type])) ? trim($_REQUEST[$type]) : 'Or';
 
-    $extra_keys = array('filter_result_result','filter_result_method','filter_result_build');
+    // caller is needed for the logic to apply default values to filters when accessing
+    // from desktop/main page
+    $extra_keys = array('caller','filter_result_result','filter_result_method','filter_result_build');
 
     foreach ($extra_keys as $ek) 
     {
@@ -857,7 +875,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
                    '&filter_result_build=' .  $this->active_filters['filter_result_build'];
       }
 
-      // 20131226
       if( !is_null($this->active_filters['filter_bugs']))
       {
         $string .= '&' . http_build_query( array('filter_bugs' => $this->active_filters['filter_bugs']));  
@@ -1192,10 +1209,26 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     $tplan_id = $this->settings['setting_testplan']['selected'];
 
-    // when in plan mode (assigning execution), we want all builds,
-    // otherwise only those which are active and open
-    $active = ($this->mode == 'plan_mode') ? null : testplan::GET_ACTIVE_BUILD;
-    $open = ($this->mode == 'plan_mode') ? null : testplan::GET_OPEN_BUILD;
+    switch( $this->mode )
+    {
+      case 'plan_mode':
+        $active = $open = null;
+        if( $this->configuration->setting_build_inactive_out )
+        {
+          $active = testplan::GET_ACTIVE_BUILD;  
+        }  
+
+        if( $this->configuration->setting_build_close_out )
+        {
+          $open = testplan::GET_OPEN_BUILD;  
+        }  
+      break;
+
+      default:
+        $active = testplan::GET_ACTIVE_BUILD;
+        $open = testplan::GET_OPEN_BUILD;
+      break;
+    }
     
     $this->settings[$key]['items'] = $this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
     $tplan_builds = array_keys((array)$this->settings[$key]['items']);
@@ -1940,11 +1973,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
 
     // handle filter reset
+    $cfx = $this->configuration->{$key . "_values"};
     $selection = $this->args->{$key};
     if (!$selection || $this->args->reset_filters) 
     {
-      $selection = null;
-    } 
+      if( !is_null($this->args->caller) && !$selection)
+      {
+        $selection = null;
+      }  
+      else if( count($cfx) > 0)
+      {
+        $selection = $cfx;
+        $this->do_filtering = true;
+      }
+      else
+      {
+        $selection = null;
+      }  
+    }  
     else 
     {
       $this->do_filtering = true;
@@ -2005,5 +2051,24 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $cf = (array)$cfields['design'] + (array)$cfields['testplan_design'];
     return count($cf) > 0 ? $cf : null;
   }
+
+  /**
+   *
+   */
+  protected function init_advanced_filter_mode() 
+  {
+    switch( $this->mode )
+    {
+      case 'edit_mode': 
+        $this->advanced_filter_mode = TRUE;
+      break;
+ 
+      default:
+        $m2c = __FUNCTION__;
+        parent::$m2c();
+      break;
+    }
+  } // end of method
+
 
 }

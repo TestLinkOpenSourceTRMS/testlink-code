@@ -10,31 +10,41 @@
 {include file="inc_ext_js.tpl"}
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 <script type="text/javascript">
-window.onload=function()
+window.onload=function() 
 {
 
   /* with typeof display_left_block_1 I'm checking is function exists */
-  if( typeof display_left_block_1 != 'undefined')
+  if(typeof display_left_block_top != 'undefined') 
+  {
+    display_left_block_top();
+  }
+
+  if(typeof display_left_block_1 != 'undefined') 
   {
     display_left_block_1();
   }
 
-  if( typeof display_left_block_2 != 'undefined')
+  if(typeof display_left_block_2 != 'undefined') 
   {
     display_left_block_2();
   }
 
-  if( typeof display_left_block_3 != 'undefined')
+  if(typeof display_left_block_3 != 'undefined') 
   {
     display_left_block_3();
   }
-    
-  if( typeof display_left_block_4 != 'undefined')
+
+  if(typeof display_left_block_4 != 'undefined') 
   {
     display_left_block_4();
   }
 
-  if( typeof display_left_block_5 != 'undefined')
+  if(typeof display_left_block_bottom != 'undefined') 
+  {
+    display_left_block_bottom();
+  }
+
+  if(typeof display_left_block_5 != 'undefined')
   {
     display_left_block_5();
   }
@@ -53,7 +63,16 @@ window.onload=function()
   {
     display_right_block_3();
   }
-   
+
+  if( typeof display_right_block_top != 'undefined')
+  {
+    display_right_block_top();
+  }
+
+  if( typeof display_right_block_bottom != 'undefined')
+  {
+    display_right_block_bottom();
+  }
 }
 </script>
 </head>

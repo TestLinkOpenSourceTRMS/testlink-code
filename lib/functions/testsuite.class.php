@@ -6,17 +6,18 @@
  * @filesource  testsuite.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
  */
 
 /** include support for attachments */
 require_once( dirname(__FILE__) . '/attachments.inc.php');
 require_once( dirname(__FILE__) . '/files.inc.php');
+require_once( dirname(__FILE__) . '/event_api.php');
 
 /**
  * Test Suite CRUD functionality
@@ -196,6 +197,12 @@ class testsuite extends tlObjectWithAttachments
       if ($result)
       {
         $ret['id'] = $tsuite_id;
+
+        if (defined('TL_APICALL'))
+        {
+            $ctx = array('id' => $tsuite_id,'name' => $name,'details' => $details);     
+            event_signal('EVENT_TEST_SUITE_CREATE', $ctx);
+        }
       }
     }
     
@@ -214,23 +221,35 @@ class testsuite extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $ret['status_ok']=0;
     $ret['msg']='';
-    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,intval($id),$parent_id);
+
+    $safeID = intval($id);
+    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$safeID,$parent_id);
+    
     if($check['status']==0)
     {
-      $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
-             " SET details = '" . $this->db->prepare_string($details) . "'" .
-             " WHERE id = {$id}";
-      $result = $this->db->exec_query($sql);
-        
-      if ($result)
+      $where = " WHERE id = {$safeID} ";
+    
+      // Work on enity table 
+      if( !is_null($details) )
       {
-        $sql = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-             " SET name='" .  $this->db->prepare_string($name) . "' ";
-        if( !is_null($node_order) && intval($node_order) > 0 )
-        {
-          $sql .= ', node_order=' . $this->db->prepare_int(intval($node_order));     
-        }    
-        $sql .= " WHERE id= {$id}";
+        $sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
+               " SET details = '" . $this->db->prepare_string($details) . "'" . $where;
+        $result = $this->db->exec_query($sql);
+      }  
+   
+      // Work on nodes hierarchy table
+      $sqlUpd = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} ";
+      if( !is_null($name) )
+      {
+        $sql = " SET name='" .  $this->db->prepare_string($name) . "' ";
+        $sql = $sqlUpd . $sql . $where;       
+        $result = $this->db->exec_query($sql);
+      }  
+      
+      if( !is_null($node_order) && intval($node_order) > 0 )
+      {
+        $sql = ' SET node_order=' . $this->db->prepare_int(intval($node_order));     
+        $sql = $sqlUpd . $sql . $where;       
         $result = $this->db->exec_query($sql);
       }
       
@@ -239,6 +258,15 @@ class testsuite extends tlObjectWithAttachments
       if (!$result)
       {
         $ret['msg'] = $this->db->error_msg();
+      } 
+      else
+      {
+        if (defined('TL_APICALL'))
+        {
+          // @TODO this need some refactoring due to conditional update added on 20160806
+          $ctx = array('id' => $id,'name' => $name,'details' => $details);
+          event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
+        }
       }
     }
     else
@@ -293,6 +321,11 @@ class testsuite extends tlObjectWithAttachments
     $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " .
            "WHERE id={$id} AND node_type_id=" . $this->my_node_type;
     $result = $this->db->exec_query($sql);
+    if ($result) 
+    {
+      $ctx = array('id' => $id);
+      event_signal('EVENT_TEST_SUITE_DELETE', $ctx);
+    }
   }
   
   
@@ -492,7 +525,8 @@ class testsuite extends tlObjectWithAttachments
     $gui->id = $id;
     $gui->page_title = lang_get('testsuite');
     $gui->level = $gui->containerType = 'testsuite';
-    
+    $cfg = getWebEditorCfg('design');
+    $gui->testDesignEditorType = $cfg['type'];
     $smarty->assign('gui',$gui);
     $smarty->display($template_dir . 'containerView.tpl');
   }

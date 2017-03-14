@@ -5,7 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - Show existing builds
 
 @internal revisions
-@since 1.9.10
+@since 1.9.15
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -71,7 +71,7 @@ var del_action=fRoot+'{$deleteAction}';
   					     {/if}    
   					  </a>   
   				</td>
-  				<td>{$build.notes}</td>
+  				<td>{if $gui->editorType == 'none'}{$build.notes|nl2br}{else}{$build.notes}{/if}</td>
   				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
 
           <td class="clickable_icon">

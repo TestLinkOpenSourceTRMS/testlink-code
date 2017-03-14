@@ -1908,7 +1908,7 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my = array();
-    $my['opt'] = array('orderByDir' => null);
+    $my['opt'] = array('orderByDir' => null,'excludeBuild' => 0);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     $sql = " /* $debugMsg */ SELECT id, name " .
@@ -1918,11 +1918,17 @@ class testplan extends tlObjectWithAttachments
     {
       $sql .= " AND active=" . intval($active) . " ";
     }
+    
     if( !is_null($open) )
     {
       $sql .= " AND is_open=" . intval($open) . " ";
     }
     
+    if( $my['opt']['excludeBuild'] > 0)
+    {
+      $sql .= " AND id <> " . intval($my['opt']['excludeBuild']) . " ";      
+    }
+
     $orderClause = " ORDER BY name ASC";
     if( !is_null($my['opt']['orderByDir']) )
     {
@@ -2350,43 +2356,6 @@ class testplan extends tlObjectWithAttachments
     return $BuildID;  
   }
 
-
-  /*
-    function: create_build
-  
-    args :
-          $tplan_id
-          $name
-          $notes
-          [$active]: default: 1
-          [$open]: default: 1
-  
-  
-  
-    returns:
-  
-    rev :
-  */
-  function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
-  {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-    $sql = " /* $debugMsg */ INSERT INTO {$this->tables['builds']} (testplan_id,name,notes,active,is_open) " .
-           " VALUES ('". $tplan_id . "','" .
-           $this->db->prepare_string($name) . "','" .
-           $this->db->prepare_string($notes) . "'," .
-           "{$active},{$open})";
-    
-    $new_build_id = 0;
-    $result = $this->db->exec_query($sql);
-    if ($result)
-    {
-      $new_build_id = $this->db->insert_id($this->tables['builds']);
-    }
-    
-    return $new_build_id;
-  }
-  
 
   // --------------------------------------------------------------------------------------
   // Custom field related methods
@@ -3556,9 +3525,6 @@ class testplan extends tlObjectWithAttachments
         }  
 
         $sql .= " ORDER BY TZ.node_order >= ($subq) ";
-        echo $sql;
-
-
       break;
 
       case 'local':
@@ -3865,7 +3831,7 @@ class testplan extends tlObjectWithAttachments
     {
       $item_info['testsuites'] = '<testsuites>' . 
                                  $this->exportTestSuiteDataToXML($tplan_spec,$context['tproject_id'],$id,
-                                                                 $context['platform_id']) . 
+                                                                 $context['platform_id'],$context['build_id']) . 
                                  '</testsuites>';
     } 
     
@@ -3888,7 +3854,7 @@ class testplan extends tlObjectWithAttachments
    * 
    *
    */
-  private function exportTestSuiteDataToXML($container,$tproject_id,$tplan_id,$platform_id)
+  private function exportTestSuiteDataToXML($container,$tproject_id,$tplan_id,$platform_id,$build_id)
   {
     static $keywordMgr;
     static $getLastVersionOpt = array('output' => 'minimun');
@@ -3939,7 +3905,7 @@ class testplan extends tlObjectWithAttachments
         switch($cNode['node_table'])
         {
           case 'testsuites':
-            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id,$tplan_id,$platform_id);
+            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id,$tplan_id,$platform_id,$build_id);
           break;
             
           case 'testcases':
@@ -3949,13 +3915,44 @@ class testplan extends tlObjectWithAttachments
             }
             // testcase::LATEST_VERSION,
             $tcaseExportOptions['EXEC_ORDER'] = $linkedItems[$cNode['id']][$platform_id]['node_order'];
-            $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
+			
+			$filter_lv = array( 'exec_status' => 'ALL', 'active_status' => 'ALL','tplan_id' => $tplan_id, 'platform_id' => $platform_id );
+			$output_lv = array( 'output' => 'simple' );
+			// get tc versions linked in current testplan for current platform
+			$info = $tcaseMgr->get_linked_versions($cNode['id'],$filter_lv,$output_lv);
+			if( !is_null($info) )
+			{
+				$tcversID = key($info);
+			}
+
+			// get users assigned to tc version in current testplan for the current build
+			$versionAssignInfo = $tcaseMgr->get_version_exec_assignment($tcversID, $tplan_id, $build_id );
+			$userList = array();
+			// extract user names
+			if(!is_null($versionAssignInfo))
+			{
+				foreach($versionAssignInfo[$tcversID][$platform_id] as $vaInfo)
+				{
+					$assignedTesterId = intval($vaInfo['user_id']);
+					if($assignedTesterId)
+					{
+					  $user = tlUser::getByID($this->db,$assignedTesterId);
+					  if ($user)
+					  {
+						$userList[] = $user->getDisplayName();
+					  }
+					}
+				}
+			}
+			(count($userList) > 0) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
+			
+			$xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
                                                          $tproject_id,testcase::NOXMLHEADER,
                                                          $tcaseExportOptions);
           break;
         }
       }
-    }   
+    }
 
     if( isset($container['id']) )
     {
@@ -7646,6 +7643,32 @@ class testplan extends tlObjectWithAttachments
     return $rs[0]['qty'];
   }
 
+  /**
+   *
+   */
+  function getFeatureByID($feature_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $target = (array)$feature_id;
+    foreach($target as $idx => $tg)
+    {
+      $target[$idx] = intval($tg);
+    }  
+    $inSet = implode(',', $target);
+
+    $sql = " /* $debugMsg */ ". 
+           " SELECT parent_id AS tcase_id,tcversion_id,platform_id,TPTCV.id " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+           " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+           " ON TPTCV.tcversion_id = NHTC.id " .
+           " WHERE TPTCV.id IN (" . $inSet . ")";
+         
+    $items = $this->db->fetchRowsIntoMap($sql,'id');           
+    return $items;
+  }
+
+
 } // end class testplan
 
 
@@ -7746,7 +7769,7 @@ class build_mgr extends tlObject
   */
   function create($tplan_id,$name,$notes = '',$active=1,$open=1,$release_date='')
   {
-    $targetDate=trim($release_date);
+    $targetDate = trim($release_date);
     $sql = " INSERT INTO {$this->tables['builds']} " .
            " (testplan_id,name,notes,release_date,active,is_open,creation_ts) " .
            " VALUES ('". $tplan_id . "','" . $this->db->prepare_string($name) . "','" .
@@ -7761,18 +7784,16 @@ class build_mgr extends tlObject
       $sql .= "'" . $this->db->prepare_string($targetDate) . "',";
     }
     
-    // Important: MySQL do not support default values on datetime columns that are functions
-    // that's why we are using db_now().
     $sql .= "{$active},{$open},{$this->db->db_now()})";                        
-    
-    $new_build_id = 0;
+
+    $id = 0;
     $result = $this->db->exec_query($sql);
     if ($result)
     {
-      $new_build_id = $this->db->insert_id($this->tables['builds']);
+      $id = $this->db->insert_id($this->tables['builds']);
     }
     
-    return $new_build_id;
+    return $id;
   }
 
 

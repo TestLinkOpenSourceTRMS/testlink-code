@@ -15,6 +15,7 @@
 
 /** related functions */ 
 require_once('attachments.inc.php');
+require_once('event_api.php');
 
 /**
  * class is responsible to get project related data and CRUD test project
@@ -40,6 +41,7 @@ class testproject extends tlObjectWithAttachments
   var $nt2exclude_children=array('testcase' => 'exclude_my_children','requirement_spec'=> 'exclude_my_children');
 
   var $debugMsg;
+  var $tmp_dir;
 
   /** 
    * Class constructor
@@ -48,6 +50,8 @@ class testproject extends tlObjectWithAttachments
    */
   function __construct(&$db)
   {
+    $this->tmp_dir = config_get('temp_dir');
+
     $this->db = &$db;
     $this->tree_manager = new tree($this->db);
     $this->cfield_mgr=new cfield_mgr($this->db);
@@ -145,6 +149,10 @@ function create($item,$opt=null)
       $this->setSessionProject($id);
     }
     $evt->logLevel = 'AUDIT';
+
+    // Send Event
+    $ctx = array('id' => $id, 'name' => $item->name, 'prefix' => $tcPrefix);
+    event_signal('EVENT_TEST_PROJECT_CREATE', $ctx);
   }
   else
   {
@@ -220,6 +228,10 @@ function update($id, $name, $color, $notes,$options,$active=null,
   {
     // update session data
     $this->setSessionProject($safeID);
+
+    // Send Event
+    $ctx = array('id' => $id, 'name' => $name, 'prefix' => $tcprefix);
+    event_signal('EVENT_TEST_PROJECT_UPDATE', $ctx);
   }
   else
   {
@@ -807,6 +819,7 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
   }
 
   $safeID = intval($id);
+  $gui->tproject_id = $safeID;
   $gui->container_data = $this->get_by_id($safeID);
   $gui->moddedItem = $gui->container_data;
   $gui->level = 'testproject';
@@ -826,7 +839,10 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
   {
     $gui->moddedItem = $this->get_by_id(intval($modded_item_id));
   }
-  $smarty->assign('gui', $gui);  
+  $cfg = getWebEditorCfg('testproject');
+  $gui->testProjectEditorType = $cfg['type'];
+  
+  $smarty->assign('gui', $gui); 
   $smarty->display($template_dir . 'containerView.tpl');
 }
 
@@ -1059,15 +1075,46 @@ function count_testcases($id)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $ret=null;
-    $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
-           " SET tc_counter=tc_counter+1 WHERE id = {$id}";
-    $recordset = $this->db->exec_query($sql);
+    $retry = 3; 
+    $lockfile = $this->tmp_dir . __FUNCTION__ . '.lock';
+    $lock = fopen($lockfile, 'a');
     
-    $sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$id}";
-    $recordset = $this->db->get_recordset($sql);
-    $ret=$recordset[0]['tc_counter'];
-    return ($ret);
+    $gotLock = false;
+    while( $retry > 0 && !$gotLock )
+    {  
+      if( flock($lock,LOCK_EX) ) 
+      {
+        $gotLock = true;
+      }
+      else
+      {
+        $retry--;
+        usleep(20);
+      }  
+    }
+
+    if( $gotLock || $retry == 0 )
+    {
+      $safeID = intval($id);
+
+      $ret=null;
+      $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
+               " SET tc_counter=tc_counter+1 WHERE id = {$safeID}";
+      $rs = $this->db->exec_query($sql);
+        
+      $sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$safeID}";
+      $rs = $this->db->get_recordset($sql);
+      $ret = $rs[0]['tc_counter'];
+      
+      if( $gotLock )
+      {
+        flock($lock, LOCK_UN);
+      }  
+      fclose($lock);
+
+      return $ret;
+    }  
+
   }
 
   /**

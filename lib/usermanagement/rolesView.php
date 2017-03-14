@@ -100,8 +100,10 @@ function initializeGui(&$db,&$args)
   $gui->roleid = $args->roleid;
   $gui->main_title = lang_get('role_management');
   $gui->role_id_replacement = config_get('role_replace_for_deleted_roles');
+  $cfg = getWebEditorCfg('role');
+  $gui->editorType = $cfg['type'];
   
-  return $gui;  
+  return $gui;
 }
 
 

@@ -33,7 +33,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Last localization update: 05/06/2010";
+$TLS_last_update = "Last localization update: 05/05/2016";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_type_not_configured = "системное сообщение: тип не настроен";
@@ -48,7 +48,7 @@ $TLS_automatic 		= "Автоматический";
 $TLS_availability = "Доступность";
 $TLS_build = "Версия (сборка)";
 $TLS_check_uncheck_all = "Включить все";
-$TLS_check_uncheck_all_for_remove = "check/uncheck all for remove";
+$TLS_check_uncheck_all_for_remove = "Включить/отключить все для удаления";
 $TLS_confirm = "Подтвердить";
 $TLS_days	= "дней";
 $TLS_desc = "по убыванию";
@@ -108,7 +108,13 @@ $TLS_title = "Название";
 $TLS_title_admin = "Администрирование";
 $TLS_warning = "Внимание!!";
 $TLS_max_size_file_msg = "Максимальный разрешенный размер файлов:  %s KB";
+$TLS_estimated_execution_duration = "Ожидаемая продолжительность прогона (мин)";
+$TLS_estimated_execution_duration_short = "Ожидаемая продолжительность (мин)";
 
+$TLS_execution_duration = "Продолжительность прогона (мин)";
+$TLS_execution_duration_short = "Продолжительность (мин)";
+
+$TLS_step_exec_notes = "Примечание";
 
 $TLS_total = "Всего";
 $TLS_Unknown = "Неизвестно";
@@ -147,6 +153,7 @@ $TLS_btn_goback 	= "Назад";
 $TLS_btn_generate_doc = "Сгенерировать документ";
 $TLS_btn_import = "Импортировать";
 $TLS_btn_move = "Переместить";
+$TLS_btn_next = "Следующий";
 $TLS_btn_no = "Нет";
 $TLS_btn_ok = "Ok";
 $TLS_btn_print = "Печать";
@@ -159,6 +166,7 @@ $TLS_btn_upload = "Загрузить";
 $TLS_btn_advanced_filters = "Расширенные фильтры";
 $TLS_btn_simple_filters = "Простые фильтры"; 
 $TLS_btn_reorder_steps = "Переупорядочить шаги";
+$TLS_btn_resequence_steps = "Переместить шаги";
 
 // Status (used wide)
 $TLS_test_status_all 		= "Все";
@@ -191,8 +199,8 @@ $TLS_req_spec_type_non_functional = 'Non functional';
 $TLS_req_spec_type_constrain = 'Constrain';
 
 
-$TLS_exec_not_run_result_note = "Important Notice: Once a Result is updated from 'Not Run' to another value, " .
-                                "you cannot set it back to 'Not Run'. <br />You can still set the Result to any other value.";
+$TLS_exec_not_run_result_note = 'Важное замечание: как только результат будет изменен с "Не запускался" на другое значение, ' .
+                                'вы больше не сможете установить обратно "Не запускался". <br />Тем не менее, вы сможете установить любое другое значение результата.';
 
 $TLS_req_status_not_testable = "Не тестируемы";
 
@@ -233,7 +241,7 @@ $TLS_created_with_new_name = "Создание с именем:%s, потому 
 
 
 $TLS_click_to_open='Нажмите, чтобы открыть';
-$TLS_testplan_usage="Использование тест-плана";
+$TLS_testplan_usage="Использование в тест-планах";
 
 $TLS_add_tcversion_to_plans = "Добавить версию теста в тест-план";
 $TLS_please_select_one_testplan = "Укажите как минимум один тест-план.";
@@ -288,18 +296,18 @@ $TLS_new_account = "TestLink - Создано новый аккаунт";
 
 // ----- archiveData.php -----
 $TLS_container_title_testcase = $TLS_test_case;
-$TLS_high_priority = "High";
-$TLS_medium_priority = "Medium";
-$TLS_low_priority = "Low";
-$TLS_high_importance = "High";
-$TLS_medium_importance = "Medium";
-$TLS_low_importance = "Low";
-$TLS_urgency_high 		= "High";
-$TLS_urgency_medium 	= "Medium";
-$TLS_urgency_low 		= "Low";
+$TLS_high_priority = "Высокий";
+$TLS_medium_priority = "Средний";
+$TLS_low_priority = "Низкий";
+$TLS_high_importance = "Высокая";
+$TLS_medium_importance = "Средняя";
+$TLS_low_importance = "Низкая";
+$TLS_urgency_high 		= "Высокая";
+$TLS_urgency_medium 	= "Средняя";
+$TLS_urgency_low 		= "Низкая";
 $TLS_test_importance = "Важность теста";
 $TLS_testcases_assigned_to_user = 'Тест-проект: %s - Тесты, назначенные на пользователя: %s';
-$TLS_assigned_on = 'Assigment date';
+$TLS_assigned_on = 'Назначен';
 
 
 // ----- index.php -----
@@ -562,6 +570,7 @@ $TLS_was_success = " были успешно";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = "Тест-план";
+$TLS_btn_reset_filters = "Сбросить фильтры";
 $TLS_btn_apply_filter = "Применить фильтр";
 $TLS_btn_update_menu = "Обновить дерево";
 $TLS_caption_nav_filter_settings = "Параметры выборки";
@@ -583,6 +592,8 @@ $TLS_filter_somebody = "Некто";
 $TLS_exec_build = "Сборка для выполнения";
 $TLS_filter_result_all_prev_builds = "Результат по ЛЮБЫМ предыдущим сборкам";
 $TLS_filter_result_any_prev_build = "ЛЮБАЯ предыдущая сборка";
+$TLS_expand_tree = "Развернуть дерево";
+$TLS_collapse_tree = "Свернуть дерево";
 
 
 // ----- gui/templates/mainPage.tpl -----
@@ -1351,8 +1362,8 @@ $TLS_btn_new_version = "Создать новую версию теста";
 $TLS_can_not_edit_tc = "Редактирование запрещено, т.к. тест этой версии прогонялся в одном из тест-планов. 
 Создайте новую версию или удалите результат прогона.";
 $TLS_deactivate_this_tcversion = "Сделать эту версию неактивной";
-$TLS_execution_type = 'Execution type';
-$TLS_execution_type_short_descr = 'Execution';
+$TLS_execution_type = 'Способ прогона';
+$TLS_execution_type_short_descr = 'Прогон';
 $TLS_tcversion_is_inactive_msg = "Эта версия теста НЕАКТИВНА. Тест этой версии нельзя включить в план тестирования";
 
 
@@ -1702,6 +1713,7 @@ $TLS_warning_empty_login = "Введите логин";
 // ----- gui/templates/attachmentupload.tpl -----
 $TLS_attachment_upload_ok = "Файл загружен";
 $TLS_enter_attachment_title = "Введите заголовок для прилагаемого файла";
+$TLS_attachment_title = "Название";
 $TLS_import_was_ok = "Импорт данных успешно завершен";
 $TLS_max_size_cvs_file = "Максимальный размер файла: ";
 $TLS_max_size_file_upload = "Макс. размер файла";
@@ -1812,12 +1824,12 @@ $TLS_href_build_new = "Редактировать версию (сборку)";
 $TLS_href_execute_test = "Прогнать тесты";
 $TLS_href_metrics_dashboard = "Панель метрик";
 $TLS_href_newest_tcversions = "Показать новейшие версии тестов";
-$TLS_href_plan_assign_urgency = "Set urgent tests";
+$TLS_href_plan_assign_urgency = "Назначить срочность тестов";
 $TLS_href_plan_management = "Редактировать тест-план";
 $TLS_href_plan_mstones = "Редактировать / Удалить Этап тестирования";
 $TLS_href_rep_and_metrics = "Просмотреть отчеты по прогону";
 $TLS_href_tc_exec_assignment = "Назначить ответственного за прогон";
-$TLS_href_update_tplan = "Update Linked Test Case Versions";
+$TLS_href_update_tplan = "Обновить версии тестов в тест-плане";
 $TLS_href_platform_assign = "Добавить/удалить платформу";
 $TLS_current_test_plan = "Текущий тест-план";
 $TLS_href_upd_mod_tc = "Обновить измененные тесты";
@@ -2724,6 +2736,20 @@ $TLS_warning_delete_step = "<p>You are going to delete step number: %s </p><p>Ar
 $TLS_warning_step_number = " Step number must be a number and > 0";
 $TLS_warning_step_number_already_exists = " Step number %s already exists";
 
-
+// ----- pluginView.php -----       
+$TLS_title_plugins = "undefined";
+$TLS_title_plugin_mgmt = "undefined";
+$TLS_th_plugin = "undefined";
+$TLS_th_plugin_description = "undefined";
+$TLS_th_plugin_version = "undefined";
+$TLS_installed_plugins = "undefined";
+$TLS_available_plugins = "undefined";
+$TLS_plugin_uninstalled = "undefined";
+$TLS_plugin_installed = "undefined";
+$TLS_confirm_install_header = "undefined";
+$TLS_confirm_install_text = "undefined";
+$TLS_confirm_uninstall_header = "undefined";
+$TLS_confirm_uninstall_text = "undefined";
+$TLS_desc_mgt_plugins = "undefined";
 // ----- END ------------------------------------------------------------------
 ?>

@@ -84,6 +84,20 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
  */
 $tlCfg->instance_id = 'Main TestLink Instance';
 
+
+/**
+ * Copied from MantisBT
+ *
+ * Specifies the path under which a cookie is visible
+ * All scripts in this directory and its sub-directories will be able
+ * to access MantisBT cookies.
+ * It is recommended to set this to the actual MantisBT path.
+ * @link http://php.net/function.setcookie
+ * @global string $tlCfg->cookie_path
+ */
+ $tlCfg->cookie_path = '/';
+
+
 /* [LOCALIZATION] */
 
 /** @var string Default localization for users */
@@ -170,6 +184,9 @@ $tlCfg->notifications->userSignUp->to->users = null; // i.e. array('login01','lo
 /* [LOGGING] */
 
 /** Error reporting - do we want php errors to show up for users */
+/** configure on custom_config.inc.php */
+/** error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_WARNING); */
+/** error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING); */
 error_reporting(E_ALL);
 
 /** @var string Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) 
@@ -329,14 +346,19 @@ $tlCfg->authentication['SSO_uid_field'] = 'SSL_CLIENT_S_DN_Email';
 
 
 
-/** LDAP authentication credentials */
-$tlCfg->authentication['ldap_server'] = 'localhost';
-$tlCfg->authentication['ldap_port'] = '389';
-$tlCfg->authentication['ldap_version'] = '3'; // could be '2' in some cases
-$tlCfg->authentication['ldap_root_dn'] = 'dc=mycompany,dc=com';
-$tlCfg->authentication['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP binding
-$tlCfg->authentication['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
-$tlCfg->authentication['ldap_tls'] = false; // true -> use tls
+/** 
+ * LDAP authentication credentials, Multiple LDAP Servers can be used. 
+ * User will be authenticaded against each server (one after other using array index order)
+ * till authentication succeed or all servers have been used.
+ */
+$tlCfg->authentication['ldap'] = array();
+$tlCfg->authentication['ldap'][1]['ldap_server'] = 'localhost';
+$tlCfg->authentication['ldap'][1]['ldap_port'] = '389';
+$tlCfg->authentication['ldap'][1]['ldap_version'] = '3'; // could be '2' in some cases
+$tlCfg->authentication['ldap'][1]['ldap_root_dn'] = 'dc=mycompany,dc=com';
+$tlCfg->authentication['ldap'][1]['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP binding
+$tlCfg->authentication['ldap'][1]['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
+$tlCfg->authentication['ldap'][1]['ldap_tls'] = false; // true -> use tls
 
 // Following configuration parameters are used to build 
 // ldap filter and ldap attributes used by ldap_search()
@@ -347,10 +369,8 @@ $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
 // This can be used to manage situation like explained on post on forum:
 // ActiveDirectory + users in AD group
 // 
-$tlCfg->authentication['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
-$tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
-
-
+$tlCfg->authentication['ldap'][1]['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
+$tlCfg->authentication['ldap'][1]['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
 
 
 // Follows Mantisbt idea.
@@ -363,6 +383,8 @@ $tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Ac
 $tlCfg->authentication['ldap_automatic_user_creation'] = false;
 
 // Configure following fields in custom_config.inc.php according your configuration
+// IMPORTANT NOTICE
+// Same for all LDAP Servers if you are using MULTIPLE LDAP Servers configuration 
 $tlCfg->authentication['ldap_email_field'] = 'mail';
 $tlCfg->authentication['ldap_firstname_field'] = 'givenname';
 $tlCfg->authentication['ldap_surname_field'] = 'sn';
@@ -1433,6 +1455,8 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_workflow_status = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = ENABLED;
 
+$tlCfg->tree_filter_cfg->testcases->edit_mode
+      ->filter_workflow_status_values = array();
 
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_testcase_name = ENABLED;
@@ -1444,6 +1468,9 @@ $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_assigned_user = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->advanced_filter_mode_choice = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_inactive_out = FALSE;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_close_out = FALSE;
+
 
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLED;
@@ -1635,12 +1662,15 @@ $g_tpl = array();
 /* Used only */ 
 /* mantissoapInterface.class.php */
 /* jirasoapInterface.class.php */
+/* jirarestInterface.class.php */
 $tlCfg->proxy->host = null;
 $tlCfg->proxy->port = null;
 $tlCfg->proxy->login = null;
 $tlCfg->proxy->password = null;
 
 
+/** Plugins feature */
+define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR);
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
@@ -1765,4 +1795,16 @@ $tlCfg->gui->title_separator_1 =  $tlCfg->gui_title_separator_1;
 $tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
+
+
+/**
+ * Globals for Events storage
+ */
+$g_event_cache = array();
+
+/**
+ * Globals for Plugins
+ */
+$g_plugin_config_cache = array();
+
 // ----- END OF FILE --------------------------------------------------------------------

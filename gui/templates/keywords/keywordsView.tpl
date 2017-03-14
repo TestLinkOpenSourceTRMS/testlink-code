@@ -47,7 +47,7 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
           </a>
         {/if}
       </td>
-      <td>{$gui->keywords[kwx]->notes|escape|nl2br}</td>
+      <td>{$gui->keywords[kwx]->notes|escape:htmlall|nl2br}</td>
       {if $gui->canManage != ""}
         <td class="clickable_icon">
             <img style="border:none;cursor: pointer;"

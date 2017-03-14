@@ -14,7 +14,7 @@
  * There is also some javascript that handles the form information.
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.15
  *
  **/
 
@@ -152,6 +152,21 @@ if( (strcmp($secCfg, 'ALWAYS') == 0) ||
 
 $gui->opt_requirements = isset($_SESSION['testprojectOptions']->requirementsEnabled) ? 
                          $_SESSION['testprojectOptions']->requirementsEnabled : null; 
+
+
+$gui->plugins = array();
+foreach(array('EVENT_LEFTMENU_TOP',
+              'EVENT_LEFTMENU_BOTTOM',
+              'EVENT_RIGHTMENU_TOP',
+              'EVENT_RIGHTMENU_BOTTOM') as $menu_item) 
+{
+  # to be compatible with PHP 5.4
+  $menu_content = event_signal($menu_item);
+  if( !empty($menu_content) )
+  {
+    $gui->plugins[$menu_item] = $menu_content;
+  }
+}
 
 $smarty->assign('gui',$gui);
 $smarty->display('mainPage.tpl');

@@ -8,7 +8,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <legend></legend>
 <form style="display:inline;" 
       id="statusForm_{$args_testcase.id}" name="statusForm_{$args_testcase.id}"  
-      method="post" action="lib/testcases/tcEdit.php">
+      method="post" action="{$basehref}lib/testcases/tcEdit.php">
   <input type="hidden" name="doAction" id="doAction" value="setStatus">
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
@@ -27,7 +27,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {if $session['testprojectOptions']->testPriorityEnabled}
    <form style="display:inline;" id="importanceForm_{$args_testcase.id}" 
          name="importanceForm_{$args_testcase.id}" method="post" 
-         action="lib/testcases/tcEdit.php">
+         action="{$basehref}lib/testcases/tcEdit.php">
 
     <input type="hidden" name="doAction" id="doAction" value="setImportance">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
@@ -48,7 +48,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {if $session['testprojectOptions']->automationEnabled}
 <form style="display:inline;" id="execTypeForm_{$args_testcase.id}" 
-      name="execTypeForm_{$args_testcase.id}" method="post" action="lib/testcases/tcEdit.php">
+      name="execTypeForm_{$args_testcase.id}" method="post" action="{$basehref}lib/testcases/tcEdit.php">
     <input type="hidden" name="doAction" id="doAction" value="setExecutionType">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
@@ -66,7 +66,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 <form style="display:inline;" id="estimatedExecDurationForm_{$args_testcase.id}" 
       name="estimatedExecDurationForm_{$args_testcase.id}" method="post"
-      action="lib/testcases/tcEdit.php">
+      action="{$basehref}lib/testcases/tcEdit.php">
   <input type="hidden" name="doAction" id="doAction" value="setEstimatedExecDuration">
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />

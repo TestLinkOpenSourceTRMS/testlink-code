@@ -16,7 +16,7 @@ Revisions:
 {if $arrTC eq ''}
 	{lang_get s='no_tc_to_reorder'}
 {else}
-	<form method="post" action="lib/testcases/containerEdit.php?categoryID={$data}">
+	<form method="post" action="{$basehref}lib/testcases/containerEdit.php?categoryID={$data}">
 		<div class="groupBtn">
 			<input id="submit" type="submit" name="updateTCorder" value="Update" />
 		</div>	

@@ -49,7 +49,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       <br />
       <div class="exec_testsuite_details" style="width:95%;">
       <span class="legend_container">{$labels.details}</span><br />
-		  {$tsuite_info[$tc_id].details}
+		  {if $gui->testDesignEditorType == 'none'}{$tsuite_info[$tc_id].details|nl2br}{else}{$tsuite_info[$tc_id].details}{/if}
 		  </div>
 
 		  {if $ts_cf_smarty[$tc_id] != ''}
@@ -75,7 +75,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <br />  
   {$drawNotRun=0}
  	{if $cfg->exec_cfg->show_last_exec_any_build}
-   	{$abs_last_exec=$gui->map_last_exec_any_build.$tcversion_id}
+    {$abs_last_exec=$gui->map_last_exec_any_build.$tcversion_id}
  		{$my_build_name=$abs_last_exec.build_name|escape}
  		{$show_current_build=1}
  		
@@ -107,7 +107,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   		{else}
   			  {$labels.last_execution}
   			  {if $show_current_build} {$labels.exec_any_build} {/if}
-  			  {* {$title_sep_type3} {$exec_build_title} *}
   		{/if}
   		</div>
 
@@ -117,7 +116,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
 			    {$status_code=$abs_last_exec.status}
      			<div class="{$tlCfg->results.code_status.$status_code}">
-     			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
+          {$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
      			{$labels.test_exec_by} {$title_sep} 
   				
@@ -134,6 +133,37 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
      			{$title_sep_type3}
      			{$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
      			</div>
+
+          {* ///////////////////////////////////////// *}
+        {if $abs_last_exec.execution_notes neq ""}
+        <script>
+       {* Initialize panel if notes exists. There might be multiple note panels
+       visible at the same time, so we need to collect those init functions in
+       an array and execute them from Ext.onReady(). See execSetResults.tpl *}
+        var panel_init = function(){
+            var p = new Ext.Panel({
+            title:'{$labels.exec_notes}',
+            collapsible:true,
+            collapsed: true,
+            baseCls: 'x-tl-panel',
+            renderTo:'latest_exec_any_build_notes'{literal},
+            width:'100%',
+            html:''
+            });
+            p.on({'expand' : 
+                   function(){load_notes(this,{/literal}{$abs_last_exec.execution_id});}
+                 });
+        };
+        panel_init_functions.push(panel_init);
+        </script>
+        <div id="latest_exec_any_build_notes" style="margin:8px;">
+        </div>
+        <hr>
+        {/if}
+        {* ///////////////////////////// *}
+
+
+
   		  {else}
           {$drawNotRun=1}
    		  {/if}

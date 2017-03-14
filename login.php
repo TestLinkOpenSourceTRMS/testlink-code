@@ -8,7 +8,7 @@
  * @filesource  login.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2006,2015 TestLink community 
+ * @copyright   2006,2016 TestLink community 
  * @link        http://www.testlink.org
  * 
  * @internal revisions
@@ -45,6 +45,7 @@ switch($args->action)
     $options = array('doSessionExistsCheck' => ($args->action=='doLogin'));
     $op = doAuthorize($db,$args->login,$args->pwd,$options);
     $doAuthPostProcess = true;
+    $gui->draw = true;
   break;
 
   case 'ajaxcheck':
@@ -53,6 +54,8 @@ switch($args->action)
   
   case 'loginform':
     $doRenderLoginScreen = true;
+    $gui->draw = true;
+
     // unfortunatelly we use $args->note in order to do some logic.
     if( (trim($args->note) == "") &&
         $gui->authCfg['SSO_enabled'] && $gui->authCfg['SSO_method'] == 'CLIENT_CERTIFICATE')
@@ -64,7 +67,6 @@ switch($args->action)
   break;
 }
 
-
 if( $doAuthPostProcess ) 
 {
   list($doRenderLoginScreen,$gui->note) = authorizePostProcessing($args,$op);
@@ -74,7 +76,6 @@ if( $doRenderLoginScreen )
 {
   renderLoginScreen($gui);
 }
-
 
 
 /**
@@ -219,8 +220,11 @@ function doBlockingChecks(&$dbHandler,&$guiObj)
       session_unset();
       session_destroy();
     } 
+
+    $guiObj->draw = false;
     $guiObj->note = $op['msg'];
     renderLoginScreen($guiObj);
+    die();
   }
 }
 
@@ -243,12 +247,8 @@ function renderLoginScreen($guiObj)
   $smarty->assign('gui', $guiObj);
 
   $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-  if( $guiObj->viewer == 'new' )
-  {
-    $tpl = 'login-model-marcobiedermann.tpl';
-  }  
+  $tpl = 'login-model-marcobiedermann.tpl';
   $smarty->display($tpl);
-
 }
 
 

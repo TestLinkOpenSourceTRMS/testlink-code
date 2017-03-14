@@ -22,7 +22,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   var='labels'
   s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
-	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
+	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
   estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
@@ -286,6 +286,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     </div>
   {/if}
 
+  {if $gui->plugins.EVENT_TESTRUN_DISPLAY}
+    <div id="plugin_display">
+      {foreach from=$gui->plugins.EVENT_TESTRUN_DISPLAY item=testrun_item}
+        {$testrun_item}
+        <br />
+      {/foreach}
+    </div>
+  {/if}
 
   {* -------------------------------------------------------------------------------- *}
   {* Test Plan notes show/hide management                                             *}
@@ -300,7 +308,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
            show_hide_container_view_status_id=$memstatus_id}
 
   <div id="{$div_id}" class="exec_additional_info">
-    {$gui->testplan_notes}
+    {if $gui->testPlanEditorType == 'none'}{$gui->testplan_notes|nl2br}{else}{$gui->testplan_notes}{/if}
     {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
   </div>
   {* -------------------------------------------------------------------------------- *}
@@ -311,6 +319,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {if $gui->platform_info.id > 0}
     {$div_id='platform_notes'}
     {$memstatus_id=$platform_notes_view_memory_id}
+	{if $gui->platformEditorType == 'none'}{$content=$gui->platform_info.notes|nl2br}{else}{$content=$gui->platform_info.notes}{/if}
 
     {include file="inc_show_hide_mgmt.tpl"
              show_hide_container_title=$gui->platform_div_title
@@ -318,7 +327,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
              show_hide_container_view_status_id=$memstatus_id
              show_hide_container_draw=true
              show_hide_container_class='exec_additional_info'
-             show_hide_container_html=$gui->platform_info.notes}
+             show_hide_container_html=$content}
   {/if}         
   {* -------------------------------------------------------------------------------- *}
 
@@ -335,7 +344,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
            show_hide_container_class='exec_additional_info'}
 
   <div id="{$div_id}" class="exec_additional_info">
-    {$gui->build_notes}
+    {if $gui->buildEditorType == 'none'}{$gui->build_notes|nl2br}{else}{$gui->build_notes}{/if}
     {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
   </div>
 
@@ -456,7 +465,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		{/if}
 		<p>
 	{/if}
-  
+
   {include file="execute/inc_exec_show_tc_exec.tpl"}
   {if isset($gui->refreshTree) && $gui->refreshTree}
     {include file="inc_refreshTreeWithFilters.tpl"}

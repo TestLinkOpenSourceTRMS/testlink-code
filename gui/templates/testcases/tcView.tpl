@@ -68,7 +68,6 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {else}
     {$my_delete_version="no"}
   {/if}
-  
     <h2 style="{$my_style}">
     {$tlImages.toggle_direct_link} &nbsp;
     {if $gui->display_testcase_path}

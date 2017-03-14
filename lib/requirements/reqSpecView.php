@@ -8,8 +8,6 @@
  *
  * Screen to view existing requirements within a req. specification.
  *
- * @internal revisions
- * @since 1.9.10
  *
 **/
 require_once("../../config.inc.php");
@@ -100,6 +98,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
   $gui->fileUploadMsg = '';
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
   
+  $cfg = new stdClass();
   $cfg->reqSpecCfg = getWebEditorCfg('requirement_spec');
   $gui->reqSpecEditorType = $cfg->reqSpecCfg['type'];
 

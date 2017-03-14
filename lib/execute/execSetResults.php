@@ -412,7 +412,7 @@ else
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
-  $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
+  $smarty->assign('users',tlUser::getByIDs($db,$userSet));
 
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 } 

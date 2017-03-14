@@ -4,8 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: smarty template - Add new build and show existing
 
-@internal revisions
-@since 1.9.14
 *}
 {$managerURL="lib/plan/buildEdit.php"}
 {$cancelAction="lib/plan/buildView.php?tplan_id={$gui->tplan_id}"}

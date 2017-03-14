@@ -161,7 +161,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     return $result;
   }
 
-
   /*
     function: get_by_id
 
@@ -173,7 +172,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   		 		 	
     returns: null if query fails
              map with requirement spec info
-
   */
   function get_by_id($id,$options=null)
   {
@@ -644,116 +642,23 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   		$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
   	  $reqVersionSet = array_keys($latestVersionSet);
 
-/*
-	  $getOptions = null;
-	  if( !is_null($my['options']['order_by']) )
-	  {
-			$getOptions = array('order_by' => $my['options']['order_by']);
-		}
-    */
-    
-    $getOptions['order_by'] = $my['options']['order_by'];
-    $getOptions['outputLevel'] = $my['options']['outputLevel'];
-    $getOptions['decodeUsers'] = $my['options']['decodeUsers'];
+      $getOptions['order_by'] = $my['options']['order_by'];
+      $getOptions['outputLevel'] = $my['options']['outputLevel'];
+      $getOptions['decodeUsers'] = $my['options']['decodeUsers'];
 
-
-	$rs = $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
-    switch($my['options']['output'])
-    {
-     	case 'standard':
-		  break;
-		    
-		  case 'count':
-		   	$rs = !is_null($rs) ? count($rs) : 0;	   
-		  break;
-		}
-	}
-
-	// get child requirements
-	if(is_null($rs)){
-			
-		$reqSql = "SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ WHERE NH_REQ.parent_id={$id}";
-
-		$itemSetAllFolder = $this->db->fetchRowsIntoMap($reqSql,'id');
-		
-		if(!is_null($itemSetAllFolder)){
-
-			foreach($itemSetAllFolder as $key => $value){
-
-				$sql= '';
-				$tcase_filter = '';
-			  
-				// First Step - get only req info
-				$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
-				$addFields = '';
-				switch($range)
-				{
-					case 'all';
-					break;
-
-					case 'assigned':
-				  // $addFields = " ,U.login, REQ_COV.creation_ts";
-						$sql .= " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id ";
-				  if(!is_null($testcase_id))
-				  {       
-					$tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
-				  }
-				  // $sql .= " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = REQ_COV.author_id ";
-					break;
-				}
-
-				$sql = sprintf($sql,$addFields);
-
-				$sql .= " WHERE NH_REQ.parent_id=" . $value['id'] .
-						" AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
-				$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
-
-				if( !is_null($itemSet) )
-				{
-					$reqSet = array_keys($itemSet);
-					$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
-						   " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
-						   " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
-						   " GROUP BY NH_REQV.parent_id ";
-
-					$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
-					$reqVersionSet = array_keys($latestVersionSet);
-
-					/*
-					  $getOptions = null;
-					  if( !is_null($my['options']['order_by']) )
-					  {
-							$getOptions = array('order_by' => $my['options']['order_by']);
-						}
-					*/
-					
-					$getOptions['order_by'] = $my['options']['order_by'];
-					$getOptions['outputLevel'] = $my['options']['outputLevel'];
-					$getOptions['decodeUsers'] = $my['options']['decodeUsers'];
-					
-					if(is_null($rs)){
-						$rs =  $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	
-					} else {
-						$rs = array_merge($rs, $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']));
-					}
-					
-
-					switch($my['options']['output'])
-					{
-					case 'standard':
-					  break;
-						
-					  case 'count':
-						$rs = !is_null($rs) ? count($rs) : 0;	   
-					  break;
-					}
-				}
-			}
-		}
-	}
-
-	return $rs;
-}
+  		$rs = $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
+      switch($my['options']['output'])
+      {
+       	case 'standard':
+  		  break;
+  		    
+  		  case 'count':
+  		   	$rs = !is_null($rs) ? count($rs) : 0;	   
+  		  break;
+  		}
+  	}
+  	return $rs;
+  }
 
 
 /** get child requirements for get all testcase associate.
@@ -1151,6 +1056,9 @@ function get_requirement_child_by_id_req($id){
   	return $xmlData;
   }
 
+
+      return $req_spec;
+  }
 
   /**
    * xmlToReqSpec

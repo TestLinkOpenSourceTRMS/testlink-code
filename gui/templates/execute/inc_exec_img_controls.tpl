@@ -90,7 +90,7 @@ Author : franciscom
                         onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
                         document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
                         document.getElementById('save_results').value=1;
-                        submit();">&nbsp;
+                        document.forms['execSetResults'].submit();">&nbsp;
                  {/foreach}  
                  <br />
                  <br />
@@ -105,7 +105,7 @@ Author : franciscom
                         onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
                         document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
                         document.getElementById('save_and_next').value=1;                        
-                        submit();">&nbsp;
+                        document.forms['execSetResults'].submit();">&nbsp;
                  {/foreach}  
                  <br />
                  <br />

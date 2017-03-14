@@ -5,8 +5,6 @@
  *
  * @filesource  buildEdit.php
  *
- * @internal revisions
- * @since 1.9.14
  *
  */
 require('../../config.inc.php');
@@ -31,7 +29,6 @@ $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
 $args = init_args($_REQUEST,$_SESSION,$date_format_cfg,$tplan_mgr);
-
 $gui = initializeGui($args,$build_mgr);
 
 
@@ -173,7 +170,6 @@ function init_args($request_hash, $session_hash,$date_format,&$tplanMgr)
     $args->tplan_id = isset($session_hash['testplanID']) ? intval($session_hash['testplanID']) : 0;
     $args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
   }  
-
 
   $args->testprojectID = intval($session_hash['testprojectID']);
   $args->testprojectName = $session_hash['testprojectName'];

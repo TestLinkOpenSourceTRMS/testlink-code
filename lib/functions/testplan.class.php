@@ -9,13 +9,9 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
- *
- * @internal revisions
- * 
- * @since 1.9.15
  **/
 
 /** related functionality */
@@ -4246,10 +4242,6 @@ class testplan extends tlObjectWithAttachments
         {
           $node['leaf'] = true; 
           $node['external_id'] = '';
-          // $itemSet['nodes'][] = $node;
-          //$itemSet['nindex'][] = 
-          //  array('tcase_id' => $node['id'], 
-          //        'tcversion_id'=> $node['tcversion_id']);
           $itemSet['nindex'][] = $node['id'];
         }      
         

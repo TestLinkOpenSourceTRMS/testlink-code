@@ -9,13 +9,9 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
- *
- * @internal revisions
- * 
- * @since 1.9.15
  **/
 
 /** related functionality */
@@ -1834,6 +1830,8 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+    $id = intval($id);
+
     $the_sql=array();
     $main_sql=array();
     
@@ -1855,12 +1853,48 @@ class testplan extends tlObjectWithAttachments
     $the_sql[]="DELETE FROM {$this->tables['cfield_execution_values']} WHERE testplan_id={$id}";
     $the_sql[]="DELETE FROM {$this->tables['user_testplan_roles']} WHERE testplan_id={$id}";
     
+
     
     // When deleting from executions, we need to clean related tables
+    $execIDSetSQL = " SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id} ";
+
+    // get test step exec attachments if any exists
+    $dummy = " SELECT id FROM {$this->tables['execution_tcsteps']} " . 
+             " WHERE execution_id IN ({$execIDSetSQL}) ";
+     
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // execution attachments
+    $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
+             " WHERE fk_table = 'executions' " .
+             " AND fk_id IN ({$execIDSetSQL}) ";
+  
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+    
+
     $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
-           "IN (SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id})";
+           "IN ($execIDSetSQL)";
+    
+    $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps']} WHERE execution_id ".
+           "IN ($execIDSetSQL) ";           
     $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";
-    $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; //BUGID 3845    
+    $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; 
+
     
     foreach($the_sql as $sql)
     {
@@ -4208,10 +4242,6 @@ class testplan extends tlObjectWithAttachments
         {
           $node['leaf'] = true; 
           $node['external_id'] = '';
-          // $itemSet['nodes'][] = $node;
-          //$itemSet['nindex'][] = 
-          //  array('tcase_id' => $node['id'], 
-          //        'tcversion_id'=> $node['tcversion_id']);
           $itemSet['nindex'][] = $node['id'];
         }      
         
@@ -7876,14 +7906,62 @@ class build_mgr extends tlObject
 
     $safe_id = intval($id);
     $where = " WHERE build_id={$safe_id}";
+    $execIDSetSQL = " SELECT id FROM {$this->tables['executions']} {$where} ";
 
+
+    // Attachments NEED special processing.
+  
+    // get test step exec attachments if any exists
+    $dummy = " SELECT id FROM {$this->tables['execution_tcsteps']} " . 
+             " WHERE execution_id IN ({$execIDSetSQL}) ";
+     
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // execution attachments
+    $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
+             " WHERE fk_table = 'executions' " .
+             " AND fk_id IN ({$execIDSetSQL}) ";
+  
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // Execution Bugs
     $sql = " DELETE FROM {$this->tables['execution_bugs']} " .
-           " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} {$where}) ";
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
     $result = $this->db->exec_query($sql);
 
+    // Execution tcsteps results
+    $sql = "DELETE FROM {$this->tables['execution_tcsteps']} " .
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
+    $result = $this->db->exec_query($sql);
+
+    $sql = "DELETE FROM {$this->tables['cfield_execution_values']} " .
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
+    $result = $this->db->exec_query($sql);
+
+
+    // Finally Executions table
     $sql = " DELETE FROM {$this->tables['executions']} {$where}";
     $result = $this->db->exec_query($sql);
 
+
+    // Build ID is the Access Key 
+    // User Task Assignment
     $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where}";
     $result=$this->db->exec_query($sql);
 

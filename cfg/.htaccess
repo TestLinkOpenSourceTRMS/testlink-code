@@ -1,6 +1,6 @@
 ## .htaccess - [TL INSTALL DIR]/cfg
-# need to allow access to tl_fckeditor_config.js
-# or FCKEditor will not load toolbar
+# need to allow access to tl_ckeditor_config.js
+# or CKEditor will not load toolbar
 Options -Indexes 
 <Files ^(*.js)>
    order deny,allow

@@ -6,7 +6,7 @@
  * @author Francisco Mancardi
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
@@ -316,8 +316,15 @@ class redminerestInterface extends issueTrackerInterface
    * - custom_fields    - See Custom fields
    * - watcher_user_ids - Array of user ids to add as watchers (since 2.3.0)
    */
-  public function addIssue($summary,$description)
+  public function addIssue($summary,$description,$opt=null)
   {
+    $reporter = null;
+    if(!is_null($opt) && property_exists($opt, 'reporter'))
+    {
+      $reporter = $opt->reporter;
+    }  
+
+
   	// Check mandatory info
   	if( !property_exists($this->cfg,'projectidentifier') )
   	{
@@ -393,7 +400,6 @@ class redminerestInterface extends issueTrackerInterface
         }  
       }  
 
-      // 20150815 
       // In order to manage custom fields in simple way, 
       // it seems that is better create here plain XML String
       //
@@ -406,7 +412,7 @@ class redminerestInterface extends issueTrackerInterface
 
       // $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
       // file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
-      $op = $this->APIClient->addIssueFromXMLString($xml);
+      $op = $this->APIClient->addIssueFromXMLString($xml,$reporter);
 
       if(is_null($op))
       {
@@ -433,14 +439,20 @@ class redminerestInterface extends issueTrackerInterface
   /**
    *
    */
-  public function addNote($issueID,$noteText)
+  public function addNote($issueID,$noteText,$opt=null)
   {
     try
     {
        // needs json or xml
       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
       $issueXmlObj->addChild('notes', htmlspecialchars($noteText));
-      $op = $this->APIClient->addIssueNoteFromSimpleXML($issueID,$issueXmlObj);
+
+      $reporter = null;
+      if(!is_null($opt) && property_exists($opt, 'reporter'))
+      {
+        $reporter = $opt->reporter;
+      }  
+      $op = $this->APIClient->addIssueNoteFromSimpleXML($issueID,$issueXmlObj,$reporter);
       $ret = array('status_ok' => true, 'id' => (string)$op->id, 
                    'msg' => sprintf(lang_get('redmine_bug_created'),$summary,$issueXmlObj->project_id));
      }

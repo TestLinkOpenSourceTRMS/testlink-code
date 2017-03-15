@@ -14,7 +14,7 @@
   <body class="align">
     <div class="site__container">
       <div class="grid__container">
-      <img src="gui/themes/default/images/{$tlCfg->logo_login}"><br>
+      <img src="{$tlCfg->theme_dir}images/{$tlCfg->logo_login}"><br>
       <span>{$tlVersion|escape} </span>
       </div>
       
@@ -34,12 +34,21 @@
       </div>
       {/if}
 
+      {if $tlCfg->login_info != ""}
+      <div class="text--center">
+      {$tlCfg->login_info}
+      </div>
+      {/if}
+      
       {if $gui->draw}  
         <div class="grid__container">
           <form name="login" id="login" action="login.php?viewer={$gui->viewer}" method="post" class="form form--login">
             <input type="hidden" name="reqURI" value="{$gui->reqURI|escape:'url'}"/>
             <input type="hidden" name="destination" value="{$gui->destination|escape:'url'}"/>
 
+            {if $gui->ssodisable}
+            <input type="hidden" name="ssodisable" value="{$gui->ssodisable}"/>
+            {/if}
 
             <div class="form__field">
               <label for="tl_login"><i class="fa fa-user"></i></label>

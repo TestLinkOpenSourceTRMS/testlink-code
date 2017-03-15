@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2016, TestLink community
+ * @copyright   2005-2017, TestLink community
  * @link        http://www.testlink.org/
  *
  * @internal revisions
@@ -3621,9 +3621,11 @@ class testcase extends tlObjectWithAttachments
     // Multiple Test Case Steps Feature
     if( !is_null($recordset) && $localOptions['getSteps'] )
     {
-      $exec_cfg =
       $xx = null;
-      if($localOptions['getStepsExecInfo'] && $this->cfg->execution->steps_exec_notes_default == 'latest')
+      if( $localOptions['getStepsExecInfo'] && 
+          ($this->cfg->execution->steps_exec_notes_default == 'latest' ||
+           $this->cfg->execution->steps_exec_status_default == 'latest') 
+        )
       {
         $tg = current($recordset);
         $xx = $this->getStepsExecInfo($tg['execution_id']);
@@ -3641,9 +3643,21 @@ class testcase extends tlObjectWithAttachments
             foreach($key_set as $kyx)
             {
               $step_set[$kyx]['execution_notes'] = '';
+              $step_set[$kyx]['execution_status'] = '';
+         
               if( isset($xx[$step_set[$kyx]['id']]) )
               {
-                $step_set[$kyx]['execution_notes'] = $xx[$step_set[$kyx]['id']]['notes'];
+                if($this->cfg->execution->steps_exec_notes_default == 'latest')
+                {
+                  $step_set[$kyx]['execution_notes'] = 
+                     $xx[$step_set[$kyx]['id']]['notes'];
+                }
+
+                if($this->cfg->execution->steps_exec_status_default == 'latest')
+                {
+                  $step_set[$kyx]['execution_status'] = 
+                     $xx[$step_set[$kyx]['id']]['status'];
+                }
               }
             }
           }
@@ -7529,13 +7543,13 @@ class testcase extends tlObjectWithAttachments
     $key2check = array('summary','preconditions');
     $tlBeginTag = '[tlVar]';
     $tlEndTag = '[/tlVar]';
-    $tlEndMarkLen = strlen($tlEndMark);
+    $tlEndTagLen = strlen($tlEndTag);
 
     // I've discovered that working with Web Rich Editor generates
     // some additional not wanted entities, that disturb a lot
     // when trying to use json_decode().
     // Hope this set is enough.
-    // $replaceSet = array($tlEndMark, '</p>', '<p>','&nbsp;');
+    // $replaceSet = array($tlEndTag, '</p>', '<p>','&nbsp;');
     // $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
 
 

@@ -4,15 +4,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 show Test Results by Status
 
 @filesource	resultsByStatus.tpl
-@internal revisions
-@since 1.9.13
 *}
 
 {lang_get var='labels' 
           s='th_test_suite,test_case,version,th_build,th_run_by,th_bugs_not_linked,
           th_date,title_execution_notes,th_bugs,summary,generated_by_TestLink_on,
           th_assigned_to,th_platform,platform,info_failed_tc_report,
-          info_blocked_tc_report,info_notrun_tc_report,export_as_spreadsheet'}
+          info_blocked_tc_report,info_notrun_tc_report,
+          export_as_spreadsheet,send_spreadsheet_by_email'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
@@ -29,22 +28,23 @@ show Test Results by Status
 </head>
 <body>
 <form name="resultsByStatus" id="resultsByStatus" METHOD="POST"
+      target="avoidPageRefreshWhenSendindMail"
       action="lib/results/resultsByStatus.php?type={$gui->type}&format=3&tplan_id={$gui->tplan_id}&tproject_id={$gui->tproject_id}">
+
 <h1 class="title">{$gui->title|escape}
+</h1>
   {if $gui->apikey != ''}
   <input type="hidden" name="apikey" id="apikey" value="{$gui->apikey}">
   {/if}
 
-  {if $gui->format != $smarty.const.FORMAT_MAIL_HTML}
+  &nbsp;&nbsp;
   <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
          src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
-  {/if}       
+
+  <input type="image" name="sendSpreadSheetByMail" id="sendSpreadSheetByMail" 
+         src="{$tlImages.email}" title="{$labels.send_spreadsheet_by_email}">
+
 </form>
-</h1>
-
-
-
-{* <h1 class="title">{$gui->title|escape}</h1> *}
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl"
@@ -72,5 +72,9 @@ show Test Results by Status
 	{$gui->warning_msg}
 {/if}
 </div>
+
+<!-- To avoid refresh when sending mail --> 
+<iframe name="avoidPageRefreshWhenSendindMail" style="display:none;"></iframe>
+
 </body>
 </html>

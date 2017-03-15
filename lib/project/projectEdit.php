@@ -176,6 +176,7 @@ switch($args->doAction)
       }
     }
         
+    $gui->editorType = $editorCfg['type'];    
     $smarty->assign('gui',$gui);
     $smarty->display($templateCfg->template_dir . $template);
   break;

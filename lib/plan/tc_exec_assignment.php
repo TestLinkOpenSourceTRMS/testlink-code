@@ -520,7 +520,6 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     $flat_path[$tcase_id]=implode('/',$pieces) . '/' . $tcnames[$tcase_id];  
   }
 
-  file_put_contents('/tmp/maillog.log', json_encode($testers));
   foreach($testers as $tester_type => $tester_set)
   {
     if( !is_null($tester_set) )
@@ -563,10 +562,9 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 
           
         $email['body'] .= '<br />' . date(DATE_RFC1123);
-        
-        file_put_contents('/tmp/tlmail.log',json_encode($email),FILE_APPEND);
         $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'], '', true, true);
+                               $email['subject'], $email['body'], null, 
+                               '', true, true);
       } // foreach($tester_set as $user_id => $value)
     }                       
   }

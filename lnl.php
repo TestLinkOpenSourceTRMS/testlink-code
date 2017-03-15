@@ -62,6 +62,14 @@ switch($args->light)
                  "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=" . FORMAT_HTML;
         $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
       break;
+      
+      case 'testreport_onbuild':
+        $param = "&type={$args->type}&level=testproject" .
+                 "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&build_id={$args->build_id}" .
+                 "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
+                 "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=" . FORMAT_HTML;
+        $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
+      break;
 
       case 'test_plan':
         $param = "&type={$args->type}&level=testproject" .

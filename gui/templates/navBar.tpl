@@ -4,14 +4,11 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 title bar + menu
 
 @filesource navBar.tpl
-@internal revisions
-@since 1.9.7
-
 *}
 {lang_get var="labels"
           s="title_events,event_viewer,home,testproject,title_specification,title_execute,
              title_edit_personal_data,th_tcid,link_logout,title_admin,
-             search_testcase,title_results,title_user_mgmt"}
+             search_testcase,title_results,title_user_mgmt,full_text_search"}
 {$cfg_section=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -28,7 +25,7 @@ title bar + menu
   <span class="bold">{$gui->whoami|escape}</span>
   <span>&nbsp;&nbsp;&nbsp;<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i"
           tabindex="6"><img src="{$tlImages.account}" title="{$labels.title_edit_personal_data}"></a>
-        <a href="logout.php?viewer={$gui->viewer}" target="_parent" accesskey="q">
+        <a href="{$gui->logout}" target="_parent" accesskey="q">
         <img src="{$tlImages.logout}" title="{$labels.link_logout}"></a>
   </span>
   <span style="float:right;">TestLink {$tlVersion|escape}</span>
@@ -71,9 +68,34 @@ title bar + menu
     <input type="hidden" name="allow_edit" value="0"/>
     </form>
   {/if}
+
+  {if $gui->grants->view_testcase_spec == "yes"}
+    <form style="display:inline" target="mainframe" name="fullTextSearch" id="fullTextSearch"
+          action="lib/search/searchMgmt.php" method="post">
+    <input type="hidden" name="caller" value="navBar">
+    <input type="hidden" name="tproject_id" value="{$gui->tproject_id}">
+
+    <input style="font-size: 80%; position:relative; top:-1px;" type="text" size="50"
+           title="{$labels.full_text_search}" name="target" value="" />
+
+    <img src="{$tlImages.magnifier}"
+         title="{$labels.full_text_search}" alt="{$labels.full_text_search}"
+         onclick="document.getElementById('fullTextSearch').submit()" class="clickable" 
+         style="position:relative; top:2px;" />
+    </form>
+  {/if}
+
 {/if}
 </div>
 
+{if $gui->plugins.EVENT_TITLE_BAR}
+	<div align="center" >
+	{foreach from=$gui->plugins.EVENT_TITLE_BAR item=menu_item}
+	  {$menu_item}
+	{/foreach}
+	</div>
+{/if}
+  
 {if $gui->updateMainPage == 1}
   <script type="text/javascript">
   parent.mainframe.location = "{$basehref}lib/general/mainPage.php";

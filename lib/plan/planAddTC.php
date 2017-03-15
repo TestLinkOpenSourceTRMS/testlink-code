@@ -650,8 +650,16 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
           $email['body'] .= $flat_path[$tcase_id] . '<br />';  
         }  
         $email['body'] .= '<br />' . date(DATE_RFC1123);
+
+        $email['cc'] = '';
+        $email['attachment'] = null;
+        $email['exit_on_error'] = true;
+        $email['htmlFormat'] = true; 
+
         $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'], '', true, true);
+                               $email['subject'], $email['body'],
+                               $email['cc'],$email['attachment'],
+                               $email['exit_on_error'],$email['htmlFormat']);
       } 
     }                       
   }

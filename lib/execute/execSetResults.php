@@ -23,7 +23,7 @@
  * is present in gui->map_last_exec
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  *
 **/
 require_once('../../config.inc.php');
@@ -147,14 +147,13 @@ if(!is_null($linked_tcversions))
   // because in some situations args->save_results is a number (0) an in other is an array
   // with just one element with key => test case version ID executed.
   //
-  if ($args->save_results || $args->do_bulk_save || $args->save_and_next || 
-      $args->save_and_exit || 
-      $args->doMoveNext || $args->doMovePrevious)
+ if ($args->doSave || $args->doNavigate)
   {
     // this has to be done to do not break logic present on write_execution()
     $args->save_results = $args->save_and_next ? $args->save_and_next : 
                           ($args->save_results ? $args->save_results : $args->save_and_exit);
 
+     
     if( $args->save_results || $args->do_bulk_save)
     {  
       // Need to get Latest execution ID before writing
@@ -413,9 +412,8 @@ else
   $smarty->assign('test_automation_enabled',0);
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
-  $smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
+  $smarty->assign('users',tlUser::getByIDs($db,$userSet));
 
-  Kint::dump($gui);
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 } 
 
@@ -489,6 +487,12 @@ function init_args(&$dbHandler,$cfgObj)
   {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
+
+ $args->doSave = $args->save_results || $args->save_and_next || 
+                 $args->save_and_exit || $args->do_bulk_save;
+ 
+ $args->doNavigate =  $args->doMoveNext || $args->doMovePrevious;
+
 
   // See details on: "When nullify filter_status - 20080504" in this file
   if( $args->level == 'testcase' || is_null($args->filter_status) || 
@@ -876,6 +880,7 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
           $bugs[$exec_id] = $the_bugs;
         }  
       }
+
 
       // Custom fields
       $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values($tcversion_id,'execution',null,
@@ -1304,6 +1309,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->treeFormToken = $argsObj->treeFormToken;
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
 
+
+  $gui->execStatusIcons = getResultsIcons();
+  $gui->execStatusIconsNext = getResultsIconsNext();
+
   $gui->execStatusValues = createResultsMenu();
   $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
   if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) )
@@ -1478,6 +1487,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
     }  
   }  
  
+  $gui->bug_summary = '';
   return $gui;
 }
 
@@ -1496,10 +1506,11 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   
   // IMPORTANT due  to platform feature
   // every element on linked_tcversions will be an array.
-  $cf_filters=array('show_on_execution' => 1); 
-  $locationFilters=$tcaseMgr->buildCFLocationMap();
-  $guiObj->design_time_cfields='';
-  $guiObj->testplan_design_time_cfields='';
+  $cf_filters = array('show_on_execution' => 1); 
+  $locationFilters = $tcaseMgr->buildCFLocationMap();
+  
+  $guiObj->design_time_cfields = array();
+  $guiObj->testplan_design_time_cfields = array();
   
   $tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
 
@@ -1517,6 +1528,8 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   $tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
     
   $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
+
+
   foreach($locationFilters as $locationKey => $filterValue)
   {
     $finalFilters=$cf_filters+$filterValue;
@@ -2136,3 +2149,44 @@ function manageCookies(&$argsObj,$cfgObj)
     }
   }
 }  
+
+/**
+ *
+ */
+function getResultsIcons()
+{
+  $resultsCfg = config_get('results');
+  // loop over status for user interface, because these are the statuses
+  // user can assign while executing test cases
+  foreach($resultsCfg['status_icons_for_exec_ui'] as $verbose_status => $ele)
+  {
+    if( $verbose_status != 'not_run' )
+    {  
+      $code = $resultsCfg['status_code'][$verbose_status];
+      $items[$code] = $ele;
+      $items[$code]['title'] = lang_get($items[$code]['title']);
+    } 
+  }
+  return $items;
+}
+
+/**
+ *
+ */
+function getResultsIconsNext()
+{
+  $resultsCfg = config_get('results');
+  // loop over status for user interface, because these are the statuses
+  // user can assign while executing test cases
+  foreach($resultsCfg['status_icons_for_exec_next_ui'] as $verbose_status => $ele)
+  {
+    if( $verbose_status != 'not_run' )
+    {  
+      $code = $resultsCfg['status_code'][$verbose_status];
+      $items[$code] = $ele;
+      $items[$code]['title'] = lang_get($items[$code]['title']);
+    } 
+  }
+  return $items;
+}
+

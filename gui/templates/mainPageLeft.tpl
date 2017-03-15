@@ -124,10 +124,10 @@
    </script>
 {/if}
 
-{if $gui->plugins.EVENT_LEFTMENU_TOP }
+{if isset($gui->plugins.EVENT_LEFTMENU_TOP) &&  $gui->plugins.EVENT_LEFTMENU_TOP}
   {$display_left_block_top=true}
 {/if}
-{if $gui->plugins.EVENT_LEFTMENU_BOTTOM }
+{if isset($gui->plugins.EVENT_LEFTMENU_BOTTOM) &&  $gui->plugins.EVENT_LEFTMENU_BOTTOM}
   {$display_left_block_bottom=true}
 {/if}
 
@@ -262,12 +262,14 @@
                                });
       }
       </script>
-      <div id="plugin_left_top">
-        {foreach from=$gui->plugins.EVENT_LEFTMENU_TOP item=menu_item}
-          {$menu_item}
-          <br />
-        {/foreach}
-      </div>
+      {if isset($gui->plugins.EVENT_LEFTMENU_TOP)}
+        <div id="plugin_left_top">
+          {foreach from=$gui->plugins.EVENT_LEFTMENU_TOP item=menu_item}
+            {$menu_item}
+            <br />
+          {/foreach}
+        </div>
+      {/if}
   {/if}
 
 
@@ -288,12 +290,14 @@
                                });
       }
       </script>
-      <div id="plugin_left_bottom">
-        {foreach from=$gui->plugins.EVENT_LEFTMENU_BOTTOM item=menu_item}
-          {$menu_item}
-          <br />
-        {/foreach}
-      </div>
+      {if isset($gui->plugins.EVENT_LEFTMENU_BOTTOM)}
+        <div id="plugin_left_bottom">
+          {foreach from=$gui->plugins.EVENT_LEFTMENU_BOTTOM item=menu_item}
+            {$menu_item}
+            <br />
+          {/foreach}
+        </div>
+      {/if}
   {/if}
 
   {if $display_left_block_5}

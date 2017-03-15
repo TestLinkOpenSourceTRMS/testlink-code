@@ -186,7 +186,8 @@ Author : franciscom
          Via Javascript the required attribute will be added when this input will be 
          done visible because user has clicked on 'Create Issue' checkbox
       *}
-      {if $gui->issueTrackerMetaData.versions != ''}
+      {if $gui->issueTrackerMetaData.versions != '' && 
+          $gui->issueTrackerMetaData.versions.items != ''}
         <label for="artifactVersion">{$labels.artifactVersion}</label> 
         <select class="chosen-select-artifact" data-placeholder=" " id="artifactVersion" 
                 {if $gui->issueTrackerMetaData.versions.isMultiSelect}

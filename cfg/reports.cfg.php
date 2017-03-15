@@ -9,7 +9,7 @@
  * SCOPE: Definition of report/metrics menu 
  * 
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.17
  *
  * 
  */
@@ -82,7 +82,7 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 	'url' => 'lib/results/resultsGeneral.php',
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=metrics_tp_general',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods'
 );
 
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
@@ -112,7 +112,7 @@ $tlCfg->reports_list['results_matrix'] = array(
 	'url' => 'lib/results/resultsTC.php',
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods'
 );
 
 $tlCfg->reports_list['results_flat'] = array( 
@@ -128,21 +128,21 @@ $tlCfg->reports_list['list_tc_failed'] = array(
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['failed'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_failed',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods'
 );
 $tlCfg->reports_list['list_tc_blocked'] = array( 
 	'title' => 'link_report_blocked_tcs',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['blocked'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_blocked',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html'
+	'format' => 'format_html,format_pseudo_ods'
 );
 $tlCfg->reports_list['list_tc_not_run'] = array( 
 	'title' => 'link_report_not_run',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['not_run'],
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_not_run',
-	'format' => 'format_html,format_pseudo_ods,format_mail_html',
+	'format' => 'format_html,format_pseudo_ods',
 	'misc' => array('bugs_not_linked' => false)
 );
 

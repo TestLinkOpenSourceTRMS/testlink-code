@@ -280,6 +280,14 @@ function doSessionStart($setPaths=false)
   if(!isset($_SESSION))
   {
     session_start();
+    if(defined('KINT_ON') && KINT_ON)
+    {
+      Kint::enabled(true);      
+    }  
+    else
+    {
+      Kint::enabled(false);      
+    }  
   }
   
   if($setPaths)
@@ -864,12 +872,13 @@ function templateConfiguration($template2get=null)
   }
   
   $path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
-    $last_part=array_pop($path_parts);
-    $tcfg = new stdClass();
-    $tcfg->template_dir = "{$last_part}/";
-    $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
-    $tcfg->template = null;
-    return $tcfg;
+  $last_part=array_pop($path_parts);
+  $tcfg = new stdClass();
+  $tcfg->template_dir = "{$last_part}/";
+  $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
+  $tcfg->template = null;
+  $tcfg->tpl = $tcfg->template_dir . $tcfg->default_template;
+  return $tcfg;
 }
 
 
@@ -1462,4 +1471,48 @@ function getWebEditorCfg($feature='all')
   return $webEditorCfg;
 }
 
+/**
+ *
+ */
+function downloadXls($fname,$xlsType,$gui,$filePrefix)
+{
+  $sets = array();
+  $sets['Excel2007'] = array('ext' => '.xlsx', 
+                             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  $sets['Excel5'] = array('ext' => '.xls', 
+                          'Content-Type' => 'application/vnd.ms-excel');
 
+
+  $dct = array('Content-Type' =>  $sets[$xlsType]['Content-Type']);
+  $content = file_get_contents($fname);
+  $f2d = $filePrefix . $gui->tproject_name . '_' . $gui->tplan_name . 
+         $sets[$xlsType]['ext'];
+
+  downloadContentsToFile($content,$f2d,$dct);
+  unlink($fname);
+  exit();    
+}
+
+/**
+ * POC on papertrailapp.com
+ */
+function syslogOnCloud($message, $component = "web", $program = "TestLink") 
+{
+  $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+  foreach(explode("\n", $message) as $line) 
+  {
+    $syslog_message = "<22>" . date('M d H:i:s ') . $program . ' ' . 
+                      $component . ': ' . $line;
+    socket_sendto($sock, $syslog_message, strlen($syslog_message), 0,
+                  'logs5.papertrailapp.com', 11613);
+  }
+  socket_close($sock);
+}
+
+/**
+ *
+ */
+function getSSODisable()
+{
+  return isset($_REQUEST['ssodisable']) ? 1 : 0;
+}

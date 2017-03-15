@@ -5,10 +5,9 @@
  *
  * @filesource  index.php
  * @package     TestLink
- * @copyright   2006-2013, TestLink community
+ * @copyright   2006-2017, TestLink community
  * @link        http://www.testlink.org
  *
- * @internal revisions
  *
 **/
 require_once('lib/functions/configCheck.php');
@@ -17,7 +16,8 @@ require_once('config.inc.php');
 require_once('common.php');
 doSessionStart();
 
-unset($_SESSION['basehref']);  // will be very interesting understand why we do this
+// will be very interesting understand why we do this
+unset($_SESSION['basehref']);  
 setPaths();
 list($args,$gui) = initEnv();
 
@@ -26,7 +26,6 @@ $redir2login = true;
 if( isset($_SESSION['currentUser']) )
 {
   // Session exists we need to do other checks.
-  //
   // we use/copy Mantisbt approach
   $securityCookie = tlUser::auth_get_current_user_cookie();
   $redir2login = is_null($securityCookie);
@@ -57,7 +56,8 @@ if($redir2login)
   //
   // Dev Notes:
   // may be we are going to login.php and it will call us again!
-  redirect(TL_BASE_HREF ."login.php");
+  $urlo = TL_BASE_HREF . "login.php" . ($args->ssodisable ? '?ssodisable' : '');
+  redirect($urlo);
   exit;
 }
 
@@ -83,15 +83,22 @@ function initEnv()
   $pParams = G_PARAMS($iParams);
   
   $args = new stdClass();
+  $args->ssodisable = getSSODisable();
   $args->reqURI = ($pParams["reqURI"] != '') ? $pParams["reqURI"] : 'lib/general/mainPage.php';
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 
   $gui = new stdClass();
   $gui->title = lang_get('main_page_title');
-  $gui->titleframe = "lib/general/navBar.php?tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
-                     "&updateMainPage=1";
   $gui->mainframe = $args->reqURI;
+  $gui->navbar_height = config_get('navbar_height');
+
+  $sso = ($args->ssodisable ? '&ssodisable' : '');
+  $gui->titleframe = "lib/general/navBar.php?" . 
+                     "tproject_id={$args->tproject_id}&" .
+                     "tplan_id={$args->tplan_id}&" .
+                     "updateMainPage=1" . $sso;
+  $gui->logout = 'logout.php?viewer=' . $sso;
 
   return array($args,$gui);
 }

@@ -4,11 +4,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: smarty template - Add new build and show existing
 
-@internal revisions
-@since 1.9.14
 *}
 {$managerURL="lib/plan/buildEdit.php"}
-{$cancelAction="lib/plan/buildView.php"}
+{$cancelAction="lib/plan/buildView.php?tplan_id={$gui->tplan_id}"}
 
 {lang_get var="labels"
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
@@ -58,6 +56,7 @@ function validateForm(f)
   </h2>
   <form method="post" id="create_build" name="create_build" 
         action="{$managerURL}" onSubmit="javascript:return validateForm(this);">
+        <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
   <table class="common" style="width:80%">
     <tr>
       <th style="background:none;">{$labels.enter_build}</th>

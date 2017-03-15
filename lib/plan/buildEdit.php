@@ -5,8 +5,6 @@
  *
  * @filesource  buildEdit.php
  *
- * @internal revisions
- * @since 1.9.14
  *
  */
 require('../../config.inc.php');
@@ -30,8 +28,7 @@ $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
-$args = init_args($_REQUEST,$_SESSION,$date_format_cfg);
-
+$args = init_args($_REQUEST,$_SESSION,$date_format_cfg,$tplan_mgr);
 $gui = initializeGui($args,$build_mgr);
 
 
@@ -120,7 +117,7 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
  * @internal revisions
  *
  */
-function init_args($request_hash, $session_hash,$date_format)
+function init_args($request_hash, $session_hash,$date_format,&$tplanMgr)
 {
   $args = new stdClass();
   $request_hash = strings_stripSlashes($request_hash);
@@ -161,8 +158,19 @@ function init_args($request_hash, $session_hash,$date_format)
     
   $args->closed_on_date = isset($request_hash['closed_on_date']) ? $request_hash['closed_on_date'] : null;
     
-  $args->tplan_id = isset($session_hash['testplanID']) ? intval($session_hash['testplanID']) : 0;
-  $args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
+
+  if(isset($request_hash['tplan_id']) && intval($request_hash['tplan_id']) > 0)
+  {
+    $args->tplan_id = intval($_REQUEST['tplan_id']);
+    $dp = $tplanMgr->get_by_id($args->tplan_id);
+    $args->tplan_name = $dp['name'];
+  } 
+  else
+  {
+    $args->tplan_id = isset($session_hash['testplanID']) ? intval($session_hash['testplanID']) : 0;
+    $args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
+  }  
+
   $args->testprojectID = intval($session_hash['testprojectID']);
   $args->testprojectName = $session_hash['testprojectName'];
   $args->userID = intval($session_hash['userID']);
@@ -191,6 +199,8 @@ function initializeGui(&$argsObj,&$buildMgr)
   {
     $guiObj->exec_status_filter['items'][$dummy['status_code'][$kv]] = lang_get($vl);  
   }  
+
+  $guiObj->tplan_id = $argsObj->tplan_id;
   return $guiObj;
 }
 

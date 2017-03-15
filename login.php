@@ -8,12 +8,9 @@
  * @filesource  login.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2006,2016 TestLink community 
+ * @copyright   2006,2017 TestLink community 
  * @link        http://www.testlink.org
  * 
- * @internal revisions
- * @since 1.9.15
- *              
  **/
 
 require_once('lib/functions/configCheck.php');
@@ -55,14 +52,28 @@ switch($args->action)
   case 'loginform':
     $doRenderLoginScreen = true;
     $gui->draw = true;
+    $op = null;
 
     // unfortunatelly we use $args->note in order to do some logic.
-    if( (trim($args->note) == "") &&
-        $gui->authCfg['SSO_enabled'] && $gui->authCfg['SSO_method'] == 'CLIENT_CERTIFICATE')
+    if( ($args->note=trim($args->note)) == "" )
     {
-      doSessionStart(true);
-      $op = doSSOClientCertificate($db,$_SERVER,$gui->authCfg);
-      $doAuthPostProcess = true;
+      if( $gui->authCfg['SSO_enabled'] )
+      {
+        doSessionStart(true);
+        $doAuthPostProcess = true;
+        
+        switch ($gui->authCfg['SSO_method']) 
+        {
+          case 'CLIENT_CERTIFICATE':
+            $op = doSSOClientCertificate($db,$_SERVER,$gui->authCfg);
+          break;
+          
+          case 'WEBSERVER_VAR':
+            //DEBUGsyslogOnCloud('Trying to execute SSO using SAML');
+            $op = doSSOWebServerVar($db,$gui->authCfg);
+          break;
+        }
+      }
     }
   break;
 }
@@ -103,6 +114,7 @@ function init_args()
   $args->note = $pParams['note'];
   $args->login = $pParams['tl_login'];
   $args->pwd = $pParams['tl_password'];
+  $args->ssodisable = getSSODisable();
   $args->reqURI = urlencode($pParams['req']);
   $args->preqURI = urlencode($pParams['reqURI']);
   $args->destination = urldecode($pParams['destination']);
@@ -186,6 +198,13 @@ function init_gui(&$db,$args)
       $gui->note = '';
     break;
   }
+
+  $gui->ssodisable = 0;
+  if(property_exists($args,'ssodisable'))
+  {
+    $gui->ssodisable = $args->ssodisable;
+  }  
+
   $gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
   $gui->destination = $args->destination;
   $gui->pwdInputMaxLenght = config_get('loginPagePasswordMaxLenght');
@@ -282,16 +301,25 @@ function authorizePostProcessing($argsObj,$op)
       {
         // ... or show main page
         $_SESSION['viewer'] = $argsObj->viewer;
-        redirect($_SESSION['basehref'] . "index.php?caller=login&viewer={$argsObj->viewer}" . 
-                 ($argsObj->preqURI ? "&reqURI=".urlencode($argsObj->preqURI) :""));
-      
+        $ad = $argsObj->ssodisable ? '&ssodisable=1' : '';
+        $ad .= ($argsObj->preqURI ? "&reqURI=".urlencode($argsObj->preqURI) :"");
+
+        $rul = $_SESSION['basehref'] . 
+                 "index.php?caller=login&viewer={$argsObj->viewer}" . $ad;
+        
+        redirect($rul);
       }
       exit(); // hmm seems is useless
     }
   }
   else
   {
-    $note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];
+    $note = '';
+    if(!$argsObj->ssodisable) 
+    {
+      $note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];
+    } 
+
     if($argsObj->action == 'ajaxlogin') 
     {
       echo json_encode(array('success' => false,'reason' => $note));

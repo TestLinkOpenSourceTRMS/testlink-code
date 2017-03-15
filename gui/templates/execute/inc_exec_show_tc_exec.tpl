@@ -312,11 +312,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        		  <td align="center">
        		  {if $tc_old_exec.build_is_open}
        		    <a href="javascript:open_bug_add_window({$gui->tproject_id},
-              {$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},'link')">
+              {$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},0,'link')">
        		    <img src="{$tlImages.bug_link_tl_to_bts}" title="{$labels.bug_link_tl_to_bts}" style="border:none" /></a>
        		    &nbsp;&nbsp;
               {if $gui->tlCanCreateIssue}
-       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},'create')">
+       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},0,'create')">
       			    <img src="{$tlImages.bug_create_into_bts}" title="{$labels.bug_create_into_bts}" style="border:none" /></a>
               {/if}
        		  {else}
@@ -480,7 +480,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_cfg=$cfg}
 
     {if $tc_exec.can_be_executed}
-      {include file="execute/inc_exec_controls.tpl"
+      {include file="execute/{$tplConfig.inc_exec_controls}"
                args_save_type='single'
                args_input_enable_mgmt=$input_enabled_disabled
                args_tcversion_id=$tcversion_id

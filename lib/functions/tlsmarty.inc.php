@@ -9,12 +9,12 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2016, TestLink community 
+ * @copyright 	2005-2017, TestLink community 
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  *
  */
 
@@ -115,6 +115,7 @@ class TLSmarty extends Smarty
   function TLSmarty()
   {
     global $tlCfg;
+    global $g_tpl;
     
     parent::__construct();
     $this->template_dir = TL_ABS_PATH . 'gui/templates/';
@@ -194,6 +195,7 @@ class TLSmarty extends Smarty
     // load configuration
     $this->assign('session',isset($_SESSION) ? $_SESSION : null);
     $this->assign('tlCfg',$tlCfg);
+    $this->assign('tplConfig',$g_tpl);
     $this->assign('gsmarty_gui',$tlCfg->gui);
     $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
     $this->assign('gsmarty_attachments',config_get('attachments'));
@@ -342,6 +344,7 @@ class TLSmarty extends Smarty
                    'add' => $imgLoc . 'add.png',
                    'add2set' => $imgLoc . 'basket_put.png',
                    'api_info' => $imgLoc . 'brick.png',
+                   'assign_task' => $imgLoc . 'assign_exec_task_to_me.png',
                    'bug' => $imgLoc . 'bug.png',
                    'bug_link_tl_to_bts' => $imgLoc . 'bug_link_famfamfam.png',
                    'bug_create_into_bts' => $imgLoc . 'bug_add_famfamfam.png',
@@ -388,6 +391,7 @@ class TLSmarty extends Smarty
                    'ghost_item' => $imgLoc . 'ghost16x16.png',
                    'user_group' => $imgLoc . 'group.png',
                    'heads_up' => $imgLoc . 'lightbulb.png',
+                   'help' => $imgLoc . 'question.gif',
                    'history' => $imgLoc . 'history.png',
                    'history_small' => $imgLoc . 'history_small.png',
                    'home' => $imgLoc . 'application_home.png',
@@ -420,6 +424,7 @@ class TLSmarty extends Smarty
                    'report_word' => $imgLoc . 'page_word.png',
                    'requirements' => $imgLoc . 'cart.png',
                    'resequence' => $imgLoc . 'control_equalizer.png',
+                   'reset' => $imgLoc . 'arrow_undo.png',
                    'summary_small' => $imgLoc . 'information_small.png',
                    'sort' => $imgLoc . 'sort_hint.png',
                    'steps' => $imgLoc . 'bricks.png',
@@ -433,7 +438,14 @@ class TLSmarty extends Smarty
                    'upload' => $imgLoc . 'upload_16.png',
                    'upload_greyed' => $imgLoc . 'upload_16_greyed.png',
                    'warning' => $imgLoc . 'error_triangle.png',
-                   'wrench' => $imgLoc . 'wrench.png');
+                   'wrench' => $imgLoc . 'wrench.png',
+                   'test_status_not_run' => $imgLoc . 'test_status_not_run.png',
+                   'test_status_passed' => $imgLoc . 'test_status_passed.png',
+                   'test_status_failed' => $imgLoc . 'test_status_failed.png',
+                   'test_status_blocked' => $imgLoc . 'test_status_blocked.png',
+                   'test_status_passed_next' => $imgLoc . 'test_status_passed_next.png',
+                   'test_status_failed_next' => $imgLoc . 'test_status_failed_next.png',
+                   'test_status_blocked_next' => $imgLoc . 'test_status_blocked_next.png');
                      
     return $dummy;
 	}

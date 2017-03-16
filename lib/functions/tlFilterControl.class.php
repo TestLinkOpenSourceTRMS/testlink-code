@@ -96,6 +96,9 @@ abstract class tlFilterControl extends tlObjectWithDB
    */
   public $draw_import_xml_results_button = false;
 
+
+  public $draw_tc_assignment_bulk_copy_button = false;
+
   /**
    * will hold the localized string options (any/none/somebody/...)
    * @var array
@@ -212,7 +215,6 @@ abstract class tlFilterControl extends tlObjectWithDB
    */
   public function __construct(&$dbHandler) 
   {
-
     // call to constructor of parent class tlObjectWithDB
     parent::__construct($dbHandler);
 
@@ -223,10 +225,8 @@ abstract class tlFilterControl extends tlObjectWithDB
     $this->init_args();
 
     // set filter mode to advanced or simple
-    $this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
-                                   $this->args->advanced_filter_mode && 
-                                   !$this->args->simple_filter_mode);
-    
+    $this->init_advanced_filter_mode();
+   
     // init button labels
     if ($this->advanced_filter_mode) 
     {
@@ -243,10 +243,8 @@ abstract class tlFilterControl extends tlObjectWithDB
     $this->filter_mode_button_name = $label;
     $this->filter_item_quantity = $qty;
 
-    // echo __FILE__ . '<br>' . __LINE__ . '<br>';
-
     $this->init_settings();
-    // $this->init_filters();
+
   } // end of method
 
   /**
@@ -324,6 +322,13 @@ abstract class tlFilterControl extends tlObjectWithDB
       isset($_REQUEST[self::SIMPLE_FILTER_BUTTON_LABEL]) ? true : false;
     $this->args->advanced_filter_mode = 
       isset($_REQUEST[self::ADVANCED_FILTER_BUTTON_LABEL]) ? true : false;  
+
+    $this->args->loadExecDashboard = true;
+    if( isset($_REQUEST['loadExecDashboard']) )
+    {
+      $this->args->loadExecDashboard = intval($_REQUEST['loadExecDashboard']);
+    }  
+
   } // end of method
 
 
@@ -446,7 +451,16 @@ abstract class tlFilterControl extends tlObjectWithDB
   } // end of method
 
 
-
+  /**
+   *
+   */
+  protected function init_advanced_filter_mode() 
+  {
+    $this->advanced_filter_mode = ($this->filter_mode_choice_enabled && 
+                                   $this->args->advanced_filter_mode && 
+                                   !$this->args->simple_filter_mode);
+ 
+  } // end of method
 
 
   

@@ -104,7 +104,7 @@ var tc_editor = "{$gui->editorType}";
     <div class="messages" align="center">{$warning_edit_msg}</div>
 {/if}
 
-<form method="post" action="lib/testcases/tcEdit.php" name="tcStepEdit"
+<form method="post" action="{$basehref}lib/testcases/tcEdit.php" name="tcStepEdit"
       onSubmit="return validateForm(this,'{$gui->step_set}',{$gui->step_number});">
 
   <input type="hidden" name="testcase_id" value="{$gui->tcase_id}" />
@@ -124,6 +124,7 @@ var tc_editor = "{$gui->editorType}";
              inc_tcbody_labels=$labels
              inc_tcbody_author_userinfo=$gui->authorObj
              inc_tcbody_updater_userinfo=$gui->updaterObj
+			 inc_tcbody_editor_type=$gui->editorType
              inc_tcbody_cf=null}
 
 

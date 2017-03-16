@@ -5,11 +5,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - compare requirement versions
 
 @internal revision
-20110107 - asimon - added daisydiff (html diff engine which handles tags well)
-20110106 - Julian - Only 1 column for last change including localized timestamp and editor
-20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
-                    visualization errors
-20101212 - franciscom - BUGID 4056: Requirement Revisioning
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -200,7 +195,7 @@ function validateForm() {
 	
 	<div class="workBack" style="width:97%;">
 	
-	<form target="diffwindow" method="post" action="lib/requirements/reqCompareVersions.php" name="req_compare_versions" id="req_compare_versions"  
+	<form target="diffwindow" method="post" action="{$basehref}lib/requirements/reqCompareVersions.php" name="req_compare_versions" id="req_compare_versions"  
 			onsubmit="return validateForm();" />			
 	
 	<p>

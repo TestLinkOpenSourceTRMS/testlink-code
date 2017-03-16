@@ -8,17 +8,18 @@
  * @filesource  containerEdit.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2016, TestLink community
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  * 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
+require_once('event_api.php');
 $editorCfg=getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
 
@@ -127,6 +128,7 @@ if($get_c_data)
   }
 }
 
+
 switch($action)
 {
   case 'fileUpload':
@@ -172,8 +174,8 @@ switch($action)
 
     $smarty->assign('opt_cfg', $opt_cfg);
 
-
     $gui = new stdClass();
+    $gui->tproject_id = $args->tprojectID;
     $gui->containerType = $level;
     $gui->refreshTree = $args->refreshTree;
     $gui->hasKeywords = (count($opt_cfg->from->map) > 0) || (count($opt_cfg->to->map) > 0);
@@ -471,6 +473,7 @@ function init_args(&$dbHandler,$optionTransferCfg)
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
+  // These lines need to be changed!!
   $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->tprojectName = $_SESSION['testprojectName'];
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
@@ -506,6 +509,15 @@ function init_args(&$dbHandler,$optionTransferCfg)
 
   // This logic sucks!!!
   $args->containerType = isset($_REQUEST['containerType']) ? $_REQUEST['containerType'] : null;
+  
+  // check againts whitelist
+  $ctWhiteList = array('testproject' => 'OK','testsuite' => 'OK');
+  if(!is_null($args->containerType) && 
+     !isset($ctWhiteList[$args->containerType]))
+  {
+    $args->containerType = null;  
+  }  
+
   if(is_null($args->containerID))
   {
     $args->containerType = is_null($args->containerType) ? 'testproject' : $args->containerType;
@@ -519,7 +531,6 @@ function init_args(&$dbHandler,$optionTransferCfg)
 
   $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $args->testCaseSet = null;
-
 
   if($args->treeFormToken >0)
   {  
@@ -542,13 +553,13 @@ returns:
 */
 function writeCustomFieldsToDB(&$db,$tprojectID,$tsuiteID,&$hash)
 {
-    $ENABLED = 1;
-    $NO_FILTERS = null;
+  $ENABLED = 1;
+  $NO_FILTERS = null;
 
-    $cfield_mgr = new cfield_mgr($db);
-    $cf_map = $cfield_mgr->get_linked_cfields_at_design($tprojectID,$ENABLED,
-                    $NO_FILTERS,'testsuite');
-    $cfield_mgr->design_values_to_db($hash,$tsuiteID,$cf_map);
+  $cfield_mgr = new cfield_mgr($db);
+  $cf_map = $cfield_mgr->get_linked_cfields_at_design($tprojectID,$ENABLED,
+                                                      $NO_FILTERS,'testsuite');
+  $cfield_mgr->design_values_to_db($hash,$tsuiteID,$cf_map);
 }
 
 
@@ -672,6 +683,10 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
             $tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));
         }
         writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$ret['id'],$hash);
+
+        // Send Events to plugins 
+        $ctx = array('id' => $ret['id'],'name' => $container['container_name'],'details' => $container['details']);
+        event_signal('EVENT_TEST_SUITE_CREATE', $ctx);
     }
     return $op;
 }
@@ -761,6 +776,10 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
       $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
     }
     writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
+
+    /* Send events to plugins */
+    $ctx = array('id' => $argsObj->testsuiteID,'name' => $container['container_name'],'details' => $container['details']);
+    event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
   }
   else
   {
@@ -853,18 +872,18 @@ returns: option transfer configuration
 */
 function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
 {
-    $opt_cfg = opt_transf_empty_cfg();
-    $opt_cfg->js_ot_name='ot';
-    $opt_cfg->global_lbl='';
-    $opt_cfg->from->lbl=lang_get('available_kword');
-    $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tprojectID);
-    $opt_cfg->to->lbl=lang_get('assigned_kword');
+  $opt_cfg = opt_transf_empty_cfg();
+  $opt_cfg->js_ot_name='ot';
+  $opt_cfg->global_lbl='';
+  $opt_cfg->from->lbl=lang_get('available_kword');
+  $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tprojectID);
+  $opt_cfg->to->lbl=lang_get('assigned_kword');
 
-    if($doAction=='edit_testsuite')
-    {
-        $opt_cfg->to->map=$tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
-    }
-    return $opt_cfg;
+  if($doAction=='edit_testsuite')
+  {
+    $opt_cfg->to->map = $tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
+  }
+  return $opt_cfg;
 }
 
 
@@ -899,28 +918,12 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
   $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);
   $tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
 
-  // 20081225 - franciscom
   // While testing with PostGres have found this behaivour:
   // No matter is UPPER CASE has used on field aliases, keys on hash returned by
   // ADODB are lower case.
   // Accessing this keys on Smarty template using UPPER CASE fails.
   // Solution: have changed case on Smarty to lower case.
   //
-
-  // $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
-  //        " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
-  //        " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
-  //        " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
-  //        " WHERE NHB.parent_id=NHA.id " .
-  //        " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
-  //        " AND NHA.parent_id={$containerID} " .
-  //        " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id ";
-
-  // $orderClause = " ORDER BY TCORDER,TCNAME";
-
-  // $sql .= $orderClause;
-  // $children = $dbHandler->get_recordset($sql);
-
   $sqlA = " SELECT MAX(TCV.version) AS lvnum, NHTC.node_order, NHTC.name, NHTC.id, TCV.tc_external_id AS tcexternalid" .
           " FROM {$tables['nodes_hierarchy']} NHTC " .
           " JOIN {$tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
@@ -1318,13 +1321,23 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
 function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 {
   $guiObj = new stdClass();
+
   $guiObj->id = $id;
+  $guiObj->tproject_id = $argsObj->tprojectID;
   $guiObj->refreshTree = $argsObj->refreshTree;
   $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
   $guiObj->page_title = $lbl['container_title_testsuite'];
   $guiObj->attachments = getAttachmentInfosFrom($objMgr,$id);
+  $guiObj->form_token = $argsObj->treeFormToken;
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
+
+  if( $objMgr->my_node_type == $objMgr->node_types_descr_id['testsuite'] )
+  {
+    $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
+                                             $guiObj->id,$argsObj->tprojectID);
+  }  
+
   return $guiObj;
 }
 

@@ -16,11 +16,11 @@ Testlink: smarty template -
              warning_empty_pwd,warning_different_pwd,empty_email_address,
              title_user_mgmt,title_account_settings,menu_edit_user,menu_new_user,
              menu_view_users,menu_define_roles,menu_view_roles,no_good_email_address,
-             menu_assign_testproject_roles,warning_empty_last_name,
+             menu_assign_testproject_roles,warning_empty_last_name,btn_apikey_generate,
              menu_assign_testplan_roles,caption_user_details,show_event_history,
              th_login,th_first_name,th_last_name,th_password,th_email,authentication_method,
              th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
-             btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled'}
+             btn_upd_user_data,btn_add,btn_cancel,button_reset_password,demo_reset_password_disabled,title_api_interface'}
 
 <script type="text/javascript">
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
@@ -134,14 +134,11 @@ function managePasswordInputs(oid,targetSetOID)
 </head>
 
 <body>
+<h1 class="title">{$gui->main_title} </h1>
 
-<h1 class="title">{$labels.title_user_mgmt} - {$labels.title_account_settings} </h1>
-
-
-
-
-{***** TABS *****}
-{include file="usermanagement/tabsmenu.tpl"}
+{* 
+{include file="usermanagement/menu.inc.tpl"}
+*}
 
 {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
@@ -156,13 +153,13 @@ function managePasswordInputs(oid,targetSetOID)
 
   {if $operation == 'doCreate'}
     {$check_password=1}
-      {if $userData neq null}
-        {$user_login=$userData->login}
+      {if $gui->user neq null}
+        {$user_login=$gui->user->login}
       {/if}
   {else}
      {$check_password=0}
-     {$user_id=$userData->dbID}
-     {$user_login=$userData->login}
+     {$user_id=$gui->user->dbID}
+     {$user_login=$gui->user->login}
      {$user_login_readonly='readonly="readonly" disabled="disabled"'}
      {$reset_password_enabled=1}
      {$reset_password_form_style="display:"}
@@ -170,7 +167,7 @@ function managePasswordInputs(oid,targetSetOID)
   {/if}
 
 
-  {$auth = $userData->authentication}
+  {$auth = $gui->user->authentication}
   {if $auth == ''}
     {$auth = $gui->authCfg.method}
   {/if}  
@@ -193,7 +190,7 @@ function managePasswordInputs(oid,targetSetOID)
   <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
   {$labels.caption_user_details}
-  {if $mgt_view_events eq "yes" && $user_id}
+  {if $gui->grants->mgt_view_events eq "yes" && $user_id}
   <img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
        onclick="showEventHistoryFor('{$user_id}','users')"
        alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
@@ -203,19 +200,19 @@ function managePasswordInputs(oid,targetSetOID)
     <tr>
       <th style="background:none;">{$labels.th_login}</th>
       <td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
-      {$user_login_readonly} value="{$userData->login|escape}" required />
+      {$user_login_readonly} value="{$gui->user->login|escape}" required />
       {include file="error_icon.tpl" field="login"}
        </td>
     </tr>
     <tr>
       <th style="background:none;">{$labels.th_first_name}</th>
-      <td><input type="text" name="firstName" value="{$userData->firstName|escape}"
+      <td><input type="text" name="firstName" value="{$gui->user->firstName|escape}"
            size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
            {include file="error_icon.tpl" field="firstName"}
       </td></tr>
     <tr>
       <th style="background:none;">{$labels.th_last_name}</th>
-      <td><input type="text" name="lastName" value="{$userData->lastName|escape}"
+      <td><input type="text" name="lastName" value="{$gui->user->lastName|escape}"
            size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" required />
            {include file="error_icon.tpl" field="lastName"}
            </td>
@@ -236,7 +233,7 @@ function managePasswordInputs(oid,targetSetOID)
 
     <tr>
       <th style="background:none;">{$labels.th_email}</th>
-      <td><input type="text" id="email" name="emailAddress" value="{$userData->emailAddress|escape}"
+      <td><input type="text" id="email" name="emailAddress" value="{$gui->user->emailAddress|escape}"
                  size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" required />
           {include file="error_icon.tpl" field="emailAddress"}
       </td>
@@ -244,8 +241,8 @@ function managePasswordInputs(oid,targetSetOID)
     <tr>
       <th style="background:none;">{$labels.th_role}</th>
       <td>
-        {$selected_role=$userData->globalRoleID}
-        {if $userData->globalRoleID eq 0}
+        {$selected_role=$gui->user->globalRoleID}
+        {if $gui->user->globalRoleID eq 0}
           {$selected_role=$tlCfg->default_roleid}
         {/if}
         <select name="rights_id">
@@ -261,8 +258,8 @@ function managePasswordInputs(oid,targetSetOID)
     <tr>
       <th style="background:none;">{$labels.th_locale}</th>
       <td>
-        {$selected_locale=$userData->locale}
-        {if $userData->locale|count_characters eq 0}
+        {$selected_locale=$gui->user->locale}
+        {if $gui->user->locale|count_characters eq 0}
            {$selected_locale=$locale}
         {/if}
 
@@ -277,7 +274,7 @@ function managePasswordInputs(oid,targetSetOID)
       <th style="background:none;">{$labels.authentication_method}</th>
       <td>
         <select id="authentication" name="authentication"> 
-        {html_options options=$gui->auth_method_opt selected=$userData->authentication}
+        {html_options options=$gui->auth_method_opt selected=$gui->user->authentication}
         </select>
       </td>
     </tr>
@@ -286,7 +283,7 @@ function managePasswordInputs(oid,targetSetOID)
     <tr>
       <th style="background:none;">{$labels.th_active}</th>
       <td>
-        <input type="checkbox"  name="user_is_active" {if $userData->isActive eq 1} checked {/if} />
+        <input type="checkbox"  name="user_is_active" {if $gui->user->isActive eq 1} checked {/if} />
       </td>
     </tr>
 
@@ -302,6 +299,8 @@ function managePasswordInputs(oid,targetSetOID)
       {$submitEnabled="0"}
     {/if} 
   {/if}
+
+
   <div class="groupBtn">
   {if $submitEnabled}
     <input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
@@ -317,19 +316,25 @@ function managePasswordInputs(oid,targetSetOID)
 </form>
 
 <br />
-<form method="post" action="lib/usermanagement/usersEdit.php" style="{$reset_password_form_style}" 
+<form method="post" action="lib/usermanagement/usersEdit.php" 
+      style=" {$reset_password_form_style}" 
       id="user_reset_password" name="user_reset_password">
   {if $tlCfg->demoMode}
     {$labels.demo_reset_password_disabled}
   {else}
-    <input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
+    <input type="hidden" name="doAction" id="doReset" value="" />
     <input type="hidden" name="user_id" value="{$user_id}" />
-    <input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
+    <input type="submit" id="do_reset_password" name="do_reset_password" 
+           value="{$labels.button_reset_password}" 
+           onclick="doReset.value='resetPassword'"/>
+
+    {if $tlCfg->api->enabled && $submitEnabled}       
+    <input type="submit" id="genAPIKey" value="{$labels.btn_apikey_generate}" 
+           onclick="doReset.value='genAPIKey'"/>
+    {/if}
   {/if} 
 </form>
-
 </div>
-
 
 {/if}
 </body>

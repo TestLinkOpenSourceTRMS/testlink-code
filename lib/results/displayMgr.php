@@ -44,7 +44,7 @@ function generateHtmlEmail(&$smarty, $template_file, $mailCfg)
     // TICKET 6905: Link to test case is still raw link (no title) in email(HTML) type of test report
     // array('strip_email_links' => false)
     $op = email_send( $mailCfg->from, $mailCfg->to, $mailCfg->subject, 
-                      $html_report, $mailCfg->cc, false,true,
+                      $html_report, $mailCfg->cc, null,false,true,
                       array('strip_email_links' => false));
 
     if($op->status_ok)
@@ -76,11 +76,28 @@ function displayReport($template_file, &$smarty, $doc_format, $mailCfg = null)
 
     case FORMAT_MAIL_HTML:
       $op = generateHtmlEmail($smarty, $template_file,  $mailCfg);
-      $message = $op->status_ok ? '' : lang_get('send_mail_ko');  
-      $smarty = new TLSmarty();
-      $smarty->assign('message', $message . ' ' . $op->msg);
-      $smarty->assign('title', $mailCfg->subject);
-      $template_file = "emailSent.tpl";
+      
+      switch($template_file)
+      {
+        case 'results/resultsGeneral.tpl'; 
+         flushHttpHeader(FORMAT_HTML, $doc_kind = 0);
+         $message =   
+           
+
+         $mf->msg = $op->status_ok ? '' : lang_get('send_mail_ko');
+         $mf->msg .= ' ' . $op->msg;
+         $mf->title = ''; //$mailCfg->subject;
+         $smarty->assign('mailFeedBack',$mf);
+        break;   
+
+        default:
+          $message = $op->status_ok ? '' : lang_get('send_mail_ko');  
+          $smarty = new TLSmarty();
+          $smarty->assign('message', $message . ' ' . $op->msg);
+          $smarty->assign('title', $mailCfg->subject);
+          $template_file = "emailSent.tpl";
+        break;   
+      }
     break;
   } 
 

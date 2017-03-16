@@ -176,6 +176,7 @@ switch($args->doAction)
       }
     }
         
+    $gui->editorType = $editorCfg['type'];    
     $smarty->assign('gui',$gui);
     $smarty->display($templateCfg->template_dir . $template);
   break;
@@ -293,7 +294,18 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
     }
   }
   
-  
+  // sanitize output via black list
+  if($args->notes != '')
+  {
+    // The Black List - Jon Bokenkamp
+    $bl = array('<script>','</script>');
+    foreach($bl as $tg)
+    {
+      $cl[] = htmlentities($tg);
+    }  
+    $args->notes = str_replace($bl,$cl,$args->notes);
+  }  
+
   $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
   $args->userID = intval(isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0);
   $args->testprojects = null;
@@ -703,5 +715,6 @@ function initializeGui(&$dbHandler,$argsObj)
 
 function checkRights(&$db,&$user)
 {
+  csrfguard_start();
   return $user->hasRight($db,'mgt_modify_product');
 }

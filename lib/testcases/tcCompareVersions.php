@@ -35,19 +35,26 @@ if ($args->compare_selected_versions)
 {
   $diffEngine = $args->use_daisydiff ? new HTMLDiffer() : new diff();
   $attributes = buildDiff($gui->tc_versions,$args);
-	foreach($attributes as $key => $val) 
+  foreach($attributes as $key => $val) 
   {
-		$gui->diff[$key]['count'] = 0;
+	$gui->diff[$key]['count'] = 0;
     $gui->diff[$key]['heading'] = lang_get($key);
     
     $val['left'] = isset($val['left']) ? $val['left'] : '';
     $val['right'] = isset($val['right']) ? $val['right'] : ''; 
 		
-		if($args->use_daisydiff) 
+	if($args->use_daisydiff)
     {
-    	list($gui->diff[$key]['diff'], $gui->diff[$key]['count']) = $diffEngine->htmlDiff($val['left'], $val['right']);
-		} 
-    else 
+		if ($gui->tcType == 'none')
+		{
+			list($gui->diff[$key]['diff'], $gui->diff[$key]['count']) = $diffEngine->htmlDiff(nl2br($val['left']), nl2br($val['right']));
+		}
+		else
+		{
+			list($gui->diff[$key]['diff'], $gui->diff[$key]['count']) = $diffEngine->htmlDiff($val['left'], $val['right']);
+		}
+	}
+    else
     {
 			// insert line endings so diff is better readable and makes sense (not everything in one line)
 			// then transform into array with \n as separator => diffEngine needs that.
@@ -124,6 +131,8 @@ function initializeGUI(&$dbHandler,$argsObj)
 
   $gui->leftID = "v{$argsObj->version_left}";
   $gui->rightID = "v{$argsObj->version_right}";
+  $tcCfg = getWebEditorCfg('design');
+  $gui->tcType = $tcCfg['type'];
   return $gui;
 }
 
@@ -167,7 +176,7 @@ function buildDiff($items,$argsObj)
           {
             foreach($attrKeys['complex'] as $attr => $key2read)
             {
-              $diff[$attr][$side] .= str_replace("</p>", "</p>\n", $step[$key2read]);
+              $diff[$attr][$side] .= str_replace("</p>", "</p>\n", $step[$key2read])."<br />"."<br />"; // insert lines between each steps and between each expected results so diff is better readable and makes sense (not everything in one line)
             }    
           }
         }  

@@ -199,6 +199,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   static $userObj;
   static $tcasePrefix;
   static $glueChar;
+  static $userRights;
 
   $ret = null;
   
@@ -221,7 +222,10 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $tproject_mgr = new testproject($db);
     $req_spec_mgr = new requirement_spec_mgr($db);
     $req_mgr = new requirement_mgr($db);
-    $userObj = new tlUser();
+    $userObj = new tlUser($userID);
+    $userObj->readFromDB($db,tlUser::TLOBJ_O_SEARCH_BY_ID);
+    $userRights['can_edit_executed'] = 
+      $userObj->hasRight($db,'testproject_edit_executed_testcases',$tproject_id);
 
     $k2l = array('already_exists_updated','original_name','testcase_name_too_long','already_exists_not_updated',
                  'start_warning','end_warning','testlink_warning','hit_with_same_external_ID');
@@ -240,6 +244,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $feedbackMsg['tcase'] = lang_get('testcase');
     $feedbackMsg['req'] = lang_get('req_not_in_req_spec_on_tcimport');
     $feedbackMsg['req_spec'] = lang_get('req_spec_ko_on_tcimport');
+    $feedbackMsg['reqNotInDB'] = lang_get('req_not_in_DB_on_tcimport');
 
 
     // because name can be changed automatically during item creation
@@ -253,7 +258,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $linkedCustomFields = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
     $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
 
-    $reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title','RSPEC.doc_id as rspec_doc_id', 'REQ.req_doc_id'),'req_doc_id');
+    $reqSpecSet = getReqSpecSet($db,$tproject_id);
+
     $tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 
     $getVersionOpt = array('output' => 'minimun');
@@ -289,6 +295,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       $attr['estimatedExecDuration'] = $attr['estimatedExecDuration']=='' ? null : floatval($attr['estimatedExecDuration']);
     }  
 
+    if(isset($tc['is_open']))
+    {
+      $attr['is_open'] = trim($tc['is_open']);
+    }  
+	
+	if(isset($tc['active']))
+    {
+      $attr['active'] = trim($tc['active']);
+    }  
+	
     if(isset($tc['status']))
     {
       $attr['status'] = trim($tc['status']);
@@ -329,8 +345,15 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       $xx = $messages['start_feedback'];
       $xx .= sprintf($messages['testcase_name_too_long'],$name_len, $fieldSizeCfg->testcase_name) . "\n";
       $xx .= $messages['original_name'] . "\n" . $name. "\n" . $messages['end_warning'] . "\n";
-      $summary = nl2br($xx) . $summary;
-      $name = tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
+	  $tcCfg = getWebEditorCfg('design');
+	  $tcType = $tcCfg['type'];
+	  if ($tcType == 'none'){
+		$summary = $xx . $summary ;
+      }
+	  else{
+		$summary = nl2br($xx) . $summary ;
+	  }
+	  $name = tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
     }
         
     
@@ -343,7 +366,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $doCreate=true;
     if( $duplicatedLogic['actionOnHit'] == 'update_last_version' )
     {
-      $updOpt = array('blockIfExecuted' => true);
+      $updOpt['blockIfExecuted'] = !$userRights['can_edit_executed'];
       switch($duplicatedLogic['hitCriteria'])
       {
         case 'name':
@@ -573,29 +596,29 @@ function nl2p($str)
 */
 function init_args()
 {
-    $args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
+  $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $key='action_on_duplicated_name';
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'generate_new';
+  $key='action_on_duplicated_name';
+  $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'generate_new';
 
-    $key='hit_criteria';
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'name';
+  $key='hit_criteria';
+  $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'name';
        
         
-    $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-    $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : 0;
-    $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
-    $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-    $args->bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
+  $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+  $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : 0;
+  $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
+  $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
+  $args->bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
     
-    $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
-    $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
+  $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
+  $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
     
-    $args->userID = $_SESSION['userID'];
-    $args->tproject_id = $_SESSION['testprojectID'];
-    
-    return $args;
+  $args->userID = $_SESSION['userID'];
+  $args->tproject_id = $_SESSION['testprojectID'];
+  
+  return $args;
 }
 
 
@@ -649,7 +672,9 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
 {
   static $missingReqMsg;
   static $missingReqSpecMsg;
+  static $missingReqInDBMsg;
   static $cachedReqSpec;
+  
   $resultMsg=null;
   $tables = tlObjectWithDB::getDBTables(array('requirements'));
 
@@ -658,14 +683,17 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
   {
     $cachedReqSpec=array();
     $doit=false;
+
+    // Look for req doc id we get from file, inside Req Spec Set
+    // we got from DB
     if( ($doit=isset($reqSpecSet[$value['doc_id']])) )
     {
       if( !(isset($cachedReqSpec[$value['req_spec_title']])) )
       {
         // $cachedReqSpec
-        // key: Requirement Specification Title
+        // key: Requirement Specification Title get from file
         // value: map with follogin keys
-        //        id => requirement specification id
+        //        id => requirement specification id from DB
         //        req => map with key: requirement document id
         $cachedReqSpec[$value['req_spec_title']]['id']=$reqSpecSet[$value['doc_id']]['id'];
         $cachedReqSpec[$value['req_spec_title']]['req']=null;
@@ -675,9 +703,9 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
     if($doit)
     {
       $useit=false;
-      $req_spec_id=$cachedReqSpec[$value['req_spec_title']]['id'];
+      $req_spec_id = $cachedReqSpec[$value['req_spec_title']]['id'];
     
-      // Check if requirement with desired document id exists on requirement specification.
+      // Check if requirement with desired document id exists on requirement specification on DB.
       // If not => create message for user feedback.
       if( !($useit=isset($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']])) )
       {
@@ -691,7 +719,6 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
           $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']]=$rsx[0]['id'];
         }  
       }
-          
           
       if($useit)
       {
@@ -710,12 +737,13 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
     } 
     else
     {
-      // Requirement Specification not found
-      if( !isset($missingReqSpecMsg[$value['req_spec_title']]) )
+      // We didnt find Req Doc ID in Req Spec Set got from DB
+      if( !isset($missingReqInDBMsg[$value['doc_id']]) )
       {
-        $missingReqSpecMsg[$value['req_spec_title']]=sprintf($messages['req_spec'],$value['req_spec_title']);  
+        $missingReqInDBMsg[$value['doc_id']]=sprintf($messages['reqNotInDB'],
+                                                     $value['doc_id'],'');  
       }
-      $resultMsg[] = array($tcaseName,$missingReqSpecMsg[$value['req_spec_title']]); 
+      $resultMsg[] = array($tcaseName,$missingReqInDBMsg[$value['doc_id']]); 
     }
       
   } //foreach
@@ -765,7 +793,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
   // TICKET 4963: Test case / Tes suite XML format, new element to set author
   $tcXML['elements'] = array('string' => array("summary" => null,"preconditions" => null,
                                                "author_login" => null,"estimated_exec_duration" => null),
-                             'integer' => array("node_order" => null,"externalid" => null,"status" => null,
+                             'integer' => array("node_order" => null,"externalid" => null,"is_open" => null,"active" => null,"status" => null,
                                                 "execution_type" => null ,"importance" => null));
   $tcXML['attributes'] = array('string' => array("name" => 'trim'), 
                                'integer' =>array('internalid' => null));
@@ -1094,4 +1122,26 @@ function processTestSuiteCF(&$tsuiteMgr,$xmlObj,&$cfDefinition,&$cfValues,$tsuit
     $tsuiteMgr->cfield_mgr->design_values_to_db($cf2insert,$tsuite['id'],null,'simple');
     return $resultMsg;
 }
-?>
+
+/**
+ * 
+ */
+function getReqSpecSet(&$dbHandler,$tproject_id)
+{
+  $debugMsg = __FUNCTION__;
+
+  $tables = tlObjectWithDB::getDBTables(array('req_specs','nodes_hierarchy','requirements'));
+
+  // get always Latest Revision Req. Spec Title 
+  $sql = "/* $debugMsg */ " .
+         " SELECT RSPEC.id, NHRSPEC.name AS title, RSPEC.doc_id AS rspec_doc_id, REQ.req_doc_id " .
+         " FROM {$tables['req_specs']} RSPEC " . 
+         " JOIN {$tables['nodes_hierarchy']} NHRSPEC ON NHRSPEC.id = RSPEC.id " .
+         " JOIN {$tables['requirements']} REQ ON REQ.srs_id = RSPEC.id " .
+         " WHERE RSPEC.testproject_id = " . intval($tproject_id) .
+         " ORDER BY RSPEC.id,title";
+
+  $rs = $dbHandler->fetchRowsIntoMap($sql,'req_doc_id');
+  
+  return $rs;
+}

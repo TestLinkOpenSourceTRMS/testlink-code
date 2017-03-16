@@ -10,16 +10,19 @@
  *
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/Jira.php");
 class jirarestInterface extends issueTrackerInterface
 {
+  const NOPROJECTKEY = 'e18b741e13b2b1b09f2ac85615e37bae';
   private $APIClient;
   private $issueDefaults;
   private $issueAttr = null;
+  private $jiraCfg;
+
   var $support;
 
 	/**
@@ -31,18 +34,18 @@ class jirarestInterface extends issueTrackerInterface
 	function __construct($type,$config,$name)
 	{
     $this->name = $name;
-		$this->interfaceViaDB = false;
+	  $this->interfaceViaDB = false;
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);
 
-		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+	  $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
-	  if( $this->setCfg($config) )
+    if($this->setCfg($config) && $this->checkCfg())
     {
       $this->completeCfg();
       $this->connect();
       $this->guiCfg = array('use_decoration' => true);
-    }  
+    } 
 	}
 
    /**
@@ -90,10 +93,10 @@ class jirarestInterface extends issueTrackerInterface
 	}
 
 	/**
-   * useful for testing 
-   *
-   *
-   **/
+     * useful for testing 
+     *
+     *
+     **/
 	function getAPIClient()
 	{
 		return $this->APIClient;
@@ -124,12 +127,29 @@ class jirarestInterface extends issueTrackerInterface
   	  // CRITIC NOTICE for developers
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
-      $par = array('username' => (string)trim($this->cfg->username),
+      $this->jiraCfg = array('username' => (string)trim($this->cfg->username),
                    'password' => (string)trim($this->cfg->password),
                    'host' => (string)trim($this->cfg->uriapi));
-  	  $this->APIClient = new JiraApi\Jira($par);
+  	  
+      $this->jiraCfg['proxy'] = config_get('proxy');
+      if( !is_null($this->jiraCfg['proxy']) )
+      {
+        if( is_null($this->jiraCfg['proxy']->host) )
+        {
+          $this->jiraCfg['proxy'] = null;
+        }  
+      }  
+
+      $this->APIClient = new JiraApi\Jira($this->jiraCfg);
 
       $this->connected = $this->APIClient->testLogin();
+      if($this->connected && ($this->cfg->projectkey != self::NOPROJECTKEY))
+      {
+        // Now check if can get info about the project, to understand
+        // if at least it exists.
+        $pk = trim((string)$this->cfg->projectkey);
+        $this->APIClient->getProject($pk);
+      }  
     }
   	catch(Exception $e)
   	{
@@ -154,15 +174,15 @@ class jirarestInterface extends issueTrackerInterface
    **/
 	public function getIssue($issueID)
 	{
-		if (!$this->isConnected())
-		{
-      tLog(__METHOD__ . '/Not Connected ', 'ERROR');
-			return false;
-		}
+	  if (!$this->isConnected())
+	  {
+        tLog(__METHOD__ . '/Not Connected ', 'ERROR');
+		return false;
+	  }
 		
-		$issue = null;
+	  $issue = null;
     try
-		{
+	  {
 
 			$issue = $this->APIClient->getIssue($issueID);
       
@@ -438,65 +458,154 @@ class jirarestInterface extends issueTrackerInterface
     return $ret;
   }
   
-
+  /**
+   *
+   */
   public function getIssueTypes()
   {
-    return $this->APIClient->getIssueTypes();
+    try
+    {
+      return $this->APIClient->getIssueTypes();
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }
   }
 
+  /**
+   *
+   */
   public function getPriorities()
   {
-    return $this->APIClient->getPriorities();
+    try
+    {
+      return $this->APIClient->getPriorities();
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }
   }
 
+  /**
+   *
+   */
   public function getVersions()
   {
-    return $this->APIClient->getVersions((string)$this->cfg->projectkey);
+    $items = null;
+    try
+    {
+      $items = $this->APIClient->getVersions((string)$this->cfg->projectkey);
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }    
+    return $items;
   }
 
+  /**
+   *
+   */
   public function getComponents()
   {
-    return $this->APIClient->getComponents((string)$this->cfg->projectkey);
+    try
+    {
+      return $this->APIClient->getComponents((string)$this->cfg->projectkey);
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }         
   }
 
+
+  /**
+   *
+   */
+  public function getCreateIssueFields()
+  {
+    try
+    {
+      return $this->APIClient->getCreateIssueFields((string)$this->cfg->projectkey);
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }         
+  }
+
+
+
+  /**
+   *
+   */
   public function getIssueTypesForHTMLSelect()
   {
     return array('items' => $this->objectAttrToIDName($this->getIssueTypes()),
                  'isMultiSelect' => false);
   }
 
+  /**
+   *
+   */
   public function getPrioritiesForHTMLSelect()
   {
     return array('items' => $this->objectAttrToIDName($this->getPriorities()),
                  'isMultiSelect' => false); 
   }
 
-
+  /**
+   *
+   */
   public function getVersionsForHTMLSelect()
   {
-    return array('items' => $this->objectAttrToIDName($this->getVersions()),
-                 'isMultiSelect' => true); 
-   }
+    $input = array('items' => null,'isMultiSelect' => true);
+    $items = $this->getVersions();
+    if(!is_null($items))
+    {
+      $input['items'] = $this->objectAttrToIDName($items);
+    }
+    else
+    {
+      $input = null; 
+    }  
+    return $input;
+  }
 
+  /**
+   *
+   */
   public function getComponentsForHTMLSelect()
   {
-    return array('items' => $this->objectAttrToIDName($this->getComponents()),
-                 'isMultiSelect' => true); 
+    $items = $this->getComponents();
+    $input = array('items' => null,'isMultiSelect' => true);
+    if(!is_null($items))
+    {
+      $input['items'] = $this->objectAttrToIDName($items);
+    }  
+    else
+    {
+      $input = null; 
+    }  
+    return $input;
   }
 
  
   /**
    *
+   * 
    */
-  private function objectAttrToIDName($obj)
+  private function objectAttrToIDName($attrSet)
   {
     $ret = null;
-    if(!is_null($obj))
+    if(!is_null($attrSet))
     {
-      $ic = count($obj);
+      $ic = count($attrSet);
       for($idx=0; $idx < $ic; $idx++)
       {
-        $ret[$obj[$idx]->id] = $obj[$idx]->name; 
+        $ret[$attrSet[$idx]->id] = $attrSet[$idx]->name; 
       }  
     }  
     return $ret;    
@@ -559,8 +668,21 @@ class jirarestInterface extends issueTrackerInterface
    **/
   function canCreateViaAPI()
   {
-    return (property_exists($this->cfg, 'projectkey') && 
-            property_exists($this->cfg, 'issuetype'));
+    $status_ok = false;
+
+    // The VERY Mandatory KEY   
+    if( property_exists($this->cfg, 'projectkey') )
+    {
+      $pk = trim((string)($this->cfg->projectkey));
+      $status_ok = ($pk !== '');
+    } 
+   
+    if($status_ok && $this->cfg->userinteraction == 0)
+    {
+      $status_ok = property_exists($this->cfg, 'issuetype'); 
+    }  
+
+    return $status_ok;
   }
 
   /**
@@ -659,7 +781,7 @@ class jirarestInterface extends issueTrackerInterface
     foreach ($cfSet as $cf)
     {
       $cf = (array)$cf;    
-      $cfJIRAID = $cf['customfield']; 
+      $cfJIRAID = $cf['customfieldId']; 
       $valueSet = (array)$cf['values'];        
       $loop2do = count($valueSet);
 
@@ -710,5 +832,35 @@ class jirarestInterface extends issueTrackerInterface
       $this->issueAttr[$cfJIRAID] = $dummy; 
     } 
   }
+
+  /**
+   *
+   *
+   **/
+  function checkCfg()
+  {
+    $status_ok = true;
+    if( property_exists($this->cfg, 'projectkey') )
+    {
+      $pk = trim((string)($this->cfg->projectkey));
+      if($pk == '')
+      {
+        $status_ok = false;
+        $msg = __CLASS__ . ' - Empty configuration: <projectKey>';
+      }  
+    }  
+    else
+    {
+      // this is oK if user only wants to LINK issues
+      $this->cfg->projectkey = self::NOPROJECTKEY;
+    }  
+
+    if(!$status_ok)
+    {
+      tLog(__METHOD__ . ' / ' . $msg , 'ERROR');
+    }  
+    return $status_ok;
+  }
+
 
 }

@@ -20,15 +20,8 @@ Purpose:
 {include file="inc_del_onclick.tpl"}
 
 
-<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
-<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
-<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
-
-<script type="text/javascript" language="javascript" class="init">
-$(document).ready(function() {
-  $('#item_view').DataTable({ "lengthMenu": [ [10, 25, 50, 75, -1], [10, 25, 50, 75, "All"] ] });
-} );
-</script>
+{$ll = '[25, 50, 75, -1], [25, 50, 75, "All"]'}
+{include file="DataTables.inc.tpl" DataTablesOID="item_view" DataTableslengthMenu=$ll}
 
 <script type="text/javascript">
 {if !$gui->testCasesTableView}
@@ -77,7 +70,7 @@ function check_action_precondition(container_id,action,msg)
 	{$user_feedback}
 {else}
 	<form id="move_copy_testcases" name="move_copy_testcases" method="post"
-	      action="lib/testcases/containerEdit.php?objectID={$objectID}">
+	      action="{$basehref}lib/testcases/containerEdit.php?objectID={$objectID}">
 
     <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
 

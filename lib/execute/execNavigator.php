@@ -50,10 +50,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function initializeGui(&$control) 
 {
   $gui = new stdClass();
-
+  
   // This logic is managed from execSetResults.php
   $gui->loadExecDashboard = true;
-  if( isset($_SESSION['loadExecDashboard'][$control->form_token]) )
+  if( isset($_SESSION['loadExecDashboard'][$control->form_token]) || 
+      $control->args->loadExecDashboard == 0 
+    ) 
   {
     $gui->loadExecDashboard = false;  
     unset($_SESSION['loadExecDashboard'][$control->form_token]);      
@@ -61,8 +63,16 @@ function initializeGui(&$control)
 
   $gui->menuUrl = 'lib/execute/execSetResults.php';
   $gui->args = $control->get_argument_string();
-  $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
-                  "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
+  if($control->args->loadExecDashboard == false)
+  {
+    $gui->src_workframe = '';
+  } 
+  else
+  {
+    $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
+                          "?edit=testproject&id={$control->args->testproject_id}" . 
+                          $gui->args;
+  } 
   
   $control->draw_export_testplan_button = true;
   $control->draw_import_xml_results_button = true;

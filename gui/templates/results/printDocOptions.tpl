@@ -2,10 +2,10 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource printDocOptions.tpl
 @internal revisions
-@since 1.9.10
+@since 1.9.14
 *}
 {lang_get var="labels"
-          s='doc_opt_title,doc_opt_guide,tr_td_show_as,check_uncheck_all_options,build,builds'}
+          s='doc_opt_title,doc_opt_guide,tr_td_show_as,check_uncheck_all_options,build,builds,onlywithuser'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
@@ -61,7 +61,6 @@ jQuery(".chosen-select").chosen({ width: "100%" });
 {* Control if options are visible *}
 <div style="margin: 10px; {if !$gui->showOptions}display:none;{/if}" >
 
-
 <form method="GET" id="printDocOptions" name="printDocOptions"
       action="lib/results/printDocument.php?type={$gui->doc_type}">
 
@@ -73,7 +72,7 @@ jQuery(".chosen-select").chosen({ width: "100%" });
    <table>
     <tr>
      <td><label for="build"> {$labels.build}</label></td>
-     <td style="width:200px"> 
+     <td style="width:100px"> 
       <select class="chosen-select" name="build_id" id="build_id" 
               data-placeholder="{$labels.builds}">
         {foreach key=build_id item=buildObj from=$gui->buildInfoSet}
@@ -81,11 +80,14 @@ jQuery(".chosen-select").chosen({ width: "100%" });
         {/foreach}
       </select>
      </td>
+     <td style="width:20px">&nbsp;</td>
+     <td><label for="with_user_assignment">{$labels.onlywithuser}</label></td>
+     <td><input type="checkbox" name="with_user_assignment" 
+                id="with_user_assignment"></td>
     </tr>
    </table>
   {/if}
 
-  <p>{$labels.doc_opt_guide}<br /></p>
   
   <table class="smallGrey" id="optionsContainer" name="optionsContainer">
     {section name=number loop=$gui->outputOptions}
@@ -117,9 +119,10 @@ jQuery(".chosen-select").chosen({ width: "100%" });
       <td><input type="hidden" id="format" name="format" value="{$selFormat}" /></td>
     {/if}
     </tr>
-    
-
   </table>
+  <br> 
+  <p>{$labels.doc_opt_guide}<br /></p>
+
 </form>
 </div>
 

@@ -11,13 +11,11 @@
  * @filesource  execTreeMenu.inc.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2013,2014 TestLink community 
+ * @copyright   2013,2017 TestLink community 
  * @link        http://testlink.sourceforge.net/ 
  * @uses        config.inc.php
  * @uses        const.inc.php
  *
- * @internal revisions
- * @since 1.9.13
  */
 
 /**
@@ -111,8 +109,9 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     
    
   // Document why this is needed, please  
-  $test_spec = $tplan_mgr->getSkeleton($context['tplan_id'],$context['tproject_id'],$my['filters'],$my['options']);
+  $spec = $tplan_mgr->getSkeleton($context['tplan_id'],$context['tproject_id'],$my['filters'],$my['options']);
 
+  $test_spec = $spec[0];
   $test_spec['name'] = $context['tproject_name'] . " / " . $context['tplan_name'];  // To be discussed
   $test_spec['id'] = $context['tproject_id'];
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];
@@ -211,8 +210,28 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     $renderTreeNodeOpt['tc_action_enabled'] = 1;
 
     // CRITIC: renderExecTreeNode() WILL MODIFY $tplan_tcases, can empty it completely
-    $linkedTestCasesSet = array_keys((array)$tplan_tcases);
-    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,$renderTreeNodeOpt);
+    // here filter has been applied
+    $lt = array_keys((array)$tplan_tcases);
+
+    // here test cases are in the right order
+    $linkedTestCasesSet = null;
+    if( isset($spec[1]['nindex']) )
+    {
+      $ltcs = $spec[1]['nindex'];
+
+      // now need to filter out
+      $tl = array_flip($lt);
+      foreach($ltcs as &$ele)
+      {
+        if( isset($tl[$ele]) )
+        {
+          $linkedTestCasesSet[] = $ele;
+        }  
+      }  
+    }  
+
+    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,
+                       $tcase_prefix,$renderTreeNodeOpt);
   }
   
   $treeMenu->rootnode=new stdClass();
@@ -243,6 +262,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $menustring = str_ireplace($target,array(':[]',''), $menustring); 
 
   $treeMenu->menustring = $menustring;
+
   return array($treeMenu, $linkedTestCasesSet);
 }
 
@@ -406,7 +426,14 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
 
       if( isset($tpNode['exec_status']) )
       {
-        $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        if( isset($resultsCfg['code_status'][$tpNode['exec_status']]) )
+        {
+          $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        }  
+        else
+        {
+          throw new Exception("Config Issue - exec status code: {$tpNode['exec_status']}", 1);
+        }  
       }
       else
       {
@@ -646,9 +673,9 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     }  
   }  
 
- 
-  $test_spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
+  $spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
 
+  $test_spec = $spec[0];
   $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
   $test_spec['id'] = $tproject_id;
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];

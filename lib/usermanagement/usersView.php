@@ -7,13 +7,13 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2012,2013 TestLink community 
+ * @copyright   2012,2016 TestLink community 
  * @filesource  usersViewNew.php
- * @link        http://www.teamst.org/index.php
+ * @link        http://www.testlink.org/
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.15
  * 
  */
 require_once("../../config.inc.php");            
@@ -56,15 +56,16 @@ switch($args->operation)
 	break;
 }
 
+$gui->main_title = lang_get('title_user_mgmt');
+$gui->update_title_bar = 0;
+$gui->reload = 0;
+
 $gui->matrix = $users = getAllUsersForGrid($db);
 $gui->images = $smarty->getImages();
 $gui->tableSet[] =  buildMatrix($gui, $args);
 
-$highlight = initialize_tabsmenu();
-$highlight->view_users = 1;
-$smarty->assign('highlight',$highlight);
-$smarty->assign('update_title_bar',0);
-$smarty->assign('reload',0);
+$gui->highlight = initialize_tabsmenu();
+$gui->highlight->view_users = 1;
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -126,17 +127,17 @@ function initEnv(&$dbHandler)
 */
 function getRoleColourCfg(&$db)
 {
-    $role_colour = config_get('role_colour');
-    $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-    unset($roles[TL_ROLES_UNDEFINED]);
-    foreach($roles as $roleObj)
+  $role_colour = config_get('role_colour');
+  $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+  unset($roles[TL_ROLES_UNDEFINED]);
+  foreach($roles as $roleObj)
+  {
+    if(!isset($role_colour[$roleObj->name]))
     {
-    	if(!isset($role_colour[$roleObj->name]))
-      {
-        $role_colour[$roleObj->name] = '';
-      }
+      $role_colour[$roleObj->name] = '';
     }
-    return $role_colour;
+  }
+  return $role_colour;
 }
 
 
@@ -175,13 +176,18 @@ function buildMatrix(&$guiObj,&$argsObj)
                            'th_email' => null));
 
   $loop2do = count($guiObj->matrix);
+ 
+  // login added as workaround for SORTING, because the whole string is used then user_id
+  // in url takes precedence over the login displayed 
+  $actionUrl = '<a href="' . $argsObj->basehref .  'lib/usermanagement/usersEdit.php?doAction=edit&' .
+               'loginJustToFixSort=';
+
   for($zdx = 0; $zdx < $loop2do; $zdx++)
   {
-    $guiObj->matrix[$zdx]['handle'] = '<a href="' . $argsObj->basehref .  
-                                      'lib/usermanagement/usersEdit.php?doAction=edit&user_id=' .
+    $guiObj->matrix[$zdx]['handle'] = $actionUrl . urlencode($guiObj->matrix[$zdx]['login']) . '&user_id=' .
                                       $guiObj->matrix[$zdx]['user_id'] . '">' . $guiObj->matrix[$zdx]['login'] . "</a>";
   }
- 
+  
 
   $matrix = new tlExtTable($columns, $guiObj->matrix, 'tl_users_list');
   

@@ -7,11 +7,11 @@
  *
  * @package     TestLink
  * @filesource  planAddTC.php
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * 
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.15
  **/
 
 require_once('../../config.inc.php');
@@ -393,6 +393,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
   $title_separator = config_get('gui_title_separator_1');
 
   $gui = new stdClass();
+  $gui->status_feeback = buildStatusFeedbackMsg();
+
   $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
   $gui->testCasePrefix .= $tcase_cfg->glue_character;
 
@@ -403,8 +405,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
   $tprojectInfo = $tcaseMgr->tproject_mgr->get_by_id($argsObj->tproject_id);
   $gui->priorityEnabled = $tprojectInfo['opt']->testPriorityEnabled;
 
-  $gui->keywordsFilterType = $argsObj->keywordsFilterType;
-  $gui->keywords_filter = '';
+  // $gui->keywordsFilterType = $argsObj->keywordsFilterType;
+  // $gui->keywords_filter = '';
   $gui->has_tc = 0;
   $gui->items = null;
   $gui->has_linked_items = false;
@@ -412,6 +414,15 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
   $gui->keywordsFilterType = new stdClass();
   $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
   $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+  $gui->keyword_id = $argsObj->keyword_id;
+
+  $gui->keywords_filter_feedback = '';
+  if( !is_null($gui->keyword_id) && $gui->keyword_id != 0 )
+  {
+    $gui->keywords_filter_feedback = 
+      buildKeywordsFeedbackMsg($dbHandler,$argsObj,$gui); 
+  }  
+
 
   // full_control, controls the operations planAddTC_m1.tpl will allow
   // 1 => add/remove
@@ -639,8 +650,16 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
           $email['body'] .= $flat_path[$tcase_id] . '<br />';  
         }  
         $email['body'] .= '<br />' . date(DATE_RFC1123);
+
+        $email['cc'] = '';
+        $email['attachment'] = null;
+        $email['exit_on_error'] = true;
+        $email['htmlFormat'] = true; 
+
         $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'], '', true, true);
+                               $email['subject'], $email['body'],
+                               $email['cc'],$email['attachment'],
+                               $email['exit_on_error'],$email['htmlFormat']);
       } 
     }                       
   }
@@ -839,4 +858,46 @@ function addToTestPlan(&$dbHandler,&$argsObj,&$guiObj,&$tplanMgr,&$tcaseMgr)
       }
     }
   }
+}
+
+/**
+ *
+ *
+ */
+function buildStatusFeedbackMsg()
+{
+  $ret = '';  
+  $hideStatusSet = config_get('tplanDesign')->hideTestCaseWithStatusIn;
+  if( !is_null($hideStatusSet) )
+  {
+    $cfx = getConfigAndLabels('testCaseStatus');
+    $sc = array_flip($cfx['cfg']);
+    $msg = array();
+    foreach( $hideStatusSet as $code => $verbose)
+    {
+      $msg[] = $cfx['lbl'][$sc[$code]];
+    }  
+    $ret = 
+      sprintf(lang_get('hint_add_testcases_to_testplan_status'),implode(',',$msg));
+  }
+
+  return $ret;
+}
+
+/**
+ *
+ */
+function buildKeywordsFeedbackMsg(&$dbHandler,&$argsObj,&$gui)
+{
+  $opx = array('tproject_id' => $argsObj->tproject_id, 
+               'cols' => 'id,keyword', 'accessKey' => 'id');
+
+  $kwSet = tlKeyword::getSimpleSet($dbHandler, $opx);
+  $msg = array();
+  $k2s = (array)$gui->keyword_id;
+  foreach( $k2s as $idt )
+  {
+    $msg[] = $kwSet[$idt]['keyword'];
+  }  
+  return implode(',',$msg); 
 }

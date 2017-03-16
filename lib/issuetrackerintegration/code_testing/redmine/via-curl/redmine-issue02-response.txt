@@ -1,0 +1,38 @@
+bash-3.2$ ./create-redmine-issue02.sh
+* About to connect() to localhost port 8080 (#0)
+*   Trying ::1...
+* Adding handle: conn: 0x101818c00
+* Adding handle: send: 0
+* Adding handle: recv: 0
+* Curl_addHandleToPipeline: length: 1
+* - Conn 0 (0x101818c00) send_pipe: 1, recv_pipe: 0
+* Connected to localhost (::1) port 8080 (#0)
+> POST /redmine/issues.xml HTTP/1.1
+> User-Agent: curl/7.30.0
+> Host: localhost:8080
+> Accept: */*
+> Content-Type: application/xml
+> X-Redmine-API-Key: ff51e7e6c5b2349f95bef327d961e526abd45638
+> Content-Length: 448
+> 
+* upload completely sent off: 448 out of 448 bytes
+< HTTP/1.1 201 Created
+< Date: Sat, 15 Aug 2015 08:55:00 GMT
+* Server Apache is not blacklisted
+< Server: Apache
+< cache-control: max-age=0, private, must-revalidate
+< x-frame-options: SAMEORIGIN
+< x-xss-protection: 1; mode=block
+< x-content-type-options: nosniff
+< x-runtime: 1.170653
+< x-request-id: 0e0d6209-1f74-4d2e-ae03-8da7ad72cf47
+< Connection: close
+< X-Powered-By: Phusion Passenger 5.0.6
+< location: http://localhost:8080/redmine/issues/3
+< etag: W/"ca99413767ea08faeed59d3b95c872d1"
+< Status: 201 Created
+< Transfer-Encoding: chunked
+< Content-Type: application/xml; charset=utf-8
+< 
+* Closing connection 0
+<?xml version="1.0" encoding="UTF-8"?><issue><id>3</id><project id="2" name="THOR"/><tracker id="1" name="Bug"/><status id="1" name="New"/><priority id="2" name="Normal"/><author id="1" name="francisco Admin"/><subject>ISSUE 01</subject><description/><start_date>2015-08-15</start_date><due_date/><done_ratio>0</done_ratio><is_private>false</is_private><estimated_hours/><custom_fields type="array"><custom_field id="1" name="CF-STRING-OPT"><value>SALAME</value></custom_field><custom_field id="3" name="CF-LIST-OPT" multiple="true"><value type="array"><value>ALFA</value></value></custom_field></custom_fields><created_on>2015-08-15T08:55:00Z</created_on><updated_on>2015-08-15T08:55:00Z</updated_on><closed_on/></issue

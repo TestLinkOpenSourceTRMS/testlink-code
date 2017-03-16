@@ -3,37 +3,63 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: buildView.php,v $
+ * @filesource buildView.php
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/06/10 19:36:00 $ $Author: franciscom $
- *
- * rev:
- *      20090509 - franciscom - minor refactoring      
  *       
  *
-*/
+ */
 require('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$tplan_mgr = new testplan($db);
-$build_mgr = new build_mgr($db);
 
-$gui = new StdClass();
-$gui->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-$gui->tplan_name = $_SESSION['testplanName'];
-$gui->buildSet = $tplan_mgr->get_builds($gui->tplan_id);
-$gui->user_feedback = null;
+
+$gui = initEnv($db);
+
+function initEnv(&$dbHandler)
+{
+  $gui = new StdClass();
+
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+
+  
+
+  $gui->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+  if( $gui->tplan_id == 0 )
+  {
+    throw new Exception("Abort Test Plan ID == 0", 1);
+  }  
+
+  $tplan_mgr = new testplan($dbHandler);
+  $info = $tplan_mgr->tree_manager->
+            get_node_hierarchy_info($gui->tplan_id,null,array('nodeType' => 'testplan'));
+
+  if( !is_null($info) )
+  {
+    $gui->tplan_name = $info['name'];
+  }  
+  else
+  {
+    throw new Exception("Invalid Test Plan ID", 1);
+  }  
+ 
+  $gui->buildSet = $tplan_mgr->get_builds($gui->tplan_id);
+  $gui->user_feedback = null;
+
+  $cfg = getWebEditorCfg('build');
+  $gui->editorType = $cfg['type'];
+  
+  return $gui;  
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'testplan_create_build');
+  return $user->hasRight($db,'testplan_create_build');
 }
-?>

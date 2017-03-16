@@ -6,9 +6,8 @@
  * @filesource  reqCommands.class.php
  * @author      Francisco Mancardi
  * 
- * web command experiment
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.15
  *  
  */
 
@@ -79,6 +78,8 @@ class reqCommands
     $obj->prompt_for_log = false;
     // do not do this -> will desctroy webeditor    
     // $obj->scope = '';
+ 
+    $obj->refreshTree = 0;
  
     return $obj;
   }
@@ -256,6 +257,7 @@ class reqCommands
     $oldData = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
     $oldCFields = $this->reqMgr->get_linked_cfields(null,$argsObj->req_version_id,$argsObj->tproject_id);
     
+   
     $cf_map = $this->reqMgr->get_linked_cfields(null,null,$argsObj->tproject_id);
     $newCFields = $this->reqMgr->cfield_mgr->_build_cfield($request,$cf_map);
  
@@ -285,7 +287,6 @@ class reqCommands
       // Need to preserve Custom Fields values filled in by user
       $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, null, $request);
       
-
     }
     else if( $diff['nochange'] || ( ($createRev = $diff['force'] && !$obj->prompt_for_log) || $argsObj->do_save ) )
     {
@@ -312,6 +313,8 @@ class reqCommands
         $this->reqMgr->values_to_db($request,$argsObj->req_version_id,$cf_map);
 
         logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
+      
+        $obj->refreshTree = $argsObj->refreshTree;
       }
       else
       {
@@ -340,7 +343,9 @@ class reqCommands
     $reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
     $req = current($reqVersionSet);
     
-    $this->reqMgr->delete($argsObj->req_id);
+    $this->reqMgr->setNotifyOn(array('delete'=> true) );
+    $this->reqMgr->delete($argsObj->req_id,requirement_mgr::ALL_VERSIONS,$argsObj->user_id);
+
     logAuditEvent(TLS("audit_requirement_deleted",$req['req_doc_id']),"DELETE",$argsObj->req_id,"requirements");
   
     $obj->template = 'show_message.tpl';
@@ -350,6 +355,7 @@ class reqCommands
     $obj->title=lang_get('delete_req');
     $obj->refreshTree = 1;
     $obj->result = 'ok';  // needed to enable refresh_tree logic
+    $obj->refreshTree = $argsObj->refreshTree;
     return $obj;
   }
   
@@ -473,7 +479,7 @@ class reqCommands
   * 
   *
   */
-  function copy(&$argsObj,$request)
+  function copy(&$argsObj,$request=NULL)
   {
     $obj = $this->initGuiBean();
     $reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
@@ -536,10 +542,12 @@ class reqCommands
       $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
       logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
 
-      $obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id']);
+
+      $obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id'],$new_req['title']);
       $obj->template = 'reqCopy.tpl';
       $obj->req_id = $ret['id'];
-      $obj->array_of_msg = array($logMsg);  
+      $obj->array_of_msg = array($logMsg); 
+      $obj->refreshTree = $argsObj->refreshTree;
     }
     return $obj;  
   }
@@ -556,8 +564,11 @@ class reqCommands
   */
   function doCreateVersion(&$argsObj,$request)
   {
-    $ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,
-                                             $argsObj->req_version_id,$argsObj->log_message);
+    $opt = array('reqVersionID' => $argsObj->req_version_id,
+                 'log_msg' => $argsObj->log_message,
+                 'notify' => true);
+  
+    $ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,$opt);
     $obj = $this->initGuiBean();
     $obj->user_feedback = $ret['msg'];
     $obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
@@ -578,7 +589,10 @@ class reqCommands
     $req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
     $req_version = $req_version[0];
 
-    $this->reqMgr->delete($node['parent_id'],$argsObj->req_version_id);
+    $this->reqMgr->setNotifyOn(array('delete'=> true) );
+    
+    $this->reqMgr->delete($node['parent_id'],$argsObj->req_version_id,$argsObj->user_id);
+
     logAuditEvent(TLS("audit_req_version_deleted",$req_version['version'],
                       $req_version['req_doc_id'],$req_version['title']),
                   "DELETE",$argsObj->req_version_id,"req_version");
@@ -605,7 +619,6 @@ class reqCommands
    */
   public function doAddRelation($argsObj,$request) 
   {
-    
     $debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
     $op = array('ok' => true, 'msg' => lang_get('new_rel_add_success'));
     $own_id = $argsObj->relation_source_req_id;
@@ -934,8 +947,28 @@ class reqCommands
     $guiObj->req_id = $argsObj->req_id;
     $guiObj->suggest_revision = $guiObj->prompt_for_log = false;
     $guiObj->template = "reqView.php?refreshTree=0&requirement_id={$argsObj->req_id}";
+
     return $guiObj;    
   }
 
+  /**
+   *
+   */ 
+  function stopMonitoring(&$argsObj,$request)
+  {
+    $this->reqMgr->monitorOff($argsObj->req_id,$argsObj->user_id,$argsObj->tproject_id);
+
+    return $this->initGuiObjForAttachmentOperations($argsObj);
+  }
+
+  /**
+   *
+   */ 
+  function startMonitoring(&$argsObj,$request)
+  {
+    $this->reqMgr->monitorOn($argsObj->req_id,$argsObj->user_id,$argsObj->tproject_id);
+
+    return $this->initGuiObjForAttachmentOperations($argsObj);
+  }
   
 }

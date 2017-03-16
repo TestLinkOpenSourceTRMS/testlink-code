@@ -2,7 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource bugAdd.tpl
 @internal revisions
-@since 1.9.14
+@since 1.9.15
 
 *}
 {include file="inc_head.tpl"}
@@ -12,6 +12,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get var='labels' 
           s='title_bug_add,link_bts_create_bug,bug_id,notes,hint_bug_notes,
              btn_close,btn_add_bug,btn_save,bug_summary,
+             add_link_to_tlexec,
              issueType,issuePriority,artifactVersion,artifactComponent'} 
 
 
@@ -28,6 +29,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
     <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}">
     <input type="hidden" name="user_action" id="user_action" value="">
+    <input type="hidden" name="tcstep_id" id="tcstep_id" value="{$gui->tcstep_id}">
 
     {if $gui->user_action == 'link' || $gui->user_action == 'add_note'}
       <p>
@@ -104,6 +106,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         <textarea id="bug_notes" name="bug_notes" 
                   rows="{#BUGNOTES_ROWS#}" cols="{#BUGNOTES_COLS#}" >{$gui->bug_notes}</textarea>
     {/if}    
+
+    {if $gui->user_action == 'create' || $gui->user_action == 'doCreate' || $gui->user_action == 'link'}
+      <br><br>
+      <input type="checkbox" name="addLinkToTL"  id="addLinkToTL">
+      <span class="label">{$labels.add_link_to_tlexec}</span>
+    {/if}
 
     <div class="groupBtn">
      {if $gui->user_action == 'link'}

@@ -44,7 +44,7 @@ viewer for requirement
 <div style="display: {$tlCfg->gui->op_area_display->req};" class="groupBtn" id="control_panel">
   {if $args_grants->req_mgmt == "yes"}
     <form style="display: inline;" id="reqViewF_{$req_version_id}" name="reqViewF_{$req_version_id}" 
-          action="lib/requirements/reqEdit.php" method="post">
+          action="{$basehref}lib/requirements/reqEdit.php" method="post">
       <input type="hidden" name="requirement_id" value="{$args_req.id}" />
       <input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
       <input type="hidden" name="doAction" value="" />
@@ -101,17 +101,24 @@ viewer for requirement
     
   {* compare versions *}
   {if $gui->req_has_history}
-    <form style="display: inline;" method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
+    <form style="display: inline;" method="post" action="{$basehref}lib/requirements/reqCompareVersions.php" name="version_compare">
         <input type="hidden" name="requirement_id" value="{$args_req.id}" />
         <input type="submit" name="compare_versions" value="{$labels.btn_view_history}" />
       </form>
   {/if}
 
   {* Option to print single requirement *}
-  <form style="display: inline;" method="post" action="" name="reqPrinterFriendly">
+  <form style="display: inline;" method="post" 
+     action="{$basehref}lib/requirements/reqEdit.php" name="reqPrinterFriendly">
+    <input type="hidden" id="rpfReqID" name="requirement_id" value="{$req_id}" />
+    <input type="hidden" id="rpfAction" name="doAction" value="" />
+
     <input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
            onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
                                                 {$args_req.revision},'lib/requirements/reqPrint.php');"/>
+    <input type="submit" name="monitor" 
+      value="{$gui->btn_monitor_mgmt}" 
+      onclick="doAction.value='{$gui->btn_monitor_action}'"/> 
   </form>
   <br/><br/>
 </div> {* class="groupBtn" *}
@@ -160,7 +167,7 @@ viewer for requirement
   <tr>
     <td>
       <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.scope}</legend>
-      {$args_req.scope}
+	  {if $gui->reqEditorType == 'none'}{$args_req.scope|nl2br}{else}{$args_req.scope}{/if}
       </fieldset>
     </td>
   </tr>
@@ -173,7 +180,7 @@ viewer for requirement
     
     {if $args_req_coverage != ''}
       <form style="display: inline;" id="reqRemoveTestCase_{$req_version_id}" name="reqRemoveTestCase_{$req_version_id}" 
-            action="lib/requirements/reqEdit.php" method="post">
+            action="{$basehref}lib/requirements/reqEdit.php" method="post">
         <input type="hidden" id="rtRID" name="requirement_id" value="{$args_req.id}" />
         <input type="hidden" id="rtRVID" name="req_version_id" value="{$args_req.version_id}" />
         <input type="hidden" id="rtAction" name="doAction" value="removeTestCase" />
@@ -197,7 +204,7 @@ viewer for requirement
     {/if}
     {if is_null($args_frozen_version) || !$args_frozen_version}
     <form style="display: inline;" id="reqAddTestCase_{$req_version_id}" name="reqAddTestCase_{$req_version_id}" 
-          action="lib/requirements/reqEdit.php" method="post">
+          action="{$basehref}lib/requirements/reqEdit.php" method="post">
       <input type="hidden" id="atRID" name="requirement_id" value="{$args_req.id}" />
       <input type="hidden" id="atRVID" name="req_version_id" value="{$args_req.version_id}" />
       <input type="hidden" id="atAction" name="doAction" value="addTestCase" />

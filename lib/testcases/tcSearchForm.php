@@ -23,11 +23,13 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args);
 
+
+echo __FILE__;
+die();
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'tcSearchForm.tpl');
-
-
 /**
  * 
  *

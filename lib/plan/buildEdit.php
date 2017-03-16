@@ -5,8 +5,6 @@
  *
  * @filesource  buildEdit.php
  *
- * @internal revisions
- * @since 1.9.14
  *
  */
 require('../../config.inc.php');
@@ -30,8 +28,7 @@ $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
-$args = init_args($_REQUEST,$_SESSION,$date_format_cfg);
-
+$args = init_args($_REQUEST,$_SESSION,$date_format_cfg,$tplan_mgr);
 $gui = initializeGui($args,$build_mgr);
 
 
@@ -59,7 +56,7 @@ switch($args->do_action)
   break;
 
   case 'do_delete':
-    $op = doDelete($args,$build_mgr);
+    $op = doDelete($db,$args,$build_mgr,$tplan_mgr);
   break;
 
   case 'do_update':
@@ -101,7 +98,7 @@ $gui->operation_descr = $op->operation_descr;
 $gui->user_feedback = $op->user_feedback;
 $gui->buttonCfg = $op->buttonCfg;
 
-$gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+$gui->mgt_view_events = $args->user->hasRight($db,"mgt_view_events");
 $gui->editorType = $editorCfg['type'];
 
 renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
@@ -120,7 +117,7 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
  * @internal revisions
  *
  */
-function init_args($request_hash, $session_hash,$date_format)
+function init_args($request_hash, $session_hash,$date_format,&$tplanMgr)
 {
   $args = new stdClass();
   $request_hash = strings_stripSlashes($request_hash);
@@ -161,8 +158,19 @@ function init_args($request_hash, $session_hash,$date_format)
     
   $args->closed_on_date = isset($request_hash['closed_on_date']) ? $request_hash['closed_on_date'] : null;
     
-  $args->tplan_id = isset($session_hash['testplanID']) ? intval($session_hash['testplanID']) : 0;
-  $args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
+
+  if(isset($request_hash['tplan_id']) && intval($request_hash['tplan_id']) > 0)
+  {
+    $args->tplan_id = intval($_REQUEST['tplan_id']);
+    $dp = $tplanMgr->get_by_id($args->tplan_id);
+    $args->tplan_name = $dp['name'];
+  } 
+  else
+  {
+    $args->tplan_id = isset($session_hash['testplanID']) ? intval($session_hash['testplanID']) : 0;
+    $args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
+  }  
+
   $args->testprojectID = intval($session_hash['testprojectID']);
   $args->testprojectName = $session_hash['testprojectName'];
   $args->userID = intval($session_hash['userID']);
@@ -170,6 +178,7 @@ function init_args($request_hash, $session_hash,$date_format)
   $args->exec_status_filter = isset($request_hash['exec_status_filter']) ?
                                     $request_hash['exec_status_filter'] : null;
 
+  $args->user = $_SESSION['currentUser'];
   return $args;
 }
 
@@ -190,6 +199,8 @@ function initializeGui(&$argsObj,&$buildMgr)
   {
     $guiObj->exec_status_filter['items'][$dummy['status_code'][$kv]] = lang_get($vl);  
   }  
+
+  $guiObj->tplan_id = $argsObj->tplan_id;
   return $guiObj;
 }
 
@@ -266,14 +277,24 @@ function create(&$argsObj)
   returns:
 
 */
-function doDelete(&$argsObj,&$buildMgr)
+function doDelete(&$dbHandler,&$argsObj,&$buildMgr,&$tplanMgr)
 {
   $op = new stdClass();
-    $op->user_feedback = '';
-    $op->operation_descr = '';
-    $op->buttonCfg = null;
+  $op->user_feedback = '';
+  $op->operation_descr = '';
+  $op->buttonCfg = null;
 
   $build = $buildMgr->get_by_id($argsObj->build_id);
+  
+  $qty = $tplanMgr->getExecCountOnBuild($argsObj->tplan_id,$argsObj->build_id);
+  if($qty > 0 && !$argsObj->user->hasRight($dbHandler,'exec_delete'))
+  {
+    // Need to check if user has rigth to delete executions
+    $op->user_feedback = sprintf(lang_get("cannot_delete_build_no_exec_delete"),$build['name']);
+    return $op;
+  }  
+
+ 
   if (!$buildMgr->delete($argsObj->build_id))
   {
     $op->user_feedback = lang_get("cannot_delete_build");
@@ -282,8 +303,8 @@ function doDelete(&$argsObj,&$buildMgr)
   {
     logAuditEvent(TLS("audit_build_deleted",$argsObj->testprojectName,$argsObj->tplan_name,$build['name']),
                   "DELETE",$argsObj->build_id,"builds");
-    }
-    return $op;
+  }
+  return $op;
 }
 
 /*

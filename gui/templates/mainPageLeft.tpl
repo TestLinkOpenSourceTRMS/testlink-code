@@ -4,7 +4,7 @@
  Purpose: smarty template - main page / site map                 
                                                                  
  @internal revisions
- @since 1.9.10
+ @since 1.9.15
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,system_config,
@@ -16,8 +16,8 @@
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
-                          href_print_req, title_documentation,href_issuetracker_management,
-                          href_reqmgrsystem_management'}
+                          href_print_req,title_plugins,title_documentation,href_issuetracker_management,
+                          href_reqmgrsystem_management,href_req_monitor_overview'}
 
 {$menuLayout=$tlCfg->gui->layoutMainPageLeft}
 
@@ -27,10 +27,16 @@
 {$display_left_block_3=false}
 {$display_left_block_4=false}
 {$display_left_block_5=$tlCfg->userDocOnDesktop}
+{$display_left_block_top = false}
+{$display_left_block_bottom = false}
 
 {if $gui->testprojectID && 
-      ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
-       $gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
+   ($gui->grants.project_edit == "yes" || 
+    $gui->grants.tproject_user_role_assignment == "yes" ||
+    $gui->grants.cfield_management == "yes" || 
+    $gui->grants.platform_management == "yes" || 
+    $gui->grants.keywords_view == "yes")}
+    
     {$display_left_block_1=true}
 
     <script  type="text/javascript">
@@ -118,12 +124,20 @@
    </script>
 {/if}
 
+{if isset($gui->plugins.EVENT_LEFTMENU_TOP) &&  $gui->plugins.EVENT_LEFTMENU_TOP}
+  {$display_left_block_top=true}
+{/if}
+{if isset($gui->plugins.EVENT_LEFTMENU_BOTTOM) &&  $gui->plugins.EVENT_LEFTMENU_BOTTOM}
+  {$display_left_block_bottom=true}
+{/if}
 
 <div class="vertical_menu" style="float: left">
+  <div id='menu_left_block_top'></div><br />
   <div id='menu_left_block_2'></div><br />
   <div id='menu_left_block_1'></div><br />
   <div id="menu_left_block_3"></div><br />
   <div id="menu_left_block_4"></div><br />
+  <div id='menu_left_block_bottom'></div><br />
   <div id="menu_left_block_5"></div><br />
   
   {if $display_left_block_1}
@@ -144,7 +158,7 @@
     {/if}
     
     {if $gui->grants.keywords_view == "yes"}
-      <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
+      <a href="lib/keywords/keywordsView.php?tproject_id={$gui->testprojectID}">{$labels.href_keywords_manage}</a>
       <br />
     {/if}
     
@@ -189,6 +203,9 @@
     {if $gui->grants.reqs_edit == "yes"}
       <a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
       <br />
+      <a href="lib/requirements/reqMonitorOverview.php?tproject_id={$gui->testprojectID}">{$labels.href_req_monitor_overview}</a>
+      <br />
+
       <a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
     {/if}
     </div>
@@ -228,6 +245,60 @@
     </div>
   {/if}
 
+  {if $display_left_block_top}
+      <script type="text/javascript">
+      function display_left_block_top()
+      {
+        var pt = new Ext.Panel({
+                                title: '{$labels.title_plugins}',
+                                collapsible:false,
+                                collapsed: false,
+                                draggable: false,
+                                contentEl: 'plugin_left_top',
+                                baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;",
+                                renderTo: 'menu_left_block_top',
+                                width:'100%'
+                               });
+      }
+      </script>
+      {if isset($gui->plugins.EVENT_LEFTMENU_TOP)}
+        <div id="plugin_left_top">
+          {foreach from=$gui->plugins.EVENT_LEFTMENU_TOP item=menu_item}
+            {$menu_item}
+            <br />
+          {/foreach}
+        </div>
+      {/if}
+  {/if}
+
+
+  {if $display_left_block_bottom}
+      <script type="text/javascript">
+      function display_left_block_bottom()
+      {
+        var pb = new Ext.Panel({
+                                title: '{$labels.title_plugins}',
+                                collapsible:false,
+                                collapsed: false,
+                                draggable: false,
+                                contentEl: 'plugin_left_bottom',
+                                baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;",
+                                renderTo: 'menu_left_block_bottom',
+                                width:'100%'
+                               });
+      }
+      </script>
+      {if isset($gui->plugins.EVENT_LEFTMENU_BOTTOM)}
+        <div id="plugin_left_bottom">
+          {foreach from=$gui->plugins.EVENT_LEFTMENU_BOTTOM item=menu_item}
+            {$menu_item}
+            <br />
+          {/foreach}
+        </div>
+      {/if}
+  {/if}
 
   {if $display_left_block_5}
     <script type="text/javascript">
@@ -263,6 +334,4 @@
       </form>
     </div>
   {/if}
-
-
 </div>

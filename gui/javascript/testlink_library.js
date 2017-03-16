@@ -528,6 +528,17 @@ function tree_getPrintPreferences()
     params.push("build_id="+bx.value);
   }
 
+  var bx = document.getElementById('with_user_assignment');
+  if(bx)
+  {
+    var vv = 0;
+    if(bx.checked)
+    {
+      vv = 1;
+    }  
+    params.push("with_user_assignment=" + vv);
+  }
+
   params = params.join('&');  // from array to string
 
   return params;
@@ -550,11 +561,11 @@ function tree_getCheckBox(id)
 /**
  *
  */
-function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,user_action)
+function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,tcstep_id,user_action)
 {
   l2l = "lib/execute/bugAdd.php?user_action=" + user_action + 
         "&tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + 
-        "&tplan_id=" + tplan_id + "&exec_id="+exec_id;
+        "&tplan_id=" + tplan_id + "&exec_id="+exec_id + "&tcstep_id="+tcstep_id;
 
   switch(user_action)  
   {
@@ -649,13 +660,15 @@ function dialog_onUnload(odialog)
  * 
  * @param btn string id of the button clicked
  * @param text string not used
- * @param combinedBugID string like <executionID-bugID>
+ * @param combinedBugID string like <executionID-tcStepID-bugID>
  */
 function deleteBug(btn,text,combinedBugID)
 {
   var idx;
   var executionID;
+  var tcStepID;
   var bugID;
+  var target;
   
   if (btn != 'yes')
   {
@@ -668,14 +681,18 @@ function deleteBug(btn,text,combinedBugID)
     return;
   }
   
-  executionID = combinedBugID.substr(0,idx)
+  executionID = combinedBugID.substr(0,idx);
+  
+  target = combinedBugID.substr(idx+1);
+  idx = target.indexOf('-');
+  tcStepID = target.substr(0,idx)
 
   // TICKET 4814: bug deletion may fails if bugID string contains special characters ('#', '&' , ...)
   // bugID string may contain special characters : 
   // must escape it to get correct bugID value in bugDelete.php
-  bugID = escape(combinedBugID.substr(idx+1));
+  bugID = escape(target.substr(idx+1));
   
-  window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&bug_id="+bugID,
+  window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&tcstep_id="+tcStepID+"&bug_id="+bugID,
                 "DeleteBug","width=510,height=150,resizable=yes,dependent=yes");
 }
 
@@ -1501,12 +1518,17 @@ function openPrintPreview(type, id, child_id, revision, print_action)
 
 
 
-function openExecHistoryWindow(tc_id) 
+function openExecHistoryWindow(tc_id,tplan_check) 
 {
   var url = "lib/execute/execHistory.php?tcase_id=" + tc_id;
 
   var width = getCookie("execHistoryPopupWidth");
   var height = getCookie("execHistoryPopupHeight");
+
+  if(tplan_check != undefined)
+  {
+    url = url + '&onlyActiveTestPlans=' + tplan_check;    
+  }  
 
   if (width == null)
   {
@@ -1686,6 +1708,20 @@ function clearTextAreaByClassName(cssClassName)
 /**
  *
  */
+function clearSelectByClassName(cssClassName)
+{
+  var ol = document.getElementsByClassName(cssClassName);
+  for (var idx= 0;idx < ol.length;idx++)
+  {
+    ol[idx].value = '';
+  }   
+}
+
+
+
+/**
+ *
+ */
 function validateStepsReorder(cssClassName)
 {
   var ol = document.getElementsByClassName(cssClassName);
@@ -1763,4 +1799,30 @@ function toogleRequiredOnShowHide(oid,display_type)
     obj.style.display = 'none';
     obj.removeAttribute('required'); 
   }
+}
+
+/**
+ * Open testcase description in a popup window.
+ * @author Andreas Simon
+ * @param tc_id
+ */
+function openTSEditWindow(tsuite_id) 
+{
+
+  var url = "lib/testcases/archiveData.php?edit=testsuite&id=" + tsuite_id 
+  var width = getCookie("TSEditPopupWidth");
+  var height = getCookie("TSEditPopupHeight");
+  
+  if (width == null)
+  {
+    var width = "800";
+  }
+  
+  if (height == null)
+  {
+    var height = "600";
+  }
+  
+  var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+  window.open(fRoot+url, '_blank', windowCfg);
 }

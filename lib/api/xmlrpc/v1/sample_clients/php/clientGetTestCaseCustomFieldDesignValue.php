@@ -3,16 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: clientGetTestCaseCustomFieldDesignValue.php,v $
- *
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/10/23 07:57:51 $ by $Author: franciscom $
+ * @filesource clientGetTestCaseCustomFieldExecValue.php
  * @Author: francisco.mancardi@gmail.com
  *
- * rev: 
- * @internal revisions
- * 20101023 - franciscom - added version number on call.
- * 			
  *
  */
  

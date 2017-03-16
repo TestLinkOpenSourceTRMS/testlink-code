@@ -8,12 +8,12 @@
  * @filesource  doAuthorize.php
  * @package     TestLink
  * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
- * @copyright   2003-2014, TestLink community 
+ * @copyright   2003-2015, TestLink community 
  * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.11
+ * @since 1.9.14
  */
 
 require_once("users.inc.php");
@@ -58,7 +58,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
       if( !$doLogin )
       {
         logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
-      } 
+      }
     }
     else
     {
@@ -67,7 +67,6 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
       {
         $user->authentication = 'LDAP';  // force for auth_does_password_match
         $check = auth_does_password_match($user,$pwd);
-
         if( $check->status_ok )
         {
           $user = new tlUser(); 
@@ -76,14 +75,10 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
           $user->isActive = true;
           $user->setPassword($pwd);  // write password on DB anyway
 
-          $user->emailAddress = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_email_field']));
-          $user->firstName = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_firstname_field']));
-          $user->lastName = ldap_get_field_from_username($user->login,strtolower($authCfg['ldap_surname_field']));
-
-          $user->firstName = (is_null($user->firstName) || strlen($user->firstName) == 0) ? $login : $user->firstName;
-          $user->lastName = (is_null($user->lastName) || strlen($user->lastName) == 0) ? $login : $user->lastName;
-
-
+          $uf = getUserFieldsFromLDAP($user->login,$authCfg['ldap'][$check->ldap_index]);
+          $user->emailAddress = $uf->emailAddress;
+          $user->firstName = $uf->firstName;
+          $user->lastName = $uf->lastName;
           $doLogin = ($user->writeToDB($db) == tl::OK);
         }  
       }  
@@ -98,9 +93,18 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     $user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN);
 
     // Need to do set COOKIE following Mantis model
-    $auth_cookie_name = config_get('auth_cookie');
     $expireOnBrowserClose=false;
-    setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');      
+    $auth_cookie_name = config_get('auth_cookie');
+    $cookie_path = config_get('cookie_path');    
+
+    // IMPORTANT DEVELOPMENT DEBUG NOTICE
+    // From PHP Manual
+    // setcookie() defines a cookie to be sent along with the rest of the HTTP headers. 
+    // Like other headers, cookies must be sent BEFORE ANY OUTPUT from your script 
+    // (this is a protocol restriction). This requires that you place calls to this function 
+    // prior to any output, including <html> and <head> tags as well as any whitespace.
+    //
+    setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,$cookie_path);      
 
     // Disallow two sessions within one browser
     if ($my['options']['doSessionExistsCheck'] && 
@@ -139,10 +143,10 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
 {
   global $g_tlLogger;
 
-  $result = array('status' => tl::ERROR, 'msg' => null);
+  $ret = array('status' => tl::ERROR, 'msg' => null, 'checkedBy' => __FUNCTION_);
   if( !isset($apache_mod_ssl_env['SSL_PROTOCOL']) )
   {
-    return $result; 
+    return $ret; 
   }
   
   // With this we trust SSL is enabled => go ahead with login control
@@ -157,42 +161,40 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
     if( $login_exists && $user->isActive)
     {
       // Need to do set COOKIE following Mantis model
-      $auth_cookie_name = config_get('auth_cookie');
       $expireOnBrowserClose=false;
-      setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,'/');      
+      $auth_cookie_name = config_get('auth_cookie');
+      $cookie_path = config_get('cookie_path');
+      setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,$cookie_path);      
 
       // Disallow two sessions within one browser
       if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
       {
-          $result['msg'] = lang_get('login_msg_session_exists1') . 
-                           ' <a style="color:white;" href="logout.php">' . 
-                         lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+        $ret['msg'] = lang_get('login_msg_session_exists1') . 
+                      ' <a style="color:white;" href="logout.php">' . 
+                      lang_get('logout_link') . '</a>' . 
+                      lang_get('login_msg_session_exists2');
       }
       else
       { 
-          // Setting user's session information
-          $_SESSION['currentUser'] = $user;
-          $_SESSION['lastActivity'] = time();
+        // Setting user's session information
+        $_SESSION['currentUser'] = $user;
+        $_SESSION['lastActivity'] = time();
           
-          $g_tlLogger->endTransaction();
-          $g_tlLogger->startTransaction();
-          setUserSession($dbHandler,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, 
-                   $user->locale,null);
-          $result['status'] = tl::OK;
+        $g_tlLogger->endTransaction();
+        $g_tlLogger->startTransaction();
+        setUserSession($dbHandler,$user->login, $user->dbID,$user->globalRoleID,
+                       $user->emailAddress,$user->locale,null);
+        $ret['status'] = tl::OK;
       }
     }
     else
     {
-      logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",
-                    $user->dbID,"users");
+      logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),
+                    "LOGIN_FAILED",$user->dbID,"users");
     } 
-
   }
-  return $result;
+  return $ret;
 }
-
-
-
 
 
 /** 
@@ -219,7 +221,6 @@ function auth_does_password_match(&$userObj,$cleartext_password)
     break;
   }
 
-  // switch($authCfg['method'])
   switch($authMethod)
   {
     case 'LDAP':
@@ -232,7 +233,8 @@ function auth_does_password_match(&$userObj,$cleartext_password)
       
       $xx = ldap_authenticate($userObj->login, $cleartext_password);
       $ret->status_ok = $xx->status_ok;
-      $ret->msg = $msg[$xx->status_code]; 
+      $ret->msg = $xx->status_ok ? 'ok' : $msg[$xx->status_code];
+      $ret->ldap_index = $xx->ldap_index;
     break;
     
     case 'MD5':
@@ -241,6 +243,107 @@ function auth_does_password_match(&$userObj,$cleartext_password)
       $ret->status_ok = ($userObj->comparePassword($cleartext_password) == tl::OK);
       $ret->msg = 'ok';
     break;
+  }
+
+  return $ret;
+}
+
+
+/**
+ *
+ *
+ */
+function getUserFieldsFromLDAP($login,$ldapCfg)
+{
+  $k2l = array('emailAddress' => 'email', 'firstName' => 'firstname', 'lastName' => 'surname'); 
+  $ret = new stdClass();
+  
+  foreach($k2l as $p => $ldf)
+  {
+    $ret->$p = ldap_get_field_from_username($ldapCfg,$login,
+                                            strtolower($ldapCfg['ldap_' . $ldf . '_field']));
+  }  
+
+  // Defaults
+  $k2l = array('firstName' => $login,'lastName' => $login, 'emailAddress' => 'no_mail_configured@on_ldapserver.org');
+  foreach($k2l as $prop => $val)
+  {
+    if( is_null($ret->$prop) || strlen($ret->$prop) == 0 )
+    {
+      $ret->$prop = $val;  
+    }
+  }  
+
+  return $ret;
+} 
+
+
+/** 
+ *
+ *
+ */
+function doSSOWebServerVar(&$dbHandler,$authCfg=null)
+{
+  $debugMsg = __FUNCTION__;
+
+  $ret = array('status' => tl::ERROR, 'msg' => null, 'checkedBy' => __FUNCTION__);
+  $authCfg = is_null($authCfg) ? config_get('authentication') : $authCfg;
+
+  $userIdentity = null;
+  if( isset($_SERVER[$authCfg['SSO_uid_field']]) )
+  {
+    $userIdentity = trim($_SERVER[$authCfg['SSO_uid_field']]);
+  }  
+
+  if( !is_null($userIdentity) && $userIdentity != '' )
+  {
+    $tables = tlObject::getDBTables(array('users'));
+
+    $sql = "/* $debugMsg */" . 
+           "SELECT login,role_id,email,first,last,active " .
+           "FROM {$tables['users']} " . 
+           "WHERE active = 1 AND " . 
+           " {$authCfg['SSO_user_target_dbfield']} = '".
+           $dbHandler->prepare_string($userIdentity) . "'";
+
+    $rs = $dbHandler->get_recordset($sql);
+    
+    $login_exists = !is_null($rs) && ($accountQty =count($rs)) == 1;
+    $loginKO = true;
+
+    if( $login_exists  )
+    {
+      $rs = current($rs);
+      if( intval($rs['active']) == 1 )
+      {
+        $loginKO = false;
+
+        $user = new tlUser();
+        $user->login = $rs['login'];
+        $user->readFromDB($dbHandler,tlUser::USER_O_SEARCH_BYLOGIN);
+        $xx = doSessionSetUp($dbHandler,$user);
+
+        if( !is_null($xx) )
+        {
+          $ret = $xx;
+        }   
+      }    
+    } 
+
+    if( $loginKO )
+    {
+      if($accountQty > 1)
+      {
+        $ret['msg'] = TLS("audit_login_sso_failed_multiple_matches",
+                          $_SERVER['REMOTE_ADDR'],$accountQty,$userIdentity,
+                          $authCfg['SSO_user_target_dbfield']);
+      }  
+      else
+      {
+        $ret['msg'] = TLS("audit_login_failed_silence",$_SERVER['REMOTE_ADDR']);
+      }  
+      logAuditEvent($result['msg'], "LOGIN_FAILED","users");
+    }
   }
 
   return $ret;

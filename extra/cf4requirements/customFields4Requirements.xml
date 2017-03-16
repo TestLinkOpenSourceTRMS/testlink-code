@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<custom_fields>
+	<custom_field>
+		<name><![CDATA[TLCFRQ_PRIORITY_MOSCOW]]></name>
+		<label><![CDATA[Priority (MOSCOW)]]></label>
+		<type><![CDATA[6]]></type>
+		<possible_values><![CDATA[M: Must have|S: Should have|C: Could have|W: Won’t Have]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[1]]></show_on_design>
+		<enable_on_design><![CDATA[1]]></enable_on_design>
+		<show_on_execution><![CDATA[0]]></show_on_execution>
+		<enable_on_execution><![CDATA[0]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[7]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[TLCFRQ_TECHNICAL_RISK]]></name>
+		<label><![CDATA[Technical Risk]]></label>
+		<type><![CDATA[6]]></type>
+		<possible_values><![CDATA[Very High|High|Average|Low|Very Low]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[1]]></show_on_design>
+		<enable_on_design><![CDATA[1]]></enable_on_design>
+		<show_on_execution><![CDATA[0]]></show_on_execution>
+		<enable_on_execution><![CDATA[0]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[7]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[TLCFRQ_FEASIBILITY]]></name>
+		<label><![CDATA[Feasibility]]></label>
+		<type><![CDATA[6]]></type>
+		<possible_values><![CDATA[Yes|No|Investigate]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[1]]></show_on_design>
+		<enable_on_design><![CDATA[1]]></enable_on_design>
+		<show_on_execution><![CDATA[0]]></show_on_execution>
+		<enable_on_execution><![CDATA[0]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[7]]></node_type_id>
+	</custom_field>
+	<custom_field>
+		<name><![CDATA[TLCFRQ_STABILITY]]></name>
+		<label><![CDATA[Stability]]></label>
+		<type><![CDATA[6]]></type>
+		<possible_values><![CDATA[Mature|Stable|Still changing]]></possible_values>
+		<default_value><![CDATA[]]></default_value>
+		<valid_regexp><![CDATA[]]></valid_regexp>
+		<length_min><![CDATA[0]]></length_min>
+		<length_max><![CDATA[0]]></length_max>
+		<show_on_design><![CDATA[1]]></show_on_design>
+		<enable_on_design><![CDATA[1]]></enable_on_design>
+		<show_on_execution><![CDATA[0]]></show_on_execution>
+		<enable_on_execution><![CDATA[0]]></enable_on_execution>
+		<show_on_testplan_design><![CDATA[0]]></show_on_testplan_design>
+		<enable_on_testplan_design><![CDATA[0]]></enable_on_testplan_design>
+		<node_type_id><![CDATA[7]]></node_type_id>
+	</custom_field>
+</custom_fields>

@@ -32,6 +32,7 @@ viewer for test case in test specification
 {$tcversion_id=$args_testcase.id}
 {$showMode=$gui->show_mode} 
 
+
 {* Used on several operations to implement goback *}
 {$tcViewAction="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
              
@@ -51,8 +52,8 @@ viewer for test case in test specification
 {$url_args="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
 {$hrefEditStep="$basehref$module$url_args"}
 
-
-{$tcExportAction="lib/testcases/tcExport.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
+{$tproject_id = $gui->tproject_id}
+{$tcExportAction="lib/testcases/tcExport.php?tproject_id=$tproject_id&goback_url=$goBackActionURLencoded&show_mode=$showMode"}
 {$exportTestCaseAction="$basehref$tcExportAction"}
 
 {$printTestCaseAction="lib/testcases/tcPrint.php?show_mode=$showMode"}
@@ -86,10 +87,13 @@ viewer for test case in test specification
 {$warning_delete_msg=""}
 {$edit_enabled=0}
 {$delete_enabled=0}
+{$has_been_executed=0}
 
 {if $args_can_do->edit == "yes"}
   {* Seems logical you can disable some you have executed before *}
   {$active_status_op_enabled=1}
+  {$freeze_op_enabled=1}
+
   {$has_been_executed=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
   {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
@@ -120,19 +124,23 @@ viewer for test case in test specification
         {/if}  
       {/if}  
     {/if} 
-    
   {/if}
+
+{if $args_read_only == "yes"}
+  {$edit_enabled=0} 
+  {$delete_enabled=0} 
+{/if}
 
 <div style="display:{$tlCfg->gui->op_area_display->test_case};" 
      class="groupBtn" id="tcView_viewer_tcase_control_panel">
-    <form style="display: inline;" id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
+    <form style="display: inline;" id="topControls" name="topControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
     <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
     <input type="hidden" name="doAction" value="" />
     <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
-    {if $edit_enabled}
+    {if $edit_enabled && $args_testcase.is_open}
          <input type="submit" name="edit_tc" 
                 onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
     {/if}
@@ -173,7 +181,7 @@ viewer for test case in test specification
   </form>
   </span>
 
-    <form style="display: inline;" id="versionControls" name="versionControls" method="post" action="lib/testcases/tcEdit.php">
+    <form style="display: inline;" id="versionControls" name="versionControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
     <input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
     <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
@@ -207,10 +215,28 @@ viewer for test case in test specification
                              value="{lang_get s=$act_deact_value}" />
     {/if}
 
+    {if $freeze_op_enabled==1 && 
+        $args_can_do->freeze=='yes'}
+          {if $args_testcase.is_open eq 0}
+              {$freeze_btn="unfreeze"}
+              {$freeze_value="unfreeze_this_tcversion"}
+              {$version_title_class="unfreeze_version"}
+          {else}
+              {$freeze_btn="freeze"}
+              {$freeze_value="freeze_this_tcversion"}
+              {$version_title_class="freeze_version"}
+          {/if}
+
+         <input type="submit" name="{$freeze_btn}" 
+                onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
+
+    {/if}
+
+
   </form>
 {/if} {* user can edit *}
 
-  {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
+{if $args_can_do->add2tplan == "yes" && $args_has_testplans}
   <span>
   <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
     <input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
@@ -225,18 +251,18 @@ viewer for test case in test specification
   <span>
   {* compare versions *}
   {if $args_testcase.version > 1}
-    <form style="display: inline;" id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
+    <form style="display: inline;" id="version_compare" name="version_compare" method="post" action="{$basehref}lib/testcases/tcCompareVersions.php">
       <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
       <input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
     </form>
   {/if}
   </span>
   <span>
-    <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id});"
+    <input type="button" onclick="javascript:openExecHistoryWindow({$args_testcase.testcase_id},1);"
            value="{$tcView_viewer_labels.btn_show_exec_history}" />
   
 
-    {if $edit_enabled}
+    {if $edit_enabled && $args_testcase.is_open}
       <form style="display: inline;" id="tcbulkact" name="tcbulkact" 
             method="post" action="{$bulkOpAction}" >
         <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />
@@ -294,7 +320,7 @@ function launchInsertStep(step_id)
 
 </script>
 
-<form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
+<form id="stepsControls" name="stepsControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
   <input type="hidden" name="goback_url" value="{$goBackAction}" />
   <input type="hidden" id="stepsControls_doAction" name="doAction" value="" />
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
@@ -311,6 +337,7 @@ function launchInsertStep(step_id)
              inc_tcbody_labels=$tcView_viewer_labels
              inc_tcbody_author_userinfo=$author_userinfo
              inc_tcbody_updater_userinfo=$updater_userinfo
+             inc_tcbody_editor_type=$gui->designEditorType
              inc_tcbody_cf=$args_cf}
     
   {if $args_testcase.steps != ''}
@@ -322,8 +349,8 @@ function launchInsertStep(step_id)
   {/if}
 </table>
 
+{if $edit_enabled && $args_testcase.is_open}
 <div {$addInfoDivStyle}>
-  {if $edit_enabled}
   <input type="submit" name="create_step" 
           onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" />
 
@@ -338,8 +365,8 @@ function launchInsertStep(step_id)
           onclick="doAction.value='doReorderSteps';{$gui->submitCode};javascript: return validateStepsReorder('step_number{$args_testcase.id}');"
           value="{$tcView_viewer_labels.btn_reorder_steps}" />
   </span>
-  {/if}
 </div>
+{/if}
 </form>
 
 {include file="testcases/attributesLinearForViewer.inc.tpl"} 
@@ -394,3 +421,4 @@ function launchInsertStep(step_id)
   <br />
   {include file="testcases/quickexec.inc.tpl" args_edit_enabled=$edit_enabled} 
 {/if}
+

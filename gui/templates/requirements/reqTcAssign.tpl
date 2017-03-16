@@ -116,7 +116,7 @@ function refreshAndClose(tcase_id,callback)
     		<td><span class="bold">{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
     		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
     			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
-    		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
+			<td>{if $gui->reqEditorType == 'none'}{$gui->arrAssignedReq[row].scope|nl2br}{else}{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}{/if}</td>	
         <td>{$gui->arrAssignedReq[row].coverageAuthor}</td>
         <td>{localize_timestamp ts=$gui->arrAssignedReq[row].coverageTS}</td>
     	</tr>
@@ -171,7 +171,7 @@ function refreshAndClose(tcase_id,callback)
       		<td><span class="bold">{$gui->arrUnassignedReq[row2].req_doc_id|escape}</span></td>
       		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrUnassignedReq[row2].id}">
       			{$gui->arrUnassignedReq[row2].title|escape}</a></span></td>
-      		<td>{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
+      		<td>{if $gui->reqEditorType == 'none'}{$gui->arrUnassignedReq[row2].scope|nl2br}{else}{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}{/if}</td>
       	</tr>
       	{sectionelse}
       	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>

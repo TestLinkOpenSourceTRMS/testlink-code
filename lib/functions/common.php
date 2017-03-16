@@ -13,18 +13,21 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2014 TestLink community 
+ * @Copyright   2005,2016 TestLink community 
  * @link        http://www.testlink.org
  * @since       1.5
  *
  * @internal revisions
- * @since 1.9.12
+ * @since 1.9.16
  *
  */
 
 /** core and parenthal classes */
 require_once('object.class.php');
 require_once('metastring.class.php');
+
+/** Testlink Plugin API helper methods, must be included before lang_api.php */
+require_once('plugin_api.php');
 
 /** library for localization */
 require_once('lang_api.php');
@@ -43,11 +46,18 @@ require_once('roles.inc.php');
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
 require_once('tlsmarty.inc.php');
 
+/** Initialize the Event System */
+require_once('event_api.php' );
+
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
 
 /** CSRF security functions. */
-require_once("csrf.php");
+/** TL_APICALL => TICKET 0007190 */
+if( !defined('TL_APICALL') )
+{
+  require_once("csrf.php");
+}  
 
 /** Input data validation */
 require_once("inputparameter.inc.php");
@@ -66,10 +76,15 @@ require_once("exec_cfield_mgr.class.php");
  */
 function tlAutoload($class_name) 
 {
+
   // exceptions
+  // 1. remove prefix and convert lower case
   $tlClasses = null;
   $tlClassPrefixLen = 2;
   $classFileName = $class_name;
+   
+  // 2. add a lower case directory 
+  $addDirToInclude = array('Kint' => true);
 
   // this way Zend_Loader_Autoloader will take care of these classes.
   // Needed in order to make work bugzillaxmlrpc interface
@@ -84,6 +99,19 @@ function tlAutoload($class_name)
     $classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
   }
   
+  if (isset($addDirToInclude[$class_name]))
+  {
+    $classFileName = strtolower($class_name) . "/" . $class_name;
+  }  
+
+  // Plugin special processing, class name ends with Plugin (see plugin_register())
+  // Does not use autoload
+  if( preg_match('/Plugin$/', $class_name) == 1 )
+  {
+    return;
+  }  
+
+
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 
   // You can reproduce it installing ThinkUp and TestLink applications in the same stack.  
@@ -175,8 +203,10 @@ function setSessionTestPlan($tplan_info)
   {
     $_SESSION['testplanID'] = $tplan_info['id'];
     $_SESSION['testplanName'] = $tplan_info['name'];
+
     // Save testplan id for next session
-    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, '/');
+    $cookie_path = config_get('cookie_path');
+    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, $cookie_path);
 
     tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
   }
@@ -250,6 +280,14 @@ function doSessionStart($setPaths=false)
   if(!isset($_SESSION))
   {
     session_start();
+    if(defined('KINT_ON') && KINT_ON)
+    {
+      Kint::enabled(true);      
+    }  
+    else
+    {
+      Kint::enabled(false);      
+    }  
   }
   
   if($setPaths)
@@ -385,8 +423,12 @@ function initProject(&$db,$hash_user_sel)
   if($user_sel["tplan_id"] != 0)
   {
     $tplan_id = $user_sel["tplan_id"];
-    setcookie($cookieName, $tplan_id, time()+60*60*24*90, '/');
-  } elseif (isset($_COOKIE[$cookieName])) {
+  
+    $cookie_path = config_get('cookie_path');  
+    setcookie($cookieName, $tplan_id, time()+60*60*24*90, $cookie_path);
+  } 
+  elseif (isset($_COOKIE[$cookieName])) 
+  {
     $tplan_id = intval($_COOKIE[$cookieName]);
   }
   
@@ -450,7 +492,10 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
   {
     checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
   }
-    
+   
+  // Init plugins
+  plugin_init_installed();
+   
   // adjust Product and Test Plan to $_SESSION
   if ($initProject)
   {
@@ -827,12 +872,13 @@ function templateConfiguration($template2get=null)
   }
   
   $path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
-    $last_part=array_pop($path_parts);
-    $tcfg = new stdClass();
-    $tcfg->template_dir = "{$last_part}/";
-    $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
-    $tcfg->template = null;
-    return $tcfg;
+  $last_part=array_pop($path_parts);
+  $tcfg = new stdClass();
+  $tcfg->template_dir = "{$last_part}/";
+  $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
+  $tcfg->template = null;
+  $tcfg->tpl = $tcfg->template_dir . $tcfg->default_template;
+  return $tcfg;
 }
 
 
@@ -1274,7 +1320,6 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
       break;
     }  
   }  
-  
 
   $status_ok = false;
   if( !is_null($item) )
@@ -1342,12 +1387,132 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
     case 'testplan':
       $target = $tables['testplans'];
     break;
+
+    default:
+      throw new Exception("Aborting - Bad type", 1);
+    break;
   }
   
   $sql = "/* $debugMsg */ " .
-         " SELECT id FROM {$target} WHERE api_key = '{$apiKey}'";
+         " SELECT id FROM {$target} " .
+         " WHERE api_key = '" . 
+         $dbHandler->prepare_string($apiKey) . "'";
  
   $rs = $dbHandler->get_recordset($sql);
   return ($rs ? $rs[0] : null);
 }
 
+/**
+ *
+ *
+ */
+function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
+{
+  // name of caller script
+  $script = basename($_SERVER['PHP_SELF']); 
+  $doExit = false;
+  $action = 'any';
+  $env = array('tproject_id' => 0, 'tplan_id' => 0);
+  $env = array_merge($env, $context);
+  foreach($env as $key => $val)
+  {
+    $env[$key] = intval($val);
+  }  
+  
+  if( $doExit = (is_null($env) || $env['tproject_id'] == 0) )
+  {
+    logAuditEvent(TLS("audit_security_no_environment",$script), $action,$userObj->dbID,"users");
+  }
+   
+  if( !$doExit )
+  {
+    foreach($rightsToCheck->items as $verboseRight)
+    {
+      $status = $userObj->hasRight($dbHandler,$verboseRight,
+                  $env['tproject_id'],$env['tplan_id'],true);
+      if( ($doExit = !$status) && ($rightsToCheck->mode == 'and'))
+      { 
+        $action = 'any';
+        logAuditEvent(TLS("audit_security_user_right_missing",$userObj->login,$script,$action),
+                  $action,$userObj->dbID,"users");
+        break;
+      }
+    }
+  }
+
+  if ($doExit)
+  {   
+    redirect($_SESSION['basehref'],"top.location");
+    exit();
+  }
+}
+
+/*
+  function: getWebEditorCfg
+
+  args:-
+
+  returns:
+
+*/
+function getWebEditorCfg($feature='all')
+{
+  $cfg = config_get('gui');
+  $defaultCfg = $cfg->text_editor['all'];
+  $webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
+  
+  foreach($defaultCfg as $key => $value)
+  {
+    if(!isset($webEditorCfg[$key]))
+    {
+      $webEditorCfg[$key] = $defaultCfg[$key];
+    }   
+  } 
+  return $webEditorCfg;
+}
+
+/**
+ *
+ */
+function downloadXls($fname,$xlsType,$gui,$filePrefix)
+{
+  $sets = array();
+  $sets['Excel2007'] = array('ext' => '.xlsx', 
+                             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  $sets['Excel5'] = array('ext' => '.xls', 
+                          'Content-Type' => 'application/vnd.ms-excel');
+
+
+  $dct = array('Content-Type' =>  $sets[$xlsType]['Content-Type']);
+  $content = file_get_contents($fname);
+  $f2d = $filePrefix . $gui->tproject_name . '_' . $gui->tplan_name . 
+         $sets[$xlsType]['ext'];
+
+  downloadContentsToFile($content,$f2d,$dct);
+  unlink($fname);
+  exit();    
+}
+
+/**
+ * POC on papertrailapp.com
+ */
+function syslogOnCloud($message, $component = "web", $program = "TestLink") 
+{
+  $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+  foreach(explode("\n", $message) as $line) 
+  {
+    $syslog_message = "<22>" . date('M d H:i:s ') . $program . ' ' . 
+                      $component . ': ' . $line;
+    socket_sendto($sock, $syslog_message, strlen($syslog_message), 0,
+                  'logs5.papertrailapp.com', 11613);
+  }
+  socket_close($sock);
+}
+
+/**
+ *
+ */
+function getSSODisable()
+{
+  return isset($_REQUEST['ssodisable']) ? 1 : 0;
+}

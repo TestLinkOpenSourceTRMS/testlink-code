@@ -508,6 +508,9 @@ table.simple_tableruler tr:hover{
     background-color: #CDDEF3 !important;
 }
 
+table.tableruler tr:hover{
+    background-color: #FFF !important;
+}
 
 /* Used for filters and options settings */
 table.smallGrey {
@@ -722,6 +725,10 @@ div.resultBox {
 	color: 			black;
 	margin: 		0px 12px 12px 12px;
 	padding: 		12px;
+}
+
+div.resultBox img:hover {
+	cursor:		pointer;	
 }
 
 img.arrow {

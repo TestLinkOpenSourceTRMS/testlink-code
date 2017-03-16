@@ -626,30 +626,51 @@ class tlIssueTracker extends tlObject
     { 
       $ret = $ret[0];
       $ret['verboseType'] = $this->types[$ret['type']];
+      $spec = $this->systems[$ret['type']];
+      $ret['api'] = $spec['api'];
     }
     
     return $ret;
   }
 
 
-  /*
+  /**
    *
-     *
+   *
    */
   function getInterfaceObject($tprojectID)
   {
-    $its = null;
     $issueT = $this->getLinkedTo($tprojectID);
-    
+    $name = $issueT['issuetracker_name'];
+    $goodForSession = ($issueT['api'] != 'db');
+
+    if($goodForSession && isset($_SESSION['its'][$name]))
+    {
+      return $_SESSION['its'][$name]; 
+    }  
+
     try
     {
       if( !is_null($issueT)  )
       {
         $itd = $this->getByID($issueT['issuetracker_id']);
         $iname = $itd['implementation'];
-        $its = new $iname($itd['implementation'],$itd['cfg'],$itd['name']);
+
+        if($goodForSession)
+        {
+          $_SESSION['its'][$name] = new $iname($iname,$itd['cfg'],$itd['name']);
+        }
+        else
+        {
+          $ixx = new $iname($iname,$itd['cfg'],$itd['name']);
+          return $ixx;
+        }  
       }
-      return  $its;
+      else
+      {
+        $_SESSION['its'][$name] = null;
+      }
+      return $_SESSION['its'][$name];
     }
     catch (Exception $e)
     {
@@ -667,7 +688,14 @@ class tlIssueTracker extends tlObject
     $xx = $this->getByID($its);
     $class2create = $xx['implementation'];
     $its = new $class2create($xx['type'],$xx['cfg'],$xx['name']);
-    return $its->isConnected();
+
+    $op = $its->isConnected();
+    
+    // because I've added simple cache on $_SESSION
+    // IMHO is better to update cache after this check
+    $_SESSION['its'][$xx['name']] = $its;
+
+    return $op;
   }
 
   /**

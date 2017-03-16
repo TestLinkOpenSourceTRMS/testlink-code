@@ -258,7 +258,7 @@ function insert_last_doc_id()
 
 <div class="workBack">
 <form name="reqEdit" id="reqEdit" method="post" 
-      action="lib/requirements/reqEdit.php" 
+      action="{$basehref}lib/requirements/reqEdit.php" 
       onSubmit="javascript:return validateForm(this,js_attr_cfg,{$gui->req_cfg->expected_coverage_management});">
 
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />

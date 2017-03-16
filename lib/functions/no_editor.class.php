@@ -45,7 +45,7 @@ class no_editor
     $Html = ' <textarea style="resize:both;" ' .
             " name=\"{$this->InstanceName}\" " . 
             " id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" >".
-            " {$HtmlValue}</textarea>" ;
+            "{$HtmlValue}</textarea>" ;
       
     return $Html ;
   }

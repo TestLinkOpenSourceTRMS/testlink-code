@@ -7,7 +7,7 @@
  *
  * @package 	  TestLink
  * @author 		  TestLink community
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2016, TestLink community 
  * @filesource  projectView.php
  * @link 		    http://www.testlink.org/
  *
@@ -26,8 +26,6 @@ $smarty = new TLSmarty();
 $imgSet = $smarty->getImages();
 $args = init_args();
 $gui = initializeGui($db,$args);
-
-new dBug($gui);
 
 $template2launch = $templateCfg->default_template;
 if(!is_null($gui->tprojects) || $args->doAction=='list')
@@ -127,6 +125,9 @@ function initializeGui(&$dbHandler,&$argsObj)
                'add_reqmgrsystem' => true);
   $guiObj->tprojects = $tproject_mgr->get_accessible_for_user($argsObj->userID,$opt,$filters);
   $guiObj->pageTitle = lang_get('title_testproject_management');
+  
+  $cfg = getWebEditorCfg('testproject');
+  $guiObj->editorType = $cfg['type'];
 
   $guiObj->itemQty = count($guiObj->tprojects);
 

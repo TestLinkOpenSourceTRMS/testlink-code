@@ -77,11 +77,9 @@ function initializeGui(&$dbHandler, &$control, &$assignmentMgr)
       $gui->title_navigator = lang_get('navigator_tc_exec_assignment');
       $gui->menuUrl = "lib/plan/tc_exec_assignment.php";
       $build_id = $control->settings['setting_build']['selected'];
-      
-      if ($assignmentMgr->get_count_of_assignments_for_build_id($build_id)) 
-      {
-        $control->draw_tc_unassign_button = true;
-      }
+      $control->draw_tc_unassign_button = true;
+      $control->draw_tc_assignment_bulk_copy_button = true;
+
     break;
   }
   

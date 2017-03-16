@@ -7,14 +7,14 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @author      Mantis Team
- * @copyright   2006-2011 TestLink community 
+ * @copyright   2006-2016 TestLink community 
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  *             (Parts of code has been adapted from Mantis BT)
  * @link       http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.12 
-
+ * @since 1.9.15 
+ *
  */
  
 /**
@@ -92,11 +92,17 @@ class database
   }
 
   // TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
-  function database($db_type)
+  function __construct($db_type)
   {
-    $this->dbType = $adodb_driver = $db_type;
     $fetch_mode = ADODB_FETCH_ASSOC;
-    
+
+    $this->dbType = $db_type;
+    if( $this->dbType == 'mysql' && version_compare(phpversion(), "5.5.0", ">=") )
+    {
+      $this->dbType = 'mysqli';
+    }
+    $adodb_driver = $this->dbType;
+  
     // added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
     if($this->dbType == 'mssql')
     {
@@ -109,7 +115,7 @@ class database
         // This extension is not available anymore on Windows with PHP 5.3 or later.
         // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
         // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
-          //
+        //
         // PHP_VERSION_ID is available as of PHP 5.2.7
         if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
         {
@@ -211,7 +217,10 @@ class database
       if(defined('DBUG_ON') && DBUG_ON == 1)
       { 
         echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+        die();
       }   
+      echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+        die();
       
       //else
       //{
@@ -632,7 +641,7 @@ class database
    * @return array an assoc array whose keys are the values from the columns
    *         of the rows
    **/
-  function fetchRowsIntoMap($sql,$column,$cumulative = 0,$limit = -1)
+  function fetchRowsIntoMap($sql,$column,$cumulative = 0,$limit = -1,$col2implode='')
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
@@ -665,7 +674,18 @@ class database
         {
           $items[$row[$column]][] = $row;
         }
-        else
+        else if($col2implode != '')
+        {
+          if(isset($items[$row[$column]]))
+          {
+            $items[$row[$column]][$col2implode] .= ',' . $row[$col2implode]; 
+          }  
+          else
+          {
+            $items[$row[$column]] = $row;
+          }  
+        }  
+        else 
         {
           $items[$row[$column]] = $row;
         } 
@@ -799,7 +819,8 @@ class database
    * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
    * 
    **/
-  function fetchMapRowsIntoMap($sql,$column_main_key,$column_sec_key,$cumulative = 0,$limit = -1)
+  function fetchMapRowsIntoMap($sql,$main_key,$sec_key,
+                               $cumulative = 0,$limit = -1, $col2implode ='')
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
@@ -809,11 +830,23 @@ class database
       {
         if($cumulative)
         {
-          $items[$row[$column_main_key]][$row[$column_sec_key]][] = $row;
+          $items[$row[$main_key]][$row[$sec_key]][] = $row;
         }
+        else if($col2implode !='')
+        {
+          if(isset($items[$row[$main_key]][$row[$sec_key]]))
+          {
+            $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= 
+              ',' . $row[$col2implode];
+          } 
+          else
+          {
+            $items[$row[$main_key]][$row[$sec_key]] = $row;   
+          } 
+        }  
         else
         {
-          $items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
+          $items[$row[$main_key]][$row[$sec_key]] = $row;
         } 
       }
     }
@@ -832,6 +865,7 @@ class database
     switch($this->db->databaseType)
     {
       case 'postgres7':
+      case 'postgres8':
         $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
         break;
         

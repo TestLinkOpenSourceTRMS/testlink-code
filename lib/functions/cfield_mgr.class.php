@@ -5,7 +5,7 @@
  *
  * @package 	  TestLink
  * @author 		  franciscom
- * @copyright 	2005-2015, TestLink community
+ * @copyright 	2005-2016, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reused from the Mantis project) 
  * @filesource  cfield_mgr.class.php
  * @link 		    http://testlink.sourceforge.net
@@ -38,8 +38,6 @@ if( count($cf_files) > 0 )
 class cfield_mgr extends tlObject
 {
   const DEFAULT_INPUT_SIZE = 50;
-  const MULTISELECTIONLIST_WINDOW_SIZE = 5;
-  const LISTBOX_WINDOW_SIZE = 5;
   const TEXTAREA_MAX_SIZE = 255;
 
   // EDIT HERE IF YOU CUSTOMIZE YOUR DB
@@ -196,8 +194,11 @@ class cfield_mgr extends tlObject
     // possible_values column on custom_fields table
     // 0 -> no limit
     var $max_length_possible_values;
-    
-    
+
+    var $decode;
+    var $html_date_input_suffix = array('input' => true,'hour' => true,
+                                        'minute' => true,'second' => true);
+
 	/**
 	 * Class constructor
 	 * 
@@ -230,7 +231,11 @@ class cfield_mgr extends tlObject
 
     $this->max_length_value = $cfConfig->max_length;
     $this->max_length_possible_values = $this->max_length_value;
-	}
+	
+    $this->decode['nodes'] = $this->tree_manager->get_available_node_types();
+
+
+  }
 
 
   function getSizeLimit()
@@ -280,13 +285,12 @@ class cfield_mgr extends tlObject
 	 */ 
 	function get_allowed_nodes()
 	{
-		$allowed_nodes=array();
-		$tl_node_types=$this->tree_manager->get_available_node_types();
+		$allowed_nodes = array();
 		foreach($this->node_types as $verbose_type )
 		{
-			$allowed_nodes[$verbose_type]=$tl_node_types[$verbose_type];
+			$allowed_nodes[$verbose_type] = $this->decode['nodes'][$verbose_type];
 		}
-		return($allowed_nodes);
+		return $allowed_nodes;
 	}
 
 	/**
@@ -322,17 +326,17 @@ class cfield_mgr extends tlObject
   */
   function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   {
-    $enabled_mgmt=array();
-    $tl_node_types=$this->tree_manager->get_available_node_types();
+    $enabled_mgmt = array();
+    $tl_node_types = $this->decode['nodes'];
     foreach($this->node_types as $verbose_type)
     {
-        $type_id=$tl_node_types[$verbose_type];
-        if( isset($map_node_id_cfg[$verbose_type]) )
-        {
-          $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
-        }
+      $type_id = $tl_node_types[$verbose_type];
+      if( isset($map_node_id_cfg[$verbose_type]) )
+      {
+        $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
+      }
     }
-    return($enabled_mgmt);
+    return $enabled_mgmt;
   }
 
 
@@ -441,12 +445,11 @@ class cfield_mgr extends tlObject
 
     if( !is_null($node_type) )
     {
-        $hash_descr_id = $this->tree_manager->get_available_node_types();
-        $node_type_id=$hash_descr_id[$node_type];
-
-        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                             " AND CFNT.node_type_id=" . $this->db->prepare_int($node_type_id);
+      $additional_join .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+                          " AND CFNT.node_type_id=" . 
+                          $this->db->prepare_int($this->decode['nodes'][$node_type]);
     }
+
     if( !is_null($node_id) )
     {
       $additional_values .= ",CFDV.value AS value,CFDV.node_id AS node_id";
@@ -489,15 +492,14 @@ class cfield_mgr extends tlObject
          " FROM {$this->object_table} CF " .
          " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
          $additional_join .
-         " WHERE CFTP.testproject_id={$tproject_id} " .
-         " AND   CFTP.active=1     " .
-         " AND   CF.show_on_design=1     " .
+         " WHERE CFTP.testproject_id=" . intval($tproject_id) .
+         " AND   CFTP.active=1 AND CF.show_on_design=1     " .
          " AND   CF.enable_on_design={$enabled} " .
          $additional_filter .
          " ORDER BY display_order,CF.id ";
 
     $map = $this->db->fetchRowsIntoMap($sql,$access_key);
-    return($map);
+    return $map;
   }
 
 
@@ -570,17 +572,21 @@ class cfield_mgr extends tlObject
   		case 'multiselection list':
    			$t_values = explode( '|', $p_field_def['possible_values']);
    			$t_values_count = count($t_values);
+        $window_size = intval($size);
+        if($t_values_count < $window_size)
+        {
+          $window_size = $t_values_count;
+        }  
+
        	if( $verbose_type == 'list' )
        	{
         	// get maximum allowed window size for lists
-        	$window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
-        	$t_multiple=' ';
+        	// $window_size = intval($size) > 1 ? $size : self::LISTBOX_WINDOW_SIZE;
+          $t_multiple=' ';
       	  $t_name_suffix='';
        	}
        	else
        	{
-          // get maximum allowed window size for mutliselection lists
-        	$window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
         	$t_name_suffix='[]';
         	$t_multiple=' multiple="multiple" ';
        	}
@@ -949,7 +955,7 @@ class cfield_mgr extends tlObject
 
 
     $sql="SELECT CF.*,NT.description AS node_description,NT.id AS node_type_id, " .
-         "       CFTP.display_order, CFTP.active, CFTP.location,CFTP.required " .
+         "       CFTP.display_order, CFTP.active, CFTP.location,CFTP.required,CFTP.monitorable " .
          " FROM {$this->object_table} CF, " .
          "      {$this->tables['cfield_testprojects']} CFTP, " .
          "      {$this->tables['cfield_node_types']} CFNT, " .
@@ -1580,11 +1586,8 @@ function name_is_unique($id,$name)
 
     if( !is_null($node_type) )
     {
-   		$hash_descr_id = $this->tree_manager->get_available_node_types();
-      $node_type_id=$hash_descr_id[$node_type];
-
-      $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                           " AND CFNT.node_type_id={$node_type_id} ";
+      $additional_join .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+                          " AND CFNT.node_type_id=" . $this->decode['nodes'][$node_type];
     }
     
     if( !is_null($node_id) && !is_null($execution_id) && !is_null($testplan_id) )
@@ -1637,7 +1640,6 @@ function name_is_unique($id,$name)
           $order_clause="ORDER BY EXECU.tcversion_id,exec_status,exec_id";
             
           $fetchMethod='fetchArrayRowsIntoMap';
-    
         }
     }
 
@@ -1646,6 +1648,7 @@ function name_is_unique($id,$name)
     	$additional_filter .= " AND CF.id= " . intval($location) . " ";
     }
 
+    
     $sql = "SELECT {$base_values} CFTP.display_order,CFTP.location,CFTP.required" .
            $additional_values .
            " FROM {$this->tables['custom_fields']} CF " .
@@ -1667,7 +1670,6 @@ function name_is_unique($id,$name)
         $map = $this->db->$fetchMethod($sql,$access_key,'id');
       break;
     }
-    
     return $map;
   }
 
@@ -1821,14 +1823,10 @@ function name_is_unique($id,$name)
   function _build_cfield($hash,$cf_map)
   {
     $localesDateFormat = config_get('locales_date_format');
-  
     $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
 	  $date_format = str_replace('%', '', $localesDateFormat[$locale]);
   	
     // carved in the stone
-    $html_date_input_suffix = array('input' => true,'hour' => true,
-                                    'minute' => true,'second' => true);
-
     $cf_prefix=$this->name_prefix;
     $len_cfp = tlStringLen($cf_prefix);
     $cftype_pos=2;
@@ -1857,10 +1855,14 @@ function name_is_unique($id,$name)
           // 
           // When using Custom Fields on Test Spec:
           // key has this format (for every type except date )
-          // custom_field_0_10 for every type except for type date.
+          // custom_field_0_10 for every type except for type date & datetime.
           //
           // For date custom fields:
-          // custom_field_8_10_day, custom_field_8_10_month, custom_field_8_10_year
+          // custom_field_8_10_input
+          //
+          // For datetime custom fields
+          // custom_field_8_10_input
+          // custom_field_8_10_hour, custom_field_8_10_minute, ..._second
           //
           // After explode()
           // Position 2: CF type
@@ -1878,7 +1880,7 @@ function name_is_unique($id,$name)
           $dummy=explode('_',$key);
           $last_idx=count($dummy)-1;
           $the_value=$value;
-          if( isset($html_date_input_suffix[$dummy[$last_idx]]) )
+          if( isset($this->html_date_input_suffix[$dummy[$last_idx]]) )
           {
             $the_value=array();
             if( isset($cfield[$dummy[$cfid_pos]]) )
@@ -1922,19 +1924,18 @@ function name_is_unique($id,$name)
             }
             else
             {
-				$parsed_value = split_localized_date($value['input'], $date_format);
-				if($parsed_value != null) {
-					$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
-					$cfield[$field_id]['cf_value'] = $parsed_value;
-				} else {
-					$cfield[$field_id]['cf_value']='';
-				}
-			}
+      				$parsed_value = split_localized_date($value['input'], $date_format);
+      				if($parsed_value != null) {
+      					$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
+      					$cfield[$field_id]['cf_value'] = $parsed_value;
+      				} else {
+      					$cfield[$field_id]['cf_value']='';
+      				}
+      			}
           break;
           
           case 'datetime':
-          	
-			if ($value['input'] == '') {
+      			if ($value['input'] == '') {
               $cfield[$field_id]['cf_value']='';
             }
             else
@@ -2662,7 +2663,7 @@ function getByLinkID($linkID, $options=null)
  */
 function buildHTMLInputName($cf,$name_suffix)
 {
-	return "{$this->name_prefix}{$cf['type']}_{$cf['id']}{$name_suffix}";
+  return "{$this->name_prefix}{$cf['type']}_{$cf['id']}{$name_suffix}";
 }
 
 
@@ -2683,6 +2684,7 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=
   {
     $lbl_upd = lang_get('update_hint');
 		$cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
+   
     $NO_WARNING_IF_MISSING=true;
     $openTag = $my['opt']['addTable'] ? "<table>" : '';
     $closeTag = $my['opt']['addTable'] ? "</table>" : '';
@@ -2734,16 +2736,37 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=
 
 /**
  * 
- *
+ * @used-by html_inputs(), html_table_inputs()
  */
 function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 {
  	if( !is_null($input_values) )
-    {
+  {
+    $dateFormatDomain = config_get('locales_date_format');
+  
+    // It will be better remove this coupling
+    $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+    $date_format = str_replace('%', '', $dateFormatDomain[$locale]);
+
 		foreach($cf_map as &$cf_info)
 		{
-			$value=null;
-			$cf_info['html_input_name'] = $this->buildHTMLInputName($cf_info,$name_suffix);
+			$value = null;
+      $dtinname = null;
+      $verbose_type = trim($this->custom_field_types[$cf_info['type']]);
+      $cf_info['html_input_name'] = $this->buildHTMLInputName($cf_info,$name_suffix);
+
+      switch($verbose_type)
+      {
+        case 'date':
+          $cf_info['html_input_name'] .= '_input';
+        break;
+
+        case 'datetime':
+          $dtinname = $cf_info['html_input_name'];
+          $cf_info['html_input_name'] .= '_input';
+        break;
+      }
+			
 			if (isset($input_values[$cf_info['html_input_name']])) 
 			{
 				$value = $input_values[$cf_info['html_input_name']];
@@ -2752,40 +2775,59 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 			{
 				$value = $cf_info['value'];
 			}
-			$verbose_type = trim($this->custom_field_types[$cf_info['type']]);
-			if ($verbose_type == 'date') 
+	
+      switch($verbose_type)
 			{
-			    // if cf is a date field, convert the three given values to unixtime format
-				$kd = array();
-				$kd['day'] = array('input' => $cf_info['html_input_name'] . '_day', 'value' => -1);
-				$kd['month'] = array('input' => $cf_info['html_input_name'] . '_month', 'value' => -1);
-				$kd['year'] = array('input' => $cf_info['html_input_name'] . '_year', 'value' => -1);
-				
-				$doIt = true;
-				foreach($kd as &$date_part)
-				{
-					if( !isset($input_values[$date_part['input']]) )
-					{
-						$doIt = false;
-						break;
-					}
-					$date_part['value'] = $input_values[$date_part['input']];
-		
-				}
-			    if ($doIt)
-			    {
-			     	$value = mktime(0, 0, 0, $kd['month']['value'],$kd['day']['value'], $kd['year']['value']);
-			    }
-			}
+        case 'date':
+          if ( ($value != 0) && ($value != '') )
+          {
+            $parsed = split_localized_date($value, $date_format);
+            if($parsed != null) 
+            {
+              $value = mktime(0,0,0,$parsed['month'],$parsed['day'],$parsed['year']);
+            } 
+            else 
+            {
+              $value = '';
+            }
+          }
+        break;
+    
+        case 'datetime':
+          if ( ($value != 0) && ($value != '') )
+          {
+            $parsed = split_localized_date($value, $date_format);
+            if($parsed != null) 
+            {
+              $vtime['hour'] = $input_values[$dtinname . '_hour'];
+              $vtime['minute'] = $input_values[$dtinname . '_minute'];
+              $vtime['second'] = $input_values[$dtinname . '_second'];
+
+              if($vtime['hour'] == -1 || $vtime['minute'] == -1 || 
+                 $vtime['second'] == -1) 
+              {
+                $vtime['hour'] = $vtime['minute'] = $vtime['second'] = 0;
+              }
+              $value = mktime($vtime['hour'], $vtime['minute'],$vtime['second'],
+                              $parsed['month'],$parsed['day'],$parsed['year']);
+            } 
+            else 
+            {
+              $value = '';
+            }
+          }
+        break;
+     	}
 			
-			if (!is_null($value) && is_array($value)){
-			    $value = implode("|", $value);
+			if (!is_null($value) && is_array($value))
+      {
+			  $value = implode("|", $value);
 			}
 			
 			$cf_info['value'] = $value;
 		}
-    }
-    return $cf_map;
+  }
+  return $cf_map;
 }
 
 
@@ -2853,7 +2895,119 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
     return($this->db->fetchRowsIntoMap($sql,'id'));
   }
 
+ /**
+   *
+   */ 
+  function setMonitorable($tproject_id,$cfieldSet,$val)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+    if(is_null($cfieldSet))
+    {
+      return;
+    }
+    
+    $safe = new stdClass();
+    $safe->tproject_id = intval($tproject_id);
+    $safe->val = (intval($val) > 0) ? 1 : 0;
+
+    $field = 'monitorable';
+
+    $info = $this->tree_manager->get_node_hierarchy_info($safe->tproject_id);
+    $auditMsg = $val ? "audit_cfield_{$field}_on" : "audit_cfield_{$field}_off";
+    foreach($cfieldSet as $field_id)
+    {
+      $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_testprojects']} " .
+           " SET {$field}=" . $safe->val .
+           " WHERE testproject_id=" . $safe->tproject_id .
+           " AND field_id=" . $this->db->prepare_int($field_id);
+
+      if ($this->db->exec_query($sql))
+      {
+        $cf = $this->get_by_id($field_id);
+        if($cf)
+        {
+          logAuditEvent(TLS($auditMsg,$cf[$field_id]['name'],$info['name']),
+                        "SAVE",$safe->tproject_id,"testprojects");
+        }                       
+      }
+    }
+  }
+ 
+  /**
+   *
+   *
+   */
+  function cfdate2mktime($value)
+  {
+    if (($value == 0) || ($value == ''))
+    {
+      return '';
+    }
+    else
+    {    
+      $localesDateFormat = config_get('locales_date_format');
+      $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+      $date_format = str_replace('%', '', $localesDateFormat[$locale]);
+
+      $pvalue = split_localized_date($value, $date_format);
+      if($pvalue != null) 
+      {
+        $pvalue = mktime(0, 0, 0, $pvalue['month'], $pvalue['day'], $pvalue['year']);
+        return $pvalue;
+      } 
+      else 
+      {
+        return '';
+      }
+    }
+  }
+
+  /**
+   * value DD/MM/YYYY HH:MM:SS
+   * 
+   *
+   */
+  /*
+  function cfdatetime2mktime($value)
+  {
+    if ($value == '') 
+    {
+      return '';
+    }
+    else
+    {
+      $localesDateFormat = config_get('locales_date_format');
+      $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+      $date_format = str_replace('%', '', $localesDateFormat[$locale]);
+
+      // first replace multiple spaces with just one
+      $pc = explode(' ',$value);
+      $dpart = $pc[0];
+      $tpart = $pc[1];
+      $pvalue = split_localized_date($dpart, $date_format);
+      if($pvalue != null) 
+      {
+        // parse time part
+        $tt = explode(':', $tpart)
+
+        if($value['hour'] == -1 || $value['minute'] == -1 || $value['second'] == -1) {
+                  $value['hour'] = $value['minute'] = $value['second'] = 0;
+        
+
+        $cfvalue = mktime($value['hour'], $value['minute'], 
+                                              $value['second'],
+                                                          $pvalue['month'], $parsed_value['day'], 
+                                                          $parsed_value['year']);
+      }
+      else
+      {
+        return '';
+      }  
+
+    } 
+  }
+  */
 
     
 } // end class

@@ -49,7 +49,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       <br />
       <div class="exec_testsuite_details" style="width:95%;">
       <span class="legend_container">{$labels.details}</span><br />
-		  {$tsuite_info[$tc_id].details}
+		  {if $gui->testDesignEditorType == 'none'}{$tsuite_info[$tc_id].details|nl2br}{else}{$tsuite_info[$tc_id].details}{/if}
 		  </div>
 
 		  {if $ts_cf_smarty[$tc_id] != ''}
@@ -75,7 +75,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <br />  
   {$drawNotRun=0}
  	{if $cfg->exec_cfg->show_last_exec_any_build}
-   	{$abs_last_exec=$gui->map_last_exec_any_build.$tcversion_id}
+    {$abs_last_exec=$gui->map_last_exec_any_build.$tcversion_id}
  		{$my_build_name=$abs_last_exec.build_name|escape}
  		{$show_current_build=1}
  		
@@ -107,7 +107,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   		{else}
   			  {$labels.last_execution}
   			  {if $show_current_build} {$labels.exec_any_build} {/if}
-  			  {* {$title_sep_type3} {$exec_build_title} *}
   		{/if}
   		</div>
 
@@ -117,7 +116,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
 			    {$status_code=$abs_last_exec.status}
      			<div class="{$tlCfg->results.code_status.$status_code}">
-     			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
+          {$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
      			{$labels.test_exec_by} {$title_sep} 
   				
@@ -134,6 +133,37 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
      			{$title_sep_type3}
      			{$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
      			</div>
+
+          {* ///////////////////////////////////////// *}
+        {if $abs_last_exec.execution_notes neq ""}
+        <script>
+       {* Initialize panel if notes exists. There might be multiple note panels
+       visible at the same time, so we need to collect those init functions in
+       an array and execute them from Ext.onReady(). See execSetResults.tpl *}
+        var panel_init = function(){
+            var p = new Ext.Panel({
+            title:'{$labels.exec_notes}',
+            collapsible:true,
+            collapsed: true,
+            baseCls: 'x-tl-panel',
+            renderTo:'latest_exec_any_build_notes'{literal},
+            width:'100%',
+            html:''
+            });
+            p.on({'expand' : 
+                   function(){load_notes(this,{/literal}{$abs_last_exec.execution_id});}
+                 });
+        };
+        panel_init_functions.push(panel_init);
+        </script>
+        <div id="latest_exec_any_build_notes" style="margin:8px;">
+        </div>
+        <hr>
+        {/if}
+        {* ///////////////////////////// *}
+
+
+
   		  {else}
           {$drawNotRun=1}
    		  {/if}
@@ -246,7 +276,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
             {$deletedUserString}
   				{/if}  
   				</td>
-  				<td class="{$tlCfg->results.code_status.$tc_status_code}" style="text-align:center">
+  				<td class="{$tlCfg->results.code_status.$tc_status_code}" 
+              style="text-align:center" title="(ID:{$tc_old_exec.execution_id})">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
   				
@@ -281,11 +312,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
        		  <td align="center">
        		  {if $tc_old_exec.build_is_open}
        		    <a href="javascript:open_bug_add_window({$gui->tproject_id},
-              {$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},'link')">
+              {$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},0,'link')">
        		    <img src="{$tlImages.bug_link_tl_to_bts}" title="{$labels.bug_link_tl_to_bts}" style="border:none" /></a>
        		    &nbsp;&nbsp;
               {if $gui->tlCanCreateIssue}
-       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},'create')">
+       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},0,'create')">
       			    <img src="{$tlImages.bug_create_into_bts}" title="{$labels.bug_create_into_bts}" style="border:none" /></a>
               {/if}
        		  {else}
@@ -449,7 +480,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
              args_cfg=$cfg}
 
     {if $tc_exec.can_be_executed}
-      {include file="execute/inc_exec_controls.tpl"
+      {include file="execute/{$tplConfig.inc_exec_controls}"
                args_save_type='single'
                args_input_enable_mgmt=$input_enabled_disabled
                args_tcversion_id=$tcversion_id

@@ -11,3 +11,5 @@ Disclaimer:
 There are no SLAs on the support agreements. 
 You're buying the privilege of having your questions looked at first in order of support level. 
 You're doing this, because you find TestLink a valuable tool!
+
+contact: testlink.forum@gmail.com

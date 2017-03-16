@@ -2,16 +2,11 @@
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- */
-
-/** 
  * Error codes for the TestlinkXMLRPCServer
  * 
  * @author    Asiel Brumfield <asielb@users.sourceforge.net>
  * @package   TestlinkAPI
  *
- * @internal revisions
- * @since 1.9.14
  * 
  */
  
@@ -104,6 +99,17 @@ define('NODEID_INVALID_DATA_TYPE_STR', lang_get('API_NODEID_INVALID_DATA_TYPE',n
 define('PLATFORM_NAME_DOESNOT_EXIST', 235);
 define('PLATFORM_NAME_DOESNOT_EXIST_STR', lang_get('API_PLATFORM_NAME_DOESNOT_EXIST',null,1));
 
+define('NO_MATCH', 236);
+define('NO_MATCH_STR', lang_get('API_NO_MATCH',null,1));
+
+define('INVALID_TIMESTAMP', 237);
+define('INVALID_TIMESTAMP_STR', lang_get('API_INVALID_TIMESTAMP',null,1));
+
+define('TSUITE_NOT_ON_TCASE_TPROJ', 238);
+define('TSUITE_NOT_ON_TCASE_TPROJ_STR', 
+	   lang_get('API_TSUITE_NOT_ON_TCASE_TPROJ',null,1));
+
+
 /**
  * 2000 level - authentication errors
  */
@@ -111,6 +117,9 @@ define('INVALID_AUTH', 2000);
 define('INVALID_AUTH_STR', lang_get('API_INVALID_AUTH',null,1));
 define('INSUFFICIENT_RIGHTS', 2010);
 define('INSUFFICIENT_RIGHTS_STR', lang_get('API_INSUFFICIENT_RIGHTS',null,1));
+define('UPDATER_INSUFFICIENT_RIGHTS', 2015);
+define('UPDATER_INSUFFICIENT_RIGHTS_STR', 
+	    lang_get('API_UPDATER_INSUFFICIENT_RIGHTS',null,1));
 
 
 /**
@@ -159,6 +168,8 @@ define('LINKED_FEATURE_ALREADY_EXISTS_STR', lang_get('API_LINKED_FEATURE_ALREADY
 define('OTHER_VERSION_IS_ALREADY_LINKED', 3046);
 define('OTHER_VERSION_IS_ALREADY_LINKED_STR', lang_get('API_OTHER_VERSION_IS_ALREADY_LINKED',null,1));
 
+define('TCVERSIONID_NOT_IN_TPLANID', 3047);
+define('TCVERSIONID_NOT_IN_TPLANID_STR', lang_get('API_TCVERSIONID_NOT_IN_TPLANID',null,1));
 
 
 /**
@@ -301,6 +312,11 @@ define('CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT_STR', lang_get('API_CUSTOMFIELD_
 define('NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES',9004);
 define('NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES_STR', lang_get('API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES',null,1));
 
+define('NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES',9005);
+define('NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES_STR', lang_get('API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES',null,1));
+
+define('NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS',9006);
+define('NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS_STR', lang_get('API_NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS',null,1));
 
 
 
@@ -339,6 +355,8 @@ define('PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK',12001);
 define('PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK_STR', lang_get('API_PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK',null,1));
 
 
-
-
-?>
+/**
+ * 13000 level - ITS
+ */
+define('ITS_NOT_FOUND',13000);
+define('ITS_NOT_FOUND_STR', lang_get('API_ITS_NOT_FOUND',null,1));

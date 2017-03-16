@@ -3,7 +3,7 @@ Testlink: smarty template -
 @filesource usersAssign.tpl
 
 @internal revisions
-@since 1.9.14
+@since 1.9.15
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
@@ -11,6 +11,8 @@ Testlink: smarty template -
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl" css_only=1}
+
+{include file="bootstrap.inc.tpl"}
 
 <script language="JavaScript" type="text/javascript">
 /*
@@ -69,30 +71,18 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 </script>
 
 {if $tlCfg->gui->usersAssign->pagination->enabled}
-<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
-<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
-<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
-
-<script type="text/javascript" language="javascript" class="init">
-$(document).ready(function() {
-  $('#item_view').DataTable({ "lengthMenu": [ [25, 50, 75, -1], [25, 50, 75, "All"] ] });
-} );
-</script>
+  {$ll = $tlCfg->gui->usersAssign->pagination->length}
+  {include file="DataTables.inc.tpl" DataTablesOID="item_view" DataTableslengthMenu=$ll}
 {/if}
-
 
 </head>
 <body>
 
-<h1 class="title">{$labels.title_user_mgmt} - {$labels.title_assign_roles}</h1>
+<h1 class="title">{$gui->main_title}</h1>
 {$umgmt="lib/usermanagement"}
 {$my_feature_name=''}
 
-{***** TABS *****}
-{$highlight=$gui->highlight}
-{$grants=$gui->grants}
-
-{include file="usermanagement/tabsmenu.tpl"}
+{include file="usermanagement/menu.inc.tpl"}
 <div class="workBack">
 
 {include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
@@ -166,6 +156,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
     	    {$globalRoleName=$user->globalRole->name}
     			{$uID=$user->dbID}
 
+
           {* get role name to add to inherited in order to give better information to user *}
           {$effective_role_id=$gui->userFeatureRoles[$uID].effective_role_id}
           {if $gui->userFeatureRoles[$uID].is_inherited == 1}
@@ -191,18 +182,30 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
             {/if}
           >
 		      {foreach key=role_id item=role from=$gui->optRights}
-            <option value="{$role_id}"
-		          {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
-		               $gui->userFeatureRoles[$uID].is_inherited==0) || 
-		               ($role_id == $smarty.const.TL_ROLES_INHERITED && 
-		                $gui->userFeatureRoles[$uID].is_inherited==1)}
-		            selected="selected" 
-              {/if} >
-                {$role->getDisplayName()|escape}
-                {if $role_id == $smarty.const.TL_ROLES_INHERITED}
-                  {$inherited_role_name|escape} 
-                {/if}
-		        </option>
+            
+            {$applySelected = ''}
+            {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
+                   $gui->userFeatureRoles[$uID].is_inherited==0) || 
+                   ($role_id == $smarty.const.TL_ROLES_INHERITED && 
+                    $gui->userFeatureRoles[$uID].is_inherited==1)}
+                {$applySelected = ' selected="selected" '} 
+            {/if}
+
+            /* For system consistency we need to remove admin role from selection */
+            {$removeRole = 0}
+            {if $role_id == $smarty.const.TL_ROLES_ADMIN && $applySelected == '' }
+                {$removeRole = 1}
+            {/if}             
+  
+            {if !$removeRole }
+              <option value="{$role_id}" {$applySelected}>
+                  {$role->getDisplayName()|escape}
+                  {if $role_id == $smarty.const.TL_ROLES_INHERITED}
+                    {$inherited_role_name|escape} 
+                  {/if}
+  		        </option>
+            {/if}
+
 		      {/foreach}
 			</select>
           {if $user->globalRole->dbID == $smarty.const.TL_ROLES_ADMIN}

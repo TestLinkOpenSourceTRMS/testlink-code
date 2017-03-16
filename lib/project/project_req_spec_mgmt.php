@@ -21,6 +21,11 @@ $gui->main_descr = lang_get('testproject') .  TITLE_SEP . $tproject_name . TITLE
 $gui->tproject_id = $tproject_id;
 $gui->refresh_tree = 'no';
 
+$uo = $_SESSION['currentUser'];
+$gui->grants = new stdClass();
+$gui->grants->modify = $uo->hasRight($db,'mgt_modify_req');
+$gui->grants->ro = $uo->hasRight($db,'mgt_view_req');
+
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display('requirements/project_req_spec_mgmt.tpl');
@@ -30,5 +35,6 @@ $smarty->display('requirements/project_req_spec_mgmt.tpl');
  */
 function checkRights(&$db,&$user)
 {
-	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  return ($user->hasRight($db,'mgt_view_req') || 
+		  $user->hasRight($db,'mgt_modify_req'));
 }

@@ -18,11 +18,8 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2017, TestLink community
  * @link        http://www.testlink.org
- *
- * @internal revisions
- * @since 1.9.13
  *
  *
  **/
@@ -82,7 +79,24 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 /** @var string used to have (when needed) a possibility to identify different TL instances
     @since 1.9.4 used on mail subject when mail logger is used
  */
-$tlCfg->instance_id = 'Main TestLink Instance';
+$tlCfg->instance_name = 'Main TestLink Instance';
+
+// do not use blanks or special characters, use a short string
+$tlCfg->instance_id = 'TLM';
+
+
+/**
+ * Copied from MantisBT
+ *
+ * Specifies the path under which a cookie is visible
+ * All scripts in this directory and its sub-directories will be able
+ * to access MantisBT cookies.
+ * It is recommended to set this to the actual MantisBT path.
+ * @link http://php.net/function.setcookie
+ * @global string $tlCfg->cookie_path
+ */
+ $tlCfg->cookie_path = '/';
+
 
 /* [LOCALIZATION] */
 
@@ -170,6 +184,9 @@ $tlCfg->notifications->userSignUp->to->users = null; // i.e. array('login01','lo
 /* [LOGGING] */
 
 /** Error reporting - do we want php errors to show up for users */
+/** configure on custom_config.inc.php */
+/** error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_WARNING); */
+/** error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING); */
 error_reporting(E_ALL);
 
 /** @var string Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) 
@@ -285,6 +302,12 @@ $g_smtp_connection_mode = '';
 $g_smtp_port = 25;                        
 
 
+/**
+ * @see https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting
+ *      Opportunistic TLS
+ */
+$g_SMTPAutoTLS = false;
+
 // ----------------------------------------------------------------------------
 /* [User Authentication] */
 
@@ -295,10 +318,7 @@ $g_smtp_port = 25;
  *  'LDAP' => use password from LDAP Server
  */
 $tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'allowPasswordManagement' => true) ,
-										 'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
-
-
-// $tlCfg->authentication['domain'] = array('DB','LDAP')
+                     'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
 
 /* Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';
@@ -310,30 +330,54 @@ $tlCfg->authentication['method'] = 'DB';
 // null => only check password IS NOT EMPTY
 // 
 // $tlCfg->passwordChecks = array('minlen' => 8,'maxlen' => 20,'number' => true,'letter' => true,
-//	                              'capital' => true, 'symbol' => true);
+//                                'capital' => true, 'symbol' => true);
 $tlCfg->passwordChecks = null;
+
+// Applies ONLY to the HTML input.
+// If auth method is DB, password will be stored as MD5 HASH that requires 32 chars (128 bits)
+$tlCfg->loginPagePasswordMaxLenght = 40;
+
+/**
+ * Standard logout url, used also when SSO is used and hint to skip SSO is used.
+ * '' => use standard TestLink page
+ */
+$tlCfg->logoutUrl = '';
 
 
 /**
  * Single Sign On authentication
- * This will be used with $tlCfg->authentication['method'] <<= INCOMPLETE COMMENT
  *
- * This works with apache webserver
+ * SSO_method: CLIENT_CERTIFICATE, tested with Apache Webserver
+ * SSP_method: WEBSERVER_VAR, tested with Apache and Shibboleth Service Provider.
  */
 $tlCfg->authentication['SSO_enabled'] = false; 
-$tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
-$tlCfg->authentication['SSO_uid_field'] = 'SSL_CLIENT_S_DN_Email';
+$tlCfg->authentication['SSO_logout_destination'] = 'YOUR LOGOUT DESTINATION';
+
+// Tested with Apache Webserver
+//$tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
+//$tlCfg->authentication['SSO_uid_field'] = 'SSL_CLIENT_S_DN_Email';
+
+// Tested with Apache and Shibboleth Service Provider 
+//$tlCfg->authentication['SSO_method'] = 'WEBSERVER_VAR';
+//$tlCfg->authentication['SSO_uid_field'] = 'REMOTE_USER';
+//$tlCfg->authentication['SSO_user_target_dbfield'] = 'email';
 
 
 
-/** LDAP authentication credentials */
-$tlCfg->authentication['ldap_server'] = 'localhost';
-$tlCfg->authentication['ldap_port'] = '389';
-$tlCfg->authentication['ldap_version'] = '3'; // could be '2' in some cases
-$tlCfg->authentication['ldap_root_dn'] = 'dc=mycompany,dc=com';
-$tlCfg->authentication['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP binding
-$tlCfg->authentication['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
-$tlCfg->authentication['ldap_tls'] = false; // true -> use tls
+
+/** 
+ * LDAP authentication credentials, Multiple LDAP Servers can be used. 
+ * User will be authenticaded against each server (one after other using array index order)
+ * till authentication succeed or all servers have been used.
+ */
+$tlCfg->authentication['ldap'] = array();
+$tlCfg->authentication['ldap'][1]['ldap_server'] = 'localhost';
+$tlCfg->authentication['ldap'][1]['ldap_port'] = '389';
+$tlCfg->authentication['ldap'][1]['ldap_version'] = '3'; // could be '2' in some cases
+$tlCfg->authentication['ldap'][1]['ldap_root_dn'] = 'dc=mycompany,dc=com';
+$tlCfg->authentication['ldap'][1]['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP binding
+$tlCfg->authentication['ldap'][1]['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding
+$tlCfg->authentication['ldap'][1]['ldap_tls'] = false; // true -> use tls
 
 // Following configuration parameters are used to build 
 // ldap filter and ldap attributes used by ldap_search()
@@ -344,10 +388,13 @@ $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
 // This can be used to manage situation like explained on post on forum:
 // ActiveDirectory + users in AD group
 // 
-$tlCfg->authentication['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
-$tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
+$tlCfg->authentication['ldap'][1]['ldap_organization'] = ''; // e.g. '(organizationname=*Traffic)'
+$tlCfg->authentication['ldap'][1]['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
 
-
+// Configure following fields in custom_config.inc.php according your configuration
+$tlCfg->authentication['ldap'][1]['ldap_email_field'] = 'mail';
+$tlCfg->authentication['ldap'][1]['ldap_firstname_field'] = 'givenname';
+$tlCfg->authentication['ldap'][1]['ldap_surname_field'] = 'sn';
 
 
 // Follows Mantisbt idea.
@@ -358,13 +405,6 @@ $tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Ac
 // name
 // surname
 $tlCfg->authentication['ldap_automatic_user_creation'] = false;
-
-// Configure following fields in custom_config.inc.php according your configuration
-$tlCfg->authentication['ldap_email_field'] = 'mail';
-$tlCfg->authentication['ldap_firstname_field'] = 'givenname';
-$tlCfg->authentication['ldap_surname_field'] = 'sn';
-
-
 
 
 /** Enable/disable Users to create accounts on login page */
@@ -431,6 +471,8 @@ $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . D
 $tlCfg->logo_login = 'tl-logo-transparent-25.png';
 $tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
 
+/** Height of the navbar always displayed  */
+$tlCfg->navbar_height = 70;
 
 /** Login page could show an informational text */
 $tlCfg->login_info = ''; // Empty by default
@@ -443,10 +485,17 @@ $tlCfg->login_info = ''; // Empty by default
 $tlCfg->gui->projectView = new stdClass();
 $tlCfg->gui->projectView->pagination = new stdClass();
 $tlCfg->gui->projectView->pagination->enabled = true;
+$tlCfg->gui->projectView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 
 $tlCfg->gui->usersAssign = new stdClass();
 $tlCfg->gui->usersAssign->pagination = new stdClass();
 $tlCfg->gui->usersAssign->pagination->enabled = true;
+$tlCfg->gui->usersAssign->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
+
+$tlCfg->gui->planView = new stdClass();
+$tlCfg->gui->planView->pagination = new stdClass();
+$tlCfg->gui->planView->pagination->enabled = true;
+$tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 
 
 /** 
@@ -543,21 +592,13 @@ $tlCfg->dashboard_precision = 2;
  * Every element is a mp with this configuration keys:
  *
  * 'type':
- *        'fckeditor'  ==> will be deprecated in future versions
  *        'ckeditor'
  *        'tinymce'    ==> will be deprecated in future versions
  *        'none' -> use plain text area input field
  * 'toolbar': only applicable for type = 'fckeditor', 'ckeditor'
  *      name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
- *      TestLink stores own definitions in <testlink_dir>/cfg/tl_fckeditor_config.js
  *      TestLink stores own definitions in <testlink_dir>/cfg/tl_ckeditor_config.js
  *
- * 'configFile': only applicable for type = 'fckeditor'
- *      See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath
- * 'height': the height in px for FCKEditor
- * 'width': the width in px for FCKEditor
- * 'cols': the number of cols for tinymce and none
- * 'rows': the number of rows for tinymce and none
  *
  * The next keys/areas are supported:
  *    'all' (default setting),
@@ -586,7 +627,7 @@ $tlCfg->dashboard_precision = 2;
 $tlCfg->gui->text_editor = array();
 $tlCfg->gui->text_editor['all'] = array('type' => 'fckeditor',
                                       'toolbar' => 'tl_default',
-                                      'configFile' => 'cfg/tl_fckeditor_config.js',);
+                                      'configFile' => 'cfg/tl_ckeditor_config.js',);
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 */
 
@@ -720,7 +761,9 @@ $tlCfg->document_generator->css_template = 'css/tl_documents.css';
 $tlCfg->document_generator->requirement_css_template = 'css/tl_documents.css';
 
 /** Misc settings */
-// Display test case version when creating test spec document
+// Display test case version when creating:
+// - test spec document
+// - test reports
 $tlCfg->document_generator->tc_version_enabled = FALSE;
 
 
@@ -827,6 +870,14 @@ $tlCfg->exec_cfg->exec_mode->tester='assigned_to_me';
 //           same context => test plan,platform, build
 $tlCfg->exec_cfg->exec_mode->new_exec='clean';
 
+
+// @since 1.9.15
+// Before 1.9.15 save & move to next worked JUST inside
+// a test suite => save_and_move = 'limited'
+// 1.9.15 will move on whole test project
+// save_and_move = 'unlimited'
+$tlCfg->exec_cfg->exec_mode->save_and_move='unlimited';
+
 /** User filter in Test Execution navigator - default value */
 // logged_user -> combo will be set to logged user
 // none        -> no filter applied by default
@@ -843,11 +894,20 @@ $tlCfg->exec_cfg->steps_results_layout = 'horizontal';
 // 
 $tlCfg->exec_cfg->steps_exec = true;
 
+// this setting will work on AND mode with: 
+// $tlCfg->exec_cfg->steps_exec
+$tlCfg->exec_cfg->steps_exec_attachments = true;
+
 // When textarea is displayed to allow user to write execution notes
 // at step level, choose what to display:
 // 'empty'
 // 'latest' => latest execution notes.
 $tlCfg->exec_cfg->steps_exec_notes_default = 'empty';
+
+
+// 'empty'
+// 'latest' => latest execution notes.
+$tlCfg->exec_cfg->steps_exec_status_default = 'empty';
 
 // Parameters to show notes/details when entering test execution feature
 // EXPAND: show expanded/open
@@ -874,10 +934,16 @@ $tlCfg->exec_cfg->copyLatestExecIssues->enabled = FALSE;
 // value to set as default
 $tlCfg->exec_cfg->copyLatestExecIssues->default = FALSE;
 
-// you can choose only between this columns
-// 'execution_id,bug_id,builds.name'
+// you can choose only between columns present on
 // (see exec.inc.php, function get_bugs_for_exec())
-$tlCfg->exec_cfg->bugs_order_clause = ' ORDER BY builds.name,bug_id ';
+$tlCfg->exec_cfg->bugs_order_clause = ' ORDER BY builds.name,step_number,bug_id ';
+
+$tlCfg->exec_cfg->features = new stdClass();
+$tlCfg->exec_cfg->features->attachments = new stdClass();
+$tlCfg->exec_cfg->features->attachments->enabled = true;
+$tlCfg->exec_cfg->features->exec_duration = new stdClass();
+$tlCfg->exec_cfg->features->exec_duration->enabled = true;
+
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
@@ -1400,10 +1466,10 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_workflow_status = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = ENABLED;
 
-// filter mode choice disabled for this mode because there are no filters benefiting from it
-$tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;
-
+$tlCfg->tree_filter_cfg->testcases->edit_mode
+      ->filter_workflow_status_values = array();
 
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_testcase_name = ENABLED;
@@ -1415,6 +1481,9 @@ $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_assigned_user = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->advanced_filter_mode_choice = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_inactive_out = FALSE;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->setting_build_close_out = FALSE;
+
 
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLED;
@@ -1475,7 +1544,9 @@ $tlCfg->custom_fields->show_custom_fields_without_value = true;
 $tlCfg->custom_fields->max_length = 255;
 
 // sizes for HTML INPUTS
-// for list, multiselection list => number of items
+// for list, multiselection list 
+//  - MAXIMUM number of items displayed at once
+//  
 // for checkbox,radio is useless
 // Hint: more than 120 produce weird effects on user interface
 //
@@ -1483,11 +1554,11 @@ $tlCfg->custom_fields->sizes = array('string' => 100,
                                      'numeric' => 10,
                                      'float' => 10,
                                      'email' => 100,
-                                     'list' => 5,
+                                     'list' => 1,
                                      'multiselection list' => 5,
-                         'text area' => array('rows' => 6, 'cols' => 80),
-                       'script' => 100,
-                       'server' => 100);
+                                     'text area' => array('rows' => 6, 'cols' => 80),
+                                     'script' => 100,
+                                     'server' => 100);
 
 // Use this variable (on custom_config.inc.php) to define new Custom Field types.
 // IMPORTANT:
@@ -1592,8 +1663,10 @@ $tlCfg->custom_css = null;
  *        ON SAME FOLDER where original template is. 
  * See example below        
  */
-$g_tpl = array();
+$g_tpl = array('inc_exec_controls' => 'inc_exec_img_controls.tpl');
+//$g_tpl = array('inc_exec_controls' => 'inc_exec_controls.tpl');
  
+
 // Example 
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',
 //                 'tcSearchView' => 'myOwnTCSearchView.tpl',
@@ -1601,12 +1674,18 @@ $g_tpl = array();
 
 // ----------------------------------------------------------------------------
 /* [PROXY] */
+/* Used only */ 
+/* mantissoapInterface.class.php */
+/* jirasoapInterface.class.php */
+/* jirarestInterface.class.php */
 $tlCfg->proxy->host = null;
 $tlCfg->proxy->port = null;
 $tlCfg->proxy->login = null;
 $tlCfg->proxy->password = null;
 
 
+/** Plugins feature */
+define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR);
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
@@ -1621,6 +1700,17 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
 {
   require_once( TL_ABS_PATH . 'custom_config.inc.php' );
 }
+
+if( !defined('TL_JQUERY') )
+{
+  define('TL_JQUERY','jquery-2.2.4.min.js' );
+}
+
+if( !defined('TL_DATATABLES_DIR') )
+{
+  define('TL_DATATABLES_DIR','DataTables-1.10.4' );
+}
+
 
 /** root of testlink directory location seen through the web server */
 /*  20070106 - franciscom - this statement it's not 100% right
@@ -1731,4 +1821,16 @@ $tlCfg->gui->title_separator_1 =  $tlCfg->gui_title_separator_1;
 $tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
+
+
+/**
+ * Globals for Events storage
+ */
+$g_event_cache = array();
+
+/**
+ * Globals for Plugins
+ */
+$g_plugin_config_cache = array();
+
 // ----- END OF FILE --------------------------------------------------------------------

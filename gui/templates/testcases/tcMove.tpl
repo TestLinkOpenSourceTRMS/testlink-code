@@ -18,7 +18,7 @@ Purpose: smarty template - move/copy test case
 
 <div class="workBack">
 <h1 class="title">{$labels.title_mv_cp_tc}</h1>
-<form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}">
+<form method="post" action="{$basehref}lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}">
   <input type="hidden" name="testcase_id" id="testcase_id" value="{$gui->testcase_id}">
 
   <p>

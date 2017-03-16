@@ -15,13 +15,13 @@
  *
  * @package     TestLink
  * @author      Andreas Morsing
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @filesource  logger.class.php
  * @link        http://www.testlink.org
  * @since       1.8
  * 
  * @internal revisions
- *
+ * @since 1.9.15
  **/
  
 /**
@@ -192,34 +192,36 @@ class tlLogger extends tlObject
    */
   public function setLogLevelFilterFromVerbose($verboseForLogger)
   {
-    //$loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
 
-    $itemSet = (array)$verboseForLogger;
-    foreach($itemSet as $loggerType => $dummy)
+    if( !is_null($verboseForLogger) )
     {
-      $filter = 0;
-      foreach($dummy as $verboseLevel) 
+      $itemSet = (array)$verboseForLogger;
+      foreach($itemSet as $loggerType => $dummy)
       {
-        if( isset(self::$logLevelsStringCode[$verboseLevel]) )
+        $filter = 0;
+        foreach($dummy as $verboseLevel) 
         {
-          $filter = $filter | self::$logLevelsStringCode[$verboseLevel];
-        }  
-      }
-      
-      switch($loggerType)
-      {
-        case 'all':
-          $this->setLogLevelFilter($filter);  
-        break;
-        
-        default:
-          if( isset($this->loggerTypeDomain[$loggerType]) )
+          if( isset(self::$logLevelsStringCode[$verboseLevel]) )
           {
-            $this->loggers[$loggerType]->setLogLevelFilter($filter);  
-          }
-        break;
-      }      
-    }
+            $filter = $filter | self::$logLevelsStringCode[$verboseLevel];
+          }  
+        }
+        
+        switch($loggerType)
+        {
+          case 'all':
+            $this->setLogLevelFilter($filter);  
+          break;
+          
+          default:
+            if( isset($this->loggerTypeDomain[$loggerType]) )
+            {
+              $this->loggers[$loggerType]->setLogLevelFilter($filter);  
+            }
+          break;
+        }      
+      }
+    }  
   }
 
 
@@ -673,6 +675,8 @@ class tlEventManager extends tlObjectWithDB
   
   function deleteEventsFor($logLevels = null,$startTime = null)
   {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
     $clauses = null;
     if (!is_null($logLevels))
     {
@@ -706,10 +710,39 @@ class tlEventManager extends tlObjectWithDB
     // Solution was found on:
     // http://stackoverflow.com/questions/4471277/mysql-delete-from-with-subquery-as-condition
     //
-    $subsql = " SELECT id FROM ( SELECT id FROM {$this->tables['transactions']} t " .
-              " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0) XX";
-    $query = " DELETE FROM {$this->tables['transactions']} WHERE id IN ( {$subsql} )";
-    $this->db->exec_query($query);  
+    // $subsql = " SELECT id FROM ( SELECT id FROM {$this->tables['transactions']} t " .
+    //          " WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0) XX";
+    // $query = " DELETE FROM {$this->tables['transactions']} WHERE id IN ( {$subsql} )";
+    //
+    
+    // 20160320 - it's not clear why sometimes databaseType property does not exist
+    //            this is a quick & dirty fix.
+    if( property_exists($this->db,'databaseType') && 
+        !is_null($this->db->databaseType) )
+    {
+      $alias4del = '';
+      switch($this->db->databaseType)
+      {
+        case 'postgres7':
+        case 'postgres8':
+          $alias4del = '';
+        break;
+
+        case 'mysql':
+        case 'mysqli':
+        default:
+          $alias4del = 'T';
+        break;
+      }
+
+      // 201501114 - help by TurboP
+      $query = "/* $debugMsg */ " . 
+               " DELETE $alias4del FROM {$this->tables['transactions']} $alias4del " .
+               " WHERE NOT EXISTS " .
+               " (SELECT EV.id FROM {$this->tables['events']} EV " .
+               "  WHERE EV.transaction_id = {$alias4del}.id) ";
+      $this->db->exec_query($query);
+    }  
   }
 }
 
@@ -1034,8 +1067,13 @@ class tlDBLogger extends tlObjectWithDB
 class tlFileLogger extends tlObject
 {
   static protected $eventFormatString = "\t[%timestamp][%errorlevel][%sessionid][%source]\n\t\t%description\n";
+
   static protected $openTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime]\n";
+
   static protected $closedTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime][%endTime][took %duration secs]\n";
+
+  static $gmdateMask = "y/M/j H:i:s";
+
   var $logLevelFilter = null;
 
   protected $doLogging = true;
@@ -1068,8 +1106,6 @@ class tlFileLogger extends tlObject
   }
 
 
-
-  //SCHLUNDUS: maybe i dont' write the transaction stuff to the file?
   public function writeTransaction(&$t)
   {
     if ($this->getEnableLoggingStatus() == false)
@@ -1084,11 +1120,14 @@ class tlFileLogger extends tlObject
 
     //build the logfile entry
     $subjects = array("%prefix","%transactionID","%name","%entryPoint","%startTime","%endTime","%duration");
+
     $bFinished = $t->endTime ? 1 : 0;
-    $formatString = $bFinished ? self::$closedTransactionFormatString : self::$openTransactionFormatString;
-    $replacements = array($bFinished ? "<<" :">>", $t->getObjectID(), $t->name, $t->entryPoint,
-                                                   gmdate("y/M/j H:i:s",$t->startTime),
-                          $bFinished ? gmdate("y/M/j H:i:s",$t->endTime) : null,
+    $formatString = $bFinished ? self::$closedTransactionFormatString : 
+                    self::$openTransactionFormatString;
+    $replacements = array($bFinished ? "<<" :">>", 
+                          $t->getObjectID(), $t->name, $t->entryPoint,
+                          gmdate(self::$gmdateMask,$t->startTime),
+                          $bFinished ? gmdate(self::$gmdateMask,$t->endTime) : null,
                           $t->duration,);
     $line = str_replace($subjects,$replacements,$formatString);
     return $this->writeEntry(self::getLogFileName(),$line);
@@ -1116,7 +1155,7 @@ class tlFileLogger extends tlObject
     
     // build the logfile entry
     $subjects = array("%timestamp","%errorlevel","%source","%description","%sessionid");
-    $replacements = array(gmdate("y/M/j H:i:s",$e->timestamp),
+    $replacements = array(gmdate(self::$gmdateMask,$e->timestamp),
                           tlLogger::$logLevels[$e->logLevel],
                           $e->source,$description,
                           $e->sessionID ? $e->sessionID : "<nosession>");
@@ -1289,7 +1328,7 @@ class tlMailLogger extends tlObjectWithDB
     // build the logfile entry
     $subjects = array("%timestamp","%errorlevel","%source","%description","%sessionid");
     
-    $verboseTimeStamp = gmdate("y/M/j H:i:s",$event->timestamp);
+    $verboseTimeStamp = gmdate(self::$gmdateMask,$event->timestamp);
     $replacements = array($verboseTimeStamp,
                           tlLogger::$logLevels[$event->logLevel],
                           $event->source,$description,
@@ -1299,7 +1338,7 @@ class tlMailLogger extends tlObjectWithDB
     try
     {
       $mail_subject = $verboseTimeStamp . lang_get('mail_logger_email_subject');
-      $mail_subject .= isset($_SESSION['basehref']) ?  $_SESSION['basehref'] : config_get('instance_id');
+      $mail_subject .= isset($_SESSION['basehref']) ?  $_SESSION['basehref'] : config_get('instance_name');
       email_send($this->from_email, $this->sendto_email, $mail_subject, $email_body);
     }
     catch (Exception $exceptionObj)
@@ -1364,7 +1403,16 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
                   E_USER_NOTICE => "E_USER_NOTICE",E_ERROR => "E_ERROR",
                   E_WARNING => "E_WARNING",E_NOTICE => "E_NOTICE",E_STRICT => "E_STRICT");
 
-  if (isset($errors[$errno]))
+  /*
+   1 E_ERROR, 2 E_WARNING, 4 E_PARSE, 8 E_NOTICE, 16  E_CORE_ERROR, 
+   32 E_CORE_WARNING, 64 E_COMPILE_ERROR, 128 E_COMPILE_WARNING,
+   256 E_USER_ERROR, 512 E_USER_WARNING, 1024 E_USER_NOTICE, 6143 E_ALL
+   2048 E_STRICT, 4096 E_RECOVERABLE_ERROR
+  */ 
+
+  $el = error_reporting();
+  $doIt = (($el & $errno) > 0);
+  if ($doIt && isset($errors[$errno]) )
   {
     // suppress some kind of errors
     // strftime(),strtotime(),date()
@@ -1383,6 +1431,7 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
         ($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
         ($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
         ($errno == E_NOTICE && strpos($errfile,"Config_File.class.php") !== false) ||
+        ($errno == E_WARNING && strpos($errfile,"smarty_internal_write_file.php") !== false) ||
         (strpos($errfile,"Smarty_Compiler.class.php") !== false)
       )
     {

@@ -59,12 +59,12 @@ Purpose: smarty template - manage import of test cases and test suites
 	{/if}
 
 	</table>
-	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
+	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB|escape} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">
-		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
-		<input type="hidden" name="bIntoProject" value="{$gui->bIntoProject}" />
-		<input type="hidden" name="containerID" value="{$gui->containerID}" />
-		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> {* restrict file size *}
+		<input type="hidden" name="useRecursion" value="{$gui->useRecursion|escape}" />
+		<input type="hidden" name="bIntoProject" value="{$gui->bIntoProject|escape}" />
+		<input type="hidden" name="containerID" value="{$gui->containerID|escape}" />
+		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes|escape}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			                   onclick="javascript:history.back();" />

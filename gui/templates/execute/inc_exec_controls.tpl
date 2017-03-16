@@ -5,7 +5,7 @@ Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 @internal revisions
-@since 1.9.14 
+@since 1.9.15 
 *}	
       {$ResultsStatusCode=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
@@ -43,15 +43,15 @@ Author : franciscom
                 {html_options options=$gui->execStatusValues}
                 </select>
               {/if}
-                
 
-    					  <br />		
+                {if $tlCfg->exec_cfg->features->exec_duration->enabled}	
+                <br />	
                 {$args_labels.execution_duration}&nbsp;
                 <input type="text" name="execution_duration" id="execution_duration"
                        size="{#EXEC_DURATION_SIZE#}" 
                        onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
-                       maxlength="{#EXEC_DURATION_MAXLEN#}">  		 			
-
+                       maxlength="{#EXEC_DURATION_MAXLEN#}">  
+                {/if}       		 			
               {if $args_save_type == 'single'}
                 <br />
                 {$addBR=0}
@@ -90,8 +90,14 @@ Author : franciscom
     		 			         
     		 			      <input type="submit" name="save_and_next[{$args_tcversion_id}]" 
     		 			        {$args_input_enable_mgmt}
-                      onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};return checkSubmitForStatusCombo('{$ResultsStatusCode.not_run}')"
+                      onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};return checkSubmitForStatusCombo('statusSingle_{$tcversion_id}','{$ResultsStatusCode.not_run}')"
     		 			        value="{$args_labels.btn_save_exec_and_movetonext}" />
+
+                  <input type="submit" name="move2next[{$args_tcversion_id}]" 
+                      {$args_input_enable_mgmt}
+                      onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};"
+                      value="{$args_labels.btn_next}" />
+
 
     		 			  {else}
      	    	        <input type="submit" id="do_bulk_save" name="do_bulk_save"
@@ -112,19 +118,32 @@ Author : franciscom
         {/if}
   		</table>
 
-      {if $gui->addIssueOp != ''}  
-      <hr> 
-      <table id="addIssueFeedback">
-      <tr>
-        <td colspan="2" class="label">{$args_labels.create_issue_feedback}</td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <div class="label">{$gui->addIssueOp.msg}</div>
-        </td>
-      </tr>
-      </table>
-      <hr>
+      {if $gui->addIssueOp != '' && !is_null($gui->addIssueOp) && 
+          !is_null($gui->addIssueOp.type) }  
+        {$ak = $gui->addIssueOp.type} 
+        <hr> 
+        <table id="addIssueFeedback">
+        <tr>
+          <td colspan="2" class="label">{$args_labels.create_issue_feedback}</td>
+        </tr>
+  
+        {if $ak == 'createIssue'}
+          <tr>
+            <td colspan="2">
+              <div class="label">{$gui->addIssueOp[$ak].msg}</div>
+            </td>
+          </tr>
+        {else}
+          {foreach key=ik item=ikmsg from=$gui->addIssueOp[$ak]}
+          <tr>
+            <td colspan="2">
+              <div class="label">{$ikmsg.msg}</div>
+            </td>
+          </tr>
+          {/foreach}
+        {/if}
+        </table>
+        <hr>
       {/if}
 
       <table style="display:none;" id="issue_summary">
@@ -167,7 +186,8 @@ Author : franciscom
          Via Javascript the required attribute will be added when this input will be 
          done visible because user has clicked on 'Create Issue' checkbox
       *}
-      {if $gui->issueTrackerMetaData.versions != ''}
+      {if $gui->issueTrackerMetaData.versions != '' && 
+          $gui->issueTrackerMetaData.versions.items != ''}
         <label for="artifactVersion">{$labels.artifactVersion}</label> 
         <select class="chosen-select-artifact" data-placeholder=" " id="artifactVersion" 
                 {if $gui->issueTrackerMetaData.versions.isMultiSelect}
@@ -211,6 +231,13 @@ Author : franciscom
           <div class="label">{$args_labels.bug_description}</div>
           <textarea id="bug_notes" name="bug_notes" 
                   rows="{#BUGNOTES_ROWS#}" cols="{$gui->issueTrackerCfg->bugSummaryMaxLength}" ></textarea>          
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="2">
+          <input type="checkbox" name="addLinkToTL"  id="addLinkToTL">
+          <span class="label">{$args_labels.add_link_to_tlexec}</span>
         </td>
       </tr>
 

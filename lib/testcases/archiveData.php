@@ -18,7 +18,7 @@
  *     System try to get Test Project analising user provided data (test case identification)
  *
  *  @internal revision
- *  @since 1.9.10
+ *  @since 1.9.15
  */
 
 require_once('../../config.inc.php');
@@ -32,6 +32,7 @@ $cfg = array('testcase' => config_get('testcase_cfg'),'testcase_reorder_by' => c
              'spec' => config_get('spec_cfg'));
 
 list($args,$gui,$grants) = initializeEnv($db);
+
 
 // User right at test project level has to be done
 // Because this script can be called requesting an item that CAN BELONG
@@ -74,6 +75,8 @@ switch($args->feature)
     trigger_error($_SESSION['currentUser']->login.'> Argument "edit" has invalid value.', E_USER_ERROR);
   break;
 }
+
+
 
 /**
  * 
@@ -197,7 +200,7 @@ function initializeEnv($dbHandler)
   $gui = new stdClass();
 
   $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
-                       'mgt_modify_req', 
+                       'mgt_modify_req','testcase_freeze', 
                        'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
   $grants = new stdClass();
   foreach($grant2check as $right)
@@ -364,10 +367,29 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg)
   else 
   {
     $templateCfg = templateConfiguration();
-    $xbm = new stdClass();
+    
+    // need to initialize search fields
+    $xbm = $item_mgr->getTcSearchSkeleton();
     $xbm->warning_msg = lang_get('no_records_found');
     $xbm->pageTitle = lang_get('caption_search_form');
     $xbm->tableSet = null;
+    $xbm->doSearch = false;
+    $xbm->tproject_id = $args->tproject_id;
+
+
+    $tprj = new testproject($dbHandler);
+    $oo = $tprj->getOptions($args->tproject_id);
+    $xbm->filter_by['requirement_doc_id'] = $oo->requirementsEnabled; 
+    $xbm->keywords = $tprj->getKeywords($args->tproject_id);
+    $xbm->filter_by['keyword'] = !is_null($xbm->keywords);
+
+    // 
+    $cfMgr = new cfield_mgr($dbHandler);
+    $xbm->design_cf = $cfMgr->get_linked_cfields_at_design($args->tproject_id,
+                                                                           cfield_mgr::ENABLED,null,'testcase');
+
+    $xbm->filter_by['design_scope_custom_fields'] = !is_null($xbm->design_cf);
+
     $tplEngine->assign('gui',$xbm);
     $tplEngine->display($templateCfg->template_dir . 'tcSearchResults.tpl');
   }  

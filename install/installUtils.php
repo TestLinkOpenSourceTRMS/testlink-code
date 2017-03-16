@@ -236,6 +236,7 @@ switch($db_type)
     break;
     
     case 'mysql':
+    case 'mysqli':
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, 'mysql'); 
     $try_create_user=1;
     break;
@@ -274,6 +275,7 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
         break;
 
         case 'mysql':
+        case 'mysqli':
         default:
         // for MySQL making the user and assign right is the same operation
         $op = _mysql_make_user($db,$the_host,$db_name,$login,$passwd);
@@ -288,6 +290,7 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
       switch($db_type)
     	{
         case 'mysql':
+        case 'mysqli':
         $op = _mysql_assign_grants($db,$the_host,$db_name,$login,$passwd);
         break;
         
@@ -317,7 +320,7 @@ if( !is_null($db) )
 }
 
 return($msg);
-}  /* Function ends */
+}
 
 
 /*
@@ -344,169 +347,32 @@ echo "
 </html>";
 
 exit;
-}  /* Function ends */
-
-
-/*
-  function: check_mysql_version()
-
-  args : [$conn]
-  
-  returns: 
-
-  rev :
-
-*/
-function check_mysql_version($conn=null)
-{
-$min_ver = "5.0.3";  // 20101120 - franciscom - seems ti be first with size(varchar) > 255 
-
-$errors=0;	
-$final_msg = "</b><br/>Checking MySQL version:<b> ";
-
-// As stated in PHP Manual:
-//
-// string mysql_get_server_info ( [resource link_identifier] )
-// link_identifier: The MySQL connection. 
-//                  If the link identifier is not specified, 
-//                  the last link opened by mysql_connect() is assumed. 
-//                  If no such link is found, it will try to create one as if mysql_connect() 
-//                  was called with no arguments. 
-//                  If by chance no connection is found or established, an E_WARNING level warning is generated.
-//
-// In my experience thi will succed only if anonymous connection to MySQL is allowed
-// 
-
-if( !$conn )
-{
-	$my_version = @mysql_get_server_info($conn);
 }
-else
-{
-	$my_version = @mysql_get_server_info();
-}
-
-if( $my_version !== FALSE )
-{
-
-  // version_compare:
-  // -1 if left is less, 0 if equal, +1 if left is higher
-  $php_ver_comp =  version_compare($my_version, $min_ver);
-  
-  if($php_ver_comp < 0) 
-  {
-  	$final_msg .= "<span class='notok'>Failed!</span> - You are running on MySQL " . 
-  	        $my_version . ", and TestLink requires MySQL " . $min_ver . " or greater";
-  	$errors += 1;
-  } 
-  else 
-  {
-  	$final_msg .= "<span class='ok'>OK! (" . $my_version . " >= " . $min_ver . ")</span>";
-  }
-}
-else
-{
-	$final_msg .= "<span class='notok'>Warning!: Unable to get MySQL version (may be due to security restrictions) - " .
-	              "Remember that Testlink requires MySQL >= " . $min_ver . ")</span>";
-}	  
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-
-return ($ret);
-}  //function end
-
 
 
 // check to see if required PEAR modules are installed
 function check_pear_modules()
 {
-    $errors = 0;    
-    $final_msg = '</b><br />Checking if PEAR modules are installed:<b>';
+  $errors = 0;    
+  $final_msg = '</b><br />Checking if PEAR modules are installed:<b>';
     
-    // SpreadSheet_Excel_Writer is needed for TestPlanResultsObj that does excel reporting
-    if(false == include_once('Spreadsheet/Excel/Writer.php'))
-    {
-        $final_msg .= '<span class="notok">Failed! - Spreadsheet_Excel_Writer PEAR Module is required.</span><br />See' .
-                '<a href="http://pear.php.net/package/Spreadsheet_Excel_Writer">' .
+  // SpreadSheet_Excel_Writer is needed for TestPlanResultsObj that does excel reporting
+  if(false == include_once('Spreadsheet/Excel/Writer.php'))
+  {
+    $final_msg .= '<span class="notok">Failed! - Spreadsheet_Excel_Writer PEAR Module is required.</span><br />See' .
+      '<a href="http://pear.php.net/package/Spreadsheet_Excel_Writer">' .
                 'http://pear.php.net/package/Spreadsheet_Excel_Writer</a> for additional information';
-        $errors += 1;                        
-    }
-    else
-    {
-        $final_msg .= "<span class='ok'>OK!</span>";
-    }
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-return ($ret);  
-} // function end
-
-function check_db_version($dbhandler)
-{
-
-switch ($dbhandler->db->databaseType)
-{
-	case 'mysql':
-	$min_ver = "4.1.0";
-	$db_verbose="MySQL";
-  break;
-  
-  case 'postgres':
-  case 'postgres7':
-  case 'postgres8':
-  case 'postgres64':
-	$min_ver = "8";
-  $db_verbose="PostGres";
-  break;
-
-  // 20071010 - franciscom
-	case 'mssql':
-	$min_ver = "8";
-  $db_verbose="MSSQL";
-  break;
-	
-}
-
-$errors=0;	
-$final_msg = "</b><br/>Checking {$db_verbose} version:<b> ";
-
-$server_info = @$dbhandler->get_version_info();
-$my_version = trim($server_info['version']);
-
-if( strlen($my_version) != 0 )
-{
-
-  // version_compare:
-  // -1 if left is less, 0 if equal, +1 if left is higher
-  $ver_comp =  version_compare($my_version, $min_ver);
-  
-  if($ver_comp < 0) 
-  {
-  	$final_msg .= "<span class='notok'>Failed!</span> - You are running on {$db_verbose} " . 
-  	        $my_version . ", and TestLink requires {$db_verbose} " . $min_ver . " or greater";
-  	$errors += 1;
-  } 
-  else 
-  {
-  	$final_msg .= "<span class='ok'>OK! (" . $my_version . " >= " . $min_ver . ")</span>";
+    $errors += 1;                        
   }
-}
-else
-{
-	$final_msg .= "<span class='notok'>Warning!: Unable to get {$db_verbose} version (may be due to security restrictions) - " .
-	              "Remember that Testlink requires {$db_verbose} >= " . $min_ver . ")</span>";
-}	  
+  else
+  {
+    $final_msg .= "<span class='ok'>OK!</span>";
+  }
 
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
+  $ret = array('errors' => $errors, 'msg' => $final_msg);
 
-
-return ($ret);
-}  //function end
-
+  return $ret;  
+} 
 
 
 /*
@@ -519,8 +385,14 @@ return ($ret);
 */
 function check_db_loaded_extension($db_type)
 {
-  $ext2search = $db_type;  
   $dbType2PhpExtension = array('postgres' => 'pgsql');
+
+  $ext2search = $db_type;  
+  if( $ext2search == 'mysql' && version_compare(phpversion(), "7.0.0", ">=") )
+  {
+    $ext2search = 'mysqli';
+  }
+
 	if(PHP_OS == 'WINNT')
 	{
 		// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
@@ -538,33 +410,33 @@ function check_db_loaded_extension($db_type)
 	}	
 
     
-    if( isset($dbType2PhpExtension[$db_type]) )
-    {
-      $ext2search=$dbType2PhpExtension[$db_type];  
-    }
+  if( isset($dbType2PhpExtension[$db_type]) )
+  {
+    $ext2search=$dbType2PhpExtension[$db_type];  
+  }
       
-    $msg_ko = "<span class='notok'>Failed!</span>";
-    $msg_ok = '<span class="ok">OK!</span>';
-    $tt=array_flip(get_loaded_extensions());
+  $msg_ko = "<span class='notok'>Failed!</span>";
+  $msg_ok = '<span class="ok">OK!</span>';
+  $tt=array_flip(get_loaded_extensions());
     
-    $errors=0;	
-    $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
+  $errors=0;	
+  $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
     
-    if( !isset($tt[$ext2search]) )
-    {
-    	$final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search}- " .
-    	              "without it is IMPOSSIBLE to use Testlink.</span>";
-    	$final_msg .= $msg_ko;
-    	$errors += 1;
-    }
-    else
-    {
-    	$final_msg .= $msg_ok;
-    }
-    $ret = array ('errors' => $errors,
-                  'msg' => $final_msg);
+  if( !isset($tt[$ext2search]) )
+  {
+    $final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search} " .
+    	"without it is IMPOSSIBLE to use Testlink.</span>";
+    $final_msg .= $msg_ko;
+    $errors += 1;
+  }
+  else
+  {
+    $final_msg .= $msg_ok;
+  }
+  $ret = array ('errors' => $errors,
+                'msg' => $final_msg);
     
-    return ($ret);
+  return ($ret);
 }  //function end
 
 

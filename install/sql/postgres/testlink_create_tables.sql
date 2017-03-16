@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.63.2.2 2010/12/11 17:25:21 franciscom Exp $
+-- testlink_create_tables.sql
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -97,12 +97,12 @@ CREATE UNIQUE INDEX /*prefix*/roles_uidx1 ON /*prefix*/roles ("description");
 --
 CREATE TABLE /*prefix*/users(  
   "id" BIGSERIAL NOT NULL ,
-  "login" VARCHAR(30) NOT NULL DEFAULT '',
+  "login" VARCHAR(100) NOT NULL DEFAULT '',
   "password" VARCHAR(32) NOT NULL DEFAULT '',
   "role_id" SMALLINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id),
   "email" VARCHAR(100) NOT NULL DEFAULT '',
-  "first" VARCHAR(30) NOT NULL DEFAULT '',
-  "last" VARCHAR(30) NOT NULL DEFAULT '',
+  "first" VARCHAR(50) NOT NULL DEFAULT '',
+  "last" VARCHAR(50) NOT NULL DEFAULT '',
   "locale" VARCHAR(10) NOT NULL DEFAULT 'en_GB',
   "default_testproject_id" INTEGER NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
@@ -211,6 +211,7 @@ CREATE TABLE /*prefix*/executions(
 ); 
 CREATE INDEX /*prefix*/executions_idx1 ON /*prefix*/executions ("testplan_id","tcversion_id","platform_id","build_id");
 CREATE INDEX /*prefix*/executions_idx2 ON /*prefix*/executions ("execution_type");
+CREATE INDEX /*prefix*/executions_idx3 ON /*prefix*/executions ("tcversion_id");
 
 --
 -- Table structure for table "execution_tcsteps"
@@ -302,6 +303,7 @@ CREATE TABLE /*prefix*/cfield_testprojects(
   "required" INT2 NOT NULL default '0',
   "required_on_design" INT2 NOT NULL default '0',
   "required_on_execution" INT2 NOT NULL default '0',
+  "monitorable" INT2 NOT NULL default '0',
 
   PRIMARY KEY ("field_id","testproject_id")
 ); 
@@ -393,6 +395,7 @@ CREATE TABLE /*prefix*/attachments(  "id" BIGSERIAL NOT NULL ,
   "compression_type" INTEGER NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ); 
+CREATE INDEX /*prefix*/attachments_idx1 ON /*prefix*/attachments ("fk_id");
 
 --
 -- Table structure for table "db_version"
@@ -413,7 +416,8 @@ CREATE TABLE /*prefix*/db_version(
 CREATE TABLE /*prefix*/execution_bugs(  
   "execution_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id) ON DELETE CASCADE,
   "bug_id" VARCHAR(64) NOT NULL DEFAULT '0',
-  PRIMARY KEY ("execution_id","bug_id")
+  "tcstep_id" BIGINT NOT NULL DEFAULT '0',
+  PRIMARY KEY ("execution_id","bug_id","tcstep_id")
 ); 
 
 
@@ -799,6 +803,13 @@ CREATE TABLE /*prefix*/testcase_relations (
 );
 
 
+CREATE TABLE /*prefix*/req_monitor (
+  req_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id) ON DELETE CASCADE,
+  user_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  PRIMARY KEY (req_id,user_id,testproject_id)
+);
+
 --
 -- TICKET 4914: Create View - tcversions_last_active
 --
@@ -826,4 +837,51 @@ CREATE OR REPLACE VIEW /*prefix*/tcases_active AS
 	FROM /*prefix*/nodes_hierarchy nhtcv
 	JOIN /*prefix*/tcversions tcv ON tcv.id = nhtcv.id
 	WHERE tcv.active = 1
-);				
+);
+
+CREATE TABLE /*prefix*/plugins (
+   id BIGSERIAL NOT NULL,
+   basename  VARCHAR(100) NOT NULL,
+   enabled INT2 NOT NULL DEFAULT '0',
+   author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+   creation_ts TIMESTAMP NOT NULL DEFAULT now(),
+   PRIMARY KEY (id)
+);
+
+CREATE TABLE /*prefix*/plugins_configuration (
+   id BIGSERIAL NOT NULL,
+   testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+   config_key VARCHAR(255) NOT NULL,
+   config_type INTEGER NOT NULL,
+   config_value varchar(255) NOT NULL,
+   author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+   creation_ts TIMESTAMP NOT NULL DEFAULT now(),
+   PRIMARY KEY (id)
+);
+
+CREATE VIEW /*prefix*/latest_tcase_version_number 
+AS SELECT NH_TC.id AS testcase_id,max(TCV.version) AS version 
+FROM /*prefix*/nodes_hierarchy NH_TC 
+JOIN /*prefix*/nodes_hierarchy NH_TCV 
+ON NH_TCV.parent_id = NH_TC.id
+JOIN /*prefix*/tcversions TCV 
+ON NH_TCV.id = TCV.id 
+GROUP BY testcase_id;
+
+CREATE VIEW /*prefix*/latest_req_version 
+AS SELECT RQ.id AS req_id,max(RQV.version) AS version 
+FROM /*prefix*/nodes_hierarchy NHRQV 
+JOIN /*prefix*/requirements RQ 
+ON RQ.id = NHRQV.parent_id 
+JOIN /*prefix*/req_versions RQV 
+ON RQV.id = NHRQV.id
+GROUP BY RQ.id;
+
+CREATE VIEW /*prefix*/latest_rspec_revision 
+AS SELECT RSR.parent_id AS req_spec_id, RS.testproject_id AS testproject_id,
+MAX(RSR.revision) AS revision 
+FROM /*prefix*/req_specs_revisions RSR 
+JOIN /*prefix*/req_specs RS 
+ON RS.id = RSR.parent_id
+GROUP BY RSR.parent_id,RS.testproject_id;
+

@@ -5,8 +5,8 @@
  *
  * @filesource  lang_api.php
  * @package     TestLink
- * @copyright   2005-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2005-2016, TestLink community 
+ * @link        http://www.testlink.org
  *
  * @internal thanks
  * The functionality is based on Mantis BTS project code 
@@ -15,7 +15,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.15
  * 20130913 - franciscom - TICKET 5916: It's impossible to login with browser set to italian language (or other language <> english)
  **/
 
@@ -64,6 +64,13 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
   }
   else
   {
+	$t_plugin_current = plugin_get_current();
+	if( !is_null( $t_plugin_current ) ) {
+		lang_load( $t_lang, TL_PLUGIN_PATH . $t_plugin_current . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $t_lang . DIRECTORY_SEPARATOR);
+		if( isset($g_lang_strings[$t_lang][$p_string]) ) {
+			$loc_str = $g_lang_strings[$t_lang][$p_string];
+		}
+	}
     if( $t_lang != 'en_GB' )
     {
       // force load of english strings
@@ -211,20 +218,27 @@ function lang_get_smarty($params, &$smarty)
 
 /** 
  * Loads the specified language and stores it in $g_lang_strings,
+ * @param string $p_lang
+ * @param string $p_dir
  * to be used by lang_get
  */
-function lang_load( $p_lang ) {
+function lang_load( $p_lang, $p_dir = null ) {
   global $g_lang_strings, $g_active_language;
   global $TLS_STRINGFILE_CHARSET;
 
   $g_active_language  = $p_lang;
 
-  if ( isset( $g_lang_strings[ $p_lang ] ) ) {
-    return;
+  if( isset( $g_lang_strings[$p_lang] ) && is_null( $p_dir ) ) {
+	return;
   }
 
   $t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
+  
+  if( !is_null( $p_dir ) && is_file( $p_dir . 'strings.txt' )) {
+	require( $p_dir . 'strings.txt' );
+  }
+  
   if (file_exists($lang_resource_path) && is_readable($lang_resource_path))
   {
     require($lang_resource_path);
@@ -242,7 +256,7 @@ function lang_load( $p_lang ) {
   else
   {
     require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php');
-    }
+  }
     
   // Allow overriding strings declared in the language file.
   // custom_strings_inc.php can use $g_active_language
@@ -405,5 +419,26 @@ function localizeTimeStamp($value,$format)
   return strftime($format, $value);
 }
 
+/**
+ *
+ */
+ function mailBodyGet($key,$locale=null)
+ {
+  
+  if (null === $locale)
+  {
+    $locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+  }
+  
+  $lzds = DIRECTORY_SEPARATOR;
+  $dir_base = TL_ABS_PATH . 'locale' . $lzds . $locale .
+              $lzds . 'text_templates' . $lzds . 'mail';
 
+  $rs = str_replace('/',$lzds,$key);
+  $resource_path = $dir_base . $lzds . $rs; 
+
+  $str = file_get_contents($resource_path);
+
+  return $str;
+ }
 

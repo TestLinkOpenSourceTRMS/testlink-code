@@ -89,9 +89,7 @@ $the_title = $_SESSION['title'];
 ?>
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
-  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
 <head>
   <title><?php echo $the_title; ?></title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -143,6 +141,8 @@ echo "<br /><b>Creating connection to Database Server:</b>";
 // Connect to DB Server without choosing an specific database
 $db = new database($db_type);
 define('NO_DSN',FALSE);
+//var_dump($db);
+//die();
 @$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
 
 if( $conn_result['status'] == 0 ) 

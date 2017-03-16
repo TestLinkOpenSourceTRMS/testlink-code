@@ -6,12 +6,12 @@
  * Allows editing a user
  *
  * @package     TestLink
- * @copyright   2005-2014, TestLink community
+ * @copyright   2005-2016, TestLink community
  * @filesource  usersEdit.php
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.15
  *
  */
 require_once('../../config.inc.php');
@@ -23,14 +23,15 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initializeGui();
+$gui = initializeGui($db,$args->user);
+$lbl = initLabels();
 
-$user = null;
 $highlight = initialize_tabsmenu();
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                          'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                         'resetPassword' => 'doUpdate');
+                         'resetPassword' => 'doUpdate',
+                         'genAPIKey' => 'doUpdate');
 
 switch($args->doAction)
 {
@@ -52,37 +53,51 @@ switch($args->doAction)
     }  
     else
     {  
-      $user = new tlUser(intval($args->user_id));
-      $user->readFromDB($db);
+      $gui->user = new tlUser(intval($args->user_id));
+      $gui->user->readFromDB($db);
     }  
+    $gui->main_title = $lbl["action_{$args->doAction}_user"];
   break;
   
   case "doCreate":
     $highlight->create_user = 1;
     $gui->op = doCreate($db,$args);
-    $user = $gui->op->user;
+    $gui->user = $gui->op->user;
     $templateCfg->template = $gui->op->template;
+    $gui->main_title = $lbl['action_create_user'];
   break;
   
   case "doUpdate":
     $highlight->edit_user = 1;
     $sessionUserID = $_SESSION['currentUser']->dbID;
     $gui->op = doUpdate($db,$args,$sessionUserID);
-    $user = $gui->op->user;
+    $gui->user = $gui->op->user;
+    $gui->main_title = $lbl['action_edit_user'];
   break;
 
   case "resetPassword":
     $highlight->edit_user = 1;
-    $user = new tlUser($args->user_id);
-    $user->readFromDB($db);
     $passwordSendMethod = config_get('password_reset_send_method');
-    $gui->op = createNewPassword($db,$args,$user,$passwordSendMethod);
+
+    $gui->user = new tlUser($args->user_id);
+    $gui->user->readFromDB($db);
+    $gui->op = createNewPassword($db,$args,$gui->user,$passwordSendMethod);
+    $gui->main_title = $lbl['action_edit_user'];
   break;
   
+  case "genAPIKey":
+    $highlight->edit_user = 1;
+    $gui->user = new tlUser($args->user_id);
+    $gui->user->readFromDB($db);
+    $gui->op = createNewAPIKey($db,$args,$gui->user);
+    $gui->main_title = $lbl['action_edit_user'];
+  break;
+
   case "create":
   default:
     $highlight->create_user = 1;
-    $user = new tlUser();
+    $gui->user = new tlUser();
+    $gui->main_title = $lbl['action_create_user'];
   break;
 }
 
@@ -93,15 +108,12 @@ unset($roles[TL_ROLES_UNDEFINED]);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 
-
 $smarty->assign('highlight',$highlight);
 $smarty->assign('operation',$gui->op->operation);
 $smarty->assign('user_feedback',$gui->op->user_feedback);
-$smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal($user->authentication));
-$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
-$smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
+$smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal($gui->user->authentication));
 $smarty->assign('optRights',$roles);
-$smarty->assign('userData', $user);
+// $smarty->assign('userData', $user);
 renderGui($smarty,$args,$templateCfg);
 
 
@@ -117,17 +129,19 @@ function init_args()
                    "user_id" => array(tlInputParameter::INT_N),
                    "rights_id" => array(tlInputParameter::INT_N),
                    "doAction" => array(tlInputParameter::STRING_N,0,30),
-                   "firstName" => array(tlInputParameter::STRING_N,0,30),
-                   "lastName" => array(tlInputParameter::STRING_N,0,100),
+                   "firstName" => array(tlInputParameter::STRING_N,0,50),
+                   "lastName" => array(tlInputParameter::STRING_N,0,50),
                    "emailAddress" => array(tlInputParameter::STRING_N,0,100),
                    "locale" => array(tlInputParameter::STRING_N,0,10),
-                   "login" => array(tlInputParameter::STRING_N,0,30),
+                   "login" => array(tlInputParameter::STRING_N,0,100),
                    "password" => array(tlInputParameter::STRING_N,0,32),
                    "authentication" => array(tlInputParameter::STRING_N,0,10),
                    "user_is_active" => array(tlInputParameter::CB_BOOL));
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
+ 
+  $args->user = $_SESSION['currentUser'];
   return $args;
 }
 
@@ -264,6 +278,57 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj,$newPasswordSendMetho
   return $op;
 }
 
+/**
+ * 
+ */
+function createNewAPIKey(&$dbHandler,&$argsObj,&$userObj)
+{
+  $op = new stdClass();
+  $op->user_feedback = '';
+  
+  // Try to validate mail configuration
+  //
+  // From Zend Documentation
+  // You may find you also want to match IP addresses, Local hostnames, or a combination of all allowed types. 
+  // This can be done by passing a parameter to Zend_Validate_Hostname when you instantiate it. 
+  // The paramter should be an integer which determines what types of hostnames are allowed. 
+  // You are encouraged to use the Zend_Validate_Hostname constants to do this.
+  // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
+  // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
+  // 
+  $validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
+  $smtp_host = config_get( 'smtp_host' );
+  $op->status = tl::ERROR;
+
+  // We need to validate at least that user mail is NOT EMPTY
+  if( $validator->isValid($smtp_host) )
+  {
+    $APIKey = new APIKey();
+    if ($APIKey->addKeyForUser($argsObj->user_id) >= tl::OK)
+    {
+      logAuditEvent(TLS("audit_user_apikey_set",$userObj->login),"CREATE",
+                    $userObj->login,"users");
+      $op->user_feedback = lang_get('apikey_by_mail');
+      $op->status = tl::OK;
+
+      // now send by mail
+      $ak = $APIKey->getAPIKey($argsObj->user_id);
+      $msgBody = lang_get('your_apikey_is') . "\n\n" . $ak . 
+                 "\n\n" . lang_get('contact_admin');
+      $mail_op = @email_send(config_get('from_email'), 
+                             $userObj->emailAddress,lang_get('mail_apikey_subject'),$msgBody);
+    }
+  }
+  else
+  {
+    $op->status = tl::ERROR;
+    $op->user_feedback = lang_get('apikey_cannot_be_reseted_invalid_smtp_hostname');
+  }
+  return $op;
+}
+
+
+
 /*
   function: initializeUserProperties
             initialize members for a user object.
@@ -281,8 +346,12 @@ function initializeUserProperties(&$userObj,&$argsObj)
       $userObj->login = $argsObj->login;
   }
   $userObj->emailAddress = $argsObj->emailAddress;
-  $userObj->firstName = $argsObj->firstName;
-  $userObj->lastName = $argsObj->lastName;
+
+  // The Black List - Jon Bokenkamp
+  $reddington = array('/','\\',':','*','?','<','>','|');
+  $userObj->firstName = str_replace($reddington,'',$argsObj->firstName);
+  $userObj->lastName = str_replace($reddington,'',$argsObj->lastName);
+
   $userObj->globalRoleID = $argsObj->rights_id;
   $userObj->locale = $argsObj->locale;
   $userObj->isActive = $argsObj->user_is_active;
@@ -303,6 +372,7 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     case "edit":
     case "create":
     case "resetPassword":
+    case "genAPIKey":
       $doRender = true;
       $tpl = $templateCfg->default_template;
     break;
@@ -330,9 +400,15 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 }
 
 
-function initializeGui()
+/**
+ *
+ */
+function initializeGui(&$dbHandler,&$userObj)
 {
   $guiObj = new stdClass(); 
+
+  $guiObj->user = null;
+  
   $guiObj->op = new stdClass();
   $guiObj->op->user_feedback = '';
   $guiObj->op->status = tl::OK;
@@ -352,7 +428,23 @@ function initializeGui()
   $guiObj->auth_method_opt = array_flip($guiObj->auth_method_opt);
 
   $guiObj->optLocale = config_get('locales');
+
+  $guiObj->grants = getGrantsForUserMgmt($dbHandler,$userObj);
+
+  $guiObj->grants->mgt_view_events = 
+    $userObj->hasRight($dbHandler,"mgt_view_events");
+
   return $guiObj;  
+}
+
+/**
+ *
+ */
+function initLabels()
+{
+  $tg = array('action_create_user' => null,'action_edit_user' => null);
+  $labels = init_labels($tg);
+  return $labels;
 }
 
 function checkRights(&$db,&$user)

@@ -7,7 +7,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 some smarty and javascript variables are created on the inc_*.tpl files.
      
 @internal revisions
-@since 1.9.13
+@since 1.9.15
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -44,6 +44,13 @@ some smarty and javascript variables are created on the inc_*.tpl files.
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'{$deleteAction}';
 </script>
+
+{if $tlCfg->gui->planView->pagination->enabled}
+  {$ll = $tlCfg->gui->planView->pagination->length}
+  {include file="DataTables.inc.tpl" DataTablesOID="item_view"
+                                     DataTableslengthMenu=$ll}
+{/if}
+
 
 </head>
 
@@ -85,18 +92,17 @@ var del_action=fRoot+'{$deleteAction}';
     <tbody>
     {foreach item=testplan from=$gui->tplans}
     <tr>
-      <td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
-          <a href="{$editAction}{$testplan.id}"> 
-             {$testplan.name|escape} 
+      <td><a href="{$editAction}{$testplan.id}"> 
+             {$testplan.name|escape}
+             <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
+           
              {if $gsmarty_gui->show_icon_edit}
                  <img title="{$labels.testplan_alt_edit_tp}"  alt="{$labels.testplan_alt_edit_tp}" 
                       src="{$tlImages.edit}"/>
              {/if}  
           </a>
       </td>
-      <td>
-        {$testplan.notes}
-      </td>
+	  <td>{if $gui->editorType == 'none'}{$testplan.notes|nl2br}{else}{$testplan.notes}{/if}</td>
       <td align="right" style="width:8%;">
         {$testplan.tcase_qty}
       </td>

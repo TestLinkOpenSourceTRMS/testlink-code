@@ -25,6 +25,11 @@
  * Revisions history is not stored for the file
  *
  * ------------------------------------------------------------------------------------ */
+$TLS_htmltext_title['error']	= "Application error";
+$TLS_htmltext['error'] 		= "<p>Unexpected error happens. Please check event viewer or " .
+		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
+		"<a href='http://www.teamst.org'>website</a>.</p>";
+
 
 
 $TLS_htmltext_title['assignReqs']	= "分配需求给测试用例"; //已校对
@@ -91,6 +96,67 @@ $TLS_htmltext['searchTc'] 		= "<h2>目的:</h2>
 </ol>";
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+/* contribution by asimon for 2976 */
+// requirements search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReq']	= "Requirement Search Page";
+$TLS_htmltext['searchReq'] 		= "<h2>Purpose:</h2>
+
+<p>Navigation according to keywords and/or searched strings. The search is not
+case sensitive. Result includes just requirements from actual Test Project.</p>
+
+<h2>To search:</h2>
+
+<ol>
+	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
+	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>Click the 'Find' button.</li>
+	<li>All fulfilling requirements are shown. You can modify requirements via 'Title' link.</li>
+</ol>
+
+<h2>Note:</h2>
+
+<p>- Only requirements within the current project will be searched.<br>
+- The search is case-insensitive.<br>
+- Empty fields are not considered.</p>";
+
+// requirement specification search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReqSpec']	= "Requirement Specification Search Page";
+$TLS_htmltext['searchReqSpec'] 		= "<h2>Purpose:</h2>
+
+<p>Navigation according to keywords and/or searched strings. The search is not
+case sensitive. Result includes just requirement specifications from actual Test Project.</p>
+
+<h2>To search:</h2>
+
+<ol>
+	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
+	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>Click the 'Find' button.</li>
+	<li>All fulfilling requirements are shown. You can modify requirement specifications via 'Title' link.</li>
+</ol>
+
+<h2>Note:</h2>
+
+<p>- Only requirement specifications within the current project will be searched.<br>
+- The search is case-insensitive.<br>
+- Empty fields are not considered.</p>";
+/* end contribution */
+
+
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printTestSpec']	= "打印需求规约"; //printTC.html //已校对
 $TLS_htmltext['printTestSpec'] 			= "<h2>目的:</h2>
@@ -131,6 +197,43 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>你可以管理需求规约文档.</p>
 中的测试套件中. 标题和范围被复制到测试用例中.</p>";
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
+$TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
+<p>You can generate document with the requirements within a requirement specification,
+or all the requirements in a test project.</p>
+<h2>Get Started:</h2>
+<ol>
+<li>
+<p>Select the parts of the requirements you want to display, and then click on a  
+requirement specification, or the test project. A printable page will be displayed.</p>
+</li>
+<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
+the information displayed as HTML, or in a Pseudo Micosoft Word document. 
+See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+'{$locale}');\">help</span> for more information.</p>
+</li>
+<li><p>Use your browser's print functionality to actually print the information.<br />
+<i>Note: Make sure to only print the right-hand frame.</i></p>
+</li>
+</ol>";
+
+
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['keywordsAssign']	= "指派关键字"; //已校对
 $TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
@@ -146,7 +249,8 @@ $TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
 
 <h2>有关测试计划中显示的关键字的重要提示:</h2>
 <p>当且仅当测试计划中包含最新版本的测试用例时，你指派的关键字才能影响到你的测试用例上.
-如果你的测试计划中包含的是旧版本的测试用例，你设置的关键字将不会被看到</p>
+如果你的测试计划中包含的是旧版本的测试用例，你设置的关键字将不会被看到。
+</p>
 <p>TestLink会使用这种要求，以至于你对最新版本的测试用例指派的关键字对测试计划中的旧版本没什么影响. 
 如果你希望测试计划中的关键字及时更新，首先使用'更新修改的测试用例'来验证是否是最新版本
 在指派关键字之前.</p>";

@@ -820,7 +820,10 @@ $TLS_filter_active_inactive = "Activo/Inactivo";
 $TLS_show_only_active_testcases = "Al menos UNA versión está ACTIVA";
 $TLS_show_only_inactive_testcases = "TODAS las versiones están INACTIVAS";
 $TLS_show_whole_spec_on_right_panel = 'Mostrar Todo (en el panel derecho)';
-
+$TLS_test_grouped_by = "Agrupados por pruebas";
+$TLS_mode_test_suite = "Suite de Pruebas";
+$TLS_mode_req_coverage = "Requisitos";
+$TLS_parent_child_relation = "Relación padre hijo";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

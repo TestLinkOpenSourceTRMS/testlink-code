@@ -80,7 +80,7 @@ function initializeGui($control)
 
   // DEV NOTES - CRITIC
   // activity has to be coherent with login on frmWorkArea.php and printDocOptions.php
-  $gui->args = $args = $control->get_argument_string() . '&activity=addTC';
+  $gui->args = $control->get_argument_string() . '&activity=addTC';
   $gui->additional_string = '';
   $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
                         "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;

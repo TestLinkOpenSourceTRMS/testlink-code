@@ -699,7 +699,10 @@ $TLS_collapse_tree = "Fechar árvore";
 $TLS_filter_active_inactive = "Ativo/Inativo";
 $TLS_show_only_active_testcases = "Pelo menos uma versão está ATIVA";
 $TLS_show_only_inactive_testcases = "TODAS versões estãso INATIVAS";
-
+$TLS_test_grouped_by = "Testes agrupados por";
+$TLS_mode_test_suite = "Suíte de Teste";
+$TLS_mode_req_coverage = "Exigência";
+$TLS_parent_child_relation = "Relacionamento pai filho";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

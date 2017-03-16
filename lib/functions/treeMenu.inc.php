@@ -51,7 +51,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
 
   $my['filters'] = array_merge($my['filters'], (array)$filters);
-  
   if( $my['options']['viewType'] == 'testSpecTree' )
   {
     $rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
@@ -1664,7 +1663,7 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
     $tc_prefix .= $tc_cfg->glue_character;
     
     $tc_ext_id = $db->prepare_int(str_replace($tc_prefix, '', $filters['filter_tc_id']));
-    
+
     $sql .= " JOIN {$tables['req_coverage']} RC ON RC.req_id = R.id " .
             " JOIN {$tables['nodes_hierarchy']} NH_T ON NH_T.id = RC.testcase_id " .
             " JOIN {$tables['nodes_hierarchy']} NH_TV on NH_TV.parent_id = NH_T.id " .
@@ -1795,7 +1794,6 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
   
   $sql .= " ORDER BY RV.version DESC ";
   $filtered_map = $db->fetchRowsIntoMap($sql, 'id');
-    
   return $filtered_map;
 }
 
@@ -2046,6 +2044,8 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
 }
 
 
+
+
 /**
  * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
  * @author Andreas Simon
@@ -2132,6 +2132,8 @@ function render_reqspeccoverage_treenode(&$db, &$node, &$filtered_map, &$map_id_
 
 	return $node;
 }
+
+
 /**
  * 
  * 
@@ -2241,7 +2243,6 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
   $chronos[] = microtime(true);
-  
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
   $my = array();

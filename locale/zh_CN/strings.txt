@@ -656,7 +656,10 @@ $TLS_btn_show_cf = "显示自定义字段";
 $TLS_btn_export_testplan_tree = '导出测试计划';
 $TLS_expand_tree = "展开树";
 $TLS_collapse_tree = "折叠树";
-
+$TLS_test_grouped_by = "测试分组";
+$TLS_mode_test_suite = "测试用例集";
+$TLS_mode_req_coverage = "需求";
+$TLS_parent_child_relation = "子父关系";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_test_plan;

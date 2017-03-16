@@ -17,21 +17,10 @@
  * with different modes for different features.
  * This is a little overview about its usage in TestLink:
  * 
- * - planTCNavigator.php/tpl use it in "plan_mode" for these features:
- *    --> assign test case execution
- *    --> update linked test case versions
- *    --> set urgent tests
- * 
- * - execNavigator.php/tpl in "execution_mode" 
- *    --> test execution
  * 
  * - planAddTCNavigator.php/tpl in "plan_add_mode"
  *    --> add/remove test cases
  * 
- * - listTestCases.php/tcTree.tpl in "edit_mode"
- *    --> edit test specification
- *    --> assign keywords
- *    --> assign requirements
  *
  * @internal revisions
  * @since 1.9.13
@@ -66,49 +55,6 @@
  * call comes from. But if the user opens a new tab, the new navigator page knows this because
  * no token has been sent to it - so it generates a new one.
  * 
- * The data is saved in session in the form of an array like this example:
- * 
- * [execution_mode] => Array                              // "mode" used by navigator
- *   (
- *     [1986901204] => Array                              // form token to identify the correct tab
- *       (
- *         [filter_keywords_filter_type] => Or            // the active filters and settings,
- *         [filter_result_result] => f                    // prefixed with "filter_" and "setting_"
- *         [filter_result_method] => 3
- *         [filter_result_build] => 71
- *         [filter_assigned_user_include_unassigned] => 1
- *         [filter_testcase_name] => 
- *         [filter_toplevel_testsuite] => Array
- *           (
- *           )
- *
- *         [filter_keywords] => 
- *         [filter_priority] => 3
- *         [filter_execution_type] => 2
- *         [filter_assigned_user] => Array
- *           (
- *             [3] => 3
- *           )
- * 
- *         [filter_custom_fields] => 
- *         [setting_testplan] => 4990
- *         [setting_build] => 71
- *         [setting_platform] => 
- *         [setting_refresh_tree_on_action] => 1
- *         [testcases_to_show] => Array                   // The internal IDs of the test cases which
- *           (                                            // where not filtered out by user's choices.
- *             [0] => 1852                                // This was the part which earlier caused
- *             [1] => 60                                  // the error because of the too long URL.
- *             [2] => 2039
- *             [3] => 2033
- *             [4] => 2065
- *             [5] => 2159
- *             [6] => 3733
- *           )
- *
- *         [timestamp] => 1277727920                      // additional means to check age of session data
- *       )
- *   )
  * 
  * The access to this data can be done in the following way from the right frame page:
  * 
@@ -153,7 +99,7 @@
  * It contains logic to be used at GUI level to manage
  * a common set of settings and filters for testcases.
  *
- * @author Tanguy Oger
+ * @author Andreas Simon
  * @package TestLink
  * @uses testplan
  * @uses exec_cf_mgr
@@ -230,36 +176,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
    * relying only on the config parameter.
    * @var array
    */
-  private $mode_filter_mapping = array('edit_mode' => array('filter_tc_id',
-                                                            'filter_testcase_name',
-                                                            'filter_toplevel_testsuite',
-                                                            'filter_keywords',
-                                                            // 'filter_active_inactive',
-                                                            'filter_workflow_status',
-                                                            'filter_importance',
-                                                            'filter_execution_type',
-                                                            'filter_custom_fields'),
-                                       'execution_mode' => array('filter_tc_id',
-                                                                 'filter_testcase_name',
-                                                                 'filter_toplevel_testsuite',
-                                                                 'filter_keywords',
-                                                                 'filter_priority',
-                                                                 'filter_execution_type',
-                                                                 'filter_assigned_user',
-                                                                 'filter_custom_fields',
-                                                                 'filter_result',
-                                                                 'filter_bugs'),
-                                       'plan_mode' => array('filter_tc_id',
-                                                            'filter_testcase_name',
-                                                            'filter_toplevel_testsuite',
-                                                            'filter_keywords',
-                                                            'filter_priority',
-                                                            'filter_execution_type',
-                                                            // enabled user filter when assigning testcases
-                                                            'filter_assigned_user',
-                                                            'filter_custom_fields',
-                                                            'filter_result'),
-                                       'plan_add_mode' => array('filter_tc_id',
+  private $mode_filter_mapping = array('plan_add_mode' => array('filter_tc_id',
                                                                 'filter_testcase_name',
                                                                 'filter_toplevel_testsuite',
                                                                 'filter_keywords',
@@ -276,27 +193,21 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
    * @var array
    */
   private $all_settings = array('setting_testplan' => array("REQUEST", tlInputParameter::INT_N),
-                                'setting_build' => array("REQUEST", tlInputParameter::INT_N),
-                                'setting_platform' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL),
-				'setting_testsgroupby' => array("REQUEST", tlInputParameter::INT_N));
+								'setting_get_parent_child_relation' => array("POST", tlInputParameter::CB_BOOL),
+								'hidden_setting_get_parent_child_relation' => array("POST", tlInputParameter::INT_N),
+								'setting_testsgroupby' => array("REQUEST", tlInputParameter::INT_N));
 
   /**
    * This array is used to map the modes to their available settings.
    * @var array
    */
    
-  private $mode_setting_mapping = array('edit_mode' => array('setting_refresh_tree_on_action'),
-                                        'execution_mode' => array('setting_testplan',
-                                                                  'setting_build',
-                                                                  'setting_platform',
-                                                                  'setting_refresh_tree_on_action'),
-                                        'plan_mode' => array('setting_testplan',
-                                                             'setting_build',
-                                                             'setting_platform',
-                                                             'setting_refresh_tree_on_action'),
-                                        'plan_add_mode' => array('setting_testplan',
-                                                                 'setting_refresh_tree_on_action'));
+  private $mode_setting_mapping = array('plan_add_mode' => array('setting_testplan',
+                                                                 'setting_refresh_tree_on_action',
+																 'setting_get_parent_child_relation',
+																 'hidden_setting_get_parent_child_relation',
+																 'setting_testsgroupby'));
 
   /**
    * The mode used. Depending on the feature for which this class will be instantiated.
@@ -305,7 +216,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
    * Value has to be one of the class constants for mode, default is edit mode.
    * @var string
    */
-  private $mode = 'edit_mode';
+  private $mode = 'plan_add_mode';
 
 
   /**
@@ -327,9 +238,9 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
   /**
    *
    * @param database $dbHandler
-   * @param string $mode can be edit_mode/execution_mode/plan_mode/plan_add_mode, depending on usage
+   * @param string $mode can be plan_add_mode, depending on usage
    */
-  public function __construct(&$dbHandler, $mode = 'edit_mode') 
+  public function __construct(&$dbHandler, $mode = 'plan_add_mode') 
   {
     // set mode to define further actions before calling parent constructor
     $this->mode = array_key_exists($mode,$this->mode_filter_mapping) ? $mode : 'edit_mode';
@@ -427,6 +338,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
 
     // add settings and filters to parameter info array for request parsers
     $params = array();
+
     foreach ($this->all_settings as $name => $info) 
     {
       if (is_array($info)) 
@@ -482,8 +394,6 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
       $this->settings['setting_build'] = false;
       $this->settings['setting_platform'] = false;
     }
-	
-	$this->init_setting_testsgroupedby();
   
     // if at least one active setting is left to display, switch settings panel on
     if ($at_least_one_active) 
@@ -776,124 +686,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     $tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
 
     switch ($this->mode) 
-    {
-      case 'plan_mode':
-        // No lazy loading here.
-        $opt_etree = $this->treeOpt[$this->mode];
-        $filters->show_testsuite_contents = 1;
-        switch($this->args->feature)
-        {
-          case 'test_urgency':
-            $filters->hide_testcases = 1; // ??
-            $opt_etree->allow_empty_build = 1;
-            $opt_etree->hideTestCases = 1;
-            $opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
-          break;
-          
-          case 'tc_exec_assignment':
-            $filters->hide_testcases = 0;
-            $opt_etree->hideTestCases = 0;
-            $opt_etree->allow_empty_build = 0;
-            $opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
-            
-            // TICKET 4905: Test Case Tester Assignment - filters dont work properly 
-            //        for 'Assigned to' Field
-            // This way we are GOING TO IGNORE SETTING BUILD
-            $opt_etree->buildIDKeyMap = 'filter_result_build';
-            
-          break;
-          
-          case 'planUpdateTC':
-            $filters->hide_testcases = 0;
-            $opt_etree->hideTestCases = 0;
-            $opt_etree->allow_empty_build = 1;
-            $opt_etree->getTreeMethod = 'getLinkedForTesterAssignmentTree';
-          break;
-          
-        }
-        list($tree_menu, $testcases_to_show) = testPlanTree($this->db,$gui->menuUrl,
-                                                            $this->args->testproject_id,
-                                                            $this->args->testproject_name,
-                                                            $this->args->testplan_id,
-                                                            $this->args->testplan_name,
-                                                            $filters,$opt_etree);
-        $this->set_testcases_to_show($testcases_to_show);
-
-        $root_node = $tree_menu->rootnode;
-        $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-        
-        // improved cookiePrefix - all trees in plan mode show test cases
-        // assigned to a specified test plan -> store state for each feature and each project
-        //
-        // usage of wrong values in $this->args->xyz for cookiePrefix
-        // instead of correct values in $filters->setting_xyz
-        $cookie_prefix = $this->args->feature . "_tplan_id_" . $filters->setting_testplan ."_";
-      break;
-      
-      case 'edit_mode':
-        if ($gui->tree_drag_and_drop_enabled[$this->args->feature]) 
-        {
-          $drag_and_drop->enabled = true;
-          $drag_and_drop->BackEndUrl = $this->args->basehref . 
-                                       'lib/ajax/dragdroptprojectnodes.php';
-          $drag_and_drop->useBeforeMoveNode = true;
-        }
-        // improved cookiePrefix - 
-        // all trees in edit mode show test cases of whole test project 
-        // -> store state for each feature and each project
-        $cookie_prefix = $this->args->feature . "_tproject_id_" . $this->args->testproject_id ."_";
-        
-        if ($this->do_filtering) 
-        {
-          // TICKET 4353: added active/inactive filter
-          $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-          $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-          if(isset($filters['filter_active_inactive']))
-          {  
-            if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
-            {
-                $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
-            }
-            if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
-            {
-                $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
-            }
-          }          
-          $options = array('forPrinting' => NOT_FOR_PRINTING,
-                           'hideTestCases' => SHOW_TESTCASES,
-                           'tc_action_enabled' => DO_ON_TESTCASE_CLICK,
-                           'exclude_branches' => null,
-                           'ignore_inactive_testcases' => $ignore_inactive_testcases,
-                           'ignore_active_testcases' => $ignore_active_testcases);
-
-          $forrest = generateTestSpecTree($this->db, $this->args->testproject_id,
-                                          $this->args->testproject_name,
-                                          $gui->menuUrl, $filters, $options);
-          
-
-          $this->set_testcases_to_show($forrest['leaves']);
-          $tree_menu = $forrest['menu'];  
-          $root_node = $tree_menu->rootnode;
-          $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-        } 
-        else 
-        {
-          $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                    "root_node={$this->args->testproject_id}&" .
-                    "tcprefix=" . urlencode($tc_prefix .
-                    $this->configuration->tc_cfg->glue_character);
-          
-          $tcase_qty = $this->testproject_mgr->count_testcases($this->args->testproject_id);
-          
-          $root_node = new stdClass();
-          $root_node->href = "javascript:EP({$this->args->testproject_id})";
-          $root_node->id = $this->args->testproject_id;
-          $root_node->name = $this->args->testproject_name . " ($tcase_qty)";
-          $root_node->wrapOpen = $root_node->wrapClose = '';
-          $root_node->testlink_node_type='testproject';
-        }
-      break;
-      
+    {     
       case 'plan_add_mode':
         // improved cookiePrefix - 
         // tree in plan_add_mode is only used for add/removed test cases features 
@@ -911,19 +704,6 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
 
         if ($this->do_filtering)
         {
-          // TICKET 4496: added active/inactive filter
-          // Will be refactored in future versions
-          // $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-          // $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-          // if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
-          // {
-          //   $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
-          // }
-          // if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
-          // {
-          //   $ignore_active_testcases = IGNORE_ACTIVE_TESTCASES;
-          // }
-          // need to be refactored
           $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
           $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
                     
@@ -937,12 +717,12 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
 			if ($mode == 'mode_req_coverage')
 			{			
 
-			$options = array('for_printing' => NOT_FOR_PRINTING,'exclude_branches' => null);
+				$options = array('for_printing' => NOT_FOR_PRINTING,'exclude_branches' => null);
 
-			$tree_menu = generateTestReqCoverageTree($this->db,
-												$this->args->testproject_id,
-												$this->args->testproject_name,
-												$gui->menuUrl, $filters, $options);
+				$tree_menu = generateTestReqCoverageTree($this->db,
+													$this->args->testproject_id,
+													$this->args->testproject_name,
+													$gui->menuUrl, $filters, $options);
 												
 			}
 			
@@ -964,55 +744,6 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
 					  $root_node->name = $this->args->testproject_name . " ($req_qty)";
 					  $root_node->testlink_node_type = 'testproject';
 			}
-        }
-      break;
-      
-      case 'execution_mode':
-      default:
-        // No lazy loading here.
-        // Filtering is always done in execution mode, no matter if user enters data or not,
-        // since the user should usually never see the whole tree here.
-        $filters->hide_testcases = false;
-        $filters->show_testsuite_contents = $this->configuration->exec_cfg->show_testsuite_contents;
-
-        $exec_cfg = &$this->configuration->exec_cfg;
-        $opt_etree = new stdClass();
-        $opt_etree->useCounters = $exec_cfg->enable_tree_testcase_counters;
-        
-        $opt_etree->useColours = new stdClass();
-        $opt_etree->useColours->testcases = $exec_cfg->enable_tree_testcases_colouring;
-        $opt_etree->useColours->counters =  $exec_cfg->enable_tree_counters_colouring;
-        $opt_etree->testcases_colouring_by_selected_build = $exec_cfg->testcases_colouring_by_selected_build; 
-        if($this->mode == 'execution_mode')
-        {
-          $opt_etree->actionJS['testproject'] = 'EXDS';
-        }  
-
-        list($tree_menu, $testcases_to_show) = execTree($this->db,$gui->menuUrl,
-                                                        array('tproject_id' => $this->args->testproject_id,
-                                                              'tproject_name' => $this->args->testproject_name,
-                                                              'tplan_id' => $this->args->testplan_id,
-                                                              'tplan_name' => $this->args->testplan_name),
-                                                        $filters,$opt_etree);
-
-        $this->set_testcases_to_show($testcases_to_show);
-        
-        $root_node = $tree_menu->rootnode;
-        $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
-        
-        //
-        // improved cookiePrefix - 
-        // tree on test execution shows test cases depending on test plan, platform and build. 
-        // Because test plan is implicitily given with build -> store state for each (platform-build)
-        // combination
-        //
-        // Usage of wrong values in $this->args->xyz for cookiePrefix
-        // instead of correct values in $filters->setting_xyz
-        //
-        $cookie_prefix = 'test_exec_build_id_' . $filters->setting_build . '_';
-        if (isset($filters->setting_platform)) 
-        {
-          $cookie_prefix .= 'platform_id_' . $filters->setting_platform . '_';
         }
       break;
     }
@@ -1058,78 +789,36 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     $_SESSION[$key] = $selection;   
   } // end of method
 
-
-
   /**
    * 
    * 
    */
-  private function init_setting_build() 
+  private function init_setting_get_parent_child_relation() 
   {
+    $key = 'setting_get_parent_child_relation';
+    $hidden_key = 'hidden_setting_get_parent_child_relation';
+    $selection = 0;
 
-    $key = 'setting_build';
-    if (is_null($this->testplan_mgr)) 
-    {
-      $this->testplan_mgr = new testplan($this->db);
-    }
+    $this->settings[$key] = array();
+    $this->settings[$key][$hidden_key] = false;
 
-    $tplan_id = $this->settings['setting_testplan']['selected'];
-
-    switch( $this->mode )
-    {
-      case 'plan_mode':
-        $active = $open = null;
-        if( $this->configuration->setting_build_inactive_out )
-        {
-          $active = testplan::GET_ACTIVE_BUILD;  
-        }  
-
-        if( $this->configuration->setting_build_close_out )
-        {
-          $open = testplan::GET_OPEN_BUILD;  
-        }  
-      break;
-
-      default:
-        $active = testplan::GET_ACTIVE_BUILD;
-        $open = testplan::GET_OPEN_BUILD;
-      break;
+    // look where we can find the setting - POST, SESSION
+    if (isset($this->args->{$key})) {
+      $selection = 1;
+	} else if (isset($this->args->{$hidden_key})) {
+      $selection = 0;
+    } else if (isset($_SESSION[$key])) {
+      $selection = $this->settings[$key];
+    } else {
+      $selection = 0;
     }
     
-    $this->settings[$key]['items'] = $this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
-    $tplan_builds = array_keys((array)$this->settings[$key]['items']);
-
-    // According to mode, we need different labels for this selector on GUI
-    $label = ($this->mode == 'plan_mode') ? 'assign_build' : 'exec_build';
-    $this->settings[$key]['label'] = lang_get($label);
-    
-    // if no build has been chosen by user, select newest build by default
-    $newest_build_id = $this->testplan_mgr->get_max_build_id($tplan_id, $active, $open);
-
-    $session_key = $tplan_id . '_stored_setting_build';
-    $session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
-
-    $this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $session_selection;
-
-    if (!$this->args->$key) 
-    {
-      $this->args->$key = $newest_build_id;
-    }
-    
-    // only take build ID into account if it really is a build from this testplan
-    $this->settings[$key]['selected'] = (in_array($this->args->$key, (array)$tplan_builds)) ? 
-                                        $this->args->$key : $newest_build_id;
-
-    // still no build selected? take first one from selection.
-    if (!$this->settings[$key]['selected'] && sizeof($this->settings[$key]['items'])) 
-    {
-      $this->settings[$key]['selected'] = end($tplan_builds);
-    }
-
-    $_SESSION[$session_key] = $this->settings[$key]['selected'];
+    $this->settings[$key]['selected'] = $selection;
+    $this->settings[$key][$hidden_key] = $selection;
+    $_SESSION[$key] = $selection;   
   } // end of method
 
-
+  
   /**
    * 
    * 
@@ -1194,102 +883,48 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     }
   }
 
-  /**
-   * 
-   * Possibility to filter by Platform:
-   * according mode we need to add [Any] option
+  
+    /**
    *
-   */
-  private function init_setting_platform() 
+   */ 
+  protected function init_setting_testsgroupby()
   {
-    if (!$this->platform_mgr) 
-    {
-      $this->platform_mgr = new tlPlatform($this->db);
-    }
-
-    $testplan_id = $this->settings['setting_testplan']['selected'];
-    $session_key = $testplan_id . '_stored_setting_platform';
-    $session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
-    $key = 'setting_platform';
-    $platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
-
-    if( is_null($platformSet) )
-    {
-      // Brute force bye, bye !! >>--->
-      $this->settings[$key] = false;
-      $_SESSION[$session_key] = null;
-      return;
-    }  
-
-    // Ok, there are platforms, go ahead
-    $this->settings[$key] = array('items' => null, 'selected' => -1);
-    if( is_null($this->args->$key) )
-    {
-      $this->args->$key = intval($session_selection);  
-    }  
-   
-
-    switch($this->mode)
-    {
-      case 'plan_mode':
-        $this->settings[$key]['items'] = array(0 => $this->option_strings['any']);
-        $this->settings[$key]['items'] += $platformSet;
-      break;
-
-      case 'execution_mode':
-        $this->settings[$key]['items'] = $platformSet;
-      break;
-
-      default:
-        throw new Exception(__METHOD__ . "Mode:" . $this->mode . 'Do not know what to do', 1);
-      break;
-    }
-
-    // If this platform is NOT valid for Test plan, I will set the first one
-    // (is any exists).
-    if( !isset($this->settings[$key]['items']) )
-    {
-      $this->args->$key = key($this->settings[$key]['items']);
-    }  
-    
-    $this->settings[$key]['selected'] = $this->args->$key;
-    if($this->args->$key <= 0)
-    {
-      $this->settings[$key]['selected'] = key($this->settings[$key]['items']);
-    }  
-    $_SESSION[$session_key] = $this->settings[$key]['selected'];
+	$key = 'setting_testsgroupby';
+	
+	// now load info from session
+	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
+	$this->args->testsgroupedby_mode = $mode;
+	$this->args->{$key} = $mode;
+	$this->settings[$key]['selected'] = $mode;
+	
+	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
+	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
   } // end of method
 
-  /**
-   * 
-   * 
-   */
-  private function init_filter_tc_id() {
+  /*
+  *
+  */
+  private function init_filter_tc_id() 
+  {
     $key = 'filter_tc_id';
     $selection = $this->args->{$key};
-    $internal_id = null;
     
     if (!$this->testproject_mgr) {
       $this->testproject_mgr = new testproject($this->db);
     }
-    if (!$this->tc_mgr) {
-      $this->tc_mgr = new testcase($this->db);
-    }
     
+    $tc_cfg = config_get('testcase_cfg');
     $tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
-    $tc_prefix .= $this->configuration->tc_cfg->glue_character;
+    $tc_prefix .= $tc_cfg->glue_character;
     
     if (!$selection || $selection == $tc_prefix || $this->args->reset_filters) {
       $selection = null;
     } else {
       $this->do_filtering = true;
-      // we got the external ID here when filtering, but need the internal one
-      $internal_id = $this->tc_mgr->getInternalID($selection);
     }
     
     $this->filters[$key] = array('selected' => $selection ? $selection : $tc_prefix);
-    $this->active_filters[$key] = $internal_id;
-	
+    $this->active_filters[$key] = $selection;
   } // end of method
   
   /**
@@ -1891,33 +1526,6 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     $this->treeOpt['plan_mode']->absolute_last_execution = true;  // hmm  probably useless
     
   }
-  
-  /**
-   *
-   */ 
- /* protected function getCustomFields($application_area=null)
-  {
-    if (!$this->cfield_mgr) 
-    {
-      $this->cfield_mgr = new cfield_mgr($this->db);
-    }
-    $scope = array('design' => true,'execution' => false, 'testplan_design' => false);
-    $scope = array_merge($scope,(array)$application_area);
-
-    $cfields = array('design' => null,'execution' => null, 'testplan_design' => null);
-    if($scope['design'])
-    {
-      $cfields['design'] = $this->cfield_mgr->get_linked_cfields_at_design($this->args->testproject_id, 1, null, 'testcase');
-    }  
-
-    if($scope['testplan_design'])
-    {
-      $cfields['testplan_design'] = $this->cfield_mgr->get_linked_cfields_at_testplan_design($this->args->testproject_id,1,'testcase');
-    }  
-
-    $cf = (array)$cfields['design'] + (array)$cfields['testplan_design'];
-    return count($cf) > 0 ? $cf : null;
-  }*/
 
   /**
    *
@@ -1963,6 +1571,9 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
   } // end of method
   
 
+  /**
+  *
+  */
   private function init_filter_title() 
   {
     $key = 'filter_title';
@@ -1978,6 +1589,9 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     $this->active_filters[$key] = $selection;
   } // end of method
   
+  /*
+  *
+  */
   private function init_filter_status() {
     $key = 'filter_status';
     $selection = $this->args->{$key};
@@ -2132,26 +1746,5 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     $cfields = $this->req_mgr->get_linked_cfields(null, null, $this->args->testproject_id);
     return $cfields;
   }
-  //---------------------
-  
-  
-  
-
-  /**
-   *
-   */ 
-  protected function init_setting_testsgroupedby()
-  {
-	$key = 'setting_testsgroupby';
-	
-	// now load info from session
-	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
-	$this->args->testsgroupedby_mode = $mode;
-	$this->args->{$key} = $mode;
-	$this->settings[$key]['selected'] = $mode;
-	
-	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
-	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
-  } // end of method
 
 }

@@ -567,6 +567,12 @@ $TLS_invalid_query = "Неудачный запрос - ";
 $TLS_warning = "Внимание!!";
 $TLS_was_success = " были успешно";
 
+// ----- gui/templates/inc_filter_panel.tpl -----
+$TLS_test_grouped_by = "Тесты сгруппированы по";
+$TLS_mode_test_suite = "Группа тестов";
+$TLS_mode_req_coverage = "Требование";
+$TLS_parent_child_relation = "Родительские отношения ребенка";
+
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = "Тест-план";

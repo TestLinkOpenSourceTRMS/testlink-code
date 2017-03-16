@@ -220,8 +220,13 @@ if($do_display)
 	{
 		$requirement_data = $req_mgr->get_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
 		$requirement_data_name = $requirement_data[0]['req_doc_id'] . ' : ' . $requirement_data[0]['title'];
-		// get child testCase
-		$requirements_child = $req_spec_mgr->get_requirement_child_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
+		// get chekbox value : setting_get_parent_child_relation.
+		if($_SESSION['setting_get_parent_child_relation']){
+			// if checkbox is checked.
+			$requirements_child = $req_spec_mgr->get_requirement_child_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
+		} else {
+			$requirements_child = null;
+		}
 	}
 	elseif($args->item_level == 'reqspeccoverage')
 	{
@@ -275,9 +280,9 @@ if($do_display)
 
 	// Add Test Cases to Test plan - Right pane does not honor custom field filter
 	$testCaseSet = $args->control_panel['filter_tc_id'];
-  if(!is_null($keywordsFilter) )
-  {
-  // With this pieces we implement the AND type of keyword filter.
+	if(!is_null($keywordsFilter) )
+	{
+		// With this pieces we implement the AND type of keyword filter.
 		$keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
 		$keywordsFilter->type);
 
@@ -295,7 +300,7 @@ if($do_display)
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   // filter by test case execution type
-	$filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet,
+	$filters = array('keywords' => $args->keyword_id, 'testcases' => null,
 	'exec_type' => $args->executionType, 'importance' => $args->importance,
 	'cfields' => $args->control_panel['filter_custom_fields'],
 	'tcase_name' => $args->control_panel['filter_testcase_name']);
@@ -310,11 +315,16 @@ if($do_display)
 	
 	  // if requirement, has a child requirement.
 	  if(!is_null($requirements_child)){
-	  
+		
+		// get parent name.
+		$parentName = $requirement_data_name;
+		
 		foreach($requirements_child as $key => $req){
-			$requirement_data_name = $req['req_doc_id'] . ' : ' . $req['name'];
+			$requirement_data_name = $req['req_doc_id'] . ' : ' . $req['name'] . " " . lang_get('req_rel_is_child_of') . " " . $parentName;
 			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['destination_id'],$requirement_data_name,
 			$tplan_linked_tcversions,null,$filters,$opt);
+			// update parent name.
+			$parentName = $req['req_doc_id'] . ' : ' . $req['name'];
 			// First requirement without test cases
 				if (empty($tmp['spec_view']))
 					continue;
@@ -377,35 +387,45 @@ if($do_display)
 		}
 	}
 
-  $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
-  $gui->items = $out['spec_view'];
-  $gui->has_linked_items = $out['has_linked_items'];
-  $gui->add_custom_fields = $opt['add_custom_fields'];
-  $gui->drawSavePlatformsButton = false;
-  $gui->drawSaveCFieldsButton = false;
+	// count nb testcases selected in view.
+	$nbTestCaseSelected = 0;
+	foreach($out['spec_view'][1]['testcases'] as $key => $value)
+	{
+		if($value['linked_version_id'] != 0){
+			$nbTestCaseSelected++;
+		}
+	}
+	$out['spec_view'][1]['linked_testcase_qty'] = $nbTestCaseSelected;
+	
+	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
+	$gui->items = $out['spec_view'];
+	$gui->has_linked_items = $out['has_linked_items'];
+	$gui->add_custom_fields = $opt['add_custom_fields'];
+	$gui->drawSavePlatformsButton = false;
+	$gui->drawSaveCFieldsButton = false;
 
     if( !is_null($gui->items) )
     {
-    initDrawSaveButtons($gui);
+		initDrawSaveButtons($gui);
 	}
 
-// This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
-setAdditionalGuiData($gui);
+	// This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
+	setAdditionalGuiData($gui);
 
-// refresh tree only when action is done
-switch ($args->doAction)
+	// refresh tree only when action is done
+	switch ($args->doAction)
 	{
-	case 'doReorder':
-	case 'doSavePlatforms':
-	case 'doSaveCustomFields':
-	case 'doAddRemove':
-	$gui->refreshTree = $args->refreshTree;
-	break;
+		case 'doReorder':
+		case 'doSavePlatforms':
+		case 'doSaveCustomFields':
+		case 'doAddRemove':
+		$gui->refreshTree = $args->refreshTree;
+		break;
 
-	default:
-	$gui->refreshTree = false;
-	break;
-  }
+		default:
+		$gui->refreshTree = false;
+		break;
+	}
 
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');

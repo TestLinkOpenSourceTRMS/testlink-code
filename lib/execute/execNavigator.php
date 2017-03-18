@@ -105,6 +105,13 @@ function initializeGui(&$dbH,&$control)
     $gui->features['import'] = true;
     $gui->execAccess = true;
   }  
+
+  if($grants['exec_ro_access'])
+  {
+    $gui->execAccess = true;
+  }  
+
+
   $control->draw_export_testplan_button = $gui->features['export'];
   $control->draw_import_xml_results_button = $gui->features['import'];
 
@@ -132,10 +139,15 @@ function checkAccessToExec(&$dbH,&$ct)
 
   $user = $_SESSION['currentUser'];
   $grants = null;
-  if( $user->hasRight($dbH,'testplan_execute',$tproject_id,$tplan_id,true) )
+  $k2a = array('testplan_execute','exec_ro_access');
+  foreach($k2a as $r2c)
   {
-    $grants['testplan_execute'] = true;
-  }
+    $grants[$r2c] = false;
+    if( $user->hasRight($dbH,$r2c,$tproject_id,$tplan_id,true) )
+    {
+      $grants[$r2c] = true;
+    }    
+  }  
 
   return $grants;
 } 

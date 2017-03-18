@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------------------
 
 # Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.16', 'TestLink 1.9.16 Moka Pot',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.17', 'TestLink 1.9.17 Alan Turing',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');
@@ -89,6 +89,9 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (47,'testcase_freeze');
 
 # since 1.9.15
 INSERT INTO /*prefix*/rights  (id,description) VALUES (48,'mgt_plugins');
+
+-- since 1.9.17
+INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
 
 # Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,1 );

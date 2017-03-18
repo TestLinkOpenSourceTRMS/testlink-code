@@ -2485,6 +2485,7 @@ $TLS_info_search_req_spec = "This list shows all requirement specifications whic
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
 $TLS_href_build_new = "Builds / Releases";
 $TLS_href_execute_test = "Execute Tests";
+$TLS_href_exec_ro_access = "Access Execute Tests RO";
 $TLS_href_metrics_dashboard = "Metrics Dashboard";
 $TLS_href_newest_tcversions = "Show Test Cases Newest Versions";
 $TLS_href_plan_assign_urgency = "Set Urgent Tests";
@@ -2649,6 +2650,7 @@ $TLS_no_rights = "no rights";
 
 $TLS_right_exec_edit_notes = "Edit Execution Notes";
 $TLS_right_exec_delete = "Delete Execution";
+$TLS_right_exec_ro_access = "Execution View (read only access)";
 $TLS_right_testplan_unlink_executed_testcases = "Unlink Executed Test Cases";
 $TLS_right_testproject_delete_executed_testcases = "Delete Executed Test Cases";
 $TLS_right_testproject_edit_executed_testcases = "Edit Executed Test Cases";
@@ -4086,4 +4088,5 @@ $TLS_search_other_attr = "You can set search criteria that does not use words. B
 
 $TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
 $TLS_multiple_entities_search = 'Search on multiple entities';
+$TLS_no_access_to_feature = 'You do not have enough rights to access the feature';
 // ----- END ------------------------------------------------------------------

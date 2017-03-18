@@ -4086,4 +4086,5 @@ $TLS_search_other_attr = "You can set search criteria that does not use words. B
 
 $TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
 $TLS_multiple_entities_search = 'Search on multiple entities';
+$TLS_no_access_to_feature = 'You do not have enough rights to access the feature';
 // ----- END ------------------------------------------------------------------

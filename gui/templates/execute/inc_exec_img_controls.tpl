@@ -4,8 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
-@internal revisions
-@since 1.9.16
 *}	
       {$ResultsStatusCode=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
@@ -14,6 +12,7 @@ Author : franciscom
         {$radio_id_prefix = "statusSingle"}
       {/if}
 
+      {if $gui->grants->execute}
   		<table class="invisible">
   		<tr>
   			<td style="text-align: center;width:80%;">
@@ -130,6 +129,13 @@ Author : franciscom
           </td></tr>
         {/if}
   		</table>
+      
+      {else}
+        <input type="submit" name="move2next[{$args_tcversion_id}]" 
+               {$args_input_enable_mgmt}
+               onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};"
+               value="{$args_labels.btn_next_tcase}" />
+      {/if}
 
       {if $gui->addIssueOp != '' && !is_null($gui->addIssueOp) && 
           !is_null($gui->addIssueOp.type) }  

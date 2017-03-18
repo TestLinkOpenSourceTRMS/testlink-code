@@ -351,9 +351,11 @@ function initTopMenu(&$db)
 
         if( $addItem )
         {
-          $_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
-          "target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-          "tabindex=''" . $idx++ . "''>";
+		  $_SESSION['testprojectTopMenu'] .= "<div class='menu_tab'><a ".
+		  "href='{$element['url']}' " .
+          "target='{$element['target']}' ".
+		  "accesskey='{$element['shortcut']}' " .
+          "tabindex='" . $idx++ . "'>";
 
           if( isset($element['imgKey']) )
           {
@@ -364,8 +366,7 @@ function initTopMenu(&$db)
           {
            $_SESSION['testprojectTopMenu'] .= lang_get($element['label']); 
           }  
-
-          $_SESSION['testprojectTopMenu'] .= "</a>&nbsp;&nbsp;&nbsp;";
+	  $_SESSION['testprojectTopMenu'] .= "</a></div>";
         }
       }
     }

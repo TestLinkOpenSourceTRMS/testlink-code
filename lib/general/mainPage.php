@@ -227,7 +227,8 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'modify_tc' => 'mgt_modify_tc',
                        'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
                        'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
-                       'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases');
+                       'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases',
+                       'exec_ro_access' => 'exec_ro_access');
  if($forceToNo)
  {
     $grants = array_fill_keys(array_keys($right2check), 'no');

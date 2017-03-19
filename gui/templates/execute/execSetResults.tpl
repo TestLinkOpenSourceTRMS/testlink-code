@@ -3,8 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
-@internal revisions
-@since 1.9.15
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -274,11 +272,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                       javascript:toogleRequiredOnShowHide('artifactComponent');
                       execSetResults.submit();"/>
 
+      {if $gui->grants->execute}
       <input type="button" id="pop_up_import_button" name="import_xml_button"
              value="{$labels.import_xml_results}"
              onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
                                                    {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
           
+      {/if}
+      
       {if $tlCfg->exec_cfg->enable_test_automation}
         <input type="submit" id="execute_cases" name="execute_cases"
                  value="{$labels.execute_and_save_results}"/>

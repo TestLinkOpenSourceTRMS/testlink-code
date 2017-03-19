@@ -873,7 +873,8 @@ $tlCfg->guiTopMenu[3] = array('label' => 'title_specification',
 $tlCfg->guiTopMenu[4] = array('label' => 'title_execute',
                               'imgKey' => 'execution',
                               'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
-                              'right' => 'testplan_execute','condition'=>'TestPlanAvailable',
+                              'right' => array('testplan_execute','exec_ro_access'),
+                              'condition'=>'TestPlanAvailable',
                               'shortcut'=>'e','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[5] = array('label' => 'title_results',

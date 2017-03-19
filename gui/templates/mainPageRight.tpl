@@ -14,7 +14,8 @@
              href_upd_mod_tc,title_test_plan_mgmt,title_test_case_suite,
              href_plan_management,href_assign_user_roles,
              href_build_new,href_plan_mstones,href_plan_define_priority,
-             href_metrics_dashboard,href_add_remove_test_cases"}
+             href_metrics_dashboard,href_add_remove_test_cases,
+             href_exec_ro_access"}
 
 
 {$menuLayout=$tlCfg->gui->layoutMainPageRight}
@@ -41,7 +42,10 @@
     </script>
 {/if}
 
-{if $gui->countPlans > 0 && ($gui->grants.testplan_execute == "yes" || $gui->grants.testplan_metrics == "yes")}
+{if $gui->countPlans > 0 && 
+    ($gui->grants.testplan_execute == "yes" || 
+     $gui->grants.testplan_metrics == "yes" ||
+     $gui->grants.exec_ro_access == "yes")}
    {$display_right_block_2=true}
 
     <script  type="text/javascript">
@@ -154,8 +158,18 @@
 	{* ------------------------------------------------------------------------------------------ *}
 	{if $display_right_block_2}
     <div id='test_execution_topics'>
-		{if $gui->grants.testplan_execute == "yes"}
-			<a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
+		{if $gui->grants.testplan_execute == "yes" || 
+        $gui->grants.exec_ro_access == "yes"}
+
+        {if $gui->grants.testplan_execute == "yes"}
+          {$lbx = $labels.href_execute_test}
+        {/if}
+
+        {if $gui->grants.exec_ro_access == "yes"}  
+          {$lbx = $labels.href_exec_ro_access}
+        {/if}
+
+			<a href="{$gui->launcher}?feature=executeTest">{$lbx}</a>
       <br /> 
 		
       {if $gui->grants.exec_testcases_assigned_to_me == "yes"}

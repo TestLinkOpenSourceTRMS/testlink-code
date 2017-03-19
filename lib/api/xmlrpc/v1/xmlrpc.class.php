@@ -8156,7 +8156,7 @@ protected function createAttachmentTempFile()
         if( $this->_isParamPresent(self::$platformIDParamName,$msg_prefix) ||
             $this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
         {
-          $status_ok = $this->checkPlatformIdentity($tplan_id]);
+          $status_ok = $this->checkPlatformIdentity($tplan_id);
           if( $status_ok)
           {
             $execContext['platform_id'] = 

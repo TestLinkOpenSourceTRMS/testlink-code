@@ -64,8 +64,8 @@ $TLS_htmltext['editTc'] 		= "<p>A <i>Especificação de Teste</i> permite aos ut
 		
 <h2>Iniciar:</h2>
 <ol>
-	<li>Selecione o seu Projecto de Teste na árvore de navegação (o nó principal). <i>Observe: " .
-	"Você poderá sempre trocar o Projecto de Teste activo selecionando um diferente da " .
+	<li>Selecione o seu Projecto de Testes na árvore de navegação (o nó principal). <i>Observe: " .
+	"Você poderá sempre trocar o Projecto de Testes activo selecionando um diferente da " .
 	"lista drop-down do canto superior esquerdo.</i></li>
 	<li>Crie uma nova Suite de Teste clicando em <b>Nova Suite de Teste</b>. As Suites de Teste podem " .
 	"trazer a estrutura da sua documentação de teste conforme suas convenções (testes funcionais/não-funcionais " .
@@ -74,13 +74,13 @@ $TLS_htmltext['editTc'] 		= "<p>A <i>Especificação de Teste</i> permite aos ut
 	"links para documentos relevantes, limitações e outras informações habituais. Em geral, " .
 	"todas anotações que são comuns às Suites de Teste. As Suites de Teste seguem " .
 	"a metáfora do &quot;diretório&quot;, assim os utilizadores podem mover e copiar Suites de Teste dentro " .
-	"do Projecto de Teste. Além disso, eles podem ser importados ou exportados (incluindo os Casos de Teste nele contidos).</li>
+	"do Projecto de Testes. Além disso, eles podem ser importados ou exportados (incluindo os Casos de Teste nele contidos).</li>
 	<li>Suites de Teste são pastas escaláveis. Os utilizadores podem mover ou copiar Suites de Teste dentro " .
-	"do Projecto de Teste. Suites de Teste podem ser importadas ou exportadas (incluindo os Casos de Teste).
+	"do Projecto de Testes. Suites de Teste podem ser importadas ou exportadas (incluindo os Casos de Teste).
 	<li>Selecione sua mais nova Suite de Teste criada na árvore de navegação e crie " .
 	"um novo Caso de Teste clicando em <b>Criar Caso(s) de Teste</b>. Um Caso de Teste especifica " .
 	"um cenário de testes particular, resultados esperados e campos personalizados definidos " .
-	"no Projecto de Teste (consulte o manual do utilizador para maiores informações). Também é possível " .
+	"no Projecto de Testes (consulte o manual do utilizador para maiores informações). Também é possível " .
 	"atribuir <b>Palavras Chave</b> para melhorar a rastreabilidade.</li>
 	<li>Navegue pela árvore de navegação do lado esquerdo e edite os dados. Os Casos de Teste armazenam histórico próprio.</li>
 	<li>Atribua as suas Especificações de Teste criadas ao <span class=\"help\" onclick=
@@ -96,7 +96,7 @@ $TLS_htmltext['editTc'] 		= "<p>A <i>Especificação de Teste</i> permite aos ut
 $TLS_htmltext_title['searchTc']	= "Página de Pesquisa de Casos de Teste";
 $TLS_htmltext['searchTc'] 		= "<h2>Objetivo:</h2>
 
-<p>Navegue de acordo com Palavras Chave e/ou texto procuradas. A pesquisa não é sensível a maiúsculas. Os resultados incluem apenas Casos de Teste do Projecto de Teste atual.</p>
+<p>Navegue de acordo com Palavras Chave e/ou texto procuradas. A pesquisa não é sensível a maiúsculas. Os resultados incluem apenas Casos de Teste do Projecto de Testes atual.</p>
 
 <h2>Para Pesquisar:</h2>
 
@@ -114,7 +114,7 @@ $TLS_htmltext_title['searchReq']        = "Página de Pesquisa de Requisitos";
 $TLS_htmltext['searchReq']              = "<h2>Objetivo:</h2>
 
 <p>Navegue de acordo com as Palavras Chave e/ou cadeias de texto procuradas. A pesquisa não é 
-sensível a maiúsculas. Os resultados apenas incluem requisitos do projecto de teste atual.</p>
+sensível a maiúsculas. Os resultados apenas incluem requisitos do Projecto de Testes atual.</p>
 
 <h2>Para Pesquisar:</h2>
 
@@ -137,7 +137,7 @@ $TLS_htmltext_title['searchReqSpec']    = "Página de Pesquisa de Especificaçã
 $TLS_htmltext['searchReqSpec']          = "<h2>Objetivo:</h2>
 
 <p>Navegue de acordo com as Palavras Chave e/ou cadeias de texto procuradas. A pesquisa não é 
-sensível a maiúsculas. Os resultados apenas incluem requisitos do projecto de teste atual.</p>
+sensível a maiúsculas. Os resultados apenas incluem requisitos do Projecto de Testes atual.</p>
 
 <h2>Para Pesquisar:</h2>
 
@@ -160,12 +160,12 @@ sensível a maiúsculas. Os resultados apenas incluem requisitos do projecto de 
 $TLS_htmltext_title['printTestSpec']	= "Imprimir Especificação de Testes"; //printTC.html
 $TLS_htmltext['printTestSpec'] 			= "<h2>Objetivo:</h2>
 <p>A partir daqui você pode imprimir um único caso de teste, todos os casos de teste dentro de uma suite 
-ou todos os casos de teste de um Projecto de Teste ou Plano de Teste.</p>
+ou todos os casos de teste de um Projecto de Testes ou Plano de Teste.</p>
 <h2>Iniciar:</h2>
 <ol>
 <li>
 <p>Selecione os campos dos casos de teste que você deseja exibir, e então clique em um Caso de Teste, 
-Suite de Teste, ou Projecto de Teste. Uma página pronta para impressão será exibida.</p>
+Suite de Teste, ou Projecto de Testes. Uma página pronta para impressão será exibida.</p>
 </li>
 <li><p>Use a drop-box \"Mostrar Como\" no painel de navegação para especificar se você quer 
 a informação exibida como HTML, como documento do Open Office Writer ou num documento do Microsoft Word. 
@@ -185,7 +185,7 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>Você pode gerir documentos de Especifica�
 <h2>Especificação de Requisitos</h2>
 
 <p>Requisitos estão agrupados por <b>documentos de Especificação de Requisitos </b>, os quais estão relacionados ao 
-Projecto de Teste.<br /> O TestLink não suporta (ainda) versões para Especificação de Requisitos 
+Projecto de Testes.<br /> O TestLink não suporta (ainda) versões para Especificação de Requisitos 
 e também Requisitos. Logo, a versão do documento deve ser inserida após o <b>Título</b> da Especificação.
 Um utilizador pode inserir uma descrição simples ou notas no campo <b>Âmbito</b>.</p> 
 
@@ -200,7 +200,7 @@ para métricas.</p>
 
 <p>Clique no título da Especificação de Requisitos criada, e se nenhuma existir, " .
 		"clique no nó do projecto para criar uma. Você pode criar, editar, excluir
-ou importar requisitos para o documento. Cada requisito tem um título, âmbito e estado.
+ou importar requisitos para o documento. Cada Requisito tem um título, âmbito e estado.
 O estado deve ser 'Válido' ou 'Não testável'. Requisitos Não Testáveis não são contabilizados 
 para métricas. Este parâmetro deve ser utilizado para características não implementadas e 
 requisitos modelados incorretamente.</p>
@@ -214,13 +214,13 @@ com nome definido na configuração <i>(default is: \$tlCfg->req_cfg->default_te
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printReqSpec'] = "Imprimir documento de Especificação de Requisitos"; //printReq
 $TLS_htmltext['printReqSpec'] = "<h2>Objetivo:</h2>
-<p>Através desta opção você pode imprimir um requisito único, todos os requisitos de uma Especificação de Requisitos, 
-ou todos os requisitos de um Projecto de Teste.</p>
+<p>Através desta opção você pode imprimir um Requisito único, todos os requisitos de uma Especificação de Requisitos, 
+ou todos os requisitos de um Projecto de Testes.</p>
 <h2>Iniciar:</h2>
 <ol>
 <li>
-<p>Selecione as partes dos requisitos que você deseja exibir, e então clique em requisito, 
-especificação de requisito ou projecto de teste. A visualização da impressão será exibida.</p>
+<p>Selecione as partes dos requisitos que você deseja exibir, e então clique em Requisito, 
+Especificação de Requisitos ou Projecto de Testes. A visualização da impressão será exibida.</p>
 </li>
 <li><p>Utilize a drop-box \"Mostrar Como\" no painel de navegação para especificar se você quer 
 a informação exibida como HTML, como documento do Open Office Writer ou num documento do Microsoft Word. 
@@ -250,13 +250,13 @@ atribuir em lotes Palavras Chave às Suites de Teste ou Casos de Teste.</p>
 		nível mais granular.</li>
 </ol>
 
-<h2>Informação Importante quanto à Atribuição de Palavras Chave nos Planos de Teste:</h2>
+<h2>Informação Importante quanto à Atribuição de Palavras Chave nos Planos de Testes:</h2>
 <p>Atribuir Palavras Chave à Suite de Teste afetará Casos de Teste 
 no seu Plano de Teste apenas se o Plano de Teste conter a última versão do Caso de Teste. 
 Caso contrário, se o Plano de Teste conter versões mais antigas do Caso de Teste, as atribuições que você 
 fez NÃO aparecerão no Plano de Teste.
 </p>
-<p>O TestLink usa esta abordagem para que versões mais antigas dos Casos de Teste nos Planos de Teste não sejam afetadas pela atribuição 
+<p>O TestLink usa esta abordagem para que versões mais antigas dos Casos de Teste nos Planos de Testes não sejam afetadas pela atribuição 
 de Palavras Chave que você fez nas versões mais recentes dos Casos de Teste. Se você deseja seus 
 Casos de Teste no seu Plano de Teste sejam atualizados, primeiro verifique se eles estão atualizados 
 utilizando a funcionalidade 'Atualizar Versão dos Casos de Teste' antes de fazer a atribuição das Palavras Chave.</p>";
@@ -355,7 +355,7 @@ e combinação de Ciclos de Teste.</p>
 <ul>
 <li><b>Palavras Chave</b> 0->1 Palavras Chave podem ser selecionadas. Por padrão, nenhuma Palavra Chave é selecionada. Se uma Palavra Chave não é 
 selecionada, então todos os Casos de Teste serão considerados indiferentemente de atribuição de Palavras Chave. Palavras Chave são atribuídas 
-na especificação de testes ou na página Gerir Palavra Chave. Palavras Chave atribuídas aos Casos de Teste alcançam todos os Planos de Teste, e 
+na especificação de testes ou na página Gerir Palavra Chave. Palavras Chave atribuídas aos Casos de Teste alcançam todos os Planos de Testes, e 
 também todas as versões de um Caso de Teste. Se você está interessado nos resultados para uma Palavra Chave específica, 
 você deverá alterar este controlo.</li>
 <li><b>Testador</b> 0->1 Testadores podem ser selecionados. Por padrão, nenhum Testador é selecionado. Se um Testador não é selecionado, 

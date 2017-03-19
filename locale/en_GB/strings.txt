@@ -3541,6 +3541,9 @@ $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Pro
 $TLS_audit_cfield_required_on = "Custom field '{%1}' was set REQUIRED on Test Project '{%2}'";
 $TLS_audit_cfield_required_off = "Custom field '{%1}' was set NOT REQUIRED on Test Project '{%2}'";
 
+$TLS_audit_cfield_monitorable_on = "Custom field '{%1}' was set MONITORABLE on Test Project '{%2}'";
+$TLS_audit_cfield_monitorable_off = "Custom field '{%1}' was set NOT MONITORABLE on Test Project '{%2}'";
+
 
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
 $TLS_audit_user_saved = "User '{%1}' was saved";

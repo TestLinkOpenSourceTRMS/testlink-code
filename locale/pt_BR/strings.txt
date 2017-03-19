@@ -29,6 +29,8 @@
  *
  * Scripted update according en_GB string file (version: ) 
  *
+ * Scripted update according en_GB string file (version: ) 
+ *
  **/
 
 // Define character set of this file (UTF-8 is common value)
@@ -3548,6 +3550,8 @@ $TLS_audit_cfield_deactivated = "Campo personalizado '{%1}' foi desativado no Pr
 $TLS_audit_cfield_required_on = "Campo Personalizado '{%1}' foi definido como OBRIGATÓRIO no Projeto de Teste '{%2}'";
 $TLS_audit_cfield_required_off = "Campo Personalizado '{%1}' foi definido como NÃO OBRIGATÓRIO no Projeto de Teste '{%2}'";
 
+$TLS_audit_cfield_monitorable_on = "Campo Personalizado '{%1}' foi definido como MONITORIZÁVEL no Projeto de Teste '{%2}'";
+$TLS_audit_cfield_monitorable_off = "Campo Personalizado '{%1}' foi definido como NÃO MONITORIZÁVEL no Projeto de Teste '{%2}'";
 
 $TLS_audit_user_apikey_set = "Chave-API para '{%1}' foi gerada";
 $TLS_audit_user_saved = "Usuário '{%1}' foi salvo";

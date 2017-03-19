@@ -3421,6 +3421,7 @@ $TLS_API_REQSPEC_KO="Dossier d’exigences (id %s) inconnu du système.";
 $TLS_API_REQ_KO="Exigence (id %s) inconnu du système.";
 $TLS_API_REQSPEC_IS_EMPTY="Dossier d’exigences (titre %s / id %s) sans exigences.";
 $TLS_API_REQ_REQSPEC_KO="Exigence (docid %s/titre %s/id %s) inconnu du dossier d’exigences (titre=%s / id=%s)";
+$TLS_API_NO_REQ_IN_THIS_PROJECT="L'exigence (docid=%s) n'appartient pas au projet (id=%s).";
 $TLS_API_TPLAN_HAS_NO_BUILDS="Aucun Build défini pour la campagne de test (nom=%s/id=%s)";
 $TLS_API_VERSION_NOT_VALID="Numéro de version %s invalide.";
 

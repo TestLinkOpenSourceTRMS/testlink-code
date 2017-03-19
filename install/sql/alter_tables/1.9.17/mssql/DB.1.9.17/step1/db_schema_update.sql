@@ -46,3 +46,6 @@ FROM /*prefix*/req_specs_revisions RSR
 JOIN /*prefix*/req_specs RS 
 ON RS.id = RSR.parent_id
 GROUP BY RSR.parent_id,RS.testproject_id;
+
+-- since 1.9.17
+INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');

@@ -7,7 +7,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 *}
 {lang_get var="labels" 
           s='note_keyword_filter, check_uncheck_all_for_remove,
-             th_id,th_test_case,version,execution_order,th_platform,
+             th_id,th_test_case, th_status, version,execution_order,th_platform,
              no_testcase_available,btn_save_custom_fields,send_mail_to_tester,
              inactive_testcase,btn_save_exec_order,info_added_on_date,
              executed_can_not_be_removed,added_on_date,btn_save_platform,
@@ -84,6 +84,19 @@ js_tcase_importance = new Array();
 // Update test case importance when selecting a different test case version
 function updateImportance(tcID,importanceOptions,importance) {
 	document.getElementById("importance_"+tcID).firstChild.nodeValue = importanceOptions[importance];
+}
+
+// variables to store status informations for test cases
+js_option_status = new Array();
+{foreach key=key item=item from=$gsmarty_option_status}
+	js_option_status[{$key}] = "{$item}";
+{/foreach}
+
+js_tcase_status = new Array();
+
+// Update test case status when selecting a different test case version
+function updateStatus(tcID,statusOptions,status) {
+	document.getElementById("status_"+tcID).firstChild.nodeValue = statusOptions[status];
 }
 
 Ext.onReady(function(){ 
@@ -221,6 +234,7 @@ Ext.onReady(function(){
              {if $gui->usePlatforms} <td>{$labels.th_platform}</td> {/if}
   			     <td>{$labels.th_test_case}</td>
   			     <td>{$labels.version}</td>
+				 <td>{$labels.th_status}</td>
   			     {if $gui->priorityEnabled} <td>{$labels.importance}</td> {/if}
              		<td align="center">
    				      <img src="{$tlImages.execution_order}" title="{$labels.execution_order}" />
@@ -311,6 +325,7 @@ Ext.onReady(function(){
 							</span>
       			        </td>
                   	<td>
+					
                   	{if $gui->priorityEnabled}
                   			<script type="text/javascript">
                   			{* To be able to update importance when selecting another test case version
@@ -320,14 +335,28 @@ Ext.onReady(function(){
                   				{foreach key=version item=value from=$tcase.importance}
                   					js_tcase_importance[{$tcID}][{$version}] = {$value};
                   				{/foreach}
+								
+								js_tcase_status[{$tcID}] = new Array();
+                  				{foreach key=version item=value from=$tcase.status}
+                  					js_tcase_status[{$tcID}][{$version}] = {$value};
+                  				{/foreach}
                       		</script>
            				    <select name="tcversion_for_tcid[{$tcID}]" 
-           				            onchange="javascript:updateImportance({$tcID},js_option_importance,js_tcase_importance[{$tcID}][this.options[this.selectedIndex].value]);"
+           				            onchange="javascript:updateImportance({$tcID},js_option_importance,js_tcase_importance[{$tcID}][this.options[this.selectedIndex].value]),
+									updateStatus({$tcID},js_option_status,js_tcase_status[{$tcID}][this.options[this.selectedIndex].value]);"
            				            {if $linked_version_id != 0} disabled{/if}>
            				            {html_options options=$tcase.tcversions selected=$linked_version_id}
            				    </select>
                   	</td>
-                  	
+					<td id="status_{$tcID}">
+						{foreach name="oneLoop" from=$tcase.status key=key item=item}
+							{if $smarty.foreach.oneLoop.first}
+								{$firstElement=$key}
+							{/if}
+						{/foreach}
+						{$stat=$tcase.status.$firstElement}
+						{$gsmarty_option_status.$stat}
+					</td>
                   	    {* BUGID - add Importance column *}
       			        <td id="importance_{$tcID}">
       			              {* $tcase.importance *}
@@ -362,7 +391,7 @@ Ext.onReady(function(){
                       	  <input type="hidden" name="linked_exec_order[{$tcID}]"  value="{$tcase.execution_order}" />
                     		{/if}
                   	</td>
-                  
+					
                   {* ---------------------------------------------------------------------------------------------------------- *}      
                   {if $ts.linked_testcase_qty gt 0 && $drawPlatformChecks==0}
             			  <td>&nbsp;</td>
@@ -438,6 +467,7 @@ Ext.onReady(function(){
   				          {*if $is_active == 1 && isset($tcase.feature_id[$platform.id])*}
                           {if isset($tcase.feature_id[$platform.id])}
   	      			      <td>&nbsp;</td>
+						  <td>&nbsp;</td>
   	   				        <td>
   	      			    	{* added isset() on next section to avoid warning on event log *}
 							        {* TICKET 4715: can_remove_executed doesn't work when Platforms are used *}	

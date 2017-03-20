@@ -1138,7 +1138,8 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
       $outRef['external_id'] = $testCase['tc_external_id'];
       $outRef['tcversions_execution_type'][$testCase['id']] = $testCase['execution_type'];
       $outRef['importance'][$testCase['id']] = $testCase['importance'];
-      
+      $outRef['status'][$testCase['id']] = $testCase['status'];
+	  
       if (!isset($outRef['tcversions_qty']))  
       {
         $outRef['tcversions_qty']=0;

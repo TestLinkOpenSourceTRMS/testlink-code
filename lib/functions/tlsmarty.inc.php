@@ -215,7 +215,15 @@ class TLSmarty extends Smarty
     $this->assign('gsmarty_option_importance', array(HIGH => lang_get('high_importance'), 
                                                      MEDIUM => lang_get('medium_importance'), 
                                                      LOW => lang_get('low_importance')));
-       
+
+	$this->assign('gsmarty_option_status', array(1 => lang_get('testCaseStatus_draft'), 
+												 2 => lang_get('testCaseStatus_readyForReview '),
+												 3 => lang_get('testCaseStatus_reviewInProgress'),
+												 4 => lang_get('testCaseStatus_rework'),
+												 5 => lang_get('testCaseStatus_obsolete'), 
+												 6 => lang_get('testCaseStatus_future'),
+												 7 => lang_get('testCaseStatus_final')));
+												 
     // this allows unclosed <head> tag to add more information and link; see inc_head.tpl
     $this->assign('openHead', 'no');
     

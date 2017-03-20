@@ -11,7 +11,7 @@
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.16','Test Link 1.9.16 Moka Pot',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.9.17','Test Link 1.9.17 Alan Turing',GETDATE());
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON
@@ -93,7 +93,8 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (46,'testplan_show_testcase
 INSERT INTO /*prefix*/rights (id,description) VALUES (47,'testcase_freeze');
 INSERT INTO /*prefix*/rights (id,description) VALUES (48,'mgt_plugins');
 
-
+-- since 1.9.17
+INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
 
 
 SET IDENTITY_INSERT /*prefix*/rights OFF

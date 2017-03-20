@@ -175,6 +175,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $releaseDateParamName = "releasedate";
   public static $requirementsParamName = "requirements";
   public static $requirementIDParamName = "requirementid";
+  public static $requirementDocIDParamName = "requirementdocid";
   public static $reqSpecIDParamName = "reqspecid";
   
   public static $scopeParamName = "scope";
@@ -7991,6 +7992,106 @@ protected function createAttachmentTempFile()
     return $d && $d->format($format) == $dateAsString;
   }
 
+/**
+   * Get requirements
+   *
+   * @param string $args["testprojectid"]
+   * @param string $args["testplanid"] OPTIONAL
+   * @param string $args["platformid"] OPTIONAL
+   *
+   * @return mixed error if someting's wrong, else array of test cases
+   *
+   * @access public
+   */
+  public function getRequirements($args)
+  {
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);  
+    
+    $checkFunctions = array('authenticate', 'checkTestProjectID');
+    $status_ok = $this->_runChecks($checkFunctions, $msg_prefix);
+
+    if( $status_ok )
+    {
+      $context['tproject_id'] = $this->args[self::$testProjectIDParamName];
+
+      // check if a context (test plan/platform) is provided
+      if ($this->_isParamPresent(self::$testPlanIDParamName)) {
+        $status_ok = checkTestPlanID($msg_prefix);
+        $context['tplan_id'] = $this->args[self::$testPlanIDParamName];
+
+        if ( $status_ok ) {
+          if ($this->_isParamPresent(self::$platformIDParamName)) {
+            $status_ok = checkPlatformIdentity($this->args[self::$testPlanIDParamName],
+                                               $this->args[self::$platformIDParamName],
+                                               $msg_prefix);
+            $context['platform_id'] = $this->args[self::$platformIDParamName];
+          }
+        }
+      }
+    }
+
+    if( $status_ok )
+    {
+      $dummy = $this->reqMgr->getAllByContext($context);
+      if ( ! is_null($dummy) )
+        $req = array_values($dummy);
+      else
+        $status_ok = false;
+    }
+
+    return $status_ok ? $req : $this->errors;
+  }
+
+
+/**
+   * Get requirement coverage
+   *
+   * Retrieve the test cases associated to a requirement
+   *
+   * @param struct $args
+   * @param string $args["devKey"]: used to check if operation can be done.
+   *                                if devKey is not valid => abort.
+   *
+   * @param string $args["testprojectid"]
+   * @param string $args["requirementdocid"]
+   *
+   * @return mixed error if someting's wrong, else array of test cases
+   *
+   * @access public
+   */
+  public function getReqCoverage($args)
+  {
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+
+    $resultInfo = array();
+    $checkFunctions = array('authenticate', 'checkTestProjectID');
+    $status_ok = $this->_runChecks($checkFunctions, $msg_prefix) &&
+      $this->userHasRight('mgt_view_req', self::CHECK_PUBLIC_PRIVATE_ATTR);
+
+    if( $status_ok )
+    {
+      // check req id exists in the project
+      $reqDocID = $this->args[self::$requirementDocIDParamName];
+      $req = $this->reqMgr->getByDocID($reqDocID,
+                                       $this->args[self::$testProjectIDParamName],
+                                       null, array('access_key' => 'req_doc_id', 'output' => 'minimun'));
+      if ( ! is_null($req) )
+      {
+        $resultInfo = $this->reqMgr->get_coverage($req[$reqDocID]['id']);
+      }
+      else
+      {
+        $msg = $msg_prefix . sprintf(NO_REQ_IN_THIS_PROJECT_STR, $reqDocID,
+                                     $this->args[self::$testProjectIDParamName]);
+        $this->errors[] = new IXR_Error(NO_REQ_IN_THIS_PROJECT, $msg);
+        $status_ok = false;
+      }
+    }
+    return $status_ok ? $resultInfo : $this->errors;
+  }
+
 
    /**
     * 
@@ -8156,7 +8257,7 @@ protected function createAttachmentTempFile()
         if( $this->_isParamPresent(self::$platformIDParamName,$msg_prefix) ||
             $this->_isParamPresent(self::$platformNameParamName,$msg_prefix) )
         {
-          $status_ok = $this->checkPlatformIdentity($tplan_id]);
+          $status_ok = $this->checkPlatformIdentity($tplan_id);
           if( $status_ok)
           {
             $execContext['platform_id'] = 
@@ -8285,6 +8386,8 @@ protected function createAttachmentTempFile()
                             'tl.updateBuildCustomFieldsValues' => 'this:updateBuildCustomFieldsValues',
                             'tl.getTestSuite' => 'this:getTestSuite',
                             'tl.updateTestSuite' => 'this:updateTestSuite',
+                            'tl.getRequirements' => 'this:getRequirements',
+                            'tl.getReqCoverage' => 'this:getReqCoverage',
                             'tl.setTestCaseTestSuite' => 'this:setTestCaseTestSuite',
                             'tl.getExecutionSet' => 'this:getExecutionSet',
                             'tl.checkDevKey' => 'this:checkDevKey',

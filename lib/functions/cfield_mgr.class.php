@@ -5,13 +5,11 @@
  *
  * @package 	  TestLink
  * @author 		  franciscom
- * @copyright 	2005-2016, TestLink community
+ * @copyright 	2005-2017, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reused from the Mantis project) 
  * @filesource  cfield_mgr.class.php
  * @link 		    http://testlink.sourceforge.net
  *
- * @internal revisions
- * @since 1.9.15
  *
 **/
 
@@ -2961,6 +2959,28 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
         return '';
       }
     }
+  }
+
+  /**
+   *
+   */
+  function getBooleanAttributes($tproject_id,$cfSet=null)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $sql = " /* $debugMsg */ " .
+           " SELECT field_id,active,required,monitorable " .
+           " FROM {$this->tables['cfield_testprojects']} CFTP " .
+           " WHERE testproject_id =" . intval($tproject_id);
+
+    if(!is_null($cfSet))
+    {
+      $sql .= " AND field_id IN(" . implode(',', $cfSet) . ")";
+    }       
+
+    $rs = $this->db->fetchRowsIntoMap($sql,'field_id');
+
+    return $rs;
   }
 
   /**

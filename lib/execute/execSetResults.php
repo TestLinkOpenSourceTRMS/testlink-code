@@ -22,8 +22,6 @@
  * Note about step info
  * is present in gui->map_last_exec
  *
- * @internal revisions
- * @since 1.9.16
  *
 **/
 require_once('../../config.inc.php');
@@ -1241,7 +1239,7 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     $exec_cfg = config_get('exec_cfg');
     $grants = new stdClass();
     
-    $grants->execute = $userObj->hasRight($dbHandler,"testplan_execute",$tproject_id,$tplan_id);
+    $grants->execute = $userObj->hasRight($dbHandler,"testplan_execute",$tproject_id,$tplan_id,true);
     $grants->execute = $grants->execute=="yes" ? 1 : 0;
     
     // IMPORTANT NOTICE - TICKET 5128
@@ -1260,7 +1258,7 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     // These checks can not be done here
     //
     // TICKET 5310: Execution Config - convert options into rights
-    $grants->delete_execution = $userObj->hasRight($dbHandler,"exec_delete",$tproject_id,$tplan_id);
+    $grants->delete_execution = $userObj->hasRight($dbHandler,"exec_delete",$tproject_id,$tplan_id,true);
   
     
     // Important:
@@ -1290,6 +1288,22 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+
+  $k2i = array('import','attachments','exec','edit_exec');
+  $gui->features = array();
+  foreach($k2i as $olh)
+  {
+    $gui->features[$olh] = false;
+  }  
+
+  if( $argsObj->user->hasRight($dbHandler,'testplan_execute',
+                      $argsObj->tproject_id,$argsObj->tplan_id,true) )
+  {
+    foreach($k2i as $olh)
+    {
+      $gui->features[$olh] = true;
+    }  
+  }  
 
   // TBD $gui->delAttachmentURL =
   

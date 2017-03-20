@@ -69,14 +69,14 @@ e imprimir a Suite de Casos de Teste do Plano de Teste. Nesta secção os utiliz
 acompanhar os resultados da sua execução dos Casos de Teste.</p> 
 
 <h2>Gestão do Plano de Teste</h2>
-<p>Esta secção, apenas acessível aos líderes, permite que os utilizadores possam administrar os Planos de Teste. 
-A administração de Planos de Teste envolve a criação/edição/eliminação de Planos, acréscimo/edição 
+<p>Esta secção, apenas acessível aos líderes, permite que os utilizadores possam administrar os Planos de Testes. 
+A administração de Planos de Testes envolve a criação/edição/eliminação de Planos, acréscimo/edição 
 /eliminação/atualização dos Casos de Teste dos Planos, criando versões, bem como definindo quem pode 
 ver qual Plano.<br />
 Utilizadores com permissão de líder poderão também definir a prioridade/risco e a propriedade das 
 Suites de Caso de Teste (categorias) e criar marcos de teste.</p> 
 
-<p>Nota: É possível que os utilizadores não possam ver uma lista suspensa que contenha os Planos de Teste. 
+<p>Nota: É possível que os utilizadores não possam ver uma lista suspensa que contenha os Planos de Testes. 
 Nesta situação, todos os links (exceto para os líderes ativos) estarão desativados. Se você 
 estiver nesta situação, contacte a administração do TestLink para lhe conceder os 
 direitos de Projecto adequado ou criar um Plano de Teste para você.</p>"; 
@@ -87,9 +87,9 @@ $TLS_hlp_customFields = "<h2>Campos Personalizados</h2>
 <ul>
 <li>Campos Personalizados são definidos para todo o sistema.</li>
 <li>Campos Personalizados são associados ao tipo do elemento (Suite de Teste, Caso de Teste).</li>
-<li>Campos Personalizados podem ser associados a múltiplos Projectos de Teste.</li>
-<li>A sequência em que os Campos Personalizados serão mostrados pode ser diferente para cada Projecto de Teste.</li>
-<li>Campos Personalizados podem ser inativados para um Projecto de Teste específico.</li>
+<li>Campos Personalizados podem ser associados a múltiplos Projectos de Testes.</li>
+<li>A sequência em que os Campos Personalizados serão mostrados pode ser diferente para cada Projecto de Testes.</li>
+<li>Campos Personalizados podem ser inativados para um Projecto de Testes específico.</li>
 <li>O número de Campos Personalizados não é restrito.</li>
 </ul>
 
@@ -215,7 +215,7 @@ por Casos de Teste. Navegue através do link \"Especificar Requisitos\" na tela 
 
 <h3>Especificação de Requisitos</h3>
 <p>Os Requisitos estão agrupados no documento 'Especificação de Requisitos' que está relacionado ao 
-Projecto de Teste.<br /> O TestLink ainda não suporta versões para a Especificação de Requisitos e   
+Projecto de Testes.<br /> O TestLink ainda não suporta versões para a Especificação de Requisitos e   
 também para os Requisitos. Assim, a versão do documento deve ser adicionada depois do 
 <b>Título</b> da Especificação.
 O utilizador pode adicionar uma descrição simples ou uma nota no campo <b>Âmbito</b>.</p> 
@@ -256,7 +256,7 @@ com uma sintaxe especial. O comportamento dos Links internos pode ser alterado n
 Link para Requisitos: [req]req_doc_id[/req]<br />
 Link para Especificação de Requisitos: [req_spec]req_spec_doc_id[/req_spec]</p>
 
-<p>O Projecto de Teste do Requisito / Especificação de Requisitos, uma versão e uma âncora 
+<p>O Projecto de Testes do Requisito / Especificação de Requisitos, uma versão e uma âncora 
 também podem ser especificados:<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
 Esta sintaxe também funciona para as especificações de Requisito (atributos de versão não tem nenhum efeito).<br />
@@ -283,7 +283,7 @@ A visão geral fornece uma mensagem de log para cada revisão/versão, um timest
 <h3>Relações:</h3>
 <p>Relações de Requisitos são usados ​​para relacionamentos de modelos entre os Requisitos.
 Relações personalizadas e a opção de permitir relações entre os Requisitos de
-diferentes projectos de teste podem ser configurados no ficheiro de configuração.
+diferentes Projectos de Testes podem ser configurados no ficheiro de configuração.
 Se você definir a relação \"Requisito A é pai do Requisito B\", 
 o Testlink irá definir a relação \"Requisito B é filho do Requisito A\" implicitamente.</p>
 ";
@@ -299,7 +299,7 @@ com uma sintaxe especial. O comportamento dos Links internos pode ser alterado n
 Link para Requisitos: [req]req_doc_id[/req]<br />
 Link para Especificação de Requisitos: [req_spec]req_spec_doc_id[/req_spec]</p>
 
-<p>O Projecto de Teste do Requisito / Especificação de Requisitos, uma versão e uma âncora 
+<p>O Projecto de Testes do Requisito / Especificação de Requisitos, uma versão e uma âncora 
 também podem ser especificados:<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
 Esta sintaxe também funciona para as especificações de Requisito (atributos de versão não tem nenhum efeito).<br />
@@ -309,7 +309,7 @@ Se você não especificar a versão do Requisito completo, todas as versões ser
 
 // planAddTC_m1.tpl
 $TLS_hlp_planAddTC = "<h2>Sobre 'Campos Personalizados salvos'</h2>
-Se você tiver definido e atribuído ao Projecto de Teste,<br /> 
+Se você tiver definido e atribuído ao Projecto de Testes,<br /> 
 Campos Personalizados com:<br />
  'Mostrar no desenho do Plano de Teste=true' e <br />
  'Activar no desenho do Plano de Teste=true'<br />

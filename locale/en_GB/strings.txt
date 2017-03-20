@@ -2485,6 +2485,7 @@ $TLS_info_search_req_spec = "This list shows all requirement specifications whic
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
 $TLS_href_build_new = "Builds / Releases";
 $TLS_href_execute_test = "Execute Tests";
+$TLS_href_exec_ro_access = "Access Execute Tests RO";
 $TLS_href_metrics_dashboard = "Metrics Dashboard";
 $TLS_href_newest_tcversions = "Show Test Cases Newest Versions";
 $TLS_href_plan_assign_urgency = "Set Urgent Tests";
@@ -2649,6 +2650,7 @@ $TLS_no_rights = "no rights";
 
 $TLS_right_exec_edit_notes = "Edit Execution Notes";
 $TLS_right_exec_delete = "Delete Execution";
+$TLS_right_exec_ro_access = "Execution View (read only access)";
 $TLS_right_testplan_unlink_executed_testcases = "Unlink Executed Test Cases";
 $TLS_right_testproject_delete_executed_testcases = "Delete Executed Test Cases";
 $TLS_right_testproject_edit_executed_testcases = "Edit Executed Test Cases";
@@ -3433,6 +3435,7 @@ $TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
 $TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
 $TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
 $TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_NO_REQ_IN_THIS_PROJECT="Requirement (docid=%s) does not belong to project (id=%s).";
 $TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
 $TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
 
@@ -3538,6 +3541,9 @@ $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Pro
 
 $TLS_audit_cfield_required_on = "Custom field '{%1}' was set REQUIRED on Test Project '{%2}'";
 $TLS_audit_cfield_required_off = "Custom field '{%1}' was set NOT REQUIRED on Test Project '{%2}'";
+
+$TLS_audit_cfield_monitorable_on = "Custom field '{%1}' was set MONITORABLE on Test Project '{%2}'";
+$TLS_audit_cfield_monitorable_off = "Custom field '{%1}' was set NOT MONITORABLE on Test Project '{%2}'";
 
 
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
@@ -4086,5 +4092,5 @@ $TLS_search_other_attr = "You can set search criteria that does not use words. B
 
 $TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
 $TLS_multiple_entities_search = 'Search on multiple entities';
+$TLS_no_access_to_feature = 'You do not have enough rights to access the feature';
 // ----- END ------------------------------------------------------------------
-

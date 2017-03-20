@@ -581,84 +581,168 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     returns: array of rows
   */
   function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null)
+{
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $my['options'] = array( 'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id", 
+                          'output' => 'standard', 'outputLevel' => 'std', 'decodeUsers' => true);
+  
+  $my['options'] = array_merge($my['options'], (array)$options);
+
+  // null => do not filter
+  $my['filters'] = array('status' => null, 'type' => null);
+  $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+  switch($my['options']['output'])
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $my['options'] = array( 'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id", 
-                            'output' => 'standard', 'outputLevel' => 'std', 'decodeUsers' => true);
+	  case 'count':
+	   	$rs = 0;	   
+	  break;
+
+  	case 'standard':
+   	default:
+			$rs = null;
+	  break;
+  }
+
+	
+	$tcase_filter = '';
+  
+	// First Step - get only req info
+	$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
+	$addFields = '';
+	switch($range)
+	{
+		case 'all';
+		break;
+
+		case 'assigned':
+      // $addFields = " ,U.login, REQ_COV.creation_ts";
+			$sql .= " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id ";
+      if(!is_null($testcase_id))
+      {       
+        $tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
+      }
+      // $sql .= " LEFT OUTER JOIN {$this->tables['users']} U ON U.id = REQ_COV.author_id ";
+	 	break;
+	}
+
+	$sql = sprintf($sql,$addFields);
+
+	$sql .= " WHERE NH_REQ.parent_id={$id} " .
+	        " AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
+	$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
+
+	if( !is_null($itemSet) )
+	{
+		$reqSet = array_keys($itemSet);
+		$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
+		       " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
+		       " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
+		       " GROUP BY NH_REQV.parent_id ";
+
+		$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
+	  $reqVersionSet = array_keys($latestVersionSet);
+
+    /*
+	  $getOptions = null;
+	  if( !is_null($my['options']['order_by']) )
+	  {
+			$getOptions = array('order_by' => $my['options']['order_by']);
+		}
+    */
     
-    $my['options'] = array_merge($my['options'], (array)$options);
+    $getOptions['order_by'] = $my['options']['order_by'];
+    $getOptions['outputLevel'] = $my['options']['outputLevel'];
+    $getOptions['decodeUsers'] = $my['options']['decodeUsers'];
 
-    // null => do not filter
-    $my['filters'] = array('status' => null, 'type' => null);
-    $my['filters'] = array_merge($my['filters'], (array)$filters);
 
+	$rs = $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
     switch($my['options']['output'])
     {
-  	  case 'count':
-  	   	$rs = 0;	   
-  	  break;
+     	case 'standard':
+		  break;
+		    
+		  case 'count':
+		   	$rs = !is_null($rs) ? count($rs) : 0;	   
+		  break;
+		}
+	}
 
-    	case 'standard':
-     	default:
-  			$rs = null;
-  	  break;
-    }
+	// get child requirements
+	if(is_null($rs)){
+			
+		$reqSql = "SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ WHERE NH_REQ.parent_id={$id}";
 
-  	
-  	$tcase_filter = '';
-    
-    // First Step - get only req info
-  	$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
-    $addFields = '';
-  	switch($range)
-  	{
-  		case 'all';
-  		break;
+		$itemSetAllFolder = $this->db->fetchRowsIntoMap($reqSql,'id');
+		
+		if(!is_null($itemSetAllFolder)){
 
-  		case 'assigned':
-        // $addFields = " ,U.login, REQ_COV.creation_ts";
-  			$sql .= " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id ";
-        if(!is_null($testcase_id))
-        {       
-          $tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
-        }
-  	 	break;
-  	}
+			foreach($itemSetAllFolder as $key => $value){
 
-    $sql = sprintf($sql,$addFields);
+				$sql= '';
+				$tcase_filter = '';
+			  
+				// First Step - get only req info
+				$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
+				$addFields = '';
+				switch($range)
+				{
+					case 'all';
+					break;
 
-  	$sql .= " WHERE NH_REQ.parent_id={$id} " .
-  	        " AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
-  	$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
+					case 'assigned':
+						$sql .= " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id ";
+				  if(!is_null($testcase_id))
+				  {       
+					$tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
+				  }
+				 break;
+				}
 
-  	if( !is_null($itemSet) )
-  	{
-  		$reqSet = array_keys($itemSet);
-  		$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
-  		       " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
-  		       " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
-  		       " GROUP BY NH_REQV.parent_id ";
+				$sql = sprintf($sql,$addFields);
 
-  		$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
-  	  $reqVersionSet = array_keys($latestVersionSet);
+				$sql .= " WHERE NH_REQ.parent_id=" . $value['id'] .
+						" AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
+				$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
 
-      $getOptions['order_by'] = $my['options']['order_by'];
-      $getOptions['outputLevel'] = $my['options']['outputLevel'];
-      $getOptions['decodeUsers'] = $my['options']['decodeUsers'];
+				if( !is_null($itemSet) )
+				{
+					$reqSet = array_keys($itemSet);
+					$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
+						   " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
+						   " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
+						   " GROUP BY NH_REQV.parent_id ";
 
-  		$rs = $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
-      switch($my['options']['output'])
-      {
-       	case 'standard':
-  		  break;
-  		    
-  		  case 'count':
-  		   	$rs = !is_null($rs) ? count($rs) : 0;	   
-  		  break;
-  		}
-  	}
-  	return $rs;
-  }
+					$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
+					$reqVersionSet = array_keys($latestVersionSet);
+					
+					$getOptions['order_by'] = $my['options']['order_by'];
+					$getOptions['outputLevel'] = $my['options']['outputLevel'];
+					$getOptions['decodeUsers'] = $my['options']['decodeUsers'];
+					
+					if(is_null($rs)){
+						$rs =  $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	
+					} else {
+						$rs = array_merge($rs, $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']));
+					}
+					
+
+					switch($my['options']['output'])
+					{
+					case 'standard':
+					  break;
+						
+					  case 'count':
+						$rs = !is_null($rs) ? count($rs) : 0;	   
+					  break;
+					}
+				}
+			}
+		}
+	}
+
+	return $rs;
+}
 
 
 /** get child requirements for get all testcase associate.

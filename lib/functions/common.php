@@ -1492,3 +1492,27 @@ function downloadXls($fname,$xlsType,$gui,$filePrefix)
   unlink($fname);
   exit();    
 }
+
+/**
+ * POC on papertrailapp.com
+ */
+function syslogOnCloud($message, $component = "web", $program = "TestLink") 
+{
+  $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+  foreach(explode("\n", $message) as $line) 
+  {
+    $syslog_message = "<22>" . date('M d H:i:s ') . $program . ' ' . 
+                      $component . ': ' . $line;
+    socket_sendto($sock, $syslog_message, strlen($syslog_message), 0,
+                  'logs5.papertrailapp.com', 11613);
+  }
+  socket_close($sock);
+}
+
+/**
+ *
+ */
+function getSSODisable()
+{
+  return isset($_REQUEST['ssodisable']) ? 1 : 0;
+}

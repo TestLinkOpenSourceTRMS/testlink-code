@@ -3,9 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource cfieldsTprojectAssign.tpl
 Purpose: management Custom fields assignment to a test project
 
-@internal revisions
-@since 1.9.15
-
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -29,7 +26,7 @@ Purpose: management Custom fields assignment to a test project
 {include file="inc_update.tpl" result=$sqlResult action=$action item="custom_field"}
 
 
-{if $gui->my_cf ne ""}
+{if $gui->linkedCF ne ""}
   <div class="workBack">
     <h2>{$labels.title_assigned_cfields}</h2>
     <form method="post">
@@ -40,7 +37,7 @@ Purpose: management Custom fields assignment to a test project
       <table class="simple_tableruler">
       	<tr>
       		<th align="center"  style="width: 5px;background-color:#005498;"> 
-      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+      		    <img src="{$tlImages.toggle_all}"
       		             onclick='cs_all_checkbox_in_div("assigned_cf","assigned_cfield","memory_assigned_cf");'
       		             title="{$labels.check_uncheck_all_checkboxes}" />
       		</th>
@@ -54,9 +51,9 @@ Purpose: management Custom fields assignment to a test project
           <th width="5%">{$labels.required}</th>
           <th width="5%">{$labels.monitorable}</th>
       	</tr>
-      	{foreach key=cf_id item=cf from=$gui->my_cf}
+      	{foreach key=cf_id item=cf from=$gui->linkedCF}
       	<tr>
-      		<td class="clickable_icon"><input type="checkbox" id="assigned_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
+      		<td class="clickable_icon"><input type="checkbox" id="assigned_cfield{$cf.id}" name="checkedCF[{$cf.id}]" /></td>
    		   	<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&amp;cfield_id={$cf.id}"
    		   	                    title="{$labels.manage_cfield}">{$cf.name|escape}</a></td>
       		<td class="bold">{$cf.label|escape}</td>
@@ -129,7 +126,7 @@ Purpose: management Custom fields assignment to a test project
       <table class="simple_tableruler" style="width: 50%;">
       	<tr>
       		<th align="center"  style="width: 5px;background-color:#005498;"> 
-      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+      		    <img src="{$tlImages.toggle_all}"
       		             onclick='cs_all_checkbox_in_div("free_cf","free_cfield","memory_free_cf");'
       		             title="{$labels.check_uncheck_all_checkboxes}" />
       		</th>
@@ -140,7 +137,7 @@ Purpose: management Custom fields assignment to a test project
       	</tr>
       	{foreach key=cf_id item=cf from=$gui->other_cf}
       	<tr>
-      		<td class="clickable_icon"> <input type="checkbox" id="free_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
+      		<td class="clickable_icon"> <input type="checkbox" id="free_cfield{$cf.id}" name="checkedCF[{$cf.id}]" /></td>
       		<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&amp;cfield_id={$cf.id}"
    		   	                    title="{$labels.manage_cfield}">{$cf.name|escape}</a></td>
       		<td class="bold">{$cf.label|escape}</td>

@@ -46,6 +46,9 @@
             <input type="hidden" name="reqURI" value="{$gui->reqURI|escape:'url'}"/>
             <input type="hidden" name="destination" value="{$gui->destination|escape:'url'}"/>
 
+            {if $gui->ssodisable}
+            <input type="hidden" name="ssodisable" value="{$gui->ssodisable}"/>
+            {/if}
 
             <div class="form__field">
               <label for="tl_login"><i class="fa fa-user"></i></label>

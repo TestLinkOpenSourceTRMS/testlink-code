@@ -11,8 +11,6 @@
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * @internal revisions
- * @since 1.9.15
  * 
  */
 
@@ -636,7 +634,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
       $rs = current($rs);
-      if($rs['VQTY'] > 1)
+      if(isset($rs['VQTY']) && $rs['VQTY'] > 1)
       {
         $action4notify = 'delete_version';
       }  
@@ -720,7 +718,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
       foreach($rs as $el)
       {
-        if($el['VQTY'] == 1)
+        if(isset($el['VQTY']) && $el['VQTY'] == 1)
         {
           $target[] = $el['parent_id'];
         }  
@@ -1422,7 +1420,7 @@ function exportReqToXML($id,$tproject_id=null)
              "\n\t\t" . "<version>||VERSION||</version>" .
              "\n\t\t" . "<revision>||REVISION||</revision>" .
              "\n\t\t" . "<node_order>||NODE_ORDER||</node_order>".
-             "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
+             "\n\t\t" . "<description><![CDATA[||DESCRIPTION||]]></description>".
              "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
              "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
              "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .         

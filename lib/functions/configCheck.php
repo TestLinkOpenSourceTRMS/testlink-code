@@ -13,8 +13,6 @@
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
- * @internal revisions
- * @since 1.9.16
  **/
 
 /**
@@ -183,9 +181,6 @@ function checkLibGd()
  * @param array [ref] msgs will be appended
  * @return bool returns true if all extension or functions ar present or defined
  *
- * @author Andreas Morsing 
- * @todo Martin: it's used in getSecurityNotes() ... but it's not consistent with 
- *     checkPhpExtensions() - refactore
  **/
 function checkForExtensions(&$msg)
 {
@@ -201,7 +196,6 @@ function checkForExtensions(&$msg)
  * checks if the install dir is present
  *
  * @return bool returns true if the install dir is present, false else
- * @author Andreas Morsing 
  **/
 function checkForInstallDir()
 {
@@ -217,7 +211,6 @@ function checkForInstallDir()
  *
  * @return boolean returns true if the default password for the admin account is set, 
  *         false else
- * @author Andreas Morsing 
  **/
 function checkForAdminDefaultPwd(&$db)
 {
@@ -235,8 +228,6 @@ function checkForAdminDefaultPwd(&$db)
 
 /*
   function: checkForLDAPExtension
-  args :
-  returns: 
 */
 function checkForLDAPExtension()
 {
@@ -248,9 +239,7 @@ function checkForLDAPExtension()
  * these notes should be displayed!
  *
  * @return array returns the security issues, or null if none found!
- * @author Andreas Morsing 
  *
- * @internal rev :
  **/
 function getSecurityNotes(&$db)
 {
@@ -379,8 +368,6 @@ function isMSWindowsServer()
 
 /*
   function: checkForRepositoryDir
-  args :
-  returns: 
 */
 function checkForRepositoryDir($the_dir)
 {
@@ -466,6 +453,7 @@ function checkSchemaVersion(&$db)
     case 'DB 1.9.13':
     case 'DB 1.9.14':
     case 'DB 1.9.15':
+    case 'DB 1.9.16':
       $result['msg'] = $manualop_msg;
     break;
 

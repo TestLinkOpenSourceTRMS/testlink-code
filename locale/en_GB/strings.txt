@@ -1498,6 +1498,12 @@ $TLS_no_data_available = "No data available";
 $TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
 $TLS_or_unassigned_test_cases = " Or without tester assignment";
 $TLS_run_mode = "Run mode";
+
+$TLS_reqspec_type = 'Req. Spec. Type';
+$TLS_req_status = 'Req. Status';
+$TLS_tcase_wkf_status = 'Test Case Status';
+
+
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";
 $TLS_show_hide_reorder = "Show / Hide reorder ";
@@ -1546,6 +1552,7 @@ $TLS_title_results = "Test Reports";
 $TLS_title_specification = "Test Specification";
 $TLS_title_requirements = "Requirements";
 $TLS_session_inactivity_timeout_at = "Session idle timeout at";
+$TLS_full_text_search = "Full Text Search";
 
 
 
@@ -2478,6 +2485,7 @@ $TLS_info_search_req_spec = "This list shows all requirement specifications whic
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
 $TLS_href_build_new = "Builds / Releases";
 $TLS_href_execute_test = "Execute Tests";
+$TLS_href_exec_ro_access = "Access Execute Tests RO";
 $TLS_href_metrics_dashboard = "Metrics Dashboard";
 $TLS_href_newest_tcversions = "Show Test Cases Newest Versions";
 $TLS_href_plan_assign_urgency = "Set Urgent Tests";
@@ -2642,6 +2650,7 @@ $TLS_no_rights = "no rights";
 
 $TLS_right_exec_edit_notes = "Edit Execution Notes";
 $TLS_right_exec_delete = "Delete Execution";
+$TLS_right_exec_ro_access = "Execution View (read only access)";
 $TLS_right_testplan_unlink_executed_testcases = "Unlink Executed Test Cases";
 $TLS_right_testproject_delete_executed_testcases = "Delete Executed Test Cases";
 $TLS_right_testproject_edit_executed_testcases = "Edit Executed Test Cases";
@@ -3426,6 +3435,7 @@ $TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
 $TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
 $TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
 $TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_NO_REQ_IN_THIS_PROJECT="Requirement (docid=%s) does not belong to project (id=%s).";
 $TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
 $TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
 
@@ -3508,6 +3518,7 @@ $TLS_API_INVALID_TIMESTAMP = "Timestamp provided (%s) is invalid";
 
 $TLS_API_ITS_NOT_FOUND = "Unable to find the ITS %s.";
 
+$TLS_API_TSUITE_NOT_ON_TCASE_TPROJ = "Test Suite does not belong to Test Case's Test Project";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
@@ -3530,6 +3541,9 @@ $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Pro
 
 $TLS_audit_cfield_required_on = "Custom field '{%1}' was set REQUIRED on Test Project '{%2}'";
 $TLS_audit_cfield_required_off = "Custom field '{%1}' was set NOT REQUIRED on Test Project '{%2}'";
+
+$TLS_audit_cfield_monitorable_on = "Custom field '{%1}' was set MONITORABLE on Test Project '{%2}'";
+$TLS_audit_cfield_monitorable_off = "Custom field '{%1}' was set NOT MONITORABLE on Test Project '{%2}'";
 
 
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
@@ -4063,4 +4077,20 @@ $TLS_click_blocked_next = "Click to set to blocked and move to next";
 
 $TLS_send_spreadsheet_by_email = 'Send Spreadsheet by email to myself';
 $TLS_send_by_email_to_me = 'Send by email to myself';
+
+$TLS_search_items = "Search";
+$TLS_search_title = "Search";
+$TLS_req_document_id = "Req. Doc. ID";
+$TLS_id = 'ID';
+
+$TLS_search_words_or = 'Search must match at least ONE word (OR)';
+$TLS_search_words_and = 'Search has to match ALL words (AND)';
+$TLS_search_words_placeholder = 'write here the words you want search for';
+$TLS_search_words_on_attr = "Word/Words will be searched among one or more attributes you will select below";
+
+$TLS_search_other_attr = "You can set search criteria that does not use words. But This search criteria will be added on AND mode";
+
+$TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
+$TLS_multiple_entities_search = 'Search on multiple entities';
+$TLS_no_access_to_feature = 'You do not have enough rights to access the feature';
 // ----- END ------------------------------------------------------------------

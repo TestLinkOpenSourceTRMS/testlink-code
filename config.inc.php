@@ -18,11 +18,8 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2017, TestLink community
  * @link        http://www.testlink.org
- *
- * @internal revisions
- * @since 1.9.13
  *
  *
  **/
@@ -323,9 +320,6 @@ $g_SMTPAutoTLS = false;
 $tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'allowPasswordManagement' => true) ,
                      'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
 
-
-// $tlCfg->authentication['domain'] = array('DB','LDAP')
-
 /* Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';
 
@@ -344,14 +338,30 @@ $tlCfg->passwordChecks = null;
 $tlCfg->loginPagePasswordMaxLenght = 40;
 
 /**
+ * Standard logout url, used also when SSO is used and hint to skip SSO is used.
+ * '' => use standard TestLink page
+ */
+$tlCfg->logoutUrl = '';
+
+
+/**
  * Single Sign On authentication
- * This will be used with $tlCfg->authentication['method'] <<= INCOMPLETE COMMENT
  *
- * This works with apache webserver
+ * SSO_method: CLIENT_CERTIFICATE, tested with Apache Webserver
+ * SSP_method: WEBSERVER_VAR, tested with Apache and Shibboleth Service Provider.
  */
 $tlCfg->authentication['SSO_enabled'] = false; 
-$tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
-$tlCfg->authentication['SSO_uid_field'] = 'SSL_CLIENT_S_DN_Email';
+$tlCfg->authentication['SSO_logout_destination'] = 'YOUR LOGOUT DESTINATION';
+
+// Tested with Apache Webserver
+//$tlCfg->authentication['SSO_method'] = 'CLIENT_CERTIFICATE';
+//$tlCfg->authentication['SSO_uid_field'] = 'SSL_CLIENT_S_DN_Email';
+
+// Tested with Apache and Shibboleth Service Provider 
+//$tlCfg->authentication['SSO_method'] = 'WEBSERVER_VAR';
+//$tlCfg->authentication['SSO_uid_field'] = 'REMOTE_USER';
+//$tlCfg->authentication['SSO_user_target_dbfield'] = 'email';
+
 
 
 

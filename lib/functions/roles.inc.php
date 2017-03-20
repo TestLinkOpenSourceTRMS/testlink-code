@@ -10,12 +10,8 @@
  * @filesource  roles.inc.php
  * @package     TestLink
  * @author      Martin Havlat, Chad Rosen
- * @copyright   2006-2015, TestLink community 
+ * @copyright   2006-2017, TestLink community 
  * 
- *
- * @internal revisions
- * @since 1.9.10
- *                                     
  */
 
 /** localization support */ 
@@ -24,7 +20,8 @@ require_once( dirname(__FILE__). '/lang_api.php' );
 // 
 // This can seems weird but we have this problem:
 //
-// lang_get() is used to translate user rights description and needs $_SESSION info.
+// lang_get() is used to translate user rights description and needs 
+// $_SESSION info.
 // If no _SESSION info is found, then default locale is used.
 // We need to be sure _SESSION info exists before using lang_get(); in any module.
 //  
@@ -87,15 +84,16 @@ function init_global_rights_maps()
                    'right_testplan_update_linked_testcase_versions' => null,
                    'right_testplan_set_urgent_testcases' => null,
                    'right_testplan_show_testcases_newest_versions' => null,
-                   'right_testcase_freeze' => null);
+                   'right_testcase_freeze' => null,
+                   'right_exec_ro_access' => null);
 
 
 
   $l18n = init_labels($l18nCfg);
 
   $g_rights_executions = array('exec_edit_notes' => $l18n['right_exec_edit_notes'], 
-                               'exec_delete' => $l18n['right_exec_delete']);
-
+                               'exec_delete' => $l18n['right_exec_delete'],
+                               'exec_ro_access' => $l18n['right_exec_ro_access']);
 
   // order is important ?
   $g_rights_tp = array("mgt_testplan_create" => $l18n['mgt_testplan_create'],

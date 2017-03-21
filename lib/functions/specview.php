@@ -6,11 +6,9 @@
  * @filesource  specview.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2004-2015, TestLink community 
+ * @copyright   2004-2017, TestLink community 
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.14
  *
  **/ 
 
@@ -1138,6 +1136,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
       $outRef['external_id'] = $testCase['tc_external_id'];
       $outRef['tcversions_execution_type'][$testCase['id']] = $testCase['execution_type'];
       $outRef['importance'][$testCase['id']] = $testCase['importance'];
+      $outRef['status'][$testCase['id']] = $testCase['status'];
       
       if (!isset($outRef['tcversions_qty']))  
       {

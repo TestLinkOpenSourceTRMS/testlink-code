@@ -13,8 +13,6 @@
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
- * @internal revisions
- * @since 1.9.16
  *
  */
 
@@ -216,6 +214,15 @@ class TLSmarty extends Smarty
                                                      MEDIUM => lang_get('medium_importance'), 
                                                      LOW => lang_get('low_importance')));
        
+    $wkf = array();
+    $xcfg = config_get('testCaseStatus');
+    foreach($xcfg as $human => $key)
+    {
+      $wkf[$key] = lang_get('testCaseStatus_' . $human);
+    }  
+    $this->assign('gsmarty_option_wkfstatus',$wkf);
+
+
     // this allows unclosed <head> tag to add more information and link; see inc_head.tpl
     $this->assign('openHead', 'no');
     

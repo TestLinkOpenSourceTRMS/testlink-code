@@ -1778,7 +1778,6 @@ define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
 define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
 define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
 define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
-define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . TL_CSS_TREEMENU);
 
 // if you do not want to use this, redefine $tlCfg->custom_css as '' or null
 define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);

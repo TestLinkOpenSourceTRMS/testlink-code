@@ -204,12 +204,8 @@ define('EVENT_TYPE_OUTPUT', 4);
 /* [GUI] */
 
 /** 
- * @todo havlatm: remove (must be solved via css)
  * @uses planAddTC_m1-tpl 
  * 
- * @internal Francisco: DISAGREE, if we want give user possibility to reconfigure
- *                 how we can do this with CSS 
- *     Havlatm: User can create own theme with own colours
  **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
@@ -217,9 +213,6 @@ define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 define('TL_CSS_MAIN', 'testlink.css');
 define('TL_CSS_PRINT', 'tl_print.css');
 define('TL_CSS_DOCUMENTS', 'tl_documents.css');
-
-/** @todo havlatm: remove - probably obsolete from 1.9 */
-define('TL_CSS_TREEMENU', 'tl_treemenu.css');
 
 /** Browser Cookie keeptime */
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days

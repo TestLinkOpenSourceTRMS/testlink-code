@@ -175,10 +175,6 @@ define('DO_PRUNE', 1);
 define('AUTOMATION_RESULT_KO', -1);
 define('AUTOMATION_NOTES_KO', -1);
 
-/** @uses testcase.class.php */
-define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
-define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
-
 define('REMOVEME', 'd8ba8cfb-ca92-4fa5-83c2-551977d405fb');
 
 /** Constants for plugins */
@@ -204,12 +200,8 @@ define('EVENT_TYPE_OUTPUT', 4);
 /* [GUI] */
 
 /** 
- * @todo havlatm: remove (must be solved via css)
  * @uses planAddTC_m1-tpl 
  * 
- * @internal Francisco: DISAGREE, if we want give user possibility to reconfigure
- *                 how we can do this with CSS 
- *     Havlatm: User can create own theme with own colours
  **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
@@ -217,9 +209,6 @@ define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 define('TL_CSS_MAIN', 'testlink.css');
 define('TL_CSS_PRINT', 'tl_print.css');
 define('TL_CSS_DOCUMENTS', 'tl_documents.css');
-
-/** @todo havlatm: remove - probably obsolete from 1.9 */
-define('TL_CSS_TREEMENU', 'tl_treemenu.css');
 
 /** Browser Cookie keeptime */
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
@@ -928,4 +917,16 @@ $tlCfg->results['charts']['dimensions'] =
 $tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
                                 'reviewInProgress' => 3, 'rework' => 4, 
                                 'obsolete' => 5, 'future' => 6, 'final' => 7 );   
+
+
+/** @uses testcase.class.php */
+// if you need to define new one, start on 20 please.
+// see strings.txt for labels
+// $TLS_execution_type_KEY => $TLS_execution_type_manual
+$tlCfg->execution_type = array( 'manual' => 1, 'auto' => 2);  
+
+// To be removed 
+define('TESTCASE_EXECUTION_TYPE_MANUAL', $tlCfg->execution_type['manual']);  
+define('TESTCASE_EXECUTION_TYPE_AUTO', $tlCfg->execution_type['auto']);
+
 // END 

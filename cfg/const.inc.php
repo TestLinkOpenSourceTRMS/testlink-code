@@ -175,10 +175,6 @@ define('DO_PRUNE', 1);
 define('AUTOMATION_RESULT_KO', -1);
 define('AUTOMATION_NOTES_KO', -1);
 
-/** @uses testcase.class.php */
-define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
-define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
-
 define('REMOVEME', 'd8ba8cfb-ca92-4fa5-83c2-551977d405fb');
 
 /** Constants for plugins */
@@ -921,4 +917,16 @@ $tlCfg->results['charts']['dimensions'] =
 $tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
                                 'reviewInProgress' => 3, 'rework' => 4, 
                                 'obsolete' => 5, 'future' => 6, 'final' => 7 );   
+
+
+/** @uses testcase.class.php */
+// if you need to define new one, start on 20 please.
+// see strings.txt for labels
+// $TLS_execution_type_KEY => $TLS_execution_type_manual
+$tlCfg->execution_type = array( 'manual' => 1, 'auto' => 2);  
+
+// To be removed 
+define('TESTCASE_EXECUTION_TYPE_MANUAL', $tlCfg->execution_type['manual']);  
+define('TESTCASE_EXECUTION_TYPE_AUTO', $tlCfg->execution_type['auto']);
+
 // END 

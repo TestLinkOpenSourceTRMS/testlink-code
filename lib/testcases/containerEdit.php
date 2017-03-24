@@ -8,12 +8,9 @@
  * @filesource  containerEdit.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2016, TestLink community
+ * @copyright   2005-2017, TestLink community
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.16
- * 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -476,13 +473,18 @@ function init_args(&$dbHandler,$optionTransferCfg)
   // These lines need to be changed!!
   $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->tprojectName = $_SESSION['testprojectName'];
+
+
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
   $args->file_id = isset($_REQUEST['file_id']) ? intval($_REQUEST['file_id']) : 0;
   $args->fileTitle = isset($_REQUEST['fileTitle']) ? trim($_REQUEST['fileTitle']) : '';
 
-  $args->tc_status = isset($_REQUEST['tc_status']) ? intval($_REQUEST['tc_status']) : -1;
-  $args->importance = isset($_REQUEST['importance']) ? intval($_REQUEST['importance']) : -1;
 
+  $k2l = array('tc_status','importance','execution_type');
+  foreach($k2l as $kv)
+  {
+    $args->$kv = isset($_REQUEST[$kv]) ? intval($_REQUEST[$kv]) : -1;
+  }  
 
   $args->user = $_SESSION['currentUser'];
   $args->grants = new stdClass();
@@ -912,9 +914,9 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
   }
 
 
-  // 20081225 - franciscom have discovered that exclude selected testsuite branch is not good
-  //            when you want to move lots of testcases from one testsuite to it's children
-  //            testsuites. (in this situation tree drag & drop is not ergonomic).
+  // I'have discovered that exclude selected testsuite branch is not good
+  // when you want to move lots of testcases from one testsuite to it's children
+  // testsuites. (in this situation tree drag & drop is not ergonomic).
   $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);
   $tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
 
@@ -924,11 +926,14 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
   // Accessing this keys on Smarty template using UPPER CASE fails.
   // Solution: have changed case on Smarty to lower case.
   //
-  $sqlA = " SELECT MAX(TCV.version) AS lvnum, NHTC.node_order, NHTC.name, NHTC.id, TCV.tc_external_id AS tcexternalid" .
+  $sqlA = " SELECT MAX(TCV.version) AS lvnum, NHTC.node_order, NHTC.name," . 
+          " NHTC.id, TCV.tc_external_id AS tcexternalid" .
           " FROM {$tables['nodes_hierarchy']} NHTC " .
-          " JOIN {$tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+          " JOIN {$tables['nodes_hierarchy']} NHTCV " . 
+          " ON NHTCV.parent_id = NHTC.id " .
           " JOIN {$tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
-          " JOIN {$tables['node_types']} NT ON NT.id = NHTC.node_type_id AND NT.description='testcase'" .
+          " JOIN {$tables['node_types']} NT " . 
+          " ON NT.id = NHTC.node_type_id AND NT.description='testcase'" .
           " WHERE NHTC.parent_id = " . intval($containerID);
 
   if( !is_null($argsObj->testCaseSet) )
@@ -938,8 +943,10 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
 
   $sqlA .=" GROUP BY NHTC.id,TCV.tc_external_id,NHTC.name,NHTC.node_order ";
 
-  $sqlB = " SELECT SQLA.id AS tcid, SQLA.name AS tcname,SQLA.node_order AS tcorder, SQLA.tcexternalid," . 
-          " MTCV.summary,MTCV.status,MTCV.importance,MTCV.id AS tcversion_id FROM ($sqlA) SQLA " .
+  $sqlB = " SELECT SQLA.id AS tcid, SQLA.name AS tcname," . 
+          " SQLA.node_order AS tcorder, SQLA.tcexternalid," . 
+          " MTCV.summary,MTCV.status,MTCV.importance,MTCV.execution_type," .
+          " MTCV.id AS tcversion_id FROM ($sqlA) SQLA " .
           " JOIN {$tables['nodes_hierarchy']} MNHTCV ON MNHTCV.parent_id = SQLA.id " .
           " JOIN {$tables['tcversions']} MTCV ON MTCV.id = MNHTCV.id AND MTCV.version = SQLA.lvnum";
   $orderClause = " ORDER BY TCORDER,TCNAME";        
@@ -964,23 +971,31 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
 
   $dummy = getConfigAndLabels('testCaseStatus','code');
   $gui->domainTCStatus = array(-1 => '') + $dummy['lbl'];
-  $gui->domainTCImportance = array(-1 => '', HIGH => lang_get('high_importance'), 
+  $gui->domainTCImportance = array(-1 => '', 
+                                   HIGH => lang_get('high_importance'), 
                                    MEDIUM => lang_get('medium_importance'), 
                                    LOW => lang_get('low_importance'));
 
+  $dummy = getConfigAndLabels('execution_type','code');
+  $gui->domainTCExecType = array(-1 => '') + $dummy['lbl'];
+
   $gui->testCasesTableView = 0;
-  if(($argsObj->action == 'testcases_table_view') || ($argsObj->action == 'doBulkSet'))
+  if(($argsObj->action == 'testcases_table_view') || 
+     ($argsObj->action == 'doBulkSet'))
   {
     $gui->testCasesTableView = 1;
   }  
   $gui->cf = $cf;
   
+  $gui->tcprefix = $tcasePrefix;
+  $gui->testcases = $children;
+
   $smartyObj->assign('gui', $gui);
   $smartyObj->assign('op_ok', $op_ok);
   $smartyObj->assign('user_feedback', $user_feedback);
-  $smartyObj->assign('tcprefix', $tcasePrefix);
-  $smartyObj->assign('testcases', $children);
-  $smartyObj->assign('old_containerID', $argsObj->tprojectID); //<<<<-- check if is needed
+  
+  //check if is needed
+  $smartyObj->assign('old_containerID', $argsObj->tprojectID); 
   $smartyObj->assign('containers', $testsuites);
   $smartyObj->assign('objectID', $containerID);
   $smartyObj->assign('object_name', $containerName);
@@ -1349,8 +1364,20 @@ function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
 {
   if( count($tcaseSet) > 0 )
   {
+    $k2s = array('tc_status' => 'setStatus',
+                 'importance' => 'setImportance',
+                 'execution_type' => 'setExecutionType');
     foreach($tcaseSet as $tcversion_id => $tcase_id)
     {
+      foreach($k2s as $attr => $m2c)
+      {
+        if($argsObj->$attr >0)
+        {
+          $tcaseMgr->$m2c($tcversion_id,$argsObj->$attr);
+        }  
+      } 
+
+      /*
       if($argsObj->tc_status >0)
       {
         $tcaseMgr->setStatus($tcversion_id,$argsObj->tc_status);
@@ -1361,6 +1388,11 @@ function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
         $tcaseMgr->setImportance($tcversion_id,$argsObj->importance);
       }  
 
+      if($argsObj->execution_type >0)
+      {
+        $tcaseMgr->setStatus($tcversion_id,$argsObj->tc_status);
+      }  
+      */
     }
 
     // second round, on Custom Fields

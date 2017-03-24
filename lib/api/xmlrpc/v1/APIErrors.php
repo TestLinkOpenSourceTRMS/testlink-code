@@ -344,6 +344,9 @@ define('REQ_REQSPEC_KO_STR', lang_get('API_REQ_REQSPEC_KO',null,1));
 define('REQ_KO', 11003);
 define('REQ_KO_STR', lang_get('API_REQ_KO',null,1));
 
+define('NO_REQ_IN_THIS_PROJECT', 11004);
+define('NO_REQ_IN_THIS_PROJECT_STR', lang_get('API_NO_REQ_IN_THIS_PROJECT',null,1));
+
 
 /**
  * 12000 level - Platforms

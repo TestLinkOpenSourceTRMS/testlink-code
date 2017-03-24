@@ -3435,6 +3435,7 @@ $TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
 $TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
 $TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
 $TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_NO_REQ_IN_THIS_PROJECT="Requirement (docid=%s) does not belong to project (id=%s).";
 $TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
 $TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
 
@@ -3540,6 +3541,9 @@ $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Pro
 
 $TLS_audit_cfield_required_on = "Custom field '{%1}' was set REQUIRED on Test Project '{%2}'";
 $TLS_audit_cfield_required_off = "Custom field '{%1}' was set NOT REQUIRED on Test Project '{%2}'";
+
+$TLS_audit_cfield_monitorable_on = "Custom field '{%1}' was set MONITORABLE on Test Project '{%2}'";
+$TLS_audit_cfield_monitorable_off = "Custom field '{%1}' was set NOT MONITORABLE on Test Project '{%2}'";
 
 
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";

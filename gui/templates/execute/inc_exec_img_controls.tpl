@@ -81,6 +81,9 @@ Author : franciscom
                  <input type="hidden" name="save_results" id="save_results" value="0">
                  <br />
                  <br />
+                 <button style="display: none;" type="submit" 
+                         id="hidden-submit-button"></button>
+
                  {foreach key=kode item=ikval from=$gui->execStatusIcons}
                    {$in = $ikval.img}
                    <img src="{$tlImages.$in}" title="{$ikval.title}"
@@ -89,7 +92,8 @@ Author : franciscom
                         onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
                         document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
                         document.getElementById('save_results').value=1;
-                        document.forms['execSetResults'].submit();">&nbsp;
+                        doSubmitForHTML5();
+                        // document.forms['execSetResults'].submit();">&nbsp;
                  {/foreach}  
                  <br />
                  <br />
@@ -103,8 +107,9 @@ Author : franciscom
                         id="fastExecNext{$kode}_{$tcversion_id}"
                         onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
                         document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
-                        document.getElementById('save_and_next').value=1;                        
-                        document.forms['execSetResults'].submit();">&nbsp;
+                        document.getElementById('save_and_next').value=1;
+                        doSubmitForHTML5();
+                        // document.forms['execSetResults'].submit();">&nbsp;
                  {/foreach}  
                  <br />
                  <br />
@@ -269,6 +274,11 @@ Author : franciscom
 
 
       <script>
+      function doSubmitForHTML5() 
+      {
+        document.getElementById("hidden-submit-button").click();
+      }
+
       jQuery( document ).ready(function() {
 
       // IMPORTANT

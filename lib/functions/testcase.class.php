@@ -5376,20 +5376,14 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-   * for a given set of test cases, search on the ACTIVE version set, and returns for each test case,
-   * an map with: the corresponding MAX(version number), other info
+   * for a given set of test cases, search on the ACTIVE version set, 
+   * and returns for each test case,
+   * a map with: the corresponding MAX(version number), other info
    *
    * @param mixed $id: test case id can be an array
    * @param map $filters OPTIONAL - now only 'cfields' key is supported
    * @param map $options OPTIONAL
    *
-   * @internal Revisions
-   * @since 1.9.4
-   * 20110817 - franciscom - TICKET 4708: When adding testcases to test plan, filtering by execution type does not work.
-   *
-   * @since 1.9.3
-   * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
-   * 20100417 - franciscom - added importance on output data
    */
   function get_last_active_version($id,$filters=null,$options=null)
   {
@@ -5428,8 +5422,6 @@ class testcase extends tlObjectWithAttachments
            " GROUP BY NH_TCVERSION.parent_id " .
            " ORDER BY NH_TCVERSION.parent_id ";
 
-    // $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-    // HERE FIXED access keys
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 
     $cfSelect = '';
@@ -5448,7 +5440,7 @@ class testcase extends tlObjectWithAttachments
         $cfQty = count($cf_hash);
         $countmain = 1;
 
-        // 20101025 - build custom fields filter
+        // Build custom fields filter
         // do not worry!! it seems that filter criteria is OR, but really is an AND,
         // OR is needed to do a simple query.
         // with processing on recordset becomes an AND
@@ -5509,7 +5501,7 @@ class testcase extends tlObjectWithAttachments
           {
             if( count($recordset[$key]) < $cfQty)
             {
-              unset($recordset[$key]); // remove
+              unset($recordset[$key]);
             }
             else
             {
@@ -5533,6 +5525,7 @@ class testcase extends tlObjectWithAttachments
         }
       }
     }
+
     return $recordset;
   }
 
@@ -5658,20 +5651,22 @@ class testcase extends tlObjectWithAttachments
    * @param map cf_hash: custom fields id plus values
    * @param map options: OPTIONAL
    *
-   * @return map key: tcversion_id , element: array numerical index with as much element as custom fields
+   * @return map key: tcversion_id , 
+   *         element: array numerical index with as much element as custom fields
    *
-   *
+   * @20170325: Ay! this search on EXACT VALUE not LIKE!
+   *            changed!
    */
   function filter_tcversions_by_cfields($tcversion_id,$cf_hash,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $recordset = null;
-      $itemSet = implode(',',(array)$tcversion_id);
+    $recordset = null;
+    $itemSet = implode(',',(array)$tcversion_id);
 
-      $my['options'] = array( 'access_key' => 'tcversion_id');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array( 'access_key' => 'tcversion_id');
+    $my['options'] = array_merge($my['options'], (array)$options);
 
-      $or_clause = '';
+    $or_clause = '';
     $cf_query = '';
     $cf_qty = count($cf_hash);
 
@@ -5680,17 +5675,21 @@ class testcase extends tlObjectWithAttachments
     // with processing on recordset becomes an AND
     foreach ($cf_hash as $cf_id => $cf_value)
     {
-        $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id . " AND CFDV.value='" . $cf_value . "') ";
+      $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id . 
+                   " AND CFDV.value LIKE '%{$cf_value}%') ";
       $or_clause = ' OR ';
     }
 
     $sql = "/* $debugMsg */ " .
-         " SELECT TCV.id AS tcversion_id, NH_TCVERSION.parent_id AS testcase_id, TCV.version," .
-         " CFDV.field_id,CFDV.value " .
-         " FROM {$this->tables['tcversions']} TCV " .
-         " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION ON NH_TCVERSION.id = TCV.id " .
-         " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.node_id = TCV.id " .
-         " AND NH_TCVERSION.id IN ({$itemSet}) AND ({$cf_query}) ";
+           " SELECT TCV.id AS tcversion_id, " . 
+           " NH_TCVERSION.parent_id AS testcase_id, TCV.version," .
+           " CFDV.field_id,CFDV.value " .
+           " FROM {$this->tables['tcversions']} TCV " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " . 
+           " ON NH_TCVERSION.id = TCV.id " .
+           " JOIN {$this->tables['cfield_design_values']} CFDV " . 
+           " ON CFDV.node_id = TCV.id " .
+           " AND NH_TCVERSION.id IN ({$itemSet}) AND ({$cf_query}) ";
 
     $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key'],database::CUMULATIVE);
 
@@ -5702,7 +5701,6 @@ class testcase extends tlObjectWithAttachments
       {
         if( count($recordset[$key]) < $cf_qty)
         {
-          // remove
           unset($recordset[$key]);
         }
       }
@@ -5711,7 +5709,7 @@ class testcase extends tlObjectWithAttachments
         $recordset = null;
       }
     }
-      return $recordset;
+    return $recordset;
   }
 
   /**

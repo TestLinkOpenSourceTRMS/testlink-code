@@ -9,9 +9,6 @@
  * @copyright   2005-2017, TestLink community
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.16
- *
  */
 
 /** related functionality */
@@ -302,8 +299,8 @@ class testcase extends tlObjectWithAttachments
       $ix->executionType = $execution_type;
       $ix->importance = $importance;
       $ix->status = $my['options']['status'];
-	  $ix->active = $my['options']['active'];
-	  $ix->is_open = $my['options']['is_open'];
+	    $ix->active = $my['options']['active'];
+	    $ix->is_open = $my['options']['is_open'];
       $ix->estimatedExecDuration = $my['options']['estimatedExecDuration'];
 
 
@@ -609,22 +606,16 @@ class testcase extends tlObjectWithAttachments
   }
 
 
-  /*
-    function: create_tcversion
-
-    args:
-
-    returns:
-
-    @internal revisions
-    @since 1.9.15
-
-
-  */
+  /**
+   *  trying to solve <body id="cke_pastebin" issues
+   *
+   */
  private function createVersion($item)
  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $tcase_version_id = $this->tree_manager->new_node($item->id,$this->node_types_descr_id['testcase_version']);
+
+    $this->CKEditorCopyAndPasteCleanUp($item,array('summary','precondition')); 
 
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
            " (id,tc_external_id,version,summary,preconditions," .
@@ -660,7 +651,8 @@ class testcase extends tlObjectWithAttachments
       $sql .= ", active";
       $sqlValues .= "," . $v;
     }
-	if( property_exists($item,'is_open') && !is_null($item->is_open) )
+	  
+    if( property_exists($item,'is_open') && !is_null($item->is_open) )
     {
       $v = intval($item->is_open) > 0 ? 1 : 0;
       $sql .= ", is_open";
@@ -5090,13 +5082,23 @@ class testcase extends tlObjectWithAttachments
     $dummy = (isset($this->execution_types[$dummy])) ? $dummy : TESTCASE_EXECUTION_TYPE_MANUAL;
 
     $item_id = $this->tree_manager->new_node($tcversion_id,$this->node_types_descr_id['testcase_step']);
+
+    $k2e = array('actions','expected_results');
+    $item = new stdClass();
+    $item->actions = $actions;
+    $item->expected_results = $expected_results;
+    $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
+
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcsteps']} " .
            " (id,step_number,actions,expected_results,execution_type) " .
-           " VALUES({$item_id},{$step_number},'" . $this->db->prepare_string($actions) . "','" .
-           $this->db->prepare_string($expected_results) . "', " . $this->db->prepare_int($dummy) . ")";
+           " VALUES({$item_id},{$step_number},'" . 
+           $this->db->prepare_string($item->actions) . "','" .
+           $this->db->prepare_string($item->expected_results) . "', " . 
+           $this->db->prepare_int($dummy) . ")";
 
     $result = $this->db->exec_query($sql);
-    $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 'sql' => $sql);
+    $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 
+                 'sql' => $sql);
     if (!$result)
     {
       $ret['msg'] = $this->db->error_msg();
@@ -7619,6 +7621,19 @@ class testcase extends tlObjectWithAttachments
         $rse[$item_key] = $ghost;
       }
     }
+  }
+
+  /**
+   *
+   */
+  function CKEditorCopyAndPasteCleanUp(&$items,$keys)
+  {
+    $offending = array('<body id="cke_pastebin"','</body>');
+    $good = array('&lt;body id="cke_pastebin"','&lt;/body&gt;');
+    foreach($keys as $fi)
+    {
+      $items->$fi = str_ireplace($offending,$good,$items->$fi);
+    } 
   }
 
 }  // Class end

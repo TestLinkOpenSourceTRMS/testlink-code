@@ -396,7 +396,7 @@ $TLS_already_exists_not_updated = '已经存在= >未更新';
 $TLS_assign_exec_task_to_me = '分配任务给我';
 $TLS_chosen_blank_option = "   ";
 
-$TLS_monitorable = 'Monitorable';
+$TLS_monitorable = '监测';
 
 // ----- unsorted (TODO move) -------------------------------------
 $TLS_problems_loading_xml_content = "无法下载XML数据，请检查文件。";
@@ -504,7 +504,7 @@ $TLS_valid_user_name_format = "用户名只能包含字母,数字,空格,连字�
 $TLS_warning_empty_pwd = "密码不允许为空！";
 $TLS_your_info_please = "输入你的用户信息";
 $TLS_new_account = "TestLink - 已创建新用户";
-$TLS_invalid_security_token = '无效的security token';
+$TLS_invalid_security_token = '无效的安全令牌。';
 
 $TLS_bad_password_minlen = '密码要求 - 最小长度 %s - 当前长度 %s';
 $TLS_bad_password_maxlen = '密码要求 - 最大长度 %s - 当前长度 %s';
@@ -1944,29 +1944,29 @@ $TLS_info_bugs_per_tc_report = "此报告显示所有与测试用例连接的问
 
 
 // ----- gui/templates/resultsTC.tpl -----
-$TLS_info_resultsTC_report = "This report shows the last test case execution result for each build, " .
-                             "analizing test cases <b>with and without tester assignment.</b> <br />" .
-                             "<br /><b>Example:</b><br />Test Case has been executed in this order: " .
-                             "<br />Build 1.0 - Passed; Build 1.0 - Failed<br />-> Last Result  for Build 1.0 " .
-                             "is Failed because second execution overrides older results.<br /><br />" .
-                             "\"[Latest (created) Build]\" and \"Latest execution\" column show data according " .
-                             "to this <b>example:</b><br />Test Case has been executed in this order:<br />" .
+$TLS_info_resultsTC_report = "此报告显示构建中每个测试用例最新的执行结果，" .
+                             "分析<b>已分配或未分配</b> 的测试用例 <br />" .
+                             "<br /><b>例如：</b><br />测试用例按如下顺序执行：" .
+                             "<br />Build 1.0 - Passed; Build 1.0 - Failed<br />-> 那么，Build 1.0 的测试结果为" .
+                             "Failed（由于第二次执行的结果会覆盖之前的执行结果）。<br /><br />" .
+                             "\"[最近 (created) 构建]\" 和 \"最近执行结果\" 列将按照如下规则显示数据：" .
+                             "<b>例如：</b><br />测试用例按如下顺序执行：<br />" .
                              "Build 1.0 - Passed; Build 1.0 - Failed; Build 2.0 - Blocked; " .
-                             "Build 1.0 - Passed<br>-> [Latest (created) Build] : Blocked because Build 2.0 is " .
-                             "the last build created for which a result has been set.<br />-> \"Latest Execution\" : " .
-                             "Passed because Build 1.0 has been executed at last.<br /><br />The shown ".
-                             "priority is calculated based on the importance of the currently linked test case ".
-                             "version.";
+                             "Build 1.0 - Passed<br>-> [最近 (created) 构建] : Blocked （由于 Build 2.0 是最新的构建对应的执行结果）。" .
+                             "<br />-> \"最近执行结果\"：" .
+                             "Passed（由于 Build 1.0 是最近被执行的结果）。<br /><br />".
+                             "所示的优先级是基于当前链接的测试用例版本的重要性来计算的。";
+                            
 
 
 
 
 // ----- gui/templates/resultsByStatus.tpl -----
 $TLS_th_bugs = "问题";
-$TLS_th_bugs_id_summary = "Bugs (ID : Summary)";
+$TLS_th_bugs_id_summary = "问题 (ID : 概述)";
 $TLS_th_date = "日期";
 $TLS_th_run_by = "执行人";
-$TLS_th_bugs_not_linked = "关联/未关联bug的测试用例";
+$TLS_th_bugs_not_linked = "关联/未关联 Bug 的测试用例";
 $TLS_th_assigned_to = "指派给";
 
 $TLS_info_only_with_tester_assignment = '注意：本报告只考虑了有测试任务的测试用例';
@@ -2367,8 +2367,8 @@ $TLS_warning_users_will_be_reset = "影响用户的角色：";
 
 // ----- gui/templates/tcexport.tpl -----
 $TLS_export_filename = "导出文件名";
-$TLS_export_tcase_external_id = 'Export Test Case external ID';
-$TLS_export_with_prefix = 'With Test Case prefix';
+$TLS_export_tcase_external_id = '导出测试用例的 external ID';
+$TLS_export_with_prefix = '含测试用例前缀';
 
 $TLS_export_with_keywords = "导出关键字";
 $TLS_warning_empty_filename = "请输入文件名称";
@@ -2485,6 +2485,7 @@ $TLS_info_search_req_spec = '此列表显示匹配搜索条件的需求规范.<b
 $TLS_href_add_remove_test_cases = "添加/删除测试用例到测试计划";
 $TLS_href_build_new = "版本管理";
 $TLS_href_execute_test = "执行测试";
+$TLS_href_exec_ro_access = "Access Execute Tests RO";
 $TLS_href_metrics_dashboard = "进度仪表盘";
 $TLS_href_newest_tcversions = "显示最新的测试用例版本";
 $TLS_href_plan_assign_urgency = "设置测试用例的级别";
@@ -2649,6 +2650,7 @@ $TLS_no_rights = "无权限";
 
 $TLS_right_exec_edit_notes = '编辑执行笔记';
 $TLS_right_exec_delete = '删除执行';
+$TLS_right_exec_ro_access = "查看执行情况（只读访问）";
 $TLS_right_testplan_unlink_executed_testcases = '未链接执行的测试用例';
 $TLS_right_testproject_delete_executed_testcases = '删除执行的测试用例';
 $TLS_right_testproject_edit_executed_testcases = '编辑执行的测试用例';
@@ -2781,7 +2783,7 @@ $TLS_text_counter_feedback = "您可以输入最多 %d 字符。还剩 ";
 $TLS_create_a_build = "创建一个新的版本";
 $TLS_no_build_warning_part1 = "没有为这个测试计划创建版本：";
 $TLS_no_build_warning_part2 = "请先创建它或找系统管理员解决。";
-$TLS_no_good_build = "At least one Build %s is needed for this Test Plan";
+$TLS_no_good_build = "当前测试计划至少需要一个构建 %s。";
 
 
 // ----- lib/general/myTPInfo.php -----
@@ -2810,8 +2812,8 @@ $TLS_kw_update_fails = "更新失败";
 // ----- lib/keywords/keywordsAssign.php -----
 $TLS_assigned_kword = "指派关键字";
 $TLS_available_kword = "有效关键字";
-$TLS_kword_to_be_assigned_to_testcases = "Keywords to be assigned to test cases";
-$TLS_assignToFilteredTestCases = 'Assign ONLY to filtered Test Cases';
+$TLS_kword_to_be_assigned_to_testcases = "待关联到测试用例的关键字";
+$TLS_assignToFilteredTestCases = '仅分配给已过滤的测试用例';
 
 
 
@@ -3102,12 +3104,12 @@ $TLS_link_assigned_tc_overview = "测试用例分派概览";
 $TLS_link_report_metrics_active_build = "活动版本的进度";
 $TLS_link_report_metrics_more_builds = "查询进度";
 $TLS_link_report_not_run = "尚未执行的测试用例";
-$TLS_link_report_not_run_any_platform = "Test Cases not run on any Platform";
+$TLS_link_report_not_run_any_platform = "未关联到测试平台的测试用例";
 $TLS_link_report_overall_build = "全部版本的状态";
 $TLS_link_report_reqs_coverage = "基于产品需求的报告";
 $TLS_link_report_tcases_without_tester = "还未分配的测试用例";
 $TLS_link_report_test = "测试结果矩阵";
-$TLS_link_report_test_flat = "Test Results Flat";
+$TLS_link_report_test_flat = "测试结果（FLAT）";
 $TLS_link_report_test_plan = "测试计划报告";
 $TLS_link_report_test_report = "测试报告";
 $TLS_link_report_test_report_on_build = "基于构建的测试报告";
@@ -3433,6 +3435,7 @@ $TLS_API_REQSPEC_KO = "产品需求规格 (id=%s) 在系统中不存在";
 $TLS_API_REQ_KO = "产品需求 (id=%s) 在系统不存在";
 $TLS_API_REQSPEC_IS_EMPTY = "产品需求规格 (title=%s / id=%s) 没有产品需求";
 $TLS_API_REQ_REQSPEC_KO = "产品需求(docid=%s/title=%s/id=%s) 不属于产品需求规格 (title=%s / id=%s)";
+$TLS_API_NO_REQ_IN_THIS_PROJECT="Requirement (docid=%s) does not belong to project (id=%s).";
 $TLS_API_TPLAN_HAS_NO_BUILDS = "没有为测试计划 (名称=%s/id=%s)定义版本";
 $TLS_API_VERSION_NOT_VALID = "版本号 %s 无效.";
 
@@ -3485,43 +3488,43 @@ $TLS_API_ATTACH_FEATURE_DISABLED = '已禁用附件功能';
 $TLS_API_ATTACH_INVALID_FK = "错误的外键 ID[%s] 标[%s]";
 $TLS_API_ATTACH_INVALID_ATTACHMENT = "错误的附件信息参数：FILE_NAME [%s] CONTENT_SIZE [%s]";
 
-$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES = "There are no custom fields usable at design time linked" .
-                                                  " to test cases on this test project ";
+$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES = "在设计时没有可用的自定义字段与此测试项目的测试用例相关联.";
+                                                  
 
-$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS = "There are no custom fields usable at design time linked" .
-                                                  " to builds on this test project ";
-
-
-$TLS_API_PLATFORMNAME_ALREADY_EXISTS = "Platform name (%s) already exists (id:%s)";
+$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS = "在设计时没有可用的自定义字段链接到此测试项目上的构建."; 
+                                                 
 
 
-$TLS_API_PLATFORM_NAME_DOESNOT_EXIST = "Platform name (%s) does not exist";
-
-$TLS_API_PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK = "Platform (%s) is used by %s test case(s), then cannot be removed." .
-                                       			  "To remove platform from test plan you must first remove all " .
-                                       			  "test cases assigned to it.";
+$TLS_API_PLATFORMNAME_ALREADY_EXISTS = "平台名称 (%s) 已存在 (id:%s)。";
 
 
-$TLS_API_NODEID_INVALID_DATA_TYPE = "Invalid Data Type - Node ID can be Array of Positive Integer, or Positive Integer";
-$TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "Test Project Source Name: %s - does not exist";
+$TLS_API_PLATFORM_NAME_DOESNOT_EXIST = "平台名称 (%s) 不存在。";
 
-$TLS_API_TPROJECT_PREFIX_DOESNOT_EXIST = "There is NO Test Project with Prefix (%s)";
+$TLS_API_PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK = "测试平台 (%s) 正用于 %s 测试用例，无法移除。" .
+                                       			  "若要从测试计划中移除测试平台，必须先移除其中对应的测试用例。";
+                                       			  
+
+
+$TLS_API_NODEID_INVALID_DATA_TYPE = "数据类型错误 - 节点ID必须是正整数或仅包含正整数的数组";
+$TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "名为 %s 的测试项目不存在。";
+
+$TLS_API_TPROJECT_PREFIX_DOESNOT_EXIST = "不存在前缀为 (%s) 的测试项目。";
 
 $TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES =
   "There are no custom fields usable at design time linked" .
   " to test suites on this test project ";
 
-$TLS_API_INVALID_TIMESTAMP = "Timestamp provided (%s) is invalid";
+$TLS_API_INVALID_TIMESTAMP = "提供的时间戳 (%s) 无效。";
 
-$TLS_API_ITS_NOT_FOUND = "Unable to find the ITS %s.";
+$TLS_API_ITS_NOT_FOUND = "找不到ITS %s.";
 
-$TLS_API_TSUITE_NOT_ON_TCASE_TPROJ = "Test Suite does not belong to Test Case's Test Project";
+$TLS_API_TSUITE_NOT_ON_TCASE_TPROJ = "测试套件不属于测试用例所在的测试项目";
 
 // ----- audit log entries -----
-$TLS_audit_login_succeeded = "从 '{%2}' 登录 '{%1}' from '{%2}' 成功";
-$TLS_audit_login_failed = "从 '{%2}' 登录 '{%1}' from '{%2}' 失败";
-$TLS_audit_login_failed_silence = "Login from '{%1}' failed";
-$TLS_audit_login_sso_failed_multiple_matches = "Login from '{%1}' failed - Reason: multiple accounts matches:{%2} - Looking for:{%3} in user attribute {%4}";
+$TLS_audit_login_succeeded = "来自 '{%2}' 的账号 '{%1}' 登陆成功";
+$TLS_audit_login_failed = "来自 '{%2}' 的账号 '{%1}' 登陆失败";
+$TLS_audit_login_failed_silence = " '{%1}' 登陆失败";
+$TLS_audit_login_sso_failed_multiple_matches = "从 '{%1}' 登陆失败 - 愿意：多个账号匹配：{%2} - 在用户属性 {%4} 中查找：{%3}。";
 $TLS_audit_role_saved = "保存角色 '{%1}'";
 $TLS_audit_role_created = "创建角色 '{%1}'";
 $TLS_audit_role_deleted = "删除角色'{%1}'";
@@ -3538,6 +3541,9 @@ $TLS_audit_cfield_deactivated = "禁用自定义字段 '{%1}' 于测试项目 '{
 
 $TLS_audit_cfield_required_on = "自定义字段 '{%1}' 在测试项目 '{%2}' 中被设置为必输";
 $TLS_audit_cfield_required_off = "自定义字段 '{%1}' 在测试项目 '{%2}' 中被设置为不必输";
+
+$TLS_audit_cfield_monitorable_on = "自定义字段 '{%1}' 在测试项目 '{%2}' 中设置为监测。";
+$TLS_audit_cfield_monitorable_off = "自定义字段 '{%1}' 在测试项目 '{%2}' 中未设置为监测。";
 
 
 $TLS_audit_user_apikey_set = "生成 '{%1}' 的 API-Key";
@@ -3774,7 +3780,7 @@ $TLS_warning_selected_revisions = "必须从列表中选择两个修订记录才
 $TLS_warning_same_selected_revisions = "必须从列表中选择两个修订记录才能比较！";
 
 // ----- grab from not-systematic developers -----
-$TLS_step = 'Test Case Step';
+$TLS_step = '测试用例步骤';
 $TLS_step_actions = "步骤动作";
 $TLS_step_details="步骤详情";
 $TLS_step_number="#";
@@ -3900,7 +3906,7 @@ $TLS_warning_empty_issuetracker_type = "问题跟踪系统的类型不能为空�
 
 // issueTrackerCommands.class.php
 $TLS_issuetracker_management = $TLS_href_issuetracker_management;
-$TLS_issuetracker_deleted = "Issue Tracker %s% has been deleted";
+$TLS_issuetracker_deleted = "问题跟踪系统 %s% 已删除。";
 
 // issueTrackerEdit.tpl
 $TLS_issuetracker_show_cfg_example = '显示问题跟踪系统连接配置样例';
@@ -3943,12 +3949,12 @@ $TLS_check_bts_connection = "检查连接";
 
 $TLS_can_not_create_direct_link = '您还没有 TestLink API KEY，无法生成直连链接。';
 
-$TLS_seems_to_belong_to_other_tproject = "Attention! - Test case have prefix %s that is different than expected prefix %s";
-$TLS_provide_full_external_tcase_id = "Attention! - You need to provide FULL test case id: %s%sNUMBER";
-$TLS_tcase_doesnot_exist = "Attention!! - Can not find test case identified by %s";
+$TLS_seems_to_belong_to_other_tproject = "注意！ - 当前测试用例的的前缀 %s 与预期前缀 %s 不一致。";
+$TLS_provide_full_external_tcase_id = "注意！ - 您需要提供完整的测试用例ID： %s%sNUMBER";
+$TLS_tcase_doesnot_exist = "注意！！ - 找不到标识为 %s 的测试用例。";
 
 // reqMgrSystemView.tpl
-$TLS_th_reqmgrsystem = 'Req. Management System';
+$TLS_th_reqmgrsystem = '需求管理系统';
 $TLS_th_reqmgrsystem_type = '类型';
 $TLS_th_reqmgrsystem_env = '环境';
 $TLS_warning_empty_reqmgrsystem_name = "需求管理系统的名称不能为空！";
@@ -4044,7 +4050,7 @@ $TLS_mail_subject_req_delete = '需求已删除 [%docid%-%title%]';
 $TLS_mail_subject_req_new_version = '需求新版本 [%docid%-%title%]';
 
 
-$TLS_hint_add_testcases_to_testplan_status = 'Test cases with Latest Version with status with one of these values (%s) will not be displayed in this screen';
+$TLS_hint_add_testcases_to_testplan_status = '具有这些状态值（％s）之一的最新版本的测试用例将不会显示在此屏幕中';
 
 $TLS_copy_done = "已复制。";
 $TLS_copy_tester_assignments_title = "复制测试人员指派情况";
@@ -4077,13 +4083,14 @@ $TLS_search_title = "搜索";
 $TLS_req_document_id = "需求DOCID";
 $TLS_id = 'ID';
 
-$TLS_search_words_or = 'Search must match at least ONE word (OR)';
-$TLS_search_words_and = 'Search has to match ALL words (AND)';
-$TLS_search_words_placeholder = 'write here the words you want search for';
-$TLS_search_words_on_attr = "Word/Words will be searched among one or more attributes you will select below";
+$TLS_search_words_or = '查询必须至少匹配一个关键字（OR）';
+$TLS_search_words_and = '查询必须匹配全部关键字（AND）';
+$TLS_search_words_placeholder = '请输入您需要查询的关键字';
+$TLS_search_words_on_attr = "关键字将在以下所列的属性范围中查询";
 
-$TLS_search_other_attr = "You can set search criteria that does not use words. But This search criteria will be added on AND mode";
+$TLS_search_other_attr = "您可以设置不使用关键字的搜索条件。 但是，此搜索条件将添加到AND模式";
 
-$TLS_search_created_by_ph = 'value will be searched on login/firts name/last name';
+$TLS_search_created_by_ph = '登录名、姓、名中查询';
 $TLS_multiple_entities_search = '搜索多个实例';
+$TLS_no_access_to_feature = '您没有权限使用该功能，请联系TestLink系统管理员。';
 // ----- END ------------------------------------------------------------------

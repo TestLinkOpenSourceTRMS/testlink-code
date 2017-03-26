@@ -8,13 +8,10 @@
  * @filesource  installNewDB.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2008,2012 TestLink community
- * @copyright   inspired by
- *              Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
+ * @copyright   2008,2017 TestLink community
+ * @copyright   inspired by Etomite Content Management System
+ *              2003, 2004 Alexander Andrew Butter 
  *
- * @internal revisions
- * @since 1.9.6
- * 
  **/
 
 require_once("../config.inc.php");
@@ -27,7 +24,6 @@ require_once("../lib/functions/metastring.class.php");
 
 require_once("../third_party/dBug/dBug.php");
 
-// 20080315 - franciscom
 // Better to avoid use of logger during installation
 // because we do not have control on what kind of logger (db, file) to create.
 // This produce the situation:dog eats dog, i.e.:
@@ -596,7 +592,7 @@ function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
   $tablesOnDB =$my_ado->MetaTables('TABLES');  
   if( count($tablesOnDB) > 0 && isset($tablesOnDB[0]))
   {
-    echo "<br />Dropping all TL existent tables:<br />";
+    echo "<br /><b>Dropping all TL existent tables:</b><br />";
     foreach($schema as $tablePlainName => $tableFullName)
     {
       $targetTable = $dbTablePrefix . $tablePlainName;
@@ -622,11 +618,11 @@ function drop_views(&$dbHandler,$dbItemPrefix,$dbType)
   $itemsOnDB =$my_ado->MetaTables('VIEWS');  
   if( count($itemsOnDB) > 0 && isset($itemsOnDB[0]))
   {
-    echo "<br />Dropping all TL existent views:<br />";
+    echo "<br /><b>Dropping all TL existent views:</b><br />";
     foreach($schema as $itemPlainName => $itemFullName)
     {
       $target = $dbItemPrefix . $itemPlainName;
-      if( in_array($itemTable,$itemsOnDB) )
+      if( in_array($target,$itemsOnDB) )
       {
         // Need to add option (CASCADE ?) to delete dependent object
         echo "Droping $target" . "<br />";

@@ -540,7 +540,7 @@ class searchCommands
       $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       foreach($targetSet as $target)
       {
-        $filterRS['scope'] .= $args->and_or . " RSRV.scope $this->likeOp '%{$target}%' ";  
+        $filterRS['scope'] .= $args->and_or . " UDFStripHTMLTags(RSRV.scope) $this->likeOp '%{$target}%' ";  
       }  
       $filterRS['scope'] .= ')';
   
@@ -687,7 +687,7 @@ class searchCommands
           $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
           foreach($targetSet as $target)
           {
-            $filterRQ['scope'] .= $args->and_or . " RQV.scope $this->likeOp '%{$target}%' "; 
+            $filterRQ['scope'] .= $args->and_or . " UDFStripHTMLTags(RQV.scope) $this->likeOp '%{$target}%' "; 
           }  
           $filterRQ['scope'] .= ')';
         }  
@@ -770,7 +770,8 @@ class searchCommands
       
       foreach($targetSet as $target)
       {
-        $filterSpecial['ts_summary'] .= $args->and_or . " TS.details $this->likeOp '%{$target}%' ";
+        $filterSpecial['ts_summary'] .= $args->and_or . 
+          " UDFStripHTMLTags(TS.details) $this->likeOp '%{$target}%' ";
       }  
       $filterSpecial['ts_summary'] .= ')';
     }  
@@ -811,6 +812,8 @@ class searchCommands
       
       $sql = $sqlFields . $filterTS['by_keyword_id'] . $otherFilters;
       $mapTS = $db->fetchRowsIntoMap($sql,'id'); 
+
+      //DEBUGecho 'DEBUG===' . $sql;
     }
 
     return $mapTS;
@@ -909,7 +912,8 @@ class searchCommands
       
       foreach($targetSet as $target)
       {
-        $filterSpecial['by_steps'] .= $args->and_or . " TCSTEPS.actions $this->likeOp '%{$target}%' ";  
+        $filterSpecial['by_steps'] .= $args->and_or . 
+          " UDFStripHTMLTags(TCSTEPS.actions) $this->likeOp '%{$target}%' ";  
       }  
       $filterSpecial['by_steps'] .= ')';
     }    
@@ -922,7 +926,7 @@ class searchCommands
       foreach($targetSet as $target)
       {
         $filterSpecial['by_expected_results'] .= $args->and_or . 
-                     " TCSTEPS.expected_results $this->likeOp '%{$target}%' "; 
+          " UDFStripHTMLTags(TCSTEPS.expected_results) $this->likeOp '%{$target}%' "; 
       }  
       $filterSpecial['by_expected_results'] .= ')';
     }    
@@ -931,7 +935,7 @@ class searchCommands
     {
       $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
       $i2s = array('name' => 'tc_title', 'summary' => 'tc_summary', 
-                 'preconditions' => 'tc_preconditions');
+                   'preconditions' => 'tc_preconditions');
       foreach($k2w as $kf => $alias)
       {
         $in = $i2s[$kf];
@@ -944,8 +948,16 @@ class searchCommands
      
           foreach($targetSet as $target)
           {
-            $filterSpecial[$kf] .= " {$args->and_or} {$alias}.{$kf} $this->likeOp ";
-            $filterSpecial[$kf] .= " '%{$target}%' "; 
+            $filterSpecial[$kf] .= " {$args->and_or} ";
+            $xx = "{$alias}.{$kf}";
+            switch($kf)
+            {
+              case 'summary':
+              case 'preconditions':
+                $xx = " UDFStripHTMLTags(" . $xx . ") ";
+              break;
+            }
+            $filterSpecial[$kf] .= "{$xx} {$this->likeOp}  '%{$target}%' "; 
           }  
           $filterSpecial[$kf] .= ' )';
         }

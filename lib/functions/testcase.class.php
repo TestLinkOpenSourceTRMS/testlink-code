@@ -9,9 +9,6 @@
  * @copyright   2005-2017, TestLink community
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.16
- *
  */
 
 /** related functionality */
@@ -302,8 +299,8 @@ class testcase extends tlObjectWithAttachments
       $ix->executionType = $execution_type;
       $ix->importance = $importance;
       $ix->status = $my['options']['status'];
-	  $ix->active = $my['options']['active'];
-	  $ix->is_open = $my['options']['is_open'];
+	    $ix->active = $my['options']['active'];
+	    $ix->is_open = $my['options']['is_open'];
       $ix->estimatedExecDuration = $my['options']['estimatedExecDuration'];
 
 
@@ -609,22 +606,16 @@ class testcase extends tlObjectWithAttachments
   }
 
 
-  /*
-    function: create_tcversion
-
-    args:
-
-    returns:
-
-    @internal revisions
-    @since 1.9.15
-
-
-  */
+  /**
+   *  trying to solve <body id="cke_pastebin" issues
+   *
+   */
  private function createVersion($item)
  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $tcase_version_id = $this->tree_manager->new_node($item->id,$this->node_types_descr_id['testcase_version']);
+
+    $this->CKEditorCopyAndPasteCleanUp($item,array('summary','precondition')); 
 
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
            " (id,tc_external_id,version,summary,preconditions," .
@@ -660,7 +651,8 @@ class testcase extends tlObjectWithAttachments
       $sql .= ", active";
       $sqlValues .= "," . $v;
     }
-	if( property_exists($item,'is_open') && !is_null($item->is_open) )
+	  
+    if( property_exists($item,'is_open') && !is_null($item->is_open) )
     {
       $v = intval($item->is_open) > 0 ? 1 : 0;
       $sql .= ", is_open";
@@ -5090,13 +5082,23 @@ class testcase extends tlObjectWithAttachments
     $dummy = (isset($this->execution_types[$dummy])) ? $dummy : TESTCASE_EXECUTION_TYPE_MANUAL;
 
     $item_id = $this->tree_manager->new_node($tcversion_id,$this->node_types_descr_id['testcase_step']);
+
+    $k2e = array('actions','expected_results');
+    $item = new stdClass();
+    $item->actions = $actions;
+    $item->expected_results = $expected_results;
+    $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
+
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcsteps']} " .
            " (id,step_number,actions,expected_results,execution_type) " .
-           " VALUES({$item_id},{$step_number},'" . $this->db->prepare_string($actions) . "','" .
-           $this->db->prepare_string($expected_results) . "', " . $this->db->prepare_int($dummy) . ")";
+           " VALUES({$item_id},{$step_number},'" . 
+           $this->db->prepare_string($item->actions) . "','" .
+           $this->db->prepare_string($item->expected_results) . "', " . 
+           $this->db->prepare_int($dummy) . ")";
 
     $result = $this->db->exec_query($sql);
-    $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 'sql' => $sql);
+    $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 
+                 'sql' => $sql);
     if (!$result)
     {
       $ret['msg'] = $this->db->error_msg();
@@ -5374,20 +5376,14 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-   * for a given set of test cases, search on the ACTIVE version set, and returns for each test case,
-   * an map with: the corresponding MAX(version number), other info
+   * for a given set of test cases, search on the ACTIVE version set, 
+   * and returns for each test case,
+   * a map with: the corresponding MAX(version number), other info
    *
    * @param mixed $id: test case id can be an array
    * @param map $filters OPTIONAL - now only 'cfields' key is supported
    * @param map $options OPTIONAL
    *
-   * @internal Revisions
-   * @since 1.9.4
-   * 20110817 - franciscom - TICKET 4708: When adding testcases to test plan, filtering by execution type does not work.
-   *
-   * @since 1.9.3
-   * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
-   * 20100417 - franciscom - added importance on output data
    */
   function get_last_active_version($id,$filters=null,$options=null)
   {
@@ -5426,8 +5422,6 @@ class testcase extends tlObjectWithAttachments
            " GROUP BY NH_TCVERSION.parent_id " .
            " ORDER BY NH_TCVERSION.parent_id ";
 
-    // $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-    // HERE FIXED access keys
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 
     $cfSelect = '';
@@ -5446,7 +5440,7 @@ class testcase extends tlObjectWithAttachments
         $cfQty = count($cf_hash);
         $countmain = 1;
 
-        // 20101025 - build custom fields filter
+        // Build custom fields filter
         // do not worry!! it seems that filter criteria is OR, but really is an AND,
         // OR is needed to do a simple query.
         // with processing on recordset becomes an AND
@@ -5507,7 +5501,7 @@ class testcase extends tlObjectWithAttachments
           {
             if( count($recordset[$key]) < $cfQty)
             {
-              unset($recordset[$key]); // remove
+              unset($recordset[$key]);
             }
             else
             {
@@ -5531,6 +5525,7 @@ class testcase extends tlObjectWithAttachments
         }
       }
     }
+
     return $recordset;
   }
 
@@ -5656,20 +5651,22 @@ class testcase extends tlObjectWithAttachments
    * @param map cf_hash: custom fields id plus values
    * @param map options: OPTIONAL
    *
-   * @return map key: tcversion_id , element: array numerical index with as much element as custom fields
+   * @return map key: tcversion_id , 
+   *         element: array numerical index with as much element as custom fields
    *
-   *
+   * @20170325: Ay! this search on EXACT VALUE not LIKE!
+   *            changed!
    */
   function filter_tcversions_by_cfields($tcversion_id,$cf_hash,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $recordset = null;
-      $itemSet = implode(',',(array)$tcversion_id);
+    $recordset = null;
+    $itemSet = implode(',',(array)$tcversion_id);
 
-      $my['options'] = array( 'access_key' => 'tcversion_id');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array( 'access_key' => 'tcversion_id');
+    $my['options'] = array_merge($my['options'], (array)$options);
 
-      $or_clause = '';
+    $or_clause = '';
     $cf_query = '';
     $cf_qty = count($cf_hash);
 
@@ -5678,17 +5675,21 @@ class testcase extends tlObjectWithAttachments
     // with processing on recordset becomes an AND
     foreach ($cf_hash as $cf_id => $cf_value)
     {
-        $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id . " AND CFDV.value='" . $cf_value . "') ";
+      $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id . 
+                   " AND CFDV.value LIKE '%{$cf_value}%') ";
       $or_clause = ' OR ';
     }
 
     $sql = "/* $debugMsg */ " .
-         " SELECT TCV.id AS tcversion_id, NH_TCVERSION.parent_id AS testcase_id, TCV.version," .
-         " CFDV.field_id,CFDV.value " .
-         " FROM {$this->tables['tcversions']} TCV " .
-         " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION ON NH_TCVERSION.id = TCV.id " .
-         " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.node_id = TCV.id " .
-         " AND NH_TCVERSION.id IN ({$itemSet}) AND ({$cf_query}) ";
+           " SELECT TCV.id AS tcversion_id, " . 
+           " NH_TCVERSION.parent_id AS testcase_id, TCV.version," .
+           " CFDV.field_id,CFDV.value " .
+           " FROM {$this->tables['tcversions']} TCV " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " . 
+           " ON NH_TCVERSION.id = TCV.id " .
+           " JOIN {$this->tables['cfield_design_values']} CFDV " . 
+           " ON CFDV.node_id = TCV.id " .
+           " AND NH_TCVERSION.id IN ({$itemSet}) AND ({$cf_query}) ";
 
     $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key'],database::CUMULATIVE);
 
@@ -5700,7 +5701,6 @@ class testcase extends tlObjectWithAttachments
       {
         if( count($recordset[$key]) < $cf_qty)
         {
-          // remove
           unset($recordset[$key]);
         }
       }
@@ -5709,7 +5709,7 @@ class testcase extends tlObjectWithAttachments
         $recordset = null;
       }
     }
-      return $recordset;
+    return $recordset;
   }
 
   /**
@@ -7619,6 +7619,19 @@ class testcase extends tlObjectWithAttachments
         $rse[$item_key] = $ghost;
       }
     }
+  }
+
+  /**
+   *
+   */
+  function CKEditorCopyAndPasteCleanUp(&$items,$keys)
+  {
+    $offending = array('<body id="cke_pastebin"','</body>');
+    $good = array('&lt;body id="cke_pastebin"','&lt;/body&gt;');
+    foreach($keys as $fi)
+    {
+      $items->$fi = str_ireplace($offending,$good,$items->$fi);
+    } 
   }
 
 }  // Class end

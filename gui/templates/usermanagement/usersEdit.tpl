@@ -280,6 +280,7 @@ function managePasswordInputs(oid,targetSetOID)
       </td>
     </tr>
 
+    {if $gui->expDateEnabled}
     <tr>
       <th style="background:none;">{$labels.expiration_date}</th>
       <td>
@@ -298,7 +299,7 @@ function managePasswordInputs(oid,targetSetOID)
 
       </td>
     </tr>
-
+    {/if}
 
     {if $external_password_mgmt eq 1}
       <td>{$labels.password_mgmt_is_external}</td>

@@ -6,12 +6,9 @@
  * Allows editing a user
  *
  * @package     TestLink
- * @copyright   2005-2016, TestLink community
+ * @copyright   2005-2017, TestLink community
  * @filesource  usersEdit.php
  * @link        http://www.testlink.org
- *
- * @internal revisions
- * @since 1.9.15
  *
  */
 require_once('../../config.inc.php');
@@ -23,7 +20,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initializeGui($db,$args->user);
+$gui = initializeGui($db,$args);
 $lbl = initLabels();
 
 $highlight = initialize_tabsmenu();
@@ -98,6 +95,8 @@ switch($args->doAction)
     $highlight->create_user = 1;
     $gui->user = new tlUser();
     $gui->main_title = $lbl['action_create_user'];
+
+    //var_dump($gui->user);die();
   break;
 }
 
@@ -141,6 +140,21 @@ function init_args()
   $args = new stdClass();
   R_PARAMS($iParams,$args);
  
+  $date_format = config_get('date_format');
+
+  // convert expiration date to ISO format to write to db
+  $dk = 'expiration_date';
+  $args->$dk = null;
+  if (isset($_REQUEST[$dk]) && $_REQUEST[$dk] != '') 
+  {
+    $da = split_localized_date($_REQUEST[$dk], $date_format);
+    if ($da != null) 
+    {
+      // set date in iso format
+      $args->$dk = $da['year'] . "-" . $da['month'] . "-" . $da['day'];
+    }
+  }
+
   $args->user = $_SESSION['currentUser'];
   return $args;
 }
@@ -175,6 +189,8 @@ function doCreate(&$dbHandler,&$argsObj)
     $op->status = $op->user->writeToDB($dbHandler);
     if($op->status >= tl::OK)
     {
+      tlUser::setExpirationDate($dbHandler,$op->user->dbID,$argsObj->expiration_date);
+
       $statusOk = true;
       $op->template = null;
       logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
@@ -206,6 +222,8 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
     $op->status = $op->user->writeToDB($dbHandler);
     if ($op->status >= tl::OK)
     {
+      tlUser::setExpirationDate($dbHandler,$op->user->dbID,$argsObj->expiration_date);
+
       logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
 
       if ($sessionUserID == $argsObj->user_id)
@@ -403,8 +421,10 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 /**
  *
  */
-function initializeGui(&$dbHandler,&$userObj)
+function initializeGui(&$dbHandler,&$argsObj)
 {
+  $userObj = &$argsObj->user;
+
   $guiObj = new stdClass(); 
 
   $guiObj->user = null;
@@ -433,6 +453,8 @@ function initializeGui(&$dbHandler,&$userObj)
 
   $guiObj->grants->mgt_view_events = 
     $userObj->hasRight($dbHandler,"mgt_view_events");
+
+  $guiObj->expiration_date = $argsObj->expiration_date;
 
   return $guiObj;  
 }

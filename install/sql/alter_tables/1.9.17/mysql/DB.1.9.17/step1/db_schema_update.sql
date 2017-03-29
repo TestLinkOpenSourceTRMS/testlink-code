@@ -28,3 +28,6 @@ GROUP BY RSR.parent_id,RS.testproject_id;
 
 -- since 1.9.17
 INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
+
+ALTER TABLE /*prefix*/users ADD COLUMN creation_ts timestamp NOT NULL DEFAULT now();
+ALTER TABLE /*prefix*/users ADD COLUMN expiration_date date DEFAULT NULL;

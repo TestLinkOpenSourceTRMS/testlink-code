@@ -181,7 +181,6 @@ if($do_display)
   $out = gen_spec_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$tsuite_data['name'],
                        $tplan_linked_tcversions,null,$filters,$opt);
   
-    
   $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
   $gui->items = $out['spec_view'];
   $gui->has_linked_items = $out['has_linked_items'];
@@ -216,8 +215,11 @@ if($do_display)
   $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 } elseif ($do_display_coverage)
 {
+
 	if($args->item_level == 'reqcoverage')
 	{
+		// Select coverage
+	
 		$requirement_data = $req_mgr->get_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
 		$requirement_data_name = $requirement_data[0]['req_doc_id'] . ' : ' . $requirement_data[0]['title'];
 		// get chekbox value : setting_get_parent_child_relation.
@@ -230,8 +232,8 @@ if($do_display)
 	}
 	elseif($args->item_level == 'reqspeccoverage')
 	{
-		$requirement_spec_data = $req_spec_mgr->get_by_id($args->object_id);
-		$requirement_spec_data_name = $requirement_spec_data['doc_id'] . ' : ' . $requirement_spec_data['title'];
+	
+		// Select folder coverage
 		$getOptions = array('order_by' => " ORDER BY id");
 		//$getFilters = array('status' => VALID_REQ);
 		$requirements = $req_spec_mgr->get_requirements($args->object_id,'all',null,$getOptions);
@@ -309,7 +311,6 @@ if($do_display)
 	{
 	
 	  $out = array();
-
 	  $out = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$requirement_data_name,
  	  $tplan_linked_tcversions,null,$filters,$opt);
 	
@@ -343,10 +344,16 @@ if($do_display)
 	}
 	elseif($args->item_level == 'reqspeccoverage')
 	{
+	
 		$out = array();
 		foreach($requirements as $key => $req)
 		{
-			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['id'],$requirement_spec_data_name,
+			if(empty($req['req_doc_id'])){
+				$coverage_name = $req['doc_id'] . " : " . $req['title'];
+			} else {
+				$coverage_name = $req['req_doc_id'] . " : " . $req['title'];
+			}		
+			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['id'], $coverage_name,
 					$tplan_linked_tcversions,null,$filters,$opt);
 
 			// First requirement without test cases
@@ -358,33 +365,13 @@ if($do_display)
 				$out = $tmp;
 			}
 			else
-			{
-				if(empty($out['spec_view'][0]['testcases']))
-				{
-					$out['spec_view'][0]['testcases'] = $tmp['spec_view'][0]['testcases'];
-				}
-				else 
-				{
-					$tmp_merged = array_merge_recursive($out['spec_view'][0]['testcases'],$tmp['spec_view'][0]['testcases']);
-					if(!empty($tmp_merged))
-					{
-						$out['spec_view'][0]['testcases'] = $tmp_merged;
-					}
-				}
-				if(empty($out['spec_view'][1]['testcases']))
-				{
-					$out['spec_view'][1]['testcases'] = $tmp['spec_view'][1]['testcases'];
-				}
-				else 
-				{
-					$tmp_merged = array_merge_recursive($out['spec_view'][1]['testcases'],$tmp['spec_view'][1]['testcases']);
-					if(!empty($tmp_merged))
-					{
-						$out['spec_view'][1]['testcases'] = $tmp_merged;
-					}
-				}
+			{	
+				$tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
+				array_push($out['spec_view'], $tmp['spec_view'][1]);
 			}
+				
 		}
+
 	}
 
 	// count nb testcases selected in view.
@@ -395,8 +382,8 @@ if($do_display)
 			$nbTestCaseSelected++;
 		}
 	}
+
 	$out['spec_view'][1]['linked_testcase_qty'] = $nbTestCaseSelected;
-	
 	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];

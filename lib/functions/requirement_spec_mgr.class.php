@@ -669,73 +669,70 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	}
 
 	// get child requirements
-	if(is_null($rs)){
-			
-		$reqSql = "SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ WHERE NH_REQ.parent_id={$id}";
+	$reqSql = "SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ WHERE NH_REQ.parent_id={$id}";
 
-		$itemSetAllFolder = $this->db->fetchRowsIntoMap($reqSql,'id');
-		
-		if(!is_null($itemSetAllFolder)){
+	$itemSetAllFolder = $this->db->fetchRowsIntoMap($reqSql,'id');
+	
+	if(!is_null($itemSetAllFolder)){
 
-			foreach($itemSetAllFolder as $key => $value){
+		foreach($itemSetAllFolder as $key => $value){
 
-				$sql= '';
-				$tcase_filter = '';
-			  
-				// First Step - get only req info
-				$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
-				$addFields = '';
-				switch($range)
-				{
-					case 'all';
-					break;
+			$sql= '';
+			$tcase_filter = '';
+		  
+			// First Step - get only req info
+			$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
+			$addFields = '';
+			switch($range)
+			{
+				case 'all';
+				break;
 
-					case 'assigned':
-						$sql .= " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id ";
-				  if(!is_null($testcase_id))
-				  {       
-					$tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
-				  }
-				 break;
+				case 'assigned':
+					$sql .= " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id ";
+			  if(!is_null($testcase_id))
+			  {       
+				$tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
+			  }
+			 break;
+			}
+
+			$sql = sprintf($sql,$addFields);
+
+			$sql .= " WHERE NH_REQ.parent_id=" . $value['id'] .
+					" AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
+			$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
+
+			if( !is_null($itemSet) )
+			{
+				$reqSet = array_keys($itemSet);
+				$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
+					   " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
+					   " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
+					   " GROUP BY NH_REQV.parent_id ";
+
+				$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
+				$reqVersionSet = array_keys($latestVersionSet);
+				
+				$getOptions['order_by'] = $my['options']['order_by'];
+				$getOptions['outputLevel'] = $my['options']['outputLevel'];
+				$getOptions['decodeUsers'] = $my['options']['decodeUsers'];
+				
+				if(is_null($rs)){
+					$rs =  $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	
+				} else {
+					$rs = array_merge($rs, $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']));
 				}
+				
 
-				$sql = sprintf($sql,$addFields);
-
-				$sql .= " WHERE NH_REQ.parent_id=" . $value['id'] .
-						" AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
-				$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
-
-				if( !is_null($itemSet) )
+				switch($my['options']['output'])
 				{
-					$reqSet = array_keys($itemSet);
-					$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
-						   " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
-						   " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
-						   " GROUP BY NH_REQV.parent_id ";
-
-					$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
-					$reqVersionSet = array_keys($latestVersionSet);
+				case 'standard':
+				  break;
 					
-					$getOptions['order_by'] = $my['options']['order_by'];
-					$getOptions['outputLevel'] = $my['options']['outputLevel'];
-					$getOptions['decodeUsers'] = $my['options']['decodeUsers'];
-					
-					if(is_null($rs)){
-						$rs =  $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	
-					} else {
-						$rs = array_merge($rs, $this->req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']));
-					}
-					
-
-					switch($my['options']['output'])
-					{
-					case 'standard':
-					  break;
-						
-					  case 'count':
-						$rs = !is_null($rs) ? count($rs) : 0;	   
-					  break;
-					}
+				  case 'count':
+					$rs = !is_null($rs) ? count($rs) : 0;	   
+				  break;
 				}
 			}
 		}

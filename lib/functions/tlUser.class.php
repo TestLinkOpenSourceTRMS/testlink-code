@@ -5,12 +5,9 @@
  * 
  * @filesource  tlUser.class.php
  * @package     TestLink
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.10
- * 20140322 - franciscom - TICKET 6258: User cannot login after change Authentication method from LDAP to DB
  */
  
 /**
@@ -91,6 +88,9 @@ class tlUser extends tlDBObject
 
 
   public $authentication;
+  public $creation_ts;
+  public $expiration_date;
+
 
   /**
    * @var string the password of the user
@@ -151,7 +151,7 @@ class tlUser extends tlDBObject
     $this->loginRegExp = config_get('validation_cfg')->user_login_valid_regex;
     $this->maxLoginLength = 100; 
     $this->loginMethod = $authCfg['method'];
-    
+
     $this->globalRoleID = config_get('default_roleid');
     $this->locale = config_get('default_language');
     $this->isActive = 1;
@@ -179,6 +179,7 @@ class tlUser extends tlDBObject
     $this->userApiKey = null;
     $this->securityCookie = null;
     $this->authentication = null;
+    $this->expiration_date = null;
 
     if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
     {
@@ -260,8 +261,9 @@ class tlUser extends tlDBObject
   public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
   {
     $this->_clean($options);
-    $sql = "SELECT id,login,password,cookie_string,first,last,email,role_id,locale, " .
-           " login AS fullname, active,default_testproject_id, script_key,auth_method " .
+    $sql = " SELECT id,login,password,cookie_string,first,last,email," .
+           " role_id,locale, " .
+           " login AS fullname, active,default_testproject_id, script_key,auth_method,creation_ts,expiration_date " .
            " FROM {$this->object_table}";
     $clauses = null;
 
@@ -277,7 +279,7 @@ class tlUser extends tlDBObject
     {
       $sql .= " WHERE " . implode(" AND ",$clauses);
     }
-    $info = $db->fetchFirstRow($sql);  
+    $info = $db->fetchFirstRow($sql);
     if ($info)
     {
       $this->dbID = $info['id'];
@@ -289,6 +291,8 @@ class tlUser extends tlDBObject
       $this->userApiKey = $info['script_key'];
       $this->securityCookie = $info['cookie_string'];
       $this->authentication = $info['auth_method'];
+      $this->expiration_date = $info['expiration_date'];
+      $this->creation_ts = $info['creation_ts'];
       
       if ($this->globalRoleID)
       {
@@ -1439,4 +1443,36 @@ class tlUser extends tlDBObject
     return $ret;
 
   }
+
+  /** 
+   */
+  static public function setExpirationDate(&$dbHandler,$userID,$ISODate)
+  {
+    $sch = tlObject::getDBTables(array('users'));
+
+    $setClause = " SET expiration_date = ";
+    if( is_null($ISODate) || trim($ISODate) == '' )
+    {
+      $setClause .= " NULL "; 
+    }  
+    else
+    {
+      // it's really a date?
+      // if not => do nothing
+      try {
+        $xx = new DateTime($ISODate);
+        $setClause .= "'" . $dbHandler->prepare_string($ISODate) . "'"; 
+      } 
+      catch (Exception $e) {
+        return;
+      }
+    }  
+
+    $sql = " UPDATE {$sch['users']} {$setClause} " .
+           " WHERE id = " . intval($userID);
+
+    $rx = $dbHandler->exec_query($sql);
+    return tl::OK;
+  }
+
 }

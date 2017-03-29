@@ -343,6 +343,8 @@ $tlCfg->loginPagePasswordMaxLenght = 40;
  */
 $tlCfg->logoutUrl = '';
 
+// users that will not allow expiration date management on GUI
+$tlCfg->noExpDateUsers = array('admin');
 
 /**
  * Single Sign On authentication

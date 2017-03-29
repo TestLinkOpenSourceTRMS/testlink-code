@@ -616,7 +616,7 @@ class testcase extends tlObjectWithAttachments
     $tcase_version_id = $this->tree_manager->new_node($item->id,
                           $this->node_types_descr_id['testcase_version']);
 
-    $this->CKEditorCopyAndPasteCleanUp($item,array('summary','precondition')); 
+    $this->CKEditorCopyAndPasteCleanUp($item,array('summary','preconditions')); 
 
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
            " (id,tc_external_id,version,summary,preconditions," .

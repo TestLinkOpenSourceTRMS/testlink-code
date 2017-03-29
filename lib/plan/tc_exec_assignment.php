@@ -5,12 +5,10 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2016, TestLink community 
+ * @copyright   2005-2017, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.16
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -26,7 +24,6 @@ $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db); 
 $assignment_mgr = new assignment_mgr($db); 
 
-$templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
@@ -242,6 +239,8 @@ switch($args->level)
 
     // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
     // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
+
+    // var_dump($filters);die();
     $out = getFilteredSpecViewFlat($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
   break;
 
@@ -265,7 +264,8 @@ if ($_SESSION['testprojectOptions']->testPriorityEnabled)
 }
 
 // Changing to _flat template
-$tpl = $templateCfg->template_dir . $templateCfg->default_template;
+$tplCfg = templateConfiguration();
+$tpl = $tplCfg->tpl;
 $tpl = str_replace('.tpl', '_flat.tpl', $tpl);
 
 $smarty = new TLSmarty();

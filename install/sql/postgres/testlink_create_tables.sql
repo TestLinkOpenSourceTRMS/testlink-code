@@ -108,7 +108,9 @@ CREATE TABLE /*prefix*/users(
   "active" INT2 NOT NULL DEFAULT '1',
   "script_key" VARCHAR(32) NULL,
   "cookie_string" varchar(64) NOT NULL DEFAULT '', 
-  "auth_method" VARCHAR(10) NULL DEFAULT '', 
+  "auth_method" VARCHAR(10) NULL DEFAULT '',
+  "creation_ts" timestamp NOT NULL DEFAULT now(),
+  "expiration_date" date DEFAULT NULL,
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/users_uidx1 ON /*prefix*/users ("login");

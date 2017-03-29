@@ -11,9 +11,6 @@
  * @copyright   2003-2015, TestLink community 
  * @link        http://www.testlink.org
  *
- *
- * @internal revisions
- * @since 1.9.14
  */
 
 require_once("users.inc.php");
@@ -48,17 +45,38 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
 
     if ($login_exists)
     {
-      $password_check = auth_does_password_match($user,$pwd);
-      if(!$password_check->status_ok)
-      {
-        $result = array('status' => tl::ERROR, 'msg' => null);
-      }
+      $doGo = true;
+      $checkDate = !is_null($user->expiration_date);
+      $checkDate = $checkDate && (trim($user->expiration_date) != '');
       
-      $doLogin = $password_check->status_ok && $user->isActive;
-      if( !$doLogin )
+      if( $checkDate )
       {
-        logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
-      }
+        $now = strtotime(date_format(date_create(),'Y-m-d'));
+        $exd = strtotime($user->expiration_date);
+
+        if($now >= $exd )
+        {
+          // Expired!
+          $doGo = false;
+          $result['msg'] = lang_get('tluser_account_expired');
+        }  
+      }  
+ 
+      if( $doGo )
+      {
+        $password_check = auth_does_password_match($user,$pwd);
+        if(!$password_check->status_ok)
+        {
+          $result = array('status' => tl::ERROR, 'msg' => null);
+        }
+
+        $doLogin = $password_check->status_ok && $user->isActive;
+        if( !$doLogin )
+        {
+          logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
+        }
+      }  
+      
     }
     else
     {

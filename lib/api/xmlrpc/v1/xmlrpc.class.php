@@ -8270,7 +8270,7 @@ protected function createAttachmentTempFile()
     if( $status_ok )
     {
       $sql = " SELECT * FROM  {$this->tables['executions']} WHERE id " .
-             " IN (SELECT id AS exec_id FROM {$this->tables['executions']} ";
+             " IN (SELECT id AS exec_id FROM {$this->tables['executions']} " .
              "     WHERE testplan_id = {$tplan_id} " .
              "     AND tcversion_id " .
              "     IN ( SELECT id FROM {$this->tables['nodes_hierarchy']} " .

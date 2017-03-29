@@ -9,9 +9,6 @@
  * @copyright   2005-2017, TestLink community
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.16
- *
  */
 
 /** related functionality */
@@ -302,8 +299,8 @@ class testcase extends tlObjectWithAttachments
       $ix->executionType = $execution_type;
       $ix->importance = $importance;
       $ix->status = $my['options']['status'];
-	  $ix->active = $my['options']['active'];
-	  $ix->is_open = $my['options']['is_open'];
+	    $ix->active = $my['options']['active'];
+	    $ix->is_open = $my['options']['is_open'];
       $ix->estimatedExecDuration = $my['options']['estimatedExecDuration'];
 
 
@@ -609,22 +606,17 @@ class testcase extends tlObjectWithAttachments
   }
 
 
-  /*
-    function: create_tcversion
-
-    args:
-
-    returns:
-
-    @internal revisions
-    @since 1.9.15
-
-
-  */
+  /**
+   *  trying to solve <body id="cke_pastebin" issues
+   *
+   */
  private function createVersion($item)
  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $tcase_version_id = $this->tree_manager->new_node($item->id,$this->node_types_descr_id['testcase_version']);
+    $tcase_version_id = $this->tree_manager->new_node($item->id,
+                          $this->node_types_descr_id['testcase_version']);
+
+    $this->CKEditorCopyAndPasteCleanUp($item,array('summary','precondition')); 
 
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
            " (id,tc_external_id,version,summary,preconditions," .
@@ -660,7 +652,8 @@ class testcase extends tlObjectWithAttachments
       $sql .= ", active";
       $sqlValues .= "," . $v;
     }
-	if( property_exists($item,'is_open') && !is_null($item->is_open) )
+	  
+    if( property_exists($item,'is_open') && !is_null($item->is_open) )
     {
       $v = intval($item->is_open) > 0 ? 1 : 0;
       $sql .= ", is_open";
@@ -691,8 +684,10 @@ class testcase extends tlObjectWithAttachments
           $item->steps[$jdx] = (array)$item->steps[$jdx];
         }
 
-        $op = $this->create_step($tcase_version_id,$item->steps[$jdx]['step_number'],
-                                 $item->steps[$jdx]['actions'],$item->steps[$jdx]['expected_results'],
+        $op = $this->create_step($tcase_version_id,
+                                 $item->steps[$jdx]['step_number'],
+                                 $item->steps[$jdx]['actions'],
+                                 $item->steps[$jdx]['expected_results'],
                                  $item->steps[$jdx]['execution_type']);
       }
     }
@@ -1112,13 +1107,22 @@ class testcase extends tlObjectWithAttachments
       $sql[] = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
                $this->db->prepare_string($name) . "' WHERE id= {$id}";
 
+
+      $k2e = array('summary','preconditions');
+      $item = new stdClass();
+      $item->summary = $summary;
+      $item->preconditions = $preconditions;
+      $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
+      
       $dummy = " UPDATE {$this->tables['tcversions']} " .
-               " SET summary='" . $this->db->prepare_string($summary) . "'," .
+               " SET summary='" . 
+                 $this->db->prepare_string($item->summary) . "'," .
                " updater_id=" . $this->db->prepare_int($user_id) . ", " .
                " modification_ts = " . $this->db->db_now() . "," .
                " execution_type=" . $this->db->prepare_int($execution_type) . ", " .
                " importance=" . $this->db->prepare_int($importance) . "," .
-               " preconditions='" . $this->db->prepare_string($preconditions) . "' ";
+               " preconditions='" . 
+                 $this->db->prepare_string($item->preconditions) . "' ";
 
 
       if( !is_null($attrib['status']) )
@@ -1131,10 +1135,11 @@ class testcase extends tlObjectWithAttachments
         $dummy .= ", is_open=" . intval($attrib['is_open']); 
       }
 	  
-	  if( !is_null($attrib['active']) )    
+	    if( !is_null($attrib['active']) )    
       {
         $dummy .= ", active=" . intval($attrib['active']); 
       }
+
       if( !is_null($attrib['estimatedExecDuration']) )
       {
         $dummy .= ", estimated_exec_duration=";
@@ -1804,7 +1809,8 @@ class testcase extends tlObjectWithAttachments
                     $act = "[ghost]\"Step\":{$step['step_number']}," .
                            '"TestCase"' .':"' . $pfx . '",' .
                            "\"Version\":{$tcversion['version']}[/ghost]";
-                    $op = $this->create_step($to_tcversion_id,$step['step_number'],$act,$act,
+                    $op = $this->create_step($to_tcversion_id,
+                                             $step['step_number'],$act,$act,
                                              $step['execution_type']);
                   }
                 }
@@ -1812,8 +1818,11 @@ class testcase extends tlObjectWithAttachments
                 {
                   foreach($stepsSet as $key => $step)
                   {
-                    $op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
-                                             $step['expected_results'],$step['execution_type']);
+                    $op = $this->create_step($to_tcversion_id,
+                                             $step['step_number'],
+                                             $step['actions'],
+                                             $step['expected_results'],
+                                             $step['execution_type']);
                   }
                 }
               }
@@ -2004,8 +2013,9 @@ class testcase extends tlObjectWithAttachments
     {
       foreach($stepsSet as $key => $step)
       {
-        $op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
-                                 $step['expected_results'],$step['execution_type']);
+        $op = $this->create_step($to_tcversion_id,$step['step_number'],
+                                 $step['actions'],$step['expected_results'],
+                                 $step['execution_type']);
       }
     }
   }
@@ -5090,13 +5100,23 @@ class testcase extends tlObjectWithAttachments
     $dummy = (isset($this->execution_types[$dummy])) ? $dummy : TESTCASE_EXECUTION_TYPE_MANUAL;
 
     $item_id = $this->tree_manager->new_node($tcversion_id,$this->node_types_descr_id['testcase_step']);
+
+    $k2e = array('actions','expected_results');
+    $item = new stdClass();
+    $item->actions = $actions;
+    $item->expected_results = $expected_results;
+    $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
+
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcsteps']} " .
            " (id,step_number,actions,expected_results,execution_type) " .
-           " VALUES({$item_id},{$step_number},'" . $this->db->prepare_string($actions) . "','" .
-           $this->db->prepare_string($expected_results) . "', " . $this->db->prepare_int($dummy) . ")";
+           " VALUES({$item_id},{$step_number},'" . 
+           $this->db->prepare_string($item->actions) . "','" .
+           $this->db->prepare_string($item->expected_results) . "', " . 
+           $this->db->prepare_int($dummy) . ")";
 
     $result = $this->db->exec_query($sql);
-    $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 'sql' => $sql);
+    $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 
+                 'sql' => $sql);
     if (!$result)
     {
       $ret['msg'] = $this->db->error_msg();
@@ -5308,11 +5328,19 @@ class testcase extends tlObjectWithAttachments
   function update_step($step_id,$step_number,$actions,$expected_results,$execution_type)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $ret = array();
+    $ret = array();
+
+    $k2e = array('actions','expected_results');
+    $item = new stdClass();
+    $item->actions = $actions;
+    $item->expected_results = $expected_results;
+    $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
+
     $sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} " .
            " SET step_number=" . $this->db->prepare_int($step_number) . "," .
-           " actions='" . $this->db->prepare_string($actions) . "', " .
-           " expected_results='" . $this->db->prepare_string($expected_results) . "', " .
+           " actions='" . $this->db->prepare_string($item->actions) . "', " .
+           " expected_results='" . 
+           $this->db->prepare_string($item->expected_results) . "', " .
            " execution_type = " . $this->db->prepare_int($execution_type)  .
            " WHERE id = " . $this->db->prepare_int($step_id);
 
@@ -5320,8 +5348,8 @@ class testcase extends tlObjectWithAttachments
     $ret = array('msg' => 'ok', 'status_ok' => 1, 'sql' => $sql);
     if (!$result)
     {
-          $ret['msg'] = $this->db->error_msg();
-        $ret['status_ok']=0;
+      $ret['msg'] = $this->db->error_msg();
+      $ret['status_ok']=0;
     }
     return $ret;
   }
@@ -5374,20 +5402,14 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-   * for a given set of test cases, search on the ACTIVE version set, and returns for each test case,
-   * an map with: the corresponding MAX(version number), other info
+   * for a given set of test cases, search on the ACTIVE version set, 
+   * and returns for each test case,
+   * a map with: the corresponding MAX(version number), other info
    *
    * @param mixed $id: test case id can be an array
    * @param map $filters OPTIONAL - now only 'cfields' key is supported
    * @param map $options OPTIONAL
    *
-   * @internal Revisions
-   * @since 1.9.4
-   * 20110817 - franciscom - TICKET 4708: When adding testcases to test plan, filtering by execution type does not work.
-   *
-   * @since 1.9.3
-   * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
-   * 20100417 - franciscom - added importance on output data
    */
   function get_last_active_version($id,$filters=null,$options=null)
   {
@@ -5426,8 +5448,6 @@ class testcase extends tlObjectWithAttachments
            " GROUP BY NH_TCVERSION.parent_id " .
            " ORDER BY NH_TCVERSION.parent_id ";
 
-    // $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-    // HERE FIXED access keys
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 
     $cfSelect = '';
@@ -5446,7 +5466,7 @@ class testcase extends tlObjectWithAttachments
         $cfQty = count($cf_hash);
         $countmain = 1;
 
-        // 20101025 - build custom fields filter
+        // Build custom fields filter
         // do not worry!! it seems that filter criteria is OR, but really is an AND,
         // OR is needed to do a simple query.
         // with processing on recordset becomes an AND
@@ -5507,7 +5527,7 @@ class testcase extends tlObjectWithAttachments
           {
             if( count($recordset[$key]) < $cfQty)
             {
-              unset($recordset[$key]); // remove
+              unset($recordset[$key]);
             }
             else
             {
@@ -5531,6 +5551,7 @@ class testcase extends tlObjectWithAttachments
         }
       }
     }
+
     return $recordset;
   }
 
@@ -5602,20 +5623,20 @@ class testcase extends tlObjectWithAttachments
    * to update whole steps/expected results structure for test case version.
    * This can result in some step removed, other updated and other new created.
    *
-   * @internal Revisions
-   * 20100821 - franciscom - needed to fix import feature (BUGID 3634).
    */
   function update_tcversion_steps($tcversion_id,$steps)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     // delete all current steps (if any exists)
-      // Attention:
-      // After addition of test case steps feature, a test case version can be root of
-      // a subtree that contains the steps.
-    // Remember we are using (at least on Postgres FK => we need to delete in a precise order
+    // Attention:
+    // After addition of test case steps feature, a test case version 
+    // can be root of a subtree that contains the steps.
+    // Remember we are using (at least on Postgres FK => we need to delete 
+    // in a precise order.
 
-    $stepSet = $this->get_steps($tcversion_id,0,array('fields2get' => 'id', 'accessKey' => 'id'));
+    $stepSet = $this->get_steps($tcversion_id,0,
+                        array('fields2get' => 'id', 'accessKey' => 'id'));
     if( count($stepSet) > 0 )
     {
       $this->delete_step_by_id(array_keys($stepSet));
@@ -5625,8 +5646,10 @@ class testcase extends tlObjectWithAttachments
     $loop2do = count($steps);
     for($idx=0; $idx < $loop2do; $idx++)
     {
-      $this->create_step($tcversion_id,$steps[$idx]['step_number'],$steps[$idx]['actions'],
-                 $steps[$idx]['expected_results'],$steps[$idx]['execution_type']);
+      $this->create_step($tcversion_id,$steps[$idx]['step_number'],
+                         $steps[$idx]['actions'],
+                         $steps[$idx]['expected_results'],
+                         $steps[$idx]['execution_type']);
     }
   }
 
@@ -5656,20 +5679,22 @@ class testcase extends tlObjectWithAttachments
    * @param map cf_hash: custom fields id plus values
    * @param map options: OPTIONAL
    *
-   * @return map key: tcversion_id , element: array numerical index with as much element as custom fields
+   * @return map key: tcversion_id , 
+   *         element: array numerical index with as much element as custom fields
    *
-   *
+   * @20170325: Ay! this search on EXACT VALUE not LIKE!
+   *            changed!
    */
   function filter_tcversions_by_cfields($tcversion_id,$cf_hash,$options=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-      $recordset = null;
-      $itemSet = implode(',',(array)$tcversion_id);
+    $recordset = null;
+    $itemSet = implode(',',(array)$tcversion_id);
 
-      $my['options'] = array( 'access_key' => 'tcversion_id');
-      $my['options'] = array_merge($my['options'], (array)$options);
+    $my['options'] = array( 'access_key' => 'tcversion_id');
+    $my['options'] = array_merge($my['options'], (array)$options);
 
-      $or_clause = '';
+    $or_clause = '';
     $cf_query = '';
     $cf_qty = count($cf_hash);
 
@@ -5678,17 +5703,21 @@ class testcase extends tlObjectWithAttachments
     // with processing on recordset becomes an AND
     foreach ($cf_hash as $cf_id => $cf_value)
     {
-        $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id . " AND CFDV.value='" . $cf_value . "') ";
+      $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id . 
+                   " AND CFDV.value LIKE '%{$cf_value}%') ";
       $or_clause = ' OR ';
     }
 
     $sql = "/* $debugMsg */ " .
-         " SELECT TCV.id AS tcversion_id, NH_TCVERSION.parent_id AS testcase_id, TCV.version," .
-         " CFDV.field_id,CFDV.value " .
-         " FROM {$this->tables['tcversions']} TCV " .
-         " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION ON NH_TCVERSION.id = TCV.id " .
-         " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.node_id = TCV.id " .
-         " AND NH_TCVERSION.id IN ({$itemSet}) AND ({$cf_query}) ";
+           " SELECT TCV.id AS tcversion_id, " . 
+           " NH_TCVERSION.parent_id AS testcase_id, TCV.version," .
+           " CFDV.field_id,CFDV.value " .
+           " FROM {$this->tables['tcversions']} TCV " .
+           " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " . 
+           " ON NH_TCVERSION.id = TCV.id " .
+           " JOIN {$this->tables['cfield_design_values']} CFDV " . 
+           " ON CFDV.node_id = TCV.id " .
+           " AND NH_TCVERSION.id IN ({$itemSet}) AND ({$cf_query}) ";
 
     $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key'],database::CUMULATIVE);
 
@@ -5700,7 +5729,6 @@ class testcase extends tlObjectWithAttachments
       {
         if( count($recordset[$key]) < $cf_qty)
         {
-          // remove
           unset($recordset[$key]);
         }
       }
@@ -5709,7 +5737,7 @@ class testcase extends tlObjectWithAttachments
         $recordset = null;
       }
     }
-      return $recordset;
+    return $recordset;
   }
 
   /**
@@ -7619,6 +7647,19 @@ class testcase extends tlObjectWithAttachments
         $rse[$item_key] = $ghost;
       }
     }
+  }
+
+  /**
+   *
+   */
+  function CKEditorCopyAndPasteCleanUp(&$items,$keys)
+  {
+    $offending = array('<body id="cke_pastebin"','</body>');
+    $good = array('&lt;body id="cke_pastebin"','&lt;/body&gt;');
+    foreach($keys as $fi)
+    {
+      $items->$fi = str_ireplace($offending,$good,$items->$fi);
+    } 
   }
 
 }  // Class end

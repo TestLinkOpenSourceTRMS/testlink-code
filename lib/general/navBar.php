@@ -12,7 +12,7 @@ require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db,('initProject' == 'initProject'));
 
-$args = init_args();
+$args = init_args($db);
 $gui = initializeGui($db,$args);
 
 $smarty = new TLSmarty();
@@ -33,7 +33,7 @@ function getGrants(&$db,&$userObj)
 /**
  * 
  */
-function init_args()
+function init_args(&$dbH)
 {
 	$iParams = array("testproject" => array(tlInputParameter::INT_N),
                    "caller" => array(tlInputParameter::STRING_N,1,6),
@@ -50,6 +50,22 @@ function init_args()
   $args->ssodisable = getSSODisable();
   $args->user = $_SESSION['currentUser'];
 
+  // Check if any project exists to display error
+  $args->newInstallation = false;
+  if($args->testproject <= 0)
+  {
+    $sch = tlObject::getDBTables(array('testprojects','nodes_hierarchy'));
+    $sql = " SELECT NH.id FROM {$sch['nodes_hierarchy']} NH " .
+           " JOIN {$sch['testprojects']} TPRJ " .
+           " ON TPRJ.id = NH.id ";
+    $rs = $dbH->get_recordset($sql);
+
+    if(count($rs) == 0)
+    {
+      $args->newInstallation = true;
+    }  
+  }  
+
 	return $args;
 }
 
@@ -62,10 +78,11 @@ function initializeGui(&$db,&$args)
   $guiCfg = config_get("gui");
 
   $gui = new stdClass();  
+
   $gui->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
   $gui->tproject_id = $gui->tprojectID;
 
-  if($gui->tproject_id <= 0)
+  if($gui->tproject_id <= 0 && !$args->newInstallation)
   {
     throw new Exception("Can't work without Test Project ID", 1);
   }  
@@ -85,6 +102,11 @@ function initializeGui(&$db,&$args)
   $gui->TestProjects = $tproject_mgr->get_accessible_for_user($args->user->dbID,$opx);
 
   $gui->TestProjectCount = sizeof($gui->TestProjects);
+  if($gui->TestProjectCount == 0)
+  {
+    $gui->TestProjects = null;
+  } 
+
   $gui->TestPlanCount = 0; 
 
   $tprojectQty = $tproject_mgr->getItemCount();  

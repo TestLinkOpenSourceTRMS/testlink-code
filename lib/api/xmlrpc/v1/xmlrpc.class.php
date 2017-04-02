@@ -8017,14 +8017,14 @@ protected function createAttachmentTempFile()
 
       // check if a context (test plan/platform) is provided
       if ($this->_isParamPresent(self::$testPlanIDParamName)) {
-        $status_ok = checkTestPlanID($msg_prefix);
+        $status_ok = $this->checkTestPlanID($msg_prefix);
         $context['tplan_id'] = $this->args[self::$testPlanIDParamName];
 
         if ( $status_ok ) {
           if ($this->_isParamPresent(self::$platformIDParamName)) {
-            $status_ok = checkPlatformIdentity($this->args[self::$testPlanIDParamName],
-                                               $this->args[self::$platformIDParamName],
-                                               $msg_prefix);
+            $status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],
+                                                      null,
+                                                      $msg_prefix);
             $context['platform_id'] = $this->args[self::$platformIDParamName];
           }
         }

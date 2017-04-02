@@ -36,7 +36,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
   $my['options'] = array_merge($my['options'], (array)$options);
 
   $doLogin = false;
-  $doChecks = false;
+  $doChecks = true;
   
   $login = trim($login);
   $pwd = trim($pwd);

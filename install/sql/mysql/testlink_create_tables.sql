@@ -540,7 +540,7 @@ CREATE TABLE /*prefix*/users (
   `cookie_string` varchar(64) NOT NULL default '',
   `auth_method` varchar(10) NULL default '',
   `creation_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `expiration_date` date DEFAULT NULL
+  `expiration_date` date DEFAULT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/users_login (`login`),
   UNIQUE KEY /*prefix*/users_cookie_string (`cookie_string`)

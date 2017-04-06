@@ -377,3 +377,42 @@ function doSSOWebServerVar(&$dbHandler,$authCfg=null)
 
   return $ret;
 }
+
+/**
+ *
+ */
+function doSessionSetUp(&$dbHandler,&$userObj)
+{
+  global $g_tlLogger;
+
+  $ret = null;
+
+  // Need to do set COOKIE following Mantis model
+  $expireOnBrowserClose=false;
+  $auth_cookie_name = config_get('auth_cookie');
+  $cookie_path = config_get('cookie_path');
+  setcookie($auth_cookie_name,$userObj->getSecurityCookie(),$expireOnBrowserClose,
+            $cookie_path);      
+
+  // Block two sessions within one browser
+  if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
+  {
+    $ret['msg'] = lang_get('login_msg_session_exists1') . 
+                     ' <a style="color:white;" href="logout.php">' . 
+                     lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2'); 
+  }
+  else
+  { 
+    // Setting user's session information
+    $_SESSION['currentUser'] = $userObj;
+    $_SESSION['lastActivity'] = time();
+          
+    $g_tlLogger->endTransaction();
+    $g_tlLogger->startTransaction();
+    setUserSessionFromObj($dbHandler,$userObj);
+
+    $ret['status'] = tl::OK;
+  }
+  
+  return $ret;        
+}

@@ -1013,11 +1013,13 @@ class testcaseCommands
     $this->tcaseMgr->setExecutionType($argsObj->tcversion_id,$argsObj->exec_type);
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
-    // set execution type for all steps
-    $tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
-    foreach($tcaseSteps as $step){
-       $this->tcaseMgr->update_step($step['id'],$step['step_number'],$step['actions'],
-                                                   $step['expected_results'],$argsObj->exec_type);
+    if (config_get('testcase_cfg')->change_steps_exec_type){
+        // set execution type for all steps
+        $tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+        foreach($tcaseSteps as $step){
+           $this->tcaseMgr->update_step($step['id'],$step['step_number'],$step['actions'],
+                                                       $step['expected_results'],$argsObj->exec_type);
+        }
     }
 
     // set up for rendering

@@ -1013,8 +1013,15 @@ class testcaseCommands
     $this->tcaseMgr->setExecutionType($argsObj->tcversion_id,$argsObj->exec_type);
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
+    // set execution type for all steps
+    $tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+    foreach($tcaseSteps as $step){
+       $this->tcaseMgr->update_step($step['id'],$step['step_number'],$step['actions'],
+                                                   $step['expected_results'],$argsObj->exec_type);
+    }
+
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" .
                         "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     $guiObj->user_feedback = '';

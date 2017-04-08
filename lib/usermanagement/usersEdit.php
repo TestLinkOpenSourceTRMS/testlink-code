@@ -428,7 +428,7 @@ function initializeGui(&$dbHandler,&$argsObj)
 
     case "resetPassword":
     case "genAPIKey":
-      $guiObj->user = new tlUser($args->user_id);
+      $guiObj->user = new tlUser($argsObj->user_id);
       $guiObj->user->readFromDB($dbHandler);
     break;
   }

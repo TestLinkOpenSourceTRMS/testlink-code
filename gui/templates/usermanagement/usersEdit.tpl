@@ -178,7 +178,7 @@ function managePasswordInputs(oid,targetSetOID)
 <div class="workBack">
 <form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
     onSubmit="javascript:return validateForm(this,{$check_password});">
-  <input type="hidden" name="user_id" value="{$user_id}" />
+  <input type="hidden" name="user_id" id="user_id_form1" value="{$user_id}" />
   <input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
 
   <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
@@ -337,7 +337,7 @@ function managePasswordInputs(oid,targetSetOID)
     {$labels.demo_reset_password_disabled}
   {else}
     <input type="hidden" name="doAction" id="doReset" value="" />
-    <input type="hidden" name="user_id" value="{$user_id}" />
+    <input type="hidden" name="user_id" id="user_id_form2" value="{$user_id}" />
     <input type="submit" id="do_reset_password" name="do_reset_password" 
            value="{$labels.button_reset_password}" 
            onclick="doReset.value='resetPassword'"/>

@@ -3736,5 +3736,16 @@ function getActiveTestPlansCount($id)
   return $rs[0]['qty'];       
 }
 
+/**
+ *
+ */
+static function getAPIKey(&$dbh,$id)
+{
+  $sch = tlDBObject::getDBTables('testprojects');
+  $sql = "SELECT api_key FROM {$sch['testprojects']} WHERE id=" . intval($id);
+  $rs = $dbh->get_recordset($sql);
+
+  return is_null($rs) ? $rs : $rs[0]['api_key'];
+}
 
 } // end class

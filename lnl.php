@@ -5,17 +5,12 @@
  *
  * Direct links for external access to reports
  *
- *
  * How this feature works:
  * 
  * @package   TestLink
  * @author    franciscom
- * @copyright 2012,2016 TestLink community
+ * @copyright 2012,2017 TestLink community
  * @link      http://www.testlink.org/
- * @since     1.9.15
- *
- * @internal revisions
- *
  */
 
 // some session and settings stuff from original index.php 
@@ -23,7 +18,6 @@ require_once('config.inc.php');
 require_once('./cfg/reports.cfg.php');
 require_once('common.php');
 
-// testlinkInitPage($db,false,true);
 doDBConnect($db);
 $args = init_args($db);
 switch($args->light)
@@ -50,8 +44,7 @@ switch($args->light)
       break;
 
       case 'metricsdashboard':
-        $param =  "&tproject_id={$args->tproject_id}";
-        $what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey{$param}";
+        $what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey";
       break;
 
 
@@ -139,7 +132,7 @@ switch($args->light)
   
     if(!is_null($what2launch))
     {
-      // 20150312 - changed to be able to get XLS file using wget
+      // changed to be able to get XLS file using wget
       // redirect(TL_BASE_HREF . $what2launch);
       //echo $what2launch;
       //die();
@@ -172,7 +165,8 @@ function init_args(&$dbHandler)
     $userAPIkeyLen = 32;
     $objectAPIkeyLen = 64;
 
-    $iParams = array("apikey" => array(tlInputParameter::STRING_N,$userAPIkeyLen,$objectAPIkeyLen),
+    $iParams = array("apikey" => array(tlInputParameter::STRING_N,
+                                       $userAPIkeyLen,$objectAPIkeyLen),
                      "tproject_id" => array(tlInputParameter::INT_N),
                      "tplan_id" => array(tlInputParameter::INT_N),
                      "level" => array(tlInputParameter::STRING_N,0,16),
@@ -188,7 +182,6 @@ function init_args(&$dbHandler)
                   
   R_PARAMS($iParams,$args);
 
-  // new dBug($args);
   $args->format = intval($args->format);
   $args->format = ($args->format <= 0) ? FORMAT_HTML : $args->format;
 
@@ -256,7 +249,7 @@ function init_args(&$dbHandler)
     if( setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$kerberos,$opt) )
     {
       $args->light = 'green';
-    }  
+    }
   }
   return $args;
 }

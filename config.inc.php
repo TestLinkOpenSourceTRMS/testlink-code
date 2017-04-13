@@ -977,10 +977,6 @@ $tlCfg->spec_cfg->automatic_tree_refresh = ENABLED;
 $tlCfg->testcase_cfg->search=new stdClass();
 $tlCfg->testcase_cfg->search->max_qty_for_display=200;
 
-//TICKET 7894: Change status of all steps when changing global status of testcase
-//TRUE -> after changing execution type for whole test all steps would have this type
-//FALSE -> execution type of steps would not be changed after changing type for whole test (default)
-$tlCfg->testcase_cfg->change_steps_exec_type = FALSE;
 
 $tlCfg->testcase_cfg->duplicated_name_algorithm = new stdClass();
 // 'stringPrefix' => use duplicated_name_algorithm->text

@@ -432,6 +432,8 @@ function launch_outer_exec(&$tplMgr,$argsObj)
 {
   $gui = new stdClass();
   $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
+  $gui->navbar_height = config_get('navbar_height');
+  
   if( $argsObj->tproject_id > 0)
   {
     $gui->titleframe .= '&testproject=' . $argsObj->tproject_id;
@@ -450,7 +452,8 @@ function launch_outer_xta2m(&$tplMgr,$argsObj)
 {
   $gui = new stdClass();
   $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
-
+  $gui->navbar_height = config_get('navbar_height');
+  
   if( $argsObj->tproject_id > 0)
   {
     $gui->titleframe .= '&testproject=' . $argsObj->tproject_id;

@@ -1503,6 +1503,7 @@ $TLS_btn_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_execution_type = 'Execution type';
+$TLS_execution_type_steps = 'Change in steps';
 $TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
 $TLS_system_blocks_delete_executed_tc = "System configuration blocks delete of executed versions";

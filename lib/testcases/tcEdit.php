@@ -388,6 +388,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
   $args->old_container_id = isset($_REQUEST['old_container']) ? intval($_REQUEST['old_container']) : 0;
   $args->has_been_executed = isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
   $args->exec_type = isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
+  $args->exec_type_steps = isset($_REQUEST['changeInSteps']) ? $_REQUEST['changeInSteps'] : FALSE;
   $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : $tc_importance_default;
   $args->status = isset($_REQUEST['status']) ? $_REQUEST['status'] : 1; // sorry for the magic
 

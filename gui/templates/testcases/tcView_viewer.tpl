@@ -17,7 +17,7 @@ viewer for test case in test specification
              execution_type,test_importance,importance,none,preconditions,btn_compare_versions,btn_bulk,
              show_ghost_string,display_author_updater,onchange_save,
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
-             requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
+             requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements,execution_type_steps"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}

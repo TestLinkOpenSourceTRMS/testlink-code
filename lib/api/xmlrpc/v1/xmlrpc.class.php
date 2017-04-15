@@ -3544,7 +3544,12 @@ class TestlinkXMLRPCServer extends IXR_Server
     $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
     $tproject_id=$this->args[self::$testProjectIDParamName];
     $tcase_id=$this->args[self::$testCaseIDParamName];
-    $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
+    
+    $tcase_external_id="";
+    if( isset($this->args[self::$testCaseExternalIDParamName]) ) {
+      $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
+    }
+
     $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
       
     if($tcase_tproject_id != $tproject_id)

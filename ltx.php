@@ -13,11 +13,9 @@
  * 
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2015, TestLink community
+ * @copyright   2015,2017 TestLink community
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.15
  */
 
 // use output buffer to prevent headers/data from being sent before 

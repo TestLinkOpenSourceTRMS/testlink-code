@@ -6172,15 +6172,40 @@ class testcase extends tlObjectWithAttachments
    *
    *
    */
-  function setExecutionType($tcversionID,$value)
+  function setExecutionType($tcversionID,$value,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $execType = intval($value);
+    
+    $my['opt'] = array('updSteps' => false);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $execType = $this->db->prepare_int(intval($value));
+    $safeTCVID = $this->db->prepare_int($tcversionID);
+
     $sql = "/* $debugMsg */ " .
            " UPDATE {$this->tables['tcversions']} " .
-           " SET execution_type=" . $this->db->prepare_int($execType) .
-           " WHERE id = " . $this->db->prepare_int($tcversionID);
+           " SET execution_type={$execType} WHERE id = {$safeTCVID} ";
     $this->db->exec_query($sql);
+
+    if( $my['opt']['updSteps'] )
+    {
+      $opx = array('fields2get' => 'id');
+      $stepIDSet = $this->get_steps($safeTCVID,null,$opx);
+      
+      if( !is_null($stepIDSet) )
+      {
+        $target = array();
+        foreach($stepIDSet as $elem )
+        {
+          $target[] = $elem['id'];
+        }  
+        $inClause = implode(',',$target);
+        $sqlX = " UPDATE {$this->tables['tcsteps']} " .
+                " SET execution_type={$execType} WHERE id IN (" . $inClause . ")";
+        $this->db->exec_query($sqlX);
+      }  
+    }    
+
     return array($value,$execType,$sql);
   }
 
@@ -7661,5 +7686,8 @@ class testcase extends tlObjectWithAttachments
       $items->$fi = str_ireplace($offending,$good,$items->$fi);
     } 
   }
+
+
+
 
 }  // Class end

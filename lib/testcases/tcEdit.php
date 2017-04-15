@@ -8,12 +8,9 @@
  * @filesource  tcEdit.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @link        http://www.testlink.org/
  *
- *
- * @internal revisions
- * @since 1.9.13
  *
  **/
 require_once("../../config.inc.php");
@@ -502,6 +499,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
   
   // need to check if user has access rights to test project is project is private.
   $args->user = $_SESSION['currentUser'];
+
+  $cbk = 'changeExecTypeOnSteps';
+  $args->applyExecTypeChangeToAllSteps = isset($_REQUEST[$cbk]);
 
   return $args;
 }

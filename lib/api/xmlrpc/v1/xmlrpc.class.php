@@ -3161,7 +3161,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     $hasPlatforms = false;
     $hasPlatformIDArgs = false;
     $platform_id = 0;
-    $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
+    $checkFunctions = array('authenticate','checkTestProjectID',
+                            'checkTestCaseVersionNumber',
                             'checkTestCaseIdentity','checkTestPlanID');
     
     $status_ok = $this->_runChecks($checkFunctions,$messagePrefix);
@@ -3194,9 +3195,13 @@ class TestlinkXMLRPCServer extends IXR_Server
     if( $status_ok )
     {
       $ret = $this->checkTestCaseAncestry();
+      $status_ok = $ret['status_ok'];
+      
       if( !$ret['status_ok'] )
       {
-        $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+        $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . 
+                                        $ret['error_msg']); 
+        
       }           
     }
         
@@ -3541,20 +3546,26 @@ class TestlinkXMLRPCServer extends IXR_Server
    */
   protected function checkTestCaseAncestry($messagePrefix='')
   {
-    $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
-    $tproject_id=$this->args[self::$testProjectIDParamName];
-    $tcase_id=$this->args[self::$testCaseIDParamName];
-    $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
-    $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
+    $ret = array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
+    $tproject_id = $this->args[self::$testProjectIDParamName];
+    $tcase_id = $this->args[self::$testCaseIDParamName];
+    $tcase_tproject_id = $this->tcaseMgr->get_testproject($tcase_id);
       
     if($tcase_tproject_id != $tproject_id)
     {
-      $status_ok=false;
-      $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
+      $status_ok = false;
+      $tcase_info = $this->tcaseMgr->get_by_id($tcase_id);
+      $dummy = $this->tcaseMgr->getExternalID($tcase_id); 
+      $tcase_external_id = $dummy[0];
+
       $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
-      $msg = $messagePrefix . sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
-                                      $tproject_info['name'],$tproject_id);  
-      $ret=array('status_ok' => false, 'error_msg' => $msg , 'error_code' => TCASE_TPROJECT_KO);                                               
+      $msg = $messagePrefix . 
+             sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,
+                     $tcase_info[0]['name'],
+                     $tproject_info['name'],$tproject_id);  
+
+      $ret = array('status_ok' => false, 'error_msg' => $msg , 
+                   'error_code' => TCASE_TPROJECT_KO);
     } 
     return $ret;
   }

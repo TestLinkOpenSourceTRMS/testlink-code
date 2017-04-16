@@ -5467,10 +5467,10 @@ class testcase extends tlObjectWithAttachments
         $countmain = 1;
 
         // Build custom fields filter
-        // do not worry!! it seems that filter criteria is OR, but really is an AND,
+        // do not worry!! it seems that filter criteria is OR, 
+        // but really is an AND,
         // OR is needed to do a simple query.
         // with processing on recordset becomes an AND
-        // BUGID 3995
         foreach ($cf_hash as $cf_id => $cf_value)
         {
           if ( $countmain != 1 )
@@ -5483,7 +5483,6 @@ class testcase extends tlObjectWithAttachments
 
             foreach ($cf_value as $value)
             {
-
               if ($count > 1)
               {
                 $cfQuery .= " AND ";
@@ -5494,7 +5493,7 @@ class testcase extends tlObjectWithAttachments
           }
           else
           {
-              $cfQuery .=  " ( CFDV.value LIKE '%{$cf_value}%' ) ";
+            $cfQuery .=  " ( CFDV.value LIKE '%{$cf_value}%' AND CFDV.field_id = {$cf_id} )";
           }
           $countmain++;
         }

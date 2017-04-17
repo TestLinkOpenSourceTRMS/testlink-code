@@ -456,13 +456,18 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
    
   $tcaseSet=null;
   $tcnames=null;
-  $email=array();
 
   $assigner=$guiObj->all_users[$argsObj->user_id]->firstName . ' ' .
             $guiObj->all_users[$argsObj->user_id]->lastName ;
               
+
+  $email=array();
   $email['from_address']=config_get('from_email');
- 
+  $email['attachment'] = null;
+  $email['cc'] = null;
+  $email['exit_on_error'] = true;
+  $email['htmlFormat'] = true;
+
   $body_header = $lbl['testproject'] . ': ' . $argsObj->tproject_name . '<br />' .
                  $lbl['testplan'] . ': ' . $guiObj->testPlanName .'<br />' .
                  $lbl['build'] . ': ' . $guiObj->buildName .'<br /><br />';
@@ -562,9 +567,11 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 
           
         $email['body'] .= '<br />' . date(DATE_RFC1123);
+
         $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'], null, 
-                               '', true, true);
+                               $email['subject'], $email['body'], $email['cc'], 
+                               $email['attachment'],$email['exit_on_error'], 
+                               $email['htmlFormat']);
       } // foreach($tester_set as $user_id => $value)
     }                       
   }

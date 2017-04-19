@@ -265,7 +265,8 @@ class issueTrackerCommands
              $this->issueTrackerMgr->getImplementationForType($argsObj->type);
 
     $class2create = $guiObj->item['implementation'];
-    $its = new $class2create($argsObj->type,$argsObj->cfg);
+
+    $its = new $class2create($argsObj->type,$argsObj->cfg,$argsObj->name);
     $guiObj->connectionStatus = $its->isConnected() ? 'ok' : 'ko';
 
     return $guiObj;

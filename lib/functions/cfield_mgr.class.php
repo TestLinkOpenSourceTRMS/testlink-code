@@ -2835,7 +2835,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
    */
   function html_inputs($cfields_map,$name_suffix='',$input_values=null)
   {
-    $inputSet = '';
+    $inputSet = array();
     $getOpt = array('name_suffix' => $name_suffix);
 
     if(!is_null($cfields_map))

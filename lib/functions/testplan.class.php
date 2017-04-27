@@ -8107,11 +8107,6 @@ class build_mgr extends tlObject
               
               
     args: $id
-          [$parent_id]: need when you call this method during the creation
-                        of a test suite, because the $id will be 0 or null.
-                        
-          [$scope]: 'design','execution'
-          
     returns: html string
     
   */

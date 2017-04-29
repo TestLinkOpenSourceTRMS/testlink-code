@@ -1,3 +1,9 @@
 logs/
 config_db.inc.php
 /custom_config.inc.php
+
+# IDE
+.buildpath
+.project
+/.settings
+/.idea

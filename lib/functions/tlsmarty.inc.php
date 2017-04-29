@@ -1,32 +1,32 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- * 
- * TLSmarty class is TestLink wraper for GUI templates processing. 
+ *
+ * TLSmarty class is TestLink wraper for GUI templates processing.
  * The class is loaded via common.php to all pages.
- * 
+ *
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2017, TestLink community 
+ * @copyright 	2005-2017, TestLink community
  * @link 		    http://www.testlink.org/
- * @link 		    http://www.smarty.net/ 
+ * @link 		    http://www.smarty.net/
  *
  *
  */
 
 
 if( defined('TL_SMARTY_VERSION') && TL_SMARTY_VERSION == 3 )
-{  
-  define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty3'.  
+{
+  define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty3'.
   	     DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
 }
 else
 {
-  define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
+  define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.
          DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
-}  
+}
 
 define('SMARTY_CORE_DIR', SMARTY_DIR . 'internals' . DIRECTORY_SEPARATOR);
 require_once( SMARTY_DIR . 'Smarty.class.php');
@@ -44,11 +44,11 @@ if(!defined('TL_USE_LOG4JAVASCRIPT') )
 }
 
 
-/** @TODO martin: refactore + describe 
+/** @TODO martin: refactore + describe
  * The next two functions was moved here from common.php */
 function translate_tc_status($status_code)
 {
-	$resultsCfg = config_get('results'); 
+	$resultsCfg = config_get('results');
 	$verbose = lang_get('test_status_not_run');
 	if( $status_code != '')
 	{
@@ -58,7 +58,7 @@ function translate_tc_status($status_code)
 	return $verbose;
 }
 
-/** 
+/**
  * function is registered in tlSmarty class
  * @uses function translate_tc_status
  * @todo should be moved to tlSmarty class
@@ -77,7 +77,7 @@ function translate_tc_status_smarty($params, &$smarty)
 }
 
 /**
- * Should be used to prevent certain templates to only get included once per page load. 
+ * Should be used to prevent certain templates to only get included once per page load.
  * For example javascript includes, such as ext-js.
  *
  * Usage (in template):
@@ -92,7 +92,7 @@ function guard_header_smarty($file)
 {
 	static $guarded = array();
 	$status_ok = false;
-	
+
 	if (!isset($guarded[$file]))
 	{
 		$guarded[$file] = true;
@@ -109,39 +109,39 @@ class TLSmarty extends Smarty
 {
   private $tlImages;
   var $tlTemplateCfg;
-	
-  function TLSmarty()
+
+  public function __construct()
   {
     global $tlCfg;
     global $g_tpl;
-    
+
     parent::__construct();
     $this->template_dir = TL_ABS_PATH . 'gui/templates/';
     $this->compile_dir = TL_TEMP_PATH;
     $this->config_dir = TL_ABS_PATH . 'gui/templates/';
-    
+
     $testproject_coloring = $tlCfg->gui->testproject_coloring;
     $testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
-    
+
     if (isset($_SESSION['testprojectColor']))
     {
       $testprojectColor =  $_SESSION['testprojectColor'];
       if ($testprojectColor == "")
       {
           $testprojectColor = $tlCfg->gui->background_color;
-      }    
+      }
     }
     $this->assign('testprojectColor', $testprojectColor);
-    
+
     $my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
     $basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
-    
+
     if ($tlCfg->smarty_debug)
     {
         $this->debugging = true;
         tLog("Smarty debug window = ON");
     }
-    
+
     // -------------------------------------------------------------------------------------
     // Must be initialized to avoid log on TestLink Event Viewer due to undefined variable.
     // This means that optional/missing parameters on include can not be used.
@@ -149,17 +149,17 @@ class TLSmarty extends Smarty
     // Good refactoring must be done in future, to create group of this variable
     // with clear names that must be a hint for developers, to understand where this
     // variables are used.
-    
+
     // inc_head.tpl
     $this->assign('SP_html_help_file',null);
     $this->assign('menuUrl',null);
     $this->assign('args',null);
     $this->assign('additionalArgs',null);
     $this->assign('pageTitle',null);
-    
+
     $this->assign('css_only',null);
     $this->assign('body_onload',null);
-    
+
     // inc_attachments.tpl
     $this->assign('attach_tableStyles',"font-size:12px");
     $this->assign('attach_tableClassName',"simple");
@@ -167,17 +167,17 @@ class TLSmarty extends Smarty
     $this->assign('attach_show_upload_btn',1);
     $this->assign('attach_show_title',1);
     $this->assign('attach_downloadOnly',false);
-    
+
     // inc_help.tpl
     $this->assign('inc_help_alt',null);
     $this->assign('inc_help_title',null);
     $this->assign('inc_help_style',null);
     $this->assign('show_help_icon',true);
-            
+
     $this->assign('tplan_name',null);
     $this->assign('name',null);
     // -----------------------------------------------------------------------------
-    
+
     $this->assign('basehref', $basehref);
     $this->assign('css', $basehref . TL_TESTLINK_CSS);
     $this->assign('use_custom_css', 0);
@@ -186,9 +186,9 @@ class TLSmarty extends Smarty
       $this->assign('use_custom_css', 1);
       $this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
     }
-    
+
     $this->assign('locale', $my_locale);
-     
+
     // -----------------------------------------------------------------------------
     // load configuration
     $this->assign('session',isset($_SESSION) ? $_SESSION : null);
@@ -197,82 +197,82 @@ class TLSmarty extends Smarty
     $this->assign('gsmarty_gui',$tlCfg->gui);
     $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
     $this->assign('gsmarty_attachments',config_get('attachments'));
-    
+
     $this->assign('pageCharset',$tlCfg->charset);
     $this->assign('tlVersion',TL_VERSION);
     $this->assign('testproject_coloring',null);
-    
-    	
+
+
     // -----------------------------------------------------------------------------
     // define a select structure for {html_options ...}
     $this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
-    $this->assign('gsmarty_option_priority', array(HIGH => lang_get('high_priority'), 
-                                                   MEDIUM => lang_get('medium_priority'), 
+    $this->assign('gsmarty_option_priority', array(HIGH => lang_get('high_priority'),
+                                                   MEDIUM => lang_get('medium_priority'),
                                                    LOW => lang_get('low_priority')));
-    
-    $this->assign('gsmarty_option_importance', array(HIGH => lang_get('high_importance'), 
-                                                     MEDIUM => lang_get('medium_importance'), 
+
+    $this->assign('gsmarty_option_importance', array(HIGH => lang_get('high_importance'),
+                                                     MEDIUM => lang_get('medium_importance'),
                                                      LOW => lang_get('low_importance')));
-       
+
     $wkf = array();
     $xcfg = config_get('testCaseStatus');
     foreach($xcfg as $human => $key)
     {
       $wkf[$key] = lang_get('testCaseStatus_' . $human);
-    }  
+    }
     $this->assign('gsmarty_option_wkfstatus',$wkf);
 
 
     // this allows unclosed <head> tag to add more information and link; see inc_head.tpl
     $this->assign('openHead', 'no');
-    
+
     // there are some variables which should not be assigned for template but must be initialized
     // inc_head.tpl
     $this->assign('jsValidate', null);
     $this->assign('jsTree', null);
     $this->assign('editorType', null);
-    	
-    	
+
+
     // user feedback variables (used in inc_update.tpl)
     $this->assign('user_feedback', null);
     $this->assign('feedback_type', ''); // Possibile values: soft
     $this->assign('action', 'updated'); //todo: simplify (remove) - use user_feedback
     $this->assign('sqlResult', null); //todo: simplify (remove) - use user_feedback
-    
+
     $this->assign('refresh', 'no');
     $this->assign('result', null);
-    
+
     // $this->assign('optLocale',config_get('locales'));
-    
+
     $this->assign('gsmarty_href_keywordsView',
     			        ' "lib/keywords/keywordsView.php?tproject_id=%s%" ' . ' target="mainframe" class="bold" ' .
     			        ' title="' . lang_get('menu_manage_keywords') . '"');
-    
+
     $this->assign('gsmarty_html_select_date_field_order',
                   $tlCfg->locales_html_select_date_field_order[$my_locale]);
-                  
+
     $this->assign('gsmarty_date_format',$tlCfg->locales_date_format[$my_locale]);
-    
+
     // add smarty variable to be able to set localized date format on datepicker
     $this->assign('gsmarty_datepicker_format',
                   str_replace('%','',$tlCfg->locales_date_format[$my_locale]));
-                  
+
     $this->assign('gsmarty_timestamp_format',$tlCfg->locales_timestamp_format[$my_locale]);
-    
+
     // -----------------------------------------------------------------------------
     // Images
     $this->tlImages = tlSmarty::getImageSet();
-    
+
     $msg = lang_get('show_hide_api_info');
     $this->tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
     								" onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
     								" src=\"{$this->tlImages['api_info']}\" align=\"left\" />";
-    
+
     $msg = lang_get('show_hide_direct_link');
     $this->tlImages['toggle_direct_link'] = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
     						  		                      " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
     						  		                      " src=\"{$this->tlImages['direct_link']}\" align=\"left\" />";
-    
+
     // Some useful values for Sort Table Engine
     $this->tlImages['sort_hint'] = '';
     switch (TL_SORT_TABLE_ENGINE)
@@ -282,10 +282,10 @@ class TLSmarty extends Smarty
         $this->tlImages['sort_hint'] = "<img title=\"{$sort_table_by_column}\" " .
         						                   " alt=\"{$sort_table_by_column}\" " .
         						                   " src=\"{$this->tlImages['sort']}\" align=\"left\" />";
-        
+
         $this->assign("noSortableColumnClass","sorttable_nosort");
       break;
-      
+
       default:
         $this->assign("noSortableColumnClass",'');
       break;
@@ -293,38 +293,38 @@ class TLSmarty extends Smarty
 
     // Do not move!!!
     $this->assign("tlImages",$this->tlImages);
-    
+
     // Register functions
     if( defined('TL_SMARTY_VERSION') && TL_SMARTY_VERSION == 3 )
-    {  
+    {
       $this->registerPlugin("function","lang_get", "lang_get_smarty");
       $this->registerPlugin("function","localize_date", "localize_date_smarty");
       $this->registerPlugin("function","localize_timestamp", "localize_timestamp_smarty");
       $this->registerPlugin("function","localize_tc_status","translate_tc_status_smarty");
-      
+
       $this->registerPlugin("modifier","basename","basename");
       $this->registerPlugin("modifier","dirname","dirname");
 
       // Call to smarty filter that adds a CSRF filter to all form elements
-      if(isset($tlCfg->csrf_filter_enabled) && $tlCfg->csrf_filter_enabled === TRUE && 
-         function_exists('smarty_csrf_filter')) 
+      if(isset($tlCfg->csrf_filter_enabled) && $tlCfg->csrf_filter_enabled === TRUE &&
+         function_exists('smarty_csrf_filter'))
       {
           $this->registerFilter('output','smarty_csrf_filter');
       }
     }
     else
-    {  
+    {
       $this->register_function("lang_get", "lang_get_smarty");
       $this->register_function("localize_date", "localize_date_smarty");
       $this->register_function("localize_timestamp", "localize_timestamp_smarty");
       $this->register_function("localize_tc_status","translate_tc_status_smarty");
-      
+
       $this->register_modifier("basename","basename");
       $this->register_modifier("dirname","dirname");
-      
+
       // Call to smarty filter that adds a CSRF filter to all form elements
-      if(isset($tlCfg->csrf_filter_enabled) && $tlCfg->csrf_filter_enabled === TRUE && 
-         function_exists('smarty_csrf_filter')) 
+      if(isset($tlCfg->csrf_filter_enabled) && $tlCfg->csrf_filter_enabled === TRUE &&
+         function_exists('smarty_csrf_filter'))
       {
           $this->register_outputfilter('smarty_csrf_filter');
       }
@@ -453,8 +453,8 @@ class TLSmarty extends Smarty
                    'test_status_passed_next' => $imgLoc . 'test_status_passed_next.png',
                    'test_status_failed_next' => $imgLoc . 'test_status_failed_next.png',
                    'test_status_blocked_next' => $imgLoc . 'test_status_blocked_next.png');
-                     
+
     return $dummy;
 	}
 
-} 
+}

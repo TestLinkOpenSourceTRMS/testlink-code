@@ -110,7 +110,7 @@ class TLSmarty extends Smarty
   private $tlImages;
   var $tlTemplateCfg;
 	
-  function TLSmarty()
+  function __construct()
   {
     global $tlCfg;
     global $g_tpl;

@@ -31,13 +31,15 @@
  *
  * Scripted update according en_GB string file (version: ) 
  *
+ * Scripted update according en_GB string file (version: ) 
+ *
  **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última atualização: 29/03/2017 (TestLink 1.9.17)";
+$TLS_last_update = "Última atualização: 29/04/2017 (TestLink 1.9.17)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Ativo (clicar para inativar)";
@@ -4104,4 +4106,6 @@ $TLS_search_other_attr = "Você pode definir critérios de pesquisa que não use
 $TLS_search_created_by_ph = "o valor será pesquisado em Login/Primeiro Nome/Apelido";
 $TLS_multiple_entities_search = "Pesquisar em múltiplas entidades";
 $TLS_no_access_to_feature = "Você não tem permissões para aceder a esta funcionalidade";
+
+$TLS_applyExecTypeChangeToAllSteps = "Aplicar a todos os Passos";
 // ----- END ------------------------------------------------------------------

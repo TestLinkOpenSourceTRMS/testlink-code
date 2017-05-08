@@ -1,15 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMoveTC.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $
+@filesource containerMoveTC.tpl
+
 Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
 
-@internal revisions
-@since 1.9.10
 *}
 {lang_get var='labels'
-          s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,btn_save,
+          s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,btn_save,execution_type,
              check_uncheck_all_checkboxes,warning,execution_history,design,copy_requirement_assignments,
              choose_target,copy_keywords,btn_move,btn_cp,summary,btn_copy_ghost_zone,status,importance'}
 
@@ -20,15 +19,8 @@ Purpose:
 {include file="inc_del_onclick.tpl"}
 
 
-<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
-<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
-<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
-
-<script type="text/javascript" language="javascript" class="init">
-$(document).ready(function() {
-  $('#item_view').DataTable({ "lengthMenu": [ [10, 25, 50, 75, -1], [10, 25, 50, 75, "All"] ] });
-} );
-</script>
+{$ll = '[25, 50, 75, -1], [25, 50, 75, "All"]'}
+{include file="DataTables.inc.tpl" DataTablesOID="item_view" DataTableslengthMenu=$ll}
 
 <script type="text/javascript">
 {if !$gui->testCasesTableView}
@@ -118,10 +110,11 @@ function check_action_precondition(container_id,action,msg)
           <th>{$labels.summary}</th>
           <th>{$labels.status}</th>
           <th>{$labels.importance}</th>
+          <th>{$labels.execution_type}</th>
           </tr>
           </thead>
 
-        {foreach from=$testcases key=rowid item=tcinfo}
+        {foreach from=$gui->testcases key=rowid item=tcinfo}
             <tr>
                 <td>
                     <input type="checkbox" name="tcaseSet[{$tcinfo.tcversion_id}]" id="tcaseSet_{$tcinfo.tcid}" value="{$tcinfo.tcid}" />
@@ -133,13 +126,15 @@ function check_action_precondition(container_id,action,msg)
                     <img class="clickable" src="{$tlImages.edit_icon}"
                          onclick="javascript:openTCaseWindow({$tcinfo.tcid});"
                          title="{$labels.design}" />
-                    {$tcprefix|escape}{$tcinfo.tcexternalid|escape}{$gsmarty_gui->title_separator_1}{$tcinfo.tcname|escape}
+                    {$gui->tcprefix|escape}{$tcinfo.tcexternalid|escape}{$gsmarty_gui->title_separator_1}{$tcinfo.tcname|escape}
                 </td>
                 <td style="width:60%;">
                   {$tcinfo.summary}
                 </td>
                 <td>{$gui->domainTCStatus[$tcinfo.status]}</td>
                 <td>{$gui->domainTCImportance[$tcinfo.importance]}</td>
+                <td>{$gui->domainTCExecType[$tcinfo.execution_type]}</td>
+
             </tr>
         {/foreach}
         </table>
@@ -149,7 +144,6 @@ function check_action_precondition(container_id,action,msg)
     {if $gui->testCasesTableView}
     {lang_get s='zero_testcase_selected' var="check_msg"}    
     <div>
-
       <span class="labelHolder">{$labels.status}</span>
       <span>
       <select name="tc_status" id="tc_status" 
@@ -166,6 +160,13 @@ function check_action_precondition(container_id,action,msg)
         </select>
         </span>
       {/if}
+
+      <span class="labelHolder" style="margin-left:20px;">{$labels.execution_type}</span>
+      <span>
+        <select name="execution_type" onchange="content_modified = true">
+          {html_options options=$gui->domainTCExecType}
+        </select>
+      </span>
 
       {if $gui->cf != ''}
         <p>

@@ -7,8 +7,6 @@
 // Original work from: Etomite Installer SNUFFKIN/ Alex 2004
 // Improved using code from MySQL Eventum
 // 
-// @internal revisions
-// 20120605 - franciscom - fixed old hidden issue with trim()
 //
 
 class SqlParser {
@@ -17,7 +15,7 @@ class SqlParser {
 
 	var $db_conn;
 	var $db_type;
-    var $db_table_prefix;
+  var $db_table_prefix;
 
 	function __construct(&$db_conn,$db_type,$db_table_prefix='') 
 	{
@@ -34,8 +32,8 @@ class SqlParser {
     
     returns: 
   */
-function process($filename) 
-{
+  function process($filename) 
+  {
     $new_value=null;
 
     // -----------------------------------------------------------------
@@ -50,19 +48,19 @@ function process($filename)
     $do_additional_replace=false;
     switch($this->db_type)
     {
-        case 'mysql':
+      case 'mysql':
         $cfil = array_filter($contents,array($this,"only_good_mysql"));
-        break;
+      break;
           
-        case 'postgres':
+      case 'postgres':
         $target['sequence'] = "SELECT setval('";
         $do_additional_replace=true; 
         $cfil = array_filter($contents,array($this,"only_good_sql"));
-        break;
+      break;
         
-        case 'mssql':
+      case 'mssql':
         $cfil = array_filter($contents,array($this,"only_good_sql"));
-        break;
+      break;
     }
 
     $r2d2 = implode("", $cfil);
@@ -70,35 +68,32 @@ function process($filename)
 
     if( $do_replace)
     {
-        $r2d2 = str_replace('/*prefix*/',$this->db_table_prefix,$r2d2);
+      $r2d2 = str_replace('/*prefix*/',$this->db_table_prefix,$r2d2);
 
-        // just to solve problem with sequence on PostGres when creating start up data
-        // (need to find a better way)
-        if($do_additional_replace)
+      // just to solve problem with sequence on PostGres when creating 
+      // start up data (need to find a better way)
+      if($do_additional_replace)
+      {
+        foreach($target as $key => $value)
         {
-        	foreach($target as $key => $value)
-        	{
-        	    if( !is_null($value) )
-        	    {
-        	        $new_value[$key] = $value . $this->db_table_prefix ;         
-        	        $r2d2 = str_replace($value,$new_value[$key],$r2d2);
-        	    }
+        	if( !is_null($value) )
+          {
+        	  $new_value[$key] = $value . $this->db_table_prefix ;         
+        	  $r2d2 = str_replace($value,$new_value[$key],$r2d2);
         	}
         }
+      }
     }
-
-    $sql_array = explode(";", $r2d2);
-    // ----------------------------------------------------------------
-    
+   
     $num = 0;
+    $sql_array = explode(";", $r2d2);
     foreach($sql_array as $sql_do) 
     {
-      // Needed becuasu explode() adds \r\n
+      // Needed becuase explode() adds \r\n
       $sql_dodo =  trim(trim($sql_do, "\r\n "));			
+
       if( strlen($sql_dodo) > 0 )
       {
-
-			// echo '<br>READY TO RUN: ' . $sql_dodo . '<br><br>';
   			$num = $num + 1;
   			$status_ok=$this->db_conn->exec_query($sql_dodo);
   			if(!$status_ok)
@@ -115,8 +110,7 @@ function only_good_mysql($v)
 {
   $comment_char='#';
   return($this->only_good_sql($v, $comment_char));
-} // Function ends
-
+}
 
 
 function only_good_sql($v, $comment_char='-')
@@ -156,4 +150,3 @@ function only_good_sql($v, $comment_char='-')
 
 
 } // class end
-?>

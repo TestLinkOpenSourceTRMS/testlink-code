@@ -6,11 +6,8 @@
  * @filesource  tree.class.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2017, TestLink community 
  * @link        http://www.testlink.org/
- *
- * @internal revisions
- * @since 1.9.13
  *
  */
 
@@ -92,14 +89,13 @@ class tree extends tlObject
     
   }
 
-    /**
-     * get info from node_types table, regarding node types that can be used in a tree. 
-     * 
-     * @return array map
-     *         key: description: single human friendly string describing node type
-     *             value: numeric code used to identify a node type
-     *
-     * @internal revisions
+  /**
+   * get info from node_types table, regarding node types that can be used in a tree. 
+   * 
+   * @return array map
+   *         key: description: single human friendly string describing node type
+   *             value: numeric code used to identify a node type
+   *
    */
   function get_available_node_types() 
   {
@@ -161,7 +157,7 @@ class tree extends tlObject
     else
     {
       $sql .= ",parent_id) {$values},{$parent_id})";
-        }
+    }
 
     $this->db->exec_query($sql);
     return ($this->db->insert_id($this->object_table));
@@ -260,10 +256,10 @@ class tree extends tlObject
   */
   function get_subtree_list($node_id,$node_type_id=null,$output=null)
   {
-      $nodes = array();
-      $this->_get_subtree_list($node_id,$nodes,$node_type_id);
-      $node_list = is_null($output) ? implode(',',$nodes) : $nodes;
-      return($node_list);
+    $nodes = array();
+    $this->_get_subtree_list($node_id,$nodes,$node_type_id);
+    $node_list = is_null($output) ? implode(',',$nodes) : $nodes;
+    return($node_list);
   }
   
   
@@ -284,7 +280,7 @@ class tree extends tlObject
     $sql = "SELECT id from {$this->object_table} WHERE parent_id = {$node_id}";
     if( !is_null($node_type_id) )
     {
-        $sql .=  " AND node_type_id = {$node_type_id} "; 
+      $sql .=  " AND node_type_id = {$node_type_id} "; 
     }
     $result = $this->db->exec_query($sql);
     
@@ -424,13 +420,15 @@ class tree extends tlObject
     return $the_path;
   }
 
+  /**
+   *
+   */
   function get_path_new($node_id,$to_node_id = null,$format = 'full') 
   {
     $the_path = array();
     $trip='';
     $matrioska = array();
     $this->_get_path($node_id,$the_path,$to_node_id,$format); 
-    
     
     if( !is_null($the_path) && ($loop2do=count($the_path)) > 0 )
     {
@@ -449,14 +447,9 @@ class tree extends tlObject
           $target = &$target[0]['childNodes'];
         }  
       }
-    
-      
     }
 
-    //return array($trip,$the_path,$matrioska);
-    //return array($trip,$matrioska);
     return array($trip,$the_path);
-    
   }
 
 
@@ -502,11 +495,6 @@ class tree extends tlObject
       // (that's the node with no parent)
       if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
       {
-        
-        // Getting data from the node specific table
-        // $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-        // $node_table = $this->node_tables_by['id'][$row['node_type_id']];
-        
         // the last part of the path to $node, is the name
         // of the parent of $node
         switch($format)
@@ -514,16 +502,16 @@ class tree extends tlObject
           case 'full':
             $row['node_table'] = $this->node_tables_by['id'][$row['node_type_id']];
             $node_list[] = $row;
-            break;    
+          break;    
             
           case 'simple':
             // Warning: starting node is NOT INCLUDED in node_list
             $node_list[$row['parent_id']] = $row['parent_id'];
-            break;    
+          break;    
             
           case 'points':
             $node_list[] = $row['id'];
-            break;    
+          break;    
 
           case 'simple_me':
             if( is_null($node_list) )
@@ -534,11 +522,11 @@ class tree extends tlObject
             {
               $node_list[$row['parent_id']] = $row['parent_id'];
             }            
-            break;    
+          break;    
 
           case 'name':
             $node_list[] = $row['name'];
-            break;    
+          break;    
 
         }
         
@@ -630,9 +618,7 @@ class tree extends tlObject
     {
       if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
       {
-        // $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
         $node_table = $this->node_tables_by['id'][$row['node_type_id']];
-
 
         $ak = is_null($my['opt']['accessKey']) ? $xdx : $row[$my['opt']['accessKey']];
         $node_list[$ak] = array('id' => $row['id'], 'parent_id' => $row['parent_id'],
@@ -885,7 +871,9 @@ class tree extends tlObject
     return $the_subtree;
   }
   
-  
+  /**
+   *
+   */  
   function _get_subtree($node_id,&$node_list,$filters = null, $options = null)
   {
     static $my;
@@ -899,36 +887,39 @@ class tree extends tlObject
                              'addJoin' => '', 'addFields' => '');
   
     }
-    // Cast to array to handle $options = null
+
     $my['filters'] = array_merge($my['filters'], (array)$filters);
     $my['options'] = array_merge($my['options'], (array)$options);
        
     switch($my['options']['order_cfg']['type'])
     {
       case 'spec_order':
-        $sql = " SELECT id,name,parent_id,node_type_id,node_order {$my['options']['addFields']}" .
+        $sql = " SELECT id,name,parent_id,node_type_id,node_order " .
+               $my['options']['addFields'] .
                " FROM {$this->object_table} {$my['options']['addJoin']} " .
-               " WHERE parent_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
+               " WHERE parent_id = {$node_id} " .
+               " {$my['filters']['additionalWhereClause']}" .
                " ORDER BY node_order,id";
-        break;
-
-        case 'rspec':
-          $sql = " SELECT OBT.id,name,parent_id,node_type_id,node_order,RSPEC.doc_id " .
-                 " FROM {$this->object_table} AS OBT " .
-                 " JOIN {$this->tables['req_specs']} AS RSPEC ON RSPEC.id = OBT.id " .
-                 " WHERE parent_id = {$node_id} {$my['filters']['additionalWhereClause']}" .
-                 " ORDER BY node_order,OBT.id";
       break;
 
-          
+      case 'rspec':
+        $sql = " SELECT OBT.id,name,parent_id,node_type_id,node_order," .
+               " RSPEC.doc_id " .
+               " FROM {$this->object_table} AS OBT " .
+               " JOIN {$this->tables['req_specs']} AS RSPEC " .
+               " ON RSPEC.id = OBT.id " .
+               " WHERE parent_id = {$node_id} " .
+               " {$my['filters']['additionalWhereClause']}" .
+               " ORDER BY node_order,OBT.id";
+      break;
+
       case 'exec_order':
-      // REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION WITHOUT ALL
-      //
-      // First query get Nodes that ARE NOT test case => test suites
-      // Second query get the TEST CASES
-      //
-      // 20101009 - franciscom - added tcversion_id , neeed for test plan export
-          $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
+        // REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION WITHOUT ALL
+        //
+        // First query get Nodes that ARE NOT test case => test suites
+        // Second query get the TEST CASES
+        //
+        $sql = "SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
                "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
                "                NH.name, NH.node_type_id, 0 AS tcversion_id" .
                "                FROM {$this->object_table} NH, {$this->tables['node_types']} NT" .
@@ -948,8 +939,23 @@ class tree extends tlObject
                "                AND NHA.parent_id = {$node_id}" .
                "                AND T.testplan_id = {$my['options']['order_cfg']['tplan_id']}) AC" .
                "                ORDER BY node_order,spec_order,id";
-          break;
+        break;
+
+        case 'req_order':
+          $sql = " SELECT NH_TC.id,NH_TC.name,NH_TC.parent_id," .
+                 " NH_TC.node_type_id,NH_TC.node_order " .
+                 " {$my['options']['addFields']}" .
+                 " FROM {$this->object_table} AS NH_TC " .
+                 " {$my['options']['addJoin']} " .
+                 " JOIN {$this->tables['req_coverage']} RC " .
+                 " ON RC.testcase_id = id " .
+                 " WHERE RC.req_id = {$node_id} " .
+                 " {$my['filters']['additionalWhereClause']}" .
+                 " ORDER BY node_order,id";
+        break;
+
       }
+
       $result = $this->db->exec_query($sql);
     
       if( $this->db->num_rows($result) == 0 )
@@ -967,6 +973,10 @@ class tree extends tlObject
         
         switch($my['options']['output'])
         {
+          case 'id':
+            $node_list[] = $row['id'];
+          break;  
+          
           case 'essential':
             $node_list[] = array('id' => $row['id'],
                                  'parent_id' => $row['parent_id'],
@@ -989,7 +999,6 @@ class tree extends tlObject
 
           case 'full':
           default:
-            // 20130426 
             // this choice
             // 'tcversion_id' => (isset($row['parent_id']) ? $row['parent_id'] : -1),
             // need to be documented and REVIEWED, because can generate confusion
@@ -1023,7 +1032,9 @@ class tree extends tlObject
       }
   } // function end
    
-   
+  /**
+   *
+   */   
   function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
   {
     static $tcNodeTypeID;
@@ -1036,14 +1047,14 @@ class tree extends tlObject
     
     if (!$tcNodeTypeID)
     {
-        $tcNodeTypeID = $this->node_descr_id['testcase'];
+      $tcNodeTypeID = $this->node_descr_id['testcase'];
 
-        $qnum=0;
+      $qnum=0;
 
-          $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
+      $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
                           'additionalWhereClause' => '', 'family' => null);
                                
-          $my['options'] = array('order_cfg' => array("type" =>'spec_order'),'key_type' => 'std',
+      $my['options'] = array('order_cfg' => array("type" =>'spec_order'),'key_type' => 'std',
                           'remove_empty_nodes_of_type' => null);
 
       // Cast to array to handle $options = null
@@ -1085,7 +1096,6 @@ class tree extends tlObject
         break;
           
         case 'exec_order':
-      // 20101003 - franciscom -
       // Hmmm, no action regarding platforms. is OK ??
       //
       // REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION
@@ -1125,8 +1135,6 @@ class tree extends tlObject
             switch($my['options']['key_type'])
             {
                   case 'std':
-                    // ACT HERE
-                      // $node_table = $this->node_tables_by['id'][$row['node_type_id']];
                       $node =  array('parent_id' => $row['parent_id'],
                                'id' => $row['id'],
                                          'name' => $row['name'],
@@ -1182,12 +1190,10 @@ class tree extends tlObject
               $this->_get_subtree_rec($row['id'],$node,$my['filters'],$my['options']);
             }
 
-        // 20101003 - franciscom 
         // Have added this logic, because when export test plan will be developed
         // having a test spec tree where test suites that do not contribute to test plan
         // are pruned/removed is very important, to avoid additional processing
         //            
-            //  !is_null($my['options']['remove_empty_nodes_of_type']) && 
             $doRemove = is_null($node['childNodes']) && 
                       $node['node_type_id'] == $my['options']['remove_empty_nodes_of_type'];
             
@@ -1449,7 +1455,6 @@ class tree extends tlObject
           //
           if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
           {
-            // 20100918 - franciscom
             // I'm paying not having commented this well
             // Why I've set root_id to null ?
             // doing this when traversing a tree, containers under level of subtree root
@@ -1466,8 +1471,6 @@ class tree extends tlObject
             }
             else if (isset($this->nodeWithoutClass[$nodeTypeID]))
             {
-              // it's ok
-              // echo '<br> it is ok:' . $this->nodeWithoutClass[$node_info[0]['node_type_id']] . '<br>';
             }  
             else
             {
@@ -1483,7 +1486,6 @@ class tree extends tlObject
     // Done this way to avoid infinte recursion for some type of nodes
     // that use this method as it's delete method. (example testproject).
     
-    // 20100918 - franciscom
     // Hmmm, need to recheck if this condition is ok
     // 
     if( !is_null($root_id) && ($node_id != $root_id) )
@@ -1505,8 +1507,6 @@ class tree extends tlObject
         }   
         else if (isset($this->nodeWithoutClass[$node_info[0]['node_type_id']]))
         {
-          // it's ok
-          // echo '<br> it is ok:' . $this->nodeWithoutClass[$node_info[0]['node_type_id']] . '<br>';
         }  
         else 
         {
@@ -1646,7 +1646,10 @@ class tree extends tlObject
       }
     }  
   }
-  
+
+  /**
+   *
+   */  
   function getNodeByAttributes($attr)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;

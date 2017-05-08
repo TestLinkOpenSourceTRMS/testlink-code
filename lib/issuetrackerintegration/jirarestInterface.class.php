@@ -10,7 +10,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
@@ -139,7 +139,6 @@ class jirarestInterface extends issueTrackerInterface
           $this->jiraCfg['proxy'] = null;
         }  
       }  
-
 
       $this->APIClient = new JiraApi\Jira($this->jiraCfg);
 
@@ -521,6 +520,24 @@ class jirarestInterface extends issueTrackerInterface
     }         
   }
 
+
+  /**
+   *
+   */
+  public function getCreateIssueFields()
+  {
+    try
+    {
+      return $this->APIClient->getCreateIssueFields((string)$this->cfg->projectkey);
+    }
+    catch(Exception $e)
+    {
+      tLog(__METHOD__ . "  " . $e->getMessage(), 'ERROR');
+    }         
+  }
+
+
+
   /**
    *
    */
@@ -652,13 +669,19 @@ class jirarestInterface extends issueTrackerInterface
   function canCreateViaAPI()
   {
     $status_ok = false;
-    if(property_exists($this->cfg, 'projectkey') && 
-       property_exists($this->cfg, 'issuetype') )
+
+    // The VERY Mandatory KEY   
+    if( property_exists($this->cfg, 'projectkey') )
     {
-      // now check mandatory value
       $pk = trim((string)($this->cfg->projectkey));
       $status_ok = ($pk !== '');
     } 
+   
+    if($status_ok && $this->cfg->userinteraction == 0)
+    {
+      $status_ok = property_exists($this->cfg, 'issuetype'); 
+    }  
+
     return $status_ok;
   }
 

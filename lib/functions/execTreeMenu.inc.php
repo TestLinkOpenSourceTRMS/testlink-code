@@ -11,13 +11,11 @@
  * @filesource  execTreeMenu.inc.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2013,2014 TestLink community 
+ * @copyright   2013,2017 TestLink community 
  * @link        http://testlink.sourceforge.net/ 
  * @uses        config.inc.php
  * @uses        const.inc.php
  *
- * @internal revisions
- * @since 1.9.13
  */
 
 /**
@@ -216,19 +214,24 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     $lt = array_keys((array)$tplan_tcases);
 
     // here test cases are in the right order
-    $ltcs = $spec[1]['nindex'];
-
-    // now need to filter out
-    $tl = array_flip($lt);
-    foreach($ltcs as &$ele)
+    $linkedTestCasesSet = null;
+    if( isset($spec[1]['nindex']) )
     {
-      if( isset($tl[$ele]) )
+      $ltcs = $spec[1]['nindex'];
+
+      // now need to filter out
+      $tl = array_flip($lt);
+      foreach($ltcs as &$ele)
       {
-        $linkedTestCasesSet[] = $ele;
+        if( isset($tl[$ele]) )
+        {
+          $linkedTestCasesSet[] = $ele;
+        }  
       }  
     }  
 
-    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,$renderTreeNodeOpt);
+    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,
+                       $tcase_prefix,$renderTreeNodeOpt);
   }
   
   $treeMenu->rootnode=new stdClass();
@@ -423,7 +426,14 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
 
       if( isset($tpNode['exec_status']) )
       {
-        $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        if( isset($resultsCfg['code_status'][$tpNode['exec_status']]) )
+        {
+          $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        }  
+        else
+        {
+          throw new Exception("Config Issue - exec status code: {$tpNode['exec_status']}", 1);
+        }  
       }
       else
       {
@@ -663,7 +673,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     }  
   }  
 
-  // 20151122
   $spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
 
   $test_spec = $spec[0];

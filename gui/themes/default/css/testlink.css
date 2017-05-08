@@ -727,6 +727,10 @@ div.resultBox {
 	padding: 		12px;
 }
 
+div.resultBox img:hover {
+	cursor:		pointer;	
+}
+
 img.arrow {
 	width: 			16px;
 	height: 		9px;

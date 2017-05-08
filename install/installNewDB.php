@@ -8,13 +8,10 @@
  * @filesource  installNewDB.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2008,2012 TestLink community
- * @copyright   inspired by
- *              Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
+ * @copyright   2008,2017 TestLink community
+ * @copyright   inspired by Etomite Content Management System
+ *              2003, 2004 Alexander Andrew Butter 
  *
- * @internal revisions
- * @since 1.9.6
- * 
  **/
 
 require_once("../config.inc.php");
@@ -27,7 +24,6 @@ require_once("../lib/functions/metastring.class.php");
 
 require_once("../third_party/dBug/dBug.php");
 
-// 20080315 - franciscom
 // Better to avoid use of logger during installation
 // because we do not have control on what kind of logger (db, file) to create.
 // This produce the situation:dog eats dog, i.e.:
@@ -53,8 +49,6 @@ define('LEN_PWD_TL_1_0_4',15);
 define('ADD_DIR',1);
 
 $migration_process = '';
-$sql_create_schema = array();
-$sql_default_data = array();
 $sql_update_schema = array();
 $sql_update_data   = array();
 
@@ -68,11 +62,16 @@ $tl_db_login = $_SESSION['tl_loginname'];
 $tl_db_passwd = $_SESSION['tl_loginpassword'];
 $db_table_prefix = $_SESSION['tableprefix'];
 
-$tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
-$sql_create_schema[1] = "sql/{$db_type}/testlink_create_tables.sql";
-$sql_default_data [1] = "sql/{$db_type}/testlink_create_default_data.sql";
+$sql_create_schema = array();
+$sql_create_schema[] = "sql/{$db_type}/testlink_create_tables.sql";
+$a_sql_schema = array();
 $a_sql_schema[] = $sql_create_schema;
+
+$sql_default_data = array();
+$sql_default_data [] = "sql/{$db_type}/testlink_create_default_data.sql";
+$a_sql_data = array();
 $a_sql_data[]   = $sql_default_data;
+
 
 global $g_tlLogger;
 $g_tlLogger->disableLogging('db');
@@ -83,15 +82,13 @@ $upgrade = !$install;
 if ($upgrade)
 {
   $inst_type_verbose=" Upgrade ";
-    $a_sql_data   = array();
+  $a_sql_data   = array();
 }
 $the_title = $_SESSION['title'];
 ?>
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
-  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
 <head>
   <title><?php echo $the_title; ?></title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -417,7 +414,7 @@ if( $install && $conn_result['status'] != 0 )
 }  
 
 
-// --------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------
 $sqlParser = new SqlParser($db,$db_type,$db_table_prefix);
 foreach($a_sql_schema as $sql_schema)
 {
@@ -518,13 +515,17 @@ else
   echo "<span class='ok'>OK!</span>";
 }
 
-// 20080308 - franciscom
+
+manual_operations($db_type);
+
 important_reminder();
 
-// BUGID 4174 - When testlink is updated do not show login data admin/admin as they might not exist
+// When testlink is updated do not show login data admin/admin 
+// as they might not exist
 $successfull_message = '</b><p /><br><div><span class="headers">' . "{$inst_type_verbose} was successful!" . '</span><br>' .
                      'You can now log in to <a href="../index.php"> Testlink';
-if($create) {
+if($create) 
+{
   $successfull_message .= ' (using login name:admin / password:admin - Please Click Me!)';
 }
 $successfull_message .= '</a>.</div>';
@@ -534,6 +535,24 @@ echo $successfull_message;
 $db->close();
 close_html_and_exit();
 
+
+
+/**
+ *
+ *
+ */
+function manual_operations($dbType)
+{
+  echo '<br><br><span class="headers">';
+  echo 'IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE';
+  echo '</span>';
+
+  echo '<br><span class="headers">';
+  echo 'YOU NEED TO RUN MANUALLY Following Script on your DB CLIENT Application';
+  echo '</span><br>';
+  echo dirname(__FILE__) . '/sql/'. $dbType . '/testlink_create_udf0.sql';
+  echo '<br> THANKS A LOT </b>';
+}
 
 // -----------------------------------------------------------
 function write_config_db($filename, $data)
@@ -598,7 +617,7 @@ function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
   $tablesOnDB =$my_ado->MetaTables('TABLES');  
   if( count($tablesOnDB) > 0 && isset($tablesOnDB[0]))
   {
-    echo "<br />Dropping all TL existent tables:<br />";
+    echo "<br /><b>Dropping all TL existent tables:</b><br />";
     foreach($schema as $tablePlainName => $tableFullName)
     {
       $targetTable = $dbTablePrefix . $tablePlainName;
@@ -624,11 +643,11 @@ function drop_views(&$dbHandler,$dbItemPrefix,$dbType)
   $itemsOnDB =$my_ado->MetaTables('VIEWS');  
   if( count($itemsOnDB) > 0 && isset($itemsOnDB[0]))
   {
-    echo "<br />Dropping all TL existent views:<br />";
+    echo "<br /><b>Dropping all TL existent views:</b><br />";
     foreach($schema as $itemPlainName => $itemFullName)
     {
       $target = $dbItemPrefix . $itemPlainName;
-      if( in_array($itemTable,$itemsOnDB) )
+      if( in_array($target,$itemsOnDB) )
       {
         // Need to add option (CASCADE ?) to delete dependent object
         echo "Droping $target" . "<br />";
@@ -640,5 +659,3 @@ function drop_views(&$dbHandler,$dbItemPrefix,$dbType)
     echo "<span class='ok'>Done!</span>";
   }
 }
-
-?>

@@ -11,8 +11,6 @@
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * @internal revisions
- * @since 1.9.15
  * 
  */
 
@@ -636,7 +634,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
       $rs = current($rs);
-      if($rs['VQTY'] > 1)
+      if(isset($rs['VQTY']) && $rs['VQTY'] > 1)
       {
         $action4notify = 'delete_version';
       }  
@@ -720,7 +718,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       $rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
       foreach($rs as $el)
       {
-        if($el['VQTY'] == 1)
+        if(isset($el['VQTY']) && $el['VQTY'] == 1)
         {
           $target[] = $el['parent_id'];
         }  
@@ -1422,7 +1420,7 @@ function exportReqToXML($id,$tproject_id=null)
              "\n\t\t" . "<version>||VERSION||</version>" .
              "\n\t\t" . "<revision>||REVISION||</revision>" .
              "\n\t\t" . "<node_order>||NODE_ORDER||</node_order>".
-             "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
+             "\n\t\t" . "<description><![CDATA[||DESCRIPTION||]]></description>".
              "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
              "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
              "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .         
@@ -2935,14 +2933,17 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       
       $new_rev = $current_rev+1;
       $db_now = $this->db->db_now();
-      $sql =   " /* $debugMsg */ " .
-          " UPDATE {$this->tables['req_versions']} " .
-          " SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," .
-              " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL, " .
-              " modification_ts = ";
+      $sql = " /* $debugMsg */ " .
+             " UPDATE {$this->tables['req_versions']} " .
+             " SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," .
+             " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL";
               
       $nullTS = $this->db->db_null_timestamp();
-      $sql .= is_null($nullTS) ? " NULL " : " {$nullTS} ";
+      if(!is_null($nullTS))
+      {
+        $sql .= ",modification_ts = {$nullTS} ";
+      }  
+      
       $sql .=  " WHERE id = {$parent_id} ";
       $this->db->exec_query($sql);
       return $ret;
@@ -4378,9 +4379,17 @@ function getCoverageCounterSet($itemSet)
                   ' using address:' . $ue["email"];
       try
       {
+        $xmail = array();
+        $xmail['cc'] = '';
+        $xmail['attachment'] = null;
+        $xmail['exit_on_error'] = false;
+        $xmail['htmlFormat'] = true; 
 
+      
        $rmx = @email_send($from,$ue["email"],
-              $mailSubjectCache[$ue['locale']],$mailBodyCache[$ue['locale']],'',false,true,null);
+              $mailSubjectCache[$ue['locale']],$mailBodyCache[$ue['locale']],
+              $xmail['cc'],$xmail['attachment'],$xmail['exit_on_error'],
+              $xmail['htmlFormat'],null);
        $apx = $rmx->status_ok ? 'Succesful - ' : 'ERROR -'; 
       }
       catch (Exception $e)

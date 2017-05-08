@@ -42,16 +42,9 @@ var del_action=fRoot+'{$deleteAction}';
 </script>
 
 {if $tlCfg->gui->projectView->pagination->enabled}
-<link rel="stylesheet" type="text/css" href="{$basehref}/third_party/DataTables-1.10.4/media/css/jquery.dataTables.TestLink.css">
-<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.js"></script>
-<script type="text/javascript" language="javascript" src="{$basehref}/third_party/DataTables-1.10.4/media/js/jquery.dataTables.js"></script>
-
-<script type="text/javascript" language="javascript" class="init">
-$(document).ready(function() {
-  $('#item_view').DataTable({ "lengthMenu": [ {$tlCfg->gui->projectView->pagination->length} ] });
-} );
-</script>
-</script>
+  {$ll = $tlCfg->gui->projectView->pagination->length}
+  {include file="DataTables.inc.tpl" DataTablesOID="item_view"
+                                     DataTableslengthMenu=$ll}
 {/if}
 
 </head>

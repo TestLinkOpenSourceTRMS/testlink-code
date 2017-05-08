@@ -2,16 +2,11 @@
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- */
-
-/** 
  * Error codes for the TestlinkXMLRPCServer
  * 
  * @author    Asiel Brumfield <asielb@users.sourceforge.net>
  * @package   TestlinkAPI
  *
- * @internal revisions
- * @since 1.9.14
  * 
  */
  
@@ -110,6 +105,11 @@ define('NO_MATCH_STR', lang_get('API_NO_MATCH',null,1));
 define('INVALID_TIMESTAMP', 237);
 define('INVALID_TIMESTAMP_STR', lang_get('API_INVALID_TIMESTAMP',null,1));
 
+define('TSUITE_NOT_ON_TCASE_TPROJ', 238);
+define('TSUITE_NOT_ON_TCASE_TPROJ_STR', 
+	   lang_get('API_TSUITE_NOT_ON_TCASE_TPROJ',null,1));
+
+
 /**
  * 2000 level - authentication errors
  */
@@ -117,6 +117,9 @@ define('INVALID_AUTH', 2000);
 define('INVALID_AUTH_STR', lang_get('API_INVALID_AUTH',null,1));
 define('INSUFFICIENT_RIGHTS', 2010);
 define('INSUFFICIENT_RIGHTS_STR', lang_get('API_INSUFFICIENT_RIGHTS',null,1));
+define('UPDATER_INSUFFICIENT_RIGHTS', 2015);
+define('UPDATER_INSUFFICIENT_RIGHTS_STR', 
+	    lang_get('API_UPDATER_INSUFFICIENT_RIGHTS',null,1));
 
 
 /**
@@ -340,6 +343,9 @@ define('REQ_REQSPEC_KO_STR', lang_get('API_REQ_REQSPEC_KO',null,1));
 
 define('REQ_KO', 11003);
 define('REQ_KO_STR', lang_get('API_REQ_KO',null,1));
+
+define('NO_REQ_IN_THIS_PROJECT', 11004);
+define('NO_REQ_IN_THIS_PROJECT_STR', lang_get('API_NO_REQ_IN_THIS_PROJECT',null,1));
 
 
 /**

@@ -9,11 +9,9 @@
  * @filesource  const.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @see         config.inc.php
  *
- * @internal revisions
- * No revisions logged here but each parameter must be described!
  *
  **/
  
@@ -23,14 +21,15 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.16'); 
-define('TL_VERSION', TL_VERSION_NUMBER . '[DEV] (Moka pot)'); 
+define('TL_VERSION_NUMBER', '1.9.17'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [Dev](Alan Turing)'); 
 define('TL_FACE_DIR', 'prague'); 
 
-/** Latest Database version that is used to give users feedback about necesssary upgrades
- * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */
-// define('TL_LATEST_DB_VERSION', 'DB ' . TL_VERSION_NUMBER);
-define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.15');
+/** Latest Database version that is used to give users feedback 
+ *  about necesssary upgrades
+ *  if you set this parameter also upgrade 
+ *  lib/functions/configCheck.php - checkSchemaVersion() */
+define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.17');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
@@ -176,10 +175,6 @@ define('DO_PRUNE', 1);
 define('AUTOMATION_RESULT_KO', -1);
 define('AUTOMATION_NOTES_KO', -1);
 
-/** @uses testcase.class.php */
-define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
-define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
-
 define('REMOVEME', 'd8ba8cfb-ca92-4fa5-83c2-551977d405fb');
 
 /** Constants for plugins */
@@ -205,12 +200,8 @@ define('EVENT_TYPE_OUTPUT', 4);
 /* [GUI] */
 
 /** 
- * @todo havlatm: remove (must be solved via css)
  * @uses planAddTC_m1-tpl 
  * 
- * @internal Francisco: DISAGREE, if we want give user possibility to reconfigure
- *                 how we can do this with CSS 
- *     Havlatm: User can create own theme with own colours
  **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
@@ -218,9 +209,6 @@ define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 define('TL_CSS_MAIN', 'testlink.css');
 define('TL_CSS_PRINT', 'tl_print.css');
 define('TL_CSS_DOCUMENTS', 'tl_documents.css');
-
-/** @todo havlatm: remove - probably obsolete from 1.9 */
-define('TL_CSS_TREEMENU', 'tl_treemenu.css');
 
 /** Browser Cookie keeptime */
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
@@ -292,7 +280,8 @@ $tlCfg->locales = array('cs_CZ' => 'Czech','de_DE' => 'German','en_GB' => 'Engli
                         'es_ES' => 'Spanish','fi_FI' => 'Finnish','fr_FR' => 'Fran&ccedil;ais',
                         'id_ID' => 'Indonesian','it_IT' => 'Italian','ja_JP' => 'Japanese',
                         'ko_KR' => 'Korean','nl_NL' => 'Dutch','pl_PL' => 'Polski',
-                        'pt_BR' => 'Portuguese (Brazil)','ru_RU' => 'Russian','zh_CN' => 'Chinese Simplified');
+                        'pt_BR' => 'Portuguese (Brazil)','pt_PT' => 'Portuguese',
+                        'ru_RU' => 'Russian','zh_CN' => 'Chinese Simplified');
 
 /** 
  * Format of date - see strftime() in PHP manual
@@ -304,7 +293,7 @@ $tlCfg->locales_date_format = array('cs_CZ' => '%d.%m.%Y','de_DE' => '%d.%m.%Y',
                                     'fi_FI' => '%d/%m/%Y','fr_FR' => '%d/%m/%Y','id_ID' => '%d/%m/%Y',
                                     'it_IT' => '%d/%m/%Y','ja_JP' => '%Y/%m/%d','ko_KR' => '%Y/%m/%d',
                                     'nl_NL' => '%d-%m-%Y','pl_PL' => '%d.%m.%Y','pt_BR' => '%d/%m/%Y',
-                                    'ru_RU' => '%d/%m/%Y','zh_CN' => '%Y-%m-%d'); 
+                                    'pt_PT' => '%d/%m/%Y','ru_RU' => '%d/%m/%Y','zh_CN' => '%Y-%m-%d'); 
 
 /** @var array Localized format of full timestamp */
 $tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' => '%d.%m.%Y %H:%M:%S',
@@ -314,8 +303,8 @@ $tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' 
                                          'id_ID' => '%d/%m/%Y %H:%M:%S','it_IT' => '%d/%m/%Y %H:%M:%S',
                                          'ja_JP' => '%Y/%m/%d %H:%M:%S','ko_KR' => '%Y/%m/%d %H:%M:%S',
                                          'nl_NL' => '%d-%m-%Y %H:%M:%S','pl_PL' => '%d.%m.%Y %H:%M:%S',
-                                         'pt_BR' => '%d/%m/%Y %H:%M:%S','ru_RU' => '%d/%m/%Y %H:%M:%S',
-                                         'zh_CN' => '%Y-%m-%d %H:%M:%S'); 
+                                         'pt_BR' => '%d/%m/%Y %H:%M:%S','pt_PT' => '%d/%m/%Y %H:%M:%S',
+                                         'ru_RU' => '%d/%m/%Y %H:%M:%S','zh_CN' => '%Y-%m-%d %H:%M:%S'); 
 
 /** @var array localized date format for smarty templates (html_select_date function) 
  * deprecated since use of datepicker */
@@ -323,7 +312,7 @@ $tlCfg->locales_html_select_date_field_order = array('cs_CZ' => 'dmY','de_DE' =>
                                                      'en_US' => 'mdY','es_AR' => 'dmY','es_ES' => 'dmY','fi_FI' => 'dmY',
                                                      'fr_FR' => 'dmY','id_ID' => 'dmY','it_IT' => 'dmY','ja_JP' => 'Ymd',
                                                      'ko_KR' => 'Ymd','nl_NL' => 'dmY','pl_PL' => 'dmY','pt_BR' => 'dmY',
-                                                     'ru_RU' => 'dmY','zh_CN' => 'Ymd'); 
+                                                     'pt_PT' => 'dmY','ru_RU' => 'dmY','zh_CN' => 'Ymd'); 
 
 
 
@@ -426,6 +415,24 @@ $tlCfg->results['status_label_for_exec_ui'] = array('not_run' => 'test_status_no
                                                     'passed'  => 'test_status_passed',
                                                     'failed'  => 'test_status_failed',
                                                     'blocked' => 'test_status_blocked');
+
+
+$tlCfg->results['status_icons_for_exec_ui'] = 
+  array('passed' => array('img' => 'test_status_passed',
+                          'title' => 'click_passed'),
+        'failed' => array('img' => 'test_status_failed',
+                          'title' => 'click_failed'),
+        'blocked' => array('img' => 'test_status_blocked',
+                           'title' => 'click_blocked'));
+
+$tlCfg->results['status_icons_for_exec_next_ui'] = 
+  array('passed' => array('img' => 'test_status_passed_next',
+                          'title' => 'click_passed_next'),
+        'failed' => array('img' => 'test_status_failed_next',
+                          'title' => 'click_failed_next'),
+        'blocked' => array('img' => 'test_status_blocked_next',
+                           'title' => 'click_blocked_next'));
+
 
 /** 
  * Selected execution result by default. Values is key from $tlCfg->results['status_label']
@@ -855,7 +862,8 @@ $tlCfg->guiTopMenu[3] = array('label' => 'title_specification',
 $tlCfg->guiTopMenu[4] = array('label' => 'title_execute',
                               'imgKey' => 'execution',
                               'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
-                              'right' => 'testplan_execute','condition'=>'TestPlanAvailable',
+                              'right' => array('testplan_execute','exec_ro_access'),
+                              'condition'=>'TestPlanAvailable',
                               'shortcut'=>'e','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[5] = array('label' => 'title_results',
@@ -909,4 +917,16 @@ $tlCfg->results['charts']['dimensions'] =
 $tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
                                 'reviewInProgress' => 3, 'rework' => 4, 
                                 'obsolete' => 5, 'future' => 6, 'final' => 7 );   
+
+
+/** @uses testcase.class.php */
+// if you need to define new one, start on 20 please.
+// see strings.txt for labels
+// $TLS_execution_type_KEY => $TLS_execution_type_manual
+$tlCfg->execution_type = array( 'manual' => 1, 'auto' => 2);  
+
+// To be removed 
+define('TESTCASE_EXECUTION_TYPE_MANUAL', $tlCfg->execution_type['manual']);  
+define('TESTCASE_EXECUTION_TYPE_AUTO', $tlCfg->execution_type['auto']);
+
 // END 

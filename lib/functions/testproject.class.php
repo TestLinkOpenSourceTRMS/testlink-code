@@ -5,11 +5,8 @@
  * 
  * @filesource  testproject.class.php
  * @package     TestLink
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2017, TestLink community 
  * @link        http://testlink.sourceforge.net/
- *
- * @internal revisions
- * @since 1.9.15
  * 
  **/
 
@@ -42,6 +39,8 @@ class testproject extends tlObjectWithAttachments
 
   var $debugMsg;
   var $tmp_dir;
+  var $node_types_descr_id;
+  var $my_node_type;
 
   /** 
    * Class constructor
@@ -58,6 +57,9 @@ class testproject extends tlObjectWithAttachments
     $this->debugMsg = 'Class:' . __CLASS__ . ' - Method: ';
     tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
     $this->object_table = $this->tables['testprojects'];
+
+    $this->node_types_descr_id = &$this->tree_manager->node_descr_id;
+    $this->my_node_type = $this->tree_manager->node_descr_id['testproject'];
   }
 
 /**
@@ -469,12 +471,23 @@ function get_all($filters=null,$options=null)
   
   
   $my['filters'] = array('active' => null);
-  $my['options'] = array('order_by' => " ORDER BY nodes_hierarchy.name ", 'access_key' => null);
+  $my['options'] = array('order_by' => " ORDER BY nodes_hierarchy.name ", 
+                         'access_key' => null, 'output' => 'std');
   
   $my['filters'] = array_merge($my['filters'], (array)$filters);
   $my['options'] = array_merge($my['options'], (array)$options);
     
   
+  if($my['options']['output'] == 'count')
+  {
+    $sql = "/* $debugMsg */ SELECT COUNT(testprojects.id) AS qty ".
+           " FROM {$this->object_table} testprojects";
+
+    $rs = $this->db->get_recordset($sql);       
+    return $rs[0]['qty'];
+  }
+
+  // 
   $sql = "/* $debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
          " FROM {$this->object_table} testprojects, " .
          " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
@@ -506,7 +519,6 @@ function get_all($filters=null,$options=null)
       }
     }
   }  
-
 
   return $recordset;
 }
@@ -1279,7 +1291,7 @@ function setPublicStatus($id,$status)
   {
     $result = tl::OK;
 
-    $itemSet = $this->getKeywordSet($tproject_id);
+    $itemSet = (array)$this->getKeywordSet($tproject_id);
     $kwIDs = array_keys($itemSet);
 
     $opt = array('checkBeforeDelete' => false,
@@ -1317,7 +1329,7 @@ function setPublicStatus($id,$status)
    * 
    *
    */
-  protected function getKeywordSet($tproject_id)
+  function getKeywordSet($tproject_id)
   {
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']}  " .
            " WHERE testproject_id = {$tproject_id}" .
@@ -1672,22 +1684,34 @@ function setPublicStatus($id,$status)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title";
-    
+    $fields2get = " RSPEC.id, RSPEC.testproject_id, RSPECREV.scope, RSPECREV.doc_id," . 
+                  " RSPECREV.total_req, RSPECREV.type, RSPECREV.author_id, RSPECREV.creation_ts, " .
+                  " RSPECREV.modifier_id, RSPECREV.modification_ts, RSPECREV.name AS title, NH.parent_id";    
+
     $fields = is_null($fields) ? $fields2get : implode(',',$fields);
-    $sql = "  /* $debugMsg */ SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
-           " {$this->tables['nodes_hierarchy']} NH , {$this->tables['requirements']} REQ " .
-           " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id AND REQ.srs_id = RSPEC.id" ;
-           
+    $sql = " /* $debugMsg */ " .
+           " SELECT {$fields} FROM {$this->tables['req_specs_revisions']} RSPECREV, " .
+           " {$this->tables['req_specs']} RSPEC, {$this->tables['nodes_hierarchy']} NH, " .
+           " {$this->tables['requirements']} REQ " .
+           " WHERE RSPECREV.parent_id=RSPEC.id " . 
+           " AND NH.id=RSPEC.id AND REQ.srs_id = RSPEC.id " .
+           " AND RSPEC.testproject_id={$testproject_id} ";
+
+
     if (!is_null($id))
-      {
-          $sql .= " AND RSPEC.id=" . $id;
-      }
-      $sql .= "  ORDER BY RSPEC.id,title";
-      $rs = is_null($access_key) ? $this->db->get_recordset($sql) : $this->db->fetchRowsIntoMap($sql,$access_key);
+    {
+      $sql .= " AND RSPEC.id=" . $id;
+    }
+
+    $sql .= " GROUP BY RSPEC.id" ;
+    $sql .= " ORDER BY RSPEC.id,title";
+
+    echo $sql;
+    die();
+    $rs = is_null($access_key) ? $this->db->get_recordset($sql) 
+                               : $this->db->fetchRowsIntoMap($sql,$access_key);
         
+    echo $sql;    
     return $rs;
   }
 
@@ -3131,20 +3155,24 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
   if( !is_null($tclist) )
   {
     $filterOnTC = false;
-    $glav = " /* Get LATEST ACTIVE tcversion ID */ " .  
-            " SELECT MAX(TCVX.id) AS tcversion_id, NHTCX.parent_id AS tc_id " .
+
+    $glvn = " /* Get LATEST ACTIVE tcversion NUMBER */ " .  
+            " SELECT MAX(TCVX.version) AS version, NHTCX.parent_id AS tc_id " .
             " FROM {$this->tables['tcversions']} TCVX " . 
             " JOIN {$this->tables['nodes_hierarchy']} NHTCX " .
             " ON NHTCX.id = TCVX.id AND TCVX.active = 1 " .
             " WHERE NHTCX.parent_id IN (" . implode($tclist,',') . ")" .
-            " GROUP BY NHTCX.parent_id,TCVX.tc_external_id  ";
-
-    $ssx = " /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .
+            " GROUP BY NHTCX.parent_id";
+  
+    $ssx = " /* Get LATEST ACTIVE tcversion MAIN ATTRIBUTES */ " .  
            " SELECT TCV.id AS tcversion_id, TCV.tc_external_id AS external_id, SQ.tc_id " .
-            " FROM {$this->tables['tcversions']} TCV " . 
-            " JOIN ( $glav ) SQ " .
-            " ON TCV.id = SQ.tcversion_id ";
-
+           " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+           " JOIN ( $glvn ) SQ " .
+           " ON NHTCV.parent_id = SQ.tc_id " .
+           " JOIN {$this->tables['tcversions']} TCV " . 
+           " ON NHTCV.id = TCV.id " .
+           " WHERE SQ.version = TCV.version ";
+  
 
     // We can add here keyword filtering if exist ?
     if( $tcversionFilter['enabled'] || $tcaseFilter['is_active'] )
@@ -3153,7 +3181,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
       if ($tcversionFilter['importance'] || $tcversionFilter['execution_type'] || 
           $tcversionFilter['status'] )
       {
-        $ssx .= " WHERE ";
+        $ssx .= " AND ";
       }
            
       if( $tcversionFilter['importance'] )
@@ -3188,6 +3216,8 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
       }  
     }    
     
+    // echo $ssx;
+
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
     if( $filterOnTC )
     {
@@ -3706,5 +3736,16 @@ function getActiveTestPlansCount($id)
   return $rs[0]['qty'];       
 }
 
+/**
+ *
+ */
+static function getAPIKey(&$dbh,$id)
+{
+  $sch = tlDBObject::getDBTables('testprojects');
+  $sql = "SELECT api_key FROM {$sch['testprojects']} WHERE id=" . intval($id);
+  $rs = $dbh->get_recordset($sql);
+
+  return is_null($rs) ? $rs : $rs[0]['api_key'];
+}
 
 } // end class

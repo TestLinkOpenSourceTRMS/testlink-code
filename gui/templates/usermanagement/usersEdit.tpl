@@ -3,7 +3,6 @@ Testlink: smarty template -
 @filesource usersEdit.tpl
 
 @internal revisions
-@since 1.9.10
 *}
 
 {config_load file="input_dimensions.conf" section='login'}
@@ -15,8 +14,8 @@ Testlink: smarty template -
           s='warning_empty_login,warning_empty_first_name,warning,btn_save,
              warning_empty_pwd,warning_different_pwd,empty_email_address,
              title_user_mgmt,title_account_settings,menu_edit_user,menu_new_user,
-             menu_view_users,menu_define_roles,menu_view_roles,no_good_email_address,
-             menu_assign_testproject_roles,warning_empty_last_name,btn_apikey_generate,
+             menu_view_users,menu_define_roles,menu_view_roles,no_good_email_address,expiration_date,created_on,
+             menu_assign_testproject_roles,warning_empty_last_name,btn_apikey_generate,show_calender,clear_date,
              menu_assign_testplan_roles,caption_user_details,show_event_history,
              th_login,th_first_name,th_last_name,th_password,th_email,authentication_method,
              th_role,th_locale,th_active,password_mgmt_is_external,demo_update_user_disabled,
@@ -135,11 +134,6 @@ function managePasswordInputs(oid,targetSetOID)
 
 <body>
 <h1 class="title">{$gui->main_title} </h1>
-
-{* 
-{include file="usermanagement/menu.inc.tpl"}
-*}
-
 {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
 {if $gui->op->status > 0}
@@ -184,14 +178,14 @@ function managePasswordInputs(oid,targetSetOID)
 <div class="workBack">
 <form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
     onSubmit="javascript:return validateForm(this,{$check_password});">
-  <input type="hidden" name="user_id" value="{$user_id}" />
+  <input type="hidden" name="user_id" id="user_id_form1" value="{$user_id}" />
   <input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
 
   <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
   {$labels.caption_user_details}
   {if $gui->grants->mgt_view_events eq "yes" && $user_id}
-  <img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+  <img style="margin-left:5px;" class="clickable" src="{$tlImages.help}" 
        onclick="showEventHistoryFor('{$user_id}','users')"
        alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
   {/if}
@@ -269,7 +263,6 @@ function managePasswordInputs(oid,targetSetOID)
       </td>
     </tr>
 
-    {* onChange="managePasswordInputs('authentication','user_reset_password,passwordContainer')"> *}
     <tr>
       <th style="background:none;">{$labels.authentication_method}</th>
       <td>
@@ -286,6 +279,27 @@ function managePasswordInputs(oid,targetSetOID)
         <input type="checkbox"  name="user_is_active" {if $gui->user->isActive eq 1} checked {/if} />
       </td>
     </tr>
+
+    {if $gui->expDateEnabled}
+    <tr>
+      <th style="background:none;">{$labels.expiration_date}</th>
+      <td>
+
+        <input type="text" name="expiration_date" id="expiration_date" 
+               value="{$gui->user->expiration_date|escape}" size="{#DATE_PICKER#}"
+               onclick="showCal('expiration_date-cal','expiration_date','{$gsmarty_datepicker_format}');" readonly />
+
+        <img title="{$labels.show_calender}" src="{$tlImages.calendar}"
+             onclick="showCal('expiration_date-cal','expiration_date','{$gsmarty_datepicker_format}');" >
+
+
+        <img title="{$labels.clear_date}" src="{$tlImages.clear}"
+               onclick="javascript:var x = document.getElementById('expiration_date'); x.value = '';" >
+        <div id="expiration_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+
+      </td>
+    </tr>
+    {/if}
 
     {if $external_password_mgmt eq 1}
       <td>{$labels.password_mgmt_is_external}</td>
@@ -323,7 +337,7 @@ function managePasswordInputs(oid,targetSetOID)
     {$labels.demo_reset_password_disabled}
   {else}
     <input type="hidden" name="doAction" id="doReset" value="" />
-    <input type="hidden" name="user_id" value="{$user_id}" />
+    <input type="hidden" name="user_id" id="user_id_form2" value="{$user_id}" />
     <input type="submit" id="do_reset_password" name="do_reset_password" 
            value="{$labels.button_reset_password}" 
            onclick="doReset.value='resetPassword'"/>

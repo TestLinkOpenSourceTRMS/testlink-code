@@ -8,12 +8,12 @@
  *
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
  *
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  * 
  *
  **/
@@ -60,16 +60,17 @@ function createResultsMenu()
 function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
 {
   static $docRepo;
-
+  static $resultsCfg;
+  static $execCfg;
+  static $executions_table;
    
   if(is_null($docRepo))
   {
     $docRepo = tlAttachmentRepository::create($db);
-  }  
-
-  $executions_table = DB_TABLE_PREFIX . 'executions';
-  $resultsCfg = config_get('results');
-  $execCfg = config_get('exec_cfg');
+    $resultsCfg = config_get('results');
+    $execCfg = config_get('exec_cfg');
+    $executions_table = DB_TABLE_PREFIX . 'executions';
+ }  
 
   $db_now = $db->db_now();
   $cfield_mgr = New cfield_mgr($db);
@@ -100,13 +101,12 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     $is_bulk_save=1;
     $bulk_notes = $db->prepare_string(trim($exec_data['bulk_exec_notes']));   
     $execStatusKey = 'status';
-
   } 
   else
   {
-    $item2loop= $exec_data['save_results'];
-    $is_bulk_save=0;
     $execStatusKey = 'statusSingle';
+    $item2loop= $exec_data[$execStatusKey];
+    $is_bulk_save=0;
   }
 
   $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
@@ -119,7 +119,6 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     $has_been_executed = ($current_status != $resultsCfg['status_code']['not_run'] ? TRUE : FALSE);
     if($has_been_executed)
     { 
-      
       $my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(trim($exec_data['notes'][$tcversion_id])); 
 
       $sql = "INSERT INTO {$executions_table} ".
@@ -269,7 +268,8 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
 
         $execContext->addLinkToTL = $exec_signature->addLinkToTL;
         $execContext->direct_link = $exec_signature->direct_link;
-      
+        $execContext->tcstep_id = 0;
+
         // Issue on Test Case
         if( isset($exec_data['createIssue']) )
         {
@@ -285,8 +285,8 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
           {
             completeIssueForStep($execContext,$exec_signature,
                                  $exec_data,$stepID);
-            $addIssueOp['issueForStep'][$stepID] = 
-              addIssue($db,$execContext,$issueTracker,$stepID);
+            $execContext->tcstep_id = $stepID;  
+            $addIssueOp['issueForStep'][$stepID] = addIssue($db,$execContext,$issueTracker);
             $addIssueOp['type'] = 'issueForStep'; 
           }  
         }  
@@ -294,7 +294,6 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     }
   }
 
-  
   return array($execSet,$addIssueOp);
 }
 
@@ -302,22 +301,29 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
  * DELETE + INSERT => this way we will not add duplicates
  *
  */
-function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
+function write_execution_bug(&$db,$exec_id, $bug_id,$tcstep_id,$just_delete=false)
 {
   $execution_bugs = DB_TABLE_PREFIX . 'execution_bugs';
   
   // Instead of Check if record exists before inserting, do delete + insert
   $prep_bug_id = $db->prepare_string($bug_id);
   
-  $sql = "DELETE FROM {$execution_bugs} WHERE execution_id={$exec_id} " .
-         "AND bug_id='" . $prep_bug_id ."'";
+  $safe['exec_id'] = intval($exec_id);
+  $safe['tcstep_id'] = intval($tcstep_id);
+
+  $sql = " DELETE FROM {$execution_bugs} " . 
+         " WHERE execution_id=" . $safe['exec_id'] .
+         " AND tcstep_id=" . $safe['tcstep_id'] .
+         " AND bug_id='" . $prep_bug_id . "'";
+
   $result = $db->exec_query($sql);
   
   
   if(!$just_delete)
   {
-    $sql = "INSERT INTO {$execution_bugs} (execution_id,bug_id) " .
-           "VALUES({$exec_id},'" . $prep_bug_id . "')";
+    $sql = " INSERT INTO {$execution_bugs} (execution_id,tcstep_id,bug_id) " .
+           " VALUES(" . $safe['exec_id'] . ',' . $safe['tcstep_id'] . 
+           " ,'" . $prep_bug_id . "')";
     $result = $db->exec_query($sql);         
   }
   
@@ -336,20 +342,25 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
  */
 function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
 {
-  $tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs','builds'));
-  $bug_list=array();
+  $tables = tlObjectWithDB::getDBTables(
+                            array('executions','execution_bugs','builds','tcsteps'));
+  $bug_list = array();
   $cfg = config_get('exec_cfg');
 
   $debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
   if( is_object($bug_interface) )
   {
-    
-    $sql =  "/* $debugMsg */ SELECT execution_id,bug_id,builds.name AS build_name " .
-            " FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
-            " {$tables['builds']} builds ".
+    $sql =  "/* $debugMsg */ " .
+            " SELECT execution_id,bug_id,tcstep_id,step_number," .
+            " builds.name AS build_name " .
+            " FROM {$tables['execution_bugs']} " .
+            " JOIN {$tables['executions']} executions " .
+            " ON executions.id = execution_id" .
+            " JOIN {$tables['builds']} builds " .
+            " ON builds.id = executions.build_id " . 
+            " LEFT OUTER JOIN {$tables['tcsteps']} tcsteps " .
+            " ON tcsteps.id = tcstep_id " .
             " WHERE execution_id = " . intval($execution_id) .
-            " AND   execution_id = executions.id " .
-            " AND   executions.build_id = builds.id " .
             " {$cfg->bugs_order_clause}";
 
     $map = $db->get_recordset($sql);
@@ -365,6 +376,8 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
           $bug_list[$elem['bug_id']]['link_to_bts'] = $dummy->link;
           $bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
           $bug_list[$elem['bug_id']]['isResolved'] = $dummy->isResolved;
+          $bug_list[$elem['bug_id']]['tcstep_id'] = $elem['tcstep_id'];
+          $bug_list[$elem['bug_id']]['step_number'] = $elem['step_number'];
         }  
         if($addAttr)
         {
@@ -381,7 +394,7 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id,$raw = null)
     }
   }
 
-  return($bug_list);
+  return $bug_list;
 }
 
 
@@ -403,28 +416,28 @@ function get_execution(&$dbHandler,$execution_id,$opt=null)
   switch($my['options']['output'])
   {
     case 'audit':
-      $sql = " SELECT B.name AS build_name,PLAT.name AS platform_name, " .
+      $sql = " SELECT B.name AS build_name, COALESCE(PLAT.name,'') AS platform_name, " .
              " NH_TPLAN.name AS testplan_name, NH_TC.name AS testcase_name, " .
              " E.id AS exec_id, NH_TPROJ.name AS testproject_name " . 
-           " FROM {$tables['executions']} E " .
-           " JOIN {$tables['builds']} B ON B.id = E.build_id " . 
-           " JOIN {$tables['platforms']} PLAT ON PLAT.id = E.platform_id " . 
-           " JOIN {$tables['nodes_hierarchy']} NH_TPLAN ON NH_TPLAN.id = E.testplan_id " . 
-           " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = E.tcversion_id " . 
-           " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = NH_TCV.parent_id " . 
-           " JOIN {$tables['nodes_hierarchy']} NH_TPROJ ON NH_TPROJ.id = NH_TPLAN.parent_id " . 
-           " WHERE E.id = " . $safe_id;
+             " FROM {$tables['executions']} E " .
+             " JOIN {$tables['builds']} B ON B.id = E.build_id " . 
+             " LEFT OUTER JOIN {$tables['platforms']} PLAT ON PLAT.id = E.platform_id " . 
+             " JOIN {$tables['nodes_hierarchy']} NH_TPLAN ON NH_TPLAN.id = E.testplan_id " . 
+             " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.id = E.tcversion_id " . 
+             " JOIN {$tables['nodes_hierarchy']} NH_TC ON NH_TC.id = NH_TCV.parent_id " . 
+             " JOIN {$tables['nodes_hierarchy']} NH_TPROJ ON NH_TPROJ.id = NH_TPLAN.parent_id " . 
+             " WHERE E.id = " . $safe_id;
     break;    
     
     case 'raw':
     default:
       $sql = " SELECT * FROM {$tables['executions']} E ".
-           " WHERE E.id = " . $safe_id;
+             " WHERE E.id = " . $safe_id;
     break;    
   } 
   tLog(__FUNCTION__ . ':' . $sql,"DEBUG");
   $rs = $dbHandler->get_recordset($sql);
-  return($rs);
+  return $rs;
 }
 
 /** 
@@ -581,7 +594,7 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
 /**
  *
  */
-function addIssue($dbHandler,$argsObj,$itsObj,$stepID=0)
+function addIssue($dbHandler,$argsObj,$itsObj)
 {
   static $my;
 
@@ -596,12 +609,41 @@ function addIssue($dbHandler,$argsObj,$itsObj,$stepID=0)
   $ret['status_ok'] = true;             
   $ret['msg'] = '';
 
-
   $issueText = generateIssueText($dbHandler,$argsObj,$itsObj);  
 
+  $issueTrackerCfg = $itsObj->getCfg();
+  if(property_exists($issueTrackerCfg, 'issuetype'))
+  {
+    $issueType = intval($issueTrackerCfg->issuetype);  
+  }  
+
+  if(property_exists($argsObj, 'issueType'))
+  {
+    $issueType = intval($argsObj->issueType);  
+  }  
+  
+  if(method_exists($itsObj,'getCreateIssueFields'))
+  {
+    $issueFields = $itsObj->getCreateIssueFields(); 
+    if(!is_null($issueFields))
+    {
+      $issueFields = current($issueFields); 
+    }
+    $setReporter = isset($issueFields[$issueType]['reporter']);
+  }  
+  else
+  {
+     $setReporter = true;
+  }  
+
+
   $opt = new stdClass();
-  $opt->reporter = $argsObj->user->login;
-  $p2check = array('issueType','issuePriority','issuePriority',
+  if( $setReporter )
+  {
+    $opt->reporter = $argsObj->user->login;
+  }
+
+  $p2check = array('issueType','issuePriority',
                    'artifactComponent','artifactVersion');
   foreach($p2check as $prop)
   {
@@ -615,7 +657,9 @@ function addIssue($dbHandler,$argsObj,$itsObj,$stepID=0)
   $ret['msg'] = $rs['msg'];
   if( ($ret['status_ok'] = $rs['status_ok']) )
   {                   
-    if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id']))
+
+    // if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$stepID))
+    if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$argsObj->tcstep_id))
     {
       logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
     }

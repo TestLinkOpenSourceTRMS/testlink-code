@@ -14,7 +14,8 @@
              href_upd_mod_tc,title_test_plan_mgmt,title_test_case_suite,
              href_plan_management,href_assign_user_roles,
              href_build_new,href_plan_mstones,href_plan_define_priority,
-             href_metrics_dashboard,href_add_remove_test_cases"}
+             href_metrics_dashboard,href_add_remove_test_cases,
+             href_exec_ro_access"}
 
 
 {$menuLayout=$tlCfg->gui->layoutMainPageRight}
@@ -41,7 +42,10 @@
     </script>
 {/if}
 
-{if $gui->countPlans > 0 && ($gui->grants.testplan_execute == "yes" || $gui->grants.testplan_metrics == "yes")}
+{if $gui->countPlans > 0 && 
+    ($gui->grants.testplan_execute == "yes" || 
+     $gui->grants.testplan_metrics == "yes" ||
+     $gui->grants.exec_ro_access == "yes")}
    {$display_right_block_2=true}
 
     <script  type="text/javascript">
@@ -74,10 +78,13 @@
 
 {/if}
 
-{if $gui->plugins.EVENT_RIGHTMENU_TOP }
+{$display_right_block_top=false}
+{$display_right_block_bottom=false}
+
+{if isset($gui->plugins.EVENT_RIGHTMENU_TOP) &&  $gui->plugins.EVENT_RIGHTMENU_TOP}
   {$display_right_block_top=true}
 {/if}
-{if $gui->plugins.EVENT_RIGHTMENU_BOTTOM }
+{if isset($gui->plugins.EVENT_RIGHTMENU_BOTTOM) &&  $gui->plugins.EVENT_RIGHTMENU_BOTTOM}
   {$display_right_block_bottom=true}
 {/if}
 
@@ -151,8 +158,18 @@
 	{* ------------------------------------------------------------------------------------------ *}
 	{if $display_right_block_2}
     <div id='test_execution_topics'>
-		{if $gui->grants.testplan_execute == "yes"}
-			<a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
+		{if $gui->grants.testplan_execute == "yes" || 
+        $gui->grants.exec_ro_access == "yes"}
+
+        {if $gui->grants.testplan_execute == "yes"}
+          {$lbx = $labels.href_execute_test}
+        {/if}
+
+        {if $gui->grants.exec_ro_access == "yes"}  
+          {$lbx = $labels.href_exec_ro_access}
+        {/if}
+
+			<a href="{$gui->launcher}?feature=executeTest">{$lbx}</a>
       <br /> 
 		
       {if $gui->grants.exec_testcases_assigned_to_me == "yes"}
@@ -220,12 +237,14 @@
                              });
     }
     </script>
-    <div id="plugin_right_top">
-      {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
-        {$menu_item}
-        <br/>
-      {/foreach}
-    </div>
+    {if isset($gui->plugins.EVENT_RIGHTMENU_TOP)}
+      <div id="plugin_right_top">
+        {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
+          {$menu_item}
+          <br/>
+        {/foreach}
+      </div>
+    {/if}
   {/if}
 
   {if $display_right_block_bottom}
@@ -245,12 +264,14 @@
                              });
     }
     </script>
+    {if isset($gui->plugins.EVENT_RIGHTMENU_BOTTOM)}
       <div id="plugin_right_bottom">
         {foreach from=$gui->plugins.EVENT_RIGHTMENU_BOTTOM item=menu_item}
           {$menu_item}
           <br/>
         {/foreach}
       </div>
+    {/if}  
   {/if}
   {* ------------------------------------------------------------------------------------------ *}
 

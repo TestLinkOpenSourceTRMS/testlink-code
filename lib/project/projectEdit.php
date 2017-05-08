@@ -124,7 +124,9 @@ switch($args->doAction)
     if( ($addIssueTracker = $addReqMgrSystem = is_null($template)) )
     {
       $template = 'projectView.tpl';
-      $gui->name = '';  // needed after addition of search function on test project view
+      // needed after addition of search function on test project view
+      $gui->name = '';  
+      $gui->feedback = '';  
     }  
 
     $gui->doAction = $reloadType;
@@ -176,6 +178,7 @@ switch($args->doAction)
       }
     }
         
+    $gui->editorType = $editorCfg['type'];    
     $smarty->assign('gui',$gui);
     $smarty->display($templateCfg->template_dir . $template);
   break;

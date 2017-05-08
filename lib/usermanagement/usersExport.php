@@ -7,13 +7,10 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2013, TestLink community 
+ * @copyright   2013,2017 TestLink community 
  * @filesource  usersExport.php
  * @link        http://www.teamst.org/index.php
  * @uses        config.inc.php
- * @since       1.9.8
- *
- * @internal revisions
  *
  */
 require_once("../../config.inc.php");
@@ -21,7 +18,6 @@ require_once("common.php");
 require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
 
 testlinkInitPage($db,false,false,"checkRights");
-$templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = initializeGui($args);
@@ -36,9 +32,10 @@ switch( $args->doAction )
   break;  
 }
 
+$tplCfg = templateConfiguration();
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($tplCfg->tpl);
 
 
 /*
@@ -96,7 +93,8 @@ function doExport(&$dbHandler,$filename)
   $adodbXML->setRowTagName('user');
 
   $tables = tlObjectWithDB::getDBTables(array('users'));
-  $fieldSet = 'id,login,role_id,email,first,last,locale,default_testproject_id,active';
+  $fieldSet = 'id,login,role_id,email,first,last,locale,' . 
+              'default_testproject_id,active,expiration_date';
   $sql = " SELECT {$fieldSet} FROM {$tables['users']} ";
 
   $content = $adodbXML->ConvertToXMLString($dbHandler->db, $sql);

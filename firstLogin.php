@@ -5,11 +5,11 @@
  *
  * @filesource  firstLogin.php
  * @package     TestLink
- * @copyright   2004-2015, TestLink community 
+ * @copyright   2004-2016, TestLink community 
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  *
  */
 require_once('config.inc.php');
@@ -132,10 +132,11 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
   $cfg = config_get('notifications');
   if( !is_null($cfg->userSignUp->to->roles) )
   {
+    $opt = array('active' => 1);
     foreach($cfg->userSignUp->to->roles as $roleID)
     {
       $roleMgr = new tlRole($roleID);
-      $userSet = $roleMgr->getUsersWithGlobalRole($dbHandler);
+      $userSet = $roleMgr->getUsersWithGlobalRole($dbHandler,$opt);
       $key2loop = array_keys($userSet);
       foreach($key2loop as $userID)
       {

@@ -3,17 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * This file handles the initial authentication for login and creates all user session variables.
+ * Handles the initial authentication for login and creates all user session variables.
  *
  * @filesource  doAuthorize.php
  * @package     TestLink
  * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
- * @copyright   2003-2015, TestLink community 
+ * @copyright   2003-2017, TestLink community 
  * @link        http://www.testlink.org
  *
- *
- * @internal revisions
- * @since 1.9.14
  */
 
 require_once("users.inc.php");
@@ -39,8 +36,18 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
   $my['options'] = array_merge($my['options'], (array)$options);
 
   $doLogin = false;
+  $doChecks = true;
+  
+  $login = trim($login);
+  $pwd = trim($pwd);
 
-  if (!is_null($pwd) && !is_null($login))
+  if($login == '')
+  {
+    $doChecks = false;
+    $result['msg'] = ' ';    
+  } 
+
+  if( $doChecks && !is_null($pwd) && !is_null($login))
   {
     $user = new tlUser();
     $user->login = $login;
@@ -48,17 +55,38 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
 
     if ($login_exists)
     {
-      $password_check = auth_does_password_match($user,$pwd);
-      if(!$password_check->status_ok)
-      {
-        $result = array('status' => tl::ERROR, 'msg' => null);
-      }
+      $doGo = true;
+      $checkDate = !is_null($user->expiration_date);
+      $checkDate = $checkDate && (trim($user->expiration_date) != '');
       
-      $doLogin = $password_check->status_ok && $user->isActive;
-      if( !$doLogin )
+      if( $checkDate )
       {
-        logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
-      }
+        $now = strtotime(date_format(date_create(),'Y-m-d'));
+        $exd = strtotime($user->expiration_date);
+
+        if($now >= $exd )
+        {
+          // Expired!
+          $doGo = false;
+          $result['msg'] = lang_get('tluser_account_expired');
+        }  
+      }  
+ 
+      if( $doGo )
+      {
+        $password_check = auth_does_password_match($user,$pwd);
+        if(!$password_check->status_ok)
+        {
+          $result = array('status' => tl::ERROR, 'msg' => null);
+        }
+
+        $doLogin = $password_check->status_ok && $user->isActive;
+        if( !$doLogin )
+        {
+          logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
+        }
+      }  
+      
     }
     else
     {
@@ -127,6 +155,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
       $result['status'] = tl::OK;
     }
   }
+
   return $result;
 }
 
@@ -143,10 +172,10 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
 {
   global $g_tlLogger;
 
-  $result = array('status' => tl::ERROR, 'msg' => null);
+  $ret = array('status' => tl::ERROR, 'msg' => null, 'checkedBy' => __FUNCTION_);
   if( !isset($apache_mod_ssl_env['SSL_PROTOCOL']) )
   {
-    return $result; 
+    return $ret; 
   }
   
   // With this we trust SSL is enabled => go ahead with login control
@@ -169,35 +198,32 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
       // Disallow two sessions within one browser
       if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
       {
-          $result['msg'] = lang_get('login_msg_session_exists1') . 
-                           ' <a style="color:white;" href="logout.php">' . 
-                         lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+        $ret['msg'] = lang_get('login_msg_session_exists1') . 
+                      ' <a style="color:white;" href="logout.php">' . 
+                      lang_get('logout_link') . '</a>' . 
+                      lang_get('login_msg_session_exists2');
       }
       else
       { 
-          // Setting user's session information
-          $_SESSION['currentUser'] = $user;
-          $_SESSION['lastActivity'] = time();
+        // Setting user's session information
+        $_SESSION['currentUser'] = $user;
+        $_SESSION['lastActivity'] = time();
           
-          $g_tlLogger->endTransaction();
-          $g_tlLogger->startTransaction();
-          setUserSession($dbHandler,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, 
-                   $user->locale,null);
-          $result['status'] = tl::OK;
+        $g_tlLogger->endTransaction();
+        $g_tlLogger->startTransaction();
+        setUserSession($dbHandler,$user->login, $user->dbID,$user->globalRoleID,
+                       $user->emailAddress,$user->locale,null);
+        $ret['status'] = tl::OK;
       }
     }
     else
     {
-      logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",
-                    $user->dbID,"users");
+      logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),
+                    "LOGIN_FAILED",$user->dbID,"users");
     } 
-
   }
-  return $result;
+  return $ret;
 }
-
-
-
 
 
 /** 
@@ -279,3 +305,114 @@ function getUserFieldsFromLDAP($login,$ldapCfg)
 
   return $ret;
 } 
+
+
+/** 
+ *
+ *
+ */
+function doSSOWebServerVar(&$dbHandler,$authCfg=null)
+{
+  $debugMsg = __FUNCTION__;
+
+  $ret = array('status' => tl::ERROR, 'msg' => null, 'checkedBy' => __FUNCTION__);
+  $authCfg = is_null($authCfg) ? config_get('authentication') : $authCfg;
+
+  $userIdentity = null;
+  if( isset($_SERVER[$authCfg['SSO_uid_field']]) )
+  {
+    $userIdentity = trim($_SERVER[$authCfg['SSO_uid_field']]);
+  }  
+
+  if( !is_null($userIdentity) && $userIdentity != '' )
+  {
+    $tables = tlObject::getDBTables(array('users'));
+
+    $sql = "/* $debugMsg */" . 
+           "SELECT login,role_id,email,first,last,active " .
+           "FROM {$tables['users']} " . 
+           "WHERE active = 1 AND " . 
+           " {$authCfg['SSO_user_target_dbfield']} = '".
+           $dbHandler->prepare_string($userIdentity) . "'";
+
+    $rs = $dbHandler->get_recordset($sql);
+    
+    $login_exists = !is_null($rs) && ($accountQty =count($rs)) == 1;
+    $loginKO = true;
+
+    if( $login_exists  )
+    {
+      $rs = current($rs);
+      if( intval($rs['active']) == 1 )
+      {
+        $loginKO = false;
+
+        $user = new tlUser();
+        $user->login = $rs['login'];
+        $user->readFromDB($dbHandler,tlUser::USER_O_SEARCH_BYLOGIN);
+        $xx = doSessionSetUp($dbHandler,$user);
+
+        if( !is_null($xx) )
+        {
+          $ret = $xx;
+        }   
+      }    
+    } 
+
+    if( $loginKO )
+    {
+      if($accountQty > 1)
+      {
+        $ret['msg'] = TLS("audit_login_sso_failed_multiple_matches",
+                          $_SERVER['REMOTE_ADDR'],$accountQty,$userIdentity,
+                          $authCfg['SSO_user_target_dbfield']);
+      }  
+      else
+      {
+        $ret['msg'] = TLS("audit_login_failed_silence",$_SERVER['REMOTE_ADDR']);
+      }  
+      logAuditEvent($result['msg'], "LOGIN_FAILED","users");
+    }
+  }
+
+  return $ret;
+}
+
+/**
+ *
+ */
+function doSessionSetUp(&$dbHandler,&$userObj)
+{
+  global $g_tlLogger;
+
+  $ret = null;
+
+  // Need to do set COOKIE following Mantis model
+  $expireOnBrowserClose=false;
+  $auth_cookie_name = config_get('auth_cookie');
+  $cookie_path = config_get('cookie_path');
+  setcookie($auth_cookie_name,$userObj->getSecurityCookie(),$expireOnBrowserClose,
+            $cookie_path);      
+
+  // Block two sessions within one browser
+  if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
+  {
+    $ret['msg'] = lang_get('login_msg_session_exists1') . 
+                     ' <a style="color:white;" href="logout.php">' . 
+                     lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2'); 
+  }
+  else
+  { 
+    // Setting user's session information
+    $_SESSION['currentUser'] = $userObj;
+    $_SESSION['lastActivity'] = time();
+          
+    $g_tlLogger->endTransaction();
+    $g_tlLogger->startTransaction();
+    setUserSessionFromObj($dbHandler,$userObj);
+
+    $ret['status'] = tl::OK;
+  }
+  
+  return $ret;        
+}

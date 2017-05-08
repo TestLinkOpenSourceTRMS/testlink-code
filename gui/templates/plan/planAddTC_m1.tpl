@@ -1,9 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource planAddTC_m1.tpl
-Purpose: smarty template - generate a list of TC for adding to Test Plan 
-
-@since 1.9.15
+generate a list of TC for adding to Test Plan 
 *}
 {lang_get var="labels" 
           s='note_keyword_filter, check_uncheck_all_for_remove,
@@ -14,7 +12,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
              check_uncheck_all_checkboxes,removal_tc,show_tcase_spec,
              tester_assignment_on_add,adding_tc,check_uncheck_all_tc,for,
              build_to_assign_on_add,importance,execution,design,execution_history,
-             warning_remove_executed'}
+             warning_remove_executed,th_status'}
 
 {* prefix for checkbox named , ADD and ReMove *}   
 {$add_cb="achecked_tc"} 
@@ -73,17 +71,40 @@ function showTT(e)
 	alert(e);
 }
 
-// variables to store importance informations for test cases
-js_option_importance = new Array();
+js_tcase_importance = new Array();
+js_tcase_wkfstatus = new Array();
+
+attrDomain = new Object();
+attrDomain.importance = new Array();
+attrDomain.wkfstatus = new Array();
+
 {foreach key=key item=item from=$gsmarty_option_importance}
-	js_option_importance[{$key}] = "{$item}";
+	attrDomain.importance[{$key}] = "{$item}";
 {/foreach}
 
-js_tcase_importance = new Array();
+{foreach key=key item=item from=$gsmarty_option_wkfstatus}
+  attrDomain.wkfstatus[{$key}] = "{$item}";
+{/foreach}
 
-// Update test case importance when selecting a different test case version
-function updateImportance(tcID,importanceOptions,importance) {
-	document.getElementById("importance_"+tcID).firstChild.nodeValue = importanceOptions[importance];
+
+// Update test case attributes when selecting a different test case version
+// - workflow status
+// - importance
+//
+function updTCAttr(tcID,tcvID) 
+{
+  var impOID = "importance_"+tcID;
+  var wkfOID = "wkfstatus_"+tcID;
+  var val;
+  var poid;
+
+  val = js_tcase_importance[tcID][tcvID];
+	poid = document.getElementById(impOID);
+  poid.firstChild.nodeValue = attrDomain.importance[val];
+
+  val = js_tcase_wkfstatus[tcID][tcvID];
+  poid = document.getElementById(wkfOID);
+  poid.firstChild.nodeValue = attrDomain.wkfstatus[val];
 }
 
 Ext.onReady(function(){ 
@@ -221,14 +242,12 @@ Ext.onReady(function(){
              {if $gui->usePlatforms} <td>{$labels.th_platform}</td> {/if}
   			     <td>{$labels.th_test_case}</td>
   			     <td>{$labels.version}</td>
+             <td>{$labels.th_status}</td>
   			     {if $gui->priorityEnabled} <td>{$labels.importance}</td> {/if}
              		<td align="center">
    				      <img src="{$tlImages.execution_order}" title="{$labels.execution_order}" />
   				   	</td>
 
-             
-             
-             
              {if $ts.linked_testcase_qty gt 0}
   				      <td>&nbsp;</td>
   				      <td>
@@ -256,7 +275,7 @@ Ext.onReady(function(){
                 {/if}
               {/if}      
               
-              {* ---------------------------------------------------------------------------------------- *}
+              {* ------------------------------------------------------------- *}
               {if $is_active || $linked_version_id != 0}  
      				    {if $gui->full_control || $linked_version_id != 0}
      					    {$drawPlatformChecks=0}
@@ -269,7 +288,7 @@ Ext.onReady(function(){
      				  
      				      <tr{if $linked_version_id != 0 && $drawPlatformChecks == 0} style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}"{/if}>
       			    	  <td width="20">
-                    {* ----------------------------------------------------------------------------------------------------- *} 
+                    {* ------------------------------------------------------- *} 
                     {* Draw check box left to test case name - the old way when platforms feature does not exist *}
       			        {if !$gui->usePlatforms  || $drawPlatformChecks == 0}
       				        {if $gui->full_control}
@@ -283,7 +302,7 @@ Ext.onReady(function(){
   								      &nbsp;&nbsp;
       				        {/if}
       				      {/if}  
-                    {* ----------------------------------------------------------------------------------------------------- *} 
+                    {* ------------------------------------------------------- *} 
       			      	</td>
       			      	
                     {if $gui->usePlatforms}
@@ -312,42 +331,65 @@ Ext.onReady(function(){
       			        </td>
                   	<td>
                   	{if $gui->priorityEnabled}
-                  			<script type="text/javascript">
-                  			{* To be able to update importance when selecting another test case version
-                      		   we need to transform smarty arrays to javascript array *}
+                  		<script type="text/javascript">
+                  		{* To be able to update importance when selecting 
+                         another test case version we need to transform 
+                         smarty arrays to javascript array *}
 
-                      			js_tcase_importance[{$tcID}] = new Array();
-                  				{foreach key=version item=value from=$tcase.importance}
-                  					js_tcase_importance[{$tcID}][{$version}] = {$value};
-                  				{/foreach}
-                      		</script>
-           				    <select name="tcversion_for_tcid[{$tcID}]" 
-           				            onchange="javascript:updateImportance({$tcID},js_option_importance,js_tcase_importance[{$tcID}][this.options[this.selectedIndex].value]);"
-           				            {if $linked_version_id != 0} disabled{/if}>
-           				            {html_options options=$tcase.tcversions selected=$linked_version_id}
+                      js_tcase_importance[{$tcID}] = new Array();
+                      js_tcase_wkfstatus[{$tcID}] = new Array();
+
+                  		{foreach key=version item=value from=$tcase.importance}
+                  			js_tcase_importance[{$tcID}][{$version}] = {$value};
+                  		{/foreach}
+                      {foreach key=version item=value from=$tcase.status}
+                        js_tcase_wkfstatus[{$tcID}][{$version}] = {$value};
+                      {/foreach}
+                      </script>
+           				    
+                      <select name="tcversion_for_tcid[{$tcID}]" 
+           				      onchange="updTCAttr({$tcID},this.options[this.selectedIndex].value);"
+           				      {if $linked_version_id != 0} disabled{/if}>
+           				        {html_options options=$tcase.tcversions selected=$linked_version_id}
            				    </select>
                   	</td>
-                  	
-                  	    {* BUGID - add Importance column *}
-      			        <td id="importance_{$tcID}">
-      			              {* $tcase.importance *}
-      			              {* $linked_version_id *}
-      			              {if $linked_version_id != 0} 
-      			                    {* set importance to importance of linked test case version *}
-      			                    {$importance=$tcase.importance.$linked_version_id}
-      			              {else}
-      			                    {* if no test case version is linked -> set to importance 
-      			                       of the first option from select box. only way to get first
-      			                       element of an array is this loop afaik *}
-      			                    {foreach name="oneLoop" from=$tcase.importance key=key item=item}
-      			                    	{if $smarty.foreach.oneLoop.first}
-      			                    		{$firstElement=$key}
-      			                    	{/if}
-      			                    {/foreach}
-      			                    {$importance=$tcase.importance.$firstElement}
-      			              {/if}
-      			              {$gsmarty_option_importance.$importance}
+
+
+                    {if $linked_version_id != 0} 
+                        {$importance=$tcase.importance.$linked_version_id}
+                        {$wkf=$tcase.status.$linked_version_id}
+                    {else}
+                      {* 
+                        if no test case version is linked -> 
+                        set attr to first option from select box. 
+                        Only way to get first element of an array is 
+                        this loop afaik 
+                      *}
+                      {foreach name="oneLoop" from=$tcase.importance 
+                               key=key item=item}
+                        {if $smarty.foreach.oneLoop.first}
+                          {$firstElement=$key}
+                        {/if}
+                      {/foreach}
+                      {$importance=$tcase.importance.$firstElement}
+
+                      {foreach name="oneLoop" from=$tcase.status 
+                               key=key item=item}
+                        {if $smarty.foreach.oneLoop.first}
+                          {$firstElement=$key}
+                        {/if}
+                      {/foreach}
+                      {$wkf=$tcase.status.$firstElement}
+                    {/if}
+
+                    <td id="wkfstatus_{$tcID}" style="width:15%">
+                      {$gsmarty_option_wkfstatus.$wkf}
+                    </td>
+
+      			        <td id="importance_{$tcID}" style="width:7%">
+      			          {$gsmarty_option_importance.$importance}
       			        </td>
+
            			{else}
            				    <select name="tcversion_for_tcid[{$tcID}]"{if $linked_version_id != 0} disabled{/if}>
            				            {html_options options=$tcase.tcversions selected=$linked_version_id}
@@ -413,11 +455,12 @@ Ext.onReady(function(){
               {/if}
               
               
-              {* ================================================================================================================ *} 
+              {* ============================================================ *} 
               {* === Draw Platform related information === *}
               {if $gui->usePlatforms && $drawPlatformChecks}
                 {foreach from=$gui->platforms item=platform}
-                  <tr {if isset($tcase.feature_id[$platform.id])}	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if} >
+                  <tr {if isset($tcase.feature_id[$platform.id])}	
+                      style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if} >
                   	<td>
       				    {if $gui->full_control}
   	      		        {if $is_active == 0 || isset($tcase.feature_id[$platform.id])}
@@ -434,13 +477,13 @@ Ext.onReady(function(){
   				          <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
   				          {if $gui->priorityEnabled} <td>&nbsp;</td> {/if}
 
-                    {* TICKET 5294: it is not possible to remove an inactive tc version from a testplan with platforms *}
-  				          {*if $is_active == 1 && isset($tcase.feature_id[$platform.id])*}
-                          {if isset($tcase.feature_id[$platform.id])}
+                    {* it's not possible to remove an inactive tc version from a testplan with platforms *}
+                      {if isset($tcase.feature_id[$platform.id])}
   	      			      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
   	   				        <td>
   	      			    	{* added isset() on next section to avoid warning on event log *}
-							        {* TICKET 4715: can_remove_executed doesn't work when Platforms are used *}	
+							        {* can_remove_executed doesn't work when Platforms are used *}	
             			    {$show_remove_check=0}
             			  	{if $linked_version_id}
             			  		{$show_remove_check=1}

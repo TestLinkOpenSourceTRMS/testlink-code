@@ -8,12 +8,10 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
- * @internal revisions
- * @since 1.9.15
  **/
 
 class testcaseCommands
@@ -1010,8 +1008,16 @@ class testcaseCommands
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
-    $this->tcaseMgr->setExecutionType($argsObj->tcversion_id,$argsObj->exec_type);
+    $opx = array('updSteps' => $argsObj->applyExecTypeChangeToAllSteps);
+    $this->tcaseMgr->setExecutionType($argsObj->tcversion_id,$argsObj->exec_type,$opx);
+
+
+
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+
+    // 
+
+    
 
     // set up for rendering
     $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 

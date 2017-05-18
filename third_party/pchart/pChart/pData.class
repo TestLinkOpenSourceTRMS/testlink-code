@@ -1,20 +1,4 @@
 <?php
-/*
- * MINOR BUG FIXES ON TEST LINK
- *
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later.
- *
- * @package 	TestLink
- * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.326 2010/10/07 08:18:43 mx-julian Exp $
- * @link 		http://www.teamst.org/index.php
- *
- * @internl revisions
- * 20101008 - franciscom - new checks to avoid unitialized string E_NOTICE
- *
- */
-
  /*
      pData - Simplifying data population for pChart
      Copyright (C) 2008 Jean-Damien POGOLOTTI
@@ -68,8 +52,8 @@
 
    function pData()
     {
-     $this->Data                           = "";
-     $this->DataDescription                = "";
+     $this->Data                           = array();
+     $this->DataDescription                = array();
      $this->DataDescription["Position"]    = "Name";
      $this->DataDescription["Format"]["X"] = "number";
      $this->DataDescription["Format"]["Y"] = "number";

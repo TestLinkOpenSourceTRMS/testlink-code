@@ -77,7 +77,7 @@ window.onload=function()
 </script>
 </head>
 
-<body>
+<body class="testlink">
 {if $gui->securityNotes}
   {include file="inc_msg_from_array.tpl" array_of_msg=$gui->securityNotes arg_css_class="warning"}
 {/if}

@@ -19,8 +19,6 @@
                           href_print_req,title_plugins,title_documentation,href_issuetracker_management,
                           href_reqmgrsystem_management,href_req_monitor_overview'}
 
-{include file="bootstrap.inc.tpl"}
-
 {* Show / Hide section logic *}
 {$display_left_block_1=false}
 {$display_left_block_2=false}

@@ -461,7 +461,8 @@ class Jira
                     $ret[$ele->key][$it->id]['issueTypeName'] = $it->name;
                     foreach($it->fields as $field)
                     {
-                      $ret[$ele->key][$it->id]['fields'][$field->key] = $field->key;
+
+                      $ret[$ele->key][$it->id]['fields'][$field->key] = $field->name;
                     } 
                 }    
             }    

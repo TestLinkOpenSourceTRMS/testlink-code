@@ -35,6 +35,8 @@
  *
  * Scripted update according en_GB string file (version: ) 
  *
+ * Scripted update according en_GB string file (version: ) 
+ *
  **/
 
 // Define character set of this file (UTF-8 is common value)
@@ -2449,8 +2451,8 @@ $TLS_href_inventory_management = "Gerenciamento de Inventário";
 $TLS_href_keywords_assign = "Selecionar Palavra-chave";
 $TLS_href_keywords_manage = "Gerenciar Palavra-chave";
 $TLS_href_keywords_view = "Visualizar palavra-chave";
-$TLS_href_print_tc = "Imprimir Casos de Teste";
-$TLS_href_print_req = "Imprimir Requisitos";
+$TLS_href_print_tc = "Documento de Especificação de Testes";^M
+$TLS_href_print_req = "Documento de Especificação de Requisitos";^M
 $TLS_href_req_assign = "Selecionar Requisitos";
 $TLS_href_req_spec = "Especificar Requisitos";
 $TLS_href_req_overview = "Visão Geral dos Requisitos";

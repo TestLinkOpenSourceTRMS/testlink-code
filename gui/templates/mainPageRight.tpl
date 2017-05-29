@@ -101,7 +101,7 @@
 
     <div class="list-group" style="{$divStyle}">
       {if $gui->grants.mgt_testplan_create == "yes"}
-       		<a href="$planView" class="list-group-item" style="{$aStyle}">{$labels.href_plan_management}</a>
+       		<a href="{$planView}" class="list-group-item" style="{$aStyle}">{$labels.href_plan_management}</a>
 	    {/if}
 	    
 	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}

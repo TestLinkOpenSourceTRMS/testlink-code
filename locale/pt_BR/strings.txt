@@ -33,13 +33,17 @@
  *
  * Scripted update according en_GB string file (version: ) 
  *
+ * Scripted update according en_GB string file (version: ) 
+ *
+ * Scripted update according en_GB string file (version: ) 
+ *
  **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última atualização: 29/03/2017 (TestLink 1.9.17)";
+$TLS_last_update = "Última atualização: 29/04/2017 (TestLink 1.9.17)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Ativo (clicar para inativar)";
@@ -2447,8 +2451,8 @@ $TLS_href_inventory_management = "Gerenciamento de Inventário";
 $TLS_href_keywords_assign = "Selecionar Palavra-chave";
 $TLS_href_keywords_manage = "Gerenciar Palavra-chave";
 $TLS_href_keywords_view = "Visualizar palavra-chave";
-$TLS_href_print_tc = "Imprimir Casos de Teste";
-$TLS_href_print_req = "Imprimir Requisitos";
+$TLS_href_print_tc = "Documento de Especificação de Testes";^M
+$TLS_href_print_req = "Documento de Especificação de Requisitos";^M
 $TLS_href_req_assign = "Selecionar Requisitos";
 $TLS_href_req_spec = "Especificar Requisitos";
 $TLS_href_req_overview = "Visão Geral dos Requisitos";
@@ -4106,4 +4110,6 @@ $TLS_search_other_attr = "Você pode definir critérios de pesquisa que não use
 $TLS_search_created_by_ph = "o valor será pesquisado em Login/Primeiro Nome/Sobrenome";
 $TLS_multiple_entities_search = "Pesquisar em múltiplas entidades";
 $TLS_no_access_to_feature = "Você não tem permissões para aceder a esta funcionalidade";
+
+$TLS_applyExecTypeChangeToAllSteps = "Aplicar a todos os Passos";
 // ----- END ------------------------------------------------------------------

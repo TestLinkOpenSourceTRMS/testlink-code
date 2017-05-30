@@ -3713,7 +3713,7 @@ function getPublicAttr($id)
     {
       $sql = "/* $debugMsg */ UPDATE {$this->object_table} " . 
              " SET options = '" . $this->db->prepare_string(serialize($itemOpt)) . "'" .
-             " WHERE testprojects.id = " . $safeID;
+             " WHERE id = " . $safeID;
 
       $this->db->exec_query($sql);  
     }  

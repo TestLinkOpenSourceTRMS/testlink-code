@@ -1,9 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	issueTrackerEdit.tpl
-
-@internal revisions
-@since 1.9.4
 *}
 {$url_args="lib/issuetrackers/issueTrackerEdit.php"}
 {$edit_url="$basehref$url_args"}
@@ -53,6 +50,7 @@ function displayITSCfgExample(oid,displayOID)
 	
 }
 </script>
+{include file="bootstrap.inc.tpl"}
 </head>
 
 <body>
@@ -64,21 +62,21 @@ function displayITSCfgExample(oid,displayOID)
 {if $gui->canManage != ""}
   <div class="workBack">
   
-  <div class="action_descr">{$gui->action_descr|escape}
-  	{if $gui->mgt_view_events eq "yes" && $gui->item.id > 0}
-			<img style="margin-left:5px;" class="clickable" src="{$tlImages.info}"
-				 onclick="showEventHistoryFor('{$gui->item.id}','issuetrackers')" 
-				 alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
-	{/if}
-  
-  </div><br />
   {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 
-
+  {$showCheckConnAlert=false}
   {if $gui->connectionStatus == 'ok'}
-    {$labels.issueTracker_connection_ok}
+    {$showCheckConnAlert=true}
+    {$connAlert = $labels.issueTracker_connection_ok}
+    {$addClass='success'}
   {else if $gui->connectionStatus == 'ko'}    
-    {$labels.issueTracker_connection_ko}
+    {$showCheckConnAlert=true}
+    {$connAlert = $labels.issueTracker_connection_ko}
+    {$addClass='danger'}
+  {/if}
+
+  {if $showCheckConnAlert}
+    <div class="alert alert-{$addClass}" style="width:50%;" role="alert"> {$connAlert} </div>
   {/if}
 
   	<form name="edit" method="post" action="{$edit_url}" onSubmit="javascript:return validateForm(this);">

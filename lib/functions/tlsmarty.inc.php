@@ -364,6 +364,7 @@ class TLSmarty extends Smarty
                    'choiceOn' => $imgLoc . 'accept.png',
                    'clear' => $imgLoc . 'trash.png',
                    'clear_notes' => $imgLoc . 'font_delete.png',
+                   'clipboard' => $imgLoc . 'page_copy.png',
                    'check_ok' => $imgLoc . 'lightbulb.png',
                    'check_ko' => $imgLoc . 'link_error.png',
                    'cog'  => $imgLoc . 'cog.png',

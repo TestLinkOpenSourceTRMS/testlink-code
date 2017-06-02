@@ -191,7 +191,7 @@ function jsCallDeleteFile(btn, text, o_id)
 }        
 </script>
 
-
+<script src="third_party/clipboard/clipboard.min.js"></script>
 </head>
 {*
 IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
@@ -262,8 +262,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       
       {$tlImages.toggle_direct_link} &nbsp;
       <div class="direct_link" style='display:none'>
-      <a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
+      <img class="clip" src="{$tlImages.clipboard}" title="eye" 
+           data-clipboard-text="{$gui->direct_link}">
+      <a href="{$gui->direct_link}" target="_blank">
+      {$gui->direct_link}</a></div>
 
+      
       <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
       <input type="button" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"
              value="{lang_get s=$gui->history_status_btn_name}" 
@@ -474,5 +478,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   
 </form>
 </div>
+
+<script>
+jQuery( document ).ready(function() {
+  clipboard = new Clipboard('.clip');
+  alert('YU');
+});
+</script>
 </body>
 </html>

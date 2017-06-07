@@ -6893,8 +6893,8 @@ class testplan extends tlObjectWithAttachments
                                     'addPriority' => false,'addImportance' => false,
                                     'ignorePlatformAndBuild' => false,
                                     'ignoreBuild' => false, 'ignorePlatform' => false,
-                                    'ua_user_alias' => '', 
-                                    'ua_force_join' => false));
+                                    'ua_user_alias' => '', 'ua_force_join' => false,
+                                    'build_is_active' => false));
 
     $my['options'] = array_merge($mop['options'],$my['options']);
       
@@ -6933,6 +6933,20 @@ class testplan extends tlObjectWithAttachments
       $platformEXEC = " ";
 
     }  
+    else if ($my['options']['ignoreBuild'] && $my['options']['build_is_active']) 
+    {
+      $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
+                " MAX(EE.id) AS id " .
+                " FROM {$this->tables['executions']} EE " . 
+                " JOIN {$this->tables['builds']} B " . 
+                " ON B.id = EE.build_id " .
+                " WHERE EE.testplan_id = " . $safe['tplan_id'] . " AND B.active = 1" .
+                " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id, B.id";
+         
+      $platformLEX = " AND LEX.platform_id = TPTCV.platform_id "; 
+      $platformEXEC = " AND E.platform_id = TPTCV.platform_id ";
+
+    }
     else if ($my['options']['ignoreBuild']) 
     {
       $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .

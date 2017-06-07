@@ -248,7 +248,7 @@ class testsuite extends tlObjectWithAttachments
       
       if( !is_null($node_order) && intval($node_order) > 0 )
       {
-        $sql .= ' SET node_order=' . $this->db->prepare_int(intval($node_order));     
+        $sql = ' SET node_order=' . $this->db->prepare_int(intval($node_order));     
         $sql = $sqlUpd . $sql . $where;       
         $result = $this->db->exec_query($sql);
       }

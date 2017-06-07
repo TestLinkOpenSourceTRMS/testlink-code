@@ -15,7 +15,7 @@
   <body class="align">
     <div class="site__container">
       <div class="grid__container">
-      <img src="gui/themes/default/images/{$tlCfg->logo_login}">
+      <img src="{$tlCfg->theme_dir}images/{$tlCfg->logo_login}">
       </div>
       
       {if $gui->note != ''}

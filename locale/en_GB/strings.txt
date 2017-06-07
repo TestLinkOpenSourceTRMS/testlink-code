@@ -3471,6 +3471,9 @@ $TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_N
 $TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTCASES = "There are no custom fields usable at design time linked" .
                                                   " to test cases on this test project ";
 
+$TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_BUILDS = "There are no custom fields usable at design time linked" .
+                                                  " to builds on this test project ";
+
 
 $TLS_API_PLATFORMNAME_ALREADY_EXISTS = "Platform name (%s) already exists (id:%s)";
 

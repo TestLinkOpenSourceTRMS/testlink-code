@@ -143,12 +143,37 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
 
   if($args->custom_field_id > 0)
   {
+
+    // Need to understand custom type to fomat the value
+
     $args->custom_field_id = $db->prepare_string($args->custom_field_id);
-    $args->custom_field_value = $db->prepare_string($args->custom_field_value);
+
+    $cf_def = $gui->design_cf[$args->custom_field_id];
     $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
                               " ON CFD.node_id=NH_TCV.id ";
-    $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-                                 " AND CFD.value like '%{$args->custom_field_value}%' ";
+    
+    $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} ";
+    
+    switch($gui->cf_types[$cf_def['type']])
+    {
+      case 'date':
+        $args->custom_field_value = $tproject_mgr->cfield_mgr->cfdate2mktime($args->custom_field_value);
+        
+        $filter['by_custom_field'] .= " AND CFD.value = {$args->custom_field_value}";
+      break;
+
+      case 'datetime':
+        $args->custom_field_value = $tproject_mgr->cfield_mgr->cfdatetime2mktime($args->custom_field_value);
+        
+        $filter['by_custom_field'] .= " AND CFD.value = {$args->custom_field_value}";
+      break;
+
+      default:
+        $args->custom_field_value = $db->prepare_string($args->custom_field_value);
+        $filter['by_custom_field'] .= " AND CFD.value like '%{$args->custom_field_value}%' ";
+      break;
+
+    }
   }
 
   if($args->requirement_doc_id != "")
@@ -495,15 +520,15 @@ function initSearch(&$gui,&$argsObj,&$tprojectMgr)
 {
   $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,
                                                                            cfield_mgr::ENABLED,null,'testcase');
-
+  
+  $gui->cf_types = $tprojectMgr->cfield_mgr->custom_field_types;
   $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
 
   $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
   $gui->filter_by['keyword'] = !is_null($gui->keywords);
 
-  $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
-  $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
-  $reqSpecSet = null; 
+  $oo = $tprojectMgr->getOptions($argsObj->tprojectID);
+  $gui->filter_by['requirement_doc_id'] = $oo->requirementsEnabled;
 
   $gui->importance = intval($argsObj->importance);
   $gui->status = intval($argsObj->status);

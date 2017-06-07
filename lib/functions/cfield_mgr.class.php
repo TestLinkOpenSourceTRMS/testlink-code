@@ -1823,7 +1823,6 @@ function name_is_unique($id,$name)
   function _build_cfield($hash,$cf_map)
   {
     $localesDateFormat = config_get('locales_date_format');
-  
     $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
 	  $date_format = str_replace('%', '', $localesDateFormat[$locale]);
   	
@@ -2935,7 +2934,80 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
     }
   }
  
+  /**
+   *
+   *
+   */
+  function cfdate2mktime($value)
+  {
+    if (($value == 0) || ($value == ''))
+    {
+      return '';
+    }
+    else
+    {    
+      $localesDateFormat = config_get('locales_date_format');
+      $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+      $date_format = str_replace('%', '', $localesDateFormat[$locale]);
 
+      $pvalue = split_localized_date($value, $date_format);
+      if($pvalue != null) 
+      {
+        $pvalue = mktime(0, 0, 0, $pvalue['month'], $pvalue['day'], $pvalue['year']);
+        return $pvalue;
+      } 
+      else 
+      {
+        return '';
+      }
+    }
+  }
+
+  /**
+   * value DD/MM/YYYY HH:MM:SS
+   * 
+   *
+   */
+  /*
+  function cfdatetime2mktime($value)
+  {
+    if ($value == '') 
+    {
+      return '';
+    }
+    else
+    {
+      $localesDateFormat = config_get('locales_date_format');
+      $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+      $date_format = str_replace('%', '', $localesDateFormat[$locale]);
+
+      // first replace multiple spaces with just one
+      $pc = explode(' ',$value);
+      $dpart = $pc[0];
+      $tpart = $pc[1];
+      $pvalue = split_localized_date($dpart, $date_format);
+      if($pvalue != null) 
+      {
+        // parse time part
+        $tt = explode(':', $tpart)
+
+        if($value['hour'] == -1 || $value['minute'] == -1 || $value['second'] == -1) {
+                  $value['hour'] = $value['minute'] = $value['second'] = 0;
+        
+
+        $cfvalue = mktime($value['hour'], $value['minute'], 
+                                              $value['second'],
+                                                          $pvalue['month'], $parsed_value['day'], 
+                                                          $parsed_value['year']);
+      }
+      else
+      {
+        return '';
+      }  
+
+    } 
+  }
+  */
 
     
 } // end class

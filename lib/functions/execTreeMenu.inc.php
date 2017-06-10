@@ -46,6 +46,8 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $testCaseQty=0;
   $testCaseSet=null;
    
+  // Seems to be useless 
+  /*
   $keyword_id = 0;
   $keywordsFilterType = 'Or';
   if (property_exists($objFilters, 'filter_keywords') && !is_null($objFilters->filter_keywords)) 
@@ -53,7 +55,9 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     $keyword_id = $objFilters->filter_keywords;
     $keywordsFilterType = $objFilters->filter_keywords_filter_type;
   }
-  
+  */
+  // ---
+
   $renderTreeNodeOpt = array();
   $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
   list($filters,$options,
@@ -142,7 +146,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
         $kmethod = "fetchRowsIntoMap";
         if( is_array($sql2do) )
         {       
-          if( $filters['keyword_filter_type'] == 'And')
+          if( $filters['keyword_filter_type'] == 'And' )
           { 
             $kmethod = "fetchRowsIntoMapAddRC";
             $unionClause = " UNION ALL ";
@@ -158,9 +162,27 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
         {
           $sql2run = $sql2do;
         }
-        $tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
+        $tplan_tcases = $dbHandler->$kmethod($sql2run,'tcase_id');
       }
     }   
+
+    if( $filters['keyword_filter_type'] == 'And' && !is_null($tplan_tcases))
+    {
+      $kwc = count($filters['keyword_id']);
+      $ak = array_keys($tplan_tcases);
+      $mx = null;
+      foreach($ak as $tk)
+      {
+        if($tplan_tcases[$tk]['recordcount'] == $kwc)
+        {
+              $mx[$tk] = $tplan_tcases[$tk];
+        } 
+      } 
+      $tplan_tcases = null;
+      $tplan_tcases = $mx;
+    } 
+    $setTestCaseStatus = $tplan_tcases;
+
 
     if( !is_null($tplan_tcases) )
     {

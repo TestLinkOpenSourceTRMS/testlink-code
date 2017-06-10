@@ -118,7 +118,7 @@
   <div class="list-group" style="{$divStyle}">
         {if $gui->grants.reqs_view == "yes"}
           <a href="{$gui->launcher}?feature=reqSpecMgmt" class="list-group-item" style="{$aStyle}">{$labels.href_req_spec}</a>
-          <a href="{$reqOverview}" class="list-group-item" style="{$aStyle}">{$labels.href_req_overview}</a>
+          <a href="{$reqOverView}" class="list-group-item" style="{$aStyle}">{$labels.href_req_overview}</a>
           <a href="{$gui->launcher}?feature=searchReq" class="list-group-item" style="{$aStyle}">{$labels.href_search_req}</a>
           <a href="{$gui->launcher}?feature=searchReqSpec" class="list-group-item" style="{$aStyle}">{$labels.href_search_req_spec}</a>
        {/if}

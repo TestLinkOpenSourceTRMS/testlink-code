@@ -19,7 +19,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get 
   var='labels'
   s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
-	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
+	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,design,execution,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
   estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,btn_next_tcase,
@@ -205,8 +205,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               show_hide('build_notes','{$build_notes_view_memory_id}',{$gui->bn_view_status});
               show_hide('bulk_controls','{$bulk_controls_view_memory_id}',{$gui->bc_view_status});
               show_hide('platform_notes','{$platform_notes_view_memory_id}',{$gui->platform_notes_view_status});
-              multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
-                                 '{$tsd_val_for_hidden_list}');
+
+              {if $tsuite_info != null}
+                multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
+                                   '{$tsd_val_for_hidden_list}');
+              {/if}
+
               {if $round_enabled}Nifty('div.exec_additional_info');{/if}
               {if #ROUND_TC_SPEC#}Nifty('div.exec_test_spec');{/if}
               {if #ROUND_EXEC_HISTORY#}Nifty('div.exec_history');{/if}
@@ -482,7 +486,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 <script>
 jQuery( document ).ready(function() {
   clipboard = new Clipboard('.clip');
-  alert('YU');
+  //alert('Clipboard Debug');
 });
 </script>
 </body>

@@ -51,6 +51,8 @@ $submitResult = null;
 list($args,$its) = init_args($db,$cfg);
 
 $smarty = new TLSmarty();
+$smarty->assign('tsuite_info',null);
+
 $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
@@ -399,9 +401,18 @@ else
   // Bulk is possible when test suite is selected (and is allowed in config)
   if( $gui->can_use_bulk_op = ($args->level == 'testsuite') )
   {
-    $xx = current($gui->execution_time_cfields);
+    $xx = null;
+    if( property_exists($gui, 'execution_time_cfields') )
+    {
+      $xx = current((array)$gui->execution_time_cfields);
+    }  
+
     $gui->execution_time_cfields = null;
-    $gui->execution_time_cfields[0] = $xx;
+    
+    if( !is_null($xx) )
+    {
+      $gui->execution_time_cfields[0] = $xx;
+    }  
   }  
   initWebEditors($gui,$cfg,$_SESSION['basehref']);
 
@@ -761,7 +772,6 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
     return;
   }  
 
-
   $fpath = $tree_mgr->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
   $tsuite_info = get_ts_name_details($db,$tcase_id);
 
@@ -780,7 +790,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
   }
   $smarty->assign('tsuite_info',$tsuite_info);
   
-  // --------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------
   if(!is_null($tsuite_info))
   {
     $cookieKey = 'TL_execSetResults_tsdetails_view_status';
@@ -1288,6 +1298,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+  $gui->tcversionSet = null;
+  $gui->plugins = null;
 
   $k2i = array('import','attachments','exec','edit_exec');
   $gui->features = array();

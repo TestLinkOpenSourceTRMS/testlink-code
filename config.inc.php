@@ -71,6 +71,32 @@ if( !defined('DB_TABLE_PREFIX') )
 /** The root dir for the testlink installation with trailing slash */
 define('TL_ABS_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 
+/** GUI themes (base for CSS and images)- modify if you create own one */
+$tlCfg->theme_dir = 'gui/themes/default/';
+
+/** Dir for compiled templates */
+$tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 
+                   'templates_c' . DIRECTORY_SEPARATOR;
+
+/** default filenames of CSS files of current GUI theme */
+define('TL_CSS_MAIN', 'testlink.css');
+define('TL_CSS_PRINT', 'tl_print.css');
+define('TL_CSS_DOCUMENTS', 'tl_documents.css');
+
+define('TL_THEME_BASE_DIR', $tlCfg->theme_dir);
+define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
+define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
+define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
+define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
+
+// name of your custom.css, place it in same folder that standard TL css
+// null or '' => do not use
+$tlCfg->custom_css = null;
+
+// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
+define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
+
+
 /** Include constants and magic numbers (users should not change it)*/
 require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
@@ -460,14 +486,8 @@ $tlCfg->api->enabled = TRUE;
 $tlCfg->api->id_format = "[ID: %s ]";
 
 
-// --------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 /* [GUI LAYOUT] */
-
-/** GUI themes (base for CSS and images)- modify if you create own one */
-$tlCfg->theme_dir = 'gui/themes/default/';
-
-/** Dir for compiled templates */
-$tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . DIRECTORY_SEPARATOR;
 
 /** Company logo (used by navigation bar and login page page) */
 $tlCfg->logo_login = 'tl-logo-transparent-25.png';
@@ -1652,9 +1672,6 @@ if the name exist.
 */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 
-// name of your custom.css, place it in same folder that standard TL css
-// null or '' => do not use
-$tlCfg->custom_css = null;
 
 
 /** 
@@ -1673,6 +1690,11 @@ $g_tpl = array('inc_exec_controls' => 'inc_exec_img_controls.tpl');
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',
 //                 'tcSearchView' => 'myOwnTCSearchView.tpl',
 //                 'tcEdit' => 'tcEdit_ultraCool.tpl');
+
+/** Add o replace images */
+$tlCfg->images = array();
+
+
 
 // ----------------------------------------------------------------------------
 /* [PROXY] */
@@ -1697,11 +1719,6 @@ define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . D
 /** Functions for check request status */
 require_once('configCheck.php');
 
-clearstatcache();
-if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
-{
-  require_once( TL_ABS_PATH . 'custom_config.inc.php' );
-}
 
 if( !defined('TL_JQUERY') )
 {
@@ -1713,11 +1730,16 @@ if( !defined('TL_DATATABLES_DIR') )
   define('TL_DATATABLES_DIR','DataTables-1.10.4' );
 }
 
-
 /** root of testlink directory location seen through the web server */
 /*  20070106 - franciscom - this statement it's not 100% right
     better use $_SESSION['basehref'] in the scripts. */
 define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
+
+clearstatcache();
+if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
+{
+  require_once( TL_ABS_PATH . 'custom_config.inc.php' );
+}
 
 
 if( !isset($g_attachments->access_icon) )
@@ -1732,8 +1754,9 @@ $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 
 
 /** Support for localization */
-//  @TODO schlundus, move the code out of config and do it only once and not always in any include!
-//  @TODO schlundus, a better parsing function should be include
+//  @TODO move the code out of config and do it only once and 
+//  not always in any include!
+//  @TODO a better parsing function should be include
 $serverLanguage = false;
 if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 {
@@ -1767,7 +1790,7 @@ $tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
 // Enable CSRF global protection
 $tlCfg->csrf_filter_enabled = TRUE;
 
-// --------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 /** Converted and derived variables (Users should not modify this section) */
 define('REFRESH_SPEC_TREE',$tlCfg->spec_cfg->automatic_tree_refresh ? 1 : 0);
 define('TL_SORT_TABLE_ENGINE',$g_sort_table_engine);
@@ -1775,17 +1798,9 @@ define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*$tlCfg->repository_max_filesize);
 
 define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"" . $tlCfg->charset . "\"?>\n");
 
-define('TL_THEME_BASE_DIR', $tlCfg->theme_dir);
-define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
-define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
-define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
-define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
-
-// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
-define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
 
 
-// --------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 // when a role is deleted, a new role must be assigned to all users
 // having role to be deleted
 // A right choice seems to be using $g_default_roleid.

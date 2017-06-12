@@ -1055,7 +1055,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            " FROM {$tables['executions']} E " .
            " JOIN {$tables['builds']} B ON B.id = E.build_id " .
            " WHERE 1 = 1 ";
-
+	
+	//Bugfix to show only active builds in Test Report view
+	$sql .= "AND B.active = 1";
+	
     if(isset($context['exec_id']))
     {
       $sql .= " AND E.id=" . intval($context['exec_id']);

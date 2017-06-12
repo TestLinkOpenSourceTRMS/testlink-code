@@ -240,7 +240,13 @@ class stashrestInterface extends codeTrackerInterface
       }
       foreach($contentList->children->values as $elem)
       {
-        $ret[$elem->path->name] = array($elem->type,$path);
+        $tmpName = $elem->path->toString;
+        $slashPos = strpos($elem->path->toString, '/');
+        if ($slashPos !== false)
+        {
+          $tmpName = substr($tmpName, 0, $slashPos);
+        }
+        $ret[$tmpName] = array($elem->type,$path);
       }
     }
     return $ret;

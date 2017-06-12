@@ -205,6 +205,17 @@ CREATE TABLE /*prefix*/execution_bugs (
 ) DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE /*prefix*/testcase_script_links (
+  `tcversion_id` int(10) unsigned NOT NULL default '0',
+  `project_key` varchar(64) NOT NULL,
+  `repository_name` varchar(64) NOT NULL,
+  `code_path` varchar(255) NOT NULL,
+  `branch_name` varchar(64) default NULL,
+  `commit_id` varchar(40) default NULL,
+  PRIMARY KEY  (`tcversion_id`,`project_key`,`repository_name`,`code_path`)
+) DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE /*prefix*/executions (
   id int(10) unsigned NOT NULL auto_increment,
   build_id int(10) NOT NULL default '0',
@@ -483,6 +494,7 @@ CREATE TABLE /*prefix*/testprojects (
   `tc_counter` int(10) unsigned NOT NULL default '0',
   `is_public` tinyint(1) NOT NULL default '1',
   `issue_tracker_enabled` tinyint(1) NOT NULL default '0',
+  `code_tracker_enabled` tinyint(1) NOT NULL default '0',
   `reqmgr_integration_enabled` tinyint(1) NOT NULL default '0',
   `api_key` varchar(64) NOT NULL default '0d8ab81dfa2c77e8235bc829a2ded3edfa2c78235bc829a27eded3ed0d8ab81d',
   PRIMARY KEY  (`id`),
@@ -656,6 +668,25 @@ CREATE TABLE /*prefix*/testproject_issuetracker
 (
   `testproject_id` int(10) unsigned NOT NULL,
   `issuetracker_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`testproject_id`)
+) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/codetrackers
+(
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `type` int(10) default 0,
+  `cfg` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/codetrackers_uidx1 (`name`)
+) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/testproject_codetracker
+(
+  `testproject_id` int(10) unsigned NOT NULL,
+  `codetracker_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 

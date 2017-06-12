@@ -560,7 +560,8 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $my = array();
   $my['opt'] = array('output' => 'map', 'order_by' => ' ORDER BY name ', 'field_set' => 'full',
-                     'format' => 'std', 'add_issuetracker' => false, 'add_reqmgrsystem' => false);
+                     'format' => 'std', 'add_issuetracker' => false, 'add_codetracker' => false,
+                     'add_reqmgrsystem' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
   
   // key = field name
@@ -587,6 +588,18 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
              " ON ITMD.id = TIT.issuetracker_id ";     
     $itf = ",ITMD.name AS itname,ITMD.type AS ittype";
   }        
+
+  $ctsql = '';
+  $ctf = '';
+  if($my['opt']['add_codetracker'])
+  {
+    $ctsql = " LEFT OUTER JOIN {$this->tables['testproject_codetracker']} AS TCT " .
+             " ON TCT.testproject_id  = TPROJ.id " .
+             " LEFT OUTER JOIN {$this->tables['codetrackers']} AS CTMD " .
+             " ON CTMD.id = TCT.codetracker_id ";     
+    $ctf = ",CTMD.name AS ctname,CTMD.type AS cttype";
+  }        
+
 
   $rmssql = '';
   $rmsf = '';
@@ -617,13 +630,13 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
     break;
   } 
   
-  $sql = " /* $debugMsg */ SELECT {$cols} {$itf} {$rmsf} " .
+  $sql = " /* $debugMsg */ SELECT {$cols} {$itf} {$ctf} {$rmsf} " .
          " FROM {$this->tables['nodes_hierarchy']} NHTPROJ " .
          " JOIN {$this->object_table} TPROJ ON NHTPROJ.id=TPROJ.id " .
          " JOIN {$this->tables['users']} U ON U.id = {$safe_user_id} " .
          " LEFT OUTER JOIN {$this->tables['user_testproject_roles']} UTR " .
          " ON TPROJ.id = UTR.testproject_id " .
-         " AND UTR.user_id =" . $safe_user_id . $itsql . $rmssql .
+         " AND UTR.user_id =" . $safe_user_id . $itsql . $ctsql . $rmssql .
          " WHERE 1=1 ";
   
   // Private test project feature
@@ -2066,7 +2079,8 @@ function setPublicStatus($id,$status)
       $error .= lang_get('info_deleting_project_roles_fails');
     }
     
-    $xSQL = array('testproject_issuetracker','testproject_reqmgrsystem');
+    $xSQL = array('testproject_issuetracker','testproject_codetracker',
+                  'testproject_reqmgrsystem');
     foreach($xSQL as $target)
     {
       $sql = "/* $debugMsg */ DELETE FROM " . $this->tables[$target] .
@@ -3411,6 +3425,70 @@ function setIssueTrackerEnabled($id,$value)
   $sql = "/* $debugMsg */ " .
        " UPDATE {$this->object_table} " .
        " SET issue_tracker_enabled = " . (intval($value) > 0 ? 1 : 0) .
+       " WHERE id =" . intval($id);   
+  $ret = $this->db->exec_query($sql);
+}
+
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.17
+ *
+ */
+function isCodeTrackerEnabled($id)
+{
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $sql = "/* $debugMsg */ " .
+         "SELECT code_tracker_enabled FROM {$this->object_table} " .
+         "WHERE id =" . intval($id);   
+       
+  $ret = $this->db->get_recordset($sql);
+  return $ret[0]['code_tracker_enabled'];
+}
+
+
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.17
+ *
+ */
+function enableCodeTracker($id)
+{
+  $this->setCodeTrackerEnabled($id,1);
+}
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.17
+ *
+ */
+function disableCodeTracker($id)
+{
+  $this->setCodeTrackerEnabled($id,0);
+}
+
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.17
+ *
+ */
+function setCodeTrackerEnabled($id,$value)
+{
+
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $sql = "/* $debugMsg */ " .
+       " UPDATE {$this->object_table} " .
+       " SET code_tracker_enabled = " . (intval($value) > 0 ? 1 : 0) .
        " WHERE id =" . intval($id);   
   $ret = $this->db->exec_query($sql);
 }

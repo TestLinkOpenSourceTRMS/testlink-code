@@ -43,6 +43,7 @@ ini_set('include_path',
     ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEPARATOR . 
     TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR  . PATH_SEPARATOR .
     TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'issuetrackerintegration' . DIRECTORY_SEPARATOR . PATH_SEPARATOR .
+    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'codetrackerintegration' . DIRECTORY_SEPARATOR . PATH_SEPARATOR .
     TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'reqmgrsystemintegration' . DIRECTORY_SEPARATOR);
 
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 

@@ -92,6 +92,8 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (48,'mgt_plugins');
 
 -- since 1.9.17
 INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
+INSERT INTO /*prefix*/rights (id,description) VALUES (50,'codetracker_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (51,'codetracker_view');
 
 # Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,1 );
@@ -140,6 +142,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,45);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,46);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,47);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,48);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
 
 
 # Rights for guest role

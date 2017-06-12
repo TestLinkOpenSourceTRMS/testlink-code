@@ -418,6 +418,7 @@ class TLSmarty extends Smarty
                    'logout' => $imgLoc . 'computer_go.png',
                    'magnifier' => $imgLoc . 'magnifier.png',
                    'move_copy' => $imgLoc . 'application_double.png',
+                   'new_f2_16' => $imgLoc . 'new_f2_16.png',
                    'note_edit' => $imgLoc . 'note_edit.png',
                    'note_edit_greyed' => $imgLoc . 'note_edit_greyed.png',
                    'on' => $imgLoc . 'lightbulb.png',

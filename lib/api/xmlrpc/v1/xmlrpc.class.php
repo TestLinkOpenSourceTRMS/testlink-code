@@ -1204,6 +1204,18 @@ class TestlinkXMLRPCServer extends IXR_Server
         
     return $status_ok;
   }  
+
+  protected function _checkCloseBuildRequest($messagePrefix='')
+  {
+    $checkFunctions = array('authenticate');
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
+    if($status_ok)
+    {
+      $status_ok=$this->_isParamPresent(self::$buildIDParamName,$messagePrefix,self::SET_ERROR);            
+    }       
+        
+    return $status_ok;
+  }
   
   /**
    * Run all the necessary checks to see if the createBuild request is valid
@@ -1589,6 +1601,45 @@ class TestlinkXMLRPCServer extends IXR_Server
     $str = " Testlink API Version: " . self::$version . " initially written by Asiel Brumfield\n" .
            " with contributions by TestLink development Team";
     return $str;        
+  }
+
+  public function closeBuild($args)
+  { //_checkCloseBuildRequest
+    $operation = __FUNCTION__;
+    $messagePrefix="({$operation}) - ";
+    $resultInfo = array();
+    $resultInfo[0]["status"] = true;
+    $resultInfo[0]["operation"] = $operation;
+    $returnMessage = GENERAL_SUCCESS_STR;
+
+    $this->_setArgs($args);
+
+    // check the tpid
+    if($this->_checkCloseBuildRequest($messagePrefix))
+    {
+      $buildID = intval($this->args[self::$buildIDParamName]);
+     
+      
+//      if ($this->tplanMgr->check_build_name_existence($testPlanID,$buildName))
+//      {
+//        //Build exists so just get the id of the existing build
+//        $insertID = $this->tplanMgr->get_build_id_by_name($testPlanID,$buildName);
+//        $returnMessage = sprintf(BUILDNAME_ALREADY_EXISTS_STR,$buildName,$insertID);
+//        $resultInfo[0]["status"] = false;
+//      
+//      } 
+        
+      $bm = new build_mgr($this->dbObj);
+      $bm->setClosed($buildID);
+      
+      $resultInfo[0]["id"] = 0;  
+      $resultInfo[0]["message"] = $returnMessage;
+      return $resultInfo;         
+    }
+    else
+    {
+      return $this->errors;
+    }  
   }
   
   /**
@@ -8328,6 +8379,7 @@ protected function createAttachmentTempFile()
     $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
                             'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
                             'tl.createBuild' => 'this:createBuild',
+                            'tl.closeBuild' => 'this:closeBuild',
                             'tl.createPlatform' => 'this:createPlatform',
                             'tl.createTestCase' => 'this:createTestCase',
                             'tl.createTestCaseSteps' => 'this:createTestCaseSteps',

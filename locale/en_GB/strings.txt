@@ -222,7 +222,6 @@ $TLS_max_size_file_msg = "Max. allowed file size:  %s KB";
 $TLS_due_since = "Assigned Since (days)";
 $TLS_parent_child='is Parent or is Child';
 $TLS_blocks_depends = 'Blocks or Depends';
-$TLS_related_to='is related to';
 $TLS_unknown_code='unknown code: %s';
 $TLS_in_percent = "[%]";
 $TLS_user_has_no_right_for_action = 'User has not needed right to do requested action';
@@ -501,7 +500,6 @@ $TLS_passwd_dont_match = "The two passwords entered did not match. Note that pas
 $TLS_user_cant_be_created_because = "Your account can't be created because:";
 $TLS_user_name_exists = "Login/User name is already in use, please select another one.";
 $TLS_valid_user_name_format = "Login/User name can only contain letters, numbers, spaces, hyphens and underscores.";
-$TLS_warning_empty_pwd = "Your password should not be empty!";
 $TLS_your_info_please = "Sign up";
 $TLS_new_account = "TestLink - New Account Created";
 $TLS_invalid_security_token = "Invalid security token";
@@ -711,7 +709,6 @@ $TLS_artifactVersion = 'Version';
 $TLS_artifactComponent = 'Component';
 
 
-$TLS_add_issue_note = "Write note on issue";
 
 // ----- gui/templates/bug_delete.tpl -----
 $TLS_title_delete_bug = "Delete bug report";
@@ -1120,7 +1117,6 @@ $TLS_req_select_delete = "Delete requirements";
 $TLS_req_title_list = "List of requirements";
 $TLS_req_total = "Total count of requirements";
 $TLS_req_reorder = "Reorder requirements";
-$TLS_select_at_least_one_req = "Please select a requirement!";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
 $TLS_warning_delete_req_spec = "You are going to delete: %s <br /><br /> Are you sure?";
 $TLS_title_change_req_order = "Change requirements order";
@@ -1612,8 +1608,6 @@ $TLS_keywords_filter_help = "You can use OR/AND filtering";
 // ----- gui/templates/planTCNavigator.tpl -----
 $TLS_btn_update_all_testcases_to_latest_version = "Update all Test Cases to latest version";
 $TLS_btn_bulk_update_to_latest_version = "Bulk Update to latest version";
-$TLS_caption_nav_filters = "Filters";
-
 
 // ----- gui/templates/planPriority.tpl -----
 $TLS_btn_upd_prio = "Update";
@@ -1871,10 +1865,6 @@ $TLS_btn_export_keywords = "Export";
 $TLS_btn_import_keywords = "Import";
 $TLS_th_keyword = "Keyword";
 $TLS_warning_delete_keyword = "You are going to delete: %s <br /><br /> Are you sure?";
-$TLS_warning_enter_at_least1 = "Please enter at least ";
-$TLS_warning_enter_at_least2 = " chars.";
-$TLS_warning_enter_less1 = "Please enter less than";
-$TLS_warning_enter_less2 = " chars.";
 
 // ----- gui/templates/platformsView.tpl -----
 $TLS_alt_delete_platform = "Delete platform?";
@@ -2463,7 +2453,6 @@ $TLS_href_search_req_spec = "Search Requirement Specifications";
 $TLS_caption_search_form_req = "Search Requirements";
 $TLS_caption_search_form_req_spec = "Search Requirement Specifications";
 $TLS_title_search_req = "Search";
-$TLS_requirement_document_id = "Req. Doc. ID";
 $TLS_req_spec_document_id = "Req. Spec. Doc. ID";
 $TLS_reqversion = "Version";
 $TLS_title_search_req_spec = "Search";
@@ -2579,7 +2568,6 @@ $TLS_trep_failing = "Failing";
 $TLS_trep_passing = "Passing";
 $TLS_trep_status_for_build = "Status for build";
 $TLS_trep_status_for_ts = "Status for Test Suite";
-$TLS_unassigned = "unassigned";
 
 
 // ----- lib/functions/resultsMoreBuilds.inc.php -----
@@ -2990,7 +2978,6 @@ $TLS_duplicate_req_criteria = "Consider Requirement as duplicate if";
 
 // ----- lib/req/reqSpecView.php -----
 $TLS_cant_create_tc_from_req_nothing_sel = "Please select a requirement!";
-$TLS_req_created = "Requirement %s was successfully created";
 
 
 
@@ -3628,7 +3615,6 @@ $TLS_audit_all_events_deleted = "User '{%1}' deleted all events";
 $TLS_audit_events_with_level_deleted = "User '{%1}' deleted events with level: {%2}";
 
 
-$TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'. Exit forced";
 $TLS_audit_security_no_environment = "Use of '{%1}' requires environment (test project id) and is not set. Exit forced";
 
 
@@ -3752,7 +3738,6 @@ $TLS_use_html_comp = "HTML Compare";
 $TLS_use_html_code_comp = "HTML Code Compare";
 
 // ----- pluginView.php -----
-$TLS_title_plugins = "Plugins";
 $TLS_title_plugin_mgmt = "Manage Plugins";
 $TLS_th_plugin = "Plugin Name";
 $TLS_th_plugin_description = "Description";
@@ -3841,7 +3826,6 @@ $TLS_link_without_required_platform = "Test case link #%s has no platform but Te
 $TLS_link_with_platform_not_needed = "Test case link #%s has platform but Test Plan has no linked platforms";
 $TLS_link_without_platform_element = "Test case link #%s has no platform element";
 $TLS_tproject_has_zero_testcases = "Test Project %s has no test cases defined, unable to continue";
-$TLS_tcase_doesnot_exist = "Test Case with external id %s does not exist on Test Project %s";
 $TLS_tcversion_doesnot_exist = "Test Case with external id %s version %s does not exist on Test Project %s";
 $TLS_link_to_tplan_feedback = "Test Case with external id %s version %s has been linked to Test Plan";
 $TLS_link_to_platform = " for Platform %s";
@@ -3881,12 +3865,8 @@ $TLS_remoteExecServerConnectionFailure = 'Remote execution connection failure - 
 $TLS_issue_status_open = "Open";
 $TLS_issue_status_accepted = "Accepted";
 $TLS_issue_status_inprogress = "In progress";
-$TLS_issue_status_confirmed = "Confirmed";
-$TLS_issue_status_assigned = "Assigned";
-$TLS_issue_status_resolved = "Resolved";
 $TLS_issue_status_tested = "Tested";
 $TLS_issue_status_delivered = "Delivered";
-$TLS_issue_status_closed = "Closed";
 $TLS_issue_status_held = "Held";
 
 

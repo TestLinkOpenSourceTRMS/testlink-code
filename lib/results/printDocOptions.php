@@ -268,7 +268,7 @@ function initializeGui(&$db,$args)
       $gui->tree_title = lang_get('title_tp_print_navigator');
       $gui->ajaxTree->loadFromChildren = 1;
       $gui->ajaxTree->loader = '';
-      $gui->mainTitle = lang_get('test_plan');
+      $gui->mainTitle = lang_get('report_test_plan_design');
     break;
 
     case DOC_TEST_PLAN_EXECUTION_ON_BUILD:

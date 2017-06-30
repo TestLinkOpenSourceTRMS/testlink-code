@@ -85,14 +85,14 @@ class gitlab
       }  
     }  
     
-    if( is_null($this->$projectId))
-    {
-      throw new Exception("Missing projectId", 1);
-    }
-    if( is_null($this->$url) || is_null($this->apiKey))
-    {
-      throw new Exception("Missing url or key", 1);
-    }
+    //if( is_null($this->$projectId))
+    //{
+    //  throw new Exception("Missing projectId", 1);
+    //}
+    //if( is_null($this->$url) || is_null($this->apiKey))
+    //{
+    //  throw new Exception("Missing url or key", 1);
+    //}
     
     $this->initCurl();
   }

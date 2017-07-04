@@ -8001,14 +8001,13 @@ class build_mgr extends tlObject
              active: build active status
              is_open: build open status
              testplan_id
-
-    rev :
   */
   function get_by_id($id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $my = array('options' => array('tplan_id' => null, 'output' => 'full'));
+    $my = array('options' => 
+                array('tplan_id' => null, 'output' => 'full', 'fields' => '*'));
     $my['options'] = array_merge($my['options'],(array)$opt);
     
     $safe_id = intval($id);  
@@ -8017,16 +8016,20 @@ class build_mgr extends tlObject
     switch($my['options']['output'])
     {
       case 'minimun':
-        $sql .= " SELECT id,is_open,active FROM {$this->tables['builds']} "; 
+        $sql .= " SELECT id,is_open,active ";  
+      break;
+
+      case 'fields':
+        $sql .= " SELECT {$my['options']['fields']} "; 
       break;
       
       case 'full':
       default:
-        $sql .= " SELECT * FROM {$this->tables['builds']} "; 
+        $sql .= " SELECT * "; 
       break;
     }
     
-    $sql .= " WHERE id = {$safe_id} ";
+    $sql .= " FROM {$this->tables['builds']} WHERE id = {$safe_id} ";
     if(!is_null($my['options']['tplan_id']) && ($safe_tplan = intval($my['options']['tplan_id'])) > 0)
     {
       $sql .= " AND testplan_id = {$safe_tplan} ";

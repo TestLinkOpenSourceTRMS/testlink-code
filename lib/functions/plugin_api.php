@@ -187,7 +187,7 @@ function plugin_config_set($option, $value, $project = TL_ANY_PROJECT)
   else 
   {
     // Insert new config value
-    $sql = " INSERT $plugin_config_table " .
+    $sql = " INSERT INTO $plugin_config_table " .
            " (config_key, config_type, config_value, testproject_id, author_id) " .
            " VALUES (" .
            "'" . $dbHandler->prepare_string($full_option) . "', " . 

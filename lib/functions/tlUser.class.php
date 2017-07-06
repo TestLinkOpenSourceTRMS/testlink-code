@@ -794,6 +794,11 @@ class tlUser extends tlDBObject
     global $g_propRights_global;
     global $g_propRights_product;
 
+    if ( ($this->globalRoleID == TL_ROLES_ADMIN) && ($roleQuestion != 'exec_ro_access') )
+    {
+      return true;
+    }
+
     if (!is_null($tplanID))
     {
       $testPlanID = $tplanID;
@@ -838,6 +843,7 @@ class tlUser extends tlDBObject
       $globalRights[] = $right->name;
     }
     $allRights = $globalRights;
+    
     $userTestProjectRoles = $this->tprojectRoles;
     $userTestPlanRoles = $this->tplanRoles;
     

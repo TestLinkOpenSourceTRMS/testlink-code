@@ -531,8 +531,6 @@ $TLS_urgency_low     = "Low";
 $TLS_test_importance   = "Test importance";
 $TLS_testcases_assigned_to_user = 'Test Project: %s - Test Cases Assigned to User: %s';
 $TLS_assigned_on = 'Assignment date';
-$TLS_access_denied = 'Access denied';
-$TLS_access_denied_feedback = 'In order to access requested item you need one of following rights/grants:';
 $TLS_code_mgmt = "Code management";
 $TLS_code_link_tl_to_cts = "Link Existent Test Script";
 

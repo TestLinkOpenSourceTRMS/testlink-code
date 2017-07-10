@@ -33,13 +33,17 @@
  *
  * Scripted update according en_GB string file (version: ) 
  *
+ * Scripted update according en_GB string file (version: ) 
+ *
+ * Scripted update according en_GB string file (version: ) 
+ *
  **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última atualização: 19/03/2017 (TestLink 1.9.17)";
+$TLS_last_update = "Última atualização: 29/04/2017 (TestLink 1.9.17)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Ativo (clicar para inativar)";
@@ -156,7 +160,7 @@ $TLS_not_in_testplan = "Não em Plano de Testes";
 $TLS_notes = "Notas";
 $TLS_latest_exec_notes = "Notas (última Execução)";
 $TLS_step_exec_notes = "Notas da Execução";
-$TLS_step_exec_status = "Estado da Execução";
+$TLS_step_exec_status = "Status da Execução";
 $TLS_step = "Passo";
 
 
@@ -197,7 +201,7 @@ $TLS_Role = "Perfil";
 $TLS_assign_roles = "Atribuir Perfis";
 $TLS_sort_table_by_column = "Clique para alterar a ordem";
 $TLS_scope = "Escopo";
-$TLS_status = "Estado";
+$TLS_status = "Status";
 $TLS_test_case = "Caso de Teste";
 $TLS_testcase = $TLS_test_case; // obsolete
 $TLS_testcaseversion   = 'Versão do CT';
@@ -1476,7 +1480,7 @@ $TLS_bug_copy_from_latest_exec =  "Copiar Bugs da Execução mais recente";
 $TLS_btn_export_testcases = "Exportar Casos de Teste";
 $TLS_build_is_closed = "Baseline está fechada";
 $TLS_builds_notes = "Descrição da Baseline";
-$TLS_bulk_tc_status_management = "Gestão em Lote do estado de Caso de Teste";      //verified
+$TLS_bulk_tc_status_management = "Gestão em Lote do status de Caso de Teste";      //verified
 $TLS_closed_build = "Baseline fechada. Operação não pode ser realizada";
 $TLS_date_time_run = "Data";
 $TLS_details = "Detalhes";
@@ -1506,8 +1510,8 @@ $TLS_or_unassigned_test_cases = " ou não atribuído à testador";
 $TLS_run_mode = "Exec.";
 
 $TLS_reqspec_type = "Tipo de Especificação de Requisitos";
-$TLS_req_status = "Estado da Especificação de Requisitos";
-$TLS_tcase_wkf_status = "Estado do Caso de Teste";
+$TLS_req_status = "Status da Especificação de Requisitos";
+$TLS_tcase_wkf_status = "Status do Caso de Teste";
 
 
 $TLS_set_all_tc_to = "Colocar todos para status ";
@@ -2185,7 +2189,7 @@ $TLS_generated_by_TestLink_on = "Relatório gerado em: ";
 $TLS_show_all_columns = "Mostrar todas as Colunas";
 $TLS_show_all_columns_tooltip = "Mostrar todas as Colunas (se oculto)";
 $TLS_expand_collapse_groups = 'Expandir/Minimizar Grupos';
-$TLS_default_state = "Resetar para o Estado Padrão";
+$TLS_default_state = "Resetar para o Status Padrão";
 $TLS_multisort = "Multiclassificação";
 $TLS_multisort_tooltip = 'Para classificar múltiplas colunas, simplesmente ' .
                          'arraste e solte os cabeçalhos das colunas desejadas ' .
@@ -2343,6 +2347,8 @@ $TLS_th_password = "Senha";
 $TLS_warning_empty_first_name = "Por favor entre com um nome";
 $TLS_warning_empty_last_name = "Por favor entre com um sobrenome";
 $TLS_warning_empty_login = "Por favor, entre com um login";
+$TLS_expiration_date = "Data de Expiração";
+$TLS_expiration = "Expiração";
 
 
 // ----- gui/templates/attachmentupload.tpl -----
@@ -2445,8 +2451,8 @@ $TLS_href_inventory_management = "Gerenciamento de Inventário";
 $TLS_href_keywords_assign = "Selecionar Palavra-chave";
 $TLS_href_keywords_manage = "Gerenciar Palavra-chave";
 $TLS_href_keywords_view = "Visualizar palavra-chave";
-$TLS_href_print_tc = "Imprimir Casos de Teste";
-$TLS_href_print_req = "Imprimir Requisitos";
+$TLS_href_print_tc = "Documento de Especificação de Testes";
+$TLS_href_print_req = "Documento de Especificação de Requisitos";
 $TLS_href_req_assign = "Selecionar Requisitos";
 $TLS_href_req_spec = "Especificar Requisitos";
 $TLS_href_req_overview = "Visão Geral dos Requisitos";
@@ -2553,7 +2559,7 @@ $TLS_error_ldap_update_failed = "Atualização do LDAP falhou";
 $TLS_error_ldap_user_not_found = "Usuário LDAP não encontrado";
 $TLS_error_ldap_start_tls_failed = "Falha no ativação TLS do LDAP";
 $TLS_unknown_authentication_method = "Não é possível tratar o método de autenticação %s";
-
+$TLS_tluser_account_expired = "Usuário do TestLink com acesso expirado";
 
 // ----- lib/functions/product.inc.php -----
 $TLS_info_product_delete_fails = "Ocorreu um erro ao excluir o Projeto de Teste";
@@ -3446,6 +3452,7 @@ $TLS_API_REQSPEC_KO="Especificação de Requisitos (id=%s) não existe no sistem
 $TLS_API_REQ_KO="Requisito (id=%s) não existe no sistema";
 $TLS_API_REQSPEC_IS_EMPTY="Especificação de Requisitos (title=%s / id=%s) não tem requisitos";
 $TLS_API_REQ_REQSPEC_KO="Requisito (docid=%s/title=%s/id=%s) não pertence à Especificação de Requisitos Req. Spec. (title=%s / id=%s)";
+$TLS_API_NO_REQ_IN_THIS_PROJECT="O Requisito (docid=%s) não pertence ao Projeto (id=%s).";
 $TLS_API_TPLAN_HAS_NO_BUILDS="Não há builds definidas para o Plano de Testes (name=%s/id=%s)";
 $TLS_API_VERSION_NOT_VALID="Número da Versão %s não é válido.";
 
@@ -4060,7 +4067,7 @@ $TLS_mail_subject_req_delete = "Requisito Apagado [%docid%-%title%]";
 $TLS_mail_subject_req_new_version = "Nova Versão de Requisitos [%docid%-%title%]";
 
 
-$TLS_hint_add_testcases_to_testplan_status = "Casos de Teste com a Versão mais recente e com estado com um destes valores (%s) não será mostrado neste écran";
+$TLS_hint_add_testcases_to_testplan_status = "Casos de Teste com a Versão mais recente e com status com um destes valores (%s) não será mostrado neste écran";
 
 $TLS_copy_done = "Copia concluída";
 $TLS_copy_tester_assignments_title = "Copiar Atribuições a Testadores";
@@ -4103,4 +4110,6 @@ $TLS_search_other_attr = "Você pode definir critérios de pesquisa que não use
 $TLS_search_created_by_ph = "o valor será pesquisado em Login/Primeiro Nome/Sobrenome";
 $TLS_multiple_entities_search = "Pesquisar em múltiplas entidades";
 $TLS_no_access_to_feature = "Você não tem permissões para aceder a esta funcionalidade";
+
+$TLS_applyExecTypeChangeToAllSteps = "Aplicar a todos os Passos";
 // ----- END ------------------------------------------------------------------

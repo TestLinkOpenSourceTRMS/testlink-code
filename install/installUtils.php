@@ -9,8 +9,6 @@
  * 
  * Functions for installation process
  *
- * internal revisions
- * @since 1.9.6
  *
  */
 
@@ -33,25 +31,26 @@ foreach( $dirPath as $the_dir)
 
   if ($handle = opendir($the_dir)) 
   {
+    clearstatcache();
+    while (false !== ($file = readdir($handle))) 
+    {
+      $is_folder=is_dir($the_dir . $file);
+      
+      // needed because is_dir() cached result. See PHP Manual
       clearstatcache();
-      while (false !== ($file = readdir($handle))) 
-      {
-          $is_folder=is_dir($the_dir . $file);
-          // needed because is_dir() cached result. See PHP Manual
-          clearstatcache();
           
-          if ($file != "." && $file != ".." && !$is_folder)
-          {
-             // 20071021 - use only is extension sql
-             $file=trim($file);
-             $path_parts=pathinfo($file);
-             if( isset($path_parts['extension']) && $path_parts['extension'] == 'sql' )
-             {   
-               $filesArr[] = $my_dir_path . $file;
-             }  
-          } 
-      }
-      closedir($handle);
+      if ($file != "." && $file != ".." && !$is_folder)
+      {
+        // use only if extension is sql
+        $file=trim($file);
+        $path_parts=pathinfo($file);
+        if( isset($path_parts['extension']) && $path_parts['extension'] == 'sql' )
+        {   
+          $filesArr[] = $my_dir_path . $file;
+        }  
+      } 
+    }
+    closedir($handle);
   }  
   
   sort($filesArr);
@@ -888,23 +887,16 @@ function _mssql_set_passwd($db,$login,$passwd)
   $db->exec_query($sql);
   
 
-} // function end
+} 
 
-
-/*
-  function: important_reminder()
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ *
+ */
 function important_reminder()
 {
-echo ' <br><br><span class="headers">YOUR ATTENTION PLEASE:</span><br>To have a fully functional installation 
+  echo ' <br><br><span class="headers">YOUR ATTENTION PLEASE:</span><br>To have a fully functional installation 
        You need to configure mail server settings, following this steps<br>
        <ul>
        <li>copy from config.inc.php, [SMTP] Section into custom_config.inc.php.</li>
        <li>complete correct data regarding email addresses and mail server.</li></ul><p>';
-}  /* Function ends */
-?>
+}

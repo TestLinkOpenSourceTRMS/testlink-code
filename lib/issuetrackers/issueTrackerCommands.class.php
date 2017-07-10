@@ -61,8 +61,11 @@ class issueTrackerCommands
     $obj->canManage = $argsObj->currentUser->hasRight($this->db,'issuetracker_management'); 
     $obj->user_feedback = array('type' => '', 'message' => '');
 
-    $obj->l18n = init_labels(array('issuetracker_management' => null, 'btn_save' => null,
-                                   'create' => null, 'edit' => null, 'issuetracker_deleted' => null));
+    $obj->l18n = init_labels(array('issuetracker_management' => null, 
+                                   'btn_save' => null,'create' => null, 
+                                   'edit' => null, 
+                                   'checkConnection' => 'btn_check_connection', 
+                                   'issuetracker_deleted' => null));
 
     // we experiment on way to get Action Description for GUI using __FUNCTION__
     $obj->l18n['doUpdate'] = $obj->l18n['edit'];
@@ -256,6 +259,7 @@ class issueTrackerCommands
     else
     {
       $guiObj->operation = 'doCreate';
+      $guiObj->item['id'] = 0; 
     }  
 
     $guiObj->item['name'] = $argsObj->name;
@@ -265,7 +269,8 @@ class issueTrackerCommands
              $this->issueTrackerMgr->getImplementationForType($argsObj->type);
 
     $class2create = $guiObj->item['implementation'];
-    $its = new $class2create($argsObj->type,$argsObj->cfg);
+
+    $its = new $class2create($argsObj->type,$argsObj->cfg,$argsObj->name);
     $guiObj->connectionStatus = $its->isConnected() ? 'ok' : 'ko';
 
     return $guiObj;

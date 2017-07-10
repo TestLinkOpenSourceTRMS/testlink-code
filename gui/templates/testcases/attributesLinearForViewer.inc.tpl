@@ -58,12 +58,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <select name="exec_type" onchange="document.getElementById('execTypeForm_{$args_testcase.id}').submit();" >
       {html_options options=$gui->execution_types selected=$args_testcase.execution_type}
     </select>
+    <input name="changeExecTypeOnSteps" type="checkbox">{$tcView_viewer_labels.applyExecTypeChangeToAllSteps}
   {else}
     {$gui->execution_types[$args_testcase.execution_type]}
   {/if}
 </form>
 {/if}
 
+<br>
 <form style="display:inline;" id="estimatedExecDurationForm_{$args_testcase.id}" 
       name="estimatedExecDurationForm_{$args_testcase.id}" method="post"
       action="{$basehref}lib/testcases/tcEdit.php">

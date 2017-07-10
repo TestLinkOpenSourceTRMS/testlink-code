@@ -122,9 +122,6 @@
  *     if the root element of the spec_view, has 0 test => then the default
  *     structure is returned ( $result = array('spec_view'=>array(), 'num_tc' => 0))
  * 
- * @internal Revisions:
- * 
- *  20100721 - asimon - BUGID 3406 - added user_assignments_per_build to options
  *  
  */
 
@@ -187,6 +184,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   }  
 
   $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
+
 
   $platforms = getPlatforms($db,$tproject_id,$testplan_id);
   $idx = 0;
@@ -639,6 +637,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
         $getFilters['status'] = array('not_in' => array_keys($s2h));   
       }
       
+      //var_dump($getFilters);
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
       
       switch($specViewType)
@@ -951,7 +950,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
   $out[$idx]['linked_by'] = 0;                                          
   $out[$idx]['priority'] = 0;
 
-  $thelevel = $out[0]['level']+1;
+  $the_level = $out[0]['level']+1;
   $idx++;
   $tsuite_tcqty=array($id => 0);
 
@@ -1046,7 +1045,10 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
         }
         else 
         {
-          $the_level = $level[$current['parent_id']];
+          if( isset($level[$current['parent_id']]) )
+          {
+            $the_level = $level[$current['parent_id']];
+          }  
         } 
       }
       $out[$idx]['testsuite']=array('id' => $current['id'], 'name' => $current['name']);

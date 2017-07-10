@@ -16,6 +16,7 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once('email_api.php');
 require_once("specview.php");
+require_once('Zend/Validate/EmailAddress.php');
 
 testlinkInitPage($db,false,false,"checkRights");
 
@@ -456,13 +457,18 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
    
   $tcaseSet=null;
   $tcnames=null;
-  $email=array();
 
   $assigner=$guiObj->all_users[$argsObj->user_id]->firstName . ' ' .
             $guiObj->all_users[$argsObj->user_id]->lastName ;
               
+
+  $email=array();
   $email['from_address']=config_get('from_email');
- 
+  $email['attachment'] = null;
+  $email['cc'] = null;
+  $email['exit_on_error'] = true;
+  $email['htmlFormat'] = true;
+
   $body_header = $lbl['testproject'] . ': ' . $argsObj->tproject_name . '<br />' .
                  $lbl['testplan'] . ': ' . $guiObj->testPlanName .'<br />' .
                  $lbl['build'] . ': ' . $guiObj->buildName .'<br /><br />';
@@ -520,6 +526,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     $flat_path[$tcase_id]=implode('/',$pieces) . '/' . $tcnames[$tcase_id];  
   }
 
+  $validator = new Zend_Validate_EmailAddress();
   foreach($testers as $tester_type => $tester_set)
   {
     if( !is_null($tester_set) )
@@ -534,7 +541,12 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
         }  
 
         $userObj=$guiObj->all_users[$user_id];
-        $email['to_address']=$userObj->emailAddress;
+        $email['to_address'] = trim($userObj->emailAddress);
+        if($email['to_address'] == '' || !$validator->isValid($email['to_address']))
+        {
+          continue;
+        }  
+
         $email['body'] = $body_header;
         $email['body'] .= sprintf($mail_details[$tester_type],
                           $userObj->firstName . ' ' .$userObj->lastName,$assigner);
@@ -562,9 +574,11 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 
           
         $email['body'] .= '<br />' . date(DATE_RFC1123);
+
         $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'], null, 
-                               '', true, true);
+                               $email['subject'], $email['body'], $email['cc'], 
+                               $email['attachment'],$email['exit_on_error'], 
+                               $email['htmlFormat']);
       } // foreach($tester_set as $user_id => $value)
     }                       
   }

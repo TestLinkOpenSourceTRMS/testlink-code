@@ -5,11 +5,8 @@
  * 
  * @filesource  testproject.class.php
  * @package     TestLink
- * @copyright   2005-2016, TestLink community 
+ * @copyright   2005-2017, TestLink community 
  * @link        http://testlink.sourceforge.net/
- *
- * @internal revisions
- * @since 1.9.16
  * 
  **/
 
@@ -474,12 +471,23 @@ function get_all($filters=null,$options=null)
   
   
   $my['filters'] = array('active' => null);
-  $my['options'] = array('order_by' => " ORDER BY nodes_hierarchy.name ", 'access_key' => null);
+  $my['options'] = array('order_by' => " ORDER BY nodes_hierarchy.name ", 
+                         'access_key' => null, 'output' => 'std');
   
   $my['filters'] = array_merge($my['filters'], (array)$filters);
   $my['options'] = array_merge($my['options'], (array)$options);
     
   
+  if($my['options']['output'] == 'count')
+  {
+    $sql = "/* $debugMsg */ SELECT COUNT(testprojects.id) AS qty ".
+           " FROM {$this->object_table} testprojects";
+
+    $rs = $this->db->get_recordset($sql);       
+    return $rs[0]['qty'];
+  }
+
+  // 
   $sql = "/* $debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
          " FROM {$this->object_table} testprojects, " .
          " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
@@ -511,7 +519,6 @@ function get_all($filters=null,$options=null)
       }
     }
   }  
-
 
   return $recordset;
 }
@@ -1284,7 +1291,7 @@ function setPublicStatus($id,$status)
   {
     $result = tl::OK;
 
-    $itemSet = $this->getKeywordSet($tproject_id);
+    $itemSet = (array)$this->getKeywordSet($tproject_id);
     $kwIDs = array_keys($itemSet);
 
     $opt = array('checkBeforeDelete' => false,
@@ -3706,7 +3713,7 @@ function getPublicAttr($id)
     {
       $sql = "/* $debugMsg */ UPDATE {$this->object_table} " . 
              " SET options = '" . $this->db->prepare_string(serialize($itemOpt)) . "'" .
-             " WHERE testprojects.id = " . $safeID;
+             " WHERE id = " . $safeID;
 
       $this->db->exec_query($sql);  
     }  
@@ -3729,5 +3736,16 @@ function getActiveTestPlansCount($id)
   return $rs[0]['qty'];       
 }
 
+/**
+ *
+ */
+static function getAPIKey(&$dbh,$id)
+{
+  $sch = tlDBObject::getDBTables('testprojects');
+  $sql = "SELECT api_key FROM {$sch['testprojects']} WHERE id=" . intval($id);
+  $rs = $dbh->get_recordset($sql);
+
+  return is_null($rs) ? $rs : $rs[0]['api_key'];
+}
 
 } // end class

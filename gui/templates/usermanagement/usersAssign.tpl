@@ -100,15 +100,25 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 	{/if}>
 	<input type="hidden" name="featureID" value="{$gui->featureID}" />
 	<input type="hidden" name="featureType" value="{$gui->featureType}" />
-	<div>
-		<table border='0'>
+
+  {$styleLH="padding: 0px 30px 10px 5px;"}
+  <div class="panel panel-default" style="background-color: #EAEAED;">
+    <div class="panel-body">
+		<table style="border:0;">
     	{if $gui->featureType == 'testproject'}
-    		<tr><td class="labelHolder">{$labels.TestProject}{$gui->accessTypeImg}</td><td>&nbsp;</td>
-    	{else}
-    		<tr><td class="labelHolder">{$labels.TestProject}{$smarty.const.TITLE_SEP}</td><td>{$gui->tproject_name|escape}</td></tr>
     		<tr>
-				<td class="labelHolder">{$labels.TestPlan}{$gui->accessTypeImg}</td>
+          <td class="labelHolder" style="{$styleLH}">{$labels.TestProject}{$gui->accessTypeImg}</td>
+          <td>&nbsp;</td>
+    	{else}
+    		<tr>
+          <td class="labelHolder" style="{$styleLH}">{$labels.TestProject}{$gui->tprojectAccessTypeImg}</td>
+          <td>{$gui->tproject_name|escape}</td>
+        </tr>
+    		<tr>
+				  <td class="labelHolder" style="{$styleLH}">{$labels.TestPlan}{$gui->accessTypeImg}
+          </td>
     	{/if}
+
 		    	<td>
             <select id="featureSel" onchange="changeFeature('{$gui->featureType}')">
 		    	   {foreach from=$gui->features item=f}
@@ -121,11 +131,13 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 		    	   </select>
 		    	</td>
 			<td>
+          {* 
 					<input type="button" value="{$labels.btn_change}" onclick="changeFeature('{$gui->featureType}');"/>
+          *}
 		  </td>
 			</tr>
    		<tr>
-   		<td class="labelHolder">{$labels.set_roles_to}</td>{if $gui->featureType == 'testproject'} <td>&nbsp;</td> {/if}
+   		<td class="labelHolder" style="{$styleLH}"">{$labels.set_roles_to}</td>{if $gui->featureType == 'testproject'} <td>&nbsp;</td> {/if}
       <td>
         <select name="allUsersRole" id="allUsersRole">
 		      {foreach key=role_id item=role from=$gui->optRights}
@@ -136,6 +148,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 			  </select>
       </td>
       <td>
+          &nbsp;
 					<input type="button" value="{$labels.btn_do}" 
 					       onclick="javascript:set_combo_group('usersRoleTable','userRole_',
 					                                           document.getElementById('allUsersRole').value);"/>
@@ -144,9 +157,10 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 
 		</table>
     </div>
-    
+    </div>
+
     <div id="usersRoleTable">
-	    <table class="common sortable" width="100%" id="item_view">
+	    <table class="common table table-bordered sortable" width="100%" id="item_view">
     	<tr>
     		<th>{$tlImages.sort_hint}{$labels.User}</th>
     		{assign var="featureVerbose" value=$gui->featureType}

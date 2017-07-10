@@ -1204,7 +1204,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         
     return $status_ok;
   }  
-  
+
   /**
    * Run all the necessary checks to see if the createBuild request is valid
    *  
@@ -1590,7 +1590,7 @@ class TestlinkXMLRPCServer extends IXR_Server
            " with contributions by TestLink development Team";
     return $str;        
   }
-  
+
   /**
    * Creates a new build for a specific test plan
    *
@@ -3161,7 +3161,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     $hasPlatforms = false;
     $hasPlatformIDArgs = false;
     $platform_id = 0;
-    $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
+    $checkFunctions = array('authenticate','checkTestProjectID',
+                            'checkTestCaseVersionNumber',
                             'checkTestCaseIdentity','checkTestPlanID');
     
     $status_ok = $this->_runChecks($checkFunctions,$messagePrefix);
@@ -3194,9 +3195,13 @@ class TestlinkXMLRPCServer extends IXR_Server
     if( $status_ok )
     {
       $ret = $this->checkTestCaseAncestry();
+      $status_ok = $ret['status_ok'];
+      
       if( !$ret['status_ok'] )
       {
-        $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+        $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . 
+                                        $ret['error_msg']); 
+        
       }           
     }
         
@@ -3541,20 +3546,26 @@ class TestlinkXMLRPCServer extends IXR_Server
    */
   protected function checkTestCaseAncestry($messagePrefix='')
   {
-    $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
-    $tproject_id=$this->args[self::$testProjectIDParamName];
-    $tcase_id=$this->args[self::$testCaseIDParamName];
-    $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
-    $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
+    $ret = array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
+    $tproject_id = $this->args[self::$testProjectIDParamName];
+    $tcase_id = $this->args[self::$testCaseIDParamName];
+    $tcase_tproject_id = $this->tcaseMgr->get_testproject($tcase_id);
       
     if($tcase_tproject_id != $tproject_id)
     {
-      $status_ok=false;
-      $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
+      $status_ok = false;
+      $tcase_info = $this->tcaseMgr->get_by_id($tcase_id);
+      $dummy = $this->tcaseMgr->getExternalID($tcase_id); 
+      $tcase_external_id = $dummy[0];
+
       $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
-      $msg = $messagePrefix . sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
-                                      $tproject_info['name'],$tproject_id);  
-      $ret=array('status_ok' => false, 'error_msg' => $msg , 'error_code' => TCASE_TPROJECT_KO);                                               
+      $msg = $messagePrefix . 
+             sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,
+                     $tcase_info[0]['name'],
+                     $tproject_info['name'],$tproject_id);  
+
+      $ret = array('status_ok' => false, 'error_msg' => $msg , 
+                   'error_code' => TCASE_TPROJECT_KO);
     } 
     return $ret;
   }
@@ -8017,14 +8028,14 @@ protected function createAttachmentTempFile()
 
       // check if a context (test plan/platform) is provided
       if ($this->_isParamPresent(self::$testPlanIDParamName)) {
-        $status_ok = checkTestPlanID($msg_prefix);
+        $status_ok = $this->checkTestPlanID($msg_prefix);
         $context['tplan_id'] = $this->args[self::$testPlanIDParamName];
 
         if ( $status_ok ) {
           if ($this->_isParamPresent(self::$platformIDParamName)) {
-            $status_ok = checkPlatformIdentity($this->args[self::$testPlanIDParamName],
-                                               $this->args[self::$platformIDParamName],
-                                               $msg_prefix);
+            $status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],
+                                                      null,
+                                                      $msg_prefix);
             $context['platform_id'] = $this->args[self::$platformIDParamName];
           }
         }
@@ -8270,7 +8281,7 @@ protected function createAttachmentTempFile()
     if( $status_ok )
     {
       $sql = " SELECT * FROM  {$this->tables['executions']} WHERE id " .
-             " IN (SELECT id AS exec_id FROM {$this->tables['executions']} ";
+             " IN (SELECT id AS exec_id FROM {$this->tables['executions']} " .
              "     WHERE testplan_id = {$tplan_id} " .
              "     AND tcversion_id " .
              "     IN ( SELECT id FROM {$this->tables['nodes_hierarchy']} " .
@@ -8309,6 +8320,88 @@ protected function createAttachmentTempFile()
   }
 
 
+ /**
+   * Close build
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["buildid"]
+   *   
+   * @return mixed $resultInfo
+   *         
+   * @access public
+   */    
+  public function closeBuild($args)
+  {
+    $operation = __FUNCTION__;
+    $messagePrefix="({$operation}) - ";
+  
+    $resultInfo = array();
+
+    $resultInfo[0]["id"] = 0;
+    $resultInfo[0]["status"] = true;
+    $resultInfo[0]["operation"] = $operation;
+    $resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
+
+    $this->_setArgs($args);
+
+    $checkFunctions = array('authenticate');       
+    $status_ok = $this->_runChecks($checkFunctions,$messagePrefix);       
+
+    if( $status_ok )
+    {
+       $status_ok = $this->_isParamPresent(self::$buildIDParamName,$messagePrefix,self::SET_ERROR);     
+    }
+
+    if( $status_ok )
+    {
+       $buildID = $this->args[self::$buildIDParamName];
+       if( !($status_ok = is_int($buildID)) )
+       {
+         $msg = sprintf(BUILDID_NOT_INTEGER_STR,$buildID);
+         $this->errors[] = new IXR_Error(BUILDID_NOT_INTEGER, $msg);
+       } 
+    }
+
+    if( $status_ok )
+    {
+       // Get Test Plan ID from Build ID in order to check rights
+       $bm = new build_mgr($this->dbObj);
+
+       $buildID = intval($this->args[self::$buildIDParamName]); 
+       $opx = array('output' => 'fields', 'fields' => 'id,testplan_id');
+       $buildInfo = $bm->get_by_id($buildID,$opx);
+      
+       if( $buildInfo == false || count($buildInfo) == 0)
+       {
+         $status_ok = false;
+         $msg = sprintf(INVALID_BUILDID_STR,$buildID);
+         $this->errors[] = new IXR_Error(INVALID_BUILDID,$msg);
+       } 
+    }  
+
+    if( $status_ok )
+    {
+      $context = array();
+      $context[self::$testPlanIDParamName] = $buildInfo['testplan_id'];
+
+      $status_ok = 
+        $this->userHasRight("testplan_create_build",
+                            self::CHECK_PUBLIC_PRIVATE_ATTR,$context);
+    }  
+
+    if( $status_ok )
+    {
+      $bm->setClosed($buildID);
+      $resultInfo[0]["id"] = $buildID;
+    }
+
+
+    return $status_ok ? $resultInfo : $this->errors;
+  }
+ 
+
+
   /**
    *
    */
@@ -8317,6 +8410,7 @@ protected function createAttachmentTempFile()
     $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
                             'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
                             'tl.createBuild' => 'this:createBuild',
+                            'tl.closeBuild' => 'this:closeBuild',
                             'tl.createPlatform' => 'this:createPlatform',
                             'tl.createTestCase' => 'this:createTestCase',
                             'tl.createTestCaseSteps' => 'this:createTestCaseSteps',

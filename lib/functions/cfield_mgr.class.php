@@ -598,9 +598,12 @@ class cfield_mgr extends tlObject
         }
         	
         $html_identity=$input_name . $t_name_suffix;
-  			$str_out .="<select {$required} name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
-  			$str_out .= ' size="' . $t_list_size . '">';
-        	
+  			$str_out .= '<select data-cfield="list" '  . 
+                    "{$required} name=\"{$html_identity}\" " .
+                    "id=\"{$input_name}\" {$t_multiple}";
+  			// $str_out .= ' size="' . $t_list_size . '">';
+        $str_out .= '">';
+          	
   			$t_selected_values = explode( '|', $cfValue);
    			foreach( $t_values as $t_option ) 
         {
@@ -1875,18 +1878,18 @@ function name_is_unique($id,$name)
           // another piece is added (testplan_tcversion.id) then for a date CF, 
           // date part indicator is Position 5, instead of 4
           //        	
-          $dummy=explode('_',$key);
-          $last_idx=count($dummy)-1;
-          $the_value=$value;
+          $dummy = explode('_',$key);
+          $last_idx = count($dummy)-1;
+
           if( isset($this->html_date_input_suffix[$dummy[$last_idx]]) )
           {
-            $the_value=array();
-            if( isset($cfield[$dummy[$cfid_pos]]) )
-            {
-              $the_value=$cfield[$dummy[$cfid_pos]]['cf_value'];
-            }
             $the_value[$dummy[$last_idx]]=$value;
           }
+          else
+          {
+            $the_value=$value;
+          }  
+
           $cfield[$dummy[$cfid_pos]]=array("type_id"  => $dummy[$cftype_pos],
                                            "cf_value" => $the_value);
         }
@@ -1916,39 +1919,42 @@ function name_is_unique($id,$name)
           break;
 
           case 'date':
-          	if (($value == 0) || ($value == ''))
+          	if (($value['input'] == 0) || ($value['input'] == ''))
             {
               $cfield[$field_id]['cf_value']='';
             }
             else
             {
-      				$parsed_value = split_localized_date($value['input'], $date_format);
-      				if($parsed_value != null) {
-      					$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
-      					$cfield[$field_id]['cf_value'] = $parsed_value;
-      				} else {
-      					$cfield[$field_id]['cf_value']='';
-      				}
+              $cfield[$field_id]['cf_value']='';
+              $pvalue = split_localized_date($value['input'], $date_format);
+              if($pvalue != null) 
+              {
+      					$cfield[$field_id]['cf_value'] = 
+                  mktime(0,0,0,$pvalue['month'],$pvalue['day'],$pvalue['year']);
+      				} 
       			}
           break;
           
           case 'datetime':
-      			if ($value['input'] == '') {
+            if ($value['input'] == '') 
+            {
               $cfield[$field_id]['cf_value']='';
             }
             else
             {
-            	$parsed_value = split_localized_date($value['input'], $date_format);
-            	if($parsed_value != null) {
-            		if($value['hour'] == -1 || $value['minute'] == -1 || $value['second'] == -1) {
+              $cfield[$field_id]['cf_value']='';
+            	$pvalue = split_localized_date($value['input'], $date_format);
+            	if($pvalue != null) 
+              {
+            		if($value['hour'] == -1 || $value['minute'] == -1 || 
+                   $value['second'] == -1) 
+                {
             			$value['hour'] = $value['minute'] = $value['second'] = 0;
             		}
-            		$cfield[$field_id]['cf_value'] = mktime($value['hour'], $value['minute'], $value['second'],
-            	                                            $parsed_value['month'], $parsed_value['day'], 
-            	                                            $parsed_value['year']);
-            	} else {
-            		$cfield[$field_id]['cf_value']='';
-            	}
+            		$cfield[$field_id]['cf_value'] = 
+                  mktime($value['hour'], $value['minute'], $value['second'],
+            	           $pvalue['month'], $pvalue['day'], $pvalue['year']);
+            	} 
             }
           break;         
 
@@ -1972,7 +1978,7 @@ function name_is_unique($id,$name)
       } // foreach
     }
 
-    return($cfield);
+    return $cfield;
  } // function end
 
 
@@ -2682,7 +2688,7 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=
   {
     $lbl_upd = lang_get('update_hint');
 		$cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
-   
+
     $NO_WARNING_IF_MISSING=true;
     $openTag = $my['opt']['addTable'] ? "<table>" : '';
     $closeTag = $my['opt']['addTable'] ? "</table>" : '';
@@ -2738,6 +2744,7 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null,$opt=
  */
 function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 {
+
  	if( !is_null($input_values) )
   {
     $dateFormatDomain = config_get('locales_date_format');
@@ -2777,12 +2784,13 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
       switch($verbose_type)
 			{
         case 'date':
-          if ( ($value != 0) && ($value != '') )
+          if ( ($value != 0) && ($value != '') && !is_numeric($value) )
           {
             $parsed = split_localized_date($value, $date_format);
             if($parsed != null) 
             {
-              $value = mktime(0,0,0,$parsed['month'],$parsed['day'],$parsed['year']);
+              $value = mktime(0,0,0,$parsed['month'],$parsed['day'],
+                              $parsed['year']);
             } 
             else 
             {
@@ -2790,9 +2798,9 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
             }
           }
         break;
-    
+
         case 'datetime':
-          if ( ($value != 0) && ($value != '') )
+          if ( ($value != 0) && ($value != '') && !is_numeric($value) )
           {
             $parsed = split_localized_date($value, $date_format);
             if($parsed != null) 
@@ -2814,7 +2822,10 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
               $value = '';
             }
           }
+
+
         break;
+
      	}
 			
 			if (!is_null($value) && is_array($value))
@@ -2835,12 +2846,13 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
    */
   function html_inputs($cfields_map,$name_suffix='',$input_values=null)
   {
-    $inputSet = '';
+    $inputSet = array();
     $getOpt = array('name_suffix' => $name_suffix);
 
     if(!is_null($cfields_map))
     {
       $cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
+
       $NO_WARNING_IF_MISSING=true;
       foreach($cf_map as $cf_id => $cf_info)
       {

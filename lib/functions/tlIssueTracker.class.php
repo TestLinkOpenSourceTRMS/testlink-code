@@ -50,7 +50,9 @@ class tlIssueTracker extends tlObject
                        18 =>  array('type' => 'seapine','api' =>'db','enabled' => false, 'order' => -1),
                        19 =>  array('type' => 'trac','api' =>'xmlrpc','enabled' => true, 'order' => -1),
                        20 =>  array('type' => 'trackplus','api' =>'soap','enabled' => false, 'order' => -1),
-                       21 =>  array('type' => 'trackplus','api' =>'db','enabled' => false, 'order' => -1));
+                       21 =>  array('type' => 'trackplus','api' =>'db','enabled' => false, 'order' => -1),
+                       22 =>  array('type' => 'gitlab','api' =>'rest','enabled' => true, 'order' => -1)
+                     );
   
     
   var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');

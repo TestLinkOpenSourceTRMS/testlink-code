@@ -29,13 +29,19 @@
  *
  * Scripted update according en_GB string file (version: ) 
  *
+ * Scripted update according en_GB string file (version: ) 
+ *
+ * Scripted update according en_GB string file (version: ) 
+ *
+ * Scripted update according en_GB string file (version: ) 
+ *
  **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última atualização: 19/03/2017 (TestLink 1.9.17)";
+$TLS_last_update = "Última atualização: 29/04/2017 (TestLink 1.9.17)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Ativo (clicar para inativar)";
@@ -2339,6 +2345,8 @@ $TLS_th_password = "Senha";
 $TLS_warning_empty_first_name = "Por favor introduza um nome";
 $TLS_warning_empty_last_name = "Por favor introduza um apelido";
 $TLS_warning_empty_login = "Por favor, introduza um login";
+$TLS_expiration_date = "Data de Expiração";
+$TLS_expiration = "Expiração";
 
 
 // ----- gui/templates/attachmentupload.tpl -----
@@ -2441,8 +2449,8 @@ $TLS_href_inventory_management = "Gestão de Inventário";
 $TLS_href_keywords_assign = "Selecionar Palavra Chave";
 $TLS_href_keywords_manage = "Gerir Palavras Chave";
 $TLS_href_keywords_view = "Visualizar Palavras Chave";
-$TLS_href_print_tc = "Imprimir Casos de Teste";
-$TLS_href_print_req = "Imprimir Requisitos";
+$TLS_href_print_tc = "Documento de Especificação de Testes";
+$TLS_href_print_req = "Documento de Especificação de Requisitos";
 $TLS_href_req_assign = "Selecionar Requisitos";
 $TLS_href_req_spec = "Especificar Requisitos";
 $TLS_href_req_overview = "Visão Geral dos Requisitos";
@@ -2549,7 +2557,7 @@ $TLS_error_ldap_update_failed = "Atualização do LDAP falhou";
 $TLS_error_ldap_user_not_found = "Utilizador LDAP não encontrado";
 $TLS_error_ldap_start_tls_failed = "Falha no ativação TLS do LDAP";
 $TLS_unknown_authentication_method = "Não é possível tratar o método de autenticação %s";
-
+$TLS_tluser_account_expired = "Utilizador do TestLink com acesso expirado";
 
 // ----- lib/functions/product.inc.php -----
 $TLS_info_product_delete_fails = "Ocorreu um erro ao apagar o Projecto de Teste";
@@ -3442,6 +3450,7 @@ $TLS_API_REQSPEC_KO = "A Especificação de Requisitos (id=%s) não existe no si
 $TLS_API_REQ_KO = "O Requisito (id=%s) não existe no sistema";
 $TLS_API_REQSPEC_IS_EMPTY = "A Especificação de Requisitos (title=%s / id=%s) não tem Requisitos";
 $TLS_API_REQ_REQSPEC_KO = "O Requisito (docid=%s/title=%s/id=%s) não pertence à Especificação de Requisitos Req. Spec. (title=%s / id=%s)";
+$TLS_API_NO_REQ_IN_THIS_PROJECT="O Requisito (docid=%s) não pertence ao Projecto (id=%s).";
 $TLS_API_TPLAN_HAS_NO_BUILDS = "Não há Builds definidas para o Plano de Testes (name=%s/id=%s)";
 $TLS_API_VERSION_NOT_VALID = "O número da Versão %s não é válido.";
 
@@ -4099,4 +4108,6 @@ $TLS_search_other_attr = "Você pode definir critérios de pesquisa que não use
 $TLS_search_created_by_ph = "o valor será pesquisado em Login/Primeiro Nome/Apelido";
 $TLS_multiple_entities_search = "Pesquisar em múltiplas entidades";
 $TLS_no_access_to_feature = "Você não tem permissões para aceder a esta funcionalidade";
+
+$TLS_applyExecTypeChangeToAllSteps = "Aplicar a todos os Passos";
 // ----- END ------------------------------------------------------------------

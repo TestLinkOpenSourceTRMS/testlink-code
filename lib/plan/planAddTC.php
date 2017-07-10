@@ -18,6 +18,7 @@ require_once('../../config.inc.php');
 require_once("common.php");
 require_once('email_api.php');
 require_once("specview.php");
+require_once('Zend/Validate/EmailAddress.php');
 
 testlinkInitPage($db);
 
@@ -631,7 +632,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     $flat_path[$tcase_id]=implode('/',$pieces) . '/' . $tcnames[$tcase_id];  
   }
     
-    
+  $validator = new Zend_Validate_EmailAddress();
   foreach($testers as $tester_type => $tester_set)
   {
     if( !is_null($tester_set) )
@@ -640,7 +641,12 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
       foreach($tester_set as $user_id => $value)
       {
         $userObj=$userData[$user_id];
-        $email['to_address']=$userObj->emailAddress;
+        $email['to_address'] = trim($userObj->emailAddress);
+        if($email['to_address'] == '' || !$validator->isValid($email['to_address']))
+        {
+          continue;
+        }  
+
         $email['body'] = $body_first_lines;
         $email['body'] .= sprintf($mail_details[$tester_type],
                                   $userObj->firstName . ' ' .$userObj->lastName,$assigner);

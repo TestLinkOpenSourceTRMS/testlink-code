@@ -1,5 +1,5 @@
 ===============================================================
-         TestLink 1.9.17 (Prague Bugfix 17) Alan Turing - Read me
+    TestLink 1.9.17 (Prague Bugfix 17) Alan Turing - Read me
 ===============================================================
 
 Contents
@@ -89,6 +89,36 @@ http://mantis.testlink.org/view.php?id=5372
 
 ** amount of memory assigned to php
 See http://mantis.testlink.org/view.php?id=7178
+
+** Changes on LDAP CONFIGURATION **
+Since 1.9.16 authentication against Multiple LDAP Servers is supported 
+(see http://mantis.testlink.org/view.php?id=2842).
+To implement this feature configuration parameters have been changed 
+as explained here:
+
+TestLink Version < 1.9.16
+$tlCfg->authentication['method'] = 'LDAP';
+
+$tlCfg->authentication['ldap_server'] = 'ldap.xyz.com';
+$tlCfg->authentication['ldap_port'] = '389';
+$tlCfg->authentication['ldap_version'] = '3';
+$tlCfg->authentication['ldap_root_dn'] = 'dc=xyz,dc=com';
+$tlCfg->authentication['ldap_bind_dn'] = 'uid=tl,ou=staff,dc=xyz,dc=com';
+$tlCfg->authentication['ldap_bind_passwd'] = 'XYZw';
+$tlCfg->authentication['ldap_tls'] = false; // true -> use tls
+
+
+TestLink Version >= 1.9.16
+$tlCfg->authentication['method'] = 'LDAP';
+
+$tlCfg->authentication['ldap'][1]['ldap_server'] = 'ldap.xyz.com';
+$tlCfg->authentication['ldap'][1]['ldap_port'] = '389';
+$tlCfg->authentication['ldap'][1]['ldap_version'] = '3';
+$tlCfg->authentication['ldap'][1]['ldap_root_dn'] = 'dc=xyz,dc=com';
+$tlCfg->authentication['ldap'][1]['ldap_bind_dn'] = 'uid=tl,ou=staff,dc=xyz,dc=com'; 
+$tlCfg->authentication['ldap'][1]['ldap_bind_passwd'] = 'XYZw';
+$tlCfg->authentication['ldap'][1]['ldap_tls'] = false;
+
 
 3. System Requirements - server
 ===============================================================

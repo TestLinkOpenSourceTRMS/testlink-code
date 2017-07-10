@@ -629,7 +629,7 @@ function addIssue($dbHandler,$argsObj,$itsObj)
     {
       $issueFields = current($issueFields); 
     }
-    $setReporter = isset($issueFields[$issueType]['reporter']);
+    $setReporter = isset($issueFields[$issueType]['fields']['reporter']);
   }  
   else
   {

@@ -3,17 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * This file handles the initial authentication for login and creates all user session variables.
+ * Handles the initial authentication for login and creates all user session variables.
  *
  * @filesource  doAuthorize.php
  * @package     TestLink
  * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
- * @copyright   2003-2015, TestLink community 
+ * @copyright   2003-2017, TestLink community 
  * @link        http://www.testlink.org
  *
- *
- * @internal revisions
- * @since 1.9.14
  */
 
 require_once("users.inc.php");
@@ -39,8 +36,18 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
   $my['options'] = array_merge($my['options'], (array)$options);
 
   $doLogin = false;
+  $doChecks = true;
+  
+  $login = trim($login);
+  $pwd = trim($pwd);
 
-  if (!is_null($pwd) && !is_null($login))
+  if($login == '')
+  {
+    $doChecks = false;
+    $result['msg'] = ' ';    
+  } 
+
+  if( $doChecks && !is_null($pwd) && !is_null($login))
   {
     $user = new tlUser();
     $user->login = $login;
@@ -48,17 +55,38 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
 
     if ($login_exists)
     {
-      $password_check = auth_does_password_match($user,$pwd);
-      if(!$password_check->status_ok)
-      {
-        $result = array('status' => tl::ERROR, 'msg' => null);
-      }
+      $doGo = true;
+      $checkDate = !is_null($user->expiration_date);
+      $checkDate = $checkDate && (trim($user->expiration_date) != '');
       
-      $doLogin = $password_check->status_ok && $user->isActive;
-      if( !$doLogin )
+      if( $checkDate )
       {
-        logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
-      }
+        $now = strtotime(date_format(date_create(),'Y-m-d'));
+        $exd = strtotime($user->expiration_date);
+
+        if($now >= $exd )
+        {
+          // Expired!
+          $doGo = false;
+          $result['msg'] = lang_get('tluser_account_expired');
+        }  
+      }  
+ 
+      if( $doGo )
+      {
+        $password_check = auth_does_password_match($user,$pwd);
+        if(!$password_check->status_ok)
+        {
+          $result = array('status' => tl::ERROR, 'msg' => null);
+        }
+
+        $doLogin = $password_check->status_ok && $user->isActive;
+        if( !$doLogin )
+        {
+          logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
+        }
+      }  
+      
     }
     else
     {
@@ -127,6 +155,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
       $result['status'] = tl::OK;
     }
   }
+
   return $result;
 }
 
@@ -347,4 +376,43 @@ function doSSOWebServerVar(&$dbHandler,$authCfg=null)
   }
 
   return $ret;
+}
+
+/**
+ *
+ */
+function doSessionSetUp(&$dbHandler,&$userObj)
+{
+  global $g_tlLogger;
+
+  $ret = null;
+
+  // Need to do set COOKIE following Mantis model
+  $expireOnBrowserClose=false;
+  $auth_cookie_name = config_get('auth_cookie');
+  $cookie_path = config_get('cookie_path');
+  setcookie($auth_cookie_name,$userObj->getSecurityCookie(),$expireOnBrowserClose,
+            $cookie_path);      
+
+  // Block two sessions within one browser
+  if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
+  {
+    $ret['msg'] = lang_get('login_msg_session_exists1') . 
+                     ' <a style="color:white;" href="logout.php">' . 
+                     lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2'); 
+  }
+  else
+  { 
+    // Setting user's session information
+    $_SESSION['currentUser'] = $userObj;
+    $_SESSION['lastActivity'] = time();
+          
+    $g_tlLogger->endTransaction();
+    $g_tlLogger->startTransaction();
+    setUserSessionFromObj($dbHandler,$userObj);
+
+    $ret['status'] = tl::OK;
+  }
+  
+  return $ret;        
 }

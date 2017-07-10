@@ -110,7 +110,7 @@ class TLSmarty extends Smarty
   private $tlImages;
   var $tlTemplateCfg;
 	
-  function TLSmarty()
+  function __construct()
   {
     global $tlCfg;
     global $g_tpl;
@@ -364,6 +364,7 @@ class TLSmarty extends Smarty
                    'choiceOn' => $imgLoc . 'accept.png',
                    'clear' => $imgLoc . 'trash.png',
                    'clear_notes' => $imgLoc . 'font_delete.png',
+                   'clipboard' => $imgLoc . 'page_copy.png',
                    'check_ok' => $imgLoc . 'lightbulb.png',
                    'check_ko' => $imgLoc . 'link_error.png',
                    'cog'  => $imgLoc . 'cog.png',
@@ -453,7 +454,12 @@ class TLSmarty extends Smarty
                    'test_status_passed_next' => $imgLoc . 'test_status_passed_next.png',
                    'test_status_failed_next' => $imgLoc . 'test_status_failed_next.png',
                    'test_status_blocked_next' => $imgLoc . 'test_status_blocked_next.png');
-                     
+
+    $imi = config_get('images');
+    if(count($imi) >0)
+    {
+      $dummy = array_merge($dummy,$imi);
+    }                 
     return $dummy;
 	}
 

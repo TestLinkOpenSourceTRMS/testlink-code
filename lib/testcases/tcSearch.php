@@ -278,8 +278,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   }
 }
 
-echo $sql;
-
 if($gui->doSearch)
 {
   $gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;

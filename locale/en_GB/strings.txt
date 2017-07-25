@@ -118,7 +118,7 @@ $TLS_hint_list_of_bugs = 'BUGX,BUGY,BUGZ';
 $TLS_hour = "Hour";
 $TLS_import = "Import";
 $TLS_importViaAPI = "Import via API (%s)";
-$TLS_importance  = "Importance";
+$TLS_importance = "Importance";
 $TLS_imported = "Imported";
 $TLS_important_notice = "Important Notice";
 $TLS_its_duedate_with_separator = "Due date: ";
@@ -131,12 +131,12 @@ $TLS_log_message = "Log message";
 $TLS_mandatory = "Mandatory fields";
 $TLS_manual = "Manual";
 $TLS_Milestone = "Milestone";
-$TLS_months  = "months";
-$TLS_monitor  = "Monitor";
+$TLS_months = "months";
+$TLS_monitor = "Monitor";
 $TLS_monitor_set  = "Monitors";
 
-$TLS_name  = "Name";
-$TLS_navigator_add_remove_tcase_to_tplan  = "Add/Remove Test Cases";
+$TLS_name = "Name";
+$TLS_navigator_add_remove_tcase_to_tplan = "Add/Remove Test Cases";
 $TLS_navigator_tc_exec_assignment = "Assign Test Case Execution";
 $TLS_navigator_test_urgency = "Set Urgent Tests";
 $TLS_navigator_update_linked_tcversions = "Update Linked Test Case Versions";
@@ -158,7 +158,7 @@ $TLS_none = "None";
 $TLS_ok = "OK";
 $TLS_open_on_new_window = "open on new window";
 
-$TLS_priority  = "Priority";
+$TLS_priority = "Priority";
 $TLS_project = "Project";
 $TLS_public = "Public";
 $TLS_private = "Private";
@@ -188,7 +188,7 @@ $TLS_scope = "Scope";
 $TLS_status = "Status";
 $TLS_test_case = "Test Case";
 $TLS_testcase = $TLS_test_case; // obsolete
-$TLS_testcaseversion   = 'Test Case Version';
+$TLS_testcaseversion = 'Test Case Version';
 $TLS_tester = "Tester";
 $TLS_test_plan = "Test Plan";
 $TLS_testplan = $TLS_test_plan; // obsolete
@@ -197,8 +197,8 @@ $TLS_test_report = "Test Report";
 $TLS_test_suite = "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_type = "Type";
-$TLS_timestamp  = "Timestamp";
-$TLS_timestamp_lastchange  = "Last Change";
+$TLS_timestamp = "Timestamp";
+$TLS_timestamp_lastchange = "Last Change";
 $TLS_title = "Title";
 $TLS_too_much_data = "Amount of potential data to be generated is too high - please refine your request";
 $TLS_too_much_builds = "You have %s Active Builds, please choose no more than %s";
@@ -255,22 +255,22 @@ $TLS_copy = "copy";
 $TLS_delete = "delete";
 $TLS_disable = "disable";
 $TLS_export_import = "Export/Import";
-$TLS_executed  = "executed";
-$TLS_move  = "Move";
+$TLS_executed = "executed";
+$TLS_move = "Move";
 $TLS_remove = "remove";
 $TLS_update = "update";
 $TLS_update_hint = "check to update value when saving";
 
 
 // Buttons (used wide)
-$TLS_btn_apply   = "Apply";
-$TLS_btn_add   = "Add";
+$TLS_btn_apply = "Apply";
+$TLS_btn_add = "Add";
 $TLS_btn_add_to_testplans = "Add to Test Plans";
-$TLS_btn_assign  = "Assign";
-$TLS_btn_cancel  = "Cancel";
-$TLS_btn_check   = "Check";
-$TLS_btn_check_connection   = "Check connection";
-$TLS_btn_close   = "Close";
+$TLS_btn_assign = "Assign";
+$TLS_btn_cancel = "Cancel";
+$TLS_btn_check = "Check";
+$TLS_btn_check_connection = "Check connection";
+$TLS_btn_close = "Close";
 $TLS_btn_cp = "Copy";
 $TLS_btn_copy_ghost_zone = "Copy (ghost steps)";
 $TLS_btn_copy_step = "Copy step";
@@ -320,7 +320,7 @@ $TLS_test_status_unknown = "Unknown";
 
 $TLS_review_status_valid = "Valid";
 $TLS_review_status_draft = 'Draft';
-$TLS_review_status_future  = 'Future';
+$TLS_review_status_future = 'Future';
 $TLS_review_status_obsolete = 'Obsolete';
 
 $TLS_req_type_info = "Informational";
@@ -399,11 +399,11 @@ $TLS_estimated_time_min = "Estimated time for executing %s test cases (min):";
 $TLS_real_time_hours = "Time used for executing %s test cases (hours):";
 $TLS_real_time_min = "Time used for executing %s test cases (min):";
 
-$TLS_th_active     = $TLS_active; //obsolete
-$TLS_th_name     = $TLS_name; //obsolete
-$TLS_th_notes     = $TLS_description; //obsolete
-$TLS_th_testcase   = $TLS_test_case; // obsolete
-$TLS_th_delete     = $TLS_delete; // obsolete
+$TLS_th_active = $TLS_active; //obsolete
+$TLS_th_name = $TLS_name; //obsolete
+$TLS_th_notes = $TLS_description; //obsolete
+$TLS_th_testcase = $TLS_test_case; // obsolete
+$TLS_th_delete = $TLS_delete; // obsolete
 $TLS_th_requirement_feature = "Requirement Feature";
 
 $TLS_import_file_type = "Import file type";
@@ -437,9 +437,6 @@ $TLS_demo_update_user_disabled = 'Demo mode enabled => Update User DISABLED';
 $TLS_demo_update_role_disabled = 'Demo mode enabled => Update Role DISABLED';
 $TLS_demo_reset_password_disabled = 'Demo mode enabled => Password Reset DISABLED';
 $TLS_demo_special_user = "Demo mode enabled - user has been configured as special (see config.inc.php demoSpecialUsers)";
-                          'Site will be re-installed at random intervals WITHOUT warning.' .
-                          'All data will be deleted at each install.' .
-                          'If you find TestLink useful think about supporting our work.';
 $TLS_demo_mode_suggested_user = 'Login as admin';
 $TLS_demo_mode_suggested_password = 'Use admin as password';
 
@@ -492,16 +489,16 @@ $TLS_bad_password_symbol = 'Password requirement - must contains at least one sy
 
 // ----- archiveData.php -----
 $TLS_container_title_testcase = $TLS_test_case;
-$TLS_high_priority     = "High";
-$TLS_medium_priority   = "Medium";
-$TLS_low_priority     = "Low";
-$TLS_high_importance   = "High";
-$TLS_medium_importance   = "Medium";
-$TLS_low_importance   = "Low";
-$TLS_urgency_high     = "High";
-$TLS_urgency_medium   = "Medium";
-$TLS_urgency_low     = "Low";
-$TLS_test_importance   = "Test importance";
+$TLS_high_priority = "High";
+$TLS_medium_priority = "Medium";
+$TLS_low_priority = "Low";
+$TLS_high_importance = "High";
+$TLS_medium_importance = "Medium";
+$TLS_low_importance = "Low";
+$TLS_urgency_high = "High";
+$TLS_urgency_medium = "Medium";
+$TLS_urgency_low = "Low";
+$TLS_test_importance = "Test importance";
 $TLS_testcases_assigned_to_user = 'Test Project: %s - Test Cases Assigned to User: %s';
 $TLS_assigned_on = 'Assignment date';
 
@@ -1129,7 +1126,6 @@ $TLS_trep_ts = $TLS_test_suite;
 
 
 // gui/templates/reqSpecEdit.tpl
-                             "of requirements within the document. '0' means unused.";
 $TLS_copy_req_spec = "Copy Req. Spec.";
 
 
@@ -1887,10 +1883,10 @@ $TLS_submit_query = "Submit Query";
 $TLS_query_metrics_report = "Query Metrics Report";
 $TLS_enter_start_time = "Start Time";
 $TLS_enter_end_time = "End Time";
-$TLS_year     = "year";
-$TLS_month     = "month";
-$TLS_day     = "day";
-$TLS_hour     = "hour";
+$TLS_year = "year";
+$TLS_month = "month";
+$TLS_day = "day";
+$TLS_hour = "hour";
 $TLS_search_in_notes = "search for string in notes";
 $TLS_executor = "executed by";
 
@@ -2060,8 +2056,7 @@ $TLS_mail_testcase_assigned = "Following Test Cases has been assigned to you %s 
 $TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments HAS BEEN REMOVED  by %s <br /><br />";
 $TLS_send_mail_to_tester = "Send mail notification to tester";
 
-$TLS_mail_subject_link_to_assigned = 
-  'TestLink - Link to test assignments summary - Test Plan: %s (%s)';
+$TLS_mail_subject_link_to_assigned = 'TestLink - Link to test assignments summary - Test Plan: %s (%s)';
 
 // ----- gui/templates/tc_exec_unassign_all.tpl -----
 $TLS_btn_remove_all_tester_assignments = "Unassign all testers from selected Build";
@@ -2198,14 +2193,11 @@ $TLS_builds_description = "A build is identified by its title. Each build is " .
     "Active / Inactive &ndash; defines whether the build can be used. " .
     "Inactive builds are not listed on the execution and reports pages.<br />" .
     "Open / Closed &ndash; Only for open builds, test results can be modified.";
-    "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
-    "and if name does not exist, build will be created.";
 
 
 // ----- gui/templates/planView.tpl -----
 $TLS_testplan_alt_delete_tp = "Delete the test plan?";
 $TLS_testplan_alt_edit_tp = "Edit the test plan";
-    "Test Plan? You can use a deactivation via Test Plan management page.";
 $TLS_testplan_th_delete = "Delete";
 $TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
 $TLS_alt_active_testplan = "Active testplan";
@@ -2457,7 +2449,6 @@ $TLS_conflict = "Conflict";
 $TLS_error_deleting_req = "Error while deleting requirements";
 $TLS_error_inserting_req = "Error while inserting requirements";
 $TLS_error_updating_reqspec = "Error while updating Requirement Specification document";
-    " 'req_doc_id','title','description'";
 $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
 $TLS_warning_duplicate_reqdoc_id = "Duplicated document id %s";
@@ -2639,15 +2630,15 @@ $TLS_opt_show_hdrNumbering = "Header Numbering";
 $TLS_opt_show_toc = "Table of Contents";
 $TLS_opt_show_suite_txt = "Test Suite description";
 $TLS_opt_show_tc_body = "Test Case Scenario";
-$TLS_opt_show_tc_summary   = "Test Case Summary";
+$TLS_opt_show_tc_summary = "Test Case Summary";
 $TLS_opt_show_tc_author = "Test Case Author";
-$TLS_opt_show_tc_notes   = "Execution Notes";
+$TLS_opt_show_tc_notes = "Execution Notes";
 $TLS_opt_show_tcstep_exec_notes   = "Step Execution Notes";
 $TLS_opt_show_tcstep_exec_status = "Step Execution Results";
 
 $TLS_opt_show_tc_reqs = "Test Case Related Requirements";
 $TLS_opt_show_tc_keys = "Test Case Keywords";
-$TLS_opt_show_cfields  = "Test Case Custom Fields";
+$TLS_opt_show_cfields = "Test Case Custom Fields";
 $TLS_opt_show_passfail = "Test results";
 $TLS_opt_show_metrics = "Metrics";
 $TLS_opt_show_build_cfields = 'Build Custom Fields';
@@ -2845,7 +2836,6 @@ $TLS_format_pseudo_msword = 'Pseudo MS Word';
 
 
 // ----- lib/results/resultsSend.php -----
-                                   "a blank to field. Please enter a valid address.";
 
 
 // ----- lib/results/displayMgr.php -----
@@ -3396,12 +3386,12 @@ $TLS_info_tc_not_assigned_to_any_tplan = "This report shows all test cases that 
                                          "to ANY test plan of this project.";
 
 // ----- timeCharts -----
-$TLS_interval_end_date     = "Last Interval Date";
-$TLS_interval_header     = "Interval Type";
-$TLS_interval_number     = "Number of Intervals";
-$TLS_link_time_charts    = "Time Charts";
-$TLS_time_charts_metrics   = "Time Charts Metrics";
-$TLS_time_charts_title     = "Time Charts";
+$TLS_interval_end_date = "Last Interval Date";
+$TLS_interval_header = "Interval Type";
+$TLS_interval_number = "Number of Intervals";
+$TLS_link_time_charts = "Time Charts";
+$TLS_time_charts_metrics = "Time Charts Metrics";
+$TLS_time_charts_title = "Time Charts";
 
 // ----- linkto.php -----
 $TLS_testproject_not_found = "Testproject with prefix (%s) does not exist";
@@ -3532,10 +3522,8 @@ $TLS_no_platforms_on_tproject = "Input file provide platforms links, but target 
 $TLS_platform_not_on_tproject = "Input file request platform %s be linked to test plan, but does not exist on target Test Project.";
 $TLS_platform_linked = "Platform %s has been linked to test plan.";
 $TLS_tcase_link_updated = "Test Case (%s) - Version (%s) was already linked to Test Plan, only execution order has been updated.";
-
 $TLS_cant_link_to_tplan_feedback = "Test Case with external id %s version %s can not be linked to Test Plan ";
 $TLS_tcversion_status_forbidden = "Status %s is not allowed.";
-
 
 
 // ----- lib/execute/execExport.php -----

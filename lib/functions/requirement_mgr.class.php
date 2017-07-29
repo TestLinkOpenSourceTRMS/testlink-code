@@ -623,7 +623,6 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     $action4notify = 'delete';
     if( $version_id != self::ALL_VERSIONS )
     {
-      echo 'ONE VERSION';
       // we use version id when working on ONE REQ,
       // then I'm going to trust this.
       // From GUI if only one version exists,
@@ -648,7 +647,6 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       {
         foreach($set2del as $rk => $r2d)
         {
-          echo $rk;
           $this->notifyMonitors($rk,$action4notify,$user_id);
           if($action4notify == 'delete')
           {

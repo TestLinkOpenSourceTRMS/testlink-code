@@ -33,6 +33,7 @@ abstract class issueTrackerInterface
   // members to store the bugtracking information.
   // Values are set in the actual subclasses
   var $cfg = null;  // simpleXML object
+  var $xmlCfg = null; // xml string
   var $name = null;
 
   var $tlCharSet = null;
@@ -110,11 +111,11 @@ abstract class issueTrackerInterface
       return false;
     }
       
-    $xmlCfg = "<?xml version='1.0'?> " . $xmlString;
+    $this->xmlCfg = "<?xml version='1.0'?> " . $xmlString;
     libxml_use_internal_errors(true);
     try 
     {
-      $this->cfg = simplexml_load_string($xmlCfg);
+      $this->cfg = simplexml_load_string($this->xmlCfg);
       if (!$this->cfg) 
       {
         $msg = $signature . " - Failure loading XML STRING\n";

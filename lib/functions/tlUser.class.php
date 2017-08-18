@@ -238,7 +238,7 @@ class tlUser extends tlDBObject
    * not used at the moment, only placeholder
    * 
    * @return void
-   * @TODO implement  
+   * @TODO implement
    **/
   function create()
   {
@@ -402,12 +402,10 @@ class tlUser extends tlDBObject
   public function writeToDB(&$db)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
     $result = $this->checkDetails($db);
     if ($result >= tl::OK)
     {    
       $t_cookie_string = $this->auth_generate_unique_cookie_string($db);   
-
       // After addition of cookie_string, and following Mantisbt pattern,
       // seems we need to check if password has changed.
       //
@@ -476,9 +474,9 @@ class tlUser extends tlDBObject
   {
     $safeUserID = intval($this->dbID);
     $sqlSet = array();
-    $sqlSet[] = "DELETE FROM {$this->table['user_assignments']} WHERE user_id = {$safeUserID}";
-    $sqlSet[] = "DELETE FROM {$this->table['users']}  WHERE id = {$safeUserID}";
-
+    #remove $this->table['xx'] because it's doesn't work.
+    $sqlSet[] = "DELETE FROM user_assignments WHERE user_id = {$safeUserID}";
+    $sqlSet[] = "DELETE FROM users WHERE id = {$safeUserID}";
     foreach($sqlSet as $sql)
     {
       $result = $db->exec_query($sql) ? tl::OK : tl::ERROR;
@@ -487,7 +485,6 @@ class tlUser extends tlDBObject
         break;  
       }
     }
-  
     if ($result == tl::OK)
     {
       $result = $this->deleteTestProjectRoles($db);
@@ -1087,7 +1084,21 @@ class tlUser extends tlDBObject
   {
     return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
   }
-  
+  /**
+   * Search User by Login
+   * @param db
+   * @param login
+   */
+  static public function getByLogin(&$db,$login)
+  {
+    $user = new tlUser();
+    $user->login = $login;
+    if ($user->readFromDB($db,self::USER_O_SEARCH_BYLOGIN) >= tl::OK)
+    {
+      return $user;
+    }
+    return null;
+  }
 
   static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
   {

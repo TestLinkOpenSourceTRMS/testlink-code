@@ -1707,6 +1707,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       return $this->errors;
     }
   }
+
   
   /**
    * Gets a list of test plans within a project
@@ -6337,6 +6338,236 @@ protected function createAttachmentTempFile()
     return $status_ok ? $ret : $this->errors;
   }
 
+  /**
+   * if everything ok return an dict of all users actived
+   * The dict (hashmap java) contains user's database 
+   * There are no param.
+   *
+   * @return dict (HashMap Java)
+   */
+  public function getUsers($args)
+  {
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate');
+    $ret = array();
+
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
+    if( $status_ok )
+    {
+      $ret = tlUser::getAll($this->dbObj,"WHERE active=1",null,null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+    }
+    return $ret;
+  }
+
+  /**
+   * if everything ok return all roles from all projects/plans
+   * The dict (hashmap java) contains :
+   *     'projectId' => $projectID,
+   *     'projectName' => $projectName,
+   *     'roleInfo' => {$userID: {'role_id': $roleId, 'user_id': $userID}}
+   * roleInfo is a current $user->getUserRoleIDs($projectID)
+   * There are no param.
+   *
+   * @return dict (HashMap Java)
+   */
+  public function getInfoRoles($args)
+  {
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate');
+    $ret = array();
+
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
+    if( $status_ok )
+    {
+      foreach($this->tprojectMgr->get_all() as $project)
+      {    
+        $projectId = $project['id'];
+        $userRole = $this->tprojectMgr->getUserRoleIDs(strval($projectId));
+        $arra = [
+          "projectId" => $projectId,
+          "projectName" => $project['name'],
+          "roleInfo" => $userRole,
+        ];
+        array_push($ret, $arra);
+      }
+      foreach($this->tplanMgr->get_all() as $plan)
+      {   
+        $planId = $plan['id'];
+        $userRole = $this->tplanMgr->getUserRoleIDs(strval($planId));
+        $arra = [
+          "planId" => $planId,
+          "planName" => $plan['name'],
+          "roleInfo" => $userRole,
+        ];
+        array_push($ret, $arra);
+      }
+      
+    }
+    return empty($ret) ? "No roles" : $ret ;
+  }
+
+  /**
+   * if everything ok allow to Assign a User to Project with Different Role id.
+   *
+   * @param userID, user id
+   * @param projectID, project id
+   * @param roleID, role id 
+   *
+   * @return Database Operation Success
+   */
+  public function addUserRoleProject($args)
+  {
+   $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate');
+    $ret = array();
+
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
+    if( $status_ok )
+    {
+      if($this->args['userID'] != null && $this->args['projectID'] != null && $this->args['roleID'] != null)
+      {
+        return $this->tprojectMgr->addUserRole($this->args['userID'], $this->args['projectID'], $this->args['roleID']);
+      } 
+      else 
+      {
+        return "Error Argument Missing";
+      }
+    }
+    return "Error"; 
+  }
+
+  /**
+   * if everything ok allow to Unassign a User to Project with Different Role id.
+   *
+   * @param userID, user id
+   * @param projectID, project id
+   * @param roleID, role id 
+   *
+   * @return Database Operation Success 
+   */
+  public function delUserRoleProject($args)
+  {
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate');
+
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
+    if( $status_ok )
+    {
+      if($this->args['userID'] != null && $this->args['projectID'] != null )
+      {
+        $tproject_id = $this->args['projectID'];
+        $user_id = $this->args['userID'];
+        $query = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE testproject_id = {$tproject_id} AND user_id = {$user_id} ;";
+        $ret = $this->dbObj->exec_query($query);
+        return $ret;
+      }
+      else
+      {
+        return "Error Argument Missing";
+      }
+    }
+    return "Error";
+  }
+
+  /**
+   * if everything ok allow to Assign a User to Plan with Different Role id.
+   *
+   * @param userID, user id
+   * @param planID, plan id
+   * @param roleID, role id 
+   *
+   * @return Database Operation Success 
+   */
+  public function addUserRolePlan($args)
+  {
+    $messagePrefix="(" .__FUNCTION__ . ") - ";
+    $this->_setArgs($args);
+    $checkFunctions = array('authenticate');
+    $ret = array();
+
+    $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);
+    if( $status_ok )
+    {
+      if($this->args['userID'] != null && $this->args['planID'] != null && $this->args['roleID'] != null)
+      {
+        return $this->tplanMgr->addUserRole($this->args['userID'], $this->args['planID'], $this->args['roleID']);
+      }
+      else
+      {
+        return "Error Argument Missing";
+      }
+    }
+    return "Error";
+  } 
+
+  /**
+   * if everything ok allow Create an User.
+   *
+   * @param login
+   * @param firstname
+   * @param lastname
+   * @param right_id, id to (Dev, Admin, Guest, ...) 
+   * @param email
+   * 
+   * @return true/false
+   */
+  public function addUser($args)
+  {
+    $this->_setArgs($args);
+    if($this->args['login']!= null && $this->args['firstname'] != null && 
+       $this->args['lastname'] != null && $this->args['right_id'] != null && 
+       $this->args['email'])
+    {
+      #lib/usermanagement/usersEdit.php doCreate() function
+      $user = new tlUser();
+      $user->login = $this->args['login'];
+      $user->firstName = $this->args['firstname'];
+      $user->lastName = $this->args['lastname'];
+      $user->globalRoleID = $this->args['right_id'];
+      $user->emailAddress = $this->args['email'];
+      $status = $user->writeToDB($this->dbObj);
+      return ($status >= tl::OK);
+    }
+    else
+    {
+      return "Argument missing";
+    }    
+  }
+  
+  /**
+   * if everything ok allow Delete an User.
+   * 
+   * @param login
+   *
+   * @return true/false
+   */
+  public function delUser($args)
+  {
+    $this->_setArgs($args);
+    if($this->args['login']!= null){
+      $login_id = $this->args['login'];
+      $result = -1;
+      if(is_numeric($login_id))
+      {
+        $user = tlUser::getByID($this->dbObj, $login_id);
+      }
+      else
+      {
+        $user = tlUser::getByLogin($this->dbObj, $login_id);
+      }
+      if($user != null)
+      {
+        $result = $user->deleteFromDB($this->dbObj);
+      }
+      return $result >= tl::OK;
+    }else{
+      return "invalid arguments";
+    }
+  }
 
   /**
    *
@@ -7627,7 +7858,6 @@ protected function createAttachmentTempFile()
     if( $status_ok )
     {
       $tprojectMgr = new testproject($this->dbObj);
-      
       $pfx = $this->args[self::$prefixParamName];
       $tproj = $tprojectMgr->get_by_prefix($pfx);
 
@@ -7769,6 +7999,11 @@ protected function createAttachmentTempFile()
                             'tl.assignRequirements' => 'this:assignRequirements',     
                             'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
                             'tl.addPlatformToTestPlan' => 'this:addPlatformToTestPlan',
+			    'tl.addUser' => 'this:addUser',
+			    'tl.delUser' => 'this:delUser',
+			    'tl.addUserRoleProject' => 'this:addUserRoleProject',
+			    'tl.delUserRoleProject' => 'this:delUserRoleProject',
+			    'tl.addUserRolePlan' => 'this:addUserRolePlan',
                             'tl.removePlatformFromTestPlan' => 'this:removePlatformFromTestPlan',
                             'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
                             'tl.getIssueTrackerSystem' => 'this:getIssueTrackerSystem',
@@ -7805,6 +8040,8 @@ protected function createAttachmentTempFile()
                             'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
                             'tl.getUserByLogin' => 'this:getUserByLogin',
                             'tl.getUserByID' => 'this:getUserByID',
+			    'tl.getUsers' => 'this:getUsers',
+			    'tl.getInfoRoles' => 'this:getInfoRoles',
                             'tl.deleteExecution' => 'this:deleteExecution',
                             'tl.doesUserExist' => 'this:doesUserExist',
                             'tl.updateTestCaseCustomFieldDesignValue' => 'this:updateTestCaseCustomFieldDesignValue',
@@ -7821,6 +8058,7 @@ protected function createAttachmentTempFile()
                             'tl.about' => 'this:about',
                             'tl.testLinkVersion' => 'this:testLinkVersion',
                             'tl.setTestMode' => 'this:setTestMode',
+			    'tl.userExist' => 'this:userExist',
                             'tl.ping' => 'this:sayHello', 
                             'tl.sayHello' => 'this:sayHello',
                             'tl.repeat' => 'this:repeat'

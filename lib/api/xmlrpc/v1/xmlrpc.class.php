@@ -6339,11 +6339,15 @@ protected function createAttachmentTempFile()
   }
 
   /**
-   * if everything ok return an dict of all users actived
-   * The dict (hashmap java) contains user's database 
-   * There are no param.
+   * returns a list of dict of all active users
+   * Example:
+   *   for one dict (user) of the list 
+   *   array(
+   *      'authentication', 'dbID', 'defaultTestprojectID', 'emailAddress', 'firstName', 'globalRole', 'globalRoleID', 
+   *      'isActive', 'lastName', 'locale', 'login', 'loginRegExp', 'tplanRoles', 'tprojectRoles', 'userApiKey'
+   *   );
    *
-   * @return dict (HashMap Java)
+   * @return list of users ( associative array / map)
    */
   public function getUsers($args)
   {
@@ -6361,20 +6365,32 @@ protected function createAttachmentTempFile()
   }
 
   /**
-   * if everything ok return all roles from all projects/plans
-   * The dict (hashmap java) contains :
-   *     'projectId' => $projectID,
-   *     'projectName' => $projectName,
-   *     'roleInfo' => {$userID: {'role_id': $roleId, 'user_id': $userID}}
-   * roleInfo is a current $user->getUserRoleIDs($projectID)
-   * There are no param.
+   * return list of dict
+   * example for the project:
+   *   it will be return:
+   *     array(
+   *      'projectId' => $projectID,
+   *      'projectName' => $projectName,
+   *      'roleInfo' => {$userID: {'role_id': $roleId, 'user_id': $userID}}
+   *     );
+   * roleInfo is a current function testproject().getUserRoleIDs($projectID)
    *
-   * @return dict (HashMap Java)
+   * example for the plan:
+   *   it will be return:
+   *     array(
+   *      'planId' => $planID,
+   *      'planName' => $planName,
+   *      'roleInfo' => {$userID: {'role_id': $roleId, 'user_id': $userID}}
+   *     );
+   * roleInfo is a current function testplan().getUserRoleIDs($planID)
+   *
+   * If there are no Plan and Project, this will return "No roles"
+   * 
+   * @return list of dict ()
    */
-  public function getInfoRoles($args)
+  public function getInfoRoles()
   {
     $messagePrefix="(" .__FUNCTION__ . ") - ";
-    $this->_setArgs($args);
     $checkFunctions = array('authenticate');
     $ret = array();
 
@@ -6409,13 +6425,20 @@ protected function createAttachmentTempFile()
   }
 
   /**
-   * if everything ok allow to Assign a User to Project with Different Role id.
+   * Allows To Add a User With a Specific Role to a Test Project
    *
    * @param userID, user id
    * @param projectID, project id
-   * @param roleID, role id 
-   *
-   * @return Database Operation Success
+   * @param roleID, role id (dev, admin, leader, guest, ...)
+   * 
+   * @return array(
+   *   {'EOF': True,
+   *    '_numOfRows': 0,
+   *    'connection': False,
+   *    'dataProvider': 'empty',
+   *    'databaseType': False,
+   *    'fields': False}
+   * );
    */
   public function addUserRoleProject($args)
   {
@@ -6440,13 +6463,20 @@ protected function createAttachmentTempFile()
   }
 
   /**
-   * if everything ok allow to Unassign a User to Project with Different Role id.
+   * Allows To Delete a User With a Specific Role to a Test Project
    *
    * @param userID, user id
    * @param projectID, project id
-   * @param roleID, role id 
-   *
-   * @return Database Operation Success 
+   * @param roleID, role id (dev, admin, leader, guest, ...)
+   * 
+   * @return array(
+   *   {'EOF': True,
+   *    '_numOfRows': 0,
+   *    'connection': False,
+   *    'dataProvider': 'empty',
+   *    'databaseType': False,
+   *    'fields': False}
+   * );
    */
   public function delUserRoleProject($args)
   {
@@ -6474,13 +6504,20 @@ protected function createAttachmentTempFile()
   }
 
   /**
-   * if everything ok allow to Assign a User to Plan with Different Role id.
+   * Allows To Add a User With a Specific Role to a Test Plan
    *
    * @param userID, user id
    * @param planID, plan id
-   * @param roleID, role id 
-   *
-   * @return Database Operation Success 
+   * @param roleID, role id (dev, admin, leader, guest, ...)
+   * 
+   * @return array(
+   *   {'EOF': True,
+   *    '_numOfRows': 0,
+   *    'connection': False,
+   *    'dataProvider': 'empty',
+   *    'databaseType': False,
+   *    'fields': False}
+   * );
    */
   public function addUserRolePlan($args)
   {
@@ -6505,7 +6542,7 @@ protected function createAttachmentTempFile()
   } 
 
   /**
-   * if everything ok allow Create an User.
+   * Allow to Create User
    *
    * @param login
    * @param firstname
@@ -6515,7 +6552,7 @@ protected function createAttachmentTempFile()
    * 
    * @return true/false
    */
-  public function addUser($args)
+  public function createUser($args)
   {
     $this->_setArgs($args);
     if($this->args['login']!= null && $this->args['firstname'] != null && 
@@ -6539,7 +6576,7 @@ protected function createAttachmentTempFile()
   }
   
   /**
-   * if everything ok allow Delete an User.
+   * Allow Delete an User.
    * 
    * @param login
    *
@@ -7999,7 +8036,7 @@ protected function createAttachmentTempFile()
                             'tl.assignRequirements' => 'this:assignRequirements',     
                             'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
                             'tl.addPlatformToTestPlan' => 'this:addPlatformToTestPlan',
-			    'tl.addUser' => 'this:addUser',
+			    'tl.createUser' => 'this:createUser',
 			    'tl.delUser' => 'this:delUser',
 			    'tl.addUserRoleProject' => 'this:addUserRoleProject',
 			    'tl.delUserRoleProject' => 'this:delUserRoleProject',

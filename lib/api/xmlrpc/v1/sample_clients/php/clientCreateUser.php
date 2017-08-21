@@ -12,7 +12,7 @@ require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
-$method = 'addUser';
+$method = 'createUser';
 $unitTestDescription="Test - {$method}";
 $idx=1;
 

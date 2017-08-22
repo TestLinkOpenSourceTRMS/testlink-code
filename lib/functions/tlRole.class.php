@@ -4,14 +4,11 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package     TestLink
- * @copyright   2004-2013, TestLink community 
+ * @copyright   2004-2016, TestLink community 
  * @filesource  tlRole.class.php
  * @link        http://www.teamst.org/index.php
  *
  * @internal revisions
- * @since 1.9.9
- * 20130914 - franciscom - TICKET 5895: New Account Created notification is sent to wrong destinations
- *                         changed access level for getUsersWithGlobalRole()
  * 
  */
 
@@ -316,9 +313,9 @@ class tlRole extends tlDBObject
    * @param resource &$db reference to database handler
    * @return array assoc map with the user ids as the keys
    **/
-  public function getUsersWithGlobalRole(&$db)
+  public function getUsersWithGlobalRole(&$db,$opt=null)
   {
-    $idSet = $this->getUserIDsWithGlobalRole($db);
+    $idSet = $this->getUserIDsWithGlobalRole($db,$opt);
     return self::createObjectsFromDB($db,$idSet,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
   }
   
@@ -328,12 +325,20 @@ class tlRole extends tlDBObject
    * @param resource &$db reference to database handler
    * @return array of userids
    **/
-  protected function getUserIDsWithGlobalRole(&$db)
+  protected function getUserIDsWithGlobalRole(&$db,$opt=null)
   {
+    $my['opt'] = array('active' => -1);
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+    
     $sql = "SELECT id FROM {$this->tables['users']} " .
            " WHERE role_id = {$this->dbID}";
+
+    if($my['opt']['active'] != -1)
+    {
+      $sql .= ' and active = ' . (intval($my['opt']['active']) > 0 ? 1 : 0);
+    } 
+
     $idSet = $db->fetchColumnsIntoArray($sql,"id");
-    
     return $idSet; 
   }
 

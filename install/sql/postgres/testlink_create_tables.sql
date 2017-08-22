@@ -108,7 +108,9 @@ CREATE TABLE /*prefix*/users(
   "active" INT2 NOT NULL DEFAULT '1',
   "script_key" VARCHAR(32) NULL,
   "cookie_string" varchar(64) NOT NULL DEFAULT '', 
-  "auth_method" VARCHAR(10) NULL DEFAULT '', 
+  "auth_method" VARCHAR(10) NULL DEFAULT '',
+  "creation_ts" timestamp NOT NULL DEFAULT now(),
+  "expiration_date" date DEFAULT NULL,
   PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX /*prefix*/users_uidx1 ON /*prefix*/users ("login");
@@ -416,7 +418,8 @@ CREATE TABLE /*prefix*/db_version(
 CREATE TABLE /*prefix*/execution_bugs(  
   "execution_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id) ON DELETE CASCADE,
   "bug_id" VARCHAR(64) NOT NULL DEFAULT '0',
-  PRIMARY KEY ("execution_id","bug_id")
+  "tcstep_id" BIGINT NOT NULL DEFAULT '0',
+  PRIMARY KEY ("execution_id","bug_id","tcstep_id")
 ); 
 
 
@@ -839,19 +842,48 @@ CREATE OR REPLACE VIEW /*prefix*/tcases_active AS
 );
 
 CREATE TABLE /*prefix*/plugins (
-   plugin_id BIGSERIAL NOT NULL,
+   id BIGSERIAL NOT NULL,
    basename  VARCHAR(100) NOT NULL,
    enabled INT2 NOT NULL DEFAULT '0',
-   PRIMARY KEY (`plugin_id`)
+   author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+   creation_ts TIMESTAMP NOT NULL DEFAULT now(),
+   PRIMARY KEY (id)
 );
 
 CREATE TABLE /*prefix*/plugins_configuration (
-   plugin_config_id BIGSERIAL NOT NULL,
+   id BIGSERIAL NOT NULL,
    testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
    config_key VARCHAR(255) NOT NULL,
    config_type INTEGER NOT NULL,
    config_value varchar(255) NOT NULL,
    author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
    creation_ts TIMESTAMP NOT NULL DEFAULT now(),
-   PRIMARY KEY (`plugin_config_id`)
+   PRIMARY KEY (id)
 );
+
+CREATE VIEW /*prefix*/latest_tcase_version_number 
+AS SELECT NH_TC.id AS testcase_id,max(TCV.version) AS version 
+FROM /*prefix*/nodes_hierarchy NH_TC 
+JOIN /*prefix*/nodes_hierarchy NH_TCV 
+ON NH_TCV.parent_id = NH_TC.id
+JOIN /*prefix*/tcversions TCV 
+ON NH_TCV.id = TCV.id 
+GROUP BY testcase_id;
+
+CREATE VIEW /*prefix*/latest_req_version 
+AS SELECT RQ.id AS req_id,max(RQV.version) AS version 
+FROM /*prefix*/nodes_hierarchy NHRQV 
+JOIN /*prefix*/requirements RQ 
+ON RQ.id = NHRQV.parent_id 
+JOIN /*prefix*/req_versions RQV 
+ON RQV.id = NHRQV.id
+GROUP BY RQ.id;
+
+CREATE VIEW /*prefix*/latest_rspec_revision 
+AS SELECT RSR.parent_id AS req_spec_id, RS.testproject_id AS testproject_id,
+MAX(RSR.revision) AS revision 
+FROM /*prefix*/req_specs_revisions RSR 
+JOIN /*prefix*/req_specs RS 
+ON RS.id = RSR.parent_id
+GROUP BY RSR.parent_id,RS.testproject_id;
+

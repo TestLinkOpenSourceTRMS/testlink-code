@@ -9,7 +9,7 @@
  * @link     http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  */
 
 /**
@@ -84,7 +84,7 @@ class redmine
    */
   public function initCurl($cfg=null) 
   {
-    $agent = "TestLink 1.9.15";
+    $agent = "TestLink 1.9.16";
     try
     {
       $this->curl = curl_init();
@@ -164,18 +164,18 @@ class redmine
 
   // with the help of http://tspycher.com/2011/03/using-the-redmine-api-with-php/
   // public function addIssue($summary, $description)
-  public function addIssueFromSimpleXML($issueXmlObj)
+  public function addIssueFromSimpleXML($issueXmlObj,$reporter=null)
   {
-    $op = $this->_request_xml('POST',"/issues.xml",$issueXmlObj->asXML());
+    $op = $this->_request_xml('POST',"/issues.xml",$issueXmlObj->asXML(),0,$reporter);
     return $op;
   }
 
   /**
    *
    */
-  public function addIssueFromXMLString($XMLString)
+  public function addIssueFromXMLString($XMLString,$reporter=null)
   {
-    $op = $this->_request_xml('POST',"/issues.xml",$XMLString);
+    $op = $this->_request_xml('POST',"/issues.xml",$XMLString,0,$reporter);
     return $op;
   }
 
@@ -183,9 +183,9 @@ class redmine
   /**
    *
    */
-  public function addIssueNoteFromSimpleXML($issueID,$issueXmlObj)
+  public function addIssueNoteFromSimpleXML($issueID,$issueXmlObj,$reporter=null)
   {
-    $op = $this->_request_xml('PUT',"/issues/{$issueID}.xml",$issueXmlObj->asXML());
+    $op = $this->_request_xml('PUT',"/issues/{$issueID}.xml",$issueXmlObj->asXML(),0,$reporter);
     return $op;
   }
 
@@ -242,9 +242,10 @@ class redmine
   * @internal notice
   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
   **/
-  protected function _request_xml($method, $url, $body = NULL, $ignore_status = 0) 
+  protected function _request_xml($method, $url, $body = NULL, $ignore_status = 0,
+                                  $reporter=null) 
   {
-    $r = $this->_request($method, $url, $body, $ignore_status);
+    $r = $this->_request($method, $url, $body, $ignore_status,$reporter);
     $response = $r['response'];
     $content = trim($r['content']);
     $ret = ($content != '' ? $content : null);
@@ -266,8 +267,15 @@ class redmine
   * @internal notice
   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
   **/
-  protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0) 
+  protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0,$reporter = null) 
   {
+    // this can happens because if I save object on _SESSION PHP is not able to
+    // save resources.
+    if( !is_resource($this->curl) )
+    {
+      $this->initCurl();
+    }  
+
     curl_setopt($this->curl, CURLOPT_URL, $this->url . $cmd);
 
     // Following Info From http://www.redmine.org/projects/redmine/wiki/Rest_api
@@ -308,6 +316,11 @@ class redmine
     //curl_setopt($this->curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     $header = array();
     $header[] = "X-Redmine-API-Key: {$this->apiKey}";
+
+    if(!is_null($reporter))
+    {
+      $header[] = "X-Redmine-Switch-User: {$reporter}";
+    } 
 
     if ($method == 'PUT' || $method == 'POST') 
     {
@@ -392,4 +405,3 @@ class redmine
   }
 
 } // Class end
-?>

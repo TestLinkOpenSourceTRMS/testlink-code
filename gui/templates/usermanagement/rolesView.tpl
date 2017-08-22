@@ -3,9 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource rolesView.tpl
 Purpose: smarty template - View defined roles
 
-@internal revisions
-@since 1.9.15
-
 *}
 {$roleActionMgr="lib/usermanagement/rolesEdit.php"}
 {$createRoleAction="$roleActionMgr?doAction=create"}
@@ -26,6 +23,12 @@ Purpose: smarty template - View defined roles
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 {include file="bootstrap.inc.tpl"}
+
+<style>
+.table-hover tr:hover td, .table-hover tr:hover th {
+   background-color: #ffffff;
+}
+</style> 
 </head>
 
 <body {$body_onload}>
@@ -43,7 +46,7 @@ Purpose: smarty template - View defined roles
   {* show user list of users having role he/she want to delete *}
   <h1 class="title">{$labels.delete_role} {$gui->roles[$gui->roleid]->name|escape}</h1>
 
-    <table class="common" style="width:50%">
+    <table class="table" style="width:50%">
     <caption>{$labels.caption_possible_affected_users}</caption>
     {foreach from=$gui->affectedUsers item=user}
     <tr>
@@ -63,7 +66,7 @@ Purpose: smarty template - View defined roles
         {$labels.no_roles}
     {else}
         {* data table *}
-        <table class="common sortable" width="70%">
+        <table class="table table-hover sortable common">
             <tr>
                 <th width="30%">{$tlImages.sort_hint}{$labels.th_roles}</th>
                 <th class="{$noSortableColumnClass}">{$labels.th_role_description}</th>

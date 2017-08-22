@@ -11,13 +11,11 @@
  * @filesource  execTreeMenu.inc.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2013,2014 TestLink community 
+ * @copyright   2013,2017 TestLink community 
  * @link        http://testlink.sourceforge.net/ 
  * @uses        config.inc.php
  * @uses        const.inc.php
  *
- * @internal revisions
- * @since 1.9.13
  */
 
 /**
@@ -48,6 +46,8 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
   $testCaseQty=0;
   $testCaseSet=null;
    
+  // Seems to be useless 
+  /*
   $keyword_id = 0;
   $keywordsFilterType = 'Or';
   if (property_exists($objFilters, 'filter_keywords') && !is_null($objFilters->filter_keywords)) 
@@ -55,7 +55,9 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     $keyword_id = $objFilters->filter_keywords;
     $keywordsFilterType = $objFilters->filter_keywords_filter_type;
   }
-  
+  */
+  // ---
+
   $renderTreeNodeOpt = array();
   $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
   list($filters,$options,
@@ -144,7 +146,7 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
         $kmethod = "fetchRowsIntoMap";
         if( is_array($sql2do) )
         {       
-          if( $filters['keyword_filter_type'] == 'And')
+          if( $filters['keyword_filter_type'] == 'And' )
           { 
             $kmethod = "fetchRowsIntoMapAddRC";
             $unionClause = " UNION ALL ";
@@ -160,9 +162,27 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
         {
           $sql2run = $sql2do;
         }
-        $tplan_tcases = $setTestCaseStatus = $dbHandler->$kmethod($sql2run,'tcase_id');
+        $tplan_tcases = $dbHandler->$kmethod($sql2run,'tcase_id');
       }
     }   
+
+    if( $filters['keyword_filter_type'] == 'And' && !is_null($tplan_tcases))
+    {
+      $kwc = count($filters['keyword_id']);
+      $ak = array_keys($tplan_tcases);
+      $mx = null;
+      foreach($ak as $tk)
+      {
+        if($tplan_tcases[$tk]['recordcount'] == $kwc)
+        {
+              $mx[$tk] = $tplan_tcases[$tk];
+        } 
+      } 
+      $tplan_tcases = null;
+      $tplan_tcases = $mx;
+    } 
+    $setTestCaseStatus = $tplan_tcases;
+
 
     if( !is_null($tplan_tcases) )
     {
@@ -216,19 +236,24 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     $lt = array_keys((array)$tplan_tcases);
 
     // here test cases are in the right order
-    $ltcs = $spec[1]['nindex'];
-
-    // now need to filter out
-    $tl = array_flip($lt);
-    foreach($ltcs as &$ele)
+    $linkedTestCasesSet = null;
+    if( isset($spec[1]['nindex']) )
     {
-      if( isset($tl[$ele]) )
+      $ltcs = $spec[1]['nindex'];
+
+      // now need to filter out
+      $tl = array_flip($lt);
+      foreach($ltcs as &$ele)
       {
-        $linkedTestCasesSet[] = $ele;
+        if( isset($tl[$ele]) )
+        {
+          $linkedTestCasesSet[] = $ele;
+        }  
       }  
     }  
 
-    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,$tcase_prefix,$renderTreeNodeOpt);
+    renderExecTreeNode(1,$test_spec,$tplan_tcases,$hash_id_descr,$menuUrl,
+                       $tcase_prefix,$renderTreeNodeOpt);
   }
   
   $treeMenu->rootnode=new stdClass();
@@ -423,7 +448,14 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
 
       if( isset($tpNode['exec_status']) )
       {
-        $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        if( isset($resultsCfg['code_status'][$tpNode['exec_status']]) )
+        {
+          $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+        }  
+        else
+        {
+          throw new Exception("Config Issue - exec status code: {$tpNode['exec_status']}", 1);
+        }  
       }
       else
       {
@@ -663,7 +695,6 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     }  
   }  
 
-  // 20151122
   $spec = $tplan_mgr->getSkeleton($tplan_id,$tproject_id,$my['filters'],$my['options']);
 
   $test_spec = $spec[0];

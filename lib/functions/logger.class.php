@@ -192,34 +192,36 @@ class tlLogger extends tlObject
    */
   public function setLogLevelFilterFromVerbose($verboseForLogger)
   {
-    //$loggerTypeDomain = array_flip(array_keys($this->loggerTypeClass));
 
-    $itemSet = (array)$verboseForLogger;
-    foreach($itemSet as $loggerType => $dummy)
+    if( !is_null($verboseForLogger) )
     {
-      $filter = 0;
-      foreach($dummy as $verboseLevel) 
+      $itemSet = (array)$verboseForLogger;
+      foreach($itemSet as $loggerType => $dummy)
       {
-        if( isset(self::$logLevelsStringCode[$verboseLevel]) )
+        $filter = 0;
+        foreach($dummy as $verboseLevel) 
         {
-          $filter = $filter | self::$logLevelsStringCode[$verboseLevel];
-        }  
-      }
-      
-      switch($loggerType)
-      {
-        case 'all':
-          $this->setLogLevelFilter($filter);  
-        break;
-        
-        default:
-          if( isset($this->loggerTypeDomain[$loggerType]) )
+          if( isset(self::$logLevelsStringCode[$verboseLevel]) )
           {
-            $this->loggers[$loggerType]->setLogLevelFilter($filter);  
-          }
-        break;
-      }      
-    }
+            $filter = $filter | self::$logLevelsStringCode[$verboseLevel];
+          }  
+        }
+        
+        switch($loggerType)
+        {
+          case 'all':
+            $this->setLogLevelFilter($filter);  
+          break;
+          
+          default:
+            if( isset($this->loggerTypeDomain[$loggerType]) )
+            {
+              $this->loggers[$loggerType]->setLogLevelFilter($filter);  
+            }
+          break;
+        }      
+      }
+    }  
   }
 
 
@@ -1336,7 +1338,7 @@ class tlMailLogger extends tlObjectWithDB
     try
     {
       $mail_subject = $verboseTimeStamp . lang_get('mail_logger_email_subject');
-      $mail_subject .= isset($_SESSION['basehref']) ?  $_SESSION['basehref'] : config_get('instance_id');
+      $mail_subject .= isset($_SESSION['basehref']) ?  $_SESSION['basehref'] : config_get('instance_name');
       email_send($this->from_email, $this->sendto_email, $mail_subject, $email_body);
     }
     catch (Exception $exceptionObj)

@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.36 2010/08/28 14:47:54 franciscom Exp $
+@filesource inc_head.tpl
 Purpose: smarty template - HTML Common Header
 
 
@@ -9,8 +9,7 @@ Critic Smarty Global Variables expected
 editorType: used to understand if code for tinymce need to be loaded 
 
 *}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset={$pageCharset}" />
 	<meta http-equiv="Content-language" content="en" />
@@ -58,13 +57,13 @@ editorType: used to understand if code for tinymce need to be loaded
 
 
   	<link rel="stylesheet" href="{$basehref}third_party/chosen/chosen.css">
-	<script type="text/javascript" src="{$basehref}third_party/jquery/jquery-2.0.3.min.js" language="javascript"></script>
+	<script type="text/javascript" src="{$basehref}third_party/jquery/{$smarty.const.TL_JQUERY}" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}third_party/chosen/chosen.jquery.js"></script>
 
 	<script type="text/javascript" src="{$basehref}third_party/prototype/prototype.js" language="javascript"></script>
 
 	<script type="text/javascript" language="javascript">
-	<!--
+	//<!--
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';

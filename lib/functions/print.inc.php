@@ -612,9 +612,7 @@ function renderHTMLHeader($title,$base_href,$doc_type,$jsSet=null)
     break;
   }
 
-  $output = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"" .
-            "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-
+  $output = "<!DOCTYPE HTML>\n";
 
   $output .= "<html>\n<head>\n";
   $output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '"/>';
@@ -1057,7 +1055,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            " FROM {$tables['executions']} E " .
            " JOIN {$tables['builds']} B ON B.id = E.build_id " .
            " WHERE 1 = 1 ";
-
+	
+	//Bugfix to show only active builds in Test Report view
+	$sql .= "AND B.active = 1";
+	
     if(isset($context['exec_id']))
     {
       $sql .= " AND E.id=" . intval($context['exec_id']);
@@ -1976,7 +1977,7 @@ function initRenderTestCaseCfg(&$tcaseMgr,$options)
     $labelsKeys=array('last_exec_result', 'report_exec_result','execution_details','execution_mode',
                       'title_execution_notes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
-                      'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
+                      'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions','step',
                       'step_number', 'step_actions', 'last_edit', 'created_on', 'execution_type',
                       'execution_type_manual','execution_type_auto','importance','relations',
                       'estimated_execution_duration','step_exec_notes','step_exec_status',
@@ -2086,11 +2087,16 @@ function buildTestExecResults(&$dbHandler,&$its,$exec_info,$opt,$buildCF=null)
   if( !is_null($its) ) 
   {
     $bugs = get_bugs_for_exec($dbHandler,$its,$exec_info[0]['execution_id']);
+
     if ($bugs) 
     {
       $bugString = '';
       foreach($bugs as $bugID => $bugInfo) 
       {
+        if($bugInfo['step_number'] != '')
+        {
+          $bugString .= $labels['step'] . ' ' . $bugInfo['step_number'] . ' - '; 
+        }  
         $bugString .= $bugInfo['link_to_bts']."<br />";
       }
       $out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 

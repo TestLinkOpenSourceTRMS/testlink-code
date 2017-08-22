@@ -1,5 +1,5 @@
 ===============================================================
-         TestLink 1.9.15 (Prague Bugfix 15) Tauriel - Read me
+    TestLink 1.9.17 (Prague Bugfix 17) Alan Turing - Read me
 ===============================================================
 
 Contents
@@ -12,7 +12,7 @@ Contents
 7. Bug Reports and Feedback
 8. Supporting our work
 9. Regarding forum usage www.testlink.org
-10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14
+10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14,1.9.15,1.9.16
 11. Testlink & FreeTest
 12. Security
 13. JIRA DB interface changes
@@ -74,7 +74,7 @@ A wide variety of reports provide information on what has been done and what sti
 2. Release notes / CRITIC Configuration Notes
 ===============================================================
 
-This release contains bugfixes for 1.9.14
+This release contains bugfixes for 1.9.16
 See CHANGELOG file for detailed list of issues fixed.
 
 *** CRITIC PHP.INI Settings ***
@@ -90,13 +90,43 @@ http://mantis.testlink.org/view.php?id=5372
 ** amount of memory assigned to php
 See http://mantis.testlink.org/view.php?id=7178
 
+** Changes on LDAP CONFIGURATION **
+Since 1.9.16 authentication against Multiple LDAP Servers is supported 
+(see http://mantis.testlink.org/view.php?id=2842).
+To implement this feature configuration parameters have been changed 
+as explained here:
+
+TestLink Version < 1.9.16
+$tlCfg->authentication['method'] = 'LDAP';
+
+$tlCfg->authentication['ldap_server'] = 'ldap.xyz.com';
+$tlCfg->authentication['ldap_port'] = '389';
+$tlCfg->authentication['ldap_version'] = '3';
+$tlCfg->authentication['ldap_root_dn'] = 'dc=xyz,dc=com';
+$tlCfg->authentication['ldap_bind_dn'] = 'uid=tl,ou=staff,dc=xyz,dc=com';
+$tlCfg->authentication['ldap_bind_passwd'] = 'XYZw';
+$tlCfg->authentication['ldap_tls'] = false; // true -> use tls
+
+
+TestLink Version >= 1.9.16
+$tlCfg->authentication['method'] = 'LDAP';
+
+$tlCfg->authentication['ldap'][1]['ldap_server'] = 'ldap.xyz.com';
+$tlCfg->authentication['ldap'][1]['ldap_port'] = '389';
+$tlCfg->authentication['ldap'][1]['ldap_version'] = '3';
+$tlCfg->authentication['ldap'][1]['ldap_root_dn'] = 'dc=xyz,dc=com';
+$tlCfg->authentication['ldap'][1]['ldap_bind_dn'] = 'uid=tl,ou=staff,dc=xyz,dc=com'; 
+$tlCfg->authentication['ldap'][1]['ldap_bind_passwd'] = 'XYZw';
+$tlCfg->authentication['ldap'][1]['ldap_tls'] = false;
+
+
 3. System Requirements - server
 ===============================================================
 
 Server environment should consists from:
 - web-server: Apache 2.x
 - PHP > 5.4
-- DBMS: MySQL 5.6.x , Postgres 9.x , MS-SQL 2008/2012
+- DBMS: MySQL 5.6.x / MariaDB 10.1.x , Postgres 9.x , MS-SQL 2008/2012
 
 Supported client web-browsers: 
 - Firefox
@@ -174,7 +204,7 @@ Check Installation manual and TestLink forum if you meet a problem.
 ===============================================================
 When accessing Installer page you will found ONLY NEW INSTALLATION OPTION
 Migration HAS TO BE DONE MANUALLY => read below 
-- Upgrade from 1.9.3  to 1.9.4/5/6/7/8/9/10/11/12/13
+- Upgrade from 1.9.3  to 1.9.4/5/6/7/8/9/10/11/12/13/14/15/16/17
 - Upgrade from 1.9.4/5 to 1.9.7
 - Upgrade from 1.9.7 to 1.9.8
 - Migration from other releases that 1.9.3
@@ -206,7 +236,7 @@ Migration HAS TO BE DONE MANUALLY => read below
    
  Always before login, after an upgrade/migration clear browser cookies.
 
-- Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11/12/13
+- Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11/12/13/14/15/16/17
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
 a) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql
 b) Execute install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql
@@ -230,6 +260,8 @@ then give a look to section 'Upgrade from 1.9.11 to 1.9.12'
 then give a look to section 'Upgrade from 1.9.12 to 1.9.13'
 then give a look to section 'Upgrade from 1.9.13 to 1.9.14'
 then give a look to section 'Upgrade from 1.9.14 to 1.9.15'
+then give a look to section 'Upgrade from 1.9.15 to 1.9.16'
+then give a look to section 'Upgrade from 1.9.16 to 1.9.17'
 
 - Upgrade from 1.9.7 to 1.9.8
 WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
@@ -273,6 +305,19 @@ a) Execute install/sql/alter_tables/1.9.15/<your_db>/DB.1.9.15/step1/db_schema_u
 
 b) Execute (IF EXISTS) install/sql/alter_tables/1.9.15/<your_db>/DB.1.9.15/stepZ/z_final_step.sql
 
+- Upgrade from 1.9.15 to 1.9.16
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+
+a) Execute install/sql/alter_tables/1.9.16/<your_db>/DB.1.9.16/step1/db_schema_update.sql
+
+b) Execute (IF EXISTS) install/sql/alter_tables/1.9.16/<your_db>/DB.1.9.16/stepZ/z_final_step.sql
+
+- Upgrade from 1.9.16 to 1.9.17
+WARNING: if you are using a table prefix replace /*prefix*/ with your prefix
+
+a) Execute install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/step1/db_schema_update.sql
+
+b) Execute (IF EXISTS) install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/stepZ/z_final_step.sql
 
 Hint: When using MySQL Query Browser make sure you are not using a single command execution. 
       (open script or use special script tab to execute the whole script at once)
@@ -292,7 +337,7 @@ Extreme example Migration from 1.7.4
 
 1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0 
 1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 => 
-1.9.8 => 1.9.9 => 1.9.10 => 1.9.11 => 1.9.12 => 1.9.13 => 1.9.14 => 1.9.15
+1.9.8 => 1.9.9 => 1.9.10 => 1.9.11 => 1.9.12 => 1.9.13 => 1.9.14 => 1.9.15 => 1.9.16 => 1.9.17
 
 You have to read carefully README and instructions (if any) provided by installer.
 Sometimes version changes do not require actions on DB structure or data. 
@@ -354,7 +399,8 @@ This list comprise people that has helped
 * grdscarabe@grdscarabe.net and Alexandre Da Costa - French localization
 * Walter Giaquinto/Alessandro Lia	and  bruno.busco@gmail.com - Italian localization
 * Alessandro Lia - Javascript and CSS advice.
-* Leonardo Molinari - Portuguese localization
+* Leonardo Molinari - Portuguese (Brazil) localization
+* Hélio Guilherme - Portuguese localization
 * jorgesf@jsf.jazztel.es - Spanish localization
 * Jonas Fleer : search test case by custom field on test projects
 * Lightbulb Technology Services Pvt. Ltd. - techpartners: import test cases from XLS file
@@ -421,8 +467,20 @@ PLEASE: read this short hints before you write a topic:
 :!: Consider that some issues are related to Apache, browser or database instead of TestLink. Use google at first. 
 
       
-10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14
+10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14,1.9.15,1.9.16
 =====================================================================
+
+1.9.17
+-
+-
+
+1.9.16
+- issues on step are saved on TestLink DB wth step ID
+- redmine integration: reported will be testlink user creating issue.
+- ADODB upgraded
+- Ckeditor upgraded
+  ... and more (read CHANGELOG file)
+
 
 1.9.15
 - plugin system by Collabnet
@@ -520,6 +578,8 @@ provided a VM on Cloud to do tests
 payed custom development of Long waited feature: execution notes & results for test steps,
 donating feature to community (is not the first time they do this!)
 
+- MAMP PRO
+
 
 15. Miscelaneous
 ===============================================================
@@ -576,8 +636,8 @@ If you need more specialized help, it can be provided paying for it.
 CHANGE LOG
 http://mantis.testlink.org/changelog_page.php
 
-TICKET with available fixes for latest stable version (1.9.14)
-http://mantis.testlink.org/view.php?id=7262
+TICKET with available fixes for latest stable version (1.9.16)
+http://mantis.testlink.org/view.php?id=7817
 
 19. Link to GITORIOUS COMMITS
 Time ago we have migrated from Gitorious (thanks a lot for all years  of free repo) to Github.

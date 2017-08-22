@@ -44,7 +44,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           {else}{$inc_steps_labels.step_exec_notes}{/if}
           <img class="clickable" src="{$tlImages.clear_notes}" 
           onclick="javascript:clearTextAreaByClassName('step_note_textarea');" title="{$inc_steps_labels.clear_all_notes}"></th>
-      <th>{$inc_steps_labels.exec_result}</th>
+
+      <th>{$inc_steps_labels.step_exec_status}
+       <img class="clickable" src="{$tlImages.reset}" 
+          onclick="javascript:clearSelectByClassName('step_status');" title="{$inc_steps_labels.clear_all_status}"></th>
     {/if}    
 
 
@@ -102,8 +105,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </td>
 
       <td>
-        <select name="step_status[{$step_info.id}]" id="step_status_{$step_info.id}">
-          {html_options options=$gui->execStatusValues}
+        <select class="step_status" name="step_status[{$step_info.id}]" id="step_status_{$step_info.id}">
+          {html_options options=$gui->execStatusValues selected=$step_info.execution_status}
+
         </select> <br>
         
         {if $gui->tlCanCreateIssue}

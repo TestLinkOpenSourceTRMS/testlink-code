@@ -69,6 +69,14 @@ switch($args->featureType)
     	$assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->testprojectID;
     	$featureMgr = &$tplanMgr;
+
+      $accessKey = 'private';
+      if( $tprojectMgr->getPublicAttr($args->testprojectID) )
+      {
+        $accessKey = 'public';
+      }  
+      $gui->tprojectAccessTypeImg = '<img src="' . $imgSet[$accessKey] . 
+                                    '" title="' . lang_get('access_' . $accessKey) . '" >';
     break;
 }
 
@@ -158,20 +166,22 @@ function init_args()
     
 	$args = new stdClass();
 	$args->featureType = $pParams["featureType"];
-    $args->featureID = $pParams["featureID"];
-    $args->map_userid_roleid = $pParams["userRole"];
-    $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
+  $args->featureID = $pParams["featureID"];
+  $args->map_userid_roleid = $pParams["userRole"];
+  $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
    
-    // Warning: 
-    // This value is used when doing Test Plan role assignment
-    $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    $args->testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+  // Warning: 
+  // This value is used when doing Test Plan role assignment
+  $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  
+  $args->testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+  
+  $args->testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 
-    $args->user = $_SESSION['currentUser'];
-    $args->userID = $args->user->dbID;
+  $args->user = $_SESSION['currentUser'];
+  $args->userID = $args->user->dbID;
     
-    return $args;
+  return $args;
 }
 
 
@@ -429,7 +439,6 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
     }
       
     $tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
-      
     $effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
     $ret = array($effectiveRoles,$features,$argsObj->featureID);
   }
@@ -541,7 +550,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 		}
     	
 		$tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
-    	
+      
 		$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
 
     // it seems that here is the best place to check if current logged user
@@ -609,6 +618,7 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->features = null;
   $gui->featureID = null;
   $gui->role_colour = null;
+  $gui->tprojectAccessTypeImg = '';
 
   $guiCfg = config_get('gui');
   if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 

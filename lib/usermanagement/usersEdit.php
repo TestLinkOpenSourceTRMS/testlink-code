@@ -6,12 +6,9 @@
  * Allows editing a user
  *
  * @package     TestLink
- * @copyright   2005-2016, TestLink community
+ * @copyright   2005-2017, TestLink community
  * @filesource  usersEdit.php
  * @link        http://www.testlink.org
- *
- * @internal revisions
- * @since 1.9.15
  *
  */
 require_once('../../config.inc.php');
@@ -23,7 +20,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initializeGui($db,$args->user);
+$gui = initializeGui($db,$args);
 $lbl = initLabels();
 
 $highlight = initialize_tabsmenu();
@@ -37,26 +34,6 @@ switch($args->doAction)
 {
   case "edit":
     $highlight->edit_user = 1;
-
-    // Because we can arrive with login, we need to check if we can get
-    // id from login
-    if(strlen(trim($args->login)) > 0)
-    {
-      $args->user_id = tlUser::doesUserExist($db,$args->login);
-    }
-
-    if( is_null($args->user_id) || intval($args->user_id) <= 0)
-    {
-      // need to manage some sort of error message
-      $gui->op->status = tl::ERROR;
-      $gui->op->user_feedback = sprintf(lang_get('login_does_not_exist'),$args->login);
-    }  
-    else
-    {  
-      $gui->user = new tlUser(intval($args->user_id));
-      $gui->user->readFromDB($db);
-    }  
-    $gui->main_title = $lbl["action_{$args->doAction}_user"];
   break;
   
   case "doCreate":
@@ -78,17 +55,12 @@ switch($args->doAction)
   case "resetPassword":
     $highlight->edit_user = 1;
     $passwordSendMethod = config_get('password_reset_send_method');
-
-    $gui->user = new tlUser($args->user_id);
-    $gui->user->readFromDB($db);
     $gui->op = createNewPassword($db,$args,$gui->user,$passwordSendMethod);
     $gui->main_title = $lbl['action_edit_user'];
   break;
   
   case "genAPIKey":
     $highlight->edit_user = 1;
-    $gui->user = new tlUser($args->user_id);
-    $gui->user->readFromDB($db);
     $gui->op = createNewAPIKey($db,$args,$gui->user);
     $gui->main_title = $lbl['action_edit_user'];
   break;
@@ -113,7 +85,6 @@ $smarty->assign('operation',$gui->op->operation);
 $smarty->assign('user_feedback',$gui->op->user_feedback);
 $smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal($gui->user->authentication));
 $smarty->assign('optRights',$roles);
-// $smarty->assign('userData', $user);
 renderGui($smarty,$args,$templateCfg);
 
 
@@ -141,6 +112,21 @@ function init_args()
   $args = new stdClass();
   R_PARAMS($iParams,$args);
  
+  $date_format = config_get('date_format');
+
+  // convert expiration date to ISO format to write to db
+  $dk = 'expiration_date';
+  $args->$dk = null;
+  if (isset($_REQUEST[$dk]) && $_REQUEST[$dk] != '') 
+  {
+    $da = split_localized_date($_REQUEST[$dk], $date_format);
+    if ($da != null) 
+    {
+      // set date in iso format
+      $args->$dk = $da['year'] . "-" . $da['month'] . "-" . $da['day'];
+    }
+  }
+
   $args->user = $_SESSION['currentUser'];
   return $args;
 }
@@ -175,6 +161,8 @@ function doCreate(&$dbHandler,&$argsObj)
     $op->status = $op->user->writeToDB($dbHandler);
     if($op->status >= tl::OK)
     {
+      tlUser::setExpirationDate($dbHandler,$op->user->dbID,$argsObj->expiration_date);
+
       $statusOk = true;
       $op->template = null;
       logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
@@ -206,6 +194,8 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
     $op->status = $op->user->writeToDB($dbHandler);
     if ($op->status >= tl::OK)
     {
+      tlUser::setExpirationDate($dbHandler,$op->user->dbID,$argsObj->expiration_date);
+
       logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
 
       if ($sessionUserID == $argsObj->user_id)
@@ -403,16 +393,49 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 /**
  *
  */
-function initializeGui(&$dbHandler,&$userObj)
+function initializeGui(&$dbHandler,&$argsObj)
 {
+  $userObj = &$argsObj->user;
+
   $guiObj = new stdClass(); 
 
   $guiObj->user = null;
+  switch($argsObj->doAction)
+  {
+    case 'edit': 
+      // Because we can arrive with login, we need to check if we can get
+      // id from login
+      if(strlen(trim($argsObj->login)) > 0)
+      {
+        $argsObj->user_id = tlUser::doesUserExist($dbHandler,$argsObj->login);
+      }
+
+      if( is_null($argsObj->user_id) || intval($argsObj->user_id) <= 0)
+      {
+        // need to manage some sort of error message
+        $guiObj->op = new stdClass();
+        $guiObj->op->status = tl::ERROR;
+        $guiObj->op->user_feedback = 
+          sprintf(lang_get('login_does_not_exist'),$argsObj->login);
+      }  
+      else
+      {  
+        $guiObj->user = new tlUser(intval($argsObj->user_id));
+        $guiObj->user->readFromDB($dbHandler);
+      }  
+      $guiObj->main_title = lang_get("action_{$argsObj->doAction}_user");
+    break;
+
+    case "resetPassword":
+    case "genAPIKey":
+      $guiObj->user = new tlUser($argsObj->user_id);
+      $guiObj->user->readFromDB($dbHandler);
+    break;
+  }
   
   $guiObj->op = new stdClass();
   $guiObj->op->user_feedback = '';
   $guiObj->op->status = tl::OK;
-
 
   $guiObj->authCfg = config_get('authentication');
   $guiObj->auth_method_opt = array(lang_get('default_auth_method') . 
@@ -433,6 +456,15 @@ function initializeGui(&$dbHandler,&$userObj)
 
   $guiObj->grants->mgt_view_events = 
     $userObj->hasRight($dbHandler,"mgt_view_events");
+
+  $guiObj->expiration_date = $argsObj->expiration_date;
+
+  $noExpirationUsers = array_flip(config_get('noExpDateUsers'));
+  $guiObj->expDateEnabled = true;
+  if( !is_null($guiObj->user) )
+  {
+    $guiObj->expDateEnabled = !isset($noExpirationUsers[$guiObj->user->login]);
+  } 
 
   return $guiObj;  
 }

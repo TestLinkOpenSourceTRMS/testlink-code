@@ -1,14 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filsesource execHistory.tpl
-@internal revision
-@since 1.9.14
 *}  
 {lang_get var='labels' 
           s='title_test_case,th_test_case_id,version,date_time_run,platform,test_exec_by,
              exec_status,testcaseversion,attachment_mgmt,deleted_user,build,testplan,
              execution_type_manual,execution_type_auto,run_mode,exec_notes,
-             edit_execution,display_only_active_test_plans'}
+             edit_execution,display_only_active_test_plans,access_test_steps_exec'}
 
 
 {include file="inc_head.tpl" openHead='yes'}
@@ -35,6 +33,7 @@ function load_notes(panel,exec_id)
 
 {$attachment_model=$gui->exec_cfg->att_model}
 {$my_colspan=$attachment_model->num_cols+2}
+{$printExecutionAction="lib/execute/execPrint.php"}
 
 <body onUnload="storeWindowSize('execHistoryPopup')">
 {if $gui->main_descr != ''}
@@ -66,6 +65,9 @@ function load_notes(panel,exec_id)
         <th style="text-align:center">{$labels.exec_status}</th>
         <th style="text-align:center">{$labels.testcaseversion}</th>
         <th style="text-align:left"><nobr>{$labels.run_mode}</nobr></th>
+        {if $tlCfg->exec_cfg->steps_exec }
+        <th style="text-align:left"><nobr>&nbsp;</nobr></th>
+        {/if}
       </tr>
     
       {* Table data *}
@@ -109,6 +111,15 @@ function load_notes(panel,exec_id)
                  style="border:none" />
             {/if}
             </td>
+          {if $tlCfg->exec_cfg->steps_exec }
+            <td class="icon_cell" align="center">
+              <img src="{$tlImages.steps}" title="{$labels.access_test_steps_exec}"  
+                   onclick="javascript:openPrintPreview('exec',{$tcv_exec.execution_id},
+                                                        null,null,'{$printExecutionAction}');"/>
+            </td>
+          {/if}
+
+
           </tr>
     
     

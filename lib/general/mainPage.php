@@ -13,8 +13,6 @@
  * based upon the login. 
  * There is also some javascript that handles the form information.
  *
- * @internal revisions
- * @since 1.9.15
  *
  **/
 
@@ -227,7 +225,8 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'modify_tc' => 'mgt_modify_tc',
                        'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
                        'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
-                       'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases');
+                       'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases',
+                       'exec_ro_access' => 'exec_ro_access');
  if($forceToNo)
  {
     $grants = array_fill_keys(array_keys($right2check), 'no');
@@ -240,7 +239,6 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   /** redirect admin to create testproject if not found */
   if ($grants['project_edit'] && !isset($_SESSION['testprojectID']))
   {
-	  tLog('No project found: Assume a new installation and redirect to create it','WARNING'); 
 	  redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
 	  exit();
   }

@@ -9,7 +9,7 @@ viewer for test case in test specification
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
              btn_edit,btn_delete,btn_mv_cp,btn_del_this_version,btn_new_version,
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
-             testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
+             testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,applyExecTypeChangeToAllSteps,
              title_last_mod,title_created,by,expected_results,keywords,goto_execute,
              btn_create_step,step_number,btn_reorder_steps,step_actions,hint_new_sibling,
              execution_type_short_descr,delete_step,show_hide_reorder,btn_new_sibling,

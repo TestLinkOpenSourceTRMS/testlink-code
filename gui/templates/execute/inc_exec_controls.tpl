@@ -118,20 +118,32 @@ Author : franciscom
         {/if}
   		</table>
 
-    
-      {if $gui->addIssueOp != '' && !is_null($gui->addIssueOp)}  
-      <hr> 
-      <table id="addIssueFeedback">
-      <tr>
-        <td colspan="2" class="label">{$args_labels.create_issue_feedback}</td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <div class="label">{$gui->addIssueOp.msg}</div>
-        </td>
-      </tr>
-      </table>
-      <hr>
+      {if $gui->addIssueOp != '' && !is_null($gui->addIssueOp) && 
+          !is_null($gui->addIssueOp.type) }  
+        {$ak = $gui->addIssueOp.type} 
+        <hr> 
+        <table id="addIssueFeedback">
+        <tr>
+          <td colspan="2" class="label">{$args_labels.create_issue_feedback}</td>
+        </tr>
+  
+        {if $ak == 'createIssue'}
+          <tr>
+            <td colspan="2">
+              <div class="label">{$gui->addIssueOp[$ak].msg}</div>
+            </td>
+          </tr>
+        {else}
+          {foreach key=ik item=ikmsg from=$gui->addIssueOp[$ak]}
+          <tr>
+            <td colspan="2">
+              <div class="label">{$ikmsg.msg}</div>
+            </td>
+          </tr>
+          {/foreach}
+        {/if}
+        </table>
+        <hr>
       {/if}
 
       <table style="display:none;" id="issue_summary">
@@ -174,7 +186,8 @@ Author : franciscom
          Via Javascript the required attribute will be added when this input will be 
          done visible because user has clicked on 'Create Issue' checkbox
       *}
-      {if $gui->issueTrackerMetaData.versions != ''}
+      {if $gui->issueTrackerMetaData.versions != '' && 
+          $gui->issueTrackerMetaData.versions.items != ''}
         <label for="artifactVersion">{$labels.artifactVersion}</label> 
         <select class="chosen-select-artifact" data-placeholder=" " id="artifactVersion" 
                 {if $gui->issueTrackerMetaData.versions.isMultiSelect}

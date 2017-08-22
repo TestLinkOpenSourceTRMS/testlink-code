@@ -11,7 +11,7 @@
  * 
  * 
  * internal revisions
- * @since 1.9.13
+ * @since 1.9.16
  */
 
 require_once("../../config.inc.php");
@@ -43,12 +43,6 @@ $args = init_args($tproject_mgr,$tplan_mgr,$req_cfg);
 $images = $smarty->getImages();
 $gui = init_gui($args,$tplan_mgr);
 $i2u = array('edit_icon','exec_icon','history_small');
-foreach($i2u as $ik)
-{
-  $images[$ik] = $gui->baseHref . $images[$ik]; 
-} 
-
-
 
 
 $reqContext = array('tproject_id' => $args->tproject_id, 'tplan_id' => $args->tplan_id, 
@@ -590,7 +584,7 @@ function init_args(&$tproject_mgr, &$tplan_mgr, &$req_cfg)
 
 
   // $dummy = $tplan_mgr->get_builds_for_html_options($id,$active=null,$open=null,$opt=null)
-  $dummy = $tplan_mgr->get_builds_for_html_options($args->tplan_id);
+  $dummy = $tplan_mgr->get_builds_for_html_options($args->tplan_id, 1); //Only active builds should be available to choose
   $args->buildSet = $dummy ? array(0 => $gui_open . lang_get('any') . $gui_close) + $dummy : null;
   $args->build = 0;
   if (isset($_REQUEST['build'])) 
@@ -817,7 +811,7 @@ function buildReqSpecMap($reqSet,&$reqMgr,&$reqSpecMgr,&$tplanMgr,$reqStatusFilt
     $allFilters = isset($filters['platform_id']) && isset($filters['build_id']);
 
     // $options = array('addExecInfo' => true,'accessKeyType' => 'tcase');
-    $options = array('addExecInfo' => true,'accessKeyType' => 'tcase+platform');
+    $options = array('addExecInfo' => true,'accessKeyType' => 'tcase+platform', 'build_is_active' => true);
 
     if($noFilter || $filterOnly['platform_id'])  
     {

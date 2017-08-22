@@ -12,7 +12,7 @@
  * @link        http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.16
  */
 require_once("common.php");
 
@@ -173,25 +173,25 @@ function buildUserMap($users,$add_options = false, $additional_options=null, $op
  */
 function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
 {
+  $doIt = false;
   $retval = array('status' => tl::OK, 'password' => '', 'msg' => ''); 
+
   $user = new tlUser($userID);
   $retval['status'] = $user->readFromDB($db);
-  
 
-  // Reset can be done ONLY if user authentication method allows it.
-  $doIt = false;
   if ($retval['status'] >= tl::OK)
   {
-    $cfg = config_get('authentication');
-    $userAuth = trim($user->authentication);
-    if($userAuth == '' || is_null($userAuth))
+    // Reset can be done ONLY if user authentication method allows it.
+    $systemCfg = config_get('authentication');
+    $userAuthMethod = trim($user->authentication);
+    if($userAuthMethod == '' || is_null($userAuthMethod))
     {
-      $userAuth = $cfg['method'];
+      $userAuthMethod = $systemCfg['method'];
     }  
   
-    $cfg = $cfg['domain'];
-    $doIt = isset($cfg[$userAuth]) && 
-                  $cfg[$userAuth]['allowPasswordManagement'];
+    $cfg = $systemCfg['domain'];
+    $doIt = isset($cfg[$userAuthMethod]) && 
+                  $cfg[$userAuthMethod]['allowPasswordManagement'];
   }
 
   if ($doIt)
@@ -201,8 +201,7 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
     if( trim($user->emailAddress) != "")
     {
       $newPassword = tlUser::generatePassword(8,4); 
-      $retval['status'] = $user->setPassword($newPassword,$cfg[$userAuth]);
-      
+      $retval['status'] = $user->setPassword($newPassword,$userAuthMethod);
       if ($retval['status'] >= tl::OK)
       {
         $retval['password'] = $newPassword;
@@ -214,6 +213,7 @@ function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
           $mail_op = @email_send(config_get('from_email'), 
                                  $user->emailAddress,lang_get('mail_passwd_subject'),$msgBody);
         }
+        
         if ($mail_op->status_ok || ($passwordSendMethod == 'display_on_screen') )
         {
           $retval['status'] = $user->writePasswordToDB($db);

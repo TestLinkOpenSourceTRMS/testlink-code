@@ -198,7 +198,7 @@ class testsuite extends tlObjectWithAttachments
       {
         $ret['id'] = $tsuite_id;
 
-        if (defined(TL_APICALL))
+        if (defined('TL_APICALL'))
         {
             $ctx = array('id' => $tsuite_id,'name' => $name,'details' => $details);     
             event_signal('EVENT_TEST_SUITE_CREATE', $ctx);
@@ -248,7 +248,7 @@ class testsuite extends tlObjectWithAttachments
       
       if( !is_null($node_order) && intval($node_order) > 0 )
       {
-        $sql .= ' SET node_order=' . $this->db->prepare_int(intval($node_order));     
+        $sql = ' SET node_order=' . $this->db->prepare_int(intval($node_order));     
         $sql = $sqlUpd . $sql . $where;       
         $result = $this->db->exec_query($sql);
       }
@@ -261,7 +261,7 @@ class testsuite extends tlObjectWithAttachments
       } 
       else
       {
-        if (defined(TL_APICALL))
+        if (defined('TL_APICALL'))
         {
           // @TODO this need some refactoring due to conditional update added on 20160806
           $ctx = array('id' => $id,'name' => $name,'details' => $details);

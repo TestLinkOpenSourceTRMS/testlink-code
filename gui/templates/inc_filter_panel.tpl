@@ -173,13 +173,6 @@
       </table>
     </div> {* settings *}
   </div> {* settings_panel *}
-
-  <script>
-  jQuery( document ).ready(function() {
-  jQuery(".chosen-select").chosen({ width: "85%" , allow_single_deselect: true});
-  });
-  </script>
-
 {/if} {* display settings *}
 
 {if $control->display_filters}
@@ -700,3 +693,10 @@
 {/if}
 </form>
 <p>
+
+<script>
+jQuery( document ).ready(function() {
+jQuery(".chosen-select").chosen({ width: "85%" , allow_single_deselect: true});
+jQuery('select[data-cfield="list"]').chosen({ width: "85%" , allow_single_deselect: true});
+});
+</script>

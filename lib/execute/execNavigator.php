@@ -7,14 +7,11 @@
  *
  * - Test case execution
  *
- *
  * @filesource  execNavigator.php
  * @package     TestLink
- * @copyright   2007-2014, TestLink community
+ * @copyright   2007-2017, TestLink community
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * since 1.9.3
  *
  **/
 
@@ -32,22 +29,34 @@ $chronos[] = $tstart = microtime(true);
 $control = new tlTestCaseFilterControl($db, 'execution_mode');
 $control->formAction = '';
 
-$gui = initializeGui($control);
+$gui = initializeGui($db,$control);
+
+
 $control->build_tree_menu($gui);
 
+
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);
-$smarty->assign('control', $control);
-$smarty->assign('menuUrl',$gui->menuUrl);
-$smarty->assign('args', $gui->args);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+if( $gui->execAccess )
+{
+  $smarty->assign('gui',$gui);
+  $smarty->assign('control', $control);
+  $smarty->assign('menuUrl',$gui->menuUrl);
+  $smarty->assign('args', $gui->args);
+  $tpl = $templateCfg->template_dir . $templateCfg->default_template;
+}  
+else
+{
+  $tpl = 'noaccesstofeature.tpl';
+}
+
+$smarty->display($tpl);
 
 
 /**
  * 
  *
  */
-function initializeGui(&$control) 
+function initializeGui(&$dbH,&$control) 
 {
   $gui = new stdClass();
   
@@ -85,5 +94,60 @@ function initializeGui(&$control)
   $gui->lastest_exec_method = $dummy['status_code']['latest_execution'];
   $gui->pageTitle = lang_get('href_execute_test');
 
+  $grants = checkAccessToExec($dbH,$control);
+
+  // feature to enable/disable
+  $gui->features = array('export' => false,'import' => false);
+  $gui->execAccess = false;
+  if($grants['testplan_execute'])
+  {
+    $gui->features['export'] = true;
+    $gui->features['import'] = true;
+    $gui->execAccess = true;
+  }  
+
+  if($grants['exec_ro_access'])
+  {
+    $gui->execAccess = true;
+  }  
+
+
+  $control->draw_export_testplan_button = $gui->features['export'];
+  $control->draw_import_xml_results_button = $gui->features['import'];
+
   return $gui;
 }
+
+
+/**
+ *
+ */
+function checkAccessToExec(&$dbH,&$ct)
+{
+  $tplan_id = intval($ct->args->testplan_id);
+  $sch = tlObject::getDBTables(array('testplans'));
+  $sql = "SELECT testproject_id FROM {$sch['testplans']} " .
+         "WHERE id=" . $tplan_id;
+  $rs = $dbH->get_recordset($sql);
+  if(is_null($rs))
+  {
+    throw new Exception("Can not find Test Project For Test Plan - ABORT", 1);
+    
+  }  
+  $rs = current($rs);
+  $tproject_id = $rs['testproject_id'];
+
+  $user = $_SESSION['currentUser'];
+  $grants = null;
+  $k2a = array('testplan_execute','exec_ro_access');
+  foreach($k2a as $r2c)
+  {
+    $grants[$r2c] = false;
+    if( $user->hasRight($dbH,$r2c,$tproject_id,$tplan_id,true) || $user->globalRoleID == TL_ROLES_ADMIN )
+    {
+      $grants[$r2c] = true;
+    }    
+  }  
+
+  return $grants;
+} 

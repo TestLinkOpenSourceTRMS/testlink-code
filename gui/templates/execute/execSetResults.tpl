@@ -3,8 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @filesource	execSetResults.tpl
 @internal smarty template - show tests to add results
-@internal revisions
-@since 1.9.15
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -21,10 +19,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get 
   var='labels'
   s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
-	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,
+	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,design,execution,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
-  estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,
+  estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,btn_next_tcase,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
 	test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
   bulk_tc_status_management,access_test_steps_exec,assign_exec_task_to_me,
@@ -193,7 +191,7 @@ function jsCallDeleteFile(btn, text, o_id)
 }        
 </script>
 
-
+<script src="third_party/clipboard/clipboard.min.js"></script>
 </head>
 {*
 IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
@@ -207,8 +205,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               show_hide('build_notes','{$build_notes_view_memory_id}',{$gui->bn_view_status});
               show_hide('bulk_controls','{$bulk_controls_view_memory_id}',{$gui->bc_view_status});
               show_hide('platform_notes','{$platform_notes_view_memory_id}',{$gui->platform_notes_view_status});
-              multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
-                                 '{$tsd_val_for_hidden_list}');
+
+              {if $tsuite_info != null}
+                multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
+                                   '{$tsd_val_for_hidden_list}');
+              {/if}
+
               {if $round_enabled}Nifty('div.exec_additional_info');{/if}
               {if #ROUND_TC_SPEC#}Nifty('div.exec_test_spec');{/if}
               {if #ROUND_EXEC_HISTORY#}Nifty('div.exec_history');{/if}
@@ -264,8 +266,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       
       {$tlImages.toggle_direct_link} &nbsp;
       <div class="direct_link" style='display:none'>
-      <a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
+      <img class="clip" src="{$tlImages.clipboard}" title="eye" 
+           data-clipboard-text="{$gui->direct_link}">
+      <a href="{$gui->direct_link}" target="_blank">
+      {$gui->direct_link}</a></div>
 
+      
       <input type="button" name="print" id="print" value="{$labels.btn_print}" onclick="javascript:window.print();" />
       <input type="button" id="toggle_history_on_off"  name="{$gui->history_status_btn_name}"
              value="{lang_get s=$gui->history_status_btn_name}" 
@@ -274,11 +280,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                       javascript:toogleRequiredOnShowHide('artifactComponent');
                       execSetResults.submit();"/>
 
+      {if $gui->grants->execute}
       <input type="button" id="pop_up_import_button" name="import_xml_button"
              value="{$labels.import_xml_results}"
              onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
                                                    {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
           
+      {/if}
+      
       {if $tlCfg->exec_cfg->enable_test_automation}
         <input type="submit" id="execute_cases" name="execute_cases"
                  value="{$labels.execute_and_save_results}"/>
@@ -358,7 +367,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {$enable_custom_fields=true}
         {$draw_submit_button=true}
 
-
         {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
             {$div_id='bulk_controls'}
             {$memstatus_id="$bulk_controls_view_memory_id"}
@@ -370,7 +378,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                      show_hide_container_view_status_id=$memstatus_id}
 
             <div id="{$div_id}" name="{$div_id}">
-              {include file="execute/inc_exec_controls.tpl"
+              {include file="execute/{$tplConfig.inc_exec_controls}"
                        args_save_type='bulk'
                        args_input_enable_mgmt=$input_enabled_disabled
                        args_tcversion_id='bulk'
@@ -474,5 +482,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   
 </form>
 </div>
+
+<script>
+jQuery( document ).ready(function() {
+  clipboard = new Clipboard('.clip');
+  //alert('Clipboard Debug');
+});
+</script>
 </body>
 </html>

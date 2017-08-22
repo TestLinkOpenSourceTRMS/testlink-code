@@ -29,234 +29,234 @@
 
 
 // printFilter.html
-$TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
+$TLS_hlp_generateDocOptions = "<h2>Opties voor een gegenereerd document</h2>
 
-<p>This table allows the user to filter test cases before they are viewed. If
-selected (checked) the data will be shown. In order to change the data
-presented, check or uncheck, click on Filter, and select the desired data
-level from the tree.</p>
+<p>In deze tabel kan de gebruiker testcases filteren voordat ze worden bekeken. 
+Geselecteerde (aangevinkte) gegevens zullen worden getoond. Om de voorgestelde gegevens te wijzigen,
+, vink aan of uit, klikt u op Filter, en selecteer het gewenste data
+niveau van de boom.</p>
 
-<p><b>Document Header:</b> Users can filter out Document Header information. 
-Document Header information includes: Introduction, Scope, References, 
-Test Methodology, and Test Limitations.</p>
+<p><b>Document Hoofding:</b> Gebruikers kunnen informatie in de hoofding filteren. 
+Document hoofding informatie omvat: inleiding, bereik, referenties, 
+testmethodologie en test beperkingen.</p>
 
-<p><b>Test Case Body:</b> Users can filter out Test Case Body information. Test Case Body information
-includes: Summary, Steps, Expected Results, and Keywords.</p>
+<p><b>Testcase Body:</b> Gebruikers kunnen testcase body informatie filteren. Testcase Body informatie
+bestaat uit: samenvatting, stappen, verwachte resultaten en sleutelwoorden </p>
 
-<p><b>Test Case Summary:</b> Users can filter out Test Case Summary information from the Test Case Title,
-however, they cannot filter out Test Case Summary information from the Test
-Case Body. Test Case Summary has only been partially separated from Test Case
-Body in order to support viewing Titles with a brief Summary and the absence of
-Steps, Expected Results, and Keywords. If a user decides to view Test Case
-Body, Test Case Summary will always be included.</p>
+<p><b>Testcase samenvatting:</b> Gebruikers kunnen testcase samenvattingen filteren van de testcase titel,
+ze kunnen echter geen informatie uit de testcase samenvatting testcase
+body. Testcase samenvatting is slechts gedeeltelijk gescheiden van testcase
+body ter ondersteuning van het bekijken van de titels met een korte samenvatting en het ontbreken van
+stappen, verwachte resultaten en trefwoorden. Als een gebruiker besluit om een testcase body te bekijken
+, zal de tescase samenvatting altijd worden opgenomen. </p>
 
-<p><b>Table of Content:</b> TestLink inserts list of all titles with internal hypertext links if checked.</p>
+<p><b>Inhoudsopgave:</b> TestLink voegt een overzicht toe van alle geselecteerde titels met interne hyperlinks</p>
 
-<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MS word component 
-in second case.</p>";
+<p><b>Uitvoerformaat:</b> Er zijn twee mogelijkheden: HTML en MS Word. Browser roept MS Word component aan 
+in het tweede geval.</p>";
 
 // testPlan.html
-$TLS_hlp_testPlan = "<h2>Test Plan</h2>
+$TLS_hlp_testPlan = "<h2>Testplan</h2>
 
-<h3>General</h3>
-<p>A test plan is a systematic approach to testing a system such as software. You can organize testing activity with 
-particular builds of product in time and trace results.</p>
+<h3>Algemeen</h3>
+<p>Een testplan is een systematische aanpak voor het testen van een systeem zoals software. U kunt het testen van de activiteit organiseren 
+met bepaalde builds van het product in de tijd en resultaten traceren.</p>
 
-<h3>Test Execution</h3>
-<p>This section is where users can execute test cases (write test results) and 
-print Test case suite of the Test Plan. This section is where users can track 
-the results of their test case execution.</p> 
+<h3>Tests Uitvoeren</h3>
+<p>Dit gedeelte is waar de gebruikers testcases kunnen uitvoeren (testresultaten schrijven) en 
+een testcase suite van het testplan afdrukken. Deze sectie is waar gebruikers de resultaten kunnen bijhouden 
+van het uitvoeren van een testcase. </p> 
 
-<h2>Test Plan Management</h2>
-<p>This section, which is only lead accessible, allows users to administrate test plans. 
-Administering test plans involves creating/editing/deleting plans, 
-adding/editing/deleting/updating test cases in plans, creating builds as well as defining who can 
-see which plan.<br />
-Users with lead permissions may also set the priority/risk and ownership of 
-Test case suites (categories) and create testing milestones.</p> 
+<h2>Testplan beheer</h2>
+<p>Deze sectie, die alleen toegankelijk is voor leiders, stelt gebruikers in staat om testplannen te beheren. 
+Administratie van testplannen omvat het maken/bewerken/verwijderen van de plannen, 
+toevoegen/bewerken/verwijderen/updaten van testcases in de plannen, builds creëren evenals bepalen wie welke 
+plannen kan zien.<br />
+Gebruikers met leider permissies kunnen ook de prioriteit/risico en de eigendom van 
+testcase suites (categorieën) en test mijlpalen maken.</p> 
 
-<p>Note: It is possible that users may not see a dropdown containing any Test plans. 
-In this situation all links (except lead enabled ones) will be unlinked. If you 
-are in this situation you must contact a lead or admin to grant you the proper 
-project rights or create a Test Plan for you.</p>"; 
+<p>Opmerking: Het is mogelijk dat gebruikers geen dropdown met testplannen kunnen zien. 
+In deze situatie zullen alle links (behalve deze geactiveerd door een leider) losgekoppeld zijn. Als u zich 
+in deze situatie bent moet u contact opnemen met een leider of administrator om u de juiste rechten voor het testplan toe te kennen 
+or een testplan voor u aan te maken.</p>";
 
 // custom_fields.html
-$TLS_hlp_customFields = "<h2>Custom Fields</h2>
-<p>Following are some facts about the implementation of custom fields:</p>
+$TLS_hlp_customFields = "<h2>Gebruikersvelden</h2>
+<p>Hier volgen enkele feiten over de implementatie van de gebruikersvelden: </p>
 <ul>
-<li>Custom fields are defined system wide.</li>
-<li>Custom fields are linked to a type of element (Test Suite, Test Case)</li>
-<li>Custom fields can be linked to multiple Test Projects.</li>
-<li>The sequence of displaying custom fields can be different per Test Project.</li>
-<li>Custom fields can be turned inactive for an specific Test Project.</li>
-<li>Number of custom fields is not restricted.</li>
-</ul>
+<li>Gebruikersvelden worden gedefinieerd het hele systeem.</li>
+<li>Gebruikersvelden zijn gekoppeld aan een type element (Testsuite, Testcase)</li>
+<li>Gebruikersvelden kunnen worden gekoppeld aan meerdere testprojecten.</li>
+<li>De volgorde van de weergave van gebruikersvelden kunnen verschillen per testproject.</li>
+<li>Gebruikersvelden kunnen inactief worden gezet voor een specifiek testproject.</li>
+<li>Het aantal gebruikersvelden is onbeperkt.</li>
+<ul>
 
-<p>The definition of a custom field includes the following logical
-attributes:</p>
+<p>De definitie van een gebruikersveld bevat de volgende logische
+attributen:</p>
 <ul>
-<li>Custom field name</li>
-<li>Caption variable name (eg: This is the value that is
-supplied to lang_get() API , or displayed as-is if not found in language file).</li>
-<li>Custom field type (string, numeric, float, enum, email)</li>
-<li>Enumeration possible values (eg: RED|YELLOW|BLUE), applicable to list, multiselection list 
-and combo types.<br />
-<i>Use the pipe ('|') character to
-separate possible values for an enumeration. One of the possible values
-can be an empty string.</i>
+<li>Gebruikersveld naam</li>
+<li>Bijschrift naam van de variabele (bijvoorbeeld: Dit is de waarde die
+geleverd wordt aan lang_get () API, of zo weergegeven wordt als deze niet wordt gevonden in een taalbestand).</li>
+<li>Type gebruikersveld (string, numeric, float, enum, e-mail)</li>
+<li>Het bepalen mogelijke waarden (bijvoorbeeld: ROOD|GEEL|BLAUW), die van toepassing zijn in een lijst 
+en combo types.<br/>
+<i>Gebruik het pijp ('|') karakter
+om mogelijke waarden voor een opsomming te scheiden. Een mogelijke waarde
+kan een lege tekenreeks zijn. </i>
 </li>
-<li>Default value: NOT IMPLEMENTED YET</li>
-<li>Minimum/maximum length for the custom field value (use 0 to disable). (NOT IMPLEMENTED YET)</li>
-<li>Regular expression to use for validating user input
-(use <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
-syntax). <b>(NOT IMPLEMENTED YET)</b></li>
-<li>All custom fields are currently saved to a field of type VARCHAR(255) in the database.</li>
-<li>Display on test specification.</li>
-<li>Enable on test specification. User can change the value during Test Case Specification Design</li>
-<li>Display on test execution.</li>
-<li>Enable on test execution. User can change the value during Test Case execution</li>
-<li>Display on test plan design.</li>
-<li>Enable on test plan design. User can change the value during Test Plan design (add test cases to test plan)</li>
-<li>Available for. User choose to what kind of item the field belows.</li>
-</ul>
+<li>Standaard waarde: NOG NIET GEIMPLEMENTEERD</li>
+<li>Minimum/maximum lengte voor de gebruikersveld waarde (gebruik 0 om uit te schakelen). (NOG NIET GEIMPLEMENTEERD)</li>
+<li>Reguliere expressie te gebruiken voor het valideren van input van de gebruiker
+(<a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
+syntaxis). <b>(NOG NIET GEIMPLEMENTEERD)</b></li>
+<li>Alle gebruikersvelden worden momenteel opgeslagen in een veld van het type VARCHAR (255) in de database.</li>
+<li>Toon in testspecificatie.</li>
+<li>Aanpassen bij testspecificatie. De gebruiker kan tijdens het testcase specificatie ontwerp de waarde veranderen</li>
+<li>Toon bij testuitvoering. </li>
+<li>Aanpassen bij testuitvoering. De gebruiker kan tijdens testcase uitvoering de waarde veranderen</li>
+<li>Toon op testplan ontwerp.</li>
+<li>Aanpassen bij testplan ontwerp. De gebruiker kan de waarde veranderen tijdens het testplan ontwerp (testgevallen aan testplan toevoegen)</li>
+<li>Beschikbaar voor. De gebruiker kan kiezen om wat voor soort punt het veld gaat.</li>
+<ul>
 ";
 
 // execMain.html
-$TLS_hlp_executeMain = "<h2>Executing Test Cases</h2>
-<p>Allows users to 'execute' test cases. Execution itself is merely
-assigning a test case a result (pass,fail,blocked) against a selected build.</p>
-<p>Access to a bug tracking system could be configured. User can directly add a new bugs
-and browse existing ones then. See Installation manual for more.</p>";
+$TLS_hlp_executeMain = "<h2>Testcases uitvoeren</h2>
+<p>Hiermee kunnen gebruikers testcases 'uitvoeren'. Uitvoeren zelf is louter
+het toewijzen van resultaat aan een testcase (OK, gefaald, geblokkeerd) in een geselecteerde build. </p>
+<p>De toegang tot een bug tracking systeem kan worden geconfigureerd. De gebruiker kan dan direct nieuwe bugs toevoegen
+en door bestaande bladeren. Zie installatiehandleiding voor meer informatie.</p> ";
 
 //bug_add.html
-$TLS_hlp_btsIntegration = "<h2>Add Bugs to Test Case</h2>
-<p><i>(only if it is configured)</i>
-TestLink has a very simple integration with Bug Tracking Systems (BTS),
-not being able either send a bug creationg request to BTS, neither get back the bug id.
-The integration is done using links to pages on BTS, that calls the following features:
+$TLS_hlp_btsIntegration = "<h2>Bugs toevoegen aan een testcase </h2>
+<p><i>(alleen als dit geconfigureerd is)</i>
+TestLink heeft een zeer eenvoudige integratie met Bug Tracking Systems (BTS),
+zonder te een verzoek om een bug aan te maken te versturen aan BTS, noch het terugkrijgen bug id.
+De integratie wordt gedaan met behulp van links naar pagina's op BTS, die de volgende functies oproepen:
 <ul>
-	<li>Insert new bug.</li>
-	<li>Display existent bug info. </li>
-</ul>
-</p>  
+<li>Nieuwe bug toevoegen.</li>
+<li>Toon bestaande bug info.</li>
+<ul>
+</p>  
 
-<h3>Process to add a bug</h3>
-<p>
-   <ul>
-   <li>Step 1: use the link to open BTS to insert a new bug. </li>
-   <li>Step 2: write down the BUGID assigned by BTS.</li>
-   <li>Step 3: write BUGID on the input field.</li>
-   <li>Step 4: use add bug button.</li>
-   </ul>  
+<h3> Proces om een bug toe te voegen </h3>
+</p>
+   <ul>
+   <li>Stap 1: Gebruik de link naar BTS openen naar een nieuwe bug in te voegen.</li>
+   <li>Stap 2: Noteer de BUGID toegewezen door BTS</li>
+   <li>Stap 3: Schrijf BUGID in het invoerveld</li>
+   <li>Stap 4: Gebruik bug  toevoegen knop</li>
+   <ul>  
 
-After closing the add bug page, you will see relevant bug data on the execute page.
-</p>";
+Na het sluiten van de bug toevoegen pagina vindt u de relevante bug gegevens op de tests uitvoeren pagina te zien.
+</p> ";
 
 // execFilter.html
-$TLS_hlp_executeFilter = "<h2>Settings</h2>
+$TLS_hlp_executeFilter = "<h2>Instellingen</h2>
 
-<p>Settings allows you to select the test plan, build and platform (if available) to
-be executed.</p>
+<p>In instellingen kunt u het testplan, build en platform (indien aanwezig) om uit te voeren selecteren
+</p>
 
-<h3>Test Plan</h3>
-<p>You can choose the required test plan. According to the chosen test plan the appropriate
-builds will be shown. After choosing a test plan filters will be reset.</p>
+<h3>Testplan</h3>
+<p>U kunt het gewenste testplan kiezen. Volgens de gekozen testplan zullen de geschikte
+builds worden getoond. Na het kiezen van een testplan zullen filters gereset worden.</p>
 
 <h3>Platform</h3>
-<p>If the platforms feature is used, you must select the appropriate platform before execution.</p>
+<p>Als de functie platformen wordt gebruikt, moet u het juiste platform te kiezen om een test uit te voeren.</p>
 
-<h3>Build to execute</h3>
-<p>You can choose the build you whish to execute the test cases for.</p>
+<h3>Uit te voeren build</h3>
+<p>U kunt de build kiezen waarvoore u de testcases wukt uitvoeren.</p>
 
 <h2>Filters</h2>
-<p>Filters provide the opportunity to further influence the set of shown test cases
-before the execution. You can reduce the set of shown test cases by specifying filters
-and click the \"Apply\" button.</p>
+<p>Filters bieden de mogelijkheid de set van de getoonde testcases verder te beinvloeden
+voor ze uit te voeren. U kunt de set van getoonde testcases verkleinen door filters op te geven
+en op de \"Apply\" knop te klikken.</p>
 
-<p> Advanced Filters will allow you to specify a set of values for applicable filters by
-using CTRL-Click inside the Multi-Select ListBox</p>
+<p>Met geavanceerde filters kunt u een reeks waarden opgeven voor de filters door
+CTRL-klik te gebruiken in de multi-select listbox.</p>
 
 
-<h3>Keyword Filter</h3>
-<p>You can filter test cases by the keywords that have been assigned. You can choose " .
-"multiple keywords by using CTRL-Click. If you chose more than one keyword you can " .
-"decide whether only test cases are shown that have all chosen keywords assigned " .
-"(radiobutton \"And\") or  at least one of the chosen keywords (radiobutton \"Or\").</p>
+<h3>Trefwoord filter</h3>
+<p>U kunt testcases filteren op de trefwoorden die eraan zijn toegewezen. Je kan meerdere trefwoorden kiezen " .
+"met CTRL-klik. Als u meer dan één trefwoord koos kun je ".
+"beslissen of alleen testcases worden getoond waaraan alle gekozen trefwoorden zijn toegewezen".
+"(Radiobutton \"en\") of ten minste één van de gekozen trefwoorden (radioknop \"Of\"). </p>
 
-<h3>Priority Filter</h3>
-<p>You can filter test cases by test priority. The test priority is \"test case importance\" " .
-"combined with \"test urgency\" within the current test plan.</p> 
+<h3>Prioriteitsfilter</h3>
+<p>U kunt testcases filteren op test prioriteit. De test prioriteit is \"testcase belang\" ".
+"gecombineerd met \"test dringendheid\" in het huidige testplan.</p> 
 
-<h3>User Filter</h3>
-<p>You can filter test cases that are not assigned (\"Nobody\") or assigned to \"Somebody\". " .
-"You can also filter test cases that are assigned to a specific tester. If you chose a specific " .
-"tester you also have the possibility to show test cases that are unassigned in addition to " .
-"those test cases (advanced Filters are available). </p>
+<h3>Gebruiker filter</h3>
+<p>U kunt testcases filteren die niet zijn toegewezen (\"Niemand\") of toegewezen aan \"Iemand\". ".
+"Je kunt ook testcases filteren die aan een specifieke tester zijn toegewezen. Als je een specifieke tester kiest ".
+"heb je ook de mogelijkheid om testcases die niet toegewezen zijn erbij te laten zien".
+"(geavanceerde filters zijn beschikbaar). </p>
 
-<h3>Result Filter</h3>
-<p>You can filter test cases by result (advanced Filters are available). You can filter by " .
-"result \"on chosen build for execution\", \"on latest execution\", \"on ALL builds\", " .
-"\"on ANY build\" and \"on specific build\". If \"specific build\" is chosen you then can " .
-"specify the build. </p>";
+<h3>Resultaat filter</h3>
+<p>U kunt testcases filteren op resultaat (geavanceerde filters zijn beschikbaar). U kunt filteren op ".
+"Resultaat \"op gekozen build \", \"op de nieuwste uitvoering\", \"op ALLE builds\", ".
+"\"op om het even welke build\" en \"op specifieke build\". Als \"specifieke build\" gekozen is dan kan u".
+"de build opgeven.</p>";
 
 
 // newest_tcversions.html
-$TLS_hlp_planTcModified = "<h2>Newest versions of linked Test Cases</h2>
-<p>The whole set of Test Cases linked to Test Plan is analyzed, and a list of Test Cases
-which have a newest version is displayed (against the current set of the Test Plan).
+$TLS_hlp_planTcModified = "<h2>De nieuwste versies van gekoppelde testcases</h2>
+<p>De hele set testcases gekoppeld aan testplan wordt geanalyseerd, en een lijst van testcases
+waarvan de nieuwste versie wordt weergegeven (vergeleken met de huidige set van het testplan).
 </p>";
 
 
 // requirementsCoverage.html
-$TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
+$TLS_hlp_requirementsCoverage = "<h3>Vereisten dekking</h3>
 <br />
-<p>This feature allows to map a coverage of user or system requirements by
-test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
+<p>Deze functie maakt het mogelijk om de ​​dekking in kaart te brengen van de gebruiker- of systeemvereisten door
+testcases Openen via link \"Vereisten specificatie\" in het hoofdscherm.</p>
 
-<h3>Requirements Specification</h3>
-<p>Requirements are grouped by 'Requirements Specification' document which is related to 
-Test Project.<br /> TestLink doesn't support versions for both Requirements Specification  
-and Requirements itself. So, version of document should be added after 
-a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p> 
+<h3>Vereisten specificatie</h3>
+<p>Vereisten worden gegroepeerd door een 'Vereisten specificatie' document dat betrekking heeft op het 
+testproject. <br /> TestLink ondersteunt geen versiebeheer voor vereisten specificaties  
+of vereisten. Dus moet de versie van document worden toegevoegd na 
+een specificatie <b>Titel</b>.
+Een gebruiker kan eenvoudige beschrijvingen of opmerkingen toevoegen aan het <b>Bereik</b> veld.</p> 
 
-<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
-evaluation Req. coverage in case that not all requirements are added (imported) in. 
-The value <b>0</b> means that current count of requirements is used for metrics.</p> 
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
-coverage is 25% (if all these added requirements will be tested).</i></p>
+<p><b><a name='total_count'>Overschreven telling van vereisten</a></b> dient voor 
+evaluatie van vereisten dekking in het geval dat niet aan alle vereisten toegevoegd (of geïmporteerd) zijn. 
+De waarde <b> 0 </b> betekent dat de huidige telling van eisen wordt gebruikt voor de statistieken.</p> 
+<p><i>Bv SRS omvat 200 vereisten, maar slechts 50 worden toegevoegd in TestLink. Test 
+dekking is 25% (indien alle toegevoegde vereisten worden getest).</i></p>
 
-<h3><a name=\"req\">Requirements</a></h3>
-<p>Click on title of a created Requirements Specification. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be \"Normal\" or \"Not testable\". Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and 
-wrong designed requirements.</p> 
+<h3><a name=\"req\">Vereisten</a></h3>
+<p>Klik op de titel van een bestaande Vereisten specificatie. U kunt vereisten maken, bewerken, verwijderen
+of importeren voor het document. Elke vereiste heeft een titel, bereik en status.
+Status moet \"normaal\" of \"Niet toetsbaar\" zijn. Niet toetsbare vereisten worden niet meegeteld
+in statistieken. Deze parameter moet worden gebruikt voor niet geïmplementeerde functies en 
+verkeerd ontworpen vereisten.</p> 
 
-<p>You can create new test cases for requirements by using multi action with checked 
-requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
-\"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
+<p>U kunt nieuwe testcases voor de vereisten aanmaken door het gebruik van multi actie met gecontroleerde 
+vereisten in het specificaties scherm. Deze testcases worden gemaakt in testsuite
+met de naam opgegeven in configuratie <i>(standaard is: &#36;tlCfg->req_cfg->default_testsuite_name = 
+\"Test suite created by Requirement - Auto\";) </i>. Titel en bereik worden gekopieerd naar deze testcases. </p>
 ";
 
-$TLS_hlp_req_coverage_table = "<h3>Coverage:</h3>
-A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
-to test it completely. 8 of those have already been created and linked to this Requirement, which 
-makes a coverage of 40 percent.
+$TLS_hlp_req_coverage_table = "<h3>Dekking:</h3>
+Een waarde van bijvoorbeeld \"40% (8/20)\" betekent dat 20 testcases moeten worden gemaakt om deze vereiste 
+volledig testen. 8 ervan al zijn gemaakt en gekoppeld aan deze vereiste, die 
+zo een dekking van 40 procent uitmaken.
 ";
 
 
 // planAddTC_m1.tpl
-$TLS_hlp_planAddTC = "<h2>Regarding 'Save Custom Fields'</h2>
-If you have defined and assigned to Test Project,<br /> 
-Custom Fields with:<br />
- 'Display on test plan design=true' and <br />
- 'Enable on test plan design=true'<br />
-you will see these in this page ONLY for Test Cases linked to Test Plan.
+$TLS_hlp_planAddTC = "<h2> Metbetrekking tot 'Gebruikersvelden opslaan'</h2>
+Als u gebruikersvelden met <br/>
+'Toon bij testplan ontwerp'<br/>
+en 'Beschikbaar bij testplan ontwerp' <br/>
+hebt gedefinieerd en toegewezen aan een testproject, <br /> 
+zult u deze op deze pagina alleen zien voor testcases gekoppeld aan het testplan.
 ";
 
 // xxx.html
-//$TLS_hlp_xxx = "";
+// $TLS_hlp_xxx = "";
 
 // ----- END ------------------------------------------------------------------
 ?>

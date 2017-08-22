@@ -9,13 +9,9 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
- *
- * @internal revisions
- * 
- * @since 1.9.15
  **/
 
 /** related functionality */
@@ -1834,6 +1830,8 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+    $id = intval($id);
+
     $the_sql=array();
     $main_sql=array();
     
@@ -1855,12 +1853,48 @@ class testplan extends tlObjectWithAttachments
     $the_sql[]="DELETE FROM {$this->tables['cfield_execution_values']} WHERE testplan_id={$id}";
     $the_sql[]="DELETE FROM {$this->tables['user_testplan_roles']} WHERE testplan_id={$id}";
     
+
     
     // When deleting from executions, we need to clean related tables
+    $execIDSetSQL = " SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id} ";
+
+    // get test step exec attachments if any exists
+    $dummy = " SELECT id FROM {$this->tables['execution_tcsteps']} " . 
+             " WHERE execution_id IN ({$execIDSetSQL}) ";
+     
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // execution attachments
+    $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
+             " WHERE fk_table = 'executions' " .
+             " AND fk_id IN ({$execIDSetSQL}) ";
+  
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+    
+
     $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
-           "IN (SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id})";
+           "IN ($execIDSetSQL)";
+    
+    $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps']} WHERE execution_id ".
+           "IN ($execIDSetSQL) ";           
     $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";
-    $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; //BUGID 3845    
+    $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; 
+
     
     foreach($the_sql as $sql)
     {
@@ -3525,9 +3559,6 @@ class testplan extends tlObjectWithAttachments
         }  
 
         $sql .= " ORDER BY TZ.node_order >= ($subq) ";
-        echo $sql;
-
-
       break;
 
       case 'local':
@@ -4211,10 +4242,6 @@ class testplan extends tlObjectWithAttachments
         {
           $node['leaf'] = true; 
           $node['external_id'] = '';
-          // $itemSet['nodes'][] = $node;
-          //$itemSet['nindex'][] = 
-          //  array('tcase_id' => $node['id'], 
-          //        'tcversion_id'=> $node['tcversion_id']);
           $itemSet['nindex'][] = $node['id'];
         }      
         
@@ -6896,8 +6923,8 @@ class testplan extends tlObjectWithAttachments
                                     'addPriority' => false,'addImportance' => false,
                                     'ignorePlatformAndBuild' => false,
                                     'ignoreBuild' => false, 'ignorePlatform' => false,
-                                    'ua_user_alias' => '', 
-                                    'ua_force_join' => false));
+                                    'ua_user_alias' => '', 'ua_force_join' => false,
+                                    'build_is_active' => false));
 
     $my['options'] = array_merge($mop['options'],$my['options']);
       
@@ -6936,6 +6963,20 @@ class testplan extends tlObjectWithAttachments
       $platformEXEC = " ";
 
     }  
+    else if ($my['options']['ignoreBuild'] && $my['options']['build_is_active']) 
+    {
+      $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
+                " MAX(EE.id) AS id " .
+                " FROM {$this->tables['executions']} EE " . 
+                " JOIN {$this->tables['builds']} B " . 
+                " ON B.id = EE.build_id " .
+                " WHERE EE.testplan_id = " . $safe['tplan_id'] . " AND B.active = 1" .
+                " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id, B.id";
+         
+      $platformLEX = " AND LEX.platform_id = TPTCV.platform_id "; 
+      $platformEXEC = " AND E.platform_id = TPTCV.platform_id ";
+
+    }
     else if ($my['options']['ignoreBuild']) 
     {
       $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
@@ -7646,6 +7687,32 @@ class testplan extends tlObjectWithAttachments
     return $rs[0]['qty'];
   }
 
+  /**
+   *
+   */
+  function getFeatureByID($feature_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $target = (array)$feature_id;
+    foreach($target as $idx => $tg)
+    {
+      $target[$idx] = intval($tg);
+    }  
+    $inSet = implode(',', $target);
+
+    $sql = " /* $debugMsg */ ". 
+           " SELECT parent_id AS tcase_id,tcversion_id,platform_id,TPTCV.id " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+           " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+           " ON TPTCV.tcversion_id = NHTC.id " .
+           " WHERE TPTCV.id IN (" . $inSet . ")";
+         
+    $items = $this->db->fetchRowsIntoMap($sql,'id');           
+    return $items;
+  }
+
+
 } // end class testplan
 
 
@@ -7853,14 +7920,62 @@ class build_mgr extends tlObject
 
     $safe_id = intval($id);
     $where = " WHERE build_id={$safe_id}";
+    $execIDSetSQL = " SELECT id FROM {$this->tables['executions']} {$where} ";
 
+
+    // Attachments NEED special processing.
+  
+    // get test step exec attachments if any exists
+    $dummy = " SELECT id FROM {$this->tables['execution_tcsteps']} " . 
+             " WHERE execution_id IN ({$execIDSetSQL}) ";
+     
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // execution attachments
+    $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
+             " WHERE fk_table = 'executions' " .
+             " AND fk_id IN ({$execIDSetSQL}) ";
+  
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs))
+    {
+      foreach($rs as $fik => $v)
+      {
+        deleteAttachment($db,$fik,false);
+      }  
+    }  
+
+
+    // Execution Bugs
     $sql = " DELETE FROM {$this->tables['execution_bugs']} " .
-           " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} {$where}) ";
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
     $result = $this->db->exec_query($sql);
 
+    // Execution tcsteps results
+    $sql = "DELETE FROM {$this->tables['execution_tcsteps']} " .
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
+    $result = $this->db->exec_query($sql);
+
+    $sql = "DELETE FROM {$this->tables['cfield_execution_values']} " .
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
+    $result = $this->db->exec_query($sql);
+
+
+    // Finally Executions table
     $sql = " DELETE FROM {$this->tables['executions']} {$where}";
     $result = $this->db->exec_query($sql);
 
+
+    // Build ID is the Access Key 
+    // User Task Assignment
     $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where}";
     $result=$this->db->exec_query($sql);
 
@@ -7886,14 +8001,13 @@ class build_mgr extends tlObject
              active: build active status
              is_open: build open status
              testplan_id
-
-    rev :
   */
   function get_by_id($id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $my = array('options' => array('tplan_id' => null, 'output' => 'full'));
+    $my = array('options' => 
+                array('tplan_id' => null, 'output' => 'full', 'fields' => '*'));
     $my['options'] = array_merge($my['options'],(array)$opt);
     
     $safe_id = intval($id);  
@@ -7902,16 +8016,20 @@ class build_mgr extends tlObject
     switch($my['options']['output'])
     {
       case 'minimun':
-        $sql .= " SELECT id,is_open,active FROM {$this->tables['builds']} "; 
+        $sql .= " SELECT id,is_open,active ";  
+      break;
+
+      case 'fields':
+        $sql .= " SELECT {$my['options']['fields']} "; 
       break;
       
       case 'full':
       default:
-        $sql .= " SELECT * FROM {$this->tables['builds']} "; 
+        $sql .= " SELECT * "; 
       break;
     }
     
-    $sql .= " WHERE id = {$safe_id} ";
+    $sql .= " FROM {$this->tables['builds']} WHERE id = {$safe_id} ";
     if(!is_null($my['options']['tplan_id']) && ($safe_tplan = intval($my['options']['tplan_id'])) > 0)
     {
       $sql .= " AND testplan_id = {$safe_tplan} ";
@@ -8006,11 +8124,6 @@ class build_mgr extends tlObject
               
               
     args: $id
-          [$parent_id]: need when you call this method during the creation
-                        of a test suite, because the $id will be 0 or null.
-                        
-          [$scope]: 'design','execution'
-          
     returns: html string
     
   */

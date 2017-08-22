@@ -5,8 +5,6 @@
  *
  * @filesource	cfieldsEdit.php
  *
- * @internal revisions
- * @since 1.9.13
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
@@ -14,30 +12,16 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
-$args=init_args();
+$args = init_args();
+$gui = initializeGui($cfield_mgr);
 
-$gui = new stdClass();
-$gui->cfield=null;
-$gui->cfield_is_used=0;
-$gui->cfield_is_linked=0;
-$gui->linked_tprojects=null;
-$gui->cfield_types=$cfield_mgr->get_available_types();
 
 $result_msg = null;
 $do_control_combo_display = 1;
+$cfMix = getCFCfg($args,$cfield_mgr);
+$cfieldCfg = $cfMix->cfieldCfg;
+$gui->cfield = $cfMix->emptyCF;
 
-$cfieldCfg=cfieldCfgInit($cfield_mgr);
-
-// Changed default values
-$emptyCF = array('id' => $args->cfield_id,
-		             'name' => '','label' => '',
-				         'type' => 0,'possible_values' => '',
-		             'show_on_design' => 1,'enable_on_design' => 1,
-		             'show_on_execution' => 0,'enable_on_execution' => 0,
-		             'show_on_testplan_design' => 0,'enable_on_testplan_design' => 0,
-		             'node_type_id' => $cfieldCfg->allowed_nodes['testcase']);
-
-$gui->cfield = $emptyCF;
 switch ($args->do_action)
 {
 	case 'create':
@@ -87,6 +71,10 @@ if( $do_control_combo_display )
   $keys2loop = $cfield_mgr->get_application_areas();
 	foreach( $keys2loop as $ui_mode)
 	{
+    $cfieldCfg->cf_enable_on[$ui_mode]['value']=0;
+    $cfieldCfg->cf_show_on[$ui_mode]['disabled']='';
+    $cfieldCfg->cf_show_on[$ui_mode]['style']='';
+
     if($cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
 		{
 	    $cfieldCfg->cf_enable_on[$ui_mode]['value']=1;
@@ -112,13 +100,53 @@ if($args->do_action == 'edit' && $gui->cfield['enable_on_execution'] )
   $cfieldCfg->cf_show_on['execution']['style']=' style="display:none;" ';
 } 
 
-$gui->cfieldCfg=$cfieldCfg;
+$gui->cfieldCfg = $cfieldCfg;
 
 $smarty = new TLSmarty();
 $smarty->assign('operation_descr',$operation_descr);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_action',$args->do_action);
 renderGui($smarty,$args,$gui,$cfield_mgr,$templateCfg);
+
+/**
+ *
+ */
+function getCFCfg(&$args,&$cfield_mgr)
+{
+  $cfg = new stdClass();
+
+  $cfg->cfieldCfg = cfieldCfgInit($cfield_mgr);
+  
+  $cfg->emptyCF = array('id' => $args->cfield_id,
+                        'name' => '','label' => '',
+                        'type' => 0,'possible_values' => '',
+                        'show_on_design' => 1,'enable_on_design' => 1,
+                        'show_on_execution' => 0,'enable_on_execution' => 0,
+                        'show_on_testplan_design' => 0,
+                        'enable_on_testplan_design' => 0);
+
+  $cfg->emptyCF['node_type_id'] = $cfg->cfieldCfg->allowed_nodes['testcase'];
+
+  return $cfg;
+}
+
+
+/**
+ *
+ */
+function initializeGui(&$cfield_mgr)
+{
+  $gui = new stdClass();
+
+  $gui->cfield=null;
+  $gui->cfield_is_used=0;
+  $gui->cfield_is_linked=0;
+  $gui->linked_tprojects=null;
+  $gui->cfield_types=$cfield_mgr->get_available_types();
+
+  return $gui;
+}
+
 
 
 /*
@@ -412,13 +440,13 @@ function cfieldCfgInit($cfieldMgr)
     $cfAppAreas=$cfieldMgr->get_application_areas();
     foreach($cfAppAreas as $area)
     {
-      $cfg->disabled_cf_enable_on[$area]='';
-      $cfg->cf_show_on[$area]['disabled']='';
-      $cfg->cf_show_on[$area]['style']='';
+      $cfg->disabled_cf_enable_on[$area] = array();
+      $cfg->cf_show_on[$area]['disabled'] = '';
+      $cfg->cf_show_on[$area]['style'] = '';
         
-      $cfg->cf_enable_on[$area]='';
-      $cfg->cf_enable_on[$area]['label']=lang_get($area);
-      $cfg->cf_enable_on[$area]['value']=0;
+      $cfg->cf_enable_on[$area] = array();
+      $cfg->cf_enable_on[$area]['label'] = lang_get($area);
+      $cfg->cf_enable_on[$area]['value'] = 0;
              
     	$cfg->enable_on_cfg[$area] = $cfieldMgr->get_enable_on_cfg($area);
     	$cfg->show_on_cfg[$area] = $cfieldMgr->get_show_on_cfg($area);

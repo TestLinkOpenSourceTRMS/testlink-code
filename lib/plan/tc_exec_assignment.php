@@ -5,12 +5,10 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2016, TestLink community 
+ * @copyright   2005-2017, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.15
  */
          
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -18,6 +16,7 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once('email_api.php');
 require_once("specview.php");
+require_once('Zend/Validate/EmailAddress.php');
 
 testlinkInitPage($db,false,false,"checkRights");
 
@@ -26,7 +25,6 @@ $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db); 
 $assignment_mgr = new assignment_mgr($db); 
 
-$templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
@@ -85,7 +83,7 @@ switch($args->doAction)
           $called[$key]=true;
         }  
       }
-          
+
       if($args->send_mail)
       {
         foreach($called as $ope => $ope_status)
@@ -115,7 +113,24 @@ switch($args->doAction)
           $features2[$op][$feature_id]['build_id'] = $args->build_id; 
         }
       }
-      
+
+      // Must be done before delete
+      if($args->send_mail)
+      {
+        $featureSet = array_keys($features2['del']);
+        $items = $tplan_mgr->getFeatureByID($featureSet);
+        $testers = $assignment_mgr->getUsersByFeatureBuild($featureSet,$args->build_id,$task_test_execution);
+
+        $f4mail = array();
+        foreach($items as $fid => $value)
+        {
+          $pid = $value['platform_id'];
+          $f4mail[$pid][$fid]['previous_user_id'] = array_keys($testers[$fid]); 
+          $f4mail[$pid][$fid]['tcase_id'] = $items[$fid]['tcase_id'];
+          $f4mail[$pid][$fid]['tcversion_id'] = $items[$fid]['tcversion_id'];
+        } 
+      }
+
       foreach($features2 as $key => $values)
       {
         if( count($features2[$key]) > 0 )
@@ -124,7 +139,24 @@ switch($args->doAction)
           $called[$key]=true;
         }  
       }
-         
+
+      /* features2 has not all needed info => need to process
+       key a: platform_id
+       key b: feature_id
+              user_id => array
+              tcase_id
+              tcversion_id
+      */
+      if($args->send_mail)
+      {
+        foreach($called as $ope => $ope_status)
+        {
+          if($ope_status)
+          {
+            send_mail_to_testers($db,$tcase_mgr,$gui,$args,$f4mail,'del');     
+          }
+        }
+      }   
     }  
   break; 
 
@@ -132,6 +164,22 @@ switch($args->doAction)
     $signature[] = array('type' => $task_test_execution, 'user_id' => $args->targetUser, 
                          'feature_id' => $args->targetFeature, 'build_id' => $args->build_id);
     $assignment_mgr->deleteBySignature($signature);
+
+    if($args->send_mail)
+    {
+      // In order to send mail to tester we need info about test case, test case version 
+      // and build, and we need to use feature_id to get this info
+      $feature = current($tplan_mgr->getFeatureByID($args->targetFeature));
+      
+      $items = array();
+      $lnk[$args->targetFeature] = array();
+      $lnk[$args->targetFeature]['previous_user_id'] = array($args->targetUser);
+      $lnk[$args->targetFeature]['tcase_id'] = intval($feature['tcase_id']);
+      $lnk[$args->targetFeature]['tcversion_id'] = intval($feature['tcversion_id']);
+      $items[intval($feature['platform_id'])] = $lnk;
+
+      send_mail_to_testers($db,$tcase_mgr,$gui,$args,$items,'del');     
+    } 
   break; 
 
   case 'linkByMail':
@@ -192,6 +240,8 @@ switch($args->level)
 
     // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
     // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
+
+    // var_dump($filters);die();
     $out = getFilteredSpecViewFlat($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
   break;
 
@@ -210,12 +260,13 @@ $gui->support_array = array_keys($gui->items);
 
 if ($_SESSION['testprojectOptions']->testPriorityEnabled) 
 {
-  $urgencyCfg = config_get('urgency');
-  $gui->priority_labels = init_labels($urgencyCfg["code_label"]);
+  $cfg = config_get('priority');
+  $gui->priority_labels = init_labels($cfg["code_label"]);
 }
 
 // Changing to _flat template
-$tpl = $templateCfg->template_dir . $templateCfg->default_template;
+$tplCfg = templateConfiguration();
+$tpl = $tplCfg->tpl;
 $tpl = str_replace('.tpl', '_flat.tpl', $tpl);
 
 $smarty = new TLSmarty();
@@ -385,6 +436,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
  * send_mail_to_testers
  *
  * @param hash $features main key platform_id
+ * @param string $operation
  *
  * @return void
  */
@@ -403,17 +455,20 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
   $use_testers['new']= ($operation == 'del') ? false : true ;
   $use_testers['old']= ($operation == 'ins') ? false : true ;
    
-
- 
   $tcaseSet=null;
   $tcnames=null;
-  $email=array();
-   
+
   $assigner=$guiObj->all_users[$argsObj->user_id]->firstName . ' ' .
             $guiObj->all_users[$argsObj->user_id]->lastName ;
               
+
+  $email=array();
   $email['from_address']=config_get('from_email');
- 
+  $email['attachment'] = null;
+  $email['cc'] = null;
+  $email['exit_on_error'] = true;
+  $email['htmlFormat'] = true;
+
   $body_header = $lbl['testproject'] . ': ' . $argsObj->tproject_name . '<br />' .
                  $lbl['testplan'] . ': ' . $guiObj->testPlanName .'<br />' .
                  $lbl['build'] . ': ' . $guiObj->buildName .'<br /><br />';
@@ -427,27 +482,32 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     $platSet = $platMgr->getAllAsMap();
   }  
    
-  // Get testers id                 
+  // Get testers id & item set with test case & test case version                 
   foreach($features as $platform_id => $items)
   {
     $plat[$platform_id] = $platform_id;
-    foreach($items as $feature_id => $value)
+    foreach( $items as $feature_id => $value )
     {
-      if($use_testers['new'])
+      if( $use_testers['new'] || $use_testers['old'] )
       {
-        $ty = (array)$value['user_id'];
-        foreach($ty as $user_id)
+        if( $use_testers['new'] )
         {
-          // $testers['new'][$user_id][$value['tcase_id']]=$value['tcase_id'];              
-          $testers['new'][$user_id][$platform_id][$feature_id]=$value['tcase_id'];              
+          $ty = (array)$value['user_id'];
+          $accessKey = 'new';          
+        }
+          
+        if( $use_testers['old'] )
+        {
+          $ty = (array)$value['previous_user_id'];
+          $accessKey = 'old';
+        }
+            
+        foreach( $ty as $user_id )
+        {
+          $testers[$accessKey][$user_id][$platform_id][$feature_id]=$value['tcase_id'];
         }  
       }
-    
-      if( $use_testers['old'] )
-      {
-        $testers['old'][$value['previous_user_id']][$platform_id][$feature_id]=$value['tcase_id'];              
-      }
-          
+              
       $tcaseSet[$value['tcase_id']]=$value['tcase_id'];
       $tcversionSet[$value['tcversion_id']]=$value['tcversion_id'];
     }    
@@ -466,7 +526,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     $flat_path[$tcase_id]=implode('/',$pieces) . '/' . $tcnames[$tcase_id];  
   }
 
-
+  $validator = new Zend_Validate_EmailAddress();
   foreach($testers as $tester_type => $tester_set)
   {
     if( !is_null($tester_set) )
@@ -481,17 +541,21 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
         }  
 
         $userObj=$guiObj->all_users[$user_id];
-        $email['to_address']=$userObj->emailAddress;
+        $email['to_address'] = trim($userObj->emailAddress);
+        if($email['to_address'] == '' || !$validator->isValid($email['to_address']))
+        {
+          continue;
+        }  
+
         $email['body'] = $body_header;
         $email['body'] .= sprintf($mail_details[$tester_type],
                           $userObj->firstName . ' ' .$userObj->lastName,$assigner);
-        
 
         foreach ($set2work as $pid => $value) 
         {
           if( $pid != 0 )
           {
-            $email['body'] .= $lbl['platform'] . ': ' . $platSet[$pid]['name'] . '<br />';  
+            $email['body'] .= $lbl['platform'] . ': ' . $platSet[$pid] . '<br />';  
           }  
   
           foreach($value as $tcase_id)
@@ -508,9 +572,13 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
           }  
         }
 
+          
         $email['body'] .= '<br />' . date(DATE_RFC1123);
+
         $email_op = email_send($email['from_address'], $email['to_address'], 
-        $email['subject'], $email['body'], '', true, true);
+                               $email['subject'], $email['body'], $email['cc'], 
+                               $email['attachment'],$email['exit_on_error'], 
+                               $email['htmlFormat']);
       } // foreach($tester_set as $user_id => $value)
     }                       
   }

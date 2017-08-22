@@ -29,6 +29,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
     <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}">
     <input type="hidden" name="user_action" id="user_action" value="">
+    <input type="hidden" name="tcstep_id" id="tcstep_id" value="{$gui->tcstep_id}">
 
     {if $gui->user_action == 'link' || $gui->user_action == 'add_note'}
       <p>

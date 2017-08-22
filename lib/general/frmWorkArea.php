@@ -6,9 +6,6 @@
  * @filesource  frmWorkArea.php
  * @author      Martin Havlat
  * 
- * @internal revisions
- * @since 1.9.15
- *
  *
 **/
 require_once('../../config.inc.php');
@@ -17,16 +14,14 @@ testlinkInitPage($db);
 
 $args = init_args();
 
-// --------------------------------------------------------------------------------------
 // Important Notes for Developers
-// --------------------------------------------------------------------------------------
 //
 // if key found in this map, at User Interface level, screen will be divided 
 // vertically in two frames.
 // Normally on left will exists a tree menu. 
 // On right frame an html named $key.html will be launched.
 // Example:
-//         if key = printTc, an html page printTc.html must exists on help directory
+// if key = printTc, an html page printTc.html must exists on help directory
 //
 // (aa_tfp -> Associative Array TreeFramePath)
 // key  : feature
@@ -34,7 +29,6 @@ $args = init_args();
 //
 $req_cfg = config_get('req_cfg');
 
-// 20131214
 // more info here
 // array(0) => left pane
 // array(1) => right pane
@@ -81,10 +75,9 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 // features that need to run the validate build function
 if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment')))
 {
-  // Check if for test project selected at least a test plan exist (BUGID 623)
+  // Check if for test project selected at least a test plan exist
   if( isset($_SESSION['testplanID']) || !is_null($args->tplan_id))
   {
-
     // Filter on build attributes: ACTIVE,OPEN
     switch($showFeature)
     {
@@ -108,7 +101,6 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
         $featureHint = lang_get('href_rep_and_metrics');
       break;  
     }
-
 
 
     $tplanIDCard = new stdClass();
@@ -237,7 +229,7 @@ function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
     { 
       // final url will be composed adding to $basehref 
       // (one TL variable available on smarty templates) to $link_to_op
-      $link_to_op = "lib/plan/buildEdit.php?do_action=create";
+      $link_to_op = "lib/plan/buildEdit.php?do_action=create&tplan_id=$tpID";
       $hint_text = lang_get('create_a_build');
     }  
     else

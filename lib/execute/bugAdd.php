@@ -5,7 +5,7 @@
  *
  * @filesource	bugAdd.php
  * @internal revisions
- * @since 1.9.15
+ * @since 1.9.16
  * 
  */
 require_once('../../config.inc.php');
@@ -59,7 +59,7 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
         {
           if ($its->checkBugIDExistence($args->bug_id))
           {     
-            if (write_execution_bug($db,$args->exec_id, $args->bug_id))
+            if (write_execution_bug($db,$args->exec_id, $args->bug_id,$args->tcstep_id))
             {
               $gui->msg = lang_get("bug_added");
               logAuditEvent(TLS("audit_executionbug_added",$args->bug_id),"CREATE",$args->exec_id,"executions");
@@ -78,7 +78,9 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
 
                 if( $args->addLinkToTL || $hasNotes )
                 {
-                  $its->addNote($args->bug_id,$gui->bug_notes);
+                  $opt = new stdClass();
+                  $opt->reporter = $args->user->login;
+                  $its->addNote($args->bug_id,$gui->bug_notes,$opt);
                 }
               }  
             }
@@ -95,7 +97,9 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
         $gui->msg = '';
         if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
         {
-          $its->addNote($args->bug_id,$gui->bug_notes);
+          $opt = new stdClass();
+          $opt->reporter = $args->user->login;
+          $its->addNote($args->bug_id,$gui->bug_notes,$opt);
         }  
       break;
     }
@@ -135,7 +139,8 @@ function initEnv(&$dbHandler)
                    "artifactVersion" => array("POST",tlInputParameter::ARRAY_INT),
 		               "user_action" => array("REQUEST",tlInputParameter::STRING_N,
                                           $user_action['minLengh'],$user_action['maxLengh']),
-                   "addLinkToTL" => array("POST",tlInputParameter::CB_BOOL));
+                   "addLinkToTL" => array("POST",tlInputParameter::CB_BOOL),
+                   "tcstep_id" => array("REQUEST",tlInputParameter::INT_N),);
 	
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
@@ -175,6 +180,8 @@ function initEnv(&$dbHandler)
   $gui->tproject_id = $args->tproject_id;
   $gui->tplan_id = $args->tplan_id;
   $gui->tcversion_id = $args->tcversion_id;
+  $gui->tcstep_id = $args->tcstep_id;
+
   $gui->user_action = $args->user_action;
   $gui->bug_id = $args->bug_id;
 

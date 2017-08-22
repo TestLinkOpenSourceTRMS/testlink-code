@@ -13,11 +13,9 @@
  * 
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2015, TestLink community
+ * @copyright   2015,2017 TestLink community
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.15
  */
 
 // use output buffer to prevent headers/data from being sent before 
@@ -432,6 +430,8 @@ function launch_outer_exec(&$tplMgr,$argsObj)
 {
   $gui = new stdClass();
   $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
+  $gui->navbar_height = config_get('navbar_height');
+  
   if( $argsObj->tproject_id > 0)
   {
     $gui->titleframe .= '&testproject=' . $argsObj->tproject_id;
@@ -450,7 +450,8 @@ function launch_outer_xta2m(&$tplMgr,$argsObj)
 {
   $gui = new stdClass();
   $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
-
+  $gui->navbar_height = config_get('navbar_height');
+  
   if( $argsObj->tproject_id > 0)
   {
     $gui->titleframe .= '&testproject=' . $argsObj->tproject_id;

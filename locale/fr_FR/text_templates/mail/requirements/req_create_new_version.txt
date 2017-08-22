@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+<body>
+<p>Une nouvelle version de l'exigence '[%docid%]:%title%' a été créée par %user%. 
+<br>
+</p>
+<p>Message d'historisation :<br/>%logmsg%</p>
+<p></p>
+<p><b>Périmètre de l'exigence</b> </p>
+%scope%<p></p>
+<hr>
+<p>
+<p><i>Cet e-mail a été généré automatiquement. (%timestamp%) </i></p>
+</body>
+</html>

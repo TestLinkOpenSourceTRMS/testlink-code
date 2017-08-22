@@ -480,7 +480,8 @@ class assignment_mgr extends tlObjectWithDB
             " AND UA.feature_id IN(" . implode(",",(array)$featureSet)  . " )" .       
             " AND type = " . intval($assignmentType);
             
-    $rs = $this->db->fetchRowsIntoMap($sql,'feature_id');
+    $rs = $this->db->fetchMapRowsIntoMap($sql,'feature_id','user_id');
+
     return $rs;
   }
   
@@ -572,8 +573,15 @@ class assignment_mgr extends tlObjectWithDB
           $email['body'] .= $hint . '<br><br>' . $ln . $user_id;
           $email['body'] .= '<br><br>' . $genby;
 
+          $email['cc'] = '';
+          $email['attachment'] = null;
+          $email['exit_on_error'] = true;
+          $email['htmlFormat'] = true; 
+
           $eop = email_send($email['from_address'],$email['to_address'], 
-                            $email['subject'], $email['body'], '', true, true);
+                            $email['subject'], $email['body'], 
+                            $email['cc'],$email['attachment'], 
+                            $email['exit_on_error'], $email['htmlFormat']);
         }  
       }  
     }  

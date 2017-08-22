@@ -20,11 +20,11 @@ class CKEditor
 	/**
 	 * The version of %CKEditor.
 	 */
-	const version = '3.6.6';
+	const version = '4.6.1';
 	/**
 	 * A constant string unique for each release of %CKEditor.
 	 */
-	const timestamp = 'D03G5XL';
+	const timestamp = 'GB8C';
 
 	/**
 	 * URL to the %CKEditor installation directory (absolute or relative to document root).
@@ -78,7 +78,7 @@ class CKEditor
 	 * A string indicating the creation date of %CKEditor.
 	 * Do not change it unless you want to force browsers to not use previously cached version of %CKEditor.
 	 */
-	public $timestamp = "D03G5XL";
+	public $timestamp = "GB8C";
 	/**
 	 * An array that holds event listeners.
 	 */
@@ -134,7 +134,8 @@ class CKEditor
 		foreach ($this->textareaAttributes as $key => $val) {
 			$attr.= " " . $key . '="' . str_replace('"', '&quot;', $val) . '"';
 		}
-		$out = "<textarea name=\"" . $name . "\"" . $attr . ">" . htmlspecialchars($value) . "</textarea>\n";
+		$out = "<textarea name=\"" . $name . "\" id=\"" . $name . "\"  " . 
+		       $attr . ">" . htmlspecialchars($value) . "</textarea>\n";
 		if (!$this->initialized) {
 			$out .= $this->init();
 		}

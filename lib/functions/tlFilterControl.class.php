@@ -265,9 +265,6 @@ abstract class tlFilterControl extends tlObjectWithDB
    */
   protected function read_config() 
   {
- file_put_contents('/development/var/tracer.log',"\n" . __METHOD__,FILE_APPEND);
-
-
     // opening and closing brackets
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');

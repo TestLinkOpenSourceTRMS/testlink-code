@@ -7,11 +7,12 @@
 * 
 * Test Results Matrix
 *
-* @internal revisions
-* @since 1.9.15
 */
 require('../../config.inc.php');
-require_once('../../third_party/codeplex/PHPExcel.php');   // Must be included BEFORE common.php
+
+// Must be included BEFORE common.php
+require_once('../../third_party/codeplex/PHPExcel.php');   
+
 require_once('common.php');
 require_once('displayMgr.php');
 require_once('exttable.class.php');
@@ -20,15 +21,19 @@ $timerOn = microtime(true);   // will be used to compute elapsed time
 $templateCfg = templateConfiguration();
 
 $smarty = new TLSmarty;
+
 $args = init_args($db);
 
 $metricsMgr = new tlTestPlanMetrics($db);
-$tplan_mgr  = &$metricsMgr; // displayMemUsage('START' . __FILE__);
+$tplan_mgr  = &$metricsMgr; 
 
 list($gui,$tproject_info,$labels,$cfg) = initializeGui($db,$args,$smarty->getImages(),$tplan_mgr);
 $args->cfg = $cfg;
-$mailCfg = buildMailCfg($gui); 
 
+// Because we will try to send via email xls, we need to be careful
+// with logic regarding args->format.
+// may be we need to add in logic the media => email, download, etc
+//
 // We have faced a performance block due to an environment with
 // 700 Builds and 1300 Test Cases on Test Plan
 // This created a block on NOT RUN QUERY, but anyway will produce an enormous and
@@ -53,37 +58,29 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
                  'getExecutionTimestamp' => true, 'getExecutionDuration' => true);
   }    
   $execStatus = $metricsMgr->getExecStatusMatrix($args->tplan_id,$buildSet,$opt);
-
   $metrics = $execStatus['metrics'];
   $latestExecution = $execStatus['latestExec']; 
 
   // Every Test suite a row on matrix to display will be created
   // One matrix will be created for every platform that has testcases
-  $tcols = array('tsuite', 'link');
-  if($gui->show_platforms)
-  {
-    $tcols[] = 'platform';
-  }
-  $tcols[] = 'priority';
-  $cols = array_flip($tcols);
-  $args->cols = $cols;
-
+  $args->cols = initCols($gui->show_platforms);
   if( !is_null($execStatus['metrics']) )
   {
     buildDataSet($db,$args,$gui,$execStatus,$labels);
   }
 
+  $renderHTML = false;
   switch($args->format)
   {
     case FORMAT_XLS:
-       createSpreadsheet($gui,$args);
+      createSpreadsheet($gui,$args,$args->getSpreadsheetBy);
     break;  
 
     default:
-     $gui->tableSet[] = buildMatrix($gui, $args);
+      $renderHTML = true;
+      $gui->tableSet[] = buildMatrix($gui, $args);
     break;
   }
-
 }  
 else
 {
@@ -102,7 +99,8 @@ $timerOff = microtime(true);
 $gui->elapsed_time = round($timerOff - $timerOn,2);
 
 $smarty->assign('gui',$gui);
-displayReport($templateCfg->template_dir . $tpl, $smarty, $args->format, $mailCfg);
+displayReport($templateCfg->template_dir . $tpl, $smarty, $args->format, 
+              $gui->mailCfg,$renderHTML);
 
 /**
  * 
@@ -121,6 +119,13 @@ function init_args(&$dbHandler)
   
   $args = new stdClass();
   R_PARAMS($iParams,$args);
+
+  $args->getSpreadsheetBy = isset($_REQUEST['sendSpreadSheetByMail_x']) ? 'email' : null;
+  if( is_null($args->getSpreadsheetBy) )
+  {
+    $args->getSpreadsheetBy = isset($_REQUEST['exportSpreadSheet_x']) ? 'download' : null;
+  }  
+
 
   $args->addOpAccess = true;
   if( !is_null($args->apikey) )
@@ -199,7 +204,7 @@ function checkRights(&$db,&$user,$context = null)
  * return tlExtTable
  *
  */
-function buildMatrix(&$guiObj,&$argsObj)
+function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null)
 {  
   $buildIDSet = $argsObj->builds->idSet;
   $latestBuild = $argsObj->builds->latest;
@@ -247,7 +252,9 @@ function buildMatrix(&$guiObj,&$argsObj)
   
   
   $columns[] = array('title_key' => 'last_execution', 'type' => 'status', 'width' => 100);
-  if ($argsObj->format == FORMAT_HTML) 
+
+  $fo = !is_null($forceFormat) ? $forceFormat : $argsObj->format; 
+  if ($fo == FORMAT_HTML) 
   {
     $matrix = new tlExtTable($columns, $guiObj->matrix, 'tl_table_results_tc');
     
@@ -378,6 +385,8 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
     $cfg['priority'][$code] = lang_get($label);
   } 
  
+  $guiObj->mailCfg = buildMailCfg($guiObj);
+
   return array($guiObj,$tproject_info,$l18n,$cfg);
 }
 
@@ -385,53 +394,17 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
  *
  *
  */
-function createSpreadsheet($gui,$args)
+function createSpreadsheet($gui,$args,$media)
 {
   $buildIDSet = $args->builds->idSet;
   $latestBuild = $args->builds->latest;
 
-  $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
-                           'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
-                           'notes' => null, 'date_time_run' => null, 'execution_duration' => null,
-                           'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
-                           'result_on_last_build' => null,'last_execution' => null,
-                           'assigned_to' => null));
-
-  // contribution to have more than 26 columns   
-  $cellRange = range('A','Z');
-  $cellRangeLen = count($cellRange);
-  for($idx = 0; $idx < $cellRangeLen; $idx++)
-  {
-    for($jdx = 0; $jdx < $cellRangeLen; $jdx++) 
-    {
-      $cellRange[] = $cellRange[$idx] . $cellRange[$jdx];
-    }
-  }
-
-  $styleReportContext = array('font' => array('bold' => true));
-  $styleDataHeader = array('font' => array('bold' => true),
-                           'borders' => array('outline' => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
-                                              'vertical' => array('style' => PHPExcel_Style_Border::BORDER_THIN)),
-                           'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID,
-                                           'startcolor' => array( 'argb' => 'FF9999FF'))
-                           );
-  $dummy = '';
-  $lines2write = array(array($lbl['testproject'],$gui->tproject_name),
-                       array($lbl['testplan'],$gui->tplan_name),
-                       array($lbl['generated_by_TestLink_on'],
-                       localize_dateOrTimeStamp(null,$dummy,'timestamp_format',time())));
+  $lbl = initLblSpreadsheet();
+  $cellRange = setCellRangeSpreadsheet();
+  $style = initStyleSpreadsheet();
 
   $objPHPExcel = new PHPExcel();
-  $cellArea = "A1:"; 
-  foreach($lines2write as $zdx => $fields)
-  {
-    $cdx = $zdx+1;
-    $objPHPExcel->setActiveSheetIndex(0)->setCellValue("A{$cdx}", current($fields))
-                ->setCellValue("B{$cdx}", end($fields));
-  }
-  $cellArea .= "A{$cdx}";
-  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleReportContext);	
-
+  $lines2write = xlsStepOne($objPHPExcel,$style,$lbl,$gui);
 
   // Step 2
   // data is organized with following columns $dataHeader[]
@@ -505,10 +478,9 @@ function createSpreadsheet($gui,$args)
   }
 
   $cellArea .= "{$cellAreaEnd}{$startingRow}";
-  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($styleDataHeader);	
+  $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($style['DataHeader']);	
   
   $startingRow++;
-
   $qta_loops = count($gui->matrix);
   for($idx = 0; $idx < $qta_loops; $idx++)
   {
@@ -520,27 +492,35 @@ function createSpreadsheet($gui,$args)
 		$startingRow++;
   }
   
-  
-  
   // Final step
-  $objPHPExcel->setActiveSheetIndex(0);
-  $settings = array();
-  $settings['Excel2007'] = array('ext' => '.xlsx', 
-                                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  $settings['Excel5'] = array('ext' => '.xls', 
-                              'Content-Type' => 'application/vnd.ms-excel');
-  
-  $xlsType = 'Excel5';                               
-  $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $xlsType);
-  
   $tmpfname = tempnam(config_get('temp_dir'),"resultsTC.tmp");
+  $objPHPExcel->setActiveSheetIndex(0);
+  $xlsType = 'Excel5';                               
+  $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, $xlsType);  
   $objWriter->save($tmpfname);
   
-  $content = file_get_contents($tmpfname);
-  unlink($tmpfname);
-  $f2d = 'resultsTC_'. $gui->tproject_name . '_' . $gui->tplan_name . $settings[$xlsType]['ext'];
-  downloadContentsToFile($content,$f2d,array('Content-Type' =>  $settings[$xlsType]['Content-Type']));
-  exit();
+  if($args->getSpreadsheetBy == 'email')
+  {
+    require_once('email_api.php');
+
+    $ema = new stdClass();
+    $ema->from_address = config_get('from_email');
+    $ema->to_address = $args->user->emailAddress;;
+    $ema->subject = $gui->mailCfg->subject;
+    $ema->message = $gui->mailCfg->subject;
+    
+    $dum = uniqid("resultsTC_") . '.xls';
+    $oops = array('attachment' => 
+                  array('file' => $tmpfname, 'newname' => $dum),
+                  'exit_on_error' => true, 'htmlFormat' => true);
+    $email_op = email_send_wrapper($ema,$oops);
+    unlink($tmpfname);
+    exit(); 
+  } 
+  else
+  {
+    downloadXls($tmpfname,$xlsType,$gui,'resultsTC_');
+  } 
 }
 
 
@@ -581,7 +561,7 @@ function setUpBuilds(&$args,&$gui)
  *
  *
  */
-function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
+function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
 {
   $userSet = getUsersForHtmlOptions($db,null,null,null,null,
                                     array('userDisplayFormat' => '%first% %last%'));
@@ -617,7 +597,9 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
 
 
         $name = htmlspecialchars("{$external_id}:{$rf[$top]['name']}",ENT_QUOTES);
-        if($args->format == FORMAT_HTML)
+
+        $fo = !is_null($forceFormat) ? $forceFormat : $args->format;
+        if($fo == FORMAT_HTML)
         {
           $rows[$cols['link']] = "<!-- " . sprintf("%010d", $rf[$top]['external_id']) . " -->";
           if($args->addOpAccess)
@@ -641,7 +623,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
 
         if($gui->options->testPriorityEnabled) 
         {
-          switch($args->format)
+          switch($fo)
           {
             case FORMAT_XLS:
               $rows[$cols['priority']] = $args->cfg['priority'][$rf[$top]['priority_level']];
@@ -661,7 +643,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
         {
           $r4build['text'] = "";
 
-          if( $args->format == FORMAT_XLS)
+          if( $fo == FORMAT_XLS)
           {
             $r4build = $labels[$rf[$buildID]['status']] .
                        sprintf($labels['versionTag'],$rf[$buildID]['version']);
@@ -689,7 +671,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
             $r4build['text'] = "";
           }  
 
-          if ($args->format == FORMAT_HTML ) 
+          if ($fo == FORMAT_HTML ) 
           {
             if ($args->addOpAccess)
             {
@@ -749,3 +731,90 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels)
     }  // $tcaseSet
   } // $tsuiteSet
 }
+
+
+/**
+ *
+ */
+function initLblSpreadsheet()
+{
+  $lbl = init_labels(array('title_test_suite_name' => null,
+                           'platform' => null,'priority' => null,
+                           'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
+                           'notes' => null, 'date_time_run' => null, 'execution_duration' => null,
+                           'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
+                           'result_on_last_build' => null,'last_execution' => null,'assigned_to' => null));
+  return $lbl;
+} 
+
+/**
+ *
+ */  
+function initStyleSpreadsheet()
+{
+  $style = array();
+  $style['ReportContext'] = array('font' => array('bold' => true));
+  $style['DataHeader'] = array('font' => array('bold' => true),
+                           'borders' => array('outline' => array('style' => PHPExcel_Style_Border::BORDER_MEDIUM),
+                                              'vertical' => array('style' => PHPExcel_Style_Border::BORDER_THIN)),
+                           'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID,
+                                           'startcolor' => array( 'argb' => 'FF9999FF'))
+                           );
+  return $style;
+}  
+
+/**
+ *
+ */
+function setCellRangeSpreadsheet()
+{
+  $cr = range('A','Z');
+  $crLen = count($cr);
+  for($idx = 0; $idx < $crLen; $idx++)
+  {
+    for($jdx = 0; $jdx < $crLen; $jdx++) 
+    {
+      $cr[] = $cr[$idx] . $cr[$jdx];
+    }
+  }
+  return $cr;
+}  
+
+/**
+ *
+ */
+function xlsStepOne(&$oj,$style,&$lbl,&$gui)
+{
+  $dummy = '';
+  $lines2write = array(array($lbl['testproject'],$gui->tproject_name),
+                       array($lbl['testplan'],$gui->tplan_name),
+                       array($lbl['generated_by_TestLink_on'],
+                       localize_dateOrTimeStamp(null,$dummy,'timestamp_format',time())));
+
+  $cellArea = "A1:"; 
+  foreach($lines2write as $zdx => $fields)
+  {
+    $cdx = $zdx+1;
+    $oj->setActiveSheetIndex(0)->setCellValue("A{$cdx}", current($fields))
+                  ->setCellValue("B{$cdx}", end($fields));
+  }
+  $cellArea .= "A{$cdx}";
+  $oj->getActiveSheet()->getStyle($cellArea)->applyFromArray($style['ReportContext']); 
+
+  return $lines2write;
+}  
+
+/**
+ *
+ */
+function initCols($showPlat)
+{
+  $tcols = array('tsuite', 'link');
+  if($showPlat)
+  {
+    $tcols[] = 'platform';
+  }
+  $tcols[] = 'priority';
+  $cols = array_flip($tcols);
+  return $cols;  
+}  

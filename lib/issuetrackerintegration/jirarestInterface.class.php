@@ -23,6 +23,7 @@ class jirarestInterface extends issueTrackerInterface
   private $issueAttr = null;
   private $jiraCfg;
 
+  var $defaultResolvedStatus;
   var $support;
 
 	/**
@@ -45,6 +46,11 @@ class jirarestInterface extends issueTrackerInterface
       $this->completeCfg();
       $this->connect();
       $this->guiCfg = array('use_decoration' => true);
+
+      if( $this->isConnected())
+      {  
+        $this->setResolvedStatusCfg();  
+      }  
     } 
 	}
 
@@ -149,6 +155,15 @@ class jirarestInterface extends issueTrackerInterface
         // if at least it exists.
         $pk = trim((string)$this->cfg->projectkey);
         $this->APIClient->getProject($pk);
+
+        $statusSet = $this->APIClient->getStatuses();
+        foreach ($statusSet as $statusID => $statusName)
+        {
+          $this->statusDomain[$statusName] = $statusID;
+        }
+
+        $this->defaultResolvedStatus = 
+          $this->support->initDefaultResolvedStatus($this->statusDomain);
       }  
     }
   	catch(Exception $e)
@@ -192,6 +207,7 @@ class jirarestInterface extends issueTrackerInterface
       // Very strange is how have this worked till today ?? (2015-01-24)
       if(!is_null($issue) && is_object($issue) && !property_exists($issue,'errorMessages'))
       {
+     
         // We are going to have a set of standard properties
         $issue->id = $issue->key;
         $issue->summary = $issue->fields->summary;
@@ -202,6 +218,7 @@ class jirarestInterface extends issueTrackerInterface
         $issue->statusHTMLString = $this->support->buildStatusHTMLString($issue->statusVerbose);
         $issue->summaryHTMLString = $this->support->buildSummaryHTMLString($issue);
         $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+
 
         /*
         for debug porpouses
@@ -693,22 +710,12 @@ class jirarestInterface extends issueTrackerInterface
     $attr = get_object_vars($this->cfg->attributes);
     foreach ($attr as $name => $elem) 
     {
-      //var_dump($name);
-      //var_dump($elem);
       $name = (string)$name;
       switch($name)
       {
         case 'customFieldValues':
           $this->getCustomFieldsAttribute($name,$elem);
         break;
-
-        //case 'affectsVersions':
-        //  $this->getAffectsVersionsAttribute($name,$elem);
-        //break;
-
-        //default:
-        //  $this->getRelaxedAttribute($name,$elem);
-        //break;  
       }
     }
   }
@@ -861,6 +868,37 @@ class jirarestInterface extends issueTrackerInterface
     }  
     return $status_ok;
   }
+
+
+  /**
+   *
+   * If connection fails $this->defaultResolvedStatus is null
+   *
+   */
+  public function setResolvedStatusCfg()
+  {
+    if( property_exists($this->cfg,'resolvedstatus') )
+    {
+      $statusCfg = (array)$this->cfg->resolvedstatus;
+    }
+    else
+    {
+      $statusCfg['status'] = $this->defaultResolvedStatus;
+    }
+
+    $this->resolvedStatus = new stdClass();
+    $this->resolvedStatus->byCode = array();
+    if(!is_null($statusCfg['status']))
+    {  
+      foreach($statusCfg['status'] as $cfx)
+      {
+        $e = (array)$cfx;
+        $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
+      }
+    }
+    $this->resolvedStatus->byName = array_flip($this->resolvedStatus->byCode);
+  }
+
 
 
 }

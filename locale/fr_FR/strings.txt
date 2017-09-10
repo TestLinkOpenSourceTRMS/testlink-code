@@ -3261,6 +3261,9 @@ $TLS_audit_keyword_deleted = "Le mot-clé '{%1}' a été supprimé.";
 $TLS_audit_keyword_assigned_tc = "Le mot-clé '{%1}' a été affecté à la fiche de test '{%2}'.";
 $TLS_audit_keyword_assignment_removed_tc = "Le mot-clé '{%1}' a été désaffecté de la fiche de test '{%2}'.";
 
+$TLS_audit_exec_saved = "La fiche de test '{%1}' a été exécutée sur la version du produit '{%2}' dans la campagne '{%3}'.";
+$TLS_audit_exec_deleted = "Une exécution de la fiche de test '{%1}' sur la version du produit '{%2}' dans la campagne '{%3}' a été supprimée.";
+
 $TLS_audit_executionbug_added = "L’anomalie '{%1}' a été ajoutée pendant l’exécution.";
 $TLS_audit_executionbug_deleted = "L’anomalie '{%1}' a été déliée.".
                   "de l’exécution avec identifiant : {%2} de la fiche de test : {%3} " .
@@ -3288,6 +3291,10 @@ $TLS_audit_req_version_deleted = " La version {%1} de l’exigence 'DOCID : {%2}
 $TLS_audit_req_version_frozen = " La version {%1} de l’exigence 'DOCID : {%2}' - {%3} a été verrouillée.";
 $TLS_audit_req_version_unfrozen = " Version {%1} de l’exigence 'DOCID : {%2}' - {%3} a été déverrouillée.";
 
+$TLS_audit_testcase_created = "La fiche de test '{%1}' a été créée.";
+$TLS_audit_testcase_saved = "La fiche de test '{%1}' a été enregistrée.";
+$TLS_audit_testcase_deleted = "La fiche de test '{%1}' a été supprimée.";
+$TLS_audit_testcase_version_deleted = " La version {%1} de la fiche de test '{%2}' a été supprimée.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' a la version du produit '{%3}' qui a été créée.";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' a la version du produit '{%3}' qui a été enregistrée.";

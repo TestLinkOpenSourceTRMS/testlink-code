@@ -3469,7 +3469,7 @@ $TLS_step_number_x_created_as_copy = "Etape # %s créée comme copie de %s";
 $TLS_edit_step_number_x = "Modifier l'étape # %s de la fiche de test %s en version %s";
 $TLS_create_step = "Créer un étape de test de la fiche de test %s en version %s";
 $TLS_delete_step = "Supprimer l'étape";
-$TLS_warning_delete_step = "<p>Etes-vous sûr de vouloir supprimer l'étape de test # %s ?</p>";
+$TLS_warning_delete_step = "<p>Etes-vous sûr de vouloir supprimer l\'étape de test # %s ?</p>";
 $TLS_warning_step_number = "Le numéro de l'étape de test doit être un entier positif.";
 $TLS_warning_step_number_already_exists = "L'étape # %s existe déjà.";
 

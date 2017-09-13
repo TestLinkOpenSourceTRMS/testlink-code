@@ -8,12 +8,12 @@
  *
  * @filesource  printDocument.php
  * @author      Martin Havlat
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @link        http://www.testlink.org
  *
  *
  * @internal revisions
- * @since 1.9.16
+ * @since 1.9.17
  *
  */
 require_once('../../config.inc.php');
@@ -91,6 +91,7 @@ switch ($doc_info->type)
     {
       $xx = $tplan_mgr->get_builds($args->tplan_id,null,null,array('buildID' => $args->build_id));
       $doc_info->build_name = htmlspecialchars($xx[$args->build_id]['name']);
+      $doc_info->build_notes = $xx[$args->build_id]['notes'];
     }  
 
     $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
@@ -185,6 +186,12 @@ if ($treeForPlatform)
     case DOC_TEST_PLAN_EXECUTION_ON_BUILD:
       $docText .= renderTestProjectItem($doc_info);
       $docText .= renderTestPlanItem($doc_info);
+
+      if($doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD)
+      {
+        $docText .= renderBuildItem($doc_info);
+      } 
+
       $cfieldFormatting=array('table_css_style' => 'class="cf"');
       if ($printingOptions['cfields'])
       {

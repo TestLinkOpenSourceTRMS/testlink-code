@@ -3261,6 +3261,9 @@ $TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted - Test Project {%2}";
 $TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}'";
 $TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from Test Case '{%2}'";
 
+$TLS_audit_exec_saved = "Test Case '{%1}' has been executed on Build '{%2}' in the Test Plan '{%3}'.";
+$TLS_audit_exec_deleted = "An execution of Test Case '{%1}' on Build '{%2}' in the Test Plan '{%3}' has been deleted.";
+
 $TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
 $TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted " .
                   "from execution with id: {%2} of Test Case: {%3} " .
@@ -3288,6 +3291,10 @@ $TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%3} was d
 $TLS_audit_req_version_frozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was frozen.";
 $TLS_audit_req_version_unfrozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was unfrozen.";
 
+$TLS_audit_testcase_created = "Test Case '{%1}' has been created.";
+$TLS_audit_testcase_saved = "Test Case '{%1}' has been saved.";
+$TLS_audit_testcase_deleted = "La fiche de test '{%1}' a été supprimée.";
+$TLS_audit_testcase_version_deleted = "Version {%1} of the Test Case '{%2}' has been deleted.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";

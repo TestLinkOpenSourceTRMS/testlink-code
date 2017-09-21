@@ -469,6 +469,9 @@ class tlTransaction extends tlDBObject
   //add an event to the transaction the last arguments are proposed for holding information about the objects
   public function add($logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
   {
+	if( $source == 'GUI' && isset($_SESSION['testprojectID']) ){
+		$source = $source . ' - ' . lang_get('TestProject') . ' ID : ' . $_SESSION['testprojectID'];
+	}
     $e = new tlEvent();
     $e->initialize($this->dbID,$this->userID,$this->sessionID,$logLevel,$description,
                    $source,$activityCode,$objectID,$objectType);

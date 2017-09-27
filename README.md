@@ -14,12 +14,11 @@
 11. Testlink & FreeTest
 12. Security
 13. JIRA DB interface changes
-14. People supporting TestLink
-15. Miscelaneous
-16. Use forum.testlink.org
-17. User cries: I WANT HELP !!!
-18. Use Mantis documentation
-19. Link to GITORIOUS COMMITS
+14. People/Companies supporting TestLink
+15. Use forum.testlink.org
+16. User cries: I WANT HELP !!!
+17. Use Mantis documentation
+18. Link to GITORIOUS COMMITS
 
 ## 1. Introduction
 
@@ -241,6 +240,7 @@ case steps and expected results, also test case ID's are empty in GUI
  1. Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11/12/13/14/15/16/17
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/step1/db_schema_update.sql`
   b. Execute `install/sql/alter_tables/1.9.4/<your_db>/DB.1.5/stepZ/z_final_step.sql`
 
@@ -254,6 +254,7 @@ then look at sections: 'Upgrade from 1.9.4/5 to 1.9.7',
  2. Upgrade from 1.9.4/5 to 1.9.7
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/step1/db_schema_update.sql`
   b. Execute `install/sql/alter_tables/1.9.6/<your_db>/DB.1.6/stepZ/z_final_step.sql`
 
@@ -272,59 +273,69 @@ then look at sections: 'Upgrade from 1.9.4/5 to 1.9.7',
  3. Upgrade from 1.9.7 to 1.9.8
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/step1/db_schema_update.sql`
   b. Execute `install/sql/alter_tables/1.9.8/<your_db>/DB.1.9.8/stepZ/z_final_step.sql`
 
  4. Upgrade from 1.9.8 to 1.9.9
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/step1/db_schema_update.sql`
   b. Execute `install/sql/alter_tables/1.9.9/<your_db>/DB.1.9.9/stepZ/z_final_step.sql`
 
  5. Upgrade from 1.9.9 to 1.9.10
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.10/<your_db>/DB.1.9.10/step1/db_data_update.sql`
 
  6. Upgrade from 1.9.10 to 1.9.11
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/step1/db_schema_update.sql`
   b. Execute `install/sql/alter_tables/1.9.11/<your_db>/DB.1.9.11/stepZ/z_final_step.sql`
 
  7. Upgrade from 1.9.11 to 1.9.12
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/step1/db_schema_update.sql`
   b. Execute `install/sql/alter_tables/1.9.12/<your_db>/DB.1.9.12/stepZ/z_final_step.sql`
 
  8. Upgrade from 1.9.12 to 1.9.13
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/step1/db_schema_update.sql`
   b. Execute `install/sql/alter_tables/1.9.13/<your_db>/DB.1.9.13/stepZ/z_final_step.sql`
 
  9. Upgrade from 1.9.13 to 1.9.14
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.14/<your_db>/DB.1.9.14/step1/db_schema_update.sql`
   b. Execute `install/sql/alter_tables/1.9.14/<your_db>/DB.1.9.14/stepZ/z_final_step.sql`
 
 10. Upgrade from 1.9.14 to 1.9.15
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.15/<your_db>/DB.1.9.15/step1/db_schema_update.sql`
   b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.15/<your_db>/DB.1.9.15/stepZ/z_final_step.sql`
 
 11. Upgrade from 1.9.15 to 1.9.16
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.16/<your_db>/DB.1.9.16/step1/db_schema_update.sql`
   b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.16/<your_db>/DB.1.9.16/stepZ/z_final_step.sql`
 
 12. Upgrade from 1.9.16 to 1.9.17
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
+
   a. Execute `install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/step1/db_schema_update.sql`
   b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/stepZ/z_final_step.sql`
 
@@ -406,17 +417,17 @@ This list comprises people who have helped:
   * Leonardo Molinari - Portuguese (Brazil) localization
   * Hélio Guilherme - Portuguese localization
   * jorgesf@jsf.jazztel.es - Spanish localization
-  * Jonas Fleer : search test case by custom field on test projects
+  * Jonas Fleer - search test case by custom field on test projects
   * Lightbulb Technology Services Pvt. Ltd. - techpartners: import test cases from XLS file
     abhishek.kulkarni@gmail.com and amit.dixit@lbtp.co.in
   * Kester Mielke <kmielke@pironet-ndh.com> (execution tree colouring and counters by tc status)
-  * Peter Rooms - Bug coloring and labeling according status using same colors than Mantis.
-  * Eugenia Drosdezki - Move/copy multiple testcases
-  *                     Access to content of docs folder on combo box
-  *                     Multiselect OR keywords filter
+  * Peter Rooms - Bug coloring and labeling according status using same colors as Mantis.
+  * Eugenia Drosdezki
+      * Move/copy multiple testcases
+      * Access to content of docs folder on combo box
+      * Multiselect OR keywords filter
   * Japanese Testing Engineer's Forum (TEF) in Japan
-    Working Group of TestLink Japanese Translation Project
-    http://sourceforge.jp/projects/testlinkjp/
+    Working Group of [TestLink Japanese Translation Project][tjp]
 
     Atsushi Nagata,       AZMA Daisuke,         Hiromi Nishiyama,
     Kaname Mochizuki,     Kaoru Nakamura,       Kunio Murakami,
@@ -540,7 +551,7 @@ If you are interested you can [get some info][free]:
     cedric (mantis.testlink.org user name)
 
 ### 1.9.10
-  - We want to thanks xistence (xistence@0x90.nl) for his tests.
+  - We want to thank xistence (xistence@0x90.nl) for his tests.
 
 ## 13. JIRA DB interface changes
 
@@ -557,28 +568,22 @@ Without this property TestLink **WILL CRASH** => this is a desired behaviour
 
 ## 14. People/Companies supporting TestLink
 
-  - Bitnami
-    - provided a VM on Cloud to do tests
+  - Bitnami: provided a VM on Cloud to do tests
 
-  - Team Cortado (Germany)
-    - paid for custom development of a long-awaited feature: execution notes
-      & results for test steps, **donating** feature to community (it is not
-      the first time they are doing this!)
+  - Team Cortado (Germany): paid for custom development of a long-awaited
+    feature: execution notes & results for test steps, **donating** feature
+    to community (it is not the first time they are doing this!)
 
   - MAMP PRO
 
-## 15. Miscellaneous
+  - [Hitek School][hitek]: Group of students helped to test TestLink
+
+  - [Wellington Institute of Technology][welt]: Group of students working on
+    creating automation infrastructure to test TestLink
 
   - [CSRF Prevention Cheat Sheet][csrf]
 
-  - [Hitek School][hitek]
-    - Group of students help to test TestLink
-
-  - [Wellington Institute of Technology][welt]
-    - Group of students working on creating automation infrastructure to
-      test TestLink
-
-## 16. Use forum.testlink.org
+## 15. Use forum.testlink.org
 
 Information has been collected with users' help
 
@@ -588,7 +593,7 @@ Information has been collected with users' help
 
 [How to get the answer (self service)][howa]
 
-## 17. User cries: I WANT HELP !!!
+## 16. User cries: I WANT HELP !!!
 
 Relax, as usual I've to say the resources are limited,
 that this effort is not supported by a company or a foundation
@@ -614,13 +619,13 @@ a bad approach. Use PRIVATE CHANNELS only on Dev Team Request.
 
 If you need more specialized help, it can be provided if you pay for it.
 
-## 18. Use Mantis documentation
+## 17. Use Mantis documentation
 
 [CHANGE LOG][chgl]
 
 [TICKET][7817] with available fixes for latest stable version (1.9.16)
 
-## 19. Link to GITORIOUS COMMITS
+## 18. Link to GITORIOUS COMMITS
 
 Some time ago we **migrated from Gitorious** (thanks a lot for all the years
 of free repo) **to Github**. On tickets or documentation that belong to the
@@ -657,3 +662,5 @@ BEFORE the commit ID. => then Nike => Just DO IT
 [howa]: http://forum.testlink.org/viewtopic.php?f=50&t=7798
 [chgl]: http://mantis.testlink.org/changelog_page.php
 [7817]: http://mantis.testlink.org/view.php?id=7817
+[gmail]: mailto:testlink.forum@gmail.com
+[tjp]: http://sourceforge.jp/projects/testlinkjp/

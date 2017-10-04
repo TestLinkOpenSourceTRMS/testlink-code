@@ -376,11 +376,11 @@ $tlCfg->noExpDateUsers = array('admin');
  * OAUTH
  */
 $tlCfg->authentication['oauth_enabled'] = true;
-$tlCfg->authentication['oauth_client_id'] = 'CLIENT_ID';
-$tlCfg->authentication['oauth_client_secret'] = 'CLIENT_SECRET;
+$tlCfg->authentication['oauth_client_id'] = '273010653565-piabcaq3qrnhdfkom19ie6do7d37p4s4.apps.googleusercontent.com';
+$tlCfg->authentication['oauth_client_secret'] = 'bEZdntT-w7BsyESrzre2NB5K';
 $tlCfg->authentication['oauth_grant_type'] = 'authorization_code';  //Can be authorization_code (by default), client_credentials or password
 $tlCfg->authentication['oauth_url'] = 'https://accounts.google.com/o/oauth2';
-//$tlCfg->authentication['oauth_domain'] = 'google.com'; //the domain you want to whitelist
+//$tlCfg->authentication['oauth_domain'] = 'reltio.com'; //the domain you want to whitelist
 $tlCfg->authentication['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 
 /**

@@ -373,6 +373,17 @@ $tlCfg->logoutUrl = '';
 $tlCfg->noExpDateUsers = array('admin');
 
 /**
+ * OAUTH
+ */
+$tlCfg->authentication['oauth_enabled'] = true;
+$tlCfg->authentication['oauth_client_id'] = 'CLIENT_ID';
+$tlCfg->authentication['oauth_client_secret'] = 'CLIENT_SECRET;
+$tlCfg->authentication['oauth_grant_type'] = 'authorization_code';  //Can be authorization_code (by default), client_credentials or password
+$tlCfg->authentication['oauth_url'] = 'https://accounts.google.com/o/oauth2';
+//$tlCfg->authentication['oauth_domain'] = 'google.com'; //the domain you want to whitelist
+$tlCfg->authentication['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+
+/**
  * Single Sign On authentication
  *
  * SSO_method: CLIENT_CERTIFICATE, tested with Apache Webserver
@@ -393,7 +404,7 @@ $tlCfg->authentication['SSO_logout_destination'] = 'YOUR LOGOUT DESTINATION';
 
 
 
-/** 
+/**
  * LDAP authentication credentials, Multiple LDAP Servers can be used. 
  * User will be authenticaded against each server (one after other using array index order)
  * till authentication succeed or all servers have been used.

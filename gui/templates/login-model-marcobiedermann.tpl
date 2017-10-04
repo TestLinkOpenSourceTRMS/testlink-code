@@ -63,6 +63,14 @@
               <input type="submit" value="{$labels.btn_login}">
             </div>
 
+            {if $tlCfg->authentication['oauth_enabled']}
+            <div class="button">
+            <a style="text-decoration: none; color:#ffffff;" href="{$gui->oauth}">
+            <img src="{$tlCfg->theme_dir}images/google.png" style="height: 42px; vertical-align:middle;">
+            <span style="padding: 10px;">Sign in with Google</span></a>
+            </div>
+            {/if}
+
           </form>
 
           <p class="text--center">

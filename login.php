@@ -48,7 +48,59 @@ switch($args->action)
   case 'ajaxcheck':
     processAjaxCheck($db);
   break;
-  
+  case 'oauth':
+    //If code is empty then break
+    if (!isset($_GET['code'])){
+        renderLoginScreen($gui);
+        die();
+    }
+
+    //Params to get token
+    $oauthParams = array(
+       'code'          => $_GET['code'],
+       'grant_type'    => $gui->authCfg['oauth_grant_type'],
+       'client_id'     => $gui->authCfg['oauth_client_id'],
+       'redirect_uri'  => 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
+       'client_secret' => $gui->authCfg['oauth_client_secret']
+    );
+    $url = $gui->authCfg['oauth_url'] . '/token';
+
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_POST, 1);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($oauthParams)));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    $result = curl_exec($curl);
+    curl_close($curl);
+    $tokenInfo = json_decode($result, true);
+
+    //If token is received start session
+    if (isset($tokenInfo['access_token'])) {
+        $oauthParams['access_token'] = $tokenInfo['access_token'];
+        $userInfo = json_decode(file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo' . '?' . urldecode(http_build_query($oauthParams))), true);
+
+        if (isset($gui->authCfg['oauth_domain'])) {
+            $domain = substr(strrchr($userInfo['email'], "@"), 1);
+
+            if ($domain !== $gui->authCfg['oauth_domain']){
+                $gui->note = 'User doesnt correspond to Oauth policy';
+                renderLoginScreen($gui);
+                die();
+            }
+        }
+
+        if (isset($userInfo['id'])) {
+            $options = new stdClass();
+            $options->givenName = $userInfo['given_name'];
+            $options->familyName = $userInfo['family_name'];
+            $options->auth = 'oauth';
+            doSessionStart(true);
+            $op = doAuthorize($db,$userInfo['email'],'oauth',$options);
+            $doAuthPostProcess = true;
+        }
+    }
+  break;
   case 'loginform':
     $doRenderLoginScreen = true;
     $gui->draw = true;
@@ -88,7 +140,6 @@ if( $doRenderLoginScreen )
   renderLoginScreen($gui);
 }
 
-
 /**
  * 
  *
@@ -97,9 +148,9 @@ function init_args()
 {
   $pwdInputLen = config_get('loginPagePasswordMaxLenght');
 
-  // 2010904 - eloff - Why is req and reqURI parameters to the login? 
+  // 2010904 - eloff - Why is req and reqURI parameters to the login?
   $iParams = array("note" => array(tlInputParameter::STRING_N,0,255),
-                   "tl_login" => array(tlInputParameter::STRING_N,0,30),
+                   "tl_login" => array(tlInputParameter::STRING_N,0,100),
                    "tl_password" => array(tlInputParameter::STRING_N,0,$pwdInputLen),
                    "req" => array(tlInputParameter::STRING_N,0,4000),
                    "reqURI" => array(tlInputParameter::STRING_N,0,4000),
@@ -107,12 +158,14 @@ function init_args()
                    "destination" => array(tlInputParameter::STRING_N, 0, 255),
                    "loginform_token" => array(tlInputParameter::STRING_N, 0, 255),
                    "viewer" => array(tlInputParameter::STRING_N, 0, 3),
+                   "oauth" => array(tlInputParameter::STRING_N,0,100),
                   );
   $pParams = R_PARAMS($iParams);
 
   $args = new stdClass();
   $args->note = $pParams['note'];
   $args->login = $pParams['tl_login'];
+
   $args->pwd = $pParams['tl_password'];
   $args->ssodisable = getSSODisable();
   $args->reqURI = urlencode($pParams['req']);
@@ -131,10 +184,15 @@ function init_args()
   {
     $args->action = 'doLogin';
   } 
-  else 
+  else if (!is_null($pParams['oauth']) && $pParams['oauth'])
+  {
+    $args->action = 'oauth';
+  }
+  else
   {
     $args->action = 'loginform';
   }
+
 
   return $args;
 }
@@ -159,7 +217,17 @@ function init_gui(&$db,$args)
 
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
-  
+
+
+  $oauth_url = $gui->authCfg['oauth_url'] . '/auth';
+  $oauth_params = array(
+    'redirect_uri'  => 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
+    'response_type' => 'code',
+    'client_id'     => $gui->authCfg['oauth_client_id'],
+    'scope'         => $gui->authCfg['oauth_scope']
+  );
+  $gui->oauth = $oauth_url . '?' . urldecode(http_build_query($oauth_params));
+
   $gui->external_password_mgmt = false;
   $domain = $gui->authCfg['domain'];
   $mm = $gui->authCfg['method'];

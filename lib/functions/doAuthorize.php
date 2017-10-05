@@ -74,7 +74,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
  
       if( $doGo )
       {
-        if (strpos($user->authentication,'OAUTH') !== false && strpos($options['auth'],'oauth') !== false){
+        if (strpos($options->auth,'oauth') !== false){
             $doLogin = $user->isActive;
         } else {
             $password_check = auth_does_password_match($user,$pwd);
@@ -95,12 +95,12 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     else
     {
       $authCfg = config_get('authentication');
-      if (strpos($options['auth'],'oauth') !== false){
+      if (strpos($options->auth,'oauth') !== false){
         $user = new tlUser();
         $user->login = $login;
         $user->emailAddress = $login;
-        $user->firstName = $options['givenName'];
-        $user->lastName = $options['familyName'];
+        $user->firstName = $options->givenName;
+        $user->lastName = $options->familyName;
         $user->authentication = 'OAUTH';
         $user->isActive = true;
         $user->setPassword('oauth');

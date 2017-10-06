@@ -342,9 +342,11 @@ $g_SMTPAutoTLS = false;
  *  'MD5' => use password stored on db => will be deprecated and DB used.
  *  'DB'  => Same as MD5 use password stored on db
  *  'LDAP' => use password from LDAP Server
+ *  'OAUTH' => use token from auth server
  */
 $tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'allowPasswordManagement' => true) ,
-                     'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
+                     'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false),
+                     'OAUTH' => array('description' => 'OAUTH', 'allowPasswordManagement' => false));
 
 /* Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';

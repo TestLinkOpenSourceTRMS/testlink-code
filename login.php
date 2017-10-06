@@ -17,6 +17,7 @@ require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
 require_once('common.php');
+require_once('oauth_api.php');
 require_once('doAuthorize.php');
 
 $templateCfg = templateConfiguration();
@@ -55,50 +56,20 @@ switch($args->action)
         die();
     }
 
-    //Params to get token
-    $oauthParams = array(
-       'code'          => $_GET['code'],
-       'grant_type'    => $gui->authCfg['oauth_grant_type'],
-       'client_id'     => $gui->authCfg['oauth_client_id'],
-       'redirect_uri'  => 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
-       'client_secret' => $gui->authCfg['oauth_client_secret']
-    );
-    $url = $gui->authCfg['oauth_url'] . '/token';
-
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_POST, 1);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($oauthParams)));
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    $result = curl_exec($curl);
-    curl_close($curl);
-    $tokenInfo = json_decode($result, true);
-
-    //If token is received start session
-    if (isset($tokenInfo['access_token'])) {
-        $oauthParams['access_token'] = $tokenInfo['access_token'];
-        $userInfo = json_decode(file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo' . '?' . urldecode(http_build_query($oauthParams))), true);
-
-        if (isset($gui->authCfg['oauth_domain'])) {
-            $domain = substr(strrchr($userInfo['email'], "@"), 1);
-
-            if ($domain !== $gui->authCfg['oauth_domain']){
-                $gui->note = 'User doesnt correspond to Oauth policy';
-                renderLoginScreen($gui);
-                die();
-            }
-        }
-
-        if (isset($userInfo['id'])) {
-            $options = new stdClass();
-            $options->givenName = $userInfo['given_name'];
-            $options->familyName = $userInfo['family_name'];
-            $options->auth = 'oauth';
-            doSessionStart(true);
-            $op = doAuthorize($db,$userInfo['email'],'oauth',$options);
-            $doAuthPostProcess = true;
-        }
+    $user_token = oauth_get_token($gui->authCfg, $_GET['code']);
+    if($user_token->status['status'] == tl::OK)
+    {
+      $options = new stdClass();
+      $options->givenName = $user_token->userInfo['given_name'];
+      $options->familyName = $user_token->userInfo['family_name'];
+      $options->auth = 'oauth';
+      doSessionStart(true);
+      $op = doAuthorize($db,$user_token->userInfo['email'],'oauth',$options);
+      $doAuthPostProcess = true;
+    } else {
+        $gui->note = $user_token->status['msg'];
+        renderLoginScreen($gui);
+        die();
     }
   break;
   case 'loginform':
@@ -217,16 +188,7 @@ function init_gui(&$db,$args)
 
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
-
-
-  $oauth_url = $gui->authCfg['oauth_url'] . '/auth';
-  $oauth_params = array(
-    'redirect_uri'  => 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
-    'response_type' => 'code',
-    'client_id'     => $gui->authCfg['oauth_client_id'],
-    'scope'         => $gui->authCfg['oauth_scope']
-  );
-  $gui->oauth = $oauth_url . '?' . urldecode(http_build_query($oauth_params));
+  $gui->oauth = oauth_link($gui->authCfg);
 
   $gui->external_password_mgmt = false;
   $domain = $gui->authCfg['domain'];

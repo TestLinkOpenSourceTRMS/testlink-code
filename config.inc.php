@@ -379,7 +379,7 @@ $tlCfg->noExpDateUsers = array('admin');
  */
 $tlCfg->authentication['oauth_enabled'] = true;
 $tlCfg->authentication['oauth_client_id'] = 'CLIENT_ID';
-$tlCfg->authentication['oauth_client_secret'] = 'CLIENT_SECRET;
+$tlCfg->authentication['oauth_client_secret'] = 'CLIENT_SECRET';
 $tlCfg->authentication['oauth_grant_type'] = 'authorization_code';  //Can be authorization_code (by default), client_credentials or password
 $tlCfg->authentication['oauth_url'] = 'https://accounts.google.com/o/oauth2';
 //$tlCfg->authentication['oauth_domain'] = 'google.com'; //the domain you want to whitelist

@@ -96,15 +96,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     {
       $authCfg = config_get('authentication');
       if (strpos($options->auth,'oauth') !== false){
-        $user = new tlUser();
-        $user->login = $login;
-        $user->emailAddress = $login;
-        $user->firstName = $options->givenName;
-        $user->lastName = $options->familyName;
-        $user->authentication = 'OAUTH';
-        $user->isActive = true;
-        $user->setPassword('oauth');
-        $doLogin = ($user->writeToDB($db) == tl::OK);
+        $doLogin = create_oauth_user_db($login,$options);
       } else
       if( $authCfg['ldap_automatic_user_creation'] )
       {

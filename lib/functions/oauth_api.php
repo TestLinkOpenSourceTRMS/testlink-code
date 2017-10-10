@@ -5,7 +5,7 @@
  *
  * @filesource  oauth_api.php
  *
- * OAUTH API (authentication)
+ * Google OAUTH API (authentication)
  *
  *
  * @internal revisions
@@ -16,15 +16,36 @@
 // Create correct link for oauth
 function oauth_link($authCfg)
 {
+  $promt = 'none';
+  if ($tlCfg->authentication['oauth_force_single'])
+    $promt = 'consent';
+
   $oauth_url = $authCfg['oauth_url'] . '/auth';
   $oauth_params = array(
     'redirect_uri'  => 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
     'response_type' => 'code',
+    'prompt'        => $promt,
     'client_id'     => $authCfg['oauth_client_id'],
     'scope'         => $authCfg['oauth_scope']
   );
+
+
   $url = $oauth_url . '?' . urldecode(http_build_query($oauth_params));
   return $url;
+}
+
+//Create new user
+function create_oauth_user_db($login, $options)
+{
+  $user = new tlUser();
+  $user->login = $login;
+  $user->emailAddress = $login;
+  $user->firstName = $options->givenName;
+  $user->lastName = $options->familyName;
+  $user->authentication = 'OAUTH';
+  $user->isActive = true;
+  $user->setPassword('oauth');
+  return ($user->writeToDB($db) == tl::OK);
 }
 
 //Get token
@@ -57,7 +78,8 @@ function oauth_get_token($authCfg, $code)
   //If token is received start session
   if (isset($tokenInfo['access_token'])){
     $oauthParams['access_token'] = $tokenInfo['access_token'];
-    $userInfo = json_decode(file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo' . '?' . urldecode(http_build_query($oauthParams))), true);
+    $authCfg['oauth_profile']
+    $userInfo = json_decode(file_get_contents($authCfg['oauth_profile'] . '?' . urldecode(http_build_query($oauthParams))), true);
 
     if (isset($userInfo['id'])){
       if (isset($authCfg['oauth_domain'])) {

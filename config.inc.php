@@ -342,11 +342,9 @@ $g_SMTPAutoTLS = false;
  *  'MD5' => use password stored on db => will be deprecated and DB used.
  *  'DB'  => Same as MD5 use password stored on db
  *  'LDAP' => use password from LDAP Server
- *  'OAUTH' => use token from auth server
  */
 $tlCfg->authentication['domain'] = array('DB' => array('description' => 'DB', 'allowPasswordManagement' => true) ,
-                     'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false),
-                     'OAUTH' => array('description' => 'OAUTH', 'allowPasswordManagement' => false));
+                     'LDAP' => array('description' => 'LDAP', 'allowPasswordManagement' => false) );
 
 /* Default Authentication method */
 $tlCfg->authentication['method'] = 'DB';
@@ -354,9 +352,9 @@ $tlCfg->authentication['method'] = 'DB';
 // Applies only if authentication methos is DB.
 // Used when:
 // 1. user sign up
-// 
+//
 // null => only check password IS NOT EMPTY
-// 
+//
 // $tlCfg->passwordChecks = array('minlen' => 8,'maxlen' => 20,'number' => true,'letter' => true,
 //                                'capital' => true, 'symbol' => true);
 $tlCfg->passwordChecks = null;
@@ -382,7 +380,9 @@ $tlCfg->authentication['oauth_client_id'] = 'CLIENT_ID';
 $tlCfg->authentication['oauth_client_secret'] = 'CLIENT_SECRET';
 $tlCfg->authentication['oauth_grant_type'] = 'authorization_code';  //Can be authorization_code (by default), client_credentials or password
 $tlCfg->authentication['oauth_url'] = 'https://accounts.google.com/o/oauth2';
+$tlCfg->authentication['oauth_force_single'] = false; //if false then the only user will be selected automatically (applied for google)
 //$tlCfg->authentication['oauth_domain'] = 'google.com'; //the domain you want to whitelist
+$tlCfg->authentication['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
 $tlCfg->authentication['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 
 /**

@@ -176,12 +176,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
    */
   private $platform_mgr = null;
   
-  /**
-   * Custom field manager object.
-   * Initialized not in constructor, only on first use to save resources.
-   * @var exec_cf_mgr
-   */
-  //public $cfield_mgr = null;
   
   /**
    * Testplan manager object.
@@ -2055,7 +2049,42 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }  
 
     $cf = (array)$cfields['design'] + (array)$cfields['testplan_design'];
-    return count($cf) > 0 ? $cf : null;
+
+    // Because I'm using these as filters, need a special processing
+    // for CF types that present a domain like LIST, then if the blank option is
+    // not present will be added as FIRST OPTION
+
+    if(count($cf) > 0)
+    {
+      $cfTypes = array_flip($this->cfield_mgr->get_available_types());
+      $key2loop = array_keys($cf);
+      foreach($key2loop as $cfID)
+      {
+        if($cf[$cfID]['type'] == $cfTypes['list'])
+        {
+          $addBlank = true;
+          $vv = explode('|',$cf[$cfID]['possible_values']);
+          foreach($vv as $value)
+          {
+            if(trim($value) == '')
+            {
+              $addBlank = false;
+              break;
+            }  
+          }
+
+          if($addBlank)
+          {
+            $cf[$cfID]['possible_values'] = ' |' . $cf[$cfID]['possible_values'];   
+          }  
+        }  
+      }  
+      return $cf;
+    }  
+    else
+    {
+      return null;
+    }  
   }
 
   /**

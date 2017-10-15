@@ -2060,6 +2060,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $key2loop = array_keys($cf);
       foreach($key2loop as $cfID)
       {
+        // we will use these CF as filter => required property has to be
+        // set to false
+        $cf[$cfID]['required'] = 0;
+
         if($cf[$cfID]['type'] == $cfTypes['list'])
         {
           $addBlank = true;

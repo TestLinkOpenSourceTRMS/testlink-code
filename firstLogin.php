@@ -176,7 +176,7 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
       }  
       $dest[] = $ema;
     }  
-    $mail['to'] = implode(',',$ema); // email_api uses ',' as list separator
+    $mail['to'] = implode(',',$dest); // email_api uses ',' as list separator
     $mail['subject'] = lang_get('new_account');
     $mail['body'] = lang_get('new_account') . "\n";
     $mail['body'] .= " user:$userObj->login\n"; 

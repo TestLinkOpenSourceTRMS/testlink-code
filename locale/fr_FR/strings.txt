@@ -845,7 +845,10 @@ $TLS_filter_active_inactive = "Actif/Inactif";
 $TLS_show_only_active_testcases = "Au moins UNE version de la fiche de test est ACTIVÉE";
 $TLS_show_only_inactive_testcases = "TOUTES les versions de la fiche de test sont DÉSACTIVÉES.";
 $TLS_show_whole_spec_on_right_panel = 'Montrer tout (dans le panneau de droite)';
-
+$TLS_test_grouped_by = "Tests regroupés par";
+$TLS_mode_test_suite = "Séquence de test";
+$TLS_mode_req_coverage = "Exigence";
+$TLS_parent_child_relation = "Relation parent enfant";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -2166,6 +2169,7 @@ $TLS_export_tcase_external_id = "Exporter l’ID externe des fiches de test";
 $TLS_export_with_prefix = 'Exporter le préfixe des fiches de test';
 
 $TLS_export_with_keywords = "Exporter les mots-clés";
+$TLS_export_attachments = "Exporter les pièces jointes";
 $TLS_warning_empty_filename = "Veuillez renseigner le nom du fichier.";
 $TLS_export_steps = "Exporter les étapes de test";
 $TLS_export_summary = "Exporter le résumé de test";

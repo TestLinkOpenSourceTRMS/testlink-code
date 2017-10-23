@@ -954,15 +954,12 @@ class requirement_spec_mgr extends tlObjectWithAttachments
    *
    * @internal revision
    */
-  function exportReqSpecToXML($id,$tproject_id,$optExport=array())
+  function exportReqSpecToXML($id,$tproject_id,$optionsForExport=array())
   {
-
-  	// manage missing keys
-  	$optionsForExport=array('RECURSIVE' => true);
-  	foreach($optionsForExport as $key => $value)
-  	{
-      $optionsForExport[$key]=isset($optExport[$key]) ? $optExport[$key] : $value;      
-  	}
+  	// manage missing keys; recursive export by default
+    if( !array_key_exists('RECURSIVE',$optionsForExport) ){
+	  $optionsForExport['RECURSIVE'] = true;
+	}
   	
     $relXmlData = '';
     $relationsCache = array();
@@ -974,14 +971,60 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     	$cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
   		$containerData = $this->get_by_id($id);
     	$xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']) . '" ' .
-    	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" ' . ' >' .
-    	           "\n<revision><![CDATA[{$containerData['revision']}]]></revision>\n" .
-                 "\n<type><![CDATA[{$containerData['type']}]]></type>\n" .
-                 "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
-                 "\n<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
-                 "<scope>\n<![CDATA[{$containerData['scope']}]]>\n</scope>\n{$cfXML}";
+    	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" ' . ' >' . "\n".
+    	           "\t<revision><![CDATA[{$containerData['revision']}]]></revision>\n" .
+                 "\t<type><![CDATA[{$containerData['type']}]]></type>\n" .
+                 "\t<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
+                 "\t<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
+                 "\t<scope><![CDATA[{$containerData['scope']}]]></scope>\n{$cfXML}";
   	}
    
+	// Add attachments info	
+	if (isset($optionsForExport['ATTACHMENTS']) && $optionsForExport['ATTACHMENTS'])
+    {
+		$attachments=null;
+		// get all attachments
+		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
+	  
+		// get all attachments content and encode it in base64	  
+		if ($attachmentInfos)
+		{
+			foreach ($attachmentInfos as $attachmentInfo)
+			{
+				$aID = $attachmentInfo["id"];
+				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+				
+				if ($content != null)
+				{
+					$attachments[$aID]["id"] = $aID;
+					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
+					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+					$attachments[$aID]["title"] = $attachmentInfo["title"];
+					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+					$attachments[$aID]["content"] = base64_encode($content);
+				}
+			}
+	    }
+	  
+		if( !is_null($attachments) && count($attachments) > 0 )
+		{
+			$attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
+			$attchElemTemplate = "\t\t<attachment>\n" .
+							   "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+							   "\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+							   "\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+							   "\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+							   "\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+							   "\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+							   "\t\t</attachment>\n";
+
+			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
+								"||ATTACHMENT_FILE_TYPE||" => "file_type", "||ATTACHMENT_TITLE||" => "title",
+								"||ATTACHMENT_DATE_ADDED||" => "date_added", "||ATTACHMENT_CONTENT||" => "content");
+			$xmlData .= exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
+        }
+    }
+	
   	$req_spec = $this->getReqTree($id);
   	$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
   	if( !is_null($childNodes) )
@@ -997,7 +1040,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   	    }
   	    else if ($cNode['node_table'] == 'requirements')
   	    {
-          $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id);
+          $xmlData .= $this->req_mgr->exportReqToXML($cNode['id'],$tproject_id,$optionsForExport['ATTACHMENTS']);
 
           $relations = $this->req_mgr->get_relations($cNode['id']);
           if( !is_null($relations['relations']) && count($relations['relations']) > 0 )
@@ -1024,7 +1067,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
   	if ($optionsForExport['RECURSIVE'])
   	{
-  		$xmlData .= "</req_spec>";
+  		$xmlData .= "</req_spec>\n";
   	}
   	return $xmlData;
   }

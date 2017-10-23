@@ -1406,9 +1406,8 @@ function set_order($map_id_order)
  * @return  string with XML code
  *
  */
-function exportReqToXML($id,$tproject_id=null)
-{            
-
+function exportReqToXML($id,$tproject_id=null, $inc_attachments=false)
+{
   $req = $this->get_by_id($id,requirement_mgr::LATEST_VERSION);
   $reqData[] = $req[0]; 
 
@@ -1422,8 +1421,54 @@ function exportReqToXML($id,$tproject_id=null)
              "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
              "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
              "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .         
-             "\n\t\t" . $this->customFieldValuesAsXML($id,$req[0]['version_id'],$tproject_id) . 
-             "\n\t" . "</requirement>" . "\n";
+             "\n\t\t" . $this->customFieldValuesAsXML($id,$req[0]['version_id'],$tproject_id);
+			 
+  // add req attachment content if checked in GUI
+  if ($inc_attachments)
+  {
+	$attachments=null;
+	// retrieve all attachments linked to req
+	$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
+	  
+	// get all attachments content and encode it in base64	  
+	if ($attachmentInfos)
+	{
+		foreach ($attachmentInfos as $attachmentInfo)
+		{
+			$aID = $attachmentInfo["id"];
+			$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+			
+			if ($content != null)
+			{
+				$attachments[$aID]["id"] = $aID;
+				$attachments[$aID]["name"] = $attachmentInfo["file_name"];
+				$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+				$attachments[$aID]["title"] = $attachmentInfo["title"];
+				$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+				$attachments[$aID]["content"] = base64_encode($content);
+			}
+		}
+	  
+		if( !is_null($attachments) && count($attachments) > 0 )
+		{
+			$attchRootElem = "<attachments>\n{{XMLCODE}}\t\t</attachments>\n";
+			$attchElemTemplate = "\t\t\t<attachment>\n" .
+							   "\t\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+							   "\t\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+							   "\t\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+							   "\t\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+							   "\t\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+							   "\t\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+							   "\t\t\t</attachment>\n";
+
+			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
+								"||ATTACHMENT_FILE_TYPE||" => "file_type", "||ATTACHMENT_TITLE||" => "title",
+								"||ATTACHMENT_DATE_ADDED||" => "date_added", "||ATTACHMENT_CONTENT||" => "content");
+			$elemTpl .= exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
+        }
+    }
+  }
+  $elemTpl .=  "\n\t" . "</requirement>" . "\n";
              
   $info = array("||DOCID||" => "req_doc_id","||TITLE||" => "title",
                 "||DESCRIPTION||" => "scope","||STATUS||" => "status",
@@ -1433,6 +1478,7 @@ function exportReqToXML($id,$tproject_id=null)
   
   $xmlStr = exportDataToXML($reqData,"{{XMLCODE}}",$elemTpl,$info,true);                
   return $xmlStr;
+  
 }
 
 

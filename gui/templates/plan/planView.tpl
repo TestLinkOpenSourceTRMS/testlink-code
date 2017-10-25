@@ -64,6 +64,13 @@ var del_action=fRoot+'{$deleteAction}';
 {/if}
 
 <div class="workBack">
+{if $gui->grants->testplan_create && $gui->tproject_id > 0 && count($gui->tplans) > 10}
+ <div class="groupBtn">
+    <form method="post" action="{$createAction}">
+      <input type="submit" name="create_testplan" value="{$labels.btn_testplan_create}" />
+    </form>
+  </div>
+{/if}
 <div id="testplan_management_list">
 {if $gui->tproject_id <= 0}
   {$labels.error_no_testprojects_present}

@@ -43,6 +43,13 @@ var del_action=fRoot+'{$deleteAction}';
 {include file="inc_update.tpl" result=$sqlResult item="build" user_feedback=$gui->user_feedback}
 
 {* --------------------------------------------------------------------------------- *}
+{if count($gui->buildSet) > 10}
+<div class="groupBtn">
+  <form method="post" action="{$createAction}" id="create_build">
+    <input type="submit" name="create_build" value="{$labels.btn_build_create}" />
+  </form>
+</div>
+{/if}
 <div id="existing_builds">
   {if $gui->buildSet ne ""}
   <form method="post" id="buildView" name="buildView" action="{$managerURL}">

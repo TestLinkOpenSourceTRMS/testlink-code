@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcExport.tpl 28 2017-10-23 14:56:03Z clm $
+$Id: tcExport.tpl,v 1.14 2010/11/06 11:42:47 amkhullar Exp $
 
 test case export initial page
 

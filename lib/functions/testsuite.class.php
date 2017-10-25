@@ -1205,14 +1205,18 @@ class testsuite extends tlObjectWithAttachments
 							   "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
 							   "\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
 							   "\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+							   "\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
 							   "\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
 							   "\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
 							   "\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
 							   "\t</attachment>\n";
 
 			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
-								"||ATTACHMENT_FILE_TYPE||" => "file_type", "||ATTACHMENT_TITLE||" => "title",
-								"||ATTACHMENT_DATE_ADDED||" => "date_added", "||ATTACHMENT_CONTENT||" => "content");
+								"||ATTACHMENT_FILE_TYPE||" => "file_type",
+								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
+								"||ATTACHMENT_TITLE||" => "title",
+								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
+								"||ATTACHMENT_CONTENT||" => "content");
 			$attachmentsXML = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
 		} 
       }

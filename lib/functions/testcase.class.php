@@ -3815,6 +3815,7 @@ class testcase extends tlObjectWithAttachments
 					$attachments[$aID]["id"] = $aID;
 					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
 					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+					$attachments[$aID]["file_size"] = $attachmentInfo["file_size"];
 					$attachments[$aID]["title"] = $attachmentInfo["title"];
 					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
 					$attachments[$aID]["content"] = base64_encode($content);
@@ -3829,14 +3830,18 @@ class testcase extends tlObjectWithAttachments
 							   "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
 							   "\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
 							   "\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+							   "\t\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
 							   "\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
 							   "\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
 							   "\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
 							   "\t\t</attachment>\n";
 
 			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
-								"||ATTACHMENT_FILE_TYPE||" => "file_type", "||ATTACHMENT_TITLE||" => "title",
-								"||ATTACHMENT_DATE_ADDED||" => "date_added", "||ATTACHMENT_CONTENT||" => "content");
+								"||ATTACHMENT_FILE_TYPE||" => "file_type",
+								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
+								"||ATTACHMENT_TITLE||" => "title",
+								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
+								"||ATTACHMENT_CONTENT||" => "content");
 			$tc_data[0]['xmlattachments'] = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
         }
     }

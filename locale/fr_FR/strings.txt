@@ -2905,6 +2905,7 @@ $TLS_same_externalID = "présente le même ID externe"; // (only applicable to T
 $TLS_same_name = "présente le même nom";
 $TLS_duplicate_criteria = "Considérer la fiche de test comme connue si elle";
 $TLS_hit_with_same_external_ID = "Ne peut pas être importée - Une fiche de test utilise déjà l'ID EXTERNE :";
+$TLS_attachment_skipped_during_import = "La pièce jointe \"%s\" a été ignorée car elle est déjà liée à l'élément de test.";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "Aucune fiche de test pour l’export";

@@ -1517,6 +1517,20 @@ function xmlToMapRequirement($xml_item)
       $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
     }    
   }
+  if( property_exists($xml_item,'attachments') )
+  {
+	$dummy['attachments'] = array();
+	foreach($xml_item->attachments->children() as $attachment)
+	{
+	  $attach_id = (int)$attachment->id;
+	  $dummy['attachments'][$attach_id]['id'] = (int)$attachment->id;
+	  $dummy['attachments'][$attach_id]['name'] = (string)$attachment->name;
+	  $dummy['attachments'][$attach_id]['file_type'] = (string)$attachment->file_type;
+	  $dummy['attachments'][$attach_id]['title'] = (string)$attachment->title;
+	  $dummy['attachments'][$attach_id]['date_added'] = (string)$attachment->date_added;
+	  $dummy['attachments'][$attach_id]['content'] = (string)$attachment->content;  
+	}
+  }
   return $dummy;
 }
 
@@ -1672,10 +1686,11 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
     if(is_null($check_in_tproject))
     {
+	  $importMode = 'creation';
       $newReq = $this->create($parent_id,$req['docid'],$req['title'],$req['description'],
                          $author_id,$req['status'],$req['type'],$req['expected_coverage'],
                          $req['node_order'],$tproject_id,array('quickAndDirty' => true));
-    
+	  $reqID = $newReq['id'];
       if( ($status_ok = ($newReq['status_ok'] == 1)) )
       {
         $msgID = 'import_req_created';
@@ -1710,6 +1725,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
       switch($my['options']['actionOnHit'])
       {
         case 'update_last_version':
+		  $importMode = 'update';
           $result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
                                   $author_id,$req['status'],$req['type'],$req['expected_coverage'],
                                   $req['node_order']);
@@ -1741,6 +1757,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
           // Because ALL VERSION HAS TO HAVE docid, or we need to improve our checks
           // and if update fails => we need to delete new created version.
           $title = trim_and_limit($req['title'],$fieldSize->req_title);
+		  $importMode = 'update';
           $result = $this->update($reqID,$newItem['id'],$req['docid'],$title,$req['description'],
                                   $author_id,$req['status'],$req['type'],$req['expected_coverage'],
                                   $req['node_order']);
@@ -1764,7 +1781,21 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   
   $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
                            'import_status' => sprintf($labels[$msgID],$what2add));
-  
+
+  $hasAttachments = array_key_exists('attachments',$req);
+  // process attachements for creation and update
+  if($status_ok && $hasAttachments)
+  {
+	$addAttachmentsResponse = $this->processAttachments( $importMode, $reqID, $req['attachments'], $feedbackMsg );
+  }
+  // display only problems during attachments import
+  if( isset($addAttachmentsResponse) && !is_null($addAttachmentsResponse) )
+  {
+	foreach($addAttachmentsResponse as $att_name){
+	  $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'],
+							'import_status' => sprintf(lang_get('import_req_attachment_skipped'),$att_name));
+	}
+  }
   if( $status_ok && $doProcessCF && isset($req['custom_fields']) && !is_null($req['custom_fields']) )
   {
     $req_version_id = !is_null($newReq) ? $newReq['version_id'] : $last_version['id'];
@@ -1795,6 +1826,49 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
   return $user_feedback;
 }
+  
+/**
+	 * processAttachments
+	 *
+	 * Analyze attachments info related to requirement to define if the the attachment has to be added.
+	 * attachments are ignored only if a attachment with the same ID is already linked to the target requirement.
+	 * 
+	 * return an array of all attachments names of IDs already linked to target requirement (to display warning messages).
+	 * 
+	 */
+
+	function processAttachments($importMode, $srs_id, $attachments, $feedbackMsg )
+	{
+		$tables = tlObjectWithDB::getDBTables(array('requirements','attachments'));
+
+		$knownAttachments = array();
+		foreach( $attachments as $attachment )
+		{
+			$addAttachment = true;
+			if($importMode == 'update'){
+				// try to bypass the importation of already known attachments.
+				// Check in database if the attachment with the same ID is linked to the rspec with the same internal ID
+				// The couple attachment ID + InternalID is used as a kind of signature to avoid duplicates. 
+				// If signature is not precise enough, could add the use of attachment timestamp (date_added in XML file).
+				$sql = " SELECT ATT.id from {$tables['attachments']} ATT " .
+					" WHERE ATT.id='{$this->db->prepare_string($attachment[id])}' " .
+					" AND ATT.fk_id={$srs_id} ";
+				$rsx=$this->db->get_recordset($sql);
+				$addAttachment = ( is_null($rsx) || count($rsx) < 1 );
+				if( $addAttachment === false ){ // inform user that the attachment has been skipped
+					$knownAttachments[] = $attachment['name'];
+				}
+			}
+			if($addAttachment){
+				$attachRepo = tlAttachmentRepository::create($this->db);				
+				$fileInfo = $attachRepo->createAttachmentTempFile( $attachment['content'] );	
+				$fileInfo['name'] = $attachment['name'];
+				$fileInfo['type'] = $attachment['file_type'];
+				$attachRepo->insertAttachment( $srs_id, $tables['requirements'], $attachment['title'], $fileInfo);
+			}
+		}
+		return $knownAttachments;
+	}
   
 // ---------------------------------------------------------------------------------------
 // Custom field related functions

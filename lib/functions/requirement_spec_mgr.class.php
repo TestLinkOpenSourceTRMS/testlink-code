@@ -1153,6 +1153,21 @@ class requirement_spec_mgr extends tlObjectWithAttachments
                $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
             }    
       }
+	  
+	  if( property_exists($xml_item,'attachments') )
+	  {
+		$dummy['attachments'] = array();
+		foreach($xml_item->attachments->children() as $attachment)
+		{
+		  $attach_id = (int)$attachment->id;
+		  $dummy['attachments'][$attach_id]['id'] = (int)$attachment->id;
+		  $dummy['attachments'][$attach_id]['name'] = (string)$attachment->name;
+		  $dummy['attachments'][$attach_id]['file_type'] = (string)$attachment->file_type;
+		  $dummy['attachments'][$attach_id]['title'] = (string)$attachment->title;
+		  $dummy['attachments'][$attach_id]['date_added'] = (string)$attachment->date_added;
+		  $dummy['attachments'][$attach_id]['content'] = (string)$attachment->content;  
+		}
+	  }
       $mapped[]=array('req_spec' => $dummy, 'requirements' => null, 
                       'level' => $dummy['level']);
 
@@ -1499,7 +1514,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
       // we can end importing struct with 'holes'.
       //
       $check_in_container = $this->getByDocID($rspec['doc_id'],$tproject_id,$container_id[$depth],$getOptions);
-      
+      $hasAttachments = array_key_exists('attachments',$rspec);
+
       $skip_level = $depth + 1;
       $result['status_ok'] = 0;
       $msgID = 'import_req_spec_skipped';
@@ -1509,6 +1525,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         $check_in_tproject = $this->getByDocID($rspec['doc_id'],$tproject_id,null,$getOptions);
         if(is_null($check_in_tproject))
         {
+		  $importMode = 'creation';
           $msgID = 'import_req_spec_created';
           $result = $this->create($tproject_id,$container_id[$depth],$rspec['doc_id'],$rspec['title'],
                                   $rspec['scope'],$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
@@ -1516,6 +1533,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
       }
       else
       {
+		$importMode = 'update';
         $msgID = 'import_req_spec_updated';
         $reqSpecID = key($check_in_container);
         $item = array('id' => $reqSpecID, 'name' => $rspec['title'],'doc_id' => $rspec['doc_id'], 
@@ -1528,6 +1546,20 @@ class requirement_spec_mgr extends tlObjectWithAttachments
       }
       $user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
                                'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
+	  
+	  // process attachements for creation and update
+	  if($result['status_ok'] && $hasAttachments)
+	  {
+		$addAttachmentsResponse = $this->processAttachments( $importMode, $result['id'], $rspec['attachments'], $feedbackMsg );
+	  }
+	  // display only problems during attachments import
+	  if( isset($addAttachmentsResponse) && !is_null($addAttachmentsResponse) )
+	  {
+		foreach($addAttachmentsResponse as $att_name){
+			$user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
+								   'import_status' => sprintf(lang_get('import_req_spec_attachment_skipped'),$att_name));
+		}
+	  }
       if( $result['status_ok'] && $doProcessCF && isset($rspec['custom_fields']) && !is_null($rspec['custom_fields']) )
       {
         $cf2insert = null;
@@ -1853,6 +1885,51 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	  	  }
 	  	}
 	  	$this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');
+	}	
+	
+	
+
+	/**
+	 * processAttachments
+	 *
+	 * Analyze attachments info related to req spec to define if the the attachment has to be added.
+	 * attachments are ignored only if a attachment with the same ID is already linked to the target ReqSpec.
+	 * 
+	 * return an array of all attachments names of IDs already linked to target ReqSpec.
+	 * 
+	 */
+
+	function processAttachments($importMode, $rs_id, $attachments, $feedbackMsg )
+	{
+		$tables = tlObjectWithDB::getDBTables(array('req_specs','attachments'));
+
+		$knownAttachments = array();
+		foreach( $attachments as $attachment )
+		{
+			$addAttachment = true;
+			if($importMode == 'update'){
+				// try to bypass the importation of already known attachments.
+				// Check in database if the attachment with the same ID is linked to the rspec with the same internal ID
+				// The couple attachment ID + InternalID is used as a kind of signature to avoid duplicates. 
+				// If signature is not precise enough, could add the use of attachment timestamp (date_added in XML file).
+				$sql = " SELECT ATT.id from {$tables['attachments']} ATT " .
+					" WHERE ATT.id='{$this->db->prepare_string($attachment[id])}' " .
+					" AND ATT.fk_id={$rs_id} ";
+				$rsx=$this->db->get_recordset($sql);
+				$addAttachment = ( is_null($rsx) || count($rsx) < 1 );
+				if( $addAttachment === false ){ // inform user that the attachment has been skipped
+					$knownAttachments[] = $attachment['name'];
+				}
+			}
+			if($addAttachment){
+				$attachRepo = tlAttachmentRepository::create($this->db);				
+				$fileInfo = $attachRepo->createAttachmentTempFile( $attachment['content'] );	
+				$fileInfo['name'] = $attachment['name'];
+				$fileInfo['type'] = $attachment['file_type'];
+				$attachRepo->insertAttachment( $rs_id, $tables['req_specs'], $attachment['title'], $fileInfo);
+			}
+		}
+		return $knownAttachments;
 	}
 
 

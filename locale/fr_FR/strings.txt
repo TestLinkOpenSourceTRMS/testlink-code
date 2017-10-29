@@ -3495,6 +3495,7 @@ $TLS_import_req_spec_created = "Créé - Dossier d'exigences - Doc ID : %s";
 $TLS_import_req_spec_skipped = "Ignoré - Dossier d'exigences - Doc ID : %s - existe déjà dans une autre branche";
 $TLS_import_req_spec_updated = "Mis à jour - Dossier d'exigences - Doc ID : %s";
 $TLS_import_req_spec_ancestor_skipped = "Ignoré - Dossier d'exigences - Doc ID : %s - existe déjà dans une autre branche";
+$TLS_import_req_spec_attachment_skipped = "Ignoré - Pièce Jointe '%s' déjà liée au dossier d'exigences";
 
 $TLS_import_req_created = "Créé - Exigence - Doc ID : %s";
 $TLS_import_req_skipped = "Ignoré - Exigence - Doc ID : %s - existe déjà dans une autre branche";
@@ -3503,6 +3504,7 @@ $TLS_import_req_updated = "Mise à jour - Exigence - Doc ID : %s";
 $TLS_import_req_new_version_created = "Nouvelle version créée - Exigence - Doc ID : %s";
 $TLS_import_req_new_version_failed = "Création d’une nouvelle version échouée - %s";
 $TLS_import_req_update_last_version_failed = "Mise à jour de la dernière version échouée - %s";
+$TLS_import_req_attachment_skipped = "Ignoré - Pièce Jointe '%s' déjà liée à l'exigence";
 
 $TLS_import_done = "Import terminé";
 $TLS_import_syntax_error = "Import terminé, mais avec des erreurs de syntaxe";

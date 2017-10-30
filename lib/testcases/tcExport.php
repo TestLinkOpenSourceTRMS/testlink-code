@@ -162,7 +162,7 @@ function init_args(&$dbHandler)
 
   $k2l = array('useRecursion','exportReqs','exportCFields','exportKeywords',
                'exportTestCaseExternalID','exportTCSummary','exportTCPreconditions',
-               'exportTCSteps');
+               'exportTCSteps', 'exportAttachments');
   foreach ($k2l as $key)
   {
     $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
@@ -181,6 +181,7 @@ function init_args(&$dbHandler)
                            'RECURSIVE' => $args->useRecursion,
                            'TCSUMMARY' => $args->exportTCSummary,
                            'TCPRECONDITIONS' => $args->exportTCPreconditions,
+                           'ATTACHMENTS' => $args->exportAttachments,
                            'TCSTEPS' => $args->exportTCSteps);
     
   

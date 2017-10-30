@@ -845,7 +845,9 @@ $TLS_filter_active_inactive = "Active/Inactive";
 $TLS_show_only_active_testcases = "At least ONE version is ACTIVE";
 $TLS_show_only_inactive_testcases = "ALL versions are INACTIVE";
 $TLS_show_whole_spec_on_right_panel = 'Show Full (on right pane)';
-
+$TLS_test_grouped_by_label = "Tests Grouped By";
+$TLS_mode_test_suite = "Test Suite";
+$TLS_mode_req_coverage = "Requirements";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -2166,6 +2168,7 @@ $TLS_export_tcase_external_id = 'Export Test Case external ID';
 $TLS_export_with_prefix = 'With Test Case prefix';
 
 $TLS_export_with_keywords = "Export with keywords";
+$TLS_export_attachments = "Export attachments";
 $TLS_warning_empty_filename = "Please give a file name";
 $TLS_export_steps = "Export Test Case Steps";
 $TLS_export_summary = "Export Test Case Summary";
@@ -2901,6 +2904,7 @@ $TLS_same_externalID = 'has same External ID'; // (only applicable to Test Cases
 $TLS_same_name = 'has same name';
 $TLS_duplicate_criteria = "Consider Test Case as duplicate if";
 $TLS_hit_with_same_external_ID = "Can not be imported - You are hitting an existent Test Case with SAME EXTERNAL ID:";
+$TLS_attachment_skipped_during_import = "Attachment \"%s\" has been ignored because it is already linked to the test element";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "There are no Test Cases to export";
@@ -3490,6 +3494,7 @@ $TLS_import_req_spec_created = 'Created - Req. Spec. - Doc ID:%s';
 $TLS_import_req_spec_skipped = 'Skipped - Req. Spec. - Doc ID:%s - Already exists on other branch';
 $TLS_import_req_spec_updated = 'Updated - Req. Spec. - Doc ID:%s';
 $TLS_import_req_spec_ancestor_skipped = 'Skipped - Req. Spec. - Doc ID:%s - a parent container already exists on other branch';
+$TLS_import_req_spec_attachment_skipped = 'Skipped - Attachement "%s" already linked to Req. Spec.';
 
 $TLS_import_req_created = 'Created - Requirement - Doc ID:%s';
 $TLS_import_req_skipped = 'Skipped - Requirement - Doc ID:%s - Already exists on other branch';
@@ -3498,6 +3503,7 @@ $TLS_import_req_updated = 'Updated - Requirement - Doc ID:%s';
 $TLS_import_req_new_version_created = 'New version created - Requirement - Doc ID:%s';
 $TLS_import_req_new_version_failed = 'Request to create a New version has failed - %s';
 $TLS_import_req_update_last_version_failed = 'Request to update LAST version has failed - %s';
+$TLS_import_req_attachment_skipped = 'Skipped - Attachement "%s" already linked to requirement';
 
 $TLS_import_done = 'Import done';
 $TLS_import_syntax_error = 'Import done, but with syntax errors';

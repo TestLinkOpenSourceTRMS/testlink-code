@@ -3794,6 +3794,57 @@ class testcase extends tlObjectWithAttachments
         $tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
       }
     }
+	
+	if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS'])
+    {
+		$attachments=null;
+	
+		// get all attachments
+		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($tcase_id,$this->attachmentTableName,'id');
+	  
+		// get all attachments content and encode it in base64	  
+		if ($attachmentInfos)
+		{
+			foreach ($attachmentInfos as $attachmentInfo)
+			{
+				$aID = $attachmentInfo["id"];
+				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+				
+				if ($content != null)
+				{
+					$attachments[$aID]["id"] = $aID;
+					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
+					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+					$attachments[$aID]["file_size"] = $attachmentInfo["file_size"];
+					$attachments[$aID]["title"] = $attachmentInfo["title"];
+					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+					$attachments[$aID]["content"] = base64_encode($content);
+				}
+			}
+	    }
+	  
+		if( !is_null($attachments) && count($attachments) > 0 )
+		{
+			$attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
+			$attchElemTemplate = "\t\t<attachment>\n" .
+							   "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+							   "\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+							   "\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+							   "\t\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
+							   "\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+							   "\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+							   "\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+							   "\t\t</attachment>\n";
+
+			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
+								"||ATTACHMENT_FILE_TYPE||" => "file_type",
+								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
+								"||ATTACHMENT_TITLE||" => "title",
+								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
+								"||ATTACHMENT_CONTENT||" => "content");
+			$tc_data[0]['xmlattachments'] = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
+        }
+    }
 
     // ------------------------------------------------------------------------------------
     if(!isset($optExport['TCSTEPS']) || $optExport['TCSTEPS'])
@@ -3893,7 +3944,7 @@ class testcase extends tlObjectWithAttachments
                 "\t<is_open>||ISOPEN||</is_open>\n" .
                 "\t<active>||ACTIVE||</active>\n" .
                 "||STEPS||\n" .
-                "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||{$addElemTpl}</testcase>\n";
+                "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||||ATTACHMENTS||{$addElemTpl}</testcase>\n";
 
 
       // ||yyy||-> tags,  {{xxx}} -> attribute
@@ -3921,6 +3972,7 @@ class testcase extends tlObjectWithAttachments
                     "||KEYWORDS||" => "xmlkeywords",
                     "||CUSTOMFIELDS||" => "xmlcustomfields",
                     "||REQUIREMENTS||" => "xmlrequirements",
+                    "||ATTACHMENTS||" => "xmlattachments",
                     "||RELATIONS||" => "xmlrelations");
 
 

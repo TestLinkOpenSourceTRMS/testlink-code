@@ -13,7 +13,7 @@ Purpose: smarty template - Show existing builds
 {$managerURL="lib/plan/buildEdit.php"}
 {$editAction="$managerURL?do_action=edit&build_id="}
 {$deleteAction="$managerURL?do_action=do_delete&build_id="}
-{$createAction="$managerURL?do_action=create&tplan_id=$gui->tplan_id"}
+{$createAction="$managerURL?do_action=create&tplan_id={$gui->tplan_id}"}
 
 
 {lang_get s='warning_delete_build' var="warning_msg"}

@@ -78,7 +78,6 @@ function oauth_get_token($authCfg, $code)
   //If token is received start session
   if (isset($tokenInfo['access_token'])){
     $oauthParams['access_token'] = $tokenInfo['access_token'];
-    $authCfg['oauth_profile']
     $userInfo = json_decode(file_get_contents($authCfg['oauth_profile'] . '?' . urldecode(http_build_query($oauthParams))), true);
 
     if (isset($userInfo['id'])){

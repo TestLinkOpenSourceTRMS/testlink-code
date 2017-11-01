@@ -7446,7 +7446,7 @@ class testcase extends tlObjectWithAttachments
     //
     // CRITIC: skipCheck is needed to render OK when creating report on Pseudo-Word format.
     $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=1&id=%id%"></p>';
+    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>';
 
     $rse = &$item2render;
     foreach($key2check as $item_key)
@@ -7478,7 +7478,8 @@ class testcase extends tlObjectWithAttachments
               {
                 if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image'])
                 {
-                  $ghost .= str_replace('%id%',$atx,$img);
+                  $sec = hash('sha256', $attSet[$id][$atx]['file_name']);
+                  $ghost .= str_replace(array('%id%','%sec%'),array($atx,$sec),$img);
                 }
                 $lim = $elc-1;
                 for($cpx=1; $cpx <= $lim; $cpx++)

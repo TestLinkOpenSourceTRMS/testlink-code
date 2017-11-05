@@ -4,16 +4,18 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: smarty template - Show existing builds
 
-@internal revisions
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
+
 {$managerURL="lib/plan/buildEdit.php"}
 {$editAction="$managerURL?do_action=edit&build_id="}
 {$deleteAction="$managerURL?do_action=do_delete&build_id="}
-{$createAction="$managerURL?do_action=create&tplan_id=$gui->tplan_id"}
+
+{$tplanID=$gui->tplan_id}
+{$createAction="$managerURL?do_action=create&tplan_id=$tplanID"}
 
 
 {lang_get s='warning_delete_build' var="warning_msg"}

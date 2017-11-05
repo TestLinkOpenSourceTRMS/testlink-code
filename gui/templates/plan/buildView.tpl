@@ -45,6 +45,15 @@ var del_action=fRoot+'{$deleteAction}';
 {include file="inc_update.tpl" result=$sqlResult item="build" user_feedback=$gui->user_feedback}
 
 {* --------------------------------------------------------------------------------- *}
+
+{if count($gui->buildSet) > $tlCfg->gui->buildView->itemQtyForTopButton}
+<div class="groupBtn">
+  <form method="post" action="{$createAction}" id="create_build_top">
+    <input type="submit" name="create_build_top" value="{$labels.btn_build_create}" />
+  </form>
+</div>
+{/if}
+
 <div id="existing_builds">
   {if $gui->buildSet ne ""}
   <form method="post" id="buildView" name="buildView" action="{$managerURL}">
@@ -122,8 +131,8 @@ var del_action=fRoot+'{$deleteAction}';
 {* ------------------------------------------------------------------------------------------- *}
 
 <div class="groupBtn">
-  <form method="post" action="{$createAction}" id="create_build">
-    <input type="submit" name="create_build" value="{$labels.btn_build_create}" />
+  <form method="post" action="{$createAction}" id="create_build_bottom">
+    <input type="submit" name="create_build_bottom" value="{$labels.btn_build_create}" />
   </form>
 </div>
 

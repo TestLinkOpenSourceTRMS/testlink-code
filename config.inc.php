@@ -519,6 +519,9 @@ $tlCfg->gui->planView->pagination = new stdClass();
 $tlCfg->gui->planView->pagination->enabled = true;
 $tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
 
+$tlCfg->gui->buildView = new stdClass();
+$tlCfg->gui->buildView->itemQtyForTopButton = 10;
+
 
 /** 
  * controls if operation area (buttons) starts open ('' or 'inline') or closed ('none') on:

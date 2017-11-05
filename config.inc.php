@@ -518,6 +518,7 @@ $tlCfg->gui->planView = new stdClass();
 $tlCfg->gui->planView->pagination = new stdClass();
 $tlCfg->gui->planView->pagination->enabled = true;
 $tlCfg->gui->planView->pagination->length = '[20, 40, 60, -1], [20, 40, 60, "All"]';
+$tlCfg->gui->planView->itemQtyForTopButton = 10;
 
 $tlCfg->gui->buildView = new stdClass();
 $tlCfg->gui->buildView->itemQtyForTopButton = 10;

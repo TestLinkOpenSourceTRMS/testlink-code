@@ -60,7 +60,7 @@ function oauth_get_token($authCfg, $code)
      'code'          => $code,
      'grant_type'    => $authCfg['oauth_grant_type'],
      'client_id'     => $authCfg['oauth_client_id'],
-     'redirect_uri'  => 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
+     'redirect_uri'  => isset($_SERVER['HTTPS']) ? 'https://' : 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
      'client_secret' => $authCfg['oauth_client_secret']
   );
   $url = $authCfg['oauth_url'] . '/token';

@@ -22,7 +22,7 @@ function oauth_link($authCfg)
 
   $oauth_url = $authCfg['oauth_url'] . '/auth';
   $oauth_params = array(
-    'redirect_uri'  => 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
+    'redirect_uri'  => isset($_SERVER['HTTPS']) ? 'https://' : 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=true',
     'response_type' => 'code',
     'prompt'        => $promt,
     'client_id'     => $authCfg['oauth_client_id'],

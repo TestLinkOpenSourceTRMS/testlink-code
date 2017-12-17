@@ -660,7 +660,7 @@ $TLS_collapse_tree = "Collapse tree";
 $TLS_test_grouped_by = "Tests Grouped By";
 $TLS_mode_test_suite = "Test Suite";
 $TLS_mode_req_coverage = "Requirement";
-$TLS_parent_child_relation = "Child parent relationship";
+$TLS_parent_child_relation = "Exploit Child / parent relationship";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

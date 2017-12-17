@@ -415,6 +415,12 @@ $TLS_invalid_query = "Virhe";
 $TLS_warning = "Varoitus!!!";
 $TLS_was_success = " onnistui ";
 
+// ----- gui/templates/inc_filter.tpl -----
+$TLS_test_grouped_by = "Ryhmitelty testi";
+$TLS_mode_test_suite = "Testitapausjakso";
+$TLS_mode_req_coverage = "Vaatimus";
+$TLS_parent_child_relation = "Vanhempi lapsisuhde";
+
 //----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
 $TLS_btn_apply_filter = $TLS_btn_apply;

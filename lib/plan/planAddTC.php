@@ -27,6 +27,8 @@ $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
+$req_mgr = new requirement_mgr($db);
+$req_spec_mgr = new requirement_spec_mgr($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args($tproject_mgr);
@@ -41,6 +43,8 @@ if(is_array($args->keyword_id))
 }
 
 $do_display = 0;
+$do_display_coverage = 0;
+
 switch($args->item_level)
 {
   case 'testsuite':
@@ -48,13 +52,15 @@ switch($args->item_level)
   case 'req_spec':
     $do_display = 1;
   break;
-  
+  case 'reqcoverage':
+  case 'reqspeccoverage':
+    $do_display_coverage = 1;
+  break;
   case 'testproject':
-    redirect($_SESSION['basehref'] . "lib/results/printDocOptions.php?activity=$args->activity");
+	redirect($_SESSION['basehref'] . "lib/results/printDocOptions.php?activity=$args->activity");
     exit();
   break;
 }
-
 
 switch($args->doAction)
 {
@@ -84,24 +90,52 @@ switch($args->doAction)
     }
   
     doReorder($args,$tplan_mgr);
-    $do_display = 1;
+    if($args->item_level == 'testsuite')
+    {
+    		$do_display = 1;
+    }
+    elseif($args->item_level == 'reqcoverage' || $args->item_level == 'reqspeccoverage')
+    {
+    		$do_display_coverage = 1;
+    }
   break;
   
   case 'doReorder':
     doReorder($args,$tplan_mgr);
-    $do_display = 1;
+    if($args->item_level == 'testsuite')
+	{
+			$do_display = 1;
+	}
+	elseif($args->item_level == 'reqcoverage' || $args->item_level == 'reqspeccoverage')
+	{
+			$do_display_coverage = 1;
+	}
   break;
 
   case 'doSavePlatforms':
     doSavePlatforms($args,$tplan_mgr);
-    $do_display = 1;
+	if($args->item_level == 'testsuite')
+	{
+			$do_display = 1;
+	}
+	elseif($args->item_level == 'reqcoverage' || $args->item_level == 'reqspeccoverage')
+	{
+			$do_display_coverage = 1;
+	}
   break;
 
   case 'doSaveCustomFields':
     doSaveCustomFields($args,$_REQUEST,$tplan_mgr,$tcase_mgr);
-    $do_display = 1;
+	if($args->item_level == 'testsuite')
+	{
+			$do_display = 1;
+	}
+	elseif($args->item_level == 'reqcoverage' || $args->item_level == 'reqspeccoverage')
+	{
+			$do_display_coverage = 1;
+	}
   break;
-  
+
   default:
   break;
 }
@@ -113,7 +147,6 @@ $smarty = new TLSmarty();
 if($do_display)
 {
   $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
-    
   // see development documentation on [INSTALL DIR]/docs/development/planAddTC.php.txt
   $tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr,array('addImportance' => true));
 
@@ -149,7 +182,6 @@ if($do_display)
   $out = gen_spec_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$tsuite_data['name'],
                        $tplan_linked_tcversions,null,$filters,$opt);
   
-    
   $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
   $gui->items = $out['spec_view'];
   $gui->has_linked_items = $out['has_linked_items'];
@@ -182,6 +214,209 @@ if($do_display)
     
   $smarty->assign('gui', $gui);
   $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
+} elseif ($do_display_coverage)
+{
+
+	if($args->item_level == 'reqcoverage')
+	{
+		// Select coverage
+	
+		$requirement_data = $req_mgr->get_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
+		$requirement_data_name = $requirement_data[0]['req_doc_id'] . ' : ' . $requirement_data[0]['title'];
+		// get chekbox value : setting_get_parent_child_relation.
+		if($_SESSION['setting_get_parent_child_relation']){
+			// if checkbox is checked.
+			$requirements_child = $req_spec_mgr->get_requirement_child_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
+		} else {
+			$requirements_child = null;
+		}
+	}
+	elseif($args->item_level == 'reqspeccoverage')
+	{
+	
+		// Select folder coverage
+		$getOptions = array('order_by' => " ORDER BY id");
+		//$getFilters = array('status' => VALID_REQ);
+		$requirements = $req_spec_mgr->get_requirements($args->object_id,'all',null,$getOptions);
+	}
+
+	// This does filter on keywords ALWAYS in OR mode.
+	//
+	// CRITIC:
+	// We have arrived after clicking in a node of Test Spec Tree where we have two classes of filters
+	// 1. filters on attribute COMMON to all test case versions => TEST CASE attribute like keyword_id
+	// 2. filters on attribute that can change on each test case version => execution type.
+	//
+	// For attributes at Version Level, filter is done ON LAST ACTIVE version, that can be NOT the VERSION
+	// already linked to test plan.
+	// This can produce same weird effects like this:
+	//
+	//  1. Test Suite A - create TC1 - Version 1 - exec type MANUAL
+	//  2. Test Suite A - create TC2 - Version 1 - exec type AUTO
+	//  3. Test Suite A - create TC3 - Version 1 - exec type MANUAL
+	//  4. Use feature ADD/REMOVE test cases from test plan.
+	//  5. Add TC1 - Version 1 to test plan
+	//  6. Apply filter on exec type AUTO
+	//  7. Tree will display (Folder) Test Suite A with 1 element
+	//  8. click on folder, then on RIGHT pane:
+	//     TC2 - Version 1 NOT ASSIGNED TO TEST PLAN is displayed
+	//  9. Use feature edits test cases, to create a new version for TC1 -> Version 2 - exec type AUTO
+	// 10. Use feature ADD/REMOVE test cases from test plan.
+	// 11. Apply filter on exec type AUTO
+	// 12. Tree will display (Folder) Test Suite A with 2 elements
+	// 13. click on folder, then on RIGHT pane:
+	//     TC2 - Version 1 NOT ASSIGNED TO TEST PLAN is displayed
+	//     TC1 - Version 2 NOT ASSIGNED TO TEST PLAN is displayed  ----> THIS IS RIGHT but WRONG
+	//     Only one TC version can be linked to test plan, and TC1 already is LINKED BUT with VERSION 1.
+	//     Version 2 is displayed because it has EXEC TYPE AUTO
+	//
+	// How to solve ?
+	// Filters regarding this kind of attributes WILL BE NOT APPLIEDED to get linked items
+	// In this way counters on Test Spec Tree and amount of TC displayed on right pane will be coherent.
+	//
+	// 20130426
+	// Hmm. But if I do as explained in ' How to solve ?'
+	// I need to apply this filters on a second step or this filters will not work
+	// Need to check what I've done
+	//
+	$tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr,null,false);
+
+	// Add Test Cases to Test plan - Right pane does not honor custom field filter
+	$testCaseSet = $args->control_panel['filter_tc_id'];
+	if(!is_null($keywordsFilter) )
+	{
+		// With this pieces we implement the AND type of keyword filter.
+		$keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
+		$keywordsFilter->type);
+
+		if (sizeof($keywordsTestCases))
+		{
+			$testCaseSet = array_keys($keywordsTestCases);
+		}
+	}
+
+	// Choose enable/disable display of custom fields, analysing if this kind of custom fields
+	// exists on this test project.
+	$cfields=$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
+	$opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
+	$opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
+
+  // Add Test Cases to Test plan - Right pane does not honor custom field filter
+  // filter by test case execution type
+	$filters = array('keywords' => $args->keyword_id, 'testcases' => null,
+	'exec_type' => $args->executionType, 'importance' => $args->importance,
+	'cfields' => $args->control_panel['filter_custom_fields'],
+	'tcase_name' => $args->control_panel['filter_testcase_name']);
+	
+	if($args->item_level == 'reqcoverage')
+	{
+	
+	  $out = array();
+	  $out = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$requirement_data_name,
+ 	  $tplan_linked_tcversions,null,$filters,$opt);
+	
+	  // if requirement, has a child requirement.
+	  if(!is_null($requirements_child)){
+		
+		// get parent name.
+		$parentName = $requirement_data_name;
+		
+		foreach($requirements_child as $key => $req){
+			$requirement_data_name = $req['req_doc_id'] . ' : ' . $req['name'] . " " . lang_get('req_rel_is_child_of') . " " . $parentName;
+			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['destination_id'],$requirement_data_name,
+			$tplan_linked_tcversions,null,$filters,$opt);
+			// update parent name.
+			$parentName = $req['req_doc_id'] . ' : ' . $req['name'];
+			// First requirement without test cases
+				if (empty($tmp['spec_view']))
+					continue;
+				
+				if(empty($out))
+				{
+					$out = $tmp;
+				}
+				else
+				{	
+					$tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
+					array_push($out['spec_view'], $tmp['spec_view'][1]);
+				}
+			}
+		}
+	}
+	elseif($args->item_level == 'reqspeccoverage')
+	{
+	
+		$out = array();
+		foreach($requirements as $key => $req)
+		{
+			if(empty($req['req_doc_id'])){
+				$coverage_name = $req['doc_id'] . " : " . $req['title'];
+			} else {
+				$coverage_name = $req['req_doc_id'] . " : " . $req['title'];
+			}		
+			$tmp = gen_coverage_view($db,'testPlanLinking',$args->tproject_id,$req['id'], $coverage_name,
+					$tplan_linked_tcversions,null,$filters,$opt);
+
+			// First requirement without test cases
+			if (empty($tmp['spec_view']))
+				continue;
+			
+			if(empty($out))
+			{
+				$out = $tmp;
+			}
+			else
+			{	
+				$tmp['spec_view'][1]["testsuite"] = $tmp['spec_view'][0]['testsuite'];
+				array_push($out['spec_view'], $tmp['spec_view'][1]);
+			}
+				
+		}
+
+	}
+
+	// count nb testcases selected in view.
+	$nbTestCaseSelected = 0;
+	foreach($out['spec_view'][1]['testcases'] as $key => $value)
+	{
+		if($value['linked_version_id'] != 0){
+			$nbTestCaseSelected++;
+		}
+	}
+
+	$out['spec_view'][1]['linked_testcase_qty'] = $nbTestCaseSelected;
+	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
+	$gui->items = $out['spec_view'];
+	$gui->has_linked_items = $out['has_linked_items'];
+	$gui->add_custom_fields = $opt['add_custom_fields'];
+	$gui->drawSavePlatformsButton = false;
+	$gui->drawSaveCFieldsButton = false;
+
+    if( !is_null($gui->items) )
+    {
+		initDrawSaveButtons($gui);
+	}
+
+	// This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
+	setAdditionalGuiData($gui);
+
+	// refresh tree only when action is done
+	switch ($args->doAction)
+	{
+		case 'doReorder':
+		case 'doSavePlatforms':
+		case 'doSaveCustomFields':
+		case 'doAddRemove':
+		$gui->refreshTree = $args->refreshTree;
+		break;
+
+		default:
+		$gui->refreshTree = false;
+		break;
+	}
+
+	$smarty->assign('gui', $gui);
+	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
 
 
@@ -818,8 +1053,9 @@ function addToTestPlan(&$dbHandler,&$argsObj,&$guiObj,&$tplanMgr,&$tcaseMgr)
       $items_to_link['items'][$tcase_id][$platform_id] = $tcversion_id;
     }
   }
-           
+
   $linked_features=$tplanMgr->link_tcversions($argsObj->tplan_id,$items_to_link,$argsObj->userID);
+
   if( $argsObj->testerID > 0 )
   {
     $features2add = null;

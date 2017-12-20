@@ -2047,7 +2047,7 @@ $TLS_check_uncheck_children_checkboxes = "Cocher/Décocher toutes les fiches de 
 $TLS_title_tc_exec_assignment = "Assigner l’exécution de fiches de test pour la version %s de la campagne %s";
 $TLS_user = "Utilisateur";
 $TLS_user_bulk_assignment = "Assignation d'exécution aux utilisateurs en masse";
-$TLS_user_bulk_remove = "Retirer les assignations d exécution en masse";
+$TLS_user_bulk_remove = "Retirer les assignations d'exécution en masse";
 
 
 

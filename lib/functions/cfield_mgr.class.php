@@ -2532,10 +2532,10 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
  */
  function exportValueAsXML($cfMap)
  {
-    $cfRootElem = "<custom_fields>\n{{XMLCODE}}\n</custom_fields>";
-    $cfElemTemplate = "\t" . "<custom_field>\n\t\t<name><![CDATA[||NAME||]]></name>\n\t\t" .
+    $cfRootElem = "<custom_fields>\n{{XMLCODE}}\t\t</custom_fields>\n";
+    $cfElemTemplate = "\t\t\t" . "<custom_field>\n\t\t\t<name><![CDATA[||NAME||]]></name>\n\t\t\t" .
 	                           "<value><![CDATA[||VALUE||]]></value>\n" .
-	                  "\t" . "</custom_field>";
+	                  "\t\t\t" . "</custom_field>\n";
     $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
 	$cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
   	return $cfXML; 

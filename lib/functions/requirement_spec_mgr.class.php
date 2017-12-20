@@ -1084,7 +1084,7 @@ function get_requirement_child_by_id_req($id){
                  "\t<type><![CDATA[{$containerData['type']}]]></type>\n" .
                  "\t<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
                  "\t<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
-                 "\t<scope><![CDATA[{$containerData['scope']}]]></scope>\n{$cfXML}";
+                 "\t<scope><![CDATA[{$containerData['scope']}]]></scope>\n\t\t{$cfXML}";
   	}
    
 	// Add attachments info	

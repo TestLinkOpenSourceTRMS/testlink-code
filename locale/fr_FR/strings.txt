@@ -33,7 +33,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Dernière mise à jour du fichier de localisation : 20/07/2017 (pour Testlink 1.9.17)";
+$TLS_last_update = "Dernière mise à jour du fichier de localisation : 20/12/2017 (pour Testlink 1.9.17)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = 'Actif (cliquer pour rendre inactif)';
@@ -2133,6 +2133,8 @@ $TLS_warning_empty_login = "Veuillez renseigner le nom d'utilisateur";
 $TLS_expiration_date = "Date d'expiration";
 $TLS_expiration = "Expiration";
 
+// usersExport.php
+$TLS_export_users = "Exporter les utilisateurs";
 
 // ----- gui/templates/attachmentupload.tpl -----
 $TLS_attachment_upload_ok = "Fichier envoyé";
@@ -2871,7 +2873,7 @@ $TLS_testcases_created_per_user = "Projet : %s - fiches de test créées par uti
 
 // ----- lib/testcases/tcImport.php -----
 $TLS_action_on_duplicated_name = "Action pour les noms doublonnés";
-$TLS_action_for_duplicates = "Action pour les fiches de test connues";
+$TLS_action_for_duplicates = "Comportement si l'élément est connu";
 $TLS_already_exists_updated = "Existe déjà. Mise à jour des données de la dernière version.";
 $TLS_please_choose_file_to_import = "Veuillez sélectionner un fichier à importer";
 $TLS_title_tc_import_to = "Importer des fiches de test";

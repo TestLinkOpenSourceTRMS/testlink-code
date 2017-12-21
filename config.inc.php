@@ -372,6 +372,7 @@ $tlCfg->logoutUrl = '';
 // users that will not allow expiration date management on GUI
 $tlCfg->noExpDateUsers = array('admin');
 
+
 /**
  * OAUTH auth
  */
@@ -404,6 +405,7 @@ $tlCfg->authentication['oauth'][2]['oauth_force_single'] = false; //if false the
 $tlCfg->authentication['oauth'][2]['oauth_profile'] = 'https://api.github.com/user';
 $tlCfg->authentication['oauth'][2]['oauth_scope'] = 'user:email';
 
+
 /**
  * Single Sign On authentication
  *
@@ -421,8 +423,6 @@ $tlCfg->authentication['SSO_logout_destination'] = 'YOUR LOGOUT DESTINATION';
 //$tlCfg->authentication['SSO_method'] = 'WEBSERVER_VAR';
 //$tlCfg->authentication['SSO_uid_field'] = 'REMOTE_USER';
 //$tlCfg->authentication['SSO_user_target_dbfield'] = 'email';
-
-
 
 
 /**
@@ -524,7 +524,6 @@ $tlCfg->api->id_format = "[ID: %s ]";
 /** Company logo (used by navigation bar and login page page) */
 $tlCfg->logo_login = 'tl-logo-transparent-25.png';
 $tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
-$tlCfg->logo_oauth = 'google.png';
 
 /** Height of the navbar always displayed  */
 $tlCfg->navbar_height = 70;

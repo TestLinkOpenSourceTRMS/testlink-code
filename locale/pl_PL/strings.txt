@@ -840,7 +840,10 @@ $TLS_filter_active_inactive = "Aktywne / nieaktywne";
 $TLS_show_only_active_testcases = "Tylko aktywne przypadki";
 $TLS_show_only_inactive_testcases = "Tylko nieaktywne przypadki";
 $TLS_show_whole_spec_on_right_panel = 'Pokaż całość (prawy panel)';
-
+$TLS_test_grouped_by = "Testy pogrupowane według";
+$TLS_mode_test_suite = "Zestaw testów";
+$TLS_mode_req_coverage = "Wymaganie";
+$TLS_parent_child_relation = "Relacje rodzic dziecko";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

@@ -5,7 +5,7 @@
 *}
 {lang_get var="labels"
           s="warning_empty_filename,title_req_export,warning,btn_export,btn_cancel,
-             view_file_format_doc,req_spec,export_filename,file_type"}
+             view_file_format_doc,req_spec,export_filename,file_type,export_attachments"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -79,6 +79,10 @@ function validateForm(f)
 	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
   	</td>
   	</tr>
+	<tr>
+    <td>{$labels.export_attachments}</td>
+    <td><input type="checkbox" name="exportAttachments" value="1" /></td>
+    </tr>
   	</table>
       
 	 <div class="groupBtn">

@@ -28,7 +28,8 @@
                         document_id, req_expected_coverage, title,bugs_on_context,
                         status, req_type, req_spec_type, th_tcid, has_relation_type,
                         btn_export_testplan_tree,btn_export_testplan_tree_for_results,
-                        tester_works_with_settings,btn_bulk_remove,btn_bulk_copy'}
+                        tester_works_with_settings,btn_bulk_remove,btn_bulk_copy,
+						test_grouped_by, parent_child_relation'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -120,6 +121,18 @@
         </tr>
       {/if}
 
+	  {if $control->settings.setting_testsgroupby}
+		<tr>
+			<td>{$labels.test_grouped_by}</td>
+			<td>
+				<select name="setting_testsgroupby" class="chosen-select" onchange="this.form.submit()">
+				{html_options options=$control->settings.setting_testsgroupby.items
+							  selected=$control->settings.setting_testsgroupby.selected}
+				 </select>
+			</td>
+		</tr>
+	  {/if}
+	  
       {if $control->settings.setting_refresh_tree_on_action}
         <tr>
             <td>{$labels.do_auto_update}</td>
@@ -134,6 +147,24 @@
                        name="setting_refresh_tree_on_action"
                        {if $control->settings.setting_refresh_tree_on_action.selected} checked {/if}
                        style="font-size: 90%;" onclick="this.form.submit()"/>
+            </td>
+          </tr>
+      {/if}
+	  
+	  {if $control->settings.setting_get_parent_child_relation}
+        <tr>
+            <td>{$labels.parent_child_relation}</td>
+            <td>
+				<input type="hidden" 
+                      id="hidden_setting_get_parent_child_relation"
+                      name="hidden_setting_get_parent_child_relation" 
+                      value="{$control->settings.setting_get_parent_child_relation.hidden_setting_get_parent_child_relation}" />
+			
+				<input type="checkbox"
+					   id="cbsetting_get_parent_child_relation"
+					   name="setting_get_parent_child_relation"
+					   {if $control->settings.setting_get_parent_child_relation.selected} checked {/if}
+					   style="font-size: 90%;" onclick="this.form.submit()"/>
             </td>
           </tr>
       {/if}
@@ -507,7 +538,7 @@
     {$labels.caption_nav_filters}
   </div>
 
-  <div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
+  <div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px; overflow: visible;">
 
   <table class="smallGrey" style="width:98%;">
 

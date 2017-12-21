@@ -89,7 +89,7 @@ if($testplanID > 0)
   	{
      	$found = 1;
      	$index = $idx;
-     	$break;
+     	break;
     }
   }
   if( $found == 0 )

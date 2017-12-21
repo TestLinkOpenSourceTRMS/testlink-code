@@ -1152,6 +1152,7 @@ class testsuite extends tlObjectWithAttachments
     if($doRecursion)
     {
       $cfXML = null;
+      $attachmentsXML = null;
       $kwXML = null;
       $tsuiteData = $this->get_by_id($container_id);
       if( isset($optExport['KEYWORDS']) && $optExport['KEYWORDS'])
@@ -1170,10 +1171,59 @@ class testsuite extends tlObjectWithAttachments
           $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
         } 
       }
+	  if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS'])
+      {
+		$attachments=null;
+	
+		// get all attachments
+		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($container_id,$this->attachmentTableName,'id');
+	  
+		// get all attachments content and encode it in base64	  
+		if ($attachmentInfos)
+		{
+			foreach ($attachmentInfos as $attachmentInfo)
+			{
+				$aID = $attachmentInfo["id"];
+				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+				
+				if ($content != null)
+				{
+					$attachments[$aID]["id"] = $aID;
+					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
+					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+					$attachments[$aID]["title"] = $attachmentInfo["title"];
+					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+					$attachments[$aID]["content"] = base64_encode($content);
+				}
+			}
+		}
+	  
+		if( !is_null($attachments) && count($attachments) > 0 )
+		{
+			$attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
+			$attchElemTemplate = "\t<attachment>\n" .
+							   "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+							   "\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+							   "\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+							   "\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
+							   "\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+							   "\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+							   "\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+							   "\t</attachment>\n";
+
+			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
+								"||ATTACHMENT_FILE_TYPE||" => "file_type",
+								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
+								"||ATTACHMENT_TITLE||" => "title",
+								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
+								"||ATTACHMENT_CONTENT||" => "content");
+			$attachmentsXML = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
+		} 
+      }
       $xmlTC = '<testsuite id="' . $tsuiteData['id'] . '" ' .
                'name="' . htmlspecialchars($tsuiteData['name']). '" >' .
                "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
-               "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}";
+               "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}{$attachmentsXML}";
     }
     else
     {
@@ -1645,7 +1695,7 @@ class testsuite extends tlObjectWithAttachments
     //
     // CRITIC: skipCheck is needed to render OK when creating report on Pseudo-Word format.
     $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=1&id=%id%"></p>'; 
+    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>'; 
 
     $key2check = array('details');
     $rse = &$item2render;
@@ -1678,7 +1728,8 @@ class testsuite extends tlObjectWithAttachments
               {
                 if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image'])
                 {
-                  $ghost .= str_replace('%id%',$atx,$img);
+                  $sec = hash('sha256', $attSet[$id][$atx]['file_name']);
+                  $ghost .= str_replace(array('%id%','%sec%'),array($atx,$sec),$img);
                 } 
                 $lim = $elc-1;
                 for($cpx=1; $cpx <= $lim; $cpx++) 

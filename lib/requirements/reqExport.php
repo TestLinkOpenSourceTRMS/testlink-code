@@ -57,6 +57,7 @@ function init_args()
   $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
   $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : null;
   $args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
+  $args->export_attachments = isset($_REQUEST['exportAttachments']) ? $_REQUEST['exportAttachments'] : "";
   
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   if( $args->tproject_id == 0 )
@@ -134,6 +135,8 @@ function doExport(&$argsObj,&$req_spec_mgr)
       $fileName = 'reqs.xml';
       $content = TL_XMLEXPORT_HEADER;
       $optionsForExport['RECURSIVE'] = $argsObj->scope == 'items' ? false : true;
+      $optionsForExport['ATTACHMENTS'] = $argsObj->export_attachments;
+
       $openTag = $argsObj->scope == 'items' ? "requirements>" : 'requirement-specification>';
       
       switch($argsObj->scope)

@@ -211,6 +211,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   // $tprojectHas = array('customFields' => false, 'reqSpec' => false);
   $hasCustomFieldsInfo = false;
   $hasRequirements = false;
+  $hasAttachments = false;
 
   if(is_null($messages))
   {
@@ -239,12 +240,12 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $messages['reqspec_warning'] = lang_get('no_reqspec_defined_can_not_import');
     
     
-    
     $feedbackMsg['cfield']=lang_get('cf_value_not_imported_missing_cf_on_testproject');
     $feedbackMsg['tcase'] = lang_get('testcase');
     $feedbackMsg['req'] = lang_get('req_not_in_req_spec_on_tcimport');
     $feedbackMsg['req_spec'] = lang_get('req_spec_ko_on_tcimport');
     $feedbackMsg['reqNotInDB'] = lang_get('req_not_in_DB_on_tcimport');
+    $feedbackMsg['attachment'] = lang_get('attachment_skipped_during_import');
 
 
     // because name can be changed automatically during item creation
@@ -519,6 +520,17 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         $resultMap = array_merge($resultMap,$msg);          
       }
     }
+
+	$hasAttachments=(isset($tc['attachments']) && !is_null($tc['attachments']));
+	if($hasAttachments)
+	{
+	  $fk_id = $doCreate ? $ret['id'] : $internalid;
+	  $msg = processAttachments( $db, $name, $internalid, $fk_id, $tc['attachments'], $feedbackMsg );
+	  if( !is_null($msg) )
+	  {
+		$resultMap = array_merge($resultMap,$msg);
+	  }      
+	}
   }
   return $resultMap;
 }
@@ -751,6 +763,66 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
   return $resultMsg;
 }
 
+/**
+ * processAttachments
+ *
+ * Analyze attachments info related to testcase or testsuite to define if the the attachment has to be saved.
+ * If attachment format is OK and attachment is not already in database for the target, save the attachment.
+ * Else return an array of messages.
+ *
+ */
+function processAttachments( &$dbHandler, $tcaseName, $xmlInternalID, $fk_Id, $tcAtt, $messages )
+{  
+	static $duplicateAttachment;
+	$resultMsg=null;	
+	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy','attachments'));
+	
+	foreach( $tcAtt as $ydx => $value )
+	{	
+		$addAttachment = false;
+		
+		// Is it a CREATION or an UPDATE?
+		if( $xmlInternalID == $fk_Id ) // internalID matches, seems to be an update
+		{
+			// try to bypass the importation of already known attachments.
+			// Check in database if the attachment with the same ID is linked to the testcase/testsuite with the same internal ID
+			// The couple attachment ID + InternalID is used as a kind of signature to avoid duplicates. 
+			// If signature is not precise enough, could add the use of attachment timestamp (date_added in XML file).
+			$sql = " SELECT ATT.id from {$tables['attachments']} ATT " .
+               " WHERE ATT.id='{$dbHandler->prepare_string($value['id'])}' " .
+               " AND ATT.fk_id={$fk_Id} ";     
+                   
+			$rsx=$dbHandler->get_recordset($sql);
+			// allow attachment import only if no record with the same signature have been found in database
+			$addAttachment = ( is_null($rsx) || count($rsx) < 1 );
+			if( $addAttachment === false ){ // inform user that the attachment has been skipped
+			  if( !isset($duplicateAttachment[$value['id']]) )
+			  {
+				$duplicateAttachment[$value['id']]=sprintf($messages['attachment'],$value['name']);  
+			  }
+			  $resultMsg[] = array($tcaseName,$duplicateAttachment[$value['id']]); 
+			}
+			
+		}else{
+			// Creation
+			$addAttachment = true;
+		}
+		
+		if( $addAttachment )
+		{
+			$attachRepo = tlAttachmentRepository::create($dbHandler);
+				
+			$fileInfo = $attachRepo->createAttachmentTempFile( $value['content'] );	
+			$fileInfo['name'] = $value['name'];
+			$fileInfo['type'] = $value['file_type'];
+
+			$attachRepo->insertAttachment( $fk_Id, $tables['nodes_hierarchy'], $value['title'], $fileInfo);
+		}
+	} //foreach
+	 
+	return $resultMsg;
+}
+
 
 
 /**
@@ -826,8 +898,14 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
       {
           $tc['requirements'] = $requirements;  
       } 
-    }  
-    $tcaseSet[$jdx++] = $tc;    
+
+	  $attachments = getAttachmentsFromSimpleXMLObj($xmlTCs[$idx]->attachments->attachment);
+	  if($attachments)
+	  {
+		$tc['attachments'] = $attachments;  
+	  }
+	}
+	$tcaseSet[$jdx++] = $tc;    
   }
   return $tcaseSet;
 }
@@ -882,6 +960,15 @@ function getRequirementsFromSimpleXMLObj($simpleXMLItems)
   return $items;
 }
 
+function getAttachmentsFromSimpleXMLObj($simpleXMLItems)
+{
+  $itemStructure['elements'] = array('string' => array("id" => 'trim', "name" => 'trim',
+                                                       "file_type" => 'trim' ,"title" => 'trim',
+                                                       "date_added" => 'trim' ,"content" => 'trim' ));
+  $items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
+  return $items;
+}
+
 function getKeywordsFromSimpleXMLObj($simpleXMLItems)
 {
   $itemStructure['elements'] = array('string' => array("notes" => null));
@@ -909,6 +996,9 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
   static $callCounter = 0;
   static $cfSpec;
   static $doCF;
+  static $feedbackMsg;
+  
+  $feedbackMsg['attachment'] = lang_get('attachment_skipped_during_import');
   
   $resultMap = array();
   if(is_null($tsuiteXML) )
@@ -917,8 +1007,9 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
     $tsuiteXML = array();
     $tsuiteXML['elements'] = array('string' => array("details" => null),
                                  'integer' => array("node_order" => null));
-    $tsuiteXML['attributes'] = array('string' => array("name" => 'trim'));
-    
+	$tsuiteXML['attributes'] = array('string' => array("name" => 'trim'), 
+									 'integer' =>array('id' => null));
+
     $tsuiteMgr = new testsuite($dbHandler);
     $doCF = !is_null(($cfSpec = $tsuiteMgr->get_linked_cfields_at_design(null,null,null,
                                        $tproject_id,'name')));
@@ -930,7 +1021,8 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 
     // getItemsFromSimpleXMLObj() first argument must be an array
     $dummy = getItemsFromSimpleXMLObj(array($xml),$tsuiteXML);
-    $tsuite = current($dummy); 
+    $tsuite = current($dummy);
+	$tsuiteXMLID = $dummy[0]['id'];	
     $tsuiteID = $parentID;  // hmmm, not clear
 
     if ($tsuite['name'] != "")
@@ -971,6 +1063,18 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
         $kwIDs = buildKeywordList($kwMap,$keywords);
         $tsuiteMgr->addKeywords($tsuite['id'],$kwIDs);
       }
+			
+	  if( $attachments = getAttachmentsFromSimpleXMLObj($xml->attachments->attachment) )
+	  {
+		if(!is_null($attachments))
+		{  
+		  $msg = processAttachments( $dbHandler, $tsuite['name'], $tsuiteXMLID, $tsuite['id'], $attachments, $feedbackMsg );
+		  if( !is_null($msg) )
+		  {
+			$resultMap = array_merge($resultMap,$msg);
+		  } 
+		}  
+	  }
 
       unset($tsuite);
     }

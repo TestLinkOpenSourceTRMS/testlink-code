@@ -622,7 +622,10 @@ $TLS_req_spec_type = "Tipo de Espec. de Req.";
 $TLS_btn_hide_cf = "Ocultar Campos personalizados";
 $TLS_btn_show_cf = "mostrar campos personalizados";
 $TLS_btn_export_testplan_tree = 'Exportar plan';
-
+$TLS_test_grouped_by = "Agrupados por pruebas";
+$TLS_mode_test_suite = "Suite de Pruebas";
+$TLS_mode_req_coverage = "Requisitos";
+$TLS_parent_child_relation = "Relación padre hijo";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

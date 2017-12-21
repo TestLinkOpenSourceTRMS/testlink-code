@@ -13,7 +13,7 @@ test case export initial page
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,export_tcase_external_id,btn_cancel,
              view_file_format_doc,export_with_prefix,export_summary,export_steps,export_preconditions,
-             export_testcase_requirements'}
+             export_testcase_requirements,export_attachments'}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -120,6 +120,10 @@ function mirrorCheckbox(sourceOID,targetOID)
     <tr>
     <td>{$labels.export_with_keywords}</td>
     <td><input type="checkbox" name="exportKeywords" value="1" /></td>
+    </tr>
+	<tr>
+    <td>{$labels.export_attachments}</td>
+    <td><input type="checkbox" name="exportAttachments" value="1" /></td>
     </tr>
 
 

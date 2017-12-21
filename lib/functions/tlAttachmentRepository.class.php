@@ -420,6 +420,31 @@ class tlAttachmentRepository extends tlObjectWithDB
     return $content;
   }
   
+	/**
+	 * Creates a temporary file and writes the attachment content into this file.
+	 * 
+	 * @param $base64encodedContent base64 encoded file content 
+	 * 
+	 * @since 1.9.17
+	 * @return file handler
+	 */
+	public function createAttachmentTempFile( $base64encodedContent )
+	{
+		$resultInfo = array();
+		$filename = tempnam(sys_get_temp_dir(), 'tl-');
+
+		$resultInfo["tmp_name"] = $filename;
+		$handle = fopen( $filename, "w" );
+		fwrite($handle, base64_decode( $base64encodedContent ));
+		fclose( $handle );
+
+		$filesize = filesize($filename);
+		$resultInfo["size"] = $filesize;
+	  
+		return $resultInfo;
+	}
+  
+  
   /**
    * Deletes all attachments of a certain object of a given type
    * 

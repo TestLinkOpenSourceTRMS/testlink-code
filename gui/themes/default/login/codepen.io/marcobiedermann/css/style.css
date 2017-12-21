@@ -91,6 +91,7 @@ input {
   color: #ffffff;
   outline: 0;
   font-weight: bold;
+  margin-bottom: 15px;
   /* text-transform: uppercase; */
 }
 .button:focus, .button:hover {

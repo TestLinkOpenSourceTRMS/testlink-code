@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {config_load file="input_dimensions.conf" section="login"}
 {lang_get var='labels' 
-          s='login_name,password,btn_login,new_user_q,login,demo_usage,lost_password_q'}
+          s='login_name,password,btn_login,new_user_q,login,demo_usage,lost_password_q,oauth_login'}
 <html >
   <head>
     <meta charset="UTF-8">
@@ -62,6 +62,14 @@
             <div class="form__field">
               <input type="submit" value="{$labels.btn_login}">
             </div>
+
+            {if $tlCfg->authentication['oauth_enabled']}
+            <div class="button">
+            <a style="text-decoration: none; color:#ffffff;" href="{$gui->oauth}">
+            <img src="{$tlCfg->theme_dir}images/{$tlCfg->logo_oauth}" style="height: 42px; vertical-align:middle;">
+            <span style="padding: 10px;">{$labels.oauth_login}</span></a>
+            </div>
+            {/if}
 
           </form>
 

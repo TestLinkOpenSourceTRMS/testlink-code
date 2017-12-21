@@ -17,6 +17,7 @@ require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
 require_once('common.php');
+require_once('oauth_api.php');
 require_once('doAuthorize.php');
 
 $templateCfg = templateConfiguration();
@@ -48,7 +49,29 @@ switch($args->action)
   case 'ajaxcheck':
     processAjaxCheck($db);
   break;
-  
+  case 'oauth':
+    //If code is empty then break
+    if (!isset($_GET['code'])){
+        renderLoginScreen($gui);
+        die();
+    }
+
+    $user_token = oauth_get_token($gui->authCfg, $_GET['code']);
+    if($user_token->status['status'] == tl::OK)
+    {
+      $options = new stdClass();
+      $options->givenName = $user_token->userInfo['given_name'];
+      $options->familyName = $user_token->userInfo['family_name'];
+      $options->auth = 'oauth';
+      doSessionStart(true);
+      $op = doAuthorize($db,$user_token->userInfo['email'],'oauth',$options);
+      $doAuthPostProcess = true;
+    } else {
+        $gui->note = $user_token->status['msg'];
+        renderLoginScreen($gui);
+        die();
+    }
+  break;
   case 'loginform':
     $doRenderLoginScreen = true;
     $gui->draw = true;
@@ -88,7 +111,6 @@ if( $doRenderLoginScreen )
   renderLoginScreen($gui);
 }
 
-
 /**
  * 
  *
@@ -97,9 +119,9 @@ function init_args()
 {
   $pwdInputLen = config_get('loginPagePasswordMaxLenght');
 
-  // 2010904 - eloff - Why is req and reqURI parameters to the login? 
+  // 2010904 - eloff - Why is req and reqURI parameters to the login?
   $iParams = array("note" => array(tlInputParameter::STRING_N,0,255),
-                   "tl_login" => array(tlInputParameter::STRING_N,0,30),
+                   "tl_login" => array(tlInputParameter::STRING_N,0,100),
                    "tl_password" => array(tlInputParameter::STRING_N,0,$pwdInputLen),
                    "req" => array(tlInputParameter::STRING_N,0,4000),
                    "reqURI" => array(tlInputParameter::STRING_N,0,4000),
@@ -107,12 +129,14 @@ function init_args()
                    "destination" => array(tlInputParameter::STRING_N, 0, 255),
                    "loginform_token" => array(tlInputParameter::STRING_N, 0, 255),
                    "viewer" => array(tlInputParameter::STRING_N, 0, 3),
+                   "oauth" => array(tlInputParameter::STRING_N,0,100),
                   );
   $pParams = R_PARAMS($iParams);
 
   $args = new stdClass();
   $args->note = $pParams['note'];
   $args->login = $pParams['tl_login'];
+
   $args->pwd = $pParams['tl_password'];
   $args->ssodisable = getSSODisable();
   $args->reqURI = urlencode($pParams['req']);
@@ -131,10 +155,15 @@ function init_args()
   {
     $args->action = 'doLogin';
   } 
-  else 
+  else if (!is_null($pParams['oauth']) && $pParams['oauth'])
+  {
+    $args->action = 'oauth';
+  }
+  else
   {
     $args->action = 'loginform';
   }
+
 
   return $args;
 }
@@ -159,7 +188,8 @@ function init_gui(&$db,$args)
 
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
-  
+  $gui->oauth = oauth_link($gui->authCfg);
+
   $gui->external_password_mgmt = false;
   $domain = $gui->authCfg['domain'];
   $mm = $gui->authCfg['method'];

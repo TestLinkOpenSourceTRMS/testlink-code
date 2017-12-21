@@ -352,9 +352,9 @@ $tlCfg->authentication['method'] = 'DB';
 // Applies only if authentication methos is DB.
 // Used when:
 // 1. user sign up
-// 
+//
 // null => only check password IS NOT EMPTY
-// 
+//
 // $tlCfg->passwordChecks = array('minlen' => 8,'maxlen' => 20,'number' => true,'letter' => true,
 //                                'capital' => true, 'symbol' => true);
 $tlCfg->passwordChecks = null;
@@ -371,6 +371,19 @@ $tlCfg->logoutUrl = '';
 
 // users that will not allow expiration date management on GUI
 $tlCfg->noExpDateUsers = array('admin');
+
+/**
+ * OAUTH
+ */
+$tlCfg->authentication['oauth_enabled'] = true;
+$tlCfg->authentication['oauth_client_id'] = 'CLIENT_ID';
+$tlCfg->authentication['oauth_client_secret'] = 'CLIENT_SECRET';
+$tlCfg->authentication['oauth_grant_type'] = 'authorization_code';  //Can be authorization_code (by default), client_credentials or password
+$tlCfg->authentication['oauth_url'] = 'https://accounts.google.com/o/oauth2';
+$tlCfg->authentication['oauth_force_single'] = false; //if false then the only user will be selected automatically (applied for google)
+//$tlCfg->authentication['oauth_domain'] = 'google.com'; //the domain you want to whitelist
+$tlCfg->authentication['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
+$tlCfg->authentication['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 
 /**
  * Single Sign On authentication
@@ -393,7 +406,7 @@ $tlCfg->authentication['SSO_logout_destination'] = 'YOUR LOGOUT DESTINATION';
 
 
 
-/** 
+/**
  * LDAP authentication credentials, Multiple LDAP Servers can be used. 
  * User will be authenticaded against each server (one after other using array index order)
  * till authentication succeed or all servers have been used.
@@ -492,6 +505,7 @@ $tlCfg->api->id_format = "[ID: %s ]";
 /** Company logo (used by navigation bar and login page page) */
 $tlCfg->logo_login = 'tl-logo-transparent-25.png';
 $tlCfg->logo_navbar = 'tl-logo-transparent-12.5.png';
+$tlCfg->logo_oauth = 'google.png';
 
 /** Height of the navbar always displayed  */
 $tlCfg->navbar_height = 70;

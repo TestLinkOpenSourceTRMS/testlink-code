@@ -2409,6 +2409,7 @@ $TLS_desc_testplan_execute = "Exécution de campagne de test";
 $TLS_desc_testplan_metrics = "Métriques de campagne de test";
 $TLS_desc_testplan_planning = "Planification de campagne de test";
 $TLS_desc_user_role_assignment = "Affectation de rôles";
+$TLS_desc_monitor_requirement = 'Surveillance des exigences';
 
 
 $TLS_error_duplicate_rolename = "Nom de rôle existant.";

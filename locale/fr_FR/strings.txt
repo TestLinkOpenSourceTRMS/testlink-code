@@ -867,7 +867,7 @@ $TLS_error_no_testprojects_present = "Aucun projet défini.";
 
 // ----- gui/templates/metrics_dashbord.tpl -----
 $TLS_th_active_tc = "Fiches de test actives";
-$TLS_show_only_active = "Ne montrer les métriques que pout les campagnes de test actives";
+$TLS_show_only_active = "Ne montrer les métriques que pour les campagnes de test actives";
 
 
 // ----- gui/templates/newest_tcversions.tpl -----

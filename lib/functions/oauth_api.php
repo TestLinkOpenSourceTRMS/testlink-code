@@ -18,11 +18,13 @@ function oauth_link($oauthCfg)
 {
   $promt = 'none';
   if ($oauthCfg['oauth_force_single'])
-    $promt = 'consent';
+  {
+    $promt = 'consent';    
+  }  
 
   $oauth_url = $oauthCfg['oauth_url'];
   $oauth_params = array(
-    'redirect_uri'  => isset($_SERVER['HTTPS']) ? 'https://' : 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth='.$oauthCfg['oauth_name'],
+    'redirect_uri'  => isset($_SERVER['HTTPS']) ? 'https://' : 'http://' . $_SERVER['HTTP_HOST']. '/login.php?oauth=' . $oauthCfg['oauth_name'],
     'response_type' => 'code',
     'prompt'        => $promt,
     'client_id'     => $oauthCfg['oauth_client_id'],

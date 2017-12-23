@@ -3416,6 +3416,8 @@ $TLS_API_TESTCASENAME_NOT_STRING = "testcasename precisa ser texto!";
 $TLS_API_NO_BUILD_FOR_TPLANID = "Não existem Builds para este Plano de Testes fornecido! " . 
                                 "Uma Build precisa ser criada para reportar os resultados.";
 $TLS_API_BUILDID_NOGUESS = "Guessing está desativado, por isso tem que indicar um ID da Build!";
+$TLS_API_BUILDID_NOT_INTEGER = "O ID da Build (buildid: %s) não é um inteiro";
+
 $TLS_API_BUILDNAME_ALREADY_EXISTS = "ID retornado de Build já existente (insensível a maiúsculas): ";
 $TLS_API_BUILDNAME_DOES_NOT_EXIST = "O Nome da Build (buildname: %s) fornecido não existe!";
 $TLS_API_NO_BUILDID = "Nenhum buildid fornecido. Deve ser fornecido um valor válido!";
@@ -3958,6 +3960,8 @@ $TLS_fogbugz_bug_created = "Ocorrência FOGBUGZ Criada (summary:%s) no Projecto:
 $TLS_youtrack_bug_created = "Ocorrência YOUTRACK Criada (summary:%s) no Projecto com ID:%s";
 $TLS_mantis_bug_created = "Ocorrência MANTIS Criada (summary:%s)  no Projecto com chave:%s";
 $TLS_bugzilla_bug_created = "Ocorrência BUGZILLA Criada (summary:%s) no Projecto:%s";
+$TLS_gitlab_bug_created = "Ocorrência GITLAB Criada (summary:%s) no Projecto com identificador:%s";
+$TLS_gitlab_bug_comment = "Ocorrência GITLAB Comentada (summary:%s)";
 $TLS_bts_check_ok = "Conexão está OK";
 $TLS_bts_check_ko = "Conexão não está OK, verifique a configuração";
 $TLS_check_bts_connection = "Verificar conexão";

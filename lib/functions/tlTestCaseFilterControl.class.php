@@ -341,6 +341,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     $this->cfield_mgr = new cfield_mgr($this->db);
 
+    $this->settings['setting_get_parent_child_relation'] = false;
+    
     // moved here from parent::__constructor() to be certain that 
     // all required objects has been created
     $this->init_filters();

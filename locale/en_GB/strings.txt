@@ -845,9 +845,10 @@ $TLS_filter_active_inactive = "Active/Inactive";
 $TLS_show_only_active_testcases = "At least ONE version is ACTIVE";
 $TLS_show_only_inactive_testcases = "ALL versions are INACTIVE";
 $TLS_show_whole_spec_on_right_panel = 'Show Full (on right pane)';
-$TLS_test_grouped_by_label = "Tests Grouped By";
+$TLS_test_grouped_by = "Tests Grouped By";
 $TLS_mode_test_suite = "Test Suite";
-$TLS_mode_req_coverage = "Requirements";
+$TLS_mode_req_coverage = "Requirement";
+$TLS_parent_child_relation = "Exploit Child / parent relationship";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

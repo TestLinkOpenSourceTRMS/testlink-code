@@ -225,23 +225,23 @@ TestLinkに全要件を登録しなかった場合に、要件網羅率を計算
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
-$TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
-<p>From here you can print a single requirement, all the requirements within a requirement specification,
-or all the requirements in a test project.</p>
-<h2>Get Started:</h2>
+$TLS_htmltext_title['printReqSpec'] = "要件仕様の印刷"; //printReq
+$TLS_htmltext['printReqSpec'] = "<h2>目的:</h2>
+<p>ここから、単一の要件、要件仕様内のすべての要件、
+またはテストプロジェクトのすべての要件を印刷できます。</p>
+<h2>最初に:</h2>
 <ol>
 <li>
-<p>Select the parts of the requirements you want to display, and then click on a requirement,
-requirement specification, or the test project. A printable page will be displayed.</p>
+<p>表示する要件の部分を選択し、要件、要件仕様、またはテストプロジェクトをクリックします。
+印刷可能なページが表示されます。</p>
 </li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want
-the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document.
-See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
-'{$locale}');\">help</span> for more information.</p>
+<li><p>ナビゲーションペインの「表示... 」ドロップダウンボックスを使用して、
+HTML、OpenOffice Writer、またはMicosoft Word文書のどれで情報を表示するかを指定します。
+詳細は <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+'{$locale}');\">ヘルプ</span> をご覧ください。</p>
 </li>
-<li><p>Use your browser's print functionality to actually print the information.<br />
-<i>Note: Make sure to only print the right-hand frame.</i></p>
+<li><p>実際に情報を印刷するのは、ブラウザの印刷機能を使用します。<br />
+<i>注: 右側のフレームのみを印刷してください。</i></p>
 </li>
 </ol>";
 

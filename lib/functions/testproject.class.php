@@ -3105,9 +3105,8 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
         " TCV.importance IN (" . implode(',',$my['filters']['importance']) . ')';
     }
 
-
   }
-  $sql =  $staticSql . " WHERE NH.parent_id = {$node_id} " .
+  $sql =  $staticSql . " WHERE NH.parent_id = " . intval($node_id) .
           " AND (" .
           "      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
           "      OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} ";
@@ -3121,11 +3120,13 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
         switch($key)
         {
           case 'name':
-             $sql .= " AND NH.name LIKE '%{$my['filters']['testcase_name']}%' ";
+             $safe4DB = $this->db->prepare_string($my['filters']['testcase_name']);
+             $sql .= " AND NH.name LIKE '%{$safe4DB}%' ";
           break;
           
           case 'id':
-                   $sql .= " AND NH.id = {$my['filters']['testcase_id']} ";
+            $safe4DB = intval($my['filters']['testcase_id']);
+            $sql .= " AND NH.id = {$safe4DB} ";
           break;
         }
       }
@@ -3133,7 +3134,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
   }
   $sql .= " )) ";
   $sql .= " ORDER BY NH.node_order,NH.id";
-  
   
   // Approach Change - get all 
   $rs = $this->db->fetchRowsIntoMap($sql,'id');
@@ -3216,8 +3216,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
       }  
     }    
     
-    // echo $ssx;
-
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
     if( $filterOnTC )
     {
@@ -3242,8 +3240,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
       if($node['node_table'] == 'testcases')
       {
         $node['leaf'] = true; 
-        // TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
-        //              for every test case with no active version
         $node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : null;
       }      
       
@@ -3284,7 +3280,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
  *
  * @internal revisions
  * @since 1.9.8
- * 20130528 - franciscom - -1 => WITHOUT KEYWORDS
+ * -1 => WITHOUT KEYWORDS
  * 
  */
 function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
@@ -3348,7 +3344,7 @@ function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_fi
   }
 
   $hits = !is_null($sql) ? $this->db->fetchRowsIntoMap($sql,'testcase_id') : null;
-  return($hits);
+  return $hits;
 }
 
 

@@ -67,7 +67,7 @@ function init_args()
 function initializeGui($argsObj)
 {
   $gui = new stdClass();
-  $gui->page_title = lang_get('export_cfields');
+  $gui->page_title = lang_get('export_users');
   $gui->do_it = 1;
   $gui->nothing_todo_msg = '';
   $gui->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : ''; 

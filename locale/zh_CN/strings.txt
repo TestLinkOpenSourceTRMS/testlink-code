@@ -886,6 +886,10 @@ $TLS_btn_export_testplan_tree_for_results = '导出为可导入结果';
 
 $TLS_expand_tree = "展开树";
 $TLS_collapse_tree = "折叠树";
+$TLS_test_grouped_by = "测试分组";
+$TLS_mode_test_suite = "测试用例集";
+$TLS_mode_req_coverage = "需求";
+$TLS_parent_child_relation = "子父关系";
 $TLS_filter_active_inactive = '活动/不活动';
 $TLS_show_only_active_testcases = '至少需要一个活动的版本';
 $TLS_show_only_inactive_testcases = '全部版本已启用';

@@ -423,7 +423,7 @@ $TLS_password_reseted = "New password has been sent via mail";
 $TLS_please_login = "Please log in ...";
 $TLS_session_expired = "Your session has expired! Please login again.";
 $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please login ...";
-
+$TLS_oauth_login = "Sign in with ";
 
 // ----- newest_tcversions.php -----
 $TLS_no_linked_tcversions = "no linked Test Case versions";
@@ -657,7 +657,10 @@ $TLS_btn_show_cf = "Show Custom Fields";
 $TLS_btn_export_testplan_tree = 'Export Test Plan';
 $TLS_expand_tree = "Expand tree";
 $TLS_collapse_tree = "Collapse tree";
-
+$TLS_test_grouped_by = "Tests Grouped By";
+$TLS_mode_test_suite = "Test Suite";
+$TLS_mode_req_coverage = "Requirement";
+$TLS_parent_child_relation = "Exploit Child / parent relationship";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

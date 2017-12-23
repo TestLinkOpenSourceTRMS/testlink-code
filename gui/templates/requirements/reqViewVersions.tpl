@@ -411,8 +411,10 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   
   {* end req relations *}
 
-  {include file="$this_template_dir/reqMonitors.tpl"} 
-         
+  {if $gui->grants->monitor_req == "yes"}
+	{include file="$this_template_dir/reqMonitors.tpl"} 
+  {/if}
+  
   {include file="attachments.inc.tpl" 
              attach_id=$reqID  
              attach_tableName=$gui->attachmentTableName

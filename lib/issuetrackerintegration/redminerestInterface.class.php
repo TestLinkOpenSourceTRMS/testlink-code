@@ -114,8 +114,9 @@ class redminerestInterface extends issueTrackerInterface
     
     if( property_exists($this->cfg,'custom_fields') )
     {
-      $cf = $this->cfg->custom_fields;
-      $this->cfg->custom_fields = (string)$cf->asXML();
+      libxml_use_internal_errors(true);
+      $xcfg = simplexml_load_string($this->xmlCfg);
+      $this->cfg->custom_fields = (string)$xcfg->custom_fields->asXML();
     }   
   }
 
@@ -430,7 +431,7 @@ class redminerestInterface extends issueTrackerInterface
      {
        $msg = "Create REDMINE Ticket FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
-       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($op));
      }
      return $ret;
   }  

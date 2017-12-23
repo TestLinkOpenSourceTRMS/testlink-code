@@ -116,9 +116,11 @@ viewer for requirement
     <input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
            onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
                                                 {$args_req.revision},'lib/requirements/reqPrint.php');"/>
-    <input type="submit" name="monitor" 
+    {if $args_grants->monitor_req == "yes"}
+	<input type="submit" name="monitor" 
       value="{$gui->btn_monitor_mgmt}" 
       onclick="doAction.value='{$gui->btn_monitor_action}'"/> 
+	{/if}  
   </form>
   <br/><br/>
 </div> {* class="groupBtn" *}

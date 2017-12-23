@@ -1,7 +1,7 @@
 <?php
 /** -------------------------------------------------------------------------------------
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
- * 
+ *
  * Filename $RCSfile: description.php,v $
  * @version $Revision: 1.4 $
  * @modified $Date: 2010/06/24 17:25:53 $ $Author: asimon83 $
@@ -11,17 +11,17 @@
  * === Japanese (ja_JP) strings ===
  *
  * @ABSTRACT
- * The file contains global variables with html text. These variables are used as 
- * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String" 
+ * The file contains global variables with html text. These variables are used as
+ * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String"
  * prefix '$TLS_hlp_' or '$TLS_txt_'. This must be a reserved prefix.
- * 
+ *
  * Contributors:
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
  *
  * No revision is stored for the the file - see CVS history
- * The initial data are based on help files stored in gui/help/<lang>/ directory. 
- * This directory is obsolete now. It serves as source for localization contributors only. 
+ * The initial data are based on help files stored in gui/help/<lang>/ directory.
+ * This directory is obsolete now. It serves as source for localization contributors only.
  *
  *-------------------------------------------------------------------
  * Japanese translation
@@ -86,7 +86,7 @@ $TLS_hlp_testPlan = "<h2>テスト計画</h2>
 
 <h3>テスト実行</h3>
 <p>このページでは、ユーザがテストケースを実行し（テスト結果を登録し）、テスト計画のテストケーススイートを印刷できます。
-このページでは、、ユーザが彼らの行ったテストケースの結果を追跡することもできます。</p> 
+このページでは、、ユーザが彼らの行ったテストケースの結果を追跡することもできます。</p>
 
 <h2>テスト計画管理</h2>
 <p>このページにアクセスできるのはリーダーだけです。このページではテスト計画の管理が出来ます。
@@ -94,12 +94,12 @@ $TLS_hlp_testPlan = "<h2>テスト計画</h2>
 （テスト計画の中にある）テストケースの追加/編集/削除/アップデート、
 ビルド作成と同様に、テスト計画のアクセス制御といった作業も含まれます。<br />
 リーダー権限を持つユーザは、優先度、リスク、テストケーススイート（カテゴリー）の所有権と、
-テストのマイルストーンを作ることができます。</p> 
+テストのマイルストーンを作ることができます。</p>
 
 <p>注意: テスト計画のドロップダウンにテスト計画が表示されない場合もあります。
 このような状況では、すべてのリンクを使用することができないでしょう。
 テストリーダもしくは管理者に連絡を取り、権限をアサインしてもらうか
-新たなテスト計画を作成してもらうようにしてください。</p>"; 
+新たなテスト計画を作成してもらうようにしてください。</p>";
 
 // custom_fields.html
 $TLS_hlp_customFields = "<h2>カスタムフィールド</h2>
@@ -164,7 +164,7 @@ BTSのページへの関連付けは、以下の機能を備えています：
 <li>新しいバグの挿入 </li>
 <li>現行のバグ情報の表示 </li>
 </ul>
-</p>  
+</p>
 
 <h2>バグ追加の手順: </h2>
 <p>
@@ -173,7 +173,7 @@ BTSのページへの関連付けは、以下の機能を備えています：
    <li>手順 2: BTSでBUG IDを割り当てる</li>
    <li>手順 3: 入力項目にBUG IDを入力する</li>
    <li>手順 4: 「バグ追加」ボタンをクリックする</li>
-   </ul>  
+   </ul>
 
 バグ追加ページを閉じた後、問題となっているバグのデータをテスト実行ページから確かめることができます。
 </p>";
@@ -195,12 +195,12 @@ $TLS_hlp_executeFilter = "<h2>テスト実行時のビルドによるフィル�
 
 <h3>テストケースのIDによるフィルター</h3>
 <p>テストケースを識別するID番号によってフィルターをかけることができます。このIDは、
-テストケース作成時に自動で生成されます。この欄を空欄にするとフィルターが無効になります。</p> 
+テストケース作成時に自動で生成されます。この欄を空欄にするとフィルターが無効になります。</p>
 
 <h3>優先度によるフィルター</h3>
 <p>優先度によりフィルターをかけることができます。各テストケースには重要度が、" .
 "テスト計画には緊急度が設定され、優先度が計算されます。例えば、優先度「高」のフィルターでは、" .
-"重要度もしくは緊急度が「高」で、もう一方が「中」以上のテストケースを表示します。</p> 
+"重要度もしくは緊急度が「高」で、もう一方が「中」以上のテストケースを表示します。</p>
 
 <h3>結果によるフィルター</h3>
 <p>テストの結果ごとにフィルターをかけることもできます。
@@ -212,19 +212,18 @@ $TLS_hlp_executeFilter = "<h2>テスト実行時のビルドによるフィル�
 <p>アサイン計画に従ってフィルターをかけることができます。また、「未アサインを含む」の" .
 "チェックボックスにより、アサインされていないテストケースを表示することができます。</p>";
 /*
-<h2>Most Current Result</h2>
-<p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted 
-by the build that is chosen from the dropdown box. In this state the tree will display 
-the test cases status. 
-<br />Example: User selects build 2 from the dropdown box and doesn't check the 'most 
-current' checkbox. All test cases will be shown with their status from build 2. 
-So, if test case 1 passed in build 2 it will be colored green.
-<br />If the user decideds to check the 'most current' checkbox the tree will be 
-colored by the test cases most recent result.
-<br />Ex: User selects build 2 from the dropdown box and this time checks 
-the 'most current' checkbox. All test cases will be shown with most current 
-status. So, if test case 1 passed in build 3, even though the user has also selected 
-build 2, it will be colored green.</p>
+<h2>最新の結果</h2>
+<p>デフォルト、または「最新」のチェックボックスがオフの場合、ツリーは
+ドロップダウンボックスから選択されたビルドによってソートされます。
+この状態では、ツリーにテストケースのステータスが表示されます。
+<br />例: ユーザーが、ドロップダウンボックスからビルド2を選択し、「最新」のチェックボックスを
+オフにします。ビルド2からすべてのテストケースがステータスとともに表示されます。
+したがって、ビルド2でテストケース1がパスすると緑色になります。
+<br />ユーザが「最新」のチェックボックスをオンにした場合、
+ツリーは最新のテストケースの結果で色が決まります。
+<br />例: ユーザーがドロップダウンボックスからビルド2を選択し、今回は「最新」のチェックボックスをチェックします。
+すべてのテストケースは最新の状態で表示されます。 したがって、ビルド3でテストケース1がパスした場合、
+ユーザーがビルド2も選択していても、緑色になります。</p>
  */
 
 
@@ -235,9 +234,9 @@ $TLS_hlp_planTcModified = "<h2>テストケースの最新バージョンを関�
 
 
 // requirementsCoverage.html
-$TLS_hlp_requirementsCoverage = "<h2>要件カバレッジ</h2>
+$TLS_hlp_requirementsCoverage = "<h2>要件網羅率</h2>
 <br />
-<p>この機能を用いると、ユーザまたはシステムが要求するテストケースのカバレッジのマップを作成できます。
+<p>この機能を用いると、ユーザまたはシステムが要求するテストケースの網羅率のマップを作成できます。
 ホームの「要件仕様」リンクから操作できます。</p>
 
 <h3>要件仕様</h3>
@@ -248,18 +247,18 @@ $TLS_hlp_requirementsCoverage = "<h2>要件カバレッジ</h2>
 また、仕様の簡単な説明や備考を<b>スコープ</b>欄に記載することができます。</p>
 
 <p><b>ドキュメント内の全要件数</b> は、
-TestLinkに全要件を登録しなかった場合の要件カバレッジを計算するために使用します。
-値<b>0</b>を設定した場合は、TestLinkに登録されている要件数をメトリクス計算で使用します。</p>
+TestLinkに全要件を登録しなかった場合の要件網羅率を計算するために使用します。
+値<b>0</b>を設定した場合は、TestLinkに登録されている要件数を指標計算で使用します。</p>
 <p><i>例えば、SRSが 200 の要件を含んでいるが、50のみをTestLinkに登録したとします。
-するとテストの要件カバレッジは25%となります (追加した要件を全てテストした場合)。</i></p>
+するとテストの要件網羅率は25%となります (追加した要件を全てテストした場合)。</i></p>
 
 <h3>要件</h3>
 <p>要件を作成する要件仕様のタイトルをクリックしてください。
 要件をドキュメントに作成、編集、削除、または要件をインポートすることができます。
 どの要件もタイトル、スコープ、ステータスがあります。
 ステータスは「通常」または「テスト不能」から選択する必要があります。
-テスト不能要件はメトリクス計算で使用されません。
-このパラメータは実装されていない機能、間違った設計の要件のために使用されます。</p> 
+テスト不能要件は指標計算で使用されません。
+このパラメータは実装されていない機能、間違った設計の要件のために使用されます。</p>
 
 <p>要件仕様のページから、数回ボタンをクリックすることで、
 要件をチェックするための新規テストケースを作成することができます。
@@ -269,14 +268,100 @@ TestLinkに全要件を登録しなかった場合の要件カバレッジを計
 タイトルとスコープは作成されたテストケースにコピーされます。</p>
 ";
 
+$TLS_hlp_req_coverage_table = "<h3>網羅率:</h3>
+\"40% (8/20)\"とあった場合、20はこの要件から生成されるべきテストケース数、
+8は、既にこの要件から生成され、紐付けられたテストケース数、これらの値から網羅率は40%となります。
+";
+
+
+// req_edit
+$TLS_hlp_req_edit = "<h3>スコープの内部リンク:</h3>
+<p>内部リンクは、他の要件/要件仕様へのリンクを作成する目的で特別な構文で提供されます。 
+内部リンクの動作は、設定ファイルで変更できます。
+<br /><br />
+<b>使用方法:</b>
+<br />
+要件へのリンク: [req]req_doc_id[/req]<br />
+要件仕様へのリンク: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>ジャンプ先の要件/要件仕様のテストプロジェクト、バージョン、
+アンカーを指定することもできます<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
+この構文は、要件仕様でも機能します (バージョン属性は効果がありません)。<br />
+バージョンを指定しない場合は、すべてのバージョンを含む要件全体が表示されます。</p>
+
+<h3>変更のログメッセージ:</h3>
+<p>変更が行われるたびに、Testlinkはログメッセージを要求します。 このログメッセージは、トレーサビリティを目的に提供されます。
+要件のスコープのみが変更された場合は、新しいリビジョンを作成するかどうかを自由に決めることができます。
+スコープ以外のものが変更された場合は、常に新しいリビジョンを作成する必要があります。</p>
+";
+
+
+// req_view
+$TLS_hlp_req_view = "<h3>ダイレクトリンク:</h3>
+<p>このドキュメントを他のユーザーと簡単に共有するには、このドキュメントの上部にある地球のアイコンをクリックしてダイレクトリンクを作成します。</p>
+
+<h3>履歴の表示:</h3>
+<p>この機能により、複数の要件のリビジョン/バージョンが存在する場合、要件のリビジョン/バージョンを比較することができます。
+概要は、各リビジョン/バージョン、タイムスタンプ、および最後に変更した作成者のログメッセージを提供します。</p>
+
+<h3>網羅率:</h3>
+<p>この要件にリンクされるすべてのテストケースを表示します。</p>
+
+<h3>関連:</h3>
+<p>要件の関連は、要件間の関連をモデル化するために使用されます。
+カスタムの関連と、異なるテストプロジェクトの要件間の関連を許可するオプションは、
+設定ファイルで設定できます。
+「要件Aは要件Bの親」という関連を設定する場合、
+Testlinkは、「要件Bは要件Aの子」という関連を暗黙的に設定します</p>
+";
+
+
+// req_spec_edit
+$TLS_hlp_req_spec_edit = "<h3>スコープの内部リンク:</h3>
+<p>内部リンクは、他の要件/要件仕様へのリンクを作成する目的で特別な構文で提供されます。 
+内部リンクの動作は、設定ファイルで変更できます。
+<br /><br />
+<b>使用方法:</b>
+<br />
+要件へのリンク: [req]req_doc_id[/req]<br />
+要件仕様へのリンク: [req_spec]req_spec_doc_id[/req_spec]</p>
+
+<p>ジャンプ先の要件/要件仕様のテストプロジェクト、バージョン、
+アンカーを指定することもできます<br />
+[req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
+この構文は、要件仕様でも機能します (バージョン属性は効果がありません)。<br />
+バージョンを指定しない場合は、すべてのバージョンを含む要件全体が表示されます。</p>
+";
+
 
 // planAddTC_m1.tpl
 $TLS_hlp_planAddTC = "<h2>「カスタムフィールドの保存」について</h2>
-例えば、以下のカスタムフィールドをテストプロジェクトで定義およびアサインするとします。<br /> 
+例えば、以下のカスタムフィールドをテストプロジェクトで定義およびアサインするとします。<br />
 「テスト計画で表示する=true」および<br />
 「テスト計画で有効にする=true」<br />
 このとき、テスト計画にアサインされたテストケースに関するページのみでこのカスタムフィールドが表示されいます。
 ";
+
+
+// resultsByTesterPerBuild.tpl
+$TLS_hlp_results_by_tester_per_build_table = <<<'TLS_hlp_results_by_tester_per_build_table'
+<b>テスト担当者に関する更なる情報</b><br/>
+担当者名をクリックすると、その担当者に割り当てられた全テストケースと、彼のテスト進捗に関する詳細を見ることが出来ます。<br/><br/>
+<b>注記</b><br/>
+このレポートは、指定の担当者に割り当てられ、活性化中の各ビルドに基づいて実行されたテストケースを表示します。<br/>
+ただし、割り当てられたのとは別のユーザーが実施したテストケースは、別のユーザーの実施ケースとして表示されます。
+TLS_hlp_results_by_tester_per_build_table;
+/*
+"<b>More information about testers:</b><br />
+If you click on a tester name in this table, you will get a more detailed overview
+about all Test Cases assigned to that user and his testing progress.<br /><br />
+<b>Note:</b><br />
+This Report shows those test cases, which are assigned to a specific user and have been executed
+based on each active build. Even if a test case has been executed by another user than the assigned user,
+the test case will appear as executed for the assigned user.
+";
+*/
 
 // xxx.html
 //$TLS_hlp_xxx = "";

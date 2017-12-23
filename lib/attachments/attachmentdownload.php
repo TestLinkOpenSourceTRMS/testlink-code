@@ -72,7 +72,7 @@ if ($args->id)
       break;
       
       case 'GUI':
-      default:
+      default:   
         $doIt = true;
       break;
     }
@@ -80,8 +80,22 @@ if ($args->id)
 
     if( $doIt )
     {
-      $content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
-      if ($content != "")
+      $content = '';
+      $getContent = true;
+      if( $args->opmode !== 'API' && $args->skipCheck !== 0 && $args->skipCheck !== false)
+      {
+        if( $args->skipCheck != hash('sha256',$attachmentInfo['file_name']) )
+        {
+          $getContent = false;
+        }  
+      }  
+
+      if($getContent)
+      {
+        $content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
+      }  
+
+      if ($content != "" )
       {
         @ob_end_clean();
         header('Pragma: public');
@@ -113,15 +127,19 @@ function init_args(&$dbHandler)
   // id (attachments.id) of the attachment to be downloaded
   $iParams = array('id' => array(tlInputParameter::INT_N),
                    'apikey' => array(tlInputParameter::STRING_N,64),  
-                   'skipCheck' => array(tlInputParameter::INT_N));
+                   'skipCheck' => array(tlInputParameter::STRING_N,1,64));
   
   $args = new stdClass();
   G_PARAMS($iParams,$args);
 
   $args->light = 'green';
   $args->opmode = 'GUI';
-  $args->skipCheck = is_null($args->skipCheck) ? false : $args->skipCheck;
+  if( is_null($args->skipCheck) || $args->skipCheck === 0 )
+  {
+    $args->skipCheck = false;
+  }  
 
+  // var_dump($args->skipCheck);die();
   // using apikey lenght to understand apikey type
   // 32 => user api key
   // other => test project or test plan

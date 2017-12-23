@@ -270,10 +270,23 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->IXR_Server($this->methods);    
   }  
   
-  protected function _setArgs($args)
+  /**
+   *
+   */
+  protected function _setArgs($args,$opt=null)
   {
     // TODO: should escape args
     $this->args = $args;
+
+    if( isset($this->args[self::$testProjectNameParamName]) && 
+        !isset($this->args[self::$testProjectIDParamName])
+      )
+    {
+       $tprojMgr = new testproject($this->dbObj);
+       $name = trim($this->args[self::$testProjectNameParamName]);
+       $info = current($this->tprojectMgr->get_by_name($name));
+       $this->args[self::$testProjectIDParamName] = $info['id'];
+    }  
   }
   
   /**
@@ -6207,8 +6220,10 @@ protected function createAttachmentTempFile()
     $status_ok = false;    
     $msg_prefix="(" . __FUNCTION__ . ") - ";
 
+
     if($this->authenticate() && 
-       $this->userHasRight("platform_management",self::CHECK_PUBLIC_PRIVATE_ATTR))
+       $this->userHasRight("platform_management",
+                           self::CHECK_PUBLIC_PRIVATE_ATTR))
     {
       $status_ok = true;
       $keys2check = array(self::$platformNameParamName, self::$testProjectNameParamName);

@@ -574,7 +574,7 @@ $TLS_passwd_lost = "Your password has been sent to the email account you specifi
 $TLS_password_reseted = "New password has been sent via mail";
 $TLS_session_expired = "Your session has expired! Please login again.";
 $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please login ...";
-
+$TLS_oauth_login = "Sign in with ";
 
 // ----- newest_tcversions.php -----
 $TLS_no_linked_tcversions = "no linked Test Case versions";
@@ -845,7 +845,10 @@ $TLS_filter_active_inactive = "Active/Inactive";
 $TLS_show_only_active_testcases = "At least ONE version is ACTIVE";
 $TLS_show_only_inactive_testcases = "ALL versions are INACTIVE";
 $TLS_show_whole_spec_on_right_panel = 'Show Full (on right pane)';
-
+$TLS_test_grouped_by = "Tests Grouped By";
+$TLS_mode_test_suite = "Test Suite";
+$TLS_mode_req_coverage = "Requirement";
+$TLS_parent_child_relation = "Exploit Child / parent relationship";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -2127,8 +2130,9 @@ $TLS_th_password = "Password";
 $TLS_warning_empty_first_name = "Please enter a name";
 $TLS_warning_empty_last_name = "Please enter a surname";
 $TLS_warning_empty_login = "Please enter a login";
-$TLS_expiration_date = "Expiration Date";
-$TLS_expiration = "Expiration";
+
+// usersExport.php
+$TLS_export_users = "Export users";
 
 
 // ----- gui/templates/attachmentupload.tpl -----
@@ -2166,6 +2170,7 @@ $TLS_export_tcase_external_id = 'Export Test Case external ID';
 $TLS_export_with_prefix = 'With Test Case prefix';
 
 $TLS_export_with_keywords = "Export with keywords";
+$TLS_export_attachments = "Export attachments";
 $TLS_warning_empty_filename = "Please give a file name";
 $TLS_export_steps = "Export Test Case Steps";
 $TLS_export_summary = "Export Test Case Summary";
@@ -2327,7 +2332,7 @@ $TLS_error_ldap_update_failed = "Updating LDAP failed";
 $TLS_error_ldap_user_not_found = "LDAP user not found";
 $TLS_error_ldap_start_tls_failed = "LDAP start TLS failed";
 $TLS_unknown_authentication_method = "Do not know how to handle %s authentication method";
-$TLS_tluser_account_expired = "TestLink User has expired";
+
 
 // ----- lib/functions/product.inc.php -----
 $TLS_info_product_delete_fails = "An error occurred while deleting the Test Project";
@@ -2405,6 +2410,7 @@ $TLS_desc_testplan_execute = "Test Plan execute";
 $TLS_desc_testplan_metrics = "Test Plan metrics";
 $TLS_desc_testplan_planning = "Test Plan planning";
 $TLS_desc_user_role_assignment = "Role assignment";
+$TLS_desc_monitor_requirement = 'Monitor Requirements';
 
 
 $TLS_error_duplicate_rolename = "There's already a role with that name!";
@@ -2901,6 +2907,7 @@ $TLS_same_externalID = 'has same External ID'; // (only applicable to Test Cases
 $TLS_same_name = 'has same name';
 $TLS_duplicate_criteria = "Consider Test Case as duplicate if";
 $TLS_hit_with_same_external_ID = "Can not be imported - You are hitting an existent Test Case with SAME EXTERNAL ID:";
+$TLS_attachment_skipped_during_import = "Attachment \"%s\" has been ignored because it is already linked to the test element";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "There are no Test Cases to export";
@@ -3261,6 +3268,9 @@ $TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted - Test Project {%2}";
 $TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}'";
 $TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from Test Case '{%2}'";
 
+$TLS_audit_exec_saved = "Test Case '{%1}' has been executed on Build '{%2}' in the Test Plan '{%3}'.";
+$TLS_audit_exec_deleted = "An execution of Test Case '{%1}' on Build '{%2}' in the Test Plan '{%3}' has been deleted.";
+
 $TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
 $TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted " .
                   "from execution with id: {%2} of Test Case: {%3} " .
@@ -3288,6 +3298,10 @@ $TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%3} was d
 $TLS_audit_req_version_frozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was frozen.";
 $TLS_audit_req_version_unfrozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was unfrozen.";
 
+$TLS_audit_testcase_created = "Test Case '{%1}' has been created.";
+$TLS_audit_testcase_saved = "Test Case '{%1}' has been saved.";
+$TLS_audit_testcase_deleted = "La fiche de test '{%1}' a été supprimée.";
+$TLS_audit_testcase_version_deleted = "Version {%1} of the Test Case '{%2}' has been deleted.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";
@@ -3483,6 +3497,7 @@ $TLS_import_req_spec_created = 'Created - Req. Spec. - Doc ID:%s';
 $TLS_import_req_spec_skipped = 'Skipped - Req. Spec. - Doc ID:%s - Already exists on other branch';
 $TLS_import_req_spec_updated = 'Updated - Req. Spec. - Doc ID:%s';
 $TLS_import_req_spec_ancestor_skipped = 'Skipped - Req. Spec. - Doc ID:%s - a parent container already exists on other branch';
+$TLS_import_req_spec_attachment_skipped = 'Skipped - Attachement "%s" already linked to Req. Spec.';
 
 $TLS_import_req_created = 'Created - Requirement - Doc ID:%s';
 $TLS_import_req_skipped = 'Skipped - Requirement - Doc ID:%s - Already exists on other branch';
@@ -3491,6 +3506,7 @@ $TLS_import_req_updated = 'Updated - Requirement - Doc ID:%s';
 $TLS_import_req_new_version_created = 'New version created - Requirement - Doc ID:%s';
 $TLS_import_req_new_version_failed = 'Request to create a New version has failed - %s';
 $TLS_import_req_update_last_version_failed = 'Request to update LAST version has failed - %s';
+$TLS_import_req_attachment_skipped = 'Skipped - Attachement "%s" already linked to requirement';
 
 $TLS_import_done = 'Import done';
 $TLS_import_syntax_error = 'Import done, but with syntax errors';

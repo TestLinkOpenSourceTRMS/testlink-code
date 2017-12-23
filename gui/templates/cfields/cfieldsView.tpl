@@ -26,6 +26,28 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <body>
 <h1 class="title">{$labels.title_cfields_mgmt}</h1>
 <div class="workBack">
+
+{if $gui->cf_map != '' && $gui->drawControlsOnTop}
+  <div class="groupBtn">
+    <span style="float: left">
+    <form method="post" action="lib/cfields/cfieldsEdit.php?do_action=create">
+      <input type="submit" id="cfieldTop" name="create_cfield" value="{$labels.btn_cfields_create}" />
+    </form>
+    </span>
+    <span>
+    <form method="post" action="{$exportCfieldsAction}" id="cfieldsExportTop" name="cfieldsExport">
+      <input type="submit" name="export_cf" id="export_cfTop"
+             style="margin-left: 3px;" value="{$labels.btn_export}" />
+             
+      <input type="button" name="import_cf" id="import_cfTop" 
+             onclick="location='{$importCfieldsAction}'" value="{$labels.btn_import}" />
+       
+    </form>
+    </span>
+  </div>
+{/if}
+
+
 {if $gui->cf_map != '' }
   <table id='item_view' class="simple_tableruler sortable">
   	<tr>
@@ -59,7 +81,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     </form>
     </span>
     <span>
-	  <form method="post" action="{$exportCfieldsAction}" name="cfieldsExport">
+	  <form method="post" action="{$exportCfieldsAction}" id="cfieldsExport" name="cfieldsExport">
 		  <input type="submit" name="export_cf" id="export_cf"
 		         style="margin-left: 3px;" value="{$labels.btn_export}" />
 		         

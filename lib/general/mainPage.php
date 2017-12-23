@@ -209,6 +209,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   // value: string present on rights table
   $right2check = array('project_edit' => 'mgt_modify_product',
                        'reqs_view' => "mgt_view_req", 
+                       'monitor_req' => "monitor_requirement", 
                        'reqs_edit' => "mgt_modify_req",
                        'keywords_view' => "mgt_view_key",
                        'keywords_edit' => "mgt_modify_key",

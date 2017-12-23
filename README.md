@@ -89,6 +89,30 @@ If you are going to re-import an XML file to update its test case data, the
 system might run out of memory. [The original issue][mem] was resolved with
 a `memory_limit` value of 256MB.
 
+### Oauth configuration
+
+In 1.9.17 there is new authorization method - using OAuth providers.
+Authentication against multiple oauth providers is supported.
+Currently it configured to work with Google OAuth and Github, but you can add
+any OAuth server that support protocol 2.0 and 2-step authentication.
+
+#### There are some restrictions in using OAuth:
+1. OAuth should not be specified as Default Authentication method
+2. If user does not exist in DB and you try to login through oauth - userID
+will be saved to db with special auth type. And for secure reasons you can't
+logon via regular email/password into Testlink.
+3. If user already exists in DB then you can logon via password or via OAuth
+
+#### To configure OAuth you should set in config provided by OAuth provider
+ oauth_client_id - id of OAuth program
+ oauth_client_secret - secret code
+ oauth_grant_type - authorization_code is default value
+ oauth_url - url of OAuth server
+ token_url - url for getting token
+ oauth_profile - url of OAuth profile page
+
+ oauth_grant_type, oauth_scope - specific parameters for several OAuth providers. They are not necessary
+
 ### Changes on LDAP CONFIGURATION
 
 Since 1.9.16 authentication against [Multiple LDAP Servers][ldap] is supported.

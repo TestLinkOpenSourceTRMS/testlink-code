@@ -162,6 +162,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,8 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,9 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,10);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,11);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,28);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,50);
 
 --  Rights for tester role
@@ -181,6 +182,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,9 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,11);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,28);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,50);
 
 --  Rights for leader role
@@ -201,6 +203,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,28);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,50);
 
 

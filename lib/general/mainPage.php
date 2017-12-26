@@ -210,6 +210,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   $right2check = array('project_edit' => 'mgt_modify_product',
                        'reqs_view' => "mgt_view_req", 
                        'monitor_req' => "monitor_requirement", 
+                       'req_tcase_link_management' => "req_tcase_link_management",
                        'reqs_edit' => "mgt_modify_req",
                        'keywords_view' => "mgt_view_key",
                        'keywords_edit' => "mgt_modify_key",

@@ -2717,6 +2717,7 @@ $TLS_bulk_req_assign_msg = "L’opération lie les exigences sélectionnées à 
 
 $TLS_bulk_req_assign_no_test_cases = "L’opération ne peut être effectuée car il n’y a aucune fiches de test dans le dossier de test";
 
+$TLS_bulk_assigment_done = '%s liens entre exigences et fiches de test ont été ajoutés';
 $TLS_req_title_bulk_assign = "Lier en masse les exigences";
 $TLS_req_title_available = "Exigences disponibles";
 $TLS_no_req_spec_available = "Aucun dossier d’exigences disponible pour le projet";

@@ -2910,6 +2910,7 @@ $TLS_same_name = "présente le même nom";
 $TLS_duplicate_criteria = "Considérer la fiche de test comme connue si elle";
 $TLS_hit_with_same_external_ID = "Ne peut pas être importée - Une fiche de test utilise déjà l'ID EXTERNE :";
 $TLS_attachment_skipped_during_import = "La pièce jointe \"%s\" a été ignorée car elle est déjà liée à l'élément de test.";
+$TLS_req_assignment_skipped_during_import = "Les liens vers les exigences ont été ignorées car l'utilisateur n'a pas les droits pour lier les exigences aux fiches de test";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "Aucune fiche de test pour l’export";

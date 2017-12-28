@@ -149,8 +149,7 @@
       {/if}    
       
     {if $gui->hasKeywords}  
-      {if $gui->grants.keywords_view == "yes" &&
-          $gui->grants.keywords_edit == "yes"}
+      {if $gui->grants.keyword_assignment == "yes"}
             <a href="{$gui->launcher}?feature=keywordsAssign" class="list-group-item" style="{$aStyle}">{$labels.href_keywords_assign}</a>
       {/if}
     {/if}

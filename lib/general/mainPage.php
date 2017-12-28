@@ -212,6 +212,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'monitor_req' => "monitor_requirement", 
                        'reqs_edit' => "mgt_modify_req",
                        'keywords_view' => "mgt_view_key",
+                       'keyword_assignment' => "keyword_assignment",
                        'keywords_edit' => "mgt_modify_key",
                        'platform_management' => "platform_management",
                        'issuetracker_management' => "issuetracker_management",

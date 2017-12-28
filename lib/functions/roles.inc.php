@@ -117,6 +117,7 @@ function init_global_rights_maps()
                           "testcase_freeze" => $l18n['right_testcase_freeze']);
   
   $g_rights_kw = array("mgt_view_key" => $l18n['desc_mgt_view_key'],
+                       "keyword_assignment" => $l18n['desc_keyword_assignment'],
                        "mgt_modify_key" => $l18n['desc_mgt_modify_key']);
   
   $g_rights_req = array("mgt_view_req" => $l18n['desc_mgt_view_req'],

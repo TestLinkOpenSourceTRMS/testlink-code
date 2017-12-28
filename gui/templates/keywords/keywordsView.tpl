@@ -74,11 +74,11 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
                  value="{$labels.btn_create_keyword}" 
                  onclick="doAction.value='create'"/>
     {/if}
-      {if $gui->keywords != ''}
+    {if $gui->keywords != '' && $gui->canAssign!=''}
         <input type="button" id="keyword_assign" name="keyword_assign" 
             value="{$labels.menu_assign_kw_to_tc}" 
               onclick="location.href=fRoot+'lib/general/frmWorkArea.php?feature=keywordsAssign';"/>
-      {/if}    
+    {/if}    
     
     {if $gui->canManage != ""}
       <input type="button" name="do_import" value="{$labels.btn_import}" 

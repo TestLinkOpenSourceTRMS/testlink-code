@@ -148,7 +148,7 @@ here:
 
 Server environment should consist of:
 - web-server: Apache 2.x
-- PHP > 5.4
+- PHP > 5.5
 - DBMS: MySQL 5.6.x / MariaDB 10.1.x, Postgres 9.x, MS-SQL 2008/2012
 
 Supported client web-browsers: 

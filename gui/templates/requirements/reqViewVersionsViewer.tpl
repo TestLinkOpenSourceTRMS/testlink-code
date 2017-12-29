@@ -190,9 +190,11 @@ viewer for requirement
 
       {section name=row loop=$args_req_coverage}
         <span>
+		{if $args_grants->req_tcase_link_management == "yes"}
         <input type="image"  class="clickable" src="{$tlImages.disconnect_small}" 
                title="{$labels.removeLinkToTestCase}" onClick="tcaseIdentity.value={$args_req_coverage[row].id}">
-        &nbsp;&nbsp;       
+        &nbsp;&nbsp; 
+		{/if}
         <img class="clickable" src="{$tlImages.history_small}"
              onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
              title="{$labels.execution_history}" />
@@ -204,7 +206,7 @@ viewer for requirement
       {/section}
       </form>
     {/if}
-    {if is_null($args_frozen_version) || !$args_frozen_version}
+    {if (is_null($args_frozen_version) || !$args_frozen_version ) && $args_grants->req_tcase_link_management == "yes"}
     <form style="display: inline;" id="reqAddTestCase_{$req_version_id}" name="reqAddTestCase_{$req_version_id}" 
           action="{$basehref}lib/requirements/reqEdit.php" method="post">
       <input type="hidden" id="atRID" name="requirement_id" value="{$args_req.id}" />

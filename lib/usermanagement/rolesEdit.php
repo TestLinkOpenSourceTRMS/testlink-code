@@ -254,7 +254,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
                                   'doCreate' => 'create_role', 'doUpdate' => 'edit_role',
                                   'duplicate' => 'create_role');
 
-
+  $guiObj->highlight->$actionCfg = array();
   $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
   $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
   $guiObj->role = $roleObj;

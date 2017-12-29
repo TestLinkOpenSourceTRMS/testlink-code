@@ -3300,7 +3300,7 @@ $TLS_audit_req_version_unfrozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was 
 
 $TLS_audit_testcase_created = "Test Case '{%1}' has been created.";
 $TLS_audit_testcase_saved = "Test Case '{%1}' has been saved.";
-$TLS_audit_testcase_deleted = "La fiche de test '{%1}' a été supprimée.";
+$TLS_audit_testcase_deleted = "Test Case '{%1}' has been deleted.";
 $TLS_audit_testcase_version_deleted = "Version {%1} of the Test Case '{%2}' has been deleted.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";

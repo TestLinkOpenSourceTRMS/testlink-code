@@ -32,7 +32,7 @@ class testcaseCommands
     $this->execution_types = $this->tcaseMgr->get_execution_types();
     $this->grants = new stdClass();
 
-    $g2c = array('mgt_modify_tc','mgt_view_req','testplan_planning',
+    $g2c = array('mgt_modify_tc','mgt_view_req','testplan_planning','req_tcase_link_management',
                  'testproject_delete_executed_testcases','testproject_edit_executed_testcases');
     foreach($g2c as $grant)
     {

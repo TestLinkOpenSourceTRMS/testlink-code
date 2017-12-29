@@ -209,6 +209,7 @@ function getRightsCfg()
     $cfg->system_mgmt = config_get('rights_system');
     $cfg->platform_mgmt = config_get('rights_platforms');
     $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
+    $cfg->codetracker_mgmt = config_get('rights_codetrackers');
     $cfg->execution = config_get('rights_executions');
     // $cfg->reqmgrsystem_mgmt = config_get('rights_reqmgrsystems');
 
@@ -254,7 +255,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
                                   'doCreate' => 'create_role', 'doUpdate' => 'edit_role',
                                   'duplicate' => 'create_role');
 
-
+  $guiObj->highlight->$actionCfg = array();
   $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
   $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
   $guiObj->role = $roleObj;

@@ -85,7 +85,7 @@ Purpose: smarty template - create new testcase
   {include file="opt_transfer.inc.tpl" option_transfer=$gui->opt_cfg}
   </div>
   
-  {if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes' && isset($gui->tc.testcase_id)}
+  {if $gui->opt_requirements==TRUE && $gui->grants->req_tcase_link_management=='yes' && isset($gui->tc.testcase_id)}
     <br />
     <div>
     <a href="javascript:openReqWindow({$gui->tc.testcase_id})">{$labels.assign_requirements}</a>    

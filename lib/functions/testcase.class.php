@@ -3817,6 +3817,57 @@ class testcase extends tlObjectWithAttachments
         $tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
       }
     }
+	
+	if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS'])
+    {
+		$attachments=null;
+	
+		// get all attachments
+		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($tcase_id,$this->attachmentTableName,'id');
+	  
+		// get all attachments content and encode it in base64	  
+		if ($attachmentInfos)
+		{
+			foreach ($attachmentInfos as $attachmentInfo)
+			{
+				$aID = $attachmentInfo["id"];
+				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+				
+				if ($content != null)
+				{
+					$attachments[$aID]["id"] = $aID;
+					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
+					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+					$attachments[$aID]["file_size"] = $attachmentInfo["file_size"];
+					$attachments[$aID]["title"] = $attachmentInfo["title"];
+					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+					$attachments[$aID]["content"] = base64_encode($content);
+				}
+			}
+	    }
+	  
+		if( !is_null($attachments) && count($attachments) > 0 )
+		{
+			$attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
+			$attchElemTemplate = "\t\t<attachment>\n" .
+							   "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+							   "\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+							   "\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+							   "\t\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
+							   "\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+							   "\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+							   "\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+							   "\t\t</attachment>\n";
+
+			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
+								"||ATTACHMENT_FILE_TYPE||" => "file_type",
+								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
+								"||ATTACHMENT_TITLE||" => "title",
+								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
+								"||ATTACHMENT_CONTENT||" => "content");
+			$tc_data[0]['xmlattachments'] = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
+        }
+    }
 
     // ------------------------------------------------------------------------------------
     if(!isset($optExport['TCSTEPS']) || $optExport['TCSTEPS'])
@@ -3916,7 +3967,7 @@ class testcase extends tlObjectWithAttachments
                 "\t<is_open>||ISOPEN||</is_open>\n" .
                 "\t<active>||ACTIVE||</active>\n" .
                 "||STEPS||\n" .
-                "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||{$addElemTpl}</testcase>\n";
+                "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||||ATTACHMENTS||{$addElemTpl}</testcase>\n";
 
 
       // ||yyy||-> tags,  {{xxx}} -> attribute
@@ -3944,6 +3995,7 @@ class testcase extends tlObjectWithAttachments
                     "||KEYWORDS||" => "xmlkeywords",
                     "||CUSTOMFIELDS||" => "xmlcustomfields",
                     "||REQUIREMENTS||" => "xmlrequirements",
+                    "||ATTACHMENTS||" => "xmlattachments",
                     "||RELATIONS||" => "xmlrelations");
 
 
@@ -6602,6 +6654,7 @@ class testcase extends tlObjectWithAttachments
     $goo->tcase_cfg->can_edit_executed = $grantsObj->testproject_edit_executed_testcases == 'yes' ? 1 : 0;
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
+	$goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
 
     $goo->parentTestSuiteName = '';
     $goo->tprojectName = '';
@@ -7417,7 +7470,7 @@ class testcase extends tlObjectWithAttachments
     //
     // CRITIC: skipCheck is needed to render OK when creating report on Pseudo-Word format.
     $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=1&id=%id%"></p>';
+    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>';
 
     $rse = &$item2render;
     foreach($key2check as $item_key)
@@ -7449,7 +7502,8 @@ class testcase extends tlObjectWithAttachments
               {
                 if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image'])
                 {
-                  $ghost .= str_replace('%id%',$atx,$img);
+                  $sec = hash('sha256', $attSet[$id][$atx]['file_name']);
+                  $ghost .= str_replace(array('%id%','%sec%'),array($atx,$sec),$img);
                 }
                 $lim = $elc-1;
                 for($cpx=1; $cpx <= $lim; $cpx++)

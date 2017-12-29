@@ -598,9 +598,12 @@ class cfield_mgr extends tlObject
         }
         	
         $html_identity=$input_name . $t_name_suffix;
-  			$str_out .="<select {$required} name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
-  			$str_out .= ' size="' . $t_list_size . '">';
-        	
+  			$str_out .= '<select data-cfield="list" '  . 
+                    "{$required} name=\"{$html_identity}\" " .
+                    "id=\"{$input_name}\" {$t_multiple}";
+  			// $str_out .= ' size="' . $t_list_size . '">';
+        $str_out .= '">';
+          	
   			$t_selected_values = explode( '|', $cfValue);
    			foreach( $t_values as $t_option ) 
         {
@@ -2529,10 +2532,10 @@ function getXMLRPCServerParams($nodeID,$tplanLinkID=null)
  */
  function exportValueAsXML($cfMap)
  {
-    $cfRootElem = "<custom_fields>\n{{XMLCODE}}\n</custom_fields>";
-    $cfElemTemplate = "\t" . "<custom_field>\n\t\t<name><![CDATA[||NAME||]]></name>\n\t\t" .
+    $cfRootElem = "<custom_fields>\n{{XMLCODE}}\t\t</custom_fields>\n";
+    $cfElemTemplate = "\t\t\t" . "<custom_field>\n\t\t\t<name><![CDATA[||NAME||]]></name>\n\t\t\t" .
 	                           "<value><![CDATA[||VALUE||]]></value>\n" .
-	                  "\t" . "</custom_field>";
+	                  "\t\t\t" . "</custom_field>\n";
     $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
 	$cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
   	return $cfXML; 

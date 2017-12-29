@@ -51,9 +51,9 @@ switch($args->operation)
 	break;
 }
 
+$gui->images = $smarty->getImages();
 $gui->matrix = getAllUsersForGrid($db);
 $gui->tableSet[] = buildMatrix($gui, $args);
-$gui->images = $smarty->getImages();
 
 $tplCfg = templateConfiguration();
 $smarty->assign('gui',$gui);

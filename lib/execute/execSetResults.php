@@ -194,6 +194,10 @@ if(!is_null($linked_tcversions))
                    'status'   => $args->statusSingle[$args->version_id],
                    'directLink' => $args->direct_link);
       event_signal('EVENT_EXECUTE_TEST', $ctx);
+	  $tc_info = $tcase_mgr->getExternalID($tcase_id);
+	  $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
+	  $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
+	  logAuditEvent(TLS("audit_exec_saved",$tc_info[0],$build_info['name'],$tp_info['name']),"CREATE",$execSet[$tcversion_id],"execution");
     }
 
     // Need to re-read to update test case status
@@ -304,7 +308,13 @@ if(!is_null($linked_tcversions))
   {  
     if ($args->doDelete)
     {
-      delete_execution($db,$args->exec_to_delete);
+      $dummy = delete_execution($db,$args->exec_to_delete);
+	  if ($dummy){
+	    $tc_info = $tcase_mgr->getExternalID($tcase_id);
+	    $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
+	    $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
+		logAuditEvent(TLS("audit_exec_deleted",$tc_info[0],$build_info['name'],$tp_info['name']),"DELETE",$args->exec_to_delete,"execution");
+	  }
     }
 
     // Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution

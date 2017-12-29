@@ -143,7 +143,7 @@ function checkAccessToExec(&$dbH,&$ct)
   foreach($k2a as $r2c)
   {
     $grants[$r2c] = false;
-    if( $user->hasRight($dbH,$r2c,$tproject_id,$tplan_id,true) )
+    if( $user->hasRight($dbH,$r2c,$tproject_id,$tplan_id,true) || $user->globalRoleID == TL_ROLES_ADMIN )
     {
       $grants[$r2c] = true;
     }    

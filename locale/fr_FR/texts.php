@@ -1,25 +1,23 @@
 ﻿<?php
 /**
- * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
+ * ♔ TestLink Open Source Project - http://testlink.org/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * French(fr_FR) texts for help/instruction pages. Strings for dynamic pages
- * are stored in strings.txt pages.
+ * French (fr_FR) strings (en_GB is default development language)
  *
- * Here we are defining GLOBAL variables. To avoid override of other globals
- * we are using reserved prefixes:
- * $TLS_help[<key>] and $TLS_help_title[<key>]
- * or
- * $TLS_instruct[<key>] and $TLS_instruct_title[<key>]
+ * This list of labels is defined as GLOBAL string variables. The first sections are general
+ * for strings used over all GUI. These definition should not be redefined. Next sections are
+ * related to particular pages. Comment with page filename indicate a begin of section. There
+ * must be defined all other strings.
  *
+ * ********************************************************************************************
+ * Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning - Warning
+ * ********************************************************************************************
  *
- * Revisions history is not stored for the file
- * 
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2003-2009, TestLink community
- * @version    	CVS: $Id: texts.php,v 1.29 2010/07/22 14:14:44 asimon83 Exp $
- * @link 		http://www.teamst.org/index.php
+ * 1. Be careful about format - the file is parsed by script -> comment only with "//" except header
+ * 2. for JS string you must use \\n to get \n for end of line
+ *
+ * ********************************************************************************************
  *
  **/
 
@@ -32,69 +30,70 @@ $TLS_htmltext['error'] 		= "<p>Une erreur inattendue est survenue. Merci de cons
 
 
 
-$TLS_htmltext_title['assignReqs']	= "Affecter les exigences au cas de test";
+$TLS_htmltext_title['assignReqs']	= "Lier les exigences aux fiches de test";
 $TLS_htmltext['assignReqs'] 		= "<h2>Objectif :</h2>
-<p>Les utilisateurs peuvent créer des relations entre exigences et cas de test. Un concepteur de test peut
-définir des relations 0..n vers 0..n. Par exemple, un cas de test peut être affecté à une ou plusieurs 
+<p>Les utilisateurs peuvent créer des relations entre exigences et fiches de test. Un concepteur de test peut
+définir des relations 0..n vers 0..n. Par exemple, une fiche de test peut être affectée à une ou plusieurs 
 exigences, ou aucune, et inversement. Tout comme la matrice de traçabilité aide à rechercher la couverture des tests
-d'une exigence et trouver lesquelles ont successivement échoué pendant les tests, l'analyse sert à confirmer que toutes les attentes définies ont été rencontrées.</p><h2>Pour commencer :</h2>
+d'une exigence et trouver lesquelles ont successivement échoué pendant les tests, l'analyse sert à confirmer que toutes les attentes définies ont été rencontrées.</p>
+
+<h2>Pour commencer :</h2>
 <ol>
-	<li>Choisissez un cas de test dans l'arborescence à gauche. La combo box avec la liste des dossiers
+	<li>Choisissez une fiche de test dans l'arborescence à gauche. La combo box avec la liste des dossiers
 	d'exigences est affichée en haut de l'espace de travail.</li>
 	<li>Choisissez un dossier d'exigence si plus d'un est défini. 
 	TestLink recharge la page automatiquement.</li>
 	<li>Un bloc au milieu de l'espace de travail liste toutes les exigences (des spécifications choisies), qui
-	sont liées au cas de test. Le bloc du dessous 'Exigences disponibles' liste toutes 
-	les exigences qui n'ont aucune relation
-	avec le cas de test courant. Un concepteur peut marquer les exigences qui sont couvertes par ce
-	cas de test et alors cliquer sur le bouton 'Affecter'. Ce nouveau cas de test affecté est affiché dans
-	le bloc du milieu 'Exigences affectées'.</li>
+	sont liées à la fiche de test. Le bloc du dessous 'Exigences disponibles' liste toutes 	les exigences qui 
+	n'ont pas de relation avec la fiche de test sélectionnée. Un concepteur peut marquer les exigences qui sont 
+	couvertes par cette fiche de test et alors cliquer sur le bouton 'Affecter'. Cette nouvelle fiche de test 
+	affectée est affichée dans 	le bloc du milieu 'Exigences affectées'.</li>
 </ol>";
 
 
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "Cahier de test";
 $TLS_htmltext['editTc'] 		= "<h2>Objectif :</h2>
-<p>La <i>Cahier de Test</i> autorise les utilisateurs à voir et éditer toutes " .
-		"<i>Séquences de Test</i> et <i>Cas de Tests</i> existants. Les cas de test ont une version " .
+<p>La <i>Cahier de Test</i> autorise les utilisateurs à voir et éditer tous les " .
+		"<i>Dossiers de Test</i> et <i>Fiches de Tests</i> existants. Les fiches de test ont une version " .
 		" et toutes les versions précédentes sont disponibles et peuvent être vues et gérées ici.</p>
 
 <h2>Pour commencer :</h2>
 <ol>
 	<li>Sélectionner votre projet dans l'arborescence (le noeud racine). <i>Veuillez noter : " .
 	"Vous pouvez toujours changer le projet actif en sélectionnant un projet différent dans la " .
-	"liste déroulante dans le coin en haut à droite.</i></li>
-	<li>Créer une nouvelle séquence de test en cliquant sur <b>Nouvelle séquence de test enfant</b>. Les séquences de test peuvent " .
-	"apporter une structure à vos documents de test conformément à vos normes (tests fonctionnels/non-fonctionnels, " .
-	"composants du produit ou fonctionnalités, requêtes de modifications, etc.). La description d'une " .
-	"séquence de test peut contenir le contexte des cas de tests inclus, configuration par défaut, " .
+	"liste déroulante dans le coin en haut à droite.</i></li> " .
+	"<li>Créer un dossier de test en cliquant sur <b>Créer</b> dans <b>Opérations sur les dossiers de tests</b>. " .
+	"Les dossiers de test peuvent apporter une structure à vos documents de test conformément à vos normes " .
+	"(tests fonctionnels/non-fonctionnels, composants du produit ou fonctionnalités, requêtes de modifications, etc.). " .
+	"La description d'un dossier de test peut contenir le contexte des fiches de tests inclus, configuration par défaut," .
 	"des liens vers les documents utiles, les limitations et autres informations utiles. En général, " .
-	"toutes les annotations sont communes aux cas de tests enfants. Les séquences de test suivent " .
-	"le 'dossier' métaphore, ses utilisateurs peuvent déplacer ou copier les séquences de test à l'intérieur " .
-	"du projet. De plus, ils peuvent les importer ou les exporter (incluant le contenu des cas de tests).</li>
-	<li>Les séquences de tests sont des dossiers divisibles. L'utilisateur peut déplacer ou copier les séquences de tests à l'intérieur " .
-	"du projet. Les séquences de tests peuvent être importées ou exportées (incluant les cas de tests).
-	<li>Sélectionnez votre nouvelle séquence de test dans l'arborescence et créer " .
-	"un nouveau cas de test en cliquant sur <b>Créer Cas de Test</b>. Un cas de test spécifie " .
-	" un cas de test particulier, les résultats attendus et la définition des champs personnalisés " .
+	"toutes les annotations sont communes aux fiches de tests enfants. Les dossiers de test suivent " .
+	"le 'dossier' métaphore, ses utilisateurs peuvent déplacer ou copier les dossiers de test à l'intérieur " .
+	"du projet. De plus, ils peuvent les importer ou les exporter (incluant le contenu des fiches de tests).</li>
+	<li>Les dossiers de tests sont des dossiers divisibles. L'utilisateur peut déplacer ou copier les dossiers de tests à l'intérieur " .
+	"du projet. Les dossiers de tests peuvent être importés ou exportés (incluant les fiches de tests).
+	<li>Sélectionnez votre nouveau dossier de test dans l'arborescence et créer une nouvelle fiche de test en " .
+	"cliquant sur <b>Créer</b> dans <b>Opérations sur les fiches de tests</b>.. Une fiche de test spécifie " .
+	" une fiche de test particuliere, les résultats attendus et la définition des champs personnalisés " .
 	"dans le projet (se référer au manuel utilisateur pour plus d'information). Il est également possible " .
 	"d'affecter des <b>mots clés</b> pour améliorer la traçabilité.</li>
-	<li>Naviguez via l'arborescence sur le côté gauche et éditer les données. Les cas de tests stockent leur propre historique.</li>
-	<li>Affectez votre spécification de test créée au <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Campagne de test</span> lorsque votre cas de test est prêt.</li>
+	<li>Naviguez via l'arborescence sur le côté gauche et éditer les données. Les fiches de tests stockent leur propre historique.</li>
+	<li>Affectez votre fiche de test créée à la <span class=\"help\" onclick=
+	\"javascript:open_help_window('glosary','$locale');\">Campagne de test</span> lorsque votre fiche de test est prête.</li>
 </ol>
 
-<p>Avec TestLink vous pouvez organiser les cas de tests dans des séquences de tests." .
-"Les séquences de tests peuvent être imbriquées dans d'autres séquences de tests. Habituez-vous à créer des hiérarchies de séquences de tests.
- Vous pouvez alors imprimer cette information avec les cas de tests.</p>";
+<p>Avec TestLink vous pouvez organiser les fiches de tests dans des dossiers de tests." .
+"Les dossiers de tests peuvent être imbriqués dans d'autres dossiers de tests. Habituez-vous à créer des hiérarchies de dossiers de tests.
+ Vous pouvez alors imprimer cette information avec les fiches de tests.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchTc']	= "Page de recherche de cas de test";
+$TLS_htmltext_title['searchTc']	= "Page de recherche de fiches de test";
 $TLS_htmltext['searchTc'] 		= "<h2>Objectif :</h2>
 
 <p>Navigation selon des mots clés et/ou des phrases. La recherche n'est pas 
-sensible à la casse. Le résultat inclut seulement les cas de tests du projet actuel.</p>
+sensible à la casse. Le résultat inclut seulement les fiches de tests du projet actuel.</p>
 
 <h2>Pour rechercher :</h2>
 
@@ -102,7 +101,7 @@ sensible à la casse. Le résultat inclut seulement les cas de tests du projet a
 	<li>Ecrire une phrase dans le champ approprié. Laissez les champs non utilisés du formulaire vide.</li>
 	<li>Choisir le mot clé requit ou laisser la valeur 'Non appliqué'.</li>
 	<li>Cliquer sur le bouton Rechercher.</li>
-	<li>Tous les cas de tests remplissant les conditions sont affichés. Vous pouvez modifier les cas de test via le lien 'Titre'.</li>
+	<li>Toutes les fiches de tests remplissant les conditions sont affichées. Vous pouvez modifier les fiches de test via le lien 'Titre'.</li>
 </ol>";
 
 /* contribution by asimon for 2976 */
@@ -126,15 +125,15 @@ sensible à la casse. Le résultat inclut juste les exigences du projet de test 
 <h2>Note :</h2>
 
 <ol>
-	<li>Seules les exigences dans le projet courant seront recherchées.</li>>
-	<li>La recherche est sensible à la casse.</li>
+	<li>Seules les exigences dans le projet courant seront recherchées.</li>
+	<li>La recherche n'est pas sensible à la casse.</li>
 	<li>Les champs vides sont ignorés.</li>
 </ol>
 ";
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReqSpec']	= "Pas de recherche de dossier d'exigence";
+$TLS_htmltext_title['searchReqSpec']	= "Page de recherche de dossier d'exigence";
 $TLS_htmltext['searchReqSpec'] 		= "<h2>Objectif :</h2>
 
 <p>Navigation conformément aux mots-clés et/ou chaînes recherchées. La recherche n'est pas
@@ -152,23 +151,23 @@ sensible à la casse. Le résultat inclut juste les dossiers d'exigences du proj
 <h2>Note :</h2>
 
 <ol>
-	<li>Seules les exigences dans le projet courant seront recherchées.</li>>
-	<li>La recherche est sensible à la casse.</li>
+	<li>Seules les dossiers d'exigences dans le projet courant seront recherchées.</li>>
+	<li>La recherche n'est pas sensible à la casse.</li>
 	<li>Les champs vides sont ignorés.</li>
 </ol>";
 /* end contribution */
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printTestSpec']	= "Imprimer un cahier de test"; //printTC.html
+$TLS_htmltext_title['printTestSpec']	= "Imprimer un ensemble de fiches de test"; //printTC.html
 $TLS_htmltext['printTestSpec'] 			= "<h2>Objectif :</h2>
-<p>D'ici vous pouvez imprimer un cas de test seul, tous les cas de tests d'une séquence de tests,
-ou tous les cas de test du projet ou de la campagne de test.</p>
+<p>D'ici vous pouvez imprimer une fiche de test seule, toutes les fiche de tests d'un dossier de tests,
+ou toutes les fiches de test du projet ou de la campagne de test.</p>
 <h2>Commencement :</h2>
 <ol>
 <li>
-<p>Sélectionner la partie du cas de test que vous voulez afficher, et cliquer sur un cas de test, 
-une séquence de tests, ou un projet. Une page imprimable sera affichée.</p>
+<p>Sélectionner la partie de la fiche de test que vous voulez afficher, et cliquer sur une fiche de test, 
+une dossier de tests, ou un projet. Une page imprimable sera affichée.</p>
 </li>
 <li><p>Utilisez la drop-box \"Afficher comme\" dans le cadre de navigation pour spécifier si vous voulez 
 afficher les informations en HTML, document OpenOffice ou document Microsoft. 
@@ -182,41 +181,40 @@ Voir <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['reqSpecMgmt']	= "Conception du cahier d'exigences"; //printTC.html
-$TLS_htmltext['reqSpecMgmt'] 			= "<p>Vous pouvez gérer le cahier d'exigences.</p>
+$TLS_htmltext_title['reqSpecMgmt']	= "Conception du dossier d'exigences"; //printTC.html
+$TLS_htmltext['reqSpecMgmt'] 			= "<p>Vous pouvez gérer le dossier d'exigences.</p>
 
 <h2>Dossier d'exigences</h2>
 
 <p>Les exigences sont regroupées en <b>dossiers d'exigences</b>, qui sont reliés au
 projet.<br />
-Un utilisateur peut ajouter une simple description ou notes au champ <b>Contexte</b>.</p>
+Un utilisateur peut ajouter une simple description ou notes au champ <b>Périmètre</b>.</p>
 
 <p><b><a name='total_count'>Surcharger le compteur d'exigences</a></b> sert pour
 évaluer la couverture des exigences dans le cas où pas toutes les exigences sont ajoutées dans TestLink.
-La valeur <b>0</b> signifie que le compte des exigences courant est utilisé
-pour les métriques.</p>
+La valeur <b>0</b> signifie que le compte des exigences courant est utilisé pour les métriques.</p>
 <p><i>Ex : Le cahier d'exigences inclut 200 exigences mais seulement 50 sont ajoutées dans TestLink. La couverture
 de test est de 25% (en considérant que les 50 exigences ajoutées seront actuellement testées).</i></p>
 
 <h2><a name='req'>Exigences</a></h2>
 
 <p>Cliquer sur le titre d'une exigence existante. Si aucune n'existe, cliquez sur le noeud du projet pour en créer une. Vous pouvez créer, éditer, supprimer
-ou importer des exigences pour le cahier. Chaque exigence a un titre, un contexte et un statut.
+ou importer des exigences pour le dossier. Chaque exigence a un titre, un périmètre et un statut.
 Un statut peut être soit 'Normal' ou 'Non testable'. Une exigence non testable n'est pas comptée
 pour les métriques. Ce paramètre peut être utilisé pour les fonctionnalités non implémentées et
 les exigences mal conçues.</p>
 
-<p>Vous pouvez créer un nouveau cas de test pour les exigences en utilisant l'action multiple en sélectionnant
-les exigences dans l'écran des spécifications. Ces cas de test sont créés dans la séquence de test
+<p>Vous pouvez créer une nouvelle fiche de test pour les exigences en utilisant l'action multiple en sélectionnant
+les exigences dans l'écran des spécifications. Ces fiches de test sont créés dans le dossier de test
 avec un nom configuré de la sorte <i>(default is: \$tlCfg->req_cfg->default_testsuite_name =
-'Séquence de test créée par exigence - Auto';)</i>. Le titre et le contexte sont copiés dans ce cas de test.</p>";
+'Séquence de test créée par exigence - Auto';)</i>. Le titre et le périmètre sont copiés dans cette fiche de test.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printReqSpec'] = "Imprimer le cahier d'exigences"; //printReq
+$TLS_htmltext_title['printReqSpec'] = "Imprimer le dossier d'exigences"; //printReq
 $TLS_htmltext['printReqSpec'] = "<h2>Objectif :</h2>
-<p>Il est possible d'imprimer une seule exigence, toutes les exigences d'un dossier d'exigence, ou
-toutes les exigences d'un projet de test.</p>
+<p>Il est possible d'imprimer une seule exigence, toutes les exigences d'un dossier d'exigences, ou
+toutes les exigences d'un projet.</p>
 <h2>Pour commencer :</h2>
 <ol>
 <li>
@@ -238,53 +236,51 @@ Voir <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 $TLS_htmltext_title['keywordsAssign']	= "Affectation des mots-clés";
 $TLS_htmltext['keywordsAssign'] 			= "<h2>Objectif :</h2>
 <p>La page d'affectation des mots-clés est l'endroit où les utilisateurs peuvent affecter
-par lot les mots clés à une séquence de test ou un cas de test existant.</p>
+par lot les mots clés à un dossier de test ou une fiche de test existante.</p>
 
 <h2>Pour affecter les mots clés :</h2>
 <ol>
-	<li>Sélectionnez une séquence de test, ou un cas de test dans l'arborescence
+	<li>Sélectionnez un dossier de test, ou une fiche de test dans l'arborescence
 		sur la gauche.</li>
-	<li>La box la plus en haute qui se trouve sur le côté droit vous
-		autorise à affecter les mots-clés à chaque cas de test
-		seul.</li>
-	<li>La sélection plus bas vous autorise à affecter les cas à un niveau
+	<li>Le double chevron vous autorise à affecter les mots-clés à chaque fiche de test.</li>
+	<li>Le simple chevron vous autorise à affecter les cas à un niveau
 		plus granulaire.</li>
 </ol>
 
 <h2>Information importante concernant l'affectation des mots-clés dans une campagne de tests :</h2>
-<p>L'affectation des mots-clés faite à une campagne de test sera effective seulement sur les cas de test
-dans votre campagne de test si et seulement si la campagne de test contient la dernière version du cas de test.
-Sinon si une campagne de test contient une ancienne version du cas de test, l'affection que vous avez faite
+<p>L'affectation des mots-clés faite à une campagne de test sera effective seulement sur les fiches de test
+dans votre campagne de test si et seulement si la campagne de test contient la dernière version de la fiche de test.
+Sinon si une campagne de test contient une ancienne version de la fiche de test, l'affection que vous avez faite
 n'apparaît pas dans la campagne de test.
 </p>
-<p>TestLink utilise cette approche afin que les anciennes versions des cas de test dans les campagnes de test ne soient pas impactées
-par l'affectation des mots-clés faite sur la version la plus récente du cas de test. Si vous voulez que vos
-cas de tests dans votre campagne de test soient mis à jour, vérifier d'abord que les cas de tests ont été mis à jour en utilisant la fonctionnalité
-'Mettre à jour les cas de test' AVANT de faire l'affectation des mots clés.</p>";
+<p>TestLink utilise cette approche afin que les anciennes versions des fiches de test dans les campagnes de test ne soient pas impactées
+par l'affectation des mots-clés faite sur la version la plus récente de la fiche de test. Si vous voulez que vos
+fiches de tests dans votre campagne de test soient mis à jour, vérifier d'abord que les fiches de tests ont été mis à jour en utilisant la fonctionnalité
+'Mise à jour des versions de fiches de test à exécuter ' AVANT de faire l'affectation des mots clés.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['executeTest']	= "Exécution des cas de test";
+$TLS_htmltext_title['executeTest']	= "Gestion des exécutions";
 $TLS_htmltext['executeTest'] 		= "<h2>Objectif :</h2>
 
-<p>Autorise l'utilisateur à exécuter les cas de tests. L'utilisateur peut affecter les résultats de test
-à des cas de tests pour le build. Voir l'aide pour plus d'informations à propos des filtres et des actions " .
+<p>Autorise l'utilisateur à exécuter les fiches de tests. L'utilisateur peut affecter les résultats de test
+à des versions de fiche de tests pour la version du produit. Voir l'aide pour plus d'informations à propos des filtres et des actions " .
 		"(cliquer sur l'icône point d'interrogation).</p>
 
 <h2>Pour commencer :</h2>
 
 <ol>
-	<li>L'utilisateur doit avoir défini un build pour la campagne de test.</li>
-	<li>Sélectionner un build à partir de la box en bas et le bouton \"Appliquer\" dans le cadre de navigation.</li>
-	<li>Si vous voulez voir que quelques cas de test à la place de toute l'arborescence,
-      il est possible d'appliquer un filtre. Cliquer sur le bouton \"Apply\"
+	<li>L'utilisateur doit avoir défini une version du produit pour la campagne de test.</li>
+	<li>Sélectionner une version du produit à évaluer dans la liste.</li>
+	<li>Si vous voulez voir que quelques fiches de test à la place de toute l'arborescence,
+      il est possible d'appliquer un filtre. Cliquer sur le bouton \"Appliquer\"
       après avoir renseigné les filtres.</li>	
-	<li>Cliquer sur un cas de test dans l'arborescence.</li>
-	<li>Remplir le résultat du cas de test et n'importe quelles notes pertinentes et anomalies.</li>
+	<li>Cliquer sur une fiche de test dans l'arborescence.</li>
+	<li>Remplir le résultat de l'exécution de la fiche de test et toutes notes pertinentes.</li>
 	<li>Sauvegarder les résultats.</li>
 </ol>
 <p><i>Remarque : TestLink doit être configuré pour interagir avec votre gestionnaire d'anomalie 
-si vous voulez créer/tracer un rapport de problème directement pour le GUI.</i></p>";
+si vous voulez créer/tracer un rapport de problème directement depuis la GUI.</i></p>";
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['showMetrics']	= "Description des rapports et métriques de test";
@@ -298,140 +294,132 @@ de test courante pour l'exécution. Vous pouvez aussi sélectionner un format de
 </ul>
 
 <p>Le bouton 'Imprimer' active l'impression d'un seul rapport (sans navigation).</p>
+
+<p>La 'Derniere exécution' d'une fiche de test est un concept utilisé dans plusieurs rapports, et qui est déterminé comme suit :</p>
+<ul>
+<li>L'ordre dans lequel les versions du produit sont ajoutées à une campagne de test détermine quel version du produit est la plus récente. Les résultats
+enregistrés pour la version du produit la plus récente ont préséance sur les résultats liés à des versions du produit plus anciennes. 
+Par exemple, si vous marquez un test comme 'échoué' dans une version du produit 1, et marqué à 'réussi' dans une version du produit 2, 
+la 'Derniere exécution' sera considérée 'réussi'.</li>
+<li>Si une fiche de test est exécutée de multiple fois sur la même version du produit, l'exécution la plus récente aura
+préséance. Par exemple, si la version du produit 3 est affectée à votre équipe et que le testeur 1 enregistre une exécution 'réussi' à 2PM,
+et que le testeur 2 enregistre une exécution 'échoué' à 3PM - la 'Derniere exécution' sera considéré 'échoué'.</li>
+<li>Les fiches de tests listées à 'non exécuté' dans une version du produit ne sont pas pris en compte. Par exemple, si vous marquez
+une fiche de test à 'réussi' dans la version du produit 1, et que vous ne l'exécutez pas dans la version du produit 2, la 'Derniere exécution' sera considéré à 'réussi'.</li>
+</ul>
+
 <p>Différents rapports sont disponibles. Leurs objectifs et fonctions sont expliqués ci-dessous.</p>
 
-<h3>Rapport de campagne de test</h3>
-<p>Le document 'Rapport de campagne de Test' propose de définir un contenu et une structure de document.</p>
+<h3>Cahier de tests de la campagne</h3>
+<p>Le document 'Cahier de tests de la campagne' permet de définir le contenu et une structure de document à générer. Le rapport génère un descriptif des fiches de tests liées à la campagne de tests.</p>
 
-<h3>Rapport de Test</h3>
-<p>Le document 'Rapport de Test' a le choix de définir un contenu et une structure de document.
-Cela inclut les cas de tests avec les résultats de tests.</p>
+<h3>Compte-rendu des exécutions des tests de la campagne</h3>
+<p>Le document 'Compte-rendu des exécutions des tests de la campagne' permet de définir un contenu et une structure de document à générer.
+Cela inclut les fiches de tests avec les résultats de tests.</p>
 
-<h3>Métriques générales de la campagne de test</h3>
-<p>Cette page vous montre seulement le statut le plus courant d'une campagne de test par séquence de test, propriétaire, et mot-clé.
-Le statut le plus courant est déterminé par le build le plus courant pour l'exécution de cas de tests. Pour
-l'instance, si un cas de test a été exécuté pour de multiples builds, seulement le dernier résultat est pris en compte.</p>
+<h3>Compte-rendu des exécutions des tests de la campagne pour une version du produit</h3>
+<p>Le document 'Compte-rendu des exécutions des tests de la campagne pour une version du produit' permet de définir un contenu et une structure de document à générer.
+Cela inclut les fiches de tests avec les résultats de tests pour une version du produit spécifique.</p>
 
-<p>Le 'Dernier Résultat de Test' est un concept utilisé dans plusieurs rapports, et qui est déterminé comme suit :</p>
-<ul>
-<li>L'ordre dans lequel les builds sont ajoutés à une campagne de test détermine quel build est le plus récent. Les résultats
-du build le plus récent ont préséance sur les builds plus anciens. Par exemple, si vous marquez un test comme
-'échoué' dans le build 1, et marqué à 'réussi' dans le build 2, c'est le dernier résultat qui sera à 'réussi'.</li>
-<li>Si un cas de test est exécuté de multiple fois sur le même build, l'exécution la plus récente aura
-préséance. Par exemple, si le build 3 est affecté à votre équipe et que le testeur 1 marque cela à 'réussi' à 2PM,
-et que le testeur 2 marque cela à 'échoué' à 3PM - cela apparaît à 'échoué'.</li>
-<li>Les cas de tests listés à 'non exécuté' dans un build ne sont pas pris en compte. Par exemple, si vous marquez
-un cas à 'réussi' dans le build 1, et que vous ne l'exécutez pas dans le build 2, c'est le dernier résultat qui sera considéré à
-'réussi'.</li>
-</ul>
-<p>Les tables suivantes sont affichées :</p>
-<ul>
-	<li><b>Les résultats par séquence de tests de haut niveau</b>
-  Les résultats par séquence de tests de haut niveau sont listés. Le nombre de cas total, réussi, échoué, bloqué, non exécuté et pourcentage
-	complet sont listés. Un cas de test 'complété' est celui qui a été marqué réussi, échoué ou bloqué.
-	Les résultats par séquences de tests de haut niveau inclut toutes les séquences enfants.</li>
-	<li><b>Résultats par mots-clés</b>
-	Tous les mots-clés qui sont affectés à des cas dans la campagne de test courante sont listés, et les résultats associés
-	avec eux.</li>
-	<li><b>Résultats par propriétaire</b>
-	Chaque propriétaire qui a des cas de tests affectés dans la campagne de test courante est listé. Les cas de tests qui
-	ne sont pas affectés sont notés sous l'en-tête 'non affecté'.</li>
-</ul>
+<h3>Métriques généraux de la Campagne</h3>
+<p>Cette page vous montre seulement le statut le plus à jour d'une campagne de test par version du produit, dossier de test, priorité, mot-clé et indicateurs d'avancement.
+Le statut le plus à jour est déterminé par la version du produit la plus récente pour l'exécution de fiche de tests. 
+Si une fiche de test a été exécutée pour de multiples versions du produit, seulement le dernier résultat est pris en compte.</p>
 
-<h3>L'ensemble des statuts des builds</h3>
-<p>Liste les résultats d'exécutions pour chaque build. Pour chaque build, le total des cas de tests, le total des réussis,
-% réussi, le total des échoués, % échoué, bloqué, % bloqué, non exécuté, % non exécuté. Si un cas de test a été exécuté
-deux fois sur le même build, l'exécution la plus récente sera prise en compte.</p>
+
+<h3>Matrice d'avancement par testeur et par version du produit</h3>
+<p>Liste les résultats d'exécutions pour chaque version du produit par utilisateur. Pour chaque version du produit, le total des fiches de tests, le total des réussis,
+% réussi, le total des échoués, % échoué, bloqué, % bloqué, non exécuté, % non exécuté. Si une fiche de test a été exécutée
+plusieurs fois sur la même version du produit, l'exécution la plus récente sera prise en compte.</p>
 
 
 <h3>Rapports des cas de test bloqués, échoués et non exécutés</h3>
-<p>Ces rapports montrent tous les cas de tests actuellement bloqués, échoués ou non exécutés. Le 'dernier résultat de test'
-logique (qui est décrit logique ci-dessus sous Métriques générales de la campagne de test) est de nouveau employé pour déterminé si
-un cas de test peut être considéré bloqué, échoué ou non exécuté. Les rapports sur les cas de test bloqués et échoués 
-affichent les anomalies associées si l'utilisateur utilise un gestionnaire d'anomalies intégré.</p>
+<p>Ces rapports montrent toutes les fiches de tests actuellement bloquées, échouées ou non exécutées. La 'Derniere exécution'
+ est de nouveau employée pour déterminer si une fiche de test peut être considérée bloquée, échouée ou non exécutée. Les rapports sur les 
+ fiches de test bloquées et échouées affichent les anomalies associées si l'utilisateur utilise un gestionnaire d'anomalies intégré.</p>
 
-<h3>Rapport de test</h3>
-<p>Afficher les statuts de chaque cas de tests pour chaque build. Le résultat d'exécution le plus récent sera utilisé
-Si un cas de test a été exécuté plusieurs fois dans le même build. Il est recommandé d'exporter ce rapport
+<h3>Matrice de résultats de test</h3>
+<p>Afficher les statuts de chaque fiche de tests pour chaque version du produit. Le résultat d'exécution le plus récent sera utilisé
+si une fiche de test a été exécutée plusieurs fois dans la même version du produit. Il est recommandé d'exporter ce rapport
 dans un format Excel pour faciliter le survol si un ensemble important de données est utilisé.</p>
 
-<h3>Graphiques - Métriques générales de la campagne de test</h3>
-<p>'Dernier résultat du test' logique est utilisé pour les quatre graphiques que vous verrez. Les graphiques sont animés pour aider
-l'utilisateur à visualiser les métriques de la campagne de test courante. Les quatre graphiques fournis sont :</p>
+<h3>Métriques graphiques</h3>
+<p>La 'Derniere exécution' est utilisée pour les différents graphiques . Les graphiques sont animés pour aider
+l'utilisateur à visualiser les métriques de la campagne de test courante. Les graphiques fournis sont :</p>
 <ul><li>Camembert de l'ensemble des cas de test réussi/échoué/bloqué et non exécuté;</li>
 <li>Histogramme des résultats par mot-clé;</li>
-<li>Histogramme des résultats par propriétaire;</li>
 <li>Histogramme des résultats par séquence de haut niveau.</li>
 </ul>
 <p>Les barres dans les histogrammes sont colorées afin que l'utilisateur puisse identifier le nombre approximatif de
-cas réussi, échoué, bloqué et non exécuté.</p>
+résultat réussi, échoué, bloqué et non exécuté.</p>
 
-<h3>Anomalies totales pour chaque cas de test</h3>
-<p>Ce rapport montre, pour chaque cas de test, toutes les anomalies le concernant, pour la totalité du projet.
+<h3>Matrice des anomalies par fiche de test</h3>
+<p>Ce rapport montre, pour chaque fiche de test, toutes les anomalies liées, pour la totalité du projet.
 Ce rapport est disponible seulement si un système de gestion des anomalies est connecté.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTC']	= "Ajouter/Supprimer un cas de test d'une campagne de test"; // testSetAdd
+$TLS_htmltext_title['planAddTC']	= "Ajouter/Retirer fiches de test"; // testSetAdd
 $TLS_htmltext['planAddTC'] 			= "<h2>Objectif :</h2>
-<p>Autorise l'utilisateur (avec le niveau de permission le plus haut) à ajouter ou supprimer des cas de test dans la campagne de test.</p>
+<p>Permet à l'utilisateur d'ajouter ou de supprimer des fiches de test dans la campagne de test.</p>
 
-<h2>Pour ajouter ou supprimer des cas de tests :</h2>
+<h2>Pour ajouter ou supprimer des fiches de tests :</h2>
 <ol>
-	<li>Cliquez sur une suite de test pour voir toutes ses suites de tests et tous ses cas de tests.</li>
-	<li>Lorsque c'est fait, cliquez sur le bouton 'ajouter/supprimer cas de tests' pour ajouter ou supprimer les cas de tests.
+	<li>Cliquez sur un dossier de test pour voir toutes les dossiers de tests et toutes les fiches de tests.</li>
+	<li>Cocher les fiches de test à ajouter/supprimer.</li>
+	<li>Lorsque c'est fait, cliquez sur le bouton 'ajouter/retirer la sélection' pour ajouter ou supprimer les fiches de tests.
 		Remarque : Ce n'est pas possible d'ajouter le même cas de test plusieurs fois.</li>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['tc_exec_assignment']	= "Affecter testeurs à l'exécution de test";
+$TLS_htmltext_title['tc_exec_assignment']	= "Assignation d'exécution de fiches de test";
 $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Objectif</h2>
-<p>Cette page autorise le test leader à affecter des tests en particulier à des utilisateurs dans la campagne de test.</p>
+<p>Cette page autorise le test leader à affecter l'exécution des fiches de tests à des utilisateurs dans la campagne de test.</p>
 
 <h2>Pour commencer :</h2>
 <ol>
-	<li>Choisir un cas de test ou une suite de test.</li>
-	<li>Sélectionner un testeur planifié.</li>
-	<li>Cliquez sur le bouton 'sauvegarder' pour soumettre l'affectation.</li>
-	<li>Ouvrir une page d'exécution pour vérifier l'affectation. Vous pouvez exécuter un filtre par utilisateurs.</li>
+	<li>Choisir une fiche de test ou un dossier de test.</li>
+	<li>Sélectionner un ou plusieurs testeurs.</li>
+	<li>Cliquez sur le bouton 'Enregistrer' pour enregistrer l'affectation.</li>
+	<li>Cliquez sur 'Envoyer les assignations par email aux testeurs' pour notifier les utilisateurs des affectations réalisées.</li>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planUpdateTC']	= "Mise à jour des cas de tests dans la campagne de test";
+$TLS_htmltext_title['planUpdateTC']	= "Mise à jour des versions de fiches de test à exécuter";
 $TLS_htmltext['planUpdateTC'] 		= "<h2>Objectif</h2>
-<p>Cette page autorise la mise à jour d'un cas de test vers une nouvelle (différente) version si une exigence
+<p>Cette page autorise la mise à jour d'une fiche de test vers une nouvelle (différente) version si une exigence
 de test est changée. Cela arrive souvent lorsque certaines fonctionnalités sont clarifiées pendant la phase de test." .
-		" L'utilisateur modifie le cahier de test, mais les changements doivent être propagés à la campagne de test aussi. Autrement la campagne" .
-		" de test détient la version originale pour être sûr que les résultats renvoient au bon texte d'un cas de test.</p>
+		" L'utilisateur modifie le cahier de test, mais les changements doivent être propagés à la campagne de test réalisée. Autrement la campagne" .
+		" de test détient la version erronée pour être sûr que les résultats renvoient au bon texte d'une fiche de test.</p>
 
 <h2>Pour commencer :</h2>
 <ol>
-	<li>Choisissez un cas de test ou une suite de test à tester.</li>
-	<li>Choisissez une nouvelle version dans le menu à choix multiples pour un cas de test particulier.</li>
+	<li>Choisissez une fiche de test ou un dossier de test à tester.</li>
+	<li>Choisissez une nouvelle version dans le menu à choix multiples pour chque fiche de test à mettre à jour.</li>
 	<li>Cliquez sur le bouton 'mettre à jour la campagne de test' pour soumettre les changements.</li>
-	<li>Pour vérifier : Ouvrez la page d'exécution pour voir le texte du cas de test.</li>
+	<li>Pour vérifier : Ouvrez la page d'exécution pour voir le texte de la fiche de test.</li>
 </ol>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['test_urgency']	= "Spécifier les tests avec une urgence haute ou basse";
+$TLS_htmltext_title['test_urgency']	= "Définition de l'urgence de test";
 $TLS_htmltext['test_urgency'] 		= "<h2>Objectif</h2>
-<p>TestLink autorise à changer l'urgence d'une suite de tests  pour affecter la priorité de cas de tests. 
-		La priorité d'un test dépend de l'importance du cas de test et de l'urgence définie dans 
-		la campagne de test. Le test leader peut spécifier un ensemble de cas de tests qui peuvent être testés
-		en premier. Cela aide à s'assurer que les tests couvrent les tests les plus importants
+<p>TestLink autorise à changer l'urgence des tests  pour modifier la priorité de chaque fiche de tests. 
+		La priorité d'un test dépend de la criticité de la fiche de test et de l'urgence définie dans 
+		la campagne de test. Le test leader peut spécifier un ensemble de fiches de tests qui peuvent être testées
+		prioritairement. Cela aide à s'assurer que les tests les plus importants sont réalisés
 		malgré une contrainte de temps.</p>
 
 <h2>Pour commencer :</h2>
 <ol>
-	<li>Choisissez une suite de test avec l'urgence à changer pour un produit/composant
+	<li>Choisissez un dossier de test avec l'urgence à changer pour une version du produit de la campagne
       sur la partie gauche de la fenêtre</li>
 	<li>Choisissez un niveau d'urgence (haute, moyenne, basse). Moyenne est la valeur par défaut. Vous pouvez
-	descendre la priorité pour une partie non touchée du produit et l'augmenter pour des composants avec
+	descendre la priorité pour des composants non modifiés du produit et l'augmenter pour des composants avec
 	des changements significatifs.</li>
-	<li>Cliquez sur le bouton 'sauvegarder' pour soumettre les changements.</li>
+	<li>Cliquez sur le bouton 'Définir l'urgence pour les fiches de test' pour soumettre les changements.</li>
 </ol>
-<p><i>Par exemple, un cas de test avec une haute importance dans une suite de tests avec une urgence basse " .
+<p><i>Par exemple, une fiche de test avec une haute criticité dans une suite de tests avec une urgence basse " .
 		"sera de priorité moyenne.</i>";
 
 

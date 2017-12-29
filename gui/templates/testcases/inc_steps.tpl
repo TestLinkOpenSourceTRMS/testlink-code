@@ -15,7 +15,7 @@ Author : eloff, 2010
 {lang_get var="inc_steps_labels" 
           s="show_hide_reorder, step_number,clear_all_status, 
              step_actions,expected_results,
-             latest_exec_notes,exec_result,
+             latest_exec_notes,step_exec_status,
              clear_all_notes,step_exec_notes,
              execution_type_short_descr,delete_step,
              insert_step,show_ghost_string"}

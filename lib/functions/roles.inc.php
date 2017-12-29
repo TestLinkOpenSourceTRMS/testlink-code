@@ -64,9 +64,9 @@ function init_global_rights_maps()
                    'desc_mgt_modify_tc'  => null,'mgt_testplan_create' => null,
                    'desc_mgt_view_key' => null,'desc_mgt_modify_key' => null,
                    'desc_keyword_assignment' => null,'desc_mgt_view_req' => null,
-                   'desc_mgt_modify_req' => null,'desc_req_tcase_link_management' => null,
-                   'desc_mgt_modify_product' => null,'desc_project_inventory_management' => null,
-                   'desc_project_inventory_view' => null,
+                   'desc_monitor_requirement' => null,'desc_mgt_modify_req' => null,
+				   'desc_req_tcase_link_management' => null,'desc_mgt_modify_product' => null,
+                   'desc_project_inventory_management' => null,'desc_project_inventory_view' => null,
                    'desc_cfield_view' => null,'desc_cfield_management' => null,
                    'desc_platforms_view' => null,'desc_platforms_management' => null,
                    'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
@@ -122,8 +122,10 @@ function init_global_rights_maps()
                        "mgt_modify_key" => $l18n['desc_mgt_modify_key']);
   
   $g_rights_req = array("mgt_view_req" => $l18n['desc_mgt_view_req'],
+                        "monitor_requirement" => $l18n['desc_monitor_requirement'],
                         "mgt_modify_req" => $l18n['desc_mgt_modify_req'],
-                        "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req']);
+                        "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req'],
+                        "req_tcase_link_management" => $l18n['desc_req_tcase_link_management']);
   
   $g_rights_product = array("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
                             "project_inventory_management" => $l18n['desc_project_inventory_management'],

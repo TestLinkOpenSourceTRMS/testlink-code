@@ -8,14 +8,13 @@
  * @copyright   2004-2016, TestLink community 
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.16
  *
  */
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('email_api.php');
+require_once('Zend/Validate/EmailAddress.php');
 
 $templateCfg = templateConfiguration();
 
@@ -166,7 +165,18 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
 
   if($mail['to'] != '')
   {
-    $mail['to'] = implode(',',$mail['to']); // email_api uses ',' as list separator
+    $dest = null;  
+    $validator = new Zend_Validate_EmailAddress();
+    foreach($mail['to'] as $mm)
+    {
+      $ema = trim($mm);
+      if($ema == '' || !$validator->isValid($ema))
+      {
+        continue;
+      }  
+      $dest[] = $ema;
+    }  
+    $mail['to'] = implode(',',$dest); // email_api uses ',' as list separator
     $mail['subject'] = lang_get('new_account');
     $mail['body'] = lang_get('new_account') . "\n";
     $mail['body'] .= " user:$userObj->login\n"; 
@@ -174,6 +184,9 @@ function notifyGlobalAdmins(&$dbHandler,&$userObj)
     $mail['body'] .= " email:{$userObj->emailAddress}\n";
       
     // silence errors
-    @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
+    if(!is_null($dest))
+    {
+      @email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
+    }  
   }  
 }

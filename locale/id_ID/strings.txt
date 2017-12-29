@@ -494,6 +494,11 @@ $TLS_warning = "Warning!!";
 $TLS_was_success = " telah sukses ";
 
 
+// ----- gui/templates/inc_filter.tpl -----
+$TLS_test_grouped_by = "Dikelompokkan dengan uji";
+$TLS_mode_test_suite = "Test Suite";
+$TLS_mode_req_coverage = "Kebutuhan";
+$TLS_parent_child_relation = "Hubungan orangtua anak";
 
 // gui/templates/execNavigator.tpl
 $TLS_TestPlan = "TestPlan";

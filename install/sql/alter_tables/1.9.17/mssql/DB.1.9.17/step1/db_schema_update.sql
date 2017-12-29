@@ -92,6 +92,10 @@ CREATE TABLE /*prefix*/testproject_codetracker
 
 -- since 1.9.17
 INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
+INSERT INTO /*prefix*/rights (id,description) VALUES (50,'monitor_requirement');
+
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
 
 ALTER TABLE /*prefix*/testprojects ADD COLUMN code_tracker_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_code_tracker_enabled DEFAULT ((0));
 

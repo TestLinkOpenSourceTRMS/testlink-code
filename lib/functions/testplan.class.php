@@ -6812,8 +6812,6 @@ class testplan extends tlObjectWithAttachments
       break;
     }
     
-    new dBug($rs);
-
     return $rs;
   }
 
@@ -6923,8 +6921,8 @@ class testplan extends tlObjectWithAttachments
                                     'addPriority' => false,'addImportance' => false,
                                     'ignorePlatformAndBuild' => false,
                                     'ignoreBuild' => false, 'ignorePlatform' => false,
-                                    'ua_user_alias' => '', 
-                                    'ua_force_join' => false));
+                                    'ua_user_alias' => '', 'ua_force_join' => false,
+                                    'build_is_active' => false));
 
     $my['options'] = array_merge($mop['options'],$my['options']);
       
@@ -6963,6 +6961,20 @@ class testplan extends tlObjectWithAttachments
       $platformEXEC = " ";
 
     }  
+    else if ($my['options']['ignoreBuild'] && $my['options']['build_is_active']) 
+    {
+      $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
+                " MAX(EE.id) AS id " .
+                " FROM {$this->tables['executions']} EE " . 
+                " JOIN {$this->tables['builds']} B " . 
+                " ON B.id = EE.build_id " .
+                " WHERE EE.testplan_id = " . $safe['tplan_id'] . " AND B.active = 1" .
+                " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id, B.id";
+         
+      $platformLEX = " AND LEX.platform_id = TPTCV.platform_id "; 
+      $platformEXEC = " AND E.platform_id = TPTCV.platform_id ";
+
+    }
     else if ($my['options']['ignoreBuild']) 
     {
       $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
@@ -7046,7 +7058,6 @@ class testplan extends tlObjectWithAttachments
     {
       $my['join']['ua'] = str_replace('LEFT OUTER',' ', $my['join']['ua']);
     }  
-    new dBug($my['join']['ua']);
 
     $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" . $commonFields .
                          " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
@@ -7103,7 +7114,6 @@ class testplan extends tlObjectWithAttachments
                      " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
                      $my['where']['where'];
 
-    new dBug($union);
     return $union;
   }
 
@@ -7987,14 +7997,13 @@ class build_mgr extends tlObject
              active: build active status
              is_open: build open status
              testplan_id
-
-    rev :
   */
   function get_by_id($id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $my = array('options' => array('tplan_id' => null, 'output' => 'full'));
+    $my = array('options' => 
+                array('tplan_id' => null, 'output' => 'full', 'fields' => '*'));
     $my['options'] = array_merge($my['options'],(array)$opt);
     
     $safe_id = intval($id);  
@@ -8003,16 +8012,20 @@ class build_mgr extends tlObject
     switch($my['options']['output'])
     {
       case 'minimun':
-        $sql .= " SELECT id,is_open,active FROM {$this->tables['builds']} "; 
+        $sql .= " SELECT id,is_open,active ";  
+      break;
+
+      case 'fields':
+        $sql .= " SELECT {$my['options']['fields']} "; 
       break;
       
       case 'full':
       default:
-        $sql .= " SELECT * FROM {$this->tables['builds']} "; 
+        $sql .= " SELECT * "; 
       break;
     }
     
-    $sql .= " WHERE id = {$safe_id} ";
+    $sql .= " FROM {$this->tables['builds']} WHERE id = {$safe_id} ";
     if(!is_null($my['options']['tplan_id']) && ($safe_tplan = intval($my['options']['tplan_id'])) > 0)
     {
       $sql .= " AND testplan_id = {$safe_tplan} ";

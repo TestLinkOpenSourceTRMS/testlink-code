@@ -384,13 +384,13 @@ function launchInsertStep(step_id)
    {include file="testcases/keywords.inc.tpl" args_edit_enabled=$edit_enabled} 
   </div>
   
-  {if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->requirement_mgmt) }
+  {if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
   <div {$addInfoDivStyle}>
     <table cellpadding="0" cellspacing="0" style="font-size:100%;">
              <tr>
                <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
                target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
-              {if $gui->requirement_mgmt}
+              {if $gui->req_tcase_link_management}
                 <img class="clickable" src="{$tlImages.item_link}"
                      onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
                      title="{$tcView_viewer_labels.link_unlink_requirements}" />

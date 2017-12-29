@@ -270,10 +270,23 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->IXR_Server($this->methods);    
   }  
   
-  protected function _setArgs($args)
+  /**
+   *
+   */
+  protected function _setArgs($args,$opt=null)
   {
     // TODO: should escape args
     $this->args = $args;
+
+    if( isset($this->args[self::$testProjectNameParamName]) && 
+        !isset($this->args[self::$testProjectIDParamName])
+      )
+    {
+       $tprojMgr = new testproject($this->dbObj);
+       $name = trim($this->args[self::$testProjectNameParamName]);
+       $info = current($this->tprojectMgr->get_by_name($name));
+       $this->args[self::$testProjectIDParamName] = $info['id'];
+    }  
   }
   
   /**
@@ -1204,7 +1217,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         
     return $status_ok;
   }  
-  
+
   /**
    * Run all the necessary checks to see if the createBuild request is valid
    *  
@@ -1590,7 +1603,7 @@ class TestlinkXMLRPCServer extends IXR_Server
            " with contributions by TestLink development Team";
     return $str;        
   }
-  
+
   /**
    * Creates a new build for a specific test plan
    *
@@ -6207,8 +6220,10 @@ protected function createAttachmentTempFile()
     $status_ok = false;    
     $msg_prefix="(" . __FUNCTION__ . ") - ";
 
+
     if($this->authenticate() && 
-       $this->userHasRight("platform_management",self::CHECK_PUBLIC_PRIVATE_ATTR))
+       $this->userHasRight("platform_management",
+                           self::CHECK_PUBLIC_PRIVATE_ATTR))
     {
       $status_ok = true;
       $keys2check = array(self::$platformNameParamName, self::$testProjectNameParamName);
@@ -8320,6 +8335,88 @@ protected function createAttachmentTempFile()
   }
 
 
+ /**
+   * Close build
+   *
+   * @param struct $args
+   * @param string $args["devKey"]
+   * @param int $args["buildid"]
+   *   
+   * @return mixed $resultInfo
+   *         
+   * @access public
+   */    
+  public function closeBuild($args)
+  {
+    $operation = __FUNCTION__;
+    $messagePrefix="({$operation}) - ";
+  
+    $resultInfo = array();
+
+    $resultInfo[0]["id"] = 0;
+    $resultInfo[0]["status"] = true;
+    $resultInfo[0]["operation"] = $operation;
+    $resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
+
+    $this->_setArgs($args);
+
+    $checkFunctions = array('authenticate');       
+    $status_ok = $this->_runChecks($checkFunctions,$messagePrefix);       
+
+    if( $status_ok )
+    {
+       $status_ok = $this->_isParamPresent(self::$buildIDParamName,$messagePrefix,self::SET_ERROR);     
+    }
+
+    if( $status_ok )
+    {
+       $buildID = $this->args[self::$buildIDParamName];
+       if( !($status_ok = is_int($buildID)) )
+       {
+         $msg = sprintf(BUILDID_NOT_INTEGER_STR,$buildID);
+         $this->errors[] = new IXR_Error(BUILDID_NOT_INTEGER, $msg);
+       } 
+    }
+
+    if( $status_ok )
+    {
+       // Get Test Plan ID from Build ID in order to check rights
+       $bm = new build_mgr($this->dbObj);
+
+       $buildID = intval($this->args[self::$buildIDParamName]); 
+       $opx = array('output' => 'fields', 'fields' => 'id,testplan_id');
+       $buildInfo = $bm->get_by_id($buildID,$opx);
+      
+       if( $buildInfo == false || count($buildInfo) == 0)
+       {
+         $status_ok = false;
+         $msg = sprintf(INVALID_BUILDID_STR,$buildID);
+         $this->errors[] = new IXR_Error(INVALID_BUILDID,$msg);
+       } 
+    }  
+
+    if( $status_ok )
+    {
+      $context = array();
+      $context[self::$testPlanIDParamName] = $buildInfo['testplan_id'];
+
+      $status_ok = 
+        $this->userHasRight("testplan_create_build",
+                            self::CHECK_PUBLIC_PRIVATE_ATTR,$context);
+    }  
+
+    if( $status_ok )
+    {
+      $bm->setClosed($buildID);
+      $resultInfo[0]["id"] = $buildID;
+    }
+
+
+    return $status_ok ? $resultInfo : $this->errors;
+  }
+ 
+
+
   /**
    *
    */
@@ -8328,6 +8425,7 @@ protected function createAttachmentTempFile()
     $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
                             'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
                             'tl.createBuild' => 'this:createBuild',
+                            'tl.closeBuild' => 'this:closeBuild',
                             'tl.createPlatform' => 'this:createPlatform',
                             'tl.createTestCase' => 'this:createTestCase',
                             'tl.createTestCaseSteps' => 'this:createTestCaseSteps',

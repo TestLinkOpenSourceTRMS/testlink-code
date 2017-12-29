@@ -86,7 +86,6 @@ switch($args->edit)
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -379,5 +378,5 @@ function getTargetTestCases(&$dbHandler,&$argsObj)
 
 function checkRights(&$db,&$user)
 {
-  return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
+  return ($user->hasRight($db,'req_tcase_link_management'));
 }

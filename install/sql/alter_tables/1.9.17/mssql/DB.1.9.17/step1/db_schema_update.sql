@@ -49,6 +49,7 @@ GROUP BY RSR.parent_id,RS.testproject_id;
 
 -- since 1.9.17
 INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
 
 ALTER TABLE /*prefix*/users ADD COLUMN creation_ts timestamp NOT NULL DEFAULT now();

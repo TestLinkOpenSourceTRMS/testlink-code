@@ -2717,6 +2717,7 @@ $TLS_bulk_req_assign_msg = "L’opération lie les exigences sélectionnées à 
 
 $TLS_bulk_req_assign_no_test_cases = "L’opération ne peut être effectuée car il n’y a aucune fiches de test dans le dossier de test";
 
+$TLS_bulk_assigment_done = '%s liens entre exigences et fiches de test ont été ajoutés';
 $TLS_req_title_bulk_assign = "Lier en masse les exigences";
 $TLS_req_title_available = "Exigences disponibles";
 $TLS_no_req_spec_available = "Aucun dossier d’exigences disponible pour le projet";
@@ -2909,6 +2910,7 @@ $TLS_same_name = "présente le même nom";
 $TLS_duplicate_criteria = "Considérer la fiche de test comme connue si elle";
 $TLS_hit_with_same_external_ID = "Ne peut pas être importée - Une fiche de test utilise déjà l'ID EXTERNE :";
 $TLS_attachment_skipped_during_import = "La pièce jointe \"%s\" a été ignorée car elle est déjà liée à l'élément de test.";
+$TLS_req_assignment_skipped_during_import = "Les liens vers les exigences ont été ignorées car l'utilisateur n'a pas les droits pour lier les exigences aux fiches de test";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "Aucune fiche de test pour l’export";

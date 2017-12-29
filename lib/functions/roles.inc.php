@@ -122,7 +122,8 @@ function init_global_rights_maps()
   $g_rights_req = array("mgt_view_req" => $l18n['desc_mgt_view_req'],
                         "monitor_requirement" => $l18n['desc_monitor_requirement'],
                         "mgt_modify_req" => $l18n['desc_mgt_modify_req'],
-                        "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req']);
+                        "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req'],
+                        "req_tcase_link_management" => $l18n['desc_req_tcase_link_management']);
   
   $g_rights_product = array("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
                             "project_inventory_management" => $l18n['desc_project_inventory_management'],

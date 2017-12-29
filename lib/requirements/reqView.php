@@ -108,6 +108,7 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   $gui->grants = new stdClass();
   $gui->grants->req_mgmt = $argsObj->user->hasRight($dbHandler,"mgt_modify_req",$target_id);
   $gui->grants->monitor_req = $argsObj->user->hasRight($dbHandler,"monitor_requirement",$target_id);
+  $gui->grants->req_tcase_link_management = $argsObj->user->hasRight($dbHandler,"req_tcase_link_management",$target_id);
   $gui->grants->unfreeze_req = $argsObj->user->hasRight($dbHandler,"mgt_unfreeze_req",$target_id);
   
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);

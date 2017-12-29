@@ -2908,6 +2908,7 @@ $TLS_same_name = 'has same name';
 $TLS_duplicate_criteria = "Consider Test Case as duplicate if";
 $TLS_hit_with_same_external_ID = "Can not be imported - You are hitting an existent Test Case with SAME EXTERNAL ID:";
 $TLS_attachment_skipped_during_import = "Attachment \"%s\" has been ignored because it is already linked to the test element";
+$TLS_keywords_assignment_skipped_during_import = "Keywords assignment has been ignored because the current user is not allowed to assign keywords to testcases";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "There are no Test Cases to export";

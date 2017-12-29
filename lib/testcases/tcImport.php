@@ -227,9 +227,12 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $userObj->readFromDB($db,tlUser::TLOBJ_O_SEARCH_BY_ID);
     $userRights['can_edit_executed'] = 
       $userObj->hasRight($db,'testproject_edit_executed_testcases',$tproject_id);
+	$userRights['can_assign_keywords'] = 
+      $userObj->hasRight($db,'keyword_assignment',$tproject_id);
 
     $k2l = array('already_exists_updated','original_name','testcase_name_too_long','already_exists_not_updated',
-                 'start_warning','end_warning','testlink_warning','hit_with_same_external_ID');
+                 'start_warning','end_warning','testlink_warning','hit_with_same_external_ID',
+				 'keywords_assignment_skipped_during_import');
     foreach($k2l as $k)
     {
       $messages[$k] = lang_get($k);
@@ -361,7 +364,12 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $kwIDs = null;
     if (isset($tc['keywords']) && $tc['keywords'])
     {
-      $kwIDs = implode(",",buildKeywordList($kwMap,$tc['keywords']));
+	  if(!$userRights['can_assign_keywords']){
+		$resultMap[] = array($name,$messages['keywords_assignment_skipped_during_import']);
+	  }
+	  else{
+		$kwIDs = implode(",",buildKeywordList($kwMap,$tc['keywords']));
+	  }
     }  
     
     $doCreate=true;

@@ -416,7 +416,7 @@ class testcase extends tlObjectWithAttachments
                 // has provided one on import file.
                 // Then we need to check that new name will not conflict with an existing one
                 $doCreate = false;
-                if( strcmp($info['name'],$name) != 0)
+                if( strcmp($info[key($info)]['name'],$name) != 0)
                 {
                   $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);
                   if( is_null($itemSet) )

@@ -29,7 +29,7 @@ some variables smarty and javascript are created on the inc_*.tpl files.
           th_name,th_notes,testproject_alt_edit,testproject_alt_active,btn_search_filter,
           th_requirement_feature,testproject_alt_delete,btn_create,public,hint_like_search_on_name,
           testproject_alt_requirement_feature,th_active,th_delete,th_id,btn_reset_filter,
-          th_issuetracker,th_reqmgrsystem_short,active_click_to_change,inactive_click_to_change,
+          th_issuetracker,th_codetracker,th_reqmgrsystem_short,active_click_to_change,inactive_click_to_change,
           click_to_enable,click_to_disable'}
 
 
@@ -92,7 +92,8 @@ var del_action=fRoot+'{$deleteAction}';
       <th class="{$noSortableColumnClass}">{$labels.th_notes}</th>
       <th>{$tlImages.sort_hint}{$labels.tcase_id_prefix}</th>
       <th>{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
-      <th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
+      <th>{$tlImages.sort_hint}{$labels.th_codetracker}</th>
+      <th claiss="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
       <th class="icon_cell">{$labels.th_active}</th>
       <th class="icon_cell">{$labels.public}</th>
       {if $gui->canManage == "yes"}
@@ -113,12 +114,15 @@ var del_action=fRoot+'{$deleteAction}';
       <td>
         {if $gui->editorType == 'none'}{$testproject.notes|nl2br}{else}{$testproject.notes}{/if}</td>
       </td>
-      <td width="10%">
+      <td width="7%">
         {$testproject.prefix|escape}
       </td>
       
-      <td width="10%">
+      <td width="7%">
         {$testproject.itstatusImg} &nbsp; {$testproject.itname|escape} 
+      </td>
+      <td width="7%">
+        {$testproject.ctstatusImg} &nbsp; {$testproject.ctname|escape} 
       </td>
       {*
       <td width="10%">

@@ -17,7 +17,7 @@
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
                           href_print_req,title_plugins,title_documentation,href_issuetracker_management,
-                          href_reqmgrsystem_management,href_req_monitor_overview'}
+                          href_codetracker_management,href_reqmgrsystem_management,href_req_monitor_overview'}
 
 {* Show / Hide section logic *}
 {$display_left_block_1=false}
@@ -39,7 +39,8 @@
 {/if}
 
 {if $gui->testprojectID && 
-   ($gui->grants.cfield_management == "yes" || $gui->grants.issuetracker_management || $gui->grants.issuetracker_view)}
+   ($gui->grants.cfield_management == "yes" || $gui->grants.issuetracker_management ||
+    $gui->grants.codetracker_management || $gui->grants.issuetracker_view || $gui->grants.codetracker_view)}
    {$display_left_block_2=true}
 {/if}
 
@@ -83,6 +84,11 @@
 
     {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
       <a href="{$issueTrackerView}" class="list-group-item" style="{$aStyle}">{$labels.href_issuetracker_management}</a>
+      <br />
+    {/if}
+
+    {if $gui->grants.codetracker_management || $gui->grants.codetracker_view}
+      <a href="lib/codetrackers/codeTrackerView.php">{$labels.href_codetracker_management}</a>
     {/if}
   </div>
 {/if}

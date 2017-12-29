@@ -200,6 +200,22 @@ CREATE TABLE /*prefix*/execution_bugs (
 ) ON [PRIMARY]
 ) ON [PRIMARY];
 
+CREATE TABLE /*prefix*/testcase_script_links (
+  tcversion_id int NOT NULL CONSTRAINT /*prefix*/DF_testcase_script_links_tcversion_id DEFAULT ((0)),
+  project_key varchar(64)  NOT NULL,
+  repository_name varchar(64)  NOT NULL,
+  code_path varchar(255)  NOT NULL,
+  branch_name varchar(64)  NULL,
+  commit_id varchar(40)  NULL,
+ CONSTRAINT /*prefix*/PK_testcase_script_links PRIMARY KEY CLUSTERED 
+(
+  tcversion_id ASC,
+  project_key ASC,
+  repository_name ASC,
+  code_path ASC
+) ON [PRIMARY]
+) ON [PRIMARY];
+
 CREATE TABLE /*prefix*/user_assignments (
   id int IDENTITY(1,1) NOT NULL,
   type int NOT NULL CONSTRAINT /*prefix*/DF_user_assignments_type DEFAULT ((0)),
@@ -645,6 +661,7 @@ CREATE TABLE /*prefix*/testprojects (
   prefix varchar(16) NOT NULL,
   tc_counter int NOT NULL CONSTRAINT /*prefix*/DF_testprojects_tc_counter DEFAULT ((0)),
   issue_tracker_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_issue_tracker_enabled DEFAULT ((0)),  
+  code_tracker_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_code_tracker_enabled DEFAULT ((0)), 
   reqmgr_integration_enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_reqmgr_integration_enabled DEFAULT ((0)),  
   api_key varchar(64) NOT NULL DEFAULT (HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR))),
   CONSTRAINT /*prefix*/PK_testprojects PRIMARY KEY CLUSTERED 
@@ -958,6 +975,34 @@ CREATE TABLE /*prefix*/testproject_issuetracker
   testproject_id int NOT NULL,
   issuetracker_id int NOT NULL,
     CONSTRAINT /*prefix*/UIX_testproject_issuetracker UNIQUE NONCLUSTERED 
+   ( 
+  testproject_id ASC
+   ) ON [PRIMARY]    
+)ON [PRIMARY];
+
+
+CREATE TABLE /*prefix*/codetrackers
+(
+  id int IDENTITY(1,1) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  type int NOT NULL CONSTRAINT /*prefix*/DF_codetrackers_type DEFAULT ((0)),
+  cfg nvarchar(max)  NULL,
+  CONSTRAINT /*prefix*/PK_codetrackers PRIMARY KEY  CLUSTERED 
+  (
+    id
+  )  ON [PRIMARY],
+    CONSTRAINT /*prefix*/UIX_codetrackers UNIQUE NONCLUSTERED 
+   ( 
+  name ASC
+   ) ON [PRIMARY]  
+) ON [PRIMARY];
+
+
+CREATE TABLE /*prefix*/testproject_codetracker
+(
+  testproject_id int NOT NULL,
+  codetracker_id int NOT NULL,
+    CONSTRAINT /*prefix*/UIX_testproject_codetracker UNIQUE NONCLUSTERED 
    ( 
   testproject_id ASC
    ) ON [PRIMARY]    

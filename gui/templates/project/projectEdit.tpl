@@ -24,7 +24,8 @@
   testproject_enable_inventory,testproject_features,testproject_description,
   testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,api_key,
   warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker,
-  testproject_reqmgr_integration,reqmgrsystem,no_rms_defined,no_issuetracker_defined'}
+  testproject_code_tracker_integration,code_tracker,testproject_reqmgr_integration,reqmgrsystem,
+  no_rms_defined,no_issuetracker_defined,no_codetracker_defined'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -60,7 +61,7 @@ function validateForm(f)
  *
  *
  */
-function manageIssueTracker(selectOID,targetOID)
+function manageTracker(selectOID,targetOID)
 {
   var so;
   var to;
@@ -80,7 +81,8 @@ function manageIssueTracker(selectOID,targetOID)
 </script>
 </head>
 
-<body onload="manageIssueTracker('issue_tracker_id','issue_tracker_enabled');">
+<body onload="manageTracker('issue_tracker_id','issue_tracker_enabled');
+manageTracker('code_tracker_id','code_tracker_enabled');">
 <h1 class="title">
   {$main_descr|escape}  {$tlCfg->gui_title_separator_1}
   {$caption|escape}
@@ -204,13 +206,48 @@ function manageIssueTracker(selectOID,targetOID)
           <td>
             {$labels.issue_tracker}
              <select name="issue_tracker_id" id="issue_tracker_id"
-             onchange="manageIssueTracker('issue_tracker_id','issue_tracker_enabled');">
+             onchange="manageTracker('issue_tracker_id','issue_tracker_enabled');">
              <option value="0">&nbsp;</option>
              {foreach item=issue_tracker from=$gui->issueTrackers}
                <option value="{$issue_tracker.id}" 
                  {if $issue_tracker.id == $gui->issue_tracker_id} selected {/if} 
                >
                {$issue_tracker.verbose|escape}</option>
+             {/foreach}
+             </select>
+          </td>
+        </tr>
+      {/if}
+
+      <tr>
+        <td>{$labels.testproject_code_tracker_integration}</td><td></td>
+      </tr>
+      {if $gui->codeTrackers == ''}
+        <tr>
+          <td></td>
+          <td>{$labels.no_codetracker_defined}</td>
+        </tr>
+      {else}
+        <tr>
+          <td></td>
+          <td>
+            <input type="checkbox" id="code_tracker_enabled"
+                   name="code_tracker_enabled" {if $gui->code_tracker_enabled == 1} checked="checked" {/if} />
+            {$labels.th_active}
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            {$labels.code_tracker}
+             <select name="code_tracker_id" id="code_tracker_id"
+             onchange="manageTracker('code_tracker_id','code_tracker_enabled');">
+             <option value="0">&nbsp;</option>
+             {foreach item=code_tracker from=$gui->codeTrackers}
+               <option value="{$code_tracker.id}" 
+                 {if $code_tracker.id == $gui->code_tracker_id} selected {/if} 
+               >
+               {$code_tracker.verbose|escape}</option>
              {/foreach}
              </select>
           </td>

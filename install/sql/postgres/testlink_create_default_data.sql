@@ -100,7 +100,6 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (50,'monitor_requirement');
 INSERT INTO /*prefix*/rights (id,description) VALUES (51,'codetracker_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
 
-
 --  Rights for Administrator (admin role)
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,1 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,2 );

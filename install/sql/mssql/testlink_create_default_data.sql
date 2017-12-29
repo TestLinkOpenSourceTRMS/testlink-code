@@ -153,7 +153,6 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,52);
 
-
 --  Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,6);

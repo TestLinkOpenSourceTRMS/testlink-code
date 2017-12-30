@@ -375,35 +375,45 @@ $tlCfg->noExpDateUsers = array('admin');
 
 /**
  * OAUTH auth
+ * Configure this on custom_config.inc.php
  */
 
-//Google
-$tlCfg->authentication['oauth'] = array();
-$tlCfg->authentication['oauth'][1]['oauth_enabled'] = true;
-$tlCfg->authentication['oauth'][1]['oauth_name'] = 'google';
-$tlCfg->authentication['oauth'][1]['oauth_icon'] = 'google.png'; //Get from /gui/themes/default/images
-$tlCfg->authentication['oauth'][1]['oauth_client_id'] = 'CLIENT_ID';
-$tlCfg->authentication['oauth'][1]['oauth_client_secret'] = 'CLIENT_SECRET';
-$tlCfg->authentication['oauth'][1]['oauth_grant_type'] = 'authorization_code';  //Can be authorization_code (by default), client_credentials or password
-$tlCfg->authentication['oauth'][1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
-$tlCfg->authentication['oauth'][1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
-$tlCfg->authentication['oauth'][1]['oauth_force_single'] = false; //if false then the only user will be selected automatically (applied for google)
-//$tlCfg->authentication['oauth'][1]['oauth_domain'] = 'google.com'; //the domain you want to whitelist
-$tlCfg->authentication['oauth'][1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
-$tlCfg->authentication['oauth'][1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+// Google
+// $tlCfg->authentication['oauth'] = array();
+// $tlCfg->authentication['oauth'][1]['oauth_enabled'] = true;
+// $tlCfg->authentication['oauth'][1]['oauth_name'] = 'google';
 
-//Github
-$tlCfg->authentication['oauth'][2]['oauth_enabled'] = true;
-$tlCfg->authentication['oauth'][2]['oauth_name'] = 'github';
-$tlCfg->authentication['oauth'][2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
-$tlCfg->authentication['oauth'][2]['oauth_client_id'] = 'CLIENT_ID';
-$tlCfg->authentication['oauth'][2]['oauth_client_secret'] = 'CLIENT_SECRET';
-$tlCfg->authentication['oauth'][2]['oauth_grant_type'] = 'authorization_code';  //Can be authorization_code (by default), client_credentials or password
-$tlCfg->authentication['oauth'][2]['oauth_url'] = 'https://github.com/login/oauth/authorize';
-$tlCfg->authentication['oauth'][2]['token_url'] = 'https://github.com/login/oauth/access_token';
-$tlCfg->authentication['oauth'][2]['oauth_force_single'] = false; //if false then the only user will be selected automatically (applied for google)
-$tlCfg->authentication['oauth'][2]['oauth_profile'] = 'https://api.github.com/user';
-$tlCfg->authentication['oauth'][2]['oauth_scope'] = 'user:email';
+// Get from /gui/themes/default/images
+// $tlCfg->authentication['oauth'][1]['oauth_icon'] = 'google.png'; 
+// $tlCfg->authentication['oauth'][1]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->authentication['oauth'][1]['oauth_client_secret'] = 'CLIENT_SECRET';
+// Can be authorization_code (by default), client_credentials or password
+// $tlCfg->authentication['oauth'][1]['oauth_grant_type'] = 'authorization_code';  
+// $tlCfg->authentication['oauth'][1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
+// $tlCfg->authentication['oauth'][1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
+// false => then the only user will be selected automatically (applied for google)
+// $tlCfg->authentication['oauth'][1]['oauth_force_single'] = false; 
+// the domain you want to whitelist
+// $tlCfg->authentication['oauth'][1]['oauth_domain'] = 'google.com'; 
+// $tlCfg->authentication['oauth'][1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
+// $tlCfg->authentication['oauth'][1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+
+// Github
+// $tlCfg->authentication['oauth'][2]['oauth_enabled'] = true;
+// $tlCfg->authentication['oauth'][2]['oauth_name'] = 'github';
+// $tlCfg->authentication['oauth'][2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
+// $tlCfg->authentication['oauth'][2]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->authentication['oauth'][2]['oauth_client_secret'] = 'CLIENT_SECRET';
+
+// Can be authorization_code (by default), client_credentials or password
+// $tlCfg->authentication['oauth'][2]['oauth_grant_type'] = 'authorization_code';  
+// $tlCfg->authentication['oauth'][2]['oauth_url'] = 'https://github.com/login/oauth/authorize';
+
+// $tlCfg->authentication['oauth'][2]['token_url'] = 'https://github.com/login/oauth/access_token';
+// false => then the only user will be selected automatically (applied for google)
+// $tlCfg->authentication['oauth'][2]['oauth_force_single'] = false; 
+// $tlCfg->authentication['oauth'][2]['oauth_profile'] = 'https://api.github.com/user';
+// $tlCfg->authentication['oauth'][2]['oauth_scope'] = 'user:email';
 
 
 /**

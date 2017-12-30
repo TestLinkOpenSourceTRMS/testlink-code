@@ -191,7 +191,7 @@ viewer for requirement
 
       {section name=row loop=$args_req_coverage}
         <span>
-		{if $args_grants->req_tcase_link_management == "yes"}
+		{if $args_grants->req_tcase_link_management == "yes" && $args_frozen_version eq null}
         <input type="image"  class="clickable" src="{$tlImages.disconnect_small}" 
                title="{$labels.removeLinkToTestCase}" onClick="tcaseIdentity.value={$args_req_coverage[row].id}">
         &nbsp;&nbsp; 

@@ -98,6 +98,7 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
 
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,52);

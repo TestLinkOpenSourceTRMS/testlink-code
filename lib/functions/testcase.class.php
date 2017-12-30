@@ -416,7 +416,7 @@ class testcase extends tlObjectWithAttachments
                 // has provided one on import file.
                 // Then we need to check that new name will not conflict with an existing one
                 $doCreate = false;
-                if( strcmp($info['name'],$name) != 0)
+                if( strcmp($info[key($info)]['name'],$name) != 0)
                 {
                   $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);
                   if( is_null($itemSet) )
@@ -6654,6 +6654,7 @@ class testcase extends tlObjectWithAttachments
     $goo->tcase_cfg->can_edit_executed = $grantsObj->testproject_edit_executed_testcases == 'yes' ? 1 : 0;
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
+    $goo->assign_keywords = property_exists($grantsObj, 'keyword_assignment') ? $grantsObj->keyword_assignment : 0;
 	$goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
 
     $goo->parentTestSuiteName = '';

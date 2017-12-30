@@ -42,9 +42,11 @@ Purpose: smarty template - move/copy test case
   <br />
   
   <p>
-   <input type="checkbox" name="keyword_assignments" id='keyword_assignments'>
-     {$labels.copy_keyword_assignments}
-  <br />
+    {if $gui->grants->keyword_assignment}
+	   <input type="checkbox" name="keyword_assignments" id='keyword_assignments'>
+		 {$labels.copy_keyword_assignments}
+	  <br />
+  {/if}
   <input type="checkbox" name="requirement_assignments" id='requirement_assignments'>
      {$labels.copy_requirement_assignments}
   </p>

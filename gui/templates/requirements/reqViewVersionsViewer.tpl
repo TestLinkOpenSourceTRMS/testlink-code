@@ -55,23 +55,23 @@ viewer for requirement
         
       {if $args_frozen_version eq null}
         <input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
-      {/if}
         
-      {* If more than one version is displayed show "Delete" and "Delete this Version" button*}
-      {if $args_can_delete_req && !$gui->version_option}
-        <input type="button" name="delete_req" value="{$labels.btn_delete}"
+		{* If more than one version is displayed show "Delete" button (only if last version is not frozen) *}
+		{if $args_can_delete_req && !$gui->version_option}
+          <input type="button" name="delete_req" value="{$labels.btn_delete}"
                onclick="delete_confirmation({$args_req.id},
                                             '{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
                                             '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"  />
-      {/if}
+		{/if}
         
-      {* If a single version is displayed do only show "Delete this Version" button *}
-      {if $args_can_delete_version || $gui->version_option}
-        <input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
+		{* If a single version is displayed do only show "Delete this Version" button *}
+		{if ($args_can_delete_version || $gui->version_option)}
+          <input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
                onclick="delete_confirmation({$args_req.version_id},
                         '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
                                             '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req_version);"  />
                                               
+		{/if}
       {/if}
 	  {if $args_grants->unfreeze_req}
 		{if $args_frozen_version eq null}
@@ -91,8 +91,10 @@ viewer for requirement
       {if $args_can_copy}                                         
         <input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>
       {/if}
-      <input type="button" name="new_revision" id="new_revision" value="{$labels.btn_new_revision}" 
+	  {if $args_frozen_version eq null}
+        <input type="button" name="new_revision" id="new_revision" value="{$labels.btn_new_revision}" 
              onclick="doAction.value='doCreateRevision';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
+	  {/if}
       <input type="button" name="new_version" id="new_version" value="{$labels.btn_new_version}" 
                onclick="doAction.value='doCreateVersion';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
     </form>

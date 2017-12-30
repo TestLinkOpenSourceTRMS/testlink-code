@@ -73,21 +73,20 @@ viewer for requirement
                                             '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req_version);"  />
                                               
       {/if}
-
-      {if $args_frozen_version eq null}
+	  {if $args_grants->unfreeze_req}
+		{if $args_frozen_version eq null}
         <input type="button" name="freeze_req_version" value="{$labels.btn_freeze_this_version}"
                onclick="delete_confirmation({$args_req.version_id},
                         '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
                                             '{$freeze_msgbox_title}', '{$freeze_warning_msg}',pF_freeze_req_version);"  />
 
-      {else}
-        {if $args_grants->unfreeze_req}
+		{else}
           <input type="button" name="unfreeze_req_version" value="{$labels.btn_unfreeze_this_version}"
                onclick="delete_confirmation({$args_req.version_id},
                         '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
                                             '{$unfreeze_msgbox_title}', '{$unfreeze_warning_msg}',pF_unfreeze_req_version);"  />
-        {/if}
-      {/if}
+		{/if}
+	  {/if}
 
       {if $args_can_copy}                                         
         <input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>

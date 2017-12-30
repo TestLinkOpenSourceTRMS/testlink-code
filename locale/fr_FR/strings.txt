@@ -2387,7 +2387,7 @@ $TLS_desc_keyword_assignment = "Affectation de mots-clés";
 
 
 
-$TLS_desc_mgt_unfreeze_req = "Déverrouiller exigence";
+$TLS_desc_mgt_unfreeze_req = "Verrouiller/déverrouiller les exigences";
 $TLS_desc_mgt_modify_key = "Gestion des mots-clés";
 $TLS_desc_mgt_modify_product = "Gestion de projets";
 $TLS_desc_mgt_modify_req = "Gestion d’exigences";

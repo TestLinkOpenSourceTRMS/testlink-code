@@ -2425,7 +2425,7 @@ $TLS_desc_keyword_assignment = "Keyword Assignment";
 
 
 
-$TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
+$TLS_desc_mgt_unfreeze_req = "Freeze/Unfreeze requirement";
 $TLS_desc_mgt_modify_key = "Keyword management";
 $TLS_desc_mgt_modify_product = "Test Project management";
 $TLS_desc_mgt_modify_req = "Requirement management";

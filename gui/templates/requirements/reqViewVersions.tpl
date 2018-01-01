@@ -465,7 +465,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                      show_hide_container_view_status_id=$memstatus_id}
               <div id="{$div_id}" class="workBack">
               {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
-                       args_req_coverage=$gui->req_coverage
+                       args_hide_coverage=true
                        args_req=$my_req 
                        args_gui=$gui
                        args_grants=$gui->grants 

@@ -174,6 +174,7 @@ viewer for requirement
       </fieldset>
     </td>
   </tr>
+  {if !isset($args_hide_coverage)}
   <td>
     <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
     {if $gui->user_feedback != ''}
@@ -226,7 +227,8 @@ viewer for requirement
         
     </fieldset>
     </td>
-   </tr>
+	{/if}
+
   <tr>
       <td>&nbsp;</td>
   </tr>

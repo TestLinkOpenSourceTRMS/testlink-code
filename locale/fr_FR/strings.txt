@@ -2749,6 +2749,7 @@ $TLS_error_deleting_rel = "La relation n’a pas pu être supprimée.";
 $TLS_delete_rel_msgbox_title = "Supprimer la relation";
 $TLS_delete_rel_msgbox_msg = "Etes-vous sûr de vouloir supprimer la relation #%i ?";
 $TLS_img_title_delete_relation = "Cliquer pour supprimer la relation.";
+$TLS_img_title_relation_frozen = "La relation ne peut pas être supprimée car au moins une des deux exigences liées est verrouillée.";
 
 
 // ----- configured requirement relation types (BUGID 1748) -----

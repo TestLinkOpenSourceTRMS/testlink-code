@@ -2425,7 +2425,7 @@ $TLS_desc_keyword_assignment = "Keyword Assignment";
 
 
 
-$TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
+$TLS_desc_mgt_unfreeze_req = "Freeze/Unfreeze requirement";
 $TLS_desc_mgt_modify_key = "Keyword management";
 $TLS_desc_mgt_modify_product = "Test Project management";
 $TLS_desc_mgt_modify_req = "Requirement management";
@@ -2787,7 +2787,8 @@ $TLS_error_deleting_rel = "Relation could not be deleted.";
 $TLS_delete_rel_msgbox_title = "Delete relation";
 $TLS_delete_rel_msgbox_msg = "Really delete relation #%i?";
 $TLS_img_title_delete_relation = "Click to delete this relation.";
-
+$TLS_img_title_relation_frozen = "Relation can't be deleted because one of linked requirement is frozen.";
+$TLS_rel_add_error_dest_frozen = "Relation can't be added because the destination requirement is frozen.";
 
 // ----- configured requirement relation types (BUGID 1748) -----
 $TLS_req_rel_is_parent_of = "parent of";

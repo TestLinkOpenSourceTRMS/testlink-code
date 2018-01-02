@@ -2788,6 +2788,7 @@ $TLS_delete_rel_msgbox_title = "Delete relation";
 $TLS_delete_rel_msgbox_msg = "Really delete relation #%i?";
 $TLS_img_title_delete_relation = "Click to delete this relation.";
 $TLS_img_title_relation_frozen = "Relation can't be deleted because one of linked requirement is frozen.";
+$TLS_rel_add_error_dest_frozen = "Relation can't be added because the destination requirement is frozen.";
 
 // ----- configured requirement relation types (BUGID 1748) -----
 $TLS_req_rel_is_parent_of = "parent of";

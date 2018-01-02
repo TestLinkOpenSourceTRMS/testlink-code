@@ -111,8 +111,9 @@ function refreshAndClose(tcase_id,callback)
     	</tr>
     	{section name=row loop=$gui->arrAssignedReq}
     	<tr>
-    		<td><input type="checkbox" id="assigned_req{$gui->arrAssignedReq[row].id}" value="{$gui->arrAssignedReq[row].id}"
-    		                           name="req_id[{$gui->arrAssignedReq[row].id}]" /></td>
+    		<td><input type="checkbox"  {if $gui->arrAssignedReq[row].is_open == 0} disabled="disabled" {/if}
+						id="assigned_req{$gui->arrAssignedReq[row].id}" value="{$gui->arrAssignedReq[row].id}"
+    		            name="req_id[{$gui->arrAssignedReq[row].id}]" /></td>
     		<td><span class="bold">{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
     		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
     			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
@@ -164,7 +165,7 @@ function refreshAndClose(tcase_id,callback)
       	</tr>
       	{section name=row2 loop=$gui->arrUnassignedReq}
       	<tr>
-      		<td><input type="checkbox"
+      		<td><input type="checkbox" {if $gui->arrUnassignedReq[row2].is_open == 0} disabled="disabled" {/if}
       		           id="free_req{$gui->arrUnassignedReq[row2].id}" value="{$gui->arrUnassignedReq[row2].id}"
       		           name="req_id[{$gui->arrUnassignedReq[row2].id}]" /></td>
 

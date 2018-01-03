@@ -1206,7 +1206,7 @@ $TLS_th_rights = "Rights";
 $TLS_th_rolename = "Role name";
 $TLS_th_system_rights = "System rights";
 $TLS_th_tp_rights = "Test Plan";
-$TLS_th_user_rights = "User";
+$TLS_th_user_rights = "Users/Roles";
 $TLS_title_user_mgmt = "User Management";
 $TLS_warning_empty_role_name = "Please give a name to Role";
 $TLS_warning_modify_role = "Really modify the role?";
@@ -2448,7 +2448,9 @@ $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
 $TLS_desc_testplan_metrics = "Test Plan metrics";
 $TLS_desc_testplan_planning = "Test Plan planning";
-$TLS_desc_user_role_assignment = "Role assignment";
+$TLS_desc_user_role_assignment = "Assign roles to users for all projects";
+$TLS_desc_testproject_user_role_assignment = "Assign roles to users for a project";
+$TLS_desc_testplan_user_role_assignment = "Assign roles to users for a Test Plan";
 $TLS_desc_monitor_requirement = 'Monitor Requirements';
 
 

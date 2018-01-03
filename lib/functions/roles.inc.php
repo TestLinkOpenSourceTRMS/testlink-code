@@ -72,7 +72,7 @@ function init_global_rights_maps()
                    'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
                    'desc_codetrackers_view' => null,'desc_codetrackers_management' => null,
                    'desc_mgt_modify_users' => null,'desc_role_management' => null,
-                   'desc_user_role_assignment' => null,
+                   'desc_testplan_user_role_assignment' => null,'desc_testproject_user_role_assignment'=> null,
                    'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
                    'desc_mgt_unfreeze_req' => null,'desc_mgt_plugins' => null,
                    'right_exec_edit_notes' => null, 'right_exec_delete' => null,
@@ -103,8 +103,8 @@ function init_global_rights_maps()
                        "testplan_planning" => $l18n['desc_testplan_planning'],
                        "testplan_execute" => $l18n['desc_testplan_execute'],
                        "testplan_metrics" => $l18n['desc_testplan_metrics'],
-                       "testplan_user_role_assignment" => $l18n['desc_user_role_assignment'],
-                       "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases'],
+					   "testplan_user_role_assignment" => $l18n['desc_testplan_user_role_assignment'],
+					   "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases'],
                        "testplan_milestone_overview"  => $l18n['right_testplan_milestone_overview'],
                        "exec_testcases_assigned_to_me" => $l18n['right_exec_testcases_assigned_to_me'],
                        'testplan_add_remove_platforms' => $l18n['right_testplan_add_remove_platforms'],
@@ -151,14 +151,13 @@ function init_global_rights_maps()
 
 
   // Global means test project independent.
-  //
-  // $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
-  //                                "role_management" => $l18n['desc_role_management'],
-  //                                "user_role_assignment" => $l18n['desc_user_role_assignment']); 
   
   $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
-                                 "role_management" => $l18n['desc_role_management']);
-
+                                 "role_management" => $l18n['desc_role_management'],
+                                 "user_role_assignment" => $l18n['desc_user_role_assignment'],
+                                 "testproject_user_role_assignment" => $l18n['desc_testproject_user_role_assignment']); 
+  
+  
   $g_rights_users = $g_rights_users_global;
               
   $g_rights_system = array ("mgt_view_events" => $l18n['desc_mgt_view_events'],
@@ -168,7 +167,6 @@ function init_global_rights_maps()
 
               
   $g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
-  unset($g_propRights_global["testproject_user_role_assignment"]);
     
   $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }

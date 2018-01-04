@@ -2243,9 +2243,9 @@ $TLS_platform_number_help = 'Number of linked Platforms';
 $TLS_build_number_help = 'Number of Builds';
 
 // ----- gui/templates/mainPage_left.tpl -----
-$TLS_href_assign_user_roles = "Assign User Roles";
+$TLS_href_assign_user_roles = "Assign Users Roles";
 $TLS_href_browse_tc = "Browse Test Cases";
-$TLS_href_cfields_management = "Define Custom Fields";
+$TLS_href_cfields_management = "Custom Fields Management";
 $TLS_href_cfields_tproject_assign = "Assign Custom Fields";
 $TLS_href_edit_tc = "Test Specification";
 $TLS_href_inventory = "Inventory";
@@ -2260,7 +2260,7 @@ $TLS_href_req_overview = "Requirement Overview";
 $TLS_href_req_monitor_overview = "Requirement Monitoring Overview";
 $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Cases";
-$TLS_href_tproject_management = "Test Project Management";
+$TLS_href_tproject_management = "Test Projects Management";
 $TLS_href_user_management = "User Management";
 $TLS_href_admin_modules = "System Configuration";
 $TLS_title_test_spec = "Test Specification";

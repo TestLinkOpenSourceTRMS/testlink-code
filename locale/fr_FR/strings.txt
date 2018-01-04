@@ -2218,7 +2218,7 @@ $TLS_platform_number_help = 'Le nombre de plateformes liées';
 $TLS_build_number_help = 'Le nombre de versions du produit liées';
 
 // ----- gui/templates/mainPage_left.tpl -----
-$TLS_href_assign_user_roles = "Affectation des droits sur le projet";
+$TLS_href_assign_user_roles = "Affectation des utilisateurs";
 $TLS_href_browse_tc = "Parcourir les fiches de test";
 $TLS_href_cfields_management = "Gestion des champs personnalisés";
 $TLS_href_cfields_tproject_assign = "Affectation des champs personnalisés";
@@ -2245,6 +2245,7 @@ $TLS_href_plan_define_priority = "Priorité de campagne de test";
 $TLS_href_my_testcase_assignments = "Mes fiches de test à exécuter";
 $TLS_href_platform_management = "Gestion des plateformes";
 $TLS_href_issuetracker_management = "Gestion des Gestionnaires d’anomalies";
+$TLS_href_codetracker_management = "Gestion des Gestionnaires de versions de code";
 $TLS_href_reqmgrsystem_management = "Gestion du Gestionnaire d’exigences";
 $TLS_system_config = "Système";
 $TLS_title_plugins = "Plugins";

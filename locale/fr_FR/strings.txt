@@ -1173,10 +1173,8 @@ $TLS_menu_view_users = "Liste des utilisateurs";
 $TLS_menu_view_roles = "Liste des rôles";
 $TLS_th_execution_rights = "Exécution de fiches de test";
 $TLS_th_cf_rights = "Champs personnalisés";
-$TLS_th_issuetracker_rights = "Gestionnaire d’anomalies";
-$TLS_th_kw_rights = $TLS_keyword;
+$TLS_th_trackers_rights = "Integration d'outils tiers";
 $TLS_th_mgttc_rights = "Fiches de test";
-$TLS_th_platform_rights = $TLS_platform;
 $TLS_th_product_rights = "Projet";
 $TLS_th_req_rights = "Exigences";
 $TLS_th_rights = "Droits";
@@ -2411,9 +2409,9 @@ $TLS_desc_testplan_create_build = "Création/modification de Versions de produit
 $TLS_desc_testplan_execute = "Exécution de campagne de test";
 $TLS_desc_testplan_metrics = "Métriques de campagne de test";
 $TLS_desc_testplan_planning = "Planification de campagne de test";
-$TLS_desc_user_role_assignment = "Affectation de rôles  aux utilisateurs pour tous les projets";
-$TLS_desc_testproject_user_role_assignment = "Affectation de rôles aux utilisateurs pour le projet";
-$TLS_desc_testplan_user_role_assignment = "Affectation de rôles aux utilisateurs pour les campagnes du projet";
+$TLS_desc_user_role_assignment = "Affectation de rôles  aux utilisateurs (niveau global)";
+$TLS_desc_testproject_user_role_assignment = "Affectation de rôles aux utilisateurs (niveau projet)";
+$TLS_desc_testplan_user_role_assignment = "Affectation de rôles aux utilisateurs (niveau campagne)";
 $TLS_desc_monitor_requirement = 'Surveillance des exigences';
 
 

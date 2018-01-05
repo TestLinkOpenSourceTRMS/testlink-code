@@ -199,19 +199,15 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 function getRightsCfg()
 {
     $cfg = new stdClass();
-    $cfg->tplan_mgmt = config_get('rights_tp');
-    $cfg->tcase_mgmt = config_get('rights_mgttc');
-    $cfg->kword_mgmt = config_get('rights_kw');
-    $cfg->tproject_mgmt = config_get('rights_product');
-    $cfg->user_mgmt = config_get('rights_users');
-    $cfg->req_mgmt = config_get('rights_req');
-    $cfg->cfield_mgmt = config_get('rights_cf');
     $cfg->system_mgmt = config_get('rights_system');
-    $cfg->platform_mgmt = config_get('rights_platforms');
-    $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
-    $cfg->codetracker_mgmt = config_get('rights_codetrackers');
+    $cfg->tproject_mgmt = config_get('rights_product');
+    $cfg->trackers_mgmt = config_get('rights_trackers');
+    $cfg->user_mgmt = config_get('rights_users');
+    $cfg->cfield_mgmt = config_get('rights_cf');
+    $cfg->req_mgmt = config_get('rights_req');
+    $cfg->tcase_mgmt = config_get('rights_mgttc');
+    $cfg->tplan_mgmt = config_get('rights_tp');
     $cfg->execution = config_get('rights_executions');
-    // $cfg->reqmgrsystem_mgmt = config_get('rights_reqmgrsystems');
 
     return $cfg;
 }
@@ -255,8 +251,6 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
                                   'doCreate' => 'create_role', 'doUpdate' => 'edit_role',
                                   'duplicate' => 'create_role');
 
-  $guiObj->highlight->$actionCfg = array();
-  $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
   $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
   $guiObj->role = $roleObj;
   $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);

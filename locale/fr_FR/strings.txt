@@ -2382,6 +2382,7 @@ $TLS_runby = "Exécutée par";
 // ----- lib/functions/roles.inc.php -----
 $TLS_desc_cfield_management = "Gestion des champs personnalisés";
 $TLS_desc_cfield_view = "Visualisation des champs personnalisés (lecture seule)";
+$TLS_desc_cfield_assignment = "Affectation des champs personnalisés";
 $TLS_desc_events_mgt = "Gestion des évènements";
 
 $TLS_desc_issuetrackers_view = "Gestion des anomalies (lecture seule)";

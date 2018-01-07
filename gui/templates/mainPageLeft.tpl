@@ -48,9 +48,12 @@
 {if $gui->testprojectID && 
    ($gui->grants.cfield_management == "yes" || 
     $gui->grants.tproject_user_role_assignment == "yes" || 
-    $gui->grants.platform_management == "yes" || 
     $gui->grants.platform_view == "yes" || 
-    $gui->grants.keywords_view == "yes")}
+    $gui->grants.platform_management == "yes" || 
+    $gui->grants.keywords_view == "yes" || 
+    $gui->grants.mgt_modify_key == "yes" ||
+    $gui->grants.project_inventory_view == "yes" || 
+    $gui->grants.project_inventory_management == "yes")}
    {$display_left_block_2=true}
 {/if}
 
@@ -82,9 +85,6 @@
 {$divStyle="width:300px;padding: 0px 0px 0px 10px;"}
 {$aStyle="padding: 3px 15px;font-size:16px"}
 
-
-{$keywordsAssignment="lib/keywords/keywordsView.php?tproject_id="}
-{$platformsView="lib/platforms/platformsView.php"}
 
 <div class="vertical_menu" style="float: left; margin:0px 10px 10px 0px; width: 320px;">
 {if $display_left_block_1}
@@ -119,6 +119,10 @@
 {if $display_left_block_2}
 {$cfAssignment="lib/cfields/cfieldsTprojectAssign.php"}
 {$usersAssign="lib/usermanagement/usersAssign.php?featureType=testproject&featureID="}
+{$keywordsAssignment="lib/keywords/keywordsView.php?tproject_id="}
+{$platformsView="lib/platforms/platformsView.php"}
+{$inventoryView="lib/inventory/inventoryView.php"}
+
   <div class="list-group" style="{$divStyle}">
     {if $gui->grants.cfield_management == "yes"}
       <a href="{$cfAssignment}" class="list-group-item" style="{$aStyle}">{$labels.href_cfields_tproject_assign}</a>
@@ -126,11 +130,14 @@
     {if $gui->grants.tproject_user_role_assignment == "yes"}
       <a href="{$usersAssign}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_assign_user_roles}</a>
     {/if}
-    {if $gui->grants.keywords_view == "yes"}
+    {if $gui->grants.keywords_view == "yes" || $gui->grants.mgt_modify_key == "yes"}
       <a href="{$keywordsAssignment}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_keywords_manage}</a>
     {/if}
-    {if $gui->grants.platform_management == "yes" || $gui->grants.platform_view == "yes"}
+    {if $gui->grants.platform_view == "yes" || $gui->grants.platform_management == "yes"}
       <a href="{$platformsView}" class="list-group-item" style="{$aStyle}">{$labels.href_platform_management}</a>
+    {/if}
+	{if $gui->grants.project_inventory_view == "yes" || $gui->grants.project_inventory_management == "yes"}
+      <a href="{$inventoryView}" class="list-group-item" style="{$aStyle}">{$labels.href_inventory_management}</a>
     {/if}
   </div>
 {/if}

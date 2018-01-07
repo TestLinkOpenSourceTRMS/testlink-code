@@ -112,9 +112,7 @@ $rights2check = array('testplan_execute','testplan_create_build','testplan_metri
                       'testplan_user_role_assignment','mgt_testplan_create','cfield_view', 'cfield_management',
                       'testplan_milestone_overview','exec_testcases_assigned_to_me','mgt_modify_product',
                       'testplan_add_remove_platforms','testplan_update_linked_testcase_versions',
-                      'testplan_set_urgent_testcases','testplan_show_testcases_newest_versions',
-					  'platform_view','platform_management','mgt_users','role_management','user_role_assignment',
-					  'issuetracker_management','issuetracker_view','codetracker_management','codetracker_view');
+                      'testplan_set_urgent_testcases','testplan_show_testcases_newest_versions');
 
 foreach($rights2check as $key => $the_right)
 {
@@ -210,6 +208,9 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   // key: more or less verbose
   // value: string present on rights table
   $right2check = array('project_edit' => 'mgt_modify_product',
+					   'mgt_users' =>  "mgt_users",
+					   'role_management' => "role_management" ,
+					   'user_role_assignment' => "user_role_assignment",
                        'reqs_view' => "mgt_view_req", 
                        'monitor_req' => "monitor_requirement", 
                        'req_tcase_link_management' => "req_tcase_link_management",
@@ -223,6 +224,8 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'issuetracker_view' => "issuetracker_view",
                        'codetracker_management' => "codetracker_management",
                        'codetracker_view' => "codetracker_view",
+                       'cfield_view' => "cfield_view",
+                       'cfield_management' => "cfield_management",
                        // 'reqmgrsystem_management' => "reqmgrsystem_management",
                        // 'reqmgrsystem_view' => "reqmgrsystem_view",
                        'configuration' => "system_configuraton",
@@ -230,6 +233,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'view_tc' => "mgt_view_tc",
                        'view_testcase_spec' => "mgt_view_tc",
                        'project_inventory_view' => 'project_inventory_view',
+                       'project_inventory_management' => 'project_inventory_management',
                        'modify_tc' => 'mgt_modify_tc',
                        'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
                        'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
@@ -253,7 +257,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   
   foreach($right2check as $humankey => $right)
   {
-    $grants[$humankey] = $user->hasRight($dbHandler,$right); 
+    $grants[$humankey] = $user->hasRight($dbHandler,$right);
   }
 
 

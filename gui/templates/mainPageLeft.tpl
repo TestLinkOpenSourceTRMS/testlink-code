@@ -46,7 +46,7 @@
 {* Left Block 2 : Current Project Management : Assign Customs Fields, Assign Users, Keywords, PlatFroms *}
 
 {if $gui->testprojectID && 
-   ($gui->grants.cfield_management == "yes" || 
+   ($gui->grants.cfield_assignment == "yes" || 
     $gui->grants.tproject_user_role_assignment == "yes" || 
     $gui->grants.platform_view == "yes" || 
     $gui->grants.platform_management == "yes" || 
@@ -124,7 +124,7 @@
 {$inventoryView="lib/inventory/inventoryView.php"}
 
   <div class="list-group" style="{$divStyle}">
-    {if $gui->grants.cfield_management == "yes"}
+    {if $gui->grants.cfield_assignment == "yes"}
       <a href="{$cfAssignment}" class="list-group-item" style="{$aStyle}">{$labels.href_cfields_tproject_assign}</a>
     {/if}
     {if $gui->grants.tproject_user_role_assignment == "yes"}

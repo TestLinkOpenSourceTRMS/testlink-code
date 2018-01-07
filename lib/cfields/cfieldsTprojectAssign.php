@@ -149,7 +149,7 @@ function initializeGui(&$args,&$cfield_mgr)
  */
 function checkRights(&$db,&$user)
 {
-  return $user->hasRight($db,"cfield_management");
+  return $user->hasRight($db,"cfield_assignment");
 }
 
 /**

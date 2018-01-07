@@ -226,6 +226,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'codetracker_view' => "codetracker_view",
                        'cfield_view' => "cfield_view",
                        'cfield_management' => "cfield_management",
+                       'cfield_assignment' => "cfield_assignment",
                        // 'reqmgrsystem_management' => "reqmgrsystem_management",
                        // 'reqmgrsystem_view' => "reqmgrsystem_view",
                        'configuration' => "system_configuraton",

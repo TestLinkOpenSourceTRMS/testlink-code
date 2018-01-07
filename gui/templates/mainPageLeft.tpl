@@ -136,7 +136,7 @@
     {if $gui->grants.platform_view == "yes" || $gui->grants.platform_management == "yes"}
       <a href="{$platformsView}" class="list-group-item" style="{$aStyle}">{$labels.href_platform_management}</a>
     {/if}
-	{if $gui->grants.project_inventory_view == "yes" || $gui->grants.project_inventory_management == "yes"}
+	{if $gui->hasInventoryEnabled && ($gui->grants.project_inventory_view == "yes" || $gui->grants.project_inventory_management == "yes")}
       <a href="{$inventoryView}" class="list-group-item" style="{$aStyle}">{$labels.href_inventory_management}</a>
     {/if}
   </div>

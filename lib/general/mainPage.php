@@ -48,6 +48,8 @@ $userID = $currentUser->dbID;
 $gui = new stdClass();
 $gui->grants = getGrants($db,$user,$userIsBlindFolded);
 $gui->hasTestCases = false;
+$gui->hasInventoryEnabled = $_SESSION['testprojectOptions']->inventoryEnabled;
+
 if($gui->grants['view_tc'])
 { 
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
@@ -260,10 +262,6 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   {
     $grants[$humankey] = $user->hasRight($dbHandler,$right);
   }
-
-
-  $grants['project_inventory_view'] = ($_SESSION['testprojectOptions']->inventoryEnabled && 
-                                      ($user->hasRight($dbHandler,"project_inventory_view") == 'yes')) ? 1 : 0;
 
   return $grants;  
 }

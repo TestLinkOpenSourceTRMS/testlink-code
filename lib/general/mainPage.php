@@ -113,7 +113,7 @@ $rights2check = array('testplan_execute','testplan_create_build','testplan_metri
                       'testplan_milestone_overview','exec_testcases_assigned_to_me','mgt_modify_product',
                       'testplan_add_remove_platforms','testplan_update_linked_testcase_versions',
                       'testplan_set_urgent_testcases','testplan_show_testcases_newest_versions',
-					  'platform_management','mgt_users','role_management','user_role_assignment',
+					  'platform_view','platform_management','mgt_users','role_management','user_role_assignment',
 					  'issuetracker_management','issuetracker_view','codetracker_management','codetracker_view');
 
 foreach($rights2check as $key => $the_right)
@@ -217,6 +217,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'keywords_view' => "mgt_view_key",
                        'keyword_assignment' => "keyword_assignment",
                        'keywords_edit' => "mgt_modify_key",
+                       'platform_view' => "platform_view",
                        'platform_management' => "platform_management",
                        'issuetracker_management' => "issuetracker_management",
                        'issuetracker_view' => "issuetracker_view",

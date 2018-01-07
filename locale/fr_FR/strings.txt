@@ -33,7 +33,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Dernière mise à jour du fichier de localisation : 20/12/2017 (pour Testlink 1.9.17)";
+$TLS_last_update = "Dernière mise à jour du fichier de localisation : 07/01/2018 (pour Testlink 1.9.17)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = 'Actif (cliquer pour rendre inactif)';
@@ -501,6 +501,8 @@ $TLS_urgency_low = "Basse";
 $TLS_test_importance = "Criticité";
 $TLS_testcases_assigned_to_user = "Projet : %s - fiche de test assignée à l’utilisateur : %s";
 $TLS_assigned_on = "Date d'assignation";
+$TLS_code_mgmt = "Gestion du code";
+$TLS_code_link_tl_to_cts = "Lier des scripts de test existants";
 
 // ----- index.php -----
 $TLS_main_page_title = "TestLink ::: Page principale";
@@ -1590,10 +1592,12 @@ $TLS_testproject_enable_priority = "Activer la priorité de test";
 $TLS_testproject_enable_requirements = "Activer la gestion des exigences";
 $TLS_testproject_issue_tracker_integration = "Intégration d’un gestionnaire d’anomalies";
 $TLS_issue_tracker = "Gestionnaire d’anomalies";
+$TLS_code_tracker = "Gestionnaire de code source";
 $TLS_testproject_reqmgr_integration = "Intégration d’un gestionnaire d’exigences";
 $TLS_reqmgrsystem = "Gestionnaire d’exigences";
 $TLS_no_rms_defined = " >> Il n’y a pas de gestionnaire d’exigence de défini. <<";
 $TLS_no_issuetracker_defined = " >> Il n’y a pas de gestionnaire d’anomalies de défini. <<";
+$TLS_no_codetracker_defined = ' >> Il n’y a pas de gestionnaire de code de défini. <<';
 
 
 $TLS_info_failed_loc_prod = "Echec de localisation du projet.";
@@ -2377,8 +2381,10 @@ $TLS_desc_cfield_management = "Gestion des champs personnalisés";
 $TLS_desc_cfield_view = "Visualisation des champs personnalisés (lecture seule)";
 $TLS_desc_events_mgt = "Gestion des évènements";
 
-$TLS_desc_issuetrackers_view = "Suivi d’anomalies (lecture seule)";
+$TLS_desc_issuetrackers_view = "Gestion des anomalies (lecture seule)";
 $TLS_desc_issuetrackers_management = "Gestion du Gestionnaire d’anomalies";
+$TLS_desc_codetrackers_view = "Gestion du code (lecture seule)";
+$TLS_desc_codetrackers_management = "Gestion du Gestionnaire de code";
 $TLS_desc_reqmgrsystems_view = "Gestionnaire d’exigences (lecture seule)";
 $TLS_desc_reqmgrsystems_management = "Gestion du gestionnaire d’exigence";
 $TLS_desc_req_tcase_link_management = "Lier les exigences aux fiches de test";
@@ -3609,6 +3615,26 @@ $TLS_used_on_testproject = "Utilisé par le projet";
 $TLS_issuetracker_invalid_type = "Le type du gestionnaire d’anomalies %s est inconnu";
 $TLS_issuetracker_interface_not_implemented = "L’interface du gestionnaire d’anomalies %s n’est pas implémenté/disponible";
 
+// codeTrackerView.tpl
+$TLS_th_codetracker = 'Gestionnaire de code';
+$TLS_th_codetracker_type = 'Type';
+$TLS_th_codetracker_env = 'Environnement';
+$TLS_warning_empty_codetracker_name = "Le nom du gestionnaire de code ne peut pas être vide!";
+$TLS_warning_empty_codetracker_type = "Le type du gestionnaire de code ne peut pas être vide!";
+
+// codeTrackerCommands.class.php
+$TLS_codetracker_management = $TLS_href_codetracker_management;
+$TLS_codetracker_deleted = "Le gestionnaire de code %s% a été supprimé";
+
+// codeTrackerEdit.tpl
+$TLS_codetracker_show_cfg_example = 'Montrer un exemple de ocnfiguration';
+$TLS_codetracker_cfg_example = 'Exemple de configuration';
+$TLS_used_on_testproject = 'Utilisé par le projet';
+
+// getcodetrackertemplate.php
+$TLS_codetracker_invalid_type = 'Le type de gestionnaire de code %s est inconnu';
+$TLS_codetracker_interface_not_implemented = "L'interface  %s n'est pas disponible/implémentée pour le gestionnaire de code";
+
 // logger.class.php
 $TLS_mail_logger_email_subject = " :: Message de Log provenant de TestLink :: ";
 
@@ -3739,8 +3765,10 @@ $TLS_btn_toogle_mon = 'Basculer la surveillance';
 $TLS_btn_start_mon = 'Démarrer la surveillance';
 $TLS_btn_stop_mon = 'Arrêter la surveillance';
 
-$TLS_issueTracker_connection_ok = 'Test Connection OK';
-$TLS_issueTracker_connection_ko = 'Test Connection KO';
+$TLS_issueTracker_connection_ok = 'Test de connexion OK';
+$TLS_issueTracker_connection_ko = 'Test de connexion KO';
+$TLS_codeTracker_connection_ok = 'Test de connexion OK';
+$TLS_codeTracker_connection_ko = 'Test de connexion KO';
 
 $TLS_click_passed = "Enregistrer un résultat réussi";
 $TLS_click_failed = "Enregistrer un résultat en échec";

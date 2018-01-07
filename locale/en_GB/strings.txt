@@ -1306,6 +1306,7 @@ $TLS_th_last_name = "Last  Name";
 $TLS_th_locale = "Locale";
 $TLS_th_login = "Login";
 $TLS_th_role = "Role";
+$TLS_expiration_date = "Expiration date";
 $TLS_th_api = "API Key";
 
 //$TLS_api_gen_key_action = "generate";

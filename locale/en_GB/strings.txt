@@ -1185,6 +1185,8 @@ $TLS_title_execution_notes = "Execution notes";
 // ----- gui/templates/rolesedit.tpl -----
 $TLS_caption_define_role = "Define role";
 $TLS_caption_possible_affected_users = "Possibly affected users by role delete operation";
+$TLS_caption_global_roles_table = "Rights used only in a global context, based on role affected to the user in user management";
+$TLS_caption_project_testplan_roles_table = "Rights used in the current context, based on role affected to the user in each project / Test plan";
 $TLS_enter_role_notes = "Role description";
 $TLS_menu_assign_testplan_roles = "Assign Test Plan roles";
 $TLS_menu_define_roles = "New role";

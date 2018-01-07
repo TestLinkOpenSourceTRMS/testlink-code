@@ -14,6 +14,7 @@ Purpose: smarty template - create/edit user role
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
              th_platform_rights,demo_update_role_disabled,th_trackers_rights,show_event_history,
              th_reqmgrsystem_rights,th_execution_rights,
+			 caption_global_roles_table,caption_project_testplan_roles_table,
              th_rolename,th_tp_rights,btn_cancel'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
@@ -82,71 +83,77 @@ function validateForm(f)
     <tr><th>{$labels.th_rights}</th></tr>
     <tr>
       <td>
-        <table>
-        <tr>
-          <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_system_rights}</legend>
-              {foreach from=$gui->rightsCfg->system_mgmt item=id key=k}
-              <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
-              {/foreach}
-            </fieldset>
-          </td>
-          <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_user_rights}</legend>
-              {foreach from=$gui->rightsCfg->user_mgmt item=id key=k}
-              <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
-              {/foreach}
-            </fieldset>
-          </td>
-		  <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_trackers_rights}</legend>
-              {foreach from=$gui->rightsCfg->trackers_mgmt item=id key=k}
-              <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
-              {/foreach}
-            </fieldset>
-          </td>
-        </tr>
-        <tr>
-		  <td>
-            <fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_product_rights}</legend>
-            {foreach from=$gui->rightsCfg->tproject_mgmt item=id key=k}
-            <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
-            {/foreach}
-            </fieldset>
-          </td>
-          <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_cf_rights}</legend>
-              {foreach from=$gui->rightsCfg->cfield_mgmt item=id key=k}
-              <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
-              {/foreach}
-            </fieldset>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_req_rights}</legend>
-            {foreach from=$gui->rightsCfg->req_mgmt item=id key=k}
-            <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
-            {/foreach}
-            </fieldset>
-          </td>
-		  <td>
-            <fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_mgttc_rights}</legend>
-            {foreach from=$gui->rightsCfg->tcase_mgmt item=id key=k}
-            <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
-            {/foreach}
-            </fieldset>
-          </td>
-		  <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_tp_rights}</legend>
-              {foreach from=$gui->rightsCfg->tplan_mgmt item=id key=k}
-              <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]}/>{$id}<br />
-              {/foreach}
-            </fieldset>
-          </td>          
-          <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_execution_rights}</legend>
-              {foreach from=$gui->rightsCfg->execution item=id key=k}
-              <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
-              {/foreach}
-            </fieldset>
-          </td>
-        </tr>
-      </table>
+		<br />
+        <table class="common" align="center">
+		<caption>{$labels.caption_global_roles_table}</caption>
+			<tr>
+			  <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_system_rights}</legend>
+				  {foreach from=$gui->rightsCfg->system_mgmt item=id key=k}
+				  <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+				  {/foreach}
+				</fieldset>
+			  </td>
+			  <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_user_rights}</legend>
+				  {foreach from=$gui->rightsCfg->user_mgmt item=id key=k}
+				  <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+				  {/foreach}
+				</fieldset>
+			  </td>
+			  <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_trackers_rights}</legend>
+				  {foreach from=$gui->rightsCfg->trackers_mgmt item=id key=k}
+				  <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+				  {/foreach}
+				</fieldset>
+			  </td>
+			  <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_cf_rights}</legend>
+				  {foreach from=$gui->rightsCfg->cfield_mgmt item=id key=k}
+				  <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+				  {/foreach}
+				</fieldset>
+			  </td>
+			</tr>
+		</table>
+		<br />
+        <table class="common" align="center">
+		<caption>{$labels.caption_project_testplan_roles_table}</caption>
+			<tr>
+			  <td>
+				<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_product_rights}</legend>
+				{foreach from=$gui->rightsCfg->tproject_mgmt item=id key=k}
+				<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+				{/foreach}
+				</fieldset>
+			  </td>
+			</tr>
+			<tr>
+			  <td>
+				<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_req_rights}</legend>
+				{foreach from=$gui->rightsCfg->req_mgmt item=id key=k}
+				<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+				{/foreach}
+				</fieldset>
+			  </td>
+			  <td>
+				<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_mgttc_rights}</legend>
+				{foreach from=$gui->rightsCfg->tcase_mgmt item=id key=k}
+				<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+				{/foreach}
+				</fieldset>
+			  </td>
+			  <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_tp_rights}</legend>
+				  {foreach from=$gui->rightsCfg->tplan_mgmt item=id key=k}
+				  <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]}/>{$id}<br />
+				  {/foreach}
+				</fieldset>
+			  </td>          
+			  <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_execution_rights}</legend>
+				  {foreach from=$gui->rightsCfg->execution item=id key=k}
+				  <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+				  {/foreach}
+				</fieldset>
+			  </td>
+			</tr>
+        </table>
       </td>
     </tr>
     <tr><th>{$labels.enter_role_notes}</th></tr>

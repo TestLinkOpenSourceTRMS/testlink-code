@@ -151,9 +151,9 @@ function init_global_rights_maps()
 
 
               
-  $g_propRights_global = array_merge($g_rights_users,$g_rights_system,$g_rights_product);
+  $g_propRights_global = array_merge($g_rights_users,$g_rights_system,$g_rights_trackers,$g_rights_cf);
     
-  $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_req);
+  $g_propRights_product = array_merge($g_propRights_global,$g_rights_product, $g_rights_mgttc,$g_rights_req);
 }
 
 

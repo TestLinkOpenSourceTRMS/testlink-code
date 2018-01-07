@@ -1165,6 +1165,8 @@ $TLS_title_execution_notes = "Notes d’exécution";
 // ----- gui/templates/rolesedit.tpl -----
 $TLS_caption_define_role = "Définir le rôle";
 $TLS_caption_possible_affected_users = "Utilisateurs potentiellement impactés par la modification du rôle";
+$TLS_caption_global_roles_table = "Droits pris en compte globalement, basés sur le role par défaut défini pour l'utilisateur";
+$TLS_caption_project_testplan_roles_table = "Droits pris en compte en fonction du contexte, basés sur le role de l'utilisateur dans chaque projet / campagne de test";
 $TLS_enter_role_notes = "Description de rôle";
 $TLS_menu_assign_testplan_roles = "Gérer les droits sur la campagne de test";
 $TLS_menu_define_roles = "Nouveau rôle";

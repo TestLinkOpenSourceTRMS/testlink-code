@@ -112,8 +112,6 @@ function init_global_rights_maps()
                           "testcase_freeze" => $l18n['right_testcase_freeze'],
                           "testproject_edit_executed_testcases" => $l18n['right_testproject_edit_executed_testcases'],
                           "testproject_delete_executed_testcases" => $l18n['right_testproject_delete_executed_testcases'],
-						  "mgt_view_key" => $l18n['desc_mgt_view_key'],
-						  "mgt_modify_key" => $l18n['desc_mgt_modify_key'],
 						  "keyword_assignment" => $l18n['desc_keyword_assignment']);
   
   
@@ -127,6 +125,8 @@ function init_global_rights_maps()
                             "cfield_assignment" => $l18n['desc_cfield_assignment'],
                             "project_inventory_view" => $l18n['desc_project_inventory_view'],
 							"project_inventory_management" => $l18n['desc_project_inventory_management'],
+							"mgt_view_key" => $l18n['desc_mgt_view_key'],
+						    "mgt_modify_key" => $l18n['desc_mgt_modify_key'],
 							"platform_view" => $l18n['desc_platforms_view'],
                             "platform_management" => $l18n['desc_platforms_management']);            
   

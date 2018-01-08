@@ -2412,7 +2412,7 @@ $TLS_runby = "Run By";
 // ----- lib/functions/roles.inc.php -----
 $TLS_desc_cfield_management = "Custom field management";
 $TLS_desc_cfield_view = "Custom field view (read only access)";
-$TLS_desc_cfield_assignment = "Custom field assignment";
+$TLS_desc_cfield_assignment = "Assign Custom fields";
 $TLS_desc_events_mgt = "Event management";
 
 $TLS_desc_issuetrackers_view = "Issue Tracker view (read only access)";

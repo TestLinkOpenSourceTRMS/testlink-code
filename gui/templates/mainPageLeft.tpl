@@ -148,17 +148,17 @@
   <div class="list-group" style="{$divStyle}">
        {if $gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes" }
           <a href="{$gui->launcher}?feature=reqSpecMgmt" class="list-group-item" style="{$aStyle}">{$labels.href_req_spec}</a>
+         {if $gui->grants.monitor_req == "yes"}
+            <a href="{$reqMonOverView}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_req_monitor_overview}</a>
+         {/if}
+         {if $gui->grants.req_tcase_link_management == "yes"}
+            <a href="lib/general/frmWorkArea.php?feature=assignReqs" class="list-group-item" style="{$aStyle}">{$labels.href_req_assign}</a>
+         {/if}
           <a href="{$reqOverView}" class="list-group-item" style="{$aStyle}">{$labels.href_req_overview}</a>
           <a href="{$gui->launcher}?feature=printReqSpec" class="list-group-item" style="{$aStyle}">{$labels.href_print_req}</a>
           <a href="{$gui->launcher}?feature=searchReq" class="list-group-item" style="{$aStyle}">{$labels.href_search_req}</a>
           <a href="{$gui->launcher}?feature=searchReqSpec" class="list-group-item" style="{$aStyle}">{$labels.href_search_req_spec}</a>
        {/if}
-       {if $gui->grants.req_tcase_link_management == "yes"}
-          <a href="lib/general/frmWorkArea.php?feature=assignReqs" class="list-group-item" style="{$aStyle}">{$labels.href_req_assign}</a>
-       {/if}
-       {if $gui->grants.monitor_req == "yes"}
-          <a href="{$reqMonOverView}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_req_monitor_overview}</a>
-      {/if}
   </div>
 {/if}
 

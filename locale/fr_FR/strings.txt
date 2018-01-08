@@ -1256,7 +1256,7 @@ $TLS_export_keywords = "Exporter les mots-clés";
 
 
 // ----- gui/templates/cfields_tproject_assign.tpl -----
-$TLS_btn_cfields_boolean_mgmt = "Rafraîchir actif, requis, surveillable";
+$TLS_btn_cfields_boolean_mgmt = "Enregistrer Actif, Obligatoire, Surveillable";
 $TLS_btn_cfields_display_order = "Enregistrer l’ordre affiché";
 $TLS_btn_cfields_display_attr = "Enregistrer l’ordre affiché et l'emplacement";
 $TLS_cfields_active = "Actif";
@@ -3258,6 +3258,8 @@ $TLS_audit_cfield_deactivated = "Le champ personnalisé '{%1}' a été désactiv
 $TLS_audit_cfield_required_on = "Le champ personnalisé '{%1}' est REQUIS pour le projet '{%2}'";
 $TLS_audit_cfield_required_off = "Le champ personnalisé '{%1}' est NON-REQUIS pour le projet '{%2}'";
 
+$TLS_audit_cfield_monitorable_on = "texte '{%1}' texte '{%2}' texte";
+$TLS_audit_cfield_monitorable_off = "texte '{%1}' texte '{%2}' texte";
 
 
 $TLS_audit_user_apikey_set = "La clé API pour '{%1}' a été générée.";

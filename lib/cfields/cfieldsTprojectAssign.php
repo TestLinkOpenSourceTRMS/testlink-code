@@ -247,7 +247,8 @@ function doSimpleBooleanMgmt(&$cfieldMgr,$argsObj,$cfg)
     $off = null;
     foreach($cfSet as $id)
     {
-      if( isset($argsObj->$operativeInput[$id]) )
+      $CFoperative = (array) $argsObj->$operativeInput;
+	  if( isset($CFoperative[$id]) )
       {
         if($argsObj->attrBefore[$id][$cfg['dbField']] == 0)
         {

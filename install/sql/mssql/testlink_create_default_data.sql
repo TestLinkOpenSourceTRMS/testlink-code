@@ -99,6 +99,7 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (50,'monitor_requirement');
 INSERT INTO /*prefix*/rights (id,description) VALUES (51,'codetracker_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
 INSERT INTO /*prefix*/rights (id,description) VALUES (53,'cfield_assignment');
+INSERT INTO /*prefix*/rights (id,description) VALUES (54,'exec_assign_testcases');
 
 SET IDENTITY_INSERT /*prefix*/rights OFF
 
@@ -155,6 +156,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,52);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,53);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,54);
 
 --  Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3);
@@ -219,6 +221,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,29);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,30);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,47);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,50);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,54);
 
 --  admin account 
 --  SECURITY: change password after first login

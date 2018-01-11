@@ -2452,7 +2452,8 @@ $TLS_desc_testplan_planning = "Test Plan planning";
 $TLS_desc_user_role_assignment = "Assign users rights (Global Level)";
 $TLS_desc_testproject_user_role_assignment = "Assign users rights (Test Project Level)";
 $TLS_desc_testplan_user_role_assignment = "Assign users rights (Test Plan Level)";
-$TLS_desc_monitor_requirement = 'Monitor Requirements';
+$TLS_desc_monitor_requirement = "Monitor Requirements";
+$TLS_desc_exec_assign_testcases = "Assign TestCases Execution";
 
 
 $TLS_error_duplicate_rolename = "There's already a role with that name!";

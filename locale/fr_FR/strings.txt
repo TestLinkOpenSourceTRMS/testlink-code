@@ -2421,7 +2421,8 @@ $TLS_desc_testplan_planning = "Planification de campagne de test";
 $TLS_desc_user_role_assignment = "Affectation de rôles  aux utilisateurs (niveau global)";
 $TLS_desc_testproject_user_role_assignment = "Affectation de rôles aux utilisateurs (niveau projet)";
 $TLS_desc_testplan_user_role_assignment = "Affectation de rôles aux utilisateurs (niveau campagne)";
-$TLS_desc_monitor_requirement = 'Surveillance des exigences';
+$TLS_desc_monitor_requirement = "Surveillance des exigences";
+$TLS_desc_exec_assign_testcases = "Assigner l'exécution des fiches de test";
 
 
 $TLS_error_duplicate_rolename = "Nom de rôle existant.";
@@ -2439,6 +2440,7 @@ $TLS_right_testplan_unlink_executed_testcases = "Désaffecter des fiches de test
 $TLS_right_testproject_delete_executed_testcases = "Supprimer des fiches de test exécutées";
 $TLS_right_testproject_edit_executed_testcases = "Éditer des fiches de test exécutées";
 $TLS_right_testplan_milestone_overview = "Aperçu des indicateurs d'avancement";
+$TLS_right_exec_testcases_assigned_to_me = 'Afficher les fiches de test qui me sont assignées';
 $TLS_right_exec_testcases_assigned_to_me = 'Afficher les fiches de test qui me sont assignées';
 $TLS_right_testproject_metrics_dashboard = 'Tableau de bord des métriques du projet';
 $TLS_right_testplan_add_remove_platforms = 'Affecter/Désaffecter des plateformes';

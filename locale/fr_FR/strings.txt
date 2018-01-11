@@ -2136,7 +2136,6 @@ $TLS_warning_empty_first_name = "Veuillez renseigner le prénom";
 $TLS_warning_empty_last_name = "Veuillez renseigner le nom";
 $TLS_warning_empty_login = "Veuillez renseigner le nom d'utilisateur";
 $TLS_expiration_date = "Date d'expiration";
-$TLS_expiration = "Expiration";
 
 // usersExport.php
 $TLS_export_users = "Exporter les utilisateurs";

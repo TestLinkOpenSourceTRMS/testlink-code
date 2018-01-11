@@ -11,8 +11,8 @@ Purpose: smarty template - create/edit user role
           s='btn_save,warning,warning_modify_role,warning_empty_role_name,th_rights,
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
-             th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
-             th_platform_rights,demo_update_role_disabled,th_trackers_rights,show_event_history,
+             th_product_rights,th_user_rights,th_cf_rights,th_system_rights,
+             demo_update_role_disabled,th_trackers_rights,show_event_history,
              th_reqmgrsystem_rights,th_execution_rights,
 			 caption_global_roles_table,caption_project_testplan_roles_table,
              th_rolename,th_tp_rights,btn_cancel'}

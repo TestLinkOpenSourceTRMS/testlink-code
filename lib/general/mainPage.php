@@ -112,7 +112,8 @@ if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
 
 $rights2check = array('testplan_execute','testplan_create_build','testplan_metrics','testplan_planning',
                       'testplan_user_role_assignment','mgt_testplan_create',
-                      'testplan_milestone_overview','exec_testcases_assigned_to_me',
+					  'testplan_milestone_overview','exec_ro_access',
+					  'exec_assign_testcases','exec_testcases_assigned_to_me',
                       'testplan_add_remove_platforms','testplan_update_linked_testcase_versions',
                       'testplan_set_urgent_testcases','testplan_show_testcases_newest_versions');
 

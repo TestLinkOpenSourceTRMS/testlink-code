@@ -299,7 +299,7 @@ function init_args()
   }
   
   $args->userSet = null;
-  if(count($_REQUEST['bulk_tester_div']) > 0)
+  if(isset($_REQUEST['bulk_tester_div']) && count($_REQUEST['bulk_tester_div']) > 0)
   {
     foreach($_REQUEST['bulk_tester_div'] as $uid)
     {
@@ -586,5 +586,5 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 
 function checkRights(&$db,&$user)
 {
-  return $user->hasRight($db,'testplan_planning');
+  return $user->hasRight($db,'exec_assign_testcases');
 }

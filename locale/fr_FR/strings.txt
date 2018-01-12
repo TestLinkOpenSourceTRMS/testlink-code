@@ -2222,40 +2222,65 @@ $TLS_platform_number_help = 'Le nombre de plateformes liées';
 $TLS_build_number_help = 'Le nombre de versions du produit liées';
 
 // ----- gui/templates/mainPage_left.tpl -----
-$TLS_href_assign_user_roles = "Affectation des utilisateurs";
-$TLS_href_browse_tc = "Parcourir les fiches de test";
-$TLS_href_cfields_management = "Gestion des champs personnalisés";
-$TLS_href_cfields_tproject_assign = "Affectation des champs personnalisés";
-$TLS_href_edit_tc = "Gestion des fiches de test";
-$TLS_href_inventory = "Inventaire";
-$TLS_href_inventory_management = "Gestion de l’inventaire";
-$TLS_href_keywords_assign = "Affectation des mots-clés";
-$TLS_href_keywords_manage = "Gestion des mots-clés";
-$TLS_href_print_tc = "Génération du cahier de test";
-$TLS_href_print_req = "Génération du cahier d’exigences";
-$TLS_href_req_assign = "Lier/Délier exigences et fiches de test";
-$TLS_href_req_spec = "Gestion des exigences";
-$TLS_href_req_overview = "Récapitulatif d’exigences";
-$TLS_href_req_monitor_overview = "Surveillance d’exigences";
-$TLS_href_roles_management = "Gestion des rôles";
-$TLS_href_search_tc = "Recherche de fiches de test";
-$TLS_href_tproject_management = "Gestion des projets";
-$TLS_href_user_management = "Gestion des utilisateurs";
 $TLS_href_admin_modules = "Configuration du système";
-$TLS_title_test_spec = "Fiches de test";
-$TLS_title_documentation = "Documentation";
-$TLS_title_product_mgmt = "Projets";
-$TLS_href_plan_define_priority = "Priorité de campagne de test";
-$TLS_href_my_testcase_assignments = "Mes fiches de test à exécuter";
-$TLS_href_platform_management = "Gestion des plateformes";
+$TLS_href_tproject_management = "Gestion des projets";
 $TLS_href_issuetracker_management = "Gestion des Gestionnaires d’anomalies";
 $TLS_href_codetracker_management = "Gestion des Gestionnaires de versions de code";
-$TLS_href_reqmgrsystem_management = "Gestion du Gestionnaire d’exigences";
-$TLS_system_config = "Système";
-$TLS_title_plugins = "Plugins";
+$TLS_href_user_management = "Gestion des utilisateurs";
+$TLS_href_roles_management = "Gestion des rôles";
+$TLS_href_cfields_management = "Gestion des champs personnalisés";
 
+$TLS_title_product_mgmt = "Projet courant";
+$TLS_href_cfields_tproject_assign = "Affectation des champs personnalisés";
+$TLS_href_assign_user_roles = "Affectation des utilisateurs";
+$TLS_href_keywords_manage = "Gestion des mots-clés";
+$TLS_href_platform_management = "Gestion des plateformes";
+$TLS_href_inventory_management = "Gestion de l’inventaire";
+
+$TLS_href_req_spec = "Gestion des exigences";
+$TLS_href_req_monitor_overview = "Surveillance d’exigences";
+$TLS_href_req_assign = "Lier/Délier exigences et fiches de test";
+$TLS_href_req_overview = "Récapitulatif d’exigences";
+$TLS_href_print_req = "Génération du cahier d’exigences";
 $TLS_href_search_req = "Recherche d’exigences";
 $TLS_href_search_req_spec = "Recherche de dossier d’exigences";
+
+$TLS_title_test_spec = "Fiches de test";
+$TLS_href_edit_tc = "Gestion des fiches de test";
+$TLS_href_browse_tc = "Parcourir les fiches de test";
+$TLS_href_search_tc = "Recherche de fiches de test";
+$TLS_href_keywords_assign = "Affectation des mots-clés";
+$TLS_link_report_test_cases_created_per_user = "Fiches de test créées par utilisateur";
+
+// ----- gui/templates/mainPage_right.tpl -----
+$TLS_current_test_plan = "Campagne de test courante";
+$TLS_testplan_role = "Rôle de campagne de test";
+$TLS_msg_no_rights_for_tp = "<br /> Vous n’avez pas les autorisations pour aucune des campagnes de test actives";
+
+$TLS_title_test_plan_mgmt = "Campagne de test";
+$TLS_href_plan_management = "Gestion des campagnes de test";
+$TLS_href_build_new = "Gestion des versions du produit";
+$TLS_href_assign_tp_user_roles = $TLS_href_assign_user_roles;
+$TLS_href_plan_mstones = "Gestion des indicateurs d'avancement";
+
+$TLS_title_test_execution = "Exécution des fiches de tests";
+$TLS_href_execute_test = "Gestion des exécutions";
+$TLS_href_exec_ro_access = "Visualisation des exécutions";
+$TLS_href_my_testcase_assignments = "Mes fiches de test à exécuter";
+$TLS_href_rep_and_metrics = "Rapports et métriques";
+$TLS_href_metrics_dashboard = "Tableau de bord des métriques";
+
+$TLS_title_test_case_suite = "Contenu de la campagne de test";
+$TLS_href_platform_assign = "Affectation des plateformes";
+$TLS_href_add_remove_test_cases = "Ajout de fiches de test";
+$TLS_href_tc_exec_assignment = "Assignation d’exécution de fiches de test";
+$TLS_href_plan_assign_urgency = "Définition de l’urgence des tests";
+$TLS_href_update_tplan = "Mise à jour des versions de fiches de test à exécuter";
+$TLS_href_newest_tcversions = "Affichage nouvelles versions des fiches de test disponibles";
+
+$TLS_title_plugins = "Plugins";
+
+// ----- gui\templates\requirements\reqSearchForm.tpl -----
 $TLS_caption_search_form_req = "Recherche d’exigences";
 $TLS_caption_search_form_req_spec = "Recherche de dossier d’exigences";
 $TLS_title_search_req = "Rechercher";
@@ -2267,39 +2292,21 @@ $TLS_req_specs = "Dossier d’exig.";
 $TLS_req_expected_coverage = "Nombre de fiches de test nécessaires";
 $TLS_has_relation_type = "A une relation du type";
 $TLS_reqid = "ID exigence";
+
+
+// ----- gui\templates\requirements\reqSearchResults.tpl -----
 $TLS_info_search_req = "Cette liste affiche les exigences correspondant aux critères " .
-                       "de recherche<br />Vous pouvez ouvrir une version/revision d’exigence" .
-                       "en cliquant sur le lien à droite du titre de " .
-                       "l’exigence.<br />Pour ouvrir l’exigence, " .
-                       "utiliser le bouton d’édition à gauche.";
+					   "de recherche<br />Vous pouvez ouvrir une version/revision d’exigence" .
+					   "en cliquant sur le lien à droite du titre de " .
+					   "l’exigence.<br />Pour ouvrir l’exigence, " .
+					   "utiliser le bouton d’édition à gauche.";
+
+// ----- gui\templates\requirements\reqSpecSearchResults.tpl -----
 $TLS_info_search_req_spec = "Cette liste affiche les exigences correspondant aux critères " .
-                            "de recherche<br />Vous pouvez ouvrir une révision d’exigence " .
-                            "en cliquant sur le lien à droite du titre de " .
-                       "l’exigence.<br />Pour ouvrir l’exigence, " .
-                       "utiliser le bouton d’édition à gauche.";
-
-// ----- gui/templates/mainPage_right.tpl -----
-$TLS_href_add_remove_test_cases = "Ajout de fiches de test";
-$TLS_href_build_new = "Gestion des versions du produit";
-$TLS_href_execute_test = "Gestion des exécutions";
-$TLS_href_exec_ro_access = "Visualisation des exécutions";
-$TLS_href_metrics_dashboard = "Tableau de bord des métriques";
-$TLS_href_newest_tcversions = "Affichage nouvelles versions des fiches de test disponibles";
-$TLS_href_plan_assign_urgency = "Définition de l’urgence des tests";
-$TLS_href_plan_management = "Gestion des campagnes de test";
-$TLS_href_plan_mstones = "Gestion des indicateurs d'avancement";
-$TLS_href_rep_and_metrics = "Rapports et métriques";
-$TLS_href_tc_exec_assignment = "Assignation d’exécution de fiches de test";
-$TLS_href_update_tplan = "Mise à jour des versions de fiches de test à exécuter";
-$TLS_href_platform_assign = "Affectation des plateformes";
-$TLS_current_test_plan = "Campagne de test courante";
-$TLS_href_upd_mod_tc = "Mise à jour des fiches de test modifiées";
-$TLS_msg_no_rights_for_tp = "<br /> Vous n’avez pas les autorisations pour aucune des campagnes de test actives";
-$TLS_testplan_role = "Rôle de campagne de test";
-$TLS_title_test_case_suite = "Contenu de la campagne de test";
-$TLS_title_test_execution = "Exécution des fiches de tests";
-$TLS_title_test_plan_mgmt = "Campagne de test";
-
+							"de recherche<br />Vous pouvez ouvrir une révision d’exigence " .
+							"en cliquant sur le lien à droite du titre de " .
+							"l’exigence.<br />Pour ouvrir l’exigence, " .
+							"utiliser le bouton d’édition à gauche.";
 
 // ----- gui/templates/metricsDashboard.tpl -----
 $TLS_info_metrics_dashboard_progress = "La progression du projet est calculée par agrégation de toutes les exécutions " .
@@ -2882,7 +2889,7 @@ $TLS_show_closed_builds_btn = "Afficher les versions du produit verrouillées";
 
 
 // ----- lib/testcases/tcCreatedPerUser.php -----
-$TLS_link_report_test_cases_created_per_user = "Fiches de test créées par utilisateur";
+
 $TLS_testcases_created_per_user = "Projet : %s - fiches de test créées par utilisateur";
 
 

@@ -25,9 +25,7 @@ include to generate menu when managing users and roles
   {/if}
 {/foreach}
 
-{if $gui->grants->user_mgmt == "no"}
-  {$act[$ak]['class'] = ''}
-{/if}
+
 
 <div class="container">
   <ul class="nav nav-pills">

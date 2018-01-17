@@ -10,7 +10,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @internal revisions
 *}
-  {if $edit_enabled}
+  {if $edit_enabled && $args_frozen_version=="no"}
   <tr><td>
     <img class="clickable" src="{$tlImages.reorder}" align="left" title="{$inc_steps_labels.show_hide_reorder}"
     onclick="showHideByClass('span','order_info');"></td>
@@ -35,16 +35,16 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {else}
     <th>&nbsp;</th>
     {/if}
-    {if $edit_enabled}
+    {if $edit_enabled && $args_frozen_version=="no"}
     <th>&nbsp;</th>
     {/if}
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td colspan="2" {if $edit_enabled} style="cursor:pointer;"
+    <td colspan="2" {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;"
         onclick="launchEditStep({$step_info.id})"{/if}
         style="padding: 0.5em">{if $gui->stepDesignEditorType  == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}</td>
-    {if $edit_enabled}
+    {if $edit_enabled && $args_frozen_version=="no"}
     <td class="clickable_icon">
       <img style="border:none;cursor: pointer;"
            title="{$inc_steps_labels.delete_step}"
@@ -64,7 +64,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <th style="background: transparent; border: none"></th>
     <th colspan="2">{$inc_steps_labels.expected_results}</th>
   </tr>
-  <tr {if $edit_enabled} style="cursor:pointer;"
+  <tr {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;"
       onclick="launchEditStep({$step_info.id})"{/if}>
       <td>&nbsp;</td>
     <td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em">{if $gui->stepDesignEditorType  == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>

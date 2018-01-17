@@ -198,7 +198,7 @@ viewer for test case in test specification
 
 		
 	{* Edit TC *}
-	{if $edit_enabled && $args_frozen_version eq null}
+	{if $edit_enabled && $args_frozen_version=="no"}
 		 <input type="submit" name="edit_tc" 
 				onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
 	{/if}
@@ -210,7 +210,7 @@ viewer for test case in test specification
 	{/if}
 
 	{* activate/desactivate TC version *}
-	{if $args_can_do->edit == "yes" && $args_can_do->deactivate=='yes' && $args_frozen_version eq null}
+	{if $args_can_do->edit == "yes" && $args_can_do->deactivate=='yes' && $args_frozen_version=="no"}
 		  {if $args_testcase.active eq 0}
 			  {$act_deact_btn="activate_this_tcversion"}
 			  {$act_deact_value="activate_this_tcversion"}
@@ -227,7 +227,7 @@ viewer for test case in test specification
 	{* freeze/unfreeze TC version *}
 	{if $args_can_do->edit == "yes" && 
 		$args_can_do->freeze=='yes'}
-		  {if $args_frozen_version neq null}
+		  {if $args_frozen_version=="yes"}
 			  {$freeze_btn="unfreeze"}
 			  {$freeze_value="unfreeze_this_tcversion"}
 			  {$version_title_class="unfreeze_version"}
@@ -242,7 +242,7 @@ viewer for test case in test specification
 	{/if}
 
 	{* delete TC version *}
-	{if $args_frozen_version eq null && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
+	{if $args_frozen_version=="no" && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
 	   <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
 	{/if}
 
@@ -291,7 +291,7 @@ viewer for test case in test specification
   {/if}
   
   {* warning message when tc version is frozen *}
-{if $args_frozen_version neq null}
+{if $args_frozen_version=="yes"}
   <div class="messages" align="center">{$tcView_viewer_labels.can_not_edit_frozen_tc}</div>
 {/if}
   
@@ -357,12 +357,13 @@ function launchInsertStep(step_id)
   {include file="testcases/inc_steps.tpl"
            layout=$gui->steps_results_layout
            edit_enabled=$edit_enabled
+		   args_frozen_version=$args_frozen_version
            ghost_control=true
            steps=$args_testcase.steps}
   {/if}
 </table>
 
-{if $edit_enabled && $args_testcase.is_open}
+{if $edit_enabled && $args_frozen_version=="no"}
 <div {$addInfoDivStyle}>
   <input type="submit" name="create_step" 
           onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" />
@@ -402,7 +403,7 @@ function launchInsertStep(step_id)
              <tr>
                <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
                target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
-              {if $gui->req_tcase_link_management}
+              {if $gui->req_tcase_link_management && $args_frozen_version=="no"}
                 <img class="clickable" src="{$tlImages.item_link}"
                      onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
                      title="{$tcView_viewer_labels.link_unlink_requirements}" />

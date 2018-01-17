@@ -70,9 +70,9 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {/if}
   {* is it frozen? *}
   {if $gui->tc_current_version[idx][0].is_open}
-    {$frozen_version=false}
+    {$frozen_version="no"}
   {else}
-    {$frozen_version=true}
+    {$frozen_version="yes"}
   {/if}
   
     {$tlImages.toggle_direct_link} &nbsp;

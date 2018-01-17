@@ -1666,6 +1666,7 @@ $TLS_hint_new_sibling = "Créer une autre fiche de test dans le dossier de tests
 $TLS_hint_new_version = "Créer une nouvelle version";
 
 $TLS_can_not_edit_tc = "Vous ne pouvez pas modifier la version car elle a été exécutée.";
+$TLS_can_not_edit_frozen_tc = "Vous ne pouvez pas modifier la version car elle a été verrouillée";
 $TLS_deactivate_this_tcversion = "Désactiver la version";
 $TLS_execution_type = "Type d’exécution";
 $TLS_execution_type_short_descr = "Exécution";

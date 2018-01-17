@@ -744,6 +744,7 @@ $TLS_title_change_node_order = "Change children order";
 // ----- gui/templates/containerView.tpl -----
 $TLS_testsuite_operations = "Test Suite Operations";
 $TLS_testcase_operations = "Test Case Operations";
+$TLS_testcase_version_operations = "Test Case Version Operations";
 $TLS_alt_del_testsuite = "Delete this Test Suite with all children (Test Suites and Test Cases)";
 $TLS_alt_edit_testsuite = "Modify this Test Suite data and title";
 $TLS_alt_move_cp_testsuite = "Move or copy this Test Suite";
@@ -1644,7 +1645,7 @@ $TLS_testproject_alt_delete = 'Delete the Test project and all related data.';
 // Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = 'Warning! This action deletes irrevocable all Test Project related ' .
                             'data (including test results, plans, etc.). ' .
-                            'You can also use to deactivate instead of delete.\\n' .
+                            'You can also use to desactivate instead of delete.\\n' .
                             'Recommendation: Execute a dump of database at first.\\n' .
                             'Are you sure to delete the Test Project?';
 $TLS_th_reqmgrsystem_short = 'Req. Mgmt. System';
@@ -1692,13 +1693,14 @@ $TLS_hint_new_sibling = "Create another test case under current Test Suite";
 $TLS_hint_new_version = "Create a new version";
 
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
-$TLS_deactivate_this_tcversion = "Deactivate this version";
+$TLS_can_not_edit_frozen_tc = "You can not edit this version because it has been frozen";
+$TLS_deactivate_this_tcversion = "Desactivate this version";
 $TLS_execution_type = 'Execution type';
 $TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
 
 
-$TLS_no_right_to_delete_executed_tc = "Your role has no right to delete executed test cases or test case versions";
+$TLS_no_right_to_delete_executed_tc = "Your role has no right to delete executed test cases";
 $TLS_system_blocks_delete_executed_tc = $TLS_no_right_to_delete_executed_tc;
 $TLS_system_blocks_delete_executed_tc_when = $TLS_no_right_to_delete_executed_tc;
 $TLS_btn_bulk = "Bulk action";

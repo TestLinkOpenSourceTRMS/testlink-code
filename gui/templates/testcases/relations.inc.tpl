@@ -9,7 +9,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           s='relation_id, relation_type, relation_status, relation_project,
              relation_set_by, relation_delete, relations, new_relation, by, title_created,
              in, btn_add, img_title_delete_relation,no_records_found,other_versions,version,
-             title_test_case,match_count,warning,
+             title_test_case,match_count,warning,can_not_edit_frozen_tc,
              commit_title,current_direct_link,current_testcase,test_case,relation_set_on,
              specific_direct_link,req_does_not_exist,actions,tcase_relation_hint,tcase_relation_help'}
 
@@ -73,6 +73,8 @@ var pF_delete_relation = delete_relation;
             </td>
           </tr>
         {/if}
+		
+		{if $args_frozen_version=="no"}
     
         <tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
         
@@ -91,6 +93,7 @@ var pF_delete_relation = delete_relation;
           
           </td>
         </tr>
+		{/if}
       {/if}
 
     {if $gui->relations.num_relations > 0}
@@ -111,13 +114,19 @@ var pF_delete_relation = delete_relation;
             {$rx.related_tcase.name|escape}</a></td>
           <td><nobr><span title="{$rel_labels.title_created} {$rx.creation_ts} {$rel_labels.by} {$rx.author|escape}">
              {$rx.author|escape}</span></nobr></td>
-
+		  {if $args_frozen_version=="no"}
           <td align="center">
             <a href="javascript:relation_delete_confirmation({$gui->relations.item.testcase_id}, {$rx.id}, 
                                                               delete_rel_msgbox_title, delete_rel_msgbox_msg, 
                                                               pF_delete_relation);">
            <img src="{$tlImages.delete}" title="{$rel_labels.img_title_delete_relation}"  style="border:none" /></a>
           </td>
+		  {else}
+		  <td align="center">
+			<img style="border:none;" 	alt="{$rel_labels.can_not_edit_frozen_tc}"
+			   title="{$rel_labels.can_not_edit_frozen_tc}"	src="{$tlImages.delete_disabled}" />
+		  </td>
+		  {/if}
         </tr>
       {/foreach}
     {/if}

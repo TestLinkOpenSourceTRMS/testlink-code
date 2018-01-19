@@ -891,7 +891,10 @@ $TLS_filter_active_inactive = "Actief/Inactief";
 $TLS_show_only_active_testcases = "Minstens EEN versie is ACTIEF";
 $TLS_show_only_inactive_testcases = "ALLE versies zijn INACTIEF";
 $TLS_show_whole_spec_on_right_panel = 'Toon volledig (in rechts blok)';
-
+$TLS_test_grouped_by = "Tests gegroepeerd op";
+$TLS_mode_test_suite = "Testsuite";
+$TLS_mode_req_coverage = "eis";
+$TLS_parent_child_relation = "Kind ouder relatie";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

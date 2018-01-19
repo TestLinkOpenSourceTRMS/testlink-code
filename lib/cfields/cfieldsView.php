@@ -16,6 +16,7 @@ $templateCfg = templateConfiguration();
 $cfield_mgr = new cfield_mgr($db);
 $gui->cf_map = $cfield_mgr->get_all(null,'transform');
 $gui->cf_types = $cfield_mgr->get_available_types();
+$gui->drawControlsOnTop = (count($gui->cf_map) > 10); // MAGIC
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

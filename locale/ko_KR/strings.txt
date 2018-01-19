@@ -448,6 +448,11 @@ $TLS_invalid_query = "에러";
 $TLS_warning = "경고!!";
 $TLS_was_success = " 가 성공적으로 ";
 
+// ----- gui/templates/inc_filter.tpl -----
+$TLS_test_grouped_by = "그룹화 기준 테스트";
+$TLS_mode_test_suite = "테스트 스위트";
+$TLS_mode_req_coverage = "요건";
+$TLS_parent_child_relation = "자녀 양육 관계";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

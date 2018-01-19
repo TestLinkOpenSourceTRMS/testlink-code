@@ -280,17 +280,20 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
     
     foreach($attachSet as $fitem)
     {
+      $sec = hash('sha256',$fitem['file_name']);
+      $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
+               '&id=' . $fitem['id'];
+
+      $safeFileName = htmlspecialchars($fitem['file_name']);
       if($fitem['is_image'])
       {
-        $output .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
-        $output .= '<li>' . '<img src="' . $basehref . 
-                   'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . '">';
+        $output .= "<li>" . $safeFileName . "</li>";
+        $output .= '<li>' . '<img src="' . $basehref . $cmout . '">';
       }  
       else
       {
         $output .= '<li>' . '<a href="' . $basehref . 
-                   'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . 
-                   '" ' . ' target="#blank" > ' . htmlspecialchars($fitem['file_name']) . '</a>';
+                   $cmout . '" ' . ' target="#blank" > ' . $safeFileName . '</a>';
       }  
     }
     $output .="</td></tr>";
@@ -1329,19 +1332,25 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                              ' action="' . $env->base_href . 'lib/execute/execPrint.php">';
                     
                     $code .= '<input type="hidden" name="id" value="' . intval($context['exec_id']) . '">';
-                    $code .= '<input type="hidden" name="deleteAttachmentID" value="' . intval($fitem['id']) . '">';
+
+                    $safeItemID = intval($fitem['id']);
+                    $code .= '<input type="hidden" name="deleteAttachmentID" value="' . $safeItemID . '">';
       
+                    $safeFileName = htmlspecialchars($fitem['file_name']);
+                    $sec = hash('sha256',$fitem['file_name']);
+                    $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' .
+                             $sec . '&id=' . $safeItemID;
+
+
                     if($fitem['is_image'])
                     {
-                      $code .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
-                      $code .= '<li>' . '<img src="' . $env->base_href . 
-                               'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . '">';
+                      $code .= "<li>{$safeFileName}</li>";
+                      $code .= '<li><img src="' . $env->base_href . $cmout . '">';
                     }  
                     else
                     {
-                      $code .= '<li>' . '<a href="' . $env->base_href . 
-                               'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . 
-                               '" ' . ' target="#blank" > ' . htmlspecialchars($fitem['file_name']) . '</a>';
+                      $code .= '<li><a href="' . $env->base_href . $cmout .  
+                               '" target="#blank" > ' . $safeFileName . '</a>';
                     }  
                     $code .= '<input type="image" alt="' . $labels['alt_delete_attachment'] . '"' .
                              'src="' . $env->base_href . TL_THEME_IMG_DIR . 'trash.png"></li></form>';
@@ -1519,15 +1528,19 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       $fname .= htmlspecialchars($item['file_name']);
       $code .= "<li>$fname</li>";
 
-      if($item['is_image']) // && $options['outputFormat'] == FORMAT_HTML)
+
+      $sec = hash('sha256',$item['file_name']);
+      
+      $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
+               '&id=' . $item['id'];
+
+      if($item['is_image'])
       {
-        $code .= '<li>' . '<img src="' . $env->base_href . 
-                 'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
+        $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
       }  
       else
       {
-        $code .= '<li>' . '<a href="' . $env->base_href . 
-                 'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . 
+        $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
                  '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
       }  
     }
@@ -1619,17 +1632,21 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
         $code .= '<b>' . $labels['exec_attachments'] . '</b><br/>';
         foreach($execAttachInfo as $fitem)
         {
-          if($fitem['is_image']) // && $options['outputFormat'] == FORMAT_HTML)
+          $sec = hash('sha256',$fitem['file_name']);
+          
+          $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
+                   '&id=' . $fitem['id'];
+
+          $safeFileName =  htmlspecialchars($fitem['file_name']);
+          if($fitem['is_image'])
           {
-            $code .= "<li>" . htmlspecialchars($fitem['file_name']) . "</li>";
-            $code .= '<li>' . '<img src="' . $env->base_href . 
-                              'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . '"> </li>';
+            $code .= "<li>{$safeFileName}</li>";
+            $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
           }  
           else
           {
-            $code .= '<li>' . '<a href="' . $env->base_href . 
-                              'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $fitem['id'] . 
-                              '" ' . ' target="#blank" > ' . htmlspecialchars($fitem['file_name']) . '</a></li>';
+            $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
+                              '" target="#blank" > ' . $safeFileName . '</a></li>';
           }  
         }  
         $code .= '</td></tr>';
@@ -1764,15 +1781,18 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
         $fname .= htmlspecialchars($item['file_name']);
         $code .= "<li>$fname</li>";
 
+        
+        $sec = hash('sha256',$item['file_name']);
+        $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
+                 '&id=' . $item['id'];
+
         if($item['is_image']) 
         {
-          $code .= '<li>' . '<img src="' . $env->base_href . 
-                   'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . '"> </li>';
+          $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
         }  
         else
         {
-          $code .= '<li>' . '<a href="' . $env->base_href . 
-                   'lib/attachments/attachmentdownload.php?skipCheck=1&id=' . $item['id'] . 
+          $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
                    '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
         }  
       }

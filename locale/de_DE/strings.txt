@@ -766,7 +766,10 @@ $TLS_collapse_tree = "Baum zuklappen";
 $TLS_filter_active_inactive = "Aktiv/Inaktiv";
 $TLS_show_only_active_testcases = "Nur aktive Testfälle";
 $TLS_show_only_inactive_testcases = "Nur inaktive Testfälle";
-
+$TLS_test_grouped_by = "Tests gruppiert nach";
+$TLS_mode_test_suite = "Testsuite";
+$TLS_mode_req_coverage = "Bedarf";
+$TLS_parent_child_relation = "Eltern-Kind-Beziehung";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;

@@ -24,7 +24,10 @@ $(document).ready(function() {
             { "data": "login" },
         ]
     } );
-} );	
+	$('#monitors').DataTable.ajax.load();	
+} );
+
+
 </script>
 
 <table class="simple" id="monitors">

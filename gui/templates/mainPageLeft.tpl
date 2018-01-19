@@ -17,7 +17,7 @@
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
                           href_print_req,title_plugins,title_documentation,href_issuetracker_management,
-                          href_reqmgrsystem_management,href_req_monitor_overview'}
+                          href_codetracker_management,href_reqmgrsystem_management,href_req_monitor_overview'}
 
 {* Show / Hide section logic *}
 {$display_left_block_1=false}
@@ -39,12 +39,13 @@
 {/if}
 
 {if $gui->testprojectID && 
-   ($gui->grants.cfield_management == "yes" || $gui->grants.issuetracker_management || $gui->grants.issuetracker_view)}
+   ($gui->grants.cfield_management == "yes" || $gui->grants.issuetracker_management ||
+    $gui->grants.codetracker_management || $gui->grants.issuetracker_view || $gui->grants.codetracker_view)}
    {$display_left_block_2=true}
 {/if}
 
 {if $gui->testprojectID && $gui->opt_requirements == TRUE && 
-    ($gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes")}
+    ($gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes" || $gui->grants.monitor_req == "yes" || $gui->grants.req_tcase_link_management == "yes")}
     {$display_left_block_3=true}
 {/if}
 
@@ -83,6 +84,11 @@
 
     {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
       <a href="{$issueTrackerView}" class="list-group-item" style="{$aStyle}">{$labels.href_issuetracker_management}</a>
+      <br />
+    {/if}
+
+    {if $gui->grants.codetracker_management || $gui->grants.codetracker_view}
+      <a href="lib/codetrackers/codeTrackerView.php">{$labels.href_codetracker_management}</a>
     {/if}
   </div>
 {/if}
@@ -116,17 +122,18 @@
   {$reqOverView="lib/requirements/reqOverview.php"}
   {$reqMonOverView="lib/requirements/reqMonitorOverview.php?tproject_id="}
   <div class="list-group" style="{$divStyle}">
-        {if $gui->grants.reqs_view == "yes"}
+       {if $gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes" }
           <a href="{$gui->launcher}?feature=reqSpecMgmt" class="list-group-item" style="{$aStyle}">{$labels.href_req_spec}</a>
           <a href="{$reqOverView}" class="list-group-item" style="{$aStyle}">{$labels.href_req_overview}</a>
+          <a href="{$gui->launcher}?feature=printReqSpec" class="list-group-item" style="{$aStyle}">{$labels.href_print_req}</a>
           <a href="{$gui->launcher}?feature=searchReq" class="list-group-item" style="{$aStyle}">{$labels.href_search_req}</a>
           <a href="{$gui->launcher}?feature=searchReqSpec" class="list-group-item" style="{$aStyle}">{$labels.href_search_req_spec}</a>
        {/if}
-         
-      {if $gui->grants.reqs_edit == "yes"}
-        <a href="lib/general/frmWorkArea.php?feature=assignReqs" class="list-group-item" style="{$aStyle}">{$labels.href_req_assign}</a>
-        <a href="{$reqMonOverView}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_req_monitor_overview}</a>
-        <a href="{$gui->launcher}?feature=printReqSpec" class="list-group-item" style="{$aStyle}">{$labels.href_print_req}</a>
+       {if $gui->grants.req_tcase_link_management == "yes"}
+          <a href="lib/general/frmWorkArea.php?feature=assignReqs" class="list-group-item" style="{$aStyle}">{$labels.href_req_assign}</a>
+       {/if}
+       {if $gui->grants.monitor_req == "yes"}
+          <a href="{$reqMonOverView}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_req_monitor_overview}</a>
       {/if}
   </div>
 {/if}
@@ -148,8 +155,7 @@
       {/if}    
       
     {if $gui->hasKeywords}  
-      {if $gui->grants.keywords_view == "yes" &&
-          $gui->grants.keywords_edit == "yes"}
+      {if $gui->grants.keyword_assignment == "yes"}
             <a href="{$gui->launcher}?feature=keywordsAssign" class="list-group-item" style="{$aStyle}">{$labels.href_keywords_assign}</a>
       {/if}
     {/if}

@@ -212,19 +212,18 @@ $TLS_hlp_executeFilter = "<h2>テスト実行時のビルドによるフィル�
 <p>アサイン計画に従ってフィルターをかけることができます。また、「未アサインを含む」の" .
 "チェックボックスにより、アサインされていないテストケースを表示することができます。</p>";
 /*
-<h2>Most Current Result</h2>
-<p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted
-by the build that is chosen from the dropdown box. In this state the tree will display
-the test cases status.
-<br />Example: User selects build 2 from the dropdown box and doesn't check the 'most
-current' checkbox. All test cases will be shown with their status from build 2.
-So, if test case 1 passed in build 2 it will be colored green.
-<br />If the user decideds to check the 'most current' checkbox the tree will be
-colored by the test cases most recent result.
-<br />Ex: User selects build 2 from the dropdown box and this time checks
-the 'most current' checkbox. All test cases will be shown with most current
-status. So, if test case 1 passed in build 3, even though the user has also selected
-build 2, it will be colored green.</p>
+<h2>最新の結果</h2>
+<p>デフォルト、または「最新」のチェックボックスがオフの場合、ツリーは
+ドロップダウンボックスから選択されたビルドによってソートされます。
+この状態では、ツリーにテストケースのステータスが表示されます。
+<br />例: ユーザーが、ドロップダウンボックスからビルド2を選択し、「最新」のチェックボックスを
+オフにします。ビルド2からすべてのテストケースがステータスとともに表示されます。
+したがって、ビルド2でテストケース1がパスすると緑色になります。
+<br />ユーザが「最新」のチェックボックスをオンにした場合、
+ツリーは最新のテストケースの結果で色が決まります。
+<br />例: ユーザーがドロップダウンボックスからビルド2を選択し、今回は「最新」のチェックボックスをチェックします。
+すべてのテストケースは最新の状態で表示されます。 したがって、ビルド3でテストケース1がパスした場合、
+ユーザーがビルド2も選択していても、緑色になります。</p>
  */
 
 
@@ -276,63 +275,63 @@ $TLS_hlp_req_coverage_table = "<h3>網羅率:</h3>
 
 
 // req_edit
-$TLS_hlp_req_edit = "<h3>Internal links on scope:</h3>
-<p>Internal links serve the purpose of creating links to other requirements/requirement specifications
-with a special syntax. Internal Links behaviour can be changed in the config file.
+$TLS_hlp_req_edit = "<h3>スコープの内部リンク:</h3>
+<p>内部リンクは、他の要件/要件仕様へのリンクを作成する目的で特別な構文で提供されます。 
+内部リンクの動作は、設定ファイルで変更できます。
 <br /><br />
-<b>Usage:</b>
+<b>使用方法:</b>
 <br />
-Link to requirements: [req]req_doc_id[/req]<br />
-Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+要件へのリンク: [req]req_doc_id[/req]<br />
+要件仕様へのリンク: [req_spec]req_spec_doc_id[/req_spec]</p>
 
-<p>The test project of the requirement / requirement specification, a version and an anchor
-to jump to can also be specified:<br />
+<p>ジャンプ先の要件/要件仕様のテストプロジェクト、バージョン、
+アンカーを指定することもできます<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
-This syntax also works for requirement specifications (version attribute has no effect).<br />
-If you do not specify a version the whole requirement including all versions will be shown.</p>
+この構文は、要件仕様でも機能します (バージョン属性は効果がありません)。<br />
+バージョンを指定しない場合は、すべてのバージョンを含む要件全体が表示されます。</p>
 
-<h3>Log message for changes:</h3>
-<p>Whenever a change is made Testlink will ask for a log message. This log message served the purpose of traceability.
-If only the scope of the requirement has changed you are free to decide whether to create a new revision or not.
-Whenever anything besides the scope is changed you are forced to create a new revision.</p>
+<h3>変更のログメッセージ:</h3>
+<p>変更が行われるたびに、Testlinkはログメッセージを要求します。 このログメッセージは、トレーサビリティを目的に提供されます。
+要件のスコープのみが変更された場合は、新しいリビジョンを作成するかどうかを自由に決めることができます。
+スコープ以外のものが変更された場合は、常に新しいリビジョンを作成する必要があります。</p>
 ";
 
 
 // req_view
-$TLS_hlp_req_view = "<h3>Direct Links:</h3>
-<p>To easily share this document with others simply click the globe icon at the top of this document to create a direct link.</p>
+$TLS_hlp_req_view = "<h3>ダイレクトリンク:</h3>
+<p>このドキュメントを他のユーザーと簡単に共有するには、このドキュメントの上部にある地球のアイコンをクリックしてダイレクトリンクを作成します。</p>
 
-<h3>View History:</h3>
-<p>This feature allows to compare revisions/versions of requirements if more than one revision/version of the requirement exists.
-The overview provides the Log message for each revision/version, a timestamp and the author of the last change.</p>
+<h3>履歴の表示:</h3>
+<p>この機能により、複数の要件のリビジョン/バージョンが存在する場合、要件のリビジョン/バージョンを比較することができます。
+概要は、各リビジョン/バージョン、タイムスタンプ、および最後に変更した作成者のログメッセージを提供します。</p>
 
-<h3>Coverage:</h3>
-<p>Shows all linked test cases for this requirement.</p>
+<h3>網羅率:</h3>
+<p>この要件にリンクされるすべてのテストケースを表示します。</p>
 
-<h3>Relations:</h3>
-<p>Requirement Relations are used to model relationships between requirements.
-Custom relations and the option to allow relations between requirements of
-different test projects can be configured on the config file.
-If you set the relation \"Requirement A is parent of Requirement B\",
-Testlink will set the relation \"Requirement B is child of Requirement A\" implicitly.</p>
+<h3>関連:</h3>
+<p>要件の関連は、要件間の関連をモデル化するために使用されます。
+カスタムの関連と、異なるテストプロジェクトの要件間の関連を許可するオプションは、
+設定ファイルで設定できます。
+「要件Aは要件Bの親」という関連を設定する場合、
+Testlinkは、「要件Bは要件Aの子」という関連を暗黙的に設定します</p>
 ";
 
 
 // req_spec_edit
-$TLS_hlp_req_spec_edit = "<h3>Internal links on scope:</h3>
-<p>Internal links serve the purpose of creating links to other requirements/requirement specifications
-with a special syntax. Internal Links behaviour can be changed in the config file.
+$TLS_hlp_req_spec_edit = "<h3>スコープの内部リンク:</h3>
+<p>内部リンクは、他の要件/要件仕様へのリンクを作成する目的で特別な構文で提供されます。 
+内部リンクの動作は、設定ファイルで変更できます。
 <br /><br />
-<b>Usage:</b>
+<b>使用方法:</b>
 <br />
-Link to requirements: [req]req_doc_id[/req]<br />
-Link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]</p>
+要件へのリンク: [req]req_doc_id[/req]<br />
+要件仕様へのリンク: [req_spec]req_spec_doc_id[/req_spec]</p>
 
-<p>The test project of the requirement / requirement specification, a version and an anchor
-to jump to can also be specified:<br />
+<p>ジャンプ先の要件/要件仕様のテストプロジェクト、バージョン、
+アンカーを指定することもできます<br />
 [req tproj=&lt;tproj_prefix&gt; anchor=&lt;anchor_name&gt; version=&lt;version_number&gt;]req_doc_id[/req]<br />
-This syntax also works for requirement specifications (version attribute has no effect).<br />
-If you do not specify a version the whole requirement including all versions will be shown.</p>
+この構文は、要件仕様でも機能します (バージョン属性は効果がありません)。<br />
+バージョンを指定しない場合は、すべてのバージョンを含む要件全体が表示されます。</p>
 ";
 
 

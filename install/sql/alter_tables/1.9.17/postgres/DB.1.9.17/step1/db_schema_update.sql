@@ -30,8 +30,47 @@ JOIN /*prefix*/req_specs RS
 ON RS.id = RSR.parent_id
 GROUP BY RSR.parent_id,RS.testproject_id;
 
+CREATE TABLE /*prefix*/testcase_script_links(  
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id) ON DELETE CASCADE,
+  "project_key" VARCHAR(64) NOT NULL,
+  "repository_name" VARCHAR(64) NOT NULL,
+  "code_path" VARCHAR(255) NOT NULL,
+  "branch_name" VARCHAR(64) NULL,
+  "commit_id" VARCHAR(40) NULL,
+  PRIMARY KEY ("tcversion_id","project_key","repository_name","code_path")
+); 
+
+CREATE TABLE /*prefix*/codetrackers
+(
+  "id" BIGSERIAL NOT NULL ,
+  "name" VARCHAR(100) NOT NULL,
+  "type" INTEGER NOT NULL DEFAULT '0',
+  "cfg" TEXT,
+  PRIMARY KEY  ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/codetrackers_uidx1 ON /*prefix*/codetrackers ("name");
+
+
+CREATE TABLE /*prefix*/testproject_codetracker
+(
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
+  "codetracker_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/codetrackers (id) ON DELETE CASCADE,
+  PRIMARY KEY ("testproject_id")
+);
+
 -- since 1.9.17
 INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
+INSERT INTO /*prefix*/rights (id,description) VALUES (50,'monitor_requirement');
+INSERT INTO /*prefix*/rights (id,description) VALUES (51,'codetracker_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
 
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,52);
+
+ALTER TABLE /*prefix*/testprojects ADD COLUMN code_tracker_enabled INT2 NOT NULL DEFAULT '0';
 ALTER TABLE /*prefix*/users ADD COLUMN creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE /*prefix*/users ADD COLUMN expiration_date date DEFAULT NULL;

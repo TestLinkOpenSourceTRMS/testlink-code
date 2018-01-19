@@ -26,8 +26,47 @@ JOIN /*prefix*/req_specs RS
 ON RS.id = RSR.parent_id
 GROUP BY RSR.parent_id,RS.testproject_id;
 
+CREATE TABLE /*prefix*/testcase_script_links (
+  `tcversion_id` int(10) unsigned NOT NULL default '0',
+  `project_key` varchar(64) NOT NULL,
+  `repository_name` varchar(64) NOT NULL,
+  `code_path` varchar(255) NOT NULL,
+  `branch_name` varchar(64) default NULL,
+  `commit_id` varchar(40) default NULL,
+  PRIMARY KEY  (`tcversion_id`,`project_key`,`repository_name`,`code_path`)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/codetrackers
+(
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `type` int(10) default 0,
+  `cfg` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/codetrackers_uidx1 (`name`)
+) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/testproject_codetracker
+(
+  `testproject_id` int(10) unsigned NOT NULL,
+  `codetracker_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`testproject_id`)
+) DEFAULT CHARSET=utf8;
+
 -- since 1.9.17
 INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
+INSERT INTO /*prefix*/rights (id,description) VALUES (50,'monitor_requirement');
+INSERT INTO /*prefix*/rights (id,description) VALUES (51,'codetracker_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
 
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,52);
+
+ALTER TABLE /*prefix*/testprojects ADD COLUMN code_tracker_enabled tinyint(1) NOT NULL default '0';
 ALTER TABLE /*prefix*/users ADD COLUMN creation_ts timestamp NOT NULL DEFAULT now();
 ALTER TABLE /*prefix*/users ADD COLUMN expiration_date date DEFAULT NULL;

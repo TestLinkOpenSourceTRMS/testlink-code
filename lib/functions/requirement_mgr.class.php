@@ -2586,6 +2586,19 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   {
     $this->updateBoolean($reqVersionID,'is_open',$value);
   }  
+  
+  function getOpen($reqVersionID)
+  {
+	
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $sql = " /* $debugMsg */ SELECT is_open " .
+           " FROM {$this->tables['req_versions']} req_versions " .
+           " WHERE  req_versions.id={$reqVersionID}";
+
+    return ($this->db->get_recordset($sql));
+  }  
+
 
     /**
    * 

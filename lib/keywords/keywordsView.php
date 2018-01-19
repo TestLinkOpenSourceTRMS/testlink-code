@@ -52,6 +52,7 @@ function init_args(&$dbHandler)
   $args->keywords = $tproject->getKeywords($args->tproject_id);
 
   $args->canManage = $user->hasRight($dbHandler,"mgt_modify_key",$args->tproject_id);
+  $args->canAssign = $user->hasRight($dbHandler,"keyword_assignment",$args->tproject_id);
 
   return $args;
 }

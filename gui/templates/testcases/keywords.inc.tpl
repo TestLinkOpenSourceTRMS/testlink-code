@@ -66,7 +66,7 @@ var pF_remove_keyword = remove_keyword;
       <td style="vertical-align:top;">
           {foreach item=keyword_item from=$args_keywords_map}
                 {$keyword_item.keyword|escape}
-            {if $edit_enabled}
+            {if $edit_enabled && $gui->assign_keywords}
             <a href="javascript:keyword_remove_confirmation({$gui->tcase_id}, {$keyword_item.keyword_id},
                                                              '{$keyword_item.keyword|escape:'javascript'}', 
                                                               remove_kw_msgbox_title, remove_kw_msgbox_msg, 

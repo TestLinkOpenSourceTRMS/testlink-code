@@ -501,6 +501,8 @@ $TLS_urgency_low = "Low";
 $TLS_test_importance = "Test importance";
 $TLS_testcases_assigned_to_user = 'Test Project: %s - Test Cases Assigned to User: %s';
 $TLS_assigned_on = 'Assignment date';
+$TLS_code_mgmt = "Code management";
+$TLS_code_link_tl_to_cts = "Link Existent Test Script";
 
 // ----- index.php -----
 $TLS_main_page_title = "TestLink ::: Main Page";
@@ -574,7 +576,7 @@ $TLS_passwd_lost = "Your password has been sent to the email account you specifi
 $TLS_password_reseted = "New password has been sent via mail";
 $TLS_session_expired = "Your session has expired! Please login again.";
 $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please login ...";
-
+$TLS_oauth_login = "Sign in with ";
 
 // ----- newest_tcversions.php -----
 $TLS_no_linked_tcversions = "no linked Test Case versions";
@@ -655,6 +657,21 @@ $TLS_btn_create_testsuite = "Create Test Suite";
 $TLS_tc_keywords = "Keywords";
 $TLS_title_create = "Create";
 $TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
+
+
+// ----- gui/templates/script_add.tpl -----
+$TLS_script_id = "Test Script Name";
+$TLS_title_script_add = "Add link to test script";
+$TLS_btn_add_script = "Add test script link";
+$TLS_link_cts_create_script = "Access to Code Management System ";
+$TLS_cts_project_key = "Project Key";
+$TLS_cts_repo_name = "Repository Name";
+$TLS_cts_script_path = "Path to Test Script";
+$TLS_cts_branch_name = "Branch Name (optional)";
+
+// ----- gui/templates/script_delete.tpl -----
+$TLS_title_delete_script = "Delete test script link";
+
 
 
 
@@ -845,9 +862,10 @@ $TLS_filter_active_inactive = "Active/Inactive";
 $TLS_show_only_active_testcases = "At least ONE version is ACTIVE";
 $TLS_show_only_inactive_testcases = "ALL versions are INACTIVE";
 $TLS_show_whole_spec_on_right_panel = 'Show Full (on right pane)';
-$TLS_test_grouped_by_label = "Tests Grouped By";
+$TLS_test_grouped_by = "Tests Grouped By";
 $TLS_mode_test_suite = "Test Suite";
-$TLS_mode_req_coverage = "Requirements";
+$TLS_mode_req_coverage = "Requirement";
+$TLS_parent_child_relation = "Exploit Child / parent relationship";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -1138,6 +1156,11 @@ $TLS_delete_bug = "delete bug from TestLink";
 $TLS_del_bug_warning_msg = "Really delete this bug from TestLink Database?";
 
 
+// gui/templates/inc_show_script_table.tpl
+$TLS_caption_scripttable = "Relevant test scripts";
+$TLS_delete_script ="delete script link from TestLink";
+$TLS_del_script_warning_msg = "Really delete this script link from TestLink Database?";
+
 
 // gui/templates/reqSpecList.tpl
 $TLS_no_docs = "No available documents.";
@@ -1173,6 +1196,7 @@ $TLS_menu_view_roles = "View roles";
 $TLS_th_execution_rights = 'Test Case Execution';
 $TLS_th_cf_rights = "Custom field";
 $TLS_th_issuetracker_rights = 'Issue Tracker';
+$TLS_th_codetracker_rights = 'Code Tracker';
 $TLS_th_kw_rights = $TLS_keyword;
 $TLS_th_mgttc_rights = "Test Case management";
 $TLS_th_platform_rights = $TLS_platform;
@@ -1590,11 +1614,14 @@ $TLS_testproject_enable_inventory = 'Inventory';
 $TLS_testproject_enable_priority = 'Testing Priority';
 $TLS_testproject_enable_requirements = 'Requirements';
 $TLS_testproject_issue_tracker_integration = 'Issue Tracker Integration';
+$TLS_testproject_code_tracker_integration = 'Code Tracker Integration';
 $TLS_issue_tracker = 'Issue Tracker';
+$TLS_code_tracker = 'Code Tracker';
 $TLS_testproject_reqmgr_integration = 'Req. Mgmt. System Integration';
 $TLS_reqmgrsystem = 'Req. Management System';
 $TLS_no_rms_defined = ' >> There are no Req. Management Systems defined <<';
 $TLS_no_issuetracker_defined = ' >> There are no Issue Tracker Systems defined <<';
+$TLS_no_codetracker_defined = ' >> There are no Code Tracker Systems defined <<';
 
 
 $TLS_info_failed_loc_prod = 'Failed to localize the Test Project.';
@@ -2130,6 +2157,9 @@ $TLS_warning_empty_first_name = "Please enter a name";
 $TLS_warning_empty_last_name = "Please enter a surname";
 $TLS_warning_empty_login = "Please enter a login";
 
+// usersExport.php
+$TLS_export_users = "Export users";
+
 
 // ----- gui/templates/attachmentupload.tpl -----
 $TLS_attachment_upload_ok = "File uploaded";
@@ -2240,6 +2270,7 @@ $TLS_href_plan_define_priority = "Test Plan priority";
 $TLS_href_my_testcase_assignments = "Test Cases Assigned to Me";
 $TLS_href_platform_management = "Platform Management";
 $TLS_href_issuetracker_management = "Issue Tracker Management";
+$TLS_href_codetracker_management = "Code Tracker Management";
 $TLS_href_reqmgrsystem_management = "Req. Management System Management";
 $TLS_system_config = 'System';
 $TLS_title_plugins = 'Plugins';
@@ -2306,6 +2337,16 @@ $TLS_overall_progress = "Overall Progress";
 $TLS_progress_absolute = "Progress";
 $TLS_test_plan_progress = "Test Plan Progress (ATTENTION: Only Test Plans with ACTIVE BUILDS are considered)";
 $TLS_project_progress = "Test Project Progress";
+
+// ----- lib/testcases/script_add.php -----
+$TLS_script_added = "Test Script link added";
+$TLS_error_code_does_not_exist_on_cts = "Script Link '%s' does not exist on CTS!";
+$TLS_error_script_not_added = "Test Script link could not be added to DB";
+
+// ----- lib/testcases/script_delete.php -----
+$TLS_scriptdeleting_was_ok = "The test script link was successfully deleted!";
+$TLS_error_script_not_deleted = "Test Script link could not be deleted from DB";
+
 
 // ----- lib/execute/bug_add.php -----
 $TLS_bug_added = "Bug added";
@@ -2375,6 +2416,8 @@ $TLS_desc_events_mgt = "Event management";
 
 $TLS_desc_issuetrackers_view = "Issue Tracker view (read only access)";
 $TLS_desc_issuetrackers_management = "Issue Tracker Management";
+$TLS_desc_codetrackers_view = "Code Tracker view (read only access)";
+$TLS_desc_codetrackers_management = "Code Tracker Management";
 $TLS_desc_reqmgrsystems_view = "Req. Management System view (read only access)";
 $TLS_desc_reqmgrsystems_management = "Req. Management System Management";
 $TLS_desc_req_tcase_link_management = "Requirement-Test Case Assignment";
@@ -2382,7 +2425,7 @@ $TLS_desc_keyword_assignment = "Keyword Assignment";
 
 
 
-$TLS_desc_mgt_unfreeze_req = "Unfreeze requirement";
+$TLS_desc_mgt_unfreeze_req = "Freeze/Unfreeze requirement";
 $TLS_desc_mgt_modify_key = "Keyword management";
 $TLS_desc_mgt_modify_product = "Test Project management";
 $TLS_desc_mgt_modify_req = "Requirement management";
@@ -2406,6 +2449,7 @@ $TLS_desc_testplan_execute = "Test Plan execute";
 $TLS_desc_testplan_metrics = "Test Plan metrics";
 $TLS_desc_testplan_planning = "Test Plan planning";
 $TLS_desc_user_role_assignment = "Role assignment";
+$TLS_desc_monitor_requirement = 'Monitor Requirements';
 
 
 $TLS_error_duplicate_rolename = "There's already a role with that name!";
@@ -2711,6 +2755,7 @@ $TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to 
 
 $TLS_bulk_req_assign_no_test_cases = 'Operation can not be done because there are no test cases inside selected test suite';
 
+$TLS_bulk_assigment_done = '%s assignments has been done';
 $TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';
 $TLS_req_title_available = 'Available Requirements';
 $TLS_no_req_spec_available = "No Requirements Specification available for this Test Project";
@@ -2742,7 +2787,8 @@ $TLS_error_deleting_rel = "Relation could not be deleted.";
 $TLS_delete_rel_msgbox_title = "Delete relation";
 $TLS_delete_rel_msgbox_msg = "Really delete relation #%i?";
 $TLS_img_title_delete_relation = "Click to delete this relation.";
-
+$TLS_img_title_relation_frozen = "Relation can't be deleted because one of linked requirement is frozen.";
+$TLS_rel_add_error_dest_frozen = "Relation can't be added because the destination requirement is frozen.";
 
 // ----- configured requirement relation types (BUGID 1748) -----
 $TLS_req_rel_is_parent_of = "parent of";
@@ -2903,6 +2949,8 @@ $TLS_same_name = 'has same name';
 $TLS_duplicate_criteria = "Consider Test Case as duplicate if";
 $TLS_hit_with_same_external_ID = "Can not be imported - You are hitting an existent Test Case with SAME EXTERNAL ID:";
 $TLS_attachment_skipped_during_import = "Attachment \"%s\" has been ignored because it is already linked to the test element";
+$TLS_keywords_assignment_skipped_during_import = "Keywords assignment has been ignored because the current user is not allowed to assign keywords to testcases";
+$TLS_req_assignment_skipped_during_import = "Link to requirements has been ignored because the current user is not allowed to assign requirements to testcases";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "There are no Test Cases to export";
@@ -3266,6 +3314,9 @@ $TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from T
 $TLS_audit_exec_saved = "Test Case '{%1}' has been executed on Build '{%2}' in the Test Plan '{%3}'.";
 $TLS_audit_exec_deleted = "An execution of Test Case '{%1}' on Build '{%2}' in the Test Plan '{%3}' has been deleted.";
 
+$TLS_audit_testcasescript_added = "Test Script link '{%1}' was added";
+$TLS_audit_testcasescript_deleted = "Test Script link '{%1}' was deleted " .
+                  "from Test Case: {%2} from Test Project: {%3}";
 $TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
 $TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted " .
                   "from execution with id: {%2} of Test Case: {%3} " .
@@ -3295,7 +3346,7 @@ $TLS_audit_req_version_unfrozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was 
 
 $TLS_audit_testcase_created = "Test Case '{%1}' has been created.";
 $TLS_audit_testcase_saved = "Test Case '{%1}' has been saved.";
-$TLS_audit_testcase_deleted = "La fiche de test '{%1}' a été supprimée.";
+$TLS_audit_testcase_deleted = "Test Case '{%1}' has been deleted.";
 $TLS_audit_testcase_version_deleted = "Version {%1} of the Test Case '{%2}' has been deleted.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
@@ -3482,7 +3533,9 @@ $TLS_warning_delete_step = "<p>You are going to delete step number: %s </p><p>Ar
 $TLS_warning_step_number = " Step number must be a number and > 0";
 $TLS_warning_step_number_already_exists = " Step number %s already exists";
 
+$TLS_CTS_integration_failure = " Integration with Code Management System: %s - Failed";
 $TLS_BTS_integration_failure = " Integration with Bugtracking System: %s - Failed";
+$TLS_CTS_connect_to_database_fails = "Connect to Code Management database fails: %s";
 $TLS_BTS_connect_to_database_fails = "Connect to Bug Tracker database fails: %s";
 $TLS_MANTIS_status_not_configured = 'Get Bug Status: %s from Mantis DB, but status is not configured on int_mantis.php';
 $TLS_testcase_set_copied = "%s test cases has been copied";
@@ -3596,6 +3649,26 @@ $TLS_used_on_testproject = 'Used on Test Project';
 // getissuetrackertemplate.php
 $TLS_issuetracker_invalid_type = 'Issue Tracker type %s is unknown';
 $TLS_issuetracker_interface_not_implemented = 'Issue Tracker interface %s is not implemented/available';
+
+// codeTrackerView.tpl
+$TLS_th_codetracker = 'Code Tracker';
+$TLS_th_codetracker_type = 'Type';
+$TLS_th_codetracker_env = 'Environment';
+$TLS_warning_empty_codetracker_name = "Code Tracker name cannot be empty!";
+$TLS_warning_empty_codetracker_type = "Code Tracker type cannot be empty!";
+
+// codeTrackerCommands.class.php
+$TLS_codetracker_management = $TLS_href_codetracker_management;
+$TLS_codetracker_deleted = "Code Tracker %s% has been deleted";
+
+// codeTrackerEdit.tpl
+$TLS_codetracker_show_cfg_example = 'Show configuration example';
+$TLS_codetracker_cfg_example = 'Configuration example';
+$TLS_used_on_testproject = 'Used on Test Project';
+
+// getcodetrackertemplate.php
+$TLS_codetracker_invalid_type = 'Code Tracker type %s is unknown';
+$TLS_codetracker_interface_not_implemented = 'Code Tracker interface %s is not implemented/available';
 
 // logger.class.php
 $TLS_mail_logger_email_subject = ' :: Log Message From TestLink :: ';
@@ -3729,6 +3802,8 @@ $TLS_btn_stop_mon = 'Stop Monitoring';
 
 $TLS_issueTracker_connection_ok = 'Test Connection OK';
 $TLS_issueTracker_connection_ko = 'Test Connection KO';
+$TLS_codeTracker_connection_ok = 'Test Connection OK';
+$TLS_codeTracker_connection_ko = 'Test Connection KO';
 
 $TLS_click_passed = "Click to set to passed";
 $TLS_click_failed = "Click to set to failed";

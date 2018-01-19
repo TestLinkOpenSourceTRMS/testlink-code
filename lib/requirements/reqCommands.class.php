@@ -668,6 +668,11 @@ class reqCommands
         $op['ok'] = false;
         $op['msg'] = sprintf(lang_get('rel_add_error_exists_already'),$this->reqRelationTypeDescr[$relTypeID]);
       }
+	  $dest_open = $this->reqMgr->getOpen($destination_id);
+      if (!$dest_open) {
+		$op['ok'] = false;
+        $op['msg'] = sprintf(lang_get('rel_add_error_dest_frozen'));
+	  }
     }
     
     if ($op['ok']) {

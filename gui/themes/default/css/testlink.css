@@ -508,7 +508,7 @@ table.simple_tableruler tr:hover{
     background-color: #CDDEF3 !important;
 }
 
-table.tableruler tr:hover{
+table.tableruler tbody tr:hover{
     background-color: #FFF !important;
 }
 

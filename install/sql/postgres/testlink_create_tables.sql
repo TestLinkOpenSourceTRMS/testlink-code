@@ -284,6 +284,7 @@ CREATE TABLE /*prefix*/testprojects(
   "tc_counter" int NOT NULL default '0',
   "is_public" INT2 NOT NULL DEFAULT '1',
   "issue_tracker_enabled" INT2 NOT NULL DEFAULT '0',
+  "code_tracker_enabled" INT2 NOT NULL DEFAULT '0',
   "reqmgr_integration_enabled" INT2 NOT NULL DEFAULT '0',
   "api_key" varchar(64) NOT NULL DEFAULT (MD5(RANDOM()::text) || MD5(RANDOM()::text)),
   PRIMARY KEY ("id")
@@ -420,6 +421,20 @@ CREATE TABLE /*prefix*/execution_bugs(
   "bug_id" VARCHAR(64) NOT NULL DEFAULT '0',
   "tcstep_id" BIGINT NOT NULL DEFAULT '0',
   PRIMARY KEY ("execution_id","bug_id","tcstep_id")
+); 
+
+
+--
+-- Table structure for table "testcase_script_links"
+--
+CREATE TABLE /*prefix*/testcase_script_links(  
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id) ON DELETE CASCADE,
+  "project_key" VARCHAR(64) NOT NULL,
+  "repository_name" VARCHAR(64) NOT NULL,
+  "code_path" VARCHAR(255) NOT NULL,
+  "branch_name" VARCHAR(64) NULL,
+  "commit_id" VARCHAR(40) NULL,
+  PRIMARY KEY ("tcversion_id","project_key","repository_name","code_path")
 ); 
 
 

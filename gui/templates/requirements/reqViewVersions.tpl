@@ -26,7 +26,7 @@ Purpose: view requirement with version management
              relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req,
              no_records_found,other_versions,version,title_test_case,match_count,warning,
              revision_log_title,please_add_revision_log,commit_title,current_direct_link,
-             specific_direct_link,req_does_not_exist,actions'}
+             specific_direct_link,req_does_not_exist,actions,img_title_relation_frozen'}
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"} 
@@ -302,7 +302,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
     {$loadOnCancelURL=""}
   {/if} 
 
-  {if $gui->req_cfg->relations->enable && !$frozen_version} {* show this part only if relation feature is enabled *}
+  {if $gui->req_cfg->relations->enable} {* show this part only if relation feature is enabled *}
   
     {* form to enter a new relation *}
     <form method="post" action="{$basehref}lib/requirements/reqEdit.php" 
@@ -319,7 +319,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
         </td></tr>
       {/if}
     
-      {if $gui->req_relations.rw}
+      {if $gui->req_relations.rw && !$frozen_version}
       <tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
       
         <span class="bold">{$labels.new_relation}:</span> {$labels.current_req}
@@ -392,13 +392,18 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 
           <td align="center">
           {if $gui->req_relations.rw}
+			{if !$frozen_version && $relation.related_req.is_open}
                 <a href="javascript:relation_delete_confirmation({$gui->req_relations.req.id}, {$relation.id}, 
                                                                  delete_rel_msgbox_title, delete_rel_msgbox_msg, 
                                                                  pF_delete_req_relation);">
                   <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" 
                        title="{$labels.img_title_delete_relation}"  style="border:none" /></a>
-                  {/if}
-                </td>
+			{else}
+				  <img style="border:none;" 	alt="{$labels.img_title_delete_relation}"
+						title="{$labels.img_title_relation_frozen}"	src="{$tlImages.delete_disabled}" />
+			{/if}
+		  {/if}
+          </td>
         </tr>
       {/foreach}
             
@@ -411,8 +416,10 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   
   {* end req relations *}
 
-  {include file="$this_template_dir/reqMonitors.tpl"} 
-         
+  {if $gui->grants->monitor_req == "yes"}
+	{include file="$this_template_dir/reqMonitors.tpl"} 
+  {/if}
+  
   {include file="attachments.inc.tpl" 
              attach_id=$reqID  
              attach_tableName=$gui->attachmentTableName
@@ -458,7 +465,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                      show_hide_container_view_status_id=$memstatus_id}
               <div id="{$div_id}" class="workBack">
               {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
-                       args_req_coverage=$gui->req_coverage
+                       args_hide_coverage=true
                        args_req=$my_req 
                        args_gui=$gui
                        args_grants=$gui->grants 

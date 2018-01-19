@@ -48,7 +48,9 @@ d'une exigence et trouver lesquelles ont successivement échoué pendant les tes
 	n'ont pas de relation avec la fiche de test sélectionnée. Un concepteur peut marquer les exigences qui sont 
 	couvertes par cette fiche de test et alors cliquer sur le bouton 'Affecter'. Cette nouvelle fiche de test 
 	affectée est affichée dans 	le bloc du milieu 'Exigences affectées'.</li>
-</ol>";
+</ol>
+<h2>Attention :</h2>
+Une exigence verrouillée ne peut pas voir sa couverture modifiée. En conséquence, les exigences verrouillées sont listées mais les cases à cocher correspondantes sont désactivées.";
 
 
 // --------------------------------------------------------------------------------------

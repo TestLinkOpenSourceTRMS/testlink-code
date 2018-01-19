@@ -416,7 +416,7 @@ class testcase extends tlObjectWithAttachments
                 // has provided one on import file.
                 // Then we need to check that new name will not conflict with an existing one
                 $doCreate = false;
-                if( strcmp($info['name'],$name) != 0)
+                if( strcmp($info[key($info)]['name'],$name) != 0)
                 {
                   $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);
                   if( is_null($itemSet) )
@@ -865,6 +865,7 @@ class testcase extends tlObjectWithAttachments
     $idCard->tproject_id = $identity->tproject_id;
 
     $gui = $this->initShowGui($guiObj,$grants,$idSet[0],$idCard);
+    $gui->scripts = null;
     $gui->tcase_id = $idCard->tcase_id;
     $gui->tcversion_id = $idCard->tcversion_id;
     $gui->allowStepAttachments = false;
@@ -933,6 +934,16 @@ class testcase extends tlObjectWithAttachments
         $tc_current = $tc_array[0];
         $gui->tc_current_version[] = array($tc_current);
 
+        //get linked testcase scripts
+        if($gui->codeTrackerEnabled)
+        {
+          $tcase_scripts = $this->get_scripts_for_testcase($gui->cts,$tc_current['id']);
+          if(!is_null($tcase_scripts))
+          {
+            $gui->scripts[$tc_current['id']] = $tcase_scripts;
+          }
+        }
+
         // Get UserID and Updater ID for current Version
         $userIDSet[$tc_current['author_id']] = null;
         $userIDSet[$tc_current['updater_id']] = null;
@@ -979,6 +990,15 @@ class testcase extends tlObjectWithAttachments
           {
             $userIDSet[$version['author_id']] = null;
             $userIDSet[$version['updater_id']] = null;
+          }
+          //get linked testcase scripts
+          if($gui->codeTrackerEnabled)
+          {
+            $tcase_scripts = $this->get_scripts_for_testcase($gui->cts,$version['id']);
+            if(!is_null($tcase_scripts))
+            {
+              $gui->scripts[$version['id']] = $tcase_scripts;
+            }
           }
         }
         $gui->arrReqs[] = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
@@ -1516,6 +1536,7 @@ class testcase extends tlObjectWithAttachments
     links to test plans
     tcversions
     nodes from hierarchy
+    testcase_script_links
 
   */
   function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
@@ -1557,41 +1578,43 @@ class testcase extends tlObjectWithAttachments
         }
       }
 
-        if( count($children['step']) > 0)
-        {
-          $step_list=trim(implode(',',$children['step']));
-          $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
-                 " WHERE id IN ({$step_list})";
-        }
+      if( count($children['step']) > 0)
+      {
+        $step_list=trim(implode(',',$children['step']));
+        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
+               " WHERE id IN ({$step_list})";
       }
-      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
-             " WHERE id IN ({$tcversion_list})";
+    }
+    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
+           " WHERE id IN ({$tcversion_list})";
+
+    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_script_links']}  " .
+           " WHERE tcversion_id IN ({$tcversion_list})";
+
+    foreach ($sql as $the_stm)
+    {
+      $result = $this->db->exec_query($the_stm);
+    }
+
+    if($destroyTC)
+    {
+      // Remove data that is related to Test Case => must be deleted when there is no more trace
+      // of test case => when all version are deleted
+      $sql = null;
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
 
       foreach ($sql as $the_stm)
       {
         $result = $this->db->exec_query($the_stm);
       }
+      $this->deleteAttachments($id);
+    }
 
-      if($destroyTC)
-      {
-        // Remove data that is related to Test Case => must be deleted when there is no more trace
-        // of test case => when all version are deleted
-        $sql = null;
-        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
-        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
-
-        foreach ($sql as $the_stm)
-        {
-          $result = $this->db->exec_query($the_stm);
-        }
-
-        $this->deleteAttachments($id);
-      }
-
-      // Attention:
-      // After addition of test case steps feature, a test case version can be root of
-      // a subtree that contains the steps.
-      $this->tree_manager->delete_subtree($item_id);
+    // Attention:
+    // After addition of test case steps feature, a test case version can be root of
+    // a subtree that contains the steps.
+    $this->tree_manager->delete_subtree($item_id);
   }
 
 
@@ -1612,26 +1635,26 @@ class testcase extends tlObjectWithAttachments
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_bugs']} " .
              " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
-               " WHERE tcversion_id IN ({$tcversion_list}))";
+             " WHERE tcversion_id IN ({$tcversion_list}))";
 
-          $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']}  " .
-               " WHERE tcversion_id IN ({$tcversion_list})";
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']}  " .
+             " WHERE tcversion_id IN ({$tcversion_list})";
 
-          $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']}  " .
-               " WHERE tcversion_id IN ({$tcversion_list})";
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']}  " .
+             " WHERE tcversion_id IN ({$tcversion_list})";
 
       }
       else
       {
       $sql[]="/* $debugMsg */  DELETE FROM {$this->tables['execution_bugs']} " .
-               " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
-                 " WHERE tcversion_id = {$version_id})";
+             " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
+             " WHERE tcversion_id = {$version_id})";
 
-          $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
-               " WHERE tcversion_id = {$version_id}";
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
+             " WHERE tcversion_id = {$version_id}";
 
-          $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']} " .
-               " WHERE tcversion_id = {$version_id}";
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']} " .
+             " WHERE tcversion_id = {$version_id}";
       }
 
       foreach ($sql as $the_stm)
@@ -6631,6 +6654,8 @@ class testcase extends tlObjectWithAttachments
     $goo->tcase_cfg->can_edit_executed = $grantsObj->testproject_edit_executed_testcases == 'yes' ? 1 : 0;
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
+    $goo->assign_keywords = property_exists($grantsObj, 'keyword_assignment') ? $grantsObj->keyword_assignment : 0;
+	$goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
 
     $goo->parentTestSuiteName = '';
     $goo->tprojectName = '';
@@ -7725,6 +7750,65 @@ class testcase extends tlObjectWithAttachments
       }
     }
   }
+
+ /**
+   * get data about code links from external tool
+   * 
+   * @param resource &$db reference to database handler
+   * @param object &$code_interface reference to instance of bugTracker class
+   * @param integer $tcversion_id Identifier of test case version
+   * 
+   * @return array list of 'script_name' with values: link_to_cts,
+   * project_key, repository_name, code_path, branch_name
+   */
+  function get_scripts_for_testcase(&$code_interface,$tcversion_id)
+  {
+    $tables = tlObjectWithDB::getDBTables(array('tcversions','testcase_script_links'));
+    $script_list=array();
+
+    $debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
+    if( is_object($code_interface) )
+    {
+
+      $sql =  "/* $debugMsg */ SELECT TSL.*,TCV.version " .
+              " FROM {$tables['testcase_script_links']} TSL, {$tables['tcversions']} TCV " .
+              " WHERE TSL.tcversion_id = " . intval($tcversion_id) .
+              " AND   TSL.tcversion_id = TCV.id " .
+              " ORDER BY TSL.code_path";
+
+      $map = $this->db->get_recordset($sql);
+      if( !is_null($map) )
+      {
+        $opt = array();
+        foreach($map as $elem)
+        {
+          $script_id = $elem['project_key'].'&&'.$elem['repository_name'].'&&'.$elem['code_path'];
+          if(!isset($script_list[$script_id]))
+          {
+            $opt['branch'] = $elem['branch_name'];
+            $opt['commit_id'] = $elem['commit_id'];
+            $dummy = $code_interface->buildViewCodeLink($elem['project_key'],
+                     $elem['repository_name'],$elem['code_path'],$opt);
+            $script_list[$script_id]['link_to_cts'] = $dummy->link;
+            $script_list[$script_id]['project_key'] = $elem['project_key'];
+            $script_list[$script_id]['repository_name'] = $elem['repository_name'];
+            $script_list[$script_id]['code_path'] = $elem['code_path'];
+            $script_list[$script_id]['branch_name'] = $elem['branch_name'];
+            $script_list[$script_id]['commit_id'] = $elem['commit_id'];
+            $script_list[$script_id]['tcversion_id'] = $elem['tcversion_id'];
+          }
+          unset($dummy);
+        }
+      }
+    }
+
+    if(count($script_list) === 0)
+    {
+      $script_list = null;
+    }
+    return($script_list);
+  }
+
 
   /**
    *

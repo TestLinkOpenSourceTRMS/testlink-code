@@ -107,6 +107,8 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   } 
   $gui->grants = new stdClass();
   $gui->grants->req_mgmt = $argsObj->user->hasRight($dbHandler,"mgt_modify_req",$target_id);
+  $gui->grants->monitor_req = $argsObj->user->hasRight($dbHandler,"monitor_requirement",$target_id);
+  $gui->grants->req_tcase_link_management = $argsObj->user->hasRight($dbHandler,"req_tcase_link_management",$target_id);
   $gui->grants->unfreeze_req = $argsObj->user->hasRight($dbHandler,"mgt_unfreeze_req",$target_id);
   
   $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
@@ -114,11 +116,11 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr)
   $gui->req = current($gui->req_versions);
   $gui->reqMonitors = $req_mgr->getReqMonitors($gui->req_id);
 
-  $gui->btn_monitor_mgmt = 'Start Monitoring';
+  $gui->btn_monitor_mgmt = lang_get('btn_start_mon');
   $gui->btn_monitor_action = 'startMonitoring';
   if(isset($gui->reqMonitors[$argsObj->userID]))
   {
-    $gui->btn_monitor_mgmt = 'Stop Monitoring';
+    $gui->btn_monitor_mgmt = lang_get('btn_stop_mon');
     $gui->btn_monitor_action = 'stopMonitoring';
   }  
 

@@ -121,7 +121,7 @@ switch($args->doAction)
   case "setInactive":
   case 'enableRequirements':
   case 'disableRequirements':
-    if( ($addIssueTracker = $addReqMgrSystem = is_null($template)) )
+    if( ($addIssueTracker = $addCodeTracker = $addReqMgrSystem = is_null($template)) )
     {
       $template = 'projectView.tpl';
       // needed after addition of search function on test project view
@@ -131,7 +131,8 @@ switch($args->doAction)
 
     $gui->doAction = $reloadType;
     $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
-                 'add_issuetracker' => $addIssueTracker, 'add_reqmgrsystem' => $addReqMgrSystem);
+                 'add_issuetracker' => $addIssueTracker, 'add_codetracker' => $addCodeTracker,
+                 'add_reqmgrsystem' => $addReqMgrSystem);
     $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
       
     $gui->pageTitle = lang_get('title_testproject_management');
@@ -160,6 +161,24 @@ switch($args->doAction)
       }
     }
         
+    if($addCodeTracker)
+    {
+      $imgSet = $smarty->getImages();
+      $loop2do = count($gui->tprojects);
+      $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
+      for($idx=0; $idx < $loop2do; $idx++)
+      {
+        $gui->tprojects[$idx]['ctstatusImg'] = '';
+        if($gui->tprojects[$idx]['ctname'] != '')
+        {
+          $ak = ($gui->tprojects[$idx]['code_tracker_enabled']) ? 'active' : 'inactive';
+          $gui->tprojects[$idx]['ctstatusImg'] = ' <img title="' . $labels[$ak . '_integration'] . '" ' .
+                                                 ' alt="' . $labels[$ak . '_integration'] . '" ' .
+                                                 ' src="' . $imgSet[$ak] . '"/>';
+        } 
+      }
+    }    
+
     if($addReqMgrSystem)
     {
       $imgSet = $smarty->getImages();
@@ -244,6 +263,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
                          'optPriority' => 0,'optAutomation' => 0,
                          'optReq' => 0,'optInventory' => 0,
                          'issue_tracker_enabled' => 0,
+                         'code_tracker_enabled' => 0,
                          'reqmgr_integration_enabled' => 0);
   foreach ($checkbox_keys as $key => $value)
   {
@@ -251,12 +271,18 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
   }
 
   $args->issue_tracker_id = isset($request_hash['issue_tracker_id']) ? intval($request_hash['issue_tracker_id']) : 0;
+  $args->code_tracker_id = isset($request_hash['code_tracker_id']) ? intval($request_hash['code_tracker_id']) : 0;
   $args->reqmgrsystem_id = isset($request_hash['reqmgrsystem_id']) ? intval($request_hash['reqmgrsystem_id']) : 0;
 
   // This way we are safe
   if($args->issue_tracker_id == 0)
   {
     $args->issue_tracker_enabled = 0;  
+  }  
+
+  if($args->code_tracker_id == 0)
+  {
+    $args->code_tracker_enabled = 0;  
   }  
 
   if($args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
@@ -273,6 +299,15 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
       if( !is_null($issueT)  )
       {
         $args->issue_tracker_id = $issueT['issuetracker_id'];
+      }
+
+      $args->code_tracker_enabled = intval($the_data['code_tracker_enabled']);  
+      $args->code_tracker_id = 0;
+      $ctMgr = new tlCodeTracker($tprojectMgr->db);
+      $codeT = $ctMgr->getLinkedTo($args->tprojectID);
+      if( !is_null($codeT)  )
+      {
+        $args->code_tracker_id = $codeT['codetracker_id'];
       }
 
       $args->reqmgr_integration_enabled = intval($the_data['reqmgr_integration_enabled']);  
@@ -403,6 +438,22 @@ function doCreate($argsObj,&$tprojectMgr)
       { 
         $itMgr->link($argsObj->issue_tracker_id,$new_id);
       }
+
+      if($argsObj->code_tracker_enabled)
+      {
+        $tprojectMgr->enableCodeTracker($new_id);
+      }
+      else
+      {
+        $tprojectMgr->disableCodeTracker($new_id);
+      }
+      
+      
+      $ctMgr = new tlCodeTracker($tprojectMgr->db);
+      if($argsObj->code_tracker_id > 0)
+      { 
+        $ctMgr->link($argsObj->code_tracker_id,$new_id);
+      }
   
       if( !$argsObj->is_public)
       {
@@ -486,6 +537,21 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
         }  
       } 
 
+      $tprojectMgr->setCodeTrackerEnabled($argsObj->tprojectID,$argsObj->code_tracker_enabled);
+      $ctMgr = new tlCodeTracker($tprojectMgr->db);
+      if( ($doLink = $argsObj->code_tracker_id > 0)  )
+      {
+        $ctMgr->link($argsObj->code_tracker_id,$argsObj->tprojectID);
+      }
+      else
+      {
+        $codeT = $ctMgr->getLinkedTo($argsObj->tprojectID);
+        if( !is_null($codeT) )
+        {
+          $ctMgr->unlink($codeT['codetracker_id'],$codeT['testproject_id']);
+        }  
+      } 
+
       $tprojectMgr->setReqMgrIntegrationEnabled($argsObj->tprojectID,$argsObj->reqmgr_integration_enabled);
       $mgr = new tlReqMgrSystem($tprojectMgr->db);
       if( ($doLink = $argsObj->reqmgrsystem_id > 0)  )
@@ -561,7 +627,8 @@ function edit(&$argsObj,&$tprojectMgr)
   $argsObj->projectOptions = $tprojectInfo['opt'];
   $argsObj->tcasePrefix = $tprojectInfo['prefix'];
 
-  $k2l = array('color','notes', 'active','is_public','issue_tracker_enabled','reqmgr_integration_enabled','api_key');  
+  $k2l = array('color','notes', 'active','is_public','issue_tracker_enabled',
+               'code_tracker_enabled','reqmgr_integration_enabled','api_key');  
   foreach($k2l as $key)
   {
     $argsObj->$key = $tprojectInfo[$key];
@@ -703,7 +770,8 @@ function initializeGui(&$dbHandler,$argsObj)
   $guiObj->canManage = $argsObj->user->hasRight($dbHandler,"mgt_modify_product");
   $guiObj->found = 'yes';
 
-  $ent2loop = array('tlIssueTracker' => 'issueTrackers', 'tlReqMgrSystem' => 'reqMgrSystems');
+  $ent2loop = array('tlIssueTracker' => 'issueTrackers', 'tlCodeTracker' => 'codeTrackers',
+                    'tlReqMgrSystem' => 'reqMgrSystems');
   
   foreach($ent2loop as $cl => $pr)
   {

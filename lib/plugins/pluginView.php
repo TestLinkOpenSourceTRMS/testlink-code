@@ -7,7 +7,7 @@
  *
  * @filesource  pluginView.php
  * @package     TestLink
- * @copyright   2015-2016, TestLink community
+ * @copyright   2015-2017, TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -25,27 +25,29 @@ $templateCfg = templateConfiguration();
 
 list($args,$gui) = initEnv($db);
 
+$feedback = '';
 switch($args->operation)
 {
-    case 'install':
-        if ($args->pluginName)
-        {
-            $p_plugin = plugin_register($args->pluginName, true);
-            plugin_init($args->pluginName);
-            plugin_install($p_plugin);
-            $feedback = sprintf(lang_get('plugin_installed'), $args->pluginName);
-        }
-        break;
+  case 'install':
+    if ($args->pluginName)
+    {
+      $p_plugin = plugin_register($args->pluginName, true);
+      plugin_init($args->pluginName);
+      plugin_install($p_plugin);
+      $feedback = sprintf(lang_get('plugin_installed'), $args->pluginName);
+    }
+  break;
+
 	case 'uninstall':
-	    if ($args->pluginId)
-        {
-            $t_basename = plugin_uninstall($args->pluginId);
-            $feedback = sprintf(lang_get('plugin_uninstalled'), $t_basename);
-        }  
-  	    break;
+	  if ($args->pluginId)
+    {
+      $t_basename = plugin_uninstall($args->pluginId);
+      $feedback = sprintf(lang_get('plugin_uninstalled'), $t_basename);
+    }  
+  break;
 		
 	default:
-	    break;
+	break;
 } 
 
 $gui->main_title = lang_get('title_plugin_mgmt');
@@ -54,9 +56,7 @@ $gui->available_plugins = get_all_available_plugins($gui->installed_plugins);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-if ($feedback) {
-  $smarty->assign('user_feedback', $feedback);
-}
+$smarty->assign('user_feedback', $feedback);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

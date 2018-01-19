@@ -33,7 +33,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Dernière mise à jour du fichier de localisation : 20/07/2017 (pour Testlink 1.9.17)";
+$TLS_last_update = "Dernière mise à jour du fichier de localisation : 20/12/2017 (pour Testlink 1.9.17)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = 'Actif (cliquer pour rendre inactif)';
@@ -867,7 +867,7 @@ $TLS_error_no_testprojects_present = "Aucun projet défini.";
 
 // ----- gui/templates/metrics_dashbord.tpl -----
 $TLS_th_active_tc = "Fiches de test actives";
-$TLS_show_only_active = "Ne montrer les métriques que pout les campagnes de test actives";
+$TLS_show_only_active = "Ne montrer les métriques que pour les campagnes de test actives";
 
 
 // ----- gui/templates/newest_tcversions.tpl -----
@@ -1414,7 +1414,7 @@ $TLS_test_exec_summary = "Résumé";
 $TLS_test_plan_notes = "Notes de campagne de test";
 $TLS_th_test_case_id = "ID";
 $TLS_th_testsuite = $TLS_test_suite;
-$TLS_title_t_r_owner = "Affecté à";
+$TLS_title_t_r_on_build = "Enregistrement d'exécution pour la version du produit";
 $TLS_title_test_case = $TLS_test_case;
 $TLS_version = "Version";
 $TLS_warning_delete_execution = "Etes-vous sûr de vouloir supprimer l’exécution ?";
@@ -2047,7 +2047,7 @@ $TLS_check_uncheck_children_checkboxes = "Cocher/Décocher toutes les fiches de 
 $TLS_title_tc_exec_assignment = "Assigner l’exécution de fiches de test pour la version %s de la campagne %s";
 $TLS_user = "Utilisateur";
 $TLS_user_bulk_assignment = "Assignation d'exécution aux utilisateurs en masse";
-$TLS_user_bulk_remove = "Retirer les assignations d exécution en masse";
+$TLS_user_bulk_remove = "Retirer les assignations d'exécution en masse";
 
 
 
@@ -2133,6 +2133,8 @@ $TLS_warning_empty_login = "Veuillez renseigner le nom d'utilisateur";
 $TLS_expiration_date = "Date d'expiration";
 $TLS_expiration = "Expiration";
 
+// usersExport.php
+$TLS_export_users = "Exporter les utilisateurs";
 
 // ----- gui/templates/attachmentupload.tpl -----
 $TLS_attachment_upload_ok = "Fichier envoyé";
@@ -2385,7 +2387,7 @@ $TLS_desc_keyword_assignment = "Affectation de mots-clés";
 
 
 
-$TLS_desc_mgt_unfreeze_req = "Déverrouiller exigence";
+$TLS_desc_mgt_unfreeze_req = "Verrouiller/déverrouiller les exigences";
 $TLS_desc_mgt_modify_key = "Gestion des mots-clés";
 $TLS_desc_mgt_modify_product = "Gestion de projets";
 $TLS_desc_mgt_modify_req = "Gestion d’exigences";
@@ -2409,6 +2411,7 @@ $TLS_desc_testplan_execute = "Exécution de campagne de test";
 $TLS_desc_testplan_metrics = "Métriques de campagne de test";
 $TLS_desc_testplan_planning = "Planification de campagne de test";
 $TLS_desc_user_role_assignment = "Affectation de rôles";
+$TLS_desc_monitor_requirement = 'Surveillance des exigences';
 
 
 $TLS_error_duplicate_rolename = "Nom de rôle existant.";
@@ -2714,6 +2717,7 @@ $TLS_bulk_req_assign_msg = "L’opération lie les exigences sélectionnées à 
 
 $TLS_bulk_req_assign_no_test_cases = "L’opération ne peut être effectuée car il n’y a aucune fiches de test dans le dossier de test";
 
+$TLS_bulk_assigment_done = '%s liens entre exigences et fiches de test ont été ajoutés';
 $TLS_req_title_bulk_assign = "Lier en masse les exigences";
 $TLS_req_title_available = "Exigences disponibles";
 $TLS_no_req_spec_available = "Aucun dossier d’exigences disponible pour le projet";
@@ -2745,6 +2749,8 @@ $TLS_error_deleting_rel = "La relation n’a pas pu être supprimée.";
 $TLS_delete_rel_msgbox_title = "Supprimer la relation";
 $TLS_delete_rel_msgbox_msg = "Etes-vous sûr de vouloir supprimer la relation #%i ?";
 $TLS_img_title_delete_relation = "Cliquer pour supprimer la relation.";
+$TLS_img_title_relation_frozen = "La relation ne peut pas être supprimée car au moins une des deux exigences liées est verrouillée.";
+$TLS_rel_add_error_dest_frozen = "La relation ne peut pas être ajoutée car l'exigence de destination est verrouillée.";
 
 
 // ----- configured requirement relation types (BUGID 1748) -----
@@ -2871,7 +2877,7 @@ $TLS_testcases_created_per_user = "Projet : %s - fiches de test créées par uti
 
 // ----- lib/testcases/tcImport.php -----
 $TLS_action_on_duplicated_name = "Action pour les noms doublonnés";
-$TLS_action_for_duplicates = "Action pour les fiches de test connues";
+$TLS_action_for_duplicates = "Comportement si l'élément est connu";
 $TLS_already_exists_updated = "Existe déjà. Mise à jour des données de la dernière version.";
 $TLS_please_choose_file_to_import = "Veuillez sélectionner un fichier à importer";
 $TLS_title_tc_import_to = "Importer des fiches de test";
@@ -2906,6 +2912,8 @@ $TLS_same_name = "présente le même nom";
 $TLS_duplicate_criteria = "Considérer la fiche de test comme connue si elle";
 $TLS_hit_with_same_external_ID = "Ne peut pas être importée - Une fiche de test utilise déjà l'ID EXTERNE :";
 $TLS_attachment_skipped_during_import = "La pièce jointe \"%s\" a été ignorée car elle est déjà liée à l'élément de test.";
+$TLS_keywords_assignment_skipped_during_import = "Les mots-clés ont été ignorés car l'utilisateur n'a pas les droits pour assigner des mots-clés aux fiches de test";
+$TLS_req_assignment_skipped_during_import = "Les liens vers les exigences ont été ignorées car l'utilisateur n'a pas les droits pour lier les exigences aux fiches de test";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "Aucune fiche de test pour l’export";

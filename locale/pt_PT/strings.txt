@@ -37,13 +37,15 @@
  *
  * Scripted update according en_GB string file (version: ) 
  *
+ * Scripted update according en_GB string file (version: ) 
+ *
  **/
 
 // Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última atualização: 23/12/2017 (TestLink 1.9.17)";
+$TLS_last_update = "Última atualização: 26/01/2018 (TestLink 1.9.17)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Ativo (clicar para inativar)";
@@ -512,6 +514,8 @@ $TLS_urgency_low = "Baixa";
 $TLS_test_importance = "Prioridade do Teste";
 $TLS_testcases_assigned_to_user = "Projecto de Teste: %s - Casos de Teste atribuídos aos utilizadores: %s";
 $TLS_assigned_on = "Data da atribuição";
+$TLS_code_mgmt = "Gestão de código";
+$TLS_code_link_tl_to_cts = "Associar Script de Teste Existente";
 
 // ----- index.php -----
 $TLS_main_page_title = "TestLink ::: Página Principal";
@@ -665,6 +669,21 @@ $TLS_btn_create_testsuite = "Criar Suite de Teste";
 $TLS_tc_keywords = "Palavras Chave";
 $TLS_title_create = "Criar";
 $TLS_warning_empty_testsuite_name = "Por favor, forneça um nome para a Suite de Testes";
+
+
+// ----- gui/templates/script_add.tpl -----
+$TLS_script_id = "Nome do Script de Teste";
+$TLS_title_script_add = "Acrescentar ligação para o script de teste";
+$TLS_btn_add_script = "Acrescentar ligação ao script de teste";
+$TLS_link_cts_create_script = "Aceder ao Sistema de Gestão de Código ";
+$TLS_cts_project_key = "Chave do Projecto";
+$TLS_cts_repo_name = "Nome do Repositório";
+$TLS_cts_script_path = "Caminho para o Script de Teste";
+$TLS_cts_branch_name = "Nome do Ramo (opcional)";
+
+// ----- gui/templates/script_delete.tpl -----
+$TLS_title_delete_script = "Apagar ligação ao script de teste";
+
 
 
 
@@ -1149,6 +1168,11 @@ $TLS_delete_bug = "Apagar Ocorrência do Testlink";
 $TLS_del_bug_warning_msg = "Confirma o eliminar desta Ocorrência?";
 
 
+// gui/templates/inc_show_script_table.tpl
+$TLS_caption_scripttable = "Scripts de teste relevantes";
+$TLS_delete_script ="Apagar ligação a script do TestLink";
+$TLS_del_script_warning_msg = "Você quer realmente apagar esta ligação de script da Base de Dados do TestLink?";
+
 
 // gui/templates/reqSpecList.tpl
 $TLS_no_docs = "Sem documentos disponíveis.";
@@ -1184,6 +1208,7 @@ $TLS_menu_view_roles = "Ver Perfis";
 $TLS_th_execution_rights = "Execução de Casos de Teste";
 $TLS_th_cf_rights = "Permissões dos Campos Personalizados";
 $TLS_th_issuetracker_rights = "Gestor de Ocorrências (Bugtracker)";
+$TLS_th_codetracker_rights = "Gestor de Código";
 $TLS_th_kw_rights = $TLS_keyword;
 $TLS_th_mgttc_rights = "Permissões de Gestão dos Casos de Teste";
 $TLS_th_platform_rights = $TLS_platform;
@@ -1600,11 +1625,14 @@ $TLS_testproject_enable_inventory = "Ativar Inventário";
 $TLS_testproject_enable_priority = "Ativar as Prioridades de Teste";
 $TLS_testproject_enable_requirements = "Ativar a funcionalidade de Requisitos";
 $TLS_testproject_issue_tracker_integration = "Integração com Gestor de Ocorrências";
+$TLS_testproject_code_tracker_integration = "Integração com Gestor de Código";
 $TLS_issue_tracker = "Gestor de Ocorrências";
+$TLS_code_tracker = "Gestor de Código";
 $TLS_testproject_reqmgr_integration = "Sistema de Gestão de Integração";
 $TLS_reqmgrsystem = "Sistema de Gestão de Requisitos";
 $TLS_no_rms_defined = " >> Não há Sistema de Gestão de Requisitos definido <<";
 $TLS_no_issuetracker_defined = " >> Não há Sistema de Gestão de Ocorrências definido <<";
+$TLS_no_codetracker_defined = " >> Não há Sistema de Gestão de Código definido <<";
 
 
 $TLS_info_failed_loc_prod = "Falha ao localizar o Projecto de Teste.";
@@ -2260,6 +2288,7 @@ $TLS_href_plan_define_priority = "Prioridades do Plano de Testes";
 $TLS_href_my_testcase_assignments = "Casos de Teste atribuídos a mim";
 $TLS_href_platform_management = "Gestão de Plataformas";
 $TLS_href_issuetracker_management = "Gerir Gestor de Ocorrências (Bugtracker)";
+$TLS_href_codetracker_management = "Gestão do Sistema de Gestão de Código";
 $TLS_href_reqmgrsystem_management = "Gestão do Sistema de Gestão de Requisitos";
 $TLS_system_config = "Sistema";
 $TLS_title_plugins = "Plugin";
@@ -2326,6 +2355,16 @@ $TLS_overall_progress = "Progresso Geral";
 $TLS_progress_absolute = "Progresso";
 $TLS_test_plan_progress = "Progresso do Plano de Testes";
 $TLS_project_progress = "Progresso do Projecto de Teste";
+
+// ----- lib/testcases/script_add.php -----
+$TLS_script_added = "Adicionada ligação para o Script de Teste";
+$TLS_error_code_does_not_exist_on_cts = "A ligação de Script de Teste '%s' não existe no Sistema de Gestão de Código!";
+$TLS_error_script_not_added = "A ligação de Script de Teste não foi adicionada à BD";
+
+// ----- lib/testcases/script_delete.php -----
+$TLS_scriptdeleting_was_ok = "A ligação de Script de Teste foi apagada com sucesso!";
+$TLS_error_script_not_deleted = "A ligação de Script de Teste não pôde ser removida da BD";
+
 
 // ----- lib/execute/bug_add.php -----
 $TLS_bug_added = "Ocorrência adicionada";
@@ -2395,6 +2434,8 @@ $TLS_desc_events_mgt = "Gerir evento";
 
 $TLS_desc_issuetrackers_view = "Visualizar Gestor de Ocorrências (apenas leitura)";
 $TLS_desc_issuetrackers_management = "Gestão do Gestor de Ocorrências";
+$TLS_desc_codetrackers_view = "Ver Sistema de Gestão de Código (apenas leitura)";
+$TLS_desc_codetrackers_management = "Sistema de Gestão de Código";
 $TLS_desc_reqmgrsystems_view = "Ver Sistema de Gestão de Requisitos (apenas leitura)";
 $TLS_desc_reqmgrsystems_management = "Sistema de Gestão de Requisitos";
 $TLS_desc_req_tcase_link_management = "Atribuição de Requisitos-Casos de Teste";
@@ -2732,6 +2773,7 @@ $TLS_bulk_req_assign_msg = " Esta operação irá atribuir Requisitos selecionad
 
 $TLS_bulk_req_assign_no_test_cases = "A operação não pode ser realizada porque não existem Casos de Teste selecionados dentro da Suite de Testes";
 
+$TLS_bulk_assigment_done = "foram feitas %s atribuições";
 $TLS_req_title_bulk_assign = "Atribuição em Lote de Requisitos ";
 $TLS_req_title_available = "Requisitos disponíveis";
 $TLS_no_req_spec_available = "Projecto de Testes sem Especificação de Requisitos disponível";
@@ -2763,7 +2805,8 @@ $TLS_error_deleting_rel = "A relação não pode ser removida.";
 $TLS_delete_rel_msgbox_title = "Remover relação";
 $TLS_delete_rel_msgbox_msg = "Deseja realmente remover a relação #%i?";
 $TLS_img_title_delete_relation = "Clique para remover esta relação.";
-
+$TLS_img_title_relation_frozen = "A relação não pode ser removida porque um dos Requisitos relacionados está congelado.";
+$TLS_rel_add_error_dest_frozen = "A relação não pode ser adicionada porque o Requisito de destino está congelado.";
 
 // ----- configured requirement relation types (BUGID 1748) -----
 $TLS_req_rel_is_parent_of = "pai de ";
@@ -2925,6 +2968,8 @@ $TLS_same_name = "têm o mesmo nome";
 $TLS_duplicate_criteria = "Considere o Caso de Teste como duplicado se ";
 $TLS_hit_with_same_external_ID = "Não pode ser importado - Já existe um Caso de Teste com MESMO ID EXTERNO:";
 $TLS_attachment_skipped_during_import = "O Anexo \"%s\" foi ignorado pois já está ligado ao elemento do teste";
+$TLS_keywords_assignment_skipped_during_import = "A atribuição de Palavras Chave foi ignorada porque o utilizador actual não tem permissão de atribuir Palavras Chave a Casos de Teste";
+$TLS_req_assignment_skipped_during_import = "A ligação a Requisitos foi ignorada porque o utilizador actual não tem permissão de atribuir Requisitos a Casos de Teste";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "Não há Casos de Teste para exportar";
@@ -3288,6 +3333,9 @@ $TLS_audit_keyword_assignment_removed_tc = "Palavra Chave '{%1}' foi removida do
 $TLS_audit_exec_saved = "O Caso de Teste '{%1}' foi executado na Build '{%2}' no Plano de Teste '{%3}'.";
 $TLS_audit_exec_deleted = "A execução do Caso de Teste '{%1}' na Build '{%2}' no Plano de Teste '{%3}' foi apagada.";
 
+$TLS_audit_testcasescript_added = "Adicionada a ligação '{%1}' a Script de Teste";
+$TLS_audit_testcasescript_deleted = "Apagada a ligação '{%1}' a Script de Teste " .
+                  "do Caso de Teste: {%2} do Projecto de Teste: {%3}";
 $TLS_audit_executionbug_added = "Ocorrência '{%1}' foi acrescentada durante a Execução";
 $TLS_audit_executionbug_deleted = "Ocorrência '{%1}' foi apagada " . 
                   "da Execução com ID: {%2} do Caso de Teste: {%3} " .
@@ -3504,7 +3552,9 @@ $TLS_warning_delete_step = "<p>Você está prestes a remover o Passo número: %s
 $TLS_warning_step_number = " O número do Passo precisa ser um número > 0";
 $TLS_warning_step_number_already_exists = " O número do Passo %s já existe";
 
+$TLS_CTS_integration_failure = " Integração com o Sistema de Gestão de Código: %s - falhou";
 $TLS_BTS_integration_failure = " Integração com o Sistema de Gestão de Ocorrências: %s - falhou";
+$TLS_CTS_connect_to_database_fails = "Conexão com a base de dados do Gestor de Código falhou: %s";
 $TLS_BTS_connect_to_database_fails = "Conexão com a base de dados do Gestor de Ocorrências falhou: %s";
 $TLS_MANTIS_status_not_configured = "Obteve o estado da Ocorrência: %s do BD Mantis, mas o estado não está configurado no ficheiro int_mantis.php";
 $TLS_testcase_set_copied = "%s Casos de Teste foram copiados";
@@ -3618,6 +3668,26 @@ $TLS_used_on_testproject = "Usado no Projecto de Testes";
 // getissuetrackertemplate.php
 $TLS_issuetracker_invalid_type = "O tipo %s do Gestor de Ocorrências é desconhecido";
 $TLS_issuetracker_interface_not_implemented = "A interface para o Gestor de Ocorrências %s não está implementada/disponível";
+
+// codeTrackerView.tpl
+$TLS_th_codetracker = "Gestão de Código";
+$TLS_th_codetracker_type = "Tipo";
+$TLS_th_codetracker_env = "Ambiente";
+$TLS_warning_empty_codetracker_name = "O nome do Gestor de Código não pode estar vazio!";
+$TLS_warning_empty_codetracker_type = "O tipo do Gestor de Código não pode estar vazio!";
+
+// codeTrackerCommands.class.php
+$TLS_codetracker_management = $TLS_href_codetracker_management;
+$TLS_codetracker_deleted = "O  Gestor de Código  %s% foi removido";
+
+// codeTrackerEdit.tpl
+$TLS_codetracker_show_cfg_example = "Mostrar exemplo de configuração";
+$TLS_codetracker_cfg_example = "Exemplo de configuração";
+$TLS_used_on_testproject = "Usado no Projecto de Testes";
+
+// getcodetrackertemplate.php
+$TLS_codetracker_invalid_type = "O tipo do Gestor de Código %s é desconhecido";
+$TLS_codetracker_interface_not_implemented = "O interface do Gestor de Código %s não está implementado ou disponível";
 
 // logger.class.php
 $TLS_mail_logger_email_subject = " :: Log de mensagem do TestLink :: ";
@@ -3751,6 +3821,8 @@ $TLS_btn_stop_mon = "Parar Monitorização";
 
 $TLS_issueTracker_connection_ok = "Teste de Conexão OK";
 $TLS_issueTracker_connection_ko = "Teste de Conexão NÃO OK";
+$TLS_codeTracker_connection_ok = "Teste de Conexão OK";
+$TLS_codeTracker_connection_ko = "Teste de Conexão NÃO OK";
 
 $TLS_click_passed = "Clicar para marcar passado";
 $TLS_click_failed = "Clicar para marcar falhado";

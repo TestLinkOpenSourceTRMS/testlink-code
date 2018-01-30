@@ -90,7 +90,7 @@ viewer for test case in test specification
 {$edit_enabled=0}
 {$delete_enabled=0}
 {$has_been_executed=0}
-
+{$show_relations=1}
 {if $args_can_do->edit == "yes"}
 
   {$has_been_executed=0}
@@ -129,7 +129,10 @@ viewer for test case in test specification
   {$edit_enabled=0} 
   {$delete_enabled=0} 
 {/if}
-	
+{if $args_hide_relations == "yes"}
+	{$show_relations=0}
+{/if}
+
 <div style="display:{$tlCfg->gui->op_area_display->test_case};" 
     id="tcView_viewer_tcase_control_panel">
   <fieldset class="groupBtn">
@@ -454,11 +457,13 @@ function launchInsertStep(step_id)
         </tr>
       {/if}
     </table>
-  </div><br>
+  </div>
   {/if}
   
-
-{include file="testcases/relations.inc.tpl" args_edit_enabled=$edit_enabled} 
+{if $show_relations}
+  <br />
+  {include file="testcases/relations.inc.tpl" args_edit_enabled=$edit_enabled} 
+{/if}
 
 {if $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}
   {* Test Case version Test Plan Assignment *}

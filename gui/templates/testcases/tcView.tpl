@@ -183,6 +183,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_can_delete_version="yes"
                        args_read_only="yes"
 
+                       args_hide_relations="yes" 
                        args_show_version="no" 
                        args_show_title="no"
                        args_users=$gui->users

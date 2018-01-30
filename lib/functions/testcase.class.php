@@ -2175,7 +2175,7 @@ class testcase extends tlObjectWithAttachments
 
        [options]:
                 [output]: default 'full'
-          domain 'full','essential','full_without_steps'
+          domain 'full','essential','full_without_steps','full_without_users'
 
     returns: array
 
@@ -7170,7 +7170,7 @@ class testcase extends tlObjectWithAttachments
             }
             $relSet['relations'][$key]['type_localized'] = $relSet['relations'][$key][$type_localized];
             $otherItem = $this->get_by_id($rel[$other_key],self::LATEST_VERSION,null,
-                                          array('output' => 'essential','getPrefix' => true));
+                                          array('output' => 'full_without_users','getPrefix' => true));
 
 
             // only add it, if either interproject linking is on or if it is in the same project

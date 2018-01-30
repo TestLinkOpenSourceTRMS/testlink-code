@@ -146,7 +146,7 @@ viewer for test case in test specification
 		<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
 		{* New TC sibling *}
-		{if $args_read_only}
+		{if $args_read_only != "yes" }
 			<input type="hidden" name="containerID" value="{$args_testcase.testsuite_id}" />
 			<input type="submit" name="new_tc" title="{$tcView_viewer_labels.hint_new_sibling}"
 				   onclick="doAction.value='create';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_new_sibling}" />
@@ -207,7 +207,7 @@ viewer for test case in test specification
 	{/if}
 
 	{* new TC version *}
-	{if $args_can_do->create_new_version == "yes"}
+	{if $args_can_do->create_new_version == "yes" && $args_read_only != "yes"}
 	  <input type="submit" name="do_create_new_version" title="{$tcView_viewer_labels.hint_new_version}" 
 			 value="{$tcView_viewer_labels.btn_new_version}" />
 	{/if}
@@ -228,7 +228,7 @@ viewer for test case in test specification
 	{/if}
 
 	{* freeze/unfreeze TC version *}
-	{if $args_can_do->edit == "yes" && 
+	{if $args_read_only != "yes" && 
 		$args_can_do->freeze=='yes'}
 		  {if $args_frozen_version=="yes"}
 			  {$freeze_btn="unfreeze"}

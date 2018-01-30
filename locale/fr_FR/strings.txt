@@ -2473,7 +2473,9 @@ $TLS_create_new_version = "Nouvelle version créée %s";
 $TLS_testcase_name_already_exists = "Fiche de test existe déjà avec le titre (%s)";
 $TLS_created_with_title = "Créée avec le titre (%s)";
 $TLS_the_format_tc_xml_import = "";
-
+$TLS_relation_added = "La relation vers %s a été ajoutée";
+$TLS_related_tcase_not_open = "La relation vers %s ne peut pas être ajoutée : cette fiche de test est verrouillée";
+$TLS_relation_already_exists = "La relation vers %s ne peut pas être ajoutée : cette relation existe déjà";
 
 // ----- lib/functions/testsuite.class.php -----
 $TLS_component_name_already_exists = "Il existe déjà un dossier de test portant le nom %s";

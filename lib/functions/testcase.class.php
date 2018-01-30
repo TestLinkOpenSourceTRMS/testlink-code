@@ -7282,8 +7282,8 @@ class testcase extends tlObjectWithAttachments
    *
    * @author Andreas Simon
    *
-   * @param integer $source_id ID of source requirement
-   * @param integer $destination_id ID of destination requirement
+   * @param integer $source_id ID of source testcase
+   * @param integer $destination_id ID of destination testcase
    * @param integer $type_id relation type ID to set
    * @param integer $author_id user's ID
    */
@@ -7294,13 +7294,21 @@ class testcase extends tlObjectWithAttachments
     // check if exists before trying to add
     if( !$this->relationExits($source_id, $destination_id, $type_id) )
     {
+		// check if related testcase is open
+		$dummy = $this->get_by_id($destination_id,self::LATEST_VERSION);
+		if(($dummy[0]['is_open']) =="1"){
 
-      $time = is_null($ts) ? $this->db->db_now() : $ts;
-      $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  .
-             " (source_id, destination_id, relation_type, author_id, creation_ts) " .
-             " values ($source_id, $destination_id, $type_id, $author_id, $time)";
-      $this->db->exec_query($sql);
-      $ret = array('status_ok' => true, 'msg' => 'relation_added');
+		  $time = is_null($ts) ? $this->db->db_now() : $ts;
+		  $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  .
+				 " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+				 " values ($source_id, $destination_id, $type_id, $author_id, $time)";
+		  $this->db->exec_query($sql);
+		  $ret = array('status_ok' => true, 'msg' => 'relation_added');
+		}
+		else
+		{
+		  $ret = array('status_ok' => false, 'msg' => 'related_tcase_not_open');
+		}
     }
     else
     {

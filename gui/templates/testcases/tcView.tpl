@@ -147,6 +147,12 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
           {$title=$labels.version}
           {$title="$title $version_num"}
 
+		  {if $my_testcase.is_open == "0"}
+			{$tcv_frozen_version="yes"}
+		  {else}
+			{$tcv_frozen_version="no"}
+		  {/if}
+		  
           {$sep="_"}
           {$div_id="v_$vid"}
           {$div_id="$div_id$sep$version_num"}
@@ -178,8 +184,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_can_do=$gui->can_do
                        args_can_move_copy="no" 
                        args_can_delete_testcase='no'
-					   args_frozen_version=$frozen_version
-
+					   args_frozen_version=$tcv_frozen_version
+					   
                        args_can_delete_version="yes"
                        args_read_only="yes"
 

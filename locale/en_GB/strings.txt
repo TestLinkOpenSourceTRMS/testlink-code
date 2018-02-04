@@ -1251,7 +1251,9 @@ $TLS_too_wide_search_criteria = "Too many results. Please, set a more specific "
 
 // ----- gui/templates/tcDelete.tpl -----
 $TLS_btn_yes_iw2del = "Yes, delete Test Case!";
-$TLS_question_del_tc = "Really delete Test Case?";
+$TLS_btn_yes_iw2del_version = "Yes, delete Test Case Version!";
+$TLS_question_del_tc = "Really delete this Test Case?";
+$TLS_question_del_tc_version = "Really delete this Test Case Version?";
 $TLS_th_executed = "Executed";
 $TLS_th_linked_to_tplan = "Linked to Test Plan";
 $TLS_th_version = "Version";

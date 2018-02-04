@@ -1227,7 +1227,9 @@ $TLS_too_wide_search_criteria = "Trop de résultats à afficher. Veuillez défin
 
 // ----- gui/templates/tcDelete.tpl -----
 $TLS_btn_yes_iw2del = "OK, supprimer la fiche de test";
+$TLS_btn_yes_iw2del_version = "OK, supprimer la version de cette fiche de test";
 $TLS_question_del_tc = "Etes-vous sûr de vouloir supprimer la fiche de test ?";
+$TLS_question_del_tc_version = "Etes-vous sûr de vouloir supprimer cette version de la fiche de test ?";
 $TLS_th_executed = "Exécutée";
 $TLS_th_linked_to_tplan = "Liée à une campagne de test";
 $TLS_th_version = "Version";

@@ -77,7 +77,10 @@ function init_args(&$tcaseMgr)
   $args->domainTCExecType = $tcaseMgr->get_execution_types();
 
   $dummy = config_get('importance');
-  $args->domainTCImportance = $dummy['code_label'];
+  foreach ($dummy['code_label'] as $code => $label) 
+  {
+	$args->domainTCImportance[$code] =  lang_get($label);
+  }
   $args->forceFrozenVersions = isset($_REQUEST['forceFrozenTestcasesVersions']) ? intval($_REQUEST['forceFrozenTestcasesVersions']) : 0;
 
   return $args;

@@ -7583,14 +7583,22 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    */
-  function setIntAttrForAllVersions($id,$attr,$value)
+  function setIntAttrForAllVersions($id,$attr,$value,$forceFrozenVersions=false)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 //    $children =
 
+
     $sql = " UPDATE {$this->tables['tcversions']} " .
-           " SET {$attr} = " . $this->db->prepare_int($value) .
-           " WHERE id IN (" .
+           " SET {$attr} = " . $this->db->prepare_int($value) ;
+		   
+	if($forceFrozenVersions==false){
+	  $sql .= " WHERE is_open=1 AND ";
+	}
+	else{
+	  $sql .= " WHERE ";
+	}
+	$sql .= " id IN (" .
            "  SELECT NHTCV.id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
            "  WHERE NHTCV.parent_id = " . intval($id) . ")";
     $this->db->exec_query($sql);

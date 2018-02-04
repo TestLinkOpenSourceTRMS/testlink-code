@@ -1212,6 +1212,10 @@ $TLS_jolly_hint = "la valeur sera cherchée, comme en mode OR, dans le titre, le
 
 
 
+// ----- gui/templates/testcases/tcBulkOp.tpl -----
+$TLS_force_frozen_testcases_versions = "Forcer les versions verrouillées des fiches de test";
+
+
 // ----- gui/templates/testcases/searchData.tpl -----
 $TLS_too_wide_search_criteria = "Trop de résultats à afficher. Veuillez définir des " .
 		"critères de recherche plus fins.";

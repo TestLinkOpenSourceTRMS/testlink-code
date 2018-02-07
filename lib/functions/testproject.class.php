@@ -560,7 +560,8 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $my = array();
   $my['opt'] = array('output' => 'map', 'order_by' => ' ORDER BY name ', 'field_set' => 'full',
-                     'format' => 'std', 'add_issuetracker' => false, 'add_reqmgrsystem' => false);
+                     'format' => 'std', 'add_issuetracker' => false, 'add_codetracker' => false,
+                     'add_reqmgrsystem' => false);
   $my['opt'] = array_merge($my['opt'],(array)$opt);
   
   // key = field name
@@ -587,6 +588,18 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
              " ON ITMD.id = TIT.issuetracker_id ";     
     $itf = ",ITMD.name AS itname,ITMD.type AS ittype";
   }        
+
+  $ctsql = '';
+  $ctf = '';
+  if($my['opt']['add_codetracker'])
+  {
+    $ctsql = " LEFT OUTER JOIN {$this->tables['testproject_codetracker']} AS TCT " .
+             " ON TCT.testproject_id  = TPROJ.id " .
+             " LEFT OUTER JOIN {$this->tables['codetrackers']} AS CTMD " .
+             " ON CTMD.id = TCT.codetracker_id ";     
+    $ctf = ",CTMD.name AS ctname,CTMD.type AS cttype";
+  }        
+
 
   $rmssql = '';
   $rmsf = '';
@@ -617,13 +630,13 @@ function get_accessible_for_user($user_id,$opt = null,$filters = null)
     break;
   } 
   
-  $sql = " /* $debugMsg */ SELECT {$cols} {$itf} {$rmsf} " .
+  $sql = " /* $debugMsg */ SELECT {$cols} {$itf} {$ctf} {$rmsf} " .
          " FROM {$this->tables['nodes_hierarchy']} NHTPROJ " .
          " JOIN {$this->object_table} TPROJ ON NHTPROJ.id=TPROJ.id " .
          " JOIN {$this->tables['users']} U ON U.id = {$safe_user_id} " .
          " LEFT OUTER JOIN {$this->tables['user_testproject_roles']} UTR " .
          " ON TPROJ.id = UTR.testproject_id " .
-         " AND UTR.user_id =" . $safe_user_id . $itsql . $rmssql .
+         " AND UTR.user_id =" . $safe_user_id . $itsql . $ctsql . $rmssql .
          " WHERE 1=1 ";
   
   // Private test project feature
@@ -2066,7 +2079,8 @@ function setPublicStatus($id,$status)
       $error .= lang_get('info_deleting_project_roles_fails');
     }
     
-    $xSQL = array('testproject_issuetracker','testproject_reqmgrsystem');
+    $xSQL = array('testproject_issuetracker','testproject_codetracker',
+                  'testproject_reqmgrsystem');
     foreach($xSQL as $target)
     {
       $sql = "/* $debugMsg */ DELETE FROM " . $this->tables[$target] .
@@ -3105,9 +3119,8 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
         " TCV.importance IN (" . implode(',',$my['filters']['importance']) . ')';
     }
 
-
   }
-  $sql =  $staticSql . " WHERE NH.parent_id = {$node_id} " .
+  $sql =  $staticSql . " WHERE NH.parent_id = " . intval($node_id) .
           " AND (" .
           "      NH.node_type_id = {$this->tree_manager->node_descr_id['testsuite']} " .
           "      OR (NH.node_type_id = {$this->tree_manager->node_descr_id['testcase']} ";
@@ -3121,11 +3134,13 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
         switch($key)
         {
           case 'name':
-             $sql .= " AND NH.name LIKE '%{$my['filters']['testcase_name']}%' ";
+             $safe4DB = $this->db->prepare_string($my['filters']['testcase_name']);
+             $sql .= " AND NH.name LIKE '%{$safe4DB}%' ";
           break;
           
           case 'id':
-                   $sql .= " AND NH.id = {$my['filters']['testcase_id']} ";
+            $safe4DB = intval($my['filters']['testcase_id']);
+            $sql .= " AND NH.id = {$safe4DB} ";
           break;
         }
       }
@@ -3133,7 +3148,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
   }
   $sql .= " )) ";
   $sql .= " ORDER BY NH.node_order,NH.id";
-  
   
   // Approach Change - get all 
   $rs = $this->db->fetchRowsIntoMap($sql,'id');
@@ -3216,8 +3230,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
       }  
     }    
     
-    // echo $ssx;
-
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
     if( $filterOnTC )
     {
@@ -3242,8 +3254,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
       if($node['node_table'] == 'testcases')
       {
         $node['leaf'] = true; 
-        // TICKET 5228: Filter use on test spec causes "undefined index" warning in event log
-        //              for every test case with no active version
         $node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : null;
       }      
       
@@ -3284,7 +3294,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
  *
  * @internal revisions
  * @since 1.9.8
- * 20130528 - franciscom - -1 => WITHOUT KEYWORDS
+ * -1 => WITHOUT KEYWORDS
  * 
  */
 function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
@@ -3348,7 +3358,7 @@ function getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_fi
   }
 
   $hits = !is_null($sql) ? $this->db->fetchRowsIntoMap($sql,'testcase_id') : null;
-  return($hits);
+  return $hits;
 }
 
 
@@ -3411,6 +3421,70 @@ function setIssueTrackerEnabled($id,$value)
   $sql = "/* $debugMsg */ " .
        " UPDATE {$this->object_table} " .
        " SET issue_tracker_enabled = " . (intval($value) > 0 ? 1 : 0) .
+       " WHERE id =" . intval($id);   
+  $ret = $this->db->exec_query($sql);
+}
+
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.17
+ *
+ */
+function isCodeTrackerEnabled($id)
+{
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $sql = "/* $debugMsg */ " .
+         "SELECT code_tracker_enabled FROM {$this->object_table} " .
+         "WHERE id =" . intval($id);   
+       
+  $ret = $this->db->get_recordset($sql);
+  return $ret[0]['code_tracker_enabled'];
+}
+
+
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.17
+ *
+ */
+function enableCodeTracker($id)
+{
+  $this->setCodeTrackerEnabled($id,1);
+}
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.17
+ *
+ */
+function disableCodeTracker($id)
+{
+  $this->setCodeTrackerEnabled($id,0);
+}
+
+
+/**
+ *
+ *
+ * @internal revisions
+ * @since 1.9.17
+ *
+ */
+function setCodeTrackerEnabled($id,$value)
+{
+
+  $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  $sql = "/* $debugMsg */ " .
+       " UPDATE {$this->object_table} " .
+       " SET code_tracker_enabled = " . (intval($value) > 0 ? 1 : 0) .
        " WHERE id =" . intval($id);   
   $ret = $this->db->exec_query($sql);
 }

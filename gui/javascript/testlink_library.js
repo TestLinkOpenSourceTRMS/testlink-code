@@ -279,6 +279,55 @@ function TPROJECT_PRS(id)
 
 
 /*
+function: Edit Rec Spec or launch print
+
+args :
+
+returns:
+
+rev :
+*/
+function ERS(id)
+{
+// get checkboxes status
+	var _FUNCTION_NAME_="ERS";
+	var pParams = tree_getPrintPreferences();
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=reqspeccoverage&level=reqspec&id="+id+args+"&"+pParams;
+
+	// alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+
+}
+
+/*
+function: Edit Rec or launch print
+
+args :
+
+returns:
+
+rev :
+*/
+function ER(id)
+{
+// get checkboxes status
+	var _FUNCTION_NAME_="ER";
+	var pParams = tree_getPrintPreferences();
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=reqcoverage&level=requirement&id="+id+args+"&"+pParams;
+
+	// alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+
+}
+
+/* Generate doc: a selected Test Suite from Test Specification
+function TPROJECT_PRS(id)
+{
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testsuite&id="+id+args+"&"+pParams;
+}
   function: TPLAN_PTS
             Test PLAN Print Test Suite
 
@@ -561,6 +610,29 @@ function tree_getCheckBox(id)
 /**
  *
  */
+function open_script_add_window(tproject_id,tplan_id,tcversion_id,user_action)
+{
+  l2l = "lib/testcases/scriptAdd.php?user_action=" + user_action + 
+        "&tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + 
+        "&tplan_id=" + tplan_id;
+
+  switch(user_action)  
+  {
+    case 'create':
+      wh = "width=700,height=580";
+    break;
+
+    default:
+      wh = "width=610,height=650";
+    break;
+  }            
+ 
+  window.open(fRoot+l2l,"script_add",wh+",resizable=yes,dependent=yes");
+}
+
+/**
+ *
+ */
 function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,tcstep_id,user_action)
 {
   l2l = "lib/execute/bugAdd.php?user_action=" + user_action + 
@@ -694,6 +766,42 @@ function deleteBug(btn,text,combinedBugID)
   
   window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&tcstep_id="+tcStepID+"&bug_id="+bugID,
                 "DeleteBug","width=510,height=150,resizable=yes,dependent=yes");
+}
+
+/**
+ * Calls the script link delete page when the 'yes' button in the delete confirmation dialog
+ * was clicked
+ * 
+ * @param btn string id of the button clicked
+ * @param text string not used
+ * @param combinedScriptID string like <tprojectID:tcversionID-scriptID>
+ */
+function deleteScript(btn,text,combinedScriptID)
+{
+  var idx1;
+  var idx2;
+  var tprojectID;
+  var tcversionID;
+  var scriptID;
+  
+  if (btn != 'yes')
+  {
+    return;
+  }
+ 
+  idx1 = combinedScriptID.indexOf(':');
+  idx2 = combinedScriptID.indexOf('-');
+  if (idx1 < 0 || idx2 < 0)
+  {
+    return;
+  }
+  
+  tprojectID = combinedScriptID.substr(0,idx1)
+  tcversionID = combinedScriptID.substr(idx1+1,idx2)
+  scriptID = escape(combinedScriptID.substr(idx2+1));
+ 
+  window.open(fRoot+"lib/testcases/scriptDelete.php?tproject_id="+tprojectID+"&tcversion_id="+tcversionID+"&script_id="+scriptID,
+                "DeleteScript","width=510,height=150,resizable=yes,dependent=yes");
 }
 
 // seems is not used => do more checks and remove

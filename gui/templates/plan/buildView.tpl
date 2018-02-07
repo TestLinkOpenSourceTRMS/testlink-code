@@ -4,16 +4,18 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: smarty template - Show existing builds
 
-@internal revisions
 *}
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
+
 {$managerURL="lib/plan/buildEdit.php"}
 {$editAction="$managerURL?do_action=edit&build_id="}
 {$deleteAction="$managerURL?do_action=do_delete&build_id="}
-{$createAction="$managerURL?do_action=create&tplan_id=$gui->tplan_id"}
+
+{$tplanID=$gui->tplan_id}
+{$createAction="$managerURL?do_action=create&tplan_id=$tplanID"}
 
 
 {lang_get s='warning_delete_build' var="warning_msg"}
@@ -43,6 +45,15 @@ var del_action=fRoot+'{$deleteAction}';
 {include file="inc_update.tpl" result=$sqlResult item="build" user_feedback=$gui->user_feedback}
 
 {* --------------------------------------------------------------------------------- *}
+
+{if count($gui->buildSet) > $tlCfg->gui->buildView->itemQtyForTopButton}
+<div class="groupBtn">
+  <form method="post" action="{$createAction}" id="create_build_top">
+    <input type="submit" name="create_build_top" value="{$labels.btn_build_create}" />
+  </form>
+</div>
+{/if}
+
 <div id="existing_builds">
   {if $gui->buildSet ne ""}
   <form method="post" id="buildView" name="buildView" action="{$managerURL}">
@@ -120,8 +131,8 @@ var del_action=fRoot+'{$deleteAction}';
 {* ------------------------------------------------------------------------------------------- *}
 
 <div class="groupBtn">
-  <form method="post" action="{$createAction}" id="create_build">
-    <input type="submit" name="create_build" value="{$labels.btn_build_create}" />
+  <form method="post" action="{$createAction}" id="create_build_bottom">
+    <input type="submit" name="create_build_bottom" value="{$labels.btn_build_create}" />
   </form>
 </div>
 

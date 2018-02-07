@@ -451,6 +451,13 @@ $TLS_warning 		= "Upozornění!";
 $TLS_was_success = " byl úspěšný ";
 
 
+// ----- gui/templates/inc_filter.tpl -----
+$TLS_test_grouped_by = "Testy seskupeny podle";
+$TLS_mode_test_suite = "Testovací sada";
+$TLS_mode_req_coverage = "požadavky";
+$TLS_parent_child_relation = "Rodič dítě vztah";
+
+
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
 $TLS_btn_apply_filter = "Použít filtr";

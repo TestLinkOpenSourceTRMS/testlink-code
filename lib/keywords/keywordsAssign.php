@@ -179,5 +179,5 @@ function initializeGui(&$argsObj)
 
 function checkRights(&$db,&$user)
 {
-  return ($user->hasRight($db,'mgt_modify_key') && $user->hasRight($db,'mgt_view_key'));
+  return $user->hasRight($db,'keyword_assignment');
 }

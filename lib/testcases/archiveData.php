@@ -185,6 +185,20 @@ function init_args(&$dbHandler)
   $args->automationEnabled = $args->tcaseTestProject['opt']->automationEnabled;
   $args->testPriorityEnabled = $args->tcaseTestProject['opt']->testPriorityEnabled;
 
+  // get code tracker config and object to manage TestLink - CTS integration
+  $args->ctsCfg = null;
+  $args->cts = null;
+
+  unset($tprojectMgr);
+  if( ($args->codeTrackerEnabled = intval($args->tcaseTestProject['code_tracker_enabled'])) )
+  {
+    $ct_mgr = new tlCodeTracker($dbHandler);
+    $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
+    $args->cts = $ct_mgr->getInterfaceObject($args->tproject_id);
+
+    unset($ct_mgr);
+  }
+
   return $args;
 }
 
@@ -200,7 +214,7 @@ function initializeEnv($dbHandler)
   $gui = new stdClass();
 
   $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
-                       'mgt_modify_req','testcase_freeze', 
+                       'mgt_modify_req','testcase_freeze','keyword_assignment','req_tcase_link_management',
                        'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
   $grants = new stdClass();
   foreach($grant2check as $right)
@@ -215,6 +229,8 @@ function initializeEnv($dbHandler)
   $gui->requirementsEnabled = $args->requirementsEnabled; 
   $gui->automationEnabled = $args->automationEnabled; 
   $gui->testPriorityEnabled = $args->testPriorityEnabled;
+  $gui->codeTrackerEnabled = $args->codeTrackerEnabled;
+  $gui->cts = $args->cts;
   $gui->show_mode = $args->show_mode;
   $lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
   $gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);

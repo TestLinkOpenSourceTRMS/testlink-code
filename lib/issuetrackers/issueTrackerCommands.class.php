@@ -8,7 +8,7 @@
  * @filesource  issueTrackerCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
@@ -200,6 +200,11 @@ class issueTrackerCommands
       $guiObj->main_descr = '';
       $guiObj->action_descr = '';
       $guiObj->template = "issueTrackerView.php";
+
+      if( isset($_SESSION['its'][$it->name]) )
+      {
+        unset($_SESSION['its'][$it->name]);
+      }
     }
     else
     {

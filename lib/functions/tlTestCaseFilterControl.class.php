@@ -176,12 +176,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
    */
   private $platform_mgr = null;
   
-  /**
-   * Custom field manager object.
-   * Initialized not in constructor, only on first use to save resources.
-   * @var exec_cf_mgr
-   */
-  //public $cfield_mgr = null;
   
   /**
    * Testplan manager object.
@@ -281,7 +275,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
   private $all_settings = array('setting_testplan' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_build' => array("REQUEST", tlInputParameter::INT_N),
                                 'setting_platform' => array("REQUEST", tlInputParameter::INT_N),
-                                'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL));
+                                'setting_refresh_tree_on_action' => array("POST", tlInputParameter::CB_BOOL),
+								'setting_testsgroupby' => array("REQUEST", tlInputParameter::INT_N));
 
   /**
    * This array is used to map the modes to their available settings.
@@ -298,6 +293,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                                                              'setting_platform',
                                                              'setting_refresh_tree_on_action'),
                                         'plan_add_mode' => array('setting_testplan',
+																 'setting_testsgroupby',
                                                                  'setting_refresh_tree_on_action'));
 
   /**
@@ -345,6 +341,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     $this->cfield_mgr = new cfield_mgr($this->db);
 
+    $this->settings['setting_get_parent_child_relation'] = false;
+    
     // moved here from parent::__constructor() to be certain that 
     // all required objects has been created
     $this->init_filters();
@@ -375,7 +373,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     unset($this->platform_mgr);
     unset($this->cfield_mgr);
   }
-
+  
   /**
    * Reads the configuration from the configuration file specific for test cases,
    * additionally to those parts of the config which were already loaded by parent class.
@@ -560,7 +558,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
    */
   protected function init_settings() 
   {
-    $at_least_one_active = false;
+  
+	$at_least_one_active = false;
 
     foreach ($this->all_settings as $name => $info) 
     {
@@ -910,7 +909,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $drag_and_drop->enabled = false;
     $drag_and_drop->BackEndUrl = '';
     $drag_and_drop->useBeforeMoveNode = FALSE;
-        
     if (!$this->testproject_mgr) 
     {
       $this->testproject_mgr = new testproject($this->db);
@@ -1007,7 +1005,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'exclude_branches' => null,
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
-            
+
           $forrest = generateTestSpecTree($this->db, $this->args->testproject_id,
                                           $this->args->testproject_name,
                                           $gui->menuUrl, $filters, $options);
@@ -1046,6 +1044,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // values in $filters->setting_xyz
         $cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 
+		// get filter mode
+        $key = 'setting_testsgroupby';
+        $mode = $this->args->$key;
+
         if ($this->do_filtering)
         {
           // TICKET 4496: added active/inactive filter
@@ -1071,33 +1073,37 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
       
-          $options['nodeHelpText']['testproject'] = lang_get('right_pane_test_plan_tree'); 
-          $options['nodeHelpText']['testsuite'] = lang_get('display_tsuite_contents');
 
-          // belongs to treeMenu.inc.php
-          $forrest = generateTestSpecTree($this->db,
-                                          $this->args->testproject_id,
-                                          $this->args->testproject_name,
-                                          $gui->menuUrl,$filters,$options);
-          $tree_menu = $forrest['menu'];  
+          if ($mode == 'mode_test_suite')
+          {
+			
+         	 $tree_menu = generateTestSpecTree($this->db,
+                                            $this->args->testproject_id,
+                                            $this->args->testproject_name,
+                                            $gui->menuUrl,$filters,$options);
+
+          }
+
+		  $tree_menu = $tree_menu['menu']; 
           $root_node = $tree_menu->rootnode;
           $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
         else 
         {
-          $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                    "root_node={$this->args->testproject_id}&show_tcases=0" .
-                    "&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
+		  if ($mode == 'mode_test_suite')
+		  {
+				  $loader = $this->args->basehref . 'lib/ajax/gettprojectnodes.php?' .
+                    	"root_node={$this->args->testproject_id}&show_tcases=0" .
+                    	"&" . http_build_query(array('tsuiteHelp' => lang_get('display_tsuite_contents')));
 
-          $root_node = new stdClass();
-          $root_node->href = "javascript:EP({$this->args->testproject_id})";
-          $root_node->id = $this->args->testproject_id;
-          $root_node->name = $this->args->testproject_name;
-
-          $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
-          $root_node->wrapClose = '</span>';
-
-          $root_node->testlink_node_type = 'testproject';
+				  $root_node = new stdClass();
+				  $root_node->href = "javascript:EP({$this->args->testproject_id})";
+				  $root_node->id = $this->args->testproject_id;
+				  $root_node->name = $this->args->testproject_name;
+				  $root_node->wrapOpen = '<span title="' . lang_get('right_pane_test_plan_tree') . '">';
+				          $root_node->wrapClose = '</span>';
+				  $root_node->testlink_node_type = 'testproject';
+		  }
         }
       break;
       
@@ -2055,7 +2061,46 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }  
 
     $cf = (array)$cfields['design'] + (array)$cfields['testplan_design'];
-    return count($cf) > 0 ? $cf : null;
+
+    // Because I'm using these as filters, need a special processing
+    // for CF types that present a domain like LIST, then if the blank option is
+    // not present will be added as FIRST OPTION
+
+    if(count($cf) > 0)
+    {
+      $cfTypes = array_flip($this->cfield_mgr->get_available_types());
+      $key2loop = array_keys($cf);
+      foreach($key2loop as $cfID)
+      {
+        // we will use these CF as filter => required property has to be
+        // set to false
+        $cf[$cfID]['required'] = 0;
+
+        if($cf[$cfID]['type'] == $cfTypes['list'])
+        {
+          $addBlank = true;
+          $vv = explode('|',$cf[$cfID]['possible_values']);
+          foreach($vv as $value)
+          {
+            if(trim($value) == '')
+            {
+              $addBlank = false;
+              break;
+            }  
+          }
+
+          if($addBlank)
+          {
+            $cf[$cfID]['possible_values'] = ' |' . $cf[$cfID]['possible_values'];   
+          }  
+        }  
+      }  
+      return $cf;
+    }  
+    else
+    {
+      return null;
+    }  
   }
 
   /**
@@ -2076,5 +2121,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
   } // end of method
 
+  
+  /**
+  *
+  */
+  protected function init_setting_testsgroupby()
+  {
+	$key = 'setting_testsgroupby';
+	
+	// now load info from session
+	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
+	$this->args->testsgroupedby_mode = $mode;
+	$this->args->{$key} = $mode;
+	$this->settings[$key]['selected'] = $mode;
+	
+	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
+	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
+  } // end of method
 
 }

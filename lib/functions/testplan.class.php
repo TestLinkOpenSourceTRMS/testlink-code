@@ -6812,8 +6812,6 @@ class testplan extends tlObjectWithAttachments
       break;
     }
     
-    new dBug($rs);
-
     return $rs;
   }
 
@@ -7060,7 +7058,6 @@ class testplan extends tlObjectWithAttachments
     {
       $my['join']['ua'] = str_replace('LEFT OUTER',' ', $my['join']['ua']);
     }  
-    new dBug($my['join']['ua']);
 
     $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" . $commonFields .
                          " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
@@ -7117,7 +7114,6 @@ class testplan extends tlObjectWithAttachments
                      " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
                      $my['where']['where'];
 
-    new dBug($union);
     return $union;
   }
 

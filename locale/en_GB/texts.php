@@ -52,7 +52,9 @@ analyse serves as confirmation that all defined expectations are met.</p>
 	to the current test case. A designer could mark requirements which are covered by this
 	test case and then click the button 'Assign'. These new assigned test case are shown in
 	the middle block 'Assigned Requirements'.</li>
-</ol>";
+</ol>
+<h2>Warning:</h2>
+A frozen requirement cannot be modified to update coverage. According to this fact, frozen requirements are listed but associated checkboxed are disabled.";
 
 
 // --------------------------------------------------------------------------------------

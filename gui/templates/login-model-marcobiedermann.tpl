@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {config_load file="input_dimensions.conf" section="login"}
 {lang_get var='labels' 
-          s='login_name,password,btn_login,new_user_q,login,demo_usage,lost_password_q'}
+          s='login_name,password,btn_login,new_user_q,login,demo_usage,lost_password_q,oauth_login'}
 <html >
   <head>
     <meta charset="UTF-8">
@@ -63,6 +63,13 @@
               <input type="submit" value="{$labels.btn_login}">
             </div>
 
+            {foreach from=$gui->oauth item=oauth_item}
+                <div class="button">
+                <a style="text-decoration: none; color:#ffffff;" href="{$oauth_item->link}">
+                <img src="{$tlCfg->theme_dir}images/{$oauth_item->icon}" style="height: 42px; vertical-align:middle;">
+                <span style="padding: 10px;">{$labels.oauth_login}{$oauth_item->name}</span></a>
+                </div>
+            {/foreach}
           </form>
 
           <p class="text--center">

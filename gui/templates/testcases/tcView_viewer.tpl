@@ -17,7 +17,8 @@ viewer for test case in test specification
              execution_type,test_importance,importance,none,preconditions,btn_compare_versions,btn_bulk,
              show_ghost_string,display_author_updater,onchange_save,
              estimated_execution_duration,status,btn_save,estimated_execution_duration_short,
-             requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements"}
+             requirement,btn_show_exec_history,btn_resequence_steps,link_unlink_requirements,
+             code_mgmt,code_link_tl_to_cts"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -383,13 +384,13 @@ function launchInsertStep(step_id)
    {include file="testcases/keywords.inc.tpl" args_edit_enabled=$edit_enabled} 
   </div>
   
-  {if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->requirement_mgmt) }
+  {if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
   <div {$addInfoDivStyle}>
     <table cellpadding="0" cellspacing="0" style="font-size:100%;">
              <tr>
                <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
                target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
-              {if $gui->requirement_mgmt}
+              {if $gui->req_tcase_link_management}
                 <img class="clickable" src="{$tlImages.item_link}"
                      onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
                      title="{$tcView_viewer_labels.link_unlink_requirements}" />
@@ -411,6 +412,36 @@ function launchInsertStep(step_id)
             </tr>
     </table>
   </div>
+  {/if}
+
+
+  {if $gui->codeTrackerEnabled}
+  <br>
+  <div {$addInfoDivStyle}>
+    <table cellpadding="0" cellspacing="0" style="font-size:100%;">
+      <tr>
+        <td colspan="{$tableColspan}" style="vertical-align:text-top;">
+          <span><a title="{$tcView_viewer_labels.code_mgmt}" href="{$gui->cts->cfg->uriview}"
+               target="_blank" class="bold">{$tcView_viewer_labels.code_mgmt}</a><b>: &nbsp;</b>
+            <a href="javascript:open_script_add_window({$gui->tproject_id},null,{$tcversion_id},'link')">
+            <img src="{$tlImages.new_f2_16}" title="{$tcView_viewer_labels.code_link_tl_to_cts}" style="border:none" /></a>
+              &nbsp;
+          </span>
+        </td>
+      </tr>
+      {* TestScript Links (if any) *}
+      {if isset($gui->scripts[$tcversion_id]) && !is_null($gui->scripts[$tcversion_id])}
+        <tr style="background-color: #d0d0d0">
+          {include file="inc_show_scripts_table.tpl"
+           scripts_map=$gui->scripts[$tcversion_id]
+           can_delete=true
+           tcase_id=$tcversion_id
+           tproject_id=$tproject_id
+          }
+        </tr>
+      {/if}
+    </table>
+  </div><br>
   {/if}
   
 

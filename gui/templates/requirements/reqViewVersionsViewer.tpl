@@ -55,45 +55,46 @@ viewer for requirement
         
       {if $args_frozen_version eq null}
         <input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
-      {/if}
         
-      {* If more than one version is displayed show "Delete" and "Delete this Version" button*}
-      {if $args_can_delete_req && !$gui->version_option}
-        <input type="button" name="delete_req" value="{$labels.btn_delete}"
+		{* If more than one version is displayed show "Delete" button (only if last version is not frozen) *}
+		{if $args_can_delete_req && !$gui->version_option}
+          <input type="button" name="delete_req" value="{$labels.btn_delete}"
                onclick="delete_confirmation({$args_req.id},
                                             '{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
                                             '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"  />
-      {/if}
+		{/if}
         
-      {* If a single version is displayed do only show "Delete this Version" button *}
-      {if $args_can_delete_version || $gui->version_option}
-        <input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
+		{* If a single version is displayed do only show "Delete this Version" button *}
+		{if ($args_can_delete_version || $gui->version_option)}
+          <input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
                onclick="delete_confirmation({$args_req.version_id},
                         '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
                                             '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req_version);"  />
                                               
+		{/if}
       {/if}
-
-      {if $args_frozen_version eq null}
+	  {if $args_grants->unfreeze_req}
+		{if $args_frozen_version eq null}
         <input type="button" name="freeze_req_version" value="{$labels.btn_freeze_this_version}"
                onclick="delete_confirmation({$args_req.version_id},
                         '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
                                             '{$freeze_msgbox_title}', '{$freeze_warning_msg}',pF_freeze_req_version);"  />
 
-      {else}
-        {if $args_grants->unfreeze_req}
+		{else}
           <input type="button" name="unfreeze_req_version" value="{$labels.btn_unfreeze_this_version}"
                onclick="delete_confirmation({$args_req.version_id},
                         '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
                                             '{$unfreeze_msgbox_title}', '{$unfreeze_warning_msg}',pF_unfreeze_req_version);"  />
-        {/if}
-      {/if}
+		{/if}
+	  {/if}
 
       {if $args_can_copy}                                         
         <input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>
       {/if}
-      <input type="button" name="new_revision" id="new_revision" value="{$labels.btn_new_revision}" 
+	  {if $args_frozen_version eq null}
+        <input type="button" name="new_revision" id="new_revision" value="{$labels.btn_new_revision}" 
              onclick="doAction.value='doCreateRevision';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
+	  {/if}
       <input type="button" name="new_version" id="new_version" value="{$labels.btn_new_version}" 
                onclick="doAction.value='doCreateVersion';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
     </form>
@@ -116,9 +117,11 @@ viewer for requirement
     <input type="button" name="printerFriendly" value="{$labels.btn_print_view}" 
            onclick="javascript:openPrintPreview('req',{$args_req.id},{$args_req.version_id},
                                                 {$args_req.revision},'lib/requirements/reqPrint.php');"/>
-    <input type="submit" name="monitor" 
+    {if $args_grants->monitor_req == "yes"}
+	<input type="submit" name="monitor" 
       value="{$gui->btn_monitor_mgmt}" 
       onclick="doAction.value='{$gui->btn_monitor_action}'"/> 
+	{/if}  
   </form>
   <br/><br/>
 </div> {* class="groupBtn" *}
@@ -171,6 +174,7 @@ viewer for requirement
       </fieldset>
     </td>
   </tr>
+  {if !isset($args_hide_coverage)}
   <td>
     <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
     {if $gui->user_feedback != ''}
@@ -188,9 +192,11 @@ viewer for requirement
 
       {section name=row loop=$args_req_coverage}
         <span>
+		{if $args_grants->req_tcase_link_management == "yes" && $args_frozen_version eq null}
         <input type="image"  class="clickable" src="{$tlImages.disconnect_small}" 
                title="{$labels.removeLinkToTestCase}" onClick="tcaseIdentity.value={$args_req_coverage[row].id}">
-        &nbsp;&nbsp;       
+        &nbsp;&nbsp; 
+		{/if}
         <img class="clickable" src="{$tlImages.history_small}"
              onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
              title="{$labels.execution_history}" />
@@ -202,7 +208,7 @@ viewer for requirement
       {/section}
       </form>
     {/if}
-    {if is_null($args_frozen_version) || !$args_frozen_version}
+    {if (is_null($args_frozen_version) || !$args_frozen_version ) && $args_grants->req_tcase_link_management == "yes"}
     <form style="display: inline;" id="reqAddTestCase_{$req_version_id}" name="reqAddTestCase_{$req_version_id}" 
           action="{$basehref}lib/requirements/reqEdit.php" method="post">
       <input type="hidden" id="atRID" name="requirement_id" value="{$args_req.id}" />
@@ -221,7 +227,8 @@ viewer for requirement
         
     </fieldset>
     </td>
-   </tr>
+	{/if}
+
   <tr>
       <td>&nbsp;</td>
   </tr>

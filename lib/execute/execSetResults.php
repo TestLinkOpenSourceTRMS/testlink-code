@@ -48,7 +48,7 @@ $templateCfg = templateConfiguration();
 
 $tcversion_id = null;
 $submitResult = null;
-list($args,$its) = init_args($db,$cfg);
+list($args,$its,$cts) = init_args($db,$cfg);
 
 $smarty = new TLSmarty();
 $smarty->assign('tsuite_info',null);
@@ -60,7 +60,7 @@ $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 $attachmentRepository = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
-$gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr,$its);
+$gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr,$its,$cts);
 
 $_SESSION['history_on'] = $gui->history_on;
 $attachmentInfos = null;
@@ -194,6 +194,10 @@ if(!is_null($linked_tcversions))
                    'status'   => $args->statusSingle[$args->version_id],
                    'directLink' => $args->direct_link);
       event_signal('EVENT_EXECUTE_TEST', $ctx);
+	  $tc_info = $tcase_mgr->getExternalID($tcase_id);
+	  $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
+	  $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
+	  logAuditEvent(TLS("audit_exec_saved",$tc_info[0],$build_info['name'],$tp_info['name']),"CREATE",$execSet[$tcversion_id],"execution");
     }
 
     // Need to re-read to update test case status
@@ -304,7 +308,13 @@ if(!is_null($linked_tcversions))
   {  
     if ($args->doDelete)
     {
-      delete_execution($db,$args->exec_to_delete);
+      $dummy = delete_execution($db,$args->exec_to_delete);
+	  if ($dummy){
+	    $tc_info = $tcase_mgr->getExternalID($tcase_id);
+	    $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
+	    $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
+		logAuditEvent(TLS("audit_exec_deleted",$tc_info[0],$build_info['name'],$tp_info['name']),"DELETE",$args->exec_to_delete,"execution");
+	  }
     }
 
     // Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
@@ -339,6 +349,12 @@ if(!is_null($linked_tcversions))
       $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id);
       $gui->relations = $tcase_mgr->getRelations($tcase_id);
       $gui->kw = $tcase_mgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
+
+      if(!is_null($cts))
+      {
+        $gui->scripts[$tcversion_id]=$tcase_mgr->get_scripts_for_testcase($cts, $tcversion_id);
+      }
+
       $gui->other_execs = getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
         
       // Get attachment,bugs, etc
@@ -608,7 +624,20 @@ function init_args(&$dbHandler,$cfgObj)
   
   initArgsIssueOnSteps($args,$bug_summary);
 
-  return array($args,$its);
+  // get code tracker config and object to manage TestLink - CTS integration
+  $args->ctsCfg = null;
+  $cts = null;
+
+  if( ($args->codeTrackerEnabled = intval($info['code_tracker_enabled'])) )
+  {
+    $ct_mgr = new tlCodeTracker($dbHandler);
+    $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
+    $cts = $ct_mgr->getInterfaceObject($args->tproject_id);
+
+    unset($ct_mgr);
+  }
+
+  return array($args,$its,$cts);
 }
 
 /**
@@ -1292,7 +1321,7 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
   returns: 
 
 */
-function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$issueTracker)
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$issueTracker,&$codeTracker)
 {
   $buildMgr = new build_mgr($dbHandler);
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
@@ -1353,6 +1382,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->req_details=null;
   $gui->attachmentInfos=null;
   $gui->bugs=null;
+  $gui->scripts=null;
   $gui->other_exec_cfields=null;
   $gui->ownerDisplayName = null;
     

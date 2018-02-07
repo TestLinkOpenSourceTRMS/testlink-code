@@ -409,6 +409,11 @@ $TLS_invalid_query = "Query non valida";
 $TLS_warning = "Attenzione!!";
 $TLS_was_success = " è stato correttamente ";
 
+// ----- gui/templates/inc_filter.tpl -----
+$TLS_test_grouped_by = "Test raggruppati per";
+$TLS_mode_test_suite = "Test Suite";
+$TLS_mode_req_coverage = "Requisito";
+$TLS_parent_child_relation = "Relazione padre del bambino";
 
 // gui/templates/execNavigator.tpl
 $TLS_TestPlan = "TestPlan";

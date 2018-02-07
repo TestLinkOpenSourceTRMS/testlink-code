@@ -13,7 +13,7 @@ Purpose: smarty template - create/edit user role
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
              th_platform_rights,demo_update_role_disabled,th_issuetracker_rights,show_event_history,
-             th_reqmgrsystem_rights,th_execution_rights,
+             th_reqmgrsystem_rights,th_execution_rights,th_codetracker_rights,
              th_rolename,th_tp_rights,btn_cancel'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
@@ -147,6 +147,12 @@ function validateForm(f)
           </td>
           <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_issuetracker_rights}</legend>
               {foreach from=$gui->rightsCfg->issuetracker_mgmt item=id key=k}
+              <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+              {/foreach}
+            </fieldset>
+          </td>
+          <td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_codetracker_rights}</legend>
+              {foreach from=$gui->rightsCfg->codetracker_mgmt item=id key=k}
               <input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
               {/foreach}
             </fieldset>

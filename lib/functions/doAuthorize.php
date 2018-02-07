@@ -37,7 +37,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
 
   $doLogin = false;
   $doChecks = true;
-  
+
   $login = trim($login);
   $pwd = trim($pwd);
 
@@ -74,16 +74,20 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
  
       if( $doGo )
       {
-        $password_check = auth_does_password_match($user,$pwd);
-        if(!$password_check->status_ok)
-        {
-          $result = array('status' => tl::ERROR, 'msg' => null);
-        }
+        if (strpos($options->auth,'oauth') !== false){
+            $doLogin = $user->isActive;
+        } else {
+            $password_check = auth_does_password_match($user,$pwd);
+            if(!$password_check->status_ok)
+            {
+              $result = array('status' => tl::ERROR, 'msg' => null);
+            }
 
-        $doLogin = $password_check->status_ok && $user->isActive;
-        if( !$doLogin )
-        {
-          logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
+            $doLogin = $password_check->status_ok && $user->isActive;
+            if( !$doLogin )
+            {
+              logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
+            }
         }
       }  
       
@@ -91,6 +95,9 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     else
     {
       $authCfg = config_get('authentication');
+      if (strpos($options->auth,'oauth') !== false){
+        $doLogin = create_oauth_user_db($login,$options);
+      } else
       if( $authCfg['ldap_automatic_user_creation'] )
       {
         $user->authentication = 'LDAP';  // force for auth_does_password_match

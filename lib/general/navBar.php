@@ -140,7 +140,7 @@ function initializeGui(&$db,&$args)
         {
           $testPlanFound = 1;
           $index = $idx;
-          $break;
+          break;
         }
       }
       if( $testPlanFound == 0 )

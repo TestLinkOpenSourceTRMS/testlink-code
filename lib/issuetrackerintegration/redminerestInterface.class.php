@@ -461,7 +461,7 @@ class redminerestInterface extends issueTrackerInterface
      {
        $msg = "REDMINE Add Note to Ticket FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
-       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issueXmlObj));
      }
      return $ret;
   }  

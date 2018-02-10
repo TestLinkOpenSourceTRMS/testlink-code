@@ -5,17 +5,12 @@ viewer for test case in test specification
 
 *}
 <table class="simple">
-  {if $inc_tcbody_show_title == "yes"}
-	<tr>
-	  <th colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">
-	  {$inc_tcbody_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$inc_tcbody_testcase.name|escape}
-	  </th>
-	</tr>
-  {/if}
-
 	  <tr>
-	  	<th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">{$inc_tcbody_labels.version}
-	  	{$inc_tcbody_testcase.version|escape}
+	  	<th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">
+		{$args_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$args_testcase.name|escape}
+		{$smarty.const.TITLE_SEP_TYPE2}{$inc_tcbody_labels.version}{$inc_tcbody_testcase.version|escape}
+
+		
 		<img class="clickable" src="{$tlImages.ghost_item}"
              title="{$inc_tcbody_labels.show_ghost_string}"
              onclick="showHideByClass('tr','ghostTC');">

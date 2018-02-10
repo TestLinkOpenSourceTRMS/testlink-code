@@ -1141,8 +1141,9 @@ class testcaseCommands
       {
         $source_id = $argsObj->destination_tcase_id;
         $destination_id = $argsObj->tcase_id;
-      }      
-      $this->tcaseMgr->addRelation($source_id, $destination_id,$relTypeInfo[0], $argsObj->user_id); 
+      }
+      $ret = $this->tcaseMgr->addRelation($source_id, $destination_id,$relTypeInfo[0], $argsObj->user_id);
+	  $guiObj->user_feedback = sprintf(lang_get($ret['msg']), $argsObj->relation_destination_tcase);	  
     } 
     else
     {

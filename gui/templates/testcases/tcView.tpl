@@ -68,7 +68,13 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {else}
     {$my_delete_version="no"}
   {/if}
-    <h2 style="{$my_style}">
+  {* is it frozen? *}
+  {if $gui->tc_current_version[idx][0].is_open}
+    {$frozen_version="no"}
+  {else}
+    {$frozen_version="yes"}
+  {/if}
+  
     {$tlImages.toggle_direct_link} &nbsp;
     {if $gui->display_testcase_path}
       {foreach from=$gui->path_info[$tcID] item=path_part}
@@ -79,9 +85,6 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
     <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel','inline');"
          title="{$labels.actions}" />
 
-    {if $gui->show_title == 'no'}
-      {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
-    {/if}
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
     {include file="testcases/tcView_viewer.tpl" 
              args_testcase=$gui->tc_current_version[idx][0]
@@ -92,6 +95,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
              args_can_do=$gui->can_do
              args_can_move_copy="yes"
              args_can_delete_testcase="yes" 
+             args_frozen_version=$frozen_version
              args_can_delete_version=$my_delete_version
 
              args_show_version="yes" 
@@ -143,6 +147,12 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
           {$title=$labels.version}
           {$title="$title $version_num"}
 
+		  {if $my_testcase.is_open == "0"}
+			{$tcv_frozen_version="yes"}
+		  {else}
+			{$tcv_frozen_version="no"}
+		  {/if}
+		  
           {$sep="_"}
           {$div_id="v_$vid"}
           {$div_id="$div_id$sep$version_num"}
@@ -174,9 +184,12 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_can_do=$gui->can_do
                        args_can_move_copy="no" 
                        args_can_delete_testcase='no'
+					   args_frozen_version=$tcv_frozen_version
+					   
                        args_can_delete_version="yes"
                        args_read_only="yes"
 
+                       args_hide_relations="yes" 
                        args_show_version="no" 
                        args_show_title="no"
                        args_users=$gui->users

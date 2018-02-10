@@ -178,7 +178,7 @@ if($args->delete_tc_version)
 
   $tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
 
-  $gui->title = lang_get('title_del_tc') . 
+  $gui->main_descr = lang_get('title_del_tc') . 
                 TITLE_SEP_TYPE3 . lang_get('version') . " " . $tcinfo[0]['version'];
   $gui->testcase_name = $tcinfo[0]['name'];
   $gui->testcase_id = $args->tcase_id;

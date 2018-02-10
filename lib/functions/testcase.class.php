@@ -2175,7 +2175,7 @@ class testcase extends tlObjectWithAttachments
 
        [options]:
                 [output]: default 'full'
-          domain 'full','essential','full_without_steps'
+          domain 'full','essential','full_without_steps','full_without_users'
 
     returns: array
 
@@ -7170,7 +7170,7 @@ class testcase extends tlObjectWithAttachments
             }
             $relSet['relations'][$key]['type_localized'] = $relSet['relations'][$key][$type_localized];
             $otherItem = $this->get_by_id($rel[$other_key],self::LATEST_VERSION,null,
-                                          array('output' => 'essential','getPrefix' => true));
+                                          array('output' => 'full_without_users','getPrefix' => true));
 
 
             // only add it, if either interproject linking is on or if it is in the same project
@@ -7282,8 +7282,8 @@ class testcase extends tlObjectWithAttachments
    *
    * @author Andreas Simon
    *
-   * @param integer $source_id ID of source requirement
-   * @param integer $destination_id ID of destination requirement
+   * @param integer $source_id ID of source testcase
+   * @param integer $destination_id ID of destination testcase
    * @param integer $type_id relation type ID to set
    * @param integer $author_id user's ID
    */
@@ -7294,13 +7294,21 @@ class testcase extends tlObjectWithAttachments
     // check if exists before trying to add
     if( !$this->relationExits($source_id, $destination_id, $type_id) )
     {
+		// check if related testcase is open
+		$dummy = $this->get_by_id($destination_id,self::LATEST_VERSION);
+		if(($dummy[0]['is_open']) =="1"){
 
-      $time = is_null($ts) ? $this->db->db_now() : $ts;
-      $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  .
-             " (source_id, destination_id, relation_type, author_id, creation_ts) " .
-             " values ($source_id, $destination_id, $type_id, $author_id, $time)";
-      $this->db->exec_query($sql);
-      $ret = array('status_ok' => true, 'msg' => 'relation_added');
+		  $time = is_null($ts) ? $this->db->db_now() : $ts;
+		  $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  .
+				 " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+				 " values ($source_id, $destination_id, $type_id, $author_id, $time)";
+		  $this->db->exec_query($sql);
+		  $ret = array('status_ok' => true, 'msg' => 'relation_added');
+		}
+		else
+		{
+		  $ret = array('status_ok' => false, 'msg' => 'related_tcase_not_open');
+		}
     }
     else
     {
@@ -7575,14 +7583,22 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    */
-  function setIntAttrForAllVersions($id,$attr,$value)
+  function setIntAttrForAllVersions($id,$attr,$value,$forceFrozenVersions=false)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 //    $children =
 
+
     $sql = " UPDATE {$this->tables['tcversions']} " .
-           " SET {$attr} = " . $this->db->prepare_int($value) .
-           " WHERE id IN (" .
+           " SET {$attr} = " . $this->db->prepare_int($value) ;
+		   
+	if($forceFrozenVersions==false){
+	  $sql .= " WHERE is_open=1 AND ";
+	}
+	else{
+	  $sql .= " WHERE ";
+	}
+	$sql .= " id IN (" .
            "  SELECT NHTCV.id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
            "  WHERE NHTCV.parent_id = " . intval($id) . ")";
     $this->db->exec_query($sql);

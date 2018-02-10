@@ -18,7 +18,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
   <tr>
     <th width="40px"><nobr>
-    {if $edit_enabled && $steps != '' && !is_null($steps)}
+    {if $edit_enabled && $steps != '' && !is_null($steps) && $args_frozen_version=="no"}
       <img class="clickable" src="{$tlImages.reorder}" align="left"
            title="{$inc_steps_labels.show_hide_reorder}"
            onclick="showHideByClass('span','order_info');">
@@ -63,7 +63,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <tr id="step_row_{$step_info.step_number}">
     <td style="text-align:left;">
       <span class="order_info" style='display:none'>
-      {if $edit_enabled}
+      {if $edit_enabled && $args_frozen_version=="no"}
         <input type="text" class="step_number{$args_testcase.id}" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
           value="{$step_info.step_number}"
           size="{#STEP_NUMBER_SIZE#}"
@@ -73,14 +73,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </span>
       {$step_info.step_number}
     </td>
-    <td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}
+    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.actions|nl2br}{else}{$step_info.actions}{/if}
     </td>
-    <td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>
+    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{if $gui->stepDesignEditorType == 'none'}{$step_info.expected_results|nl2br}{else}{$step_info.expected_results}{/if}</td>
     {if $session['testprojectOptions']->automationEnabled}
-    <td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
+    <td {if $edit_enabled && $args_frozen_version=="no"} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
     {/if}
 
-    {if $edit_enabled}
+    {if $edit_enabled && $args_frozen_version=="no"}
     <td class="clickable_icon">
       <img style="border:none;cursor: pointer;"
            title="{$inc_steps_labels.delete_step}"

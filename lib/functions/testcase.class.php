@@ -467,7 +467,6 @@ class testcase extends tlObjectWithAttachments
       }
     }
 
-
     if ($my['options']['check_duplicate_name'])
     {
       $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);
@@ -590,7 +589,7 @@ class testcase extends tlObjectWithAttachments
       $path2root = $this->tree_manager->get_path($parent_id);
       $tproject_id = $path2root[0]['parent_id'];
 
-      $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
+      $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,testcase::AUTOMATIC_ID);
       $ret['id'] = $tcase_id;
 
       $generateExtID = false;

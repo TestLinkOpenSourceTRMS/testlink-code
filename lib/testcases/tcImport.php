@@ -469,18 +469,18 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       }        
     }
     if( $doCreate )
-    {     
-        $createOptions = array('check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
+    {
+        $createOptions = array('check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME,
                                'action_on_duplicate_name' => $duplicatedLogic['actionOnHit'],
                                'external_id' => $externalid, 'importLogic' => $duplicatedLogic);
 
         if(!is_null($attr) )
         {
           $createOptions += $attr;
-        }  
+        }
 
         if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
-                                      $personID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
+                                      $personID,$kwIDs,$node_order,$internalid,
                                       $exec_type,$importance,$createOptions))
         {
           $resultMap[] = array($name,$ret['msg']);
@@ -1045,7 +1045,8 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
     {
       // Check if Test Suite with this name exists on this container
       // if yes -> update instead of create
-      $info = $tsuiteMgr->get_by_name($tsuite['name'],$parentID);
+      $info = $tsuiteMgr->get_by_id($tsuite['id'],$parentID);
+      //$info = $tsuiteMgr->get_by_name($tsuite['name'],$parentID);
       if( is_null($info) )
       {
         $ret = $tsuiteMgr->create($parentID,$tsuite['name'],$tsuite['details'],$tsuite['node_order']);
@@ -1053,7 +1054,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
       }
       else
       {
-        $ret = $tsuiteMgr->update(($tsuite['id'] = $info[0]['id']),$tsuite['name'],$tsuite['details'],
+        $ret = $tsuiteMgr->update(($tsuite['id'] = $info[key($info)]['id']),$tsuite['name'],$tsuite['details'],
                                   null,$tsuite['node_order']);
         
       }

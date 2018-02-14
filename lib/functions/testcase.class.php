@@ -386,6 +386,32 @@ class testcase extends tlObjectWithAttachments
       $doQuickReturn = false;
       switch($my['options']['importLogic']['hitCriteria'])
       {
+        case 'internalID':
+          // check if already exists a test case with this internal id
+          $info = $this->get_by_id($id);
+          if( !is_null($info)) {
+            switch ($my['options']['importLogic']['actionOnHit']) {
+              case 'create_new_version':
+                $doCreate = false;
+                  if (strcmp($info[key($info)]['name'], $name) != 0) {
+                    $itemSet = $this->getDuplicatesByName($name, $parent_id, $getDupOptions);
+                      if (is_null($itemSet)) {
+                        $ret['id'] = $id;
+                        $ret['external_id'] = $info[key($info)]['tc_external_id'];
+                        $ret['version_number'] = -1;
+                        $ret['external_id_already_exists'] = true;
+                        $ret['name'] = $name;
+                        $ret['update_name'] = true;
+                      }
+                  }
+                  return $ret;
+                break;
+                case 'generate_new':
+                  $forceGenerateExternalID = true;
+                break;
+              }
+          }
+          break;
         case 'externalID':
           if( ($sf = intval($my['options']['external_id'])) > 0 )
           {

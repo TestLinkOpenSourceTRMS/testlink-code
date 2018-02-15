@@ -5470,7 +5470,8 @@ class testcase extends tlObjectWithAttachments
     }
 
     $sql .= $add_filters;
-    $sql .= " AND NH_TCASE_PARENT.id = {$parent_id}" ;
+    if ($parent_id != -1)
+      $sql .= " AND NH_TCASE_PARENT.id = {$parent_id}" ;
     $recordset = $this->db->fetchRowsIntoMap($sql,'id');
     return $recordset;
   }

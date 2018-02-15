@@ -301,7 +301,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
  * DELETE + INSERT => this way we will not add duplicates
  *
  */
-function write_execution_bug(&$db,$exec_id, $bug_id,$tcstep_id,$just_delete=false)
+function write_execution_bug(&$db,$exec_id, $bug_id,$tcstep_id,$tcexternal_id,$just_delete=false)
 {
   $execution_bugs = DB_TABLE_PREFIX . 'execution_bugs';
   
@@ -310,6 +310,7 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$tcstep_id,$just_delete=fals
   
   $safe['exec_id'] = intval($exec_id);
   $safe['tcstep_id'] = intval($tcstep_id);
+  $safe['tcexternal_id'] = intval($tcexternal_id);
 
   $sql = " DELETE FROM {$execution_bugs} " . 
          " WHERE execution_id=" . $safe['exec_id'] .
@@ -321,9 +322,9 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$tcstep_id,$just_delete=fals
   
   if(!$just_delete)
   {
-    $sql = " INSERT INTO {$execution_bugs} (execution_id,tcstep_id,bug_id) " .
-           " VALUES(" . $safe['exec_id'] . ',' . $safe['tcstep_id'] . 
-           " ,'" . $prep_bug_id . "')";
+    $sql = " INSERT INTO {$execution_bugs} (execution_id,tcstep_id,tcexternal_id,bug_id) " .
+           " VALUES(" . $safe['exec_id'] . ',' . $safe['tcstep_id'] . ',' . $safe['tcexternal_id'] .
+        " ,'" . $prep_bug_id . "')";
     $result = $db->exec_query($sql);         
   }
   
@@ -659,7 +660,7 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   {                   
 
     // if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$stepID))
-    if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$argsObj->tcstep_id))
+    if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$argsObj->tcstep_id,getExternalID($argsObj->tcase_id)))
     {
       logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
     }

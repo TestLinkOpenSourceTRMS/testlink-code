@@ -633,11 +633,11 @@ function open_script_add_window(tproject_id,tplan_id,tcversion_id,user_action)
 /**
  *
  */
-function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,tcstep_id,user_action)
+function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,tcstep_id,tcase_id,user_action)
 {
-  l2l = "lib/execute/bugAdd.php?user_action=" + user_action + 
-        "&tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + 
-        "&tplan_id=" + tplan_id + "&exec_id="+exec_id + "&tcstep_id="+tcstep_id;
+  l2l = "lib/execute/bugAdd.php?user_action=" + user_action +
+        "&tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id +
+        "&tplan_id=" + tplan_id + "&exec_id="+exec_id + "&tcstep_id="+tcstep_id + "&tcase_id="+tcase_id;
 
   switch(user_action)  
   {

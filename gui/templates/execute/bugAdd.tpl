@@ -28,6 +28,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
     <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
     <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}">
+    <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}">
     <input type="hidden" name="user_action" id="user_action" value="">
     <input type="hidden" name="tcstep_id" id="tcstep_id" value="{$gui->tcstep_id}">
 

@@ -420,6 +420,7 @@ CREATE TABLE /*prefix*/execution_bugs(
   "execution_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id) ON DELETE CASCADE,
   "bug_id" VARCHAR(64) NOT NULL DEFAULT '0',
   "tcstep_id" BIGINT NOT NULL DEFAULT '0',
+  "tcexternal_id" BIGINT NOT NULL DEFAULT '0',
   PRIMARY KEY ("execution_id","bug_id","tcstep_id")
 ); 
 

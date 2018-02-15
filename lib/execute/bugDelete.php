@@ -19,7 +19,7 @@ $args = init_args();
 $msg = "";
 if ($args->exec_id && $args->bug_id != "")
 {
-  if (write_execution_bug($db,$args->exec_id,$args->bug_id,$args->tcstep_id,true))
+  if (write_execution_bug($db,$args->exec_id,$args->bug_id,$args->tcstep_id,0,true))
   {
     // get audit info
     $ainfo = get_execution($db,$args->exec_id,array('output' => 'audit'));

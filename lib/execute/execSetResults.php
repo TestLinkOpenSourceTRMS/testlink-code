@@ -106,7 +106,7 @@ if(!is_null($linked_tcversions))
 
 
     $args->direct_link = $gui->direct_link;
-     
+
     // 20151206 - issue @ test step
     if(!is_null($gui->issueSummaryForStep))
     {
@@ -1363,7 +1363,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->loadExecDashboard = false;
   $gui->treeFormToken = $argsObj->treeFormToken;
   $gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
-
+  $gui->tcase_id = $argsObj->id;
 
   $gui->execStatusIcons = getResultsIcons();
   $gui->execStatusIconsNext = getResultsIconsNext();

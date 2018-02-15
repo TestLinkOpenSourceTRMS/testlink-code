@@ -311,12 +311,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     			{if $gui->issueTrackerIntegrationOn}
        		  <td align="center">
        		  {if $tc_old_exec.build_is_open}
-       		    <a href="javascript:open_bug_add_window({$gui->tproject_id},
-              {$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},0,'link')">
+                  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},0,{$gui->tcase_id},'link')">
        		    <img src="{$tlImages.bug_link_tl_to_bts}" title="{$labels.bug_link_tl_to_bts}" style="border:none" /></a>
        		    &nbsp;&nbsp;
               {if $gui->tlCanCreateIssue}
-       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},0,'create')">
+       		  	  <a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},0,{$gui->tcase_id},'create')">
       			    <img src="{$tlImages.bug_create_into_bts}" title="{$labels.bug_create_into_bts}" style="border:none" /></a>
               {/if}
        		  {else}

@@ -370,17 +370,6 @@
                               selected=$control->filters.filter_assigned_user.selected}
         </select>
 
-        <br/>
-        <br />
-        <input type="checkbox"
-               id="filter_assigned_user_include_unassigned"
-               name="filter_assigned_user_include_unassigned"
-                   value="1"
-                   {if $control->filters.filter_assigned_user.filter_assigned_user_include_unassigned}
-                      checked="checked"
-                   {/if}
-            />
-        {$labels.include_unassigned_testcases}
       {/if}
 
       </td>

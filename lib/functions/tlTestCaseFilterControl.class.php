@@ -1791,10 +1791,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
       }
 
       $view_mode = $simple ? $this->configuration->exec_cfg->view_mode->tester : 'all';
-      
       if ($view_mode != 'all') {
-        $visible_testers = (array)$this->user->getDisplayName();
-        $selection = (array)$this->user->dbID;
+        $visible_testers = array(TL_USER_NOBODY => $this->option_strings['none'],
+								$this->user->dbID => $this->user->getDisplayName());
+        if($selection == null){
+		  $selection = (array)$this->user->dbID;
+		}
       }
 
       // re-enable option "user_filter_default"

@@ -67,6 +67,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,52);
 
+ALTER TABLE /*prefix*/execution_bugs ADD COLUMN tcexternal_id INT(10) NOT NULL DEFAULT '0' AFTER tcstep_id;
 ALTER TABLE /*prefix*/testprojects ADD COLUMN code_tracker_enabled tinyint(1) NOT NULL default '0';
 ALTER TABLE /*prefix*/users ADD COLUMN creation_ts timestamp NOT NULL DEFAULT now();
 ALTER TABLE /*prefix*/users ADD COLUMN expiration_date date DEFAULT NULL;

@@ -47,7 +47,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 
         {if $gui->issueTrackerIntegrationOn}
           <td>
-       		<a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},{$bug_elem.tcstep_id},'link')">
+       		<a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},{$bug_elem.tcstep_id},{$gui->tcase_id},'link')">
       		<img src="{$tlImages.bug_link_tl_to_bts}"
       		     title="{$labels.bug_link_tl_to_bts}" style="border:none" /></a>
           </td>
@@ -55,7 +55,7 @@ Testlink Open Source Project - http://testlink.sourceforge.net/
 
         {if $gui->tlCanCreateIssue}
        	  <td>
-       		<a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},{$bug_elem.tcstep_id},'create')">
+       		<a href="javascript:open_bug_add_window({$gui->tproject_id},{$gui->tplan_id},{$tc_old_exec.id},{$tc_old_exec.execution_id},{$bug_elem.tcstep_id},{$gui->tcase_id},'create')">
       		<img src="{$tlImages.bug_create_into_bts}" title="{$labels.bug_create_into_bts}" style="border:none" /></a>
       	  </td>
         {/if}

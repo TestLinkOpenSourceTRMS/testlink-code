@@ -201,6 +201,7 @@ CREATE TABLE /*prefix*/execution_bugs (
   `execution_id` int(10) unsigned NOT NULL default '0',
   `bug_id` varchar(64) NOT NULL default '0',
   `tcstep_id` int(10) unsigned NOT NULL default '0',
+  `tcexternal_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`execution_id`,`bug_id`,`tcstep_id`)
 ) DEFAULT CHARSET=utf8;
 

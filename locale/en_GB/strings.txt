@@ -2170,6 +2170,7 @@ $TLS_th_password = "Password";
 $TLS_warning_empty_first_name = "Please enter a name";
 $TLS_warning_empty_last_name = "Please enter a surname";
 $TLS_warning_empty_login = "Please enter a login";
+$TLS_expiration_date = "Expiration date";
 
 // usersExport.php
 $TLS_export_users = "Export users";

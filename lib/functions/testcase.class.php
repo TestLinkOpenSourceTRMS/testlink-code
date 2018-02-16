@@ -299,8 +299,8 @@ class testcase extends tlObjectWithAttachments
       $ix->executionType = $execution_type;
       $ix->importance = $importance;
       $ix->status = $my['options']['status'];
-	    $ix->active = $my['options']['active'];
-	    $ix->is_open = $my['options']['is_open'];
+      $ix->active = $my['options']['active'];
+      $ix->is_open = $my['options']['is_open'];
       $ix->estimatedExecDuration = $my['options']['estimatedExecDuration'];
 
 
@@ -386,6 +386,32 @@ class testcase extends tlObjectWithAttachments
       $doQuickReturn = false;
       switch($my['options']['importLogic']['hitCriteria'])
       {
+        case 'internalID':
+          // check if already exists a test case with this internal id
+          $info = $this->get_by_id($id);
+          if( !is_null($info)) {
+            switch ($my['options']['importLogic']['actionOnHit']) {
+              case 'create_new_version':
+                $doCreate = false;
+                  if (strcmp($info[key($info)]['name'], $name) != 0) {
+                    $itemSet = $this->getDuplicatesByName($name, $parent_id, $getDupOptions);
+                      if (is_null($itemSet)) {
+                        $ret['id'] = $id;
+                        $ret['external_id'] = $info[key($info)]['tc_external_id'];
+                        $ret['version_number'] = -1;
+                        $ret['external_id_already_exists'] = true;
+                        $ret['name'] = $name;
+                        $ret['update_name'] = true;
+                      }
+                  }
+                  return $ret;
+                break;
+                case 'generate_new':
+                  $forceGenerateExternalID = true;
+                break;
+              }
+          }
+          break;
         case 'externalID':
           if( ($sf = intval($my['options']['external_id'])) > 0 )
           {
@@ -440,7 +466,6 @@ class testcase extends tlObjectWithAttachments
         break;
       }
     }
-
 
     if ($my['options']['check_duplicate_name'])
     {
@@ -564,7 +589,7 @@ class testcase extends tlObjectWithAttachments
       $path2root = $this->tree_manager->get_path($parent_id);
       $tproject_id = $path2root[0]['parent_id'];
 
-      $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
+      $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,testcase::AUTOMATIC_ID);
       $ret['id'] = $tcase_id;
 
       $generateExtID = false;
@@ -652,7 +677,7 @@ class testcase extends tlObjectWithAttachments
       $sql .= ", active";
       $sqlValues .= "," . $v;
     }
-	  
+    
     if( property_exists($item,'is_open') && !is_null($item->is_open) )
     {
       $v = intval($item->is_open) > 0 ? 1 : 0;
@@ -869,9 +894,9 @@ class testcase extends tlObjectWithAttachments
     $gui->tcase_id = $idCard->tcase_id;
     $gui->tcversion_id = $idCard->tcversion_id;
     $gui->allowStepAttachments = false;
-	$designEditorCfg = getWebEditorCfg('design');
+  $designEditorCfg = getWebEditorCfg('design');
     $gui->designEditorType = $designEditorCfg['type'];
-	$stepDesignEditorCfg = getWebEditorCfg('steps_design');
+  $stepDesignEditorCfg = getWebEditorCfg('steps_design');
     $gui->stepDesignEditorType = $stepDesignEditorCfg['type'];
 
     $userIDSet = array();
@@ -1150,12 +1175,12 @@ class testcase extends tlObjectWithAttachments
         $dummy .= ", status=" . intval($attrib['status']);
       }
 
-	    if( !is_null($attrib['is_open']) )    
+      if( !is_null($attrib['is_open']) )    
       {
         $dummy .= ", is_open=" . intval($attrib['is_open']); 
       }
-	  
-	    if( !is_null($attrib['active']) )    
+    
+      if( !is_null($attrib['active']) )    
       {
         $dummy .= ", active=" . intval($attrib['active']); 
       }
@@ -2175,7 +2200,7 @@ class testcase extends tlObjectWithAttachments
 
        [options]:
                 [output]: default 'full'
-          domain 'full','essential','full_without_steps','full_without_users'
+          domain 'full','essential','full_without_steps'
 
     returns: array
 
@@ -3817,55 +3842,55 @@ class testcase extends tlObjectWithAttachments
         $tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
       }
     }
-	
-	if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS'])
+  
+  if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS'])
     {
-		$attachments=null;
-	
-		// get all attachments
-		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($tcase_id,$this->attachmentTableName,'id');
-	  
-		// get all attachments content and encode it in base64	  
-		if ($attachmentInfos)
-		{
-			foreach ($attachmentInfos as $attachmentInfo)
-			{
-				$aID = $attachmentInfo["id"];
-				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
-				
-				if ($content != null)
-				{
-					$attachments[$aID]["id"] = $aID;
-					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
-					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
-					$attachments[$aID]["file_size"] = $attachmentInfo["file_size"];
-					$attachments[$aID]["title"] = $attachmentInfo["title"];
-					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
-					$attachments[$aID]["content"] = base64_encode($content);
-				}
-			}
-	    }
-	  
-		if( !is_null($attachments) && count($attachments) > 0 )
-		{
-			$attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
-			$attchElemTemplate = "\t\t<attachment>\n" .
-							   "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
-							   "\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
-							   "\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
-							   "\t\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
-							   "\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
-							   "\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
-							   "\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
-							   "\t\t</attachment>\n";
+    $attachments=null;
+  
+    // get all attachments
+    $attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($tcase_id,$this->attachmentTableName,'id');
+    
+    // get all attachments content and encode it in base64    
+    if ($attachmentInfos)
+    {
+      foreach ($attachmentInfos as $attachmentInfo)
+      {
+        $aID = $attachmentInfo["id"];
+        $content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+        
+        if ($content != null)
+        {
+          $attachments[$aID]["id"] = $aID;
+          $attachments[$aID]["name"] = $attachmentInfo["file_name"];
+          $attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+          $attachments[$aID]["file_size"] = $attachmentInfo["file_size"];
+          $attachments[$aID]["title"] = $attachmentInfo["title"];
+          $attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+          $attachments[$aID]["content"] = base64_encode($content);
+        }
+      }
+      }
+    
+    if( !is_null($attachments) && count($attachments) > 0 )
+    {
+      $attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
+      $attchElemTemplate = "\t\t<attachment>\n" .
+                 "\t\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+                 "\t\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+                 "\t\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+                 "\t\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
+                 "\t\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+                 "\t\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+                 "\t\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+                 "\t\t</attachment>\n";
 
-			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
-								"||ATTACHMENT_FILE_TYPE||" => "file_type",
-								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
-								"||ATTACHMENT_TITLE||" => "title",
-								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
-								"||ATTACHMENT_CONTENT||" => "content");
-			$tc_data[0]['xmlattachments'] = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
+      $attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
+                "||ATTACHMENT_FILE_TYPE||" => "file_type",
+                "||ATTACHMENT_FILE_SIZE||" => "file_size", 
+                "||ATTACHMENT_TITLE||" => "title",
+                "||ATTACHMENT_DATE_ADDED||" => "date_added", 
+                "||ATTACHMENT_CONTENT||" => "content");
+      $tc_data[0]['xmlattachments'] = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
         }
     }
 
@@ -3932,11 +3957,11 @@ class testcase extends tlObjectWithAttachments
     // TICKET 7513: Export assigned_users into "Export Test Plan" XML content
     if(isset($optExport['ASSIGNED_USER'])) // table with all users assigned to an execution
     {
-	  $elemTpl .= "\t<assigned_users>\n";
-	  foreach ($optExport['ASSIGNED_USER'] as $key => $username){
-		$elemTpl .= "\t\t<assigned_user><![CDATA[".$username."]]></assigned_user>\n";
-	  }
-	  $elemTpl .= "\t</assigned_users>\n";
+    $elemTpl .= "\t<assigned_users>\n";
+    foreach ($optExport['ASSIGNED_USER'] as $key => $username){
+    $elemTpl .= "\t\t<assigned_user><![CDATA[".$username."]]></assigned_user>\n";
+    }
+    $elemTpl .= "\t</assigned_users>\n";
     }
 
     if(!isset($optExport['EXTERNALID']) || $optExport['EXTERNALID'])
@@ -3944,7 +3969,7 @@ class testcase extends tlObjectWithAttachments
       $elemTpl .= "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n";
     }
 
-	if(!isset($optExport['ADDPREFIX']) || $optExport['ADDPREFIX'])
+  if(!isset($optExport['ADDPREFIX']) || $optExport['ADDPREFIX'])
     {
       $elemTpl .= "\t<fullexternalid><![CDATA[||FULLEXTERNALID||]]></fullexternalid>\n";
     }
@@ -6655,7 +6680,7 @@ class testcase extends tlObjectWithAttachments
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
     $goo->assign_keywords = property_exists($grantsObj, 'keyword_assignment') ? $grantsObj->keyword_assignment : 0;
-	$goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
+  $goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
 
     $goo->parentTestSuiteName = '';
     $goo->tprojectName = '';
@@ -7170,7 +7195,7 @@ class testcase extends tlObjectWithAttachments
             }
             $relSet['relations'][$key]['type_localized'] = $relSet['relations'][$key][$type_localized];
             $otherItem = $this->get_by_id($rel[$other_key],self::LATEST_VERSION,null,
-                                          array('output' => 'full_without_users','getPrefix' => true));
+                                          array('output' => 'essential','getPrefix' => true));
 
 
             // only add it, if either interproject linking is on or if it is in the same project
@@ -7282,8 +7307,8 @@ class testcase extends tlObjectWithAttachments
    *
    * @author Andreas Simon
    *
-   * @param integer $source_id ID of source testcase
-   * @param integer $destination_id ID of destination testcase
+   * @param integer $source_id ID of source requirement
+   * @param integer $destination_id ID of destination requirement
    * @param integer $type_id relation type ID to set
    * @param integer $author_id user's ID
    */
@@ -7294,21 +7319,13 @@ class testcase extends tlObjectWithAttachments
     // check if exists before trying to add
     if( !$this->relationExits($source_id, $destination_id, $type_id) )
     {
-		// check if related testcase is open
-		$dummy = $this->get_by_id($destination_id,self::LATEST_VERSION);
-		if(($dummy[0]['is_open']) =="1"){
 
-		  $time = is_null($ts) ? $this->db->db_now() : $ts;
-		  $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  .
-				 " (source_id, destination_id, relation_type, author_id, creation_ts) " .
-				 " values ($source_id, $destination_id, $type_id, $author_id, $time)";
-		  $this->db->exec_query($sql);
-		  $ret = array('status_ok' => true, 'msg' => 'relation_added');
-		}
-		else
-		{
-		  $ret = array('status_ok' => false, 'msg' => 'related_tcase_not_open');
-		}
+      $time = is_null($ts) ? $this->db->db_now() : $ts;
+      $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  .
+             " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+             " values ($source_id, $destination_id, $type_id, $author_id, $time)";
+      $this->db->exec_query($sql);
+      $ret = array('status_ok' => true, 'msg' => 'relation_added');
     }
     else
     {
@@ -7583,22 +7600,14 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    */
-  function setIntAttrForAllVersions($id,$attr,$value,$forceFrozenVersions=false)
+  function setIntAttrForAllVersions($id,$attr,$value)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 //    $children =
 
-
     $sql = " UPDATE {$this->tables['tcversions']} " .
-           " SET {$attr} = " . $this->db->prepare_int($value) ;
-		   
-	if($forceFrozenVersions==false){
-	  $sql .= " WHERE is_open=1 AND ";
-	}
-	else{
-	  $sql .= " WHERE ";
-	}
-	$sql .= " id IN (" .
+           " SET {$attr} = " . $this->db->prepare_int($value) .
+           " WHERE id IN (" .
            "  SELECT NHTCV.id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
            "  WHERE NHTCV.parent_id = " . intval($id) . ")";
     $this->db->exec_query($sql);

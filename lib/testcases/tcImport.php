@@ -1043,12 +1043,12 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 
     if ($tsuite['name'] != "")
     {
-      // Check if Test Suite with this name exists on this container
+      // Check if Test Suite with this id exists on this container
       // if yes -> update instead of create
       $info = $tsuiteMgr->get_by_id($tsuite['id'],$parentID);
-      //$info = $tsuiteMgr->get_by_name($tsuite['name'],$parentID);
       if( is_null($info) )
       {
+        // If other Test Suite on the same node has the same name there will be a error
         $ret = $tsuiteMgr->create($parentID,$tsuite['name'],$tsuite['details'],$tsuite['node_order']);
         $tsuite['id'] = $ret['id'];
       }

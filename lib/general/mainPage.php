@@ -108,11 +108,18 @@ if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
 	$gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
 }
 
-$rights2check = array('testplan_execute','testplan_create_build','testplan_metrics','testplan_planning',
-                      'testplan_user_role_assignment','mgt_testplan_create','cfield_view', 'cfield_management',
-                      'testplan_milestone_overview','exec_testcases_assigned_to_me',
-                      'testplan_add_remove_platforms','testplan_update_linked_testcase_versions',
-                      'testplan_set_urgent_testcases','testplan_show_testcases_newest_versions');
+$rights2check = array('testplan_execute','testplan_create_build',
+                      'testplan_metrics','testplan_planning',
+                      'testplan_user_role_assignment',
+                      'mgt_testplan_create',
+                      'cfield_view', 'cfield_management',
+                      'testplan_milestone_overview',
+                      'exec_testcases_assigned_to_me',
+                      'exec_assign_testcases','exec_ro_access',
+                      'testplan_add_remove_platforms',
+                      'testplan_update_linked_testcase_versions',
+                      'testplan_set_urgent_testcases',
+                      'testplan_show_testcases_newest_versions');
 
 foreach($rights2check as $key => $the_right)
 {
@@ -220,8 +227,6 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'issuetracker_view' => "issuetracker_view",
                        'codetracker_management' => "codetracker_management",
                        'codetracker_view' => "codetracker_view",
-                       // 'reqmgrsystem_management' => "reqmgrsystem_management",
-                       // 'reqmgrsystem_view' => "reqmgrsystem_view",
                        'configuration' => "system_configuraton",
                        'usergroups' => "mgt_view_usergroups",
                        'view_tc' => "mgt_view_tc",

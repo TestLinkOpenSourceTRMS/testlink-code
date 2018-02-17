@@ -53,14 +53,32 @@ $sql_update_schema = array();
 $sql_update_data   = array();
 
 // get db info from session
-$db_server = $_SESSION['databasehost'];
-$db_admin_name = $_SESSION['databaseloginname'];
-$db_admin_pass = $_SESSION['databaseloginpassword'];
-$db_name = $_SESSION['databasename'];
-$db_type = $_SESSION['databasetype'];
-$tl_db_login = $_SESSION['tl_loginname'];
-$tl_db_passwd = $_SESSION['tl_loginpassword'];
-$db_table_prefix = $_SESSION['tableprefix'];
+$san = '/[^A-Za-z0-9\-]/';
+$db_name = trim($_SESSION['databasename']);
+$db_name = preg_replace($san,'',$db_name);
+
+$db_table_prefix = trim($_SESSION['tableprefix']);
+$db_table_prefix = preg_replace($san,'',$db_table_prefix);
+
+$db_server = trim($_SESSION['databasehost']);
+$db_server = preg_replace($san,'',$db_server);
+
+$db_admin_name = trim($_SESSION['databaseloginname']);
+$db_admin_name = preg_replace($san,'',$db_admin_name);
+
+$db_admin_pass = trim($_SESSION['databaseloginpassword']);
+$db_admin_pass = preg_replace($san,'',$db_admin_pass);
+
+$db_type = trim($_SESSION['databasetype']);
+$db_type = preg_replace($san,'',$db_type);
+
+$tl_db_login = trim($_SESSION['tl_loginname']);
+$tl_db_login = preg_replace($san,'',$tl_db_login);
+
+$tl_db_passwd = trim($_SESSION['tl_loginpassword']);
+$tl_db_passwd = preg_replace($san,'',$tl_db_passwd);
+
+
 
 $sql_create_schema = array();
 $sql_create_schema[] = "sql/{$db_type}/testlink_create_tables.sql";

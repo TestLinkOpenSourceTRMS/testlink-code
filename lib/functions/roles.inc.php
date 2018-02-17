@@ -37,21 +37,15 @@ init_global_rights_maps();
 function init_global_rights_maps()
 {
   // Every array, defines a section in the define role page => HAS EFFECTS ONLY ON LAYOUT
-  global $g_rights_tp;
-  global $g_rights_mgttc;
-  global $g_rights_kw;
-  global $g_rights_req;
-  global $g_rights_product;
-  global $g_rights_cf;
-  global $g_rights_users_global;
-  global $g_rights_users;
   global $g_rights_system;
-  global $g_rights_platforms;
-  global $g_rights_issuetrackers;
-  global $g_rights_codetrackers;
+  global $g_rights_product;
+  global $g_rights_trackers;
+  global $g_rights_users;
+  global $g_rights_cf;
+  global $g_rights_req;
+  global $g_rights_mgttc;
+  global $g_rights_tp;
   global $g_rights_executions;
-
-  // global $g_rights_reqmgrsystems;
 
   global $g_propRights_global;
   global $g_propRights_product;
@@ -68,11 +62,12 @@ function init_global_rights_maps()
 				   'desc_req_tcase_link_management' => null,'desc_mgt_modify_product' => null,
                    'desc_project_inventory_management' => null,'desc_project_inventory_view' => null,
                    'desc_cfield_view' => null,'desc_cfield_management' => null,
+                   'desc_cfield_assignment' => null,'desc_exec_assign_testcases' => null,
                    'desc_platforms_view' => null,'desc_platforms_management' => null,
                    'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
                    'desc_codetrackers_view' => null,'desc_codetrackers_management' => null,
                    'desc_mgt_modify_users' => null,'desc_role_management' => null,
-                   'desc_user_role_assignment' => null,
+                   'desc_testplan_user_role_assignment' => null,'desc_testproject_user_role_assignment'=> null,
                    'desc_mgt_view_events' => null, 'desc_events_mgt' => null,
                    'desc_mgt_unfreeze_req' => null,'desc_mgt_plugins' => null,
                    'right_exec_edit_notes' => null, 'right_exec_delete' => null,
@@ -93,34 +88,33 @@ function init_global_rights_maps()
 
   $l18n = init_labels($l18nCfg);
 
-  $g_rights_executions = array('exec_edit_notes' => $l18n['right_exec_edit_notes'], 
-                               'exec_delete' => $l18n['right_exec_delete'],
-                               'exec_ro_access' => $l18n['right_exec_ro_access']);
+  $g_rights_executions = array('exec_ro_access' => $l18n['right_exec_ro_access'],
+							   'exec_edit_notes' => $l18n['right_exec_edit_notes'], 
+                               'exec_delete' => $l18n['right_exec_delete']);
 
-  // order is important ?
+  // order is used to define elements order in each box
   $g_rights_tp = array("mgt_testplan_create" => $l18n['mgt_testplan_create'],
                        "testplan_create_build" => $l18n['desc_testplan_create_build'],
-                       "testplan_planning" => $l18n['desc_testplan_planning'],
-                       "testplan_execute" => $l18n['desc_testplan_execute'],
-                       "testplan_metrics" => $l18n['desc_testplan_metrics'],
-                       "testplan_user_role_assignment" => $l18n['desc_user_role_assignment'],
-                       "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases'],
                        "testplan_milestone_overview"  => $l18n['right_testplan_milestone_overview'],
-                       "exec_testcases_assigned_to_me" => $l18n['right_exec_testcases_assigned_to_me'],
                        'testplan_add_remove_platforms' => $l18n['right_testplan_add_remove_platforms'],
-                       'testplan_update_linked_testcase_versions' => $l18n['right_testplan_update_linked_testcase_versions'],
+                       "testplan_planning" => $l18n['desc_testplan_planning'],
+					   "testplan_user_role_assignment" => $l18n['desc_testplan_user_role_assignment'],
                        'testplan_set_urgent_testcases' => $l18n['right_testplan_set_urgent_testcases'],
-                       'testplan_show_testcases_newest_versions' => $l18n['right_testplan_show_testcases_newest_versions']);
+                       "testplan_execute" => $l18n['desc_testplan_execute'],
+                       "exec_assign_testcases" => $l18n['desc_exec_assign_testcases'],
+                       "exec_testcases_assigned_to_me" => $l18n['right_exec_testcases_assigned_to_me'],
+					   "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases'],
+                       'testplan_show_testcases_newest_versions' => $l18n['right_testplan_show_testcases_newest_versions'],
+                       'testplan_update_linked_testcase_versions' => $l18n['right_testplan_update_linked_testcase_versions'],
+                       "testplan_metrics" => $l18n['desc_testplan_metrics']);
             
   $g_rights_mgttc = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
                           "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
-                          "testproject_delete_executed_testcases" => $l18n['right_testproject_delete_executed_testcases'],
+                          "testcase_freeze" => $l18n['right_testcase_freeze'],
                           "testproject_edit_executed_testcases" => $l18n['right_testproject_edit_executed_testcases'],
-                          "testcase_freeze" => $l18n['right_testcase_freeze']);
+                          "testproject_delete_executed_testcases" => $l18n['right_testproject_delete_executed_testcases'],
+						  "keyword_assignment" => $l18n['desc_keyword_assignment']);
   
-  $g_rights_kw = array("mgt_view_key" => $l18n['desc_mgt_view_key'],
-                       "keyword_assignment" => $l18n['desc_keyword_assignment'],
-                       "mgt_modify_key" => $l18n['desc_mgt_modify_key']);
   
   $g_rights_req = array("mgt_view_req" => $l18n['desc_mgt_view_req'],
                         "monitor_requirement" => $l18n['desc_monitor_requirement'],
@@ -128,49 +122,41 @@ function init_global_rights_maps()
                         "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req'],
                         "req_tcase_link_management" => $l18n['desc_req_tcase_link_management']);
   
-  $g_rights_product = array("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
-                            "project_inventory_management" => $l18n['desc_project_inventory_management'],
-                            "project_inventory_view" => $l18n['desc_project_inventory_view'] );            
+  $g_rights_product = array("testproject_user_role_assignment" => $l18n['desc_testproject_user_role_assignment'],
+                            "cfield_assignment" => $l18n['desc_cfield_assignment'],
+                            "project_inventory_view" => $l18n['desc_project_inventory_view'],
+							"project_inventory_management" => $l18n['desc_project_inventory_management'],
+							"mgt_view_key" => $l18n['desc_mgt_view_key'],
+						    "mgt_modify_key" => $l18n['desc_mgt_modify_key'],
+							"platform_view" => $l18n['desc_platforms_view'],
+                            "platform_management" => $l18n['desc_platforms_management']);            
   
   $g_rights_cf = array("cfield_view" => $l18n['desc_cfield_view'],
                        "cfield_management" => $l18n['desc_cfield_management']);
   
   
-  $g_rights_platforms = array("platform_view" => $l18n['desc_platforms_view'],
-                              "platform_management" => $l18n['desc_platforms_management']);
 
-  $g_rights_issuetrackers = array("issuetracker_view" => $l18n['desc_issuetrackers_view'],
-                                  "issuetracker_management" => $l18n['desc_issuetrackers_management']);
-
-  $g_rights_codetrackers = array("codetracker_view" => $l18n['desc_codetrackers_view'],
-                                 "codetracker_management" => $l18n['desc_codetrackers_management']);
+  $g_rights_trackers = array("issuetracker_view" => $l18n['desc_issuetrackers_view'],
+                             "issuetracker_management" => $l18n['desc_issuetrackers_management'],
+							 "codetracker_view" => $l18n['desc_codetrackers_view'],
+                             "codetracker_management" => $l18n['desc_codetrackers_management']);
 
 
-  // $g_rights_reqmgrsystems = array("reqmgrsystem_view" => $l18n['desc_reqmgrsystems_view'],
-  //                                 "reqmgrsystem_management" => $l18n['desc_reqmgrsystems_management']);
-
-
-  // Global means test project independent.
-  //
-  // $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
-  //                                "role_management" => $l18n['desc_role_management'],
-  //                                "user_role_assignment" => $l18n['desc_user_role_assignment']); 
   
-  $g_rights_users_global = array("mgt_users" => $l18n['desc_mgt_modify_users'],
-                                 "role_management" => $l18n['desc_role_management']);
-
-  $g_rights_users = $g_rights_users_global;
+  $g_rights_users = array("mgt_users" => $l18n['desc_mgt_modify_users'],
+                            "role_management" => $l18n['desc_role_management'],
+							"user_role_assignment" => $l18n['desc_user_role_assignment']); 
               
-  $g_rights_system = array ("mgt_view_events" => $l18n['desc_mgt_view_events'],
-                            "events_mgt" => $l18n['desc_events_mgt'],
-                            "mgt_plugins" => $l18n['desc_mgt_plugins']);
+  $g_rights_system = array ("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
+                            "mgt_plugins" => $l18n['desc_mgt_plugins'],
+							"mgt_view_events" => $l18n['desc_mgt_view_events'],
+                            "events_mgt" => $l18n['desc_events_mgt']);
 
 
               
-  $g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
-  unset($g_propRights_global["testproject_user_role_assignment"]);
+  $g_propRights_global = array_merge($g_rights_users,$g_rights_system,$g_rights_trackers,$g_rights_cf);
     
-  $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
+  $g_propRights_product = array_merge($g_propRights_global,$g_rights_product, $g_rights_mgttc,$g_rights_req);
 }
 
 

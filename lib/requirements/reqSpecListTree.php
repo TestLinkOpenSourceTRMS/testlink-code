@@ -74,5 +74,5 @@ function initializeGui($argsObj)
  */
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'mgt_view_req');
+	return ($user->hasRight($db,'mgt_view_req') || $user->hasRight($db,'mgt_modify_req'));
 }

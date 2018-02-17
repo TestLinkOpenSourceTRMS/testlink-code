@@ -162,16 +162,13 @@ function buildMatrix(&$guiObj,&$argsObj)
                    array('title_key' => 'th_role', 'width' => 150),
                    array('title_key' => 'th_locale', 'width' => 150),
                    array('title_key' => 'th_active', 'type' => 'oneZeroImage', 'width' => 50),
-                   array('title_key' => 'expiration', 'width' => 50),
+                   array('title_key' => 'expiration_date', 'width' => 50),
                    array('title' => 'disableUser', 'tlType' => 'disableUser', 'width' => 150),
                    array('hidden' => true, 'title' => 'hidden_role_id', 'col_id' => 'role_id'),
                    array('hidden' => true, 'title' => 'hidden_user_id', 'col_id' => 'user_id'),
                    array('hidden' => true, 'title' => 'hidden_login', 'col_id' => 'login'),
                    array('hidden' => true, 'title' => 'hidden_is_special', 'col_id' => 'is_special'));
 
-  $lbl = init_labels(array('th_login' => null,'th_first_name' => null,
-                           'th_last_name' => null,'expiration' => null,
-                           'th_email' => null));
 
   $loop2do = count($guiObj->matrix);
  

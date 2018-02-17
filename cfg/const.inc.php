@@ -22,7 +22,7 @@ define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_VERSION_NUMBER', '1.9.17'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [Dev](Alan Turing)'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [Dev](Alan Turing)', true); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Latest Database version that is used to give users feedback 
@@ -846,13 +846,15 @@ $tlCfg->guiTopMenu[1] = array('label' => 'home','url' => 'index.php','right' => 
 $tlCfg->guiTopMenu[2] = array('label' => 'title_requirements',
                               'imgKey' => 'requirements',
                               'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
-                              'right' => 'mgt_view_req','condition'=>'ReqMgmtEnabled',
+							  'right' => array('mgt_view_req','mgt_modify_req'),
+                              'condition'=>'ReqMgmtEnabled',
                               'shortcut'=>'r','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[3] = array('label' => 'title_specification',
                               'imgKey' => 'test_specification', 
                               'url' => 'lib/general/frmWorkArea.php?feature=editTc',
-                              'right' => 'mgt_view_tc','condition'=>'',
+							  'right' => array('mgt_view_tc','mgt_modify_tc'),
+                              'condition'=>'',
                               'shortcut'=>'t','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[4] = array('label' => 'title_execute',

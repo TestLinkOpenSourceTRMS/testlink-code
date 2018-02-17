@@ -65,8 +65,12 @@ viewer for test case in test specification
 {$bulkOpAction="lib/testcases/tcBulkOp.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
 {$bulkOpAction="$basehref$bulkOpAction"}
 
+{if in_array($args_testcase.author_id, $args_users)}
+   {$author_userinfo=$args_users[$args_testcase.author_id]}
+{else}
+   {$author_userinfo=""}
+{/if}
 
-{$author_userinfo=$args_users[$args_testcase.author_id]}
 {$updater_userinfo=""}
 
 {if $args_testcase.updater_id != ''}

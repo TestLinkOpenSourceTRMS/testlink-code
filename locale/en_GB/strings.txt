@@ -1191,6 +1191,8 @@ $TLS_title_execution_notes = "Execution notes";
 // ----- gui/templates/rolesedit.tpl -----
 $TLS_caption_define_role = "Define role";
 $TLS_caption_possible_affected_users = "Possibly affected users by role delete operation";
+$TLS_caption_global_roles_table = "Rights used only in a global context, based on role affected to the user in user management";
+$TLS_caption_project_testplan_roles_table = "Rights used in the current context, based on role affected to the user in each project / Test plan";
 $TLS_enter_role_notes = "Role description";
 $TLS_menu_assign_testplan_roles = "Assign Test Plan roles";
 $TLS_menu_define_roles = "New role";
@@ -1201,18 +1203,15 @@ $TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
 $TLS_th_execution_rights = 'Test Case Execution';
 $TLS_th_cf_rights = "Custom field";
-$TLS_th_issuetracker_rights = 'Issue Tracker';
-$TLS_th_codetracker_rights = 'Code Tracker';
-$TLS_th_kw_rights = $TLS_keyword;
-$TLS_th_mgttc_rights = "Test Case management";
-$TLS_th_platform_rights = $TLS_platform;
+$TLS_th_trackers_rights = "Third Part Tools Integration";
+$TLS_th_mgttc_rights = "Test Case";
 $TLS_th_product_rights = "Test Project";
 $TLS_th_req_rights = "Requirement";
 $TLS_th_rights = "Rights";
 $TLS_th_rolename = "Role name";
 $TLS_th_system_rights = "System rights";
 $TLS_th_tp_rights = "Test Plan";
-$TLS_th_user_rights = "User";
+$TLS_th_user_rights = "Users/Roles";
 $TLS_title_user_mgmt = "User Management";
 $TLS_warning_empty_role_name = "Please give a name to Role";
 $TLS_warning_modify_role = "Really modify the role?";
@@ -1319,6 +1318,7 @@ $TLS_th_last_name = "Last  Name";
 $TLS_th_locale = "Locale";
 $TLS_th_login = "Login";
 $TLS_th_role = "Role";
+$TLS_expiration_date = "Expiration date";
 $TLS_th_api = "API Key";
 
 //$TLS_api_gen_key_action = "generate";
@@ -2257,40 +2257,65 @@ $TLS_platform_number_help = 'Number of linked Platforms';
 $TLS_build_number_help = 'Number of Builds';
 
 // ----- gui/templates/mainPage_left.tpl -----
-$TLS_href_assign_user_roles = "Assign User Roles";
-$TLS_href_browse_tc = "Browse Test Cases";
-$TLS_href_cfields_management = "Define Custom Fields";
-$TLS_href_cfields_tproject_assign = "Assign Custom Fields";
-$TLS_href_edit_tc = "Test Specification";
-$TLS_href_inventory = "Inventory";
-$TLS_href_inventory_management = 'Inventory management';
-$TLS_href_keywords_assign = "Assign Keywords";
-$TLS_href_keywords_manage = "Keyword Management";
-$TLS_href_print_tc = "Test Specification Document";
-$TLS_href_print_req = "Requirement Specification Document";
-$TLS_href_req_assign = "Assign Requirements";
-$TLS_href_req_spec = "Requirement Specification";
-$TLS_href_req_overview = "Requirement Overview";
-$TLS_href_req_monitor_overview = "Requirement Monitoring Overview";
-$TLS_href_roles_management = "Role Management";
-$TLS_href_search_tc = "Search Test Cases";
-$TLS_href_tproject_management = "Test Project Management";
-$TLS_href_user_management = "User Management";
-$TLS_href_admin_modules = "System Configuration";
-$TLS_title_test_spec = "Test Specification";
-$TLS_title_documentation = "Documentation";
-$TLS_title_product_mgmt = "Test Project";
-$TLS_href_plan_define_priority = "Test Plan priority";
-$TLS_href_my_testcase_assignments = "Test Cases Assigned to Me";
-$TLS_href_platform_management = "Platform Management";
+$TLS_href_admin_modules = "Instance Configuration";
+$TLS_href_tproject_management = "Test Projects Management";
 $TLS_href_issuetracker_management = "Issue Tracker Management";
 $TLS_href_codetracker_management = "Code Tracker Management";
-$TLS_href_reqmgrsystem_management = "Req. Management System Management";
-$TLS_system_config = 'System';
-$TLS_title_plugins = 'Plugins';
+$TLS_href_user_management = "User Management";
+$TLS_href_roles_management = "Role Management";
+$TLS_href_cfields_management = "Custom Fields Management";
 
+$TLS_title_product_mgmt = "Project";
+$TLS_href_cfields_tproject_assign = "Assign Custom Fields";
+$TLS_href_assign_user_roles = "Assign Users Roles";
+$TLS_href_keywords_manage = "Keyword Management";
+$TLS_href_platform_management = "Platform Management";
+$TLS_href_inventory_management = 'Inventory Management';
+
+$TLS_href_req_spec = "Requirement Specification";
+$TLS_href_req_monitor_overview = "Requirement Monitoring Overview";
+$TLS_href_req_assign = "Assign Requirements";
+$TLS_href_req_overview = "Requirement Overview";
+$TLS_href_print_req = "Requirement Specification Document";
 $TLS_href_search_req = "Search Requirements";
 $TLS_href_search_req_spec = "Search Requirement Specifications";
+
+$TLS_title_test_spec = "Test Cases";
+$TLS_href_edit_tc = "Test Specification";
+$TLS_href_browse_tc = "Browse Test Specification";
+$TLS_href_search_tc = "Search Test Cases";
+$TLS_href_keywords_assign = "Assign Keywords";
+$TLS_link_report_test_cases_created_per_user = "Test Cases created per User";
+
+// ----- gui/templates/mainPage_right.tpl -----
+$TLS_current_test_plan = "Current Test Plan";
+$TLS_testplan_role = "Test Plan role ";
+$TLS_msg_no_rights_for_tp = "<br /> You don't have permissions for any ACTIVE Test Plan";
+
+$TLS_title_test_plan_mgmt = "Test Plan";
+$TLS_href_plan_management = "Test Plan Management";
+$TLS_href_build_new = "Builds / Releases";
+$TLS_href_assign_tp_user_roles = $TLS_href_assign_user_roles;
+$TLS_href_plan_mstones = "Milestones";
+
+$TLS_title_test_execution = "Test Execution";
+$TLS_href_execute_test = "Execute Tests";
+$TLS_href_exec_ro_access = "Access Execute Tests RO";
+$TLS_href_my_testcase_assignments = "Test Cases Assigned to Me";
+$TLS_href_rep_and_metrics = "Test Reports and Metrics";
+$TLS_href_metrics_dashboard = "Metrics Dashboard";
+
+$TLS_title_test_case_suite = "Test Plan Contents";
+$TLS_href_platform_assign = "Add / Remove Platforms";
+$TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
+$TLS_href_tc_exec_assignment = "Assign Test Case Execution";
+$TLS_href_plan_assign_urgency = "Set Urgent Tests";
+$TLS_href_update_tplan = "Update Linked Test Case Versions";
+$TLS_href_newest_tcversions = "Show Test Cases Newest Versions";
+
+$TLS_title_plugins = "Plugins";
+
+// ----- gui\templates\requirements\reqSearchForm.tpl -----
 $TLS_caption_search_form_req = "Search Requirements";
 $TLS_caption_search_form_req_spec = "Search Requirement Specifications";
 $TLS_title_search_req = "Search";
@@ -2302,39 +2327,21 @@ $TLS_req_specs = "Req. Specs";
 $TLS_req_expected_coverage = "Expected no. of testcases";
 $TLS_has_relation_type = "Has relation of type";
 $TLS_reqid = "Requirement ID";
+
+
+// ----- gui\templates\requirements\reqSearchResults.tpl -----
 $TLS_info_search_req = "This list shows all requirements which match the search " .
                        "criteria.<br />You can open a matching version/revision " .
                        "of the requirement by clicking a link to the right of " .
                        "the requirement title.<br />To open the whole requirement " .
                        "use the edit icon on the left.";
+					   
+// ----- gui\templates\requirements\reqSpecSearchResults.tpl -----
 $TLS_info_search_req_spec = "This list shows all requirement specifications which match the " .
                             "search criteria.<br />You can open a matching revision of the " .
                             "requirement specification by clicking a link to the right of " .
                             "the requirement specification title.<br />To open the whole " .
                             "requirement specification use the edit icon on the left.";
-
-// ----- gui/templates/mainPage_right.tpl -----
-$TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
-$TLS_href_build_new = "Builds / Releases";
-$TLS_href_execute_test = "Execute Tests";
-$TLS_href_exec_ro_access = "Access Execute Tests RO";
-$TLS_href_metrics_dashboard = "Metrics Dashboard";
-$TLS_href_newest_tcversions = "Show Test Cases Newest Versions";
-$TLS_href_plan_assign_urgency = "Set Urgent Tests";
-$TLS_href_plan_management = "Test Plan Management";
-$TLS_href_plan_mstones = "Milestones";
-$TLS_href_rep_and_metrics = "Test Reports and Metrics";
-$TLS_href_tc_exec_assignment = "Assign Test Case Execution";
-$TLS_href_update_tplan = "Update Linked Test Case Versions";
-$TLS_href_platform_assign = "Add / Remove Platforms";
-$TLS_current_test_plan = "Current Test Plan";
-$TLS_href_upd_mod_tc = "Update modified Test Cases";
-$TLS_msg_no_rights_for_tp = "<br /> You don't have permissions for any ACTIVE Test Plan";
-$TLS_testplan_role = "Test Plan role ";
-$TLS_title_test_case_suite = "Test Plan contents";
-$TLS_title_test_execution = "Test Execution";
-$TLS_title_test_plan_mgmt = "Test Plan";
-
 
 // ----- gui/templates/metricsDashboard.tpl -----
 $TLS_info_metrics_dashboard_progress = "The project progress is calculated by summing up all executions " .
@@ -2426,6 +2433,7 @@ $TLS_runby = "Run By";
 // ----- lib/functions/roles.inc.php -----
 $TLS_desc_cfield_management = "Custom field management";
 $TLS_desc_cfield_view = "Custom field view (read only access)";
+$TLS_desc_cfield_assignment = "Assign Custom fields";
 $TLS_desc_events_mgt = "Event management";
 
 $TLS_desc_issuetrackers_view = "Issue Tracker view (read only access)";
@@ -2441,7 +2449,7 @@ $TLS_desc_keyword_assignment = "Keyword Assignment";
 
 $TLS_desc_mgt_unfreeze_req = "Freeze/Unfreeze requirement";
 $TLS_desc_mgt_modify_key = "Keyword management";
-$TLS_desc_mgt_modify_product = "Test Project management";
+$TLS_desc_mgt_modify_product = "Projects Management";
 $TLS_desc_mgt_modify_req = "Requirement management";
 $TLS_desc_mgt_modify_tc = "Test Case create/edit";
 $TLS_desc_mgt_modify_users = "User management";
@@ -2462,8 +2470,11 @@ $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
 $TLS_desc_testplan_metrics = "Test Plan metrics";
 $TLS_desc_testplan_planning = "Test Plan planning";
-$TLS_desc_user_role_assignment = "Role assignment";
-$TLS_desc_monitor_requirement = 'Monitor Requirements';
+$TLS_desc_user_role_assignment = "Assign users rights (Global Level)";
+$TLS_desc_testproject_user_role_assignment = "Assign users rights (Test Project Level)";
+$TLS_desc_testplan_user_role_assignment = "Assign users rights (Test Plan Level)";
+$TLS_desc_monitor_requirement = "Monitor Requirements";
+$TLS_desc_exec_assign_testcases = "Assign TestCases Execution";
 
 
 $TLS_error_duplicate_rolename = "There's already a role with that name!";
@@ -2483,7 +2494,7 @@ $TLS_right_testproject_edit_executed_testcases = "Edit Executed Test Cases";
 $TLS_right_testplan_milestone_overview = 'Milestone Overview';
 $TLS_right_exec_testcases_assigned_to_me = 'Show Test Cases Assigned to me';
 $TLS_right_testproject_metrics_dashboard = 'Test Project Metrics Dashboard';
-$TLS_right_testplan_add_remove_platforms = 'Add/Remove Platforms';
+$TLS_right_testplan_add_remove_platforms = 'Assign Platforms';
 $TLS_right_testplan_update_linked_testcase_versions = 'Update Linked Test Case Versions';
 $TLS_right_testplan_set_urgent_testcases = 'Set Urgent Test Cases';
 $TLS_right_testplan_show_testcases_newest_versions = 'Show Test Cases Newest Versions';
@@ -2924,7 +2935,6 @@ $TLS_show_closed_builds_btn = "Show also closed builds";
 
 
 // ----- lib/testcases/tcCreatedPerUser.php -----
-$TLS_link_report_test_cases_created_per_user = "Test Cases created per User";
 $TLS_testcases_created_per_user = 'Test Project: %s - Test Cases created per User';
 
 
@@ -3297,11 +3307,11 @@ $TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned from Test Pro
 $TLS_audit_cfield_display_order_changed = "Display order of custom fields from Test Project '{%1}' was saved";
 $TLS_audit_cfield_activated = "Custom field '{%1}' was activated on Test Project '{%2}'";
 $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Project '{%2}'";
-
 $TLS_audit_cfield_required_on = "Custom field '{%1}' was set REQUIRED on Test Project '{%2}'";
 $TLS_audit_cfield_required_off = "Custom field '{%1}' was set NOT REQUIRED on Test Project '{%2}'";
-
-
+$TLS_audit_cfield_monitorable_on = "Custom field '{%1}' was set MONITORABLE on Test Project '{%2}'";
+$TLS_audit_cfield_monitorable_off = "Custom field '{%1}' was set not MONITORABLE on Test Project '{%2}'";
+$TLS_audit_cfield_location_changed = "Custom field location has been saved on Test Project '{%2}'";
 
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
 $TLS_audit_user_saved = "User '{%1}' was saved";

@@ -13,12 +13,8 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2016 TestLink community 
+ * @Copyright   2005,2018 TestLink community 
  * @link        http://www.testlink.org
- * @since       1.5
- *
- * @internal revisions
- * @since 1.9.16
  *
  */
 
@@ -205,8 +201,13 @@ function setSessionTestPlan($tplan_info)
     $_SESSION['testplanName'] = $tplan_info['name'];
 
     // Save testplan id for next session
-    $cookie_path = config_get('cookie_path');
-    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, $cookie_path);
+    $ckObj = new stdClass();
+
+    $ckCfg = config_get('cookie');
+    $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' . 1;
+    $ckObj->value = $tplan_info['id'];
+
+    tlSetCookie($ckObj);
 
     tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
   }
@@ -417,15 +418,17 @@ function initProject(&$db,$hash_user_sel)
   // Refresh test project id after call to setSessionProject
   $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   $tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
+
   // Now we need to validate the TestPlan
-  // dolezalz, havlatm: added remember the last selection by cookie
-  $cookieName = "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
+  $ckObj = new stdClass();
+  $ckCfg = config_get('cookie');
+  $ckObj->name = $ckCfg->prefix .  "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
+
   if($user_sel["tplan_id"] != 0)
   {
-    $tplan_id = $user_sel["tplan_id"];
-  
-    $cookie_path = config_get('cookie_path');  
-    setcookie($cookieName, $tplan_id, time()+60*60*24*90, $cookie_path);
+    $ckObj->value = $user_sel["tplan_id"];
+    $ckObj->expire = time()+60*60*24*90;
+    tlSetCookie($ckObj);
   } 
   elseif (isset($_COOKIE[$cookieName])) 
   {
@@ -1516,3 +1519,18 @@ function getSSODisable()
 {
   return isset($_REQUEST['ssodisable']) ? 1 : 0;
 }
+
+/**
+ *
+ */
+function tlSetCookie($ckObj) {
+  $stdCk = config_get('cookie');
+
+  foreach($ckObj as $prop => $value) {
+    $stdCk->$prop = $value;
+  }
+  
+  setcookie($stdCk->name, $stdCk->value, $stdCk->expire,$stdCk->path,
+            $stdCk->domain,$stdCk->secure,$stdCk->httponly);
+}
+

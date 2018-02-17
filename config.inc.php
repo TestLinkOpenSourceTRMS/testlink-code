@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2017, TestLink community
+ * @copyright   2005-2018, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -30,6 +30,7 @@
 /** @global array Global configuration class */
 $tlCfg = new stdClass();
 $tlCfg->api = new stdClass();
+$tlCfg->cookie = new stdClass();
 $tlCfg->document_generator = new stdClass();
 
 $tlCfg->spec_cfg = new stdClass();
@@ -113,15 +114,41 @@ $tlCfg->instance_id = 'TLM';
 
 /**
  * Copied from MantisBT
+ * 
+ * Prefix for all TestLink cookies
+ * This should be an identifier which does not include spaces or periods,
+ * and should be unique per TestLink installation, especially if
+ * $tlCfg->cookie_path is not restricting the cookies' scope to the actual
+ * TestLink directory.
+ * @see $tlCfg->cookie->path
+ * @global string $tlCfg->cookie->prefix
+ */
+$tlCfg->cookie->prefix = 'TESTLINK197';
+
+
+/**
+ * @link http://php.net/function.setcookie
+ *
+ */
+$tlCfg->cookie->expire = (time()+60*60*24*30); // 30 days;
+$tlCfg->cookie->domain = '';
+$tlCfg->cookie->secure = false;
+$tlCfg->cookie->httponly = false;
+
+/**
+ * Copied from MantisBT
  *
  * Specifies the path under which a cookie is visible
  * All scripts in this directory and its sub-directories will be able
- * to access MantisBT cookies.
- * It is recommended to set this to the actual MantisBT path.
+ * to access TestLink cookies.
+ * It is recommended to set this to the actual TestLink path.
  * @link http://php.net/function.setcookie
- * @global string $tlCfg->cookie_path
+ * @global string $tlCfg->cookie->path
  */
- $tlCfg->cookie_path = '/';
+ $tlCfg->cookie->path = '/';
+
+
+
 
 
 /* [LOCALIZATION] */

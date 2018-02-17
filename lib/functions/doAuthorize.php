@@ -8,7 +8,7 @@
  * @filesource  doAuthorize.php
  * @package     TestLink
  * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
- * @copyright   2003-2017, TestLink community 
+ * @copyright   2003-2018, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -128,9 +128,12 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     $user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN);
 
     // Need to do set COOKIE following Mantis model
-    $expireOnBrowserClose=false;
-    $auth_cookie_name = config_get('auth_cookie');
-    $cookie_path = config_get('cookie_path');    
+    $ckCfg = config_get('cookie');    
+
+    $ckObj = new stdClass();
+    $ckObj->name = config_get('auth_cookie');
+    $ckObj->value = $user->getSecurityCookie();
+    $ckObj->expire = $expireOnBrowserClose = false;
 
     // IMPORTANT DEVELOPMENT DEBUG NOTICE
     // From PHP Manual
@@ -139,7 +142,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
     // (this is a protocol restriction). This requires that you place calls to this function 
     // prior to any output, including <html> and <head> tags as well as any whitespace.
     //
-    setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,$cookie_path);      
+    tlSetCookie($ckObj);
 
     // Disallow two sessions within one browser
     if ($my['options']['doSessionExistsCheck'] && 
@@ -197,10 +200,13 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
     if( $login_exists && $user->isActive)
     {
       // Need to do set COOKIE following Mantis model
-      $expireOnBrowserClose=false;
-      $auth_cookie_name = config_get('auth_cookie');
-      $cookie_path = config_get('cookie_path');
-      setcookie($auth_cookie_name,$user->getSecurityCookie(),$expireOnBrowserClose,$cookie_path);      
+      $ckCfg = config_get('cookie');    
+
+      $ckObj = new stdClass();
+      $ckObj->name = config_get('auth_cookie');
+      $ckObj->value = $user->getSecurityCookie();
+      $ckObj->expire = $expireOnBrowserClose = false;
+      tlSetCookie($ckObj);
 
       // Disallow two sessions within one browser
       if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
@@ -395,11 +401,14 @@ function doSessionSetUp(&$dbHandler,&$userObj)
   $ret = null;
 
   // Need to do set COOKIE following Mantis model
-  $expireOnBrowserClose=false;
-  $auth_cookie_name = config_get('auth_cookie');
-  $cookie_path = config_get('cookie_path');
-  setcookie($auth_cookie_name,$userObj->getSecurityCookie(),$expireOnBrowserClose,
-            $cookie_path);      
+  $ckCfg = config_get('cookie');    
+
+  $ckObj = new stdClass();
+  $ckObj->name = config_get('auth_cookie');
+  $ckObj->value = $user->getSecurityCookie();
+  $ckObj->expire = $expireOnBrowserClose = false;
+  tlSetCookie($ckObj);
+
 
   // Block two sessions within one browser
   if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))

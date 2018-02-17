@@ -822,9 +822,11 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
   // ------------------------------------------------------------------------------
   if(!is_null($tsuite_info))
   {
-    $cookieKey = 'TL_execSetResults_tsdetails_view_status';
-    $exec_cfg = config_get('exec_cfg');
+    $ckObj = new stdClass();
+    $ckCfg = config_get('cookie');
+    $cookieKey = $ckCfg->prefix . 'TL_execSetResults_tsdetails_view_status';
 
+    $exec_cfg = config_get('exec_cfg');
     $a_tsvw=array();
     $a_ts=array();
     $a_tsval=array();
@@ -866,7 +868,8 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
 
     if( count($a_tsval) > 0 )
     {
-      setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME,$cfgObj->cookie_path);
+      $ckObj->value = $a_tsval[0];
+      tlSetCookie($ckObj)
     }
       
     $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
@@ -1251,7 +1254,7 @@ function getCfg()
   $cfg->testcase_cfg = config_get('testcase_cfg'); 
   $cfg->editorCfg = getWebEditorCfg('execution');
   
-  $cfg->cookie_path = config_get('cookie_path');  
+  $cfg->cookie = config_get('cookie');  
   return $cfg;
 }
 
@@ -2164,7 +2167,7 @@ function getSettingsAndFilters(&$argsObj)
  */
 function manageCookies(&$argsObj,$cfgObj)
 {
-  $cookiePrefix = 'TL_execSetResults_';
+  $cookieExecPrefix = 'TL_execSetResults_';
       
   // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
   //            see smarty_assign_tsuite_info() in this file.  
@@ -2176,7 +2179,7 @@ function manageCookies(&$argsObj,$cfgObj)
 
   foreach($key4cookies as $key => $cfgKey)
   {
-    $cookieKey = $cookiePrefix . $key;
+    $cookieKey = $cookieExecPrefix . $key;
     if( !isset($_REQUEST[$key]) )
     {
       // First time we are entered here => we can need to understand how to proceed
@@ -2201,7 +2204,9 @@ function manageCookies(&$argsObj,$cfgObj)
     $argsObj->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
     if( isset($key4cookies[$key]) )
     {
-      setcookie($cookiePrefix . $key,$argsObj->$key,TL_COOKIE_KEEPTIME, $cfgObj->cookie_path);
+      $ckObj->name = $cfObj->cookie->prefix . $cookieExecPrefix . $key;
+      $ckObj->value = $argsObj->$key;
+      tlSetCookie($ckObj);
     }
   }
 }  

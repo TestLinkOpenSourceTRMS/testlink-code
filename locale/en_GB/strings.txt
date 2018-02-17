@@ -3853,5 +3853,6 @@ $TLS_applyExecTypeChangeToAllSteps = "Apply To All Steps";
 $TLS_user_bulk_action = 'Users for Bulk Actions';
 $TLS_title_issuetracker_mgmt = 'Issue Trackers';
 $TLS_title_codetracker_mgmt = 'Code Trackers';
+$TLS_desc_cfield_assignment = "Custom field assignment";
 
 // ----- END ------------------------------------------------------------------

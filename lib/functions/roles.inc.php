@@ -9,8 +9,8 @@
  *
  * @filesource  roles.inc.php
  * @package     TestLink
- * @author      Martin Havlat, Chad Rosen
- * @copyright   2006-2017, TestLink community 
+ * @author      Martin Havlat, Chad Rosen, Francisco Mancardi
+ * @copyright   2006-2018, TestLink community 
  * 
  */
 
@@ -68,6 +68,7 @@ function init_global_rights_maps()
 				   'desc_req_tcase_link_management' => null,'desc_mgt_modify_product' => null,
                    'desc_project_inventory_management' => null,'desc_project_inventory_view' => null,
                    'desc_cfield_view' => null,'desc_cfield_management' => null,
+                   'desc_cfield_assignment' => null,
                    'desc_platforms_view' => null,'desc_platforms_management' => null,
                    'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
                    'desc_codetrackers_view' => null,'desc_codetrackers_management' => null,
@@ -128,9 +129,11 @@ function init_global_rights_maps()
                         "mgt_unfreeze_req" => $l18n['desc_mgt_unfreeze_req'],
                         "req_tcase_link_management" => $l18n['desc_req_tcase_link_management']);
   
-  $g_rights_product = array("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
-                            "project_inventory_management" => $l18n['desc_project_inventory_management'],
-                            "project_inventory_view" => $l18n['desc_project_inventory_view'] );            
+  $g_rights_product = 
+    array("mgt_modify_product" => $l18n['desc_mgt_modify_product'],
+          "cfield_assignment" => $l18n['desc_cfield_assignment'],
+          "project_inventory_management" => $l18n['desc_project_inventory_management'],
+          "project_inventory_view" => $l18n['desc_project_inventory_view'] );            
   
   $g_rights_cf = array("cfield_view" => $l18n['desc_cfield_view'],
                        "cfield_management" => $l18n['desc_cfield_management']);

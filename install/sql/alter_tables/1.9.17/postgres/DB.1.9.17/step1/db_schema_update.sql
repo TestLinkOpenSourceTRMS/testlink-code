@@ -63,6 +63,7 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
 INSERT INTO /*prefix*/rights (id,description) VALUES (50,'monitor_requirement');
 INSERT INTO /*prefix*/rights (id,description) VALUES (51,'codetracker_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (53,'cfield_assignment');
 
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);

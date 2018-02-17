@@ -3778,4 +3778,5 @@ $TLS_multiple_entities_search = "Rechercher dans plusieurs entités";
 $TLS_no_access_to_feature = "Vous n'avez pas les droits nécessaires pour accéder à la fonctionnalité";
 
 $TLS_applyExecTypeChangeToAllSteps = "Appliquer à toutes les étapes";
+$TLS_desc_cfield_assignment = "Affectation des champs personnalisés";
 // ----- END ------------------------------------------------------------------

@@ -17,6 +17,10 @@
              href_metrics_dashboard,href_add_remove_test_cases,
              href_exec_ro_access"}
 
+{$planView="lib/plan/planView.php"}
+{$buildView="lib/plan/buildView.php?tplan_id="}
+{$mileView="lib/plan/planMilestonesView.php"}
+{$platformAssign="lib/platforms/platformsAssign.php?tplan_id="}
 
 {$menuLayout=$tlCfg->gui->layoutMainPageRight}
 {$display_right_block_1=false}
@@ -95,10 +99,6 @@
 
   {* ----------------------------------------------------------------------------- *}
   {if $display_right_block_1}
-    {$planView="lib/plan/planView.php"}
-    {$buildView="lib/plan/buildView.php?tplan_id="}
-    {$mileView="lib/plan/planMilestonesView.php"}
-
     <div class="list-group" style="{$divStyle}">
       {if $gui->grants.mgt_testplan_create == "yes"}
        		<a href="{$planView}" class="list-group-item" style="{$aStyle}">{$labels.href_plan_management}</a>
@@ -142,7 +142,6 @@
 	{/if}
 
 	{if $display_right_block_3}
-	  {$platformAssign="lib/platforms/platformsAssign.php?tplan_id="}
     <div class="list-group" style="{$divStyle}">
     {if $gui->grants.testplan_add_remove_platforms == "yes"}
   	  <a href="{$platformAssign}{$gui->testplanID}" class="list-group-item" style="{$aStyle}">{$labels.href_platform_assign}</a>

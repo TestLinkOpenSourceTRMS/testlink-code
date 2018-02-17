@@ -430,9 +430,9 @@ function initProject(&$db,$hash_user_sel)
     $ckObj->expire = time()+60*60*24*90;
     tlSetCookie($ckObj);
   } 
-  elseif (isset($_COOKIE[$cookieName])) 
+  elseif (isset($_COOKIE[$ckObj->name])) 
   {
-    $tplan_id = intval($_COOKIE[$cookieName]);
+    $tplan_id = intval($_COOKIE[$ckObj->name]);
   }
   
   // check if the specific combination of testprojectid and testplanid is valid

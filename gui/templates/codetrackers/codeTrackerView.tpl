@@ -7,8 +7,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 
+
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {lang_get var='labels'
-          s='th_codetracker,th_codetracker_type,th_delete,th_description,menu_assign_kw_to_tc,
+          s='th_codetracker,th_codetracker_type,th_delete,th_description,menu_assign_kw_to_tc,title_codetracker_mgmt,
           	 btn_create,alt_delete,th_codetracker_env,check_bts_connection,bts_check_ok,bts_check_ko'}
 
 {lang_get s='warning_delete' var="warning_msg" }
@@ -21,9 +25,7 @@ var del_action=fRoot+'lib/codetrackers/codeTrackerEdit.php?doAction=doDelete&id=
  
 </head>
 <body {$body_onload}>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
-
+<h1 class="title">{$labels.title_codetracker_mgmt}</h1>
 <div class="workBack">
 	{include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 	{if $gui->items != ''}

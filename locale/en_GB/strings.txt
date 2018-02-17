@@ -3851,4 +3851,7 @@ $TLS_no_access_to_feature = 'You do not have enough rights to access the feature
 $TLS_applyExecTypeChangeToAllSteps = "Apply To All Steps";
 
 $TLS_user_bulk_action = 'Users for Bulk Actions';
+$TLS_title_issuetracker_mgmt = 'Issue Trackers';
+$TLS_title_codetracker_mgmt = 'Code Trackers';
+
 // ----- END ------------------------------------------------------------------

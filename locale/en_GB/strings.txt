@@ -307,6 +307,11 @@ $TLS_btn_reorder_steps = "Reorder Steps";
 $TLS_btn_resequence_steps = "Resequence Steps";
 $TLS_btn_view_history = "View history";
 $TLS_btn_testcases_table_view = 'Test Cases table view';
+$TLS_btn_remove_all_users = "Remove ALL Assignments";
+$TLS_btn_apply_assign = "Apply Assign";
+$TLS_btn_save_assign = "Save Assignments";
+$TLS_btn_remove = "Remove";
+$TLS_btn_remove_assignments = "Remove Assignments";
 
 
 // Status (used wide)
@@ -3844,4 +3849,6 @@ $TLS_multiple_entities_search = 'Search on multiple entities';
 $TLS_no_access_to_feature = 'You do not have enough rights to access the feature';
 
 $TLS_applyExecTypeChangeToAllSteps = "Apply To All Steps";
+
+$TLS_user_bulk_action = 'Users for Bulk Actions';
 // ----- END ------------------------------------------------------------------

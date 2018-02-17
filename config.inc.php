@@ -786,6 +786,10 @@ $tlCfg->reportsCfg->start_time = '00:00';
 // Shows an extra column which gives the status of the last executed build
 $tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
 
+// Result matrix (resultsTC.php)
+// Shows an extra column which gives the note of the last executed build
+$tlCfg->resultMatrixReport->buildColumns['showNoteLastExecuted'] = true;
+
 // Show build columns in revers order. The latest build is to the left
 $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
 

@@ -253,6 +253,10 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null)
   
   $columns[] = array('title_key' => 'last_execution', 'type' => 'status', 'width' => 100);
 
+  if ($guiObj->matrixCfg->buildColumns['showNoteLastExecuted']) {
+    $columns[] = array('title_key' => 'test_exec_notes', 'type' => 'status', 'width' => 100);
+  }
+
   $fo = !is_null($forceFormat) ? $forceFormat : $argsObj->format; 
   if ($fo == FORMAT_HTML) 
   {
@@ -639,6 +643,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         // Now loop on result on each build, but following order
         $buildExecStatus = null;  
         $execOnLastBuild = null;
+        $lastNote = ['text' => ''];
         foreach($args->builds->idSet as $buildID)
         {
           $r4build['text'] = "";
@@ -693,7 +698,14 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
              $args->builds->latest->id == $buildID)
           {
             $execOnLastBuild = $r4build;  
-          }              
+          }
+
+          if ($gui->matrixCfg->buildColumns['showNoteLastExecuted'] &&
+            $args->builds->latest->id == $buildID &&
+            $rf[$buildID]['execution_notes'])
+          {
+            $lastNote['text'] = $rf[$buildID]['execution_notes'];
+          }
 
           // why we do special reasoning on NOT RUN ???
           if( ($latestExecution[$platformID][$tcaseID]['status'] == 
@@ -722,6 +734,11 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
           
         // Always righmost column will display lastest execution result
         $rows[] = $lexec;
+
+        if ($gui->matrixCfg->buildColumns['showNoteLastExecuted'])
+        {
+          $rows[] = $lastNote;
+        }
          
         $gui->matrix[] = $rows;
         unset($r4build);

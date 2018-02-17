@@ -258,9 +258,10 @@ function init_args()
   }
   
   $args->userSet = null;
-  if(count($_REQUEST['bulk_tester_div']) > 0)
+  $target = $_REQUEST['bulk_tester_div']; 
+  if(isset($target) && count($target) > 0)
   {
-    foreach($_REQUEST['bulk_tester_div'] as $uid)
+    foreach($target as $uid)
     {
       if($uid > 0)
       {
@@ -632,5 +633,5 @@ function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
 
 function checkRights(&$db,&$user)
 {
-  return $user->hasRight($db,'testplan_planning');
+  return $user->hasRight($db,'exec_assign_testcases');
 }

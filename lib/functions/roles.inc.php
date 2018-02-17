@@ -69,6 +69,7 @@ function init_global_rights_maps()
                    'desc_project_inventory_management' => null,'desc_project_inventory_view' => null,
                    'desc_cfield_view' => null,'desc_cfield_management' => null,
                    'desc_cfield_assignment' => null,
+                   'desc_exec_assign_testcases' => null,
                    'desc_platforms_view' => null,'desc_platforms_management' => null,
                    'desc_issuetrackers_view' => null,'desc_issuetrackers_management' => null,
                    'desc_codetrackers_view' => null,'desc_codetrackers_management' => null,
@@ -99,19 +100,21 @@ function init_global_rights_maps()
                                'exec_ro_access' => $l18n['right_exec_ro_access']);
 
   // order is important ?
-  $g_rights_tp = array("mgt_testplan_create" => $l18n['mgt_testplan_create'],
-                       "testplan_create_build" => $l18n['desc_testplan_create_build'],
-                       "testplan_planning" => $l18n['desc_testplan_planning'],
-                       "testplan_execute" => $l18n['desc_testplan_execute'],
-                       "testplan_metrics" => $l18n['desc_testplan_metrics'],
-                       "testplan_user_role_assignment" => $l18n['desc_user_role_assignment'],
-                       "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases'],
-                       "testplan_milestone_overview"  => $l18n['right_testplan_milestone_overview'],
-                       "exec_testcases_assigned_to_me" => $l18n['right_exec_testcases_assigned_to_me'],
-                       'testplan_add_remove_platforms' => $l18n['right_testplan_add_remove_platforms'],
-                       'testplan_update_linked_testcase_versions' => $l18n['right_testplan_update_linked_testcase_versions'],
-                       'testplan_set_urgent_testcases' => $l18n['right_testplan_set_urgent_testcases'],
-                       'testplan_show_testcases_newest_versions' => $l18n['right_testplan_show_testcases_newest_versions']);
+  $g_rights_tp = 
+    array("mgt_testplan_create" => $l18n['mgt_testplan_create'],
+          "testplan_create_build" => $l18n['desc_testplan_create_build'],
+          "testplan_planning" => $l18n['desc_testplan_planning'],
+          "testplan_execute" => $l18n['desc_testplan_execute'],
+          "testplan_metrics" => $l18n['desc_testplan_metrics'],
+          "testplan_user_role_assignment" => $l18n['desc_user_role_assignment'],
+          "exec_assign_testcases" => $l18n['desc_exec_assign_testcases'],
+          "testplan_unlink_executed_testcases" => $l18n['right_testplan_unlink_executed_testcases'],
+          "testplan_milestone_overview"  => $l18n['right_testplan_milestone_overview'],
+          "exec_testcases_assigned_to_me" => $l18n['right_exec_testcases_assigned_to_me'],
+          'testplan_add_remove_platforms' => $l18n['right_testplan_add_remove_platforms'],
+          'testplan_update_linked_testcase_versions' => $l18n['right_testplan_update_linked_testcase_versions'],
+          'testplan_set_urgent_testcases' => $l18n['right_testplan_set_urgent_testcases'],
+          'testplan_show_testcases_newest_versions' => $l18n['right_testplan_show_testcases_newest_versions']);
             
   $g_rights_mgttc = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
                           "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],

@@ -6,11 +6,9 @@
  * @filesource  rolesEdit.php
  *
  * @package     TestLink
- * @copyright   2005-2016, TestLink community
+ * @copyright   2005-2018, TestLink community
  * @link        http://www.testlink.org
  *
- * @internal revisions 
- * @since 1.9.15
  * 
 **/
 require_once("../../config.inc.php");
@@ -252,12 +250,15 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
                                   'duplicate' => 'duplicate');
 
   $actionCfg['highlight'] = array('create' => 'create_role', 'edit' => 'edit_role',
-                                  'doCreate' => 'create_role', 'doUpdate' => 'edit_role',
+                                  'doCreate' => 'create_role', 
+                                  'doUpdate' => 'edit_role',
                                   'duplicate' => 'create_role');
 
-  $guiObj->highlight->$actionCfg = array();
-  $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
+  $guiObj->highlight = new stdClass();
+  $kp = $actionCfg['highlight'][$argsObj->doAction];
+  $guiObj->highlight->$kp = 1;
   $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
+
   $guiObj->role = $roleObj;
   $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
   $guiObj->grants->mgt_view_events = $argsObj->user->hasRight($db,"mgt_view_events");

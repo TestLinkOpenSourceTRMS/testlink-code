@@ -7,7 +7,7 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2012,2017 TestLink community 
+ * @copyright   2012,2018 TestLink community 
  * @filesource  usersViewNew.php
  * @link        http://www.testlink.org/
  *
@@ -162,7 +162,7 @@ function buildMatrix(&$guiObj,&$argsObj)
                    array('title_key' => 'th_role', 'width' => 150),
                    array('title_key' => 'th_locale', 'width' => 150),
                    array('title_key' => 'th_active', 'type' => 'oneZeroImage', 'width' => 50),
-                   array('title_key' => 'expiration', 'width' => 50),
+                   array('title_key' => 'expiration_date', 'width' => 50),
                    array('title' => 'disableUser', 'tlType' => 'disableUser', 'width' => 150),
                    array('hidden' => true, 'title' => 'hidden_role_id', 'col_id' => 'role_id'),
                    array('hidden' => true, 'title' => 'hidden_user_id', 'col_id' => 'user_id'),

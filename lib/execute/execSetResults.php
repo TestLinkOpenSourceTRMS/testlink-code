@@ -2197,13 +2197,14 @@ function manageCookies(&$argsObj,$cfgObj)
         } 
     }
   }
-                        
+             
+  $ckObj = new stdClass();                      
   foreach($key2loop as $key => $value)
   {
     $argsObj->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
     if( isset($key4cookies[$key]) )
     {
-      $ckObj->name = $cfObj->cookie->prefix . $cookieExecPrefix . $key;
+      $ckObj->name = $cfgObj->cookie->prefix . $cookieExecPrefix . $key;
       $ckObj->value = $argsObj->$key;
       tlSetCookie($ckObj);
     }

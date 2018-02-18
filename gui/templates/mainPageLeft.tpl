@@ -38,8 +38,12 @@
 {/if}
 
 {if $gui->testprojectID && 
-   ($gui->grants.cfield_management == "yes" || $gui->grants.issuetracker_management ||
-    $gui->grants.codetracker_management || $gui->grants.issuetracker_view || $gui->grants.codetracker_view)}
+   ($gui->grants.cfield_management || 
+    $gui->grants.cfield_assignment || 
+    $gui->grants.issuetracker_management ||
+    $gui->grants.codetracker_management || 
+    $gui->grants.issuetracker_view || 
+    $gui->grants.codetracker_view)}
    {$display_left_block_2=true}
 {/if}
 

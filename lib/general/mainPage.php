@@ -48,6 +48,7 @@ $userID = $currentUser->dbID;
 $gui = new stdClass();
 $gui->grants = getGrants($db,$user,$userIsBlindFolded);
 $gui->hasTestCases = false;
+
 if($gui->grants['view_tc'])
 { 
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
@@ -235,6 +236,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'view_tc' => "mgt_view_tc",
                        'view_testcase_spec' => "mgt_view_tc",
                        'project_inventory_view' => 'project_inventory_view',
+                       'project_inventory_management' => 'project_inventory_management',
                        'modify_tc' => 'mgt_modify_tc',
                        'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
                        'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
@@ -262,8 +264,13 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   }
 
 
-  $grants['project_inventory_view'] = ($_SESSION['testprojectOptions']->inventoryEnabled && 
-                                      ($user->hasRight($dbHandler,"project_inventory_view") == 'yes')) ? 1 : 0;
+  // check right ONLY if option is enables
+  if($_SESSION['testprojectOptions']->inventoryEnabled) {
+    $invr = array('project_inventory_view','project_inventory_management');
+    foreach($invr as $r){
+      $grants[$r] = ($user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
+    }
+  }
 
   return $grants;  
 }

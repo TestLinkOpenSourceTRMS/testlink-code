@@ -83,8 +83,7 @@
 {$tcSearch="lib/testcases/tcSearch.php?doAction=userInput&tproject_id="}
 {$tcCreatedUser="lib/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&tproject_id="}
 {$assignReq="lib/general/frmWorkArea.php?feature=assignReqs"}
-
-          <a href="lib/general/frmWorkArea.php?feature=assignReqs" class="
+{$inventoryView="lib/inventory/inventoryView.php"}
 
 
 <div class="vertical_menu" style="float: left; margin:0px 10px 10px 0px; width: 320px;">
@@ -124,9 +123,15 @@
       <a href="{$keywordsAssignment}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_keywords_manage}</a>
     {/if}
 
-    {if $gui->grants.platform_management == "yes"}
+    {if $gui->grants.platform_management || $gui->grants.platform_view}
       <a href="{$platformsView}" class="list-group-item" style="{$aStyle}">{$labels.href_platform_management}</a>
     {/if}
+    
+    {if $gui->grants.project_inventory_view || $gui->grants.project_inventory_management}
+       <a href="{$inventoryView}" class="list-group-item" style="{$aStyle}">{$labels.href_inventory_management}</a>
+    {/if}
+
+
   </div>
 {/if}
 

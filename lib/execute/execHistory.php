@@ -23,6 +23,10 @@ $args = init_args();
 $gui = new stdClass();
 $gui->exec_cfg = config_get('exec_cfg');
 
+if ($args->tcase_id == 0){
+ $row = $tcase_mgr->get_by_external($args->external_id,-1);
+ $args->tcase_id = key($row);
+}
 
 $node['basic'] = $tcase_mgr->tree_manager->get_node_hierarchy_info($args->tcase_id); 
 $node['specific'] = $tcase_mgr->getExternalID($args->tcase_id); 
@@ -101,11 +105,13 @@ function init_args()
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $iParams = array("tcase_id" => array(tlInputParameter::INT_N),
+                    "external_id" => array(tlInputParameter::INT_N),
                    'onlyActiveTestPlans' => array(tlInputParameter::INT_N));
   $pParams = R_PARAMS($iParams);
 
   $args = new stdClass();
   $args->tcase_id = intval($pParams["tcase_id"]);
+  $args->external_id = intval($pParams["external_id"]);
 
   $args->onlyActiveTestPlans = null;
   if(intval($pParams["onlyActiveTestPlans"]) > 0  ||  

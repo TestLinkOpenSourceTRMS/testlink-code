@@ -9,7 +9,7 @@
  * @filesource  const.inc.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @see         config.inc.php
  *
  *
@@ -846,13 +846,15 @@ $tlCfg->guiTopMenu[1] = array('label' => 'home','url' => 'index.php','right' => 
 $tlCfg->guiTopMenu[2] = array('label' => 'title_requirements',
                               'imgKey' => 'requirements',
                               'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
-                              'right' => 'mgt_view_req','condition'=>'ReqMgmtEnabled',
+                              'right' => array('mgt_view_req','mgt_modify_req'),
+                              'condition'=>'ReqMgmtEnabled',
                               'shortcut'=>'r','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[3] = array('label' => 'title_specification',
                               'imgKey' => 'test_specification', 
                               'url' => 'lib/general/frmWorkArea.php?feature=editTc',
-                              'right' => 'mgt_view_tc','condition'=>'',
+                              'right' => array('mgt_view_tc','mgt_modify_tc'),
+                              'condition'=>'',
                               'shortcut'=>'t','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[4] = array('label' => 'title_execute',

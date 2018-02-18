@@ -866,10 +866,9 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
       $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
     }
 
-    if( count($a_tsval) > 0 )
-    {
+    if( count($a_tsval) > 0 ) {
       $ckObj->value = $a_tsval[0];
-      tlSetCookie($ckObj)
+      tlSetCookie($ckObj);
     }
       
     $smarty->assign('tsd_div_id_list',implode(",",$a_ts));

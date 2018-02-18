@@ -1183,7 +1183,7 @@ $TLS_th_rights = "Droits";
 $TLS_th_rolename = "Nom de rôle";
 $TLS_th_system_rights = "Système";
 $TLS_th_tp_rights = "Campagne de test";
-$TLS_th_user_rights = "Utilisateurs";
+$TLS_th_user_rights = "Utilisateurs/Rôles";
 $TLS_title_user_mgmt = "Gestion des utilisateurs";
 $TLS_warning_empty_role_name = "Le nom de rôle est obligatoire.";
 $TLS_warning_modify_role = "Etes-vous sûr de vouloir modifier le rôle ?";
@@ -2418,7 +2418,11 @@ $TLS_desc_testplan_create_build = "Création/modification de Versions de produit
 $TLS_desc_testplan_execute = "Exécution de campagne de test";
 $TLS_desc_testplan_metrics = "Métriques de campagne de test";
 $TLS_desc_testplan_planning = "Planification de campagne de test";
-$TLS_desc_user_role_assignment = "Affectation de rôles";
+$TLS_desc_user_role_assignment = "Affectation de rôles  aux utilisateurs pour tous les projets";
+$TLS_desc_testproject_user_role_assignment = "Affectation de rôles aux utilisateurs pour le projet";
+$TLS_desc_testplan_user_role_assignment = "Affectation de rôles aux utilisateurs pour les campagnes du campagne de test";
+
+
 $TLS_desc_monitor_requirement = 'Surveillance des exigences';
 
 

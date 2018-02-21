@@ -349,8 +349,6 @@ function initExecTree($filtersObj,$optionsObj)
   $options['hideTestCases'] = isset($optionsObj->hideTestCases) ?
                                     $optionsObj->hideTestCases : false;
 
-  $options['include_unassigned'] = isset($filtersObj->filter_assigned_user_include_unassigned) ?
-                                         $filtersObj->filter_assigned_user_include_unassigned : false;
 
   // useful when using tree on set urgent test cases
   $options['allow_empty_build'] = isset($optionsObj->allow_empty_build) ?

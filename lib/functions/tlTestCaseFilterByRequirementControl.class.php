@@ -632,9 +632,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
       // Using serialization      
       if ($this->active_filters['filter_assigned_user']) 
       {
-        $string .= '&filter_assigned_user='. json_encode($this->active_filters['filter_assigned_user']) .
-                   '&filter_assigned_user_include_unassigned=' . 
-                   ($this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0');
+        $string .= '&filter_assigned_user='. json_encode($this->active_filters['filter_assigned_user']);
       }
       
       if ($this->active_filters['filter_result_result']) 
@@ -1249,7 +1247,6 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     }
 
     $key = 'filter_assigned_user';
-    $unassigned_key = 'filter_assigned_user_include_unassigned';
     $tplan_id = $this->settings['setting_testplan']['selected'];
 
     // set selection to default (any), only change if value is sent by user and reset is not requested
@@ -1300,8 +1297,7 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     }
     
     $this->filters[$key] = array('items' => $visible_testers,
-                                 'selected' => $selection,
-                                 $unassigned_key => $this->args->{$unassigned_key});
+                                 'selected' => $selection);
     
     // which value shall be passed to tree generation class?
     
@@ -1309,7 +1305,6 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
     || ($selection == TL_USER_ANYBODY)) {
       // delete user assignment filter if "any user" is part of the selection
       $this->active_filters[$key] = null;
-      $this->active_filters[$unassigned_key] = 0;
     }
     
     if (is_array($selection)) {
@@ -1318,7 +1313,6 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
       foreach ($this->active_filters[$key] as $user_key => $user_value) {
         $this->active_filters[$key][$user_key] = $user_key;
       }
-      $this->active_filters[$unassigned_key] = $this->filters[$key][$unassigned_key];
     }
   } // end of method
 

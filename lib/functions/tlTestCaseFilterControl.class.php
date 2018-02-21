@@ -76,7 +76,6 @@
  *         [filter_result_result] => f                    // prefixed with "filter_" and "setting_"
  *         [filter_result_method] => 3
  *         [filter_result_build] => 71
- *         [filter_assigned_user_include_unassigned] => 1
  *         [filter_testcase_name] => 
  *         [filter_toplevel_testsuite] => Array
  *           (
@@ -486,9 +485,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->args->{$ek} = (isset($_REQUEST[$ek])) ? $_REQUEST[$ek] : null;
     }
 
-    $this->args->{'filter_assigned_user_include_unassigned'} = 
-      isset($_REQUEST['filter_assigned_user_include_unassigned']) ? 1 : 0;
-
     // got session token sent by form or do we have to generate a new one?
     $sent_token = null;
     $this->args->form_token = null;
@@ -606,8 +602,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     // In resulting data structure, all values have to be defined (at least initialized),
     // no matter wether they are wanted for filtering or not.
     $dummy = array('filter_keywords_filter_type','filter_result_result',
-                   'filter_result_method','filter_result_build',
-                   'filter_assigned_user_include_unassigned');
+                   'filter_result_method','filter_result_build');
     
     foreach ($dummy as $filtername) 
     {
@@ -862,9 +857,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       // Using serialization      
       if ($this->active_filters['filter_assigned_user']) 
       {
-        $string .= '&filter_assigned_user='. json_encode($this->active_filters['filter_assigned_user']) .
-                   '&filter_assigned_user_include_unassigned=' . 
-                   ($this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0');
+        $string .= '&filter_assigned_user='. json_encode($this->active_filters['filter_assigned_user']);
       }
       
       if ($this->active_filters['filter_result_result']) 
@@ -1753,7 +1746,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
 
     $key = 'filter_assigned_user';
-    $unassigned_key = 'filter_assigned_user_include_unassigned';
     $tplan_id = $this->settings['setting_testplan']['selected'];
 
     // set selection to default (any), only change if value is sent by user and reset is not requested
@@ -1803,28 +1795,23 @@ class tlTestCaseFilterControl extends tlFilterControl {
       if (!$selection && $this->configuration->exec_cfg->user_filter_default == 'logged_user') {
         $selection = (array)$this->user->dbID;
       }
+
     }
-    
     $this->filters[$key] = array('items' => $visible_testers,
-                                 'selected' => $selection,
-                                 $unassigned_key => $this->args->{$unassigned_key});
-    
+                                 'selected' => $selection);
     // which value shall be passed to tree generation class?
-    
     if ((is_array($selection) && in_array(TL_USER_ANYBODY, $selection))
+	|| (is_array($selection) && in_array(TL_USER_NOBODY, $selection) && in_array(TL_USER_SOMEBODY, $selection))
     || ($selection == TL_USER_ANYBODY)) {
-      // delete user assignment filter if "any user" is part of the selection
+      // delete user assignment filter if "any user" is part of the selection or if SOMEBODY + NOBODY are selected
       $this->active_filters[$key] = null;
-      $this->active_filters[$unassigned_key] = 0;
     }
-    
-    if (is_array($selection)) {
+    elseif (is_array($selection)) {
       // get keys of the array as values
       $this->active_filters[$key] = array_flip($selection);
       foreach ($this->active_filters[$key] as $user_key => $user_value) {
         $this->active_filters[$key][$user_key] = $user_key;
       }
-      $this->active_filters[$unassigned_key] = $this->filters[$key][$unassigned_key];
     }
   } // end of method
 

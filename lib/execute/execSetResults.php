@@ -2112,10 +2112,6 @@ function getSettingsAndFilters(&$argsObj)
 
   $argsObj->refreshTree = isset($sf['setting_refresh_tree_on_action']) ? 
                                 $sf['setting_refresh_tree_on_action'] : null;
-                                  
-  // Checkbox
-  $tgk = 'filter_assigned_user_include_unassigned';
-  $argsObj->include_unassigned = isset($sf[$tgk]) && ($sf[$tgk] != 0 ? 1 : 0);
 }
 
 

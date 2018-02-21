@@ -56,14 +56,15 @@
     {$display_left_block_4=true}
 {/if}
 
+{$display_left_block_top=false}
+{$display_left_block_bottom=false}
+
 {if isset($gui->plugins.EVENT_LEFTMENU_TOP) &&  $gui->plugins.EVENT_LEFTMENU_TOP}
   {$display_left_block_top=true}
 {/if}
 {if isset($gui->plugins.EVENT_LEFTMENU_BOTTOM) &&  $gui->plugins.EVENT_LEFTMENU_BOTTOM}
   {$display_left_block_bottom=true}
 {/if}
-
-
 
 
 
@@ -87,6 +88,18 @@
 
 
 <div class="vertical_menu" style="float: left; margin:0px 10px 10px 0px; width: 320px;">
+
+  {if $display_left_block_top}
+    {if isset($gui->plugins.EVENT_LEFTMENU_TOP)}
+      <div class="list-group" style="{$divStyle}" id="plugin_left_top">
+        {foreach from=$gui->plugins.EVENT_LEFTMENU_TOP item=menu_item}
+		  <a href="{$menu_item['href']}" class="list-group-item" style="{$aStyle}">{$menu_item['label']}</a>
+          <br/>
+        {/foreach}
+      </div>
+    {/if}
+  {/if}
+
 {if $display_left_block_2}
   <div class="list-group" style="{$divStyle}">
     {if $gui->grants.cfield_management == "yes"}
@@ -178,4 +191,16 @@
     
     </div>
 {/if}
+
+  {if $display_left_block_bottom}
+    {if isset($gui->plugins.EVENT_LEFTMENU_BOTTOM)}
+	  <br/>
+	  <div class="list-group" style="{$divStyle}" id="plugin_left_bottom">
+        {foreach from=$gui->plugins.EVENT_LEFTMENU_BOTTOM item=menu_item}
+		  <a href="{$menu_item['href']}" class="list-group-item" style="{$aStyle}">{$menu_item['label']}</a>
+        {/foreach}
+      </div>
+    {/if}  
+  {/if}
+  
 </div>

@@ -96,6 +96,16 @@
   {/if}
   <br />
 
+   {if $display_right_block_top}
+    {if isset($gui->plugins.EVENT_RIGHTMENU_TOP)}
+      <div class="list-group" style="{$divStyle}" id="plugin_right_top">
+        {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
+		  <a href="{$menu_item['href']}" class="list-group-item" style="{$aStyle}">{$menu_item['label']}</a>
+          <br/>
+        {/foreach}
+      </div>
+    {/if}
+  {/if}
 
   {* ----------------------------------------------------------------------------- *}
   {if $display_right_block_1}
@@ -167,55 +177,12 @@
     </div>
   {/if}
 
-  {if $display_right_block_top}
-    <script type="text/javascript">
-    function display_right_block_top() 
-    {
-      var pt = new Ext.Panel({
-                              title: '{$labels.title_plugins}',
-                              collapsible: false,
-                              collapsed: false,
-                              draggable: false,
-                              contentEl: 'plugin_right_top',
-                              baseCls: 'x-tl-panel',
-                              bodyStyle: "background:#c8dce8;padding:3px;",
-                              renderTo: 'menu_right_block_top',
-                              width: '100%'
-                             });
-    }
-    </script>
-    {if isset($gui->plugins.EVENT_RIGHTMENU_TOP)}
-      <div id="plugin_right_top">
-        {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
-          {$menu_item}
-          <br/>
-        {/foreach}
-      </div>
-    {/if}
-  {/if}
-
   {if $display_right_block_bottom}
-    <script type="text/javascript">
-    function display_right_block_bottom() 
-    {
-      var pb = new Ext.Panel({
-                              title: '{$labels.title_plugins}',
-                              collapsible: false,
-                              collapsed: false,
-                              draggable: false,
-                              contentEl: 'plugin_right_bottom',
-                              baseCls: 'x-tl-panel',
-                              bodyStyle: "background:#c8dce8;padding:3px;",
-                              renderTo: 'menu_right_block_bottom',
-                              width: '100%'
-                             });
-    }
-    </script>
     {if isset($gui->plugins.EVENT_RIGHTMENU_BOTTOM)}
-      <div id="plugin_right_bottom">
+	  <br/>
+	  <div class="list-group" style="{$divStyle}" id="plugin_right_bottom">
         {foreach from=$gui->plugins.EVENT_RIGHTMENU_BOTTOM item=menu_item}
-          {$menu_item}
-          <br/>
+		  <a href="{$menu_item['href']}" class="list-group-item" style="{$aStyle}">{$menu_item['label']}</a>
         {/foreach}
       </div>
     {/if}  

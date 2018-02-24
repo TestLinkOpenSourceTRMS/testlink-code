@@ -8,13 +8,10 @@
  *
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2016, TestLink community 
+ * @copyright   2005-2018, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.16
- * 
  *
  **/
 
@@ -652,6 +649,11 @@ function addIssue($dbHandler,$argsObj,$itsObj)
       $opt->$prop = $argsObj->$prop;    
     }   
   }  
+
+  // Management of Dynamic Values From XML Configuration 
+  // (@20180120 only works for redmine)  
+  $opt->tagValue = $issueText->tagValue;
+ 
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
   
   $ret['msg'] = $rs['msg'];
@@ -729,36 +731,56 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
   $ret->auditSign = $tcaseMgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
 
 
-  $dummy = $exec['status'];
+  $exec['statusVerbose'] = $exec['status'];
   if( isset($resultsCfg['code_status'][$exec['status']]) )
   {
-    $dummy = $resultsCfg['code_status'][$exec['status']];  
-  }                         
-  $exec['statusVerbose'] = sprintf(lang_get('issue_exec_result'),$dummy);
+    $exec['statusVerbose'] = $resultsCfg['code_status'][$exec['status']];  
+  }                       
+
+  // $exec['statusVerbose'] = sprintf(lang_get('issue_exec_result'),$dummy);
   
   unset($tcaseMgr);
 
   $platform_identity = '';
   if($exec['platform_id'] > 0)
   {
-    $platform_identity = sprintf(lang_get('issue_platform') ,$exec['platform_name']); 
+    $platform_identity = $exec['platform_name']; 
   }
+
+
+  // will be used to manage Dynamic Values From XML Configuration 
+  $ret->tagValue = new stdClass();
+  $ret->tagValue->tag = array('%%EXECID%%','%%TESTER%%','%%TESTPLAN%%',
+                              '%%PLATFORM_VALUE%%','%%BUILD%%', '%%EXECTS%%',
+                              '%%EXECSTATUS%%'); 
+
+  $ret->tagValue->value = array($argsObj->exec_id,$exec['tester_login'],
+                                $exec['testplan_name'],$platform_identity,
+                                $exec['build_name'],$exec['execution_ts'],
+                                $exec['statusVerbose']); 
+
 
   if(property_exists($argsObj, 'bug_notes'))
   {  
-    // parse 
-    $tags = array('%%EXECID%%','%%TESTER%%','%%TESTPLAN%%','%%PLATFORM%%',
-                  '%%BUILD%%', '%%EXECTS%%','%%EXECSTATUS%%','%%EXECNOTES%%'); 
-    $values = array(sprintf(lang_get('issue_exec_id'),$argsObj->exec_id),
-                    sprintf(lang_get('issue_tester'),$exec['tester_login']),
-                    sprintf(lang_get('issue_tplan'),$exec['testplan_name']),
-                    $platform_identity,
-                    sprintf(lang_get('issue_build'),$exec['build_name']),
-                    sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),
-                    $exec['statusVerbose'],
+    $lblKeys = array('issue_exec_id','issue_tester','issue_tplan','issue_build',
+                     'execution_ts_iso','issue_exec_result','issue_platform');
+
+    $lbl = array();
+    $l2d = count($lblKeys);
+    for($ldx=0; $ldx < $l2d; $ldx++) {
+      $lbl[$lblKeys[$ldx]] = lang_get($lblKeys[$ldx]);
+    }
+
+    $tags = $ret->tagValue->tag;
+    $tags[] = '%%EXECNOTES%%';
+    $values = array(sprintf($lbl['issue_exec_id'],$argsObj->exec_id),
+                    sprintf($lbl['issue_tester'],$exec['tester_login']),
+                    sprintf($lbl['issue_tplan'],$exec['testplan_name']),
+                    sprintf($lbl['issue_platform'],$platform_identity),
+                    sprintf($lbl['issue_build'],$exec['build_name']),
+                    sprintf($lbl['execution_ts_iso'],$exec['execution_ts']),
+                    sprintf($lbl['issue_exec_result'],$exec['statusVerbose']),
                     $exec['execution_notes']);
-
-
  
     $ret->description = str_replace($tags,$values,$argsObj->bug_notes);
    
@@ -905,4 +927,3 @@ function completeIssueForStep(&$execContext,$exsig,$exData,$stepID)
     }  
   }
 }
-

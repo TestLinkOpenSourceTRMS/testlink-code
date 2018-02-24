@@ -2205,6 +2205,7 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
 
     $tprojectMgr = new testproject($dbHandler);
     $tcaseMgr = new testcase($dbHandler);
+    $tplanMgr = new testplan($dbHandler);
   }  
 
   $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
@@ -2281,8 +2282,10 @@ function renderExecutionForPrinting(&$dbHandler, $baseHref, $id, $userObj = null
     $context['user'] = $userObj;
     $out .= renderTestCaseForPrinting($dbHandler,$tcase,$renderOptions,$env,$context,$indentLevel); 
 
+    $tplanInfo = $tplanMgr->get_by_id($context['tplan_id']);
     $out .= '<br/>' . lang_get('direct_link') . ':' .
-            $env->base_href . 'lnl.php?type=exec&id=' . intval($id) . '<br/>';
+            $env->base_href . 'lnl.php?type=exec&id=' . intval($id) . 
+            '&apikey=' . $tplanInfo['api_key'] . '<br/>';
     $exec_info = null;    
   }  
 

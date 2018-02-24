@@ -1043,6 +1043,29 @@ $tlCfg->exec_cfg->features->attachments->enabled = true;
 $tlCfg->exec_cfg->features->exec_duration = new stdClass();
 $tlCfg->exec_cfg->features->exec_duration->enabled = true;
 
+$tlCfg->exec_cfg->issues = new stdClass();
+$tlCfg->exec_cfg->issues->tcase_level = new stdClass();
+$tlCfg->exec_cfg->issues->tcstep_level = new stdClass();
+
+/**
+ * %%STEPNUMBER%%,%%TCNAME%%,%%PROJECTNAME%%,%%PLANNAME%%
+ * %%BUILDNAME%%,%%PLATFNAME%%
+ */
+$tlCfg->exec_cfg->issues->tcase_level->subject = '';
+
+/*
+$tlCfg->exec_cfg->issues->tcstep_level->subject = 
+'$$issue_on_step %%STEPNUMBER%% - $$issue_subject_tcname %%TCNAME%% - ' .
+'$$issue_subject_projectname %%PROJECTNAME%% - ' .
+'$$issue_subject_planname %%PLANNAME%% - ' .
+'$$issue_subject_buildname %%BUILDNAME%% - ' . 
+'$$issue_subject_platfname %%PLATFNAME%%';
+*/
+
+$tlCfg->exec_cfg->issues->tcstep_level->subject = '$$issue_on_step %%STEPNUMBER%% - $$issue_subject_tcname %%TCNAME%% ';
+
+
+
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */

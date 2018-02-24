@@ -107,16 +107,16 @@ if(!is_null($linked_tcversions))
 
     $args->direct_link = $gui->direct_link;
      
-    // 20151206 - issue @ test step
-    if(!is_null($gui->issueSummaryForStep))
-    {
+    // will add as SUFFIX Test Case Name
+    /*
+    if( !is_null($gui->issueSummaryForStep) ) {
       $yoda = explode('/',$audit);                    
       $name = ' ' . lang_get('testcase') . ' ' . end($yoda);
-      foreach($gui->issueSummaryForStep as $ele)
-      {
+      foreach($gui->issueSummaryForStep as &$ele) {
         $ele .= $name;     
       }  
-    }  
+    } 
+    */ 
   }
   else
   {
@@ -1425,7 +1425,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   // over these two functions.   
   $tprojectMgr = new testproject($dbHandler);
   $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+  
   $build_info = $buildMgr->get_by_id($argsObj->build_id);
+
+  $gui->build_name = $build_info['name'];  
   $gui->build_notes=$build_info['notes'];
   $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
   $gui->execution_types=$tcaseMgr->get_execution_types();
@@ -1453,8 +1456,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->grants = initializeRights($dbHandler,$argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
 
   $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
+
+  $gui->testplan_name = $rs['name'];
+  $gui->testproject_name = $rs['tproject_name'];
   $gui->testplan_notes = $rs['notes'];
-  $gui->testplan_div_title = lang_get('test_plan') . ' ' . $rs['name'];
+  $gui->testplan_div_title = lang_get('test_plan') . ' ' . $gui->testplan_name;
+
   $argsObj->tplan_apikey = $rs['api_key'];
 
 
@@ -1479,8 +1486,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
   $gui->has_platforms = !is_null($dummy) ? 1 : 0;
     
-  $gui->platform_info['id']=0;
-  $gui->platform_info['name']='';
+  $gui->platform_info['id'] = 0;
+  $gui->platform_info['name'] = '';
   if(!is_null($argsObj->platform_id) && $argsObj->platform_id > 0 )
   { 
     $gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
@@ -1501,8 +1508,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 
   
   if(!is_null($issueTracker))
-  {
-    
+  {    
     if( $issueTracker->isConnected() )
     {
       $itsCfg = $issueTracker->getCfg();
@@ -1546,6 +1552,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   }  
  
   $gui->bug_summary = '';
+
+
+  $gui->executionContext = array();
+  $gui->executionContext['tproject_name'] = $gui->testproject_name;
+  $gui->executionContext['tplan_name'] = $gui->testplan_name;
+  $gui->executionContext['platform_name'] = $gui->platform_info['name'];
+  $gui->executionContext['build_name'] = $gui->build_name;
+
+
   return $gui;
 }
 
@@ -1614,14 +1629,42 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   // needed for issue @ test case step level
   if(1==1)
   {
+    $subjectMask = $cfgObj->exec_cfg->issues->tcstep_level->subject;
+    $haystack = $subjectMask;
+
     $opt = array('fields2get' => 'step_number,id');
     $steps = $tcaseMgr->get_steps($tcversion_id,0,$opt);
     if(!is_null($steps))
     {
-      $lbl = lang_get('issue_on_step');
+      $lbl = lang_get($prefixLabel);
+
+      $searchFor = array('$$issue_on_step', 
+                         '$$issue_subject_tcname', 
+                         '$$issue_subject_projectname',
+                         '$$issue_subject_planname',
+                         '$$issue_subject_buildname',
+                         '$$issue_subject_platfname');
+
+      $replaceWith = array();
+      foreach ( $searchFor as $lblKey ) { 
+        $jk = str_replace('$$','',$lblKey);
+        $replaceWith[] = lang_get($jk);
+      }
+      $haystack = str_replace($searchFor, $replaceWith, $haystack);
+
+
+      $ecx = &$guiObj->executionContext;
+      $searchFor = array('%%TCNAME%%', '%%PROJECTNAME%%', 
+                         '%%PLANNAME%%','%%BUILDNAME%%','%%PLATFNAME%%');
+      $replaceWith = array($tc_info['name'],$ecx['tproject_name'],
+                           $ecx['tplan_name'],$ecx['build_name'],
+                           $ecx['platform_name']);
+
+      $nu = str_replace($searchFor, $replaceWith, $haystack);
       foreach($steps as $elem)
       {
-        $guiObj->issueSummaryForStep[$elem['id']] = $lbl . $elem['step_number']; 
+        $guiObj->issueSummaryForStep[$elem['id']] = $lbl . 
+          str_replace('%%STEPNUMBER%%',$elem['step_number'],$nu); 
       }  
     } 
   }  

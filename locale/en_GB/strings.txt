@@ -3709,6 +3709,15 @@ $TLS_issue_platform = " Platform: %s";
 $TLS_issue_exec_result = " Execution Status: %s";
 $TLS_issue_generated_description = "Execution ID: %s \n Tester: %s \n Test Plan: %s \n";
 
+$TLS_issue_subject_projectname = "Test Project";
+$TLS_issue_subject_planname = "Test Plan:";
+$TLS_issue_subject_buildname = "Build:";
+$TLS_issue_subject_platfname = "Platform:";
+$TLS_issue_subject_tcname = "Test Case:";
+
+
+
+
 $TLS_jira_bug_created = "JIRA Issue Created (summary:%s) on project with key:%s";
 $TLS_redmine_bug_created = "REDMINE Issue Created (summary:%s) on project with identifier:%s";
 $TLS_fogbugz_bug_created = "FOGBUGZ Issue Created (summary:%s) on project:%s";
@@ -3858,5 +3867,4 @@ $TLS_title_codetracker_mgmt = 'Code Trackers';
 $TLS_desc_cfield_assignment = "Custom field assignment";
 $TLS_desc_exec_assign_testcases = "Assign TestCase Execution";
 $TLS_expiration_date = 'Expiration Date';
-
 // ----- END ------------------------------------------------------------------

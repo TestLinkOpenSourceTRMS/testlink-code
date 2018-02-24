@@ -63,20 +63,23 @@ $db_table_prefix = preg_replace($san,'',$db_table_prefix);
 $db_server = trim($_SESSION['databasehost']);
 $db_server = preg_replace($san,'',$db_server);
 
-$db_admin_name = trim($_SESSION['databaseloginname']);
-$db_admin_name = preg_replace($san,'',$db_admin_name);
-
 $db_admin_pass = trim($_SESSION['databaseloginpassword']);
 $db_admin_pass = preg_replace($san,'',$db_admin_pass);
 
 $db_type = trim($_SESSION['databasetype']);
 $db_type = preg_replace($san,'',$db_type);
 
-$tl_db_login = trim($_SESSION['tl_loginname']);
-$tl_db_login = preg_replace($san,'',$tl_db_login);
-
 $tl_db_passwd = trim($_SESSION['tl_loginpassword']);
 $tl_db_passwd = preg_replace($san,'',$tl_db_passwd);
+
+
+// will limit length to avoi some kind of injection
+// Choice: 32 
+$tl_db_login = trim($_SESSION['tl_loginname']);
+$tl_db_login = substr(preg_replace($san,'',$tl_db_login),0,32);
+
+$db_admin_name = trim($_SESSION['databaseloginname']);
+$db_admin_name = substr(preg_replace($san,'',$db_admin_name),0,32);
 
 
 

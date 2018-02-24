@@ -466,10 +466,14 @@ class testplan extends tlObjectWithAttachments
       case 'full':
       default:
             $sql =   "/* $debugMsg */ " .
-                " SELECT TPLAN.*,NH_TPLAN.name,NH_TPLAN.parent_id " .
+                " SELECT TPLAN.*,NH_TPLAN.name,NH_TPLAN.parent_id, " .
+                " NH_TPROJ.id AS tproject_id, NH_TPROJ.name AS tproject_name,TPROJ.prefix " .
                " FROM {$this->tables['testplans']} TPLAN, " .
                " {$this->tables['nodes_hierarchy']} NH_TPLAN " .
+               " JOIN {$this->tables['nodes_hierarchy']} NH_TPROJ ON NH_TPROJ.id = NH_TPLAN.parent_id " .
+               " JOIN {$this->tables['testprojects']} TPROJ ON TPROJ.ID = NH_TPROJ.id " .
                " WHERE TPLAN.id = NH_TPLAN.id AND TPLAN.id = " . $safe_id;
+         
       break;  
     
     }

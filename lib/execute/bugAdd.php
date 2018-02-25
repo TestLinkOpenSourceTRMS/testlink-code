@@ -4,8 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	bugAdd.php
- * @internal revisions
- * @since 1.9.16
  * 
  */
 require_once('../../config.inc.php');
@@ -18,8 +16,7 @@ $templateCfg = templateConfiguration();
 list($args,$gui,$its,$issueT) = initEnv($db);
 
 if( ($args->user_action == 'create' || $args->user_action == 'doCreate') && 
-    $gui->issueTrackerCfg->tlCanCreateIssue)
-{
+    $gui->issueTrackerCfg->tlCanCreateIssue) {
   // get matadata
   $gui->issueTrackerMetaData = getIssueTrackerMetaData($its);
   
@@ -107,6 +104,8 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
 }
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
+
+//var_dump($gui);die();
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -144,22 +143,22 @@ function initEnv(&$dbHandler)
 	
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
-	if ($args->exec_id)
-	{
+	if ($args->exec_id) {
 		$_SESSION['bugAdd_execID'] = intval($args->exec_id);
 	}
-	else
-	{
+	else {
 		$args->exec_id = intval(isset($_SESSION['bugAdd_execID']) ? $_SESSION['bugAdd_execID'] : 0);
 	}	
 
-
+  // it's a checkbox
+  $args->addLinkToTL = isset($_REQUEST['addLinkToTL']);
   $args->user = $_SESSION['currentUser'];
 
   $gui = new stdClass();
-  $gui->addLinkToTL = $args->addLinkToTL;
-  switch($args->user_action)
-  {
+  $cfg = config_get('exec_cfg');
+  $gui->addLinkToTLChecked = $cfg->exec_mode->addLinkToTLChecked;
+
+  switch($args->user_action) {
     case 'create':
     case 'doCreate':
       $gui->pageTitle = lang_get('create_issue');

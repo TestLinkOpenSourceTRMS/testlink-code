@@ -96,22 +96,30 @@ class TLTestPlugin extends TestlinkPlugin
 
   function bottom_link()
   {
-    return "<a href=''>".plugin_lang_get('left_bottom_link')."</a>";
+	$tLink['href'] = '';
+	$tLink['label'] = plugin_lang_get('left_bottom_link');
+    return $tLink;
   }
 
   function top_link()
   {
-    return "<a href='" . plugin_page('config.php') . "'>".plugin_lang_get('config')."</a>";
+	$tLink['href'] = plugin_page('config.php');
+	$tLink['label'] = plugin_lang_get('config');
+    return $tLink;
   }
 
   function right_top_link()
   {
-    return "<a href=''>".plugin_lang_get('right_top_link')."</a>";
+	$tLink['href'] = '';
+	$tLink['label'] = plugin_lang_get('right_top_link');
+    return $tLink;
   }
 
   function right_bottom_link()
   {
-    return "<a href=''>".plugin_lang_get('right_bottom_link')."</a>";
+	$tLink['href'] = '';
+	$tLink['label'] = plugin_lang_get('right_bottom_link');
+    return $tLink;
   }
 
 }

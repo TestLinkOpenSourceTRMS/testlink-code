@@ -49,12 +49,12 @@ function createResultsMenu()
  * write execution result to DB
  * 
  * @param resource &$db reference to database handler
- * @param obj &$exec_signature object with tproject_id,tplan_id,build_id,platform_id,user_id
+ * @param obj &$execSign object with tproject_id,tplan_id,build_id,platform_id,user_id
  * 
  * @internal revisions
  * 
  */
-function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
+function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker)
 {
   static $docRepo;
   static $resultsCfg;
@@ -76,7 +76,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
   $bulk_notes = '';
   
   $ENABLED = 1;
-  $cf_map = $cfield_mgr->get_linked_cfields_at_execution($exec_signature->tproject_id,$ENABLED,'testcase');
+  $cf_map = $cfield_mgr->get_linked_cfields_at_execution($execSign->tproject_id,$ENABLED,'testcase');
   $has_custom_fields = is_null($cf_map) ? 0 : 1;
   
   // extract custom fields id.
@@ -116,9 +116,9 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
       $sql = "INSERT INTO {$executions_table} ".
              "(build_id,tester_id,status,testplan_id,tcversion_id," .
              " execution_ts,notes,tcversion_number,platform_id,execution_duration)".
-             " VALUES ( {$exec_signature->build_id}, {$exec_signature->user_id}, '{$exec_data[$execStatusKey][$tcversion_id]}',".
-             "{$exec_signature->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
-             "{$version_number},{$exec_signature->platform_id}";
+             " VALUES ( {$execSign->build_id}, {$execSign->user_id}, '{$exec_data[$execStatusKey][$tcversion_id]}',".
+             "{$execSign->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
+             "{$version_number},{$execSign->platform_id}";
 
       $dura = 'NULL ';
       if(isset($exec_data['execution_duration']))
@@ -155,7 +155,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
             $hash_cf[$cf_v]=$exec_data[$cf_v];
           }  
         }                          
-        $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $exec_signature->tplan_id,$cf_map);
+        $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $execSign->tplan_id,$cf_map);
       }               
 
       $hasMoreData = new stdClass();
@@ -244,44 +244,37 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
       
       // re-init
       $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
-      if($itCheckOK) {
 
-        //echo '<br><b>' .__LINE__  .'</b>';
-        //var_dump($exec_signature); die();
+      if($itCheckOK) {
         $execContext = new stdClass();
         $execContext->exec_id = $execution_id;
         $execContext->tcversion_id = $tcversion_id;
-        $execContext->user = $exec_signature->user;
-        $execContext->basehref = $exec_signature->basehref;
-        $execContext->tplan_apikey = $exec_signature->tplan_apikey;
+        $execContext->user = $execSign->user;
+        $execContext->basehref = $execSign->basehref;
+        $execContext->tplan_apikey = $execSign->tplan_apikey;
 
-        $execContext->addLinkToTL = $exec_signature->addLinkToTL;
-        $execContext->direct_link = $exec_signature->direct_link;
+        $execContext->addLinkToTL = $execSign->addLinkToTL;
+        $execContext->direct_link = $execSign->direct_link;
         $execContext->tcstep_id = 0;
 
         // Issue on Test Case
-        if( isset($exec_data['createIssue']) )
-        {
-          completeCreateIssue($execContext,$exec_signature);
-          $addIssueOp['createIssue'] = addIssue($db,$execContext,$issueTracker);
+        if( isset($exec_data['createIssue']) ) {
+          completeCreateIssue($execContext,$execSign);
+          
+          $addIssueOp['createIssue'] = addIssue($db,$execContext,$issueTracker,
+                                                $execContext->addLinkToTL);
           $addIssueOp['type'] = 'createIssue';
         }  
         
         // Issues at step level
         if( isset($exec_data['issueForStep']) ) {
-          $execContext->addLinkToTLForStep = null;
-          if( property_exists($exec_signature, 'addLinkToTLForStep') ) {
-            $execContext->addLinkToTLForStep = $exec_signature->addLinkToTLForStep;
-          }
-
+          $addIssueOp['type'] = 'issueForStep'; 
           foreach($exec_data['issueForStep'] as $stepID => $val) {
-            completeIssueForStep($execContext,$exec_signature,
-                                 $exec_data,$stepID);
-
-            $execContext->tcstep_id = $stepID;  
-            $addIssueOp['issueForStep'][$stepID] = addIssue($db,$execContext,$issueTracker);
-            $addIssueOp['type'] = 'issueForStep'; 
-          }  
+            $addl = completeIssueForStep($execContext,$execSign,$exec_data,
+                                         $stepID);
+            $addIssueOp['issueForStep'][$stepID] = 
+              addIssue($db,$execContext,$issueTracker,$addl);
+          }
         }  
       } // $itCheckOK
     }
@@ -587,7 +580,7 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
 /**
  *
  */
-function addIssue($dbHandler,$argsObj,$itsObj)
+function addIssue($dbHandler,$argsObj,$itsObj,$addLinkToTL)
 {
   static $my;
 
@@ -597,14 +590,11 @@ function addIssue($dbHandler,$argsObj,$itsObj)
     $my->tcaseMgr = new testcase($dbHandler);
   }  
 
-  //echo __FUNCTION__; 
-  //var_dump($argsObj);
-  //die();
   $ret = array();
   $ret['status_ok'] = true;             
   $ret['msg'] = '';
 
-  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj);  
+  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL);  
 
   $issueTrackerCfg = $itsObj->getCfg();
   if(property_exists($issueTrackerCfg, 'issuetype')) {
@@ -701,7 +691,7 @@ function copyIssues(&$dbHandler,$source,$dest)
 /**
  *
  */
-function generateIssueText($dbHandler,$argsObj,$itsObj) {
+function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL) {
   $ret = new stdClass();
 
   $opOK = false;             
@@ -803,8 +793,7 @@ function generateIssueText($dbHandler,$argsObj,$itsObj) {
     $ret->summary = $argsObj->bug_summary;
   }
 
-  if( $argsObj->addLinkToTL || 
-      isset($argsObj->addLinkToTLForStep[$argsObj->tcstep_id]) ) {
+  if( $addLinkToTL ) {
     $ret->description .= "\n\n" . lang_get('dl2tl') . $argsObj->direct_link;
   }  
 
@@ -867,36 +856,38 @@ function completeCreateIssue(&$execContext,$exsig)
  *
  *
  */
-function completeIssueForStep(&$execContext,$exsig,$exData,$stepID)
-{
+function completeIssueForStep(&$execContext,$execSigfrid,$exData,$stepID) {
   $p2i = array('issueSummaryForStep','issueBodyForStep',
                'issueTypeForStep','issuePriorityForStep',
                'artifactVersionForStep',
                'artifactComponentForStep');
-  foreach($p2i as $key)
-  {
-    if( isset($exData,$key) && isset($exData[$key],$stepID) )
-    {
-      if( !property_exists($execContext,$key) )
-      {
+  foreach($p2i as $key) {
+    if( isset($exData,$key) && isset($exData[$key],$stepID) ) {
+      if( !property_exists($execContext,$key) ) {
         $execContext->$key = array();  
       }
       $ref = &$execContext->$key;
       $ref[$stepID] = $exData[$key][$stepID];
     }  
   }
+
   $p2i = array('issueSummaryForStep' => 'bug_summary',
                'issueBodyForStep' => 'bug_notes',
                'issueTypeForStep' => 'issueType',
                'issuePriorityForStep' => 'issuePriority',
                'artifactVersionForStep' => 'artifactVersion',
                'artifactComponentForStep' => 'artifactComponent');
-  foreach($p2i as $from => $to)
-  {
-    if(property_exists($execContext,$from) )
-    {
+  foreach($p2i as $from => $to) {
+    if(property_exists($execContext,$from) ) {
       $ref = &$execContext->$from;
       $execContext->$to = $ref[$stepID];
     }  
   }
+
+  $addLink = false;
+  if( property_exists($execSigfrid, 'addLinkToTLForStep') ) {
+    $addLink = isset($execSigfrid->addLinkToTLForStep[$stepID]);
+  }
+
+  return $addLink;
 }

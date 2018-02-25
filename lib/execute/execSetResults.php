@@ -35,8 +35,7 @@ require_once('event_api.php');
 $cfg = getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
 
-if( $cfg->exec_cfg->enable_test_automation )
-{
+if( $cfg->exec_cfg->enable_test_automation ) {
   require_once('remote_exec.php');
 }
 
@@ -489,12 +488,10 @@ function init_args(&$dbHandler,$cfgObj)
   // See details on: "When nullify filter_status - 20080504" in this file
   if( $args->level == 'testcase' || is_null($args->filter_status) || 
       (!is_array($args->filter_status) && trim($args->filter_status)=='')
-    )
-  {
+    ) {
     $args->filter_status = null;  
   }
-  else
-  {
+  else {
     // 20130306 - franciscom
     // This (without the strlen() check) generated issue 5541: When "Result" filter is used ...
     // at least when result DIFFERENT that NOT RUN is used on filter
@@ -506,19 +503,16 @@ function init_args(&$dbHandler,$cfgObj)
     // to unserialize something that IS NOT SERIALIZED!!!!
 
     // After TICKET 6651, may be need to limit size of $args->filter_status
-    if(is_string($args->filter_status) && strlen($args->filter_status) > 1)
-    {
+    if(is_string($args->filter_status) && strlen($args->filter_status) > 1) {
       $args->filter_status = json_decode($args->filter_status);
     }
   }
   
 
-  switch($args->level)
-  {
+  switch($args->level) {
     case 'testcase':
       $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-      if( !is_null($args->tc_versions) )
-      {
+      if( !is_null($args->tc_versions) ) {
         $args->tc_id = current($args->tc_versions);
         $args->id = $args->tc_id;
         $args->version_id = key($args->tc_versions);
@@ -534,8 +528,7 @@ function init_args(&$dbHandler,$cfgObj)
     
   
   $args->tsuitesInBranch = null; 
-  if( !is_null($args->tsuite_id) )
-  {
+  if( !is_null($args->tsuite_id) ) {
     // will get all test suites in this branch, in order to limit amount of data returned 
     // by functions/method that collect linked tcversions
     // THIS COLLECT ONLY FIRST LEVEL UNDER test suite, do not do deep search
@@ -552,8 +545,8 @@ function init_args(&$dbHandler,$cfgObj)
   // TICKET 5630: Test Results by direct link ...
   $args->tplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
   $args->tproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID']);
-  if($args->tproject_id <= 0)
-  {
+
+  if($args->tproject_id <= 0) {
     $tree_mgr = new tree($dbHandler);
     $dm = $tree_mgr->get_node_hierarchy_info($args->tplan_id);
     $args->tproject_id = $dm['parent_id']; 
@@ -561,7 +554,6 @@ function init_args(&$dbHandler,$cfgObj)
 
 
   $args->addLinkToTL = isset($_REQUEST['addLinkToTL']) ? TRUE : FALSE;
-  
 
   // Do this only on single execution mode
   // get issue tracker config and object to manage TestLink - BTS integration 
@@ -574,14 +566,12 @@ function init_args(&$dbHandler,$cfgObj)
   $bug_summary['minLengh'] = 1; 
   $bug_summary['maxLengh'] = 1; 
 
-  if( ($args->issue_tracker_enabled = $info['issue_tracker_enabled']) )
-  {
+  if( ($args->issue_tracker_enabled = $info['issue_tracker_enabled']) ) {
     $it_mgr = new tlIssueTracker($dbHandler);
     $args->itsCfg = $it_mgr->getLinkedTo($args->tproject_id);
     $its = $it_mgr->getInterfaceObject($args->tproject_id);
     
-    if(!is_null($args->itsCfg) && !is_null($its))
-    {
+    if(!is_null($args->itsCfg) && !is_null($its)) {
       $bug_summary['maxLengh'] = $its->getBugSummaryMaxLength(); 
     }  
     unset($it_mgr);
@@ -595,8 +585,7 @@ function init_args(&$dbHandler,$cfgObj)
   $args->ctsCfg = null;
   $cts = null;
 
-  if( ($args->codeTrackerEnabled = intval($info['code_tracker_enabled'])) )
-  {
+  if( ($args->codeTrackerEnabled = intval($info['code_tracker_enabled'])) ) {
     $ct_mgr = new tlCodeTracker($dbHandler);
     $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
     $cts = $ct_mgr->getInterfaceObject($args->tproject_id);
@@ -611,8 +600,7 @@ function init_args(&$dbHandler,$cfgObj)
  *
  *
  */
-function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp)
-{
+function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp) {
 
   $inputCfg = array("bug_notes" => array("POST",tlInputParameter::STRING_N),
                     "issueType" => array("POST",tlInputParameter::INT_N),
@@ -623,8 +611,7 @@ function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp)
   $inputCfg["bug_summary"] = array("POST",tlInputParameter::STRING_N);
 
   // hmm this MAGIC needs to be commented 
-  if(!$argsObj->do_bulk_save)
-  {
+  if(!$argsObj->do_bulk_save) {
     $inputCfg["bug_summary"][2] = $bugSummaryProp['minLengh'];
     $inputCfg["bug_summary"][3] = $bugSummaryProp['maxLengh']; 
   } 
@@ -655,14 +642,18 @@ function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp) {
   I_PARAMS($cfg,$argsObj);
 
   // Special
-  $sk = array('issueForStep','addLinkToTLForStep',
+  // Array of Check Boxes:
+  // 'issueForStep','addLinkToTLForStep'
+  $sk = array('issueForStep','addLinkToTLForStep', 
               'artifactComponentForStep','artifactVersionForStep');
+  
   foreach($sk as $kt) {
     $argsObj->$kt = null;
     if(isset($_REQUEST[$kt])) {
       $argsObj->$kt = $_REQUEST[$kt];
     }  
-  }  
+  }
+
 }
 
 /*
@@ -1204,12 +1195,10 @@ function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
   returns: 
 
 */
-function getCfg()
-{
+function getCfg() {
   $cfg = new stdClass();
   $cfg->exec_cfg = config_get('exec_cfg');
   $cfg->gui_cfg = config_get('gui');
-  // $cfg->bts_type = config_get('interface_bugs');
     
   $results = config_get('results');
   $cfg->tc_status = $results['status_code'];
@@ -1238,8 +1227,7 @@ function getCfg()
   returns: 
 
 */
-function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
-{
+function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id) {
     $exec_cfg = config_get('exec_cfg');
     $grants = new stdClass();
     
@@ -1294,25 +1282,21 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui = new stdClass();
   $gui->tcversionSet = null;
   $gui->plugins = null;
+  $gui->addLinkToTLChecked = $cfgObj->exec_cfg->exec_mode->addLinkToTLChecked;
 
   $k2i = array('import','attachments','exec','edit_exec');
   $gui->features = array();
-  foreach($k2i as $olh)
-  {
+  foreach($k2i as $olh) {
     $gui->features[$olh] = false;
   }  
 
   if( $argsObj->user->hasRight($dbHandler,'testplan_execute',
-                      $argsObj->tproject_id,$argsObj->tplan_id,true) )
-  {
-    foreach($k2i as $olh)
-    {
+                      $argsObj->tproject_id,$argsObj->tplan_id,true) ) {
+    foreach($k2i as $olh) {
       $gui->features[$olh] = true;
     }  
   }  
 
-  // TBD $gui->delAttachmentURL =
-  
   $gui->showExternalAccessString = true;
   $gui->showImgInlineString = false;
   
@@ -1335,11 +1319,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 
   $gui->execStatusValues = createResultsMenu();
   $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
-  if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) )
-  {
+  if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) ) {
     unset($gui->execStatusValues[$cfgObj->tc_status['all']]);
   }
-
 
   $gui->can_use_bulk_op=0;
   $gui->exec_notes_editors=null;
@@ -1372,15 +1354,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->platform_notes_view_status=$argsObj->platform_notes_view_status;
 
   $gui->refreshTree = $argsObj->refreshTree;
-  if (!$argsObj->statusSingle || current($argsObj->statusSingle) == $cfgObj->tc_status['not_run']) 
-  {
+  if (!$argsObj->statusSingle || current($argsObj->statusSingle) == $cfgObj->tc_status['not_run'])  {
     $gui->refreshTree = 0;
   }
 
   $gui->map_last_exec_any_build=null;
   $gui->map_last_exec=null;
 
-      
   // 20081122 - franciscom
   // Just for the records:  
   // doing this here, we avoid to do on processTestSuite() and processTestCase(),

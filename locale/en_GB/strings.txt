@@ -3714,6 +3714,8 @@ $TLS_issue_subject_planname = "Test Plan:";
 $TLS_issue_subject_buildname = "Build:";
 $TLS_issue_subject_platfname = "Platform:";
 $TLS_issue_subject_tcname = "Test Case:";
+$TLS_issue_subject_tcpathname = $TLS_issue_subject_tcname;
+$TLS_issue_subject_execon = "Execution (ISO Timestamp): ";
 
 
 

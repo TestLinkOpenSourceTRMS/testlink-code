@@ -88,35 +88,12 @@ if(!is_null($linked_tcversions))
   $_SESSION['s_lastAttachmentInfos'] = null;
   if($args->level == 'testcase')
   {
-    // Warning!!! - $gui is passed by reference to be updated inside function
+    // passed by reference to be updated inside function
+    // $gui, $args
     $tcase = null;
     list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
                                                     $tree_mgr,$tcase_mgr,$attachmentRepository);
 
-    $dummy = $tree_mgr->get_node_hierarchy_info($args->version_id);
-    
-    $audit = $gui->bug_summary = $tcase_mgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
-    $ts = sprintf(lang_get('execution_ts_iso'), date('Y-m-dTH:i',time()));
-    $gui->bug_summary .= (' ' . $ts);
-
-    $lk = current($linked_tcversions);
-    $gui->direct_link = trim($_SESSION['basehref'],'/') . 
-                        "/ltx.php?item=exec&feature_id=" . $lk[0]['feature_id'] .
-                        "&build_id=" . $args->build_id;
-
-
-    $args->direct_link = $gui->direct_link;
-     
-    // will add as SUFFIX Test Case Name
-    /*
-    if( !is_null($gui->issueSummaryForStep) ) {
-      $yoda = explode('/',$audit);                    
-      $name = ' ' . lang_get('testcase') . ' ' . end($yoda);
-      foreach($gui->issueSummaryForStep as &$ele) {
-        $ele .= $name;     
-      }  
-    } 
-    */ 
   }
   else
   {
@@ -438,6 +415,8 @@ else
   $smarty->assign('gui',$gui);
   $smarty->assign('cfg',$cfg);
   $smarty->assign('users',tlUser::getByIDs($db,$userSet));
+
+  // var_dump($gui);
 
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 } 
@@ -1575,7 +1554,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 */
 function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tcaseMgr,&$docRepository)
 {     
-
   
   // IMPORTANT due  to platform feature
   // every element on linked_tcversions will be an array.
@@ -1603,8 +1581,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
 
 
-  foreach($locationFilters as $locationKey => $filterValue)
-  {
+  foreach($locationFilters as $locationKey => $filterValue) {
     $finalFilters=$cf_filters+$filterValue;
     $guiObj->design_time_cfields[$tcase_id][$locationKey] = 
       $tcaseMgr->html_table_of_custom_field_values($tcase_id,'design',$finalFilters,null,null,
@@ -1615,59 +1592,35 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
                                                    null,null,$argsObj->tproject_id,null,$link_id);
   }
 
-  if($guiObj->grants->execute)
-  {
+  if($guiObj->grants->execute) {
     $guiObj->execution_time_cfields[$tcase_id] = 
       $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
                                                    null,$argsObj->tproject_id);
   }
 
-  $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
-  $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
-                                                                         'nodes_hierarchy',true,1);
+  $tc_info = $treeMgr->get_node_hierarchy_info($tcase_id);
+  $guiObj->tSuiteAttachments[$tc_info['parent_id']] = 
+    getAttachmentInfos($docRepository,$tc_info['parent_id'],
+                       'nodes_hierarchy',true,1);
+  // Direct Link
+  $lk = current($tcv);
+  $guiObj->direct_link = trim($_SESSION['basehref'],'/') . 
+                        "/ltx.php?item=exec&feature_id=" . $lk[0]['feature_id'] .
+                        "&build_id=" . $argsObj->build_id;
 
-  // needed for issue @ test case step level
-  if(1==1)
-  {
-    $subjectMask = $cfgObj->exec_cfg->issues->tcstep_level->subject;
-    $haystack = $subjectMask;
-
-    $opt = array('fields2get' => 'step_number,id');
-    $steps = $tcaseMgr->get_steps($tcversion_id,0,$opt);
-    if(!is_null($steps))
-    {
-      $lbl = lang_get($prefixLabel);
-
-      $searchFor = array('$$issue_on_step', 
-                         '$$issue_subject_tcname', 
-                         '$$issue_subject_projectname',
-                         '$$issue_subject_planname',
-                         '$$issue_subject_buildname',
-                         '$$issue_subject_platfname');
-
-      $replaceWith = array();
-      foreach ( $searchFor as $lblKey ) { 
-        $jk = str_replace('$$','',$lblKey);
-        $replaceWith[] = lang_get($jk);
-      }
-      $haystack = str_replace($searchFor, $replaceWith, $haystack);
+  $argsObj->direct_link = $guiObj->direct_link;
 
 
-      $ecx = &$guiObj->executionContext;
-      $searchFor = array('%%TCNAME%%', '%%PROJECTNAME%%', 
-                         '%%PLANNAME%%','%%BUILDNAME%%','%%PLATFNAME%%');
-      $replaceWith = array($tc_info['name'],$ecx['tproject_name'],
-                           $ecx['tplan_name'],$ecx['build_name'],
-                           $ecx['platform_name']);
+  // Information for Issue Management
+  // Common Info
+  $signature = new stdClass();
+  $signature->tcname = $tc_info['name'];
+  $signature->tcpathname = $tcaseMgr->getPathName($tcase_id);
+  $signature->tcversion_id = $tcversion_id;
 
-      $nu = str_replace($searchFor, $replaceWith, $haystack);
-      foreach($steps as $elem)
-      {
-        $guiObj->issueSummaryForStep[$elem['id']] = $lbl . 
-          str_replace('%%STEPNUMBER%%',$elem['step_number'],$nu); 
-      }  
-    } 
-  }  
+  list($guiObj->bug_summary,$guiObj->issueSummaryForStep) = 
+    genIssueSummary($tcaseMgr,$signature,$guiObj->executionContext);
+
   return array($tcase_id,$tcversion_id);
 }
 
@@ -2294,3 +2247,63 @@ function getResultsIconsNext()
   return $items;
 }
 
+/**
+ *
+ */
+function genIssueSummary(&$tcaseMgr,$signature,$context) {
+
+  $cfg = config_get('exec_cfg');
+
+  // Work on labels
+  $text = array();
+  $text['tcase'] = helperLabels($cfg->issues->tcase_level->subject);
+  $text['tcstep'] = helperLabels($cfg->issues->tcstep_level->subject);
+
+  // Work on values
+  $ecx = &$context;
+  $searchFor = array('%%TCNAME%%', '%%PROJECTNAME%%', 
+                     '%%PLANNAME%%','%%BUILDNAME%%','%%PLATFNAME%%',
+                     '%%TCPATHNAME%%','%%EXECTSISO%%');
+
+  $replaceWith = array($signature->tcname,$ecx['tproject_name'],
+                       $ecx['tplan_name'],$ecx['build_name'],
+                       $ecx['platform_name'],$signature->tcpathname,
+                       date('Y-m-dTH:i',time()));
+
+  $nu = array();
+  $nu['tcase'] = str_replace($searchFor, $replaceWith, $text['tcase']);
+  $nu['tcstep'] = null;
+
+  $opt = array('fields2get' => 'step_number,id');
+  $steps = $tcaseMgr->get_steps($signature->tcversion_id,0,$opt);
+  if(null != $steps) {
+    $tstx = str_replace($searchFor, $replaceWith, $text['tcstep']);
+    foreach($steps as $elem) {
+      $nu['tcstep'][$elem['id']] = 
+        str_replace('%%STEPNUMBER%%',$elem['step_number'],$tstx); 
+    }     
+  }
+
+  return array($nu['tcase'],$nu['tcstep']);
+}
+
+
+
+/**
+ *
+ */
+function helperLabels($haystack) {
+  $searchFor = array('$$issue_on_step', 
+                     '$$issue_subject_tcname','$$issue_subject_tcpathname', 
+                     '$$issue_subject_projectname',
+                     '$$issue_subject_planname','$$issue_subject_buildname',
+                     '$$issue_subject_platfname','$$issue_subject_execon');
+
+  $replaceWith = array();
+  foreach ( $searchFor as $lblKey ) { 
+    $jk = str_replace('$$','',$lblKey);
+    $replaceWith[] = lang_get($jk);
+  }
+  $hy = str_replace($searchFor, $replaceWith, $haystack);
+  return $hy; 
+}  

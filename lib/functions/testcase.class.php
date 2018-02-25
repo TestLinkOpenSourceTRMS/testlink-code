@@ -1673,11 +1673,11 @@ class testcase extends tlObjectWithAttachments
     returns: testproject id
 
   */
-  function formatTestCaseIdentity($id,$external_id)
+  function formatTestCaseIdentity($id,$external_id=null)
   {
-      $path2root=$this->tree_manager->get_path($tc_id);
-      $tproject_id=$path2root[0]['parent_id'];
-      $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
+    $path2root = $this->tree_manager->get_path($tc_id);
+    $tproject_id = $path2root[0]['parent_id'];
+    $tcasePrefix = $this->tproject_mgr->getTestCasePrefix($tproject_id);
   }
 
 
@@ -1698,7 +1698,7 @@ class testcase extends tlObjectWithAttachments
       $path2root=$this->tree_manager->get_path($id);
       $root=$path2root[0]['parent_id'];
     }
-    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
+    $tcasePrefix = $this->tproject_mgr->getTestCasePrefix($root);
     return array($tcasePrefix,$root);
   }
 
@@ -6582,10 +6582,27 @@ class testcase extends tlObjectWithAttachments
   }
 
 
-
-  public function getAuditSignature($context,$options = null)
-  {
+  /**
+   *
+   */
+  public function getAuditSignature($context,$options = null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $key2check = array('tcversion_id','id');
+    $safeID = array();
+    foreach($key2check as $idx => $key ) {
+      if( property_exists($context, $key) ) {
+        $safeID[$key] = intval($context->$key);
+      }
+      else {
+        $safeID[$key] = -1;
+      }  
+    }
+
+    if( $safeID['id'] <= 0  && $safeID['tcversion_id'] > 0 ) {
+      $node = $this->tree_manager->get_node_hierarchy_info($safeID['tcversion_id']);
+      $safeID['id'] = $node['parent_id'];
+    }
 
     // we need:
     // Test Case External ID
@@ -6593,11 +6610,11 @@ class testcase extends tlObjectWithAttachments
     // Test Case Path
     // What about test case version ID ? => only if argument provided
     //
-    $pathInfo = $this->tree_manager->get_full_path_verbose($context->id,array('output_format' => 'id_name'));
+    $pathInfo = $this->tree_manager->get_full_path_verbose($safeID['id'],array('output_format' => 'id_name'));
     $pathInfo = current($pathInfo);
     $path = '/' . implode('/',$pathInfo['name']) . '/';
-    $tcase_prefix = $this->getPrefix($context->id, $pathInfo['node_id'][0]);
-    $info = $this->get_last_version_info($context->id, array('output' => 'medium'));
+    $tcase_prefix = $this->getPrefix($safeID['id'], $pathInfo['node_id'][0]);
+    $info = $this->get_last_version_info($safeID['id'], array('output' => 'medium'));
     $signature = $path . $tcase_prefix[0] . $this->cfg->testcase->glue_character .
                  $info['tc_external_id'] . ':' . $info['name'];
 
@@ -7839,6 +7856,25 @@ class testcase extends tlObjectWithAttachments
     } 
   }
 
+  /**
+   *
+   *
+   */
+  function getPathName($tcase_id) {
+
+    $pathInfo = $this->tree_manager->get_full_path_verbose($tcase_id,array('output_format' => 'id_name'));
+    $pathInfo = current($pathInfo);
+    $path = '/' . implode('/',$pathInfo['name']) . '/';
+
+    $pfx = $this->tproject_mgr->getTestCasePrefix($pathInfo['node_id'][0]);
+
+    $info = $this->get_last_version_info($tcase_id, array('output' => 'medium'));
+
+    $path .= $pfx . $this->cfg->testcase->glue_character .
+             $info['tc_external_id'] . ':' . $info['name'];
+
+    return $path;
+  }
 
 
 

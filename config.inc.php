@@ -1049,9 +1049,13 @@ $tlCfg->exec_cfg->issues->tcstep_level = new stdClass();
 
 /**
  * %%STEPNUMBER%%,%%TCNAME%%,%%PROJECTNAME%%,%%PLANNAME%%
- * %%BUILDNAME%%,%%PLATFNAME%%
+ * %%BUILDNAME%%,%%PLATFNAME%%,%%EXECTSISO%%,
+ * %%TCPATHNAME%%
+ *
+ * /saado/TS100/SAA-4:WSTEPS  Executed ON (ISO FORMAT): 2018-02-25CET10:00
  */
-$tlCfg->exec_cfg->issues->tcase_level->subject = '';
+$tlCfg->exec_cfg->issues->tcase_level->subject = 
+'$$issue_subject_tcname %%TCPATHNAME%% - $$issue_subject_execon %%EXECTSISO%% ';
 
 /*
 $tlCfg->exec_cfg->issues->tcstep_level->subject = 

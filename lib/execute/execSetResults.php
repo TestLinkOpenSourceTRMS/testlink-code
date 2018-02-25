@@ -131,21 +131,17 @@ if(!is_null($linked_tcversions))
                           ($args->save_results ? $args->save_results : $args->save_and_exit);
 
      
-    if( $args->save_results || $args->do_bulk_save)
-    {  
+    if( $args->save_results || $args->do_bulk_save) {  
       // Need to get Latest execution ID before writing
       $lexid = 0;
-      if($args->copyIssues && $args->level == 'testcase')
-      {
+      if($args->copyIssues && $args->level == 'testcase') {
         $lexid = $tcase_mgr->getSystemWideLastestExecutionID($args->version_id);
       }  
-
 
       $_REQUEST['save_results'] = $args->save_results;
       list($execSet,$gui->addIssueOp) = write_execution($db,$args,$_REQUEST,$its);
       
-      if($args->assignTask)
-      {
+      if($args->assignTask) {
         $fid = $tplan_mgr->getFeatureID($args->tplan_id,$args->platform_id,$args->version_id);
         $taskMgr = new assignment_mgr($db);
         $taskDomain = $taskMgr->get_available_types();
@@ -158,8 +154,7 @@ if(!is_null($linked_tcversions))
         $taskMgr->assign($fmap);
       }  
 
-      if($lexid > 0 && $args->copyIssues && $args->level == 'testcase')
-      {
+      if($lexid > 0 && $args->copyIssues && $args->level == 'testcase') {
         copyIssues($db,$lexid,$execSet[$args->version_id]);
       }
 
@@ -171,20 +166,18 @@ if(!is_null($linked_tcversions))
                    'status'   => $args->statusSingle[$args->version_id],
                    'directLink' => $args->direct_link);
       event_signal('EVENT_EXECUTE_TEST', $ctx);
-	  $tc_info = $tcase_mgr->getExternalID($tcase_id);
-	  $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
-	  $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
-	  logAuditEvent(TLS("audit_exec_saved",$tc_info[0],$build_info['name'],$tp_info['name']),"CREATE",$execSet[$tcversion_id],"execution");
-    }
+  	  $tc_info = $tcase_mgr->getExternalID($tcase_id);
+  	  $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
+  	  $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
+
+  	  logAuditEvent(TLS("audit_exec_saved",$tc_info[0],$build_info['name'],$tp_info['name']),"CREATE",$execSet[$tcversion_id],"execution");
+      }
 
     // Need to re-read to update test case status
-    if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) 
-    {  
+    if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) {  
       $nextInChain = -1;
-      if( $cfg->exec_cfg->exec_mode->save_and_move == 'unlimited' )
-      {
-        if( $args->caller ==  'tcAssignedToMe')
-        {
+      if( $cfg->exec_cfg->exec_mode->save_and_move == 'unlimited' ) {
+        if( $args->caller ==  'tcAssignedToMe') {
           $optz = array('order_by' => 'ORDER BY TPTCV.node_order');
           $filters['build_id'] = $args->build_id;
 
@@ -199,13 +192,10 @@ if(!is_null($linked_tcversions))
         }
 
         $chainLen = count($args->testcases_to_show);
-        foreach($args->testcases_to_show as $ix => $val)
-        {
-          if( $val == $args->tc_id)
-          {
+        foreach($args->testcases_to_show as $ix => $val) {
+          if( $val == $args->tc_id) {
             $nextInChain = $ix+1;
-            if($nextInChain == $chainLen)
-            {
+            if($nextInChain == $chainLen) {
               $nextInChain = 0;  
             }  
             break;
@@ -229,8 +219,7 @@ if(!is_null($linked_tcversions))
       $args->testcases_to_show = (array)$args->testcases_to_show;
         
       $opt4sibling = array('move' => $args->moveTowards);
-      switch ($args->caller)
-      {
+      switch ($args->caller) {
         case 'tcAssignedToMe':
           $doSingleStep = true;
           $opt4sibling['assigned_to'] = array('user_id' => $args->user_id, 'build_id' => $args->build_id);
@@ -240,8 +229,7 @@ if(!is_null($linked_tcversions))
         break;  
       }
   
-      switch($cfg->exec_cfg->exec_mode->save_and_move)
-      {
+      switch($cfg->exec_cfg->exec_mode->save_and_move) {
         case 'unlimited':
           // get position on chain
           $opx = array('tcase_id' => 
@@ -649,8 +637,7 @@ function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp)
  *
  *
  */
-function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp)
-{
+function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp) {
   $arrayOfInt = array("POST",tlInputParameter::ARRAY_INT);
 
   $cfg = array("issueBodyForStep" => array("POST",tlInputParameter::ARRAY_STRING_N),
@@ -660,8 +647,7 @@ function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp)
   $cfg["issueSummaryForStep"] = array("POST",tlInputParameter::ARRAY_STRING_N);
 
   // hmm this MAGIC needs to be commented 
-  if(!$argsObj->do_bulk_save)
-  {
+  if(!$argsObj->do_bulk_save) {
     $cfg["issueSummaryForStep"][2] = $bugSummaryProp['minLengh'];
     $cfg["issueSummaryForStep"][3] = $bugSummaryProp['maxLengh']; 
   } 
@@ -669,13 +655,11 @@ function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp)
   I_PARAMS($cfg,$argsObj);
 
   // Special
-  $sk = array('issueForStep','artifactComponentForStep',
-              'artifactVersionForStep');
-  foreach($sk as $kt)
-  {
+  $sk = array('issueForStep','addLinkToTLForStep',
+              'artifactComponentForStep','artifactVersionForStep');
+  foreach($sk as $kt) {
     $argsObj->$kt = null;
-    if(isset($_REQUEST[$kt]))
-    {
+    if(isset($_REQUEST[$kt])) {
       $argsObj->$kt = $_REQUEST[$kt];
     }  
   }  

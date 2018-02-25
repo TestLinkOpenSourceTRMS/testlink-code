@@ -91,5 +91,11 @@
                     cols="{$gui->issueTrackerCfg->bugSummaryMaxLength}" ></textarea>          
         </td>
       </tr>
-
+      <tr>
+        <td colspan="2">
+          <input type="checkbox" name="addLinkToTLForStep[{$args_step_id}]"  
+                 id="addLinkToTLForStep_{$args_step_id}">
+          <span class="label">{$args_labels.add_link_to_tlexec}</span>
+        </td>
+      </tr>
       </table>

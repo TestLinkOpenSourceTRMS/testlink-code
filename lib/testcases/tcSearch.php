@@ -10,12 +10,9 @@
  * @filesource  tcSearch.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @link        http://www.testlink.org/
  *
- *
- * @internal revisions
- * @since 1.9.15
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -59,27 +56,21 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $tcaseID = null;
   $emptyTestProject = false;
 
-  if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
-  {
-    if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
-    {
+  if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0) {
+    if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false) {
       $args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
     }
         
     $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase);
     $filter['by_tc_id'] = " AND NH_TCV.parent_id = " . intval($tcaseID);
   }
-  else
-  {
-    echo 'RRR';
+  else {
     $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
 
-    if(!is_null($a_tcid))
-    {
+    if(!is_null($a_tcid)) {
       $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
     }  
-    else
-    {
+    else {
       // Force Nothing extracted, because test project 
       // has no test case defined 
       $emptyTestProject = true;

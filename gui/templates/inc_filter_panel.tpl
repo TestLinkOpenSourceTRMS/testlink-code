@@ -20,7 +20,7 @@
                         build,filter_tcID,filter_on,filter_result,status,
                         btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
                         filter_owner,TestPlan,test_plan,caption_nav_filters,
-                        platform, include_unassigned_testcases, filter_active_inactive,
+                        platform, filter_active_inactive,
                         btn_remove_all_tester_assignments, execution_type, 
                         do_auto_update, testsuite, btn_reset_filters,hint_list_of_bugs,
                         btn_bulk_update_to_latest_version, priority, tc_title,
@@ -362,7 +362,6 @@
         <select class="chosen-select" name="filter_assigned_user" 
                 id="filter_assigned_user"
                 onchange="javascript: triggerAssignedBox('filter_assigned_user',
-                                                               'filter_assigned_user_include_unassigned',
                                                                '{$control->option_strings.any}',
                                                                '{$control->option_strings.none}',
                                                                '{$control->option_strings.somebody}');">
@@ -370,17 +369,6 @@
                               selected=$control->filters.filter_assigned_user.selected}
         </select>
 
-        <br/>
-        <br />
-        <input type="checkbox"
-               id="filter_assigned_user_include_unassigned"
-               name="filter_assigned_user_include_unassigned"
-                   value="1"
-                   {if $control->filters.filter_assigned_user.filter_assigned_user_include_unassigned}
-                      checked="checked"
-                   {/if}
-            />
-        {$labels.include_unassigned_testcases}
       {/if}
 
       </td>

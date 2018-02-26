@@ -71,7 +71,6 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   }
   else
   {
-    echo 'RRR';
     $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
 
     if(!is_null($a_tcid))

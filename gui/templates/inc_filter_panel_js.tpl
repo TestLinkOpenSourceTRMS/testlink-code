@@ -25,24 +25,15 @@
    * 
    * @author Andreas Simon
    * @param filter_assigned_to combobox in which assignment is chosen
-   * @param include_unassigned checkbox for including unassigned testcases
    * @param str_option_any string value anybody
    * @param str_option_none string value nobody
    * @param str_option_somebody string value somebody
    */
-  function triggerAssignedBox(filter_assigned_to_id, include_unassigned_id,
-                              str_option_any, str_option_none, str_option_somebody) 
+  function triggerAssignedBox(filter_assigned_to_id, str_option_any, str_option_none, str_option_somebody) 
   {
     var filter_assigned_to = document.getElementById(filter_assigned_to_id);
-    var include_unassigned = document.getElementById(include_unassigned_id);
     var index = filter_assigned_to.options.selectedIndex;
-    var choice = filter_assigned_to.options[index].label;
-    include_unassigned.disabled = false;
-    if (choice == str_option_any || choice == str_option_none || choice == str_option_somebody) 
-    {
-      include_unassigned.disabled = true;
-      include_unassigned.checked = false;
-    } 
+    var choice = filter_assigned_to.options[index].label; 
   }
 {/if}
 
@@ -146,7 +137,6 @@ function copy_tester_assignments_from_build(destination)
     
     {if $control->filters.filter_assigned_user}
       triggerAssignedBox('filter_assigned_user',
-                         'filter_assigned_user_include_unassigned',
                          '{$control->option_strings.any}',
                          '{$control->option_strings.none}',
                          '{$control->option_strings.somebody}');

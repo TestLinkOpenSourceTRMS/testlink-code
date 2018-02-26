@@ -727,6 +727,7 @@ $TLS_title_change_node_order = "Modifier l’ordre des éléments enfants";
 // ----- gui/templates/containerView.tpl -----
 $TLS_testsuite_operations = "Opérations sur les dossiers de tests";
 $TLS_testcase_operations = "Opérations sur les fiches de test";
+$TLS_testcase_version_operations = "Opérations sur les versions de la fiche de test";
 $TLS_alt_del_testsuite = "Supprimer le dossier de tests avec tous les dossiers et fiches de test enfants";
 $TLS_alt_edit_testsuite = "Modifier les données et titre du dossier de tests";
 $TLS_alt_move_cp_testsuite = "Déplacer ou copier le dossier de tests vers un autre projet";

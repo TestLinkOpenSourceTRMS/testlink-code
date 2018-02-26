@@ -975,21 +975,19 @@ class testplan extends tlObjectWithAttachments
             " AND UA.type = {$this->execTaskCode} ";
     
     // Warning!!!:
-    // If special user id TL_USER_NOBODY is present in set of user id
-    // we will ignore any other user id present on set.
+    // TL_USER_NOBODY is used to ask for unassigned testcases
     $ff = (array)$filter;
     $sql = " UA.user_id "; 
-    if( in_array(TL_USER_NOBODY,$ff) )
+    if( in_array(TL_USER_SOMEBODY,$ff) )
     {
-      $sql .= " IS NULL "; 
-      $join = ' LEFT OUTER ' . $join;
-    } 
-    else if( in_array(TL_USER_SOMEBODY,$ff) )
-    {
-      $sql .= " IS NOT NULL "; 
+      $sql .= " IS NOT NULL ";
     }
     else
     {
+      if( in_array(TL_USER_NOBODY,$ff) )
+      {
+        $opt['include_unassigned'] = true;
+      } 
       $sql_unassigned="";
       $sql = '';
       if( $opt['include_unassigned'] )

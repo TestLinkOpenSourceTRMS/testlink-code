@@ -123,8 +123,11 @@ class tlUser extends tlDBObject
   const E_EMAILFORMAT = -512;
   const S_PWDMGTEXTERNAL = 2;
   
-  //search options
+  // search options
+  // 1 already in use by TLOBJ_O_SEARCH_BY_ID
   const USER_O_SEARCH_BYLOGIN = 2;
+  const USER_O_SEARCH_BYEMAIL = 4;
+
   
   
   //detail leveles
@@ -164,11 +167,9 @@ class tlUser extends tlDBObject
    * 
    * @param mixed $options tlUser/tlObject options
    */
-  protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
-  {
+  protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID) {
     $this->firstName = null;
     $this->lastName = null;
-    $this->emailAddress = null;
     $this->locale = null;
     $this->password = null;
     $this->isActive = null;
@@ -181,15 +182,19 @@ class tlUser extends tlDBObject
     $this->authentication = null;
     $this->expiration_date = null;
 
-    if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
-    {
+    if (!($options & self::TLOBJ_O_SEARCH_BY_ID)) {
       $this->dbID = null;
     }
 
-    if (!($options & self::USER_O_SEARCH_BYLOGIN))
-    {
+    if (!($options & self::USER_O_SEARCH_BYLOGIN)) {
       $this->login = null;
     }
+
+    if (!($options & self::USER_O_SEARCH_BYEMAIL)) {
+      $this->emailAddress = null;
+    }
+
+
   }
   
   /** 
@@ -267,21 +272,23 @@ class tlUser extends tlDBObject
            " FROM {$this->object_table}";
     $clauses = null;
 
-    if ($options & self::TLOBJ_O_SEARCH_BY_ID)
-    {
+    if ($options & self::TLOBJ_O_SEARCH_BY_ID) {
       $clauses[] = "id = " . intval($this->dbID);    
     }
-    if ($options & self::USER_O_SEARCH_BYLOGIN)
-    {
+
+    if ($options & self::USER_O_SEARCH_BYLOGIN) {
       $clauses[] = "login = '".$db->prepare_string($this->login)."'";    
     }
-    if ($clauses)
-    {
+
+    if ($options & self::USER_O_SEARCH_BYEMAIL) {
+      $clauses[] = "email = '".$db->prepare_string($this->emailAddress)."'";    
+    }
+
+    if ($clauses) {
       $sql .= " WHERE " . implode(" AND ",$clauses);
     }
     $info = $db->fetchFirstRow($sql);
-    if ($info)
-    {
+    if ($info) {
       $this->dbID = $info['id'];
       $this->firstName = $info['first'];
       $this->lastName = $info['last'];
@@ -294,13 +301,12 @@ class tlUser extends tlDBObject
       $this->expiration_date = $info['expiration_date'];
       $this->creation_ts = $info['creation_ts'];
       
-      if ($this->globalRoleID)
-      {
+      if ($this->globalRoleID) {
         $this->globalRole = new tlRole($this->globalRoleID);
         $this->globalRole->readFromDB($db);
       }
-      if ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_ROLES)
-      {
+
+      if ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_ROLES) {
         $this->readTestProjectRoles($db);
         $this->readTestPlanRoles($db);
       }
@@ -603,8 +609,7 @@ class tlUser extends tlDBObject
   /**
    * 
    */
-  public function checkDetails(&$db)
-  {
+  public function checkDetails(&$db) {
     $this->firstName = trim($this->firstName);
     $this->lastName = trim($this->lastName);
     $this->emailAddress = trim($this->emailAddress);
@@ -1081,18 +1086,29 @@ class tlUser extends tlDBObject
   {
     $user = new tlUser();
     $user->login = $login;
-    if ($user->readFromDB($db,self::USER_O_SEARCH_BYLOGIN) >= tl::OK)
-    {
+    if ($user->readFromDB($db,self::USER_O_SEARCH_BYLOGIN) >= tl::OK) {
       return $user->dbID;
     }
     return null;
   }
+
+  /**
+   *
+   */
+  static public function doesUserExistByEmail(&$db,$email) {
+    $user = new tlUser();
+    $user->emailAddress = $email;
+    if ($user->readFromDB($db,self::USER_O_SEARCH_BYEMAIL) >= tl::OK) {
+      return $user->dbID;
+    }
+    return null;
+  }
+
   
   /**
    *
    */
-  static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
-  {
+  static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
     return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
   }
   

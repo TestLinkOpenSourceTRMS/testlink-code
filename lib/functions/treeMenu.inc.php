@@ -1058,7 +1058,7 @@ function filter_by_cf_values(&$db, &$tcase_tree, &$cf_hash, $node_types)
             {
               if ($count > 1) 
               {
-                $cf_sql .= " AND ";
+                $cf_sql .= ' '. $_SESSION[$safeID.'_cf_filter_type'] .' ';
               }
               $safeValue = $db->prepare_string($value);
               $cf_sql .= "( CFD.value LIKE '%{$safeValue}%' AND CFD.field_id = {$safeID} )";

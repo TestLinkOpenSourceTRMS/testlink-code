@@ -617,6 +617,15 @@ class cfield_mgr extends tlObject
    				}
    			}
    			$str_out .='</select>';
+            if($verbose_type == "multiselection list"  and $dateOpt['show_on_filters']){
+                $filter_type = $_SESSION[$p_field_def["id"].'_cf_filter_type'];
+                $filter_type = $filter_type == null ? 'And': $filter_type;
+                $check_and = $filter_type == 'And' ? ' checked="checked"': '';
+                $check_or = $filter_type == 'Or' ? ' checked="checked"': '';
+                $str_out .='<div>
+<label><input type="radio" name="'.$p_field_def["id"].'_cf_filter_type" value="Or"'.$check_or.'">Or</label>   
+<label><input type="radio" name="'.$p_field_def["id"].'_cf_filter_type" value="And"'.$check_and.'">And</label></div>';
+            }
 		break;
 
 		case 'checkbox':

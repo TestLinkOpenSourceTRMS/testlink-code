@@ -23,17 +23,17 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
 <body {$body_onload}>
 {$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
-
+<div class="container">
 <h1 class="title">{$labels.menu_manage_keywords}</h1>
 
-<div class="workBack">
+<div class="row">
   {if $gui->keywords != ''}
-  <table class="simple_tableruler sortable">
+  <table class="table sortable" id="keyword">
     <tr>
-      <th width="30%">{$tlImages.sort_hint}{$labels.th_keyword}</th>
-      <th>{$tlImages.sort_hint}{$labels.th_notes}</th>
+      <th>{$labels.th_keyword}</th>
+      <th>{$labels.th_notes}</th>
       {if $gui->canManage != ""}
-        <th style="min-width:70px">{$tlImages.sort_hint}{$labels.th_delete}</th>
+        <th>{$labels.th_delete}</th>
       {/if}
     </tr>
     {section name=kwx loop=$gui->keywords}
@@ -62,7 +62,11 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
     {/section}
   </table>
   {/if}
-  
+  <script>
+	$(document).ready(function() {
+		$('#keyword').DataTable();
+	});
+  </script>
 
   <div class="groupBtn">  
       <form name="keyword_view" id="keyword_view" method="post" action="lib/keywords/keywordsEdit.php"> 
@@ -70,28 +74,28 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
         <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 
     {if $gui->canManage != ""}
-        <input type="submit" id="create_keyword" name="create_keyword" 
+        <input type="submit" class="btn btn-default" id="create_keyword" name="create_keyword" 
                  value="{$labels.btn_create_keyword}" 
                  onclick="doAction.value='create'"/>
     {/if}
-      {if $gui->keywords != ''}
-        <input type="button" id="keyword_assign" name="keyword_assign" 
+    {if $gui->keywords != '' && $gui->canAssign!=''}
+        <input type="button" class="btn btn-default" id="keyword_assign" name="keyword_assign" 
             value="{$labels.menu_assign_kw_to_tc}" 
               onclick="location.href=fRoot+'lib/general/frmWorkArea.php?feature=keywordsAssign';"/>
-      {/if}    
+    {/if}    
     
     {if $gui->canManage != ""}
-      <input type="button" name="do_import" value="{$labels.btn_import}" 
+      <input type="button" class="btn btn-default" name="do_import" value="{$labels.btn_import}" 
         onclick="location='{$basehref}/lib/keywords/keywordsImport.php?tproject_id={$gui->tproject_id}'" />
     {/if}
   
       {if $gui->keywords != ''}
-      <input type="button" name="do_export" value="{$labels.btn_export}" 
+      <input type="button" class="btn btn-default" name="do_export" value="{$labels.btn_export}" 
         onclick="location='{$basehref}/lib/keywords/keywordsExport.php?doAction=export&tproject_id={$gui->tproject_id}'" />
       {/if}
       </form>
   </div>
 </div>
-
+</div>
 </body>
 </html>

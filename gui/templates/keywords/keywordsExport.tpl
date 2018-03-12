@@ -30,41 +30,29 @@ function validateForm(f)
 
 
 <body>
-<h1 class="title">{$gui->main_descr|escape}</h1>
-
-<div class="workBack">
-<h1 class="title">{$gui->action_descr|escape}</h1>
-
-  <form method="post" id="export_xml" enctype="multipart/form-data" 
-        action="{$gui->actionUrl}"
-        onSubmit="javascript:return validateForm(this);">
-  
-    <table>
-    <tr>
-	    <td>
-		    {$lbl.export_filename}
-	    </td>
-	    <td>
-		  	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
+	<div class="container">
+		<h1 class="title">{$gui->action_descr|escape}</h1>
+		  <form method="post" id="export_xml" enctype="multipart/form-data" 
+		        action="{$gui->actionUrl}"
+		        onSubmit="javascript:return validateForm(this);">
+		  
+		  <div class="form-group row">
+		  	<label for="export_filename">{$lbl.export_filename}</label>
+		  	<input type="text" class="form-control" id="export_filename" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
 				           value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
 				  				{include file="error_icon.tpl" field="export_filename"}
-	  	</td>
-  	<tr>
-	  	<td>
-	  		{$lbl.file_type}
-	  	</td>
-	  	<td>
-		  	<select name="exportType">
+		  </div>
+	      <div class="form-group row">
+	      	<label for="exportType">{$lbl.file_type}</label>
+	      	<select name="exportType" id=exportType class="form-control" >
 		  		{html_options options=$gui->exportTypes}
 		  	</select>
 		 	<a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$lbl.view_file_format_doc}</a>
-	  	</td>
-	</tr>
-  	</table>
+	      </div>
   	
   	<div class="groupBtn">
-  		<input type="submit" name="export" value="{$lbl.btn_export}" />
-  		<input type="button" name="cancel" value="{$lbl.btn_cancel}" 
+  		<input type="submit" class="btn btn-default" name="export" value="{$lbl.btn_export}" />
+  		<input type="button" class="btn btn-default" name="cancel" value="{$lbl.btn_cancel}" 
 			onclick="javascript: location.href=fRoot+'{$gui->cancelUrl}';" />
   	</div>
   </form>

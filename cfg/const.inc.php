@@ -215,7 +215,7 @@ define('EVENT_TYPE_OUTPUT', 4);
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
 /** default filenames of CSS files of current GUI theme */
-define('TL_CSS_MAIN', 'testlink.css');
+define('TL_CSS_MAIN', 'testlink-old.css');
 define('TL_CSS_PRINT', 'tl_print.css');
 define('TL_CSS_DOCUMENTS', 'tl_documents.css');
 

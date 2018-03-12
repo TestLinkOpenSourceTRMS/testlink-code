@@ -25,7 +25,8 @@ editorType: used to understand if code for tinymce need to be loaded
 	
 {* ----- load CSS ------------------------------------------------------------------- *} 
 	<style media="all" type="text/css">@import "{$css}";</style>
-
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	
 	{if $use_custom_css}
 	<style media="all" type="text/css">@import "{$custom_css}";</style>
 	{/if}

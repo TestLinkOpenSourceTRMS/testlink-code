@@ -8,7 +8,7 @@
  * @filesource  login.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2006,2017 TestLink community 
+ * @copyright   2006,2018 TestLink community 
  * @link        http://www.testlink.org
  * 
  **/
@@ -49,6 +49,8 @@ switch($args->action)
   case 'ajaxcheck':
     processAjaxCheck($db);
   break;
+
+
   case 'oauth':
     //If code is empty then break
     if (!isset($_GET['code'])){
@@ -57,20 +59,20 @@ switch($args->action)
     }
 
     //Switch between oauth providers
-    if (!include_once('lib/functions/oauth_providers/'.$_GET['oauth'].'.php'))
-    {
+    if (!include_once('lib/functions/oauth_providers/'.$_GET['oauth'].'.php')) {
         die("Oauth client doesn't exist");
     }
 
-    $oauth_params;
-    foreach ($gui->authCfg['oauth'] as $oauth_prov) {
-      if (strcmp($oauth_prov['oauth_name'],$_GET['oauth']) == 0){
-           $oauth_params = $oauth_prov;
+    $oau = config_get('OAuthServers');
+    foreach ($oau as $oprov) {
+      if (strcmp($oprov['oauth_name'],$_GET['oauth']) == 0){
+        $oauth_params = $oprov;
+        break;
       }
     }
+
     $user_token = oauth_get_token($oauth_params, $_GET['code']);
-    if($user_token->status['status'] == tl::OK)
-    {
+    if($user_token->status['status'] == tl::OK) {
       doSessionStart(true);
       $op = doAuthorize($db,$user_token->options->user,'oauth',$user_token->options);
       $doAuthPostProcess = true;
@@ -80,6 +82,7 @@ switch($args->action)
         die();
     }
   break;
+
   case 'loginform':
     $doRenderLoginScreen = true;
     $gui->draw = true;
@@ -197,34 +200,32 @@ function init_gui(&$db,$args)
   $gui->authCfg = config_get('authentication');
   $gui->user_self_signup = config_get('user_self_signup');
 
-  //Oauth buttons
+  // Oauth buttons
+  $oau = config_get('OAuthServers');
   $gui->oauth = array();
-  foreach ($gui->authCfg['oauth'] as $oauth_prov) {
-    if ($oauth_prov['oauth_enabled']){
+  foreach ($oau as $oauth_prov) {
+    if ($oauth_prov['oauth_enabled']) {
         $name = $oauth_prov['oauth_name'];
         $gui->oauth[$name] = new stdClass();
-        $gui->oauth[$name] -> name = ucfirst($name);
-        $gui->oauth[$name] -> link = oauth_link($oauth_prov);
-        $gui->oauth[$name] -> icon = $oauth_prov['oauth_icon'];
+        $gui->oauth[$name]->name = ucfirst($name);
+        $gui->oauth[$name]->link = oauth_link($oauth_prov);
+        $gui->oauth[$name]->icon = $oauth_prov['oauth_icon'];
     }
   }
 
   $gui->external_password_mgmt = false;
   $domain = $gui->authCfg['domain'];
   $mm = $gui->authCfg['method'];
-  if( isset($domain[$mm]) )
-  {
+  if( isset($domain[$mm]) ) {
     $ac = $domain[$mm];
     $gui->external_password_mgmt = !$ac['allowPasswordManagement'];
   }  
 
   $gui->login_disabled = (('LDAP' == $gui->authCfg['method']) && !checkForLDAPExtension()) ? 1 : 0;
 
-  switch($args->note)
-  {
+  switch($args->note) {
     case 'expired':
-      if(!isset($_SESSION))
-      {
+      if(!isset($_SESSION)) {
         session_start();
       }
       session_unset();
@@ -249,8 +250,7 @@ function init_gui(&$db,$args)
   }
 
   $gui->ssodisable = 0;
-  if(property_exists($args,'ssodisable'))
-  {
+  if(property_exists($args,'ssodisable')) {
     $gui->ssodisable = $args->ssodisable;
   }  
 

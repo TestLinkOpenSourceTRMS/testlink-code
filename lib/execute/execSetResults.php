@@ -35,8 +35,7 @@ require_once('event_api.php');
 $cfg = getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
 
-if( $cfg->exec_cfg->enable_test_automation )
-{
+if( $cfg->exec_cfg->enable_test_automation ) {
   require_once('remote_exec.php');
 }
 
@@ -88,35 +87,12 @@ if(!is_null($linked_tcversions))
   $_SESSION['s_lastAttachmentInfos'] = null;
   if($args->level == 'testcase')
   {
-    // Warning!!! - $gui is passed by reference to be updated inside function
+    // passed by reference to be updated inside function
+    // $gui, $args
     $tcase = null;
     list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
                                                     $tree_mgr,$tcase_mgr,$attachmentRepository);
 
-    $dummy = $tree_mgr->get_node_hierarchy_info($args->version_id);
-    
-    $audit = $gui->bug_summary = $tcase_mgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
-    $ts = sprintf(lang_get('execution_ts_iso'), date('Y-m-dTH:i',time()));
-    $gui->bug_summary .= (' ' . $ts);
-
-    $lk = current($linked_tcversions);
-    $gui->direct_link = trim($_SESSION['basehref'],'/') . 
-                        "/ltx.php?item=exec&feature_id=" . $lk[0]['feature_id'] .
-                        "&build_id=" . $args->build_id;
-
-
-    $args->direct_link = $gui->direct_link;
-     
-    // 20151206 - issue @ test step
-    if(!is_null($gui->issueSummaryForStep))
-    {
-      $yoda = explode('/',$audit);                    
-      $name = ' ' . lang_get('testcase') . ' ' . end($yoda);
-      foreach($gui->issueSummaryForStep as $ele)
-      {
-        $ele .= $name;     
-      }  
-    }  
   }
   else
   {
@@ -154,21 +130,17 @@ if(!is_null($linked_tcversions))
                           ($args->save_results ? $args->save_results : $args->save_and_exit);
 
      
-    if( $args->save_results || $args->do_bulk_save)
-    {  
+    if( $args->save_results || $args->do_bulk_save) {  
       // Need to get Latest execution ID before writing
       $lexid = 0;
-      if($args->copyIssues && $args->level == 'testcase')
-      {
+      if($args->copyIssues && $args->level == 'testcase') {
         $lexid = $tcase_mgr->getSystemWideLastestExecutionID($args->version_id);
       }  
-
 
       $_REQUEST['save_results'] = $args->save_results;
       list($execSet,$gui->addIssueOp) = write_execution($db,$args,$_REQUEST,$its);
       
-      if($args->assignTask)
-      {
+      if($args->assignTask) {
         $fid = $tplan_mgr->getFeatureID($args->tplan_id,$args->platform_id,$args->version_id);
         $taskMgr = new assignment_mgr($db);
         $taskDomain = $taskMgr->get_available_types();
@@ -181,8 +153,7 @@ if(!is_null($linked_tcversions))
         $taskMgr->assign($fmap);
       }  
 
-      if($lexid > 0 && $args->copyIssues && $args->level == 'testcase')
-      {
+      if($lexid > 0 && $args->copyIssues && $args->level == 'testcase') {
         copyIssues($db,$lexid,$execSet[$args->version_id]);
       }
 
@@ -194,20 +165,18 @@ if(!is_null($linked_tcversions))
                    'status'   => $args->statusSingle[$args->version_id],
                    'directLink' => $args->direct_link);
       event_signal('EVENT_EXECUTE_TEST', $ctx);
-	  $tc_info = $tcase_mgr->getExternalID($tcase_id);
-	  $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
-	  $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
-	  logAuditEvent(TLS("audit_exec_saved",$tc_info[0],$build_info['name'],$tp_info['name']),"CREATE",$execSet[$tcversion_id],"execution");
-    }
+  	  $tc_info = $tcase_mgr->getExternalID($tcase_id);
+  	  $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
+  	  $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
+
+  	  logAuditEvent(TLS("audit_exec_saved",$tc_info[0],$build_info['name'],$tp_info['name']),"CREATE",$execSet[$tcversion_id],"execution");
+      }
 
     // Need to re-read to update test case status
-    if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) 
-    {  
+    if ($args->save_and_next || $args->doMoveNext || $args->doMovePrevious) {  
       $nextInChain = -1;
-      if( $cfg->exec_cfg->exec_mode->save_and_move == 'unlimited' )
-      {
-        if( $args->caller ==  'tcAssignedToMe')
-        {
+      if( $cfg->exec_cfg->exec_mode->save_and_move == 'unlimited' ) {
+        if( $args->caller ==  'tcAssignedToMe') {
           $optz = array('order_by' => 'ORDER BY TPTCV.node_order');
           $filters['build_id'] = $args->build_id;
 
@@ -222,13 +191,10 @@ if(!is_null($linked_tcversions))
         }
 
         $chainLen = count($args->testcases_to_show);
-        foreach($args->testcases_to_show as $ix => $val)
-        {
-          if( $val == $args->tc_id)
-          {
+        foreach($args->testcases_to_show as $ix => $val) {
+          if( $val == $args->tc_id) {
             $nextInChain = $ix+1;
-            if($nextInChain == $chainLen)
-            {
+            if($nextInChain == $chainLen) {
               $nextInChain = 0;  
             }  
             break;
@@ -252,8 +218,7 @@ if(!is_null($linked_tcversions))
       $args->testcases_to_show = (array)$args->testcases_to_show;
         
       $opt4sibling = array('move' => $args->moveTowards);
-      switch ($args->caller)
-      {
+      switch ($args->caller) {
         case 'tcAssignedToMe':
           $doSingleStep = true;
           $opt4sibling['assigned_to'] = array('user_id' => $args->user_id, 'build_id' => $args->build_id);
@@ -263,8 +228,7 @@ if(!is_null($linked_tcversions))
         break;  
       }
   
-      switch($cfg->exec_cfg->exec_mode->save_and_move)
-      {
+      switch($cfg->exec_cfg->exec_mode->save_and_move) {
         case 'unlimited':
           // get position on chain
           $opx = array('tcase_id' => 
@@ -439,6 +403,8 @@ else
   $smarty->assign('cfg',$cfg);
   $smarty->assign('users',tlUser::getByIDs($db,$userSet));
 
+  // var_dump($gui);
+
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 } 
 
@@ -522,12 +488,10 @@ function init_args(&$dbHandler,$cfgObj)
   // See details on: "When nullify filter_status - 20080504" in this file
   if( $args->level == 'testcase' || is_null($args->filter_status) || 
       (!is_array($args->filter_status) && trim($args->filter_status)=='')
-    )
-  {
+    ) {
     $args->filter_status = null;  
   }
-  else
-  {
+  else {
     // 20130306 - franciscom
     // This (without the strlen() check) generated issue 5541: When "Result" filter is used ...
     // at least when result DIFFERENT that NOT RUN is used on filter
@@ -539,19 +503,16 @@ function init_args(&$dbHandler,$cfgObj)
     // to unserialize something that IS NOT SERIALIZED!!!!
 
     // After TICKET 6651, may be need to limit size of $args->filter_status
-    if(is_string($args->filter_status) && strlen($args->filter_status) > 1)
-    {
+    if(is_string($args->filter_status) && strlen($args->filter_status) > 1) {
       $args->filter_status = json_decode($args->filter_status);
     }
   }
   
 
-  switch($args->level)
-  {
+  switch($args->level) {
     case 'testcase':
       $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-      if( !is_null($args->tc_versions) )
-      {
+      if( !is_null($args->tc_versions) ) {
         $args->tc_id = current($args->tc_versions);
         $args->id = $args->tc_id;
         $args->version_id = key($args->tc_versions);
@@ -567,8 +528,7 @@ function init_args(&$dbHandler,$cfgObj)
     
   
   $args->tsuitesInBranch = null; 
-  if( !is_null($args->tsuite_id) )
-  {
+  if( !is_null($args->tsuite_id) ) {
     // will get all test suites in this branch, in order to limit amount of data returned 
     // by functions/method that collect linked tcversions
     // THIS COLLECT ONLY FIRST LEVEL UNDER test suite, do not do deep search
@@ -585,8 +545,8 @@ function init_args(&$dbHandler,$cfgObj)
   // TICKET 5630: Test Results by direct link ...
   $args->tplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
   $args->tproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID']);
-  if($args->tproject_id <= 0)
-  {
+
+  if($args->tproject_id <= 0) {
     $tree_mgr = new tree($dbHandler);
     $dm = $tree_mgr->get_node_hierarchy_info($args->tplan_id);
     $args->tproject_id = $dm['parent_id']; 
@@ -594,7 +554,6 @@ function init_args(&$dbHandler,$cfgObj)
 
 
   $args->addLinkToTL = isset($_REQUEST['addLinkToTL']) ? TRUE : FALSE;
-  
 
   // Do this only on single execution mode
   // get issue tracker config and object to manage TestLink - BTS integration 
@@ -607,14 +566,12 @@ function init_args(&$dbHandler,$cfgObj)
   $bug_summary['minLengh'] = 1; 
   $bug_summary['maxLengh'] = 1; 
 
-  if( ($args->issue_tracker_enabled = $info['issue_tracker_enabled']) )
-  {
+  if( ($args->issue_tracker_enabled = $info['issue_tracker_enabled']) ) {
     $it_mgr = new tlIssueTracker($dbHandler);
     $args->itsCfg = $it_mgr->getLinkedTo($args->tproject_id);
     $its = $it_mgr->getInterfaceObject($args->tproject_id);
     
-    if(!is_null($args->itsCfg) && !is_null($its))
-    {
+    if(!is_null($args->itsCfg) && !is_null($its)) {
       $bug_summary['maxLengh'] = $its->getBugSummaryMaxLength(); 
     }  
     unset($it_mgr);
@@ -628,8 +585,7 @@ function init_args(&$dbHandler,$cfgObj)
   $args->ctsCfg = null;
   $cts = null;
 
-  if( ($args->codeTrackerEnabled = intval($info['code_tracker_enabled'])) )
-  {
+  if( ($args->codeTrackerEnabled = intval($info['code_tracker_enabled'])) ) {
     $ct_mgr = new tlCodeTracker($dbHandler);
     $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
     $cts = $ct_mgr->getInterfaceObject($args->tproject_id);
@@ -644,8 +600,7 @@ function init_args(&$dbHandler,$cfgObj)
  *
  *
  */
-function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp)
-{
+function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp) {
 
   $inputCfg = array("bug_notes" => array("POST",tlInputParameter::STRING_N),
                     "issueType" => array("POST",tlInputParameter::INT_N),
@@ -656,8 +611,7 @@ function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp)
   $inputCfg["bug_summary"] = array("POST",tlInputParameter::STRING_N);
 
   // hmm this MAGIC needs to be commented 
-  if(!$argsObj->do_bulk_save)
-  {
+  if(!$argsObj->do_bulk_save) {
     $inputCfg["bug_summary"][2] = $bugSummaryProp['minLengh'];
     $inputCfg["bug_summary"][3] = $bugSummaryProp['maxLengh']; 
   } 
@@ -670,8 +624,7 @@ function initArgsIssueOnTestCase(&$argsObj,$bugSummaryProp)
  *
  *
  */
-function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp)
-{
+function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp) {
   $arrayOfInt = array("POST",tlInputParameter::ARRAY_INT);
 
   $cfg = array("issueBodyForStep" => array("POST",tlInputParameter::ARRAY_STRING_N),
@@ -681,8 +634,7 @@ function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp)
   $cfg["issueSummaryForStep"] = array("POST",tlInputParameter::ARRAY_STRING_N);
 
   // hmm this MAGIC needs to be commented 
-  if(!$argsObj->do_bulk_save)
-  {
+  if(!$argsObj->do_bulk_save) {
     $cfg["issueSummaryForStep"][2] = $bugSummaryProp['minLengh'];
     $cfg["issueSummaryForStep"][3] = $bugSummaryProp['maxLengh']; 
   } 
@@ -690,16 +642,18 @@ function initArgsIssueOnSteps(&$argsObj,$bugSummaryProp)
   I_PARAMS($cfg,$argsObj);
 
   // Special
-  $sk = array('issueForStep','artifactComponentForStep',
-              'artifactVersionForStep');
-  foreach($sk as $kt)
-  {
+  // Array of Check Boxes:
+  // 'issueForStep','addLinkToTLForStep'
+  $sk = array('issueForStep','addLinkToTLForStep', 
+              'artifactComponentForStep','artifactVersionForStep');
+  
+  foreach($sk as $kt) {
     $argsObj->$kt = null;
-    if(isset($_REQUEST[$kt]))
-    {
+    if(isset($_REQUEST[$kt])) {
       $argsObj->$kt = $_REQUEST[$kt];
     }  
-  }  
+  }
+
 }
 
 /*
@@ -822,9 +776,11 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
   // ------------------------------------------------------------------------------
   if(!is_null($tsuite_info))
   {
-    $cookieKey = 'TL_execSetResults_tsdetails_view_status';
-    $exec_cfg = config_get('exec_cfg');
+    $ckObj = new stdClass();
+    $ckCfg = config_get('cookie');
+    $cookieKey = $ckCfg->prefix . 'TL_execSetResults_tsdetails_view_status';
 
+    $exec_cfg = config_get('exec_cfg');
     $a_tsvw=array();
     $a_ts=array();
     $a_tsval=array();
@@ -864,9 +820,9 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
       $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
     }
 
-    if( count($a_tsval) > 0 )
-    {
-      setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME,$cfgObj->cookie_path);
+    if( count($a_tsval) > 0 ) {
+      $ckObj->value = $a_tsval[0];
+      tlSetCookie($ckObj);
     }
       
     $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
@@ -1239,19 +1195,17 @@ function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
   returns: 
 
 */
-function getCfg()
-{
+function getCfg() {
   $cfg = new stdClass();
   $cfg->exec_cfg = config_get('exec_cfg');
   $cfg->gui_cfg = config_get('gui');
-  // $cfg->bts_type = config_get('interface_bugs');
     
   $results = config_get('results');
   $cfg->tc_status = $results['status_code'];
   $cfg->testcase_cfg = config_get('testcase_cfg'); 
   $cfg->editorCfg = getWebEditorCfg('execution');
   
-  $cfg->cookie_path = config_get('cookie_path');  
+  $cfg->cookie = config_get('cookie');  
   return $cfg;
 }
 
@@ -1273,8 +1227,7 @@ function getCfg()
   returns: 
 
 */
-function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
-{
+function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id) {
     $exec_cfg = config_get('exec_cfg');
     $grants = new stdClass();
     
@@ -1329,25 +1282,21 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui = new stdClass();
   $gui->tcversionSet = null;
   $gui->plugins = null;
+  $gui->addLinkToTLChecked = $cfgObj->exec_cfg->exec_mode->addLinkToTLChecked;
 
   $k2i = array('import','attachments','exec','edit_exec');
   $gui->features = array();
-  foreach($k2i as $olh)
-  {
+  foreach($k2i as $olh) {
     $gui->features[$olh] = false;
   }  
 
   if( $argsObj->user->hasRight($dbHandler,'testplan_execute',
-                      $argsObj->tproject_id,$argsObj->tplan_id,true) )
-  {
-    foreach($k2i as $olh)
-    {
+                      $argsObj->tproject_id,$argsObj->tplan_id,true) ) {
+    foreach($k2i as $olh) {
       $gui->features[$olh] = true;
     }  
   }  
 
-  // TBD $gui->delAttachmentURL =
-  
   $gui->showExternalAccessString = true;
   $gui->showImgInlineString = false;
   
@@ -1370,11 +1319,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 
   $gui->execStatusValues = createResultsMenu();
   $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
-  if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) )
-  {
+  if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) ) {
     unset($gui->execStatusValues[$cfgObj->tc_status['all']]);
   }
-
 
   $gui->can_use_bulk_op=0;
   $gui->exec_notes_editors=null;
@@ -1407,15 +1354,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->platform_notes_view_status=$argsObj->platform_notes_view_status;
 
   $gui->refreshTree = $argsObj->refreshTree;
-  if (!$argsObj->statusSingle || current($argsObj->statusSingle) == $cfgObj->tc_status['not_run']) 
-  {
+  if (!$argsObj->statusSingle || current($argsObj->statusSingle) == $cfgObj->tc_status['not_run'])  {
     $gui->refreshTree = 0;
   }
 
   $gui->map_last_exec_any_build=null;
   $gui->map_last_exec=null;
 
-      
   // 20081122 - franciscom
   // Just for the records:  
   // doing this here, we avoid to do on processTestSuite() and processTestCase(),
@@ -1423,7 +1368,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   // over these two functions.   
   $tprojectMgr = new testproject($dbHandler);
   $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+  
   $build_info = $buildMgr->get_by_id($argsObj->build_id);
+
+  $gui->build_name = $build_info['name'];  
   $gui->build_notes=$build_info['notes'];
   $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
   $gui->execution_types=$tcaseMgr->get_execution_types();
@@ -1451,8 +1399,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->grants = initializeRights($dbHandler,$argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
 
   $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
+
+  $gui->testplan_name = $rs['name'];
+  $gui->testproject_name = $rs['tproject_name'];
   $gui->testplan_notes = $rs['notes'];
-  $gui->testplan_div_title = lang_get('test_plan') . ' ' . $rs['name'];
+  $gui->testplan_div_title = lang_get('test_plan') . ' ' . $gui->testplan_name;
+
   $argsObj->tplan_apikey = $rs['api_key'];
 
 
@@ -1477,8 +1429,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
   $gui->has_platforms = !is_null($dummy) ? 1 : 0;
     
-  $gui->platform_info['id']=0;
-  $gui->platform_info['name']='';
+  $gui->platform_info['id'] = 0;
+  $gui->platform_info['name'] = '';
   if(!is_null($argsObj->platform_id) && $argsObj->platform_id > 0 )
   { 
     $gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
@@ -1499,8 +1451,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 
   
   if(!is_null($issueTracker))
-  {
-    
+  {    
     if( $issueTracker->isConnected() )
     {
       $itsCfg = $issueTracker->getCfg();
@@ -1544,6 +1495,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   }  
  
   $gui->bug_summary = '';
+
+
+  $gui->executionContext = array();
+  $gui->executionContext['tproject_name'] = $gui->testproject_name;
+  $gui->executionContext['tplan_name'] = $gui->testplan_name;
+  $gui->executionContext['platform_name'] = $gui->platform_info['name'];
+  $gui->executionContext['build_name'] = $gui->build_name;
+
+
   return $gui;
 }
 
@@ -1558,7 +1518,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 */
 function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tcaseMgr,&$docRepository)
 {     
-
   
   // IMPORTANT due  to platform feature
   // every element on linked_tcversions will be an array.
@@ -1586,8 +1545,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
 
 
-  foreach($locationFilters as $locationKey => $filterValue)
-  {
+  foreach($locationFilters as $locationKey => $filterValue) {
     $finalFilters=$cf_filters+$filterValue;
     $guiObj->design_time_cfields[$tcase_id][$locationKey] = 
       $tcaseMgr->html_table_of_custom_field_values($tcase_id,'design',$finalFilters,null,null,
@@ -1598,31 +1556,35 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
                                                    null,null,$argsObj->tproject_id,null,$link_id);
   }
 
-  if($guiObj->grants->execute)
-  {
+  if($guiObj->grants->execute) {
     $guiObj->execution_time_cfields[$tcase_id] = 
       $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
                                                    null,$argsObj->tproject_id);
   }
 
-  $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
-  $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
-                                                                         'nodes_hierarchy',true,1);
+  $tc_info = $treeMgr->get_node_hierarchy_info($tcase_id);
+  $guiObj->tSuiteAttachments[$tc_info['parent_id']] = 
+    getAttachmentInfos($docRepository,$tc_info['parent_id'],
+                       'nodes_hierarchy',true,1);
+  // Direct Link
+  $lk = current($tcv);
+  $guiObj->direct_link = trim($_SESSION['basehref'],'/') . 
+                        "/ltx.php?item=exec&feature_id=" . $lk[0]['feature_id'] .
+                        "&build_id=" . $argsObj->build_id;
 
-  // needed for issue @ test case step level
-  if(1==1)
-  {
-    $opt = array('fields2get' => 'step_number,id');
-    $steps = $tcaseMgr->get_steps($tcversion_id,0,$opt);
-    if(!is_null($steps))
-    {
-      $lbl = lang_get('issue_on_step');
-      foreach($steps as $elem)
-      {
-        $guiObj->issueSummaryForStep[$elem['id']] = $lbl . $elem['step_number']; 
-      }  
-    } 
-  }  
+  $argsObj->direct_link = $guiObj->direct_link;
+
+
+  // Information for Issue Management
+  // Common Info
+  $signature = new stdClass();
+  $signature->tcname = $tc_info['name'];
+  $signature->tcpathname = $tcaseMgr->getPathName($tcase_id);
+  $signature->tcversion_id = $tcversion_id;
+
+  list($guiObj->bug_summary,$guiObj->issueSummaryForStep) = 
+    genIssueSummary($tcaseMgr,$signature,$guiObj->executionContext);
+
   return array($tcase_id,$tcversion_id);
 }
 
@@ -2164,7 +2126,7 @@ function getSettingsAndFilters(&$argsObj)
  */
 function manageCookies(&$argsObj,$cfgObj)
 {
-  $cookiePrefix = 'TL_execSetResults_';
+  $cookieExecPrefix = 'TL_execSetResults_';
       
   // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
   //            see smarty_assign_tsuite_info() in this file.  
@@ -2176,7 +2138,7 @@ function manageCookies(&$argsObj,$cfgObj)
 
   foreach($key4cookies as $key => $cfgKey)
   {
-    $cookieKey = $cookiePrefix . $key;
+    $cookieKey = $cookieExecPrefix . $key;
     if( !isset($_REQUEST[$key]) )
     {
       // First time we are entered here => we can need to understand how to proceed
@@ -2195,13 +2157,16 @@ function manageCookies(&$argsObj,$cfgObj)
         } 
     }
   }
-                        
+             
+  $ckObj = new stdClass();                      
   foreach($key2loop as $key => $value)
   {
     $argsObj->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
     if( isset($key4cookies[$key]) )
     {
-      setcookie($cookiePrefix . $key,$argsObj->$key,TL_COOKIE_KEEPTIME, $cfgObj->cookie_path);
+      $ckObj->name = $cfgObj->cookie->prefix . $cookieExecPrefix . $key;
+      $ckObj->value = $argsObj->$key;
+      tlSetCookie($ckObj);
     }
   }
 }  
@@ -2246,3 +2211,63 @@ function getResultsIconsNext()
   return $items;
 }
 
+/**
+ *
+ */
+function genIssueSummary(&$tcaseMgr,$signature,$context) {
+
+  $cfg = config_get('exec_cfg');
+
+  // Work on labels
+  $text = array();
+  $text['tcase'] = helperLabels($cfg->issues->tcase_level->subject);
+  $text['tcstep'] = helperLabels($cfg->issues->tcstep_level->subject);
+
+  // Work on values
+  $ecx = &$context;
+  $searchFor = array('%%TCNAME%%', '%%PROJECTNAME%%', 
+                     '%%PLANNAME%%','%%BUILDNAME%%','%%PLATFNAME%%',
+                     '%%TCPATHNAME%%','%%EXECTSISO%%');
+
+  $replaceWith = array($signature->tcname,$ecx['tproject_name'],
+                       $ecx['tplan_name'],$ecx['build_name'],
+                       $ecx['platform_name'],$signature->tcpathname,
+                       date('Y-m-dTH:i',time()));
+
+  $nu = array();
+  $nu['tcase'] = str_replace($searchFor, $replaceWith, $text['tcase']);
+  $nu['tcstep'] = null;
+
+  $opt = array('fields2get' => 'step_number,id');
+  $steps = $tcaseMgr->get_steps($signature->tcversion_id,0,$opt);
+  if(null != $steps) {
+    $tstx = str_replace($searchFor, $replaceWith, $text['tcstep']);
+    foreach($steps as $elem) {
+      $nu['tcstep'][$elem['id']] = 
+        str_replace('%%STEPNUMBER%%',$elem['step_number'],$tstx); 
+    }     
+  }
+
+  return array($nu['tcase'],$nu['tcstep']);
+}
+
+
+
+/**
+ *
+ */
+function helperLabels($haystack) {
+  $searchFor = array('$$issue_on_step', 
+                     '$$issue_subject_tcname','$$issue_subject_tcpathname', 
+                     '$$issue_subject_projectname',
+                     '$$issue_subject_planname','$$issue_subject_buildname',
+                     '$$issue_subject_platfname','$$issue_subject_execon');
+
+  $replaceWith = array();
+  foreach ( $searchFor as $lblKey ) { 
+    $jk = str_replace('$$','',$lblKey);
+    $replaceWith[] = lang_get($jk);
+  }
+  $hy = str_replace($searchFor, $replaceWith, $haystack);
+  return $hy; 
+}  

@@ -18,7 +18,7 @@
  *
  * @filesource  config.inc.php
  * @package     TestLink
- * @copyright   2005-2017, TestLink community
+ * @copyright   2005-2018, TestLink community
  * @link        http://www.testlink.org
  *
  *
@@ -30,6 +30,7 @@
 /** @global array Global configuration class */
 $tlCfg = new stdClass();
 $tlCfg->api = new stdClass();
+$tlCfg->cookie = new stdClass();
 $tlCfg->document_generator = new stdClass();
 
 $tlCfg->spec_cfg = new stdClass();
@@ -113,15 +114,41 @@ $tlCfg->instance_id = 'TLM';
 
 /**
  * Copied from MantisBT
+ * 
+ * Prefix for all TestLink cookies
+ * This should be an identifier which does not include spaces or periods,
+ * and should be unique per TestLink installation, especially if
+ * $tlCfg->cookie_path is not restricting the cookies' scope to the actual
+ * TestLink directory.
+ * @see $tlCfg->cookie->path
+ * @global string $tlCfg->cookie->prefix
+ */
+$tlCfg->cookie->prefix = 'TESTLINK197';
+
+
+/**
+ * @link http://php.net/function.setcookie
+ *
+ */
+$tlCfg->cookie->expire = (time()+60*60*24*30); // 30 days;
+$tlCfg->cookie->domain = '';
+$tlCfg->cookie->secure = false;
+$tlCfg->cookie->httponly = false;
+
+/**
+ * Copied from MantisBT
  *
  * Specifies the path under which a cookie is visible
  * All scripts in this directory and its sub-directories will be able
- * to access MantisBT cookies.
- * It is recommended to set this to the actual MantisBT path.
+ * to access TestLink cookies.
+ * It is recommended to set this to the actual TestLink path.
  * @link http://php.net/function.setcookie
- * @global string $tlCfg->cookie_path
+ * @global string $tlCfg->cookie->path
  */
- $tlCfg->cookie_path = '/';
+ $tlCfg->cookie->path = '/';
+
+
+
 
 
 /* [LOCALIZATION] */
@@ -786,6 +813,10 @@ $tlCfg->reportsCfg->start_time = '00:00';
 // Shows an extra column which gives the status of the last executed build
 $tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
 
+// Result matrix (resultsTC.php)
+// Shows an extra column which gives the note of the last executed build
+$tlCfg->resultMatrixReport->buildColumns['showNoteLastExecuted'] = true;
+
 // Show build columns in revers order. The latest build is to the left
 $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
 
@@ -946,6 +977,12 @@ $tlCfg->exec_cfg->exec_mode->new_exec='clean';
 // save_and_move = 'unlimited'
 $tlCfg->exec_cfg->exec_mode->save_and_move='unlimited';
 
+/**
+ * @since 1.9.17
+ *
+ */
+$tlCfg->exec_cfg->exec_mode->addLinkToTLChecked = false;
+
 /** User filter in Test Execution navigator - default value */
 // logged_user -> combo will be set to logged user
 // none        -> no filter applied by default
@@ -1011,6 +1048,33 @@ $tlCfg->exec_cfg->features->attachments = new stdClass();
 $tlCfg->exec_cfg->features->attachments->enabled = true;
 $tlCfg->exec_cfg->features->exec_duration = new stdClass();
 $tlCfg->exec_cfg->features->exec_duration->enabled = true;
+
+$tlCfg->exec_cfg->issues = new stdClass();
+$tlCfg->exec_cfg->issues->tcase_level = new stdClass();
+$tlCfg->exec_cfg->issues->tcstep_level = new stdClass();
+
+/**
+ * %%STEPNUMBER%%,%%TCNAME%%,%%PROJECTNAME%%,%%PLANNAME%%
+ * %%BUILDNAME%%,%%PLATFNAME%%,%%EXECTSISO%%,
+ * %%TCPATHNAME%%
+ *
+ * /saado/TS100/SAA-4:WSTEPS  Executed ON (ISO FORMAT): 2018-02-25CET10:00
+ */
+$tlCfg->exec_cfg->issues->tcase_level->subject = 
+'$$issue_subject_tcname %%TCPATHNAME%% - $$issue_subject_execon %%EXECTSISO%% ';
+
+/*
+$tlCfg->exec_cfg->issues->tcstep_level->subject = 
+'$$issue_on_step %%STEPNUMBER%% - $$issue_subject_tcname %%TCNAME%% - ' .
+'$$issue_subject_projectname %%PROJECTNAME%% - ' .
+'$$issue_subject_planname %%PLANNAME%% - ' .
+'$$issue_subject_buildname %%BUILDNAME%% - ' . 
+'$$issue_subject_platfname %%PLATFNAME%%';
+*/
+
+$tlCfg->exec_cfg->issues->tcstep_level->subject = '$$issue_on_step %%STEPNUMBER%% - $$issue_subject_tcname %%TCNAME%% ';
+
+
 
 
 // ----------------------------------------------------------------------------

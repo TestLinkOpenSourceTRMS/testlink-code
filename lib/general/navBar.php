@@ -176,8 +176,13 @@ function initializeGui(&$db,&$args)
   {
     // set test project ID for the next session
     $gui->updateMainPage = is_null($args->caller);
-    $cookie_path = config_get('cookie_path');
-    setcookie('TL_lastTestProjectForUserID_'. $args->user->dbID, $args->testproject, TL_COOKIE_KEEPTIME, $cookie_path);
+
+    $ckCfg = config_get('cookie');    
+    $ckObj = new stdClass();
+    $ckObj->name = $ckObj->prefix . 'TL_lastTestProjectForUserID_'. 
+                   $args->user->dbID;
+    $ckObj->value = $args->testproject;
+    tlSetCookie($ckObj);
   }
 
   $gui->grants = getGrants($db,$args->user);

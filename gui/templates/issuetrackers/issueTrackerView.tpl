@@ -2,15 +2,15 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	issueTrackerView.tpl
 
-@internal revisions
-@since 1.9.5
-20121012 - franciscom - TICKET 5281: On list view add check to environment (example SOAP ext is enabled?) 
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 
+{$cfg_section=$smarty.template|basename|replace:".tpl":""}
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {lang_get var='labels'
-          s='th_issuetracker,th_issuetracker_type,th_delete,th_description,menu_assign_kw_to_tc,
+          s='th_issuetracker,th_issuetracker_type,th_delete,th_description,menu_assign_kw_to_tc,title_issuetracker_mgmt,
           	 btn_create,alt_delete,th_issuetracker_env,check_bts_connection,bts_check_ok,bts_check_ko'}
 
 {lang_get s='warning_delete' var="warning_msg" }
@@ -19,12 +19,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&id=';
-</script>
- 
+</script> 
 </head>
 <body {$body_onload}>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
+<h1 class="title">{$labels.title_issuetracker_mgmt}</h1>
 
 <div class="workBack">
 	{include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}

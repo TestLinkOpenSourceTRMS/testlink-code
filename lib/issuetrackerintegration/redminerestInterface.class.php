@@ -5,8 +5,6 @@
  * @filesource	redminerestInterface.class.php
  * @author Francisco Mancardi
  *
- * @internal revisions
- * @since 1.9.16
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
@@ -320,20 +318,17 @@ class redminerestInterface extends issueTrackerInterface
   public function addIssue($summary,$description,$opt=null)
   {
     $reporter = null;
-    if(!is_null($opt) && property_exists($opt, 'reporter'))
-    {
+    if(!is_null($opt) && property_exists($opt, 'reporter')) {
       $reporter = $opt->reporter;
     }  
 
 
   	// Check mandatory info
-  	if( !property_exists($this->cfg,'projectidentifier') )
-  	{
+  	if( !property_exists($this->cfg,'projectidentifier') ) {
   	  throw new exception(__METHOD__ . " project identifier is MANDATORY");
   	}
   	  
-    try
-    {
+    try {
        // needs json or xml
       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
 
@@ -350,25 +345,20 @@ class redminerestInterface extends issueTrackerInterface
       // Got from XML Configuration
       // improvement
       $pid = (string)$this->cfg->projectidentifier;
-      if(is_string($pid))
-      {
+      if(is_string($pid)) {
         $pinfo = $this->APIClient->getProjectByIdentity($pid);
-        if(!is_null($pinfo))
-        {
+        if(!is_null($pinfo)) {
           $pid = (int)$pinfo->id;
         }  
       }  
    		$issueXmlObj->addChild('project_id', (string)$pid);
 
-
-      if( property_exists($this->cfg,'trackerid') )
-      {
+      if( property_exists($this->cfg,'trackerid') ) {
         $issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
       } 
 
       // try to be generic
-      if( property_exists($this->cfg,'parent_issue_id') )
-      {
+      if( property_exists($this->cfg,'parent_issue_id') ) {
         $issueXmlObj->addChild('parent_issue_id', (string)$this->cfg->parent_issue_id);
       } 
 
@@ -391,10 +381,8 @@ class redminerestInterface extends issueTrackerInterface
       // but it's still named fixed_version internally and thus in the API.
       // $issueXmlObj->addChild('fixed_version_id', (string)2);
       // 
-      if(!is_null($this->issueOtherAttr))
-      {
-        foreach($this->issueOtherAttr as $ka => $kv)
-        {
+      if(!is_null($this->issueOtherAttr)) {
+        foreach($this->issueOtherAttr as $ka => $kv) {
           // will treat everything as simple strings or can I check type
           // see completeCfg()
           $issueXmlObj->addChild((isset($this->translate[$ka]) ? $this->translate[$ka] : $ka), (string)$kv);
@@ -405,18 +393,27 @@ class redminerestInterface extends issueTrackerInterface
       // it seems that is better create here plain XML String
       //
       $xml = $issueXmlObj->asXML();
-      if( property_exists($this->cfg,'custom_fields') )
-      {
+      if( property_exists($this->cfg,'custom_fields') ) {
         $cf = (string)$this->cfg->custom_fields;
+
+        // -- 
+        // Management of Dynamic Values From XML Configuration 
+        $safeVal = array();
+        foreach($opt->tagValue->value as $val) {
+          array_push($safeVal, htmlentities($val, ENT_XML1));
+        }
+        $cf = str_replace($opt->tagValue->tag,$safeVal,$cf);
+        // --
+
         $xml = str_replace('</issue>', $cf . '</issue>', $xml);
       }
 
       // $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
-      // file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
+      file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
       $op = $this->APIClient->addIssueFromXMLString($xml,$reporter);
 
-      if(is_null($op))
-      {
+      
+      if(is_null($op)) {
         $msg = "Error Calling " . __CLASS__ . 
                "->APIClient->addIssueFromXMLString() " .
                " check Communication TimeOut ";
@@ -427,11 +424,10 @@ class redminerestInterface extends issueTrackerInterface
                    'msg' => sprintf(lang_get('redmine_bug_created'),
                     $summary,$pid));
      }
-     catch (Exception $e)
-     {
+     catch (Exception $e) {
        $msg = "Create REDMINE Ticket FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
-       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($op));
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($xml));
      }
      return $ret;
   }  
@@ -461,7 +457,7 @@ class redminerestInterface extends issueTrackerInterface
      {
        $msg = "REDMINE Add Note to Ticket FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
-       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issueXmlObj));
      }
      return $ret;
   }  

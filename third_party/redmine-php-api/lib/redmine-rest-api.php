@@ -5,11 +5,8 @@
  * Bare bones implementation, just to cover TestLink needs
  *
  * @author   Francisco Mancardi <francisco.mancardi@gmail.com>
- * @created  20120339
  * @link     http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.16
  */
 
 /**
@@ -166,6 +163,10 @@ class redmine
   // public function addIssue($summary, $description)
   public function addIssueFromSimpleXML($issueXmlObj,$reporter=null)
   {
+    if( null !== $reporter ) {
+      $reporter = $this->checkUserExistence($reporter) ? $reporter : null; 
+    }
+
     $op = $this->_request_xml('POST',"/issues.xml",$issueXmlObj->asXML(),0,$reporter);
     return $op;
   }
@@ -175,6 +176,10 @@ class redmine
    */
   public function addIssueFromXMLString($XMLString,$reporter=null)
   {
+    if( null !== $reporter ) {
+      $reporter = $this->checkUserExistence($reporter) ? $reporter : null; 
+    }
+
     $op = $this->_request_xml('POST',"/issues.xml",$XMLString,0,$reporter);
     return $op;
   }
@@ -185,6 +190,10 @@ class redmine
    */
   public function addIssueNoteFromSimpleXML($issueID,$issueXmlObj,$reporter=null)
   {
+    if( null !== $reporter ) {
+      $reporter = $this->checkUserExistence($reporter) ? $reporter : null; 
+    }
+
     $op = $this->_request_xml('PUT',"/issues/{$issueID}.xml",$issueXmlObj->asXML(),0,$reporter);
     return $op;
   }
@@ -218,12 +227,59 @@ class redmine
     return $items;
   }                                                   
 
+  /**
+   *
+   * @return array of simpleXMLObjects
+   */
+  public function checkUserExistence($login_name) {                        
+    $items = $this->getUsers();
+    $status = false;
+    foreach( $items as $userObj ) {
+      if( strcmp($login_name, $userObj->login ) == 0 ) {
+        $status = true;
+        break;
+      }
+    }
+
+    if( !$status ) {
+        $msg = 'Redmine Impersonation Not Possible - ' .
+               'TestLink User:' . $login_name . ' is not present on Redmine';
+        tLog($msg,"WARNING","REDMINE");
+    }
+    return $status;
+  }                                                   
+
+
+  /**
+   *
+   * @return array of simpleXMLObjects
+   */
+  public function getUsers() {           
+    /*
+      From Redmine documentation:
+      Collection resources and pagination
+      The response to a GET request on a collection resources (eg. /issues.xml, /users.xml) generally won't return all the objects available in your database. Redmine 1.1.0 introduces a common way to query such resources using the following parameters:
+
+      offset: the offset of the first object to retrieve
+      limit: the number of items to be present in the response (default is 25, maximum is 100)
+      Examples:
+
+      GET /issues.xml
+      => returns the 25 first issues
+
+      GET /issues.xml?limit=100
+      => returns the 100 first issues                 
+    */
+    $items = (array)$this->_get("/users.xml?limit=1000");
+    return $items['user'];
+  }                                                   
 
 
 
-  /* -------------------------------------------------------------------------------------- */
-  /* General Methods used to build up communication process                                 */
-  /* -------------------------------------------------------------------------------------- */
+
+  /* ------------------------------------------------------ */
+  /* General Methods used to build up communication process */
+  /* ------------------------------------------------------ */
 
   /** 
    *
@@ -317,9 +373,10 @@ class redmine
     $header = array();
     $header[] = "X-Redmine-API-Key: {$this->apiKey}";
 
+    $XRedmineSwitchUser = '';
     if(!is_null($reporter))
     {
-      $header[] = "X-Redmine-Switch-User: {$reporter}";
+      $header[] = $XRedmineSwitchUser = "X-Redmine-Switch-User: {$reporter}";
     } 
 
     if ($method == 'PUT' || $method == 'POST') 
@@ -381,8 +438,10 @@ class redmine
     $httpCode = (int)$response['http_code'];
     if ($httpCode != 200 && $httpCode != 201 && $httpCode != $ignoreStatusCode) 
     {
-      throw new exception(__METHOD__ . "url:$this->url - response:" .
-                          json_encode($response) . ' - content: ' . json_encode($content) );
+      throw new exception(__METHOD__ . "url:$this->url" .
+                          ' - XRedmineSwitchUser:' . $XRedmineSwitchUser . 
+                          ' - response:' . json_encode($response) . 
+                          ' - content: ' . json_encode($content) );
     }
     
     $rr = array('content' => $content,'response' => $response,'curlError' => $curlError);

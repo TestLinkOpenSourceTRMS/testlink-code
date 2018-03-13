@@ -8,7 +8,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 
 {lang_get var="labels" 
-          s='status,importance,execution_type,btn_apply,btn_cancel'} 
+          s='status,importance,execution_type,force_frozen_testcases_versions,btn_apply,btn_cancel'} 
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -53,6 +53,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </select>
     </td>
   </tr>
+  <tr>
+	<td>{$labels.force_frozen_testcases_versions}</td>
+	<td><input type="checkbox" name="forceFrozenTestcasesVersions" value="1" /></td>
+  </tr>
+
 </table>
 
   	<div class="groupBtn">

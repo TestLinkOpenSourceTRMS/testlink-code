@@ -8,13 +8,10 @@
  *
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2005-2016, TestLink community 
+ * @copyright   2005-2018, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.16
- * 
  *
  **/
 
@@ -52,25 +49,24 @@ function createResultsMenu()
  * write execution result to DB
  * 
  * @param resource &$db reference to database handler
- * @param obj &$exec_signature object with tproject_id,tplan_id,build_id,platform_id,user_id
+ * @param obj &$execSign object with tproject_id,tplan_id,build_id,platform_id,user_id
  * 
  * @internal revisions
  * 
  */
-function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
+function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker)
 {
   static $docRepo;
   static $resultsCfg;
   static $execCfg;
   static $executions_table;
    
-  if(is_null($docRepo))
-  {
+  if(is_null($docRepo)) {
     $docRepo = tlAttachmentRepository::create($db);
     $resultsCfg = config_get('results');
     $execCfg = config_get('exec_cfg');
     $executions_table = DB_TABLE_PREFIX . 'executions';
- }  
+  }  
 
   $db_now = $db->db_now();
   $cfield_mgr = New cfield_mgr($db);
@@ -80,13 +76,12 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
   $bulk_notes = '';
   
   $ENABLED = 1;
-  $cf_map = $cfield_mgr->get_linked_cfields_at_execution($exec_signature->tproject_id,$ENABLED,'testcase');
+  $cf_map = $cfield_mgr->get_linked_cfields_at_execution($execSign->tproject_id,$ENABLED,'testcase');
   $has_custom_fields = is_null($cf_map) ? 0 : 1;
   
   // extract custom fields id.
   $map_nodeid_array_cfnames=null;
-  foreach($exec_data as $input_name => $value)
-  {
+  foreach($exec_data as $input_name => $value) {
     if( strncmp($input_name,$cf_prefix,$len_cfp) == 0 )
     {
       $dummy=explode('_',$input_name);
@@ -94,16 +89,14 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
     } 
   }
   
-  if( isset($exec_data['do_bulk_save']) )
-  {
+  if( isset($exec_data['do_bulk_save']) ) {
     // create structure to use common algoritm
     $item2loop= $exec_data['status'];
     $is_bulk_save=1;
     $bulk_notes = $db->prepare_string(trim($exec_data['bulk_exec_notes']));   
     $execStatusKey = 'status';
   } 
-  else
-  {
+  else {
     $execStatusKey = 'statusSingle';
     $item2loop= $exec_data[$execStatusKey];
     $is_bulk_save=0;
@@ -111,8 +104,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
 
   $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
   
-  foreach ( $item2loop as $tcversion_id => $val)
-  {
+  foreach ( $item2loop as $tcversion_id => $val) {
     $tcase_id=$exec_data['tc_version'][$tcversion_id];
     $current_status = $exec_data[$execStatusKey][$tcversion_id];
     $version_number=$exec_data['version_number'][$tcversion_id];;
@@ -124,9 +116,9 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
       $sql = "INSERT INTO {$executions_table} ".
              "(build_id,tester_id,status,testplan_id,tcversion_id," .
              " execution_ts,notes,tcversion_number,platform_id,execution_duration)".
-             " VALUES ( {$exec_signature->build_id}, {$exec_signature->user_id}, '{$exec_data[$execStatusKey][$tcversion_id]}',".
-             "{$exec_signature->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
-             "{$version_number},{$exec_signature->platform_id}";
+             " VALUES ( {$execSign->build_id}, {$execSign->user_id}, '{$exec_data[$execStatusKey][$tcversion_id]}',".
+             "{$execSign->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
+             "{$version_number},{$execSign->platform_id}";
 
       $dura = 'NULL ';
       if(isset($exec_data['execution_duration']))
@@ -150,8 +142,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
       
       $execSet[$tcversion_id] = $execution_id;
       
-      if( $has_custom_fields )
-      {
+      if( $has_custom_fields ) {
         // test useful when doing bulk update, because some type of custom fields
         // like checkbox can not exist on exec_data. => why ??
         //
@@ -164,7 +155,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
             $hash_cf[$cf_v]=$exec_data[$cf_v];
           }  
         }                          
-        $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $exec_signature->tplan_id,$cf_map);
+        $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $execSign->tplan_id,$cf_map);
       }               
 
       $hasMoreData = new stdClass();
@@ -173,18 +164,15 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
       $hasMoreData->nike = $execCfg->steps_exec && 
                            ($hasMoreData->step_notes || $hasMoreData->step_status);
 
-      if( $hasMoreData->nike )
-      {
+      if( $hasMoreData->nike ) {
         $target = DB_TABLE_PREFIX . 'execution_tcsteps';
         $key2loop = array_keys($exec_data['step_notes']);
-        foreach( $key2loop as $step_id )
-        {
+        foreach( $key2loop as $step_id ) {
           $doIt = (!is_null($exec_data['step_notes'][$step_id]) && 
                    trim($exec_data['step_notes'][$step_id]) != '') || 
                   $exec_data['step_status'][$step_id] != $resultsCfg['status_code']['not_run'];
 
-          if( $doIt )
-          {
+          if( $doIt ) {
             $sql = " INSERT INTO {$target} (execution_id,tcstep_id,notes";
             $values = " VALUES ( {$execution_id}, {$step_id}," . 
                       "'" . $db->prepare_string($exec_data['step_notes'][$step_id]) . "'";
@@ -203,8 +191,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
 
             // NOW MANAGE attachments
             if( isset($_FILES['uploadedFile']['name'][$step_id]) && 
-                !is_null($_FILES['uploadedFile']['name'][$step_id])) 
-            {
+                !is_null($_FILES['uploadedFile']['name'][$step_id])) {
               $repOpt = array('allow_empty_title' => TRUE);
 
               // May be we have enabled MULTIPLE on file upload
@@ -257,38 +244,37 @@ function write_execution(&$db,&$exec_signature,&$exec_data,&$issueTracker)
       
       // re-init
       $addIssueOp = array('createIssue' => null, 'issueForStep' => null, 'type' => null);
-      if($itCheckOK)
-      {
+
+      if($itCheckOK) {
         $execContext = new stdClass();
         $execContext->exec_id = $execution_id;
         $execContext->tcversion_id = $tcversion_id;
-        $execContext->user = $exec_signature->user;
-        $execContext->basehref = $exec_signature->basehref;
-        $execContext->tplan_apikey = $exec_signature->tplan_apikey;
+        $execContext->user = $execSign->user;
+        $execContext->basehref = $execSign->basehref;
+        $execContext->tplan_apikey = $execSign->tplan_apikey;
 
-        $execContext->addLinkToTL = $exec_signature->addLinkToTL;
-        $execContext->direct_link = $exec_signature->direct_link;
+        $execContext->addLinkToTL = $execSign->addLinkToTL;
+        $execContext->direct_link = $execSign->direct_link;
         $execContext->tcstep_id = 0;
 
         // Issue on Test Case
-        if( isset($exec_data['createIssue']) )
-        {
-          completeCreateIssue($execContext,$exec_signature);
-          $addIssueOp['createIssue'] = addIssue($db,$execContext,$issueTracker);
+        if( isset($exec_data['createIssue']) ) {
+          completeCreateIssue($execContext,$execSign);
+          
+          $addIssueOp['createIssue'] = addIssue($db,$execContext,$issueTracker,
+                                                $execContext->addLinkToTL);
           $addIssueOp['type'] = 'createIssue';
         }  
         
         // Issues at step level
-        if( isset($exec_data['issueForStep']) )
-        {
-          foreach($exec_data['issueForStep'] as $stepID => $val)
-          {
-            completeIssueForStep($execContext,$exec_signature,
-                                 $exec_data,$stepID);
-            $execContext->tcstep_id = $stepID;  
-            $addIssueOp['issueForStep'][$stepID] = addIssue($db,$execContext,$issueTracker);
-            $addIssueOp['type'] = 'issueForStep'; 
-          }  
+        if( isset($exec_data['issueForStep']) ) {
+          $addIssueOp['type'] = 'issueForStep'; 
+          foreach($exec_data['issueForStep'] as $stepID => $val) {
+            $addl = completeIssueForStep($execContext,$execSign,$exec_data,
+                                         $stepID);
+            $addIssueOp['issueForStep'][$stepID] = 
+              addIssue($db,$execContext,$issueTracker,$addl);
+          }
         }  
       } // $itCheckOK
     }
@@ -594,12 +580,11 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
 /**
  *
  */
-function addIssue($dbHandler,$argsObj,$itsObj)
+function addIssue($dbHandler,$argsObj,$itsObj,$addLinkToTL)
 {
   static $my;
 
-  if(!$my)
-  {
+  if(!$my) {
     $my = new stdClass();
     $my->resultsCfg = config_get('results');                      
     $my->tcaseMgr = new testcase($dbHandler);
@@ -609,58 +594,49 @@ function addIssue($dbHandler,$argsObj,$itsObj)
   $ret['status_ok'] = true;             
   $ret['msg'] = '';
 
-  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj);  
+  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL);  
 
   $issueTrackerCfg = $itsObj->getCfg();
-  if(property_exists($issueTrackerCfg, 'issuetype'))
-  {
+  if(property_exists($issueTrackerCfg, 'issuetype')) {
     $issueType = intval($issueTrackerCfg->issuetype);  
   }  
 
-  if(property_exists($argsObj, 'issueType'))
-  {
+  if(property_exists($argsObj, 'issueType')) {
     $issueType = intval($argsObj->issueType);  
   }  
   
-  if(method_exists($itsObj,'getCreateIssueFields'))
-  {
+  $setReporter = true;
+  if(method_exists($itsObj,'getCreateIssueFields')) {
     $issueFields = $itsObj->getCreateIssueFields(); 
-    if(!is_null($issueFields))
-    {
+    if(!is_null($issueFields)) {
       $issueFields = current($issueFields); 
     }
     $setReporter = isset($issueFields[$issueType]['fields']['reporter']);
   }  
-  else
-  {
-     $setReporter = true;
-  }  
 
 
   $opt = new stdClass();
-  if( $setReporter )
-  {
+  if( $setReporter ) {
     $opt->reporter = $argsObj->user->login;
   }
 
   $p2check = array('issueType','issuePriority',
                    'artifactComponent','artifactVersion');
-  foreach($p2check as $prop)
-  {
-    if(property_exists($argsObj, $prop) && !is_null($argsObj->$prop))
-    {
+  foreach($p2check as $prop) {
+    if(property_exists($argsObj, $prop) && !is_null($argsObj->$prop)) {
       $opt->$prop = $argsObj->$prop;    
     }   
   }  
+
+  // Management of Dynamic Values From XML Configuration 
+  // (@20180120 only works for redmine)  
+  $opt->tagValue = $issueText->tagValue;
+ 
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
   
   $ret['msg'] = $rs['msg'];
-  if( ($ret['status_ok'] = $rs['status_ok']) )
-  {                   
-
-    // if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$stepID))
-    if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$argsObj->tcstep_id))
-    {
+  if( ($ret['status_ok'] = $rs['status_ok']) ) {                   
+    if (write_execution_bug($dbHandler,$argsObj->exec_id, $rs['id'],$argsObj->tcstep_id)){
       logAuditEvent(TLS("audit_executionbug_added",$rs['id']),"CREATE",$argsObj->exec_id,"executions");
     }
   }
@@ -715,8 +691,7 @@ function copyIssues(&$dbHandler,$source,$dest)
 /**
  *
  */
-function generateIssueText($dbHandler,$argsObj,$itsObj)
-{
+function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL) {
   $ret = new stdClass();
 
   $opOK = false;             
@@ -729,36 +704,51 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
   $ret->auditSign = $tcaseMgr->getAuditSignature((object)array('id' => $dummy['parent_id'])); 
 
 
-  $dummy = $exec['status'];
-  if( isset($resultsCfg['code_status'][$exec['status']]) )
-  {
-    $dummy = $resultsCfg['code_status'][$exec['status']];  
-  }                         
-  $exec['statusVerbose'] = sprintf(lang_get('issue_exec_result'),$dummy);
-  
+  $exec['statusVerbose'] = $exec['status'];
+  if( isset($resultsCfg['code_status'][$exec['status']]) ) {
+    $exec['statusVerbose'] = $resultsCfg['code_status'][$exec['status']];  
+  }                       
+
   unset($tcaseMgr);
 
   $platform_identity = '';
-  if($exec['platform_id'] > 0)
-  {
-    $platform_identity = sprintf(lang_get('issue_platform') ,$exec['platform_name']); 
+  if($exec['platform_id'] > 0) {
+    $platform_identity = $exec['platform_name']; 
   }
 
-  if(property_exists($argsObj, 'bug_notes'))
-  {  
-    // parse 
-    $tags = array('%%EXECID%%','%%TESTER%%','%%TESTPLAN%%','%%PLATFORM%%',
-                  '%%BUILD%%', '%%EXECTS%%','%%EXECSTATUS%%','%%EXECNOTES%%'); 
-    $values = array(sprintf(lang_get('issue_exec_id'),$argsObj->exec_id),
-                    sprintf(lang_get('issue_tester'),$exec['tester_login']),
-                    sprintf(lang_get('issue_tplan'),$exec['testplan_name']),
-                    $platform_identity,
-                    sprintf(lang_get('issue_build'),$exec['build_name']),
-                    sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']),
-                    $exec['statusVerbose'],
+
+  // will be used to manage Dynamic Values From XML Configuration 
+  $ret->tagValue = new stdClass();
+  $ret->tagValue->tag = array('%%EXECID%%','%%TESTER%%','%%TESTPLAN%%',
+                              '%%PLATFORM_VALUE%%','%%BUILD%%', '%%EXECTS%%',
+                              '%%EXECSTATUS%%'); 
+
+  $ret->tagValue->value = array($argsObj->exec_id,$exec['tester_login'],
+                                $exec['testplan_name'],$platform_identity,
+                                $exec['build_name'],$exec['execution_ts'],
+                                $exec['statusVerbose']); 
+
+
+  if(property_exists($argsObj, 'bug_notes')) {  
+    $lblKeys = array('issue_exec_id','issue_tester','issue_tplan','issue_build',
+                     'execution_ts_iso','issue_exec_result','issue_platform');
+
+    $lbl = array();
+    $l2d = count($lblKeys);
+    for($ldx=0; $ldx < $l2d; $ldx++) {
+      $lbl[$lblKeys[$ldx]] = lang_get($lblKeys[$ldx]);
+    }
+
+    $tags = $ret->tagValue->tag;
+    $tags[] = '%%EXECNOTES%%';
+    $values = array(sprintf($lbl['issue_exec_id'],$argsObj->exec_id),
+                    sprintf($lbl['issue_tester'],$exec['tester_login']),
+                    sprintf($lbl['issue_tplan'],$exec['testplan_name']),
+                    sprintf($lbl['issue_platform'],$platform_identity),
+                    sprintf($lbl['issue_build'],$exec['build_name']),
+                    sprintf($lbl['execution_ts_iso'],$exec['execution_ts']),
+                    sprintf($lbl['issue_exec_result'],$exec['statusVerbose']),
                     $exec['execution_notes']);
-
-
  
     $ret->description = str_replace($tags,$values,$argsObj->bug_notes);
    
@@ -769,15 +759,12 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
     $doIt = true;
     $url2use = $argsObj->basehref . 'lnl.php?type=file&id=';
 
-    while($doIt)
-    {
+    while($doIt) {
       $mx = strpos($ret->description,$target['value']);
-      if( ($doIt = !($mx === FALSE)) )
-      {
+      if( ($doIt = !($mx === FALSE)) ) {
         $offset = $mx+$target['len'];
         $cx = strpos($ret->description,'%%',$offset);
-        if($cx === FALSE)
-        {
+        if($cx === FALSE) {
           // chaos! => abort
           $doIt = false;
           break;
@@ -789,8 +776,7 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
       }
     } 
   }
-  else
-  {
+  else {
     $ret->description = sprintf(lang_get('issue_generated_description'),
                                 $argsObj->exec_id,$exec['tester_login'],$exec['testplan_name']);
     
@@ -803,13 +789,11 @@ function generateIssueText($dbHandler,$argsObj,$itsObj)
 
   $ret->timestamp = sprintf(lang_get('execution_ts_iso'),$exec['execution_ts']);
   $ret->summary = $ret->auditSign . ' - ' . $ret->timestamp;
-  if(property_exists($argsObj,'bug_summary') && strlen(trim($argsObj->bug_summary)) != 0 )
-  {
+  if(property_exists($argsObj,'bug_summary') && strlen(trim($argsObj->bug_summary)) != 0 ) {
     $ret->summary = $argsObj->bug_summary;
   }
 
-  if( $argsObj->addLinkToTL )
-  {
+  if( $addLinkToTL ) {
     $ret->description .= "\n\n" . lang_get('dl2tl') . $argsObj->direct_link;
   }  
 
@@ -872,37 +856,38 @@ function completeCreateIssue(&$execContext,$exsig)
  *
  *
  */
-function completeIssueForStep(&$execContext,$exsig,$exData,$stepID)
-{
+function completeIssueForStep(&$execContext,$execSigfrid,$exData,$stepID) {
   $p2i = array('issueSummaryForStep','issueBodyForStep',
                'issueTypeForStep','issuePriorityForStep',
                'artifactVersionForStep',
                'artifactComponentForStep');
-  foreach($p2i as $key)
-  {
-    if( isset($exData,$key) && isset($exData[$key],$stepID) )
-    {
-      if( !property_exists($execContext,$key) )
-      {
+  foreach($p2i as $key) {
+    if( isset($exData,$key) && isset($exData[$key],$stepID) ) {
+      if( !property_exists($execContext,$key) ) {
         $execContext->$key = array();  
       }
       $ref = &$execContext->$key;
       $ref[$stepID] = $exData[$key][$stepID];
     }  
   }
+
   $p2i = array('issueSummaryForStep' => 'bug_summary',
                'issueBodyForStep' => 'bug_notes',
                'issueTypeForStep' => 'issueType',
                'issuePriorityForStep' => 'issuePriority',
                'artifactVersionForStep' => 'artifactVersion',
                'artifactComponentForStep' => 'artifactComponent');
-  foreach($p2i as $from => $to)
-  {
-    if(property_exists($execContext,$from) )
-    {
+  foreach($p2i as $from => $to) {
+    if(property_exists($execContext,$from) ) {
       $ref = &$execContext->$from;
       $execContext->$to = $ref[$stepID];
     }  
   }
-}
 
+  $addLink = false;
+  if( property_exists($execSigfrid, 'addLinkToTLForStep') ) {
+    $addLink = isset($execSigfrid->addLinkToTLForStep[$stepID]);
+  }
+
+  return $addLink;
+}

@@ -17,6 +17,10 @@
              href_metrics_dashboard,href_add_remove_test_cases,
              href_exec_ro_access"}
 
+{$planView="lib/plan/planView.php"}
+{$buildView="lib/plan/buildView.php?tplan_id="}
+{$mileView="lib/plan/planMilestonesView.php"}
+{$platformAssign="lib/platforms/platformsAssign.php?tplan_id="}
 
 {$menuLayout=$tlCfg->gui->layoutMainPageRight}
 {$display_right_block_1=false}
@@ -92,13 +96,19 @@
   {/if}
   <br />
 
+   {if $display_right_block_top}
+    {if isset($gui->plugins.EVENT_RIGHTMENU_TOP)}
+      <div class="list-group" style="{$divStyle}" id="plugin_right_top">
+        {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
+		  <a href="{$menu_item['href']}" class="list-group-item" style="{$aStyle}">{$menu_item['label']}</a>
+          <br/>
+        {/foreach}
+      </div>
+    {/if}
+  {/if}
 
   {* ----------------------------------------------------------------------------- *}
   {if $display_right_block_1}
-    {$planView="lib/plan/planView.php"}
-    {$buildView="lib/plan/buildView.php?tplan_id="}
-    {$mileView="lib/plan/planMilestonesView.php"}
-
     <div class="list-group" style="{$divStyle}">
       {if $gui->grants.mgt_testplan_create == "yes"}
        		<a href="{$planView}" class="list-group-item" style="{$aStyle}">{$labels.href_plan_management}</a>
@@ -142,7 +152,6 @@
 	{/if}
 
 	{if $display_right_block_3}
-	  {$platformAssign="lib/platforms/platformsAssign.php?tplan_id="}
     <div class="list-group" style="{$divStyle}">
     {if $gui->grants.testplan_add_remove_platforms == "yes"}
   	  <a href="{$platformAssign}{$gui->testplanID}" class="list-group-item" style="{$aStyle}">{$labels.href_platform_assign}</a>
@@ -168,55 +177,12 @@
     </div>
   {/if}
 
-  {if $display_right_block_top}
-    <script type="text/javascript">
-    function display_right_block_top() 
-    {
-      var pt = new Ext.Panel({
-                              title: '{$labels.title_plugins}',
-                              collapsible: false,
-                              collapsed: false,
-                              draggable: false,
-                              contentEl: 'plugin_right_top',
-                              baseCls: 'x-tl-panel',
-                              bodyStyle: "background:#c8dce8;padding:3px;",
-                              renderTo: 'menu_right_block_top',
-                              width: '100%'
-                             });
-    }
-    </script>
-    {if isset($gui->plugins.EVENT_RIGHTMENU_TOP)}
-      <div id="plugin_right_top">
-        {foreach from=$gui->plugins.EVENT_RIGHTMENU_TOP item=menu_item}
-          {$menu_item}
-          <br/>
-        {/foreach}
-      </div>
-    {/if}
-  {/if}
-
   {if $display_right_block_bottom}
-    <script type="text/javascript">
-    function display_right_block_bottom() 
-    {
-      var pb = new Ext.Panel({
-                              title: '{$labels.title_plugins}',
-                              collapsible: false,
-                              collapsed: false,
-                              draggable: false,
-                              contentEl: 'plugin_right_bottom',
-                              baseCls: 'x-tl-panel',
-                              bodyStyle: "background:#c8dce8;padding:3px;",
-                              renderTo: 'menu_right_block_bottom',
-                              width: '100%'
-                             });
-    }
-    </script>
     {if isset($gui->plugins.EVENT_RIGHTMENU_BOTTOM)}
-      <div id="plugin_right_bottom">
+	  <br/>
+	  <div class="list-group" style="{$divStyle}" id="plugin_right_bottom">
         {foreach from=$gui->plugins.EVENT_RIGHTMENU_BOTTOM item=menu_item}
-          {$menu_item}
-          <br/>
+		  <a href="{$menu_item['href']}" class="list-group-item" style="{$aStyle}">{$menu_item['label']}</a>
         {/foreach}
       </div>
     {/if}  

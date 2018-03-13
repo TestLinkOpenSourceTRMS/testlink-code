@@ -5,39 +5,36 @@
  *
  * @filesource  oauth_api.php
  *
- * Google OAUTH API (authentication)
- *
- *
- * @internal revisions
- * @since 1.9.17
+ * OAUTH API (authentication)
  *
  */
 
 // Create correct link for oauth
-function oauth_link($oauthCfg)
-{
-  $promt = 'none';
-  if ($oauthCfg['oauth_force_single'])
-  {
-    $promt = 'consent';    
+function oauth_link($oauthCfg) {
+
+  $oauth_params = array();
+
+  $oauth_params['prompt'] = 'none';
+  if ($oauthCfg['oauth_force_single']) {
+    $oauth_params['prompt'] = 'consent';    
   }  
 
-  $oauth_url = $oauthCfg['oauth_url'];
-  $oauth_params = array(
-    'redirect_uri'  => isset($_SERVER['HTTPS']) ? 'https://' : 'http://' . $_SERVER['HTTP_HOST']. '/login.php?oauth=' . $oauthCfg['oauth_name'],
-    'response_type' => 'code',
-    'prompt'        => $promt,
-    'client_id'     => $oauthCfg['oauth_client_id'],
-    'scope'         => $oauthCfg['oauth_scope']
-  );
+  $oauth_params['response_type'] = 'code';
+  $oauth_params['client_id'] = $oauthCfg['oauth_client_id'];
+  $oauth_params['scope'] = $oauthCfg['oauth_scope'];
 
-  $url = $oauth_url . '?' . urldecode(http_build_query($oauth_params));
+  $oauth_params['redirect_uri'] = $oauthCfg['redirect_uri'];  
+  if( isset($_SERVER['HTTPS']) ) {
+    $oauth_params['redirect_uri'] = 
+      str_replace('http://', 'https://', $oauth_params['redirect_uri']);  
+  }  
+
+  $url = $oauthCfg['oauth_url'] . '?' . http_build_query($oauth_params);
   return $url;
 }
 
 //Create new user
-function create_oauth_user_db($login, $options)
-{
+function create_oauth_user_db(&$dbHandler, $login, $options) {
   $user = new tlUser();
   $user->login = $login;
   $user->emailAddress = $login;
@@ -46,5 +43,5 @@ function create_oauth_user_db($login, $options)
   $user->authentication = 'OAUTH';
   $user->isActive = true;
   $user->setPassword('oauth');
-  return ($user->writeToDB($db) == tl::OK);
+  return ($user->writeToDB($dbHandler) == tl::OK);
 }

@@ -24,5 +24,5 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function checkRights(&$db,&$user)
 {
-  return $user->hasRight($db,"cfield_view");
+  return $user->hasRight($db,"cfield_management") || $user->hasRight($db,"cfield_view");
 }

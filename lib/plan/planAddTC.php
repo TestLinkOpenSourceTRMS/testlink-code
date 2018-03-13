@@ -7,11 +7,9 @@
  *
  * @package     TestLink
  * @filesource  planAddTC.php
- * @copyright   2007-2016, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * 
- * @internal revisions
- * @since 1.9.15
  **/
 
 require_once('../../config.inc.php');
@@ -669,6 +667,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
   $gui->testPlanName = $tplan_info['name'];
   $gui->pageTitle = lang_get('test_plan') . $title_separator . $gui->testPlanName;
   $gui->refreshTree = $argsObj->refreshTree;
+  $gui->canAssignExecTask = $argsObj->user->hasRight($dbHandler,"exec_assign_testcases",$argsObj->tproject_id,$argsObj->tplan_id);
 
   $tproject_mgr = new testproject($dbHandler);
   $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);

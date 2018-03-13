@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2017, TestLink community 
+ * @copyright   2005-2018, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
@@ -20,10 +20,15 @@ require_once('Zend/Validate/EmailAddress.php');
 
 testlinkInitPage($db,false,false,"checkRights");
 
-$tree_mgr = new tree($db); 
-$tplan_mgr = new testplan($db); 
-$tcase_mgr = new testcase($db); 
-$assignment_mgr = new assignment_mgr($db); 
+$objMgr['tree'] = new tree($db);
+$objMgr['tplan'] = new testplan($db);
+$objMgr['tcase'] = new testcase($db);
+$objMgr['assign'] = new assignment_mgr($db);
+
+$tree_mgr = &$objMgr['tree']; 
+$tplan_mgr = &$objMgr['tplan'];
+$tcase_mgr = &$objMgr['tcase'];
+$assignment_mgr = &$objMgr['assign'];
 
 
 $args = init_args();
@@ -40,7 +45,8 @@ $arrData = array();
 
 $status_map = $assignment_mgr->get_available_status();
 $types_map = $assignment_mgr->get_available_types();
-$task_test_execution = $types_map['testcase_execution']['id'];
+$cfg['task_test_execution'] = $types_map['testcase_execution']['id'];
+$task_test_execution = $cfg['task_test_execution'];
 
 switch($args->doAction)
 {
@@ -98,71 +104,17 @@ switch($args->doAction)
   break;
 
 
-  case 'doBulkRemove':
-    if(!is_null($args->achecked_tc))
-    {
-      $op='del';
-      $features2[$op] = array();
-      foreach($args->achecked_tc as $key_tc => $platform_tcversion)
-      {
-        foreach($platform_tcversion as $platform_id => $tcversion_id)
-        {
-          $feature_id = $args->feature_id[$key_tc][$platform_id];
-
-          $features2[$op][$feature_id]['type'] = $task_test_execution;
-          $features2[$op][$feature_id]['build_id'] = $args->build_id; 
-        }
-      }
-
-      // Must be done before delete
-      if($args->send_mail)
-      {
-        $featureSet = array_keys($features2['del']);
-        $items = $tplan_mgr->getFeatureByID($featureSet);
-        $testers = $assignment_mgr->getUsersByFeatureBuild($featureSet,$args->build_id,$task_test_execution);
-
-        $f4mail = array();
-        foreach($items as $fid => $value)
-        {
-          $pid = $value['platform_id'];
-          $f4mail[$pid][$fid]['previous_user_id'] = array_keys($testers[$fid]); 
-          $f4mail[$pid][$fid]['tcase_id'] = $items[$fid]['tcase_id'];
-          $f4mail[$pid][$fid]['tcversion_id'] = $items[$fid]['tcversion_id'];
-        } 
-      }
-
-      foreach($features2 as $key => $values)
-      {
-        if( count($features2[$key]) > 0 )
-        {
-          $assignment_mgr->delete_by_feature_id_and_build_id($values);
-          $called[$key]=true;
-        }  
-      }
-
-      /* features2 has not all needed info => need to process
-       key a: platform_id
-       key b: feature_id
-              user_id => array
-              tcase_id
-              tcversion_id
-      */
-      if($args->send_mail)
-      {
-        foreach($called as $ope => $ope_status)
-        {
-          if($ope_status)
-          {
-            send_mail_to_testers($db,$tcase_mgr,$gui,$args,$f4mail,'del');     
-          }
-        }
-      }   
+  case 'doRemoveAll':
+    if(!is_null($args->achecked_tc)) {
+      doRemoveAll($db,$args,$gui,$cfg,$objMgr);
     }  
   break; 
 
   case 'doRemove':
-    $signature[] = array('type' => $task_test_execution, 'user_id' => $args->targetUser, 
-                         'feature_id' => $args->targetFeature, 'build_id' => $args->build_id);
+    $signature[] = array('type' => $task_test_execution, 
+                         'user_id' => $args->targetUser, 
+                         'feature_id' => $args->targetFeature, 
+                         'build_id' => $args->build_id);
     $assignment_mgr->deleteBySignature($signature);
 
     if($args->send_mail)
@@ -187,6 +139,13 @@ switch($args->doAction)
                      'build_id' => $args->build_id);
     $assignment_mgr->emailLinkToExecPlanning($context,$args->userSet);
   break;
+
+  case 'doBulkUserRemove':
+    if(!is_null($args->achecked_tc)) {
+      doBulkUserRemove($db,$args,$gui,$cfg,$objMgr);    
+    }  
+  break; 
+
 
 }
 
@@ -299,9 +258,10 @@ function init_args()
   }
   
   $args->userSet = null;
-  if(count($_REQUEST['bulk_tester_div']) > 0)
+  $target = $_REQUEST['bulk_tester_div']; 
+  if(isset($target) && count($target) > 0)
   {
-    foreach($_REQUEST['bulk_tester_div'] as $uid)
+    foreach($target as $uid)
     {
       if($uid > 0)
       {
@@ -367,10 +327,10 @@ function init_args()
   $args->targetUser = intval(isset($_REQUEST['targetUser']) ? $_REQUEST['targetUser'] : 0);  
 
 
-  $args->doBulkUserRemove = isset($_REQUEST['doBulkUserRemove']) ? 1 : 0;
-  if($args->doBulkUserRemove)
+  $key = 'doRemoveAll';
+  if( ($args->$key = isset($_REQUEST[$key]) ? 1 : 0) )
   {
-    $args->doAction = 'doBulkRemove';
+    $args->doAction = $key;
   }  
 
   return $args;
@@ -584,7 +544,94 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
   }
 }
 
+/**
+ *
+ */
+function doRemoveAll(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
+  $op='del';
+  $features2[$op] = array();
+
+  foreach($argsObj->achecked_tc as $key_tc => $ptc) {
+    foreach($ptc as $platform_id => $tcversion_id) {
+      $fid = $argsObj->feature_id[$key_tc][$platform_id];
+      $features2[$op][$fid]['type'] = $cfg['task_test_execution'];
+      $features2[$op][$fid]['build_id'] = $argsObj->build_id; 
+    }
+  }
+  
+  // Must be done before delete
+  if($argsObj->send_mail) {
+    $fSet = array_keys($features2[$op]);
+    $items = $oMgr['tplan']->getFeatureByID($fSet);
+    $testers = $oMgr['assign']->getUsersByFeatureBuild($fSet,$argsObj->build_id,$cfg['task_test_execution']);
+
+    $f4mail = array();
+    foreach($items as $fid => $value)
+    {
+      $pid = $value['platform_id'];
+      $f4mail[$pid][$fid]['previous_user_id'] = array_keys($testers[$fid]); 
+      $f4mail[$pid][$fid]['tcase_id'] = $items[$fid]['tcase_id'];
+      $f4mail[$pid][$fid]['tcversion_id'] = $items[$fid]['tcversion_id'];
+    } 
+  }
+
+
+  foreach($features2 as $key => $values) {
+    if( count($features2[$key]) > 0 ) {
+      $oMgr['assign']->delete_by_feature_id_and_build_id($values);
+    }  
+  }
+
+  if($argsObj->send_mail) {
+    send_mail_to_testers($dbH,$oMgr['tcase'],$guiObj,$argsObj,$f4mail,'del'); 
+  }   
+}
+
+/**
+ *
+ */
+function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
+  
+  if(!is_null($argsObj->achecked_tc)) {
+    foreach($argsObj->achecked_tc as $key_tc => $ptc) {
+      foreach($ptc as $platform_id => $tcversion_id) {
+        foreach($argsObj->userSet as $user2remove) {
+          $fid = $argsObj->feature_id[$key_tc][$platform_id];
+          $feat[$fid]['type'] = $cfg['task_test_execution'];
+          $feat[$fid]['feature_id'] = $fid;
+          $feat[$fid]['build_id'] = $argsObj->build_id; 
+          $feat[$fid]['user_id'] = $user2remove;
+        }
+      }
+    }
+
+    // Must be done before delete
+    if($argsObj->send_mail) {
+      $fSet = array_keys($features2[$op]);
+      $items = $oMgr['tplan']->getFeatureByID($fSet);
+      $testers = $oMgr['assign']->getUsersByFeatureBuild($fSet,$argsObj->build_id,$cfg['task_test_execution']);
+
+      $f4mail = array();
+      foreach($items as $fid => $value)
+      {
+        $pid = $value['platform_id'];
+        $f4mail[$pid][$fid]['previous_user_id'] = array_keys($testers[$fid]); 
+        $f4mail[$pid][$fid]['tcase_id'] = $items[$fid]['tcase_id'];
+        $f4mail[$pid][$fid]['tcversion_id'] = $items[$fid]['tcversion_id'];
+      } 
+    }
+
+    $oMgr['assign']->deleteBySignature($feat);
+
+    if($argsObj->send_mail) {
+      send_mail_to_testers($dbH,$oMgr['tcase'],$guiObj,$argsObj,$f4mail,'del'); 
+    }   
+
+  }
+}
+
+
 function checkRights(&$db,&$user)
 {
-  return $user->hasRight($db,'testplan_planning');
+  return $user->hasRight($db,'exec_assign_testcases');
 }

@@ -9,7 +9,7 @@ delete test case in test specification
 *}
 {lang_get var="labels"
           s='btn_yes_iw2del,btn_no,th_version,th_linked_to_tplan,title_delete_testcases,
-             th_executed,question_del_tc,platform'}
+             th_executed,question_del_tc,platform,question_del_tc_version,btn_yes_iw2del_version'}
 {include file="inc_head.tpl"}
 
 <body>
@@ -47,16 +47,23 @@ delete test case in test specification
 	  		{/foreach}
 	      </table>
       	{$gui->delete_message}
-    {/if}
+      {/if}
     
     {if $gui->delete_enabled}
-	  <p>{$labels.question_del_tc}</p>
-	  <form method="post" 
-	        action="{$basehref}lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
-	  	<input type="submit" id="do_delete" name="do_delete" value="{$labels.btn_yes_iw2del}" />
-	  	<input type="button" name="cancel_delete"
-	  	                     onclick="javascript:{$gui->cancelActionJS};" value="{$labels.btn_no}" />
-	  </form>
+	  {if $gui->tcversion_id neq 0}
+		{$local_question=$labels.question_del_tc_version}
+		{$local_button=$labels.btn_yes_iw2del_version}
+	  {else}
+	    {$local_question=$labels.question_del_tc}
+		{$local_button=$labels.btn_yes_iw2del}
+	  {/if}
+	  <p>{$local_question}</p>
+		  <form method="post" 
+				action="{$basehref}lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
+			<input type="submit" id="do_delete" name="do_delete" value="{$local_button}" />
+			<input type="button" name="cancel_delete"
+								 onclick="javascript:{$gui->cancelActionJS};" value="{$labels.btn_no}" />
+		  </form>	  
     {/if}
  
   

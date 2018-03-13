@@ -48,6 +48,7 @@ $userID = $currentUser->dbID;
 $gui = new stdClass();
 $gui->grants = getGrants($db,$user,$userIsBlindFolded);
 $gui->hasTestCases = false;
+
 if($gui->grants['view_tc'])
 { 
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
@@ -108,11 +109,18 @@ if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
 	$gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
 }
 
-$rights2check = array('testplan_execute','testplan_create_build','testplan_metrics','testplan_planning',
-                      'testplan_user_role_assignment','mgt_testplan_create','cfield_view', 'cfield_management',
-                      'testplan_milestone_overview','exec_testcases_assigned_to_me',
-                      'testplan_add_remove_platforms','testplan_update_linked_testcase_versions',
-                      'testplan_set_urgent_testcases','testplan_show_testcases_newest_versions');
+$rights2check = array('testplan_execute','testplan_create_build',
+                      'testplan_metrics','testplan_planning',
+                      'testplan_user_role_assignment',
+                      'mgt_testplan_create',
+                      'cfield_view', 'cfield_management',
+                      'testplan_milestone_overview',
+                      'exec_testcases_assigned_to_me',
+                      'exec_assign_testcases','exec_ro_access',
+                      'testplan_add_remove_platforms',
+                      'testplan_update_linked_testcase_versions',
+                      'testplan_set_urgent_testcases',
+                      'testplan_show_testcases_newest_versions');
 
 foreach($rights2check as $key => $the_right)
 {
@@ -220,13 +228,15 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'issuetracker_view' => "issuetracker_view",
                        'codetracker_management' => "codetracker_management",
                        'codetracker_view' => "codetracker_view",
-                       // 'reqmgrsystem_management' => "reqmgrsystem_management",
-                       // 'reqmgrsystem_view' => "reqmgrsystem_view",
                        'configuration' => "system_configuraton",
+                       'cfield_management' => 'cfield_management',
+                       'cfield_view' => 'cfield_view',
+                       'cfield_assignment' => 'cfield_assignment',
                        'usergroups' => "mgt_view_usergroups",
                        'view_tc' => "mgt_view_tc",
                        'view_testcase_spec' => "mgt_view_tc",
                        'project_inventory_view' => 'project_inventory_view',
+                       'project_inventory_management' => 'project_inventory_management',
                        'modify_tc' => 'mgt_modify_tc',
                        'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
                        'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
@@ -254,8 +264,13 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   }
 
 
-  $grants['project_inventory_view'] = ($_SESSION['testprojectOptions']->inventoryEnabled && 
-                                      ($user->hasRight($dbHandler,"project_inventory_view") == 'yes')) ? 1 : 0;
+  // check right ONLY if option is enables
+  if($_SESSION['testprojectOptions']->inventoryEnabled) {
+    $invr = array('project_inventory_view','project_inventory_management');
+    foreach($invr as $r){
+      $grants[$r] = ($user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
+    }
+  }
 
   return $grants;  
 }

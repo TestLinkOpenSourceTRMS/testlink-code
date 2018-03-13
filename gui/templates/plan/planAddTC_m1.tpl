@@ -133,7 +133,7 @@ Ext.onReady(function(){
 	  	  	
 		{* user assignments per build *}
 		{* show this only if a build exists to which we can assign users *}
-		{if $gui->build.count}
+		{if $gui->build.count && $gui->canAssignExecTask}
 		
 		<div class="groupBtn">
 				{$labels.tester_assignment_on_add}

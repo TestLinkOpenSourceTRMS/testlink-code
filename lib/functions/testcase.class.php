@@ -1673,11 +1673,11 @@ class testcase extends tlObjectWithAttachments
     returns: testproject id
 
   */
-  function formatTestCaseIdentity($id,$external_id)
+  function formatTestCaseIdentity($id,$external_id=null)
   {
-      $path2root=$this->tree_manager->get_path($tc_id);
-      $tproject_id=$path2root[0]['parent_id'];
-      $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
+    $path2root = $this->tree_manager->get_path($tc_id);
+    $tproject_id = $path2root[0]['parent_id'];
+    $tcasePrefix = $this->tproject_mgr->getTestCasePrefix($tproject_id);
   }
 
 
@@ -1698,7 +1698,7 @@ class testcase extends tlObjectWithAttachments
       $path2root=$this->tree_manager->get_path($id);
       $root=$path2root[0]['parent_id'];
     }
-    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
+    $tcasePrefix = $this->tproject_mgr->getTestCasePrefix($root);
     return array($tcasePrefix,$root);
   }
 
@@ -2175,7 +2175,7 @@ class testcase extends tlObjectWithAttachments
 
        [options]:
                 [output]: default 'full'
-          domain 'full','essential','full_without_steps'
+          domain 'full','essential','full_without_steps','full_without_users'
 
     returns: array
 
@@ -6582,10 +6582,27 @@ class testcase extends tlObjectWithAttachments
   }
 
 
-
-  public function getAuditSignature($context,$options = null)
-  {
+  /**
+   *
+   */
+  public function getAuditSignature($context,$options = null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $key2check = array('tcversion_id','id');
+    $safeID = array();
+    foreach($key2check as $idx => $key ) {
+      if( property_exists($context, $key) ) {
+        $safeID[$key] = intval($context->$key);
+      }
+      else {
+        $safeID[$key] = -1;
+      }  
+    }
+
+    if( $safeID['id'] <= 0  && $safeID['tcversion_id'] > 0 ) {
+      $node = $this->tree_manager->get_node_hierarchy_info($safeID['tcversion_id']);
+      $safeID['id'] = $node['parent_id'];
+    }
 
     // we need:
     // Test Case External ID
@@ -6593,11 +6610,11 @@ class testcase extends tlObjectWithAttachments
     // Test Case Path
     // What about test case version ID ? => only if argument provided
     //
-    $pathInfo = $this->tree_manager->get_full_path_verbose($context->id,array('output_format' => 'id_name'));
+    $pathInfo = $this->tree_manager->get_full_path_verbose($safeID['id'],array('output_format' => 'id_name'));
     $pathInfo = current($pathInfo);
     $path = '/' . implode('/',$pathInfo['name']) . '/';
-    $tcase_prefix = $this->getPrefix($context->id, $pathInfo['node_id'][0]);
-    $info = $this->get_last_version_info($context->id, array('output' => 'medium'));
+    $tcase_prefix = $this->getPrefix($safeID['id'], $pathInfo['node_id'][0]);
+    $info = $this->get_last_version_info($safeID['id'], array('output' => 'medium'));
     $signature = $path . $tcase_prefix[0] . $this->cfg->testcase->glue_character .
                  $info['tc_external_id'] . ':' . $info['name'];
 
@@ -7170,7 +7187,7 @@ class testcase extends tlObjectWithAttachments
             }
             $relSet['relations'][$key]['type_localized'] = $relSet['relations'][$key][$type_localized];
             $otherItem = $this->get_by_id($rel[$other_key],self::LATEST_VERSION,null,
-                                          array('output' => 'essential','getPrefix' => true));
+                                          array('output' => 'full_without_users','getPrefix' => true));
 
 
             // only add it, if either interproject linking is on or if it is in the same project
@@ -7282,8 +7299,8 @@ class testcase extends tlObjectWithAttachments
    *
    * @author Andreas Simon
    *
-   * @param integer $source_id ID of source requirement
-   * @param integer $destination_id ID of destination requirement
+   * @param integer $source_id ID of source testcase
+   * @param integer $destination_id ID of destination testcase
    * @param integer $type_id relation type ID to set
    * @param integer $author_id user's ID
    */
@@ -7294,13 +7311,21 @@ class testcase extends tlObjectWithAttachments
     // check if exists before trying to add
     if( !$this->relationExits($source_id, $destination_id, $type_id) )
     {
+		// check if related testcase is open
+		$dummy = $this->get_by_id($destination_id,self::LATEST_VERSION);
+		if(($dummy[0]['is_open']) =="1"){
 
-      $time = is_null($ts) ? $this->db->db_now() : $ts;
-      $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  .
-             " (source_id, destination_id, relation_type, author_id, creation_ts) " .
-             " values ($source_id, $destination_id, $type_id, $author_id, $time)";
-      $this->db->exec_query($sql);
-      $ret = array('status_ok' => true, 'msg' => 'relation_added');
+		  $time = is_null($ts) ? $this->db->db_now() : $ts;
+		  $sql = " $debugMsg INSERT INTO {$this->tables['testcase_relations']} "  .
+				 " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+				 " values ($source_id, $destination_id, $type_id, $author_id, $time)";
+		  $this->db->exec_query($sql);
+		  $ret = array('status_ok' => true, 'msg' => 'relation_added');
+		}
+		else
+		{
+		  $ret = array('status_ok' => false, 'msg' => 'related_tcase_not_open');
+		}
     }
     else
     {
@@ -7575,14 +7600,22 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    */
-  function setIntAttrForAllVersions($id,$attr,$value)
+  function setIntAttrForAllVersions($id,$attr,$value,$forceFrozenVersions=false)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 //    $children =
 
+
     $sql = " UPDATE {$this->tables['tcversions']} " .
-           " SET {$attr} = " . $this->db->prepare_int($value) .
-           " WHERE id IN (" .
+           " SET {$attr} = " . $this->db->prepare_int($value) ;
+		   
+	if($forceFrozenVersions==false){
+	  $sql .= " WHERE is_open=1 AND ";
+	}
+	else{
+	  $sql .= " WHERE ";
+	}
+	$sql .= " id IN (" .
            "  SELECT NHTCV.id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
            "  WHERE NHTCV.parent_id = " . intval($id) . ")";
     $this->db->exec_query($sql);
@@ -7823,6 +7856,25 @@ class testcase extends tlObjectWithAttachments
     } 
   }
 
+  /**
+   *
+   *
+   */
+  function getPathName($tcase_id) {
+
+    $pathInfo = $this->tree_manager->get_full_path_verbose($tcase_id,array('output_format' => 'id_name'));
+    $pathInfo = current($pathInfo);
+    $path = '/' . implode('/',$pathInfo['name']) . '/';
+
+    $pfx = $this->tproject_mgr->getTestCasePrefix($pathInfo['node_id'][0]);
+
+    $info = $this->get_last_version_info($tcase_id, array('output' => 'medium'));
+
+    $path .= $pfx . $this->cfg->testcase->glue_character .
+             $info['tc_external_id'] . ':' . $info['name'];
+
+    return $path;
+  }
 
 
 

@@ -1183,7 +1183,7 @@ $TLS_th_rights = "Droits";
 $TLS_th_rolename = "Nom de rôle";
 $TLS_th_system_rights = "Système";
 $TLS_th_tp_rights = "Campagne de test";
-$TLS_th_user_rights = "Utilisateurs";
+$TLS_th_user_rights = "Utilisateurs/Rôles";
 $TLS_title_user_mgmt = "Gestion des utilisateurs";
 $TLS_warning_empty_role_name = "Le nom de rôle est obligatoire.";
 $TLS_warning_modify_role = "Etes-vous sûr de vouloir modifier le rôle ?";
@@ -1212,6 +1212,10 @@ $TLS_jolly_hint = "la valeur sera cherchée, comme en mode OR, dans le titre, le
 
 
 
+// ----- gui/templates/testcases/tcBulkOp.tpl -----
+$TLS_force_frozen_testcases_versions = "Forcer les versions verrouillées des fiches de test";
+
+
 // ----- gui/templates/testcases/searchData.tpl -----
 $TLS_too_wide_search_criteria = "Trop de résultats à afficher. Veuillez définir des " .
 		"critères de recherche plus fins.";
@@ -1223,7 +1227,9 @@ $TLS_too_wide_search_criteria = "Trop de résultats à afficher. Veuillez défin
 
 // ----- gui/templates/tcDelete.tpl -----
 $TLS_btn_yes_iw2del = "OK, supprimer la fiche de test";
+$TLS_btn_yes_iw2del_version = "OK, supprimer la version de cette fiche de test";
 $TLS_question_del_tc = "Etes-vous sûr de vouloir supprimer la fiche de test ?";
+$TLS_question_del_tc_version = "Etes-vous sûr de vouloir supprimer cette version de la fiche de test ?";
 $TLS_th_executed = "Exécutée";
 $TLS_th_linked_to_tplan = "Liée à une campagne de test";
 $TLS_th_version = "Version";
@@ -1666,6 +1672,8 @@ $TLS_hint_new_sibling = "Créer une autre fiche de test dans le dossier de tests
 $TLS_hint_new_version = "Créer une nouvelle version";
 
 $TLS_can_not_edit_tc = "Vous ne pouvez pas modifier la version car elle a été exécutée.";
+$TLS_can_not_edit_frozen_tc = "Vous ne pouvez pas modifier la version car elle a été verrouillée";
+$TLS_can_not_delete_relation_frozen_tc = "Vous ne pouvez pas supprimer la relation : fiche de test verrouillée";
 $TLS_deactivate_this_tcversion = "Désactiver la version";
 $TLS_execution_type = "Type d’exécution";
 $TLS_execution_type_short_descr = "Exécution";
@@ -2410,7 +2418,11 @@ $TLS_desc_testplan_create_build = "Création/modification de Versions de produit
 $TLS_desc_testplan_execute = "Exécution de campagne de test";
 $TLS_desc_testplan_metrics = "Métriques de campagne de test";
 $TLS_desc_testplan_planning = "Planification de campagne de test";
-$TLS_desc_user_role_assignment = "Affectation de rôles";
+$TLS_desc_user_role_assignment = "Affectation de rôles  aux utilisateurs pour tous les projets";
+$TLS_desc_testproject_user_role_assignment = "Affectation de rôles aux utilisateurs pour le projet";
+$TLS_desc_testplan_user_role_assignment = "Affectation de rôles aux utilisateurs pour les campagnes du campagne de test";
+
+
 $TLS_desc_monitor_requirement = 'Surveillance des exigences';
 
 
@@ -2471,7 +2483,9 @@ $TLS_create_new_version = "Nouvelle version créée %s";
 $TLS_testcase_name_already_exists = "Fiche de test existe déjà avec le titre (%s)";
 $TLS_created_with_title = "Créée avec le titre (%s)";
 $TLS_the_format_tc_xml_import = "";
-
+$TLS_relation_added = "La relation vers %s a été ajoutée";
+$TLS_related_tcase_not_open = "La relation vers %s ne peut pas être ajoutée : cette fiche de test est verrouillée";
+$TLS_relation_already_exists = "La relation vers %s ne peut pas être ajoutée : cette relation existe déjà";
 
 // ----- lib/functions/testsuite.class.php -----
 $TLS_component_name_already_exists = "Il existe déjà un dossier de test portant le nom %s";
@@ -3768,4 +3782,5 @@ $TLS_multiple_entities_search = "Rechercher dans plusieurs entités";
 $TLS_no_access_to_feature = "Vous n'avez pas les droits nécessaires pour accéder à la fonctionnalité";
 
 $TLS_applyExecTypeChangeToAllSteps = "Appliquer à toutes les étapes";
+$TLS_desc_cfield_assignment = "Affectation des champs personnalisés";
 // ----- END ------------------------------------------------------------------

@@ -260,9 +260,15 @@ function process_testcase(&$dbHandler,$externalID, $tprojectID, $tprojectPrefix,
   {
     $ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
     $ret['msg'] = 'ok';
-    $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,'ys-tproject_');
-    $cookie_path = config_get('cookie_path');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, $cookie_path);
+
+    $ckCfg = config_get('cookie');    
+    $ckCfg->prefix .= 'ys-tproject_';
+    $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,$ckCfg->prefix);
+
+    $ckObj = new stdClass();
+    $ckObj->name = $cookie['value'];
+    $ckObj->value = $cookie['path'];
+    tlSetCookie($ckObj);
   }
 
   return $ret;
@@ -321,9 +327,14 @@ function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version
       $ret['url'] .= "&req_version_id=$version_id";
     } 
 
-    $cookie = buildCookie($dbHandler, $req_id, $tprojectID,'ys-requirement_spec');
-    $cookie_path = config_get('cookie_path');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, $cookie_path);
+    $ckCfg = config_get('cookie');    
+    $ckCfg->prefix .= 'requirement_spec';
+    $cookie = buildCookie($dbHandler,$req_id,$tprojectID,$ckCfg->prefix);
+
+    $ckObj = new stdClass();
+    $ckObj->name = $cookie['value'];
+    $ckObj->value = $cookie['path'];
+    tlSetCookie($ckObj);
   }
 
   return $ret;
@@ -350,9 +361,14 @@ function process_reqspec(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $ver
     $id = $reqSpec['id'];
     $ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}";
 
-    $cookie = buildCookie($dbHandler,$id,$tprojectID,'ys-requirement_spec');
-    $cookie_path = config_get('cookie_path');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, $cookie_path);
+    $ckCfg = config_get('cookie');    
+    $ckCfg->prefix .= 'ys-requirement_spec';
+    $cookie = buildCookie($dbHandler,$id,$tprojectID,$ckCfg->prefix);
+
+    $ckObj = new stdClass();
+    $ckObj->name = $cookie['value'];
+    $ckObj->value = $cookie['path'];
+    tlSetCookie($ckObj);
   }
   return $ret;
 }
@@ -396,9 +412,16 @@ function process_testsuite(&$dbHandler,$tsuiteID, $tprojectID, $tprojectPrefix)
                 '&edit=testsuite&level=testsuite&containerType=testsuite&id=' . $tsuiteID;
 
   $ret['msg'] = 'ok';
-  $cookie = buildCookie($dbHandler,$tsuiteID,$tprojectID,'ys-tproject_');
-  $cookie_path = config_get('cookie_path');
-  setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, $cookie_path);
+
+  $ckCfg = config_get('cookie');    
+  $ckCfg->prefix .= 'ys-tproject_';
+  $cookie = buildCookie($dbHandler,$tsuiteID,$tprojectID,$ckCfg->prefix);
+
+  $ckObj = new stdClass();
+  $ckObj->name = $cookie['value'];
+  $ckObj->value = $cookie['path'];
+  tlSetCookie($ckObj);
+
 
   return $ret;
 }

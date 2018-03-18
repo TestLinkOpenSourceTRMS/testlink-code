@@ -1259,7 +1259,7 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @param struct $args
    * @param string $args["devKey"]
-   * @param int $args["tplanid"]
+   * @param int $args["testplanid"]
    * @return mixed 
    *         
    * @access public
@@ -4863,7 +4863,7 @@ public function getTestCase($args)
    *
    * @param struct $args
    * @param string $args["devKey"]
-   * @param int $args["tplanid"] test plan id
+   * @param int $args["testplanid"] test plan id
    *
    * @return map where every element has:
    *

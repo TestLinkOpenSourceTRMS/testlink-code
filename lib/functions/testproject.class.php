@@ -1070,7 +1070,7 @@ function count_testcases($id)
     // limit tcasePrefix len.
     if(tlStringLen($fstr) > self::TESTCASE_PREFIX_MAXLEN)
     {
-      $fstr = substr($fstr,self::TESTCASE_PREFIX_MAXLEN);
+      $fstr = substr($fstr, 0, self::TESTCASE_PREFIX_MAXLEN);
     }
     return $fstr;
   }

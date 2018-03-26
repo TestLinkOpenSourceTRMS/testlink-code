@@ -25,8 +25,7 @@ require_once("ldap_api.php");
  * feature that requires login when session has expired and user has some data
  * not saved. (ajaxlogin on login.php page)
  */
-function doAuthorize(&$db,$login,$pwd,$options=null)
-{
+function doAuthorize(&$db,$login,$pwd,$options=null) {
   global $g_tlLogger;
 
   $result = array('status' => tl::ERROR, 'msg' => null);
@@ -35,97 +34,99 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
   $my['options'] = array('doSessionExistsCheck' => true); 
   $my['options'] = array_merge($my['options'], (array)$options);
 
-  $doLogin = false;
-  $doChecks = true;
-
   $login = trim($login);
   $pwd = trim($pwd);
-
-  if($login == '')
-  {
+  $doChecks = true;
+  if($login == '') {
     $doChecks = false;
     $result['msg'] = ' ';    
   } 
 
-  if( $doChecks && !is_null($pwd) && !is_null($login))
-  {
+  $isOauth = (strpos($options->auth,'oauth') !== false);
+  $loginExists = false;
+  $loginExpired = false;
+  $doLogin = false;
+
+  // if( $doChecks && !is_null($pwd) && !is_null($login)) {
+  if( $doChecks && !is_null($login)) {
     $user = new tlUser();
     $user->login = $login;
-    $login_exists = ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK); 
-
-    if ($login_exists)
-    {
-      $doGo = true;
-      $checkDate = !is_null($user->expiration_date);
-      $checkDate = $checkDate && (trim($user->expiration_date) != '');
-      
-      if( $checkDate )
-      {
-        $now = strtotime(date_format(date_create(),'Y-m-d'));
-        $exd = strtotime($user->expiration_date);
-
-        if($now >= $exd )
-        {
-          // Expired!
-          $doGo = false;
-          $result['msg'] = lang_get('tluser_account_expired');
-        }  
-      }  
- 
-      if( $doGo )
-      {
-        if (strpos($options->auth,'oauth') !== false){
-            $doLogin = $user->isActive;
-        } else {
-            $password_check = auth_does_password_match($user,$pwd);
-            if(!$password_check->status_ok)
-            {
-              $result = array('status' => tl::ERROR, 'msg' => null);
-            }
-
-            $doLogin = $password_check->status_ok && $user->isActive;
-            if( !$doLogin )
-            {
-              logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
-            }
-        }
-      }  
-      
+    $searchBy = tlUser::USER_O_SEARCH_BYLOGIN;
+    if( $isOauth ) {
+      $user->emailAddress = $login;
+      $searchBy = tlUser::USER_O_SEARCH_BYEMAIL;
     }
-    else
-    {
-      $authCfg = config_get('authentication');
-      if (strpos($options->auth,'oauth') !== false){
-        $doLogin = create_oauth_user_db($login,$options);
-      } else
-      if( $authCfg['ldap_automatic_user_creation'] )
-      {
-        $user->authentication = 'LDAP';  // force for auth_does_password_match
-        $check = auth_does_password_match($user,$pwd);
-        if( $check->status_ok )
-        {
-          $user = new tlUser(); 
-          $user->login = $login;
-          $user->authentication = 'LDAP';
-          $user->isActive = true;
-          $user->setPassword($pwd);  // write password on DB anyway
+    $loginExists = ( $user->readFromDB( $db, $searchBy ) >= tl::OK ); 
+  }
 
-          $uf = getUserFieldsFromLDAP($user->login,$authCfg['ldap'][$check->ldap_index]);
-          $user->emailAddress = $uf->emailAddress;
-          $user->firstName = $uf->firstName;
-          $user->lastName = $uf->lastName;
-          $doLogin = ($user->writeToDB($db) == tl::OK);
-        }  
+  if( $loginExists ) {
+    $loginExpired = false;
+    $checkDate = !is_null($user->expiration_date);
+    $checkDate = $checkDate && (trim($user->expiration_date) != '');
+      
+    if( $checkDate ) {
+      $now = strtotime(date_format(date_create(),'Y-m-d'));
+      $exd = strtotime($user->expiration_date);
+      if( $now >= $exd ) {
+        // Expired!
+        $loginExpired = true;
+        $result['msg'] = lang_get('tluser_account_expired');
       }  
     }  
   }
 
-  if( $doLogin )
-  {
+  if( $loginExists ) {
+    if( $loginExpired === false ) {
+      if ($isOauth) {
+         $doLogin = $user->isActive;
+      } else {
+        $password_check = auth_does_password_match($user,$pwd);
+        if(!$password_check->status_ok) {
+           $result = array('status' => tl::ERROR, 'msg' => null);
+        }
+        $doLogin = $password_check->status_ok && $user->isActive;
+        if( !$doLogin ) {
+            logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
+        }
+      }
+    }
+  }  else {
+    // Will Try To Create a New User
+      $authCfg = config_get('authentication');
+      if ($isOauth){
+        $doLogin = create_oauth_user_db($db,$login,$options);
+      } else {
+        if( $authCfg['ldap_automatic_user_creation'] ) {
+          $user->authentication = 'LDAP';  // force for auth_does_password_match
+          $check = auth_does_password_match($user,$pwd);
+          if( $check->status_ok ) {
+            $user = new tlUser(); 
+            $user->login = $login;
+            $user->authentication = 'LDAP';
+            $user->isActive = true;
+            $user->setPassword($pwd);  // write password on DB anyway
+
+            $uf = getUserFieldsFromLDAP($user->login,$authCfg['ldap'][$check->ldap_index]);
+            $user->emailAddress = $uf->emailAddress;
+            $user->firstName = $uf->firstName;
+            $user->lastName = $uf->lastName;
+            $doLogin = ($user->writeToDB($db) == tl::OK);
+          }  
+        }
+      }  
+  }
+
+  if( $doLogin ) {
     // After some tests (I'm very tired), seems that re-reading is best option
     $user = new tlUser();
     $user->login = $login;
-    $user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN);
+    $searchBy = tlUser::USER_O_SEARCH_BYLOGIN;
+    if( $isOauth ) {
+      $user->emailAddress = $login;
+      $user->login = null;
+      $searchBy = tlUser::USER_O_SEARCH_BYEMAIL;
+    }
+    $user->readFromDB($db,$searchBy);
 
     // Need to do set COOKIE following Mantis model
     $ckCfg = config_get('cookie');    
@@ -146,14 +147,11 @@ function doAuthorize(&$db,$login,$pwd,$options=null)
 
     // Disallow two sessions within one browser
     if ($my['options']['doSessionExistsCheck'] && 
-        isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
-    {
+        isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser'])) {
       $result['msg'] = lang_get('login_msg_session_exists1') . 
                        ' <a style="color:white;" href="logout.php">' . 
                        lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
-    }
-    else
-    { 
+    } else { 
       // Setting user's session information
       $_SESSION['currentUser'] = $user;
       $_SESSION['lastActivity'] = time();
@@ -192,13 +190,12 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
   $authCfg = is_null($authCfg) ? config_get('authentication') : $authCfg;
 
   $login = $apache_mod_ssl_env[$authCfg['SSO_uid_field']];
-  if( !is_null($login) )
-  {
+  if( !is_null($login) ) {
     $user = new tlUser();
     $user->login = $login;
     $login_exists = ($user->readFromDB($dbHandler,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK); 
-    if( $login_exists && $user->isActive)
-    {
+
+    if( $login_exists && $user->isActive) {
       // Need to do set COOKIE following Mantis model
       $ckCfg = config_get('cookie');    
 
@@ -353,11 +350,9 @@ function doSSOWebServerVar(&$dbHandler,$authCfg=null)
     $login_exists = !is_null($rs) && ($accountQty =count($rs)) == 1;
     $loginKO = true;
 
-    if( $login_exists  )
-    {
+    if( $login_exists  ) {
       $rs = current($rs);
-      if( intval($rs['active']) == 1 )
-      {
+      if( intval($rs['active']) == 1 ) {
         $loginKO = false;
 
         $user = new tlUser();
@@ -365,23 +360,18 @@ function doSSOWebServerVar(&$dbHandler,$authCfg=null)
         $user->readFromDB($dbHandler,tlUser::USER_O_SEARCH_BYLOGIN);
         $xx = doSessionSetUp($dbHandler,$user);
 
-        if( !is_null($xx) )
-        {
+        if( !is_null($xx) ) {
           $ret = $xx;
         }   
       }    
     } 
 
-    if( $loginKO )
-    {
-      if($accountQty > 1)
-      {
+    if( $loginKO ) {
+      if($accountQty > 1) {
         $ret['msg'] = TLS("audit_login_sso_failed_multiple_matches",
                           $_SERVER['REMOTE_ADDR'],$accountQty,$userIdentity,
                           $authCfg['SSO_user_target_dbfield']);
-      }  
-      else
-      {
+      } else {
         $ret['msg'] = TLS("audit_login_failed_silence",$_SERVER['REMOTE_ADDR']);
       }  
       logAuditEvent($result['msg'], "LOGIN_FAILED","users");
@@ -394,8 +384,7 @@ function doSSOWebServerVar(&$dbHandler,$authCfg=null)
 /**
  *
  */
-function doSessionSetUp(&$dbHandler,&$userObj)
-{
+function doSessionSetUp(&$dbHandler,&$userObj) {
   global $g_tlLogger;
 
   $ret = null;

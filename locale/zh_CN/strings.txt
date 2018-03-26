@@ -177,8 +177,8 @@ $TLS_requirements_spec = "产品需求规格";
 $TLS_req_specification = "产品需求规格";
 $TLS_revision = "修订记录";
 $TLS_revision_short = "修订记录";
-$TLS_revision_tag = "[r%s]";
-$TLS_version_revision_tag = "[v%sr%s]";
+$TLS_revision_tag = "[R%s]";
+$TLS_version_revision_tag = "[V%s R%s]";
 
 $TLS_srs = "SRS";
 $TLS_Role = "角色";
@@ -665,17 +665,17 @@ $TLS_warning_empty_testsuite_name = "请指定一个测试用例集的名称";
 
 
 // ----- gui/templates/script_add.tpl -----
-$TLS_script_id = "Test Script Name";
-$TLS_title_script_add = "Add link to test script";
-$TLS_btn_add_script = "Add test script link";
-$TLS_link_cts_create_script = "Access to Code Management System ";
-$TLS_cts_project_key = "Project Key";
-$TLS_cts_repo_name = "Repository Name";
-$TLS_cts_script_path = "Path to Test Script";
-$TLS_cts_branch_name = "Branch Name (optional)";
+$TLS_script_id = "测试脚本名称";
+$TLS_title_script_add = "添加链接至测试脚本";
+$TLS_btn_add_script = "添加测试脚本链接";
+$TLS_link_cts_create_script = "访问源代码管理系统 ";
+$TLS_cts_project_key = "项目 Key";
+$TLS_cts_repo_name = "库名称";
+$TLS_cts_script_path = "测试脚本路径";
+$TLS_cts_branch_name = "分支名称 (选填)";
 
 // ----- gui/templates/script_delete.tpl -----
-$TLS_title_delete_script = "Delete test script link";
+$TLS_title_delete_script = "删除测试脚本链接";
 
 
 
@@ -1014,8 +1014,8 @@ $TLS_commit_title = "日志信息";
 // gui/templates/buildEdit.tpl
 $TLS_enter_build = "输入版本的标识";
 $TLS_enter_build_notes = "版本的说明：";
-//$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
-//                 "Description should include: list of delivered packages, approvals, status,etc.";
+//$TLS_msg_build = "注意：构建只能与激活的测试计划关联。" .
+//                 "描述信息应包含：已交付的包、审批、状态等信息。;
 $TLS_open = "打开";
 $TLS_title_build_2 = "版本管理";
 $TLS_title_build_create = "创建一个新的版本";
@@ -1163,9 +1163,9 @@ $TLS_del_bug_warning_msg = "确认要删除这个问题？";
 
 
 // gui/templates/inc_show_script_table.tpl
-$TLS_caption_scripttable = "Relevant test scripts";
-$TLS_delete_script ="delete script link from TestLink";
-$TLS_del_script_warning_msg = "Really delete this script link from TestLink Database?";
+$TLS_caption_scripttable = "相关测试脚本";
+$TLS_delete_script ="在 TestLink 中删除测试脚本";
+$TLS_del_script_warning_msg = "确定从 TestLink 数据库中删除测试脚本？";
 
 
 // gui/templates/reqSpecList.tpl
@@ -1201,8 +1201,8 @@ $TLS_menu_view_users = "查看用户";
 $TLS_menu_view_roles = "查看角色";
 $TLS_th_execution_rights = '测试用例执行';
 $TLS_th_cf_rights = "自定义字段";
-$TLS_th_issuetracker_rights = '问题跟踪系统';
-$TLS_th_codetracker_rights = 'Code Tracker';
+$TLS_th_issuetracker_rights = '问题管理系统';
+$TLS_th_codetracker_rights = '源代码管理系统';
 $TLS_th_kw_rights = "关键字";
 $TLS_th_mgttc_rights = "测试用例管理";
 $TLS_th_platform_rights = $TLS_platform;
@@ -1242,7 +1242,7 @@ $TLS_jolly_hint = '根据值、标题、概要、前提条件、步骤、动作�
 
 
 // ----- gui/templates/testcases/tcBulkOp.tpl -----
-$TLS_force_frozen_testcases_versions = "Force Frozen Testcases Versions";
+$TLS_force_frozen_testcases_versions = "强制冻结测试用例版本";
 
 
 // ----- gui/templates/testcases/searchData.tpl -----
@@ -1526,7 +1526,7 @@ $TLS_keywords_filter_help = "你可以使用 OR/AND 过滤";
 
 
 // ----- gui/templates/planTCNavigator.tpl -----
-$TLS_btn_bulk_update_to_latest_version = "Bulk Update to latest version";
+$TLS_btn_bulk_update_to_latest_version = "批量更新到最新版本";
 
 // ----- gui/templates/planPriority.tpl -----
 
@@ -1625,15 +1625,15 @@ $TLS_testproject_enable_automation = '启用测试自动化 (API keys)';
 $TLS_testproject_enable_inventory = '启用设备管理';
 $TLS_testproject_enable_priority = '启用测试优先级';
 $TLS_testproject_enable_requirements = '启用产品需求功能';
-$TLS_testproject_issue_tracker_integration = '集成问题跟踪系统';
-$TLS_testproject_code_tracker_integration = 'Code Tracker Integration';
-$TLS_issue_tracker = '问题跟踪系统';
-$TLS_code_tracker = 'Code Tracker';
+$TLS_testproject_issue_tracker_integration = '集成问题管理系统';
+$TLS_testproject_code_tracker_integration = '集成源代码管理系统;
+$TLS_issue_tracker = '问题管理系统';
+$TLS_code_tracker = '源码管理系统';
 $TLS_testproject_reqmgr_integration = '集成需求管理系统';
 $TLS_reqmgrsystem = '需求管理系统';
-$TLS_no_rms_defined = ' >> 没有定义需求管理系统 <<';
-$TLS_no_issuetracker_defined = ' >> 没有定义问题跟踪系统 <<';
-$TLS_no_codetracker_defined = ' >> There are no Code Tracker Systems defined <<';
+$TLS_no_rms_defined = ' >> 未定义需求管理系统 <<';
+$TLS_no_issuetracker_defined = ' >> 未定义问题管理系统 <<';
+$TLS_no_codetracker_defined = ' >> 未定义源代码管理系统 <<';
 
 
 $TLS_info_failed_loc_prod = "本地化产品失败";
@@ -1704,8 +1704,8 @@ $TLS_hint_new_sibling = '在当前测试套件中创建另一个测试用例';
 $TLS_hint_new_version = '创建一个新版本';
 
 $TLS_can_not_edit_tc = "您不能编辑这个版本因为已经被执行过";
-$TLS_can_not_edit_frozen_tc = "You can not edit this version because it has been frozen";
-$TLS_can_not_delete_relation_frozen_tc = "You can not delete this relation : testcase has been frozen";
+$TLS_can_not_edit_frozen_tc = "不能编辑已冻结项目的版本信息。";
+$TLS_can_not_delete_relation_frozen_tc = "不能删除关联关系 - 测试用例已冻结。";
 $TLS_deactivate_this_tcversion = "禁用这个版本";
 $TLS_execution_type = '测试方式';
 $TLS_execution_type_short_descr = '执行';
@@ -2099,7 +2099,7 @@ $TLS_mail_testcase_assigned = "下面的测试用例已分配给你%s,由%s分�
 $TLS_mail_testcase_assignment_removed = "%s - 已指派给您的测试用例被%s删除 <br /><br />";
 $TLS_send_mail_to_tester = "给测试者发送邮件通知";
 
-$TLS_mail_subject_link_to_assigned =  'TestLink - Link to test assignments summary - Test Plan: %s (%s)';
+$TLS_mail_subject_link_to_assigned =  'TestLink - 测试指派情况概览 - 测试计划：%s (%s)';
 
 // ----- gui/templates/tc_exec_unassign_all.tpl -----
 $TLS_btn_remove_all_tester_assignments = "从选择的版本删除所有测试者";
@@ -2317,7 +2317,7 @@ $TLS_info_search_req_spec = '此列表显示匹配搜索条件的需求规范.<b
 $TLS_href_add_remove_test_cases = "添加/删除测试用例到测试计划";
 $TLS_href_build_new = "版本管理";
 $TLS_href_execute_test = "执行测试";
-$TLS_href_exec_ro_access = "Access Execute Tests RO";
+$TLS_href_exec_ro_access = "访问执行测试 RO";
 $TLS_href_metrics_dashboard = "进度仪表盘";
 $TLS_href_newest_tcversions = "显示最新的测试用例版本";
 $TLS_href_plan_assign_urgency = "设置测试用例的级别";
@@ -2353,19 +2353,19 @@ $TLS_test_plan_progress = "测试计划进度";
 $TLS_project_progress = "测试项目进度";
 
 // ----- lib/testcases/script_add.php -----
-$TLS_script_added = "Test Script link added";
-$TLS_error_code_does_not_exist_on_cts = "Script Link '%s' does not exist on CTS!";
-$TLS_error_script_not_added = "Test Script link could not be added to DB";
+$TLS_script_added = "测试脚本链接已添加。";
+$TLS_error_code_does_not_exist_on_cts = "测试脚本 '%s' 在 CTS 中不存在!";
+$TLS_error_script_not_added = "测试脚本不能添加到数据库！";
 
 // ----- lib/testcases/script_delete.php -----
-$TLS_scriptdeleting_was_ok = "The test script link was successfully deleted!";
-$TLS_error_script_not_deleted = "Test Script link could not be deleted from DB";
+$TLS_scriptdeleting_was_ok = "测试脚本已删除！";
+$TLS_error_script_not_deleted = "测试脚本无法从数据库删除！";
 
 
 // ----- lib/execute/bug_add.php -----
 $TLS_bug_added = "问题已添加。";
-$TLS_error_bug_does_not_exist_on_bts = "bug的ID在BTS中不存在！";
-$TLS_error_wrong_BugID_format = "bug的编号格式！";
+$TLS_error_bug_does_not_exist_on_bts = "bug ID 在 BTS 中不存在！";
+$TLS_error_wrong_BugID_format = "bug 的编号格式！";
 
 
 
@@ -2428,10 +2428,10 @@ $TLS_desc_cfield_management = "自定义字段管理";
 $TLS_desc_cfield_view = "查看自定义字段(只读)";
 $TLS_desc_events_mgt = "事件管理";
 
-$TLS_desc_issuetrackers_view = "问题跟踪系统视图 (只读访问)";
-$TLS_desc_issuetrackers_management = "问题跟踪系统";
-$TLS_desc_codetrackers_view = "Code Tracker view (read only access)";
-$TLS_desc_codetrackers_management = "Code Tracker Management";
+$TLS_desc_issuetrackers_view = "问题管理系统视图 (只读访问)";
+$TLS_desc_issuetrackers_management = "问题管理系统";
+$TLS_desc_codetrackers_view = "源代码管理系统视图 (只读访问)";
+$TLS_desc_codetrackers_management = "源代码管理系统管理";
 $TLS_desc_reqmgrsystems_view = '需求管理系统视图 (只读访问)';
 $TLS_desc_reqmgrsystems_management = '需求管理系统管理';
 $TLS_desc_req_tcase_link_management = '要求-测试用例分配';
@@ -2463,9 +2463,9 @@ $TLS_desc_testplan_execute = "测试计划执行";
 $TLS_desc_testplan_metrics = "测试计划进度";
 $TLS_desc_testplan_planning = "测试计划安排";
 $TLS_desc_user_role_assignment = "角色指派";
-$TLS_desc_testproject_user_role_assignment = "Assign roles to users at Test Project Level";
-$TLS_desc_testplan_user_role_assignment = "Assign roles to users at Test Plan Level";
-$TLS_desc_monitor_requirement = 'Monitor Requirements';
+$TLS_desc_testproject_user_role_assignment = "在测试项目层级，指派用户角色";
+$TLS_desc_testplan_user_role_assignment = "在测试计划层级，指派用户角色";
+$TLS_desc_monitor_requirement = '需求监控';
 
 
 $TLS_error_duplicate_rolename = "存在同名的角色！";
@@ -2525,9 +2525,9 @@ $TLS_create_new_version="创建新的版本 %s";
 $TLS_testcase_name_already_exists = "存在同名的测试用例！";
 $TLS_created_with_title = "以标题(%s)创建";
 $TLS_the_format_tc_xml_import = "";
-$TLS_relation_added = "Relation to %s has been added";
-$TLS_related_tcase_not_open = "Relation to %s cannot be added : this testcase is frozen";
-$TLS_relation_already_exists = "Relation to %s cannot be added : the relation already exists";
+$TLS_relation_added = "成功关联到 %s 。";
+$TLS_related_tcase_not_open = "无法关联到 %s  : 测试用例已被冻结。";
+$TLS_relation_already_exists = "无法关联到 %s  : 关联关系已存在。";
 
 
 // ----- lib/functions/testsuite.class.php -----
@@ -2568,7 +2568,7 @@ $TLS_stmp_host_unconfigured = "SMTP主机没有配置正确！";
 
 // ----- lib/functions/configCheck.php -----
 $TLS_attachments_dir = "附件目录：";
-$TLS_bts_connection_problems = "连接问题跟踪系统失败：<br>
+$TLS_bts_connection_problems = "连接问题管理系统失败：<br>
                                 请检查相关的配置参数是否正确。";
 
 $TLS_but_directory_is_not_writable = "目录不可写！";
@@ -2806,8 +2806,8 @@ $TLS_error_deleting_rel = "无法删除关联。";
 $TLS_delete_rel_msgbox_title = "删除关联";
 $TLS_delete_rel_msgbox_msg = "确定删除关联 #%i?";
 $TLS_img_title_delete_relation = "点击删除关联。";
-$TLS_img_title_relation_frozen = "Relation can't be deleted because one of linked requirement is frozen.";
-$TLS_rel_add_error_dest_frozen = "Relation can't be added because the destination requirement is frozen.";
+$TLS_img_title_relation_frozen = "由于关联需求双方中至少有一方被冻结，关联关系无法删除。";
+$TLS_rel_add_error_dest_frozen = "由于目标需求冻结，无法添加关联关系。";
 
 // ----- configured requirement relation types (BUGID 1748) -----
 $TLS_req_rel_is_parent_of = "父关系";
@@ -2963,13 +2963,13 @@ $TLS_no_reqspec_defined_can_not_import="产品需求存在于导入文件中".
 
 
 $TLS_same_internalID = '具有相同内部 ID';
-$TLS_same_externalID = '具有相同外部 ID'; // (only applicable to Test Cases)';
+$TLS_same_externalID = '具有相同外部 ID'; // (仅适用于测试用例)';
 $TLS_same_name = '同名';
 $TLS_duplicate_criteria = "判定重复的标准";
 $TLS_hit_with_same_external_ID = '无法导入 - 您命中了带相同的外部标识（EXTERNAL ID）的已存在的测试案例:';
-$TLS_attachment_skipped_during_import = "Attachment \"%s\" has been ignored because it is already linked to the test element";
-$TLS_keywords_assignment_skipped_during_import = "Keywords assignment has been ignored because the current user is not allowed to assign keywords to testcases";
-$TLS_req_assignment_skipped_during_import = "Link to requirements has been ignored because the current user is not allowed to assign requirements to testcases";
+$TLS_attachment_skipped_during_import = "由于当前已关联了测试元素，附件 \"%s\" 已被略过。 ";
+$TLS_keywords_assignment_skipped_during_import = "当前用户无权使用关键词关联到测试用例的功能，关键词无法指派给测试用例。";
+$TLS_req_assignment_skipped_during_import = "当前用户无权使用需求关联到测试用例的功能，需求无法指派给测试用例。";
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "没有测试用例可以被导出";
@@ -3124,15 +3124,14 @@ $TLS_platform_update_failed = "更新平台失败";
 $TLS_warning_empty_platform = "平台不能为空!";
 
 // ----- api/TestlinkXMLRPCServerErrors.php -----
-$TLS_API_NO_MATCH = "No match between following parameters (%s)";
+$TLS_API_NO_MATCH = "以下参数不匹配： (%s)";
 $TLS_API_INVALID_AUTH = "不能认证客户: 无效的开发者密钥";
 $TLS_API_INSUFFICIENT_RIGHTS = "对应于开发者密钥的用户无权执行这个操作";
 
 
 
-$TLS_API_UPDATER_INSUFFICIENT_RIGHTS = "User %s " .
-                 "has insufficient rights to perform this action" .
-                 " - Details: right %s, test project id: %s, test plan id: %s";
+$TLS_API_UPDATER_INSUFFICIENT_RIGHTS = "用户 %s 无权处理该操作。" .
+                 " - 详情：权限 %s, 测试项目 id: %s, 测试计划 id: %s";
 		 
 
 $TLS_API_NO_DEV_KEY = "未提供 devKey。";
@@ -3160,7 +3159,7 @@ $TLS_API_TESTCASENAME_NOT_STRING = "测试用例名称必须是一个字符串!"
 $TLS_API_NO_BUILD_FOR_TPLANID = "没有为测试计划 id 提供版本! 必须创建一个版本来报告结果。";
 
 $TLS_API_BUILDID_NOGUESS = "推测被禁用所以必须提供一个 buildid!";
-$TLS_API_BUILDID_NOT_INTEGER = "The Build ID (buildid: %s) is not an integer";
+$TLS_API_BUILDID_NOT_INTEGER = "构建 ID (buildid: %s) 必须是数字！";
 
 $TLS_API_BUILDNAME_ALREADY_EXISTS = "版本名称 (%s) 已经存在 (id:%s)";
 $TLS_API_BUILDNAME_DOES_NOT_EXIST = "提供的版本名称 (buildname: %s) 不存在！";
@@ -3196,7 +3195,7 @@ $TLS_API_REQSPEC_KO = "产品需求规格 (id=%s) 在系统中不存在";
 $TLS_API_REQ_KO = "产品需求 (id=%s) 在系统不存在";
 $TLS_API_REQSPEC_IS_EMPTY = "产品需求规格 (title=%s / id=%s) 没有产品需求";
 $TLS_API_REQ_REQSPEC_KO = "产品需求(docid=%s/title=%s/id=%s) 不属于产品需求规格 (title=%s / id=%s)";
-$TLS_API_NO_REQ_IN_THIS_PROJECT="Requirement (docid=%s) does not belong to project (id=%s).";
+$TLS_API_NO_REQ_IN_THIS_PROJECT="需求 (docid=%s) 并不术语产品 (id=%s).";
 $TLS_API_TPLAN_HAS_NO_BUILDS = "没有为测试计划 (名称=%s/id=%s)定义版本";
 $TLS_API_VERSION_NOT_VALID = "版本号 %s 无效.";
 
@@ -3272,8 +3271,8 @@ $TLS_API_TESTPROJECTCOPY_SOURCENAME_DOESNOT_EXIST = "名为 %s 的测试项目�
 $TLS_API_TPROJECT_PREFIX_DOESNOT_EXIST = "不存在前缀为 (%s) 的测试项目。";
 
 $TLS_API_NO_CUSTOMFIELDS_DT_LINKED_TO_TESTSUITES =
-  "There are no custom fields usable at design time linked" .
-  " to test suites on this test project ";
+  "在设计时，无可用的自定义字段可以关联到该测试项目的测试集。" .
+
 
 $TLS_API_INVALID_TIMESTAMP = "提供的时间戳 (%s) 无效。";
 
@@ -3330,12 +3329,12 @@ $TLS_audit_keyword_deleted = "删除关键字 '{%1}'";
 $TLS_audit_keyword_assigned_tc = "关键字 '{%1}' 被指派给测试用例 '{%2}'";
 $TLS_audit_keyword_assignment_removed_tc = "关键字 '{%1}' 被从测试用例 '{%2}' 撤销指派";
 
-$TLS_audit_exec_saved = "Test Case '{%1}' has been executed on Build '{%2}' in the Test Plan '{%3}'.";
-$TLS_audit_exec_deleted = "An execution of Test Case '{%1}' on Build '{%2}' in the Test Plan '{%3}' has been deleted.";
+$TLS_audit_exec_saved = "测试用例 '{%1}' 已在测试计划 '{%3}' 的构建 '{%2}' 中执行。";
+$TLS_audit_exec_deleted = "测试用例 '{%1}' 已在测试计划 '{%3}' 的构建 '{%2}' 中删除。";
 
-$TLS_audit_testcasescript_added = "Test Script link '{%1}' was added";
-$TLS_audit_testcasescript_deleted = "Test Script link '{%1}' was deleted " .
-                  "from Test Case: {%2} from Test Project: {%3}";
+$TLS_audit_testcasescript_added = "测试脚本连接 '{%1}' 已添加。";
+$TLS_audit_testcasescript_deleted = "测试脚本连接 '{%1}' 已从测试项目： {%3} 的测试用例： '{%2} 中删除。";
+                 
 $TLS_audit_executionbug_added = "在执行过程中添加 Bug '{%1}' ";
 $TLS_audit_executionbug_deleted = 
 
@@ -3501,8 +3500,8 @@ $TLS_num_changes = "%s 中的更改数： %s.";
 $TLS_no_changes = "%s 中无更改。";
 $TLS_context = "内容 (行数)：";
 $TLS_show_all = "全部显示";
-$TLS_version_short = "v";
-$TLS_version_revision = "v%s r%s";
+$TLS_version_short = "V";
+$TLS_version_revision = "V-%s R-%s";
 $TLS_empty_log_message = "<i>日志信息为空</i>";
 $TLS_diff_method = "选择比较模式:";
 $TLS_use_html_comp = "HTML 比较";
@@ -3564,7 +3563,7 @@ $TLS_import_req_spec_created = '创建 - 产品需求规格 - 文档ID:%s';
 $TLS_import_req_spec_skipped = '跳过 - 产品需求规格 - 文档ID:%s - 已经存在于另外的分支';
 $TLS_import_req_spec_updated = '更新 - 产品需求规格 - 文档ID:%s';
 $TLS_import_req_spec_ancestor_skipped = '跳过 - 产品需求规格 - 文档ID:%s - 父容器已经存在于另外的分支';
-$TLS_import_req_spec_attachment_skipped = 'Skipped - Attachement "%s" already linked to Req. Spec.';
+$TLS_import_req_spec_attachment_skipped = '略过 - 附件 "%s" 已关联到需求规格说明。';
 
 $TLS_import_req_created = '创建 - 产品需求 - 文档ID:%s';
 $TLS_import_req_skipped = '跳过 - 产品需求 - 文档ID:%s - 已经存在于另外的分支';
@@ -3573,7 +3572,7 @@ $TLS_import_req_updated = 'Updated - 产品需求 - 文档ID:%s';
 $TLS_import_req_new_version_created = '创建新版本 - 产品需求 - 文档ID:%s';
 $TLS_import_req_new_version_failed = '创建新版本请求失败 - %s';
 $TLS_import_req_update_last_version_failed = '更新最新版本请求失败 - %s';
-$TLS_import_req_attachment_skipped = 'Skipped - Attachement "%s" already linked to requirement';
+$TLS_import_req_attachment_skipped = '略过 - 附件 "%s" 已关联到需求';
 
 $TLS_import_done = '导入成功';
 $TLS_import_syntax_error = '导入已完成，存在语法错误。';
@@ -3653,21 +3652,21 @@ $TLS_display_only_active_test_plans = '仅显示当前活动的测试计划';
 $TLS_th_issuetracker = '问题跟踪';
 $TLS_th_issuetracker_type = '类型';
 $TLS_th_issuetracker_env = '环境';
-$TLS_warning_empty_issuetracker_name = "问题跟踪系统的名称不能为空！";
-$TLS_warning_empty_issuetracker_type = "问题跟踪系统的类型不能为空！";
+$TLS_warning_empty_issuetracker_name = "问题管理系统的名称不能为空！";
+$TLS_warning_empty_issuetracker_type = "问题管理系统的类型不能为空！";
 
 // issueTrackerCommands.class.php
 $TLS_issuetracker_management = $TLS_href_issuetracker_management;
-$TLS_issuetracker_deleted = "问题跟踪系统 %s% 已删除。";
+$TLS_issuetracker_deleted = "问题管理系统 %s% 已删除。";
 
 // issueTrackerEdit.tpl
-$TLS_issuetracker_show_cfg_example = '显示问题跟踪系统连接配置样例';
+$TLS_issuetracker_show_cfg_example = '显示问题管理系统连接配置样例';
 $TLS_issuetracker_cfg_example = '连接配置样例';
 $TLS_used_on_testproject = '用于测试项目';
 
 // getissuetrackertemplate.php
 $TLS_issuetracker_invalid_type = '问题跟踪类型 %s 未定义。';
-$TLS_issuetracker_interface_not_implemented = '问题跟踪系统的几口 %s 不可用。';
+$TLS_issuetracker_interface_not_implemented = '问题管理系统的几口 %s 不可用。';
 
 // codeTrackerView.tpl
 $TLS_th_codetracker = '代码跟踪系统';
@@ -3709,13 +3708,13 @@ $TLS_issue_platform = " 平台: %s";
 $TLS_issue_exec_result = " 执行状态: %s";
 $TLS_issue_generated_description = "执行 ID: %s \n 测试人员: %s \n 测试计划: %s \n";
 
-$TLS_issue_subject_projectname = "Test Project";
-$TLS_issue_subject_planname = "Test Plan:";
-$TLS_issue_subject_buildname = "Build:";
-$TLS_issue_subject_platfname = "Platform:";
-$TLS_issue_subject_tcname = "Test Case:";
+$TLS_issue_subject_projectname = "测试项目";
+$TLS_issue_subject_planname = "测试计划：";
+$TLS_issue_subject_buildname = "构建：";
+$TLS_issue_subject_platfname = "平台：";
+$TLS_issue_subject_tcname = "测试用例：";
 $TLS_issue_subject_tcpathname = $TLS_issue_subject_tcname;
-$TLS_issue_subject_execon = "Execution (ISO Timestamp): ";
+$TLS_issue_subject_execon = "执行（ISO 时间戳）：";
 
 
 
@@ -3802,7 +3801,7 @@ $TLS_hint_you_need_to_be_logged = "使用该链接需要登陆。";
 $TLS_security_check_ko = '安全检查失败。';
 $TLS_issue_on_step = "发生BUG时的测试用例执行步骤序号：";
 
-$TLS_add_link_to_tlexec = "在问题跟踪系统中添加测试用例执行管理功能链接";
+$TLS_add_link_to_tlexec = "在问题管理系统中添加测试用例执行管理功能链接";
 $TLS_dl2tl = '链接到TestLink测试执行：';
 $TLS_old_style_login = '经典登录界面';
 $TLS_new_style_login = '试用新登录界面';
@@ -3864,7 +3863,7 @@ $TLS_no_access_to_feature = '您的权限不足，无法使用该功能。';
 $TLS_applyExecTypeChangeToAllSteps = "应用与所有步骤";
 
 $TLS_user_bulk_action = '支持批量操作的用户';
-$TLS_title_issuetracker_mgmt = '问题跟踪系统';
+$TLS_title_issuetracker_mgmt = '问题管理系统';
 $TLS_title_codetracker_mgmt = '代码跟踪系统';
 $TLS_desc_cfield_assignment = "自定义字段分配";
 $TLS_desc_exec_assign_testcases = "指派测试用例执行";

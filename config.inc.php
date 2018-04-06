@@ -261,9 +261,9 @@ $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
 /**
  * @var string How to warning user when security weak points exists.
  *
- * 'SCREEN': messages will displayed on login screen, and tl desktop (default)
+ * 'SCREEN': messages will displayed on login screen, and tl desktop
  * 'FILE': a file with a list is created but users are not notified via GUI
- *         user will receive a message on screen.
+ *         user will receive a message on screen. (default)
  * 'SILENT': same that FILE, but user will not receive message on screen.
  */
 $tlCfg->config_check_warning_mode = 'FILE';
@@ -1823,7 +1823,7 @@ define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . D
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
-// DO NOT CHANGE NOTHING BELOW
+// DO NOT CHANGE SOMETHING BELOW
 // --------------------------------------------------------------------------------------
 
 /** Functions for check request status */

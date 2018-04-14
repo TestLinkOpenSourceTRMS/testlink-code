@@ -10,7 +10,7 @@
  7. Bug Reports and Feedback
  8. Supporting our work
  9. Regarding forum usage www.testlink.org
-10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14,1.9.15,1.9.16
+10. Changes
 11. Testlink & FreeTest
 12. Security
 13. JIRA DB interface changes
@@ -502,7 +502,14 @@ PLEASE: read these short hints before you write a topic:
   - :!: Consider that some issues are related to Apache, browser or database
         instead of TestLink. Use Google first.
 
-## 10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14,1.9.15,1.9.16
+## 10. Changes
+
+### 1.9.17
+  - oAuth Authentication with GitHub
+  - code repository integration (to manage external scripts)
+  - more features on requirements
+    ... and more (read CHANGELOG file)
+  
 
 ### 1.9.16
   - issues on step are saved on TestLink DB wth step ID

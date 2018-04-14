@@ -1,4 +1,4 @@
-# TestLink 1.9.17 (Prague Bugfix 17) Alan Turing - Read me
+# TestLink 1.9.18 Gaura - Read me
 
 ## Contents
  1. Introduction
@@ -65,7 +65,7 @@ has been done and what still needs to be done.
 
 ## 2. Release notes / CRITICAL Configuration Notes
 
-This release contains bugfixes for 1.9.16
+This release contains bugfixes for 1.9.17
 See CHANGELOG file for detailed list of issues fixed.
 
 ### CRITICAL PHP.INI Settings

@@ -28,7 +28,6 @@ title bar + menu
         <a href="{$gui->logout}" target="_parent" accesskey="q">
         <img src="{$tlImages.logout}" title="{$labels.link_logout}"></a>
   </span>
-  <span style="float:right;">TestLink {$tlVersion|escape}</span>
 </div>
 
 <div class="menu_bar" style="margin: 0px 5px 0px 135px;">

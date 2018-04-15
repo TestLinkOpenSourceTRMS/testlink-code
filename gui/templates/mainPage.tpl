@@ -89,5 +89,7 @@ window.onload=function()
 
 {* ----- Left Column -------------- *}
 {include file="mainPageLeft.tpl"}
+
+{include file="mainPageFooter.inc.tpl"}
 </body>
 </html>

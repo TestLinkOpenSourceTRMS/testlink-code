@@ -12,7 +12,7 @@ assigned using name (example: white) instead of code (example: #FFF)
 
 /* ***** GLOBAL HTML ***************************************************************** */
 body, body.testlink {
-	background:  	#EEE; 
+	background:  	#EEE!important; 
 	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
 	font-size: 		small;
 	margin:			0px;
@@ -95,16 +95,21 @@ form
 
 /* ***** Links ***** */
 /* A Visited link is still blue */
-a:visited, a:link, a:active {
+
+/*
+a:visited, a:active {
 	color: 			#059;
 	text-decoration: none;
 }
+*/
+
 /* A link being hovered over is red*/
+/*
 a:hover   {
 	color: 			#900;
 	text-decoration: none;
 }
-
+*/
 
 /* ***** Menu bar specific ******************************************* */
 div.menu_title {
@@ -1089,6 +1094,34 @@ th.testlink, td.testlink, tr.testlink td {
 }
 .x-progress-wrap.left-align .x-progress-text {
     text-align:left;
+}
+
+/* From ACE */
+.page-content {
+    margin: 0 0 10px;
+    padding: 8px 8px 24px;
+    position: relative;
+}
+
+/* To adjust Bootstrap tables */
+.table {
+  font-size: 12px;
+}
+
+.table th, .table tr, .table td {
+   height: 10px;
+}
+
+.table .thead-dark th {
+  color: #fff;
+  background-color: #212529;
+  border-color: #32383e;
+}
+
+.table .thead-light th {
+  color: #495057;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
 }
 
 /* ----- END ------------------------------------------------------------------------- */

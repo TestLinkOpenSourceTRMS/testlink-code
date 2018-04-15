@@ -1827,7 +1827,7 @@ define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . D
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
-// DO NOT CHANGE SOMETHING BELOW
+// DO NOT DO CHANGES BELOW
 // --------------------------------------------------------------------------------------
 
 /** Functions for check request status */

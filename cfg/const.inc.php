@@ -82,10 +82,6 @@ define('LAST_USER_CHOICE',2);
 define('COLLAPSE', 0);
 define('EXPAND',1 );
 
-
-/** @TODO havlatm: remove, use ON || 'OFF' constant */
-define('TL_FILTER_OFF',null);
-
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS', 0);
 define('TP_ALL_STATUS', null);

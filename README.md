@@ -1,4 +1,4 @@
-# TestLink 1.9.17 (Prague Bugfix 17) Alan Turing - Read me
+# TestLink 1.9.18 Gaura - Read me
 
 ## Contents
  1. Introduction
@@ -10,7 +10,7 @@
  7. Bug Reports and Feedback
  8. Supporting our work
  9. Regarding forum usage www.testlink.org
-10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14,1.9.15,1.9.16
+10. Changes
 11. Testlink & FreeTest
 12. Security
 13. JIRA DB interface changes
@@ -65,7 +65,7 @@ has been done and what still needs to be done.
 
 ## 2. Release notes / CRITICAL Configuration Notes
 
-This release contains bugfixes for 1.9.16
+This release contains bugfixes for 1.9.17
 See CHANGELOG file for detailed list of issues fixed.
 
 ### CRITICAL PHP.INI Settings
@@ -502,7 +502,14 @@ PLEASE: read these short hints before you write a topic:
   - :!: Consider that some issues are related to Apache, browser or database
         instead of TestLink. Use Google first.
 
-## 10. Changes regarding 1.9.6,...,1.9.12,1.9.13,1.9.14,1.9.15,1.9.16
+## 10. Changes
+
+### 1.9.17
+  - oAuth Authentication with GitHub
+  - code repository integration (to manage external scripts)
+  - more features on requirements
+    ... and more (read CHANGELOG file)
+  
 
 ### 1.9.16
   - issues on step are saved on TestLink DB wth step ID

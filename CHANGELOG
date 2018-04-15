@@ -6,6 +6,133 @@ http://www.testlink.org
 http://forum.testlink.org
 https://twitter.com/TLOpenSource
 
+TestLink - 1.9.17 - Alan Turing (Released 2018-04-14)
+==================================================
+- 0007873: [New Feature] Search on multiple entities (Test Case,Test Suites,Req. Spec,Req) on one shot
+- 0007999: [Bug Tracking Systems Integration] Creating Issue from Test Steps cannot be directly Linked in Issue Tracker
+- 0008209: [Security - General] Remote Code Execution
+- 0008211: [Bug Tracking Systems Integration] Issue on test case - Issue summary configuration
+- 0008184: [Bug Tracking Systems Integration] Issue on test case STEP - Issue summary configuration
+- 0008183: [Test Execute] Link to execution report http://testlink/testlink-code/lnl.php?type=exec&id=61 [^] doesn't work
+- 0008180: [Bug Tracking System - Redmine Integration] Support dynamic values in the custom fields for Redmine for issue creation
+- 0008192: [Bug Tracking System - Redmine Integration] Notes are not added to Redmine because user impersonation fails when TestLink user is not a Redmine user (reporter)
+- 0008051: [Test Execute - 'Save and move to next'] Firefox 55 : All the "click set to" and "click set to x and move to next" buttons fails
+- 0008205: [Bug Tracking System - JIRA Integration] Error while checking TestLink connection with JIRA using REST interface.
+- 0008196: [GUI] In 1.9.17 GUI Inventory is missing
+- 0008202: [Reports - Test report matrix] Show Last Build Note in `Test Result Matrix`
+- 0008188: [Assign Test Case Execution] Allow Bulk Test Case unassignment specifying users in the same way is done on bulk assignment
+- 0008189: [Test Specification] Rework Testcase freeze comportment
+- 0008191: [Bug Tracking System - Redmine Integration] warning because $issue variables not found in redminerestInterface.class.php exception handlers
+- 0008157: [Reports] Test report shows results from inactive builds
+- 0008181: [Bug Tracking Systems Integration] IssueTracker config changes are not always taken by the same browser instance
+- 0008172: [Users and Rights] Use existant right 'mgt_unfreeze_req'
+- 0008160: [Users and Rights] Access to Requirement Monitoring functions
+- 0008164: [Users and Rights] Use existant right 'req_tcase_link_management'
+- 0008170: [Users and Rights] Use existant right 'keyword_assignment'
+- 0008141: [Custom fields] Custom field value dosen't show in Test Case edit mode
+- 0007864: [GUI] Execute test status icons do not work with FIREFOX
+- 0008126: [Test Plan Management] plan view - Add control button on page top and bottom
+- 0008125: [Build Management] build view - Add control button on page top and bottom
+- 0008112: [GUI] Creating a new build is not possible in latest Google Chrome due to security reasons and not closed HTML tag
+- 0008121: [Export/Import] Handle attachments in Req - Req Specs - TestSuites - TestCases XML export / import
+- 0008111: [Database MySQL] Not able to create the "UDFStringHTMLTags" function when upgrading my MySQL database
+- 0008117: [Users and Rights] Not able to create a new user from the login page due to wrong variable
+- 0006437: [Users and Rights] Right "Requirement view (read only access)" doesn't allow to see the requirement specifications
+- 0008101: [Test Spec. - Search Test Cases] GitHub version : default value for custom field of type list in test specification filter menu
+- 0008105: [Filters - Test Specification] Test Specification Filter by Custom Field - REQUIRED ISSUE
+- 0008090: [Assign Test Case Execution] Test execution generate blank page when TestCase is selected
+- 0008087: [Test Spec. - Test Case Steps] GITHUB version : unable to delete a testcase step in French Version
+- 0008034: [Localization] New locale version for FR_fr
+- 0007995: [Custom fields] Custom Fields Checkbox Changes not Saved
+- 0008018: [GUI] GITHUB version : debug info is displayed when deleting requirement version
+- 0008085: [Security - General] Add AUDIT log for TestCases and Execution Save/Deletion + Improve AUDIT info
+- 0008080: [GUI] Search Test Cases displays query
+- 0008065: [Users and Rights] user rights at project level should be also considered
+- 0007607: [Bug Tracking System - JIRA Integration] Resolved bug in Jira is not reported in TestLink (REST Integration)
+- 0008015: [Test Plan - Assign Test Case Execution] Unable to execute test cases (PHP 7.1.x issue)
+- 0007967: [Bug Tracking System - Redmine Integration] Custom fields redmine
+- 0008060: [Reports - Test Report on Build] Can I output the build description to the Testlink report?
+- 0008061: [Test Spec. - Search Test Cases] After the edit of a testcase, the whole content of it is not visible any more
+- 0008036: [Test Execute - Issue at Step Level] When trying to execute a test plan the steps are not displayed and no radio buttons (PHP 7.1.x version issue)
+- 0008057: [Bug Tracking System - Redmine Integration] Check Connection with configuration containing Custom Field - Crash asXML()
+- 0008021: [Charts] Warnings on every opening of Charts report: "E_WARNING imagettftext(): Could not find/open font..." for pChart.class
+- 0007987: [Test Execute] Execute test: cannot open test item, it shows as blank. (PHP 7.1.x ISSUE)
+- 0007964: [Assign Test Case Execution] issue in the way error handling is performed under "Assign Test case execution"
+- 0008020: [Test Specification - Move/Copy Test Cases] Error when Move/copy testcases
+- 0007983: [Localization] Dev Version : error during pt_BR strings.txt file
+- 0007959: [Localization] en_GB\strings.txt file cleanup
+- 0007985: [Reports - Failed/Blocked Test Cases] Failed Test Cases : linked bugs are not listed in Excel export
+- 0008001: [GUI] Wrong sting used as title in testplan design report
+- 0008000: [Localization] Not found string in en_GB file + unused Strings in login-model-marcobiedermann.tpl
+- 0007984: [GUI] DEV version : step exec status label is not used in execution view
+- 0008005: [API - XMLRPC] closeBuild() Method
+- 0007976: [GUI] Custom field of type list always displayed expanded in tree filters
+- 0007978: [Test Specification] Make step status available in test specification execution history
+- 0007941: [Users and Rights] New user redirect not working in firstlogin.php
+- 0007973: [GUI] Possibility of configuring bigger execution icons
+- 0007946: [Test Execute - Filters] Filters With KeyWords : Operator And/Or same result
+- 0007968: [Req Overview] Last GitHub Version : Requirement Overview access is broken
+- 0007950: [Bug Tracking System - JIRA Integration] The Jira issues updated with Jira integration User name instead of the actual testlink user name
+- 0007944: [User Interface Layout] this is actually on 1.9.17....large blank space
+- 0007955: [Test Project Management] when enabling/disabling requirement feautes Unknown column 'testprojects.id' in 'where clause
+- 0007929: [Bug Tracking System - JIRA Integration] Create issue from testlink use wrong username: integration user instead current user
+- 0007948: [Documentation (Install, User Manual, help)] Read Me does not seem to have relavent information related to LDAP configurations
+- 0007931: [Custom fields] How to increase the size of custom field values of type multiselection from 255 to higher like 1024
+- 0007910: [Test Specification] Direct Link to testcase doesn't work ON FIREFOX
+- 0007925: [Custom fields] Don´t show the custom fields date format. - CUSTOM FIELD FOR BUILD
+- 0007930: [Test Plan - Assign Test Case Execution] Bulk user assignment does not work
+- 0007912: [Communication via mail] Link provided by "email Assignments" function doesn't work
+- 0007919: [Test Execute] Cannot use string offset as an array
+- 0007911: [Test Execute] direct link to testcase execution doesn't work
+- 0007922: [Test Specification] Add option to update execution type on ALL test case steps, when changing on Test Case
+- 0007915: [Security - General] User APIKEY shoudn't be exposed in Direct Link
+- 0007903: [Code alignment] cke_pastebin - missing changes for udpdate operations
+- 0007902: [API - XMLRPC] (github code) API-XMLRPC - getRequirements raise PHP Fatal error
+- 0007905: [Database MySQL] use latest 1.9.16 hot-fixes cause DB Access Error
+- 0007643: [Test Specification] Some testcases in edit mode appear blank and can´t edit (reason: <body id="cke_pastebin")
+- 0007904: [Users and Rights] Manage user expiration date
+- 0007900: [API - XMLRPC] (github code) API-XMLRPC - getExecutionSet raise database error
+- 0007885: [New Feature] Option to set Execution Type in bulk mode in test cases table view feature
+- 0007802: [API - XMLRPC] Need an API to move test case between test suites
+- 0007891: [Test Plan - Add/Remove Test Cases] Display Testcase Status in Add/remove Testcase page
+- 0007886: [Test Execute] Mandatory custom fields do not work with execution icons
+- 0007887: [Security - General] Access to exec page from Test Specification for user without execution rights
+- 0007889: [Users and Rights] Right to allow user to view execution data (access execution feature in Read Only Mode)
+- 0007401: [Localization] French translation issues on the TC execution screen
+- 0007827: [API - XMLRPC] Extend API to get ALL runs on a certain build - new function getExecutionResult
+- 0007875: [API - XMLRPC] new method setTestCaseTestSuite
+- 0007866: [Code alignment] Typing error in code: breack instead of break
+- 0007862: [Export/Import] Extra character in Requirement description
+- 0007863: [User Interface Layout] An extra character 0x20 is added in text area when editor = none
+- 0007840: [User Interface General] Firefox 50: onClick error on "Test Results on Build...."
+- 0007859: [Reports] General Test Plan Metrics - send by mail refactoring
+- 0007835: [User Interface General] HTML definition is not correct - effect on IE11
+- 0007844: [Reports - Test report matrix] Statut don't appear in email version
+- 0007847: [Test Execute] Tests are not listed with PHP 7.1
+- 0007798: [General] Debug code left: file_put_contents(/development/var/tracer.log)
+- 0007843: [Export/Import] Unable to export Matrix Results in excel format with PHP7
+- 0007830: [User Interface Customization] 'Show [$num] entries' value chosen by user should be rememebered for given view
+- 0007825: [LDAP authentication] ldap mail configuration for mail, firstname and surname do not follow standard for multiple LDAP Servers cfg
+- 0007936: [Charts] Unable to display Charts - PHP 7.1
+- 0008213: [GUI] New Desktop : plugins are not well displayed
+- 0008169: [Migration/Upgrade Testlink] problems with 1.9.17 sql migration scripts (github)
+- 0008159: [GUI] Wrong information displayed in TestLink GUI
+- 0008054: [Bug Tracking System - Redmine Integration] Issue tracking management (PHP Version 7.1.x Issue)
+- 0008088: [Documentation (Install, User Manual, help)] GITHUB: Porting README into Markdown and fixing typos
+- 0008017: [GUI] GITHUB version : sql request is displayed in search TestCases view
+- 0007986: [Users and Rights] Personal API key not visible anymore
+- 0007962: [Test Plan - Add/Remove Test Cases] No Test Case available exception shows while filtering the cases by importance for add/remove cases.
+- 0007935: [Bug Tracking System - JIRA Integration] Integrated testlink with Jira and the reporter name is same user updated in the issue tracker and create issue is not happening
+- 0007916: [Test Plan - Add/Remove Test Cases] Search by Custom Field value, left tree has right result, while right pane show more results (Both CF has SAME VALUE)
+- 0007917: [Requirement Management] Error clicking the button "Bulk Monitoring", located in Requirement Operations.
+- 0007899: [Test Plan - Assign Test Case Execution] Search by Custom Field value, left tree has right result, while right pane show less results
+- 0007872: [API - XMLRPC] Get All test execution by build
+- 0007656: [API - XMLRPC] tl.updateTestCase updates executed testcase allthough user does not have permission
+
+[120 issues]
+
+
+
 TestLink - 1.9.16 - Moka Pot (Released 2017-01-21)
 ==================================================
 - 7814: [User Authentication Methods] Unable to Reset Passwords For Users with DB Authentication In System Using Mixed LDAP/DB Authentication

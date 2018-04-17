@@ -6842,6 +6842,15 @@ class testplan extends tlObjectWithAttachments
       $my[$mk] = array_merge($my[$mk], (array)$$mk);
     }
 
+    switch($my['options']['details'])
+    {
+      case 'full':
+      $my['options']['addPriority'] = true;
+      $my['options']['addImportance'] = true;
+      $my['options']['testSuiteInfo'] = true;
+      break;
+    }
+ 
     if( !is_null($sql2do = $this->getLinkedTCVersionsSQL($id,$my['filters'],$my['options'])) )
     {
       // need to document better

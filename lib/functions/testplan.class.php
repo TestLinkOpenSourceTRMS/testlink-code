@@ -7062,7 +7062,7 @@ class testplan extends tlObjectWithAttachments
     $my['join']['tsuites'] = '';
     if($my['options']['testSuiteInfo'])
     {
-      $commonFields .= ",NH_TSUITE.name AS tsuite_name ";
+      $commonFields .= ",NH_TSUITE.name AS tsuite_name, NH_TSUITE.id AS tsuite_id ";
       $my['join']['tsuites'] = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
                                " ON NH_TSUITE.id = NH_TCASE.parent_id ";
     }

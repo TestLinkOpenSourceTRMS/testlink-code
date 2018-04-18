@@ -7050,7 +7050,7 @@ class testplan extends tlObjectWithAttachments
     
     if($my['options']['addExecInfo'])
     {
-      $commonFields .= ",COALESCE(E.id,0) AS exec_id,E.tcversion_number,E.build_id AS exec_on_build,E.testplan_id AS exec_on_tplan, E.notes as execution_notes ";
+      $commonFields .= ",COALESCE(E.id,0) AS exec_id,E.tcversion_number,E.build_id AS exec_on_build,E.testplan_id AS exec_on_tplan, E.execution_ts, E.notes as execution_notes ";
     }
     
     if($my['options']['specViewFields'])

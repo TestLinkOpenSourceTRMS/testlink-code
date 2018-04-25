@@ -4,23 +4,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 Purpose: Default TestLink CSS
 
-IMPORTANT:
-NiftyCube rounding package has problems with I.E. 6 if background color is
-assigned using name (example: white) instead of code (example: #FFF)
-
 */
 
 /* ***** GLOBAL HTML ***************************************************************** */
 body, body.testlink {
 	background:  	#EEE!important; 
-	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
-	font-size: 		small;
-	margin:			0px;
-	padding:		0px;
-}
-
-body.landing {
-	background:  	#059; /* 059 */
 	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
 	font-size: 		small;
 	margin:			0px;

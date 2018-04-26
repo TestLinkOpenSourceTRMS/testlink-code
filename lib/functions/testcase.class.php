@@ -386,6 +386,33 @@ class testcase extends tlObjectWithAttachments
       $doQuickReturn = false;
       switch($my['options']['importLogic']['hitCriteria'])
       {
+        case 'internalID':
+         // check if already exists a test case with this internal id
+         $info = $this->get_by_id($id);
+         if( !is_null($info)) {
+          switch ($my['options']['importLogic']['actionOnHit'])
+          {
+            case 'create_new_version':
+              $doCreate = false;
+              if (strcmp($info[key($info)]['name'], $name) != 0) {
+                $itemSet = $this->getDuplicatesByName($name, $parent_id, $getDupOptions);
+                if (is_null($itemSet)) {
+                  $ret['id'] = $id;
+                  $ret['external_id'] = $info[key($info)]['tc_external_id'];
+                  $ret['version_number'] = -1;
+                  $ret['external_id_already_exists'] = true;
+                  $ret['name'] = $name;
+                  $ret['update_name'] = true;
+                }
+              }
+              return $ret;
+          break;
+          case 'generate_new':
+            $forceGenerateExternalID = true;
+          break;
+         }
+        }
+        break;
         case 'externalID':
           if( ($sf = intval($my['options']['external_id'])) > 0 )
           {
@@ -564,7 +591,7 @@ class testcase extends tlObjectWithAttachments
       $path2root = $this->tree_manager->get_path($parent_id);
       $tproject_id = $path2root[0]['parent_id'];
 
-      $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
+      $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,testcase::AUTOMATIC_ID);
       $ret['id'] = $tcase_id;
 
       $generateExtID = false;
@@ -616,7 +643,7 @@ class testcase extends tlObjectWithAttachments
     $tcase_version_id = $this->tree_manager->new_node($item->id,
                           $this->node_types_descr_id['testcase_version']);
 
-    $this->CKEditorCopyAndPasteCleanUp($item,array('summary','preconditions')); 
+    $this->CKEditorCopyAndPasteCleanUp($item,array('summary','preconditions'));
 
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
            " (id,tc_external_id,version,summary,preconditions," .
@@ -646,13 +673,13 @@ class testcase extends tlObjectWithAttachments
       }
     }
 
-    if( property_exists($item,'active') && !is_null($item->active) )    
+    if( property_exists($item,'active') && !is_null($item->active) )
     {
       $v = intval($item->active) > 0 ? 1 : 0;
       $sql .= ", active";
       $sqlValues .= "," . $v;
     }
-	  
+
     if( property_exists($item,'is_open') && !is_null($item->is_open) )
     {
       $v = intval($item->is_open) > 0 ? 1 : 0;
@@ -1101,7 +1128,7 @@ class testcase extends tlObjectWithAttachments
         // execution tcversion_number keeps the version of test case executed
         // will EX.tcversion_id is updated with id requested by user.
         // That's why when importing we need to check HUMAN READEABLE version numbers.
-        $sql = " SELECT EX.id, EX.tcversion_number,TCV.version " .  
+        $sql = " SELECT EX.id, EX.tcversion_number,TCV.version " .
                " FROM {$this->tables['executions']} EX " .
                " JOIN {$this->tables['tcversions']} TCV " .
                " ON TCV.id = EX.tcversion_id " .
@@ -1119,7 +1146,7 @@ class testcase extends tlObjectWithAttachments
               $ret['reason'] = 'blockIfExecuted';
               return $ret;
             }
-          }  
+          }
         }
       }
 
@@ -1132,16 +1159,16 @@ class testcase extends tlObjectWithAttachments
       $item = new stdClass();
       $item->summary = $summary;
       $item->preconditions = $preconditions;
-      $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
-      
+      $this->CKEditorCopyAndPasteCleanUp($item,$k2e);
+
       $dummy = " UPDATE {$this->tables['tcversions']} " .
-               " SET summary='" . 
+               " SET summary='" .
                  $this->db->prepare_string($item->summary) . "'," .
                " updater_id=" . $this->db->prepare_int($user_id) . ", " .
                " modification_ts = " . $this->db->db_now() . "," .
                " execution_type=" . $this->db->prepare_int($execution_type) . ", " .
                " importance=" . $this->db->prepare_int($importance) . "," .
-               " preconditions='" . 
+               " preconditions='" .
                  $this->db->prepare_string($item->preconditions) . "' ";
 
 
@@ -1150,14 +1177,14 @@ class testcase extends tlObjectWithAttachments
         $dummy .= ", status=" . intval($attrib['status']);
       }
 
-	    if( !is_null($attrib['is_open']) )    
+	    if( !is_null($attrib['is_open']) )
       {
-        $dummy .= ", is_open=" . intval($attrib['is_open']); 
+        $dummy .= ", is_open=" . intval($attrib['is_open']);
       }
-	  
-	    if( !is_null($attrib['active']) )    
+
+	    if( !is_null($attrib['active']) )
       {
-        $dummy .= ", active=" . intval($attrib['active']); 
+        $dummy .= ", active=" . intval($attrib['active']);
       }
 
       if( !is_null($attrib['estimatedExecDuration']) )
@@ -3655,9 +3682,9 @@ class testcase extends tlObjectWithAttachments
     if( !is_null($recordset) && $localOptions['getSteps'] )
     {
       $xx = null;
-      if( $localOptions['getStepsExecInfo'] && 
+      if( $localOptions['getStepsExecInfo'] &&
           ($this->cfg->execution->steps_exec_notes_default == 'latest' ||
-           $this->cfg->execution->steps_exec_status_default == 'latest') 
+           $this->cfg->execution->steps_exec_status_default == 'latest')
         )
       {
         $tg = current($recordset);
@@ -3677,18 +3704,18 @@ class testcase extends tlObjectWithAttachments
             {
               $step_set[$kyx]['execution_notes'] = '';
               $step_set[$kyx]['execution_status'] = '';
-         
+
               if( isset($xx[$step_set[$kyx]['id']]) )
               {
                 if($this->cfg->execution->steps_exec_notes_default == 'latest')
                 {
-                  $step_set[$kyx]['execution_notes'] = 
+                  $step_set[$kyx]['execution_notes'] =
                      $xx[$step_set[$kyx]['id']]['notes'];
                 }
 
                 if($this->cfg->execution->steps_exec_status_default == 'latest')
                 {
-                  $step_set[$kyx]['execution_status'] = 
+                  $step_set[$kyx]['execution_status'] =
                      $xx[$step_set[$kyx]['id']]['status'];
                 }
               }
@@ -3817,22 +3844,22 @@ class testcase extends tlObjectWithAttachments
         $tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
       }
     }
-	
+
 	if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS'])
     {
 		$attachments=null;
-	
+
 		// get all attachments
 		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($tcase_id,$this->attachmentTableName,'id');
-	  
-		// get all attachments content and encode it in base64	  
+
+		// get all attachments content and encode it in base64
 		if ($attachmentInfos)
 		{
 			foreach ($attachmentInfos as $attachmentInfo)
 			{
 				$aID = $attachmentInfo["id"];
 				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
-				
+
 				if ($content != null)
 				{
 					$attachments[$aID]["id"] = $aID;
@@ -3845,7 +3872,7 @@ class testcase extends tlObjectWithAttachments
 				}
 			}
 	    }
-	  
+
 		if( !is_null($attachments) && count($attachments) > 0 )
 		{
 			$attchRootElem = "\t<attachments>\n{{XMLCODE}}\t</attachments>\n";
@@ -3861,9 +3888,9 @@ class testcase extends tlObjectWithAttachments
 
 			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
 								"||ATTACHMENT_FILE_TYPE||" => "file_type",
-								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
+								"||ATTACHMENT_FILE_SIZE||" => "file_size",
 								"||ATTACHMENT_TITLE||" => "title",
-								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
+								"||ATTACHMENT_DATE_ADDED||" => "date_added",
 								"||ATTACHMENT_CONTENT||" => "content");
 			$tc_data[0]['xmlattachments'] = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
         }
@@ -5180,17 +5207,17 @@ class testcase extends tlObjectWithAttachments
     $item = new stdClass();
     $item->actions = $actions;
     $item->expected_results = $expected_results;
-    $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
+    $this->CKEditorCopyAndPasteCleanUp($item,$k2e);
 
     $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcsteps']} " .
            " (id,step_number,actions,expected_results,execution_type) " .
-           " VALUES({$item_id},{$step_number},'" . 
+           " VALUES({$item_id},{$step_number},'" .
            $this->db->prepare_string($item->actions) . "','" .
-           $this->db->prepare_string($item->expected_results) . "', " . 
+           $this->db->prepare_string($item->expected_results) . "', " .
            $this->db->prepare_int($dummy) . ")";
 
     $result = $this->db->exec_query($sql);
-    $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 
+    $ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1,
                  'sql' => $sql);
     if (!$result)
     {
@@ -5409,12 +5436,12 @@ class testcase extends tlObjectWithAttachments
     $item = new stdClass();
     $item->actions = $actions;
     $item->expected_results = $expected_results;
-    $this->CKEditorCopyAndPasteCleanUp($item,$k2e); 
+    $this->CKEditorCopyAndPasteCleanUp($item,$k2e);
 
     $sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} " .
            " SET step_number=" . $this->db->prepare_int($step_number) . "," .
            " actions='" . $this->db->prepare_string($item->actions) . "', " .
-           " expected_results='" . 
+           " expected_results='" .
            $this->db->prepare_string($item->expected_results) . "', " .
            " execution_type = " . $this->db->prepare_int($execution_type)  .
            " WHERE id = " . $this->db->prepare_int($step_id);
@@ -5477,7 +5504,7 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-   * for a given set of test cases, search on the ACTIVE version set, 
+   * for a given set of test cases, search on the ACTIVE version set,
    * and returns for each test case,
    * a map with: the corresponding MAX(version number), other info
    *
@@ -5542,7 +5569,7 @@ class testcase extends tlObjectWithAttachments
         $countmain = 1;
 
         // Build custom fields filter
-        // do not worry!! it seems that filter criteria is OR, 
+        // do not worry!! it seems that filter criteria is OR,
         // but really is an AND,
         // OR is needed to do a simple query.
         // with processing on recordset becomes an AND
@@ -5704,9 +5731,9 @@ class testcase extends tlObjectWithAttachments
 
     // delete all current steps (if any exists)
     // Attention:
-    // After addition of test case steps feature, a test case version 
+    // After addition of test case steps feature, a test case version
     // can be root of a subtree that contains the steps.
-    // Remember we are using (at least on Postgres FK => we need to delete 
+    // Remember we are using (at least on Postgres FK => we need to delete
     // in a precise order.
 
     $stepSet = $this->get_steps($tcversion_id,0,
@@ -5753,7 +5780,7 @@ class testcase extends tlObjectWithAttachments
    * @param map cf_hash: custom fields id plus values
    * @param map options: OPTIONAL
    *
-   * @return map key: tcversion_id , 
+   * @return map key: tcversion_id ,
    *         element: array numerical index with as much element as custom fields
    *
    * @20170325: Ay! this search on EXACT VALUE not LIKE!
@@ -5777,19 +5804,19 @@ class testcase extends tlObjectWithAttachments
     // with processing on recordset becomes an AND
     foreach ($cf_hash as $cf_id => $cf_value)
     {
-      $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id . 
+      $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id .
                    " AND CFDV.value LIKE '%{$cf_value}%') ";
       $or_clause = ' OR ';
     }
 
     $sql = "/* $debugMsg */ " .
-           " SELECT TCV.id AS tcversion_id, " . 
+           " SELECT TCV.id AS tcversion_id, " .
            " NH_TCVERSION.parent_id AS testcase_id, TCV.version," .
            " CFDV.field_id,CFDV.value " .
            " FROM {$this->tables['tcversions']} TCV " .
-           " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " . 
+           " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
            " ON NH_TCVERSION.id = TCV.id " .
-           " JOIN {$this->tables['cfield_design_values']} CFDV " . 
+           " JOIN {$this->tables['cfield_design_values']} CFDV " .
            " ON CFDV.node_id = TCV.id " .
            " AND NH_TCVERSION.id IN ({$itemSet}) AND ({$cf_query}) ";
 
@@ -6249,7 +6276,7 @@ class testcase extends tlObjectWithAttachments
   function setExecutionType($tcversionID,$value,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    
+
     $my['opt'] = array('updSteps' => false);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
@@ -6265,20 +6292,20 @@ class testcase extends tlObjectWithAttachments
     {
       $opx = array('fields2get' => 'id');
       $stepIDSet = $this->get_steps($safeTCVID,null,$opx);
-      
+
       if( !is_null($stepIDSet) )
       {
         $target = array();
         foreach($stepIDSet as $elem )
         {
           $target[] = $elem['id'];
-        }  
+        }
         $inClause = implode(',',$target);
         $sqlX = " UPDATE {$this->tables['tcsteps']} " .
                 " SET execution_type={$execType} WHERE id IN (" . $inClause . ")";
         $this->db->exec_query($sqlX);
-      }  
-    }    
+      }
+    }
 
     return array($value,$execType,$sql);
   }
@@ -7608,7 +7635,7 @@ class testcase extends tlObjectWithAttachments
 
     $sql = " UPDATE {$this->tables['tcversions']} " .
            " SET {$attr} = " . $this->db->prepare_int($value) ;
-		   
+
 	if($forceFrozenVersions==false){
 	  $sql .= " WHERE is_open=1 AND ";
 	}
@@ -7786,11 +7813,11 @@ class testcase extends tlObjectWithAttachments
 
  /**
    * get data about code links from external tool
-   * 
+   *
    * @param resource &$db reference to database handler
    * @param object &$code_interface reference to instance of bugTracker class
    * @param integer $tcversion_id Identifier of test case version
-   * 
+   *
    * @return array list of 'script_name' with values: link_to_cts,
    * project_key, repository_name, code_path, branch_name
    */
@@ -7853,7 +7880,7 @@ class testcase extends tlObjectWithAttachments
     foreach($keys as $fi)
     {
       $items->$fi = str_ireplace($offending,$good,$items->$fi);
-    } 
+    }
   }
 
   /**

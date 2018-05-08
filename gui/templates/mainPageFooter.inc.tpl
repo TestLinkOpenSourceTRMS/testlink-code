@@ -6,6 +6,7 @@
 
 <link rel="stylesheet" href="{$basehref}{$smarty.const.TL_THEME_CSS_DIR}/footer.css">
 
+<!--
 <div class="footer noprint">
 <div class="footer-inner">
 <div class="footer-content">
@@ -31,3 +32,4 @@
 </div>
 </div>
 </div>
+-->

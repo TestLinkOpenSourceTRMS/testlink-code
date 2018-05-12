@@ -69,7 +69,7 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
                 if($args->addLinkToTL) 
                 {
                   $args->direct_link = getDirectLinkToExec($db,$args->exec_id);
-                  $dummy = generateIssueText($db,$args,$its); 
+                  $dummy = generateIssueText($db,$args,$its,$args->addLinkToTL); 
                   $gui->bug_notes = $dummy->description;
                 }  
 

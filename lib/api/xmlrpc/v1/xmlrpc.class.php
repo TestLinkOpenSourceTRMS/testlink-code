@@ -8651,7 +8651,8 @@ protected function createAttachmentTempFile()
                             'tl.setTestMode' => 'this:setTestMode',
                             'tl.ping' => 'this:sayHello', 
                             'tl.sayHello' => 'this:sayHello',
-                            'tl.repeat' => 'this:repeat'
+                            'tl.repeat' => 'this:repeat',
+                            'tl.getAllExecutionsResults' => 'this:getAllExecutionsResults',
                         );
   }
   

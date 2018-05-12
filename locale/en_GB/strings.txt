@@ -1338,7 +1338,7 @@ $TLS_login_name = "Login Name";
 $TLS_lost_password_q = "Lost Password?";
 $TLS_new_user_q = "New User?";
 $TLS_password = "Password";
-$TLS_timeout_info = "Your session has expired.<br><br>Please log in again to not loose " .
+$TLS_timeout_info = "Your session has expired.<br><br>Please log in again to not lose " .
                     "recent changes.";
 
 

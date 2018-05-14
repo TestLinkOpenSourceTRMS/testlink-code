@@ -541,6 +541,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	if($hasAttachments)
 	{
 	  $fk_id = $doCreate ? $ret['id'] : $internalid;
+	  if ($internalid == "" && $item_id>0){ // internalid is optionnal in XML schema, real internalid may has been retrieved based on externalID before
+		$internalid = $item_id;
+	  }
 	  $msg = processAttachments( $db, $name, $internalid, $fk_id, $tc['attachments'], $feedbackMsg );
 	  if( !is_null($msg) )
 	  {
@@ -1084,6 +1087,9 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 	  {
 		if(!is_null($attachments))
 		{  
+			if ($tsuiteXMLID == "" && $info[0]['id']>0){ // testsuite id is optionnal in XML schema, id may has been retrieved from name during update
+				$tsuiteXMLID = $info[0]['id'];
+			}
 		  $msg = processAttachments( $dbHandler, $tsuite['name'], $tsuiteXMLID, $tsuite['id'], $attachments, $feedbackMsg );
 		  if( !is_null($msg) )
 		  {

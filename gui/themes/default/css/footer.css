@@ -1,35 +1,8 @@
-.footer {
-    padding-top: 10px;
-    height: 0;
-    width: 0;
-}
-.footer .footer-inner {
-    text-align: center;
-    position: absolute;
-    z-index: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-.footer .footer-inner .footer-content {
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 4px;
-    padding: 8px;
-}
-.footer.footer-fixed .footer-inner {
-    position: fixed;
-    z-index: 999;
-    bottom: 0;
-}
-.footer.footer-fixed .footer-inner .footer-content {
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
-    border: 1px solid #DDD;
-    background-color: #F2F2F2;
-}
-.footer.footer-fixed + .btn-scroll-up {
-    z-index: 999;
+.footerFoo {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   height: 60px;
+   text-align: center;
 }

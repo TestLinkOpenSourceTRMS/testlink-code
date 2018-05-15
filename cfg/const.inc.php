@@ -45,7 +45,8 @@ ini_set('include_path',
     TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'reqmgrsystemintegration' . DIRECTORY_SEPARATOR);
 
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
-         TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
+         TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR . PATH_SEPARATOR .
+         TL_ABS_PATH . 'vendor' . DIRECTORY_SEPARATOR );
 
 /** Localization directory base */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');

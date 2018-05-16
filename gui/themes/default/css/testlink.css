@@ -82,22 +82,18 @@ form
 }
 
 /* ***** Links ***** */
-/* A Visited link is still blue */
+/* A Visited link is still blue, except if class is btn-primary from bootstrap */
 
-/*
-a:visited, a:active {
+a:not(.btn-primary){
 	color: 			#059;
 	text-decoration: none;
 }
-*/
 
 /* A link being hovered over is red*/
-/*
 a:hover   {
 	color: 			#900;
 	text-decoration: none;
 }
-*/
 
 /* ***** Menu bar specific ******************************************* */
 div.menu_title {

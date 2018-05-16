@@ -48,6 +48,7 @@ $userID = $currentUser->dbID;
 $gui = new stdClass();
 $gui->grants = getGrants($db,$user,$userIsBlindFolded);
 $gui->hasTestCases = false;
+$gui->hasInventoryEnabled = $_SESSION['testprojectOptions']->inventoryEnabled;
 
 if($gui->grants['view_tc'])
 { 
@@ -113,7 +114,6 @@ $rights2check = array('testplan_execute','testplan_create_build',
                       'testplan_metrics','testplan_planning',
                       'testplan_user_role_assignment',
                       'mgt_testplan_create',
-                      'cfield_view', 'cfield_management',
                       'testplan_milestone_overview',
                       'exec_testcases_assigned_to_me',
                       'exec_assign_testcases','exec_ro_access',
@@ -216,6 +216,9 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   // key: more or less verbose
   // value: string present on rights table
   $right2check = array('project_edit' => 'mgt_modify_product',
+                       'mgt_users' =>  "mgt_users",
+                       'role_management' => "role_management" ,
+                       'user_role_assignment' => "user_role_assignment",
                        'reqs_view' => "mgt_view_req", 
                        'monitor_req' => "monitor_requirement", 
                        'req_tcase_link_management' => "req_tcase_link_management",
@@ -223,14 +226,15 @@ function getGrants($dbHandler,$user,$forceToNo=false)
                        'keywords_view' => "mgt_view_key",
                        'keyword_assignment' => "keyword_assignment",
                        'keywords_edit' => "mgt_modify_key",
+                       'platform_view' => "platform_view",
                        'platform_management' => "platform_management",
                        'issuetracker_management' => "issuetracker_management",
                        'issuetracker_view' => "issuetracker_view",
                        'codetracker_management' => "codetracker_management",
                        'codetracker_view' => "codetracker_view",
+                       'cfield_view' => "cfield_view",
+                       'cfield_management' => "cfield_management",
                        'configuration' => "system_configuraton",
-                       'cfield_management' => 'cfield_management',
-                       'cfield_view' => 'cfield_view',
                        'cfield_assignment' => 'cfield_assignment',
                        'usergroups' => "mgt_view_usergroups",
                        'view_tc' => "mgt_view_tc",
@@ -261,15 +265,6 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   foreach($right2check as $humankey => $right)
   {
     $grants[$humankey] = $user->hasRight($dbHandler,$right); 
-  }
-
-
-  // check right ONLY if option is enables
-  if($_SESSION['testprojectOptions']->inventoryEnabled) {
-    $invr = array('project_inventory_view','project_inventory_management');
-    foreach($invr as $r){
-      $grants[$r] = ($user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
-    }
   }
 
   return $grants;  

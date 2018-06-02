@@ -1512,6 +1512,7 @@ class tlTestPlanMetrics extends testplan
               $latestExec[$platform_id][$tcase_id]['id'] = $exec['executions_id'];
               $latestExec[$platform_id][$tcase_id]['status'] = $exec['status'];
               $latestExec[$platform_id][$tcase_id]['build_id'] = $exec['build_id'];
+              $latestExec[$platform_id][$tcase_id]['execution_notes'] = $exec['execution_notes'];
             }
             
             // -------------------------------------------------------------------

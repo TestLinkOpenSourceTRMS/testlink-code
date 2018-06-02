@@ -70,6 +70,8 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   }
 
   $renderHTML = false;
+  //echo 'MOMO';die();
+  //var_dump($gui->matrix); die();
   switch($args->format)
   {
     case FORMAT_XLS:
@@ -212,8 +214,10 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null)
   $columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
                    array('title_key' => 'title_test_case_title', 'width' => 150));
 
-  $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,'priority' => null,
-                           'result_on_last_build' => null, 'title_test_case_title' => null));
+  $lbl = init_labels(array('title_test_suite_name' => null,'platform' => null,
+                           'priority' => null, 'result_on_last_build' => null, 
+                           'title_test_case_title' => null,
+                           'latest_exec_notes' => null));
   
   $group_name = $lbl['title_test_suite_name'];
 
@@ -243,20 +247,21 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null)
   {
     $buildSet[] = array('name' => $lbl['result_on_last_build'] . ' ' . $latestBuild->name);
   }
-  
+
   foreach($buildSet as $build) 
   {
     $columns[] = array('title' => $build['name'], 'type' => 'status', 'width' => 100);
   }
-  // --------------------------------------------------------------------
-  
-  
-  $columns[] = array('title_key' => 'last_execution', 'type' => 'status', 'width' => 100);
 
   if ($guiObj->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild']) {
     $columns[] = array('title_key' => 'test_exec_notes_latest_created_build', 
       'type' => 'status', 'width' => 100);
   }
+
+  // --------------------------------------------------------------------
+  $columns[] = array('title_key' => 'last_execution', 'type' => 'status', 'width' => 100);
+
+  $columns[] = array('title_key' => 'latest_exec_notes', 'type' => 'status', 'width' => 100);
 
   $fo = !is_null($forceFormat) ? $forceFormat : $argsObj->format; 
   if ($fo == FORMAT_HTML) 
@@ -408,6 +413,7 @@ function createSpreadsheet($gui,$args,$media)
   $cellRange = setCellRangeSpreadsheet();
   $style = initStyleSpreadsheet();
 
+
   $objPHPExcel = new PHPExcel();
   $lines2write = xlsStepOne($objPHPExcel,$style,$lbl,$gui);
 
@@ -433,8 +439,12 @@ function createSpreadsheet($gui,$args,$media)
   // ...
   // ...
   // Exec result on Build N
-  // Exec result on ON LATEST CREATED Build
+  //
+  //
+  // Exec result ON LATEST CREATED Build
+  // Exec notes ON LATEST CREATED Build 
   // Latest Execution result (Hmm need to explain better)
+  // Latest Execution notes
   // 
   $dataHeader = array($lbl['title_test_suite_name'],$lbl['title_test_case_title']);
 
@@ -469,9 +479,17 @@ function createSpreadsheet($gui,$args,$media)
   // Now the magic
   if( $gui->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'] )
   {  
-    $dataHeader[] = $lbl['result_on_last_build'];
+    $dataHeader[] = $lbl['result_on_last_build'] . ' ' . $latestBuild->name;
   }
+
+  if( $gui->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild'] )
+  {  
+    $dataHeader[] = $lbl['test_exec_notes_latest_created_build'];
+  }
+
+
   $dataHeader[] = $lbl['last_execution'];
+  $dataHeader[] = $lbl['latest_exec_notes'];
 
   $startingRow = count($lines2write) + 2; // MAGIC
   $cellArea = "A{$startingRow}:";
@@ -484,7 +502,9 @@ function createSpreadsheet($gui,$args,$media)
 
   $cellArea .= "{$cellAreaEnd}{$startingRow}";
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($style['DataHeader']);	
-  
+
+  //var_dump($gui->matrix);
+
   $startingRow++;
   $qta_loops = count($gui->matrix);
   for($idx = 0; $idx < $qta_loops; $idx++)
@@ -580,6 +600,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
 
   $metrics = $exec['metrics'];
   $latestExecution = $exec['latestExec'];
+
   $cols = $args->cols;
 
   $tsuiteSet = array_keys($metrics);
@@ -643,8 +664,8 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
 
         // Now loop on result on each build, but following order
         $buildExecStatus = null;  
-        $execOnLastBuild = null;
-        $lastNote = ['text' => ''];
+        $execOnLatestCreatedBuild = null;
+        $execNoteLatestCreatedBuild = ['text' => ''];
         foreach($args->builds->idSet as $buildID)
         {
           $r4build['text'] = "";
@@ -699,14 +720,14 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
           if($gui->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'] && 
              $args->builds->latest->id == $buildID)
           {
-            $execOnLastBuild = $r4build;  
+            $execOnLatestCreatedBuild = $r4build;  
           }
 
           if ($gui->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild'] &&
             $args->builds->latest->id == $buildID &&
             $rf[$buildID]['execution_notes'])
           {
-            $lastNote['text'] = $rf[$buildID]['execution_notes'];
+            $execNoteLatestCreatedBuild['text'] = $rf[$buildID]['execution_notes'];
           }
 
           // why we do special reasoning on NOT RUN ???
@@ -724,7 +745,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         // If configured, add column with Exec result on Latest Created Build
         if ($gui->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'])
         {
-          $buildExecStatus[] = $execOnLastBuild;
+          $buildExecStatus[] = $execOnLatestCreatedBuild;
         }
         
         if ($gui->matrixCfg->buildColumns['latestBuildOnLeft']) 
@@ -734,14 +755,27 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
 
         $rows = array_merge($rows, $buildExecStatus);
           
+        if ($gui->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild'])
+        {
+          if( $fo == FORMAT_XLS) {
+            $rows[] = $execNoteLatestCreatedBuild['text'];
+          } 
+          if( $fo == FORMAT_HTML) {
+            $rows[] = $execNoteLatestCreatedBuild;
+          }
+        }
+
         // Always righmost column will display lastest execution result
         $rows[] = $lexec;
 
-        if ($gui->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild'])
-        {
-          $rows[] = $lastNote;
+        $dfx = current($latestExecution[0]);
+        if( $fo == FORMAT_XLS) {
+          $rows[] = $dfx['execution_notes'];
+        } 
+        if( $fo == FORMAT_HTML) {
+          $rows[] = ['text' => $dfx['execution_notes']];
         }
-         
+
         $gui->matrix[] = $rows;
         unset($r4build);
         unset($rows);
@@ -762,7 +796,8 @@ function initLblSpreadsheet()
                            'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
                            'notes' => null, 'date_time_run' => null, 'execution_duration' => null,
                            'testproject' => null,'generated_by_TestLink_on' => null,'testplan' => null,
-                           'result_on_last_build' => null,'last_execution' => null,'assigned_to' => null));
+                           'result_on_last_build' => null,'last_execution' => null,'assigned_to' => null,'latest_exec_notes' => null,
+                           'test_exec_notes_latest_created_build' => null));
   return $lbl;
 } 
 

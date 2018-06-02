@@ -1443,6 +1443,8 @@ $TLS_testcase_customfields = "Test Cases Custom Fields";
 $TLS_test_exec_by = "Tested by";
 $TLS_test_exec_expected_r = "Expected Results";
 $TLS_test_exec_notes = "Notes / Description";
+$TLS_test_exec_notes_latest_created_build = "Exec Notes for Latest (created) Build";
+
 $TLS_test_exec_result = "Result";
 $TLS_test_exec_steps = "Steps";
 $TLS_test_exec_summary = "Summary";

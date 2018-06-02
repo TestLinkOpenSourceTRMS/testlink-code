@@ -814,12 +814,14 @@ $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 $tlCfg->reportsCfg->start_time = '00:00';
 
 // Result matrix (resultsTC.php)
-// Shows an extra column which gives the status of the last executed build
-$tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
+// Shows an extra column with the result of the latest execution on
+// the lastest CREATED build
+$tlCfg->resultMatrixReport->buildColumns['showExecutionResultLatestCreatedBuild'] = true;
 
 // Result matrix (resultsTC.php)
-// Shows an extra column which gives the note of the last executed build
-$tlCfg->resultMatrixReport->buildColumns['showNoteLastExecuted'] = true;
+// Shows an extra column with the note of latest execution on 
+// the lastest CREATED build
+$tlCfg->resultMatrixReport->buildColumns['showExecutionNoteLatestCreatedBuild'] = true;
 
 // Show build columns in revers order. The latest build is to the left
 $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;

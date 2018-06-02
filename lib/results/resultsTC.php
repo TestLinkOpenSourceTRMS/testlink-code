@@ -48,9 +48,9 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   setUpBuilds($args,$gui);
 
   $tpl = $templateCfg->default_template;
-  $opt = null;
   $buildSet = array('buildSet' => $args->builds->idSet);
 
+  $opt = array('getExecutionNotes' => true);
   if($args->format == FORMAT_XLS)
   {
     $opt = array('getExecutionNotes' => true, 'getTester' => true,
@@ -239,7 +239,7 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null)
     }
   }  
 
-  if( $guiObj->matrixCfg->buildColumns['showStatusLastExecuted'] )
+  if( $guiObj->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'] )
   {
     $buildSet[] = array('name' => $lbl['result_on_last_build'] . ' ' . $latestBuild->name);
   }
@@ -253,8 +253,9 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null)
   
   $columns[] = array('title_key' => 'last_execution', 'type' => 'status', 'width' => 100);
 
-  if ($guiObj->matrixCfg->buildColumns['showNoteLastExecuted']) {
-    $columns[] = array('title_key' => 'test_exec_notes', 'type' => 'status', 'width' => 100);
+  if ($guiObj->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild']) {
+    $columns[] = array('title_key' => 'test_exec_notes_latest_created_build', 
+      'type' => 'status', 'width' => 100);
   }
 
   $fo = !is_null($forceFormat) ? $forceFormat : $argsObj->format; 
@@ -466,7 +467,7 @@ function createSpreadsheet($gui,$args,$media)
 
 
   // Now the magic
-  if( $gui->matrixCfg->buildColumns['showStatusLastExecuted'] )
+  if( $gui->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'] )
   {  
     $dataHeader[] = $lbl['result_on_last_build'];
   }
@@ -694,13 +695,14 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
             $buildExecStatus[] = $r4build;
           }
 
-          if($gui->matrixCfg->buildColumns['showStatusLastExecuted'] && 
+          
+          if($gui->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'] && 
              $args->builds->latest->id == $buildID)
           {
             $execOnLastBuild = $r4build;  
           }
 
-          if ($gui->matrixCfg->buildColumns['showNoteLastExecuted'] &&
+          if ($gui->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild'] &&
             $args->builds->latest->id == $buildID &&
             $rf[$buildID]['execution_notes'])
           {
@@ -720,7 +722,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         
         // Ok, now the specials
         // If configured, add column with Exec result on Latest Created Build
-        if ($gui->matrixCfg->buildColumns['showStatusLastExecuted'])
+        if ($gui->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'])
         {
           $buildExecStatus[] = $execOnLastBuild;
         }
@@ -735,7 +737,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         // Always righmost column will display lastest execution result
         $rows[] = $lexec;
 
-        if ($gui->matrixCfg->buildColumns['showNoteLastExecuted'])
+        if ($gui->matrixCfg->buildColumns['showExecutionNoteLatestCreatedBuild'])
         {
           $rows[] = $lastNote;
         }

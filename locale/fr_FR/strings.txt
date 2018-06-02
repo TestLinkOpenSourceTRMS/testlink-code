@@ -3313,7 +3313,7 @@ $TLS_audit_cfield_required_on = "Le champ personnalisé '{%1}' est REQUIS pour l
 $TLS_audit_cfield_required_off = "Le champ personnalisé '{%1}' est NON-REQUIS pour le projet '{%2}'";
 $TLS_audit_cfield_monitorable_on = "texte '{%1}' texte '{%2}' texte";
 $TLS_audit_cfield_monitorable_off = "texte '{%1}' texte '{%2}' texte";
-$TLS_audit_cfield_location_changed = L'emplacement du champ personnalisé '{%1}' a été sauvegardé pour le projet '{%2}'";
+$TLS_audit_cfield_location_changed = "L'emplacement du champ personnalisé '{%1}' a été sauvegardé pour le projet '{%2}'";
 
 $TLS_audit_user_apikey_set = "La clé API pour '{%1}' a été générée.";
 $TLS_audit_user_saved = "L’utilisateur '{%1}' a été enregistré.";

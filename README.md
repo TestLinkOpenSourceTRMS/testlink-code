@@ -1,24 +1,24 @@
 # TestLink 1.9.18 Gaura - Read me
 
 ## Contents
- 1. Introduction
- 2. Release notes / Critical Configuration Notes
- 3. System Requirements
- 4. Installation & SECURITY
- 5. Upgrade and Migration
- 6. TestLink Team
- 7. Bug Reports and Feedback
- 8. Supporting our work
- 9. Regarding forum usage www.testlink.org
-10. Changes
-11. Testlink & FreeTest
-12. Security
-13. JIRA DB interface changes
-14. People/Companies supporting TestLink
-15. Use forum.testlink.org
-16. User cries: I WANT HELP !!!
-17. Use Mantis documentation
-18. Link to GITORIOUS COMMITS
+ 1. [Introduction](#1-introduction)
+ 2. [Release notes / Critical Configuration Notes](2-release-notes--critical-configuration-notes)
+ 3. [System Requirements](#3-system-requirements---server)
+ 4. [Installation & SECURITY](#4-installation--security)
+ 5. [Upgrade and Migration](#5-upgrade-and-migration)
+ 6. [TestLink Team](#6-testlink-team)
+ 7. [Bug Reports and Feedback](#7-bug-reports-and-feedback)
+ 8. [Supporting our work](#8-supporting-our-work)
+ 9. [Regarding forum usage](#9-regarding-forum-usage-wwwtestlinkorg) www.testlink.org
+10. [Changes](#10-changes)
+11. [Testlink & FreeTest](#11-testlink--freetest)
+12. [Security](#12-security)
+13. [JIRA DB interface changes](#13-jira-db-interface-changes)
+14. [People/Companies supporting TestLink](#14-peoplecompanies-supporting-testlink)
+15. [Use forum.testlink.org](#15-use-forumtestlinkorg)
+16. [User cries: I WANT HELP !!!](#16-user-cries-i-want-help-)
+17. [Use Mantis documentation](#17-use-mantis-documentation)
+18. [Link to GITORIOUS COMMITS](#18-link-to-gitorious-commits)
 
 ## 1. Introduction
 

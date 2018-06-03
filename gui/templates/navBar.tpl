@@ -61,7 +61,7 @@ title bar + menu
     <input type="hidden" id="caller" name="caller" value="navBar" />
     <img src="{$tlImages.magnifier}"
          title="{$labels.search_testcase}" alt="{$labels.search_testcase}"
-         onclick="document.getElementById('searchTC').submit()" class="clickable" 
+         onclick="jQuery('#searchTC').submit()" class="clickable" 
          style="position:relative; top:2px;" />
     <input type="hidden" name="edit" value="testcase"/>
     <input type="hidden" name="allow_edit" value="0"/>
@@ -79,7 +79,7 @@ title bar + menu
 
     <img src="{$tlImages.magnifier}"
          title="{$labels.full_text_search}" alt="{$labels.full_text_search}"
-         onclick="document.getElementById('fullTextSearch').submit()" class="clickable" 
+         onclick="jQuery('#fullTextSearch').submit()" class="clickable" 
          style="position:relative; top:2px;" />
     </form>
   {/if}

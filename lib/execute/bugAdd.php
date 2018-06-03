@@ -30,15 +30,9 @@ if( ($args->user_action == 'create' || $args->user_action == 'doCreate') &&
     case 'doCreate':
      $args->direct_link = getDirectLinkToExec($db,$args->exec_id);
 
-     /*
-     $dummy = generateIssueText($db,$args,$its,$args->addLinkToTL); 
-     $gui->bug_summary = $dummy->summary;
-     */
-     
      $dummy = generateIssueText($db,$args,$its); 
-     $gui->bug_summary = $args->bug_summary;
-     
-     $ret = addIssue($db,$args,$its);
+     $gui->bug_summary = $dummy->summary;
+     $ret = addIssue($db,$args,$its,$args->addLinkToTL);
      $gui->issueTrackerCfg->tlCanCreateIssue = $ret['status_ok'];
      $gui->msg = $ret['msg'];
     break;

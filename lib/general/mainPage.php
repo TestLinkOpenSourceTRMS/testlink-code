@@ -4,7 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	mainPage.php
- * @author      Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
  *
@@ -13,15 +12,10 @@
  * based upon the login. 
  * There is also some javascript that handles the form information.
  *
- *
  **/
 
 require_once('../../config.inc.php');
 require_once('common.php');
-if(function_exists('memory_get_usage') && function_exists('memory_get_peak_usage'))
-{
-  tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
-}
 
 testlinkInitPage($db,TRUE);
 
@@ -29,8 +23,17 @@ $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);
 $user = $_SESSION['currentUser'];
 
+
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-$testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+
+if( isset($_REQUEST['testplan']) ) {
+  $testplanID = $_REQUEST['testplan'];
+
+} else {
+  $testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+}
+$testplanID = intval($testplanID);
+
 
 $accessibleItems = $tproject_mgr->get_accessible_for_user($user->dbID,array('output' => 'map_name_with_inactive_mark'));
 $tprojectQty = $tproject_mgr->getItemCount();
@@ -96,9 +99,11 @@ if($testplanID > 0)
   if( $found == 0 )
   {
     // update test plan id
-    $testplanID = $arrPlans[0]['id'];
-	  setSessionTestPlan($arrPlans[0]);     	
+    $index = 0;
+    $testplanID = $arrPlans[$index]['id'];
   } 
+
+  setSessionTestPlan($arrPlans[$index]);         
   $arrPlans[$index]['selected']=1;
 }
 

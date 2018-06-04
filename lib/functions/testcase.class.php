@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2017, TestLink community
+ * @copyright   2005-2018, TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -44,7 +44,9 @@ class testcase extends tlObjectWithAttachments
   const EXECUTION_TYPE_MANUAL = 1;
   const EXECUTION_TYPE_AUTO = 2;
 
-
+  const NAME_PHOPEN = '[[';
+  const NAME_PHCLOSE = ']]';
+  const NAME_DIVIDE = '::';
 
   /** @var database handler */
   var $db;
@@ -258,6 +260,12 @@ class testcase extends tlObjectWithAttachments
                             'importLogic' => null);
 
     $my['options'] = array_merge($my['options'], (array)$options);
+
+    if( trim($summary) != '' ) {
+      if( strpos($summary,self::NAME_PHOPEN) !== FALSE && strpos($summary,self::NAME_PHCLOSE) !== FALSE ) {
+        $name = $this->buildTCName($name,$summary);
+      }
+    }
 
     $ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,$my['options']);
 
@@ -1070,6 +1078,12 @@ class testcase extends tlObjectWithAttachments
 
     tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
 
+    if( trim($summary) != '' ) {
+      if( strpos($summary,self::NAME_PHOPEN) !== FALSE && strpos($summary,self::NAME_PHCLOSE) !== FALSE ) {
+        $name = $this->buildTCName($name,$summary);
+      }
+    }
+    
     // Check if new name will be create a duplicate testcase under same parent
     if( ($checkDuplicates = config_get('check_names_for_duplicates')) )
     {
@@ -7876,6 +7890,55 @@ class testcase extends tlObjectWithAttachments
     return $path;
   }
 
+
+
+  /**
+   *
+   */
+  function buildTCName($name, $summary) {
+      
+    $taglen = strlen(self::NAME_PHOPEN);
+    $whomai = array('l' => '','r' => '');
+
+    $where['open'] = strpos($name, self::NAME_PHOPEN);
+    $where['close'] = strpos($name, self::NAME_PHCLOSE);
+
+    if( FALSE !== $where['open'] ) {
+      $whoami['l'] = substr($name, 0, $where['open']);
+      $meat = substr($name,$where['open']+$taglen, ($where['close'] - $where['open']-$taglen) );  
+
+
+      $dummy = strstr($name,$close);
+      if( $dummy !== FALSE ) {
+        $whoami['r'] = ltrim($dummy,$close);   
+      }    
+
+      $dm = explode(self::NAME_DIVIDE, $meat);
+      $name = $whoami['l'] . self::NAME_PHOPEN; 
+
+      $juice = $this->orangeJuice($summary);
+      $name .=  ( count($dm) > 0 ) ? $dm[0] : $meat;
+      $name .= self::NAME_DIVIDE . $juice . self::NAME_PHCLOSE . $whoami['r']; 
+    }
+    return $name;
+  }
+
+  /**
+   *
+   */
+  function orangeJuice($str) {
+  
+    $juice = '';
+    $taglen = strlen(self::NAME_PHOPEN);
+
+    $where['open'] = strpos($str, self::NAME_PHOPEN);
+    $where['close'] = strpos($str, self::NAME_PHCLOSE);
+
+    if( FALSE !== $where['open'] ) {
+      $juice = substr($str,$where['open']+$taglen, ($where['close'] - $where['open']-$taglen) );  
+    }
+    return $juice;
+  }
 
 
 }  // Class end

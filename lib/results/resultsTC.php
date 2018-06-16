@@ -604,14 +604,14 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
   $cols = $args->cols;
 
   $tsuiteSet = array_keys($metrics);
-  foreach($tsuiteSet as $tsuiteID)
-  {
+  foreach($tsuiteSet as $tsuiteID) {
+
     $tcaseSet = array_keys($metrics[$tsuiteID]);
-    foreach($tcaseSet as $tcaseID)
-    {
+    
+    foreach($tcaseSet as $tcaseID) {
+
       $platformSet = array_keys($metrics[$tsuiteID][$tcaseID]);
-      foreach($platformSet as $platformID)
-      {
+      foreach($platformSet as $platformID) {
         $rf = &$metrics[$tsuiteID][$tcaseID][$platformID];
         $rows = null;
 
@@ -768,7 +768,10 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         // Always righmost column will display lastest execution result
         $rows[] = $lexec;
 
-        $dfx = current($latestExecution[0]);
+        // @see lib/functions/tlTestPlanMetrics.class.php
+        //      getExecStatusMatrix($id, $filters=null, $opt=null)
+        //
+        $dfx = $latestExecution[$platformID][$tcaseID];
         if( $fo == FORMAT_XLS) {
           $rows[] = $dfx['execution_notes'];
         } 

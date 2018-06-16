@@ -105,7 +105,7 @@ function getUserList(&$db,$db_type)
       break;
    
       case 'mssql':
-	  case 'mssqlnative':
+	    case 'mssqlnative':
       // info about running store procedures, get form adodb manuals
       // Important:
       // From ADODB manual - Prepare() documentation
@@ -119,35 +119,42 @@ function getUserList(&$db,$db_type)
       // This info is very important, to use mssql_free_statement()
       //
       $stmt = $db->db->PrepareSP('SP_HELPLOGINS'); # note that the parameter name does not have @ in front!
-      $result=$db->db->Execute($stmt); 
+      $result = $db->db->Execute($stmt); 
       
       // Very important:
       // Info from PHP Manual notes
       // mssql_free_statement()
       //
       // mitch at 1800radiator dot kom (23-Mar-2005 06:02)
-      // Maybe it's unique to my FreeTDS configuration, but if I don't call mssql_free_statement() 
-      // after every stored procedure (i.e. mssql_init, mssql_bind, mssql_execute, mssql_fetch_array), 
-      // all subsequent stored procedures on the same database connection will fail.
-      // I only mention it because this man-page deprecates the use of mssql_free_statement(), 
+      // Maybe it's unique to my FreeTDS configuration, but if 
+      // I don't call mssql_free_statement() 
+      // after every stored procedure (i.e. mssql_init, mssql_bind, 
+      // mssql_execute, mssql_fetch_array), 
+      // all subsequent stored procedures on the same database 
+      // connection will fail.
+      // I only mention it because this man-page deprecates 
+      // the use of mssql_free_statement(), 
       // saying it's only there for run-time memory concerns.  
-      // At least in my case, it's also a crucial step in the process of running a stored procedure.  
-      // If anyone else has problems running multiple stored procedures on the same connection, 
+      // At least in my case, it's also a crucial step in the 
+      // process of running a stored procedure.  
+      // If anyone else has problems running multiple stored 
+      // procedures on the same connection, 
       // I hope this helps them out.
       //
-      // Without this was not possible to call other functions that use store procedures,
+      // Without this was not possible to call other functions 
+      // that use store procedures,
       // because I've got:
       // a) wrong results
       // b) mssql_init() errors
       //
-	  if (function_exists('mssql_free_statement')) 
-	  {
-		mssql_free_statement($stmt[1]);
-	  }	  
-	  else
-	  {      
-	  	sqlsrv_free_stmt($stmt[1]);
-	  }
+      if( is_resource($stmt) ) {
+  	    if (function_exists('mssql_free_statement')) {
+            mssql_free_statement($stmt[1]);
+  	    }	  
+  	    else {      
+            sqlsrv_free_stmt($stmt[1]);
+  	    }
+      }  
       break;
    
    }
@@ -166,7 +173,19 @@ function getUserList(&$db,$db_type)
      while (!$result->EOF) 
      { 
        $row = $result->GetRowAssoc();
-       $users[] = trim($row['LOGINNAME']);
+
+       // seems that on newer SQL Server Version
+       // Camel Case is used, or may be ADODB behaviour has changed
+       // Anyway this check avoid issues
+       //
+       if( isset($row['LOGINNAME']) ) {
+        $uk = 'LOGINNAME';
+       }
+       if( isset($row['LoginName']) ) {
+        $uk = 'LoginName';
+       }
+
+       $users[] = trim($row[$uk]);
        $result->MoveNext(); 
      } 
    }

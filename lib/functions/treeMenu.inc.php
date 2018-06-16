@@ -1969,8 +1969,7 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
   static $js_functions;
   static $forbidden_parents;
   
-  if (!$js_functions) 
-  {
+  if (!$js_functions) {
     $js_functions = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
                           'requirement_spec' =>'REQ_SPEC_MGMT',
                           'requirement' => 'REQ_MGMT');
@@ -2009,7 +2008,7 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
       // get doc id from filtered array, it's already stored in there
       $doc_id = '';
       foreach($node['childNodes'] as $child) {
-        if (!is_null($child)) {
+        if ( is_array($child) ) {
           $child_id = $child['id'];
           if (isset($filtered_map[$child_id])) {
             $doc_id = htmlspecialchars($filtered_map[$child_id]['req_spec_doc_id']);

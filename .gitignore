@@ -5,3 +5,4 @@ custom_config.inc.php
 .project
 config.inc.php
 .idea/
+*.iml

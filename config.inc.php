@@ -164,7 +164,9 @@ $tlCfg->smarty_debug = false;
  *	put it out of reach via web or configure access denied.
  */
 $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
-
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    $tlCfg->log_path = 'C:\testlink\logs'; /* windows example */
+}
 
 /**
  * @var string How to warning user when security weak points exists.
@@ -884,6 +886,9 @@ $tlCfg->attachments->orderBy = " ORDER BY date_added DESC ";
 
 $tlCfg->attachments->repository->type = TL_REPOSITORY_TYPE_FS;
 $tlCfg->attachments->repository->path = '/var/testlink/upload_area/';  /* unix example */
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    $tlCfg->attachments->repository->path = 'C:\testlink\upload_area';  /* windows example */
+}
 
 // the maximum allowed file size for each repository entry, default 1MB.
 // Also check your PHP settings (default is usually 2MBs)

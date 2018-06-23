@@ -772,11 +772,12 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         //      getExecStatusMatrix($id, $filters=null, $opt=null)
         //
         $dfx = $latestExecution[$platformID][$tcaseID];
+        $nv = is_null($dfx['execution_notes']) ? '' : $dfx['execution_notes'];
         if( $fo == FORMAT_XLS) {
-          $rows[] = $dfx['execution_notes'];
+          $rows[] = $nv;
         } 
         if( $fo == FORMAT_HTML) {
-          $rows[] = ['text' => $dfx['execution_notes']];
+          $rows[] = ['text' => $nv];
         }
 
         $gui->matrix[] = $rows;

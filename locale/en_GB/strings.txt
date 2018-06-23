@@ -3873,4 +3873,6 @@ $TLS_desc_exec_assign_testcases = "Assign TestCase Execution";
 $TLS_expiration_date = 'Expiration Date';
 $TLS_system_descr = "test & requirement management software";
 $TLS_poweredBy = 'Powered by';
+$TLS_expiration = 'Expiration';
+
 // ----- END ------------------------------------------------------------------

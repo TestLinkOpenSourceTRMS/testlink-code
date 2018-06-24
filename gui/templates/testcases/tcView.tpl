@@ -112,7 +112,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
     
     
     {$bDownloadOnly=false}
-    {if $gui->can_do->edit != 'yes'}
+    {if $gui->can_do->edit != 'yes' || $frozen_version == 'yes'}
       {$bDownloadOnly=true}
     {/if}
     

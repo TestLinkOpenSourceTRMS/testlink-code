@@ -259,7 +259,9 @@ $tlCfg->smarty_debug = false;
  *  put it out of reach via web or configure access denied.
  */
 $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
-
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    $tlCfg->log_path = 'C:\testlink\logs'; /* windows example */
+}
 
 /**
  * @var string How to warning user when security weak points exists.
@@ -1285,6 +1287,9 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
  *
  **/
 $g_repositoryPath = '/var/testlink/upload_area/';  /* unix example */
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    $g_repositoryPath = 'C:\testlink\upload_area';  /* windows example */
+}
 
 /**
  * compression used within the repository

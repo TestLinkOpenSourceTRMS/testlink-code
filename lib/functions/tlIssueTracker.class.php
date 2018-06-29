@@ -83,7 +83,9 @@ class tlIssueTracker extends tlObject
            25 =>  array('type' => 'github','api' =>'rest',
                         'enabled' => false, 'order' => 25),
            26 =>  array('type' => 'trello','api' =>'rest',
-                        'enabled' => true, 'order' => 26)
+                        'enabled' => true, 'order' => 26),
+           27 =>  array('type' => 'tuleap','api' =>'rest',
+                        'enabled' => true, 'order' => 27)
                      );
     
   var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');

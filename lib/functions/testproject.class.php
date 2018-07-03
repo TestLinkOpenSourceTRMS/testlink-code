@@ -1931,6 +1931,50 @@ function setPublicStatus($id,$status)
   }
 
   /**
+   * Sets testproject related role assignment for all users
+   *
+   * @param integer $tproject_id
+   * @param integer $role_id
+   **/
+  function setUserRoleIDs($tproject_id, $role_id)
+  {
+    $delQuery = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE testproject_id = {$tproject_id}";
+    if($this->db->exec_query($delQuery))
+    {
+      if($role_id == TL_ROLES_INHERITED)
+      {
+        return tl::OK;
+      }
+      $userQuery = "SELECT id, role_id FROM {$this->tables['users']} " .
+                   "WHERE role_id != " . TL_ROLES_ADMIN;
+      $userArray = $this->db->get_recordset($userQuery);
+
+      if(!is_null($userArray) && $userArray != array())
+      {
+        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        $query = "/* debugMsg*/ INSERT INTO {$this->tables['user_testproject_roles']} " .
+                 " (user_id,testproject_id,role_id) VALUES ";
+        foreach($userArray as $value)
+        {
+          $query .= "({$value['id']},{$tproject_id},{$role_id}),";
+        }
+        $query = substr($query, 0, strlen($query)-1);
+        if($this->db->exec_query($query))
+        {
+          $testProject = $this->get_by_id($tproject_id);
+          $role = tlRole::getByID($this->db,$role_id,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+          logAuditEvent(TLS("audit_users_roles_added_testproject",'all users',
+                        $testProject['name'],$role->name),"ASSIGN",$tproject_id,"testprojects");
+          return tl::OK;
+        }
+        return tl::ERROR;
+      }
+      return tl::ERROR;
+    }
+    return tl::ERROR;
+  }
+
+  /**
    * Inserts a testproject related role for a given user
    *
    * @param integer $userID the id of the user

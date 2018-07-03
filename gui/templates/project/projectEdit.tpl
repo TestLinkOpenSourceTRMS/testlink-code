@@ -25,7 +25,7 @@
   testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,api_key,
   warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker,
   testproject_code_tracker_integration,code_tracker,testproject_reqmgr_integration,reqmgrsystem,
-  no_rms_defined,no_issuetracker_defined,no_codetracker_defined'}
+  no_rms_defined,no_issuetracker_defined,no_codetracker_defined,th_roles_testproject,default_auth_method'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -76,6 +76,19 @@ function manageTracker(selectOID,targetOID)
     to.disabled = true;
   }  
 
+}
+
+function setDefaultRole(is_public)
+{
+  var selectRoleObj = document.getElementById('tproject_role_id');
+  if (is_public.checked == true)
+  {
+    selectRoleObj.disabled = false;
+  }
+  else
+  {
+    selectRoleObj.disabled = true;
+  }
 }
 
 </script>
@@ -302,9 +315,21 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
 
       <tr>
         <td></td><td>
-            <input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked"  {/if} />
+            <input type="checkbox" name="is_public" id="is_public" {if $gui->is_public eq 1} checked="checked"  {/if} onchange="javascript:setDefaultRole(this);" />
             {$labels.public}
           </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          {$labels.default_auth_method} {$labels.th_roles_testproject}
+          <select name="tproject_role_id" id="tproject_role_id">
+            {foreach item=role from=$gui->allRoles}
+              <option value="{$role->dbID}"
+              {if $role->dbID == $gui->default_role_id} selected {/if}>{$role->name|escape}</option>
+            {/foreach}
+          </select>
+        </td>
       </tr>
       
       {if $gui->api_key != ''}

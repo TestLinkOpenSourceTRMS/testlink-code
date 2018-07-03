@@ -42,7 +42,7 @@ $reloadType = 'none';  // domain 'none','reloadNavBar'
 
 $tproject_mgr = new testproject($db);
 $role_mgr = new tlRole($db);
-$args = init_args($tproject_mgr, $role_mgr, $_REQUEST, $session_tproject_id);
+$args = init_args($tproject_mgr, $role_mgr, $_REQUEST);
 
 $gui = initializeGui($db,$args);
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
@@ -237,13 +237,14 @@ switch($args->doAction)
  * Important: changes in HTML input elements on the Smarty template
  *            must be reflected here.
  *
+ * @param class $tprojectMgr project manager class object
+ * @param class $role_mgr role manager class object
  * @param array $request_hash the $_REQUEST
- * @param hash session_hash the $_SESSION
  * @return singleton object with html values tranformed and other
  *                   generated variables.
  * @internal
  */
-function init_args($tprojectMgr,$role_mgr, $request_hash, $session_tproject_id)
+function init_args($tprojectMgr,$role_mgr, $request_hash)
 {
   $args = new stdClass();
   $request_hash = strings_stripSlashes($request_hash);

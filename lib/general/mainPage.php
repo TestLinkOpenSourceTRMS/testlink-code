@@ -179,8 +179,15 @@ foreach(array('EVENT_LEFTMENU_TOP',
   }
 }
 
+$tplCfg= config_get('tpl');
+$tplKey = 'mainPage';
+$tpl = $tplKey . '.tpl';
+if( property_exists($tplCfg, $tplKey) ) {
+  $tpl = $tplCfg->$tplKey;
+} 
+
 $smarty->assign('gui',$gui);
-$smarty->display('mainPage.tpl');
+$smarty->display($tpl);
 
 
 /**

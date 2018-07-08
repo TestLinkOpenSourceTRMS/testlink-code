@@ -267,7 +267,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     $this->initMethodYellowPages();
     $this->methods += $callbacks;
 
-    $this->IXR_Server($this->methods);    
+    // after changing IXR_Server() constructor to __contructor()
+    parent::__construct($this->methods); 
   }  
   
   /**

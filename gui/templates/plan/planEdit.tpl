@@ -86,19 +86,6 @@ function jsCallDeleteFile(btn, text, o_id)
     window.location=my_action;
   }
 }        
-
-function setDefaultRole(is_public)
-{
-  var selectRoleObj = document.getElementById('tplan_role_id');
-  if (is_public.checked == true)
-  {
-    selectRoleObj.disabled = false;
-  }
-  else
-  {
-    selectRoleObj.disabled = true;
-  }
-}
 </script>
 
 </head>
@@ -174,19 +161,8 @@ function setDefaultRole(is_public)
       <tr>
         <th style="background:none;">{$labels.public}</th>
           <td>
-            <input type="checkbox" name="is_public" id="is_public" {if $gui->is_public eq 1} checked="checked" {/if} onchange="javascript:setDefaultRole(this);"/>
+            <input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked" {/if} />
           </td>
-      </tr>
-      <tr>
-        <th style="background:none;">{$labels.default_auth_method} {$labels.th_roles_testplan}</th>
-        <td>
-          <select name="tplan_role_id" id="tplan_role_id">
-            {foreach item=role from=$gui->allRoles}
-              <option value="{$role->dbID}"
-              {if $role->dbID == $gui->default_role_id} selected {/if}>{$role->name|escape}</option>
-            {/foreach}
-          </select>
-        </td>
       </tr>
 
       {if isset($gui->api_key) && $gui->api_key != ''}

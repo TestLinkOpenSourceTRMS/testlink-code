@@ -121,7 +121,7 @@ class testplan extends tlObjectWithAttachments
    *     if everything ok -> id of new testplan (node id).
    *     if problems -> 0.
    */
-  function create($name,$notes,$testproject_id,$is_active=1,$is_public=1,$default_role=TL_ROLES_INHERITED)
+  function create($name,$notes,$testproject_id,$is_active=1,$is_public=1)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -134,10 +134,10 @@ class testplan extends tlObjectWithAttachments
     $api_key = md5(rand()) . md5(rand()); 
 
     $sql = "/* $debugMsg */ " . 
-           " INSERT INTO {$this->tables['testplans']} (id,notes,api_key,testproject_id,active,is_public,default_role) " .
+           " INSERT INTO {$this->tables['testplans']} (id,notes,api_key,testproject_id,active,is_public) " .
            " VALUES ( {$tplan_id} " . ", '" . $this->db->prepare_string($notes) . "'," .
            "'" .  $this->db->prepare_string($api_key) . "'," .
-           $testproject_id . "," . $active_status . "," . $public_status . "," . $default_role . ")";
+           $testproject_id . "," . $active_status . "," . $public_status . ")";
     $result = $this->db->exec_query($sql);
     $id = 0;
     if ($result)
@@ -314,7 +314,7 @@ class testplan extends tlObjectWithAttachments
    * 
    * @return integer result code (1=ok)
    */
-  function update($id,$name,$notes,$is_active=null,$is_public=null,$default_role=TL_ROLES_INHERITED)
+  function update($id,$name,$notes,$is_active=null,$is_public=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $do_update = 1;
@@ -335,11 +335,10 @@ class testplan extends tlObjectWithAttachments
     if($do_update)
     {
       // Update name
-      $safe_id = intval($id);
       $sql = "/* $debugMsg */ ";
       $sql .= "UPDATE {$this->tables['nodes_hierarchy']} " .
               "SET name='" . $this->db->prepare_string($name) . "'" .
-              "WHERE id={$safe_id}";
+              "WHERE id={$id}";
       $result = $this->db->exec_query($sql);
       
       if($result)
@@ -356,7 +355,7 @@ class testplan extends tlObjectWithAttachments
         
         $sql = " UPDATE {$this->tables['testplans']} " .
                " SET notes='" . $this->db->prepare_string($notes). "' " .
-               " {$add_upd},default_role={$default_role} WHERE id=" . $safe_id;
+               " {$add_upd} WHERE id=" . $id;
         $result = $this->db->exec_query($sql);
       }
     }
@@ -1750,51 +1749,6 @@ class testplan extends tlObjectWithAttachments
            "WHERE testplan_id = {$id}";
     $roles = $this->db->fetchRowsIntoMap($sql,'user_id');
     return $roles;
-  }
-
-
-  /**
-   * Sets testplan related role assignment for all users
-   *
-   * @param integer $tplan_id
-   * @param integer $role_id
-   **/
-  function setUserRoleIDs($tplan_id, $role_id)
-  {
-    $delQuery = "DELETE FROM {$this->tables['user_testplan_roles']} WHERE testplan_id = {$tplan_id}";
-    if($this->db->exec_query($delQuery))
-    {
-      if($role_id == TL_ROLES_INHERITED)
-      {
-        return tl::OK;
-      }
-      $userQuery = "SELECT id, role_id FROM {$this->tables['users']} " .
-                   "WHERE role_id != " . TL_ROLES_ADMIN;
-      $userArray = $this->db->get_recordset($userQuery);
-
-      if(!is_null($userArray) && $userArray != array())
-      {
-        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $query = "/* debugMsg*/ INSERT INTO {$this->tables['user_testplan_roles']} " .
-                 " (user_id,testplan_id,role_id) VALUES ";
-        foreach($userArray as $value)
-        {
-          $query .= "({$value['id']},{$tplan_id},{$role_id}),";
-        }
-        $query = substr($query, 0, strlen($query)-1);
-        if($this->db->exec_query($query))
-        {
-          $testPlan = $this->get_by_id($tplan_id);
-          $role = tlRole::getByID($this->db,$role_id,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-          logAuditEvent(TLS("audit_users_roles_added_testplan",'all users',
-                        $testPlan['name'],$role->name),"ASSIGN",$tplan_id,"testplans");
-          return tl::OK;
-        }
-        return tl::ERROR;
-      }
-      return tl::ERROR;
-    }
-    return tl::ERROR;
   }
 
 

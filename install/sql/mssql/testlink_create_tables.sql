@@ -631,7 +631,6 @@ CREATE TABLE /*prefix*/testplans (
   active tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_active DEFAULT ((1)),
   is_open tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_is_open DEFAULT ((1)),
   is_public tinyint NOT NULL CONSTRAINT /*prefix*/DF_testplans_is_public DEFAULT ((1)),
-  default_role INT NOT NULL CONSTRAINT /*prefix*/DF_testplans_default_role DEFAULT ((0)),
   api_key varchar(64) NOT NULL DEFAULT (HashBytes('MD5',CAST(RAND() AS CHAR)) + HashBytes('MD5',CAST(RAND() AS CHAR))),
  CONSTRAINT /*prefix*/PK_testplans PRIMARY KEY CLUSTERED 
  (

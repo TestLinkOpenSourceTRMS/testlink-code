@@ -17,7 +17,6 @@
 
 require_once('../../config.inc.php');
 require_once("common.php");
-require_once('tlRole.class.php')
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testplan');
 require_once(require_web_editor($editorCfg['type']));
@@ -27,12 +26,11 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
-$role_mgr = new tlRole($db);
 
 $smarty = new TLSmarty();
 $do_display=false;
 $template = null;
-$args = init_args($tproject_mgr, $role_mgr, $_REQUEST);
+$args = init_args($_REQUEST);
 if (!$args->tproject_id)
 {
   $smarty->assign('title', lang_get('fatal_page_title'));
@@ -96,7 +94,6 @@ switch($args->do_action)
     $gui->testplan_name = $args->testplan_name;
     $gui->is_active = ($args->active == 'on') ? 1 :0 ;
     $gui->is_public = ($args->is_public == 'on') ? 1 :0 ;
-    $gui->tplan_role_id = $args->tplan_role_id;
 
     $template = 'planEdit.tpl';
     $status_ok = false;
@@ -104,7 +101,7 @@ switch($args->do_action)
     if(!$name_exists || $name_id_rel_ok)
     {
       if(!$tplan_mgr->update($args->tplan_id,$args->testplan_name,$args->notes,
-                             $args->active,$args->is_public,$args->tplan_role_id))
+                             $args->active,$args->is_public))
       {
         $gui->user_feedback = lang_get('update_tp_failed1'). $gui->testplan_name . 
                               lang_get('update_tp_failed2').": " . $db->error_msg() . "<br />";
@@ -134,13 +131,6 @@ switch($args->do_action)
             $tplan_mgr->addUserRole($args->user_id,$args->tplan_id,$tprojectEffectiveRole->dbID);
           }  
         }
-        else
-        {
-          if($args->tplan_role_id !== -1)
-          {
-            $tplan_mgr->setUserRoleIDs($args->tplan_id, $args->tplan_role_id);
-          }
-        }
       }
     }
     else
@@ -164,12 +154,11 @@ switch($args->do_action)
     $gui->testplan_name = $args->testplan_name;
     $gui->is_active = ($args->active == 'on') ? 1 :0 ;
     $gui->is_public = ($args->is_public == 'on') ? 1 :0 ;
-    $gui->tplan_role_id = $args->tplan_role_id;
     
     if(!$name_exists)
     {
       $new_tplan_id = $tplan_mgr->create($args->testplan_name,$args->notes,
-                                         $args->tproject_id,$args->active,$args->is_public,$args->tplan_role_id);
+                                         $args->tproject_id,$args->active,$args->is_public);
       if ($new_tplan_id == 0)
       {
         $gui->user_feedback = $db->error_msg();
@@ -203,13 +192,6 @@ switch($args->do_action)
             $effectiveRole = $args->user->getEffectiveRole($db,$args->tproject_id,null);
             $tplan_mgr->addUserRole($args->user_id,$new_tplan_id,$effectiveRole->dbID);
           }  
-        }
-        else
-        {
-          if($args->tplan_role_id !== -1)
-          {
-            $tplan_mgr->setUserRoleIDs($args->tplan_id, $args->tplan_role_id);
-          }
         }
         // End critic block
 
@@ -335,14 +317,12 @@ if($do_display)
  *            must be reflected here.
  *
  *
- * @parameter tprojectMgr the project manager class object
- + @parameter role_mgr the tlRole manager class object
  * @parameter hash request_hash the $_REQUEST
  * @return    object with html values tranformed and other
  *                   generated variables.
  *
  */
-function init_args($tprojectMgr, $role_mgr, $request_hash)
+function init_args($request_hash)
 {
   $session_hash = $_SESSION;
   $args = new stdClass();
@@ -360,7 +340,7 @@ function init_args($tprojectMgr, $role_mgr, $request_hash)
     $args->$key = isset($request_hash[$key]) ? 1 : 0;
   }
 
-  $intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0, 'tplan_role_id' => -1);
+  $intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
   foreach($intval_keys as $key => $value)
   {
     $args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
@@ -386,12 +366,6 @@ function init_args($tprojectMgr, $role_mgr, $request_hash)
   $args->user_id = intval($session_hash['userID']);
   $args->user = $session_hash['currentUser'];
 
-  if($args->do_action != 'do_update' && $args->do_action != 'do_create')
-  {
-    $args->allRoles = $role_mgr->getAll($tprojectMgr->db, "WHERE id != 1 AND id != 2 AND id != " . TL_ROLES_ADMIN . " ",
-                                        null, null, $role_mgr::TLOBJ_O_GET_DETAIL_MINIMUM);
-    $args->default_role_id = TL_ROLES_INHERITED;
-  }
 
   // all has to be refactored this way  
   $iParams = array("file_id" => array(tlInputParameter::INT_N),
@@ -447,15 +421,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
 
     $guiObj->fileUploadMsg = '';
     $guiObj->import_limit = TL_REPOSITORY_MAXFILESIZE;
-
-    if(property_exists($argsObj, "allRoles"))
-    {
-      $guiObj->allRoles = $argsObj->allRoles;
-    }
-    if(property_exists($argsObj, "default_role_id"))
-    {
-      $guiObj->default_role_id = $argsObj->default_role_id;
-    }
     
     return $guiObj;
 }
@@ -474,7 +439,6 @@ function getItemData(&$itemMgr,&$guiObj,&$ofObj,$itemID,$updateAttachments=false
     $guiObj->is_public = $dummy['is_public'];
     $guiObj->api_key = $dummy['api_key'];
     $guiObj->tplan_id = $itemID;
-    $guiObj->default_role_id = $dummy['default_role'];
 
     if($updateAttachments)
     {  

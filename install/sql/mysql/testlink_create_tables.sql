@@ -465,6 +465,7 @@ CREATE TABLE /*prefix*/testplans (
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
   `is_public` tinyint(1) NOT NULL default '1',
+  `default_role` int(5) NOT NULL default '0',
   `api_key` varchar(64) NOT NULL default '829a2ded3ed0829a2dedd8ab81dfa2c77e8235bc3ed0d8ab81dfa2c77e8235bc',
   PRIMARY KEY  (`id`),
   KEY /*prefix*/testplans_testproject_id_active (`testproject_id`,`active`),

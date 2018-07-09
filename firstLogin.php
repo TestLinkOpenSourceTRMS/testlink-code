@@ -61,11 +61,21 @@ if( !is_null($args->doEditUser) )
         {
           $tproject_mgr = new testproject($db);
           $projects = $tproject_mgr->get_all();
+          $tplan_mgr = new testplan($db);
           foreach($projects as $tproj)
           {
             if(isset($tproj['opt']) && property_exists($tproj['opt'], 'defaultRole') && $tproj['opt']->defaultRole != TL_ROLES_INHERITED)
             {
               $tproject_mgr->addUserRole($user->dbID,$tproj['id'],$tproj['opt']->defaultRole);
+            }
+          }
+
+          $plans = $tplan_mgr->get_all();
+          foreach($plans as $tplan)
+          {
+            if (isset($tplan['default_role']) && $tplan['default_role'] != TL_ROLES_INHERITED)
+            {
+              $tplan_mgr->addUserRole($user->dbID,$tplan['id'], $tplan['default_role']);
             }
           }
         }

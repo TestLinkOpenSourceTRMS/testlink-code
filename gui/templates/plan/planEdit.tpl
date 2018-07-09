@@ -11,7 +11,7 @@ Purpose: smarty template - create Test Plan
           s="warning,warning_empty_tp_name,testplan_title_edit,public,api_key,
              testplan_th_name,testplan_th_notes,testplan_question_create_tp_from,
              opt_no,testplan_th_active,btn_testplan_create,btn_upd,cancel,
-             show_event_history,testplan_txt_notes"}
+             show_event_history,testplan_txt_notes,th_roles_testplan,default_auth_method"}
 
 
 
@@ -85,7 +85,20 @@ function jsCallDeleteFile(btn, text, o_id)
     my_action='{$gui->delAttachmentURL}'+o_id;
     window.location=my_action;
   }
-}        
+}
+
+function setDefaultRole(is_public)
+{
+  var selectRoleObj = document.getElementById('tplan_role_id');
+  if (is_public.checked == true)
+  {
+    selectRoleObj.disabled = false;
+  }
+  else
+  {
+    selectRoleObj.disabled = true;
+  }
+}
 </script>
 
 </head>
@@ -161,8 +174,19 @@ function jsCallDeleteFile(btn, text, o_id)
       <tr>
         <th style="background:none;">{$labels.public}</th>
           <td>
-            <input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked" {/if} />
+            <input type="checkbox" name="is_public" id="is_public" {if $gui->is_public eq 1} checked="checked" {/if} onchange="javascript:setDefaultRole(this);"/>
           </td>
+      </tr>
+      <tr>
+        <th style="background:none;">{$labels.default_auth_method} {$labels.th_roles_testplan}</th>
+        <td>
+          <select name="tplan_role_id" id="tplan_role_id">
+            {foreach item=role from=$gui->allRoles}
+              <option value="{$role->dbID}"
+              {if $role->dbID == $gui->default_role_id} selected {/if}>{$role->name|escape}</option>
+            {/foreach}
+          </select>
+        </td>
       </tr>
 
       {if isset($gui->api_key) && $gui->api_key != ''}

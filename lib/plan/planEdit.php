@@ -136,7 +136,7 @@ switch($args->do_action)
         }
         else
         {
-          if($args->tplan_role_id !== -1)
+          if($args->update_default_role === 1 && $args->tplan_role_id !== -1)
           {
             $tplan_mgr->setUserRoleIDs($args->tplan_id, $args->tplan_role_id);
           }
@@ -354,7 +354,7 @@ function init_args($tprojectMgr, $role_mgr, $request_hash)
     $args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
   }
 
-  $checkboxes_keys = array('is_public' => 0,'active' => 0);
+  $checkboxes_keys = array('is_public' => 0,'active' => 0, 'update_default_role' => 0);
   foreach($checkboxes_keys as $key => $value)
   {
     $args->$key = isset($request_hash[$key]) ? 1 : 0;
@@ -456,6 +456,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
     {
       $guiObj->default_role_id = $argsObj->default_role_id;
     }
+    $guiObj->overwrite_default_role = sprintf(lang_get('overwrite_default_role'), lang_get('test_plan'), lang_get('test_plan'));
     
     return $guiObj;
 }

@@ -1561,6 +1561,7 @@ $TLS_testplan_txt_notes = "Test plans should encompass a (set of) clearly define
                           "Test plans can be deactivated (i.e., editing and changing of results change are not allowed). " .
                           "Deactivated test plans are visible only via 'Reporting' and this page.";
 $TLS_warning_empty_tp_name = "You cannot enter Test plan without a name!";
+$TLS_no_testplan_default_role = "Note: Default Test Plan Role option is only applicable for public test plans";
 
 $TLS_testplan_copy_tcases = "Copy Test Cases";
 $TLS_testplan_copy_tcases_latest = "Latest available version";
@@ -1636,6 +1637,7 @@ $TLS_reqmgrsystem = 'Req. Management System';
 $TLS_no_rms_defined = ' >> There are no Req. Management Systems defined <<';
 $TLS_no_issuetracker_defined = ' >> There are no Issue Tracker Systems defined <<';
 $TLS_no_codetracker_defined = ' >> There are no Code Tracker Systems defined <<';
+$TLS_overwrite_default_role = "Set new default role for %s, deleting existing User %s roles?";
 
 
 $TLS_info_failed_loc_prod = 'Failed to localize the Test Project.';

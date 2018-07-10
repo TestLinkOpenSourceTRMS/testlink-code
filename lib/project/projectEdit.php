@@ -267,7 +267,8 @@ function init_args($tprojectMgr,$role_mgr, $request_hash)
                          'optReq' => 0,'optInventory' => 0,
                          'issue_tracker_enabled' => 0,
                          'code_tracker_enabled' => 0,
-                         'reqmgr_integration_enabled' => 0);
+                         'reqmgr_integration_enabled' => 0,
+                         'update_default_role' => 0);
   foreach ($checkbox_keys as $key => $value)
   {
     $args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -472,7 +473,7 @@ function doCreate($argsObj,&$tprojectMgr)
       {
         if($argsObj->tproject_role_id !== -1)
         {
-          $tprojectMgr->setUserRoleIDs($argsObj->tprojectID, $argsObj->tproject_role_id);
+          $tprojectMgr->setAllUsersToRole($argsObj->tprojectID, $argsObj->tproject_role_id);
         }
       }
     }
@@ -592,9 +593,9 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
       }
       else
       {
-        if($argsObj->tproject_role_id !== -1)
+        if($argsObj->update_default_role === 1 && $argsObj->tproject_role_id !== -1)
         {
-          $tprojectMgr->setUserRoleIDs($argsObj->tprojectID, $argsObj->tproject_role_id);
+          $tprojectMgr->setAllUsersToRole($argsObj->tprojectID, $argsObj->tproject_role_id);
         }
       }
          
@@ -791,6 +792,7 @@ function initializeGui(&$dbHandler,$argsObj)
   $guiObj = $argsObj;
   $guiObj->canManage = $argsObj->user->hasRight($dbHandler,"mgt_modify_product");
   $guiObj->found = 'yes';
+  $guiObj->overwrite_default_role = sprintf(lang_get('overwrite_default_role'), lang_get('testproject'), lang_get('testproject'));
 
   $ent2loop = array('tlIssueTracker' => 'issueTrackers', 'tlCodeTracker' => 'codeTrackers',
                     'tlReqMgrSystem' => 'reqMgrSystems');

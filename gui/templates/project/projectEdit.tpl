@@ -25,7 +25,8 @@
   testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,api_key,
   warning_empty_tproject_name,testproject_issue_tracker_integration,issue_tracker,
   testproject_code_tracker_integration,code_tracker,testproject_reqmgr_integration,reqmgrsystem,
-  no_rms_defined,no_issuetracker_defined,no_codetracker_defined,th_roles_testproject,default_auth_method'}
+  no_rms_defined,no_issuetracker_defined,no_codetracker_defined,th_roles_testproject,default_auth_method,
+  no_testproject_default_role'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -38,6 +39,7 @@
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
 var warning_empty_tproject_name = "{$labels.warning_empty_tproject_name|escape:'javascript'}";
+var public_note = " ({$labels.no_testproject_default_role|escape:'javascript'})";
 
 function validateForm(f)
 {
@@ -81,13 +83,16 @@ function manageTracker(selectOID,targetOID)
 function setDefaultRole(is_public)
 {
   var selectRoleObj = document.getElementById('tproject_role_id');
+  var spanNoteObj = document.getElementById('public_note');
   if (is_public.checked == true)
   {
     selectRoleObj.disabled = false;
+    spanNoteObj.innerHTML = "";
   }
   else
   {
     selectRoleObj.disabled = true;
+    spanNoteObj.innerHTML = public_note;
   }
 }
 
@@ -329,8 +334,16 @@ manageTracker('code_tracker_id','code_tracker_enabled');">
               {if $role->dbID == $gui->default_role_id} selected {/if}>{$role->name|escape}</option>
             {/foreach}
           </select>
-        </td>
+        <span id="public_note">{if $gui->is_public eq 0} ({$labels.no_testproject_default_role}){/if}</span></td>
       </tr>
+      {if $doActionValue eq "doUpdate"}
+        <tr>
+          <td></td><td>
+              &emsp;&emsp;<input type="checkbox" name="update_default_role" id="update_default_role" />
+              {$gui->overwrite_default_role}
+            </td>
+        </tr>
+      {/if}
       
       {if $gui->api_key != ''}
       <tr>

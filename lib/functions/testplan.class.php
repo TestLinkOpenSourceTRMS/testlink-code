@@ -1759,14 +1759,15 @@ class testplan extends tlObjectWithAttachments
    * @param integer $tplan_id
    * @param integer $role_id
    **/
-  function setUserRoleIDs($tplan_id, $role_id)
+  function setAllUsersToRole($tplan_id, $role_id)
   {
+    $retVal = tl::ERROR;
     $delQuery = "DELETE FROM {$this->tables['user_testplan_roles']} WHERE testplan_id = {$tplan_id}";
     if($this->db->exec_query($delQuery))
     {
       if($role_id == TL_ROLES_INHERITED)
       {
-        return tl::OK;
+        $retVal = tl::OK;
       }
       $userQuery = "SELECT id, role_id FROM {$this->tables['users']} " .
                    "WHERE role_id != " . TL_ROLES_ADMIN;
@@ -1788,13 +1789,11 @@ class testplan extends tlObjectWithAttachments
           $role = tlRole::getByID($this->db,$role_id,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
           logAuditEvent(TLS("audit_users_roles_added_testplan",'all users',
                         $testPlan['name'],$role->name),"ASSIGN",$tplan_id,"testplans");
-          return tl::OK;
+          $retVal = tl::OK;
         }
-        return tl::ERROR;
       }
-      return tl::ERROR;
     }
-    return tl::ERROR;
+    return $retVal;
   }
 
 

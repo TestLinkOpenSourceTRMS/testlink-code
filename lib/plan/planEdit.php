@@ -138,7 +138,7 @@ switch($args->do_action)
         {
           if($args->update_default_role === 1 && $args->tplan_role_id !== -1)
           {
-            $tplan_mgr->setUserRoleIDs($args->tplan_id, $args->tplan_role_id);
+            $tplan_mgr->setAllUsersToRole($args->tplan_id, $args->tplan_role_id);
           }
         }
       }
@@ -208,7 +208,7 @@ switch($args->do_action)
         {
           if($args->tplan_role_id !== -1)
           {
-            $tplan_mgr->setUserRoleIDs($args->tplan_id, $args->tplan_role_id);
+            $tplan_mgr->setAllUsersToRole($args->tplan_id, $args->tplan_role_id);
           }
         }
         // End critic block

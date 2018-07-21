@@ -2471,6 +2471,12 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @param int $args["testplanid"] 
    * @param string $args["status"] - status is {@link $validStatusList}
+   *
+   * @param array $args["steps"] - each element is an array with following
+   *        structure:
+   *        array('step_number' => 1, 'result' => 'p', 'notes' => 'the notes')
+   *
+   *
    * @param int $args["buildid"] - optional.
    *                               if not present and $args["buildname"] exists
    *                               then 
@@ -2606,14 +2612,20 @@ class TestlinkXMLRPCServer extends IXR_Server
       $resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
 
 
-      if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
-      {
+      $doOverwrite = $this->_isParamPresent(self::$overwriteParamName) && 
+                     $this->args[self::$overwriteParamName];
+      
+      if($doOverwrite) {
+        $resultInfo[0]["overwrite"] = true;   
         $executionID = $this->_updateResult($tester_id,$exec_ts);
-        $resultInfo[0]["overwrite"] = true;      
+
+        if( $executionID != 0 && $this->_isParamPresent(self::$stepsParamName) ) {
+          $resultInfo[0]["steps"] = 'yes!';
+          $resultInfo[0]["steps_sql"] = $this->_updateStepsResult($executionID);
+        }  
       }
 
-      if($executionID == 0)
-      {
+      if($executionID == 0) {
         $executionID = $this->_insertResultToDB($tester_id,$exec_ts);      
       } 
       
@@ -2651,14 +2663,13 @@ class TestlinkXMLRPCServer extends IXR_Server
                         'renderGhostSteps' => false, 
                         'renderImageInline' => false);
           
-          // return array('tcx' => $this->tcVersionID); //gretel
           $steps = $this->tcaseMgr->getStepsSimple($this->tcVersionID,0,$r2d2);
         
           $target = DB_TABLE_PREFIX . 'execution_tcsteps';
           $resultsCfg = config_get('results');
+
           foreach($nst as $spnum => $spdata)
           {
-
             // check if step exists, if not ignore
             if( isset($steps[$spnum]) )
             {
@@ -8562,6 +8573,128 @@ protected function createAttachmentTempFile()
     return $status_ok ? $resultInfo : $this->errors;
   }
  
+
+ /**
+  * update result of LATEST execution for each
+  * step.
+  *
+  * If step is not present, exec status will not be changed.
+  *
+  * @access protected
+  */
+
+  protected function _updateStepsResult($execID=null) {
+    
+    $tcversion_id =  $this->tcVersionID;
+    $tcase_id = $this->args[self::$testCaseIDParamName];
+
+    $stepExecStatus = $this->args[self::$stepsParamName];
+
+    $exec_id = $execID;
+
+    if( is_null($exec_id) ) {
+      $execContext = array('tplan_id' => $this->args[self::$testPlanIDParamName],
+                           'platform_id' => $this->args[self::$platformIDParamName],
+                           'build_id' => $this->args[self::$buildIDParamName]);
+      
+      $opt = array('output' => 'exec_id');
+      $identity = array('id' => $tcase_id, 'version_id' => $tcversion_id);
+      $exec_id = $this->tcaseMgr->getLatestExecSingleContext($identity,
+                                                             $execContext, $opt);
+    }
+
+    if( !is_null($exec_id) ) {
+      $exec_id = intval($exec_id);
+      $execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
+
+      $st = &$this->args[self::$stepsParamName];
+
+      // needed to get tcstep_id from step number
+      $r2d2 = array('fields2get' => 'TCSTEPS.step_number,TCSTEPS.id', 
+                    'accessKey' => 'step_number', 
+                    'renderGhostSteps' => false, 'renderImageInline' => false);
+          
+      $steps = $this->tcaseMgr->getStepsSimple($this->tcVersionID,0,$r2d2);
+
+      $xx = null;
+      foreach($st as $spdata) {
+        $dbField = null;
+        $dbVal = null;
+        foreach ($spdata as $keyF => $value) {
+          switch($keyF) {
+            case 'result':
+             $status = strtolower(trim($spdata['result']));
+             $dbField[] = 'status';
+             $dbVal[] = "'" . $status[0] . "'";
+            break;
+
+            case 'notes':
+             $dbField[] = $keyF;
+             $dbVal[] = "'" . $this->dbObj->prepare_string($spdata[$keyF]) ."'";
+            break;
+          }
+        }
+
+        $spnum = $spdata['step_number'];
+        if( !is_null($dbField) && isset($steps[$spnum]) ) {
+
+          $target = DB_TABLE_PREFIX . 'execution_tcsteps';
+          $where = " WHERE execution_id=" . $exec_id . " AND " .
+                   " tcstep_id=" . intval($steps[$spnum]['id']);
+    
+          // Manage Insert
+          $sql = "SELECT id FROM $target $where";
+          $rs = $this->dbObj->get_recordset($sql);
+      
+          if( is_null($rs) or count($rs) != 1 ) {
+            $sql = " INSERT INTO $target (";
+            
+            $dbField[] = 'tcstep_id';
+            $dbVal[] = intval($steps[$spnum]['id']);
+            
+            $dbField[] = 'execution_id';
+            $dbVal[] = $exec_id;
+            
+            foreach($dbField as $idx => $kf) {
+              if( $idx > 0 ) {
+                $sql .= ',';
+              }
+              $sql .= $kf; 
+            }   
+            $sql .= ') VALUES( ';
+
+            foreach($dbVal as $idx => $kv) {
+              if( $idx > 0 ) {
+                $sql .= ',';
+              }
+              $sql .= $kv; 
+            }   
+            $sql .= ") ";
+          } else {
+            $sql = " UPDATE " . DB_TABLE_PREFIX . 'execution_tcsteps' .
+                   " SET ";
+            foreach($dbField as $idx => $kf) {
+              if( $idx > 0 ) {
+                $sql .= ',';
+              }
+              $sql .= $kf . '=' . $dbVal[$idx]; 
+            }   
+            $sql .= $where; 
+          } 
+
+          try {
+            $xx[] = $sql;
+            $this->dbObj->exec_query($sql);   
+          } catch (Exception $e) {
+            return $e;
+          }
+                 
+        }
+      } 
+    }
+    return $xx;
+  }  
+
 
 
   /**

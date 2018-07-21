@@ -141,7 +141,7 @@ switch($args->doAction)
   break;
 
   case 'doBulkUserRemove':
-    if(!is_null($args->achecked_tc)) {
+    if(!is_null($args->achecked_tc) && !is_null($args->userSet)) {
       doBulkUserRemove($db,$args,$gui,$cfg,$objMgr);    
     }  
   break; 
@@ -200,7 +200,6 @@ switch($args->level)
     // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
     // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
 
-    // var_dump($filters);die();
     $out = getFilteredSpecViewFlat($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
   break;
 
@@ -259,12 +258,9 @@ function init_args()
   
   $args->userSet = null;
   $target = $_REQUEST['bulk_tester_div']; 
-  if(isset($target) && count($target) > 0)
-  {
-    foreach($target as $uid)
-    {
-      if($uid > 0)
-      {
+  if(isset($target) && count($target) > 0) {
+    foreach($target as $uid) {
+      if($uid > 0) {
         $args->userSet[$uid] = $uid;
       }  
     }  
@@ -592,6 +588,7 @@ function doRemoveAll(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
  */
 function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
   
+  $feat = null;
   if(!is_null($argsObj->achecked_tc)) {
     foreach($argsObj->achecked_tc as $key_tc => $ptc) {
       foreach($ptc as $platform_id => $tcversion_id) {

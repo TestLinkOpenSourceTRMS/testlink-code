@@ -3874,5 +3874,5 @@ $TLS_expiration_date = 'Expiration Date';
 $TLS_system_descr = "test & requirement management software";
 $TLS_poweredBy = 'Powered by';
 $TLS_expiration = 'Expiration';
-
+$TLS_no_user_selected = 'You need to select at least one user';
 // ----- END ------------------------------------------------------------------

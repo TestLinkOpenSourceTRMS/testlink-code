@@ -67,7 +67,7 @@ switch($args->light)
       case 'test_plan':
         $param = "&type={$args->type}&level=testproject" .
                  "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
-                 "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
+                 "&header=y&summary=y&toc=y&body=y&passfail=n&cfields=y&metrics=y&author=y" .
                  "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=" . FORMAT_HTML;
         $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
       break;

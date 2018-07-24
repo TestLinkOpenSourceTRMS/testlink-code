@@ -604,13 +604,12 @@ function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
 
     // Must be done before delete
     if($argsObj->send_mail) {
-      $fSet = array_keys($features2[$op]);
+      $fSet = array_keys($feat);
       $items = $oMgr['tplan']->getFeatureByID($fSet);
       $testers = $oMgr['assign']->getUsersByFeatureBuild($fSet,$argsObj->build_id,$cfg['task_test_execution']);
 
       $f4mail = array();
-      foreach($items as $fid => $value)
-      {
+      foreach($items as $fid => $value) {
         $pid = $value['platform_id'];
         $f4mail[$pid][$fid]['previous_user_id'] = array_keys($testers[$fid]); 
         $f4mail[$pid][$fid]['tcase_id'] = $items[$fid]['tcase_id'];

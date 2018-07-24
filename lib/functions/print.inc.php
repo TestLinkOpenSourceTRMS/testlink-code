@@ -1624,7 +1624,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       $code .= buildTestExecResults($db,$its,$exec_info,$settings,$buildCfields);
 
       // Get Execution Attachments
-      $execAttachInfo = getAttachmentInfos($docRepo,$exec_info[0]['execution_id'],$tables['executions'],true,1);
+      // Need to fixed in a better way
+      // Seems that when creating attachment I use 'executions'
+      // instead of real table name.
+      // Name will be different is TABLE PREFIX is configured
+      //
+      $execAttachInfo = getAttachmentInfos($docRepo,$exec_info[0]['execution_id'],'executions',true,1);
 
       if( !is_null($execAttachInfo) )
       {

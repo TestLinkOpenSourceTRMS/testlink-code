@@ -151,7 +151,33 @@ $tlCfg->cookie->httponly = false;
  $tlCfg->cookie->path = '/';
 
 
-
+/* [ROLE INHERITANCE] */
+/**
+ * possible values
+ *
+ * 'testproject'
+ * 'global'
+ *
+ * 'testproject' 
+ * till a role is specifically assigned to test plan, test plan role 
+ * will be inherited from test project role.
+ *
+ * IMPORTANT NOTICE
+ * test project role can be specifically assigned or inherited from
+ * user's global role.
+ *
+ * if test project specifically assigned role changes, and test plan role was inherited, then it will also changes, due to inheritance.
+ *
+ *
+ * 'global'
+ * till a role is specifically assigned to test plan, test plan role 
+ * will be inherited from user's global role, and NOT from test project 
+ * specifically assigned role.
+ *
+ * if test project specifically assigned role changes, will not be changed.
+ *
+ */
+ $tlCfg->testplan_role_inheritance_mode = 'testproject';
 
 
 /* [LOCALIZATION] */

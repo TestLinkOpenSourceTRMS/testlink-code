@@ -352,32 +352,67 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
   @internal revisions
   20101111 - franciscom - BUGID 4006: test plan is_public                    
  */
-function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$users = null)
+function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$users = null,$inheritanceMode = null)
 {
   $tplan_mgr = new testplan($db);
   $tplan = $tplan_mgr->get_by_id($tplan_id);
   unset($tplan_mgr);
 
+  $roleInhMode = !is_null($inheritanceMode) ? $inheritanceMode : 
+                   config_get('testplan_role_inheritance_mode');
+
+ /**
+  * key: user_id 
+  * value: map with keys:
+  *        login                (from users table - useful for debug)
+  *        user_role_id         (from users table - useful for debug)
+  *        uplayer_role_id      (always = user_role_id)
+  *        uplayer_is_inherited
+  *        effective_role_id  user role for test project
+  *        is_inherited
+  */
   $effective_role = get_tproject_effective_role($db,$tproject,$user_id,$users);
-  foreach($effective_role as $user_id => $row)
-  {
-    $isInherited = 1;
-    $effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
-    $effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
-    
-    // Manage administrator exception DO NOT ENTER HERE
-    if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
-    {
-        $isInherited = 0;
-        $effective_role[$user_id]['effective_role_id'] = TL_ROLES_NO_RIGHTS;
-        $effective_role[$user_id]['effective_role'] = '<no rights>';
-    }
-    if(isset($row['user']->tplanRoles[$tplan_id]))
-    {
+
+  foreach($effective_role as $user_id => $row) {
+
+    $doNextStep = true;
+
+    // Step 1 - If I've role specified for Test Plan, get and skip
+    if( isset($row['user']->tplanRoles[$tplan_id]) ) {
       $isInherited = 0;
+      $doNextStep = false;
+
       $effective_role[$user_id]['effective_role_id'] = $row['user']->tplanRoles[$tplan_id]->dbID;  
       $effective_role[$user_id]['effective_role'] = $row['user']->tplanRoles[$tplan_id];
+    } 
+
+    // For Private Test Plans specific role is NEEDED for users with 
+    // global role !? ADMIN
+    if( $doNextStep && 
+       ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public']) {
+      $isInherited = 0;
+      $doNextStep = false;
+
+      $effective_role[$user_id]['effective_role_id'] = TL_ROLES_NO_RIGHTS;
+      $effective_role[$user_id]['effective_role'] = '<no rights>';
     }
+
+    if( $doNextStep ) {
+      $isInherited = 1;
+
+      switch($roleInhMode) {
+        case 'testproject':
+          $effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
+          $effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
+        break;
+
+        case 'global':
+          $effective_role[$user_id]['effective_role_id'] = $row['user']->globalRoleID;
+          $effective_role[$user_id]['effective_role'] = $row['user']->globalRole;
+        break;
+      }
+    }
+    
     $effective_role[$user_id]['is_inherited'] = $isInherited;
   }
   return $effective_role;

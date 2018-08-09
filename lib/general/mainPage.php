@@ -108,12 +108,24 @@ if($testplanID > 0)
 }
 
 $gui->testplanRole = null;
-if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
-{
-	$role = $currentUser->tplanRoles[$testplanID];
-	$gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
-}
+if ($testplanID)  {
 
+  $rd = null; 
+  // Role can be configured or inherited
+  if( isset($currentUser->tplanRoles[$testplanID]) ) {
+    // Configured
+    $role = $currentUser->tplanRoles[$testplanID];
+    $rd = $role->getDisplayName();
+  } else {
+    if( config_get('testplan_role_inheritance_mode') == 'global' ) {
+      $rd = $currentUser->globalRole->name;
+    }
+  } 
+
+  if( null != $rd ) {
+    $gui->testplanRole = $tlCfg->gui->role_separator_open .$rd . $tlCfg->gui->role_separator_close;
+  }
+}
 $rights2check = array('testplan_execute','testplan_create_build',
                       'testplan_metrics','testplan_planning',
                       'testplan_user_role_assignment',

@@ -937,18 +937,17 @@ class tlUser extends tlDBObject
      * @internal revisions
      * 
      */
-  function getAccessibleTestPlans(&$db,$testprojectID,$testplanID=null, $options=null)
-  {
+  function getAccessibleTestPlans(&$db,$testprojectID,$testplanID=null, $options=null) {
     $debugTag = 'Class:' .  __CLASS__ . '- Method:' . __FUNCTION__ . '-';
     
     $my['options'] = array( 'output' => null, 'active' => ACTIVE);
     $my['options'] = array_merge($my['options'], (array)$options);
     
-    $fields2get = ' NH.id, NH.name, TPLAN.is_public, COALESCE(USER_TPLAN_ROLES.testplan_id,0) AS has_role, ' .
+    $fields2get = ' NH.id, NH.name, TPLAN.is_public, ' .
+                  ' COALESCE(USER_TPLAN_ROLES.testplan_id,0) AS has_role, ' .
                   ' USER_TPLAN_ROLES.role_id AS user_testplan_role, TPLAN.active, 0 AS selected ';
 
-    if( $my['options']['output'] == 'mapfull' )
-    {
+    if( $my['options']['output'] == 'mapfull' ) {
       $fields2get .= ' ,TPLAN.notes, TPLAN.testproject_id ';
     }    
     
@@ -957,52 +956,98 @@ class tlUser extends tlDBObject
            " JOIN {$this->tables['testplans']} TPLAN ON NH.id=TPLAN.id  " .
            " LEFT OUTER JOIN {$this->tables['user_testplan_roles']} USER_TPLAN_ROLES" .
            " ON TPLAN.id = USER_TPLAN_ROLES.testplan_id " .
-           " AND USER_TPLAN_ROLES.user_id = " . intval($this->dbID) .
-           " WHERE testproject_id = " . intval($testprojectID) . " AND ";
+           " AND USER_TPLAN_ROLES.user_id = " . intval($this->dbID);
     
-    
-    if (!is_null($my['options']['active'])) 
-    {
-      $sql .= " active = {$my['options']['active']} AND ";
+
+    // Construct where sentence
+    $where = " WHERE testproject_id = " . intval($testprojectID) . " AND ";
+    if (!is_null($my['options']['active'])) {
+      $where .= " active = {$my['options']['active']} AND ";
     }
   
-    if (!is_null($testplanID))
-    {
-      $sql .= " NH.id = " . intval($testplanID) . " AND ";
+    if (!is_null($testplanID)) {
+      $where .= " NH.id = " . intval($testplanID) . " AND ";
     }
     
-    $globalNoRights = ($this->globalRoleID == TL_ROLES_NO_RIGHTS);
-    $projectNoRights = 0;
     $analyseGlobalRole = 1;
-    
-    // If user has a role for $testprojectID, then we DO NOT HAVE to check for globalRole
-    if( isset($this->tprojectRoles[$testprojectID]->dbID) )
-    {
-      $analyseGlobalRole = 0;
-      $projectNoRights = ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
+    $userGlobalRoleIsNoRights = ($this->globalRoleID == TL_ROLES_NO_RIGHTS);
+
+    // Role at Test Project level is defined?
+    $userProjectRoleIsNoRights = 0;
+    if( isset($this->tprojectRoles[$testprojectID]->dbID) ) {
+      $userProjectRoleIsNoRights = 
+        ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
+    }
+
+    // according to new configuration option
+    //
+    // testplan_role_inheritance_mode
+    //
+    // this logic will be different
+    $joins = '';
+    switch ( config_get('testplan_role_inheritance_mode') ) {
+
+      case 'testproject':
+        // If user has a role for $testprojectID, then we DO NOT HAVE 
+        // to check for globalRole
+        if( isset($this->tprojectRoles[$testprojectID]->dbID) ) {
+          $analyseGlobalRole = 0;
+        }
+
+        // User can have NO RIGHT on test project under analisys ($testprojectID), 
+        // in this situation he/she 
+        // has to have a role at Test Plan level in order to access one or more test plans 
+        // that belong to $testprojectID.
+        //
+        // Other situation: he/she has been created with role without rights ($globalNoRights)
+        //
+        if( $userProjectRoleIsNoRights || 
+            ($analyseGlobalRole && $userGlobalRoleIsNoRights) ) {
+          // In order to access he/she needs specific configuration.
+          $where .= "(USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
+        }  
+        else {
+          // in this situation:
+          // We can use what we have inherited from test project 
+          // OR 
+          // We can use specific test plan role if defined            
+          $where .= "(USER_TPLAN_ROLES.role_id IS NULL OR ";
+        }
+        $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")"; 
+
+      break;
+
+
+      case 'global':
+
+        // Because inheritance is from GLOBAL Role, do not need to care
+        // about existence of specific role defined AT TEST PROJECT LEVEL
+
+        // If User has NO RIGHTS at GLOBAL Level he/she need specific
+        // on test plan
+        if( $userGlobalRoleIsNoRights ) {
+          // In order to access he/she needs specific configuration.
+          $where .= "(USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
+        }  
+        else {
+          // in this situation:
+          // We can use what we have inherited from GLOBAL
+          // 
+          // OR 
+          // We can use specific test plan role if defined            
+          $where .= "(USER_TPLAN_ROLES.role_id IS NULL OR ";
+        }
+        $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")"; 
+      break;
     }
     
-    // User can have NO RIGHT on test project under analisys ($testprojectID), in this situation he/she 
-    // has to have a role at Test Plan level in order to access one or more test plans 
-    // that belong to $testprojectID.
-    //
-    // Other situation: he/she has been created with role without rights ($globalNoRights)
-    //
-    if( $projectNoRights || ($analyseGlobalRole && $globalNoRights))
-    {
-      $sql .= "(USER_TPLAN_ROLES.role_id IS NOT NULL AND USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")";
-    }  
-    else
-    {
-      // in this situation, do we are inheriting role from testprojectID ?  
-      $sql .= "(USER_TPLAN_ROLES.role_id IS NULL OR USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")";
-    }
+    $sql .= $joins . $where;
+    
     
     // new dBug($sql);  
     $sql .= " ORDER BY name";
     $numericIndex = false;
-    switch($my['options']['output'])
-    {
+    switch($my['options']['output']) {
       case 'map':
       case 'mapfull':
         $testPlanSet = $db->fetchRowsIntoMap($sql,'id');

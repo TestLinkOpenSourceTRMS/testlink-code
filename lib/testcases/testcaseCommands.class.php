@@ -160,8 +160,7 @@ class testcaseCommands
     $guiObj->initWebEditorFromTemplate = true;
       
     $guiObj->containerID = $argsObj->container_id;
-    if($argsObj->container_id > 0)
-    {
+    if($argsObj->container_id > 0) {
       $pnode_info = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->container_id);
       $node_descr = array_flip($this->tcaseMgr->tree_manager->get_available_node_types());
       $guiObj->parent_info['name'] = $pnode_info['name'];
@@ -190,8 +189,7 @@ class testcaseCommands
 
 
     $cfPlaces = $this->tcaseMgr->buildCFLocationMap();
-    foreach($cfPlaces as $locationKey => $locationFilter)
-    { 
+    foreach($cfPlaces as $locationKey => $locationFilter) { 
       $guiObj->cf[$locationKey] = 
       $this->tcaseMgr->html_table_of_custom_field_inputs(null,null,'design','',null,null,
                                                          $argsObj->testproject_id,$locationFilter, $_REQUEST);
@@ -208,25 +206,15 @@ class testcaseCommands
    * 
    *
    */
-  function doCreate(&$argsObj,&$otCfg,$oWebEditorKeys,$request)
-  {
+  function doCreate(&$argsObj,&$otCfg,$oWebEditorKeys,$request) {
     $guiObj = $this->create($argsObj,$otCfg,$oWebEditorKeys);
       
     // compute order
     $new_order = config_get('treemenu_default_testcase_order');
     $co = $this->tcaseMgr->tree_manager->getBottomOrder($argsObj->container_id,array('node_type' => 'testcase'));
-    if( $co > 0)
-    {
+    if( $co > 0){
       $new_order = $co+1; 
     }  
-    // $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
-    // $siblings = $this->tcaseMgr->tree_manager->get_children($argsObj->container_id,$nt2exclude);
-  
-    //if( !is_null($siblings) )
-    //{
-    //  $dummy = end($siblings);
-    //  $new_order = $dummy['node_order']+1;
-    //}
 
     $options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
                      'action_on_duplicate_name' => 'block',
@@ -238,11 +226,9 @@ class testcaseCommands
                                      $new_order,testcase::AUTOMATIC_ID,
                                      $argsObj->exec_type,$argsObj->importance,$options);
 
-    if($tcase['status_ok'])
-    {
+    if($tcase['status_ok']) {
       $guiObj->actionOK = true;
-      if($argsObj->stay_here)
-      {   
+      if($argsObj->stay_here) {   
         $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,ENABLED,
                                                                              NO_FILTER_SHOW_ON_EXEC,'testcase');
       
@@ -254,16 +240,16 @@ class testcaseCommands
         $guiObj->cleanUpWebEditor = true;
         $opt_list = '';
       }
-      else
-      {
+      else {
         // we will not return to caller
         $argsObj->tcase_id = $tcase['id'];
         $argsObj->tcversion_id = $tcase['tcversion_id'];
+        
+        // BAD Choice Custom fields are written to db on $this->show()
         $this->show($argsObj,$request, array('status_ok' => 1));
       }
     }
-    elseif(isset($tcase['msg']))
-    {
+    elseif(isset($tcase['msg'])) {
       $guiObj->actionOK = false;
       $guiObj->user_feedback = lang_get('error_tc_add');
       $guiObj->user_feedback .= '' . $tcase['msg'];
@@ -333,8 +319,7 @@ class testcaseCommands
     returns: 
 
   */
-  function doUpdate(&$argsObj,$request)
-  {
+  function doUpdate(&$argsObj,$request) {
     $options = array('status' => $argsObj->tc_status,
                      'estimatedExecDuration' => $argsObj->estimated_execution_duration);
 
@@ -685,12 +670,10 @@ class testcaseCommands
     $guiObj->user_feedback = '';
     
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
-    try
-    {
+    try {
       $stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
     }
-    catch (Exception $e)
-    {
+    catch (Exception $e) {
       echo $e->getMessage();
     }
 
@@ -1054,8 +1037,7 @@ class testcaseCommands
    * 
    *
    */
-  function show(&$argsObj,$request,$userFeedback,$updateCFOnDB=true)
-  {
+  function show(&$argsObj,$request,$userFeedback,$updateCFOnDB=true) {
     $smartyObj = new TLSmarty();
     $guiObj = $this->initGuiBean($argsObj);
     $identity = $this->buildIdentity($argsObj);
@@ -1071,19 +1053,19 @@ class testcaseCommands
                                           $argsObj->tcase_id,
                                           $argsObj->testproject_id);
 
-    if($userFeedback['status_ok'])
-    {
+    if($userFeedback['status_ok']) {
       $guiObj->user_feedback = '';
-      if($updateCFOnDB)
-      {  
-        $cf_map = $this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($identity->tproject_id,
-                                                                            1,null,'testcase') ;
+      if($updateCFOnDB) {  
+        $cfCtx = array('tproject_id' => $identity->tproject_id, 'enabled' => 1,
+                       'node_type' => 'testcase');
+        $cf_map = $this->tcaseMgr->cfield_mgr->getLinkedCfieldsAtDesign($cfCtx);
+
+        
         $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$identity->version_id,$cf_map);
       }
       $guiObj->attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$identity->id);
     }
-    else
-    {
+    else {
       $guiObj->viewerArgs['user_feedback'] = $guiObj->user_feedback = $userFeedback['msg'];
     }
 
@@ -1110,8 +1092,7 @@ class testcaseCommands
     {
       $idy->tproject_id = $cred->testproject_id;
     }  
-    else
-    {
+    else {
       throw new Exception(__METHOD__ . ' EXCEPTION: test project ID, is mandatory');  
     }  
     $idy->tproject_id = intval($idy->tproject_id);
@@ -1223,7 +1204,6 @@ class testcaseCommands
 
   function freeze(&$argsObj,$request)
   {
-    echo __FUNCTION__;
     $argsObj->isOpen = 0;
     return $this->setIsOpen($argsObj,$request);
   }

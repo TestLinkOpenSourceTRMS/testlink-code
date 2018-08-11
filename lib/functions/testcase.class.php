@@ -47,6 +47,7 @@ class testcase extends tlObjectWithAttachments
   const NAME_PHOPEN = '[[';
   const NAME_PHCLOSE = ']]';
   const NAME_DIVIDE = '::';
+  const GHOSTMASK = '[ghost]"TestCase":"%s","Version":"%s"[/ghost]';
 
   /** @var database handler */
   var $db;
@@ -207,12 +208,10 @@ class testcase extends tlObjectWithAttachments
    *  just a wrapper
    *
    */
-  function createFromObject($item)
-  {
+  function createFromObject($item) {
     static $wkfstatus;
 
-    if(is_null($wkfstatus))
-    {
+    if(is_null($wkfstatus)) {
       $wkfstatus = config_get('testCaseStatus');
     }
     $options = array('check_duplicate_name' => self::CHECK_DUPLICATE_NAME,
@@ -220,19 +219,16 @@ class testcase extends tlObjectWithAttachments
                      'estimatedExecDuration' => 0,
                      'status' => $wkfstatus['draft'], 'importLogic' => null);
 
-    if(property_exists($item, 'estimatedExecDuration'))
-    {
+    if(property_exists($item, 'estimatedExecDuration')) {
       $options['estimatedExecDuration'] = floatval($item->estimatedExecDuration);
     }
 
-    if(property_exists($item, 'status'))
-    {
+    if(property_exists($item, 'status')) {
       $options['status'] = intval($item->status);
     }
 
 
-    if(property_exists($item, 'importLogic'))
-    {
+    if(property_exists($item, 'importLogic')) {
       $options['importLogic'] = $item->importLogic;
     }
 
@@ -245,7 +241,6 @@ class testcase extends tlObjectWithAttachments
   /**
    * create a test case
    *
-   * @internal revisions
    */
   function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
                   $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
@@ -272,17 +267,14 @@ class testcase extends tlObjectWithAttachments
 
     $ix = new stdClass();
 
-    if($ret["status_ok"])
-    {
-      if(trim($keywords_id) != "")
-      {
+    if($ret["status_ok"]) {
+      if(trim($keywords_id) != "") {
         $a_keywords = explode(",",$keywords_id);
         $this->addKeywords($ret['id'],$a_keywords);
       }
 
       $ix->version = 1;
-      if(isset($ret['version_number']) && $ret['version_number'] < 0)
-      {
+      if(isset($ret['version_number']) && $ret['version_number'] < 0) {
         // We are in the special situation we are only creating a new version,
         // useful when importing test cases. Need to get last version number.
         // I do not use create_new_version() because it does a copy ot last version
@@ -314,8 +306,7 @@ class testcase extends tlObjectWithAttachments
 
       $op = $this->createVersion($ix);
 
-      if($ret['update_name'])
-      {
+      if($ret['update_name']) {
         $sql = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
                $this->db->prepare_string($name) . "' WHERE id= " . intval($ret['id']);
         $this->db->exec_query($sql);
@@ -618,8 +609,7 @@ class testcase extends tlObjectWithAttachments
    *  trying to solve <body id="cke_pastebin" issues
    *
    */
- private function createVersion($item)
- {
+ private function createVersion($item) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $tcase_version_id = $this->tree_manager->new_node($item->id,
                           $this->node_types_descr_id['testcase_version']);
@@ -637,32 +627,27 @@ class testcase extends tlObjectWithAttachments
                  ", {$item->executionType},{$item->importance} ";
 
 
-    if( !is_null($item->status) )
-    {
+    if( !is_null($item->status) ) {
       $wf = intval($item->status);
       $sql .= ',status';
       $sqlValues .= ",{$wf}";
     }
 
-    if( !is_null($item->estimatedExecDuration) )
-    {
+    if( !is_null($item->estimatedExecDuration) ) {
       $v = trim($item->estimatedExecDuration);
-      if($v != '')
-      {
+      if($v != '') {
         $sql .= ", estimated_exec_duration";
         $sqlValues .= "," . floatval($v);
       }
     }
 
-    if( property_exists($item,'active') && !is_null($item->active) )    
-    {
+    if( property_exists($item,'active') && !is_null($item->active) ) {
       $v = intval($item->active) > 0 ? 1 : 0;
       $sql .= ", active";
       $sqlValues .= "," . $v;
     }
 	  
-    if( property_exists($item,'is_open') && !is_null($item->is_open) )
-    {
+    if( property_exists($item,'is_open') && !is_null($item->is_open) ) {
       $v = intval($item->is_open) > 0 ? 1 : 0;
       $sql .= ", is_open";
       $sqlValues .= "," . $v;
@@ -678,8 +663,7 @@ class testcase extends tlObjectWithAttachments
     $ret['id']=$tcase_version_id;
     $ret['status_ok']=1;
 
-    if ($result && ( !is_null($item->steps) && is_array($item->steps) ) )
-    {
+    if ($result && ( !is_null($item->steps) && is_array($item->steps) ) ) {
       $steps2create = count($item->steps);
       $op['status_ok'] = 1;
 
@@ -852,12 +836,13 @@ class testcase extends tlObjectWithAttachments
    *  rev :
    *
    */
-  function show(&$smarty,$guiObj,$identity,$grants)
-  {
+  function show(&$smarty,$guiObj,$identity,$grants) {
     static $cfg;
+    static $req_mgr;
 
     if(!$cfg) {
       $cfg = config_get('spec_cfg');
+      $req_mgr = new requirement_mgr($this->db);
     }
 
     $status_ok = ($identity->id > 0);
@@ -865,7 +850,6 @@ class testcase extends tlObjectWithAttachments
       throw new Exception(__METHOD__ . ' EXCEPTION: Test Case ID is invalid ( <= 0)' );
     }
 
-    $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
     $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
 
@@ -879,30 +863,16 @@ class testcase extends tlObjectWithAttachments
     $gui = $this->initShowGui($guiObj,$grants,$idCard);
 
     $userIDSet = array();
-    if($status_ok)
-    {
-      // Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
-      // $gui->can_do->add2tplan = 'no';
-      if($env_tproject_id == $gui->tproject_id)
-      {
-        $gui->can_do->add2tplan = ($gui->can_do->add2tplan == 'yes') ? $grants->testplan_planning : 'no';
-      }
-      else
-      {
-        $gui->can_do->add2tplan = 'no';
-      }
-    }
 
-    if($status_ok && sizeof($idSet))
-    {
-      $cfx = 0;
+
+    if($status_ok && sizeof($idSet)) {
 
       $cfPlaces = $this->buildCFLocationMap();
-      $req_mgr = new requirement_mgr($this->db);
       $allReqs = $req_mgr->get_all_for_tcase($idSet);
 
       $gkOpt = array('accessKey' => 'testcase_id','orderBy' => 'ORDER BY keyword ASC ');
       $allTCKeywords = $this->getKeywords($idSet,null,$gkOpt);
+
 
       $ovx = 0;
       $gui->linked_versions = null;
@@ -910,114 +880,112 @@ class testcase extends tlObjectWithAttachments
       $gopt = array('renderGhost' => true, 'withGhostString' => true,
                     'renderImageInline' => true, 'renderVariables' => true,
                     'caller' => 'show()');
-      foreach($idSet as $key => $tc_id)
-      {
-        // using $version_id has sense only when we are working on ONE SPECIFIC Test Case
+
+      $cfx = 0;
+      foreach($idSet as $key => $tc_id) {
+        // using $version_id has sense only when we are working on 
+        // ONE SPECIFIC Test Case
         // if we are working on a set of test cases $version_id will be ALL VERSIONS
-        if( !$tc_array = $this->get_by_id($tc_id,$version_id,null,$gopt) )
-        {
+        if( !$tcvSet = $this->get_by_id($tc_id,$version_id,null,$gopt) ) {
           continue;
         }
 
-
-        $tc_array[0]['tc_external_id'] = $gui->tcasePrefix . $tc_array[0]['tc_external_id'];
-        $tc_array[0]['ghost'] = '[ghost]"TestCase":"' . $tc_array[0]['tc_external_id'] . '","Version":"' .
-                                $tc_array[0]['version'] . '"[/ghost]';
-
-        // status quo of execution and links of tc versions
-        $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
-
-        if($cfg->show_tplan_usage)
-        {
+        if($cfg->show_tplan_usage) {
           $gui->linked_versions[] = $this->get_linked_versions($tc_id);
         }
 
+        $tcvSet[0]['tc_external_id'] = $gui->tcasePrefix . $tcvSet[0]['tc_external_id'];
+        $tcvSet[0]['ghost'] = sprintf(self::GHOSTMASK,$tcvSet[0]['tc_external_id'],
+                                      $tcvSet[0]['version']);
 
+        // status quo of execution and links of tc versions
+        $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
         $gui->keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 
-        $tc_current = $tc_array[0];
+        $gui->arrReqs[] = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
+
+        // Logic on Current/Latest Test Case Version
+        $tc_current = $tcvSet[0];
         $gui->tc_current_version[] = array($tc_current);
 
-        //get linked testcase scripts
-        if($gui->codeTrackerEnabled)
-        {
-          $tcase_scripts = $this->get_scripts_for_testcase($gui->cts,$tc_current['id']);
-          if(!is_null($tcase_scripts))
-          {
-            $gui->scripts[$tc_current['id']] = $tcase_scripts;
-          }
-        }
+        //  
+        // REFACTORING - Following code uses tc_current!!!
+        //
 
         // Get UserID and Updater ID for current Version
         $userIDSet[$tc_current['author_id']] = null;
         $userIDSet[$tc_current['updater_id']] = null;
 
-        foreach($cfPlaces as $locationKey => $locationFilter)
-        {
-          $gui->cf_current_version[$cfx][$locationKey] =
-            $this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
-                                                     null,null,$gui->tproject_id,null,$tc_current['id']);
+
+        // get linked testcase scripts
+        if($gui->codeTrackerEnabled) {
+          $scripts = $this->get_scripts_for_testcase($gui->cts,$tc_current['id']);
+          if(!is_null($scripts)) {
+            $gui->scripts[$tc_current['id']] = $scripts;
+          }
+        }
+
+        if($this->cfg->testcase->relations->enable) {
+          $gui->relationSet[] = $this->getRelations($tc_id);
+        }
+
+        $cfCtx = array('scope' => 'design','tproject_id' => $gui->tproject_id,'link_id' => $tc_current['id']);
+        foreach($cfPlaces as $cfpKey => $cfpFilter) {
+          $gui->cf_current_version[$cfx][$cfpKey] =
+            $this->htmlTableOfCFValues($tc_id,$cfCtx,$cfpFilter);
         }
 
         // Other versions (if exists)
-        if(count($tc_array) > 1)
-        {
-          $gui->testcase_other_versions[] = array_slice($tc_array,1);
+        if(count($tcvSet) > 1) {
+          $gui->testcase_other_versions[] = array_slice($tcvSet,1);
           $target_idx = count($gui->testcase_other_versions) - 1;
           $loop2do = count($gui->testcase_other_versions[$target_idx]);
 
+          $cfCtx = array('scope' => 'design','tproject_id' => $gui->tproject_id);
+
           $ref = &$gui->testcase_other_versions[$target_idx];
-          for($qdx=0; $qdx < $loop2do; $qdx++)
-          {
-            $ref[$qdx]['ghost'] = '[ghost]"TestCase":"' . $tc_array[0]['tc_external_id'] . '","Version":"' .
-                                  $ref[$qdx]['version'] . '"[/ghost]';
-            $target_tcversion = $gui->testcase_other_versions[$target_idx][$qdx]['id'];
-            foreach($cfPlaces as $locationKey => $locationFilter)
-            {
-              $gui->cf_other_versions[$cfx][$qdx][$locationKey] =
-                  $this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
-                                                           null,null,$gui->tproject_id,null,$target_tcversion);
+          for($qdx=0; $qdx < $loop2do; $qdx++) {
+            
+            $ref[$qdx]['ghost'] = sprintf(self::GHOSTMASK,$tcvSet[0]['tc_external_id'],
+                                          $ref[$qdx]['version']);
+
+            $cfCtx['link_id'] = $gui->testcase_other_versions[$target_idx][$qdx]['id'];
+            foreach($cfPlaces as $locKey => $locFilter) {
+              $gui->cf_other_versions[$cfx][$qdx][$locKey] =
+                  $this->htmlTableOfCFValues($tc_id,$cfCtx,$locFilter);
             }
           }
         }
-        else
-        {
+        else {
           $gui->testcase_other_versions[] = null;
           $gui->cf_other_versions[$cfx]=null;
         }
+
         $cfx++;
 
-        // Get author and updater id for each version
-        if ($gui->testcase_other_versions[0])
-        {
-          foreach($gui->testcase_other_versions[0] as $key => $version)
-          {
+
+
+
+        if ($gui->testcase_other_versions[0]) {
+          // Get author and updater id for each version
+          foreach($gui->testcase_other_versions[0] as $key => $version) {
             $userIDSet[$version['author_id']] = null;
             $userIDSet[$version['updater_id']] = null;
           }
           //get linked testcase scripts
-          if($gui->codeTrackerEnabled)
-          {
-            $tcase_scripts = $this->get_scripts_for_testcase($gui->cts,$version['id']);
-            if(!is_null($tcase_scripts))
-            {
-              $gui->scripts[$version['id']] = $tcase_scripts;
+          if($gui->codeTrackerEnabled) {
+            $scripts = $this->get_scripts_for_testcase($gui->cts,$version['id']);
+            if(!is_null($scripts)) {
+              $gui->scripts[$version['id']] = scripts;
             }
           }
-        }
-        $gui->arrReqs[] = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
-
-        if($this->cfg->testcase->relations->enable)
-        {
-          $gui->relationSet[] = $this->getRelations($tc_id);
         }
       }
     }
 
-     $gui->relations = $gui->relationSet[0];
+    $gui->relations = $gui->relationSet[0];
     $gui->relation_domain = '';
-    if($this->cfg->testcase->relations->enable)
-    {
+    if($this->cfg->testcase->relations->enable) {
       $gui->relation_domain = $this->getRelationTypeDomainForHTMLSelect();
     }
 
@@ -1719,8 +1687,7 @@ class testcase extends tlObjectWithAttachments
   /*
     @internal revisions
   */
-  function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
-  {
+  function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null) {
     $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
     $my['options'] = array('check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
                            'action_on_duplicate_name' => 'generate_new',
@@ -1817,8 +1784,7 @@ class testcase extends tlObjectWithAttachments
 
           $op = $this->createVersion($ix);
 
-          if( $op['status_ok'] )
-          {
+          if( $op['status_ok'] ) {
               $newTCObj['mappings'][$tcversion['id']] = $op['id'];
 
               // ATTENTION:  NEED TO UNDERSTAND HOW TO MANAGE COPY TO OTHER TEST PROJECTS
@@ -4659,6 +4625,23 @@ class testcase extends tlObjectWithAttachments
     return $cf_smarty;
   }
 
+  /**
+   * Just a Wrapper to improve, sometimes code layout
+   */
+  function htmlTableOfCFValues($id,$context,$filters=null,$formatOptions=null) {
+
+    // $context
+    $ctx = array('scope' => 'design', 'execution_id' => null,
+                 'testplan_id' => null,'tproject_id' => null,'link_id' => null);
+
+    $ctx = array_merge($ctx,$context);
+    extract($ctx);
+
+    return $this->html_table_of_custom_field_values($id,$scope,$filters,$execution_id,
+              $testplan_id,$tproject_id,$formatOptions,$link_id);
+
+  }  
+
 
   /*
     function: html_table_of_custom_field_values
@@ -4728,7 +4711,8 @@ class testcase extends tlObjectWithAttachments
     returns: html string
 
   */
-  function html_table_of_custom_field_values($id,$scope='design',$filters=null,$execution_id=null,
+  function html_table_of_custom_field_values($id,$scope='design',$filters=null,
+                                             $execution_id=null,
                                              $testplan_id=null,$tproject_id = null,
                                              $formatOptions=null,$link_id=null)
   {
@@ -4877,18 +4861,15 @@ class testcase extends tlObjectWithAttachments
 
 
   */
-  function copy_cfields_design_values($source,$destination)
-  {
+  function copy_cfields_design_values($source,$destination) {
     // Get all cfields linked to any testcase of this test project
     // with the values presents for $from_id, testcase we are using as
     // source for our copy
     $cfmap_from = $this->get_linked_cfields_at_design($source['id'],$source['tcversion_id']);
 
     $cfield=null;
-    if( !is_null($cfmap_from) )
-    {
-      foreach($cfmap_from as $key => $value)
-      {
+    if( !is_null($cfmap_from) ) {
+      foreach($cfmap_from as $key => $value) {
         $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
       }
     }
@@ -6756,10 +6737,8 @@ class testcase extends tlObjectWithAttachments
     $goo->domainTCStatus = $dummy['lbl'];
 
     $goo->can_do = $this->getShowViewerActions($goo->show_mode);
-
     $key = 'testcase_freeze';
-    if(property_exists($grantsObj, $key))
-    {
+    if(property_exists($grantsObj, $key)) {
       $goo->can_do->freeze = $grantsObj->$key;
     }
 
@@ -6795,6 +6774,12 @@ class testcase extends tlObjectWithAttachments
     $goo->designEditorType = $designEditorCfg['type'];
     $stepDesignEditorCfg = getWebEditorCfg('steps_design');
     $goo->stepDesignEditorType = $stepDesignEditorCfg['type'];
+
+    // Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
+    $goo->can_do->add2tplan = 'no';
+    if($idCard->tproject_id == $goo->tproject_id) {
+      $goo->can_do->add2tplan = ($goo->can_do->add2tplan == 'yes') ? $grantsObj->testplan_planning : 'no';
+    }
 
     return $goo;
   }

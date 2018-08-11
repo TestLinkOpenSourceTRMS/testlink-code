@@ -856,31 +856,27 @@ class testcase extends tlObjectWithAttachments
   {
     static $cfg;
 
-    if(!$cfg)
-    {
+    if(!$cfg) {
       $cfg = config_get('spec_cfg');
+    }
+
+    $status_ok = ($identity->id > 0);
+    if( !$status_ok ) {
+      throw new Exception(__METHOD__ . ' EXCEPTION: Test Case ID is invalid ( <= 0)' );
     }
 
     $env_tproject_id = $identity->tproject_id;
     $id = $identity->id;
     $version_id = isset($identity->version_id) ? $identity->version_id : self::ALL_VERSIONS;
-    $idSet = is_array($id) ? $id : (array)$id;
-    $status_ok = $idSet[0] > 0 ? 1 : 0;
+
+    $idSet = (array)$id;
 
     $idCard = new stdClass();
-    $idCard->tcase_id = intval($idSet[0]);
-    $idCard->tcversion_id = $version_id;
-    $idCard->tproject_id = $identity->tproject_id;
+    $idCard->tcase_id = intval($id);
+    $idCard->tcversion_id = intval($version_id);
+    $idCard->tproject_id = intval($identity->tproject_id);
 
-    $gui = $this->initShowGui($guiObj,$grants,$idSet[0],$idCard);
-    $gui->scripts = null;
-    $gui->tcase_id = $idCard->tcase_id;
-    $gui->tcversion_id = $idCard->tcversion_id;
-    $gui->allowStepAttachments = false;
-	$designEditorCfg = getWebEditorCfg('design');
-    $gui->designEditorType = $designEditorCfg['type'];
-	$stepDesignEditorCfg = getWebEditorCfg('steps_design');
-    $gui->stepDesignEditorType = $stepDesignEditorCfg['type'];
+    $gui = $this->initShowGui($guiObj,$grants,$idCard);
 
     $userIDSet = array();
     if($status_ok)
@@ -6661,8 +6657,9 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    */
-  private function initShowGui($guiObj,$grantsObj,$id,$idCard)
+  private function initShowGui($guiObj,$grantsObj,$idCard)
   {
+    $id = $idCard->tcase_id;
     $goo = is_null($guiObj) ? new stdClass() : $guiObj;
 
     $goo->execution_types = $this->execution_types;
@@ -6670,13 +6667,13 @@ class testcase extends tlObjectWithAttachments
     $goo->import_limit = TL_REPOSITORY_MAXFILESIZE;
     $goo->msg = '';
     $goo->fileUploadMsg = '';
+
     $goo->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($idCard);
     $goo->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($idCard);
 
 
     $goo->requirement_mgmt = property_exists($grantsObj, 'mgt_modify_req' ) ? $grantsObj->mgt_modify_req : null;
-    if( is_null($goo->requirement_mgmt))
-    {
+    if( is_null($goo->requirement_mgmt)) {
       $goo->requirement_mgmt = property_exists($grantsObj, 'requirement_mgmt' ) ? $grantsObj->requirement_mgmt : 0;
     }
 
@@ -6686,7 +6683,7 @@ class testcase extends tlObjectWithAttachments
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
     $goo->assign_keywords = property_exists($grantsObj, 'keyword_assignment') ? $grantsObj->keyword_assignment : 0;
-	$goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
+	  $goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;
 
     $goo->parentTestSuiteName = '';
     $goo->tprojectName = '';
@@ -6731,8 +6728,7 @@ class testcase extends tlObjectWithAttachments
     $goo->pageTitle = $viewer_defaults['title'];
     $goo->display_testcase_path = !is_null($goo->path_info);
     $goo->show_match_count = $viewer_defaults['show_match_count'];
-    if($goo->show_match_count && $goo->display_testcase_path )
-    {
+    if($goo->show_match_count && $goo->display_testcase_path ) {
       $goo->pageTitle .= '-' . lang_get('match_count') . ':' . ($goo->match_count = count($goo->path_info));
     }
 
@@ -6772,13 +6768,11 @@ class testcase extends tlObjectWithAttachments
     $info = $this->tproject_mgr->get_by_id($goo->tproject_id);
     $goo->requirementsEnabled = $info['opt']->requirementsEnabled;
 
-    if( $goo->display_testproject )
-    {
+    if( $goo->display_testproject ) {
       $goo->tprojectName = $info['name'];
     }
 
-    if( $goo->display_parent_testsuite )
-    {
+    if( $goo->display_parent_testsuite ) {
       $parent = count($path2root)-2;
       $goo->parentTestSuiteName = $path2root[$parent]['name'];
     }
@@ -6792,6 +6786,15 @@ class testcase extends tlObjectWithAttachments
     $goo->platforms = $platformMgr->getAllAsMap();
 
     $goo->tcasePrefix = $this->tproject_mgr->getTestCasePrefix($goo->tproject_id) . $this->cfg->testcase->glue_character;
+
+    $goo->scripts = null;
+    $goo->tcase_id = $idCard->tcase_id;
+    $goo->tcversion_id = $idCard->tcversion_id;
+    $goo->allowStepAttachments = false;
+    $designEditorCfg = getWebEditorCfg('design');
+    $goo->designEditorType = $designEditorCfg['type'];
+    $stepDesignEditorCfg = getWebEditorCfg('steps_design');
+    $goo->stepDesignEditorType = $stepDesignEditorCfg['type'];
 
     return $goo;
   }

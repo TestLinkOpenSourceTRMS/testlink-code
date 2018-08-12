@@ -874,7 +874,6 @@ class testcase extends tlObjectWithAttachments
       $allTCKeywords = $this->getKeywords($idSet,null,$gkOpt);
 
 
-      $ovx = 0;
       $gui->linked_versions = null;
 
       $gopt = array('renderGhost' => true, 'withGhostString' => true,
@@ -7928,5 +7927,35 @@ class testcase extends tlObjectWithAttachments
     return $juice;
   }
 
+  /**
+   *
+   */
+  function getVersionNumber($version_id) {
+
+    $sql = " SELECT version FROM {$this->tables['tcversions']} " .
+           " WHERE id=" . intval($version_id);
+
+    $rs = $this->db->get_recordset($sql);
+    
+    return $rs[0]['version'];
+  }  
+
+  /**
+   *
+   */
+  function getAllVersionsID( $id ) {
+    $sql = " SELECT id FROM {$this->tables['nodes_hierarchy']} NHTCV " .
+           " WHERE NHTCV.parent_id =" . intval($id) .
+           " AND NHTCV.node_type_id = " . 
+           $this->node_types_descr_id['testcase_version'];
+
+    $xx = $this->db->fetchColumnsIntoMap( $sql, 'id' );
+
+    if( null != $xx && count($xx) > 0 ) {
+      return array_keys($xx);
+    } 
+
+    return null;      
+  }
 
 }  // Class end

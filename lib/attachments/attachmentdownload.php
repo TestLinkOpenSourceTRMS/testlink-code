@@ -7,9 +7,6 @@
  *
  * @filesource attachmentdownload.php
  *
- * @internal revisions
- * @since 1.9.14
- *
  */
 @ob_end_clean();
 require_once('../../config.inc.php');
@@ -25,8 +22,7 @@ if ($args->id)
   $attachmentRepository = tlAttachmentRepository::create($db);
   $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
 
-  if ($attachmentInfo && 
-      ($args->skipCheck || checkAttachmentID($db,$args->id,$attachmentInfo)) )
+  if ($attachmentInfo)
   {
     switch ($args->opmode) 
     {

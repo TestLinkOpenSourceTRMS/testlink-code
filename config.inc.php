@@ -434,6 +434,7 @@ $tlCfg->noExpDateUsers = array('admin');
  * Configure this on custom_config.inc.php
  */
 
+$tlCfg->OAuthServers = array();
 
 // Google
 // $tlCfg->OAuthServers = array();

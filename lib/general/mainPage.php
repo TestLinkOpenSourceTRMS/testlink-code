@@ -191,10 +191,10 @@ foreach(array('EVENT_LEFTMENU_TOP',
   }
 }
 
-$tplCfg= config_get('tpl');
 $tplKey = 'mainPage';
 $tpl = $tplKey . '.tpl';
-if( property_exists($tplCfg, $tplKey) ) {
+$tplCfg = config_get('tpl');
+if( null !== $tplCfg && isset($tplCfg[$tplKey]) ) {
   $tpl = $tplCfg->$tplKey;
 } 
 

@@ -3198,7 +3198,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     */
   protected function getValidKeywordSet($tproject_id,$keywords,$byName,$op=null)
   {
-    $keywordSet = '';
+    $keywordSet = array();
 
     $sql = " SELECT keyword,id FROM {$this->tables['keywords']} " .
            " WHERE testproject_id = {$tproject_id} ";

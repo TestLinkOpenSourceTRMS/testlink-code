@@ -23,6 +23,8 @@ Critic Smarty Global Variables expected
 	<link rel="icon" href="{$basehref}{$tlImages.favicon}" type="image/x-icon" />
 	
 {* ----- load CSS ------------------------------------------------------------------- *} 
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<style media="all" type="text/css">@import "{$css}";</style>
 	<style media="all" type="text/css">@import "{$custom_css}";</style>
 
@@ -33,6 +35,12 @@ Critic Smarty Global Variables expected
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
 
 {* ----- load javascripts libraries -------------------------------------------------- *} 
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ 
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 	{if $smarty.const.TL_USE_LOG4JAVASCRIPT}
   <script type="text/javascript" src="{$basehref}third_party/log4javascript/log4javascript.js"></script>
 	{/if}

@@ -30,6 +30,14 @@ $_SESSION['testlink_version'] = TL_VERSION;
 	<title>Testlink <?php echo $_SESSION['testlink_version'] ?> Installation procedure</title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<link href="../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
+
+	<!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 	<style type="text/css">@import url('./css/style.css');</style>
 </head>
 

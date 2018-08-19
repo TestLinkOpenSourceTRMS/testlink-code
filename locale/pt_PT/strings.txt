@@ -45,7 +45,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última atualização: 26/01/2018 (TestLink 1.9.17)";
+$TLS_last_update = "Última atualização: 26/01/2018 (TestLink 1.9.18)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Ativo (clicar para inativar)";
@@ -319,6 +319,11 @@ $TLS_btn_reorder_steps = "Reordenar Passos";
 $TLS_btn_resequence_steps = "Resequenciar Passos";
 $TLS_btn_view_history = "Ver histórico";
 $TLS_btn_testcases_table_view = "Vista em Tabela dos Casos de Teste";
+$TLS_btn_remove_all_users = "Remover TODAS Atribuições";
+$TLS_btn_apply_assign = "Aplicar Atribuir";
+$TLS_btn_save_assign = "Guardar Atribuições";
+$TLS_btn_remove = "Remover";
+$TLS_btn_remove_assignments = "Remover Atribuições";
 
 
 // Status (used wide)
@@ -756,6 +761,7 @@ $TLS_title_change_node_order = "Mudar ordem do nó filho";
 // ----- gui/templates/containerView.tpl -----
 $TLS_testsuite_operations = "Operações da Suite de Testes";
 $TLS_testcase_operations = "Operações do Caso de Teste";
+$TLS_testcase_version_operations = "Operações de Versões de Casos de Teste";
 $TLS_alt_del_testsuite = "Apagar esta Suite de Testes com todos os filhos (Suites e Casos de Teste)";
 $TLS_alt_edit_testsuite = "Modifique esse dados e título da Suites de Testes";
 $TLS_alt_move_cp_testsuite = "Mover ou copiar esta Suites de Testes para outro Projecto";
@@ -1247,6 +1253,10 @@ $TLS_jolly_hint = "o valor será pesquisado tal como em modo OU no título, resu
 
 
 
+// ----- gui/templates/testcases/tcBulkOp.tpl -----
+$TLS_force_frozen_testcases_versions = "Forçar Congelar Versões de Casos de Teste";
+
+
 // ----- gui/templates/testcases/searchData.tpl -----
 $TLS_too_wide_search_criteria = "Muitos resultados. Por favor, seja mais específico " .
      "no critério da pesquisa.";
@@ -1258,7 +1268,9 @@ $TLS_too_wide_search_criteria = "Muitos resultados. Por favor, seja mais especí
 
 // ----- gui/templates/tcDelete.tpl -----
 $TLS_btn_yes_iw2del = "Sim, apagar Caso de Teste!";
+$TLS_btn_yes_iw2del_version = "Sim, apagar Versão de Caso de Teste!";
 $TLS_question_del_tc = "Deseja realmente apagar esse Caso de Teste?";
+$TLS_question_del_tc_version = "Deseja realmente apagar esta Versão de Caso de Teste?";
 $TLS_th_executed = "Executado";
 $TLS_th_linked_to_tplan = "Associado ao Plano de Testes";
 $TLS_th_version = "Versão";
@@ -1443,6 +1455,8 @@ $TLS_testcase_customfields = "Campos Personalizados dos Casos de Teste";
 $TLS_test_exec_by = "Testador";
 $TLS_test_exec_expected_r = "<br>Resultados Esperados:";
 $TLS_test_exec_notes = "Notas / Descrição:";
+$TLS_test_exec_notes_latest_created_build = "Notas de Execução da Build mais recentemente criada";
+
 $TLS_test_exec_result = "Resultados: ";
 $TLS_test_exec_steps = "<br>Passos: ";
 $TLS_test_exec_summary = "Sumário";
@@ -1703,6 +1717,8 @@ $TLS_hint_new_sibling = "Criar outro Caso de Teste na Suite de Testes corrente";
 $TLS_hint_new_version = "Criar uma nova versão";
 
 $TLS_can_not_edit_tc = "Você não pode editar esta versão porque ela foi executada";
+$TLS_can_not_edit_frozen_tc = "Você não pode editar esta versão porque ela foi congelada";
+$TLS_can_not_delete_relation_frozen_tc = "Você não pode apagar esta relação : o Caso de Teste foi congelado";
 $TLS_deactivate_this_tcversion = "Desativar esta versão";
 $TLS_execution_type= "<br />Tipo de Execução";
 $TLS_execution_type_short_descr = "Execução";
@@ -2467,6 +2483,8 @@ $TLS_desc_testplan_execute = "Executar Plano de Testes";
 $TLS_desc_testplan_metrics = "Métricas do Plano de Testes";
 $TLS_desc_testplan_planning = "Planeamento do Plano de Testes";
 $TLS_desc_user_role_assignment = "Atribuição de Regras";
+$TLS_desc_testproject_user_role_assignment = "Atribuição de regras a utilizadores ao nível do Projecto de Teste";
+$TLS_desc_testplan_user_role_assignment = "Atribuição de regras a utilizadores ao nível do Plano de Teste";
 $TLS_desc_monitor_requirement = "Monitorizar Requisitos";
 
 
@@ -2527,6 +2545,9 @@ $TLS_create_new_version = "Criada nova versão %s";
 $TLS_testcase_name_already_exists = "Já existe um Caso de Teste com este título (%s)";
 $TLS_created_with_title = "Criado com o título (%s)";
 $TLS_the_format_tc_xml_import = "";
+$TLS_relation_added = "Relação acrescentada a %s";
+$TLS_related_tcase_not_open = "Não se pode acrescentar Relação a %s : este Caso de Teste está congelado";
+$TLS_relation_already_exists = "Não se pode acrescentar Relação a %s : a Relação já existe";
 
 
 // ----- lib/functions/testsuite.class.php -----
@@ -3709,6 +3730,17 @@ $TLS_issue_platform = " Plataforma: %s \n";
 $TLS_issue_exec_result = " Estado de Execução: %s \n";
 $TLS_issue_generated_description = "ID de Execução: %s \n Testador: %s \n Plano de Testes: %s \n";
 
+$TLS_issue_subject_projectname = "Projecto de Teste";
+$TLS_issue_subject_planname = "Plano de Teste:";
+$TLS_issue_subject_buildname = "Build:";
+$TLS_issue_subject_platfname = "Plataforma:";
+$TLS_issue_subject_tcname = "Caso de Teste:";
+$TLS_issue_subject_tcpathname = $TLS_issue_subject_tcname;
+$TLS_issue_subject_execon = "Execução (Hora e Data ISO): ";
+
+
+
+
 $TLS_jira_bug_created = "Ocorrência JIRA Criada (summary:%s) no Projecto com chave:%s";
 $TLS_redmine_bug_created = "Ocorrência REDMINE Criada (summary:%s) no Projecto com identificador:%s";
 $TLS_fogbugz_bug_created = "Ocorrência FOGBUGZ Criada (summary:%s) no Projecto:%s";
@@ -3851,4 +3883,15 @@ $TLS_multiple_entities_search = "Pesquisar em múltiplas entidades";
 $TLS_no_access_to_feature = "Você não tem permissões para aceder a esta funcionalidade";
 
 $TLS_applyExecTypeChangeToAllSteps = "Aplicar a todos os Passos";
+
+$TLS_user_bulk_action = 'Utilizadores para Ações em Massa';
+$TLS_title_issuetracker_mgmt = 'Gestores de Ocorrências';
+$TLS_title_codetracker_mgmt = 'Gestores de Código';
+$TLS_desc_cfield_assignment = "Atribuição de campo personalizado";
+$TLS_desc_exec_assign_testcases = "Atribuir Execução de Caso de Teste";
+$TLS_expiration_date = 'Data de Expiração';
+$TLS_system_descr = "software de gestão de testes e requisitos";
+$TLS_poweredBy = 'Dinamizado por';
+$TLS_expiration = 'Expiração';
+$TLS_no_user_selected = 'Você tem que selecionar pelo menos um utilizador';
 // ----- END ------------------------------------------------------------------

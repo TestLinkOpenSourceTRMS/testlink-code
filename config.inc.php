@@ -61,11 +61,9 @@ $tlCfg->notifications = new stdClass();
 $tlCfg->proxy = new stdClass();
 
 
-
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
-if( !defined('DB_TABLE_PREFIX') )
-{
+if( !defined('DB_TABLE_PREFIX') ) {
     define('DB_TABLE_PREFIX','' );
 }
 
@@ -87,18 +85,6 @@ define('TL_CSS_MAIN', 'testlink.css');
 define('TL_CSS_PRINT', 'tl_print.css');
 define('TL_CSS_DOCUMENTS', 'tl_documents.css');
 
-define('TL_THEME_BASE_DIR', $tlCfg->theme_dir);
-define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
-define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
-define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
-define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
-
-// name of your custom.css, place it in same folder that standard TL css
-// null or '' => do not use
-$tlCfg->custom_css = null;
-
-// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
-define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
 
 
 /** Include constants and magic numbers (users should not change it)*/
@@ -1863,13 +1849,11 @@ define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . D
 require_once('configCheck.php');
 
 
-if( !defined('TL_JQUERY') )
-{
+if( !defined('TL_JQUERY') ) {
   define('TL_JQUERY','jquery-2.2.4.min.js' );
 }
 
-if( !defined('TL_DATATABLES_DIR') )
-{
+if( !defined('TL_DATATABLES_DIR') ) {
   define('TL_DATATABLES_DIR','DataTables-1.10.4' );
 }
 
@@ -1879,14 +1863,27 @@ if( !defined('TL_DATATABLES_DIR') )
 define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
 
 clearstatcache();
-if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
-{
+if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) ) {
   require_once( TL_ABS_PATH . 'custom_config.inc.php' );
 }
 
 
-if( !isset($g_attachments->access_icon) )
-{
+define('TL_THEME_BASE_DIR', $tlCfg->theme_dir);
+define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
+define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
+define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
+define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
+
+// name of your custom.css, place it in same folder that standard TL css
+// null or '' => do not use
+$tlCfg->custom_css = null;
+
+// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
+define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
+
+
+
+if( !isset($g_attachments->access_icon) ) {
   $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 }
 
@@ -1901,22 +1898,18 @@ $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 //  not always in any include!
 //  @TODO a better parsing function should be include
 $serverLanguage = false;
-if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-{
+if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
   @list($code) = explode(",",$_SERVER['HTTP_ACCEPT_LANGUAGE']);
   @list($a,$b) = explode("-",$code);
-  if ($a && $b)
-  {
+  if ($a && $b) {
     $a = strtolower($a);
     $b = strtoupper($a);
     $serverLanguage = $a."_".$b;
   }
 }
 
-if(false !== $serverLanguage)
-{
-  if (array_key_exists($serverLanguage,$tlCfg->locales))
-  { 
+if(false !== $serverLanguage) {
+  if (array_key_exists($serverLanguage,$tlCfg->locales)) { 
     $tlCfg->default_language = $serverLanguage;
   } 
 }

@@ -3384,7 +3384,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 
     $rs = $this->db->get_recordset($sql);
     
-    if(!is_null() && $my['opt']['renderImageInline'])
+    if(!is_null($rs) && $my['opt']['renderImageInline'])
     {
       $k2l = array_keys($rs);
       foreach($k2l as $akx)

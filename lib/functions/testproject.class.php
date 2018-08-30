@@ -2953,10 +2953,10 @@ private function copy_requirements($source_id,$target_id,$user_id)
     foreach($elements as $piece)
     {
       $op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
-      $mappings += $op['mappings'];
+      $mappings += $op['mappings']['req'];
     }
   }
-  return (!is_null($mappings) && isset($mappings['req'])) ? $mappings['req'] : null;
+  return $mappings;
 }
 
 

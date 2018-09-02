@@ -14,8 +14,7 @@
  * 	None.
  */
 ?>
-<div class="tlLiner">&nbsp;</div>
-
-</div>
+    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+  </section> <!-- installHead.inc -->
 </body>
 </html>

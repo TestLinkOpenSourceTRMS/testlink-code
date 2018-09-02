@@ -1,0 +1,152 @@
+/***********************************************************************/
+/* TestLink Open Source Project - http://testlink.sourceforge.net/     */
+/* $Id: tl_documents.css,v 1.5 2010/04/08 15:11:34 asimon83 Exp $        */
+/* Purpose: Basic schema for print documentation css                   */
+/* rev: 20090329 - franciscom - added style per printing custom fields */
+/***********************************************************************/
+
+body {
+	font-family : 		Arial, Helvetica, sans-serif;
+	font-size : 		12px;
+	padding:			15px;
+}
+
+pre{
+	font-family : 		Arial, Helvetica, sans-serif;
+}
+
+h1.general {
+	text-align: 		left;
+	font-size:			120%;
+	font-weight:		bold;
+}
+
+h1 {
+	text-align: 		left;
+	font-size:			120%;
+	margin: 			50px 0px;
+}
+
+h2 {
+	font-size:			110%;
+	text-indent:		10px;
+}
+
+h3 {
+	font-size:			105%;
+	text-indent:		10px;
+}
+
+h4 {
+	font-size:			105%;
+	text-indent:		20px;
+}
+
+
+h1.doclevel {
+	text-align: 		left;
+	font-size:			130%;
+	margin: 			50px 0px;
+	border-bottom: 		1px solid grey; 
+	page-break-before: 	always;
+}
+
+h2.doclevel {
+	font-size:			120%;
+	text-indent:		5px;
+}
+
+h3.doclevel {
+	font-size:			110%;
+	background: 		#CCC;
+	text-indent:		10px;
+}
+
+h4.doclevel {
+	font-size:			105%;
+	text-indent:		15px;
+}
+
+
+p.important {
+	font-size:			110%;
+	color:				red;
+	font-weight:    	bold;
+}
+
+
+table.tc, table.tc td, table.tc th, 
+table.req, table.req td, table.req th,
+table.req_spec, table.req_spec td, table.req_spec th {
+	border: 			1px solid #DDD;
+	border-collapse:	collapse;
+	font-size:			11px;
+	padding:			2px;
+}
+
+table.tc, table.req, table.req_spec {
+	margin:				5px 0px;
+	width:				95%;
+}
+
+table.req {
+	margin-left: 50px;
+}
+
+table.tc th, table.req th, table.req_spec th {
+	font-weight:    	bold;
+	background:     	#EEE;
+	text-align:			left;
+}
+
+div.pageheader {
+	border-bottom: 		1px solid #DDD; 
+	font-size: 			110%; 
+	font-weight: 		bold;
+	padding: 			5px; 
+}
+
+div.pagefooter {
+	border: 			1px solid #DDD;
+	font-size: 			90%; 
+}
+
+div.summary {
+	margin-top:			400px;
+}
+
+div.doc_title {
+	margin: 			100px 0px; 
+	text-align: 		center; 
+	font-size:			200%;
+}
+
+span.label {
+	text-decoration:	underline;
+}
+
+/* A link is black */
+a:visited, a:link, a:active {
+	color: 				black; 
+	text-decoration: 	none;
+} 
+/*A link being hovered over is red*/
+a:hover   {
+	color: 				#900; 
+	text-decoration: 	none;
+	font-weight:    	bold;
+} 
+
+/* For Custom Fields */
+table.cf, table.cf td {
+	border: 			1px solid #DDD;
+	border-collapse:	collapse;
+	font-size:			11px;
+	padding:			2px;
+}
+
+td.labelHolder {
+	font-weight:    	bold;
+	background:     	#EEE;
+	text-align:			left;
+}

@@ -1,10 +1,26 @@
 *******************************************************************************
    TestLink  Change-log
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 *******************************************************************************
 
 http://www.testlink.org
 http://forum.testlink.org
 https://twitter.com/TLOpenSource
+
+## [Unreleased] - xxxx-xx-xx
+
+### ADDED
+
+- Created new template at /gui/templates/tmpl-bs based on bootstrap framework
+
+### DEPRECATED
+
+- Removed links from install.php for image /install/img/dot.gif 
+
 
 TestLink - 1.9.16 - Moka Pot (Released 2017-01-21)
 ==================================================

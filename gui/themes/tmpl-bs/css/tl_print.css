@@ -1,0 +1,45 @@
+/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
+/* $Id: tl_print.css,v 1.1 2008/04/19 21:52:21 havlat Exp $ */
+/* Purpose: modify css  for print */
+/* Author: Martin Havlat                                                                */
+/*******************************************************************/
+
+
+body, div.workBack, div.notesBox,table.notesBox, table.common, table.simple {
+	background:     white;
+}
+
+
+div.groupBtn, div.groupBtn input, img.help, div.resultBox, div.error, .info {
+	display:		none;
+}
+
+a:visited, a:link {
+	color: 			black; 
+	text-decoration: underline;
+} 
+
+
+/***** EXECUTION & RESULTS ****************************************/
+
+
+.bgGreen, div.passBox {
+	background:		white;
+}
+.bgRed, div.failBox {
+	background:		white;
+}
+.bgBlue, div.blockedBox {
+	background:		white;
+}
+.bgBlack, div.notRunBox {
+	background:		white;
+}
+.bgPurple {
+	background:		white;
+}
+
+
+/***** END *************************************************/
+
+

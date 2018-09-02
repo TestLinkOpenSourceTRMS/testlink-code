@@ -6,7 +6,7 @@
  * Navigation for installation scripts
  *
  * @package     TestLink
- * @copyright   2007,2017 TestLink community
+ * @copyright   2007,2018 TestLink community
  * @filesource  index.php
  *
  * @internal revisions
@@ -28,48 +28,98 @@ $forum_url = 'forum.testlink.org';
 <!DOCTYPE html>
 <head>
   <title>Testlink <?php echo $_SESSION['testlink_version'] ?> Installation procedure</title>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <link href="../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
-  <style type="text/css">@import url('./css/style.css');</style>
+  <!-- Bootstrap Metas -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Reset CSS for Bootstrap+HTML5 -->
+   <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/reset.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap.min.css">
+
+  <style type="text/css">@import url('../gui/themes/tmpl-bs/css/template.css');</style>
 </head>
 
-<body>
-<div class="tlPager">
-<h1><img src="./img/dot.gif" alt="Dot" style="margin: 0px 10px;" />
-    TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</h1>
-<div class="tlLiner">&nbsp;</div>
-<div class="tlStory">
-    <p>You are installing TestLink <?php echo $_SESSION['testlink_version'] ?> </p>
-    <p><b>Migration from <?php echo $prev_ver ?>  to  <?php echo $_SESSION['testlink_version'] ?> require Database changes that has to be done MANUALLY.
-          Please read README file provided with installation.</b></p> 
-    <p><b>For information about Migration from older version please read README file provided with installation.</b></p> 
-    <p><b>Please read Section on README file or go to <?php echo 'http://' .$forum_url ?> (Forum: TestLink 1.9.4 and greater News,changes, etc)</b> </p>
-    <p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
-    for more information or troubleshooting. You could also look at
-    <a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>.
-    You are welcome to visit our <a target="_blank" href="http://forum.testlink.org">
-    forum</a> to browse or discuss.
-    </p>
-    <p><h3>Some user contributed videos (You Tube)</h3></p>
-    <b>
-    <a href="https://www.youtube.com/watch?v=NOvTWZvc2x8" target="#">Installation of "Testlink" & Creating project.</a><br>
-    <a href="https://www.youtube.com/watch?v=P2zWScVjuag" target="#">TestLink Test Management Tool Tutorial</a><br>
-    <a href="https://www.youtube.com/watch?v=7xH1LKQU1TA" target="#">Introduction to TestLink</a><br>
-    <a href="https://www.youtube.com/watch?v=6s48WGuX2WE" target="#">TestLink Walkthrough</a><br>
-    </b>
+<body id="tl-container" class="container-fluid">
 
-    <p><ul><li><a href="installIntro.php?type=new">New installation</a></li></ul></p>
+  <section id="tl-section" class="row">
 
-    <br>
-    <i>
-    TestLink is a complicated piece of software, and has always been released under 
-    an Open Source license, and this will continue into the far future. 
-    <br>It has cost thousands of hours to develop, test and support TestLink. 
-    <br>If you find TestLink valuable, we would appreciate if you would consider 
-    buying a support agreement or requesting custom development.    
-    </i>
-</div>
-<div class="tlLiner">&nbsp;</div>
-</div>
+    <header id="tl-header" class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-title tl-box-header">
+      <h1 class="text-center tl-title">
+        TestLink <?php echo $_SESSION['testlink_version'] ?>
+      </h1>
+    </header>
+    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+      <h2 class="tl-title">How to install?</h2>
+      <p><i>
+        TestLink is a complicated piece of software, and has always been released under an Open Source license, and this will continue into the far future. It has cost thousands of hours to develop, test and support TestLink. If you find TestLink valuable, we would appreciate if you would consider buying a support agreement or requesting custom development.
+      </i></p>
+      <p><button class="btn btn-primary btn-block tl-btn" onclick="location.href='installIntro.php?type=new'">Install</button></p>
+    </section>
+    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+      <h2 class="tl-title">How to migrate?</h2>
+      <p>
+        Migration from 
+        <span class="tl-text-bold"><?php echo $prev_ver ?></span> 
+        to 
+        <span class="tl-text-bold"><?php echo $_SESSION['testlink_version'] ?></span> 
+        require Database changes that has to be done MANUALLY. Please read 
+        <a target="_blank" href="https://github.com/TestLinkOpenSourceTRMS/testlink-code/blob/master/README.md">README</a> 
+        file provided with installation.
+      </p>
+      <p>
+        For information about Migration from older version please read 
+        <a target="_blank" href="https://github.com/TestLinkOpenSourceTRMS/testlink-code/blob/testlink_1_9/README.md#5-upgrade-and-migration">README</a> 
+        file provided with installation.
+      </p>
+      <p>Please read Section on README file or go to <?php echo 'http://' .$forum_url ?> (Forum: TestLink 1.9.4 and greater News,changes, etc)</p>
+      <p>
+        Open
+        <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
+        for more information or troubleshooting. You could also look at
+        <a target="_blank" href="https://github.com/TestLinkOpenSourceTRMS/testlink-code/blob/master/README.md">README</a>
+        or
+        <a target="_blank" href="https://github.com/TestLinkOpenSourceTRMS/testlink-code/blob/testlink_1_9/CHANGELOG">Changes Log</a>.
+        You are welcome to visit our
+        <a target="_blank" href="http://forum.testlink.org">forum</a>
+        to browse or discuss.
+      </p>
+    </section>
+    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+      <h2 class="text-center tl-title">
+        Documentation & Contributions
+        <br />
+        <span class="text-center tl-desc">Some user contributed with videos (YouTube)</span>
+      </h2>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+         <iframe src="https://www.youtube.com/embed/NOvTWZvc2x8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+         <p class="text-center"><a href="https://www.youtube.com/watch?v=NOvTWZvc2x8" target="#">Installation of "Testlink" & Creating project.</a></p>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-5 col-xs-12">
+        <iframe src="https://www.youtube.com/embed/P2zWScVjuag" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <p class="text-center"><a href="https://www.youtube.com/watch?v=P2zWScVjuag" target="#">TestLink Test Management Tool Tutorial</a></p>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-5 col-xs-12">
+        <iframe src="https://www.youtube.com/embed/7xH1LKQU1TA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <p class="text-center"><a href="https://www.youtube.com/watch?v=7xH1LKQU1TA" target="#">Introduction to TestLink</a></p>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-5 col-xs-12">
+        <iframe src="https://www.youtube.com/embed/P2zWScVjuag" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <p class="text-center"><a href="https://www.youtube.com/watch?v=6s48WGuX2WE" target="#">TestLink Walkthrough</a></p>
+      </div>
+    </section>
+    <footer id="tl-footer" class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></footer>
+
+  </section>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="../gui/themes/tmpl-bs/js/jquery-3.2.1.slim.min.js"></script>
+  <script src="../gui/themes/tmpl-bs/js/popper.min.js"></script>
+  <script src="../gui/themes/tmpl-bs/js/bootstrap.min.js"></script>
 </body>
 </html>

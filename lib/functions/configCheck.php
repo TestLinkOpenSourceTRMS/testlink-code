@@ -956,7 +956,7 @@ function reportCheckingBrowser(&$errCounter)
 {
   $browser = strtolower($_SERVER['HTTP_USER_AGENT']);
 
-  echo "\n".'<h2>Browser compliance</h2><table class="common" style="width: 100%;">'."\n";
+  echo "\n".'<h2>Browser compliance</h2><table class="table tl-table" style="width: 100%;">'."\n";
 
   echo '<p>'.$browser.'</p>';
   echo '<tr><td>Browser supported</td>';
@@ -988,7 +988,7 @@ function reportCheckingBrowser(&$errCounter)
  **/
 function reportCheckingSystem(&$errCounter)
 {
-  echo '<h2>System requirements</h2><table class="common" style="width: 100%;">';
+  echo '<h2 class="tl-title">System requirements</h2><table class="table tl-table tl-desc" style="width: 100%;">';
   echo checkServerOs();
   echo checkPhpVersion($errCounter);
   echo '</table>';
@@ -1010,7 +1010,7 @@ function reportCheckingDatabase(&$errCounter, $type = null)
 
   if (!is_null($type))
   {
-    echo '<h2>Database checking</h2><table class="common" style="width: 100%;">';
+    echo '<h2 class="tl-title">Database checking</h2><table class="table tl-table tl-desc" style="width: 100%;">';
     echo checkDbType($errCounter, $type);
     echo "</table>\n";
   }
@@ -1026,7 +1026,7 @@ function reportCheckingDatabase(&$errCounter, $type = null)
  **/
 function reportCheckingWeb(&$errCounter)
 {
-  echo '<h2>Web and PHP configuration</h2><table class="common" style="width: 100%;">';
+  echo '<h2 class="tl-title">Web and PHP configuration</h2><table class="table tl-table tl-desc" style="width: 100%;">';
   echo check_timeout($errCounter);
   echo check_php_settings($errCounter);
   echo checkPhpExtensions($errCounter);
@@ -1045,7 +1045,7 @@ function reportCheckingWeb(&$errCounter)
  **/
 function reportCheckingPermissions(&$errCounter,$installationType='none')
 {
-  echo '<h2>Read/write permissions</h2><table class="common" style="width: 100%;">';
+  echo '<h2 class="tl-title">Read/write permissions</h2><table class="table tl-table tl-desc" style="width: 100%;">';
   echo check_dir_permissions($errCounter);
   
   // for $installationType='upgrade' existence of config_db.inc.php is not needed

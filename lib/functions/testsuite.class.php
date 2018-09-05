@@ -30,6 +30,7 @@ class testsuite extends tlObjectWithAttachments
   const DONT_CHECK_DUPLICATE_NAME=0;
   const DEFAULT_ORDER=0;
   const USE_RECURSIVE_MODE = 1;
+  const MAXLEN_NAME = 100;
   
 
   private $object_table;
@@ -127,12 +128,10 @@ class testsuite extends tlObjectWithAttachments
   */
   function create($parent_id,$name,$details,$order=null,
                   $check_duplicate_name=0,
-                  $action_on_duplicate_name='allow_repeat')
-  {
+                  $action_on_duplicate_name='allow_repeat') {
     static $l18n;
     static $cfg;
-    if(!$cfg)
-    {
+    if(!$cfg) {
       $cfg = array();
       $cfg['prefix_name_for_copy'] = config_get('prefix_name_for_copy');
       $cfg['node_order'] = config_get('treemenu_default_testsuite_order');
@@ -141,8 +140,7 @@ class testsuite extends tlObjectWithAttachments
       $l18n['component_name_already_exists'] = lang_get('component_name_already_exists');
     }
     
-    if( is_null($order) )
-    {
+    if( is_null($order) ) {
       // @since 1.9.13
       //
       //$node_order = isset($cfg['treemenu_default_testsuite_order']) ? 
@@ -151,9 +149,7 @@ class testsuite extends tlObjectWithAttachments
       // this way theorically each will be a different order.
       // this can be good when ordering
       $node_order = $this->tree_manager->getBottomOrder($parent_id,array('node_type' => 'testsuite')) + 1;  
-    }
-    else
-    {
+    } else {
       $node_order = $order;
     }
     
@@ -161,23 +157,25 @@ class testsuite extends tlObjectWithAttachments
     $ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok', 
                  'name' => '', 'name_changed' => false);
   
-    if ($check_duplicate_name)
-    {
+    if ($check_duplicate_name) {
       $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,null,$parent_id);
-      if( $check['status'] == 1)
-      {
-        if ($action_on_duplicate_name == 'block')
-        {
+      if( $check['status'] == 1) {
+        if ($action_on_duplicate_name == 'block') {
           $ret['status_ok'] = 0;
           $ret['msg'] = sprintf($l18n['component_name_already_exists'],$name);  
-        } 
-        else
-        {
+        } else {
           $ret['status_ok'] = 1;      
-          if ($action_on_duplicate_name == 'generate_new')
-          { 
+          if ($action_on_duplicate_name == 'generate_new') { 
             $desired_name = $name;      
-            $name = $ret['name'] = $cfg['prefix_name_for_copy'] . " " . $desired_name ;      
+            $name = $cfg['prefix_name_for_copy'] . " " . $desired_name;
+
+            if( strlen($name) > self::MAXLEN_NAME ) {
+              $len2cut = strlen($cfg['prefix_name_for_copy']);
+              $name = $cfg['prefix_name_for_copy'] . 
+                      substr($desired_name,0,self::MAXLEN_NAME-$len2cut);
+            }
+            $ret['name'] = $name;
+
             $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);
             $ret['name_changed'] = true;
           }
@@ -263,7 +261,6 @@ class testsuite extends tlObjectWithAttachments
       {
         if (defined('TL_APICALL'))
         {
-          // @TODO this need some refactoring due to conditional update added on 20160806
           $ctx = array('id' => $id,'name' => $name,'details' => $details);
           event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
         }
@@ -663,8 +660,7 @@ class testsuite extends tlObjectWithAttachments
     added option 'preserve_external_id' needed by tcase copy_to()
 
   */
-  function copy_to($id, $parent_id, $user_id,$options=null,$mappings=null)
-  {
+  function copy_to($id, $parent_id, $user_id,$options=null,$mappings=null) {
 
     $my['options'] = array('check_duplicate_name' => 0,
                            'action_on_duplicate_name' => 'allow_repeat',

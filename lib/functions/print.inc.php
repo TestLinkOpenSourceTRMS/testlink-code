@@ -55,10 +55,10 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   static $decodeReq;
   static $force = null;
   static $basehref;
+  static $repoDir;
 
   
-  if (!$req_mgr) 
-  {
+  if (!$req_mgr) {
     $basehref = $_SESSION['basehref'];
     $req_cfg = config_get('req_cfg');
     $req_spec_cfg = config_get('req_spec_cfg');
@@ -86,6 +86,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
     $title_separator = config_get('gui_title_separator_1');
     $req_mgr = new requirement_mgr($db);
     $tplan_mgr = new testplan($db);
+
+    $repoDir = config_get('repositoryPath');
   }
   
   $versionID = isset($node['version_id']) ? intval($node['version_id']) : requirement_mgr::LATEST_VERSION;
@@ -273,25 +275,25 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
 
   // Display Images Inline (Always)
   $attachSet =  $req_mgr->getAttachmentInfos($req['id']);
-  if (count($attachSet))
-  {
+  if (count($attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                $labels['attached_files'] . "</span></td><td>";
     
-    foreach($attachSet as $fitem)
-    {
+    foreach($attachSet as $fitem) {
       $sec = hash('sha256',$fitem['file_name']);
       $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
                '&id=' . $fitem['id'];
 
       $safeFileName = htmlspecialchars($fitem['file_name']);
-      if($fitem['is_image'])
-      {
+      if($fitem['is_image']) {
         $output .= "<li>" . $safeFileName . "</li>";
-        $output .= '<li>' . '<img src="' . $basehref . $cmout . '">';
-      }  
-      else
-      {
+        
+        $pathname = $repoDir . $item['file_path'];
+        list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+        $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+        $output .= '<li>' . '<img ' . $iDim . 
+                   ' src="' . $basehref . $cmout . '">';
+      } else {
         $output .= '<li>' . '<a href="' . $basehref . 
                    $cmout . '" ' . ' target="#blank" > ' . $safeFileName . '</a>';
       }  
@@ -332,12 +334,14 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
   static $reqSpecTypeLabels;
   static $nodeTypes;
   static $basehref;
+  static $repoDir;
 
   $output = '';
   $reLevel = ($rsLevel > 0) ? $rsLevel : 1;
 
-  if (!$req_spec_mgr) 
-  {
+  if (!$req_spec_mgr) {
+     $repoDir = config_get('repositoryPath');
+
     $basehref = $_SESSION['basehref'];
     $req_spec_cfg = config_get('req_spec_cfg');
     $firstColWidth = '20%';
@@ -470,15 +474,13 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
   }
   
   $attachSet =  $req_spec_mgr->getAttachmentInfos($spec_id);
-  if (count($attachSet))
-  {
+  if (count($attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                $labels['attached_files'] . "</span></td><td><ul>";
-    foreach($attachSet as $item)
-    {
+
+    foreach($attachSet as $item) {
       $fname = "";
-      if ($item['title'])
-      {
+      if ($item['title']) {
         $fname .=  htmlspecialchars($item['title']) . " : ";
       }
       $fname .= htmlspecialchars($item['file_name']);
@@ -516,14 +518,15 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,$tocPrefix, $rsCnt
   static $tree_mgr;
   static $map_id_descr;
   static $tplan_mgr;
+  static $repoDir;
   $code = null;
 
-  if(!$tree_mgr)
-  { 
-       $tplan_mgr = new testplan($db);
-      $tree_mgr = new tree($db);
-       $map_id_descr = $tree_mgr->node_types;
-   }
+  if(!$tree_mgr) { 
+    $tplan_mgr = new testplan($db);
+    $tree_mgr = new tree($db);
+    $map_id_descr = $tree_mgr->node_types;
+    $repoDir = config_get('repositoryPath');
+  }
    $verbose_node_type = $map_id_descr[$node['node_type_id']];
    
     switch($verbose_node_type)
@@ -676,9 +679,12 @@ function renderFirstPage($doc_info)
       $height = "height=\"{$docCfg->company_logo_height}\"";
     }
     
+    $safePName = $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo;
+    list($iWidth, $iHeight, $iType, $iAttr) = getimagesize($safePName);
     $output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
-               'title="configure using $tlCfg->document_generator->company_logo" ' . $height .
-               ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" /></p>';
+               'title="configure using $tlCfg->document_generator->company_logo" ' . 
+               ' width=' . $iWidth . ' height=' . $iHeight .
+               ' src="' . $safePName . '" /></p>';
   }
   $output .= "</div>\n";
 
@@ -783,13 +789,15 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
   static $tree_mgr;
   static $id_descr;
   static $tplan_mgr;
+  static $repoDir;
+
   $code = null;
 
-  if(!$tree_mgr)
-  { 
+  if(!$tree_mgr) { 
     $tplan_mgr = new testplan($db);
     $tree_mgr = new tree($db);
     $id_descr = $tree_mgr->node_types;
+    $repoDir = config_get('repositoryPath');
 
     $k2i = array('tproject_id' => 0, 'tplan_id' => 0, 'platform_id' => 0,  'build_id' => 0, 'prefix' => null);
     $context = array_merge($k2i,$context);
@@ -908,8 +916,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   static $buildCfields;  
   static $statusL10N;
   static $docRepo;
-
   static $st;
+  static $repoDir;
 
   $code = null;
   $tcInfo = null;
@@ -930,8 +938,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $stepDesignType = $stepDesignCfg['type'];
 
   // init static elements
-  if (!$tables)
-  {
+  if (!$tables) {
+    $repoDir = config_get('repositoryPath');
+
     $st = new stdClass();
 
     $tables = tlDBObject::getDBTables(array('executions','builds','execution_tcsteps'));
@@ -1342,13 +1351,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                              $sec . '&id=' . $safeItemID;
 
 
-                    if($fitem['is_image'])
-                    {
+                    if($fitem['is_image']) {
                       $code .= "<li>{$safeFileName}</li>";
-                      $code .= '<li><img src="' . $env->base_href . $cmout . '">';
-                    }  
-                    else
-                    {
+
+                      $pathname = $repoDir . $item['file_path'];
+                      list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+                      $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+                      $code .= '<li><img ' . $iDim . 
+                               ' src="' . $env->base_href . $cmout . '">';
+                    } else {
                       $code .= '<li><a href="' . $env->base_href . $cmout .  
                                '" target="#blank" > ' . $safeFileName . '</a>';
                     }  
@@ -1513,33 +1524,32 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
   // Attachments
   $attachSet =  (array)$tc_mgr->getAttachmentInfos($id);
-  if (count($attachSet) > 0)
-  {
+  if (count($attachSet) > 0) {
+    $repoDir = config_get('repositoryPath');
     $code .= '<tr><td> <span class="label">' . $labels['attached_files'] . '</span></td>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-2) . '"><ul>';
 
-    foreach($attachSet as $item)
-    {
+    foreach($attachSet as $item) {
       $fname = "";
-      if ($item['title'])
-      {
+      if ($item['title']) {
         $fname .=  htmlspecialchars($item['title']) . " : ";
       }
       $fname .= htmlspecialchars($item['file_name']);
       $code .= "<li>$fname</li>";
-
 
       $sec = hash('sha256',$item['file_name']);
       
       $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
                '&id=' . $item['id'];
 
-      if($item['is_image'])
-      {
-        $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
-      }  
-      else
-      {
+      if($item['is_image']) {
+        $pathname = $repoDir . $item['file_path'];
+        list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+
+        $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+        $code .= '<li>' . '<img ' . $iDim . 
+                 ' src="' . $env->base_href . $cmout . '"> </li>';
+      } else {
         $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
                  '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
       }  
@@ -1643,13 +1653,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                    '&id=' . $fitem['id'];
 
           $safeFileName =  htmlspecialchars($fitem['file_name']);
-          if($fitem['is_image'])
-          {
+          if($fitem['is_image']) {
             $code .= "<li>{$safeFileName}</li>";
-            $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
-          }  
-          else
-          {
+
+            $pathname = $repoDir . $item['file_path'];
+            list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+            $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+            $code .= '<li>' . '<img ' . $iDim . 
+                     ' src="' . $env->base_href . $cmout . '"> </li>';
+          } else {
             $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
                               '" target="#blank" > ' . $safeFileName . '</a></li>';
           }  
@@ -1712,12 +1724,13 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   static $title_separator;
   static $cfieldFormatting;
   static $getOpt;
+  static $reporDir;
   
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
 
-  if(is_null($l10n))
-  {
+  if(is_null($l10n)) {
+    $repoDir = config_get('repositoryPath');
     $tsuite_mgr = new testsuite($db);
     
     $l10n = array('test_suite' => 'test_suite', 'details' => 'details', 
@@ -1764,23 +1777,19 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   if ($options['header'])
   {
     $tInfo = $tsuite_mgr->get_by_id($node['id'],$getOpt['getByID']);
-    if ($tInfo['details'] != '')
-    {
+    if ($tInfo['details'] != '') {
       $code .= '<div>' . ($designType == 'none' ? nl2br($tInfo['details']) : $tInfo['details'] ) . '</div>';
     }
     $tInfo = null;
 
     $attachSet =  (array)$tsuite_mgr->getAttachmentInfos($node['id']);
-    if (count($attachSet) > 0)
-    {
+    if (count($attachSet) > 0) {
       $code .= '<table><caption style="text-align:left;">' . $l10n['attached_files'] . '</caption>';
       $code .= '<tr><td>&nbsp</td>';
       $code .= '<td><ul>';
-      foreach($attachSet as $item)
-      {
+      foreach($attachSet as $item) {
         $fname = "";
-        if ($item['title'])
-        {
+        if ($item['title']) {
           $fname .=  htmlspecialchars($item['title']) . " : ";
         }
         $fname .= htmlspecialchars($item['file_name']);
@@ -1788,15 +1797,16 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
 
         
         $sec = hash('sha256',$item['file_name']);
-        $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
-                 '&id=' . $item['id'];
+        $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . 
+                  $sec . '&id=' . $item['id'];
 
-        if($item['is_image']) 
-        {
-          $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
-        }  
-        else
-        {
+        if($item['is_image'])  {
+          $pathname = $repoDir . $item['file_path'];
+          list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+          $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+          $code .= '<li>' . '<img ' . $iDim . 
+                   ' src="' . $env->base_href . $cmout . '"> </li>';
+        } else {
           $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
                    '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
         }  

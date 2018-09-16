@@ -384,6 +384,7 @@ $TLS_CSRF_attack = "Cross-Site Request Forgery attack!";
 $TLS_already_exists_not_updated = "Already exists => not updated";
 $TLS_assign_exec_task_to_me = "Assign task to me";
 $TLS_chosen_blank_option = "   ";
+$TLS_already_exists_skipped = "Already exists => skipped";
 
 $TLS_monitorable = 'Monitorable';
 
@@ -2954,6 +2955,8 @@ $TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not
 $TLS_req_not_in_DB_on_tcimport = "Requirement DOCID=%s can not be linked to testcase," .
                                  "because does not exist.";
 
+
+$TLS_skip_testcase_import = 'Do not import the test case';
 $TLS_update_last_testcase_version = 'Update data on Latest version';
 $TLS_create_new_testcase_version = 'Create a new version';
 $TLS_generate_new_testcase = 'Create a new test case with different title';

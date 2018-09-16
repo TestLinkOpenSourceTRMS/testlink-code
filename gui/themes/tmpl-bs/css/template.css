@@ -3,8 +3,10 @@
 
 Base template for >=1.9.17 versions
 
-+ When apply this classes to any WebElement, you must put at end of class attribute
-example: <h1 class="text-center anotherclass tl-class">example</h1>
++ When apply this classes to any WebElement,
+ you must put at end of class attribute
+example:
+ <h1 class="text-center anotherclass tl-class">example</h1>
 */
 
 /*TODO: add description here*/
@@ -22,6 +24,7 @@ example: <h1 class="text-center anotherclass tl-class">example</h1>
   /*TODO: add description here*/
   #tl-container .tl-btn {
     background-color: #003399;
+    color: #000000;
   }
   /*TODO: add decription here*/
   #tl-container .tl-table {}
@@ -60,6 +63,10 @@ example: <h1 class="text-center anotherclass tl-class">example</h1>
   #tl-container .tl-text-bold {
     font-weight: bold;
   }
+  /*TODO: add description here*/
+  #tl-container .tl-text-italic {
+    font-style: italic;
+  }
 
   /*TODO: add description here*/
   #tl-container .tl-desc {
@@ -68,8 +75,8 @@ example: <h1 class="text-center anotherclass tl-class">example</h1>
   }
 
   /*TODO: add description here*/
-  #tl-container .tl-desc.tl-desc-warn{
-    background-color: #ffffdd !important;
+  #tl-container .tl-font-10 {
+    font-size: 10px !important;
   }
 
   /*TODO: add description here*/
@@ -90,5 +97,10 @@ example: <h1 class="text-center anotherclass tl-class">example</h1>
     background-color: #ABC8EF;
     border: 1px solid #003399;
     min-height: 15px;
+  }
+
+  /*TODO: add description here*/
+  #tl-container .tl-note {
+    font-size: 11px;
   }
 

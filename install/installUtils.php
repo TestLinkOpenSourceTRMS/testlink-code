@@ -342,6 +342,13 @@ echo "
 		<td class="border-top-bottom smallText" align="right">&nbsp;</td>' .
   "</tr>
 </table>
+</section> <!-- installHead.inc -->
+<!-- Jquery 3.3.1 -->
+<script type='text/javascript' src='../gui/themes/tmpl-bs/js/jquery.min.js'></script>
+<!-- Bootstrap JS 3.3.7 -->
+<script type='text/javascript' src='../gui/themes/tmpl-bs/js/bootstrap.min.js'></script>
+<!-- Testlink JS -->
+<script type='text/javascript' src='../gui/themes/tmpl-bs/js/template.js'></script>
 </body>
 </html>";
 

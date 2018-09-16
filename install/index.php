@@ -34,10 +34,11 @@ $forum_url = 'forum.testlink.org';
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Reset CSS for Bootstrap+HTML5 -->
-   <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/reset.css">
+  <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/reset.css">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap.min.css">
-
+  <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap-theme.min.css">
+  <!-- Testlink CSS -->
   <style type="text/css">@import url('../gui/themes/tmpl-bs/css/template.css');</style>
 </head>
 
@@ -56,7 +57,7 @@ $forum_url = 'forum.testlink.org';
       <p><i>
         TestLink is a complicated piece of software, and has always been released under an Open Source license, and this will continue into the far future. It has cost thousands of hours to develop, test and support TestLink. If you find TestLink valuable, we would appreciate if you would consider buying a support agreement or requesting custom development.
       </i></p>
-      <p><button class="btn btn-primary btn-block tl-btn" onclick="location.href='installIntro.php?type=new'">Install</button></p>
+      <p><button class="btn btn-primary btn-block" onclick="location.href='installIntro.php?type=new'">Install</button></p>
     </section>
     <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
     <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
@@ -116,10 +117,11 @@ $forum_url = 'forum.testlink.org';
 
   </section>
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="../gui/themes/tmpl-bs/js/jquery-3.2.1.slim.min.js"></script>
-  <script src="../gui/themes/tmpl-bs/js/popper.min.js"></script>
-  <script src="../gui/themes/tmpl-bs/js/bootstrap.min.js"></script>
+  <!-- Jquery 3.3.1 -->
+  <script type="text/javascript" src="../gui/themes/tmpl-bs/js/jquery.min.js"></script>
+  <!-- Bootstrap JS 3.3.7 -->
+  <script type="text/javascript" src="../gui/themes/tmpl-bs/js/bootstrap.min.js"></script>
+  <!-- Testlink JS -->
+  <script type="text/javascript" src="../gui/themes/tmpl-bs/js/template.js"></script>
 </body>
 </html>

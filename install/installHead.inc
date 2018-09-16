@@ -33,8 +33,10 @@ function getPhaseAttr($inst_phase, $phase)
   <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/reset.css">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap.min.css">
-
+  <!-- <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap-theme.min.css">-->
+  <!-- Testlink CSS -->
   <style type="text/css">@import url('../gui/themes/tmpl-bs/css/template.css');</style>
+
 </head> 
 <body id="tl-container" class="container-fluid">
   <section id="tl-section" class="row">

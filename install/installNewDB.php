@@ -61,7 +61,7 @@ $db_table_prefix = trim($_SESSION['tableprefix']);
 $db_table_prefix = preg_replace($san,'',$db_table_prefix);
 
 $db_server = trim($_SESSION['databasehost']);
-$db_server = preg_replace($san,'',$db_server);
+# $db_server = preg_replace($san,'',$db_server); # bug , delete dots for ip value
 
 $db_admin_pass = trim($_SESSION['databaseloginpassword']);
 $db_admin_pass = preg_replace($san,'',$db_admin_pass);
@@ -161,9 +161,7 @@ echo "<br /><b>Creating connection to Database Server:</b>";
 // Connect to DB Server without choosing an specific database
 $db = new database($db_type);
 define('NO_DSN',FALSE);
-//var_dump($db);
-//die();
-@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
+$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
 
 if( $conn_result['status'] == 0 ) 
 {
@@ -515,8 +513,8 @@ $data['db_table_prefix'] = $db_table_prefix;
 $cfg_file = "../config_db.inc.php";
 $yy = write_config_db($cfg_file,$data);
 // -----------------------------------------------------------------------------
-
-
+//DEBUG PURPOSE
+/*
 if(strcasecmp('ko', $yy['status']) == 0)
 {
   echo "<span class='notok'>Failed!</span></b>";
@@ -533,8 +531,11 @@ if(strcasecmp('ko', $yy['status']) == 0)
 } 
 else 
 {
+*/
   echo "<span class='ok'>OK!</span>";
+/*
 }
+*/
 
 
 manual_operations($db_type);

@@ -691,7 +691,7 @@ function copyIssues(&$dbHandler,$source,$dest)
 /**
  *
  */
-function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL) {
+function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL=false) {
   $ret = new stdClass();
 
   $opOK = false;             

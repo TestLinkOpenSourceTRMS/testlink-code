@@ -17,6 +17,7 @@
 
 require_once('../../config.inc.php');
 require_once('common.php');
+require_once('tlRole.class.php');
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testproject');
 require_once(require_web_editor($editorCfg['type']));
@@ -40,7 +41,8 @@ $user_feedback = '';
 $reloadType = 'none';  // domain 'none','reloadNavBar'
 
 $tproject_mgr = new testproject($db);
-$args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
+$role_mgr = new tlRole($db);
+$args = init_args($tproject_mgr, $role_mgr, $_REQUEST);
 
 $gui = initializeGui($db,$args);
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
@@ -235,13 +237,14 @@ switch($args->doAction)
  * Important: changes in HTML input elements on the Smarty template
  *            must be reflected here.
  *
+ * @param class $tprojectMgr project manager class object
+ * @param class $role_mgr role manager class object
  * @param array $request_hash the $_REQUEST
- * @param hash session_hash the $_SESSION
  * @return singleton object with html values tranformed and other
  *                   generated variables.
  * @internal
  */
-function init_args($tprojectMgr,$request_hash, $session_tproject_id)
+function init_args($tprojectMgr,$role_mgr, $request_hash)
 {
   $args = new stdClass();
   $request_hash = strings_stripSlashes($request_hash);
@@ -252,7 +255,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
     $args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
   }
 
-  $intval_keys = array('tprojectID' => 0, 'copy_from_tproject_id' => 0);
+  $intval_keys = array('tprojectID' => 0, 'copy_from_tproject_id' => 0, 'tproject_role_id' => -1);
   foreach ($intval_keys as $key => $value)
   {
     $args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
@@ -264,7 +267,8 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
                          'optReq' => 0,'optInventory' => 0,
                          'issue_tracker_enabled' => 0,
                          'code_tracker_enabled' => 0,
-                         'reqmgr_integration_enabled' => 0);
+                         'reqmgr_integration_enabled' => 0,
+                         'update_default_role' => 0);
   foreach ($checkbox_keys as $key => $value)
   {
     $args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -329,6 +333,9 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
     {
       $args->notes = '';
     }
+    $args->allRoles = $role_mgr->getAll($tprojectMgr->db, "WHERE id != 1 AND id != 2 AND id != " . TL_ROLES_ADMIN . " ",
++                                        null, null, $role_mgr::TLOBJ_O_GET_DETAIL_MINIMUM);
++    $args->default_role_id = TL_ROLES_INHERITED;
   }
   
   // sanitize output via black list
@@ -364,6 +371,7 @@ function prepareOptions($argsObj)
   $opts->testPriorityEnabled = $argsObj->optPriority;
   $opts->automationEnabled = $argsObj->optAutomation;
   $opts->inventoryEnabled = $argsObj->optInventory;
+  $opts->defaultRole = $argsObj->tproject_role_id;
 
   return $opts;
 }
@@ -460,7 +468,14 @@ function doCreate($argsObj,&$tprojectMgr)
         // Need to add specific role on test project in order to not make
         // it invisible for me!!!
         $tprojectMgr->addUserRole($argsObj->userID,$new_id,$argsObj->user->globalRole->dbID);
-      }  
+      }
+      else
+      {
+        if($argsObj->tproject_role_id !== -1)
+        {
+          $tprojectMgr->setAllUsersToRole($argsObj->tprojectID, $argsObj->tproject_role_id);
+        }
+      }
     }
   }
 
@@ -575,7 +590,14 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
         {  
             $tprojectMgr->addUserRole($argsObj->userID,$argsObj->tprojectID,$argsObj->user->globalRole->dbID);
         }  
-      }  
+      }
+      else
+      {
+        if($argsObj->update_default_role === 1 && $argsObj->tproject_role_id !== -1)
+        {
+          $tprojectMgr->setAllUsersToRole($argsObj->tprojectID, $argsObj->tproject_role_id);
+        }
+      }
          
       $event = new stdClass();
       $event->message = TLS("audit_testproject_saved",$argsObj->tprojectName);
@@ -591,7 +613,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
       $op->status_ok=0;
     }  
   }
-    if($op->status_ok)
+  if($op->status_ok)
   {
     if($sessionTprojectID == $argsObj->tprojectID)
     {
@@ -626,6 +648,7 @@ function edit(&$argsObj,&$tprojectMgr)
   $argsObj->tprojectName = $tprojectInfo['name'];
   $argsObj->projectOptions = $tprojectInfo['opt'];
   $argsObj->tcasePrefix = $tprojectInfo['prefix'];
+  $argsObj->default_role_id = $argsObj->projectOptions->defaultRole;
 
   $k2l = array('color','notes', 'active','is_public','issue_tracker_enabled',
                'code_tracker_enabled','reqmgr_integration_enabled','api_key');  
@@ -713,10 +736,10 @@ function create(&$argsObj,&$tprojectMgr)
   $gui->active = $argsObj->active;
   $gui->is_public = $argsObj->is_public;
   $gui->projectOptions = $argsObj->projectOptions = prepareOptions($argsObj);
+  $gui->tproject_role_id = $argsObj->tproject_role_id;
   $gui->doActionValue = 'doCreate';
   $gui->buttonValue = lang_get('btn_create');
   $gui->caption = lang_get('caption_new_tproject');
-
 
 
   new dBug($gui);
@@ -769,6 +792,7 @@ function initializeGui(&$dbHandler,$argsObj)
   $guiObj = $argsObj;
   $guiObj->canManage = $argsObj->user->hasRight($dbHandler,"mgt_modify_product");
   $guiObj->found = 'yes';
+  $guiObj->overwrite_default_role = sprintf(lang_get('overwrite_default_role'), lang_get('testproject'), lang_get('testproject'));
 
   $ent2loop = array('tlIssueTracker' => 'issueTrackers', 'tlCodeTracker' => 'codeTrackers',
                     'tlReqMgrSystem' => 'reqMgrSystems');

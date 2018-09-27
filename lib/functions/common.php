@@ -275,24 +275,22 @@ function checkSessionValid(&$db, $redirect=true)
 /**
  * Start session
  */
-function doSessionStart($setPaths=false)
-{
-  session_set_cookie_params(99999);
-  if(!isset($_SESSION))
-  {
+function doSessionStart($setPaths=false) {
+
+  if( PHP_SESSION_NONE == session_status() ) {
+    session_set_cookie_params(99999);
+  }
+  
+  if(!isset($_SESSION)) {
     session_start();
-    if(defined('KINT_ON') && KINT_ON)
-    {
+    if(defined('KINT_ON') && KINT_ON) {
       Kint::enabled(true);      
-    }  
-    else
-    {
+    } else {
       Kint::enabled(false);      
     }  
   }
   
-  if($setPaths)
-  {
+  if($setPaths) {
     unset($_SESSION['basehref']);
     setPaths();
   }

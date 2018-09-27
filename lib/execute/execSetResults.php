@@ -310,7 +310,10 @@ if(!is_null($linked_tcversions))
         }      
       }
         
-      $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id);
+      // 2018 $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id);
+      $gui->req_details = $req_mgr->getActiveForTCVersion($tcversion_id);
+
+      // 2018 - to be refactored
       $gui->relations = $tcase_mgr->getRelations($tcase_id);
       $gui->kw = $tcase_mgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
 
@@ -1202,6 +1205,8 @@ function getCfg() {
     
   $results = config_get('results');
   $cfg->tc_status = $results['status_code'];
+  $cfg->execStatusToExclude = $results['execStatusToExclude'];
+  
   $cfg->testcase_cfg = config_get('testcase_cfg'); 
   $cfg->editorCfg = getWebEditorCfg('execution');
   
@@ -1317,11 +1322,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->execStatusIcons = getResultsIcons();
   $gui->execStatusIconsNext = getResultsIconsNext();
 
-  $gui->execStatusValues = createResultsMenu();
-  $gui->execStatusValues[$cfgObj->tc_status['not_run']] = '';
-  if( isset($gui->execStatusValues[$cfgObj->tc_status['all']]) ) {
-    unset($gui->execStatusValues[$cfgObj->tc_status['all']]);
-  }
+  list($gui->execStatusValues,$gui->execStepStatusValues) =
+   initExecValuesMenus($cfgObj->tc_status,$cfgObj->execStatusToExclude);
 
   $gui->can_use_bulk_op=0;
   $gui->exec_notes_editors=null;
@@ -2271,3 +2273,28 @@ function helperLabels($haystack) {
   $hy = str_replace($searchFor, $replaceWith, $haystack);
   return $hy; 
 }  
+
+/**
+ *
+ */
+function initExecValuesMenus($tcStatusCfg, $execStatusToExclude) {
+
+  $execStatusTestCase = $execStatusTestCaseStep = createResultsMenu();
+
+  $execStatusTestCase[$tcStatusCfg['not_run']] = '';
+  $execStatusTestCaseStep[$tcStatusCfg['not_run']] = '';
+
+  foreach($execStatusToExclude['testcase'] as $code) {  
+    if( isset($execStatusTestCase[$code]) ) {
+      unset($execStatusTestCase[$code]);
+    }
+  }
+
+  foreach($execStatusToExclude['step'] as $code) {  
+    if( isset($execStatusTestCaseStep[$code]) ) {
+      unset($execStatusTestCaseStep[$code]);
+    }
+  }
+
+  return array($execStatusTestCase,$execStatusTestCaseStep);
+}

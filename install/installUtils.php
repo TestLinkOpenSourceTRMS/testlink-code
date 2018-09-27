@@ -105,7 +105,7 @@ function getUserList(&$db,$db_type)
       break;
    
       case 'mssql':
-	    case 'mssqlnative':
+	  case 'mssqlnative':
       // info about running store procedures, get form adodb manuals
       // Important:
       // From ADODB manual - Prepare() documentation

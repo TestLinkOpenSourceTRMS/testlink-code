@@ -562,17 +562,19 @@ close_html_and_exit();
  *
  *
  */
-function manual_operations($dbType)
-{
-  echo '<br><br><span class="headers">';
-  echo 'IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE';
-  echo '</span>';
+function manual_operations($dbType) {
+
+  echo '<h1>IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE</h1>';
+
+  echo '<span class="headers">';
+  //echo 'IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE - IMPORTANT NOTICE';
+  //echo '</span>';
 
   echo '<br><span class="headers">';
-  echo 'YOU NEED TO RUN MANUALLY Following Script on your DB CLIENT Application';
+  echo '<h1>YOU NEED TO RUN MANUALLY Following Script on your DB CLIENT Application</h1>';
   echo '</span><br>';
-  echo dirname(__FILE__) . '/sql/'. $dbType . '/testlink_create_udf0.sql';
-  echo '<br> THANKS A LOT </b>';
+  echo '<h1>' . dirname(__FILE__) . '/sql/'. $dbType . '/testlink_create_udf0.sql';
+  echo '</h1><br><h1>THANKS A LOT </b></h1>';
 }
 
 // -----------------------------------------------------------

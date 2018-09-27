@@ -3,52 +3,41 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *  
- * @filesource  displayMgr.php
- * @author      Kevin Levy
  * 
- * @internal revisions
- * @since 1.9.8
  *
  */
 require_once('email_api.php');
-require_once('../../cfg/reports.cfg.php');
+require_once('reports.cfg.php');
 
 /**
  * 
  *
  */
-function generateHtmlEmail(&$smarty, $template_file, $mailCfg)
-{
+function generateHtmlEmail(&$smarty, $template_file, $mailCfg) {
   // same objet that is returned by email_send
   $op = new stdClass();
   $op->status_ok = true;
   $op->msg = 'ok';
   
   $html_report = $smarty->fetch($template_file);
-  if( ! property_exists($mailCfg,'from') )
-  {
+  if( ! property_exists($mailCfg,'from') ) {
     $mailCfg->from = $_SESSION['currentUser']->emailAddress;
   }
-  if( ! property_exists($mailCfg,'to') )
-  {
+
+  if( ! property_exists($mailCfg,'to') ) {
     $mailCfg->to = $mailCfg->from;
   }
   
-  if($mailCfg->to == "")
-  {
+  if($mailCfg->to == ""){
     $op->status_ok = false;
     $op->msg = lang_get("error_sendreport_no_email_credentials");
-  }
-  else
-  {
-    // TICKET 6905: Link to test case is still raw link (no title) in email(HTML) type of test report
-    // array('strip_email_links' => false)
+  } else {
+    // Link to test case is still raw link (no title) in email(HTML) type of test report
     $op = email_send( $mailCfg->from, $mailCfg->to, $mailCfg->subject, 
                       $html_report, $mailCfg->cc, null,false,true,
                       array('strip_email_links' => false));
 
-    if($op->status_ok)
-    {
+    if($op->status_ok) {
       $op->msg = sprintf(lang_get('mail_sent_to'), $mailCfg->to);
     }
   }

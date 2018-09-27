@@ -5,12 +5,9 @@
  * 
  * @filesource  testsuite.class.php
  * @package     TestLink
- * @author      franciscom
- * @copyright   2005-2016, TestLink community 
+ * @copyright   2005-2018, TestLink community 
  * @link        http://www.testlink.org/
  *
- * @internal revisions
- * @since 1.9.15
  *
  */
 
@@ -31,7 +28,6 @@ class testsuite extends tlObjectWithAttachments
   const DEFAULT_ORDER=0;
   const USE_RECURSIVE_MODE = 1;
   const MAXLEN_NAME = 100;
-  
 
   private $object_table;
 
@@ -164,18 +160,20 @@ class testsuite extends tlObjectWithAttachments
           $ret['status_ok'] = 0;
           $ret['msg'] = sprintf($l18n['component_name_already_exists'],$name);  
         } else {
+          
           $ret['status_ok'] = 1;      
           if ($action_on_duplicate_name == 'generate_new') { 
+
             $desired_name = $name;      
             $name = $cfg['prefix_name_for_copy'] . " " . $desired_name;
-
+            
             if( strlen($name) > self::MAXLEN_NAME ) {
               $len2cut = strlen($cfg['prefix_name_for_copy']);
               $name = $cfg['prefix_name_for_copy'] . 
                       substr($desired_name,0,self::MAXLEN_NAME-$len2cut);
             }
             $ret['name'] = $name;
-
+            
             $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);
             $ret['name_changed'] = true;
           }
@@ -253,21 +251,15 @@ class testsuite extends tlObjectWithAttachments
       
       $ret['status_ok']=1;
       $ret['msg']='ok';
-      if (!$result)
-      {
+      if (!$result) {
         $ret['msg'] = $this->db->error_msg();
-      } 
-      else
-      {
-        if (defined('TL_APICALL'))
-        {
+      } else {
+        if (defined('TL_APICALL')) {
           $ctx = array('id' => $id,'name' => $name,'details' => $details);
           event_signal('EVENT_TEST_SUITE_UPDATE', $ctx);
         }
       }
-    }
-    else
-    {
+    } else {
       $ret['msg']=$check['msg'];
     }
     return $ret;
@@ -470,18 +462,16 @@ class testsuite extends tlObjectWithAttachments
    *
    **/
   function show(&$smarty,$guiObj,$template_dir, $id, $options=null,
-                $sqlResult = '', $action = 'update',$modded_item_id = 0)
-  {
+                $sqlResult = '', $action = 'update',$modded_item_id = 0) {
+
     $gui = is_null($guiObj) ? new stdClass() : $guiObj;
     $gui->cf = '';
     $gui->sqlResult = '';
     $gui->sqlAction = '';
 
     $p2ow = array('refreshTree' => false, 'user_feedback' => '');
-    foreach($p2ow as $prop => $value)
-    {
-      if( !property_exists($gui,$prop) )
-      {
+    foreach($p2ow as $prop => $value) {
+      if( !property_exists($gui,$prop) ) {
         $gui->$prop = $value;
       }
     }
@@ -498,21 +488,24 @@ class testsuite extends tlObjectWithAttachments
     $my['options'] = array_merge($my['options'], (array)$options);
 
     $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
-    if($my['options']['show_mode'] == 'readonly')
-    {       
+    if($my['options']['show_mode'] == 'readonly') {       
       $gui->modify_tc_rights = 'no';
     }
       
-    if($sqlResult)
-    { 
+    if($sqlResult) { 
       $gui->sqlResult = $sqlResult;
       $gui->sqlAction = $action;
     }
     
+
+    $tsuite_id = $id;
+    if( !property_exists($gui,'tproject_id') ) {
+      $gui->tproject_id = $this->getTestProjectFromTestSuite($tsuite_id,null);
+    }
+
     $gui->container_data = $this->get_by_id($id,array('renderImageInline' => true));
     $gui->moddedItem = $gui->container_data;
-    if ($modded_item_id)
-    {
+    if ($modded_item_id) {
       $gui->moddedItem = $this->get_by_id($modded_item_id,array('renderImageInline' => true));
     }
 
@@ -524,6 +517,9 @@ class testsuite extends tlObjectWithAttachments
     $gui->level = $gui->containerType = 'testsuite';
     $cfg = getWebEditorCfg('design');
     $gui->testDesignEditorType = $cfg['type'];
+
+    $gui->calledByMethod = 'testsuite::show';
+
     $smarty->assign('gui',$gui);
     $smarty->display($template_dir . 'containerView.tpl');
   }
@@ -553,21 +549,22 @@ class testsuite extends tlObjectWithAttachments
     returns: -
   
   */
-  function viewer_edit_new(&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action, $parent_id, 
-                           $id=null, $messages=null, $userTemplateKey=null, $userInput=null)
+  function viewer_edit_new(&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, 
+                           $action, $parent_id,$id=null, $messages=null, 
+                           $userTemplateKey=null, $userInput=null)
   {
     $internalMsg = array('result_msg' => null,  'user_feedback' => null);
     $the_data = null;
     $name = '';
     
-    if( !is_null($messages) )
-    {
+    if( !is_null($messages) ) {
       $internalMsg = array_merge($internalMsg, $messages);
     }
  
     $useUserInput = is_null($userInput) ? 0 : 1;
     $cf_smarty=-2; // MAGIC must be explained
     $pnode_info=$this->tree_manager->get_node_hierarchy_info($parent_id);
+
     $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
     $parent_info['name']=$pnode_info['name'];
     
@@ -611,8 +608,7 @@ class testsuite extends tlObjectWithAttachments
       } 
     }
     
-    foreach ($webEditorHtmlNames as $key)
-    {
+    foreach ($webEditorHtmlNames as $key) {
       // Warning:
       // the data assignment will work while the keys in $the_data are identical
       // to the keys used on $oWebEditor.
@@ -671,18 +667,23 @@ class testsuite extends tlObjectWithAttachments
     $my['mappings'] = array();
     $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
 
-    $copyTCaseOpt = array('preserve_external_id' => $my['options']['preserve_external_id'],
+    $copyTCaseOpt = array('preserve_external_id' => 
+                            $my['options']['preserve_external_id'],
                           'copy_also' => 
-                          array('keyword_assignments' => $my['options']['copyKeywords'],
-                                'requirement_assignments' => $my['options']['copyRequirements']) ); 
+                            array('keyword_assignments' => 
+                                    $my['options']['copyKeywords'],
+                                  'requirement_assignments' => 
+                                    $my['options']['copyRequirements']) ); 
                                 
     $copyOptions = array('keyword_assignments' => $my['options']['copyKeywords']);
       
     $tcase_mgr = new testcase($this->db);
     $tsuite_info = $this->get_by_id($id);
     
-    $op = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
-                        $tsuite_info['node_order'],$my['options']['check_duplicate_name'],
+    $op = $this->create($parent_id,$tsuite_info['name'],
+                        $tsuite_info['details'],
+                        $tsuite_info['node_order'],
+                        $my['options']['check_duplicate_name'],
                         $my['options']['action_on_duplicate_name']);
         
     $op['mappings'][$id] = $op['id']; 
@@ -694,13 +695,11 @@ class testsuite extends tlObjectWithAttachments
     // Custom Field values  - always copied
     $oldToNew = $this->copy_attachments($id,$new_tsuite_id);
     $inlineImg = null;
-    if(!is_null($oldToNew))
-    {
+    if(!is_null($oldToNew)) {
       $this->inlineImageProcessing($new_tsuite_id,$tsuite_info['details'],$oldToNew);
     }
 
-    if( $my['options']['copyKeywords'] )
-    {
+    if( $my['options']['copyKeywords'] ) {
       $kmap = isset($my['mappings']['keywords']) ? $my['mappings']['keywords'] : null;
       $this->copy_keyword_assignment($id,$new_tsuite_id,$kmap);
     }
@@ -709,15 +708,12 @@ class testsuite extends tlObjectWithAttachments
     
     $my['filters'] = array('exclude_children_of' => array('testcase' => 'exclude my children'));
     $subtree = $this->tree_manager->get_subtree($id,$my['filters']);
-    if (!is_null($subtree))
-    {
+    if (!is_null($subtree)) {
       $parent_decode=array();
       $parent_decode[$id]=$new_tsuite_id;
-      foreach($subtree as $the_key => $elem)
-      {
+      foreach($subtree as $the_key => $elem) {
         $the_parent_id=$parent_decode[$elem['parent_id']];
-        switch ($elem['node_type_id'])
-        {
+        switch ($elem['node_type_id']) {
           case $this->node_types_descr_id['testcase']:
             // forgotten parameter $mappings caused requirement assignments to use wrong IDs
             $tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt, $my['mappings']);
@@ -767,8 +763,7 @@ class testsuite extends tlObjectWithAttachments
              see tree->get_subtree() for details.
   
   */
-  function get_subtree($id,$recursive_mode=false)
-  {
+  function get_subtree($id,$recursive_mode=false) {
     $my['options'] = array('recursive' => $recursive_mode);
     $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
                            'exclude_children_of' => $this->nt2exclude_children);
@@ -809,8 +804,7 @@ class testsuite extends tlObjectWithAttachments
     returns: array
   
   */
-  function get_testcases_deep($id, $details = 'simple', $options=null)
-  {
+  function get_testcases_deep($id, $details = 'simple', $options=null) {
     $tcase_mgr = new testcase($this->db);
     $testcases = null;
 
@@ -883,8 +877,7 @@ class testsuite extends tlObjectWithAttachments
    * get only test cases with parent=testsuite without doing a deep search
    *
    */
-  function get_children_testcases($id, $details = 'simple', $options=null)
-  {
+  function get_children_testcases($id, $details = 'simple', $options=null) {
     $testcases=null;
     $only_id=($details=='only_id') ? true : false;                    
     $subtree=$this->tree_manager->get_children($id,array('testsuite' => 'exclude_me'));
@@ -1003,8 +996,7 @@ class testsuite extends tlObjectWithAttachments
              notes
     
   */
-  function getKeywords($id,$kw_id = null)
-  {
+  function getKeywords($id,$kw_id = null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword, notes " .
@@ -1041,8 +1033,7 @@ class testsuite extends tlObjectWithAttachments
     
   
   */
-  function get_keywords_map($id,$order_by_clause='')
-  {
+  function get_keywords_map($id,$order_by_clause='') {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword " .
            " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
@@ -1307,8 +1298,7 @@ class testsuite extends tlObjectWithAttachments
      * getTestProjectFromTestSuite()
      *
      */
-    function getTestProjectFromTestSuite($id,$parent_id)
-    {
+    function getTestProjectFromTestSuite($id,$parent_id) {
       $tproject_id = $this->tree_manager->getTreeRoot( (!is_null($id) && $id > 0) ? $id : $parent_id);
       return $tproject_id;
     }
@@ -1801,13 +1791,51 @@ class testsuite extends tlObjectWithAttachments
    * 
    *
    */
-  function buildDirectWebLink($base_href,$id,$tproject_id)
-  {
+  function buildDirectWebLink($base_href,$id,$tproject_id) {
     $tproject_mgr = new testproject($this->db);
     $prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
     $dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . '&item=testsuite&id=' . $id;
     return $dl;
   }
+
+  /**
+   * 
+   * get only test cases with parent=testsuite without doing a deep search
+   *
+   */
+  function getChildrenLatestTCVersion($id) {
+
+    $testcases = null;
+    $items = null;
+    $subtree = 
+      $this->tree_manager->get_children($id,array('testsuite' => 'exclude_me'));
+    
+    $doit = !is_null($subtree);
+    
+    if($doit) {
+      $tsuite = $this->get_by_id($id);
+      $tsuiteName = $tsuite['name'];
+      $testcases = array();
+      foreach ($subtree as $the_key => $elem) {
+        $testcases[] = $elem['id'];
+      }
+      $doit = count($testcases) > 0;
+    }
+    
+    if( $doit ) {
+      $inClause = implode(',',$testcases);
+      $sql = " SELECT tcversion_id 
+               FROM {$this->views['latest_tcase_version_id']} 
+               WHERE testcase_id IN ($inClause) ";
+
+      $items = $this->db->get_recordset($sql);
+    }  
+
+
+    return $items; 
+  }  
+
+
 
 
 

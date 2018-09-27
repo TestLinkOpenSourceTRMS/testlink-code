@@ -1,5 +1,8 @@
     {$tlImages.toggle_direct_link} &nbsp;
 
+    {$calledByOK = property_exists($gui,'calledByMethod')} 
+    {$tprojIDOK = property_exists($gui,'tproject_id')} 
+    
     <img class="clickable" src="{$tlImages.cog}" 
          onclick="javascript:toogleShowHide('tsuite_control_panel');"  title="{$labels.actions}" />
     
@@ -15,6 +18,19 @@
           <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
           <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
           <input type="hidden" name="containerType" value="{$gui->containerType}" />
+
+          <input type="hidden" name="containerType" value="{$gui->containerType}" />
+
+          {if $tprojIDOK}
+            <input type="hidden" name="tproject_id" id="tproject_id" 
+                  value="{$gui->tproject_id}" />
+          {/if}
+
+          {if $calledByOK}
+            <input type="hidden" name="calledByMethod" id="calledByMethod" 
+                  value="{$gui->calledByMethod}" />
+          {/if}
+
 
           <input type="image" src="{$tlImages.add}" name="new_testsuite" id="new_testsuite" 
                  onclick="doAction.value='new_testsuite'" title="{$labels.btn_new_testsuite}">
@@ -61,6 +77,18 @@
           <input type="hidden" name="doAction" id="doAction" value="" />
           <input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
           <input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
+
+          {if $tprojIDOK}
+            <input type="hidden" name="tproject_id" id="tproject_id" 
+                  value="{$gui->tproject_id}" />
+          {/if}
+
+          {if $calledByOK}
+            <input type="hidden" name="calledByMethod" id="calledByMethod" 
+                  value="{$gui->calledByMethod}" />
+          {/if}
+
+
 
           <input type="image" src="{$tlImages.move_copy}" name="move_testcases_viewer" id="move_testcases_viewer" 
                  onclick="doAction.value='move_testcases_viewer'" title="{$labels.alt_move_cp_testcases}">

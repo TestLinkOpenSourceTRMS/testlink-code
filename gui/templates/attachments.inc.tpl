@@ -2,21 +2,18 @@
 Testlink Open Source Project - http://testlink.sourceforge.net/
 @filesource attachments.inc. tpl
 
+
 Generic attachment management
 
 Input:
-  $attach_attachmentInfos
+  $attach_attachmentsInfos
   $attach_show_upload_btn
   $attach_downloadOnly
   $attach_tableClassName
   $attach_inheritStyle
   $attach_tableStyles
 
-To be analized
-seems to be NON USED
-  $attach_id
-  $attach_tableName
-
+  
 
 Smarty global variables:
 $gsmarty_attachments

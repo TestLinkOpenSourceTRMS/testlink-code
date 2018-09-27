@@ -85,6 +85,8 @@ $TLS_click_to_set_closed = "Open (click to close)";
 $TLS_click_to_disable = "Enabled (click to disable)";
 $TLS_click_to_enable = "Disabled (click to enable)";
 $TLS_current_testcase = "This test case";
+$TLS_this_tcversion = "This test case version ";
+
 $TLS_confirm = "Confirm";
 $TLS_config = "Configuration";
 $TLS_created_by = "Created by";
@@ -366,11 +368,11 @@ $TLS_addLinkToTestCase = 'Add link to test case';
 $TLS_removeLinkToTestCase = 'Remove test case link';
 
 
-$TLS_parent_of = "parent of";
-$TLS_child_of = "child of";
+$TLS_parent_of = "is parent of";
+$TLS_child_of = "is child of";
 $TLS_blocks = "blocks";
 $TLS_depends = "depends on";
-$TLS_related_to = "related to";
+$TLS_related_to = "is related to";
 
 $TLS_tcase_relation_hint = "PREFIX-ID";
 $TLS_tcase_relation_help = "(if you are linking to a test on same test project, you can write ONLY the ID)";
@@ -2773,7 +2775,7 @@ $TLS_duplicate_req_criteria = "Consider Requirement as duplicate if";
 $TLS_req_msg_noselect = "Nothing selected";
 $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements ";
 $TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximum number of) %s test cases' .
-                         '<br />belonging to test suites present on selected branch.';
+                         '<br />belonging to test suites present on branch <b>( %s )</b> , selected on left side Test Specification Tree';
 
 $TLS_bulk_req_assign_no_test_cases = 'Operation can not be done because there are no test cases inside selected test suite';
 
@@ -2781,6 +2783,8 @@ $TLS_bulk_assigment_done = '%s assignments has been done';
 $TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';
 $TLS_req_title_available = 'Available Requirements';
 $TLS_no_req_spec_available = "No Requirements Specification available for this Test Project";
+$TLS_req_on_req_spec = 'Children Req. ( %s ) on Req. Spec: %s';
+
 
 
 // ----- requirement relations (BUGID 1748)
@@ -2954,7 +2958,6 @@ $TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not
                                "linked to testcase";
 $TLS_req_not_in_DB_on_tcimport = "Requirement DOCID=%s can not be linked to testcase," .
                                  "because does not exist.";
-
 
 $TLS_skip_testcase_import = 'Do not import the test case';
 $TLS_update_last_testcase_version = 'Update data on Latest version';
@@ -3308,7 +3311,8 @@ $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Pro
 $TLS_audit_cfield_required_on = "Custom field '{%1}' was set REQUIRED on Test Project '{%2}'";
 $TLS_audit_cfield_required_off = "Custom field '{%1}' was set NOT REQUIRED on Test Project '{%2}'";
 
-
+$TLS_audit_tcversion_activated = "Test Case '{%1}' Version {%2} has been activated";
+$TLS_audit_tcversion_deactivated = "Test Case '{%1}' Version {%2} has been deactivated";
 
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
 $TLS_audit_user_saved = "User '{%1}' was saved";
@@ -3332,7 +3336,7 @@ $TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' was deleted";
 $TLS_audit_keyword_created = "Keyword '{%1}' was created";
 $TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
 $TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted - Test Project {%2}";
-$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}' Version '{%3}' ";
 $TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from Test Case '{%2}'";
 
 $TLS_audit_exec_saved = "Test Case '{%1}' has been executed on Build '{%2}' in the Test Plan '{%3}'.";
@@ -3362,7 +3366,16 @@ $TLS_audit_requirement_created = "Requirement '{%1}' was created";
 $TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
 $TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
 $TLS_audit_req_assigned_tc = "Requirement with title '{%1}' was assigned to the Test Case '{%2}'";
+
 $TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassigned from the Test Case '{%2}'";
+
+
+$TLS_audit_reqv_assigned_tcv = "Requirement Title '{%1}'' (Version: {%2}) was assigned to the Test Case '{%3}' (Version:{%4}) ";
+
+$TLS_audit_reqv_assignment_removed_tcv = "Requirement Title '{%1}'' (Version: {%2}) was unassigned from the Test Case '{%3}' (Version:{%4}) ";
+
+
+
 $TLS_audit_requirement_copy = "Req 'DOCID:{%1}' was created as a copy of Req 'DOCID:{%2}'";
 $TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%3} was deleted.";
 $TLS_audit_req_version_frozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was frozen.";
@@ -3878,4 +3891,11 @@ $TLS_system_descr = "test & requirement management software";
 $TLS_poweredBy = 'Powered by';
 $TLS_expiration = 'Expiration';
 $TLS_no_user_selected = 'You need to select at least one user';
+
+$TLS_can_not_delete_relation_tcversion_frozen = "Delete Disabled: test case version is frozen";
+$TLS_can_not_delete_relation_related_tcversion_frozen =  "Delete Disabled: Related test case version is frozen";
+$TLS_obsolete = 'obsolete';
+
+$TLS_tcversion_executed_keyword_assignment_blocked = ' Test Case Version Has been executed, system configuration does not allow keyword management';
+
 // ----- END ------------------------------------------------------------------

@@ -208,15 +208,15 @@ function EP(id)
 
   rev :
 */
-function ETS(id)
-{
+function ETS(id) {
   // menuUrl 99% => archiveData.php
 
   // get checkboxes status
   var _FUNCTION_NAME_="ETS";
   var pParams = tree_getPrintPreferences();
   var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
-                 "&edit=testsuite&level=testsuite&containerType=testsuite&id="+id+args+"&"+pParams;
+                 "&edit=testsuite&level=testsuite&" + 
+                 "containerType=testsuite&id="+id+args+"&"+pParams;
 
   // alert(_FUNCTION_NAME_ + " " +action_url);
   parent.workframe.location = action_url;
@@ -986,8 +986,7 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode)
  * @param req_version_id Requirement Version ID
  * @param anchor string with anchor name
  */
-function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
-{
+function openLinkedReqVersionWindow(req_id, req_version_id, anchor) {
   if (anchor == null) {
     anchor = '';
   } else {
@@ -1001,13 +1000,11 @@ function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
 
-  if (width == null)
-  {
+  if (width == null) {
     var width = "800";
   }
 
-  if (height == null)
-  {
+  if (height == null) {
     var height = "600";
   }
 
@@ -1022,9 +1019,7 @@ function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
  * @param req_id Requirement ID
  * @param anchor string with anchor name
  */
-function openLinkedReqWindow(req_id, anchor)
-{
-  // 20101008 - asimon - BUGID 3311
+function openLinkedReqWindow(req_id, anchor) {
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
   var windowCfg='';
@@ -1037,13 +1032,11 @@ function openLinkedReqWindow(req_id, anchor)
     anchor = '#' + anchor;
   }
   
-  if (width == null)
-  {
+  if (width == null) {
     width = "800";
   }
 
-  if (height == null)
-  {
+  if (height == null) {
     height = "600";
   }
 
@@ -1052,6 +1045,39 @@ function openLinkedReqWindow(req_id, anchor)
   window.open(fRoot+feature_url,"Requirement",windowCfg);
 }
 
+/**
+ * open a requirement in a popup window
+ * 
+ * @param req_id Requirement ID
+ * @param req_version_id Requirement Version ID
+ * @param anchor string with anchor name
+ */
+function openLinkedReqVersionWindow(req_id,req_version_id, anchor) {
+  var width = getCookie("ReqPopupWidth");
+  var height = getCookie("ReqPopupHeight");
+  var windowCfg='';
+  var feature_url = "lib/requirements/reqView.php";
+
+
+  if (anchor == null) {
+    anchor = '';
+  } else {
+    anchor = '#' + anchor;
+  }
+  
+  if (width == null) {
+    width = "800";
+  }
+
+  if (height == null) {
+    height = "600";
+  }
+
+  feature_url += "?&showReqSpecTitle=1&requirement_id=" + req_id + 
+                 "&req_version_id=" + req_version_id + anchor;
+  windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+  window.open(fRoot+feature_url,"Requirement",windowCfg);
+}
 
 /**
  * open a req spec in a popup window
@@ -1583,8 +1609,7 @@ function openReqRevisionWindow(item_id, anchor)
  * @param revision_id only used for requirements, null in case of testcases
  * @param print_action target url to open in popup
  */
-function openPrintPreview(type, id, child_id, revision, print_action) 
-{
+function openPrintPreview(type, id, child_id, revision, print_action) {
   // configure window size using cookies or default values if there are no cookies
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
@@ -1598,8 +1623,7 @@ function openPrintPreview(type, id, child_id, revision, print_action)
     height = "600";
   }
   
-  switch(type)
-  {
+  switch(type) {
 
     case 'req':
       feature_url += "?req_id=" + id + "&req_version_id=" + child_id + "&req_revision=" + revision;
@@ -1617,17 +1641,15 @@ function openPrintPreview(type, id, child_id, revision, print_action)
      feature_url += "?id=" + id;
     break;
 
-
-    
   }
+
   windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,toolbar=yes,dependent=yes,menubar=yes";
   window.open(fRoot+feature_url,"_blank",windowCfg); // TODO localize "Print Preview"!
 }
 
 
 
-function openExecHistoryWindow(tc_id,tplan_check) 
-{
+function openExecHistoryWindow(tc_id,tplan_check) {
   var url = "lib/execute/execHistory.php?tcase_id=" + tc_id;
 
   var width = getCookie("execHistoryPopupWidth");

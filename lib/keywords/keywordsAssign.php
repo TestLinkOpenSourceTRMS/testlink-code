@@ -5,11 +5,9 @@
  *
  * @filesource  keywordsAssign.php
  * @package     TestLink
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @link        http://www.testlink.org/
  * 
- * @internal revisions
- * @since 1.9.13
  *
 **/
 require_once("../../config.inc.php");
@@ -25,8 +23,7 @@ $args = init_args($opt_cfg);
 
 $gui = initializeGui($args);
 
-if ($args->edit == 'testproject')
-{
+if ($args->edit == 'testproject') {
   // We can NOT assign/remove keywords on a whole test project
   show_instructions('keywordsAssign');
   exit();
@@ -48,8 +45,7 @@ $opt_cfg->additional_global_lbl = null;
 $opt_cfg->from->lbl = lang_get('available_kword');
 $opt_cfg->from->map = $tproject_mgr->get_keywords_map($args->testproject_id);
 
-switch($args->edit)
-{
+switch($args->edit) {
 
   case 'testsuite':
     $opt_cfg->to->lbl = lang_get('kword_to_be_assigned_to_testcases');
@@ -61,31 +57,32 @@ switch($args->edit)
     $testsuite = $tsuite_mgr->get_by_id($args->id);
     $gui->keyword_assignment_subtitle = lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
 
-    if($args->useFilteredSet)
-    {
+    if($args->useFilteredSet) {
       $tcs = $args->tcaseSet;    
     } 
-    else
-    {
+    else {
       $tcs = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
     } 
 
-    if( ($loop2do = sizeof($tcs)) )
-    {
+    if( ($loop2do = sizeof($tcs)) ) {
       $gui->can_do = 1;
-      if ($args->assignToTestSuite)
-      {
+      if ($args->assignToTestSuite) {
         $result = 'ok';
-        for($idx = 0; $idx < $loop2do; $idx++)
-        {
-          if(is_null($args->keywordArray))
-          { 
-            $tcase_mgr->deleteKeywords($tcs[$idx]);
+        
+        for($idx = 0; $idx < $loop2do; $idx++) {
+          $ltcv = $tcase_mgr->get_last_version_info($tcs[$idx],$glOpt);
+          $latestActiveVersionID = $ltcv['tcversion_id'];
+          $statusQuo = current($tcase_mgr->get_versions_status_quo($tcs[$idx],$latestActiveVersionID));
+         
+          $hasBeenExecuted = intval($statusQuo['executed']) > 0;
+          if( $hasBeenExecuted == false ) {
+            if(is_null($args->keywordArray)) { 
+              $tcase_mgr->deleteKeywords($tcs[$idx],$latestActiveVersionID);
+            }
+            else {
+              $tcase_mgr->addKeywords($tcs[$idx],$latestActiveVersionID,$args->keywordArray);
+            }             
           }
-          else
-          {
-            $tcase_mgr->addKeywords($tcs[$idx],$args->keywordArray);
-          } 
         }
       }
     }
@@ -95,21 +92,30 @@ switch($args->edit)
   case 'testcase':
     $doRecall = true;
     $gui->can_do = 1;
-    $tcData = $tcase_mgr->get_by_id($args->id);
-    if (sizeof($tcData))
-    {
-      $gui->keyword_assignment_subtitle = lang_get('test_case') . TITLE_SEP . $tcData[0]['name'];
-    }
+    
+    $tcName = $tcase_mgr->getName($args->id);
+    $gui->keyword_assignment_subtitle = lang_get('test_case') . TITLE_SEP . 
+                                        $tcName;
 
-    if($args->assignToTestCase)
-    {
+    // Now we work only on latest active version.
+    // We also need to check if has been executed
+    $glOpt = array('output' => 'thin', 'active' => 1);
+    $ltcv = $tcase_mgr->get_last_version_info($args->id,$glOpt);
+    $latestActiveVersionID = $ltcv['tcversion_id'];
+    
+    $statusQuo = current($tcase_mgr->get_versions_status_quo($args->id,$latestActiveVersionID));
+    $gui->hasBeenExecuted = intval($statusQuo['executed']) > 0;
+
+    if($args->assignToTestCase && !$gui->hasBeenExecuted) {
       $result = 'ok';
-      $tcase_mgr->setKeywords($args->id,$args->keywordArray);
+      $tcase_mgr->setKeywords($args->id,$latestActiveVersionID,$args->keywordArray);
       $doRecall = !is_null($args->keywordArray);  
     }
+
     $opt_cfg->to->lbl = lang_get('assigned_kword');
-    $opt_cfg->to->map = $doRecall ? $tcase_mgr->get_keywords_map($args->id,
-                                    array('orderByClause' =>" ORDER BY keyword ASC ")) : null;
+    $opt_cfg->to->map = $doRecall ? 
+      $tcase_mgr->get_keywords_map($args->id,$latestActiveVersionID,
+                                   array('orderByClause' =>" ORDER BY keyword ASC ")) : null;
   break;
 }
 
@@ -126,8 +132,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  *
  */ 
-function init_args(&$opt_cfg)
-{
+function init_args(&$opt_cfg) {
   $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
   
   $iParams = array("id" => array(tlInputParameter::INT_N),
@@ -153,8 +158,7 @@ function init_args(&$opt_cfg)
 
   $args->keywordArray = null;
   $args->keywordList = $pParams[$rl_html_name];
-  if ($args->keywordList != "")
-  { 
+  if ($args->keywordList != "") { 
     $args->keywordArray = explode(",",$args->keywordList);
   }
 
@@ -164,8 +168,7 @@ function init_args(&$opt_cfg)
 /**
  *
  */
-function initializeGui(&$argsObj)
-{
+function initializeGui(&$argsObj) {
   $guiObj = new stdClass();
   $guiObj->can_do = 0;
   $guiObj->form_token = $argsObj->form_token;
@@ -177,7 +180,6 @@ function initializeGui(&$argsObj)
 }
 
 
-function checkRights(&$db,&$user)
-{
+function checkRights(&$db,&$user) {
   return $user->hasRight($db,'keyword_assignment');
 }

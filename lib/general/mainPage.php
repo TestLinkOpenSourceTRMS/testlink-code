@@ -38,8 +38,8 @@ $testplanID = intval($testplanID);
 $accessibleItems = $tproject_mgr->get_accessible_for_user($user->dbID,array('output' => 'map_name_with_inactive_mark'));
 $tprojectQty = $tproject_mgr->getItemCount();
 $userIsBlindFolded = (is_null($accessibleItems) || count($accessibleItems) == 0) && $tprojectQty > 0;
-if($userIsBlindFolded)
-{
+
+if($userIsBlindFolded) {
   $testprojectID = $testplanID = 0;
   $_SESSION['testprojectTopMenu'] = '';
 }
@@ -52,19 +52,17 @@ $gui = new stdClass();
 $gui->grants = getGrants($db,$user,$userIsBlindFolded);
 $gui->hasTestCases = false;
 
-if($gui->grants['view_tc'])
-{ 
+if($gui->grants['view_tc']) { 
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
 }
 
 $gui->hasKeywords = false;
-if($gui->hasTestCases)
-{
+if($gui->hasTestCases) {
   $gui->hasKeywords = $tproject_mgr->hasKeywords($testprojectID);
 }  
 
 
-// ----- Test Plan Section --------------------------------------------------------------
+// ----- Test Plan Section --------------------------------
 /** 
  * @TODO - franciscom - we must understand if these two calls are really needed,
  * or is enough just call to getAccessibleTestPlans()
@@ -72,13 +70,10 @@ if($gui->hasTestCases)
 $filters = array('plan_status' => ACTIVE);
 $gui->num_active_tplans = $tproject_mgr->getActiveTestPlansCount($testprojectID);
 
-//sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
-
 // get Test Plans available for the user 
-$arrPlans = $currentUser->getAccessibleTestPlans($db,$testprojectID);
+$arrPlans = (array)$currentUser->getAccessibleTestPlans($db,$testprojectID);
 
-if($testplanID > 0)
-{
+if($testplanID > 0) {
 	// if this test plan is present on $arrPlans
 	//	  OK we will set it on $arrPlans as selected one.
 	// else 
@@ -87,17 +82,14 @@ if($testplanID > 0)
 	$index=0;
 	$found=0;
 	$loop2do=count($arrPlans);
-	for($idx=0; $idx < $loop2do; $idx++)
-	{
-  	if( $arrPlans[$idx]['id'] == $testplanID )
-  	{
+	for($idx=0; $idx < $loop2do; $idx++) {
+  	if( $arrPlans[$idx]['id'] == $testplanID ) {
      	$found = 1;
      	$index = $idx;
      	break;
     }
   }
-  if( $found == 0 )
-  {
+  if( $found == 0 ) {
     // update test plan id
     $index = 0;
     $testplanID = $arrPlans[$index]['id'];
@@ -139,8 +131,7 @@ $rights2check = array('testplan_execute','testplan_create_build',
                       'testplan_set_urgent_testcases',
                       'testplan_show_testcases_newest_versions');
 
-foreach($rights2check as $key => $the_right)
-{
+foreach($rights2check as $key => $the_right) {
   $gui->grants[$the_right] = $userIsBlindFolded ? 'no' : $currentUser->hasRight($db,$the_right,$testprojectID,$testplanID);
 }
                          

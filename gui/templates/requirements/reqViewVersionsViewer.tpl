@@ -3,11 +3,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource reqViewVersionsViewer.tpl
 viewer for requirement
 
-@internal revisions
-@since 1.9.9
 *}
 {lang_get var="labels"
-          s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
+          s="requirement_spec,Requirements,scope,status,type,expected_coverage,obsolete,
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
              testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
@@ -174,7 +172,7 @@ viewer for requirement
       </fieldset>
     </td>
   </tr>
-  {if !isset($args_hide_coverage)}
+  {if !isset($args_hide_coverage) || $args_hide_coverage == FALSE}
   <td>
     <fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
     {if $gui->user_feedback != ''}
@@ -188,27 +186,38 @@ viewer for requirement
         <input type="hidden" id="rtRID" name="requirement_id" value="{$args_req.id}" />
         <input type="hidden" id="rtRVID" name="req_version_id" value="{$args_req.version_id}" />
         <input type="hidden" id="rtAction" name="doAction" value="removeTestCase" />
-        <input type="hidden" id="rtTCID" name="tcaseIdentity" value="" />
+        <input type="hidden" id="rtTCVID" name="tcaseIdentity" value="" />
 
       {section name=row loop=$args_req_coverage}
         <span>
-		{if $args_grants->req_tcase_link_management == "yes" && $args_frozen_version eq null}
+		{if $args_grants->req_tcase_link_management == "yes" && $args_frozen_version eq null && $args_req_coverage[row].can_be_deleted}
         <input type="image"  class="clickable" src="{$tlImages.disconnect_small}" 
-               title="{$labels.removeLinkToTestCase}" onClick="tcaseIdentity.value={$args_req_coverage[row].id}">
+               title="{$labels.removeLinkToTestCase}" onClick="tcaseIdentity.value={$args_req_coverage[row].tcversion_id}">
+    {else}    
         &nbsp;&nbsp; 
 		{/if}
+        &nbsp;&nbsp; 
+        {if $args_req_coverage[row].is_obsolete ==1}
+        <img class="clickable" src="{$tlImages.heads_up}"
+             title="{$labels.obsolete}" />
+        {else}
+          &nbsp;&nbsp;&nbsp; 
+        {/if}
         <img class="clickable" src="{$tlImages.history_small}"
              onclick="javascript:openExecHistoryWindow({$args_req_coverage[row].id});"
              title="{$labels.execution_history}" />
         <img class="clickable" src="{$tlImages.edit_icon}"
              onclick="javascript:openTCaseWindow({$args_req_coverage[row].id});"
              title="{$labels.design}" />
-        {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}
+        {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].tcase_name|escape} [{$labels.version} {$args_req_coverage[row].version}]
         </span><br />
       {/section}
       </form>
     {/if}
-    {if (is_null($args_frozen_version) || !$args_frozen_version ) && $args_grants->req_tcase_link_management == "yes"}
+
+
+    {if ( !isset($args_can_manage_coverage) || $args_can_manage_coverage == TRUE ) &&  
+        (is_null($args_frozen_version) || !$args_frozen_version ) && $args_grants->req_tcase_link_management == "yes"}
     <form style="display: inline;" id="reqAddTestCase_{$req_version_id}" name="reqAddTestCase_{$req_version_id}" 
           action="{$basehref}lib/requirements/reqEdit.php" method="post">
       <input type="hidden" id="atRID" name="requirement_id" value="{$args_req.id}" />

@@ -488,21 +488,6 @@ function initializeGui(&$argsObj,&$tprojectMgr)
   $gui->modification_date_to = null;
   $gui->search_important_notice = sprintf(lang_get('search_important_notice'),$argsObj->tprojectName);
 
-  // $gui->design_cf = $tprojectMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->tprojectID,cfield_mgr::ENABLED,null,'testcase');
-  // $gui->keywords = $tprojectMgr->getKeywords($argsObj->tprojectID);
-  // $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
-  // $gui->filter_by['keyword'] = !is_null($gui->keywords);
-  // $reqSpecSet = $tprojectMgr->genComboReqSpec($argsObj->tprojectID);
-  // $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
-
-  // $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
-  //                                LOW => lang_get('low_importance'));
-
- 
-  //$dummy = getConfigAndLabels('testCaseStatus','code');
-  //$gui->domainTCStatus = array(0 => '') + $dummy['lbl'];
-
-
   // need to set values that where used on latest search (if any was done)
   // $gui->importance = config_get('testcase_importance_default');
 

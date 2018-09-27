@@ -23,8 +23,7 @@ $templateCfg = templateConfiguration();
 $pcheck_fn=null;
 $args = init_args();
 $gui = initializeGui($db,$args);
-if ($args->do_upload)
-{
+if ($args->do_upload) {
   
   // check the uploaded file
   $source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
@@ -32,49 +31,44 @@ if ($args->do_upload)
   tLog('Uploaded file: '.$source);
   $doIt = false;
   $gui->file_check = null;
-  if (($source != 'none') && ($source != ''))
-  { 
+  if (($source != 'none') && ($source != '')) { 
     // ATTENTION:
     // MAX_FILE_SIZE hidden input is defined on form, but anyway we do not get error at least using
     // Firefox and Chrome.
-    if( !($doIt = $_FILES['uploadedFile']['size'] <= $gui->importLimitBytes) )
-    {
+    if( !($doIt = $_FILES['uploadedFile']['size'] <= $gui->importLimitBytes) ) {
       $gui->file_check['status_ok'] = 0;
       $gui->file_check['msg'] = sprintf(lang_get('file_size_exceeded'),$_FILES['uploadedFile']['size'],$gui->importLimitBytes);
     }
   }
-  if($doIt)
-  { 
+
+  if($doIt) { 
     $gui->file_check['status_ok'] = 1;
-    if (move_uploaded_file($source, $gui->dest))
-    {
+    if (move_uploaded_file($source, $gui->dest)) {
       tLog('Renamed uploaded file: ' . $source);
-      switch($args->importType)
-      {
+      switch($args->importType) {
         case 'XML':
           $pcheck_fn = "check_xml_tc_tsuite";
           $pimport_fn = "importTestCaseDataFromXML";
           break;
       }
-      if(!is_null($pcheck_fn))
-      {
+
+      if(!is_null($pcheck_fn)) {
         $gui->file_check = $pcheck_fn($gui->dest,$args->useRecursion);
       }
     }
-    if($gui->file_check['status_ok'] && $pimport_fn)
-    {
+
+    if($gui->file_check['status_ok'] && $pimport_fn) {
       tLog('Check is Ok.');
       $opt = array();
       $opt['useRecursion'] = $args->useRecursion;
       $opt['importIntoProject'] = $args->bIntoProject;
       $opt['duplicateLogic'] = array('hitCriteria' => $args->hit_criteria,
                                      'actionOnHit' => $args->action_on_duplicated_name);
-      $gui->resultMap = $pimport_fn($db,$gui->dest,intval($args->container_id),
-                                    intval($args->tproject_id),intval($args->userID),$opt);
+      $gui->resultMap = $pimport_fn($db,$gui->dest,
+         intval($args->container_id),intval($args->tproject_id),intval($args->userID),
+         $opt);
     }
-  }
-  else if(is_null($gui->file_check))
-  {
+  } else if(is_null($gui->file_check)) {
     
     tLog('Missing upload file','WARNING');
     $gui->file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
@@ -84,15 +78,23 @@ if ($args->do_upload)
 
 if($args->useRecursion) {
   $obj_mgr = new testsuite($db);
+  $gui->actionOptions = 
+    array('update_last_version' => lang_get('update_last_testcase_version'),
+          'generate_new' => lang_get('generate_new_testcase'),
+          'create_new_version' => lang_get('create_new_testcase_version'));
+  
+  $gui->hitOptions=array('name' => lang_get('same_name'),
+                         'internalID' => lang_get('same_internalID'),
+                         'externalID' => lang_get('same_externalID'));
 } else {
-  $obj_mgr = new testcase($db);  
+  $obj_mgr = new testcase($db);
 }
 
 $gui->actionOptions = 
-  array('skip' => lang_get('skip_testcase_import'),
-        'update_last_version' => lang_get('update_last_testcase_version'),
-        'generate_new' => lang_get('generate_new_testcase'),
-        'create_new_version' => lang_get('create_new_testcase_version'));
+array('skip' => lang_get('skip_testcase_import'),
+      'update_last_version' => lang_get('update_last_testcase_version'),
+      'generate_new' => lang_get('generate_new_testcase'),
+      'create_new_version' => lang_get('create_new_testcase_version'));
 
 $gui->hitOptions = array('name' => lang_get('same_name'),
                          'internalID' => lang_get('same_internalID'),
@@ -115,8 +117,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   args :
   returns: 
 */
-function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$options=null)
-{
+function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$options=null) {
+
   tLog('importTestCaseDataFromXML called for file: '. $fileName);
   $xmlTCs = null;
   $resultMap  = null;
@@ -133,7 +135,6 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
     if($xml !== FALSE) {
       $xmlKeywords = $xml->xpath('//keywords');
       $kwMap = null;
-
       if ($xmlKeywords) {
         $tproject = new testproject($db);
         $loop2do = sizeof($xmlKeywords);
@@ -149,10 +150,8 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
       }
       
       if ($useRecursion && ($xml->getName() == 'testsuite')) {
-        $resultMap = importTestSuitesFromSimpleXML($db,$xml,intval($parentID),intval($tproject_id),$userID,
-                                                   $kwMap,$importIntoProject,$duplicateLogic);
+        $resultMap = importTestSuitesFromSimpleXML($db,$xml,intval($parentID),intval($tproject_id),$userID,$kwMap,$importIntoProject,$duplicateLogic);
       }
-
     }
   }
   return $resultMap;
@@ -192,7 +191,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   }
   
   // $tprojectHas = array('customFields' => false, 'reqSpec' => false);
-  $hasCustomFieldsInfo = false;
+  $hasCFieldsInfo = false;
   $hasRequirements = false;
   $hasAttachments = false;
 
@@ -207,6 +206,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $req_mgr = new requirement_mgr($db);
     $userObj = new tlUser($userID);
     $userObj->readFromDB($db,tlUser::TLOBJ_O_SEARCH_BY_ID);
+    
     $userRights['can_edit_executed'] = 
       $userObj->hasRight($db,'testproject_edit_executed_testcases',$tproject_id);
 	  $userRights['can_link_to_req'] = 
@@ -218,7 +218,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                  'already_exists_not_updated','already_exists_skipped',
                  'start_warning','end_warning','testlink_warning',
                  'hit_with_same_external_ID',
-				         'keywords_assignment_skipped_during_import',
+                 'keywords_assignment_skipped_during_import',
                  'req_assignment_skipped_during_import');
 
     foreach($k2l as $k) {
@@ -299,7 +299,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       $resultMap[] = array($name,$messages['already_exists_skipped']);
       continue;
     }
-      
 
     // I've changed value to use when order has not been provided 
     // from testcase:DEFAULT_ORDER to a counter, because with original solution
@@ -340,8 +339,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         $personID = $userIDCache[$tc['author_login']];
       } else {
         $userObj->login = $tc['author_login'];
-        if( $userObj->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == tl::OK )
-        {
+        if( $userObj->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == tl::OK ) {
           $personID = $userObj->dbID;
         }
         
@@ -360,7 +358,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       $xx .= $messages['original_name'] . "\n" . $name. "\n" . $messages['end_warning'] . "\n";
 	    $tcCfg = getWebEditorCfg('design');
 	    $tcType = $tcCfg['type'];
-	    if ($tcType == 'none') {
+	    if ($tcType == 'none'){
 		    $summary = $xx . $summary ;
       } else{
 		    $summary = nl2br($xx) . $summary ;
@@ -372,19 +370,19 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     $kwIDs = null;
     if (isset($tc['keywords']) && $tc['keywords']) {
   	  if(!$userRights['can_assign_keywords']){
-  		  $resultMap[] = array($name,$messages['keywords_assignment_skipped_during_import']);
-  	  }
-  	  else{
+  		  $resultMap[] = 
+          array($name,$messages['keywords_assignment_skipped_during_import']);
+  	  } else{
   		  $kwIDs = implode(",",buildKeywordList($kwMap,$tc['keywords']));
   	  }
     }  
-
+    
     // More logic regarding Action on Duplicate
     if( $duplicatedLogic['actionOnHit'] == 'update_last_version' && 
         !is_null($dupInfo) ) {
-
+        
         $tcase_qty = count($dupInfo);
-
+    
         switch($tcase_qty) {
            case 1:
              $doCreate=false;
@@ -392,9 +390,12 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
              $last_version = $tcase_mgr->get_last_version_info($tcase_id,
                                                                $getVersionOpt);
              $tcversion_id = $last_version['id'];
-             $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
-                                       $preconditions,$steps,$personID,$kwIDs,
-                                       $node_order,$exec_type,$importance,$attr,$updOpt);
+             $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,
+                                       $summary,
+                                       $preconditions,$steps,$personID,
+                                       $kwIDs,
+                                       $node_order,$exec_type,$importance,
+                                       $attr,$updOpt);
 
              $ret['id'] = $tcase_id;
              $ret['tcversion_id'] = $tcversion_id;
@@ -404,8 +405,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                if($ret['reason'] == '') {
                  $resultMap[] = array($name, 
                   sprintf($messages['already_exists_not_updated'], 
-                          $tcasePrefix . $glueChar . $externalid,
-                          $tcasePrefix . $glueChar . $ret['hit_on']['tc_external_id']));
+                                                     $tcasePrefix . $glueChar . $externalid,
+                                                     $tcasePrefix . $glueChar . $ret['hit_on']['tc_external_id']));
                } else {
                  $resultMap[] = array($name,$ret['msg']);
                } 
@@ -421,10 +422,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
            break;
        }
     }
-    
+
     if( $doCreate ) {           
-      // Want to block creation of with existent EXTERNAL ID, 
-      // if containers ARE DIFFERENT.
+      // Want to block creation of with existent EXTERNAL ID, if containers ARE DIFFERENT.
       $item_id = intval($tcase_mgr->getInternalID($externalid, array('tproject_id' => $tproject_id))); 
 
       if( $item_id > 0) {
@@ -444,41 +444,41 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     }
 
     if( $doCreate ) {     
-        $createOptions = array('check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
-                               'action_on_duplicate_name' => $duplicatedLogic['actionOnHit'],
-                               'external_id' => $externalid, 'importLogic' => $duplicatedLogic);
+        $createOptions = 
+          array('check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
+                'action_on_duplicate_name' => $duplicatedLogic['actionOnHit'],
+                'external_id' => $externalid, 'importLogic' => $duplicatedLogic);
 
         if(!is_null($attr) ) {
           $createOptions += $attr;
         }  
 
-        if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
-                                      $personID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
-                                      $exec_type,$importance,$createOptions))
-        {
+        if ( $ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,
+                                      $steps,$personID,$kwIDs,$node_order,
+                                      testcase::AUTOMATIC_ID,
+                                      $exec_type,$importance,$createOptions) ) {
           $resultMap[] = array($name,$ret['msg']);
         }  
     }
       
     // Custom Fields Management
-    // Check if CF with this name and that can be used on Test Cases is defined in current Test Project.
+    // Check if CF with this name and that can be used on Test Cases 
+    // is defined in current Test Project.
     // If Check fails => give message to user.
     // Else Import CF data
     //   
-    $hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
-    if($hasCustomFieldsInfo &&  !is_null($ret))
-    {                
-      if($tprojectHas['customFields'])
-      {                         
-        $msg = processCustomFields($tcase_mgr,$name,$ret['id'],$ret['tcversion_id'],$tc['customfields'],
-                                   $linkedCustomFields,$feedbackMsg);
-        if( !is_null($msg) )
-        {
+    $hasCFieldsInfo = (isset($tc['customfields']) && 
+                       !is_null($tc['customfields']));
+
+
+   if($hasCFieldsInfo &&  !is_null($ret)) {                
+      if($tprojectHas['customFields']) {                         
+        $msg = processCustomFields($tcase_mgr,$name,$ret['id'],$ret['tcversion_id'],
+                 $tc['customfields'],$linkedCustomFields,$feedbackMsg);
+        if( !is_null($msg) ) {
             $resultMap = array_merge($resultMap,$msg);
         }
-      }
-      else
-      {
+      } else {
         // Can not import Custom Fields Values, give feedback
         $msg[]=array($name,$messages['cf_warning']);
         $resultMap = array_merge($resultMap,$msg);          
@@ -486,17 +486,19 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
     }
     
     $hasRequirements=(isset($tc['requirements']) && !is_null($tc['requirements']));
+
     if($hasRequirements) {
       if( $tprojectHas['reqSpec'] ) {
-    		if(!$userRights['can_link_to_req']) {
-    			$msg[]=array($name,$messages['req_assignment_skipped_during_import']);
-    		} else {
-    			$msg = processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],
-                                       $reqSpecSet,$feedbackMsg,$userID);
-    		}
 
-    		if( !is_null($msg) ) {
-            $resultMap = array_merge($resultMap,$msg);
+        if(!$userRights['can_link_to_req']){
+          $msg[]=array($name,$messages['req_assignment_skipped_during_import']);
+        } else{
+          $msg = processRequirements($db,$req_mgr,$name,$ret,$tc['requirements'],
+                                     $reqSpecSet,$feedbackMsg,$userID);
+        }
+
+        if( !is_null($msg) ) {
+          $resultMap = array_merge($resultMap,$msg);
         }
       } else {
         $msg[]=array($name,$messages['reqspec_warning']);
@@ -504,24 +506,27 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
       }
     }
 
-  	$hasAttachments=(isset($tc['attachments']) && !is_null($tc['attachments']));
-  	if($hasAttachments) {
-  	  $fk_id = $doCreate ? $ret['id'] : $internalid;
-  	  if ($internalid == "" && $item_id>0) { 
-  		  $internalid = $item_id;
-  	  }
-  	  $msg = processAttachments( $db, $name, $internalid, $fk_id, $tc['attachments'], $feedbackMsg );
 
-  	  if( !is_null($msg) ) {
-  		   $resultMap = array_merge($resultMap,$msg);
-  	  }      
-  	}
+    $hasAttachments=(isset($tc['attachments']) && !is_null($tc['attachments']));
+    if($hasAttachments) {
+      $fk_id = $doCreate ? $ret['id'] : $internalid;
+      if ($internalid == "" && $item_id>0) { 
+        $internalid = $item_id;
+      }
+      $msg = processAttachments( $db, $name, $internalid, $fk_id, $tc['attachments'], 
+               $feedbackMsg );
+      if( !is_null($msg) ) {
+        $resultMap = array_merge($resultMap,$msg);
+      }      
+    }
+    
   }
+
   return $resultMap;
 }
 
 
-// -----------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------
 /*
   function: buildKeywordList
   args :
@@ -662,78 +667,79 @@ function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$tcversionId,$cfValu
  * Else return an array of messages.
  *
  */
-function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$reqSpecSet,$messages,$userID)
-{
+function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcIDCard,
+  $tcReq,$reqSpecSet,$messages,$userID) {
+
   static $missingReqMsg;
   static $missingReqSpecMsg;
   static $missingReqInDBMsg;
   static $cachedReqSpec;
   
-  $resultMsg=null;
+  $resultMsg = null;
   $tables = tlObjectWithDB::getDBTables(array('requirements'));
 
+  // Since 1.9.18, links are between req version e test case version
+  // We will work on latest test case version and lates req version
+  //
+  $tcaseId = $tcIDCard['id'];
+  $latestTCVersionID = $tcIDCard['tcversion_id'];
 
-  foreach($tcReq as $ydx => $value)
-  {
+  foreach($tcReq as $ydx => $value) {
     $cachedReqSpec=array();
     $doit=false;
 
     // Look for req doc id we get from file, inside Req Spec Set
     // we got from DB
-    if( ($doit=isset($reqSpecSet[$value['doc_id']])) )
-    {
-      if( !(isset($cachedReqSpec[$value['req_spec_title']])) )
-      {
+    if( ($doit=isset($reqSpecSet[$value['doc_id']])) ) {
+      if( !(isset($cachedReqSpec[$value['req_spec_title']])) ) {
         // $cachedReqSpec
         // key: Requirement Specification Title get from file
         // value: map with follogin keys
         //        id => requirement specification id from DB
         //        req => map with key: requirement document id
-        $cachedReqSpec[$value['req_spec_title']]['id']=$reqSpecSet[$value['doc_id']]['id'];
+        $cachedReqSpec[$value['req_spec_title']]['id'] = 
+          $reqSpecSet[$value['doc_id']]['id'];
+        
         $cachedReqSpec[$value['req_spec_title']]['req']=null;
       }
     }
     
-    if($doit)
-    {
-      $useit=false;
+    if($doit) {
+      $useit = false;
       $req_spec_id = $cachedReqSpec[$value['req_spec_title']]['id'];
     
-      // Check if requirement with desired document id exists on requirement specification on DB.
+      // Check if requirement with desired document id exists 
+      // on requirement specification on DB.
       // If not => create message for user feedback.
-      if( !($useit=isset($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']])) )
-      {
+      if( !($useit=isset($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']])) ) {
+
         $sql = " SELECT REQ.id from {$tables['requirements']} REQ " .
                " WHERE REQ.req_doc_id='{$dbHandler->prepare_string($value['doc_id'])}' " .
                " AND REQ.srs_id={$req_spec_id} ";     
                    
-        $rsx=$dbHandler->get_recordset($sql);
-        if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) )
-        {
+        $rsx = $dbHandler->get_recordset($sql);
+        if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) ) {
           $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']]=$rsx[0]['id'];
         }  
       }
           
-      if($useit)
-      {
+      if($useit) {        
+        // $reqMgr->assign_to_tcase($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']],$tcaseId,$userID);
+        $reqMgr->assignToTCaseUsingLatestVersions(
+          $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']],
+          $tcaseId,$userID);
 
-        $reqMgr->assign_to_tcase($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']],$tcaseId,$userID);
       }
-      else
-      {
-        if( !isset($missingReqMsg[$value['doc_id']]) )
-        {
+      else {
+        if( !isset($missingReqMsg[$value['doc_id']]) ) {
           $missingReqMsg[$value['doc_id']]=sprintf($messages['req'],
                                                    $value['doc_id'],$value['req_spec_title']);  
         }
         $resultMsg[] = array($tcaseName,$missingReqMsg[$value['doc_id']]); 
       }
-    } 
-    else
-    {
+    } else {
       // We didnt find Req Doc ID in Req Spec Set got from DB
-      if( !isset($missingReqInDBMsg[$value['doc_id']]) )
-      {
+      if( !isset($missingReqInDBMsg[$value['doc_id']]) ) {
         $missingReqInDBMsg[$value['doc_id']]=sprintf($messages['reqNotInDB'],
                                                      $value['doc_id'],'');  
       }
@@ -816,7 +822,8 @@ function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id
   $resultMap = null;
   $xmlTCs = $simpleXMLObj->xpath('//testcase');
   $tcData = getTestCaseSetFromSimpleXMLObj($xmlTCs);
-  if ($tcData) {
+  if ($tcData)
+  {
     $resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
   }  
   return $resultMap;

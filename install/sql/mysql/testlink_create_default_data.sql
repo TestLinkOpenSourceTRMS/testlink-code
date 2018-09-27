@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------------------
 
 # Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.17', 'TestLink 1.9.17 Alan Turing',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.9.18', 'TestLink 1.9.18 Gaura',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');

@@ -142,22 +142,21 @@ $smarty = new TLSmarty();
 
 // echo __LINE__ . __FILE__; die();
 
-if($do_display)
-{
+if($do_display) {
   $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
   // see development documentation on [INSTALL DIR]/docs/development/planAddTC.php.txt
   $tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr,array('addImportance' => true));
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   $testCaseSet = $args->control_panel['filter_tc_id'];   
-  if(!is_null($keywordsFilter) )
-  { 
+  if(!is_null($keywordsFilter) ) { 
+    
     // With this pieces we implement the AND type of keyword filter.
-    $keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
-                                                            $keywordsFilter->type);
-      
-    if (sizeof($keywordsTestCases))
-    {
+    $keywordsTestCases = 
+      $tproject_mgr->getKeywordsLatestTCV($args->tproject_id,
+        $keywordsFilter->items,$keywordsFilter->type);
+
+    if (sizeof($keywordsTestCases)) {
       $testCaseSet = array_keys($keywordsTestCases);
     }
   }
@@ -212,11 +211,8 @@ if($do_display)
     
   $smarty->assign('gui', $gui);
   $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
-} elseif ($do_display_coverage)
-{
-
-	if($args->item_level == 'reqcoverage')
-	{
+} elseif ($do_display_coverage) {
+	if($args->item_level == 'reqcoverage') {
 		// Select coverage
 	
 		$requirement_data = $req_mgr->get_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
@@ -229,8 +225,7 @@ if($do_display)
 			$requirements_child = null;
 		}
 	}
-	elseif($args->item_level == 'reqspeccoverage')
-	{
+	elseif($args->item_level == 'reqspeccoverage') {
 	
 		// Select folder coverage
 		$getOptions = array('order_by' => " ORDER BY id");
@@ -281,14 +276,14 @@ if($do_display)
 
 	// Add Test Cases to Test plan - Right pane does not honor custom field filter
 	$testCaseSet = $args->control_panel['filter_tc_id'];
-	if(!is_null($keywordsFilter) )
-	{
-		// With this pieces we implement the AND type of keyword filter.
-		$keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
-		$keywordsFilter->type);
+	if(!is_null($keywordsFilter) ) {
 
-		if (sizeof($keywordsTestCases))
-		{
+		// With this pieces we implement the AND type of keyword filter.
+    $keywordsTestCases = 
+      $tproject_mgr->getKeywordsLatestTCV($args->tproject_id,
+        $keywordsFilter->items,$keywordsFilter->type);
+
+		if (sizeof($keywordsTestCases)) {
 			$testCaseSet = array_keys($keywordsTestCases);
 		}
 	}

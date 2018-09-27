@@ -1,77 +1,111 @@
-/* mysql */
-CREATE VIEW /*prefix*/latest_tcase_version_number 
-AS SELECT NH_TC.id AS testcase_id,max(TCV.version) AS version 
-FROM /*prefix*/nodes_hierarchy NH_TC 
-JOIN /*prefix*/nodes_hierarchy NH_TCV 
-ON NH_TCV.parent_id = NH_TC.id
-JOIN /*prefix*/tcversions TCV 
-ON NH_TCV.id = TCV.id 
-GROUP BY testcase_id;
+# TestLink Open Source Project - http://testlink.sourceforge.net/
+# This script is distributed under the GNU General Public License 2 or later.
+# ---------------------------------------------------------------------------------------
+# @filesource db_schema_update.sql
+#
+# SQL script - updates DB schema for MySQL - From TestLink 1.9.17 to 1.9.18
+# 
+#
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN `id` int(10) unsigned primary KEY AUTO_INCREMENT FIRST;
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN `req_version_id` int(10) NOT NULL AFTER req_id;
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN `tcversion_id` int(10) NOT NULL AFTER testcase_id;
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN `link_status` int(11) NOT NULL DEFAULT '1' AFTER tcversion_id;
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN `is_active` int(11) NOT NULL DEFAULT '1' AFTER link_status;
+
+ALTER TABLE /*prefix*/req_coverage DROP KEY /*prefix*/req_testcase;
+ALTER TABLE /*prefix*/req_coverage ADD UNIQUE KEY /*prefix*/req_coverage_full_link (`req_id`,`req_version_id`,`testcase_id`,`tcversion_id`);
 
 
-CREATE VIEW /*prefix*/latest_req_version 
-AS SELECT RQ.id AS req_id,max(RQV.version) AS version 
-FROM /*prefix*/nodes_hierarchy NHRQV 
-JOIN /*prefix*/requirements RQ 
-ON RQ.id = NHRQV.parent_id 
-JOIN /*prefix*/req_versions RQV 
-ON RQV.id = NHRQV.id
-GROUP BY RQ.id;
+ALTER TABLE /*prefix*/testcase_keywords ADD COLUMN `tcversion_id` int(10) NOT NULL AFTER testcase_id;
+ALTER TABLE /*prefix*/testcase_keywords DROP PRIMARY KEY;
+ALTER TABLE /*prefix*/testcase_keywords ADD COLUMN `id` int(10) unsigned primary KEY AUTO_INCREMENT FIRST;
+ALTER TABLE /*prefix*/testcase_keywords ADD UNIQUE KEY /*prefix*/idx01_testcase_keywords (`testcase_id`,`tcversion_id`,`keyword_id`);
 
-CREATE VIEW /*prefix*/latest_rspec_revision 
-AS SELECT RSR.parent_id AS req_spec_id, RS.testproject_id AS testproject_id,
-MAX(RSR.revision) AS revision 
-FROM /*prefix*/req_specs_revisions RSR 
-JOIN /*prefix*/req_specs RS 
-ON RS.id = RSR.parent_id
-GROUP BY RSR.parent_id,RS.testproject_id;
-
-CREATE TABLE /*prefix*/testcase_script_links (
-  `tcversion_id` int(10) unsigned NOT NULL default '0',
-  `project_key` varchar(64) NOT NULL,
-  `repository_name` varchar(64) NOT NULL,
-  `code_path` varchar(255) NOT NULL,
-  `branch_name` varchar(64) default NULL,
-  `commit_id` varchar(40) default NULL,
-  PRIMARY KEY  (`tcversion_id`,`project_key`,`repository_name`,`code_path`)
-) DEFAULT CHARSET=utf8;
-
-CREATE TABLE /*prefix*/codetrackers
-(
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL,
-  `type` int(10) default 0,
-  `cfg` text,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY /*prefix*/codetrackers_uidx1 (`name`)
-) DEFAULT CHARSET=utf8;
+ALTER TABLE /*prefix*/testcase_relations ADD COLUMN `link_status` tinyint(1) NOT NULL DEFAULT '1' AFTER relation_type;
 
 
-CREATE TABLE /*prefix*/testproject_codetracker
-(
-  `testproject_id` int(10) unsigned NOT NULL,
-  `codetracker_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`testproject_id`)
-) DEFAULT CHARSET=utf8;
 
--- since 1.9.17
-INSERT INTO /*prefix*/rights (id,description) VALUES (49,'exec_ro_access');
-INSERT INTO /*prefix*/rights (id,description) VALUES (50,'monitor_requirement');
-INSERT INTO /*prefix*/rights (id,description) VALUES (51,'codetracker_management');
-INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
-INSERT INTO /*prefix*/rights (id,description) VALUES (53,'cfield_assignment');
-INSERT INTO /*prefix*/rights (id,description) VALUES (54,'exec_assign_testcases');
-
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,28);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,29);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,30);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,50);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,51);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,52);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,53);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,54);
+CREATE OR REPLACE VIEW /*prefix*/tcversions_without_keywords
+AS SELECT
+   `NHTCV`.`parent_id` AS `testcase_id`,
+   `NHTCV`.`id` AS `id`
+FROM /*prefix*/nodes_hierarchy NHTCV where ((`NHTCV`.`node_type_id` = 4) and (not(exists(select 1 from /*prefix*/testcase_keywords TCK where (`TCK`.`tcversion_id` = `NHTCV`.`id`)))));
 
 
-ALTER TABLE /*prefix*/testprojects ADD COLUMN code_tracker_enabled tinyint(1) NOT NULL default '0';
-ALTER TABLE /*prefix*/users ADD COLUMN creation_ts timestamp NOT NULL DEFAULT now();
-ALTER TABLE /*prefix*/users ADD COLUMN expiration_date date DEFAULT NULL;
+CREATE OR REPLACE VIEW /*prefix*/latest_tcase_version_id
+AS SELECT
+   `ltcvn`.`testcase_id` AS `testcase_id`,
+   `ltcvn`.`version` AS `version`,
+   `TCV`.`id` AS `tcversion_id`
+FROM ((/*prefix*/latest_tcase_version_number LTCVN 
+       join /*prefix*/nodes_hierarchy NHTCV 
+       on ((`NHTCV`.`parent_id` = `ltcvn`.`testcase_id`))) 
+       join /*prefix*/tcversions `TCV` 
+       on (((`TCV`.`id` = `NHTCV`.`id`) 
+       and (`TCV`.`version` = `ltcvn`.`version`))));
+
+CREATE OR REPLACE VIEW /*prefix*/latest_req_version_id
+AS SELECT
+   `lrqvn`.`req_id` AS `req_id`,
+   `lrqvn`.`version` AS `version`,
+   `REQV`.`id` AS `req_version_id`
+FROM ((`latest_req_version` `LRQVN` 
+join `nodes_hierarchy` `NHRQV` on ((`NHRQV`.`parent_id` = `lrqvn`.`req_id`))) 
+join `req_versions` `REQV` on (((`REQV`.`id` = `NHRQV`.`id`) and (`REQV`.`version` = `lrqvn`.`version`))));
+
+
+# UPDATE DATA
+UPDATE /*prefix*/req_coverage RCOV,/*prefix*/latest_req_version_id LRQVID
+SET RCOV.req_version_id = LRQVID.req_version_id
+WHERE RCOV.req_id = LRQVID.req_id;
+
+UPDATE /*prefix*/req_coverage RCOV,/*prefix*/latest_tcase_version_id LTCVID
+SET RCOV.tcversion_id = LTCVID.tcversion_id
+WHERE RCOV.testcase_id = LTCVID.testcase_id;
+
+UPDATE /*prefix*/testcase_keywords TCKW,/*prefix*/latest_tcase_version_id LTCVID
+SET TCKW.tcversion_id = LTCVID.tcversion_id
+WHERE TCKW.testcase_id = LTCVID.testcase_id;
+
+# A little bit complex migration
+# Test Case Relations
+CREATE TABLE /*prefix*/testcase_relations_backup SELECT * FROM /*prefix*/testcase_relations;
+ALTER TABLE /*prefix*/testcase_relations ADD COLUMN `tcase_source_id` int(10) unsigned NOT NULL;
+ALTER TABLE /*prefix*/testcase_relations ADD COLUMN `tcase_destination_id` int(10) unsigned NOT NULL;
+
+UPDATE /*prefix*/testcase_relations SET tcase_source_id = source_id;
+UPDATE /*prefix*/testcase_relations SET tcase_destination_id = destination_id;
+
+# Update SOURCE_ID 
+UPDATE /*prefix*/testcase_relations TCREL
+INNER JOIN /*prefix*/latest_tcase_version_id LTCVID
+ON TCREL.tcase_source_id = LTCVID.testcase_id
+SET TCREL.source_id = LTCVID.tcversion_id 
+
+# Update DESTINATION_ID 
+UPDATE /*prefix*/testcase_relations TCREL
+INNER JOIN /*prefix*/latest_tcase_version_id LTCVID
+ON TCREL.tcase_destination_id = LTCVID.testcase_id
+SET TCREL.destination_id = LTCVID.tcversion_id
+
+# Attachments
+CREATE TABLE /*prefix*/attachments_backup SELECT * FROM /*prefix*/attachments;
+ALTER TABLE /*prefix*/attachments ADD COLUMN `original_fk_id` int(10) unsigned NOT NULL default '0';
+ALTER TABLE /*prefix*/attachments ADD COLUMN `original_fk_table` varchar(250) default '';
+
+UPDATE /*prefix*/attachments SET original_fk_id = fk_id;
+UPDATE /*prefix*/attachments SET original_fk_table = fk_table;
+
+# Work on REQ Attachments
+UPDATE /*prefix*/attachments ATT,/*prefix*/latest_req_version_id LRQVID
+SET ATT.fk_id = LRQVID.req_version_id,ATT.fk_table ='req_versions'
+WHERE ATT.original_fk_id = LRQVID.req_id
+AND ATT.original_fk_table = 'requirements';
+
+# Work on TEST CASE Attachments
+UPDATE /*prefix*/attachments ATT,/*prefix*/latest_tcase_version_id LTCVID
+SET ATT.fk_id = LTCVID.tcversion_id,ATT.fk_table ='tcversions'
+WHERE ATT.original_fk_id = LTCVID.testcase_id
+AND ATT.original_fk_table = 'nodes_hierarchy';
+
+# END

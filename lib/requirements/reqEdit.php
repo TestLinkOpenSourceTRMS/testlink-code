@@ -8,9 +8,6 @@
  *
  * Screen to view existing requirements within a req. specification.
  *
- * @internal revision
- * @since 1.9.10
- *
  *
 **/
 require_once("../../config.inc.php");
@@ -36,10 +33,10 @@ $gui = initialize_gui($db,$args,$commandMgr);
 
 $pFn = $args->doAction;
 $op = null;
-if(method_exists($commandMgr,$pFn))
-{
+if(method_exists($commandMgr,$pFn)) {
   $op = $commandMgr->$pFn($args,$_REQUEST);
 }
+
 renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
 
 
@@ -140,8 +137,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
                      'startMonitoring' => '','stopMonitoring' => '');
 
   $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
-  switch($argsObj->doAction)
-  {
+  switch($argsObj->doAction) {
     case "edit":
     case "doCreate":
       $owebEditor->Value = $argsObj->scope;

@@ -9,7 +9,7 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
@@ -454,6 +454,7 @@ function checkSchemaVersion(&$db)
     case 'DB 1.9.14':
     case 'DB 1.9.15':
     case 'DB 1.9.16':
+    case 'DB 1.9.17':
       $result['msg'] = $manualop_msg;
     break;
 

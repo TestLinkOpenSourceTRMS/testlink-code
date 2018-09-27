@@ -648,14 +648,14 @@ class database
     if ($result)
     {
       // -----------------------------------------------
-            // Error management Code         
-            $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
+      // Error management Code         
+      $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
       if( ($empty_column = (trim($column)=='') ) )
       {
         $errorMsg .= 'empty column - SQL:' . $sql;
-          trigger_error($errorMsg,E_USER_NOTICE);
-          return null;
-        }
+        trigger_error($errorMsg,E_USER_NOTICE);
+        return null;
+      }
 
       while($row = $this->fetch_array($result))
       {

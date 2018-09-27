@@ -359,6 +359,7 @@ class TLSmarty extends Smarty
                    'bug_create_into_bts_disabled' => $imgLoc . 'bug_add_disabled_famfamfam.png',
                    'bug_add_note' => $imgLoc . 'bug_edit.png',
                    'bullet' => $imgLoc . 'slide_gripper.gif',
+                   'bulkOperation' => $imgLoc . 'bulkAssignTransparent.png',
                    'calendar' => $imgLoc . 'calendar.gif',
                    'checked' => $imgLoc . 'apply_f2_16.png',
                    'choiceOn' => $imgLoc . 'accept.png',

@@ -8,7 +8,7 @@
  * @filesource  tcEdit.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
@@ -43,21 +43,12 @@ $gui = initializeGui($db,$args,$cfg,$tcase_mgr);
 
 $smarty = new TLSmarty();
 
-$active_status = 0;
 $name_ok = 1;
-$action_result = "deactivate_this_version";
-if($args->do_activate_this)
-{
-  $active_status = 1;
-  $action_result = "activate_this_version";
-}
-
 $doRender = false;
 $pfn = $args->doAction;
 
 $testCaseEditorKeys = null;
-switch($args->doAction)
-{
+switch($args->doAction) {
   case "create":  
   case "edit":  
   case "doCreate":  
@@ -124,7 +115,7 @@ switch($args->doAction)
   break;
 
   case "fileUpload":
-    fileUploadManagement($db,$args->tcase_id,$args->fileTitle,$tcase_mgr->getAttachmentTableName());
+    fileUploadManagement($db,$args->tcversion_id,$args->fileTitle,$tcase_mgr->getAttachmentTableName());
     $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
   break;
 
@@ -150,8 +141,7 @@ if( $doRender )
 }
 
 // Things that one day will be managed by command file
-if($args->delete_tc_version)
-{
+if($args->delete_tc_version) {
   $status_quo_map = $tcase_mgr->get_versions_status_quo($args->tcase_id);
   $exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
   $gui->delete_mode = 'single';
@@ -159,16 +149,13 @@ if($args->delete_tc_version)
 
   $msg = '';
   $sq = null;
-  if(!is_null($exec_status_quo))
-  {
-    if(isset($exec_status_quo[$args->tcversion_id]))
-    {
+  if(!is_null($exec_status_quo)) {
+    if(isset($exec_status_quo[$args->tcversion_id])) {
       $sq = array($args->tcversion_id => $exec_status_quo[$args->tcversion_id]);
     }
   }
 
-  if(intval($status_quo_map[$args->tcversion_id]['executed']))
-  {
+  if(intval($status_quo_map[$args->tcversion_id]['executed'])) {
     $msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
   }
   else if(intval($status_quo_map[$args->tcversion_id]['linked']))
@@ -281,15 +268,14 @@ else if($args->do_copy || $args->do_copy_ghost_zone)
   $tcase_mgr->show($smarty,$gui,$identity,$gui->grants);
 
 }
-else if($args->do_create_new_version)
-{
+else if($args->do_create_new_version) {
   $user_feedback = '';
   $show_newTC_form = 0;
   $action_result = "do_update";
   $msg = lang_get('error_tc_add');
   $op = $tcase_mgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
-  if ($op['msg'] == "ok")
-  {
+
+  if ($op['msg'] == "ok") {
     $user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);
     $msg = 'ok';
   
@@ -308,37 +294,25 @@ else if($args->do_create_new_version)
   $gui->loadOnCancelURL = $_SESSION['basehref'] . 
                           '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
                           "&show_mode={$args->show_mode}";
+
+  $gui->codeTrackerEnabled = $tproject_mgr->isCodeTrackerEnabled($args->tproject_id);
+
   
   $identity = new stdClass();
   $identity->id = $args->tcase_id;
   $identity->tproject_id = $args->tproject_id;
   $identity->version_id = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
  
-  $tcase_mgr->show($smarty,$gui,$identity,$gui->grants);
+
+  $tcase_mgr->show($smarty,$gui,$identity,$gui->grants,array('getAttachments' => true));
 
 }
-else if($args->do_activate_this || $args->do_deactivate_this)
-{
-  $gui->loadOnCancelURL = $_SESSION['basehref'] . 
-                          '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
-                          "&show_mode={$args->show_mode}";
-  
-  $tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
-  $gui->viewerArgs['action'] = $action_result;
-  $gui->viewerArgs['refreshTree']=DONT_REFRESH;
-  $gui->path_info = null;
-  
-  $identity = new stdClass();
-  $identity->id = $args->tcase_id;
-  $identity->tproject_id = $args->tproject_id;
-  $identity->version_id = testcase::ALL_VERSIONS;
- 
-  $tcase_mgr->show($smarty,$gui,$identity,$gui->grants);
-
+else if($args->do_activate_this || $args->do_deactivate_this) {
+  $commandMgr->setActiveAttr($args,$_REQUEST);
+  exit();
 }
 
-// --------------------------------------------------------------------------
-
+// -----------------------------------------------------------------------
 
 /*
   function:
@@ -348,8 +322,7 @@ else if($args->do_activate_this || $args->do_deactivate_this)
   returns:
 
 */
-function init_args(&$cfgObj,$otName,&$tcaseMgr)
-{
+function init_args(&$cfgObj,$otName,&$tcaseMgr) {
   $tc_importance_default = config_get('testcase_importance_default');
 
   $args = new stdClass();
@@ -362,17 +335,21 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
   $args->file_id = isset($_REQUEST['file_id']) ? intval($_REQUEST['file_id']) : 0;
 
   $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
-  if($args->tcase_id == 0)
-  {
+  if($args->tcase_id == 0) {
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : 0;
   }  
-  if($args->tcase_id == 0)
-  {
+  if($args->tcase_id == 0) {
     $args->tcase_id = intval(isset($_REQUEST['relation_source_tcase_id']) ? 
                              $_REQUEST['relation_source_tcase_id'] : 0);
   }
   
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
+
+  if( $args->tcversion_id == 0 && $args->tcase_id > 0 ) {
+    // get latest active version
+    $nu = key($tcaseMgr->get_last_active_version($args->tcase_id));
+  }
+
   $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
 
   // Normally Rich Web Editors  
@@ -408,19 +385,23 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
    
   $key2loop = array('move_copy_tc','delete_tc_version','do_move','do_copy','do_copy_ghost_zone',
                     'do_create_new_version','do_delete_tc_version');
-  foreach($key2loop as $key)
-  {
+  foreach($key2loop as $key) {
     $args->$key = isset($_REQUEST[$key]) ? 1 : 0;
   }
 
   $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
   $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
+  $args->activeAttr = 0;
+  if( $args->do_activate_this ) {
+    $args->activeAttr = 1;
+  }
+
+
   $args->target_position = isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
     
   $key2loop=array("keyword_assignments","requirement_assignments");
-  foreach($key2loop as $key)
-  {
-     $args->copy[$key]=isset($_REQUEST[$key])?true:false;    
+  foreach($key2loop as $key) {
+    $args->copy[$key]=isset($_REQUEST[$key])?true:false;    
   }    
   
   
@@ -435,12 +416,14 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
         
   // from session
   $args->testproject_id = $args->tproject_id = intval($_SESSION['testprojectID']);
+  
+  $args->user = $_SESSION['currentUser'];  
   $args->user_id = intval($_SESSION['userID']);
+
   $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? intval($_SESSION['setting_refresh_tree_on_action']) : 0;
     
   $args->opt_requirements = null;
-  if( isset($_SESSION['testprojectOptions']) )
-  {
+  if( isset($_SESSION['testprojectOptions']) ) {
     $args->opt_requirements = $_SESSION['testprojectOptions']->requirementsEnabled;
     $args->requirementsEnabled = $_SESSION['testprojectOptions']->requirementsEnabled;
   } 
@@ -483,8 +466,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
 
   $args->relation_destination_tcase = str_replace(' ','',$args->relation_destination_tcase);
   $getOpt = array('tproject_id' => null, 'output' => 'map');                         
-  if( is_numeric($args->relation_destination_tcase) )   
-  {
+  if( is_numeric($args->relation_destination_tcase) ) {
     $getOpt['tproject_id'] = $args->tproject_id;
   }  
   $args->dummy = $tcaseMgr->getInternalID($args->relation_destination_tcase,$getOpt);
@@ -494,11 +476,13 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr)
 
   $args->keyword_id = isset($_GET['keyword_id']) ? intval($_GET['keyword_id']) : 0;
 
+
+  $args->tckw_link_id = isset($_GET['tckw_link_id']) ? intval($_GET['tckw_link_id']) : 0;
+
+
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
   $args->platform_id = isset($_REQUEST['platform_id']) ? intval($_REQUEST['platform_id']) : 0;
   
-  // need to check if user has access rights to test project is project is private.
-  $args->user = $_SESSION['currentUser'];
 
   $cbk = 'changeExecTypeOnSteps';
   $args->applyExecTypeChangeToAllSteps = isset($_REQUEST[$cbk]);
@@ -604,10 +588,9 @@ function getCfg()
   args :
   returns: object
 */
-function getGrants(&$dbHandler)
-{
-  $grants=new stdClass();
-  $grants->requirement_mgmt=has_rights($dbHandler,"mgt_modify_req"); 
+function getGrants(&$dbHandler) {
+  $grants = new stdClass();
+  $grants->requirement_mgmt = has_rights($dbHandler,"mgt_modify_req"); 
   return $grants;
 }
 
@@ -642,8 +625,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $tcaseMgr->getFileUploadRelativeURL($argsObj);
 
    
-  if($argsObj->container_id > 0)
-  {
+  if($argsObj->container_id > 0) {
     $pnode_info = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->container_id);
     $node_descr = array_flip($tcaseMgr->tree_manager->get_available_node_types());
     $guiObj->parent_info['name'] = $pnode_info['name'];
@@ -655,12 +637,13 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 
   $guiObj->domainTCStatus = $argsObj->tcStatusCfg['code_label'];
   
-
-  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product','keyword_assignment',
-                       'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
+  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning',
+                       'mgt_modify_product','keyword_assignment',
+                       'req_tcase_link_management',
+                       'testproject_edit_executed_testcases',
+                       'testproject_delete_executed_testcases');
   $guiObj->grants = new stdClass();
-  foreach($grant2check as $right)
-  {
+  foreach($grant2check as $right) {
     $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id);
   }
 

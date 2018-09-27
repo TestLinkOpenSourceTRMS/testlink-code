@@ -7,7 +7,6 @@
  * @author schlundus
  */
  
-//@TODO COMMENT ALL FUNCTIONS 
 
 //some shorthand function for creating meta strings
 /**
@@ -80,34 +79,34 @@ class tlMetaString extends tlObject
 	 * @param $label string the label to localize, use {%1} to {%n} for parameters inserted into the localized string 
 	 * @param $args array the array of parameters
 	 */
-	public function __construct($label = null,$args = null)
-	{
+	public function __construct($label = null,$args = null) {
 		parent::__construct();
 		$this->helper = new tlMetaStringHelper();
-		if ($label)
+		if ($label) {
 			$this->initialize($label,$args);
+		}
 	}
+
 	/**
 	 * Initializes the object
 	 * 
 	 * @param $label @see __construct
 	 * @param $args  @see __construct
 	 */
-	public function initialize($label,$args = null)
-	{
+	public function initialize($label,$args = null) {
 		$this->helper->label = $label;
 		$this->helper->params = $args;
 		$this->helper->bDontLocalize = false;
 		$this->helper->bDontFireEvent = false;
 	}
+
 	/**
 	  * Creates a serialized representation of the object, which can be stored
 	  * and later unserialized again
 	  *
 	  * @return string the serialized tlMetaString object
 	  */
-	public function serialize()
-	{
+	public function serialize() {
 		return @serialize($this->helper);
 	}
 	
@@ -117,13 +116,11 @@ class tlMetaString extends tlObject
 	 * @param $representation string the serialized representation of the object
 	 * @return tlMetaString the recreated tlMetaString object
 	 */
-	static public function unserialize($representation)
-	{
+	static public function unserialize($representation) {
 		//at the moment we do this, maybe there is a more readable serialization
 		$helper = @unserialize($representation);
 		$metaString = new tlMetaString();
-		if (!$helper)
-		{
+		if (!$helper) {
 			$helper = new tlMetaStringHelper();
 			$helper->label = $representation;
 			$helper->params = null;
@@ -138,8 +135,7 @@ class tlMetaString extends tlObject
 	/* magic method, if a tlMetaString is to be printed we use default localization
 	* @return string the localized tlMetaString
 	*/
-	public function __toString()
-	{
+	public function __toString() {
 		return $this->localize();
 	}
 	
@@ -149,26 +145,28 @@ class tlMetaString extends tlObject
 	 * @param $locale string any valid locale (which is supported by TestLink)
 	 * @return string returns the localized tlMetaString
 	 */
-	public function localize($locale = null)
-	{
-		if ($this->helper->bDontLocalize)
+	public function localize($locale = null) {
+
+		if ($this->helper->bDontLocalize) {
 			$str = $this->helper->label;
-		else
-			$str = lang_get($this->helper->label,$locale,$this->helper->bDontFireEvent);
+		} else {
+			$str = lang_get($this->helper->label,$locale,
+				              $this->helper->bDontFireEvent);
+		}
 
 		$subjects = array();
 		$replacements = array();
-		$params = $this->helper->params;
-		for($i = 0;$i < sizeof($params);$i++)
-		{
+		$params = (array)$this->helper->params;
+		for($i = 0;$i < sizeof($params); $i++) {
 			$param = $params[$i];
-			if (is_array($param))
-			{
+			if (is_array($param)) {
 				$item = null;
-				if ($param[0])
+				if ($param[0]) {
 					$type = $param[0];
-				if ($param[1])
+				}
+				if ($param[1]) {
 					$item = $param[1];
+				}
 
 				//at the moment we ignore the type, if needed we can add types to eG localize a date or
 				//something else
@@ -185,4 +183,3 @@ class tlMetaString extends tlObject
 		return $str;
 	}
 }
-?>

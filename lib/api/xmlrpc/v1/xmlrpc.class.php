@@ -3184,8 +3184,7 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @access protected
    */
-  protected function getValidKeywordSetByName($tproject_id,$keywords)
-  { 
+  protected function getValidKeywordSetByName($tproject_id,$keywords) { 
     return $this->getValidKeywordSet($tproject_id,$keywords,true);
   }
   
@@ -3196,57 +3195,43 @@ class TestlinkXMLRPCServer extends IXR_Server
     * @param $byName set this to true if $keywords is an array of keywords, false if it's an array of keywordIDs
     * @return string that represent a list of keyword id (comma is character separator)
     */
-  protected function getValidKeywordSet($tproject_id,$keywords,$byName,$op=null)
-  {
+  protected function getValidKeywordSet($tproject_id,$keywords,$byName,$op=null) {
     $keywordSet = array();
 
     $sql = " SELECT keyword,id FROM {$this->tables['keywords']} " .
            " WHERE testproject_id = {$tproject_id} ";
     
     $keywords = trim($keywords);
-    if($keywords != "")
-    {
+    if($keywords != "") {
       $a_keywords = explode(",",$keywords);
       $items_qty = count($a_keywords);
-      for($idx = 0; $idx < $items_qty; $idx++)
-      {
+      for($idx = 0; $idx < $items_qty; $idx++) {
         $a_keywords[$idx] = trim($a_keywords[$idx]);
       }
       $itemSet = implode("','",$a_keywords);
 
-      if ($byName)
-      {
+      if ($byName) {
         $sql .= " AND keyword IN ('{$itemSet}')";
-      }
-      else
-      {
+      } else {
         $sql .= " AND id IN ({$itemSet})";
       }
     }
 
     
     $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
-    if(!is_null($keywordMap))
-    {
-      if(is_null($op))
-      {
+    if(!is_null($keywordMap)) {
+      if(is_null($op)) {
         $a_items = null;
-        for($idx = 0; $idx < $items_qty; $idx++)
-        {
-          if(isset($keywordMap[$a_keywords[$idx]]))
-          {
+        for($idx = 0; $idx < $items_qty; $idx++) {
+          if(isset($keywordMap[$a_keywords[$idx]])) {
             $a_items[] = $keywordMap[$a_keywords[$idx]]['id'];  
           }
         }
-        if( !is_null($a_items))
-        {
+        if( !is_null($a_items)) {
           $keywordSet = implode(",",$a_items);
         }    
-      }  
-      else
-      {
-        foreach($keywordMap as $kw => $elem)
-        {
+      } else {
+        foreach($keywordMap as $kw => $elem) {
           $keywordSet[$elem['id']] = $elem['keyword'];
         }  
       }  
@@ -3265,10 +3250,9 @@ class TestlinkXMLRPCServer extends IXR_Server
    *
    * @access protected
    */
-    protected function  getValidKeywordSetById($tproject_id,$keywords)
-    {
-      return $this->getValidKeywordSet($tproject_id,$keywords,false);
-    }
+  protected function  getValidKeywordSetById($tproject_id,$keywords) {
+    return $this->getValidKeywordSet($tproject_id,$keywords,false);
+  }
 
 
     /**
@@ -3640,10 +3624,14 @@ class TestlinkXMLRPCServer extends IXR_Server
    
 
    /**
-    *  Assign Requirements to a test case 
+    *  Assign Requirements to a test case.
+    *  IMPORTANT:
+    *  Latest Versions of Req & Test Case will be used
+    *  
     *  we can assign multiple requirements.
     *  Requirements can belong to different Requirement Spec
     *         
+    *
     *  @param struct $args
     *  @param string $args["devKey"]
     *  @param int $args["testcaseexternalid"]
@@ -3653,8 +3641,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     *                array('req_spec' => 3,'requirements' => array(22,42))
     *
     */
-  public function assignRequirements($args)
-  {
+  public function assignRequirements($args) {
+
     $operation=__FUNCTION__;
     $msg_prefix="({$operation}) - ";
     $status_ok=true;
@@ -3663,38 +3651,32 @@ class TestlinkXMLRPCServer extends IXR_Server
     $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity');       
     $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);
 
-    if( $status_ok )
-    {
+    if( $status_ok ) {
       $ret = $this->checkTestCaseAncestry();
       $status_ok=$ret['status_ok'];
-      if( !$status_ok )
-      {
+      if( !$status_ok ) {
         $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
       }           
     }
        
-    if( $status_ok )
-    {
+    if( $status_ok ) {
       $ret = $this->checkReqSpecQuality();
       $status_ok=$ret['status_ok'];
-      if( !$status_ok )
-      {
+      if( !$status_ok ) {
         $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
       }           
     }
        
-    if($status_ok)
-    {
+    if($status_ok) {
       // assignment
       // Note: when test case identity is checked this args key is setted
       //       this does not means that this mut be present on method call.
       //
-      $tcase_id=$this->args[self::$testCaseIDParamName];
-      foreach($this->args[self::$requirementsParamName] as $item)
-      {
-        foreach($item['requirements'] as $req_id)
-        {
-          $this->reqMgr->assign_to_tcase($req_id,$tcase_id,$this->userID);
+      $tcase_id = $this->args[self::$testCaseIDParamName];
+      foreach($this->args[self::$requirementsParamName] as $item) {
+        foreach($item['requirements'] as $req_id) {
+          $this->reqMgr->assignToTCaseUsingLatestVersions($req_id,$tcase_id,
+                                                          $this->userID);
         }          
       }
       $resultInfo[] = array("operation" => $operation,"status" => true, "id" => -1, 
@@ -7377,22 +7359,18 @@ protected function createAttachmentTempFile()
   /**
    *
    */
-  public function getProjectKeywords($args)
-  {
+  public function getProjectKeywords($args) {
     $messagePrefix="(" .__FUNCTION__ . ") - ";
         
     $this->_setArgs($args);
     $checkFunctions = array('authenticate','checkTestProjectID');       
     $status_ok=$this->_runChecks($checkFunctions,$messagePrefix);       
   
-    if($status_ok)
-    {
+    if($status_ok) {
       $itemSet = $this->getValidKeywordSet(intval($this->args[self::$testProjectIDParamName]),
                                            '',true,'getProjectKeywords');
       return $itemSet;
-    }
-    else
-    {
+    } else {
       return $this->errors;
     } 
   }
@@ -7496,6 +7474,9 @@ protected function createAttachmentTempFile()
 
   /**
    * addTestCaseKeywords
+   *
+   * links will be added to LATEST Test Case Version
+   *
    * @param struct $args
    * @param string $args["devKey"]
    * @param array $args["keywords"]: map key testcaseexternalid
@@ -7503,14 +7484,10 @@ protected function createAttachmentTempFile()
    * 
    * @return mixed $resultInfo
    *
-   * @internal revisions
-   * @since 1.9.14
    */
-  function addTestCaseKeywords($args)
-  {
+  function addTestCaseKeywords($args) {
     $ret = $this->checksForManageTestCaseKeywords($args,'add');
-    if( $ret['status_ok'] )
-    {
+    if( $ret['status_ok'] ) {
       $kwSet = $this->args[self::$keywordNameParamName];
       return $this->manageTestCaseKeywords($kwSet,$ret['tprojectSet'],'add');
     }  
@@ -7597,13 +7574,9 @@ protected function createAttachmentTempFile()
    * @param string $action: domain 'add','remove'
    * @return mixed $resultInfo
    *
-   * @internal revisions
-   * @since 1.9.14
    */
-  protected function manageTestCaseKeywords($keywords,$tprojects,$action)
-  {
-    switch($action)
-    {
+  protected function manageTestCaseKeywords($keywords,$tprojects,$action) {
+    switch($action) {
       case 'add':
         $method2call = 'addKeywords';
       break;
@@ -7624,8 +7597,7 @@ protected function createAttachmentTempFile()
     $resultInfo['validKeywords'] = null;
     $resultInfo['status_ok'] = true;
 
-    foreach($keywords as $ak => $kwset)
-    {
+    foreach($keywords as $ak => $kwset) {
       $kw[$ak] = $this->getValidKeywordSet($tprojects[$ak],
                                       implode(",",$kwset),true,true);
       
@@ -7633,12 +7605,16 @@ protected function createAttachmentTempFile()
       $resultInfo['status_ok'] = $resultInfo['status_ok'] && ($kw[$ak] != '');
     }  
     
-    if($resultInfo['status_ok'])
-    {
-      foreach($kw as $ak => $val)
-      {
-        // return array($this->tcaseE2I[$ak],array_keys($val),$ak)
-        $this->tcaseMgr->$method2call($this->tcaseE2I[$ak],array_keys($val));
+    if($resultInfo['status_ok']) {
+
+      $cacheLTCV = array();
+      foreach($kw as $ak => $val) {
+        $tcaseID = $this->tcaseE2I[$ak];
+        if( !isset($cacheLTCV[$tcaseID]) ) {
+          $cacheLTCV[$tcaseID] = $this->tcaseMgr->getLatestVersionID($tcaseID);
+        }
+        $this->tcaseMgr->$method2call($this->tcaseE2I[$ak],
+          $cacheLTCV[$tcaseID],array_keys($val));
       }  
     }
 
@@ -7660,8 +7636,7 @@ protected function createAttachmentTempFile()
    * @return boolean
    * @access protected
    */    
-    protected function checkTestCaseSetIdentity($messagePrefix='',$itemSet=null)
-    {
+    protected function checkTestCaseSetIdentity($messagePrefix='',$itemSet=null) {
       // Three Cases - Internal ID, External ID, No Id        
       $status_ok = false;
       $fromExternal = false;
@@ -7672,62 +7647,48 @@ protected function createAttachmentTempFile()
       $tcaseIDSet = null;
       $tcaseE2I = null;  // External to Internal
 
-      if(!is_null($itemSet))
-      {
+      if(!is_null($itemSet)) {
         $fromExternal = true; 
         $fromItemSet = true;
         $errorCode = INVALID_TESTCASE_EXTERNAL_ID;
         $msg = $messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR;
         
-        foreach($itemSet as $tcaseExternalID)
-        {
+        foreach($itemSet as $tcaseExternalID) {
           $tcaseE2I[$tcaseExternalID] =
             $tcaseIDSet[] = intval($this->tcaseMgr->getInternalID($tcaseExternalID));
         }
       } 
 
-      if($this->_isTestCaseExternalIDPresent())
-      {
+      if($this->_isTestCaseExternalIDPresent()) {
         $fromExternal = true;
         $errorCode = INVALID_TESTCASE_EXTERNAL_ID;
         $msg = $messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR;
 
-        foreach($this->args[self::$testCaseExternalIDParamName] as $tcaseExternalID)
-        {
-          $tcaseIDSet[] = intval($this->tcaseMgr->getInternalID($tcaseExternalID));            
+        foreach($this->args[self::$testCaseExternalIDParamName] as $tcaseExternalID) {
+          $tcaseIDSet[] = intval($this->tcaseMgr->getInternalID($tcaseExternalID));
         }
       }  
 
-      if($this->_isTestCaseIDPresent())
-      {
+      if($this->_isTestCaseIDPresent()) {
         $fromInternal = true;
         $errorCode = INVALID_TESTCASE_EXTERNAL_ID;
         $msg = $messagePrefix . INVALID_TCASEID_STR;        
         $tcaseIDSet = $this->args[self::$testCaseIDParamName];       
       }       
        
-      if(!is_null($tcaseIDSet))
-      {
+      if(!is_null($tcaseIDSet)) {
         $status_ok = true;
-        foreach($tcaseIDSet as $idx => $tcaseID)
-        {
+        foreach($tcaseIDSet as $idx => $tcaseID) {
           if (( ($tcaseID = intval($tcaseID)) <= 0 ) || 
-              (!$this->_isTestCaseIDValid($tcaseID,$messagePrefix)))
-          {
+              (!$this->_isTestCaseIDValid($tcaseID,$messagePrefix))) {
             $status_ok = false;
 
-            if($fromInternal)
-            {  
+            if($fromInternal) {  
               $this->errors[] = new IXR_Error($errorCode,sprintf($msg,$tcaseID));
-            }
-            else 
-            {
-              if($fromItemSet)
-              {
+            } else {
+              if($fromItemSet) {
                 $tcaseExternalID = $itemSet[$idx];
-              } 
-              else
-              {
+              } else {
                 $tcaseExternalID = $this->args[self::$testCaseExternalIDParamName][$idx];
               } 
               $this->errors[] = new IXR_Error($errorCode,sprintf($msg,$tcaseExternalID));                  
@@ -7736,8 +7697,7 @@ protected function createAttachmentTempFile()
         }  
       }  
        
-      if($status_ok)
-      {
+      if($status_ok) {
         $this->_setTestCaseID($tcaseIDSet);
         $this->tcaseE2I = $tcaseE2I;
       }  

@@ -7,8 +7,7 @@
  *
  * @filesource  containerEdit.php
  * @package     TestLink
- * @author      Martin Havlat
- * @copyright   2005-2017, TestLink community
+ * @copyright   2005-2018, TestLink community
  * @link        http://www.testlink.org
  *
  */
@@ -33,42 +32,28 @@ $refreshTree = false;
 $opt_cfg=new stdClass();
 $opt_cfg->js_ot_name = 'ot';
 
-$args = init_args($db,$opt_cfg);
-$level = $args->containerType;
+$args = init_args($db,$tproject_mgr,$tsuite_mgr,$opt_cfg);
+$level = isset($args->level) ? $args->level : $args->containerType;
 
 $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
 
-$a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
-                'delete_testsuite' => 'containerDelete.tpl',
-                'move_testcases_viewer' => 'containerMoveTC.tpl',
-                'testcases_table_view' => 'containerMoveTC.tpl',
-                'do_copy_tcase_set' => 'containerMoveTC.tpl',
-                'do_copy_tcase_set_ghost' => 'containerMoveTC.tpl',
-                'delete_testcases' =>  'containerDeleteTC.tpl',
-                'do_delete_testcases' =>  'containerDeleteTC.tpl',
-                'doBulkSet' => 'containerMoveTC.tpl',);
 
-$a_actions = array('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
-                   'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
-                   'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
-                   'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,'testcases_table_view' => 0,
-                   'do_copy_tcase_set' => 0, 'do_copy_tcase_set_ghost' => 0, 'del_testsuites_bulk' => 0,
-                   'delete_testcases' => 0,'do_delete_testcases' => 0, 'reorder_testcases' => 0,
-                   'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0,
-                   'doBulkSet' => 0);
+list($a_tpl, $a_actions) = initTPLActions();
 
-$a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
-                           'update_testsuite' => 1);
+$a_init_opt_transfer = array('edit_testsuite' => 1,'new_testsuite'  => 1,
+                             'add_testsuite'  => 1,'update_testsuite' => 1);
 
 $the_tpl = null;
 $action = null;
 $get_c_data = null;
 $init_opt_transfer = null;
 
-$dummy = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
-$lbl2init = array('warning_empty_testsuite_name' => null,'string_contains_bad_chars' => null,
+$dummy = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : 
+         '_externalid';
+$lbl2init = array('warning_empty_testsuite_name' => null,
+                  'string_contains_bad_chars' => null,
                   'container_title_testsuite' => null,
                   'btn_reorder_testcases' => 'btn_reorder_testcases' . $dummy);
 $l18n = init_labels($lbl2init);
@@ -76,17 +61,13 @@ $l18n = init_labels($lbl2init);
 // 20121222 -franciscom
 // Need this trick because current implementation of Ext.ux.requireSessionAndSubmit()
 // discards the original submit button
-if( isset($_REQUEST['doAction']) )
-{
+if( isset($_REQUEST['doAction']) ) {
   $_POST[$_REQUEST['doAction']] = $_REQUEST['doAction'];
 }
-
 $action = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 
-foreach ($a_actions as $the_key => $the_val)
-{
-  if (isset($_POST[$the_key]) )
-  {
+foreach ($a_actions as $the_key => $the_val) {
+  if (isset($_POST[$the_key]) ) {
     $the_tpl = isset($a_tpl[$the_key]) ? $a_tpl[$the_key] : null;
     $init_opt_transfer = isset($a_init_opt_transfer[$the_key])?1:0;
   
@@ -101,36 +82,29 @@ $args->action = $action;
 $smarty->assign('level', $level);
 $smarty->assign('page_title',lang_get('container_title_' . $level));
 
-if($init_opt_transfer)
-{
+if($init_opt_transfer) {
   $opt_cfg = initializeOptionTransfer($tproject_mgr,$tsuite_mgr,$args,$action);
 }
 
 // create  web editor objects
 list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateKey) = initWebEditors($action,$level,$editorCfg);
-if($get_c_data)
-{
+if($get_c_data) {
   $name_ok = 1;
   $c_data = getValuesFromPost($webEditorHtmlNames);
-  if($name_ok && !check_string($c_data['container_name'],$g_ereg_forbidden))
-  {
+  if($name_ok && !check_string($c_data['container_name'],$g_ereg_forbidden)) {
     $msg = $l18n['string_contains_bad_chars'];
     $name_ok = 0;
   }
 
-  if($name_ok && ($c_data['container_name'] == ""))
-  {
+  if($name_ok && ($c_data['container_name'] == "")) {
     $msg = $l18n['warning_empty_testsuite_name'];
     $name_ok = 0;
   }
 }
 
-
-switch($action)
-{
+switch($action) {
   case 'fileUpload':
-    switch($level)
-    {
+    switch($level) {
       case 'testsuite':
         fileUploadManagement($db,$args->testsuiteID,$args->fileTitle,$tsuite_mgr->getAttachmentTableName());
         $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
@@ -149,8 +123,7 @@ switch($action)
 
   case 'deleteFile':
     deleteAttachment($db,$args->file_id);
-    switch($level)
-    {
+    switch($level) {
       case 'testsuite':
         $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
         $gui->refreshTree = 0;
@@ -179,8 +152,7 @@ switch($action)
 
     $gui->cancelActionJS = 'location.href=fRoot+' . 
                            "'lib/testcases/archiveData.php?id=" . intval($args->containerID);
-    switch($level)
-    {
+    switch($level) {
       case 'testproject':
         $gui->cancelActionJS .= "&edit=testproject&level=testproject'";
       break;  
@@ -192,8 +164,10 @@ switch($action)
 
     $smarty->assign('level', $level);
     $smarty->assign('gui', $gui);
-    $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
-                                 $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
+    $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,
+                                 $oWebEditor,$action,$args->containerID, 
+                                 $args->testsuiteID,null,
+                                 $webEditorTemplateKey);
   break;
 
   case 'delete_testsuite':
@@ -211,8 +185,7 @@ switch($action)
   case 'testcases_table_view':
     $cf = null;
     $cf_map = $tcase_mgr->get_linked_cfields_at_design(0,null,null,null,$args->tprojectID);    
-    if(!is_null($cf_map))
-    {
+    if(!is_null($cf_map)) {
       $cfOpt = array('addCheck' => true, 'forceOptional' => true);
       $cf = $tcase_mgr->cfield_mgr->html_table_inputs($cf_map,'',null,$cfOpt);
     }
@@ -235,8 +208,7 @@ switch($action)
   break;
 
   case 'update_testsuite':
-    if ($name_ok)
-    {
+    if ($name_ok) {
       $msg = updateTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
     }
     $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
@@ -246,8 +218,7 @@ switch($action)
   case 'add_testsuite':
     $messages = null;
     $op['status'] = 0;
-    if ($name_ok)
-    {
+    if ($name_ok) {
       $op = addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
       $messages = array( 'result_msg' => $op['messages']['msg'],
                          'user_feedback' => $op['messages']['user_feedback']);
@@ -261,13 +232,13 @@ switch($action)
     $smarty->assign('opt_cfg', $opt_cfg);
 
     $gui = new stdClass();
+    $gui->tproject_id = $args->tprojectID;
     $gui->containerType = $level;
     $gui->refreshTree = $args->refreshTree;
     $gui->cancelActionJS = 'location.href=fRoot+' . 
                            "'lib/testcases/archiveData.php?id=" . intval($args->containerID);
     
-    switch($level)
-    {
+    switch($level) {
       case 'testproject':
         $gui->cancelActionJS .= "&edit=testproject&level=testproject'";
       break;  
@@ -280,8 +251,9 @@ switch($action)
     $smarty->assign('level', $level);
     $smarty->assign('gui', $gui);
 
-    $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
-                                 $args->containerID, null,$messages,$webEditorTemplateKey,$userInput);
+    $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, 
+                                 $oWebEditor, $action,$args->containerID, null,
+                                 $messages,$webEditorTemplateKey,$userInput);
   break;
 
 
@@ -307,7 +279,8 @@ switch($action)
   case 'do_delete_testcases':
     $args->refreshTree = true;
     doDeleteTestCases($db,$args->tcaseSet,$tcase_mgr);
-    deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
+    deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,
+                          $tcase_mgr,$args,
                           lang_get('all_testcases_have_been_deleted'));
   break;
 
@@ -339,8 +312,7 @@ switch($action)
 
     $cf = null;
     $cf_map = $tcase_mgr->get_linked_cfields_at_design(0,null,null,null,$args->tprojectID);    
-    if(!is_null($cf_map))
-    {
+    if(!is_null($cf_map)) {
       $cfOpt = array('addCheck' => true, 'forceOptional' => true);
       $cf = $tcase_mgr->cfield_mgr->html_table_inputs($cf_map,'',null,$cfOpt);
     }
@@ -355,8 +327,7 @@ switch($action)
   break;
 }
 
-if($the_tpl)
-{
+if($the_tpl) {
   $smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
   $smarty->display($template_dir . $the_tpl);
 }
@@ -366,15 +337,13 @@ if($the_tpl)
  *
  *
  */
-function getValuesFromPost($akeys2get)
-{
-    $akeys2get[] = 'container_name';
-    $c_data = array();
-    foreach($akeys2get as $key)
-    {
-        $c_data[$key] = isset($_POST[$key]) ? strings_stripSlashes($_POST[$key]) : null;
-    }
-    return $c_data;
+function getValuesFromPost($akeys2get) {
+  $akeys2get[] = 'container_name';
+  $c_data = array();
+  foreach($akeys2get as $key) {
+    $c_data[$key] = isset($_POST[$key]) ? strings_stripSlashes($_POST[$key]) : null;
+  }
+  return $c_data;
 }
 
 /*
@@ -392,8 +361,7 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
     $msg['link_msg'] = null;
     $msg['delete_msg'] = null;
 
-    if(!is_null($testcases))
-    {
+    if(!is_null($testcases)) {
         $show_warning = 0;
         $delete_msg = '';
         $verbose = array();
@@ -408,37 +376,29 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
                         'no_links' => '');
 
         $getOptions = array('addExecIndicator' => true);
-        foreach($testcases as $the_key => $elem)
-        {
+        foreach($testcases as $the_key => $elem) {
             $verbose[] = $tree_mgr->get_path($elem['id'],$tsuite_id);
-            // $status = $tcase_mgr->check_link_and_exec_status($elem['id']);
             $xx = $tcase_mgr->get_exec_status($elem['id'],null,$getOptions);
             $status = 'no_links';
-            if(!is_null($xx))
-            {
+            if(!is_null($xx)) {
                 $status = $xx['executed'] ? 'linked_and_executed' : 'linked_but_not_executed';
             }
             $msg['link_msg'][] = $status;
 
-            if($status_warning[$status])
-            {
+            if($status_warning[$status]) {
                 $show_warning = 1;
                 $msg['delete_msg'] = $delete_notice[$status];
             }
         }
 
         $idx = 0;
-        if($show_warning)
-        {
+        if($show_warning) {
             $msg['warning'] = array();
-            foreach($verbose as $the_key => $elem)
-            {
+            foreach($verbose as $the_key => $elem) {
                 $msg['warning'][$idx] = '';
                 $bSlash = false;
-                foreach($elem as $tkey => $telem)
-                {
-                    if ($bSlash)
-                    {
+                foreach($elem as $tkey => $telem) {
+                    if ($bSlash) {
                         $msg['warning'][$idx] .= "\\";
                     }
                     $msg['warning'][$idx] .= $telem['name'];
@@ -447,8 +407,7 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
                 $idx++;
             }
         }
-        else
-        {
+        else {
             $msg['link_msg'] = null;
             $msg['warning'] = null;
         }
@@ -465,15 +424,72 @@ args :
 returns:
 
 */
-function init_args(&$dbHandler,$optionTransferCfg)
-{
+function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr,$optionTransferCfg) {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
-  // These lines need to be changed!!
-  $args->tprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  $args->tprojectName = $_SESSION['testprojectName'];
+  $args->containerID = isset($_REQUEST['containerID']) ? 
+                         $_REQUEST['containerID'] : null; 
 
+  // check againts whitelist
+  $args->objectType = isset($_REQUEST['objectType']) ? 
+                         $_REQUEST['objectType'] : null; 
+
+  $args->containerType = isset($_REQUEST['containerType']) ? 
+                         $_REQUEST['containerType'] : null; 
+
+  if( null != $args->containerType ) {
+    $ctWhiteList = array('testproject' => 'OK','testsuite' => 'OK');
+    if(!is_null($args->containerType) && 
+       !isset($ctWhiteList[$args->containerType])) {
+      $args->containerType = null;  
+    }      
+  }
+
+  // When Deleting Test suite - container ID is not set
+  if( is_null($args->containerID) ) {
+    $args->containerType = is_null($args->containerType) ? 'testproject' : 
+                           $args->containerType;
+  }
+
+  if( null == $args->containerType ) {
+    throw new Exception("Error No Container Type", 1);    
+  }
+
+
+  $args->testsuiteID = isset($_REQUEST['testsuiteID']) ? intval($_REQUEST['testsuiteID']) : null;
+  $args->tsuite_name = isset($_REQUEST['testsuiteName']) ? $_REQUEST['testsuiteName'] : null;
+
+  // Order is critic
+  $args->objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) : null;
+  $args->containerID = isset($_REQUEST['containerID']) ? 
+                       intval($_REQUEST['containerID']) : $args->objectID;
+
+  switch( $args->containerType ) {
+    case 'testproject':
+      $args->tprojectID = $args->containerID;
+    break;
+
+    case 'testsuite':
+      $nodeID = !is_null($args->testsuiteID) ? $args->testsuiteID : 
+                $args->containerID;
+      $args->tprojectID = $tsuiteMgr->getTestProjectFromTestSuite($nodeID,null);
+    break;
+  }
+
+  if( intval($args->tprojectID) == 0 ) {
+    $args->tprojectID = intval($_REQUEST['tproject_id']);
+  }
+  // very ugly
+  $args->level = null; 
+  if( isset($_REQUEST['delete_testsuite']) ) {
+    $args->level = $args->objectType; 
+  }
+
+
+  $info = $tprojectMgr->get_by_id($args->tprojectID,
+                                  array('output' => 'name'));
+  $args->tprojectName = $info['name'];
 
   $args->userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
   $args->file_id = isset($_REQUEST['file_id']) ? intval($_REQUEST['file_id']) : 0;
@@ -481,8 +497,7 @@ function init_args(&$dbHandler,$optionTransferCfg)
 
 
   $k2l = array('tc_status','importance','execution_type');
-  foreach($k2l as $kv)
-  {
+  foreach($k2l as $kv) {
     $args->$kv = isset($_REQUEST[$kv]) ? intval($_REQUEST[$kv]) : -1;
   }  
 
@@ -490,52 +505,30 @@ function init_args(&$dbHandler,$optionTransferCfg)
   $args->grants = new stdClass();
   $args->grants->delete_executed_testcases = $args->user->hasRight($dbHandler,'testproject_delete_executed_testcases',$args->tprojectID);
 
-  $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,'target_position' => 'bottom', 'doAction' => '');
-  foreach($keys2loop as $key => $value)
-  {
+  $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,
+                   'target_position' => 'bottom', 'doAction' => '');
+  foreach($keys2loop as $key => $value) {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
 
-  $args->tsuite_name = isset($_REQUEST['testsuiteName']) ? $_REQUEST['testsuiteName'] : null;
   $args->bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
   $rl_html_name = $optionTransferCfg->js_ot_name . "_newRight";
   $args->assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
 
-  $keys2loop=array('testsuiteID' => null, 'containerID' => null,'objectID' => null, 
-                   'copyKeywords' => 0,'copyRequirementAssignments' => 0);
-  foreach($keys2loop as $key => $value)
-  {
+  $keys2loop=array('copyKeywords' => 0,'copyRequirementAssignments' => 0);
+
+  foreach($keys2loop as $key => $value) {
     $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
   }
 
-  // This logic sucks!!!
-  $args->containerType = isset($_REQUEST['containerType']) ? $_REQUEST['containerType'] : null;
-  
-  // check againts whitelist
-  $ctWhiteList = array('testproject' => 'OK','testsuite' => 'OK');
-  if(!is_null($args->containerType) && 
-     !isset($ctWhiteList[$args->containerType]))
-  {
-    $args->containerType = null;  
-  }  
-
-  if(is_null($args->containerID))
-  {
-    $args->containerType = is_null($args->containerType) ? 'testproject' : $args->containerType;
-    $args->containerID = $args->tprojectID;
-  }
   
   $args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
                              $_SESSION['setting_refresh_tree_on_action'] : 0;
-
-
-
   $args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
   $args->testCaseSet = null;
 
-  if($args->treeFormToken >0)
-  {  
+  if($args->treeFormToken >0) {  
     $mode = 'edit_mode';
     $sdata = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->treeFormToken]) ? 
              $_SESSION[$mode][$args->treeFormToken] : null;
@@ -582,8 +575,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
   $testcase_cfg = config_get('testcase_cfg');
   $can_delete = 1;
 
-  if($argsObj->bSure)
-  {
+  if($argsObj->bSure) {
     $tsuite = $tsuiteMgr->get_by_id($argsObj->objectID);
     $tsuiteMgr->delete_deep($argsObj->objectID);
     $tsuiteMgr->deleteKeywords($argsObj->objectID);
@@ -592,8 +584,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
     $feedback_msg = 'ok';
     $smartyObj->assign('user_feedback',lang_get('testsuite_successfully_deleted'));
   }
-  else
-  {
+  else {
     $doRefreshTree = false;
 
     // Get test cases present in this testsuite and all children
@@ -602,28 +593,25 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
     $map_msg['link_msg'] = null;
     $map_msg['delete_msg'] = null;
 
-    if(is_null($testcases) || count($testcases) == 0)
-    {
+    if(is_null($testcases) || count($testcases) == 0) {
       $can_delete = 1;
     }
-    else
-    {
+    else {
       $map_msg = build_del_testsuite_warning_msg($treeMgr,$tcaseMgr,$testcases,$argsObj->testsuiteID);
-      if( in_array('linked_and_executed', (array)$map_msg['link_msg']) )
-      {
+      if( in_array('linked_and_executed', (array)$map_msg['link_msg']) ) {
         $can_delete = $argsObj->grants->delete_executed_testcases;
       }
     }
 
     $system_message = '';
-    if(!$can_delete && !$argsObj->grants->delete_executed_testcases)
-    {
+    if(!$can_delete && !$argsObj->grants->delete_executed_testcases) {
       $system_message = lang_get('system_blocks_tsuite_delete_due_to_exec_tc');
     }
 
     // prepare to show the delete confirmation page
     $smartyObj->assign('can_delete',$can_delete);
     $smartyObj->assign('objectID',$argsObj->testsuiteID);
+    $smartyObj->assign('objectType','testsuite');
     $smartyObj->assign('objectName', $argsObj->tsuite_name);
     $smartyObj->assign('delete_msg',$map_msg['delete_msg']);
     $smartyObj->assign('warning', $map_msg['warning']);
@@ -652,8 +640,7 @@ This is because this config option has to be used ONLY when copying/moving not w
 20091206 - franciscom - new items are created as last element of tree branch
 
 */
-function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
-{
+function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash) {
     $new_order = null;
 
     // compute order
@@ -702,8 +689,7 @@ args:
 returns: -
 
 */
-function  moveTestSuiteViewer(&$smartyObj,&$tprojectMgr,$argsObj)
-{
+function  moveTestSuiteViewer(&$smartyObj,&$tprojectMgr,$argsObj) {
     $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID,
                     array($argsObj->testsuiteID => 'exclude'));
     // Added the Test Project as the FIRST Container where is possible to copy
@@ -798,8 +784,7 @@ args:
 returns:
 
 */
-function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$l18n)
-{
+function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$l18n) {
   $guiObj = new stdClass();
   $guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];;
 
@@ -813,9 +798,10 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$l18n)
 
 
   // copy_to($source,$destination,...)
-  $op = $tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
-  if( $op['status_ok'] )
-  {
+  $op = $tsuiteMgr->copy_to($argsObj->objectID, 
+          $argsObj->containerID, $argsObj->userID,$options);
+
+  if( $op['status_ok'] ) {
     $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
                                                  $argsObj->target_position,$exclude_node_types);
 
@@ -872,8 +858,7 @@ args:
 returns: option transfer configuration
 
 */
-function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
-{
+function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction) {
   $opt_cfg = opt_transf_empty_cfg();
   $opt_cfg->js_ot_name='ot';
   $opt_cfg->global_lbl='';
@@ -881,8 +866,7 @@ function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
   $opt_cfg->from->map = $tprojectMgr->get_keywords_map($argsObj->tprojectID);
   $opt_cfg->to->lbl=lang_get('assigned_kword');
 
-  if($doAction=='edit_testsuite')
-  {
+  if($doAction=='edit_testsuite') {
     $opt_cfg->to->map = $tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
   }
   return $opt_cfg;
@@ -907,12 +891,10 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
 
   $containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
   $containerName = $argsObj->tsuite_name;
-  if( is_null($containerName) )
-  {
+  if( is_null($containerName) ) {
     $dummy = $treeMgr->get_node_hierarchy_info($argsObj->objectID);
     $containerName = $dummy['name'];
   }
-
 
   // I'have discovered that exclude selected testsuite branch is not good
   // when you want to move lots of testcases from one testsuite to it's children
@@ -936,8 +918,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
           " ON NT.id = NHTC.node_type_id AND NT.description='testcase'" .
           " WHERE NHTC.parent_id = " . intval($containerID);
 
-  if( !is_null($argsObj->testCaseSet) )
-  {
+  if( !is_null($argsObj->testCaseSet) ) {
     $sqlA .= " AND NHTC.id IN (" . implode(',', $argsObj->testCaseSet). ")";
   }        
 
@@ -955,12 +936,9 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
 
   // check if operation can be done
   $user_feedback = $feedback;
-  if(!is_null($children) && (sizeof($children) > 0) && sizeof($testsuites))
-  {
+  if(!is_null($children) && (sizeof($children) > 0) && sizeof($testsuites)) {
     $op_ok = true;
-  }
-  else
-  {
+  } else {
     $children = null;
     $op_ok = false;
     $user_feedback = lang_get('no_testcases_available_or_tsuite');
@@ -981,8 +959,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,
 
   $gui->testCasesTableView = 0;
   if(($argsObj->action == 'testcases_table_view') || 
-     ($argsObj->action == 'doBulkSet'))
-  {
+     ($argsObj->action == 'doBulkSet')) {
     $gui->testCasesTableView = 1;
   }  
   $gui->cf = $cf;
@@ -1021,15 +998,17 @@ function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj
     $msg_id = $qty == 1 ? 'one_testcase_copied' : 'testcase_set_copied';
     $op['userfeedback'] = sprintf(lang_get($msg_id),$qty);
 
-    $copyOpt = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
-                     'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
-                     'stepAsGhost' => $argsObj->stepAsGhost);
-    $copyOpt['copy_also'] = array('keyword_assignments' => $argsObj->copyKeywords,
-                                  'requirement_assignments' => $argsObj->copyRequirementAssignments);
+    $copyOpt = array(
+      'check_duplicate_name' => config_get('check_names_for_duplicates'),
+      'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
+      'stepAsGhost' => $argsObj->stepAsGhost);
+    $copyOpt['copy_also'] = 
+      array('keyword_assignments' => $argsObj->copyKeywords,
+            'requirement_assignments' => 
+              $argsObj->copyRequirementAssignments);
 
     $copy_op =array();
-    foreach($argsObj->tcaseSet as $key => $tcaseid)
-    {
+    foreach($argsObj->tcaseSet as $key => $tcaseid) {
       $copy_op[$tcaseid] = $tcaseMgr->copy_to($tcaseid, $argsObj->containerID, $argsObj->userID, $copyOpt);
     }
     $guiObj = new stdClass();
@@ -1422,4 +1401,35 @@ function doBulkSet(&$dbHandler,$argsObj,$tcaseSet,&$tcaseMgr)
     }  
 
   }
+}
+
+
+/**
+ *
+ */
+function initTPLActions() {
+
+  $tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
+                'delete_testsuite' => 'containerDelete.tpl',
+                'move_testcases_viewer' => 'containerMoveTC.tpl',
+                'testcases_table_view' => 'containerMoveTC.tpl',
+                'do_copy_tcase_set' => 'containerMoveTC.tpl',
+                'do_copy_tcase_set_ghost' => 'containerMoveTC.tpl',
+                'delete_testcases' =>  'containerDeleteTC.tpl',
+                'do_delete_testcases' =>  'containerDeleteTC.tpl',
+                'doBulkSet' => 'containerMoveTC.tpl',);
+
+  $actions = array('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,
+                   'do_move' => 0,'do_copy' => 0,'reorder_testsuites' => 1,
+                   'do_testsuite_reorder' => 0,'add_testsuite' => 1,
+                   'move_testsuite_viewer' => 0,'update_testsuite' => 1,
+                   'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
+                   'testcases_table_view' => 0,'do_copy_tcase_set' => 0, 
+                   'do_copy_tcase_set_ghost' => 0, 'del_testsuites_bulk' => 0,
+                   'delete_testcases' => 0,'do_delete_testcases' => 0, 
+                   'reorder_testcases' => 0,'reorder_testsuites_alpha' => 0, 
+                   'reorder_testproject_testsuites_alpha' => 0,
+                   'doBulkSet' => 0);
+
+  return array($tpl,$actions);
 }

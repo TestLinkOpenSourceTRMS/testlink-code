@@ -25,14 +25,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  * @return object returns the arguments for the page
  */
-function init_args(&$dbHandler)
-{
+function init_args(&$dbHandler) {
   $args = new stdClass();
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
   $args->tproject_id = intval($args->tproject_id);
 
-  if( $args->tproject_id <= 0 )
-  {
+  if( $args->tproject_id <= 0 ) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
 

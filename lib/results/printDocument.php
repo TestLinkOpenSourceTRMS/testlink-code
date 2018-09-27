@@ -7,9 +7,13 @@
  * Generate documentation Test report based on Test plan data.
  *
  * @filesource  printDocument.php
- * @copyright   2007-2018, TestLink community 
+ * @author      Martin Havlat
+ * @copyright   2007-2017, TestLink community 
  * @link        http://www.testlink.org
  *
+ *
+ * @internal revisions
+ * @since 1.9.17
  *
  */
 require_once('../../config.inc.php');
@@ -29,16 +33,17 @@ $tree_manager = &$tproject_mgr->tree_manager;
 list($doc_info,$my) = initEnv($db,$args,$tproject_mgr,$args->user_id);
 
 $printingOptions = initPrintOpt($_REQUEST,$doc_info);
-$printingOptions['format'] = $args->format;
 
 $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
 $treeForPlatform[0] = &$subtree;
 $doc_info->title = $doc_info->tproject_name;
 $doc_info->outputFormat = $printingOptions['outputFormat'] = $args->format;
 
-switch ($doc_info->type) {
+switch ($doc_info->type)
+{
   case DOC_REQ_SPEC:
-    switch($doc_info->content_range) {
+    switch($doc_info->content_range)
+    {
       case 'reqspec':
         $spec_mgr = new requirement_spec_mgr($db);
         $spec = $spec_mgr->get_by_id($args->itemID);
@@ -59,7 +64,8 @@ switch ($doc_info->type) {
   case DOC_TEST_SPEC:
     $printingOptions['importance'] = $doc_info->test_priority_enabled;
 
-    switch($doc_info->content_range) {
+    switch($doc_info->content_range)
+    {
       case 'testsuite':
         $tsuite = new testsuite($db);
         $tInfo = $tsuite->get_by_id($args->itemID);
@@ -81,7 +87,8 @@ switch ($doc_info->type) {
     $tplan_mgr = new testplan($db);
     $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 
-    if($args->build_id > 0) {
+    if($args->build_id > 0)
+    {
       $xx = $tplan_mgr->get_builds($args->tplan_id,null,null,array('buildID' => $args->build_id));
       $doc_info->build_name = htmlspecialchars($xx[$args->build_id]['name']);
       $doc_info->build_notes = $xx[$args->build_id]['notes'];
@@ -106,19 +113,23 @@ switch ($doc_info->type) {
     $ctx->platformIDSet = $platformIDSet; 
     $opx = null;
    
-    if( $doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD ) {
+    if( $doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD )  
+    {
       $ctx->build_id = ($args->build_id > 0) ? $args->build_id : null;
       
       $opx = array('setAssignedTo' => false);
       $ctx->with_user_assignment = $args->with_user_assignment;
-      if( $ctx->build_id > 0 ) {
-        if( $args->with_user_assignment ) {
+      if( $ctx->build_id > 0 )
+      {
+        if( $args->with_user_assignment )
+        {
           $opx = array('setAssignedTo' => true);
         }
       }  
     }  
     
-    switch($doc_info->content_range) {
+    switch($doc_info->content_range)
+    {
       case 'testproject':
         $treeForPlatform = buildContentForTestPlan($db,$subtree,$ctx,$decode,
                                                    $tplan_mgr,$filters,$opx);
@@ -136,7 +147,8 @@ switch ($doc_info->type) {
     // Create list of execution id, that will be used to compute execution time if
     // CF_EXEC_TIME custom field exists and is linked to current testproject
     $doc_data->statistics = null;                                            
-    if ($printingOptions['metrics']) {
+    if ($printingOptions['metrics'])
+    {
       $target = new stdClass();
       $target->tplan_id = $args->tplan_id;
       $target->build_id = $args->build_id;
@@ -148,8 +160,7 @@ switch ($doc_info->type) {
 
 
 // ----- rendering logic -----
-$topText = renderHTMLHeader($doc_info->type . ' ' . 
-           $doc_info->title,$_SESSION['basehref'],$doc_info->type);
+$topText = renderHTMLHeader($doc_info->type . ' ' . $doc_info->title,$_SESSION['basehref'],$doc_info->type);
 $topText .= renderFirstPage($doc_info);
 
 // Init table of content (TOC) data
@@ -157,14 +168,17 @@ renderTOC($printingOptions);  // @TODO check if is really useful
 
 
 $tocPrefix = null;
-if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) ) {
+if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) )
+{
   $tocPrefix = 0;
 }
 
-if ($treeForPlatform) {
+if ($treeForPlatform)
+{
   // Things that have to be printed just once
   // 
-  switch ($doc_info->type) {
+  switch ($doc_info->type)
+  {
     case DOC_TEST_PLAN_DESIGN:
       $printingOptions['metrics'] = true; // FORCED
 
@@ -189,7 +203,8 @@ if ($treeForPlatform) {
 
 
   $actionContext = (array)$args;
-  foreach ($treeForPlatform as $platform_id => $tree2work) {
+  foreach ($treeForPlatform as $platform_id => $tree2work)            
+  {
     $actionContext['platform_id'] = $platform_id;
 
     if(isset($tree2work['childNodes']) && sizeof($tree2work['childNodes']) > 0)
@@ -197,7 +212,8 @@ if ($treeForPlatform) {
       $tree2work['name'] = $args->tproject_name;
       $tree2work['id'] = $args->tproject_id;
       $tree2work['node_type_id'] = $decode['node_descr_id']['testproject'];
-      switch ($doc_info->type) {
+      switch ($doc_info->type)
+      {
         case DOC_REQ_SPEC:
           $docText .= renderReqSpecTreeForPrinting($db, $tree2work, $printingOptions, 
                                                    null, 0, 1, $args->user_id,0,$args->tproject_id);
@@ -221,9 +237,8 @@ if ($treeForPlatform) {
 
           $actionContext['level'] = 0;
           $indentLevelStart = 1;
-          $docText .= renderTestSpecTreeForPrinting($db,$tree2work,
-            $printingOptions,$env,$actionContext,
-            $env->tocPrefix,$indentLevelStart);
+          $docText .= renderTestSpecTreeForPrinting($db,$tree2work,$printingOptions,$env,$actionContext,
+                                                    $env->tocPrefix,$indentLevelStart);
         break;
       
         case DOC_TEST_PLAN_DESIGN:
@@ -239,14 +254,16 @@ if ($treeForPlatform) {
           $env->testCounter = 1;
           $env->reportType = $doc_info->type;
 
-          if ($showPlatforms) {
+          if ($showPlatforms)
+          {
             $printingOptions['showPlatformNotes'] = true;
             $docText .= renderPlatformHeading($tocPrefix,$platforms[$platform_id],$printingOptions);
           }
 
           $actionContext['level'] = 0;
           $docText .= renderTestPlanForPrinting($db,$tree2work,$printingOptions,$env,$actionContext);
-          if( $printingOptions['metrics'] ) {
+          if( $printingOptions['metrics'] )
+          {
             $docText .= buildTestPlanMetrics($doc_data->statistics,$platform_id);
           }  
         break;
@@ -279,7 +296,8 @@ echo $docText;
  * Process input data
  * 
  **/
-function init_args(&$dbHandler) {
+function init_args(&$dbHandler)
+{
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                    "tproject_id" => array(tlInputParameter::INT_N), 
                    "tplan_id" => array(tlInputParameter::INT_N),  
@@ -298,24 +316,30 @@ function init_args(&$dbHandler) {
   $typeDomain = array('test_plan' => 'testplan','test_report' => 'testreport');
   $args->type = isset($typeDomain[$args->type]) ? $typeDomain[$args->type] : $args->type;
   
-  if( !is_null($args->apikey) ) {
+  if( !is_null($args->apikey) )
+  {
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
 
-    if(strlen($args->apikey) == 32) {
+    if(strlen($args->apikey) == 32)
+    {
       $cerbero->args->getAccessAttr = true;
       $cerbero->method = 'checkRights';
       $cerbero->redirect_target = "../../login.php?note=logout";
       setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
-    } else {
+    }
+    else
+    {
       $args->addOpAccess = false;
       $cerbero->method = null;
       setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
     }  
     $args->itemID = $args->tproject_id;
-  } else {
+  }
+  else
+  {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
     
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
@@ -325,10 +349,13 @@ function init_args(&$dbHandler) {
 
   $tproject_mgr = new testproject($dbHandler);
 
-  if($args->tproject_id > 0) {
+  if($args->tproject_id > 0) 
+  {
     $dummy = $tproject_mgr->get_by_id($args->tproject_id);
     $args->tproject_name = $dummy['name'];
-  } else {
+  }
+  else
+  {
     $msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
     throw new Exception($msg);
   }
@@ -353,26 +380,22 @@ function init_args(&$dbHandler) {
  * @uses init_checkboxes() - printDocOptions.php 
  * 
  **/
-function initPrintOpt(&$UIhash,&$docInfo) {
+function initPrintOpt(&$UIhash,&$docInfo)
+{
   // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
-  $pOpt = array( 'toc' => 0,'body' => 0,'summary' => 0, 
-                 'header' => 0,'headerNumbering' => 1,
-                 'passfail' => 0, 'author' => 0, 'notes' => 0, 
-                 'requirement' => 0, 'keyword' => 0, 
-                 'cfields' => 0, 'testplan' => 0, 'metrics' => 0, 
-                 'assigned_to_me' => 0, 
-                 'req_spec_scope' => 0,'req_spec_author' => 0,
-                 'build_cfields' => 0,
+  $pOpt = array( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
+                 'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
+                 'cfields' => 0, 'testplan' => 0, 'metrics' => 0, 'assigned_to_me' => 0, 
+                 'req_spec_scope' => 0,'req_spec_author' => 0,'build_cfields' => 0,
                  'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
                  'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
-                 'req_status' => 0,'req_type' => 0,'req_cf' => 0,
-                 'req_relations' => 0,
-                 'req_linked_tcs' => 0,'req_coverage' => 0,
-                 'displayVersion' => 0,
+                 'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
+                 'req_linked_tcs' => 0,'req_coverage' => 0,'displayVersion' => 0,
                  'step_exec_notes' => 0, 'step_exec_status' => 0);
   
   $lightOn = isset($UIhash['allOptionsOn']);
-  foreach($pOpt as $opt => $val) {
+  foreach($pOpt as $opt => $val)
+  {
     $pOpt[$opt] = $lightOn || (isset($UIhash[$opt]) && ($UIhash[$opt] == 'y'));
   }          
   $pOpt['docType'] = $docInfo->type;

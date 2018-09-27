@@ -60,6 +60,7 @@ $tlCfg->tplanDesign = new stdClass();
 $tlCfg->notifications = new stdClass();
 $tlCfg->proxy = new stdClass();
 
+$tlCfg->reqTCLinks = new stdClass();
 
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -85,6 +86,18 @@ define('TL_CSS_MAIN', 'testlink.css');
 define('TL_CSS_PRINT', 'tl_print.css');
 define('TL_CSS_DOCUMENTS', 'tl_documents.css');
 
+define('TL_THEME_BASE_DIR', $tlCfg->theme_dir);
+define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
+define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
+define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
+define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
+
+// name of your custom.css, place it in same folder that standard TL css
+// null or '' => do not use
+$tlCfg->custom_css = null;
+
+// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
+define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
 
 
 /** Include constants and magic numbers (users should not change it)*/
@@ -1188,6 +1201,20 @@ $tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHI
 
 
 
+// @since 1.9.18
+// TRUE => After a test case version has been executed 
+//         attachment on test case spec can not be added/removed
+//         
+// FALSE  
+$tlCfg->testcase_cfg->downloadOnlyAfterExec = TRUE;
+
+$tlCfg->testcase_cfg->reqLinkingDisabledAfterExec = TRUE;
+
+$tlCfg->testcase_cfg->freezeReqVersionAfterExec = TRUE;
+
+$tlCfg->reqTCLinks->freeBothEndsOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freeBothEndsOnNewREQVersion = TRUE;
+
 /** text template for a new items:
     Test Case: summary, steps, expected_results, preconditions
 
@@ -1284,6 +1311,36 @@ $tlCfg->platform_template->notes->value = '';
 $g_attachments = new stdClass();
 $g_attachments->enabled = TRUE;
 
+// TRUE -> when you upload a file you can give no title
+$g_attachments->allow_empty_title = TRUE;
+
+// $g_attachments->allow_empty_title == TRUE, you can ask the system
+// to do something
+//
+// 'none'         -> just write on db an empty title
+// 'use_filename' -> use filename as title
+//$g_attachments->action_on_save_empty_title='use_filename';
+//
+$g_attachments->action_on_save_empty_title = 'none';
+
+// Remember that title is used as link description for download
+// then if title is empty, what the system has to do when displaying ?
+// 'show_icon'  -> the $g_attachments->access_icon will be used.
+// 'show_label' -> the value of $g_attachments->access_string will be used .
+$g_attachments->action_on_display_empty_title = 'show_icon';
+
+// Set display order of uploaded files 
+$g_attachments->order_by = " ORDER BY date_added DESC ";
+
+
+// need to be moved AFTER include of custom_config
+//
+// $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+$g_attachments->access_string = "[*]";
+
+
+
+
 /** the type of the repository can be database or filesystem
  * TL_REPOSITORY_TYPE_DB => database
  * TL_REPOSITORY_TYPE_FS => filesystem
@@ -1310,31 +1367,6 @@ $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 // Also check your PHP settings (default is usually 2MBs)
 $tlCfg->repository_max_filesize = 1; //MB
 
-// TRUE -> when you upload a file you can give no title
-$g_attachments->allow_empty_title = TRUE;
-
-// $g_attachments->allow_empty_title == TRUE, you can ask the system
-// to do something
-//
-// 'none'         -> just write on db an empty title
-// 'use_filename' -> use filename as title
-//$g_attachments->action_on_save_empty_title='use_filename';
-//
-$g_attachments->action_on_save_empty_title = 'none';
-
-// Remember that title is used as link description for download
-// then if title is empty, what the system has to do when displaying ?
-// 'show_icon'  -> the $g_attachments->access_icon will be used.
-// 'show_label' -> the value of $g_attachments->access_string will be used .
-$g_attachments->action_on_display_empty_title = 'show_icon';
-
-// need to be moved AFTER include of custom_config
-//
-// $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
-$g_attachments->access_string = "[*]";
-
-// Set display order of uploaded files 
-$g_attachments->order_by = " ORDER BY date_added DESC ";
 
 
 
@@ -1346,7 +1378,9 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 // false: you want req_doc_id UNIQUE INSIDE a SRS
 // $tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
 
-// 20101212 - truncate log message to this amount of chars for reqCompareVersions
+$tlCfg->req_cfg->monitor_enabled = true;
+
+// truncate log message to this amount of chars for reqCompareVersions
 $tlCfg->req_cfg->log_message_len = 200;
 
 /**
@@ -1849,11 +1883,13 @@ define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . D
 require_once('configCheck.php');
 
 
-if( !defined('TL_JQUERY') ) {
+if( !defined('TL_JQUERY') )
+{
   define('TL_JQUERY','jquery-2.2.4.min.js' );
 }
 
-if( !defined('TL_DATATABLES_DIR') ) {
+if( !defined('TL_DATATABLES_DIR') )
+{
   define('TL_DATATABLES_DIR','DataTables-1.10.4' );
 }
 
@@ -1863,27 +1899,14 @@ if( !defined('TL_DATATABLES_DIR') ) {
 define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
 
 clearstatcache();
-if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) ) {
+if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
+{
   require_once( TL_ABS_PATH . 'custom_config.inc.php' );
 }
 
 
-define('TL_THEME_BASE_DIR', $tlCfg->theme_dir);
-define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
-define('TL_THEME_CSS_DIR', $tlCfg->theme_dir . 'css/');
-define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
-define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
-
-// name of your custom.css, place it in same folder that standard TL css
-// null or '' => do not use
-$tlCfg->custom_css = null;
-
-// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
-define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
-
-
-
-if( !isset($g_attachments->access_icon) ) {
+if( !isset($g_attachments->access_icon) )
+{
   $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 }
 
@@ -1898,18 +1921,22 @@ $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 //  not always in any include!
 //  @TODO a better parsing function should be include
 $serverLanguage = false;
-if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+{
   @list($code) = explode(",",$_SERVER['HTTP_ACCEPT_LANGUAGE']);
   @list($a,$b) = explode("-",$code);
-  if ($a && $b) {
+  if ($a && $b)
+  {
     $a = strtolower($a);
     $b = strtoupper($a);
     $serverLanguage = $a."_".$b;
   }
 }
 
-if(false !== $serverLanguage) {
-  if (array_key_exists($serverLanguage,$tlCfg->locales)) { 
+if(false !== $serverLanguage)
+{
+  if (array_key_exists($serverLanguage,$tlCfg->locales))
+  { 
     $tlCfg->default_language = $serverLanguage;
   } 
 }

@@ -47,7 +47,7 @@ CREATE TABLE /*prefix*/req_monitor (
 ) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/plugins (
-  plugin_id int NOT NULL IDENTITY(1,1),
+  plugin_id int NOT NULL IDENTITY(1,1) CONSTRAINT /*prefix*/DF_plugins_plugin_id DEFAULT ((0)),
   basename VARCHAR(100) NOT NULL,
   enabled tinyint NOT NULL CONSTRAINT /*prefix*/DF_plugins_enabled DEFAULT ((0)),
   author_id int NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE /*prefix*/plugins (
 ) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/plugins_configuration (
-  plugin_config_id int IDENTITY(1,1),
+  plugin_config_id int IDENTITY(1,1) NOT NULL CONSTRAINT /*prefix*/DF_plugins_configuration_plugin_config_id DEFAULT ((0)),
   testproject_id int NOT NULL CONSTRAINT /*prefix*/DF_plugins_configuration__testproject_id DEFAULT ((0)),
   config_key VARCHAR(255) NOT NULL,
   config_type int NOT NULL,

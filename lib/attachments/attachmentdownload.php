@@ -22,8 +22,7 @@ if ($args->id)
   $attachmentRepository = tlAttachmentRepository::create($db);
   $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
 
-  if ($attachmentInfo)
-  {
+  if ($attachmentInfo) {
     switch ($args->opmode) 
     {
       case 'API':
@@ -74,21 +73,25 @@ if ($args->id)
     }
 
 
-    if( $doIt ) {
+    if( $doIt )
+    {
       $content = '';
       $getContent = true;
-      if( $args->opmode !== 'API' && $args->skipCheck !== 0 && 
-          $args->skipCheck !== false) {
-        if( $args->skipCheck != hash('sha256',$attachmentInfo['file_name']) ){
+      if( $args->opmode !== 'API' && $args->skipCheck !== 0 && $args->skipCheck !== false)
+      {
+        if( $args->skipCheck != hash('sha256',$attachmentInfo['file_name']) )
+        {
           $getContent = false;
         }  
       }  
 
-      if($getContent) {
+      if($getContent)
+      {
         $content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
       }  
 
-      if ($content != "" ) {
+      if ($content != "" )
+      {
         @ob_end_clean();
         header('Pragma: public');
         header("Cache-Control: ");
@@ -142,7 +145,6 @@ function init_args(&$dbHandler)
     $args->opmode = 'API';
     $args->skipCheck = true;
   } 
-
   return $args;
 }
 

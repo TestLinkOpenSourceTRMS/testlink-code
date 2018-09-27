@@ -3,12 +3,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource tcView_viewer.tpl
 viewer for test case in test specification
 
-@internal revisions
 *}
 {lang_get var="tcView_viewer_labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
              btn_edit,btn_delete,btn_mv_cp,btn_del_this_version,btn_new_version,
-             btn_export,btn_execute_automatic_testcase,version,testplan_usage,
+             btn_export,btn_execute_automatic_testcase,version,
+             testplan_usage,version_short,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,applyExecTypeChangeToAllSteps,
              title_last_mod,title_created,by,expected_results,keywords,goto_execute,
              btn_create_step,step_number,btn_reorder_steps,step_actions,hint_new_sibling,
@@ -33,6 +33,10 @@ viewer for test case in test specification
 {$tcase_id=$args_testcase.testcase_id}
 {$tcversion_id=$args_testcase.id}
 {$showMode=$gui->show_mode} 
+
+{$openC = $gsmarty_gui->role_separator_open}
+{$closeC = $gsmarty_gui->role_separator_close}
+{$sepC = $gsmarty_gui->title_separator_1}
 
 
 {* Used on several operations to implement goback *}
@@ -360,7 +364,7 @@ function launchInsertStep(step_id)
   {include file="testcases/inc_steps.tpl"
            layout=$gui->steps_results_layout
            edit_enabled=$edit_enabled
-		   args_frozen_version=$args_frozen_version
+		       args_frozen_version=$args_frozen_version
            ghost_control=true
            steps=$args_testcase.steps}
   {/if}
@@ -397,16 +401,33 @@ function launchInsertStep(step_id)
 
   <p>
   <div {$addInfoDivStyle}>
-   {include file="testcases/keywords.inc.tpl" args_edit_enabled=$edit_enabled} 
+   {$kwRW = ($edit_enabled == 1) && ($has_been_executed == 0)} 
+
+   {include file="testcases/keywords.inc.tpl" 
+            args_edit_enabled=$kwRW} 
   </div>
   
-  {if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
+  {if $gui->requirementsEnabled == TRUE && 
+     ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
+
+     {$reqLinkingEnabled = 0}
+     {if $gui->req_tcase_link_management && $args_frozen_version=="no" &&
+         $edit_enabled == 1 }
+        {$reqLinkingEnabled = 1}
+     {/if}    
+
+     {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 && 
+         $has_been_executed == 1}
+        {$reqLinkingEnabled = 0}
+     {/if}
+     
+
   <div {$addInfoDivStyle}>
     <table cellpadding="0" cellspacing="0" style="font-size:100%;">
              <tr>
                <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
                target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
-              {if $gui->req_tcase_link_management && $args_frozen_version=="no"}
+              {if $reqLinkingEnabled }
                 <img class="clickable" src="{$tlImages.item_link}"
                      onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
                      title="{$tcView_viewer_labels.link_unlink_requirements}" />
@@ -415,11 +436,16 @@ function launchInsertStep(step_id)
              </td>
               <td>
               {section name=item loop=$args_reqs}
+                {$reqID=$args_reqs[item].id}
+                {$reqVersionID=$args_reqs[item].req_version_id}
+                {$reqVersionNum=$args_reqs[item].version}
+                
+                
                 <img class="clickable" src="{$tlImages.edit}"
-                     onclick="javascript:openLinkedReqWindow({$args_reqs[item].id});"
+                     onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID});"
                      title="{$tcView_viewer_labels.requirement}" />
-                {$gsmarty_gui->role_separator_open}{$args_reqs[item].req_spec_title|escape}{$gsmarty_gui->role_separator_close}
-                {$args_reqs[item].req_doc_id|escape}{$gsmarty_gui->title_separator_1}{$args_reqs[item].title|escape}
+                {$openC}{$args_reqs[item].req_spec_title|escape}{$closeC}
+                {$args_reqs[item].req_doc_id|escape}&nbsp{$openC}{$tcView_viewer_labels.version_short}{$reqVersionNum}{$closeC}{$sepC}{$args_reqs[item].title|escape}
                 {if !$smarty.section.item.last}<br />{/if}
               {sectionelse}
                 {$tcView_viewer_labels.none}
@@ -462,7 +488,10 @@ function launchInsertStep(step_id)
   
 {if $show_relations}
   <br />
-  {include file="testcases/relations.inc.tpl" args_edit_enabled=$edit_enabled} 
+  {include file="testcases/relations.inc.tpl"
+           args_relations = $args_relations
+           args_frozen_version = $args_frozen_version
+           args_edit_enabled = $edit_enabled} 
 {/if}
 
 {if $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}

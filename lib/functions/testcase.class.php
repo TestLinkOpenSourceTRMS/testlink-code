@@ -1903,21 +1903,10 @@ class testcase extends tlObjectWithAttachments
           }
 
           if( $op['status_ok'] && $copyReqLinks ) {
-            // $this->copyReqAssignmentTo($id,$newTCObj['id'],$my['mappings']['requirements'],$ix->authorID);
-
-            /*echo '<pre>';
-            echo __LINE__ . '<br>';
-            var_dump($my['mappings']['requirements']);
-            echo '</pre>';
-            die();
-            */
-
             $this->copyReqVersionLinksTo($source,$dest,
               $my['mappings']['requirements'],$ix->authorID);
-
           }
         }  // foreach($tcase_info ...
-
       } // $newTCObj['status_ok']
     }
 
@@ -3587,11 +3576,9 @@ class testcase extends tlObjectWithAttachments
     $status_not_run = $resultsCfg['status_code']['not_run'];
 
     $filterKeys = array('build_id','platform_id');
-    foreach($filterKeys as $key)
-    {
+    foreach($filterKeys as $key) {
       $filterBy[$key] = '';
-      if( !is_null($$key) )
-      {
+      if( !is_null($$key) ) {
         $itemSet = implode(',', (array)$$key);
         $filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
       }
@@ -3617,30 +3604,23 @@ class testcase extends tlObjectWithAttachments
     //
     $localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0, 'getSteps' => 1,
                         'getStepsExecInfo' => 0, 'output' => 'std');
-    if(!is_null($options) && is_array($options))
-    {
+    if(!is_null($options) && is_array($options)) {
       $localOptions=array_merge($localOptions,$options);
     }
-    if( is_array($id) )
-    {
+
+    if( is_array($id) ) {
       $tcid_list = implode(",",$id);
       $where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
-    }
-    else
-    {
+    } else {
       $where_clause = " WHERE NHA.parent_id = {$id} ";
     }
 
-    if( is_array($version_id) )
-    {
+    if( is_array($version_id) ) {
         $versionid_list = implode(",",$version_id);
         $where_clause_1 = $where_clause . " AND NHA.id IN ({$versionid_list}) ";
         $where_clause_2 = $where_clause . " AND tcversions.id IN ({$versionid_list}) ";
-    }
-    else
-    {
-      if($version_id != self::ALL_VERSIONS)
-      {
+    } else {
+      if($version_id != self::ALL_VERSIONS) {
         $where_clause_1 = $where_clause . " AND NHA.id = {$version_id} ";
         $where_clause_2 = $where_clause . " AND tcversions.id = {$version_id} ";
       }
@@ -3649,8 +3629,7 @@ class testcase extends tlObjectWithAttachments
     // This logic (is mine - franciscom) must be detailed better!!!!!
     $group_by = ' GROUP BY tcversion_id ';
     $add_fields = ', e.tcversion_id AS tcversion_id';
-    if( $localOptions['groupByBuild'] )
-    {
+    if( $localOptions['groupByBuild'] ) {
       $add_fields .= ', e.build_id';
       $group_by .= ', e.build_id';
       $cumulativeMode = 1;
@@ -3659,7 +3638,6 @@ class testcase extends tlObjectWithAttachments
       $where_clause_1 = $where_clause;
       $where_clause_2 = $where_clause;
     }
-
 
     // we may be need to remove tcversion filter ($set_group_by==false)
     // $add_field = $set_group_by ? ', e.tcversion_id AS tcversion_id' : '';
@@ -3687,39 +3665,31 @@ class testcase extends tlObjectWithAttachments
 
     $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
     $and_exec_id='';
-    if( !is_null($recordset) && count($recordset) > 0)
-    {
+    if( !is_null($recordset) && count($recordset) > 0) {
       $the_list = implode(",", array_keys($recordset));
-      if($the_list != '')
-      {
-        if( count($recordset) > 1 )
-        {
+      if($the_list != '') {
+        if( count($recordset) > 1 ) {
           $and_exec_id = " AND e.id IN ($the_list) ";
-        }
-        else
-        {
+        } else {
           $and_exec_id = " AND e.id = $the_list ";
         }
       }
     }
 
-    $executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id " .
-                     " AND e.testplan_id = {$tplan_id} {$and_exec_id} {$filterBy['build_id']} " .
-                     " {$filterBy['platform_id']} ";
+    $executions_join = 
+      " JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id " .
+      " AND e.testplan_id = {$tplan_id} {$and_exec_id} {$filterBy['build_id']} " .
+      " {$filterBy['platform_id']} ";
 
-    if( $localOptions['getNoExecutions'] )
-    {
+    if( $localOptions['getNoExecutions'] ) {
        $executions_join = " LEFT OUTER " . $executions_join;
-    }
-    else
-    {
+    } else {
        // @TODO understand if this condition is really needed - 20090716 - franciscom
        $executions_join .= " AND e.status IS NOT NULL ";
     }
 
     //
-    switch ($localOptions['output'])
-    {
+    switch ($localOptions['output']) {
       case 'timestamp':
         $sql= "/* $debugMsg */ SELECT e.id AS execution_id, " .
               " COALESCE(e.status,'{$status_not_run}') AS status, " .
@@ -3762,47 +3732,36 @@ class testcase extends tlObjectWithAttachments
       break;
     }
 
-
-
     $recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
 
     // Multiple Test Case Steps Feature
-    if( !is_null($recordset) && $localOptions['getSteps'] )
-    {
+    if( !is_null($recordset) && $localOptions['getSteps'] ) {
       $xx = null;
       if( $localOptions['getStepsExecInfo'] && 
           ($this->cfg->execution->steps_exec_notes_default == 'latest' ||
            $this->cfg->execution->steps_exec_status_default == 'latest') 
-        )
-      {
+        ) {
         $tg = current($recordset);
         $xx = $this->getStepsExecInfo($tg['execution_id']);
       }
 
       $itemSet = array_keys($recordset);
-      foreach( $itemSet as $sdx)
-      {
+      foreach( $itemSet as $sdx) {
         $step_set = $this->get_steps($recordset[$sdx]['id']);
-        if($localOptions['getStepsExecInfo'])
-        {
-          if(!is_null($step_set))
-          {
+        if($localOptions['getStepsExecInfo']) {
+          if(!is_null($step_set)) {
             $key_set = array_keys($step_set);
-            foreach($key_set as $kyx)
-            {
+            foreach($key_set as $kyx) {
               $step_set[$kyx]['execution_notes'] = '';
               $step_set[$kyx]['execution_status'] = '';
          
-              if( isset($xx[$step_set[$kyx]['id']]) )
-              {
-                if($this->cfg->execution->steps_exec_notes_default == 'latest')
-                {
+              if( isset($xx[$step_set[$kyx]['id']]) ) {
+                if($this->cfg->execution->steps_exec_notes_default == 'latest') {
                   $step_set[$kyx]['execution_notes'] = 
                      $xx[$step_set[$kyx]['id']]['notes'];
                 }
 
-                if($this->cfg->execution->steps_exec_status_default == 'latest')
-                {
+                if($this->cfg->execution->steps_exec_status_default == 'latest') {
                   $step_set[$kyx]['execution_status'] = 
                      $xx[$step_set[$kyx]['id']]['status'];
                 }
@@ -3816,16 +3775,20 @@ class testcase extends tlObjectWithAttachments
     }
 
     // ghost Test Case processing in summary & preconditions
-    if( !is_array($id) )
-    {
-      if(!is_null($recordset))
-      {
+    if( !is_array($id) ) {
+      if(!is_null($recordset)) {
         $key2loop = array_keys($recordset);
-        foreach( $key2loop as $accessKey)
-        {
+        foreach( $key2loop as $accessKey) {
           $this->renderGhost($recordset[$accessKey]);
           $this->renderVariables($recordset[$accessKey]);
           $this->renderImageAttachments($id,$recordset[$accessKey]);
+
+          
+          // render exec variables only if we have just one build
+          if( intval($build_id) > 0 && intval($tplan_id) >0 ) {
+            $context = array('tplan_id' => $tplan_id, 'build_id' => $build_id);
+            $this->renderBuildExecVars($context,$recordset[$accessKey]);
+          }
         }
         reset($recordset);
       }
@@ -7903,14 +7866,12 @@ class testcase extends tlObjectWithAttachments
   *
   * <p> </p> added by web rich editor create some layout issues
   */
-  function renderVariables(&$item2render)
-  {
+  function renderVariables(&$item2render) {
     $tcase_id = $item2render['testcase_id'];
     $tcversion_id = $item2render['id'];
     $cfSet = $this->get_linked_cfields_at_design($tcase_id,$tcversion_id);
 
-    if( is_null($cfSet) )
-    {
+    if( is_null($cfSet) ) {
       return;
     }
 
@@ -7928,14 +7889,12 @@ class testcase extends tlObjectWithAttachments
 
 
     $rse = &$item2render;
-    foreach($key2check as $item_key)
-    {
+    foreach($key2check as $item_key) {
       $start = strpos($rse[$item_key],$tlBeginTag);
       $ghost = $rse[$item_key];
 
       // There is at least one request to replace ?
-      if($start !== FALSE)
-      {
+      if($start !== FALSE) {
         // This way remove may be the <p> that webrich editor adds
         $play = substr($rse[$item_key],$start);
         $xx = explode($tlBeginTag,$play);
@@ -7943,25 +7902,20 @@ class testcase extends tlObjectWithAttachments
         // How many requests to replace ?
         $xx2do = count($xx);
         $ghost = '';
-        for($xdx=0; $xdx < $xx2do; $xdx++)
-        {
+        for($xdx=0; $xdx < $xx2do; $xdx++) {
+
           // Hope was not a false request.
-          if( ($es=strpos($xx[$xdx],$tlEndTag)) !== FALSE)
-          {
+          if( ($es=strpos($xx[$xdx],$tlEndTag)) !== FALSE) {
             // Separate command string from other text
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($tlEndTag,$xx[$xdx]);
-            if( ($elc = count($yy)) > 0)
-            {
+            if( ($elc = count($yy)) > 0) {
               $cfname = trim($yy[0]);
-              try
-              {
+              try {
                 // look for the custom field
-                foreach ($cfSet as $cfID => $cfDef)
-                {
-                  if( $cfDef['name'] === $cfname )
-                  {
+                foreach ($cfSet as $cfID => $cfDef) {
+                  if( $cfDef['name'] === $cfname ) {
                     $ghost .=
                     $this->cfield_mgr->string_custom_field_value($cfDef,$tcversion_id);
                   }
@@ -7969,27 +7923,21 @@ class testcase extends tlObjectWithAttachments
 
                 // reconstruct the contect with the other pieces
                 $lim = $elc-1;
-                for($cpx=1; $cpx <= $lim; $cpx++)
-                {
+                for($cpx=1; $cpx <= $lim; $cpx++) {
                   $ghost .= $yy[$cpx];
                 }
-              }
-              catch (Exception $e)
-              {
+              } catch (Exception $e) {
                 $ghost .= $rse[$item_key];
               }
             }
-          }
-          else
-          {
+          } else {
             $ghost .= $xx[$xdx];
           }
         }
       }
 
       // reconstruct field contents
-      if($ghost != '')
-      {
+      if($ghost != '') {
         $rse[$item_key] = $ghost;
       }
     }
@@ -8445,4 +8393,109 @@ class testcase extends tlObjectWithAttachments
     return $rs['tcversion_id'];
   }
   
+ /**
+  * render CF BUILD values with a defined name prefix
+  *
+  * <p> </p> added by web rich editor create some layout issues
+  */
+  function renderBuildExecVars($context,&$item2render) {
+
+    static $execVars;
+    
+    $tplan_id = $context['tplan_id'];
+    $build_id = $context['build_id'];
+
+    $sql = " SELECT parent_id FROM {$this->tables['nodes_hierarchy']} NHTP
+             WHERE NHTP.id = $tplan_id 
+             AND NHTP.node_type_id = {$this->node_types_descr_id['testplan']} ";
+    $dummy = current($this->db->get_recordset($sql));
+
+    $tproject_id = $dummy['parent_id'];
+
+    if( !($execVars) ) {
+      $cfx = array('tproject_id' => $tproject_id, 'node_type' => 'build',
+                   'node_id' => $build_id);
+      $CFSet = 
+        $this->cfield_mgr->getLinkedCfieldsAtDesign($cfx);
+
+      $execVars = array();
+      foreach($CFSet as $cfDef) {
+        $execVars[$cfDef['name']] = 
+          $this->cfield_mgr->string_custom_field_value($cfDef,$build_id);
+      } 
+    }
+
+    $tcase_id = $item2render['testcase_id'];
+    $tcversion_id = $item2render['id'];
+    if( is_null($execVars) ) {
+      return;
+    }
+
+    $key2check = array('summary','preconditions');
+    $tlBeginTag = '[tlExecVar]';
+    $tlEndTag = '[/tlExecVar]';
+    $tlEndTagLen = strlen($tlEndTag);
+
+    // I've discovered that working with Web Rich Editor generates
+    // some additional not wanted entities, that disturb a lot
+    // when trying to use json_decode().
+    // Hope this set is enough.
+    // $replaceSet = array($tlEndTag, '</p>', '<p>','&nbsp;');
+    // $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
+
+    $rse = &$item2render;
+    foreach($key2check as $item_key) {
+      $start = strpos($rse[$item_key],$tlBeginTag);
+      $ghost = $rse[$item_key];
+
+      // There is at least one request to replace ?
+      if($start !== FALSE) {
+        // This way remove may be the <p> that webrich editor adds
+        $play = $rse[$item_key];
+        $xx = explode($tlBeginTag,$play);
+
+        // How many requests to replace ?
+        $xx2do = count($xx);
+        $ghost = '';
+        for($xdx=0; $xdx < $xx2do; $xdx++) {
+
+          // Hope was not a false request.
+          if( ($es=strpos($xx[$xdx],$tlEndTag)) !== FALSE) {
+            // Separate command string from other text
+            // Theorically can be just ONE, but it depends
+            // is user had not messed things.
+            $yy = explode($tlEndTag,$xx[$xdx]);
+            if( ($elc = count($yy)) > 0) {
+              $cfname = trim($yy[0]);
+              try {
+                // look for the custom field
+                foreach ($execVars as $cfn => $cfv ) {
+                  if( $cfn === $cfname ) {
+                    $ghost .= $execVars[$cfname];
+                  }
+                }
+
+                // reconstruct the contect with the other pieces
+                $lim = $elc-1;
+                for($cpx=1; $cpx <= $lim; $cpx++) {
+                  $ghost .= $yy[$cpx];
+                }
+              } catch (Exception $e) {
+                $ghost .= $rse[$item_key];
+              }
+            }
+          } else {
+            $ghost .= $xx[$xdx];
+          }
+        }
+      }
+
+      // reconstruct field contents
+      if($ghost != '') {
+        $rse[$item_key] = $ghost;
+      }
+    }
+  }
+
+
 }  // Class end

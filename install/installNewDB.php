@@ -60,12 +60,22 @@ $dbHost = $db_server;
 $dbPort = null;
 
 $nu = explode(':',$db_server);
-if(count($nu) == 2) {
-  $dbHost = $nu[1];
-  $dbPort = $nu[0];
-} else {
-  echo "No good, host name has to many ':'\n";
-  die();
+$hmp = count($nu);
+
+switch($hmp) {
+  case 2:
+    $dbHost = $nu[1];
+    $dbPort = $nu[0];
+  break;
+
+  case 1:
+  break;
+
+  default:
+    echo "No good, host name has to many ':'\n";
+    die();
+  break;
+
 }
 
 $validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);

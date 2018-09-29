@@ -558,8 +558,7 @@ function check_php_settings(&$errCounter)
  * @todo martin: Do we require "Checking DOM XML support"? It seems that we use internal library.
  *      if (function_exists('domxml_open_file'))
  */
-function checkPhpExtensions(&$errCounter)
-{
+function checkPhpExtensions(&$errCounter) {
  
   $cannot_use='cannot be used';
   $td_ok = "<td><span class='tab-success'>OK</span></td></tr>\n";
@@ -571,8 +570,7 @@ function checkPhpExtensions(&$errCounter)
 
   // Database extensions  
   $mysqlExt = 'mysql';
-  if( version_compare(phpversion(), "5.5.0", ">=") )
-  {
+  if( version_compare(phpversion(), "5.5.0", ">=") ) {
     $mysqlExt = 'mysqli';
   }
  
@@ -583,23 +581,34 @@ function checkPhpExtensions(&$errCounter)
                   'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
 
-  // ---------------------------------------------------------------------------------------------------------    
+  // ----------------------------------------------------------------------------    
   // special check for MSSQL - TICKET 4898
   $extid = 'mssql';
-  if(PHP_OS == 'WINNT')
-  {
-  // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
-  // From PHP MANUAL - reganding mssql_* functions
-  // These functions allow you to access MS SQL Server database.
-  // This extension is not available anymore on Windows with PHP 5.3 or later.
-  // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
-  // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
-  //
-  // PHP_VERSION_ID is available as of PHP 5.2.7
-  if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
-  {
-    $extid = 'sqlsrv';
-  }      
+  if(PHP_OS == 'WINNT') {
+    // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
+    // From PHP MANUAL - reganding mssql_* functions
+    // These functions allow you to access MS SQL Server database.
+    // This extension is not available anymore on Windows with PHP 5.3 or later.
+    // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+    // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
+    //
+    // Second Time: (2018) 
+    // When using PHP 7 or up
+    // Help from Bitnami
+    // PHP 7 does not support mssql anymore. 
+    // The PECL extension recommended is to use the "sqlsrv" module 
+    // but you will need to compile it on your own.
+    //
+    //    
+    // PHP_VERSION_ID is available as of PHP 5.2.7
+    if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300 ) {
+      $extid = 'sqlsrv';
+    } 
+
+    if ( version_compare(phpversion(), "7.0.0", ">=") ) {
+      $extid = 'sqlsrv';
+    } 
+
   }  
   $checks[] = array('extension' => $extid,
                     'msg' => array('feedback' => 'MSSQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );    

@@ -377,7 +377,7 @@ $conn->Connect($dsn);
 ## 1.10 - 19 May 2001
 
 - Added caching. CacheExecute() and CacheSelectLimit().
-- Added csv driver. See [http://php.weblogs.com/ADODB_csv](http://php.weblogs.com/adodb_csv).
+- Added csv driver.
 - Fixed SelectLimit(), SELECT TOP not working under certain circumstances.
 - Added better Frontbase support of MetaTypes() by Frank M. Kromann.
 

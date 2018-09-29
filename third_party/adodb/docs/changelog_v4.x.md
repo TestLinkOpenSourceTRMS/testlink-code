@@ -214,7 +214,7 @@ rs2html($rs2);
 - Removed `$off = $fieldOffset - 1` line in db2 driver, FetchField(). Tx Larry Menard.
 - Added support for PHP5 objects as Execute() bind parameters using `__toString` (eg. Simple-XML). Thx Carl-Christian Salvesen.
 - Rounding in tohtml.inc.php did not work properly. Fixed.
-- MetaIndexes in postgres fails when fields are deleted then added in again because the attnum has gaps in it. See http://sourceforge.net/tracker/index.php?func=detail&aid=1451245&group_id=42718&atid=433976. Fixed.
+- MetaIndexes in postgres fails when fields are deleted then added in again because the attnum has gaps in it. See https://sourceforge.net/p/adodb/bugs/45/. Fixed.
 - MetaForeignkeys in mysql and mysqli did not work when fetchMode==ADODB_FETCH_ASSOC used. Fixed.
 - Reference error in AutoExecute() fixed.
 - Added macaddr postgres type to MetaType. Maps to 'C'.

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version   v5.20.9  21-Dec-2016
+ * @version   v5.20.13  06-Aug-2018
  * @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
  * @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
  * Released under both BSD license and Lesser GPL library license.
@@ -9,7 +9,7 @@
   the BSD license will take precedence.
  */
 
-/* Documentation on usage is at http://php.weblogs.com/adodb_csv
+/* Documentation on usage is at http://adodb.org/dokuwiki/doku.php?id=v5:proxy:proxy_index
  *
  * Legal query string parameters:
  *

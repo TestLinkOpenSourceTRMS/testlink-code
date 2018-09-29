@@ -6,7 +6,7 @@ global $ADODB_INCLUDED_LIB;
 $ADODB_INCLUDED_LIB = 1;
 
 /*
-  @version   v5.20.9  21-Dec-2016
+  @version   v5.20.13  06-Aug-2018
   @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
   @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -416,11 +416,16 @@ function _adodb_getcount(&$zthis, $sql,$inputarr=false,$secs2cache=0)
 			} else
 				$rewritesql = "SELECT COUNT(*) FROM (".$rewritesql.")";
 
-		} else if (strncmp($zthis->databaseType,'postgres',8) == 0 || strncmp($zthis->databaseType,'mysql',5) == 0)  {
-			$rewritesql = "SELECT COUNT(*) FROM ($rewritesql) _ADODB_ALIAS_";
-		} else {
-			$rewritesql = "SELECT COUNT(*) FROM ($rewritesql)";
-		}
+        } else if (strncmp($zthis->databaseType,'postgres',8) == 0
+            || strncmp($zthis->databaseType,'mysql',5) == 0
+	    || strncmp($zthis->databaseType,'mssql',5) == 0
+            || strncmp($zthis->dsnType,'sqlsrv',5) == 0
+            || strncmp($zthis->dsnType,'mssql',5) == 0
+        ){
+		    $rewritesql = "SELECT COUNT(*) FROM ($rewritesql) _ADODB_ALIAS_";
+        } else {
+            $rewritesql = "SELECT COUNT(*) FROM ($rewritesql)";
+        }
 	} else {
 		// now replace SELECT ... FROM with SELECT COUNT(*) FROM
 		if ( strpos($sql, '_ADODB_COUNT') !== FALSE ) {
@@ -766,7 +771,7 @@ function _adodb_getupdatesql(&$zthis,&$rs, $arrFields,$forceUpdate=false,$magicq
 				if (preg_match('/\s(ORDER\s.*)/is', $whereClause[1], $discard));
 				else if (preg_match('/\s(LIMIT\s.*)/is', $whereClause[1], $discard));
 				else if (preg_match('/\s(FOR UPDATE.*)/is', $whereClause[1], $discard));
-				else preg_match('/\s.*(\) WHERE .*)/is', $whereClause[1], $discard); # see http://sourceforge.net/tracker/index.php?func=detail&aid=1379638&group_id=42718&atid=433976
+				else preg_match('/\s.*(\) WHERE .*)/is', $whereClause[1], $discard); # see https://sourceforge.net/p/adodb/bugs/37/
 			} else
 				$whereClause = array(false,false);
 

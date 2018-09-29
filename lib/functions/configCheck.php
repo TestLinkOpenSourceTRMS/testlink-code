@@ -104,14 +104,12 @@ function get_home_url($opt)
 
 
 /** check language acceptance by web client */
-function checkServerLanguageSettings($defaultLanguage)
-{
+function checkServerLanguageSettings($defaultLanguage) {
   $language = $defaultLanguage;
 
   // check for !== false because getenv() returns false on error
   $serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-  if(false !== $serverLanguage)
-  {
+  if(false !== $serverLanguage) {
     $localeSet = config_get('locales');
     if (array_key_exists($serverLanguage,$localeSet))
     {
@@ -567,24 +565,23 @@ function checkPhpExtensions(&$errCounter) {
   $msg_support='<tr><td>Checking %s </td>';
   $checks=array();
 
-
   // Database extensions  
+  $checks[]=array('extension' => 'pgsql',
+                  'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
+
   $mysqlExt = 'mysql';
   if( version_compare(phpversion(), "5.5.0", ">=") ) {
     $mysqlExt = 'mysqli';
-  }
- 
+  } 
   $checks[]=array('extension' => $mysqlExt,
                   'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
  
-  $checks[]=array('extension' => 'pgsql',
-                  'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
- 
-
   // ----------------------------------------------------------------------------    
-  // special check for MSSQL - TICKET 4898
+  // special check for MSSQL
+  $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
+
   $extid = 'mssql';
-  if(PHP_OS == 'WINNT') {
+  if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
     // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
     // From PHP MANUAL - reganding mssql_* functions
     // These functions allow you to access MS SQL Server database.
@@ -605,7 +602,7 @@ function checkPhpExtensions(&$errCounter) {
       $extid = 'sqlsrv';
     } 
 
-    if ( version_compare(phpversion(), "7.0.0", ">=") ) {
+    if ( $isPHPGTE7 ) {
       $extid = 'sqlsrv';
     } 
 
@@ -659,8 +656,7 @@ function checkPhpExtensions(&$errCounter) {
  * @param integer &$errCounter reference to error counter
  * @return string html row with result 
  */
-function check_session(&$errCounter)
-{
+function check_session(&$errCounter) {
   $out = "<tr><td>Checking if sessions are properly configured</td>";
 
   if( !isset($_SESSION) )
@@ -1034,14 +1030,12 @@ function reportCheckingDatabase(&$errCounter, $type = null)
  * @param integer &$errCounter reference to error counter
  * @author Martin Havlat
  **/
-function reportCheckingWeb(&$errCounter)
-{
+function reportCheckingWeb(&$errCounter) {
   echo '<h2>Web and PHP configuration</h2><table class="common" style="width: 100%;">';
   echo check_timeout($errCounter);
   echo check_php_settings($errCounter);
   echo checkPhpExtensions($errCounter);
   echo '</table>';
-
 }
 
 

@@ -54,9 +54,23 @@ $sql_update_schema = array();
 $sql_update_data   = array();
 
 // Wants to sanitize some user inputs
-$validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
+// Because we use host:port, need to remove port before check
 $db_server = trim($_SESSION['databasehost']);
-if (!$validator->isValid($db_server)) {
+$dbHost = $db_server;
+$dbPort = null;
+
+$nu = explode(':',$db_server);
+if(count($nu) == 2) {
+  $dbHost = $nu[1];
+  $dbPort = $nu[0];
+} else {
+  echo "No good, host name has to many ':'\n";
+  die();
+}
+
+$validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
+
+if (!$validator->isValid($dbHost)) {
   // hostname is invalid; print the reasons
   foreach ($validator->getMessages() as $message) {
     echo "$message\n";

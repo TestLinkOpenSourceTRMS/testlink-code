@@ -138,18 +138,26 @@ $db = 0;
  *         aa['status'] = 1 -> OK , 0 -> KO
  *         aa['dbms_msg''] = 'ok', or $db->error_msg().
  */
-function doDBConnect(&$db,$onErrorExit=false)
-{
+function doDBConnect(&$db,$onErrorExit=false) {
   global $g_tlLogger;
   
   $charSet = config_get('charset');
   $result = array('status' => 1, 'dbms_msg' => 'ok');
 
-  $db = new database(DB_TYPE);
+  switch(DB_TYPE) {
+    case 'mssql':
+      $dbDriverName = 'mssqlnative';    
+    break;
+
+    default:
+      $dbDriverName = DB_TYPE;
+    break;  
+  }
+
+  $db = new database($dbDriverName);
   $result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-  if (!$result['status'])
-  {
+  if (!$result['status']) {
     echo $result['dbms_msg'];
     $result['status'] = 0;
     $search = array('<b>','</b>','<br>');
@@ -159,8 +167,7 @@ function doDBConnect(&$db,$onErrorExit=false)
     
     $logmsg  = $logtext . ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
     tLog(str_replace($search,$replace,$logmsg), 'ERROR');
-    if( $onErrorExit )
-    {
+    if( $onErrorExit ) {
       $smarty = new TLSmarty();
       $smarty->assign('title', lang_get('fatal_page_title'));
       $smarty->assign('content', $logtext);
@@ -169,10 +176,8 @@ function doDBConnect(&$db,$onErrorExit=false)
       exit();
     }
   }
-  else
-  {
-    if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
-    {
+  else {
+    if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8')) {
       $db->exec_query("SET CHARACTER SET utf8");
       $db->exec_query("SET collation_connection = 'utf8_general_ci'");
     }
@@ -193,10 +198,8 @@ function doDBConnect(&$db,$onErrorExit=false)
  * 
  * @param array $tplan_info result of DB query
  */
-function setSessionTestPlan($tplan_info)
-{
-  if ($tplan_info)
-  {
+function setSessionTestPlan($tplan_info) {
+  if ($tplan_info) {
     $_SESSION['testplanID'] = $tplan_info['id'];
     $_SESSION['testplanName'] = $tplan_info['name'];
 
@@ -211,8 +214,7 @@ function setSessionTestPlan($tplan_info)
 
     tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
   }
-  else
-  {
+  else {
     unset($_SESSION['testplanID']);
     unset($_SESSION['testplanName']);
   }

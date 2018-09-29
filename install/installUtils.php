@@ -226,22 +226,20 @@ if @ in login ->  get the hostname using splitting, and use it
                 
 */
 function create_user_for_db($db_type,$db_name,$db_server, $db_admin_name, $db_admin_pass,
-                            $login, $passwd)
-{
+                            $login, $passwd) {
 $db = new database($db_type);
 
 $user_host = explode('@',$login);
 $the_host = 'localhost';
 
-if ( count($user_host) > 1 )
-{
+if ( count($user_host) > 1 ) {
   $login    = $user_host[0];    
   $the_host = trim($user_host[1]);  
 }
 
 $try_create_user=0;
-switch($db_type)
-{
+switch($db_type) {
+
     case 'mssql':
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
     $msg="For MSSQL, no attempt is made to check for user existence";

@@ -8,7 +8,7 @@
  * @filesource  installNewDB.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2008,2017 TestLink community
+ * @copyright   2008,2018 TestLink community
  * @copyright   inspired by Etomite Content Management System
  *              2003, 2004 Alexander Andrew Butter 
  *
@@ -24,6 +24,8 @@ require_once("../lib/functions/metastring.class.php");
 
 require_once("../third_party/dBug/dBug.php");
 
+require_once('Zend/Validate/Hostname.php');
+
 // Better to avoid use of logger during installation
 // because we do not have control on what kind of logger (db, file) to create.
 // This produce the situation:dog eats dog, i.e.:
@@ -31,8 +33,7 @@ require_once("../third_party/dBug/dBug.php");
 // but this table do not still yet !!.
 require_once("../lib/functions/logger.class.php");
 
-if( !isset($_SESSION) )
-{ 
+if( !isset($_SESSION) ) { 
   session_start();
 }
 
@@ -52,16 +53,23 @@ $migration_process = '';
 $sql_update_schema = array();
 $sql_update_data   = array();
 
-// get db info from session
+// Wants to sanitize some user inputs
+$validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
+$db_server = trim($_SESSION['databasehost']);
+if (!$validator->isValid($db_server)) {
+  // hostname is invalid; print the reasons
+  foreach ($validator->getMessages() as $message) {
+    echo "$message\n";
+  }
+  die();
+}
+
 $san = '/[^A-Za-z0-9\-]/';
 $db_name = trim($_SESSION['databasename']);
 $db_name = preg_replace($san,'',$db_name);
 
 $db_table_prefix = trim($_SESSION['tableprefix']);
 $db_table_prefix = preg_replace($san,'',$db_table_prefix);
-
-$db_server = trim($_SESSION['databasehost']);
-$db_server = preg_replace($san,'',$db_server);
 
 $db_admin_pass = trim($_SESSION['databaseloginpassword']);
 $db_admin_pass = preg_replace($san,'',$db_admin_pass);
@@ -71,7 +79,6 @@ $db_type = preg_replace($san,'',$db_type);
 
 $tl_db_passwd = trim($_SESSION['tl_loginpassword']);
 $tl_db_passwd = preg_replace($san,'',$tl_db_passwd);
-
 
 // will limit length to avoi some kind of injection
 // Choice: 32 

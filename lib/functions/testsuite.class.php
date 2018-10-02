@@ -1039,19 +1039,16 @@ class testsuite extends tlObjectWithAttachments
            " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
            " WHERE keyword_id = keywords.id ";
 
-    if (is_array($id))
-    {
+    if (is_array($id)) {
       $sql .= " AND fk_id IN (".implode(",",$id).") ";
-    }
-    else
-    {
+    } else {
       $sql .= " AND fk_id = {$id} ";
     }
       
     $sql .= $order_by_clause;
   
     $map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
-    return($map_keywords);
+    return $map_keywords;
   } 
   
   
@@ -1059,8 +1056,7 @@ class testsuite extends tlObjectWithAttachments
    * 
    *
    */
-  function addKeyword($id,$kw_id)
-  {
+  function addKeyword($id,$kw_id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $status = 1;
     $kw = $this->getKeywords($id,$kw_id);
@@ -1835,6 +1831,64 @@ class testsuite extends tlObjectWithAttachments
     return $items; 
   }  
 
+  /**
+   *
+   */
+  function getTSuitesFilteredByKWSet( $id, $opt = null, $filters = null ) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $options = array('output' => 'std');
+    $options = array_merge($options, (array)$opt);
+    
+    $fil = array('keywordsIn' => null, 'keywordsLikeStart' => null);
+    $fil = array_merge($fil, (array)$filters);
+
+    $fields = 'fk_id AS tsuite_id, NHTS.name AS tsuite_name,';
+
+    if( null != $fil['keywordsLikeStart'] ) {
+      $target = trim($fil['keywordsLikeStart']);
+      $fields .= " CONCAT(REPLACE(KW.keyword,'{$target}',''),':', NHTS.name) AS dyn_string ";
+    } else {
+      $fields .= " CONCAT(KW.keyword,':', NHTS.name) AS dyn_string ";      
+    }
+
+    switch($options['output']) {
+      case 'kwname':
+        $fields .= ',KW.keyword';
+      break;
+
+      default:
+        $fields .= ",keyword_id,KW.keyword";
+      break;
+    }
+
+    $sql = "/* $debugMsg */ 
+           SELECT $fields
+           FROM {$this->tables['object_keywords']}
+           JOIN {$this->tables['keywords']} KW  
+           ON keyword_id = KW.id 
+           JOIN {$this->tables['nodes_hierarchy']} NHTS  
+           ON NHTS.id = fk_id ";
+
+    $idSet = (array)$id;       
+    $sql .= " WHERE fk_id IN (" . implode(",",$idSet) . ") ";
+
+    if( null != $fil['keywordsIn'] ) {
+      $kwFilter = "'" . implode("','", $fil['keywordsIn']) . "'";  
+      $sql .= " AND KW.keyword IN (" . $kwFilter . ") ";
+    }
+  
+    if( null != $fil['keywordsLikeStart'] ) {
+      $target = $fil['keywordsLikeStart'];
+      $sql .= " AND KW.keyword LIKE '{$target}%' ";
+    }
+
+
+    $items = 
+      $this->db->fetchRowsIntoMap($sql,'tsuite_id',database::CUMULATIVE);
+
+    return $items;
+  } 
 
 
 

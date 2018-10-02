@@ -825,8 +825,7 @@ class testcase extends tlObjectWithAttachments
   Every array element contains an assoc array with testcase info
 
   */
-  function get_all()
-  {
+  function get_all() {
     $sql = " SELECT nodes_hierarchy.name, nodes_hierarchy.id
              FROM  {$this->tables['nodes_hierarchy']} nodes_hierarchy
              WHERE nodes_hierarchy.node_type_id={$my_node_type}";
@@ -881,6 +880,7 @@ class testcase extends tlObjectWithAttachments
 
       $gopt = array('renderGhost' => true, 'withGhostString' => true,
                     'renderImageInline' => true, 'renderVariables' => true,
+                    'renderSpecialKW' => true,
                     'caller' => 'show()');
 
       $cfx = 0;
@@ -1524,19 +1524,15 @@ class testcase extends tlObjectWithAttachments
     }
 
     // Multiple Test Case Steps
-    if( !is_null($recordset) && ($my['options']['output'] == 'full') )
-    {
+    if( !is_null($recordset) && ($my['options']['output'] == 'full') ) {
       $version2loop = array_keys($recordset);
-      foreach( $version2loop as $accessKey)
-      {
+      foreach( $version2loop as $accessKey) {
         // no options => will renderd Ghost Steps
         $step_set = $this->get_steps($accessKey);
         $tplan2loop = array_keys($recordset[$accessKey]);
-        foreach( $tplan2loop as $tplanKey)
-        {
+        foreach( $tplan2loop as $tplanKey) {
           $elem2loop = array_keys($recordset[$accessKey][$tplanKey]);
-          foreach( $elem2loop as $elemKey)
-          {
+          foreach( $elem2loop as $elemKey) {
             $recordset[$accessKey][$tplanKey][$elemKey]['steps'] = $step_set;
           }
         }
@@ -2251,9 +2247,13 @@ class testcase extends tlObjectWithAttachments
     $my['filters'] = array('active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => 1);
     $my['filters'] = array_merge($my['filters'], (array)$filters);
 
-    $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 'getPrefix' => false,
-                           'order_by' => null, 'renderGhost' => false, 'withGhostString' => false,
-                           'renderImageInline' => false, 'renderVariables' => false);
+    $my['options'] = array('output' => 'full', 'access_key' => 'tcversion_id', 
+                           'getPrefix' => false,
+                           'order_by' => null, 'renderGhost' => false, 
+                           'withGhostString' => false,
+                           'renderImageInline' => false, 
+                           'renderVariables' => false,
+                           'renderSpecialKW' => false);
 
     $my['options'] = array_merge($my['options'], (array)$options);
 
@@ -2350,12 +2350,9 @@ class testcase extends tlObjectWithAttachments
                " JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id " .
                " {$where_clause} {$active_filter} ";
 
-        if(is_null($my['options']['order_by']))
-        {
+        if(is_null($my['options']['order_by'])) {
           $sql .= " ORDER BY TCV.version DESC ";
-        }
-        else
-        {
+        } else {
           $sql .= $my['options']['order_by'];
         }
       break;
@@ -2366,6 +2363,7 @@ class testcase extends tlObjectWithAttachments
     $render['ghostSteps'] = false;
     $render['imageInline'] = $my['options']['renderImageInline'];
     $render['variables'] = $my['options']['renderVariables'];
+    $render['specialKW'] = $my['options']['renderSpecialKW'];
 
     switch($my['options']['output']) {
       case 'full':
@@ -2404,8 +2402,9 @@ class testcase extends tlObjectWithAttachments
       $recordset = $this->db->get_recordset($sql);
     }
 
+    $canProcess = !is_null($recordset);
 
-    if( !is_null($recordset) && $render['variables'] ) {
+    if( $canProcess && $render['variables'] ) {
       $key2loop = array_keys($recordset);
       foreach( $key2loop as $accessKey) {
         $this->renderVariables($recordset[$accessKey]);
@@ -2413,9 +2412,17 @@ class testcase extends tlObjectWithAttachments
       reset($recordset);
     }
 
+    if( $canProcess && $render['specialKW'] ) {
+      $key2loop = array_keys($recordset);
+      foreach( $key2loop as $accessKey) {
+        $this->renderSpecialTSuiteKeywords($recordset[$accessKey]);
+      }
+      reset($recordset);
+    }
+
 
     // ghost on preconditions and summary
-    if( !is_null($recordset) && $my['options']['renderGhost'] ) {
+    if( $canProcess && $my['options']['renderGhost'] ) {
       $key2loop = array_keys($recordset);
       foreach( $key2loop as $accessKey) {
         $this->renderGhost($recordset[$accessKey]);
@@ -2423,7 +2430,7 @@ class testcase extends tlObjectWithAttachments
       reset($recordset);
     }
 
-    if( !is_null($recordset) && $render['imageInline']) {
+    if( $canProcess && $render['imageInline']) {
       $key2loop = array_keys($recordset);
       foreach( $key2loop as $accessKey) {
         $pVersion = $recordset[$accessKey]['id'];
@@ -2434,22 +2441,19 @@ class testcase extends tlObjectWithAttachments
 
 
     // Multiple Test Case Steps
-    if( !is_null($recordset) && $my['options']['output'] == 'full') {
+    if( $canProcess && $my['options']['output'] == 'full') {
       $gsOpt['renderGhostSteps'] = $my['options']['renderGhost'];
 
       $key2loop = array_keys($recordset);
-      foreach( $key2loop as $accessKey)
-      {
+      foreach( $key2loop as $accessKey) {
         $step_set = $this->get_steps($recordset[$accessKey]['id'],0,$gsOpt);
-        if($my['options']['withGhostString'])
-        {
+        if($my['options']['withGhostString']) {
           // need to get test case prefix test project info
           $pfx = $this->getPrefix($id);
           $pfx = $pfx[0] . $this->cfg->testcase->glue_character . $recordset[$accessKey]['tc_external_id'];
 
           $k2l = array_keys((array)$step_set);
-          foreach($k2l as $kx)
-          {
+          foreach($k2l as $kx) {
             $step_set[$kx]['ghost_action'] = "[ghost]\"Step\":{$step_set[$kx]['step_number']}," .
                                              '"TestCase"' .':"' . $pfx . '",' .
                                              "\"Version\":{$recordset[$accessKey]['version']}[/ghost]";
@@ -2460,12 +2464,10 @@ class testcase extends tlObjectWithAttachments
       }
     }
 
-    if( !is_null($recordset) && $my['options']['getPrefix'] )
-    {
+    if( $canProcess && $my['options']['getPrefix'] ) {
       $pfx = $this->getPrefix($id);
       $key2loop = array_keys($recordset);
-      foreach( $key2loop as $accessKey)
-      {
+      foreach( $key2loop as $accessKey) {
         $recordset[$accessKey]['fullExternalID'] =  $pfx[0] . $this->cfg->testcase->glue_character .
                                                     $recordset[$accessKey]['tc_external_id'];
       }
@@ -5033,29 +5035,50 @@ class testcase extends tlObjectWithAttachments
    *
    *
    */
-  function getPathLayered($tcaseSet)
-  {
+  function getPathLayered($tcaseSet, $opt=null) {
+
+    static $tsuiteMgr;
+    if( !$tsuiteMgr ) {
+      $tsuiteMgr = new testsuite($this->db);
+    }
+
     $xtree=null;
+    
+    $options = array('getTSuiteKeywords' => false);
+    $options = array_merge($options, (array)$opt);
+   
     $idSet = (array)$tcaseSet;
     foreach($idSet as $item) {
       $path_info = $this->tree_manager->get_path($item);
       $testcase = end($path_info);
 
       // This check is useful when you have several test cases with same parent test suite
-      if( !isset($xtree[$testcase['parent_id']]['value']) )
-      {
+      if( !isset($xtree[$testcase['parent_id']]['value']) ) {
         $level=0;
-        foreach($path_info as $elem)
-        {
+   
+        foreach($path_info as $elem) {
           $level++;
           $prefix = isset($xtree[$elem['parent_id']]['value']) ? ($xtree[$elem['parent_id']]['value'] . '/') : '';
-          if( $elem['node_table'] == 'testsuites' )
-          {
+          if( $elem['node_table'] == 'testsuites' ) {
             $xtree[$elem['id']]['value'] = $prefix . $elem['name'];
             $xtree[$elem['id']]['level']=$level;
+            $xtree[$elem['id']]['data_management'] = null;
           }
         }
       }
+
+      if( null != $xtree && $options['getTSuiteKeywords'] ) {
+        $tsSet = array_keys($xtree);
+        $opkw = array('output' => 'kwname');
+        $fkw = array('keywordsLikeStart' => '@#');
+        $iset = $tsuiteMgr->getTSuitesFilteredByKWSet($tsSet,$opkw,$fkw);
+
+        foreach( $iset as $tsuite_id => $elem ) {
+          foreach( $elem as $e ) {
+            $xtree[$tsuite_id]['data_management'][$e['keyword']] = $e['dyn_string'];
+          }  
+        }
+      } 
     }
     return $xtree;
   } // getPathLayered($tcaseSet)
@@ -6014,8 +6037,7 @@ class testcase extends tlObjectWithAttachments
    *
    * <p> </p> added by web rich editor create some layout issues
    */
-  function renderGhostSteps(&$steps2render)
-  {
+  function renderGhostSteps(&$steps2render) {
     $warningRenderException = lang_get('unable_to_render_ghost');
     $loop2do = count($steps2render);
 
@@ -6841,8 +6863,7 @@ class testcase extends tlObjectWithAttachments
   /**
    * render Ghost Test Case
    */
-  function renderGhost(&$item2render)
-  {
+  function renderGhost(&$item2render) {
     $versionTag = '[version:%s]';
     $hint = "(link%s";
 
@@ -7646,8 +7667,8 @@ class testcase extends tlObjectWithAttachments
    * render Image Attachments INLINE
    *
    */
-  private function renderImageAttachments($id,&$item2render,$key2check=array('summary','preconditions'),$basehref=null)
-  {
+  private function renderImageAttachments($id,&$item2render,$key2check=array('summary','preconditions'),$basehref=null) {
+
     static $attSet;
     static $beginTag;
     static $endTag;
@@ -8497,5 +8518,57 @@ class testcase extends tlObjectWithAttachments
     }
   }
 
+ /**
+  * render Special Test Suite Keywords
+  *
+  * <p> </p> added by web rich editor create some layout issues
+  */
+  function renderSpecialTSuiteKeywords(&$item2render) {
+
+    static $skwSet;
+    static $key2check;
+
+    $tcase_id = $item2render['testcase_id'];
+    $tcversion_id = $item2render['id'];
+
+    if( !$key2check ) {
+      $key2check = array('summary','preconditions');
+    }
+
+    if( !$skwSet[$tcase_id] ) {
+      $optSKW = array('getTSuiteKeywords' => true);
+      $skwSet[$tcase_id] = $this->getPathLayered($tcase_id,$optSKW);      
+    }
+
+    if( is_null($skwSet) ) {
+      return;
+    }
+
+    $rse = &$item2render;
+
+    // From PHP Documentation
+    // $phrase  = "You should eat fruits, vegetables, and fiber every day.";
+    // $healthy = array("fruits", "vegetables", "fiber");
+    // $yummy   = array("pizza", "beer", "ice cream");
+    // 
+    // $newphrase = str_replace($healthy, $yummy, $phrase);
+    // Provides: You should eat pizza, beer, and ice cream every day
+    //
+    $searchSet = null;
+    $replaceSet = null;
+    foreach($skwSet as $xdx => $eSet ) {
+      foreach($eSet as $dm) {
+        foreach($dm['data_management'] as $search => $replace ) {
+          $searchSet[] = $search;
+          $replaceSet[] = $replace;
+        }
+      }
+    }
+
+    foreach($key2check as $item_key) {       
+      $rse[$item_key] = str_replace($searchSet,$replaceSet,$rse[$item_key]);
+    }
+
+  } 
 
 }  // Class end

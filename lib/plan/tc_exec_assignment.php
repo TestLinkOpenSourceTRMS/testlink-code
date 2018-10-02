@@ -153,11 +153,10 @@ switch($args->doAction)
 
 
 
-switch($args->level)
-{
+switch($args->level) {
   case 'testcase':
     // build the data need to call gen_spec_view
-    $xx=$tcase_mgr->getPathLayered(array($args->id));
+    $xx = $tcase_mgr->getPathLayered(array($args->id));
     $yy = array_keys($xx);  // done to silence warning on end()
     $tsuite_data['id'] = end($yy);
     $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 

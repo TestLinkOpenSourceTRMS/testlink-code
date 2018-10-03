@@ -1928,12 +1928,17 @@ class testcase extends tlObjectWithAttachments
   */
   function create_new_version($id,$user_id,$source_version_id=null, $options=null) {
 
-    $freezeLinkedRequirements = 
-      config_get('reqTCLinks')->freeBothEndsOnNewTCVersion;
+    $reqTCLinksCfg = config_get('reqTCLinks');    
+    $freezeLinkOnNewTCVersion = $reqTCLinksCfg->freezeLinkOnNewTCVersion;
+    $freezeLinkedRequirements = $freezeLinkOnNewTCVersion && 
+      $reqTCLinksCfg->freezeBothEndsOnNewTCVersion;
+
 
     $now = $this->db->db_now();
     $opt = array('is_open' => 1, 
-                 'freezeLinkedRequirements' => $freezeLinkedRequirements);
+                 'freezeLinkedRequirements' => $freezeLinkedRequirements,
+                 'freezeLinkOnNewTCVersion' => $freezeLinkOnNewTCVersion);
+
     $opt = array_merge($opt,(array)$options);
 
     $tcversion_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
@@ -1976,7 +1981,11 @@ class testcase extends tlObjectWithAttachments
     }
 
     $signature = array('user_id' => $user_id, 'when' => $now);
-    $this->updateCoverage($source['version_id'],$dest['version_id'],$signature);
+    $link = array('source' => $source['version_id'],
+                  'dest' => $dest['version_id']);
+    $optUC = array('freezePrevious' => $opt['freezeLinkOnNewTCVersion']);
+    $this->updateCoverage($link,$signature,$optUC);
+
 
     $ret['id'] = $tcversion_id;
     $ret['version'] = $last_version_info['version']+1;
@@ -5071,11 +5080,13 @@ class testcase extends tlObjectWithAttachments
         $tsSet = array_keys($xtree);
         $opkw = array('output' => 'kwname');
         $fkw = array('keywordsLikeStart' => '@#');
-        $iset = $tsuiteMgr->getTSuitesFilteredByKWSet($tsSet,$opkw,$fkw);
+        $iset = (array) $tsuiteMgr->getTSuitesFilteredByKWSet($tsSet,$opkw,$fkw);
 
         foreach( $iset as $tsuite_id => $elem ) {
           foreach( $elem as $e ) {
-            $xtree[$tsuite_id]['data_management'][$e['keyword']] = $e['dyn_string'];
+            if( null != $e ) {
+              $xtree[$tsuite_id]['data_management'][$e['keyword']] = $e['dyn_string'];              
+            }
           }  
         }
       } 
@@ -8238,22 +8249,26 @@ class testcase extends tlObjectWithAttachments
  /**
   *
   */
-  function updateCoverage($from_version_id,$to_version_id,$whoWhen) {
+  function updateCoverage($link,$whoWhen,$opt=null) {
 
     // Set coverage for previous version to FROZEN & INACTIVE
     // Create coverage for NEW Version
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $safeF = intval($from_version_id);
-    $safeT = intval($to_version_id);
+    $options = array('freezePrevious' => true);
+    $options = array_merge($options,(array)$opt);
+    $safeF = intval($link['source']);
+    $safeT = intval($link['dest']);
 
-    // Set coverage for previous version to FROZEN & INACTIVE
-    $sql = " /* $debugMsg */ " .
-           " UPDATE {$this->tables['req_coverage']} " .
-           " SET link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_TCVERSION . "," .
-           "     is_active=0 " .
-           " WHERE tcversion_id=" . $safeF; 
-    $this->db->exec_query($sql);
+    // Set coverage for previous version to FROZEN & INACTIVE ?
+    if( $options['freezePrevious'] ) {
+      $sql = " /* $debugMsg */ " .
+             " UPDATE {$this->tables['req_coverage']} " .
+             " SET link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_TCVERSION . "," .
+             "     is_active=0 " .
+             " WHERE tcversion_id=" . $safeF; 
+      $this->db->exec_query($sql);      
+    }
 
     // Create coverage for NEW Version
     $sql = "/* $debugMsg */ " .
@@ -8558,9 +8573,11 @@ class testcase extends tlObjectWithAttachments
     $replaceSet = null;
     foreach($skwSet as $xdx => $eSet ) {
       foreach($eSet as $dm) {
-        foreach($dm['data_management'] as $search => $replace ) {
-          $searchSet[] = $search;
-          $replaceSet[] = $replace;
+        if( null != $dm['data_management'] ) {
+          foreach($dm['data_management'] as $search => $replace ) {
+            $searchSet[] = $search;
+            $replaceSet[] = $replace;
+          }
         }
       }
     }

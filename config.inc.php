@@ -1212,8 +1212,12 @@ $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec = TRUE;
 
 $tlCfg->testcase_cfg->freezeReqVersionAfterExec = TRUE;
 
-$tlCfg->reqTCLinks->freeBothEndsOnNewTCVersion = TRUE;
-$tlCfg->reqTCLinks->freeBothEndsOnNewREQVersion = TRUE;
+$tlCfg->reqTCLinks->freezeeLinkOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freezeeLinkOnNewREQVersion = TRUE;
+
+$tlCfg->reqTCLinks->freezeeBothEndsOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freezeeBothEndsOnNewREQVersion = TRUE;
+
 
 /** text template for a new items:
     Test Case: summary, steps, expected_results, preconditions

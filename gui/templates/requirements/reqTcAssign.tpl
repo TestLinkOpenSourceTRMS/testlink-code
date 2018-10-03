@@ -122,10 +122,13 @@ function refreshAndClose(tcase_id,callback) {
     	{section name=row loop=$gui->assignedReq}
 
       {$cbDisabled = 0}
-      {if $gui->assignedReq[row].is_open == 0 || 
-          $gui->assignedReq[row].can_be_removed == 0 }
-        {$cbDisabled = 1}
-      {/if}    
+      {* Has become complex & weird!! *}
+      {if $tlCfg->reqTCLink->freezeeLinkOnNewREQVersion != FALSE }
+        {if $gui->assignedReq[row].reqver_is_open == 0 || 
+            $gui->assignedReq[row].can_be_removed == 0 }
+          {$cbDisabled = 1}
+        {/if}
+      {/if}      
     	<tr>
     		<td>
           {if $cbDisabled == 1}
@@ -187,7 +190,7 @@ function refreshAndClose(tcase_id,callback) {
       	{section name=row2 loop=$gui->unassignedReq}
           {$freeReq = $gui->unassignedReq[row2]}
       	<tr>
-      		<td><input type="checkbox" {if $freeReq.is_open == 0} disabled="disabled" {/if}
+      		<td><input type="checkbox" {if $freeReq.reqver_is_open == 0} disabled="disabled" {/if}
       		           id="free_req{$freeReq.id}" value="{$freeReq.id}"
       		           name="req_id[{$freeReq.id}]" /></td>
 

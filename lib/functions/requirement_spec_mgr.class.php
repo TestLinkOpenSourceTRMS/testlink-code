@@ -2608,9 +2608,10 @@ function get_requirement_child_by_id_req($id){
            " SELECT RCOV.id as link_id, NH_REQ.id,RCOV.req_version_id," .
            " REQVER.scope, " .
            " CONCAT(NH_REQ.name,' [{$lblVersion}',REQVER.version ,'] ' ) AS title," .
-           " REQ.req_doc_id, REQVER.version," .
-           " TLUSER.login AS coverage_author," .
-           " RCOV.creation_ts AS coverage_ts,REQVER.is_open," .
+           " REQ.req_doc_id, REQVER.version,TLUSER.login AS coverage_author,
+             RCOV.creation_ts AS coverage_ts,
+             REQVER.is_open AS reqver_is_open,
+             TCVER.is_open AS tcversion_is_open," .
            " CASE " .
            "      WHEN RCOV.link_status = " . LINK_TC_REQ_OPEN .
            "           THEN 1 " .
@@ -2624,6 +2625,9 @@ function get_requirement_child_by_id_req($id){
 
            " JOIN {$this->tables['req_versions']} REQVER " .
            " ON REQVER.id = RCOV.req_version_id " .
+
+           " JOIN {$this->tables['tcversions']} TCVER " .
+           " ON TCVER.id = RCOV.tcversion_id " .
            
            " JOIN {$this->tables['requirements']} REQ " .
            " ON REQ.id = NH_REQ.id " .

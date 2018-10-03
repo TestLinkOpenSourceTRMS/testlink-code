@@ -16,8 +16,7 @@
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
 require_once( dirname(__FILE__) . '/attachments.inc.php');
-class requirement_mgr extends tlObjectWithAttachments
-{
+class requirement_mgr extends tlObjectWithAttachments {
   var $db;
   var $cfield_mgr;
   var $my_node_type;
@@ -25,7 +24,6 @@ class requirement_mgr extends tlObjectWithAttachments
   var $node_types_descr_id;
   var $node_types_id_descr;
   var $attachmentTableName;
-
 
   // 20100220 - franciscom - I'm will work only on XML
   // then remove other formats till other dev do refactor
@@ -41,6 +39,7 @@ class requirement_mgr extends tlObjectWithAttachments
   var $internal_links;
   var $relationsCfg;
   var $notifyOn;
+  var $reqTCLinkCfg;
 
   
   
@@ -60,14 +59,12 @@ class requirement_mgr extends tlObjectWithAttachments
     returns: instance of requirement_mgr
 
   */
-  function __construct(&$db)
-  {
+  function __construct(&$db) {
+
     $this->db = &$db;
     $this->cfield_mgr=new cfield_mgr($this->db);
     $this->tree_mgr =  new tree($this->db);
     
-    // 2018
-    // $this->attachmentTableName = 'requirements';
     $this->attachmentTableName = 'req_versions';
     
     tlObjectWithAttachments::__construct($this->db,$this->attachmentTableName);
@@ -79,6 +76,7 @@ class requirement_mgr extends tlObjectWithAttachments
 
     $this->fieldSize = config_get('field_size');
     $this->reqCfg = config_get('req_cfg');
+    $this->reqTCLinkCfg = config_get('reqTCLinks');
 
     $this->relationsCfg = new stdClass();
     $this->relationsCfg->interProjectLinking = $this->reqCfg->relations->interproject_linking;
@@ -2329,7 +2327,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   
     $my['opt'] = array('reqVersionID' => null,'log_msg' => null, 
-                       'notify' => false, 'freezeSourceVersion' => true);
+                       'notify' => false, 
+                       'freezeSourceVersion' => true);
 
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
@@ -2471,14 +2470,21 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  
     $this->copy_attachments($from_version_id,$to_version_id);
 
-    $freezeLinkedTCases = 
-      config_get('reqTCLinks')->freeBothEndsOnNewREQVersion;
+
+    $reqTCLinksCfg = config_get('reqTCLinks');
+    $freezeLinkOnNewReqVersion = $reqTCLinksCfg->freezeLinkOnNewReqVersion;
+    $freezeLinkedTCases = $freezeLinkOnNewReqVersion &
+      $reqTCLinksCfg->freezeBothEndsOnNewREQVersion;
+
     if( $freezeLinkedTCases ) {
       $this->closeOpenTCVersionOnOpenLinks( $from_version_id );
     }
 
     $signature = array('user_id' => $user_id, 'when' => $now);
-    $this->updateTCVLinkStatus($from_version_id,LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION);
+
+    if( $freezeLinkOnNewReqVersion ) { 
+      $this->updateTCVLinkStatus($from_version_id,LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION);      
+    }
 
   }
 
@@ -4485,22 +4491,27 @@ function getCoverageCounter($id) {
  /**
   *
   */
-  function updateCoverage($from_version_id,$to_version_id,$whoWhen) {
+  function updateCoverage($link,$whoWhen,$opt=null) {
 
-    // Set coverage for previous version to FROZEN & INACTIVE
+    // Set coverage for previous version to FROZEN & INACTIVE ?
     // Create coverage for NEW Version
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $safeF = intval($from_version_id);
-    $safeT = intval($to_version_id);
+    $options = array('freezePrevious' => true);
+    $options = array_merge($options,(array)$opt);
 
-    // Set coverage for previous version to FROZEN & INACTIVE
-    $sql = " /* $debugMsg */ " .
-           " UPDATE {$this->tables['req_coverage']} " .
-           " SET link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION . "," .
-           "     is_active=0 " .
-           " WHERE req_version_id=" . $safeF; 
-    $this->db->exec_query($sql);
+    $safeF = intval($link['source']);
+    $safeT = intval($link['dest']);
+
+    // Set coverage for previous version to FROZEN & INACTIVE ?
+    if( $options['freezePrevious'] ) {
+      $sql = " /* $debugMsg */ " .
+             " UPDATE {$this->tables['req_coverage']} " .
+             " SET link_status = " . LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION . "," .
+             "     is_active=0 " .
+             " WHERE req_version_id=" . $safeF; 
+      $this->db->exec_query($sql);
+    }
 
     // Create coverage for NEW Version
     $sql = "/* $debugMsg */ " .
@@ -4524,13 +4535,10 @@ function getCoverageCounter($id) {
   */
   function updateTCVLinkStatus($from_version_id,$reason) {
 
-    // Set coverage for previous version to FROZEN & INACTIVE
-    // Create coverage for NEW Version
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $safeF = intval($from_version_id);
 
-    // Set coverage for previous version to FROZEN & INACTIVE
     $sql = " /* $debugMsg */ " .
            " UPDATE {$this->tables['req_coverage']} " .
            " SET link_status = " . $reason  . "," .

@@ -1143,8 +1143,16 @@ class tlUser extends tlDBObject {
   }
   
 
+  /**
+   *
+   */
   static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
     $users = null;
+ 
+    if( null == $ids ) {
+      return null;
+    }
+
     for($idx = 0;$idx < sizeof($ids);$idx++) {
       $id = $ids[$idx];
       $user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);

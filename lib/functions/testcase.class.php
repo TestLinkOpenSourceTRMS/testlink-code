@@ -2392,6 +2392,8 @@ class testcase extends tlObjectWithAttachments
       break;
     }
 
+    $recordset = null;
+
     // Control improvements
     if( !$version_id_is_array && $version_id == self::LATEST_VERSION) {
       // But, how performance wise can be do this, instead of using MAX(version)
@@ -3036,9 +3038,9 @@ class testcase extends tlObjectWithAttachments
 
 
 
-  // -------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   //                            Keyword related methods
-  // -------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   /*
     function: getKeywords
 
@@ -3087,6 +3089,14 @@ class testcase extends tlObjectWithAttachments
     return $items;
   }
 
+  /**
+   *
+   */
+  function getKeywordsByIdCard($idCard,$opt=null) {
+    return $this->get_keywords_map($idCard['tcase_id'],$idCard['tcversion_id'],$opt);
+  }
+
+
 
   /*
     function: get_keywords_map
@@ -3112,8 +3122,7 @@ class testcase extends tlObjectWithAttachments
     $my['opt'] = array_merge($my['opt'], (array)$opt);
 
 
-    switch($my['opt']['output'])
-    {
+    switch($my['opt']['output']) {
       case 'kwfull':
         $sql = "SELECT TCKW.keyword_id,KW.keyword,KW.notes";
       break;
@@ -3131,8 +3140,7 @@ class testcase extends tlObjectWithAttachments
     $sql .= $my['opt']['orderByClause'];
 
 
-    switch($my['opt']['output'])
-    {
+    switch($my['opt']['output']) {
       case 'kwfull':
         $map_keywords = $this->db->fetchRowsIntoMap($sql,'keyword_id');
       break;
@@ -7207,9 +7215,12 @@ class testcase extends tlObjectWithAttachments
 
     $relSet = array();
     $relSet['num_relations'] = 0;
-    $relSet['item'] = current($this->get_by_id($id,self::LATEST_VERSION,null,
-                                               array('output' => 'essential','getPrefix' => true,
-                                                     'caller' => __FUNCTION__)));
+
+    $dummy = $this->get_by_id($id,self::LATEST_VERSION,null,
+                              array('output' => 'essential','getPrefix' => true,
+                                    'caller' => __FUNCTION__));
+
+    $relSet['item'] = (null != $dummy) ? current($dummy) : null;
     $relSet['relations'] = array();
 
     $tproject_mgr = new testproject($this->db);
@@ -7267,7 +7278,8 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-   *
+   * idCard['tcase_id']
+   * idCard['tcversion_id']
    */
   public function getTCVersionRelations($idCard) {
     $debugMsg = "/* {$this->debugMsg}" . __FUNCTION__ . ' */';
@@ -7399,8 +7411,7 @@ class testcase extends tlObjectWithAttachments
   public static function getRelationLabels() {
     $cfg = config_get('testcase_cfg');
     $labels = $cfg->relations->type_labels;
-    foreach ($labels as $key => $label)
-    {
+    foreach ($labels as $key => $label) {
       $labels[$key] = init_labels($label);
     }
     return $labels;
@@ -7558,9 +7569,7 @@ class testcase extends tlObjectWithAttachments
    *
    * @return array $htmlSelect info needed to create select box on multiple templates
    */
-  function getRelationTypeDomainForHTMLSelect()
-  {
-
+  function getRelationTypeDomainForHTMLSelect() {
     $htmlSelect = array('items' => array(), 'selected' => null, 'equal_relations' => array());
     $labels = $this->getRelationLabels();
 
@@ -8069,9 +8078,12 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
+   * build Test Case Name getting information
+   * from special marked text inside string
    *
+   * string can be test case summary or test case precondition
    */
-  function buildTCName($name, $summary) {
+  function buildTCName($name, $text2scan) {
       
     $taglen = strlen(self::NAME_PHOPEN);
     $whomai = array('l' => '','r' => '');
@@ -8084,15 +8096,16 @@ class testcase extends tlObjectWithAttachments
       $meat = substr($name,$where['open']+$taglen, ($where['close'] - $where['open']-$taglen) );  
 
 
-      $dummy = strstr($name,$close);
+      $dummy = strstr($name,self::NAME_PHCLOSE);
+      $whoami['r'] = '';   
       if( $dummy !== FALSE ) {
-        $whoami['r'] = ltrim($dummy,$close);   
+        $whoami['r'] = ltrim($dummy,self::NAME_PHCLOSE);   
       }    
 
       $dm = explode(self::NAME_DIVIDE, $meat);
       $name = $whoami['l'] . self::NAME_PHOPEN; 
 
-      $juice = $this->orangeJuice($summary);
+      $juice = $this->orangeJuice($text2scan);
       $name .=  ( count($dm) > 0 ) ? $dm[0] : $meat;
       $name .= self::NAME_DIVIDE . $juice . self::NAME_PHCLOSE . $whoami['r']; 
     }

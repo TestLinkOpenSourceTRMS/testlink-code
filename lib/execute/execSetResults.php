@@ -278,13 +278,15 @@ if(!is_null($linked_tcversions)) {
 	  }
     }
 
-    // Important Notice: $tcase_id and $tcversions_id, can be ARRAYS when user enable bulk execution
-    if( is_array($tcase_id))
-    {
+    // Important Notice: 
+    // $tcase_id and $tcversions_id, can be ARRAYS 
+    // when user enable bulk execution
+    if( is_array($tcase_id)) {
       $tcase_id = array_intersect($tcase_id, $args->testcases_to_show);
     }  
 
-    $gui->map_last_exec = getLatestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+    $gui->map_last_exec = 
+      getLatestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
 
     $gui->map_last_exec_any_build = null;
     $gui->other_execs=null;
@@ -299,22 +301,22 @@ if(!is_null($linked_tcversions)) {
 
         // Get UserID and Updater ID for current Version
         $tc_current = $gui->map_last_exec_any_build;
-        foreach ($tc_current as $key => $value)
-        {
+        foreach ($tc_current as $key => $value) {
           $testerid = $value['tester_id'];
           $userid_array[$testerid] = $testerid;
         }      
       }
         
-      // 2018 $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id);
       $gui->req_details = $req_mgr->getActiveForTCVersion($tcversion_id);
 
       // 2018 - to be refactored
-      $gui->relations = $tcase_mgr->getRelations($tcase_id);
-      $gui->kw = $tcase_mgr->get_keywords_map($tcase_id,array('output' => 'kwfull'));
+      // $gui->relations = $tcase_mgr->getRelations($tcase_id);
+      $idCard = array('tcase_id' => $tcase_id, 'tcversion_id' => $tcversion_id);
 
-      if(!is_null($cts))
-      {
+      $gui->relations = $tcase_mgr->getRelations($idCard);
+      $gui->kw = $tcase_mgr->getKeywordsByIdCard($idCard,array('output' => 'kwfull'));
+
+      if(!is_null($cts)) {
         $gui->scripts[$tcversion_id]=$tcase_mgr->get_scripts_for_testcase($cts, $tcversion_id);
       }
 

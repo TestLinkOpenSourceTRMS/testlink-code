@@ -1605,11 +1605,12 @@ function getLatestExec(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tc
 
   $last_exec = 
     $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
-    $argsObj->build_id,$argsObj->platform_id,$options);
+      $argsObj->build_id,$argsObj->platform_id,$options);
     
   if( !is_null($last_exec) ) {
-    $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
-                                   $argsObj->tplan_id,$argsObj->platform_id, $argsObj->build_id);
+    $last_exec = setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
+                                     $argsObj->tplan_id,$argsObj->platform_id, 
+                                     $argsObj->build_id);
 
     // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
     $can_execute = $guiObj->grants->execute && ($guiObj->build_is_open);

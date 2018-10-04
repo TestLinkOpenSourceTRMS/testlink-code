@@ -3583,10 +3583,6 @@ class testcase extends tlObjectWithAttachments
                     build_is_active
                     build_is_open
 
-     rev:
-
-    @internal revisions
-    20130601 - franciscom - added estimated_exec_duration, status with alias wkfstatus on recordset
   */
   function get_last_execution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
   {
@@ -3800,9 +3796,9 @@ class testcase extends tlObjectWithAttachments
         foreach( $key2loop as $accessKey) {
           $this->renderGhost($recordset[$accessKey]);
           $this->renderVariables($recordset[$accessKey]);
+          $this->renderSpecialTSuiteKeywords($recordset[$accessKey]);
           $this->renderImageAttachments($id,$recordset[$accessKey]);
 
-          
           // render exec variables only if we have just one build
           if( intval($build_id) > 0 && intval($tplan_id) >0 ) {
             $context = array('tplan_id' => $tplan_id, 'build_id' => $build_id);

@@ -272,6 +272,13 @@ class testcase extends tlObjectWithAttachments
       }
     }
 
+    if( trim($preconditions) != '' ) {
+      if( strpos($preconditions,self::NAME_PHOPEN) !== FALSE && 
+          strpos($preconditions,self::NAME_PHCLOSE) !== FALSE ) {
+        $name = $this->buildTCName($name,$preconditions);
+      }
+    }
+
     $ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,$my['options']);
 
 

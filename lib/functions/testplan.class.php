@@ -4247,23 +4247,19 @@ class testplan extends tlObjectWithAttachments
     $sql .= " ORDER BY node_order,id";
     
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
-    if( count($rs) == 0 )
-    {
+    if( null != $rs || count($rs) == 0 ) {
       return $qnum;
     }
   
 
-     foreach($rs as $row)
-     {
-      if(!isset($exclude_branches[$row['id']]))
-      {  
+    foreach($rs as $row) {
+      if(!isset($exclude_branches[$row['id']])) {  
         $node = $row + 
                 array('node_type' => $this->tree_manager->node_types[$row['node_type_id']],
                       'node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
         $node['childNodes'] = null;
         
-        if($node['node_table'] == 'testcases')
-        {
+        if($node['node_table'] == 'testcases') {
           $node['leaf'] = true; 
           $node['external_id'] = '';
           $itemSet['nindex'][] = $node['id'];
@@ -4274,8 +4270,7 @@ class testplan extends tlObjectWithAttachments
         // 1. Sometimes we don't want the children if the parent is a testcase,
         //    due to the version management
         //
-        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
-        {
+        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]])) {
           // Keep walking (Johny Walker Whisky)
           $this->_get_subtree_rec($tplan_id,$row['id'],$node,$itemSet,$my['filters'],$my['options']);
         }
@@ -4290,8 +4285,7 @@ class testplan extends tlObjectWithAttachments
         //
           $doRemove = is_null($node['childNodes']) && 
                     ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
-          if(!$doRemove)
-          {
+          if(!$doRemove) {
             $pnode['childNodes'][] = $node;
           }  
       } // if(!isset($exclude_branches[$rowID]))
@@ -4302,15 +4296,9 @@ class testplan extends tlObjectWithAttachments
 
   /**
    *
-   * 
-   * @return
-   *
-   * @internal revisions
-   * @since 1.9.4
    *
    */
-  function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null) 
-  {
+  function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null)  {
     // On Postgresql 
     // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
     // but not in the WHERE or HAVING clauses; there you must write out the expression instead.

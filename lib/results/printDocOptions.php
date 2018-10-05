@@ -11,8 +11,6 @@
  *  - It builds the javascript tree that allow the user select a required part 
  *    Test specification/ Test plan.
  *
- * @internal revisions
- * @since 1.9.12
  *
  */
 require_once("../../config.inc.php");
@@ -27,8 +25,7 @@ $gui = initializeGui($db,$args);
 $rightPaneAction = 'lib/results/printDocument.php';
 $additionalArgs = '';
 
-switch($args->doc_type) 
-{
+switch($args->doc_type)  {
   case DOC_TEST_SPEC:
   case DOC_REQ_SPEC:
     $gui->buildInfoSet = null;
@@ -45,8 +42,7 @@ switch($args->doc_type)
     // $filters = new stdClass();
     // $filters->build_id = $tplan_mgr->get_max_build_id($args->tplan_id);
     $gui->buildInfoSet = null;
-    if( $args->doc_type == DOC_TEST_PLAN_EXECUTION_ON_BUILD)
-    {
+    if( $args->doc_type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) {
       $gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id); 
     } 
 
@@ -64,8 +60,7 @@ switch($args->doc_type)
     $opt_etree->useColours->testcases = COLOR_BY_TC_STATUS_OFF;
     $opt_etree->useColours->counters =  COLOR_BY_TC_STATUS_OFF;
 
-    switch($args->activity)
-    {
+    switch($args->activity) {
       case 'addTC':
         $opt_etree->hideTestCases = SHOW_TESTCASES;
         $opt_etree->tc_action_enabled = false;
@@ -85,16 +80,19 @@ switch($args->doc_type)
 
     $filters = null;
     $treeContents = null;
-    list($treeContents, $testcases_to_show) = testPlanTree($db,$rightPaneAction,$args->tproject_id,
-                                                           $args->tproject_name,$args->tplan_id,
-                                                           $testplan_name,$filters,$opt_etree);
+    list($treeContents, $testcases_to_show) = 
+      testPlanTree($db,$rightPaneAction,$args->tproject_id,
+                   $args->tproject_name,$args->tplan_id,
+                   $testplan_name,$filters,$opt_etree);
+
+   
     $gui->ajaxTree = new stdClass();
     $gui->ajaxTree->cookiePrefix = "{$args->doc_type}_tplan_id_{$args->tplan_id}_";
     $gui->ajaxTree->loadFromChildren = true;
     $gui->ajaxTree->root_node = $treeContents->rootnode;
     $gui->ajaxTree->children = trim($treeContents->menustring);
-    if($gui->ajaxTree->children == '')
-    {
+
+    if($gui->ajaxTree->children == ''){
       $gui->ajaxTree->children = '{}';  // generate valid JSON
       $gui->ajaxTree->root_node->href = '';
     }  
@@ -122,8 +120,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * get user input and create an object with properties representing this inputs.
  * @return stdClass object 
  */
-function init_args(&$dbHandler)
-{
+function init_args(&$dbHandler) {
   $args = new stdClass();
   $iParams = array("tplan_id" => array(tlInputParameter::INT_N),
                    "format" => array(tlInputParameter::INT_N,999),
@@ -153,13 +150,12 @@ function init_args(&$dbHandler)
   $args->tplan_info = null;
   $args->mainTitle = '';
 
-  if( ($args->tplan_id = intval($args->tplan_id)) <= 0 || $args->activity != '')   
-  {
+  if( ($args->tplan_id = intval($args->tplan_id)) <= 0 || $args->activity != '') {
     $args->showOptions = false;
     $args->showHelpIcon = false;
     $args->tplan_id = intval(isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0);
-    if($args->tplan_id > 0)
-    {  
+
+    if($args->tplan_id > 0) {  
       $tplan_mgr = new testplan($dbHandler);
       $args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
       $args->mainTitle = $l18n['test_plan'] . ': ' . $args->tplan_info['name'];
@@ -182,8 +178,7 @@ function init_args(&$dbHandler)
  * 
  * @return stdClass TBD structure
  */ 
-function initializeGui(&$db,$args)
-{
+function initializeGui(&$db,$args) {
   $tcaseCfg = config_get('testcase_cfg');
   $reqCfg = config_get('req_cfg');
         
@@ -197,11 +192,9 @@ function initializeGui(&$db,$args)
                              FORMAT_MSWORD => lang_get('format_pseudo_msword'));
 
   $gui->outputOptions = init_checkboxes($args);
-  if($gui->showOptions == false)
-  {
+  if($gui->showOptions == false) {
     $loop2do = count($gui->outputOptions);
-    for($idx = 0; $idx < $loop2do; $idx++)
-    {
+    for($idx = 0; $idx < $loop2do; $idx++) {
       $gui->outputOptions[$idx]['checked'] = 'y';
     }  
   }  
@@ -222,8 +215,7 @@ function initializeGui(&$db,$args)
   $gui->doc_type = $args->doc_type;
     
   $addTestPlanID = false;
-  switch($args->doc_type)
-  {
+  switch($args->doc_type) {
     case DOC_REQ_SPEC:
       $gui->showOptions = true;
       $gui->showOptionsCheckBoxes = false;
@@ -279,17 +271,14 @@ function initializeGui(&$db,$args)
   }
 
   // Do not move
-  if($args->mainTitle == '')
-  {  
+  if($args->mainTitle == '') {  
     $gui->mainTitle .=  ' - ' . lang_get('doc_opt_title');
-  }
-  else
-  {
+  } else {
     $gui->mainTitle = $args->mainTitle; 
-  }  
+  } 
+
   $gui->getArguments = "&type=" . $args->doc_type; 
-  if ($addTestPlanID) 
-  {
+  if ($addTestPlanID) {
     $gui->getArguments .= '&docTestPlanId=' . $args->tplan_id;
   }
   return $gui;  
@@ -307,77 +296,70 @@ function initializeGui(&$db,$args)
  * 
  * @param stdClass $args reference to user input parameters
  * 
- * @return array $arrCheckboxes
+ * @return array $cbSet
  */
-function init_checkboxes(&$args) 
-{
+function init_checkboxes(&$args) {
   // Important Notice:
   // If you want to add or remove elements in this array, you must also update
   // $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
   
   $execCfg = config_get('exec_cfg');
 
-  $arrCheckboxes = array();
+  // Check Box Set
+  $cbSet = array();
   
   // these are the options which are always needed, type-specific ones follow below in switch
-  $arrCheckboxes[] = array( 'value' => 'toc','description' => 'opt_show_toc', 'checked' => 'n');
-  $arrCheckboxes[] = array( 'value' => 'headerNumbering','description' => 'opt_show_hdrNumbering','checked' => 'n');
+  $cbSet[] = array( 'value' => 'toc','description' => 'opt_show_toc', 'checked' => 'n');
+  $cbSet[] = array( 'value' => 'headerNumbering','description' => 'opt_show_hdrNumbering','checked' => 'n');
   
-  switch($args->doc_type) 
-  {
+  switch($args->doc_type) {
     case 'reqspec':
       $key2init = array('req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
                         'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
                         'req_type','req_cf','req_relations','req_linked_tcs','req_coverage','displayVersion');
 
       $key2init2yes = array('req_spec_scope' => 'y','req_scope' => 'y');
-      foreach($key2init as $key)
-      {
+      foreach($key2init as $key) {
         $checked = isset($key2init2yes[$key]) ? $key2init2yes[$key] : 'n';
-        $arrCheckboxes[] = array('value' => $key,'description' => 'opt_' . $key, 'checked' => $checked);
+        $cbSet[] = array('value' => $key,'description' => 'opt_' . $key, 'checked' => $checked);
       } 
     break;
     
     default:
-      $arrCheckboxes[] = array('value' => 'header','description' => 'opt_show_suite_txt','checked' => 'n');
-      $arrCheckboxes[] = array('value' => 'summary','description' => 'opt_show_tc_summary','checked' => 'y');
-      $arrCheckboxes[] = array('value' => 'body','description' => 'opt_show_tc_body','checked' => 'n');
-      $arrCheckboxes[] = array('value' => 'author','description' => 'opt_show_tc_author','checked' => 'n');
-      $arrCheckboxes[] = array('value' => 'keyword','description' => 'opt_show_tc_keys','checked' => 'n');
-      $arrCheckboxes[] = array('value' => 'cfields','description' => 'opt_show_cfields','checked' => 'n');
+      $cbSet[] = array('value' => 'header','description' => 'opt_show_suite_txt','checked' => 'n');
+      $cbSet[] = array('value' => 'summary','description' => 'opt_show_tc_summary','checked' => 'y');
+      $cbSet[] = array('value' => 'body','description' => 'opt_show_tc_body','checked' => 'n');
+      $cbSet[] = array('value' => 'author','description' => 'opt_show_tc_author','checked' => 'n');
+      $cbSet[] = array('value' => 'keyword','description' => 'opt_show_tc_keys','checked' => 'n');
+      $cbSet[] = array('value' => 'cfields','description' => 'opt_show_cfields','checked' => 'n');
 
-      if($args->testprojectOptReqs) 
-      {
-        $arrCheckboxes[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs','checked' => 'n');
+      if($args->testprojectOptReqs) {
+        $cbSet[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs','checked' => 'n');
       }
 
-      if ($args->doc_type == DOC_TEST_PLAN_EXECUTION || $args->doc_type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) 
-      {
-        $arrCheckboxes[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',  'checked' => 'n');
+      if ($args->doc_type == DOC_TEST_PLAN_EXECUTION || $args->doc_type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) {
+        $cbSet[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',  'checked' => 'n');
         
-        if($execCfg->steps_exec)
-        {  
-          $arrCheckboxes[] = array('value' => 'step_exec_notes', 'description' => 'opt_show_tcstep_exec_notes',  
+        if($execCfg->steps_exec) {  
+          $cbSet[] = array('value' => 'step_exec_notes', 'description' => 'opt_show_tcstep_exec_notes',  
                                    'checked' => 'n');
         }
-        $arrCheckboxes[] = array('value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
+        $cbSet[] = array('value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
         
-        if($execCfg->steps_exec)
-        {  
-          $arrCheckboxes[] = array('value' => 'step_exec_status','description' => 'opt_show_tcstep_exec_status','checked' => 'y');
+        if($execCfg->steps_exec) {  
+          $cbSet[] = array('value' => 'step_exec_status','description' => 'opt_show_tcstep_exec_status','checked' => 'y');
         }
         
-        $arrCheckboxes[] = array('value' => 'build_cfields','description' => 'opt_show_build_cfields','checked' => 'n');
-        $arrCheckboxes[] = array('value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
-        // $arrCheckboxes[] = array('value' => 'assigned_to_me','description' => 'opt_show_only_assigned_to_me','checked' => 'n');
+        $cbSet[] = array('value' => 'build_cfields','description' => 'opt_show_build_cfields','checked' => 'n');
+        $cbSet[] = array('value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
+        // $cbSet[] = array('value' => 'assigned_to_me','description' => 'opt_show_only_assigned_to_me','checked' => 'n');
       }
     break;    
   }
 
-  foreach ($arrCheckboxes as $key => $elem) 
-  {
-    $arrCheckboxes[$key]['description'] = lang_get($elem['description']);
+  foreach ($cbSet as $key => $elem)  {
+    $cbSet[$key]['description'] = lang_get($elem['description']);
   }
   
-  return $arrCheckboxes;
+  return $cbSet;
 }

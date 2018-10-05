@@ -4247,7 +4247,7 @@ class testplan extends tlObjectWithAttachments
     $sql .= " ORDER BY node_order,id";
     
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
-    if( null != $rs || count($rs) == 0 ) {
+    if( null == $rs || count($rs) == 0 ) {
       return $qnum;
     }
   

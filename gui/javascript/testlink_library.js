@@ -187,6 +187,7 @@ function EXDS()
 function EP(id)
 {
   // menuUrl 99% => archiveData.php
+  // can be planAddTC.php
   var _FUNCTION_NAME_="EP";
 
   // get checkboxes status

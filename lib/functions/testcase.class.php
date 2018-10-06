@@ -1828,7 +1828,6 @@ class testcase extends tlObjectWithAttachments
           if( $op['status_ok'] ) {
               $alienTCV = $newTCObj['mappings'][$tcversion['id']] = $op['id'];
 
-              // 2018
               $inlineImg = null;
               $attNewRef = $this->copy_attachments($tcversion['id'],$alienTCV);      
               if(!is_null($attNewRef)) {
@@ -7696,15 +7695,13 @@ class testcase extends tlObjectWithAttachments
     static $beginTag;
     static $endTag;
 
-    if(!$attSet || !isset($attSet[$id]))
-    {
+    if(!$attSet || !isset($attSet[$id])) {
       $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
       $beginTag = '[tlInlineImage]';
       $endTag = '[/tlInlineImage]';
     }
 
-    if(is_null($attSet[$id]))
-    {
+    if(is_null($attSet[$id])) {
       return;
     }
 
@@ -7714,55 +7711,52 @@ class testcase extends tlObjectWithAttachments
     //
     // CRITIC: skipCheck is needed to render OK when creating report on Pseudo-Word format.
     $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-    $img = '<p><img src="' . $bhref . '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>';
+    $img = '<p><img src="' . $bhref . 
+      '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>';
 
     $rse = &$item2render;
-    foreach($key2check as $item_key)
-    {
+    foreach($key2check as $item_key) {
       $start = strpos($rse[$item_key],$beginTag);
       $ghost = $rse[$item_key];
 
       // There is at least one request to replace ?
-      if($start !== FALSE)
-      {
+      if($start !== FALSE) {
         $xx = explode($beginTag,$rse[$item_key]);
 
         // How many requests to replace ?
         $xx2do = count($xx);
         $ghost = '';
-        for($xdx=0; $xdx < $xx2do; $xdx++)
-        {
+        for($xdx=0; $xdx < $xx2do; $xdx++) {
           // Hope was not a false request.
-          if( strpos($xx[$xdx],$endTag) !== FALSE)
-          {
+          if( strpos($xx[$xdx],$endTag) !== FALSE) {
             // Separate command string from other text
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($endTag,$xx[$xdx]);
-            if( ($elc = count($yy)) > 0)
-            {
+            if( ($elc = count($yy)) > 0) {
+
               $atx = $yy[0];
-              try
-              {
-                if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image'])
-                {
+              if( intval($atx) == 0 ) {
+                $atx = 
+                  $this->getTCVersionAttachIDFromTitle($id,$atx);
+              }
+
+              try {
+                if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image']) {
                   $sec = hash('sha256', $attSet[$id][$atx]['file_name']);
                   $ghost .= str_replace(array('%id%','%sec%'),array($atx,$sec),$img);
                 }
                 $lim = $elc-1;
-                for($cpx=1; $cpx <= $lim; $cpx++)
-                {
+                for($cpx=1; $cpx <= $lim; $cpx++) {
                   $ghost .= $yy[$cpx];
                 }
               }
-              catch (Exception $e)
-              {
+              catch (Exception $e) {
                 $ghost .= $rse[$item_key];
               }
             }
           }
-          else
-          {
+          else {
             // nothing to do
             $ghost .= $xx[$xdx];
           }
@@ -7770,8 +7764,7 @@ class testcase extends tlObjectWithAttachments
       }
 
       // reconstruct field contents
-      if($ghost != '')
-      {
+      if($ghost != '') {
         $rse[$item_key] = $ghost;
       }
     }
@@ -7803,8 +7796,7 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    */
-  static function getLayout()
-  {
+  static function getLayout() {
     $ly = new stdClass();
     $ly->tableToDisplayTestCaseSteps = new stdClass();
 
@@ -7844,8 +7836,7 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    */
-  function getTcSearchSkeleton($userInput=null)
-  {
+  function getTcSearchSkeleton($userInput=null) {
     $sk = new stdClass();
 
     $sk->creation_date_from = null;
@@ -8603,5 +8594,28 @@ class testcase extends tlObjectWithAttachments
     }
 
   } 
+
+  /**
+   *
+   */
+  function getTCVersionAttachIDFromTitle($tcversion_id,$target) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $id = 0;
+    $sql = " /* $debugMsg */ 
+             SELECT id 
+             FROM {$this->tables['attachments']}
+             WHERE fk_id=" . intval($tcversion_id) .
+           " AND title = '" . 
+           $this->db->prepare_string($target) . "'"; 
+    
+    $rs = $this->db->get_recordset($sql);
+    if( null != $rs ) {
+      $id = intval($rs[0]['id']);
+    }
+            
+    return $id;
+  }
 
 }  // Class end

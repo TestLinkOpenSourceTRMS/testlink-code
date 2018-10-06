@@ -830,4 +830,5 @@ AS SELECT
    NHTCV.parent_id AS testcase_id,
    NHTCV.id AS `id`
 FROM /*prefix*/nodes_hierarchy NHTCV 
-WHERE NHTCV.node_type_id = 4 and (not(exists(select 1 from /*prefix*/testcase_keywords TCK where (`TCK`.`tcversion_id` = `NHTCV`.`id`)))));
+WHERE NHTCV.node_type_id = 4 and 
+not(exists(select 1 from /*prefix*/testcase_keywords TCK where `TCK`.`tcversion_id` = `NHTCV`.`id`));

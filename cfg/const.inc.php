@@ -20,7 +20,7 @@ define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
 define('TL_VERSION_NUMBER', '1.9.18'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [Dev] (Gaura)'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' (Gaura)'); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Latest Database version that is used to give users feedback 
@@ -31,8 +31,7 @@ define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.18');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
-if (!defined('TL_ABS_PATH')) 
-{
+if (!defined('TL_ABS_PATH')) {
   define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
 }
 
@@ -55,7 +54,7 @@ ini_set('include_path',ini_get('include_path') .
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 /* [GENERAL MAGIC NUMBERS] */
 
 /** PHPMAILER */
@@ -197,7 +196,7 @@ define('EVENT_TYPE_OUTPUT', 4);
 
 
 
-// --------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 /* [GUI] */
 
 /** 

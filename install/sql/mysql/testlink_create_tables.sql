@@ -778,15 +778,15 @@ GROUP BY testcase_id;
 #
 CREATE OR REPLACE VIEW /*prefix*/latest_tcase_version_id
 AS SELECT
-   `ltcvn`.`testcase_id` AS `testcase_id`,
-   `ltcvn`.`version` AS `version`,
-   `TCV`.`id` AS `tcversion_id`
-FROM ((/*prefix*/latest_tcase_version_number LTCVN 
-       join /*prefix*/nodes_hierarchy NHTCV 
-       on ((`NHTCV`.`parent_id` = `ltcvn`.`testcase_id`))) 
-       join /*prefix*/tcversions `TCV` 
-       on (((`TCV`.`id` = `NHTCV`.`id`) 
-       and (`TCV`.`version` = `ltcvn`.`version`))));
+   LTCVN.testcase_id AS testcase_id,
+   LTCVN.version AS version,
+   TCV.id AS tcversion_id
+FROM /*prefix*/latest_tcase_version_number LTCVN 
+join /*prefix*/nodes_hierarchy NHTCV 
+on NHTCV.parent_id = LTCVN.testcase_id 
+join /*prefix*/tcversions TCV 
+on TCV.id = NHTCV.id 
+and TCV.version = LTCVN.version;
 
 
 #
@@ -809,10 +809,11 @@ AS SELECT
    LRQVN.req_id AS req_id,
    LRQVN.version AS version,
    REQV.id AS req_version_id
-FROM ((latest_req_version LRQVN JOIN /*prefix*/nodes_hierarchy NHRQV
-       ON ((NHRQV.parent_id = LRQVN.req_id))) 
-       JOIN /*prefix*/req_versions REQV 
-       ON (((REQV.id = NHRQV.id) AND (REQV.version = LRQVN.version))));
+FROM latest_req_version LRQVN 
+JOIN /*prefix*/nodes_hierarchy NHRQV
+ON NHRQV.parent_id = LRQVN.req_id 
+JOIN /*prefix*/req_versions REQV 
+ON REQV.id = NHRQV.id AND REQV.version = LRQVN.version;
 
 # 
 CREATE OR REPLACE VIEW /*prefix*/latest_rspec_revision 
@@ -826,7 +827,7 @@ GROUP BY RSR.parent_id,RS.testproject_id;
 # 
 CREATE OR REPLACE VIEW /*prefix*/tcversions_without_keywords
 AS SELECT
-   `NHTCV`.`parent_id` AS `testcase_id`,
-   `NHTCV`.`id` AS `id`
+   NHTCV.parent_id AS testcase_id,
+   NHTCV.id AS `id`
 FROM /*prefix*/nodes_hierarchy NHTCV 
-where ((`NHTCV`.`node_type_id` = 4) and (not(exists(select 1 from /*prefix*/testcase_keywords TCK where (`TCK`.`tcversion_id` = `NHTCV`.`id`)))));
+WHERE NHTCV.node_type_id = 4 and (not(exists(select 1 from /*prefix*/testcase_keywords TCK where (`TCK`.`tcversion_id` = `NHTCV`.`id`)))));

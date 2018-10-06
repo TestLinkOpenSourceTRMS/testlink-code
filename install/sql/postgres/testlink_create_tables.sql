@@ -532,7 +532,7 @@ CREATE TABLE /*prefix*/req_coverage(
   "review_request_ts" TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 ); 
-CREATE INDEX /*prefix*/req_coverage_full_link ON /*prefix*/req_coverage ("req_id","req_version_id","testcase_id","tcversion_id");
+CREATE UNIQUE INDEX /*prefix*/req_coverage_full_link ON /*prefix*/req_coverage ("req_id","req_version_id","testcase_id","tcversion_id");
 
 
 --
@@ -943,7 +943,7 @@ CREATE OR REPLACE VIEW /*prefix*/latest_tcase_version_id AS
 --
 -- @used_by latest_req_version_id
 --
-CREATE VIEW /*prefix*/latest_req_version AS
+CREATE OR REPLACE VIEW /*prefix*/latest_req_version AS
 ( 
   SELECT RQ.id AS req_id,max(RQV.version) AS version 
   FROM /*prefix*/nodes_hierarchy NHRQV 
@@ -972,7 +972,7 @@ CREATE OR REPLACE VIEW /*prefix*/latest_req_version_id AS
 
 --
 --
-CREATE VIEW /*prefix*/latest_rspec_revision AS 
+CREATE OR REPLACE VIEW /*prefix*/latest_rspec_revision AS 
 (
   SELECT RSR.parent_id AS req_spec_id, RS.testproject_id AS testproject_id,
   MAX(RSR.revision) AS revision 

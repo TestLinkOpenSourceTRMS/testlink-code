@@ -65,8 +65,12 @@ has been done and what still needs to be done.
 
 ## 2. Release notes / CRITICAL Configuration Notes
 
-This release contains bugfixes for 1.9.17
+This release contains bugfixes and enhancement for 1.9.17
 See CHANGELOG file for detailed list of issues fixed.
+
+Give a look also to:
+https://github.com/TestLinkOpenSourceTRMS/testlink-code/wiki
+https://github.com/TestLinkOpenSourceTRMS/testlink-documentation/wiki
 
 ### CRITICAL PHP.INI Settings
 
@@ -91,7 +95,7 @@ a `memory_limit` value of 256MB.
 
 ### Oauth configuration
 
-In 1.9.17 there is new authorization method - using OAuth providers.
+Since 1.9.17 there is new authorization method - using OAuth providers.
 Authentication against multiple oauth providers is supported.
 Currently it configured to work with Google OAuth and Github, but you can add
 any OAuth server that support protocol 2.0 and 2-step authentication.
@@ -148,8 +152,8 @@ here:
 
 Server environment should consist of:
 - web-server: Apache 2.x
-- PHP > 5.5
-- DBMS: MySQL 5.6.x / MariaDB 10.1.x, Postgres 9.x, MS-SQL 2008/2012
+- PHP > 5.5 It will be better if you use PHP 7.2.x
+- DBMS: MySQL 5.7.x / MariaDB 10.1.x, Postgres 9.x, MS-SQL 201x
 
 Supported client web-browsers: 
 - Firefox
@@ -261,7 +265,7 @@ case steps and expected results, also test case ID's are empty in GUI
 
 ### Special Cases
 
- 1. Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11/12/13/14/15/16/17
+ 1. Upgrade from 1.9.3 to 1.9.4/5/6/7/../16/17/18
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
@@ -363,13 +367,21 @@ WARNING: if you are using a table prefix replace `prefix` with your prefix
   a. Execute `install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/step1/db_schema_update.sql`
   b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.17/<your_db>/DB.1.9.17/stepZ/z_final_step.sql`
 
+13. Upgrade from 1.9.17 to 1.9.18
+
+WARNING: if you are using a table prefix replace `prefix` with your prefix
+
+  a. Execute `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.17/step1/db_schema_update.sql`
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.17/stepZ/z_final_step.sql`
+
 **Hint**: When using MySQL Query Browser make sure you are not using single
           command execution. (open script or use special script tab to
           execute the whole script at once)
 
 **USE THE [FORUM SECTION][upgf] and the [USER UPGRADE SECTION][uupg]**
 
-13. Migration from other releases before 1.9.3
+
+14. Migration from other releases before 1.9.3
 
 You have always have to migrate one by one to each version that is newer
 than yours. Extreme example: migration from 1.7.4
@@ -377,7 +389,7 @@ than yours. Extreme example: migration from 1.7.4
     1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0
     1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 =>
     1.9.8 => 1.9.9 => 1.9.10 => 1.9.11 => 1.9.12 => 1.9.13 => 1.9.14 =>
-    1.9.15 => 1.9.16 => 1.9.17
+    1.9.15 => 1.9.16 => 1.9.17 => 1.9.18
 
 You have to read carefully README and instructions (if any) provided by
 installer. Sometimes version changes do not require actions on DB structure
@@ -392,6 +404,8 @@ This list comprises people who have helped:
   * Francisco Mancardi - Project lead, builds, core developer, contributors
                          code reviewer (well, really the One Man Band ;) )
   * Asiel Brumfield - Infrastructure
+
+  * Netzuleando Development OpenSource (netzuleando@gmail.com)
 
 ### Contributors and developers active on older releases
 
@@ -503,6 +517,14 @@ PLEASE: read these short hints before you write a topic:
         instead of TestLink. Use Google first.
 
 ## 10. Changes
+
+
+### 1.9.18
+  - DB Schema changes to allow fine grain management of different entities.
+  - more features on requirements/test case links
+  - more features on attachments & keywords
+  - more on data management
+    ... and more (read CHANGELOG file)
 
 ### 1.9.17
   - oAuth Authentication with GitHub

@@ -532,7 +532,6 @@ class mantissoapInterface extends issueTrackerInterface
             $ret['msg'] = 
               "Cannot create note, using TestLink logged user: " .
               $issueNoteData['reporter']['name'];
-            var_dump($ret);die();  
           break;
 
           default:

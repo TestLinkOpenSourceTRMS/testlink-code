@@ -1172,7 +1172,7 @@ class testcaseCommands {
   }
 
 
- /**
+  /**
    * 
    *
    */
@@ -1255,6 +1255,28 @@ class testcaseCommands {
 
     $this->show($argsObj,$request, array('status_ok' => 1));
     exit();
+  }
+
+
+  /**
+   * 
+   *
+   */
+  function addKeyword(&$argsObj,&$request) {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    if( null != $argsObj->free_keywords ) {
+      $this->tcaseMgr->addKeywords($guiObj->tcase_id,$guiObj->tcversion_id,
+        $argsObj->free_keywords);
+    }
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" .
+      "&caller=addKeyword";
+    return $guiObj;
   }
 
 

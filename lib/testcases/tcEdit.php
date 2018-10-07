@@ -108,6 +108,7 @@ switch($args->doAction)
   case "setExecutionType":
   case "setEstimatedExecDuration":
   case "removeKeyword":
+  case "addKeyword":
   case "freeze":
   case "unfreeze":
     $op = $commandMgr->$pfn($args,$_REQUEST);
@@ -373,10 +374,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
 
   $key2loop = array('edit_tc' => 'edit', 'delete_tc' => 'delete','do_delete' => 'doDelete',
                     'create_tc' => 'create','do_create' => 'doCreate');
-  foreach($key2loop as $key => $action)
-  {
-    if( isset($_REQUEST[$key]) )
-    {
+
+  foreach($key2loop as $key => $action) {
+    if( isset($_REQUEST[$key]) ) {
       $args->doAction = $action;
       break;
     }
@@ -401,7 +401,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
     
   $key2loop=array("keyword_assignments","requirement_assignments");
   foreach($key2loop as $key) {
-    $args->copy[$key]=isset($_REQUEST[$key])?true:false;    
+    $args->copy[$key] = isset($_REQUEST[$key])?true:false;    
   }    
   
   
@@ -436,8 +436,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
   $action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,
                         "doUpdateStep" => true, "doInsertStep" => true, 
                         "doCopyStep" => true,"doUpdateStepAndInsert" => true);
-  if( isset($action2check[$args->doAction]) )
-  {
+  if( isset($action2check[$args->doAction]) ) {
     $cfgObj->webEditorCfg = getWebEditorCfg('steps_design');  
   }   
 
@@ -486,6 +485,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
 
   $cbk = 'changeExecTypeOnSteps';
   $args->applyExecTypeChangeToAllSteps = isset($_REQUEST[$cbk]);
+
+  $k2c = 'free_keywords';
+  $args->free_keywords = isset($_REQUEST[$k2c]) ? $_REQUEST[$k2c] : null;
 
   return $args;
 }
@@ -655,37 +657,42 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
  * manage GUI rendering
  *
  */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
-{
-    $smartyObj = new TLSmarty();
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys) {
+  $smartyObj = new TLSmarty();
     
-    // needed by webeditor loading logic present on inc_head.tpl
-    $smartyObj->assign('editorType',$guiObj->editorType);  
+  // needed by webeditor loading logic present on inc_head.tpl
+  $smartyObj->assign('editorType',$guiObj->editorType);  
 
-    $renderType = 'none';
+  $renderType = 'none';
 
-    //
-    // key: operation requested (normally received from GUI on doAction)
-    // value: operation value to set on doAction HTML INPUT
-    // This is useful when you use same template (example xxEdit.tpl), for create and edit.
-    // When template is used for create -> operation: doCreate.
-    // When template is used for edit -> operation: doUpdate.
-    //              
-    // used to set value of: $guiObj->operation
-    //
-    $actionOperation = array('create' => 'doCreate', 'doCreate' => 'doCreate',
-                             'edit' => 'doUpdate','delete' => 'doDelete', 'doDelete' => '',
-                             'createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
-                             'doCopyStep' => 'doUpdateStep',
-                             'editStep' => 'doUpdateStep', 
-                             'doUpdateStep' => 'doUpdateStep', 
-                             'doUpdateStepAndInsert' => 'doUpdateStep', 
-                             'doDeleteStep' => '', 'doReorderSteps' => '','doResequenceSteps' => '',
-                             'doInsertStep' => 'doUpdateStep',
-                             'setImportance' => '','setStatus' => '',
-                             'setExecutionType' => '', "setEstimatedExecDuration" => '',
-                             'doAddRelation' => '', 'doDeleteRelation' => '',
-                             'removeKeyword' => '', 'freeze' => '', 'unfreeze' => '');
+  //
+  // key: operation requested (normally received from GUI on doAction)
+  // value: operation value to set on doAction HTML INPUT
+  // This is useful when you use same template (example xxEdit.tpl), 
+  // for create and edit.
+  // When template is used for create -> operation: doCreate.
+  // When template is used for edit -> operation: doUpdate.
+  //              
+  // used to set value of: $guiObj->operation
+  //
+  $actionOperation = array('create' => 'doCreate', 'doCreate' => 'doCreate',
+                           'edit' => 'doUpdate','delete' => 'doDelete', 
+                           'createStep' => 'doCreateStep', 
+                           'doCreateStep' => 'doCreateStep',
+                           'doCopyStep' => 'doUpdateStep',
+                           'editStep' => 'doUpdateStep', 
+                           'doUpdateStep' => 'doUpdateStep', 
+                           'doInsertStep' => 'doUpdateStep',
+                           'doUpdateStepAndInsert' => 'doUpdateStep');
+
+  $nak = array('doDelete','doDeleteStep','doReorderSteps','doResequenceSteps',
+               'setImportance','setStatus','setExecutionType', 
+               'setEstimatedExecDuration','doAddRelation','doDeleteRelation',
+               'removeKeyword','freeze','unfreeze','addKeyword');
+
+  foreach($nak as $ak) {
+    $actionOperation[$ak] = '';
+  }
 
   $key2work = 'initWebEditorFromTemplate';
   $initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
@@ -772,7 +779,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys)
         case "doAddRelation":
         case "doDeleteRelation":
         case "doUpdateStepAndInsert":
-        case "removeKeyword":        
+        case "removeKeyword":  
+        case "addKeyword":  
         case "freeze":        
         case "unfreeze":        
             $renderType = 'template';

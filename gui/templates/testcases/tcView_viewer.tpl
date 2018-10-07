@@ -404,7 +404,10 @@ function launchInsertStep(step_id)
    {$kwRW = ($edit_enabled == 1) && ($has_been_executed == 0)} 
 
    {include file="testcases/keywords.inc.tpl" 
-            args_edit_enabled=$kwRW} 
+            args_edit_enabled=$kwRW
+            args_tcase_id=$tcase_id
+            args_tcversion_id=$tcversion_id
+   } 
   </div>
   
   {if $gui->requirementsEnabled == TRUE && 

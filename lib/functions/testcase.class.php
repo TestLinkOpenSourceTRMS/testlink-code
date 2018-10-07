@@ -918,8 +918,10 @@ class testcase extends tlObjectWithAttachments
         }
 
         // Position 0 is latest active version
-        $tcvSet[0]['tc_external_id'] = $gui->tcasePrefix . $tcvSet[0]['tc_external_id'];
-        $tcvSet[0]['ghost'] = sprintf(self::GHOSTMASK,$tcvSet[0]['tc_external_id'],$tcvSet[0]['version']);
+        $tcvSet[0]['tc_external_id'] = 
+          $gui->tcasePrefix . $tcvSet[0]['tc_external_id'];
+        $tcvSet[0]['ghost'] = 
+          sprintf(self::GHOSTMASK,$tcvSet[0]['tc_external_id'],$tcvSet[0]['version']);
 
         // status quo of execution and links of tc versions
         $gui->status_quo[] = $this->get_versions_status_quo($tc_id);
@@ -947,7 +949,14 @@ class testcase extends tlObjectWithAttachments
           $reqMgr->getGoodForTCVersion($currentVersionID);
 
         
-        $gui->currentVersionKeywords = $this->getKeywords($tc_id,$currentVersionID);
+        $gui->currentVersionKeywords = 
+          $this->getKeywords($tc_id,$currentVersionID);
+
+        $whoami = array('tcase_id' => $tc_id, 
+                        'tcversion_id' => $currentVersionID);
+
+        $of = array('output' => 'html_options','add_blank' => true);
+        $gui->currentVersionFreeKeywords = $this->getFreeKeywords($whoami,$of);
 
         if( $my['opt']['getAttachments'] ) {
           $gui->attachments[$currentVersionID] = 
@@ -3168,13 +3177,18 @@ class testcase extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $adt = array('on' => self::AUDIT_ON, 'version' => null);
-    $adt = array_merge($adt, ($audit));
+    $adt = array_merge($adt, (array)$audit);
 
     if( count($kw_ids) == 0 ) {
       return true;
     }
 
     $safeID = array('tc' => intval($id), 'tcv' => intval($version_id));
+    foreach($safeID as $key => $val ) {
+      if($val <= 0) {
+        throw new Exception(__METHOD__ . " $key cannot be $val ", 1);
+      }
+    } 
 
     // Firts check if records exist    
     $sql = "/* $debugMsg */
@@ -4588,10 +4602,9 @@ class testcase extends tlObjectWithAttachments
 
     returns: testproject id
   */
-  function get_testproject($id)
-  {
+  function get_testproject($id) {
     $a_path = $this->tree_manager->get_path($id);
-    return ($a_path[0]['parent_id']);
+    return $a_path[0]['parent_id'];
   }
 
 
@@ -8616,6 +8629,61 @@ class testcase extends tlObjectWithAttachments
     }
             
     return $id;
+  }
+
+  /**
+   *
+   *
+   */
+  function getFreeKeywords($idCard,$opt = null) {
+    $my['opt'] = array('accessKey' => 'keyword_id', 'fields' => null, 
+                       'orderBy' => null, 'tproject_id' => null,
+                       'output' => 'std', 'add_blank' => false);
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $safe = array();
+    foreach($idCard as $key => $val) {
+      $safe[$key] = intval($val);
+    }
+
+    // CRITIC
+    $tproject_id = $my['opt']['tproject_id'];
+    if( null == $tproject_id ) {
+      $tproject_id = $this->get_testproject($safe['tcase_id']);
+    }
+    $tproject_id = intval($tproject_id);
+
+    $sql = " SELECT KW.id AS keyword_id, KW.keyword
+             FROM {$this->tables['keywords']} KW
+             WHERE KW.testproject_id = {$tproject_id}
+             AND KW.id NOT IN 
+             (
+               SELECT TCKW.keyword_id 
+               FROM {$this->tables['testcase_keywords']} TCKW
+               WHERE TCKW.testcase_id = {$safe['tcase_id']}
+               AND TCKW.tcversion_id = {$safe['tcversion_id']}
+             ) ";
+
+    if (!is_null($my['opt']['orderBy'])) {
+      $sql .= ' ' . $my['opt']['orderBy'];
+    }
+
+    switch($my['opt']['output']) {
+      case 'html_options':
+        $items = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+        if( null != $items && $my['opt']['add_blank']) {
+          $items = array(0 => '') + $items;
+        }
+
+      break;
+
+      default:
+        $items = $this->db->fetchRowsIntoMap($sql,$my['opt']['accessKey']);
+      break;
+    }
+    
+    return $items;
   }
 
 }  // Class end

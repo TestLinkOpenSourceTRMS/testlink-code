@@ -4,10 +4,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 
 {lang_get var='kw_labels' 
-          s='in, btn_add, img_title_remove_keyword,no_records_found,
-             title_test_case,match_count,warning,keywords,none,
-             commit_title,current_direct_link,current_testcase,test_case,
-             specific_direct_link,req_does_not_exist,actions'}
+          s='btn_add,img_title_remove_keyword,warning,select_keywords'}
 
 
 {lang_get s='remove_kw_msgbox_msg' var='remove_kw_msgbox_msg'}
@@ -48,10 +45,11 @@ function remove_keyword(btn, text, item_id, tckw_link_id) {
 var pF_remove_keyword = remove_keyword;
 
 </script>
+
 <form method="post" id="kwf" name="kwf" action="{$basehref}lib/testcases/tcEdit.php">
   <input type="hidden" id="kwf_doAction" name="doAction" value="removeKeyword" />
-  <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
-  <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}" />
+  <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_tcase_id}" />
+  <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$args_tcversion_id}" />
 
   {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id}
 
@@ -63,7 +61,7 @@ var pF_remove_keyword = remove_keyword;
       <td style="vertical-align:top;">
           {foreach item=tckw_link_item from=$args_keywords_map}
                 {$tckw_link_item.keyword|escape}
-            {if $edit_enabled && $gui->assign_keywords && $args_frozen_version == "no"}
+            {if $args_edit_enabled && $gui->assign_keywords && $args_frozen_version == "no"}
             <a href="javascript:keyword_remove_confirmation({$gui->tcase_id},
                      {$tckw_link_item.tckw_link},
                      '{$tckw_link_item.keyword|escape:'javascript'}', 
@@ -75,7 +73,30 @@ var pF_remove_keyword = remove_keyword;
                 {foreachelse}
                   {$tcView_viewer_labels.none}
             {/foreach}
-          </td>
-        </tr>
+      </td>      
+    </tr>
+    <tr>
+      {if $args_edit_enabled && null != $gui->currentVersionFreeKeywords} 
+      <td>
+       &nbsp;  
+      <td>
+        <select id="free_keywords" name="free_keywords[]"
+          data-placeholder="{$kw_labels.select_keywords}"
+          class="chosen-add-keywords" multiple="multiple">
+          {html_options options = $gui->currentVersionFreeKeywords}
+        </select>
+        <input type="submit" value="{$kw_labels.btn_add}"
+          onclick="doAction.value='addKeyword'">
+      </td>  
+
+      <script>
+      jQuery( document ).ready(
+        function() { 
+          jQuery(".chosen-add-keywords").chosen({ width: "75%", allow_single_deselect: true }); 
+        }
+      );
+      </script>  
+      {/if}
+    </tr>
   </table>  
 </form>

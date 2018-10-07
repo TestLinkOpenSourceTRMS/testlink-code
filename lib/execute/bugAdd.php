@@ -20,8 +20,7 @@ if( ($args->user_action == 'create' || $args->user_action == 'doCreate') &&
   // get matadata
   $gui->issueTrackerMetaData = getIssueTrackerMetaData($its);
   
-  switch($args->user_action)
-  {
+  switch($args->user_action) {
     case 'create':
      $dummy = generateIssueText($db,$args,$its); 
      $gui->bug_summary = $dummy->summary;
@@ -39,50 +38,39 @@ if( ($args->user_action == 'create' || $args->user_action == 'doCreate') &&
 
   }
 }  
-else if($args->user_action == 'link' || $args->user_action == 'add_note')
-{
+else if($args->user_action == 'link' || $args->user_action == 'add_note') {
   // Well do not think is very elegant to check for $args->bug_id != ""
   // to understand if user has pressed ADD Button
-  if(!is_null($issueT) && $args->bug_id != "")
-  {
+  if(!is_null($issueT) && $args->bug_id != "") {
   	$l18n = init_labels(array("error_wrong_BugID_format" => null,"error_bug_does_not_exist_on_bts" => null));
 
-    switch($args->user_action)
-    {
+    switch($args->user_action) {
       case 'link':
         $gui->msg = $l18n["error_wrong_BugID_format"];
-        if ($its->checkBugIDSyntax($args->bug_id))
-        {
-          if ($its->checkBugIDExistence($args->bug_id))
-          {     
-            if (write_execution_bug($db,$args->exec_id, $args->bug_id,$args->tcstep_id))
-            {
+        if ($its->checkBugIDSyntax($args->bug_id)) {
+          if ($its->checkBugIDExistence($args->bug_id)) {     
+            if (write_execution_bug($db,$args->exec_id, $args->bug_id,$args->tcstep_id)) {
               $gui->msg = lang_get("bug_added");
               logAuditEvent(TLS("audit_executionbug_added",$args->bug_id),"CREATE",$args->exec_id,"executions");
 
               // blank notes will not be added :).
-              if($gui->issueTrackerCfg->tlCanAddIssueNote) 
-              {
+              if($gui->issueTrackerCfg->tlCanAddIssueNote)  {
                 $hasNotes = (strlen($gui->bug_notes) > 0);
                 // will do call to update issue Notes
-                if($args->addLinkToTL) 
-                {
+                if($args->addLinkToTL) {
                   $args->direct_link = getDirectLinkToExec($db,$args->exec_id);
                   $dummy = generateIssueText($db,$args,$its,$args->addLinkToTL); 
                   $gui->bug_notes = $dummy->description;
                 }  
 
-                if( $args->addLinkToTL || $hasNotes )
-                {
+                if( $args->addLinkToTL || $hasNotes ) {
                   $opt = new stdClass();
                   $opt->reporter = $args->user->login;
                   $its->addNote($args->bug_id,$gui->bug_notes,$opt);
                 }
               }  
             }
-          }
-          else
-          {
+          } else {
             $gui->msg = sprintf($l18n["error_bug_does_not_exist_on_bts"],$gui->bug_id);
           }  
         }
@@ -91,11 +79,14 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
       case 'add_note':
         // blank notes will not be added :).
         $gui->msg = '';
-        if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
-        {
+        if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) ) {
           $opt = new stdClass();
           $opt->reporter = $args->user->login;
-          $its->addNote($args->bug_id,$gui->bug_notes,$opt);
+          $ope = $its->addNote($args->bug_id,$gui->bug_notes,$opt);
+
+          if( !$ope['status_ok'] ) {
+            $gui->msg = $ope['msg'];
+          }  
         }  
       break;
     }
@@ -104,7 +95,6 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 
-//var_dump($gui);die();
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

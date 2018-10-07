@@ -6,8 +6,6 @@
  * @author Francisco Mancardi
  * @since 1.9.4
  *
- * @internal revisions
- * @since 1.9.13
  *
 **/
 class mantissoapInterface extends issueTrackerInterface
@@ -83,12 +81,9 @@ class mantissoapInterface extends issueTrackerInterface
     { 
       // OK, we have got WSDL => server is up and we can do SOAP calls, but now we need 
       // to do a simple call with user/password only to understand if we are really connected
-      try
-      {
+      try {
         $x = $op['client']->mc_enum_status($this->cfg->username,$this->cfg->password);
-      }
-      catch (SoapFault $f)
-      {
+      } catch (SoapFault $f) {
         $this->connected = false;
         tLog("SOAP Fault: (code: {$f->faultcode}, string: {$f->faultstring})","ERROR");
       }
@@ -494,17 +489,15 @@ class mantissoapInterface extends issueTrackerInterface
    *
    *
    */
-  public function addNote($issueID,$noteText,$opt=null)
-  {
+  public function addNote($issueID,$noteText,$opt=null) {
+
     static $client;
     $ret = array('status_ok' => false,'msg' => '', 'note_id' => -1);
-    if (!$this->isConnected())
-    {
+    if (!$this->isConnected()) {
       return $ret;
     }
     
-    if(is_null($client))
-    {
+    if(is_null($client)) {
       $dummy = $this->getClient();
       $client = $dummy['client'];
     }
@@ -514,24 +507,43 @@ class mantissoapInterface extends issueTrackerInterface
     $safe->password = (string)$this->cfg->password;
     $safe->issueID = intval($issueID);
 
-    if($client->mc_issue_exists($safe->username,$safe->password,$safe->issueID))
-    {
-      $issueNoteData = array('text' => $noteText);
+    
+    if($client->mc_issue_exists($safe->username,$safe->password,$safe->issueID)) {
 
-      // If provided user tester as Reporter
-      if(!is_null($opt))
-      {
-        if(property_exists($opt, 'reporter'))
-        {
+      $issueNoteData = array('text' => $noteText);
+      if(!is_null($opt)) {
+        if(property_exists($opt, 'reporter')) {
           $issueNoteData['reporter'] = array('name' => $opt->reporter);
         }  
       }  
-      $ret['note_id'] = $client->mc_issue_note_add($safe->username,$safe->password,$safe->issueID,$issueNoteData);
+
+      try {
+        $ret['note_id'] = 
+          $client->mc_issue_note_add($safe->username,$safe->password,
+                                     $safe->issueID,$issueNoteData);        
+      } catch (SoapFault $f) {
+        // "User id missing";
+        // Have found no way to check code, then will check message
+        // MantisBT send messages only on English
+        $faultMsg = $f->getMessage();
+
+        switch( $faultMsg ) {
+          case "User id missing":
+            $ret['msg'] = 
+              "Cannot create note, using TestLink logged user: " .
+              $issueNoteData['reporter']['name'];
+            var_dump($ret);die();  
+          break;
+
+          default:
+          break;
+        } 
+      }  
     }
-    else
-    {
+    else {
       $ret['msg'] = 'issue does not exist';
     }
+
     return $ret;
   }
   

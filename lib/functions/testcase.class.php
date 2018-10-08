@@ -5305,10 +5305,8 @@ class testcase extends tlObjectWithAttachments
   /**
    *
    *
-   *  @internal revisions
    */
-  function get_steps($tcversion_id,$step_number=0,$options=null)
-  {
+  function get_steps($tcversion_id,$step_number=0,$options=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $my['options'] = array( 'fields2get' => '*', 'accessKey' => null,
@@ -5321,11 +5319,9 @@ class testcase extends tlObjectWithAttachments
 
     // build
     $f2g = "TCSTEPS.{$my['options']['fields2get']}";
-    if($my['options']['fields2get'] != '*')
-    {
+    if($my['options']['fields2get'] != '*') {
       $sof = explode(',',$my['options']['fields2get']);
-      foreach($sof as &$ele)
-      {
+      foreach($sof as &$ele) {
         $ele = 'TCSTEPS.' . $ele;
       }
       $f2g = implode(',',$sof);
@@ -5337,28 +5333,37 @@ class testcase extends tlObjectWithAttachments
            " ON NH_STEPS.id = TCSTEPS.id " .
            " WHERE NH_STEPS.parent_id = {$safe_tcversion_id} {$step_filter} ORDER BY step_number";
 
-    if( is_null($my['options']['accessKey']) )
-    {
+    if( is_null($my['options']['accessKey']) ) {
       $result = $this->db->get_recordset($sql);
-    }
-    else
-    {
+    } else {
       $result = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
     }
 
-    if(!is_null($result) && $my['options']['renderGhostSteps'])
-    {
-      $this->renderGhostSteps($result);
+    if(!is_null($result) && $my['options']['renderGhostSteps']) {
+      $sql = "/* $debugMsg */
+              SELECT summary,preconditions 
+              FROM {$this->tables['tcversions']} TCV 
+              WHERE TCV.id = $safe_tcversion_id ";
+      $scan = current($this->db->get_recordset($sql));
+  
+      $xrayScan = null;
+      foreach($scan as $fn => $vf) {
+        if( trim($vf) != '' ) {
+          if( strpos($vf,self::NAME_PHOPEN) !== FALSE && 
+              strpos($vf,self::NAME_PHCLOSE) !== FALSE ) {
+            $xrayScan[$fn] = $vf;
+          }
+        }
+      }            
+      $this->renderGhostSteps($result, $xrayScan);
     }
 
-    if(!is_null($result) && $my['options']['renderImageInline'])
-    {
+    if(!is_null($result) && $my['options']['renderImageInline']) {
       // for attachments we need main entity => Test case
       $tcvnode = $this->tree_manager->get_node_hierarchy_info($tcversion_id);
       $k2l = count($result);
       $gaga = array('actions','expected_results');
-      for($idx=0; $idx < $k2l; $idx++)
-      {
+      for($idx=0; $idx < $k2l; $idx++) {
         $this->renderImageAttachments($tcvnode['parent_id'],$result[$idx],$gaga);
       }
     }
@@ -6079,12 +6084,12 @@ class testcase extends tlObjectWithAttachments
    *
    * <p> </p> added by web rich editor create some layout issues
    */
-  function renderGhostSteps(&$steps2render) {
+  function renderGhostSteps(&$steps2render, $scan = null) {
     $warningRenderException = lang_get('unable_to_render_ghost');
     $loop2do = count($steps2render);
 
-    $tlBeginMark = '[ghost]';
-    $tlEndMark = '[/ghost]';
+    $tlBeginMark = self::GHOSTBEGIN;
+    $tlEndMark = self::GHOSTEND;
     $tlEndMarkLen = strlen($tlEndMark);
 
     $key2check = array('actions','expected_results');
@@ -6097,31 +6102,24 @@ class testcase extends tlObjectWithAttachments
     $replaceSetWebRichEditor = array('</p>', '<p>','&nbsp;');
 
     $rse = &$steps2render;
-    for($gdx=0; $gdx < $loop2do; $gdx++)
-    {
-      foreach($key2check as $item_key)
-      {
+    for($gdx=0; $gdx < $loop2do; $gdx++) {
+      foreach($key2check as $item_key) {
         $deghosted = false;
         $start = FALSE;
 
-        if(isset($rse[$gdx][$item_key]))
-        {
+        if(isset($rse[$gdx][$item_key])) {
           $start = strpos($rse[$gdx][$item_key],$tlBeginMark);
           $ghost = $rse[$gdx][$item_key];
         }
 
-        if($start !== FALSE)
-        {
+        if($start !== FALSE) {
           $xx = explode($tlBeginMark,$rse[$gdx][$item_key]);
           $xx2do = count($xx);
           $ghost = '';
           $deghosted = false;
-          for($xdx=0; $xdx < $xx2do; $xdx++)
-          {
-            try
-            {
-              if( ($cutting_point = strpos($xx[$xdx],$tlEndMark)) !== FALSE)
-              {
+          for($xdx=0; $xdx < $xx2do; $xdx++) {
+            try {
+              if( ($cutting_point = strpos($xx[$xdx],$tlEndMark)) !== FALSE) {
                 // here I've made a mistake
                 // Look at this situation:
                 //
@@ -6141,18 +6139,14 @@ class testcase extends tlObjectWithAttachments
                 $dx = '{' . html_entity_decode(trim($leftside,'\n')) . '}';
                 $dx = json_decode($dx,true);
 
-                if(isset($dx['Step']))
-                {
-                  if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 )
-                  {
+                if(isset($dx['Step'])) {
+                  if( ($xid = $this->getInternalID($dx['TestCase'])) > 0 ) {
                     // Start looking initially just for ACTIVE Test Case Versions
                     $vn = isset($dx['Version']) ? intval($dx['Version']) : 0;
-                    if($vn == 0)
-                    {
+                    if($vn == 0) {
                       // User wants to follow latest ACTIVE VERSION
                       $yy = $this->get_last_version_info($xid,array('output' => 'full','active' => 1));
-                      if(is_null($yy))
-                      {
+                      if(is_null($yy)) {
                         // seems all versions are inactive, in this situation will get latest
                         $yy = $this->get_last_version_info($xid,array('output' => 'full'));
                       }
@@ -6160,19 +6154,15 @@ class testcase extends tlObjectWithAttachments
                     }
 
                     $fi = $this->get_basic_info($xid,array('number' => $vn));
-                    if(!is_null($fi))
-                    {
-                      if(intval($dx['Step']) > 0)
-                      {
+                    if(!is_null($fi)) {
+                      if(intval($dx['Step']) > 0) {
                         $deghosted = true;
                         $stx = $this->get_steps($fi[0]['tcversion_id'],$dx['Step']);
                         $ghost .= str_replace($replaceSetWebRichEditor,'',$stx[0][$item_key]) . $rightside;
                       }
                     }
                   }
-                }
-                else
-                {
+                } else {
                   // seems we have found a ghost test case INSTEAD OF a GHOST test case STEP
                   // Then I do a trick creating an artificial 'summary' member
                   $zorro = array('summary' => $tlBeginMark . $leftside . $tlEndMark);
@@ -6180,23 +6170,24 @@ class testcase extends tlObjectWithAttachments
                   $deghosted = true;
                   $ghost .= $zorro['summary'] . $rightside;
                 }
-              }
-              else
-              {
+              } else {
                 $ghost = $xx[$xdx]; // 20131022
               }
-            }
-            catch (Exception $e)
-            {
+            } catch (Exception $e) {
               $deghosted = true;
               $ghost .= $warningRenderException . $rse[$gdx][$item_key];
             }
           }
         } // $start
 
-        if($deghosted)
-        {
+        if($deghosted) {
           $rse[$gdx][$item_key] = $ghost;
+        }
+
+        if(null != $scan) {
+          $gaga = implode(',',$scan);
+          $rse[$gdx][$item_key] = 
+            $this->replaceTextBTWTags($rse[$gdx][$item_key],$gaga);
         }
 
       }
@@ -8126,6 +8117,54 @@ class testcase extends tlObjectWithAttachments
     }
     return $name;
   }
+
+  /**
+   * target => [[All you need]]
+   * scan4values => [[is Love]]
+   * 
+   * returned text => All you need::is Love
+   *
+   */
+  function replaceTextBTWTags($target, $scan4values) {
+
+    $taglen = strlen(self::NAME_PHOPEN);
+    $side = array('l' => '','r' => '');
+
+    $where['open'] = strpos($target,self::NAME_PHOPEN);
+    $where['close'] = strpos($target,self::NAME_PHCLOSE);
+
+    // Both tags present or ... skip
+    if( FALSE !== $where['open'] && FALSE !== $where['close']) {
+
+      // the needle will NOT BE replaced.
+      $needle = substr($target,
+                       $where['open'] + $taglen, 
+                       ($where['close'] - $where['open'] - $taglen) );  
+
+      // start disecting the target
+      // first to the left
+      $side['l'] = substr($target, 0, $where['open']);
+
+      // haystack = $target
+      // needle = self::NAME_PHCLOSE
+      $dummy = strstr($target,self::NAME_PHCLOSE);
+      $whoami['r'] = '';  
+
+      if( $dummy !== FALSE ) {
+        // dummy => ]]xxxxxxxxxxx
+        $side['r'] = ltrim($dummy,self::NAME_PHCLOSE); 
+      }    
+      
+      $dm = explode(self::NAME_DIVIDE, $needle);
+      $target = $side['l'] . ((count($dm) > 0) ? $dm[0] : $needle);
+
+      $juice = $this->orangeJuice($scan4values);
+      $target .= self::NAME_DIVIDE . $juice . $side['r']; 
+    }
+    return $target;
+  } 
+
+
 
   /**
    *

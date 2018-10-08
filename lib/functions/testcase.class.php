@@ -47,7 +47,12 @@ class testcase extends tlObjectWithAttachments
   const NAME_PHOPEN = '[[';
   const NAME_PHCLOSE = ']]';
   const NAME_DIVIDE = '::';
-  const GHOSTMASK = '[ghost]"TestCase":"%s","Version":"%s"[/ghost]';
+  const GHOSTBEGIN = '[ghost]';
+  const GHOSTEND = '[/ghost]';
+  const GHOSTMASK = self::GHOSTBEGIN . 
+    '"TestCase":"%s","Version":"%s"' . self::GHOSTEND;
+  const GHOSTSTEPMASK = self::GHOSTBEGIN .
+    '"Step":"%s","TestCase":"%s","Version":"%s"' . self::GHOSTEND;
 
   /** @var database handler */
   var $db;
@@ -73,7 +78,7 @@ class testcase extends tlObjectWithAttachments
   var $XMLCfg;
 
   /**
-   * testplan class constructor
+   * testcase class constructor
    *
    * @param resource &$db reference to database handler
    */
@@ -993,8 +998,9 @@ class testcase extends tlObjectWithAttachments
           $ref = &$gui->testcase_other_versions[$target_idx];
           for($qdx=0; $qdx < $loop2do; $qdx++) {
             
-            $ref[$qdx]['ghost'] = sprintf(self::GHOSTMASK,$tcvSet[0]['tc_external_id'],
-                                          $ref[$qdx]['version']);
+            $ref[$qdx]['ghost'] = 
+              sprintf(self::GHOSTMASK,$tcvSet[0]['tc_external_id'],
+                                      $ref[$qdx]['version']);
 
             $cfCtx['link_id'] = $gui->testcase_other_versions[$target_idx][$qdx]['id'];
             foreach($cfPlaces as $locKey => $locFilter) {
@@ -1882,10 +1888,11 @@ class testcase extends tlObjectWithAttachments
                 if($my['options']['stepAsGhost']) {
                   $pfx = $this->getPrefix($id);
                   $pfx = $pfx[0] . $this->cfg->testcase->glue_character . $tcversion['tc_external_id'];
+
                   foreach($stepsSet as $key => $step) {
-                    $act = "[ghost]\"Step\":{$step['step_number']}," .
-                           '"TestCase"' .':"' . $pfx . '",' .
-                           "\"Version\":{$tcversion['version']}[/ghost]";
+                    $act = sprtinf(self::GHOSTSTEPMASK,$step['step_number'],
+                                   $pfx,$tcversion['version']); 
+
                     $op = $this->create_step($to_tcversion_id,
                                              $step['step_number'],$act,$act,
                                              $step['execution_type']);
@@ -2480,9 +2487,10 @@ class testcase extends tlObjectWithAttachments
 
           $k2l = array_keys((array)$step_set);
           foreach($k2l as $kx) {
-            $step_set[$kx]['ghost_action'] = "[ghost]\"Step\":{$step_set[$kx]['step_number']}," .
-                                             '"TestCase"' .':"' . $pfx . '",' .
-                                             "\"Version\":{$recordset[$accessKey]['version']}[/ghost]";
+            $step_set[$kx]['ghost_action'] =
+              sprintf(self::GHOSTSTEPMASK,$step_set[$kx]['step_number'],
+                      $pfx,$recordset[$accessKey]['version']);
+
             $step_set[$kx]['ghost_result'] = $step_set[$kx]['ghost_action'];
           }
         }

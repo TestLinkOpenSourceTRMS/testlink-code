@@ -43,7 +43,20 @@ switch($args->doc_type)  {
     // $filters->build_id = $tplan_mgr->get_max_build_id($args->tplan_id);
     $gui->buildInfoSet = null;
     if( $args->doc_type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) {
-      $gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id); 
+      $gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id);
+
+      if( null != $gui->buildInfoSet ) {
+        $gui->buildRptLinkSet = array();
+        $dl = $args->basehref .
+              "lnl.php?apikey=" . $args->tplan_info['api_key'] .
+              "&tproject_id=$args->tproject_id" .
+              "&tplan_id=$args->tplan_id" .
+              "&type=testreport_onbuild";
+
+        foreach( $gui->buildInfoSet as $bid => $nunu ) {
+          $gui->buildRptLinkSet[$bid] = $dl . "&build_id=$bid";         
+        }       
+      }
     } 
 
     $additionalInfo = new stdClass();
@@ -155,13 +168,14 @@ function init_args(&$dbHandler) {
     $args->showHelpIcon = false;
     $args->tplan_id = intval(isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0);
 
-    if($args->tplan_id > 0) {  
-      $tplan_mgr = new testplan($dbHandler);
-      $args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-      $args->mainTitle = $l18n['test_plan'] . ': ' . $args->tplan_info['name'];
-    }
   }  
-
+  
+  if($args->tplan_id > 0) {  
+    $tplan_mgr = new testplan($dbHandler);
+    $args->tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+    $args->mainTitle = $l18n['test_plan'] . ': ' . $args->tplan_info['name'];
+  }
+  
   return $args;
 }
 

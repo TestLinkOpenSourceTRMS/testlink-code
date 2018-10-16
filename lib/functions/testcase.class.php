@@ -7706,11 +7706,13 @@ class testcase extends tlObjectWithAttachments
     static $attSet;
     static $beginTag;
     static $endTag;
+    static $repoDir;    
 
     if(!$attSet || !isset($attSet[$id])) {
       $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
       $beginTag = '[tlInlineImage]';
       $endTag = '[/tlInlineImage]';
+      $repoDir = config_get('repositoryPath');
     }
 
     if(is_null($attSet[$id])) {
@@ -7723,8 +7725,10 @@ class testcase extends tlObjectWithAttachments
     //
     // CRITIC: skipCheck is needed to render OK when creating report on Pseudo-Word format.
     $bhref = is_null($basehref) ? $_SESSION['basehref'] : $basehref;
-    $img = '<p><img src="' . $bhref . 
-      '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>';
+
+    $src = ' src="' . $bhref .  
+      '/lib/attachments/attachmentdownload.php?skipCheck=%sec%&id=%id%"></p>';    
+    $img = '<p><img  %s ' . $src;
 
     $rse = &$item2render;
     foreach($key2check as $item_key) {
@@ -7756,7 +7760,15 @@ class testcase extends tlObjectWithAttachments
               try {
                 if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image']) {
                   $sec = hash('sha256', $attSet[$id][$atx]['file_name']);
-                  $ghost .= str_replace(array('%id%','%sec%'),array($atx,$sec),$img);
+
+                  // Need file dimension!!!
+                  $pathname = $repoDir . $attSet[$id][$atx]['file_path'];
+                  list($iWidth, $iHeight, $iT, $iA) = 
+                    getimagesize($pathname);
+                  
+                  $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+                  $icarus = str_replace(array('%id%','%sec%'),array($atx,$sec),  $img);
+                  $ghost .= sprintf($icarus,$iDim);
                 }
                 $lim = $elc-1;
                 for($cpx=1; $cpx <= $lim; $cpx++) {

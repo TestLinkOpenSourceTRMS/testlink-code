@@ -478,8 +478,15 @@ function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr,$optionTransferCfg) {
   }
 
   if( intval($args->tprojectID) == 0 ) {
-    $args->tprojectID = intval($_REQUEST['tproject_id']);
+    if( isset($_REQUEST['tproject_id']) ) {
+      $args->tprojectID = intval($_REQUEST['tproject_id']);
+    }
+
+    if( isset($_REQUEST['tprojectID']) ) {
+      $args->tprojectID = intval($_REQUEST['tprojectID']);
+    }    
   }
+
   // very ugly
   $args->level = null; 
   if( isset($_REQUEST['delete_testsuite']) ) {

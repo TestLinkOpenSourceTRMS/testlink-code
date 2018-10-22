@@ -6854,10 +6854,12 @@ class testcase extends tlObjectWithAttachments
     $stepDesignEditorCfg = getWebEditorCfg('steps_design');
     $goo->stepDesignEditorType = $stepDesignEditorCfg['type'];
 
-    // Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
-    $goo->can_do->add2tplan = 'no';
+    // Add To Testplan button will be disabled if 
+    // the testcase doesn't belong to the current selected testproject
     if($idCard->tproject_id == $goo->tproject_id) {
       $goo->can_do->add2tplan = ($goo->can_do->add2tplan == 'yes') ? $grantsObj->testplan_planning : 'no';
+    } else {
+      $goo->can_do->add2tplan = 'no';
     }
 
     return $goo;

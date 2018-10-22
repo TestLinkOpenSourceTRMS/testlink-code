@@ -173,8 +173,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     returns: null if query fails
              map with requirement spec info
   */
-  function get_by_id($id,$options=null)
-  {
+  function get_by_id($id,$options=null) {
   	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
    
          
@@ -694,6 +693,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 			$sql .= " WHERE NH_REQ.parent_id=" . $value['id'] .
 					" AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
 			$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
+
+      // var_dump($sql);
 
 			if( !is_null($itemSet) )
 			{
@@ -2763,7 +2764,8 @@ function get_requirement_child_by_id_req($id){
            " CONCAT(NH_REQ.name,' [v', REQVER.version ,'] ' ) AS title," .
            " REQ.req_doc_id, REQVER.version," .
            " TLUSER.login AS coverage_author," .
-           " RCOV.creation_ts AS coverage_ts,REQVER.is_open," .
+           " RCOV.creation_ts AS coverage_ts,REQVER.is_open,
+             REQVER.is_open AS reqver_is_open," .
            " CASE " .
            "      WHEN RCOV.link_status = " . LINK_TC_REQ_OPEN .
            "           THEN 1 " .

@@ -206,7 +206,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     default:
       $outf = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
               " REQV.scope,REQV.status,REQV.type,REQV.active," . 
-              " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+              " REQV.is_open,REQV.is_open AS reqver_is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
               " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
               " REQV.modification_ts,REQV.revision, -1 AS revision_id, " .
               " NH_REQ.name AS title, REQ_SPEC.testproject_id, " .

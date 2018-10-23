@@ -2314,20 +2314,15 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function _natsort_builds($builds_map)
-  {
-    // BUGID - sort in natural order (see natsort in PHP manual)
-    foreach($builds_map as $key => $value)
-    {
-      $vk[$value['name']]=$key;
-      $build_names[$key]=$value['name'];
+  function _natsort_builds($builds_map) {
+    // sort in natural order (see natsort in PHP manual)
+    foreach($builds_map as $key => $value) {
+      $build_names[$key] = $value['name'];
     }
     
     natsort($build_names);
-    $build_num=count($builds_map);
-    foreach($build_names as $key => $value)
-    {
-      $dummy[$key]=$builds_map[$key];
+    foreach($build_names as $key => $value) {
+      $dummy[$key] = $builds_map[$key];
     }
     return $dummy;
   }

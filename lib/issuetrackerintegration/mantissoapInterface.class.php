@@ -37,7 +37,10 @@ class mantissoapInterface extends issueTrackerInterface
   {
     $this->name = $name;
     $this->interfaceViaDB = false;
-    $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => true);
+
+    $this->methodOpt['buildViewBugLink'] = 
+      array('addSummary' => true, 'colorByStatus' => true,
+            'addReporter' => true, 'addHandler' => true);
     
     $this->defaultResolvedStatus = array();
     $this->defaultResolvedStatus[] = array('code' => 80, 'verbose' => 'resolved');
@@ -210,8 +213,7 @@ class mantissoapInterface extends issueTrackerInterface
       if($client->mc_issue_exists($safe->username,$safe->password,$safe->id))
       {
         $issue = $client->mc_issue_get($safe->username,$safe->password,$safe->id);
-        if( !is_null($issue) && is_object($issue) )
-        {       
+        if( !is_null($issue) && is_object($issue) ) {       
           $issue->IDHTMLString = "<b>{$id} : </b>";
           $issue->statusCode = $issue->status->id; 
           $issue->statusVerbose = $issue->status->name; 
@@ -220,7 +222,10 @@ class mantissoapInterface extends issueTrackerInterface
           $this->status_color[$issue->statusVerbose] : 'white';
 
           $issue->summaryHTMLString = $issue->summary;
-          $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]); 
+          $issue->isResolved = isset($this->resolvedStatus->byCode[$issue->statusCode]);
+
+          $issue->reportedBy = (string)$issue->reporter->name;
+          $issue->handledBy = (string)$issue->handler->name;    
         }
       }
     }

@@ -3899,4 +3899,8 @@ $TLS_obsolete = 'obsolete';
 $TLS_tcversion_executed_keyword_assignment_blocked = ' Test Case Version Has been executed, system configuration does not allow keyword management';
 
 $TLS_select_keywords = 'Select Keywords';
+
+$TLS_issueReporter = 'Reported By';
+$TLS_issueHandler = 'Assigned To / Handled By';
+
 // ----- END ------------------------------------------------------------------

@@ -7,8 +7,8 @@
 # 
 #
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN `id` int(10) unsigned primary KEY AUTO_INCREMENT FIRST;
-ALTER TABLE /*prefix*/req_coverage ADD COLUMN `req_version_id` int(10) NOT NULL AFTER req_id;
-ALTER TABLE /*prefix*/req_coverage ADD COLUMN `tcversion_id` int(10) NOT NULL AFTER testcase_id;
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN `req_version_id` int(10) NOT NULL DEFAULT '0' AFTER req_id;
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN `tcversion_id` int(10) NOT NULL DEFAULT '0' AFTER testcase_id;
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN `link_status` int(11) NOT NULL DEFAULT '1' AFTER tcversion_id;
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN `is_active` int(11) NOT NULL DEFAULT '1' AFTER link_status;
 
@@ -16,7 +16,7 @@ ALTER TABLE /*prefix*/req_coverage DROP KEY /*prefix*/req_testcase;
 ALTER TABLE /*prefix*/req_coverage ADD UNIQUE KEY /*prefix*/req_coverage_full_link (`req_id`,`req_version_id`,`testcase_id`,`tcversion_id`);
 
 
-ALTER TABLE /*prefix*/testcase_keywords ADD COLUMN `tcversion_id` int(10) NOT NULL AFTER testcase_id;
+ALTER TABLE /*prefix*/testcase_keywords ADD COLUMN `tcversion_id` int(10) NOT NULL DEFAULT '0' AFTER testcase_id;
 ALTER TABLE /*prefix*/testcase_keywords DROP PRIMARY KEY;
 ALTER TABLE /*prefix*/testcase_keywords ADD COLUMN `id` int(10) unsigned primary KEY AUTO_INCREMENT FIRST;
 ALTER TABLE /*prefix*/testcase_keywords ADD UNIQUE KEY /*prefix*/idx01_testcase_keywords (`testcase_id`,`tcversion_id`,`keyword_id`);
@@ -76,8 +76,8 @@ WHERE TCKW.testcase_id = LTCVID.testcase_id;
 # A little bit complex migration
 # Test Case Relations
 CREATE TABLE /*prefix*/testcase_relations_backup SELECT * FROM /*prefix*/testcase_relations;
-ALTER TABLE /*prefix*/testcase_relations ADD COLUMN `tcase_source_id` int(10) unsigned NOT NULL;
-ALTER TABLE /*prefix*/testcase_relations ADD COLUMN `tcase_destination_id` int(10) unsigned NOT NULL;
+ALTER TABLE /*prefix*/testcase_relations ADD COLUMN `tcase_source_id` int(10) unsigned NOT NULL DEFAULT '0';
+ALTER TABLE /*prefix*/testcase_relations ADD COLUMN `tcase_destination_id` int(10) unsigned NOT NULL DEFAULT '0';
 
 UPDATE /*prefix*/testcase_relations SET tcase_source_id = source_id;
 UPDATE /*prefix*/testcase_relations SET tcase_destination_id = destination_id;

@@ -6,8 +6,8 @@
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN id BIGSERIAL  NOT NULL;
 ALTER TABLE /*prefix*/req_coverage ADD PRIMARY KEY (id);
 
-ALTER TABLE /*prefix*/req_coverage ADD COLUMN req_version_id INTEGER NOT NULL;
-ALTER TABLE /*prefix*/req_coverage ADD COLUMN tcversion_id INTEGER NOT NULL;
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN req_version_id INTEGER NOT NULL DEFAULT '0';
+ALTER TABLE /*prefix*/req_coverage ADD COLUMN tcversion_id INTEGER NOT NULL DEFAULT '0';
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN link_status INT2 NOT NULL DEFAULT '1';
 ALTER TABLE /*prefix*/req_coverage ADD COLUMN is_active INT2 NOT NULL DEFAULT '1';
 
@@ -23,7 +23,7 @@ ALTER TABLE /*prefix*/testcase_keywords DROP constraint /*prefix*/testcase_keywo
 
 ALTER TABLE /*prefix*/testcase_keywords ADD COLUMN id BIGSERIAL NOT NULL;
 ALTER TABLE /*prefix*/testcase_keywords ADD PRIMARY KEY (id);
-ALTER TABLE /*prefix*/testcase_keywords ADD COLUMN tcversion_id INTEGER NOT NULL;
+ALTER TABLE /*prefix*/testcase_keywords ADD COLUMN tcversion_id INTEGER NOT NULL DEFAULT '0';
 
 CREATE UNIQUE INDEX /*prefix*/idx01_testcase_keywords ON /*prefix*/testcase_keywords ("testcase_id","tcversion_id","keyword_id");
 

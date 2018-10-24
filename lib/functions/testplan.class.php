@@ -152,14 +152,12 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function createFromObject($item,$opt=null)
-  {
+  function createFromObject($item,$opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-    try 
-    {
+    try {
       // mandatory checks
       if(strlen($item->name)==0)
       {
@@ -7711,20 +7709,18 @@ class testplan extends tlObjectWithAttachments
  * Build Manager Class 
  * @package TestLink
  **/
-class build_mgr extends tlObject
-{
+class build_mgr extends tlObject {
   /** @var database handler */
   var $db;
   var $cfield_mgr;
 
 
   /** 
-   * class constructor 
+   * Build Manager class constructor 
    * 
    * @param resource &$db reference to database handler
    **/
-  function build_mgr(&$db)
-  {
+  function build_mgr(&$db) {
     parent::__construct();
     $this->db = &$db;
     $this->cfield_mgr = new cfield_mgr($this->db);
@@ -7732,10 +7728,9 @@ class build_mgr extends tlObject
 
 
   /**
-   *
+   * Build Manager
    */
-  function setZeroOneAttr($id,$attr,$zeroOne)
-  {
+  function setZeroOneAttr($id,$attr,$zeroOne) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = "/* $debugMsg */ " . 
@@ -7745,38 +7740,34 @@ class build_mgr extends tlObject
 
 
   /**
-   *
+   * Build Manager
    */
-  function setActive($id)
-  {
+  function setActive($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'active',1);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setInactive($id)
-  {
+  function setInactive($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'active',0);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setOpen($id)
-  {
+  function setOpen($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'is_open',1);
     $this->setClosedOnDate($id,null);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setClosed($id)
-  {
+  function setClosed($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'is_open',0);
     $timestamp = explode(' ',trim($this->db->db_now(),"'"));
@@ -7786,6 +7777,8 @@ class build_mgr extends tlObject
 
 
   /*
+    Build Manager 
+
     function: create
 
     args :
@@ -8220,6 +8213,29 @@ class build_mgr extends tlObject
 
     return $cf_smarty;
   }
+
+  /** 
+   *
+   *
+   */
+  function createFromObject($buildObj) {
+
+    $item = $buildObj;
+    $optProp = array('notes' => '', 'active' => 1, 'open' => 1,
+                     'release_date' => '');
+
+    foreach($optProp as $prop => $defa) {
+      if( !property_exists($item, $prop) ) {
+        $item->$prop = $defa;
+      }
+    }
+    
+    $id = $this->create($buildObj->tplan_id,$buildObj->name,
+                        $item->notes,$item->active,$item->open,
+                        $item->release_date);
+    return $id;
+  }
+
 
 
 

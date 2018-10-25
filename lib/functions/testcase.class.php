@@ -635,7 +635,7 @@ class testcase extends tlObjectWithAttachments
  private function createVersion($item) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $tcase_version_id = $this->tree_manager->new_node($item->id,
-                          $this->node_types_descr_id['testcase_version']);
+                        $this->node_types_descr_id['testcase_version']);
 
     $this->CKEditorCopyAndPasteCleanUp($item,array('summary','preconditions')); 
 
@@ -683,7 +683,7 @@ class testcase extends tlObjectWithAttachments
     $result = $this->db->exec_query($sql);
 
     $ret['msg']='ok';
-    $ret['id']=$tcase_version_id;
+    $ret['id'] = $tcase_version_id;
     $ret['status_ok']=1;
 
     if ($result && ( !is_null($item->steps) && is_array($item->steps) ) ) {
@@ -1838,10 +1838,9 @@ class testcase extends tlObjectWithAttachments
           $ix->summary = $tcversion['summary'];
           $ix->preconditions = $tcversion['preconditions'];
 
-          $op = $this->createVersion($ix);
-
-          if( $op['status_ok'] ) {
-              $alienTCV = $newTCObj['mappings'][$tcversion['id']] = $op['id'];
+          $opCV = $this->createVersion($ix);
+          if( $opCV['status_ok'] ) {
+              $alienTCV = $newTCObj['mappings'][$tcversion['id']] = $opCV['id'];
 
               $inlineImg = null;
               $attNewRef = $this->copy_attachments($tcversion['id'],$alienTCV);      
@@ -1876,12 +1875,12 @@ class testcase extends tlObjectWithAttachments
               // ATTENTION:  NEED TO UNDERSTAND HOW TO MANAGE COPY TO OTHER TEST PROJECTS
               $this->copy_cfields_design_values(
                 array('id' => $id, 'tcversion_id' => $tcversion['id']),
-                array('id' => $newTCObj['id'], 'tcversion_id' => $op['id']));
+                array('id' => $newTCObj['id'], 'tcversion_id' => $opCV['id']));
 
               // Need to get all steps
               $stepsSet = $this->get_steps($tcversion['id'],0,$my['options']);
 
-              $to_tcversion_id = $op['id'];
+              $to_tcversion_id = $opCV['id'];
               if( !is_null($stepsSet) ) {
 
                 // not elegant but ...
@@ -1893,34 +1892,34 @@ class testcase extends tlObjectWithAttachments
                     $act = sprtinf(self::GHOSTSTEPMASK,$step['step_number'],
                                    $pfx,$tcversion['version']); 
 
-                    $op = $this->create_step($to_tcversion_id,
-                                             $step['step_number'],$act,$act,
-                                             $step['execution_type']);
+                    $this->create_step($to_tcversion_id,
+                                       $step['step_number'],$act,$act,
+                                       $step['execution_type']);
                   }
                 } else {
                   foreach($stepsSet as $key => $step) {
-                    $op = $this->create_step($to_tcversion_id,
-                                             $step['step_number'],
-                                             $step['actions'],
-                                             $step['expected_results'],
-                                             $step['execution_type']);
+                    $this->create_step($to_tcversion_id,
+                                       $step['step_number'],
+                                       $step['actions'],
+                                       $step['expected_results'],
+                                       $step['execution_type']);
                   }
                 }
               }
           }
 
           // Conditional copies
-          if( $op['status_ok'] ) {
+          if( $opCV['status_ok'] ) {
             $source = array('id' => $id, 'version_id' => $tcversion['id']);
-            $dest = array('id' => $newTCObj['id'], 'version_id' => $op['id'] ,
+            $dest = array('id' => $newTCObj['id'], 'version_id' => $opCV['id'] ,
                           'version' => $tcversion['version']);
           }
-            
-          if( $op['status_ok'] && $copyKW ) {
+
+          if( $opCV['status_ok'] && $copyKW ) {
             $this->copyKeywordsTo($source,$dest,$my['mappings']['keywords']);
           }
 
-          if( $op['status_ok'] && $copyReqLinks ) {
+          if( $opCV['status_ok'] && $copyReqLinks ) {
             $this->copyReqVersionLinksTo($source,$dest,
               $my['mappings']['requirements'],$ix->authorID);
           }

@@ -9,6 +9,9 @@
  * @package 	TestLink
  * @since     1.9.7             
  * 
+ * Implemented using Slim framework Version 2.2.0
+ * 
+ * 
  * References
  * http://ericbrandel.com/2013/01/14/quickly-build-restful-apis-in-php-with-slim-part-2/
  * https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Add+Comment
@@ -22,9 +25,6 @@
  * http://nitschinger.at/A-primer-on-PHP-exceptions
  *
  *
- *
- * @internal revisions 
- * @since 1.9.14
  *
  */
 
@@ -113,6 +113,9 @@ class tlRestApi
     // test route with anonymous function 
     $this->app->get('/who', function () { echo __CLASS__ . ' : Get Route /who';});
 
+    // using middleware for authentication
+    // https://docs.slimframework.com/routing/middleware/
+    //
     $this->app->get('/whoAmI', array($this,'authenticate'), array($this,'whoAmI'));
 
     $this->app->get('/superman', array($this,'authenticate'), array($this,'superman'));

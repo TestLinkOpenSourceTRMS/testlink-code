@@ -414,6 +414,12 @@ function launchInsertStep(step_id)
    {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
             $has_been_executed == 0} 
 
+   {if $args_frozen_version=="no" && 
+       $args_tcase_cfg->can_edit_executed == 1 &&
+       $has_been_executed == 1}
+     {$kwRW = 1}
+   {/if}
+   
    {include file="testcases/keywords.inc.tpl" 
             args_edit_enabled=$kwRW
             args_tcase_id=$tcase_id
@@ -431,7 +437,7 @@ function launchInsertStep(step_id)
      {/if}    
 
      {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 && 
-         $has_been_executed == 1}
+         $has_been_executed == 1 && $args_tcase_cfg->can_edit_executed == 0}
         {$reqLinkingEnabled = 0}
      {/if}
      

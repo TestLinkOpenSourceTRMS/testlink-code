@@ -1220,6 +1220,9 @@ $tlCfg->reqTCLinks->freezeeLinkOnNewREQVersion = TRUE;
 $tlCfg->reqTCLinks->freezeeBothEndsOnNewTCVersion = TRUE;
 $tlCfg->reqTCLinks->freezeeBothEndsOnNewREQVersion = TRUE;
 
+$tlCfg->req_cfg->freezeREQVersionOnNewREQVersion = TRUE;
+
+
 
 /** text template for a new items:
     Test Case: summary, steps, expected_results, preconditions

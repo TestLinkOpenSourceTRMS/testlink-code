@@ -429,20 +429,16 @@ class testcase extends tlObjectWithAttachments
             }
           }
 
-          switch($my['options']['importLogic']['actionOnHit'])
-          {
+          switch($my['options']['importLogic']['actionOnHit']) {
             case 'create_new_version':
-              if($doQuickReturn)
-              {
+              if($doQuickReturn) {
                 // I this situation we will need to also update test case name, if user
                 // has provided one on import file.
                 // Then we need to check that new name will not conflict with an existing one
                 $doCreate = false;
-                if( strcmp($info[key($info)]['name'],$name) != 0)
-                {
+                if( strcmp($info[key($info)]['name'],$name) != 0) {
                   $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);
-                  if( is_null($itemSet) )
-                  {
+                  if( is_null($itemSet) ) {
                     $ret['name'] = $name;
                     $ret['update_name'] = true;
                   }
@@ -555,7 +551,7 @@ class testcase extends tlObjectWithAttachments
             break;
 
             case 'create_new_version':
-              $doCreate=false;
+              $doCreate = false;
 
               // If we found more that one with same name and same parent,
               // will take the first one.
@@ -692,23 +688,20 @@ class testcase extends tlObjectWithAttachments
 
       // need to this to manage call to this method for REST API.
       $stepIsObject =  is_object($item->steps[0]);
-      for($jdx=0 ; ($jdx < $steps2create && $op['status_ok']); $jdx++)
-      {
-        if($stepIsObject)
-        {
+      for($jdx=0 ; ($jdx < $steps2create && $op['status_ok']); $jdx++) {
+        if($stepIsObject) {
           $item->steps[$jdx] = (array)$item->steps[$jdx];
         }
 
-        $op = $this->create_step($tcase_version_id,
-                                 $item->steps[$jdx]['step_number'],
-                                 $item->steps[$jdx]['actions'],
-                                 $item->steps[$jdx]['expected_results'],
-                                 $item->steps[$jdx]['execution_type']);
+        $this->create_step($tcase_version_id,
+                           $item->steps[$jdx]['step_number'],
+                           $item->steps[$jdx]['actions'],
+                           $item->steps[$jdx]['expected_results'],
+                           $item->steps[$jdx]['execution_type']);
       }
     }
 
-    if (!$result)
-    {
+    if (!$result) {
       $ret['msg'] = $this->db->error_msg();
       $ret['status_ok']=0;
       $ret['id']=-1;
@@ -7909,8 +7902,7 @@ class testcase extends tlObjectWithAttachments
    *
    *
    */
-  function setIsOpen($id,$tcversion_id,$value)
-  {
+  function setIsOpen($id,$tcversion_id,$value) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $bv = (intval($value) > 0) ? 1 : 0;

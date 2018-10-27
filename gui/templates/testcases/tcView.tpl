@@ -84,18 +84,24 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
         {$path_part|escape} /
     {/foreach}
   {/if}
-    <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel','inline');"
+
+    <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel_{$tcVersionID}','inline');"
          title="{$labels.actions}" />
 
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 
     {include file="testcases/tcView_viewer.tpl" 
 
+             args_tcase_operations_enabled="yes"
              args_read_only="no"
              args_can_move_copy="yes"
              args_can_delete_testcase="yes" 
              args_show_version="yes" 
              args_hide_relations="no"
+             args_new_sibling="yes"
+             args_bulk_action="yes"
+             args_tcversion_operation_only_edit_button="no"
+
 
              args_testcase=$gui->tc_current_version[idx][0]
              args_status_quo=$gui->status_quo[idx]
@@ -191,7 +197,10 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
               args_cf=$gui->cf_other_versions[idx][$tdx] - OK 
               - do not know if there is info on smarty manuals
               *}
-              
+
+              <img class="clickable" src="{$tlImages.cog}" 
+                onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel_{$tcversion_id}','inline');"
+                   title="{$labels.actions}" />
 
               {* Setting args_can_do makes other versions READONLY *}
               {* Be carefull IDX is OK ONLY for status_quo *}
@@ -200,10 +209,13 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_can_move_copy="no" 
                        args_can_delete_testcase='no'
                        args_can_delete_version="yes"
-                       args_read_only="yes"
                        args_hide_relations="no"
                        args_show_version="no" 
                        args_show_title="no"
+                       args_new_sibling="no"
+                       args_bulk_action="no"
+                       args_tcase_operations_enabled="no"
+
 
                        args_testcase = $my_testcase 
 

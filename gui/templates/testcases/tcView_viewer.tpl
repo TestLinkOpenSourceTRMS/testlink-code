@@ -138,7 +138,9 @@ viewer for test case in test specification
 {/if}
 
 <div style="display:{$tlCfg->gui->op_area_display->test_case};" 
-    id="tcView_viewer_tcase_control_panel">
+    id="tcView_viewer_tcase_control_panel_{$tcversion_id}">
+  
+  {if $args_tcase_operations_enabled == "yes"}
   <fieldset class="groupBtn">
 	 <b>{$tcView_viewer_labels.testcase_operations}</b>
 
@@ -150,7 +152,7 @@ viewer for test case in test specification
 		<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
 		{* New TC sibling *}
-		{if $args_read_only != "yes" }
+		{if $args_new_sibling == "yes" }
 			<input type="hidden" name="containerID" value="{$args_testcase.testsuite_id}" />
 			<input type="submit" name="new_tc" title="{$tcView_viewer_labels.hint_new_sibling}"
 				   onclick="doAction.value='create';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_new_sibling}" />
@@ -162,13 +164,14 @@ viewer for test case in test specification
 		{/if}
 	  
 		{* Delete TC *}
-		{if $delete_enabled && $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
+		{if $delete_enabled && $args_can_do->delete_testcase == "yes" &&
+        $args_can_delete_testcase == "yes"}
 		  <input type="submit" name="delete_tc" value="{$tcView_viewer_labels.btn_delete}" />
 		{/if}
     </form>
   
 	{* bulk action *}
-	{if $edit_enabled}
+	{if $edit_enabled && $args_bulk_action=="yes"}
 	  <form style="display: inline;" id="tcbulkact" name="tcbulkact" 
 			method="post" action="{$bulkOpAction}" >
 		<input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />
@@ -191,6 +194,8 @@ viewer for test case in test specification
            value="{$tcView_viewer_labels.btn_show_exec_history}" />
     </span>
   </fieldset>
+  {/if}
+
   {* End of TC Section *}
 
   <fieldset class="groupBtn">
@@ -211,68 +216,73 @@ viewer for test case in test specification
 	{/if}
 
 	{* new TC version *}
-	{if $args_can_do->create_new_version == "yes" && $args_read_only != "yes"}
-	  <input type="submit" name="do_create_new_version" title="{$tcView_viewer_labels.hint_new_version}" 
-			 value="{$tcView_viewer_labels.btn_new_version}" />
-	{/if}
+  {if $args_tcversion_operation_only_edit_button == "no" }
+  	{if $args_can_do->create_new_version == "yes" && $args_read_only != "yes"}
+  	  <input type="submit" name="do_create_new_version" title="{$tcView_viewer_labels.hint_new_version}" 
+  			 value="{$tcView_viewer_labels.btn_new_version}" />
+  	{/if}
 
-	{* activate/desactivate TC version *}
-	{if $args_can_do->edit == "yes" && $args_can_do->deactivate=='yes' && $args_frozen_version=="no"}
-		  {if $args_testcase.active eq 0}
-			  {$act_deact_btn="activate_this_tcversion"}
-			  {$act_deact_value="activate_this_tcversion"}
-			  {$version_title_class="inactivate_version"}
-		  {else}
-			  {$act_deact_btn="deactivate_this_tcversion"}
-			  {$act_deact_value="deactivate_this_tcversion"}
-			  {$version_title_class="activate_version"}
-		  {/if}
-		  <input type="submit" name="{$act_deact_btn}"
-							 value="{lang_get s=$act_deact_value}" />
-	{/if}
+  	{* activate/desactivate TC version *}
+  	{if $args_can_do->edit == "yes" && $args_can_do->deactivate=='yes' && $args_frozen_version=="no"}
+  		  {if $args_testcase.active eq 0}
+  			  {$act_deact_btn="activate_this_tcversion"}
+  			  {$act_deact_value="activate_this_tcversion"}
+  			  {$version_title_class="inactivate_version"}
+  		  {else}
+  			  {$act_deact_btn="deactivate_this_tcversion"}
+  			  {$act_deact_value="deactivate_this_tcversion"}
+  			  {$version_title_class="activate_version"}
+  		  {/if}
+  		  <input type="submit" name="{$act_deact_btn}"
+  							 value="{lang_get s=$act_deact_value}" />
+  	{/if}
 
-	{* freeze/unfreeze TC version *}
-	{if $args_read_only != "yes" && 
-		$args_can_do->freeze=='yes'}
-		  {if $args_frozen_version=="yes"}
-			  {$freeze_btn="unfreeze"}
-			  {$freeze_value="unfreeze_this_tcversion"}
-			  {$version_title_class="unfreeze_version"}
-		  {else}
-			  {$freeze_btn="freeze"}
-			  {$freeze_value="freeze_this_tcversion"}
-			  {$version_title_class="freeze_version"}
-		  {/if}
+  	{* freeze/unfreeze TC version *}
+  	{if $args_read_only != "yes" && 
+  		$args_can_do->freeze=='yes'}
+  		  {if $args_frozen_version=="yes"}
+  			  {$freeze_btn="unfreeze"}
+  			  {$freeze_value="unfreeze_this_tcversion"}
+  			  {$version_title_class="unfreeze_version"}
+  		  {else}
+  			  {$freeze_btn="freeze"}
+  			  {$freeze_value="freeze_this_tcversion"}
+  			  {$version_title_class="freeze_version"}
+  		  {/if}
 
-		 <input type="submit" name="{$freeze_btn}" 
-				onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
-	{/if}
+  		 <input type="submit" name="{$freeze_btn}" 
+  				onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
+  	{/if}
 
-	{* delete TC version *}
-	{if $args_frozen_version=="no" && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
-	   <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
-	{/if}
+  	{* delete TC version *}
+  	{if $args_frozen_version=="no" && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
+  	   <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
+  	{/if}
 
   </form>
-  {* add TC version to testplan *}
-  {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
-	<span>
-	  <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
-		<input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
-		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
-		   value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
-	  </form>
-	</span>
   {/if}
-  {* Export TC version *}
-	<span>
-	  <form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
-		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
-	  </form>
-	</span>
+
+  {if $args_tcversion_operation_only_edit_button == "no"}
+    {* add TC version to testplan *}
+    {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
+  	<span>
+  	  <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
+  		<input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
+  		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+  		<input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
+  		   value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
+  	  </form>
+  	</span>
+    {/if}
+    {* Export TC version *}
+  	<span>
+  	  <form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
+  		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+  		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+  		<input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
+  	  </form>
+  	</span>
+  {/if}
 {/if} {* user can edit *}
 
 {* Print TC version *}
@@ -401,7 +411,8 @@ function launchInsertStep(step_id)
 
   <p>
   <div {$addInfoDivStyle}>
-   {$kwRW = ($edit_enabled == 1) && ($has_been_executed == 0)} 
+   {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
+            $has_been_executed == 0} 
 
    {include file="testcases/keywords.inc.tpl" 
             args_edit_enabled=$kwRW

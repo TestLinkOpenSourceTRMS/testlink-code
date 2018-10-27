@@ -280,9 +280,10 @@ else if($args->do_create_new_version) {
     $user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);
     $msg = 'ok';
   
-    // @since 1.9.15
-    // Source version need to be set to FROZEN
-    $tcase_mgr->setIsOpen($args->tcase_id,$args->tcversion_id,0);
+    $tcCfg = config_get('testcase_cfg');
+    
+    $isOpen = !$tcCfg->freezeTCVersionOnNewTCVersion;
+    $tcase_mgr->setIsOpen($args->tcase_id,$args->tcversion_id,$isOpen);
   }
 
   $gui->viewerArgs['action'] = $action_result;

@@ -1212,6 +1212,8 @@ $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec = TRUE;
 
 $tlCfg->testcase_cfg->freezeReqVersionAfterExec = TRUE;
 
+$tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = TRUE;
+
 $tlCfg->reqTCLinks->freezeeLinkOnNewTCVersion = TRUE;
 $tlCfg->reqTCLinks->freezeeLinkOnNewREQVersion = TRUE;
 

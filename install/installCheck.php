@@ -27,8 +27,9 @@ $inst_phase = 'checking';  // global variable -> absolutely wrong use as usual, 
 $msg='';
 include 'installHead.inc';
 ?>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
-      <p>TestLink will carry out a number of checks to see if everything's ready to start the setup.</p>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
+      <br/>
+      <p class="alert alert-warning text-center">TestLink will carry out a number of checks to see if everything's ready to start the setup</p>
       <?php
         // Check before DB installation
         $inst_type = isset($_GET['type']) ? $_GET['type'] : '';
@@ -38,8 +39,8 @@ include 'installHead.inc';
         reportCheckingPermissions($errors,$inst_type);
       ?>
     </section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
     <?php
       if($errors > 0) {
         // Stop process because of error

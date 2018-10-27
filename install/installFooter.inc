@@ -14,7 +14,7 @@
  * 	None.
  */
 ?>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
   </section> <!-- installHead.inc -->
   <!-- Jquery 3.3.1 -->
   <script type="text/javascript" src="../gui/themes/tmpl-bs/js/jquery.min.js"></script>

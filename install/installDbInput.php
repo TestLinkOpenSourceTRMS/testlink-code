@@ -85,7 +85,7 @@ include 'installHead.inc';
     }
   </script>
 
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
       <form action="installNewDB.php" method="post" name="myForm" onsubmit="return validate()" class="form-horizontal">
       <?php echo ('<input type="hidden" id="isNew" name="isNew"  value="' . $_SESSION['isNew'] . '"/> '); ?>
       <?php

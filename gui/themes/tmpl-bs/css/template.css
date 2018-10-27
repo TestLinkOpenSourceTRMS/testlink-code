@@ -104,3 +104,8 @@ example:
     font-size: 11px;
   }
 
+  /*TODO: add description here*/
+  #tl-container .tl-list-circle {
+    list-style-type: circle !important;
+    padding-left: 10px;
+  }

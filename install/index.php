@@ -46,21 +46,21 @@ $forum_url = 'forum.testlink.org';
 
   <section id="tl-section" class="row">
 
-    <header id="tl-header" class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-title tl-box-header">
+    <header id="tl-header" class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-title tl-box-header">
       <h1 class="text-center tl-title">
         TestLink <?php echo $_SESSION['testlink_version'] ?>
       </h1>
     </header>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
       <h2 class="tl-title">How to install?</h2>
       <p><i>
         TestLink is a complicated piece of software, and has always been released under an Open Source license, and this will continue into the far future. It has cost thousands of hours to develop, test and support TestLink. If you find TestLink valuable, we would appreciate if you would consider buying a support agreement or requesting custom development.
       </i></p>
       <p><button class="btn btn-primary btn-block" onclick="location.href='installIntro.php?type=new'">Install</button></p>
     </section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
       <h2 class="tl-title">How to migrate?</h2>
       <p>
         Migration from 
@@ -71,13 +71,19 @@ $forum_url = 'forum.testlink.org';
         <a target="_blank" href="https://github.com/TestLinkOpenSourceTRMS/testlink-code/blob/master/README.md">README</a> 
         file provided with installation.
       </p>
-      <p>
+      <p class="alert alert-info">
         For information about Migration from older version please read 
         <a target="_blank" href="https://github.com/TestLinkOpenSourceTRMS/testlink-code/blob/testlink_1_9/README.md#5-upgrade-and-migration">README</a> 
         file provided with installation.
       </p>
-      <p>Please read Section on README file or go to <?php echo 'http://' .$forum_url ?> (Forum: TestLink 1.9.4 and greater News,changes, etc)</p>
-      <p>
+      <p class="alert alert-info tl-note">
+        Please read Section on README file or go to
+        <a href="<?php echo 'http://' .$forum_url ?>">
+          <?php echo 'http://' .$forum_url ?>
+          (Forum: TestLink 1.9.4 and greater News,changes, etc)
+        </a>
+      </p>
+      <p class="alert alert-warning tl-note">
         Open
         <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
         for more information or troubleshooting. You could also look at
@@ -89,31 +95,31 @@ $forum_url = 'forum.testlink.org';
         to browse or discuss.
       </p>
     </section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
       <h2 class="text-center tl-title">
         Documentation & Contributions
         <br />
         <span class="text-center tl-desc">Some user contributed with videos (YouTube)</span>
       </h2>
-      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+      <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 col-lg-offset-2">
          <iframe src="https://www.youtube.com/embed/NOvTWZvc2x8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
          <p class="text-center"><a href="https://www.youtube.com/watch?v=NOvTWZvc2x8" target="#">Installation of "Testlink" & Creating project.</a></p>
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-5 col-xs-12">
+      <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
         <iframe src="https://www.youtube.com/embed/P2zWScVjuag" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         <p class="text-center"><a href="https://www.youtube.com/watch?v=P2zWScVjuag" target="#">TestLink Test Management Tool Tutorial</a></p>
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-5 col-xs-12">
+      <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 col-lg-offset-2">
         <iframe src="https://www.youtube.com/embed/7xH1LKQU1TA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         <p class="text-center"><a href="https://www.youtube.com/watch?v=7xH1LKQU1TA" target="#">Introduction to TestLink</a></p>
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-5 col-xs-12">
+      <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
         <iframe src="https://www.youtube.com/embed/P2zWScVjuag" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         <p class="text-center"><a href="https://www.youtube.com/watch?v=6s48WGuX2WE" target="#">TestLink Walkthrough</a></p>
       </div>
     </section>
-    <footer id="tl-footer" class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></footer>
+    <footer id="tl-footer" class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></footer>
 
   </section>
 

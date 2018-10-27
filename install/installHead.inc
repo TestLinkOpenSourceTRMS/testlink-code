@@ -40,13 +40,14 @@ function getPhaseAttr($inst_phase, $phase)
 </head> 
 <body id="tl-container" class="container-fluid">
   <section id="tl-section" class="row">
-    <header id="tl-header" class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-title tl-box-header">
+    <header id="tl-header" class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-title tl-box-header">
       <h1 class="text-center tl-title">
         TestLink <?php echo $_SESSION['title'] ?>
       </h1>
     </header>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-main">
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
+      <br/ >
       <ul>
         <li<?php echo getPhaseAttr($inst_phase,'license')?> >Acceptance of License</li>
         <li<?php echo getPhaseAttr($inst_phase,'checking')?> >Verification of System and configuration requirements</li>
@@ -60,5 +61,5 @@ function getPhaseAttr($inst_phase, $phase)
         <li<?php echo getPhaseAttr($inst_phase,'final') ?>>Verify the procedure result and continue to TestLink login.</li>
       </ul>
     </section>
-    <section class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
   <!--  </section> -->

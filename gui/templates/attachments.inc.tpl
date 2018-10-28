@@ -102,7 +102,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 
         {if !$attach_downloadOnly}
           <a href="javascript:delete_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
-                                            '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',jsCallDeleteFile);">
+          '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',jsCallDeleteFile);">
             <img style="border:none;" alt="{$labels.alt_delete_attachment}"
                                       title="{$labels.alt_delete_attachment}"
                                       src="{$tlImages.delete}" /></a>

@@ -170,6 +170,17 @@ class testcase extends tlObjectWithAttachments
     return $url;
   }
 
+  /**
+   *
+   */
+  function getDeleteAttachmentByIDRelativeURL($identity) {
+    $url = "lib/testcases/tcEdit.php?doAction=deleteFile&tcase_id=" . 
+           intval($identity->tcase_id) .
+           "&tproject_id=" . intval($identity->tproject_id) . "&file_id=" ;
+    return $url;
+  }
+
+
   /*
     function: get_export_file_types
               getter
@@ -892,8 +903,6 @@ class testcase extends tlObjectWithAttachments
       $gui->otherVersionsKeywords = array();
 
       $gui->fileUploadURL = array();
-      $gui->delAttachmentURL = array();
-
       foreach($idSet as $key => $tc_id) {
 
         // IMPORTANT NOTICE
@@ -931,15 +940,14 @@ class testcase extends tlObjectWithAttachments
         $io = $idCard;
         $io->tcversion_id = $currentVersionID;
 
+        $gui->delAttachmentURL = $_SESSION['basehref'] . 
+          $this->getDeleteAttachmentByIDRelativeURL($io);
+
         // Impacted for version management
         $gui->fileUploadURL[$currentVersionID] = 
           $_SESSION['basehref'] . $this->getFileUploadRelativeURL($io);
 
-        $gui->delAttachmentURL[$currentVersionID] = 
-          $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($io);
 
-        // $gui->fileUploadURL .= $this->getFileUploadRelativeURL($io);
-        // $gui->delAttachmentURL .= $this->getDeleteAttachmentRelativeURL($io);
 
         $gui->tc_current_version[] = array($tc_current);
 
@@ -1053,8 +1061,8 @@ class testcase extends tlObjectWithAttachments
             $gui->fileUploadURL[$version['id']] = 
               $_SESSION['basehref'] . $this->getFileUploadRelativeURL($io);
 
-            $gui->delAttachmentURL[$version['id']] = 
-              $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($io);
+            //$gui->delAttachmentURL[$version['id']] = 
+            //  $_SESSION['basehref'] . $this->getDeleteAttachmentByIDRelativeURL($io);
 
             // Requirements
             $gui->req4OtherVersions[] = 

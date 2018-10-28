@@ -207,6 +207,9 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
               {* Be carefull IDX is OK ONLY for status_quo *}
               {include file="testcases/tcView_viewer.tpl" 
                        
+                       args_tcase_cfg=$gui->tcase_cfg
+                       args_read_only=$tcv_frozen_version
+
                        args_can_move_copy="no" 
                        args_can_delete_testcase='no'
                        args_can_delete_version="yes"

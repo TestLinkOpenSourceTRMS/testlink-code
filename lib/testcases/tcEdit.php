@@ -121,7 +121,10 @@ switch($args->doAction)
   break;
 
   case "deleteFile":
-    deleteAttachment($db,$args->file_id);
+    $fileInfo = deleteAttachment($db,$args->file_id,false);
+    if( $args->tcversion_id == 0 && null != $fileInfo ) {
+      $args->tcversion_id = $fileInfo['fk_id'];
+    }
     $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
   break;
 

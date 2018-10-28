@@ -147,6 +147,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {include file="attachments.inc.tpl" 
            attach_attachmentInfos=$gui->attachments[$tcVersionID]  
            attach_downloadOnly=$bDownloadOnly
+           attach_uploadURL={$gui->fileUploadURL[$tcVersionID]}
            attach_loadOnCancelURL=$gui->loadOnCancelURL}
   
   {* Other Versions *}
@@ -206,6 +207,9 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
               {* Be carefull IDX is OK ONLY for status_quo *}
               {include file="testcases/tcView_viewer.tpl" 
                        
+                       args_tcase_cfg=$gui->tcase_cfg
+                       args_read_only=$tcv_frozen_version
+
                        args_can_move_copy="no" 
                        args_can_delete_testcase='no'
                        args_can_delete_version="yes"
@@ -233,11 +237,12 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_linked_versions=null
                        args_has_testplans=$gui->has_testplans}
 
+              DEBUG-TCV={$tcv_frozen_version}
               {include file="attachments.inc.tpl" 
                        attach_attachmentInfos=$gui->attachments[$tcversion_id]  
-                       attach_downloadOnly=1
+                       attach_downloadOnly=($tcv_frozen_version=="yes")
+                       attach_uploadURL=$gui->fileUploadURL[$tcversion_id]
                        attach_loadOnCancelURL=$gui->loadOnCancelURL}
-
 
              </div>
              <br />

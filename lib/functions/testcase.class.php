@@ -170,6 +170,17 @@ class testcase extends tlObjectWithAttachments
     return $url;
   }
 
+  /**
+   *
+   */
+  function getDeleteAttachmentByIDRelativeURL($identity) {
+    $url = "lib/testcases/tcEdit.php?doAction=deleteFile&tcase_id=" . 
+           intval($identity->tcase_id) .
+           "&tproject_id=" . intval($identity->tproject_id) . "&file_id=" ;
+    return $url;
+  }
+
+
   /*
     function: get_export_file_types
               getter
@@ -891,10 +902,8 @@ class testcase extends tlObjectWithAttachments
       $cfx = 0;
       $gui->otherVersionsKeywords = array();
 
+      $gui->fileUploadURL = array();
       foreach($idSet as $key => $tc_id) {
-
-        $gui->fileUploadURL = $_SESSION['basehref'];
-        $gui->delAttachmentURL = $_SESSION['basehref'];
 
         // IMPORTANT NOTICE
         // Deep Analysis is need to understand if there is an use case
@@ -930,8 +939,15 @@ class testcase extends tlObjectWithAttachments
 
         $io = $idCard;
         $io->tcversion_id = $currentVersionID;
-        $gui->fileUploadURL .= $this->getFileUploadRelativeURL($io);
-        $gui->delAttachmentURL .= $this->getDeleteAttachmentRelativeURL($io);
+
+        $gui->delAttachmentURL = $_SESSION['basehref'] . 
+          $this->getDeleteAttachmentByIDRelativeURL($io);
+
+        // Impacted for version management
+        $gui->fileUploadURL[$currentVersionID] = 
+          $_SESSION['basehref'] . $this->getFileUploadRelativeURL($io);
+
+
 
         $gui->tc_current_version[] = array($tc_current);
 
@@ -1038,6 +1054,16 @@ class testcase extends tlObjectWithAttachments
                 getAttachmentInfosFrom($this,$version['id']);
             }
 
+
+            $io = $idCard;
+            $io->tcversion_id = $version['id'];
+
+            $gui->fileUploadURL[$version['id']] = 
+              $_SESSION['basehref'] . $this->getFileUploadRelativeURL($io);
+
+            //$gui->delAttachmentURL[$version['id']] = 
+            //  $_SESSION['basehref'] . $this->getDeleteAttachmentByIDRelativeURL($io);
+
             // Requirements
             $gui->req4OtherVersions[] = 
               $reqMgr->getGoodForTCVersion($version['id']);
@@ -1045,6 +1071,9 @@ class testcase extends tlObjectWithAttachments
 
             $gui->otherVersionsKeywords[] = 
               $this->getKeywords($version['testcase_id'],$version['id']);
+
+
+
           }
         } // Other versions exist
       }

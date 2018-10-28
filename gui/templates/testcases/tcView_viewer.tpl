@@ -140,7 +140,7 @@ viewer for test case in test specification
 <div style="display:{$tlCfg->gui->op_area_display->test_case};" 
     id="tcView_viewer_tcase_control_panel_{$tcversion_id}">
   
-  {if $args_tcase_operations_enabled == "yes"}
+  {if isset($args_tcase_operations_enabled) && $args_tcase_operations_enabled == "yes"}
   <fieldset class="groupBtn">
 	 <b>{$tcView_viewer_labels.testcase_operations}</b>
 
@@ -216,7 +216,8 @@ viewer for test case in test specification
 	{/if}
 
 	{* new TC version *}
-  {if $args_tcversion_operation_only_edit_button == "no" }
+  {if isset($args_tcversion_operation_only_edit_button) && 
+      $args_tcversion_operation_only_edit_button == "no" }
   	{if $args_can_do->create_new_version == "yes" && $args_read_only != "yes"}
   	  <input type="submit" name="do_create_new_version" title="{$tcView_viewer_labels.hint_new_version}" 
   			 value="{$tcView_viewer_labels.btn_new_version}" />
@@ -262,7 +263,8 @@ viewer for test case in test specification
   </form>
   {/if}
 
-  {if $args_tcversion_operation_only_edit_button == "no"}
+  {if isset($args_tcversion_operation_only_edit_button) &&
+      $args_tcversion_operation_only_edit_button == "no"}
     {* add TC version to testplan *}
     {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
   	<span>

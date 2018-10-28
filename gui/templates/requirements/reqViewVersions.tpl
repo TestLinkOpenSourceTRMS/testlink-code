@@ -266,7 +266,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
         {$path_part|escape} /
       {/foreach}
   {/if}
-  <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('control_panel','inline');"
+  <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('control_panel_{$latestReqVersionID}','inline');"
        title="{$labels.actions}" />
 
     {if !$gui->show_title }
@@ -277,6 +277,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
     <a href="{$gui->direct_link}&version={$gui->current_version[idx][0].version}" target="_blank">{$labels.specific_direct_link}</a><br/>
     </div>
 
+  {* Current *}
   {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
            args_req_coverage=$gui->current_req_coverage
            args_can_manage_coverage=$gui->canAddCoverage
@@ -423,6 +424,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {include file="attachments.inc.tpl" 
              attach_attachmentInfos=$gui->attachments[$latestReqVersionID]  
              attach_downloadOnly=$downloadOnly
+             attach_uploadURL=$gui->fileUploadURL[$latestReqVersionID]
              attach_loadOnCancelURL=$loadOnCancelURL}
              
   {* Other Versions *}
@@ -437,7 +439,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                  show_hide_container_draw=false
                  show_hide_container_class='exec_additional_info'
                  show_hide_container_view_status_id=$memstatus_id}
-               
+
         <div id="vers_{$vid}" class="workBack">
         {foreach from=$gui->other_versions[idx] item=my_req key=rdx}
             {$version_num=$my_req.version}
@@ -460,10 +462,19 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                      show_hide_container_draw=false
                      show_hide_container_class='exec_additional_info'
                      show_hide_container_view_status_id=$memstatus_id}
+
+              {* Other Versions *}     
+              {* args_can_manage_coverage=false *}  
               <div id="{$div_id}" class="workBack">
+               
+                <img class="clickable" src="{$tlImages.cog}" 
+                  onclick="javascript:toogleShowHide('control_panel_{$reqVersionID}','inline');"
+                  title="{$labels.actions}" />
+
               {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
                        args_hide_coverage=false
-                       args_can_manage_coverage=false
+ 
+                       args_can_manage_coverage=!$frozen_version
                        args_req_coverage=$gui->other_req_coverage[idx][$rdx]
                        args_req=$my_req 
                        args_gui=$gui
@@ -478,7 +489,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
         
              {include file="attachments.inc.tpl" 
                attach_attachmentInfos=$gui->attachments[$reqVersionID]
-               attach_downloadOnly=1
+               attach_downloadOnly=($frozen_version == "yes")
+               attach_uploadURL=$gui->fileUploadURL[$reqVersionID]
                attach_loadOnCancelURL=$loadOnCancelURL}
 
 

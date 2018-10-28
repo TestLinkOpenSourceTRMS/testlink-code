@@ -601,9 +601,12 @@ class reqCommands {
    */
   function doCreateVersion(&$argsObj,$request) {
 
+    $freezeSourceVersion = $this->reqCfg->freezeREQVersionOnNewREQVersion;
+
     $opt = array('reqVersionID' => $argsObj->req_version_id,
                  'log_msg' => $argsObj->log_message,
-                 'notify' => true);
+                 'notify' => true,
+                 'freezeSourceVersion' => $freezeSourceVersion);
   
     $ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,$opt);
     $obj = $this->initGuiBean();
@@ -970,7 +973,11 @@ class reqCommands {
    *
    */
   function deleteFile(&$argsObj) {
-    deleteAttachment($this->db,$argsObj->file_id,false);
+    $fileInfo = deleteAttachment($this->db,$argsObj->file_id,false);
+    if( $argsObj->req_version_id == 0 ) {
+      $argsObj->req_version_id = $fileInfo['fk_id'];
+    }
+
     return $this->initGuiObjForAttachmentOperations($argsObj);
   }
 

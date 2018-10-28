@@ -125,14 +125,25 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
   $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
                       urlencode($gui->tcasePrefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
 
+
+  /*
   $gui->fileUploadURL = $gui->delAttachmentURL = $_SESSION['basehref'];
   $gui->fileUploadURL .= 
     $req_mgr->getFileUploadRelativeURL($gui->req_id, $gui->req_version_id);
 
   $gui->delAttachmentURL .= 
     $req_mgr->getDeleteAttachmentRelativeURL($gui->req_id, $gui->req_version_id);
+  */
 
+  // Same for all versions because we only use the FILE ID
+  // need to be refactored  
+  $gui->delAttachmentURL = $_SESSION['basehref'] .  
+    $req_mgr->getDeleteAttachmentRelativeURL($gui->req_id,0);
   
+  $gui->fileUploadURL = array();
+  $gui->fileUploadURL[$gui->req_version_id] = $_SESSION['basehref'] . 
+    $req_mgr->getFileUploadRelativeURL($gui->req_id, $gui->req_version_id);
+
   $gui->log_target = null;
   $loop2do = count($gui->req_versions);
   for($rqx = 0; $rqx < $loop2do; $rqx++) {
@@ -158,10 +169,14 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
     $gui->other_versions[0] = array_slice($gui->req_versions,1);
     $loop2do = count($gui->other_versions[0]);
     for($qdx=0; $qdx < $loop2do; $qdx++) {
-     $target_version = $gui->other_versions[0][$qdx]['version_id'];
-     $gui->cfields_other_versions[0][$qdx]= 
-       $req_mgr->html_table_of_custom_field_values($gui->req_id,$target_version,$argsObj->tproject_id);
-    }
+      $target_version = $gui->other_versions[0][$qdx]['version_id'];
+      $gui->cfields_other_versions[0][$qdx]= 
+        $req_mgr->html_table_of_custom_field_values($gui->req_id,$target_version,$argsObj->tproject_id);
+
+      // File Upload Management
+      $gui->fileUploadURL[$target_version] = $_SESSION['basehref'] . 
+        $req_mgr->getFileUploadRelativeURL($gui->req_id, $target_version);
+      }
   }
   
   $gui->show_title = false;

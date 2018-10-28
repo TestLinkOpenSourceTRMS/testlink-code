@@ -424,6 +424,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
   {include file="attachments.inc.tpl" 
              attach_attachmentInfos=$gui->attachments[$latestReqVersionID]  
              attach_downloadOnly=$downloadOnly
+             attach_uploadURL=$gui->fileUploadURL[$latestReqVersionID]
              attach_loadOnCancelURL=$loadOnCancelURL}
              
   {* Other Versions *}
@@ -464,8 +465,6 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 
               {* Other Versions *}     
               {* args_can_manage_coverage=false *}  
-              FNN {$frozen_version}
-
               <div id="{$div_id}" class="workBack">
                
                 <img class="clickable" src="{$tlImages.cog}" 
@@ -490,7 +489,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
         
              {include file="attachments.inc.tpl" 
                attach_attachmentInfos=$gui->attachments[$reqVersionID]
-               attach_downloadOnly={$frozen_version}
+               attach_downloadOnly=($frozen_version == "yes")
+               attach_uploadURL=$gui->fileUploadURL[$reqVersionID]
                attach_loadOnCancelURL=$loadOnCancelURL}
 
 

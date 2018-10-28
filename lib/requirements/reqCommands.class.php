@@ -973,7 +973,11 @@ class reqCommands {
    *
    */
   function deleteFile(&$argsObj) {
-    deleteAttachment($this->db,$argsObj->file_id,false);
+    $fileInfo = deleteAttachment($this->db,$argsObj->file_id,false);
+    if( $argsObj->req_version_id == 0 ) {
+      $argsObj->req_version_id = $fileInfo['fk_id'];
+    }
+
     return $this->initGuiObjForAttachmentOperations($argsObj);
   }
 

@@ -601,7 +601,7 @@ class reqCommands {
    */
   function doCreateVersion(&$argsObj,$request) {
 
-    $freezeSourceVersion = $this->$reqCfg->freezeREQVersionOnNewREQVersion;
+    $freezeSourceVersion = $this->reqCfg->freezeREQVersionOnNewREQVersion;
 
     $opt = array('reqVersionID' => $argsObj->req_version_id,
                  'log_msg' => $argsObj->log_message,

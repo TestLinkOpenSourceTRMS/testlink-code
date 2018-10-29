@@ -46,45 +46,37 @@ function statusRenderer(item)
  WARNING: Global coupling
           uses variable status_code_order
 */
-function statusCompare(item)
-{
+function statusCompare(item) {
   var order=0;
+
+  console.log("statusCompare!");
   order = status_code_order[item.value];
-  if( order == undefined )
-  {
-    alert('Configuration Issue - test case execution status code: ' + val + ' is not configured ');
+  if( order == undefined ) {
+    alert('Configuration Issue - test case execution status code: ' + item.value + ' is not configured ');
     order = -1;
   }
   return order;
 }
 
-function priorityRenderer(val)
-{
+function priorityRenderer(val) {
   return prio_code_label[val];
 }
 
-function importanceRenderer(val)
-{
+function importanceRenderer(val) {
   return importance_code_label[val];
 }
 
 /* Unfortunately global coupling is needed to get the image */
-function oneZeroImageRenderer(val)
-{
-  if(val == 1)
-  {
+function oneZeroImageRenderer(val) {
+  if(val == 1) {
     return '<img src="' + checkedImg + '" />';
-  }
-  else
-  {
+  } else {
     return '';
   }
 }
 
- 
 
-function columnWrap(val)
-{
+function columnWrap(val) {
   return '<div style="white-space:normal !important; -moz-user-select: text; -webkit-user-select: text;">'+ val +'</div>';
 }
 

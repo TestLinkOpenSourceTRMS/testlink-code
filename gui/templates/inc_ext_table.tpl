@@ -49,7 +49,6 @@ function statusRenderer(item)
 function statusCompare(item) {
   var order=0;
 
-  console.log("statusCompare!");
   order = status_code_order[item.value];
   if( order == undefined ) {
     alert('Configuration Issue - test case execution status code: ' + item.value + ' is not configured ');

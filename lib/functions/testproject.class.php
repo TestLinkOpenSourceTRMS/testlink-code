@@ -3845,8 +3845,7 @@ function getPublicAttr($id)
   /**
    * @used-by projectEdit.php
    */
-  function enableRequirements($id)
-  {
+  function enableRequirements($id) {
     $debugMsg = $this->debugMsg . __FUNCTION__;
     $opt = $this->getOptions($safeID = intval($id));
     $opt->requirementsEnabled = 1;

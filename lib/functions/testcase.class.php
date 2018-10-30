@@ -8405,7 +8405,7 @@ class testcase extends tlObjectWithAttachments
     // This has to be done BEFORE changing link_status
     if( $options['freeze_req_version'] ) {
 
-     // https://stackoverflow.com/questions/11369757/postgres-wont-accept-table-alias-before-column-name
+     /* execution time issues 
      $sql = " $debugMsg UPDATE {$this->tables['req_versions']}
                SET is_open = 0
                WHERE id IN (
@@ -8413,6 +8413,28 @@ class testcase extends tlObjectWithAttachments
                  FROM {$this->tables['req_coverage']}
                  $commonWhere
                ) ";
+      */
+     switch( DB_TYPE ) {
+       case 'mysql':
+         $sql = " $debugMsg 
+                  UPDATE {$this->tables['req_versions']} RQV
+                  INNER JOIN {$this->tables['req_coverage']} RC
+                  ON RQV.id = RC.req_version_id
+                  SET is_open = 0 $commonWhere ";
+       break;
+
+
+       case 'postgres':
+         // https://stackoverflow.com/questions/11369757/
+         //         postgres-wont-accept-table-alias-before-column-name
+         //
+         $sql = " $debugMsg 
+                  UPDATE {$this->tables['req_versions']} RQV
+                  SET is_open = 0 
+                  FROM {$this->tables['req_coverage']} RC
+                  $commonWhere AND RQV.id = RC.req_version_id";
+       break;
+     }
 
       $this->db->exec_query($sql);
     }
@@ -8552,14 +8574,15 @@ class testcase extends tlObjectWithAttachments
     if( !($execVars) ) {
       $cfx = array('tproject_id' => $tproject_id, 'node_type' => 'build',
                    'node_id' => $build_id);
-      $CFSet = 
-        $this->cfield_mgr->getLinkedCfieldsAtDesign($cfx);
+      $CFSet = $this->cfield_mgr->getLinkedCfieldsAtDesign($cfx);
 
       $execVars = array();
-      foreach($CFSet as $cfDef) {
-        $execVars[$cfDef['name']] = 
-          $this->cfield_mgr->string_custom_field_value($cfDef,$build_id);
-      } 
+      if( null != $CFSet ) {
+        foreach($CFSet as $cfDef) {
+          $execVars[$cfDef['name']] = 
+            $this->cfield_mgr->string_custom_field_value($cfDef,$build_id);
+        } 
+      }
     }
 
     $tcase_id = $item2render['testcase_id'];

@@ -59,6 +59,8 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
   static $tcaseCfg;
   static $executions_table;
   static $tcaseMgr;
+  static $cfield_mgr;
+  static $tprojectMgr;
 
   if(is_null($docRepo)) {
     $docRepo = tlAttachmentRepository::create($db);
@@ -68,10 +70,11 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
 
     $executions_table = DB_TABLE_PREFIX . 'executions';
     $tcaseMgr = new testcase($db);
+    $cfield_mgr = New cfield_mgr($db);
+    $tprojectMgr = new testproject($db);
   }  
 
   $db_now = $db->db_now();
-  $cfield_mgr = New cfield_mgr($db);
   $cf_prefix = $cfield_mgr->get_name_prefix();
   $len_cfp = tlStringLen($cf_prefix);
   $cf_nodeid_pos = 4;
@@ -149,10 +152,14 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
       // DO FREEZE all OPEN Coverage Links
       // Conditional DO: FREEZE all REQ Versions Linked To Test Case Version
 
-      $cOpt = array('freeze_req_version' => 
-                    $tcaseCfg->freezeReqVersionAfterExec); 
-      $tcaseMgr->closeOpenReqLinks($tcversion_id,LINK_TC_REQ_CLOSED_BY_EXEC,
-        $cOpt);
+      // Check if Test Project has the requirement management feature enabled
+      $topt = $tprojectMgr->getOptions($execSign->tproject_id); 
+      if( $topt->requirementsEnabled ) {
+        $cOpt = array('freeze_req_version' => 
+                      $tcaseCfg->freezeReqVersionAfterExec); 
+        $tcaseMgr->closeOpenReqLinks($tcversion_id,
+          LINK_TC_REQ_CLOSED_BY_EXEC,$cOpt);        
+      }
 
 
       if( $has_custom_fields ) {

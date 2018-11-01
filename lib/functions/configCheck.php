@@ -425,8 +425,8 @@ function checkSchemaVersion(&$db)
 
   $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$latest_version} - Read README file!";
 
-  switch (trim($myrow['version']))
-  {
+  switch (trim($myrow['version'])) {
+    
     case '1.7.0 Alpha':
     case '1.7.0 Beta 1':
     case '1.7.0 Beta 2':
@@ -453,6 +453,7 @@ function checkSchemaVersion(&$db)
     case 'DB 1.9.15':
     case 'DB 1.9.16':
     case 'DB 1.9.17':
+    case 'DB 1.9.18':
       $result['msg'] = $manualop_msg;
     break;
 

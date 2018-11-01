@@ -268,7 +268,8 @@ CREATE TABLE /*prefix*/keywords (
   `notes` text,
   PRIMARY KEY  (`id`),
   KEY /*prefix*/testproject_id (`testproject_id`),
-  KEY /*prefix*/keyword (`keyword`)
+  KEY /*prefix*/keyword (`keyword`),
+  UNIQUE KEY /*prefix*/keyword_testproject_id (`keyword`,`testproject_id`)  
 ) DEFAULT CHARSET=utf8;
 
 
@@ -590,7 +591,8 @@ CREATE TABLE /*prefix*/object_keywords (
   `fk_id` int(10) unsigned NOT NULL default '0',
   `fk_table` varchar(30) default '',
   `keyword_id` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/udx01_object_keywords (`fk_id`,`fk_table`,`keyword_id`)    
 ) DEFAULT CHARSET=utf8; 
 
 

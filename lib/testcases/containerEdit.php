@@ -50,13 +50,6 @@ $action = null;
 $get_c_data = null;
 $init_opt_transfer = null;
 
-$dummy = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : 
-         '_externalid';
-$lbl2init = array('warning_empty_testsuite_name' => null,
-                  'string_contains_bad_chars' => null,
-                  'container_title_testsuite' => null,
-                  'btn_reorder_testcases' => 'btn_reorder_testcases' . $dummy);
-$l18n = init_labels($lbl2init);
 
 // 20121222 -franciscom
 // Need this trick because current implementation of Ext.ux.requireSessionAndSubmit()
@@ -92,29 +85,30 @@ if($get_c_data) {
   $name_ok = 1;
   $c_data = getValuesFromPost($webEditorHtmlNames);
   if($name_ok && !check_string($c_data['container_name'],$g_ereg_forbidden)) {
-    $msg = $l18n['string_contains_bad_chars'];
+    $msg = $args->l10n['string_contains_bad_chars'];
     $name_ok = 0;
   }
 
   if($name_ok && ($c_data['container_name'] == "")) {
-    $msg = $l18n['warning_empty_testsuite_name'];
+    $msg = $args->l10n['warning_empty_testsuite_name'];
     $name_ok = 0;
   }
 }
+
 
 switch($action) {
   case 'fileUpload':
     switch($level) {
       case 'testsuite':
         fileUploadManagement($db,$args->testsuiteID,$args->fileTitle,$tsuite_mgr->getAttachmentTableName());
-        $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
+        $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args);
         $gui->refreshTree = 0;
         $tsuite_mgr->show($smarty,$gui,$template_dir,$args->testsuiteID,null,null);
       break;
 
       case 'testproject':
         fileUploadManagement($db,$args->tprojectID,$args->fileTitle,$tproject_mgr->getAttachmentTableName());
-        $gui = initializeGui($tproject_mgr,$args->tprojectID,$args,$l18n);
+        $gui = initializeGui($tproject_mgr,$args->tprojectID,$args);
         $gui->refreshTree = 0;
         $tproject_mgr->show($smarty,$gui,$template_dir,$args->tprojectID,null,null);
       break;
@@ -125,13 +119,13 @@ switch($action) {
     deleteAttachment($db,$args->file_id);
     switch($level) {
       case 'testsuite':
-        $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
+        $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args);
         $gui->refreshTree = 0;
         $tsuite_mgr->show($smarty,$gui,$template_dir,$args->testsuiteID,null,null);
       break;  
 
       case 'testproject':
-        $gui = initializeGui($tproject_mgr,$args->tprojectID,$args,$l18n);
+        $gui = initializeGui($tproject_mgr,$args->tprojectID,$args);
         $gui->refreshTree = 0;
         $tproject_mgr->show($smarty,$gui,$template_dir,$args->tprojectID,null,null);
       break;  
@@ -204,14 +198,14 @@ switch($action) {
   break;
 
   case 'do_copy':
-    copyTestSuite($smarty,$template_dir,$tsuite_mgr,$args,$l18n);
+    copyTestSuite($smarty,$template_dir,$tsuite_mgr,$args);
   break;
 
   case 'update_testsuite':
     if ($name_ok) {
       $msg = updateTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
     }
-    $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
+    $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args);
     $tsuite_mgr->show($smarty,$gui,$template_dir,$args->testsuiteID,null,$msg);
   break;
 
@@ -258,7 +252,7 @@ switch($action) {
 
 
   case 'do_move_tcase_set':
-    moveTestCases($smarty,$template_dir,$tsuite_mgr,$tree_mgr,$args,$l18n);
+    moveTestCases($smarty,$template_dir,$tsuite_mgr,$tree_mgr,$args);
   break;
 
   case 'do_copy_tcase_set':
@@ -285,8 +279,8 @@ switch($action) {
   break;
 
   case 'reorder_testcases':
-    reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr,$sortCriteria);
-    $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
+    reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr);
+    $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args);
     $gui->refreshTree = true;
     $tsuite_mgr->show($smarty,$gui,$template_dir,$args->testsuiteID,null,null);
   break;
@@ -294,14 +288,14 @@ switch($action) {
 
   case 'reorder_testsuites_alpha':
     reorderTestSuitesDictionary($args,$tree_mgr,$args->testsuiteID);
-    $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args,$l18n);
+    $gui = initializeGui($tsuite_mgr,$args->testsuiteID,$args);
     $gui->refreshTree = true;
     $tsuite_mgr->show($smarty,$gui,$template_dir,$args->testsuiteID,null,null);
   break;
 
   case 'reorder_testproject_testsuites_alpha':
     reorderTestSuitesDictionary($args,$tree_mgr,$args->tprojectID);
-    $gui = initializeGui($tproject_mgr,$args->tprojectID,$args,$l18n);
+    $gui = initializeGui($tproject_mgr,$args->tprojectID,$args);
     $gui->refreshTree = true;
     $tproject_mgr->show($smarty,$gui,$template_dir,$args->tprojectID,null,null);
   break;
@@ -320,12 +314,24 @@ switch($action) {
     moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,null,$cf);
   break;
 
+  case 'addKeyword':
+    $tsuite_mgr->addKeywords($args->item_id,$args->free_keywords);    
+    showTestSuite($smarty,$args,$tsuite_mgr,$template_dir);
+    exit();
+  break;
+
+  case 'removeKeyword': 
+    $tsuite_mgr->deleteKeywordByLinkID($args->kw_link_id);
+    showTestSuite($smarty,$args,$tsuite_mgr,$template_dir);
+    exit();
+  break;
 
 
   default:
     trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
   break;
 }
+
 
 if($the_tpl) {
   $smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
@@ -428,6 +434,15 @@ function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr,$optionTransferCfg) {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
+  $args->kw_link_id = isset($_REQUEST['kw_link_id']) ? 
+                      intval($_REQUEST['kw_link_id']) : null;
+
+  $args->item_id = isset($_REQUEST['item_id']) ? 
+                   intval($_REQUEST['item_id']) : null; 
+
+  $args->free_keywords = isset($_REQUEST['free_keywords']) ? 
+                         $_REQUEST['free_keywords'] : null; 
+
   $args->containerID = isset($_REQUEST['containerID']) ? 
                          $_REQUEST['containerID'] : null; 
 
@@ -523,7 +538,7 @@ function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr,$optionTransferCfg) {
   $args->assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
 
-  $keys2loop=array('copyKeywords' => 0,'copyRequirementAssignments' => 0);
+  $keys2loop = array('copyKeywords' => 0,'copyRequirementAssignments' => 0);
 
   foreach($keys2loop as $key => $value) {
     $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
@@ -541,6 +556,15 @@ function init_args(&$dbHandler,&$tprojectMgr,&$tsuiteMgr,$optionTransferCfg) {
              $_SESSION[$mode][$args->treeFormToken] : null;
     $args->testCaseSet = isset($sdata['testcases_to_show']) ? $sdata['testcases_to_show'] : null;
   }
+
+  $dummy = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : 
+           '_externalid';
+  $lbl2init = array('warning_empty_testsuite_name' => null,
+                    'string_contains_bad_chars' => null,
+                    'container_title_testsuite' => null,
+                    'btn_reorder_testcases' => 'btn_reorder_testcases' . $dummy);
+  $args->l10n = init_labels($lbl2init);
+
   return $args;
 }
 
@@ -669,14 +693,12 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash) {
     if($ret['status_ok'])
     {
         $op['messages']['user_feedback'] = lang_get('testsuite_created');
-        if($op['messages']['msg'] != 'ok')
-        {
+        if($op['messages']['msg'] != 'ok') {
             $op['messages']['user_feedback'] = $op['messages']['msg'];
         }
 
-        if(trim($argsObj->assigned_keyword_list) != "")
-        {
-            $tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));
+        if(trim($argsObj->assigned_keyword_list) != "") {
+          $tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));
         }
         writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$ret['id'],$hash);
 
@@ -759,15 +781,12 @@ args:
 returns:
 
 */
-function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
-{
+function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash) {
   $msg = 'ok';
   $ret = $tsuiteMgr->update($argsObj->testsuiteID,$container['container_name'],$container['details']);
-  if($ret['status_ok'])
-  {
+  if($ret['status_ok']) {
     $tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
-    if(trim($argsObj->assigned_keyword_list) != "")
-    {
+    if(trim($argsObj->assigned_keyword_list) != "") {
       $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
     }
     writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
@@ -791,9 +810,9 @@ args:
 returns:
 
 */
-function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj,$l18n) {
+function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj) {
   $guiObj = new stdClass();
-  $guiObj->btn_reorder_testcases = $l18n['btn_reorder_testcases'];;
+  $guiObj->btn_reorder_testcases = $argsObj->l10n['btn_reorder_testcases'];;
 
   $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
      
@@ -1060,13 +1079,11 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj,
  * initWebEditors
  *
  */
-function initWebEditors($action,$itemType,$editorCfg)
-{
+function initWebEditors($action,$itemType,$editorCfg) {
   $webEditorKeys = array('testsuite' => array('details'));
   $itemTemplateKey=null;
 
-  switch($action)
-  {
+  switch($action) {
     case 'new_testsuite':
     case 'add_testsuite':
     case 'edit_testsuite':
@@ -1079,8 +1096,7 @@ function initWebEditors($action,$itemType,$editorCfg)
   }
 
 
-  switch($itemType)
-  {
+  switch($itemType) {
     case 'testproject': 
     case 'testsuite':
       $itemTemplateKey = 'testsuite_template';
@@ -1090,11 +1106,9 @@ function initWebEditors($action,$itemType,$editorCfg)
 
   $oWebEditor = array();
   $htmlNames = '';
-  if( isset($webEditorKeys[$accessKey]) )
-  {  
+  if( isset($webEditorKeys[$accessKey]) ) {  
     $htmlNames = $webEditorKeys[$accessKey];
-    foreach ($htmlNames as $key)
-    {
+    foreach ($htmlNames as $key) {
       $oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorCfg);
     }
   }
@@ -1247,10 +1261,10 @@ function doDeleteTestCases(&$dbHandler,$tcaseSet,&$tcaseMgr)
  *
  *
  */
-function reorderTestCasesByCriteria($argsObj,&$tsuiteMgr,&$treeMgr,$sortCriteria)
-{
-    $pfn = ($sortCriteria == 'NAME') ? 'reorderTestCasesDictionary' : 'reorderTestCasesByExtID';
-    $pfn($argsObj,$tsuiteMgr,$treeMgr);
+function reorderTestCasesByCriteria($argsObj,&$tsuiteMgr,&$treeMgr) {
+  $sortCriteria = config_get('testcase_reorder_by');
+  $pfn = ($sortCriteria == 'NAME') ? 'reorderTestCasesDictionary' : 'reorderTestCasesByExtID';
+  $pfn($argsObj,$tsuiteMgr,$treeMgr);
 }
 
 
@@ -1319,11 +1333,11 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
 /**
  *
  */
-function initializeGui(&$objMgr,$id,$argsObj,$lbl)
-{
+function initializeGui(&$objMgr,$id,$argsObj,$lbl) {
   $guiObj = new stdClass();
 
   $guiObj->id = $id;
+  $guiObj->user = $argsObj->user;
   $guiObj->tproject_id = $argsObj->tprojectID;
   $guiObj->refreshTree = $argsObj->refreshTree;
   $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
@@ -1333,10 +1347,10 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl)
 
   $guiObj->fileUploadURL = $_SESSION['basehref'] . $objMgr->getFileUploadRelativeURL($id);
 
-  if( $objMgr->my_node_type == $objMgr->node_types_descr_id['testsuite'] )
-  {
-    $guiObj->direct_link = $objMgr->buildDirectWebLink($_SESSION['basehref'],
-                                             $guiObj->id,$argsObj->tprojectID);
+  if( $objMgr->my_node_type == $objMgr->node_types_descr_id['testsuite'] ) {
+    $guiObj->direct_link = 
+      $objMgr->buildDirectWebLink($_SESSION['basehref'],
+                                  $guiObj->id,$argsObj->tprojectID);
   }  
 
   return $guiObj;
@@ -1424,9 +1438,10 @@ function initTPLActions() {
                 'do_copy_tcase_set_ghost' => 'containerMoveTC.tpl',
                 'delete_testcases' =>  'containerDeleteTC.tpl',
                 'do_delete_testcases' =>  'containerDeleteTC.tpl',
-                'doBulkSet' => 'containerMoveTC.tpl',);
+                'doBulkSet' => 'containerMoveTC.tpl');
 
-  $actions = array('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,
+  $actions = array('edit_testsuite' => 0,'new_testsuite' => 0,
+                   'delete_testsuite' => 0,
                    'do_move' => 0,'do_copy' => 0,'reorder_testsuites' => 1,
                    'do_testsuite_reorder' => 0,'add_testsuite' => 1,
                    'move_testsuite_viewer' => 0,'update_testsuite' => 1,
@@ -1439,4 +1454,17 @@ function initTPLActions() {
                    'doBulkSet' => 0);
 
   return array($tpl,$actions);
+}
+
+/**
+ *
+ */
+function showTestSuite(&$tplEngine,&$argsO,&$tsuiteMgr,$tplDir) {
+  if( null == $argsO->tprojectID ) {
+    $argsO->tprojectID = $tsuiteMgr->getTestproject($argsO->item_id); 
+  }
+  $gui = initializeGui($tsuiteMgr,$argsO->item_id,$argsO,$argsO->l10n);
+  $gui->refreshTree = 0;
+  $tsuiteMgr->show($tplEngine,$gui,$tplDir,$argsO->item_id,null,null);
+  exit();
 }

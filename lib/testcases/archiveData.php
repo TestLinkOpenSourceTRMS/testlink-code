@@ -43,6 +43,7 @@ switch($args->feature) {
   case 'testsuite':
     $item_mgr = new $args->feature($db);
     $gui->id = $args->id;
+    $gui->user = $args->user;
     if($args->feature == 'testproject') {
       $gui->id = $args->id = $args->tproject_id;
       $item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id);
@@ -100,6 +101,8 @@ function init_args(&$dbHandler) {
   $cfg = config_get('testcase_cfg');
   $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
+
   $args->feature = $args->edit;
   $args->tcaseTestProject = null;
   $args->viewerArgs = null;

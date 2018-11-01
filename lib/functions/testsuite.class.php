@@ -85,8 +85,7 @@ class testsuite extends tlObjectWithAttachments
              key: export file type code
              value: export file type verbose description 
   */
-  function get_export_file_types()
-  {
+  function get_export_file_types() {
     return $this->export_file_types;
   }
 
@@ -476,6 +475,7 @@ class testsuite extends tlObjectWithAttachments
       }
     }
 
+
     // attachments management on page
     $gui->fileUploadURL = $_SESSION['basehref'] . $this->getFileUploadRelativeURL($id);
     $gui->delAttachmentURL = $_SESSION['basehref'] . $this->getDeleteAttachmentRelativeURL($id);
@@ -498,11 +498,17 @@ class testsuite extends tlObjectWithAttachments
     }
     
 
-    $tsuite_id = $id;
+    $gui->item_id = $tsuite_id = $id;
     if( !property_exists($gui,'tproject_id') ) {
       $gui->tproject_id = $this->getTestProjectFromTestSuite($tsuite_id,null);
     }
 
+    $gui->assign_keywords = 0;
+    if( property_exists($gui, 'user') ) {
+      $yn = $gui->user->hasRight($this->db,'mgt_modify_key',$gui->tproject_id); 
+      $gui->assign_keywords = ($yn == "yes");
+    }
+    
     $gui->container_data = $this->get_by_id($id,array('renderImageInline' => true));
     $gui->moddedItem = $gui->container_data;
     if ($modded_item_id) {
@@ -510,7 +516,6 @@ class testsuite extends tlObjectWithAttachments
     }
 
     $gui->cf = $this->html_table_of_custom_field_values($id);
-    $gui->keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
     $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
     $gui->id = $id;
     $gui->page_title = lang_get('testsuite');
@@ -519,6 +524,13 @@ class testsuite extends tlObjectWithAttachments
     $gui->testDesignEditorType = $cfg['type'];
 
     $gui->calledByMethod = 'testsuite::show';
+
+    $kopt = array('order_by_clause' => ' ORDER BY keyword ASC ',
+                  'output' => 'with_link_id');
+    $gui->keywords_map = $this->get_keywords_map($id,$kopt);
+
+    $of = array('output' => 'html_options','add_blank' => true);
+    $gui->freeKeywords = $this->getFreeKeywords($id,$of);
 
     $smarty->assign('gui',$gui);
     $smarty->display($template_dir . 'containerView.tpl');
@@ -1033,11 +1045,18 @@ class testsuite extends tlObjectWithAttachments
     
   
   */
-  function get_keywords_map($id,$order_by_clause='') {
+  function get_keywords_map($id,$opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword " .
-           " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
-           " WHERE keyword_id = keywords.id ";
+
+    $options = array('order_by_clause' => '', 'output' => 'std');
+    $options = array_merge($options,(array)$opt);
+    $order_by_clause = $options['order_by_clause'];
+
+    $sql = "/* $debugMsg */ 
+           SELECT OKW.id AS kw_link,OKW.keyword_id,keywords.keyword 
+           FROM {$this->tables['object_keywords']} OKW 
+           JOIN {$this->tables['keywords']} keywords 
+           ON OKW.keyword_id = keywords.id ";
 
     if (is_array($id)) {
       $sql .= " AND fk_id IN (".implode(",",$id).") ";
@@ -1047,7 +1066,20 @@ class testsuite extends tlObjectWithAttachments
       
     $sql .= $order_by_clause;
   
-    $map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+    switch( $options['output'] ) {
+
+      case 'with_link_id':
+        $map_keywords = $this->db->fetchRowsIntoMap($sql,'keyword_id');
+      break;
+
+      case 'std':
+      default:
+        $map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+      break;
+
+    }
+
+
     return $map_keywords;
   } 
   
@@ -1078,34 +1110,28 @@ class testsuite extends tlObjectWithAttachments
     returns: 
   
   */
-  function addKeywords($id,$kw_ids)
-  {
+  function addKeywords($id,$kw_ids) {
     $status = 1;
     $num_kws = sizeof($kw_ids);
-    for($idx = 0; $idx < $num_kws; $idx++)
-    {
+    for($idx = 0; $idx < $num_kws; $idx++) {
       $status = $status && $this->addKeyword($id,$kw_ids[$idx]);
     }
     return($status);
   }
   
   
-  /*
-    function: deleteKeywords
-  
-    args :
-    
-    returns: 
-  
-  */
-  function deleteKeywords($id,$kw_id = null)
-  {
-    $sql = " DELETE FROM {$this->tables['object_keywords']} WHERE fk_id = {$id} ";
-    if (!is_null($kw_id))
-    {
+  /**
+   * deleteKeywords
+   *
+   */
+  function deleteKeywords($id,$kw_id = null) {
+    $sql = " DELETE FROM {$this->tables['object_keywords']} 
+             WHERE fk_id = {$id} ";
+
+    if (!is_null($kw_id)) {
       $sql .= " AND keyword_id = {$kw_id}";
     } 
-    return($this->db->exec_query($sql));
+    return $this->db->exec_query($sql);
   }
   
   /*
@@ -1758,24 +1784,20 @@ class testsuite extends tlObjectWithAttachments
    *
    *
    */ 
-  function inlineImageProcessing($id,$details,$rosettaStone)
-  {
+  function inlineImageProcessing($id,$details,$rosettaStone) {
     // get all attachments, then check is there are images
     $att = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
-    foreach($rosettaStone as $oid => $nid)
-    {
-      if($att[$nid]['is_image'])
-      {
+
+    foreach($rosettaStone as $oid => $nid) {
+      if($att[$nid]['is_image']) {
         $needle = str_replace($nid,$oid,$att[$nid]['inlineString']);
         $inlineImg[] = array('needle' => $needle, 'rep' => $att[$nid]['inlineString']);
       }  
     }  
     
-    if( !is_null($inlineImg) )
-    {
+    if( !is_null($inlineImg) ) {
       $dex = $details;
-      foreach($inlineImg as $elem)
-      {
+      foreach($inlineImg as $elem) {
         $dex = str_replace($elem['needle'],$elem['rep'],$dex);
       }  
       $this->updateDetails($id,$dex);
@@ -1891,6 +1913,70 @@ class testsuite extends tlObjectWithAttachments
   } 
 
 
+  /**
+   *
+   *
+   */
+  function getFreeKeywords($tsuiteID,$opt = null) {
+    $my['opt'] = array('accessKey' => 'keyword_id', 'fields' => null, 
+                       'orderBy' => null, 'tproject_id' => null,
+                       'output' => 'std', 'add_blank' => false);
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $safeID = intval($tsuiteID);
+    $sql = " SELECT KW.id AS keyword_id, KW.keyword
+             FROM {$this->tables['keywords']} KW
+             WHERE KW.id NOT IN 
+             (
+               SELECT TSKW.keyword_id 
+               FROM {$this->tables['object_keywords']} TSKW
+               WHERE TSKW.fk_id = {$safeID}
+               AND TSKW.fk_table = 'nodes_hierarchy'
+             ) ";
+
+    if (!is_null($my['opt']['orderBy'])) {
+      $sql .= ' ' . $my['opt']['orderBy'];
+    }
+
+    switch($my['opt']['output']) {
+      case 'html_options':
+        $items = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+        if( null != $items && $my['opt']['add_blank']) {
+          $items = array(0 => '') + $items;
+        }
+
+      break;
+
+      default:
+        $items = $this->db->fetchRowsIntoMap($sql,$my['opt']['accessKey']);
+      break;
+    }
+    
+    return $items;
+  }
+
+  /**
+   *
+   */
+  function getTestproject($tsuiteID) {
+    $path = $this->tree_manager->get_path($tsuiteID);
+    return $path[0]['parent_id'];
+  }
+
+  /**
+   * deleteKeywordByLinkID
+   *
+   */
+  function deleteKeywordByLinkID( $kwLinkID ) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $safeID = intval( $kwLinkID );
+    $sql = " /* {$debugMsg} */ 
+             DELETE FROM {$this->tables['object_keywords']} 
+             WHERE id = {$kwLinkID} ";
+    return $this->db->exec_query($sql);
+  }
 
 
 } // end class

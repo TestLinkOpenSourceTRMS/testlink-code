@@ -1061,9 +1061,6 @@ class testcase extends tlObjectWithAttachments
             $gui->fileUploadURL[$version['id']] = 
               $_SESSION['basehref'] . $this->getFileUploadRelativeURL($io);
 
-            //$gui->delAttachmentURL[$version['id']] = 
-            //  $_SESSION['basehref'] . $this->getDeleteAttachmentByIDRelativeURL($io);
-
             // Requirements
             $gui->req4OtherVersions[] = 
               $reqMgr->getGoodForTCVersion($version['id']);
@@ -1071,8 +1068,6 @@ class testcase extends tlObjectWithAttachments
 
             $gui->otherVersionsKeywords[] = 
               $this->getKeywords($version['testcase_id'],$version['id']);
-
-
 
           }
         } // Other versions exist

@@ -1554,8 +1554,7 @@ class testsuite extends tlObjectWithAttachments
    * get ONLY test suites (no other kind of node) ON BRANCH with ROOT = testsuite with given id
    *
    */
-  function get_branch($id)
-  {
+  function get_branch($id) {
     $branch = $this->tree_manager->get_subtree_list($id,$this->my_node_type);
     return $branch;
   }
@@ -1977,6 +1976,74 @@ class testsuite extends tlObjectWithAttachments
              WHERE id = {$kwLinkID} ";
     return $this->db->exec_query($sql);
   }
+
+
+  /**
+   * 
+   *
+   */
+  function addKeywordsDeep($rootTestSuiteID,$kwSet) {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    // Get tree of Test Suites
+    $tsList = $rootTestSuiteID . ',';
+    $tsList .= $this->tree_manager->get_subtree_list($rootTestSuiteID,$this->my_node_type);    
+
+    $tsSet = explode(',', $tsList);
+    $kwForTS = $this->getKeywordsForTSSet($tsSet);
+
+    $vv = array();
+    if( null == $kwForTS ) {
+      // we can add all
+      foreach($tsSet as $id) {
+        foreach($kwSet as $kaboom) {
+          $vv[] = "($id,'nodes_hierarchy',$kaboom)";
+        }
+      }      
+    } else {
+      // We want to avoid issue, that's why we want to get 
+      // the difference bewteen already linked keywords and 
+      // the new ones.
+      foreach($kwForTS as $tsk => $kwVenn) {
+        $kw2add = array_diff($kwSet,$kwVenn);
+        if( count($kw2add) > 0 ) {
+          foreach($kw2add as $kaboom) {
+            $vv[] = "($tsk,'nodes_hierarchy',$kaboom)";
+          }
+        }
+      }      
+    }
+
+    if( count($vv) > 0 ) {
+      $sql = "/* $debugMsg */
+              INSERT INTO {$this->tables['object_keywords']} 
+              (fk_id,fk_table,keyword_id) 
+              VALUES " . implode(',',$vv);
+      $this->db->exec_query($sql);
+    }
+  }
+
+  
+  /**
+   *
+   */
+  function getKeywordsForTSSet( $tsuiteIDSet ) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $idSet = implode(',',$tsuiteIDSet);
+    $sql = " /* $debugMsg */ 
+             SELECT fk_id AS tsuite_id, OKW.keyword_id 
+             FROM {$this->tables['object_keywords']} OKW
+             JOIN {$this->tables['keywords']} KW
+             ON KW.id = OKW.keyword_id
+             WHERE fk_id IN ( {$idSet} ) 
+             AND fk_table = 'nodes_hierarchy' ";
+
+    $kw = $this->db->fetchColumnsIntoMap($sql,'tsuite_id','keyword_id',database::CUMULATIVE);
+
+    return $kw;
+  } 
 
 
 } // end class

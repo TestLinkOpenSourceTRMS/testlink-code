@@ -320,6 +320,12 @@ switch($action) {
     exit();
   break;
 
+  case 'addKeywordTSDeep':
+    $tsuite_mgr->addKeywordsDeep($args->item_id,$args->free_keywords);    
+    showTestSuite($smarty,$args,$tsuite_mgr,$template_dir);
+    exit();
+  break;
+
   case 'removeKeyword': 
     $tsuite_mgr->deleteKeywordByLinkID($args->kw_link_id);
     showTestSuite($smarty,$args,$tsuite_mgr,$template_dir);

@@ -267,6 +267,7 @@ $TLS_update_hint = "check to update value when saving";
 // Buttons (used wide)
 $TLS_btn_apply = "Apply";
 $TLS_btn_add = "Add";
+$TLS_btn_add_to_testsuites_deep = "Add also to children (Test Suites)";
 $TLS_btn_add_to_testplans = "Add to Test Plans";
 $TLS_btn_assign = "Assign";
 $TLS_btn_cancel = "Cancel";

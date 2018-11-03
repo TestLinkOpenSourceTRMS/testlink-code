@@ -477,6 +477,5 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
 
   // add additional joins that depends on user search criteria
   $sql = $stm['ver'] . " UNION ({$sql4Union}) ORDER BY id ASC, version DESC, revision DESC ";
-  echo $sql;
   return $sql;
 }

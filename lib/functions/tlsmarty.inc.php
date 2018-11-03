@@ -44,7 +44,7 @@ function translate_tc_status($status_code) {
  * @uses function translate_tc_status
  * @todo should be moved to tlSmarty class
  */
-function translate_tc_status_smarty($params, &$smarty) {
+function translate_tc_status_smarty($params, $smarty) {
 	$the_ret = translate_tc_status($params['s']);
 	if(	isset($params['var']) ) {
 		$smarty->assign($params['var'], $the_ret);

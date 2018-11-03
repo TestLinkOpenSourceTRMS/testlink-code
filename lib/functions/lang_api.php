@@ -187,29 +187,21 @@ function langGetFormated( $text_key, $modifier )
  * instead of return a value, this value is assigned
  * to $params['var`]
  */
-function lang_get_smarty($params, &$smarty)
-  {
+function lang_get_smarty($params, $smarty) {
   $myLocale=isset($params['locale']) ? $params['locale'] : null;
-  if(  isset($params['var']) )
-  {
+  if(  isset($params['var']) ) {
     $labels2translate=explode(',',$params['s']);
-    if( count($labels2translate) == 1)
-    {
+    if( count($labels2translate) == 1) {
       $myLabels=lang_get($params['s'], $myLocale);
-    }
-    else
-    {
+    } else {
       $myLabels=array();
-      foreach($labels2translate as $str)
-      {
+      foreach($labels2translate as $str) {
         $str2search=trim($str);
         $myLabels[$str2search]=lang_get($str2search, $myLocale);
       }
     }
     $smarty->assign($params['var'], $myLabels);
-  }
-  else
-  {
+  } else {
     $the_ret = lang_get($params['s'], $myLocale);
     return $the_ret;
   }
@@ -343,7 +335,7 @@ function init_labels($label2translate)
  * if the key 'var' is found in the associative array instead of return a value,
  * this value is assigned to $params['var`]
  */
-function localize_date_smarty($params, &$smarty)
+function localize_date_smarty($params, $smarty)
 {
   return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
 }
@@ -353,7 +345,7 @@ function localize_date_smarty($params, &$smarty)
  * Add a time in smarty template (registered to Smarty class)
  * @uses localize_dateOrTimeStamp()
  */
-function localize_timestamp_smarty($params, &$smarty)
+function localize_timestamp_smarty($params, $smarty)
 {
   return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
 }
@@ -376,14 +368,13 @@ function localize_timestamp_smarty($params, &$smarty)
  * @since 1.9.6
  * 20130202 - franciscom - TICKET 
  */
-function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
+function localize_dateOrTimeStamp($params,$smarty,$what,$value)
 {
   // to supress E_STRICT messages
   setlocale(LC_ALL, TL_DEFAULT_LOCALE);
 
   $format = config_get($what);
-  if (!is_numeric($value))
-  {
+  if (!is_numeric($value)) {
     // in order to manage without error what seems to be 
     // a MSSQL PHP Drivers format
     // YYYY-MM-DDTHH:MM:SSZ
@@ -393,8 +384,7 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
   }
   
   $retVal = strftime($format, $value);
-  if(isset($params['var']))
-  {
+  if(isset($params['var'])) {
     $smarty->assign($params['var'],$retVal);
   }
   return $retVal;

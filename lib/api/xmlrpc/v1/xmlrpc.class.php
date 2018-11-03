@@ -195,6 +195,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $testCaseNameParamName = "testcasename";
     public static $testCasePathNameParamName = "testcasepathname";
     public static $testCasePrefixParamName = "testcaseprefix";
+    public static $testCaseVersionIDParamName = "testcaseid";
     public static $testModeParamName = "testmode";
     public static $testPlanIDParamName = "testplanid";
     public static $testPlanNameParamName = "testplanname";
@@ -211,7 +212,6 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $estimatedExecDurationParamName = "estimatedexecduration";
     public static $executionDurationParamName = "execduration";
     public static $prefixParamName = "prefix";
-    public static $testCaseVersionIDParamName = "tcversionid";
     public static $testCaseVersionParamName = "tcversion";
     public static $itsNameParamName = "itsname";
     public static $itsEnabledParamName = "itsenabled";
@@ -6958,13 +6958,16 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
-     * Gets list of keywords for a given Test case
+     * Gets list of keywords for a given Test Case Version
      *
-     * @param mixed $testcaseid
-     *            can be int or array
-     *            $testcaseexternalid can be int or array
+     * @param mixed $testcaseid can be int or array
+     *        mixed $testcaseexternalid can be int or array
+     *        mixed [$version] can be int or array
+     *              if not provided latest version will be used
      *
-     * @return map indexed by test case internal (DB) ID
+     * @return map indexed by Access Key
+     *             test case internal (DB) ID OR
+     *             test case external ID.
      *
      * @access public
      */
@@ -6973,35 +6976,49 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $this->_setArgs ( $args );
 
         // Prepare material for checkTestCaseSetIdentity()
-        $a2check = array (
-                self::$testCaseIDParamName,
-                self::$testCaseExternalIDParamName
-        );
+        $a2check = array( self::$testCaseIDParamName,
+                          self::$testCaseExternalIDParamName );
+
         foreach ( $a2check as $k2c ) {
-            if (isset ( $this->args [$k2c] )) {
-                $retAsArray = is_array ( $this->args [$k2c] );
-                $this->args [$k2c] = ( array ) $this->args [$k2c];
-                $outBy = $k2c;
-                break;
-            }
+          if (isset ( $this->args[$k2c] )) {
+            $retAsArray = is_array( $this->args[$k2c] );
+            $this->args[$k2c] = (array) $this->args[$k2c];
+            $outBy = $k2c;
+            break;
+          }
         }
 
-        $checkFunctions = array (
-                'authenticate',
-                'checkTestCaseSetIdentity'
-        );
+        $checkFunctions = array('authenticate',
+                                'checkTestCaseSetIdentity');
         $status_ok = $this->_runChecks ( $checkFunctions, $msgPrefix );
 
         if ($status_ok) {
-            foreach ( $this->args [self::$testCaseIDParamName] as $idx => $tcaseID ) {
-                $accessKey = ($outBy == self::$testCaseIDParamName) ? $tcaseID : $this->args [$outBy] [$idx];
+          $hasVersionSet = isset($this->args[self::$versionNumberParamName]);
+          if( $hasVersionSet ) {
+            $versionSet = $this->args[self::$versionNumberParamName]; 
+          }  
 
-                $itemSet [$accessKey] = $this->tcaseMgr->get_keywords_map ( intval ( $tcaseID ) );
+          $kwSet = array();
+          $itemSet = $this->args[self::$testCaseIDParamName]; 
+          foreach ( $itemSet as $idx => $tcaseID ) {
+
+            $safeTCID = intval($tcaseID);
+            $accessKey = ($outBy == self::$testCaseIDParamName) ? 
+                          $tcaseID : $this->args[$outBy][$idx];
+
+            if( $hasVersionSet && isset($versionSet[$idx]) ) {
+              $vnum = intval($versionSet[$idx]);  
+              $tcversion_id = getTCVersionIDFromVersion($safeTCID,$vnum);
+            } else {
+              $tcversion_id = $this->tcaseMgr->getLatestVersionID($safeTCID);  
             }
-            // return $retAsArray ? $itemSet : current($itemSet);
-            return $itemSet;
+
+            $kwSet[$accessKey] = 
+              $this->tcaseMgr->get_keywords_map($safeTCID,$tcversion_id);
+          }
+          return $kwSet;
         } else {
-            return $this->errors;
+          return $this->errors;
         }
     }
 

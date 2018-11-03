@@ -8785,4 +8785,29 @@ class testcase extends tlObjectWithAttachments
     return $items;
   }
 
+  /**
+   *
+   */
+  function getTCVersionIDFromVersion($tcaseID,$version) {
+    
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $safeTCID = intval($tcaseID);
+    $safeVersion = intval($version);
+
+    $sql = " SELECT TCV.tcversion_id 
+             FROM {$this->tables['nodes_hierarcy']} NHTC
+             JOIN {$this->tables['nodes_hierarcy']} NHTCV
+             ON NHTCV.parent_id = NHTC.id
+             JOIN {$this->tables['tcversions']} TCV
+             ON TCV.id = NHTCV.id
+             WHERE NHTC.id = $safeTCID AND TCV.version = $safeVersion";
+
+
+    $rs = current($this->db->get_recordset($sql));
+            
+    return $rs['tcversion_id'];
+  }
+
+
 }  // Class end

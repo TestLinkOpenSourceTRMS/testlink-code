@@ -118,23 +118,23 @@
     },
     {
         "name": "smarty/smarty",
-        "version": "v3.1.13",
-        "version_normalized": "3.1.13.0",
+        "version": "v3.1.33",
+        "version_normalized": "3.1.33.0",
         "source": {
             "type": "git",
             "url": "https://github.com/smarty-php/smarty.git",
-            "reference": "7b2a2c4a883ba745759fb5db26ab8134a5ae282b"
+            "reference": "dd55b23121e55a3b4f1af90a707a6c4e5969530f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/smarty-php/smarty/zipball/7b2a2c4a883ba745759fb5db26ab8134a5ae282b",
-            "reference": "7b2a2c4a883ba745759fb5db26ab8134a5ae282b",
+            "url": "https://api.github.com/repos/smarty-php/smarty/zipball/dd55b23121e55a3b4f1af90a707a6c4e5969530f",
+            "reference": "dd55b23121e55a3b4f1af90a707a6c4e5969530f",
             "shasum": ""
         },
         "require": {
             "php": ">=5.2"
         },
-        "time": "2014-10-31T00:47:26+00:00",
+        "time": "2018-09-12T20:54:16+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -143,10 +143,8 @@
         },
         "installation-source": "dist",
         "autoload": {
-            "classmap": [
-                "libs/Smarty.class.php",
-                "libs/SmartyBC.class.php",
-                "libs/sysplugins/smarty_security.php"
+            "files": [
+                "libs/bootstrap.php"
             ]
         },
         "notification-url": "https://packagist.org/downloads/",

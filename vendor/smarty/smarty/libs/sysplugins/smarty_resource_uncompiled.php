@@ -2,43 +2,48 @@
 /**
  * Smarty Resource Plugin
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage TemplateResources
- * @author Rodney Rehm
+ * @author     Rodney Rehm
  */
 
 /**
  * Smarty Resource Plugin
- *
  * Base implementation for resource plugins that don't use the compiler
  *
- * @package Smarty
+ * @package    Smarty
  * @subpackage TemplateResources
  */
-abstract class Smarty_Resource_Uncompiled extends Smarty_Resource {
+abstract class Smarty_Resource_Uncompiled extends Smarty_Resource
+{
+    /**
+     * Flag that it's an uncompiled resource
+     *
+     * @var bool
+     */
+    public $uncompiled = true;
 
     /**
-     * Render and output the template (without using the compiler)
+     * Resource does implement populateCompiledFilepath() method
      *
-     * @param Smarty_Template_Source   $source    source object
-     * @param Smarty_Internal_Template $_template template object
-     * @throws SmartyException on failure
+     * @var bool
      */
-    public abstract function renderUncompiled(Smarty_Template_Source $source, Smarty_Internal_Template $_template);
+    public $hasCompiledHandler = true;
 
     /**
      * populate compiled object with compiled filepath
      *
      * @param Smarty_Template_Compiled $compiled  compiled object
-     * @param Smarty_Internal_Template $_template template object (is ignored)
+     * @param Smarty_Internal_Template $_template template object
      */
     public function populateCompiledFilepath(Smarty_Template_Compiled $compiled, Smarty_Internal_Template $_template)
     {
-        $compiled->filepath = false;
-        $compiled->timestamp = false;
-        $compiled->exists = false;
+        $compiled->filepath = $_template->source->filepath;
+        $compiled->timestamp = $_template->source->timestamp;
+        $compiled->exists = $_template->source->exists;
+        if ($_template->smarty->merge_compiled_includes || $_template->source->handler->checkTimestamps()) {
+            $compiled->file_dependency[ $_template->source->uid ] =
+                array($compiled->filepath, $compiled->timestamp, $_template->source->type,);
+        }
     }
-
 }
-
-?>

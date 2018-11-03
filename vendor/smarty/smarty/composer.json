@@ -2,7 +2,9 @@
     "name": "smarty/smarty",
     "type": "library",
     "description": "Smarty - the compiling PHP template engine",
-    "keywords": ["templating"],
+    "keywords": [
+        "templating"
+    ],
     "homepage": "http://www.smarty.net",
     "license": "LGPL-3.0",
     "authors": [
@@ -21,17 +23,15 @@
     ],
     "support": {
         "irc": "irc://irc.freenode.org/smarty",
-        "issues": "http://code.google.com/p/smarty-php/issues/list",
+        "issues": "https://github.com/smarty-php/smarty/issues",
         "forum": "http://www.smarty.net/forums/"
     },
     "require": {
         "php": ">=5.2"
     },
     "autoload": {
-        "classmap": [
-            "libs/Smarty.class.php",
-            "libs/SmartyBC.class.php",
-            "libs/sysplugins/smarty_security.php"
+        "files": [
+            "libs/bootstrap.php"
         ]
     },
     "extra": {
@@ -39,5 +39,4 @@
             "dev-master": "3.1.x-dev"
         }
     }
-
 }

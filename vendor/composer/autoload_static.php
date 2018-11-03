@@ -7,6 +7,7 @@ namespace Composer\Autoload;
 class ComposerStaticInit056ad17c9fe5d65b7d3c5047fc89f77e
 {
     public static $files = array (
+        'f084d01b0a599f67676cffef638aa95b' => __DIR__ . '/..' . '/smarty/smarty/libs/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
     );
 
@@ -37,20 +38,11 @@ class ComposerStaticInit056ad17c9fe5d65b7d3c5047fc89f77e
         ),
     );
 
-    public static $classMap = array (
-        'Smarty' => __DIR__ . '/..' . '/smarty/smarty/libs/Smarty.class.php',
-        'SmartyBC' => __DIR__ . '/..' . '/smarty/smarty/libs/SmartyBC.class.php',
-        'SmartyCompilerException' => __DIR__ . '/..' . '/smarty/smarty/libs/Smarty.class.php',
-        'SmartyException' => __DIR__ . '/..' . '/smarty/smarty/libs/Smarty.class.php',
-        'Smarty_Security' => __DIR__ . '/..' . '/smarty/smarty/libs/sysplugins/smarty_security.php',
-    );
-
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit056ad17c9fe5d65b7d3c5047fc89f77e::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit056ad17c9fe5d65b7d3c5047fc89f77e::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit056ad17c9fe5d65b7d3c5047fc89f77e::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -7,13 +7,10 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @author      Mantis Team
- * @copyright   2006-2016 TestLink community 
+ * @copyright   2006-2018 TestLink community 
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  *             (Parts of code has been adapted from Mantis BT)
  * @link       http://www.testlink.org
- *
- * @internal revisions
- * @since 1.9.15 
  *
  */
  
@@ -36,21 +33,14 @@
  */
 $ADODB_COUNTRECS = TRUE;
 
-// To use a different version of ADODB that provided with TL, use a similar bunch of lines
-// on custom_config.inc.php
-if( !defined('TL_ADODB_RELATIVE_PATH') )
-{
-    define('TL_ADODB_RELATIVE_PATH','/../../third_party/adodb/adodb.inc.php' );
-}
-require_once( dirname(__FILE__). TL_ADODB_RELATIVE_PATH );
 require_once( dirname(__FILE__). '/logging.inc.php' );
 
 /**
  * TestLink wrapper for ADODB component
  * @package   TestLink
  */
-class database 
-{
+class database {
+  
   const CUMULATIVE=1;
   const ONERROREXIT=1;
   

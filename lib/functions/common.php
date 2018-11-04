@@ -70,8 +70,7 @@ require_once("exec_cfield_mgr.class.php");
  * Automatic loader for PHP classes
  * See PHP Manual for details 
  */
-function tlAutoload($class_name) 
-{
+function tlAutoload($class_name)  {
 
   // exceptions
   // 1. remove prefix and convert lower case
@@ -84,26 +83,22 @@ function tlAutoload($class_name)
 
   // this way Zend_Loader_Autoloader will take care of these classes.
   // Needed in order to make work bugzillaxmlrpc interface
-  if( strstr($class_name,'Zend_') !== FALSE )
-  {
+  if( strstr($class_name,'Zend_') !== FALSE ) {
     return false;
   }
     
-  if (isset($tlClasses[$classFileName]))
-  {
+  if (isset($tlClasses[$classFileName])) {
     $len = tlStringLen($classFileName) - $tlClassPrefixLen;
     $classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
   }
   
-  if (isset($addDirToInclude[$class_name]))
-  {
+  if (isset($addDirToInclude[$class_name])) {
     $classFileName = strtolower($class_name) . "/" . $class_name;
   }  
 
   // Plugin special processing, class name ends with Plugin (see plugin_register())
   // Does not use autoload
-  if( preg_match('/Plugin$/', $class_name) == 1 )
-  {
+  if( preg_match('/Plugin$/', $class_name) == 1 ) {
     return;
   }  
 
@@ -111,8 +106,7 @@ function tlAutoload($class_name)
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 
   // You can reproduce it installing ThinkUp and TestLink applications in the same stack.  
-  try 
-  {
+  try {
     include_once $classFileName . '.class.php';
   } 
   catch (Exception $e)

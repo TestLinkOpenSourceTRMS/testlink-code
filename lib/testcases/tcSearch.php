@@ -39,12 +39,10 @@ $gui = (object)array_merge((array)$ga,(array)$gx);
 
 initSearch($gui,$args,$tproject_mgr);
 
-
-
 $map = null;
+$emptyTestProject = true;
 
-if ($args->tprojectID && $args->doAction == 'doSearch')
-{
+if ($args->tprojectID && $args->doAction == 'doSearch') {
   $tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
                                               'requirements','req_coverage','tcsteps',
                                               'testcase_keywords','tcversions','users'));
@@ -78,13 +76,11 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }  
   }
 
-  if($args->version)
-  {
+  if($args->version) {
     $filter['by_version'] = " AND TCV.version = {$args->version} ";
   }
     
-  if($args->keyword_id)       
-  {
+  if($args->keyword_id) {
   	 $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
      $filter['by_keyword_id'] = " AND KW.keyword_id  = " . $args->keyword_id; 
   }
@@ -94,8 +90,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   $filterSpecial = null;
   $feOp = " AND ";
   $filterSpecial['tricky'] = " 1=1 ";
-  if($args->jolly != "")
-  {
+  if($args->jolly != "") {
     // $filterSpecial['trick'] = " 1=1 ";
     $useOr = true;
     $feOp = " OR ";
@@ -103,26 +98,21 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     $args->steps = $args->expected_results = $args->jolly;
   }  
     
-  if($args->steps != "")
-  {
+  if($args->steps != "") {
     $args->steps = $db->prepare_string($args->steps);
     $filterSpecial['by_steps'] = $feOp . " TCSTEPS.actions like '%{$args->steps}%' ";  
   }    
     
-  if($args->expected_results != "")
-  {
+  if($args->expected_results != "") {
     $args->expected_results = $db->prepare_string($args->expected_results);
     $filterSpecial['by_expected_results'] = $feOp . " TCSTEPS.expected_results like '%{$args->expected_results}%' "; 
   }    
 
   $k2w = array('name' => 'NH_TC', 'summary' => 'TCV', 'preconditions' => 'TCV');
   $jollyEscaped = $db->prepare_string($args->jolly);
-  foreach($k2w as $kf => $alias)
-  {
-    if($args->$kf != "" || $args->jolly != '')
-    {
-      if( $args->jolly == '' )
-      {
+  foreach($k2w as $kf => $alias) {
+    if($args->$kf != "" || $args->jolly != '') {
+      if( $args->jolly == '' ) {
         $args->$kf =  $db->prepare_string($args->$kf);
       }  
       $filterSpecial[$kf] = " {$feOp} {$alias}.{$kf} like ";
@@ -131,14 +121,12 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
   } 
  
   $otherFilters = '';  
-  if(!is_null($filterSpecial))
-  {
+  if(!is_null($filterSpecial)) {
     $otherFilters = " AND (" . implode("",$filterSpecial) . ")";
   }  
 
 
-  if($args->custom_field_id > 0)
-  {
+  if($args->custom_field_id > 0) {
 
     // Need to understand custom type to fomat the value
 
@@ -150,8 +138,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     
     $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} ";
     
-    switch($gui->cf_types[$cf_def['type']])
-    {
+    switch($gui->cf_types[$cf_def['type']]) {
       case 'date':
         $args->custom_field_value = $tproject_mgr->cfield_mgr->cfdate2mktime($args->custom_field_value);
         
@@ -172,8 +159,7 @@ if ($args->tprojectID && $args->doAction == 'doSearch')
     }
   }
 
-  if($args->requirement_doc_id != "")
-  {
+  if($args->requirement_doc_id != "") {
     $args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
     $from['by_requirement_doc_id'] = " JOIN {$tables['req_coverage']} RC" .  
                                      " ON RC.testcase_id = NH_TC.id " .
@@ -309,14 +295,12 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui, $charset, $edit_icon, $history_icon) 
-{
+function buildExtTable($gui, $charset, $edit_icon, $history_icon)  {
   $table = null;
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
   
-  if(count($gui->resultSet) > 0) 
-  {
+  if(null != $gui->resultSet && count($gui->resultSet) > 0)  {
     $labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
     $columns = array();
     

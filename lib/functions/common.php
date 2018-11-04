@@ -77,6 +77,7 @@ function tlAutoload($class_name)  {
   $tlClasses = null;
   $tlClassPrefixLen = 2;
   $classFileName = $class_name;
+
    
   // 2. add a lower case directory 
   $addDirToInclude = array('Kint' => true);
@@ -86,7 +87,14 @@ function tlAutoload($class_name)  {
   if( strstr($class_name,'Zend_') !== FALSE ) {
     return false;
   }
-    
+
+  // Workaround
+  // https://github.com/smarty-php/smarty/issues/344 
+  // https://github.com/smarty-php/smarty/pull/345
+  //if( strpos($class_name,'Smarty_Internal_Compile_') !== FALSE ) {
+  //  return false;
+  //}
+
   if (isset($tlClasses[$classFileName])) {
     $len = tlStringLen($classFileName) - $tlClassPrefixLen;
     $classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
@@ -105,9 +113,10 @@ function tlAutoload($class_name)  {
 
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 
-  // You can reproduce it installing ThinkUp and TestLink applications in the same stack.  
+  // You can reproduce it installing ThinkUp and TestLink applications in the same stack. 
+
   try {
-    include_once $classFileName . '.class.php';
+      include_once $classFileName . '.class.php';
   } 
   catch (Exception $e)
   {

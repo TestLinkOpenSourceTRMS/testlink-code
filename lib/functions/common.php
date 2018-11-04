@@ -91,9 +91,9 @@ function tlAutoload($class_name)  {
   // Workaround
   // https://github.com/smarty-php/smarty/issues/344 
   // https://github.com/smarty-php/smarty/pull/345
-  //if( strpos($class_name,'Smarty_Internal_Compile_') !== FALSE ) {
-  //  return false;
-  //}
+  if( strpos($class_name,'Smarty_Internal_Compile_') !== FALSE ) {
+    return false;
+  }
 
   if (isset($tlClasses[$classFileName])) {
     $len = tlStringLen($classFileName) - $tlClassPrefixLen;

@@ -55,7 +55,7 @@ class printDocOptions {
     $this->testSpec[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs');
 
     $this->exec = array(); 
-    $this->exec[] = array( 'value' => 'requirement','description' => 'opt_cfexec_comb');
+    $this->exec[] = array( 'value' => 'execResultByCFValueOnExec','description' => 'opt_cfexec_comb');
 
     $this->exec[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes');
         

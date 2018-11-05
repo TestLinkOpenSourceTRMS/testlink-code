@@ -2726,6 +2726,9 @@ $TLS_opt_req_cf = "Requirement Custom Fields";
 $TLS_opt_req_relations = "Requirement Relations";
 $TLS_opt_req_linked_tcs = "Requirement related Test Cases";
 $TLS_opt_req_coverage = "Requirement Coverage";
+$TLS_opt_cfexec_comb = "Segregate Exec Results By Custom Fields";
+
+
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
 $TLS_title_req_print_navigator = "Navigator - Print Requirement Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";

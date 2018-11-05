@@ -347,11 +347,10 @@ function TPLAN_PTS(id)
   function: TPLAN_PTP
             Test PLAN Print Test Plan
 */
-function TPLAN_PTP(id)
-{
+function TPLAN_PTP(id) {
   var pParams = tree_getPrintPreferences();
   var my_location = fRoot+menuUrl+"?level=testproject&id="+id+args+"&"+pParams;
-  parent.workframe.location =my_location;
+  parent.workframe.location = my_location;
 }
 
 
@@ -547,43 +546,38 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
   Symbiosis (from Ancient Greek σύν "together" and βίωσις "living")
 
 */
-function tree_getPrintPreferences()
-{
+function tree_getPrintPreferences() {
+
   var params = [];
   var fields = ['header','summary','toc','body','passfail', 'cfields','testplan', 'metrics', 
                 'author','requirement','keyword','notes','assigned_to_me',
                 'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
                 'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
                 'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 
-                'headerNumbering','displayVersion','build_cfields','step_exec_notes','step_exec_status'];
+                'headerNumbering','displayVersion','build_cfields','step_exec_notes',
+                'step_exec_status','execResultsByCFOnExecCombination'];
 
-  for (var idx= 0;idx < fields.length;idx++)
-  {
+  for (var idx= 0;idx < fields.length;idx++) {
     var v = tree_getCheckBox(fields[idx]);
-    if (v)
-    {
+    if (v) {
       params.push(v);
     } 
   }
 
   var f = document.getElementById('format');
-  if(f)
-  {
+  if(f) {
     params.push("format="+f.value);
   }
 
   var bx = document.getElementById('build_id');
-  if(bx)
-  {
+  if(bx) {
     params.push("build_id="+bx.value);
   }
 
   var bx = document.getElementById('with_user_assignment');
-  if(bx)
-  {
+  if(bx) {
     var vv = 0;
-    if(bx.checked)
-    {
+    if(bx.checked) {
       vv = 1;
     }  
     params.push("with_user_assignment=" + vv);

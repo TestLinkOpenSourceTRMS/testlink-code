@@ -7,13 +7,11 @@
  * Generate documentation Test report based on Test plan data.
  *
  * @filesource  printDocument.php
- * @author      Martin Havlat
- * @copyright   2007-2017, TestLink community 
+ * @author      Martin Havlat, Francisco Mancardi
+ * @copyright   2007-2018, TestLink community 
  * @link        http://www.testlink.org
  *
  *
- * @internal revisions
- * @since 1.9.17
  *
  */
 require_once('../../config.inc.php');
@@ -22,7 +20,6 @@ require_once('common.php');
 require_once('print.inc.php');
 require_once('displayMgr.php');
 
-// displayMemUsage('START SCRIPT - LINE:' .__LINE__);
 $treeForPlatform = null;
 $docText = '';					
 $topText = '';
@@ -39,11 +36,9 @@ $treeForPlatform[0] = &$subtree;
 $doc_info->title = $doc_info->tproject_name;
 $doc_info->outputFormat = $printingOptions['outputFormat'] = $args->format;
 
-switch ($doc_info->type)
-{
+switch ($doc_info->type) {
   case DOC_REQ_SPEC:
-    switch($doc_info->content_range)
-    {
+    switch($doc_info->content_range) {
       case 'reqspec':
         $spec_mgr = new requirement_spec_mgr($db);
         $spec = $spec_mgr->get_by_id($args->itemID);
@@ -64,8 +59,7 @@ switch ($doc_info->type)
   case DOC_TEST_SPEC:
     $printingOptions['importance'] = $doc_info->test_priority_enabled;
 
-    switch($doc_info->content_range)
-    {
+    switch($doc_info->content_range) {
       case 'testsuite':
         $tsuite = new testsuite($db);
         $tInfo = $tsuite->get_by_id($args->itemID);
@@ -87,8 +81,7 @@ switch ($doc_info->type)
     $tplan_mgr = new testplan($db);
     $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 
-    if($args->build_id > 0)
-    {
+    if($args->build_id > 0) {
       $xx = $tplan_mgr->get_builds($args->tplan_id,null,null,array('buildID' => $args->build_id));
       $doc_info->build_name = htmlspecialchars($xx[$args->build_id]['name']);
       $doc_info->build_notes = $xx[$args->build_id]['notes'];
@@ -113,23 +106,19 @@ switch ($doc_info->type)
     $ctx->platformIDSet = $platformIDSet; 
     $opx = null;
    
-    if( $doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD )  
-    {
+    if( $doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD ) {
       $ctx->build_id = ($args->build_id > 0) ? $args->build_id : null;
       
       $opx = array('setAssignedTo' => false);
       $ctx->with_user_assignment = $args->with_user_assignment;
-      if( $ctx->build_id > 0 )
-      {
-        if( $args->with_user_assignment )
-        {
+      if( $ctx->build_id > 0 ) {
+        if( $args->with_user_assignment ) {
           $opx = array('setAssignedTo' => true);
         }
       }  
     }  
     
-    switch($doc_info->content_range)
-    {
+    switch($doc_info->content_range) {
       case 'testproject':
         $treeForPlatform = buildContentForTestPlan($db,$subtree,$ctx,$decode,
                                                    $tplan_mgr,$filters,$opx);
@@ -147,8 +136,7 @@ switch ($doc_info->type)
     // Create list of execution id, that will be used to compute execution time if
     // CF_EXEC_TIME custom field exists and is linked to current testproject
     $doc_data->statistics = null;                                            
-    if ($printingOptions['metrics'])
-    {
+    if ($printingOptions['metrics']) {
       $target = new stdClass();
       $target->tplan_id = $args->tplan_id;
       $target->build_id = $args->build_id;
@@ -193,8 +181,7 @@ if ($treeForPlatform)
       } 
 
       $cfieldFormatting=array('table_css_style' => 'class="cf"');
-      if ($printingOptions['cfields'])
-      {
+      if ($printingOptions['cfields']) {
         $cfields = $tplan_mgr->html_table_of_custom_field_values($args->tplan_id,'design',null,$cfieldFormatting);
         $docText .= '<p>' . $cfields . '</p>';
       }
@@ -296,8 +283,7 @@ echo $docText;
  * Process input data
  * 
  **/
-function init_args(&$dbHandler)
-{
+function init_args(&$dbHandler) {
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
                    "tproject_id" => array(tlInputParameter::INT_N), 
                    "tplan_id" => array(tlInputParameter::INT_N),  
@@ -316,30 +302,25 @@ function init_args(&$dbHandler)
   $typeDomain = array('test_plan' => 'testplan','test_report' => 'testreport');
   $args->type = isset($typeDomain[$args->type]) ? $typeDomain[$args->type] : $args->type;
   
-  if( !is_null($args->apikey) )
-  {
+  if( !is_null($args->apikey) ) {
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
 
-    if(strlen($args->apikey) == 32)
-    {
+    if(strlen($args->apikey) == 32) {
       $cerbero->args->getAccessAttr = true;
       $cerbero->method = 'checkRights';
       $cerbero->redirect_target = "../../login.php?note=logout";
       setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
-    }
-    else
-    {
+    } else {
       $args->addOpAccess = false;
       $cerbero->method = null;
       setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
     }  
     $args->itemID = $args->tproject_id;
   }
-  else
-  {
+  else {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
     
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
@@ -349,13 +330,10 @@ function init_args(&$dbHandler)
 
   $tproject_mgr = new testproject($dbHandler);
 
-  if($args->tproject_id > 0) 
-  {
+  if($args->tproject_id > 0) {
     $dummy = $tproject_mgr->get_by_id($args->tproject_id);
     $args->tproject_name = $dummy['name'];
-  }
-  else
-  {
+  } else {
     $msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
     throw new Exception($msg);
   }
@@ -380,22 +358,13 @@ function init_args(&$dbHandler)
  * @uses init_checkboxes() - printDocOptions.php 
  * 
  **/
-function initPrintOpt(&$UIhash,&$docInfo)
-{
-  // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
-  $pOpt = array( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
-                 'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
-                 'cfields' => 0, 'testplan' => 0, 'metrics' => 0, 'assigned_to_me' => 0, 
-                 'req_spec_scope' => 0,'req_spec_author' => 0,'build_cfields' => 0,
-                 'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
-                 'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
-                 'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
-                 'req_linked_tcs' => 0,'req_coverage' => 0,'displayVersion' => 0,
-                 'step_exec_notes' => 0, 'step_exec_status' => 0);
+function initPrintOpt(&$UIhash,&$docInfo) {
+
+  $optObj = new printDocOptions();
+  $pOpt = $optObj->getAllOptVars();
   
   $lightOn = isset($UIhash['allOptionsOn']);
-  foreach($pOpt as $opt => $val)
-  {
+  foreach($pOpt as $opt => $val) {
     $pOpt[$opt] = $lightOn || (isset($UIhash[$opt]) && ($UIhash[$opt] == 'y'));
   }          
   $pOpt['docType'] = $docInfo->type;
@@ -625,9 +594,9 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode)
 /**
  *
  */ 
-function buildContentForTestPlan(&$dbHandler,$itemsTree,$ctx,$decode,&$tplanMgr,
-                                 $pnFilters=null,$opt=null)
-{
+function buildContentForTestPlan(&$dbHandler,$itemsTree,$ctx,$decode,
+  &$tplanMgr,$pnFilters=null,$opt=null) {
+
   $linkedBy = array();
   $contentByPlatform = array();
 

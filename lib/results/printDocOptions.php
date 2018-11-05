@@ -126,6 +126,9 @@ $smarty->assign('docTestPlanId', $args->tplan_id);
 $smarty->assign('menuUrl', $rightPaneAction);
 $smarty->assign('additionalArgs',$additionalArgs);
 
+$optCfg = new printDocOptions();
+$smarty->assign('printPreferences', $optCfg->getJSPrintPreferences());
+
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

@@ -35,14 +35,11 @@
   returns:
 
 */
-function focusInputField(id,selectIt)
-{
+function focusInputField(id,selectIt) {
   var f = document.getElementById(id);
-  if (f)
-  {
+  if (f) {
     f.focus();
-    if(selectIt)
-    {
+    if(selectIt) {
       f.select();
     } 
   }
@@ -184,8 +181,7 @@ function EXDS()
   returns:
 
 */
-function EP(id)
-{
+function EP(id) {
   // menuUrl 99% => archiveData.php
   // can be planAddTC.php
   var _FUNCTION_NAME_="EP";
@@ -323,12 +319,7 @@ function ER(id)
 
 }
 
-/* Generate doc: a selected Test Suite from Test Specification
-function TPROJECT_PRS(id)
-{
-	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testsuite&id="+id+args+"&"+pParams;
-}
+/* 
   function: TPLAN_PTS
             Test PLAN Print Test Suite
 
@@ -337,8 +328,7 @@ function TPROJECT_PRS(id)
   returns:
 
 */
-function TPLAN_PTS(id)
-{
+function TPLAN_PTS(id) {
   var pParams = tree_getPrintPreferences();
   parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
 }
@@ -549,13 +539,7 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
 function tree_getPrintPreferences() {
 
   var params = [];
-  var fields = ['header','summary','toc','body','passfail', 'cfields','testplan', 'metrics', 
-                'author','requirement','keyword','notes','assigned_to_me',
-                'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
-                'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
-                'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 
-                'headerNumbering','displayVersion','build_cfields','step_exec_notes',
-                'step_exec_status','execResultsByCFOnExecCombination'];
+  var fields = printPreferences;
 
   for (var idx= 0;idx < fields.length;idx++) {
     var v = tree_getCheckBox(fields[idx]);

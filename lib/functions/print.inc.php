@@ -801,8 +801,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
   }
 
   $node_type = $id_descr[intval($node['node_type_id'])];
-  switch($node_type)
-  {
+  switch($node_type) {
     case 'testproject':
     break;
 
@@ -816,8 +815,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
     break;
   }
   
-  if (isset($node['childNodes']) && $node['childNodes'])
-  {
+  if (isset($node['childNodes']) && $node['childNodes']) {
     // Need to be a LOCAL COUNTER for each PARENT
     $TOCCounter = 0;
     $childNodes = $node['childNodes'];
@@ -1046,8 +1044,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     // Get Linked test case version
     $linkedItem = $tplan_mgr->getLinkInfo($tplan_id,$id,$platform_id);
 
-    $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
-           " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
+    $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, 
+             E.tester_id, E.notes, E.build_id, E.tcversion_id,
+             E.tcversion_number,E.testplan_id," .
            " E.execution_type, E.execution_duration, " .
            " B.name AS build_name " .
            " FROM {$tables['executions']} E " .
@@ -1065,32 +1064,29 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       $sql .= " AND E.testplan_id = " . intval($tplan_id) .
               " AND E.platform_id = " . intval($platform_id) .
               " AND E.tcversion_id = " . intval($linkedItem[0]['tcversion_id']);
-      if($build_id > 0)
-      {
+      if($build_id > 0) {
         $sql .= " AND E.build_id = " . intval($build_id);
-      }
-      else
-      {
+      } else {
         // We are looking for LATEST EXECUTION of CURRENT LINKED test case version
         $sql .= " AND E.tcversion_number=" . intval($linkedItem[0]['version']);
       }
       $sql .= " ORDER BY execution_id DESC";
     }
+
+    //echo $sql;
     $exec_info = $db->get_recordset($sql,null,1);
+    //$exec_info = $db->get_recordset($sql);
 
     $getByID['tcversion_id'] = $linkedItem[0]['tcversion_id'];
     $getByID['filters'] = null;
     $linkedItem = null;
 
-    if( !is_null($exec_info) )
-    {
+    if( !is_null($exec_info) ) {
       $getByID['tcversion_id'] = null;
       $getByID['filters'] = array('version_number' => $exec_info[0]['tcversion_number']);
       $tbuild_id = $exec_info[0]['build_id'];
-      if( isset($options['build_cfields']) && $options['build_cfields'] )
-      {
-        if( !isset($buildCfields[$tbuild_id]) )
-        {
+      if( isset($options['build_cfields']) && $options['build_cfields'] ) {
+        if( !isset($buildCfields[$tbuild_id]) ) {
           $buildCfields[$tbuild_id] = 
             $build_mgr->html_table_of_custom_field_values($tbuild_id,$tprojectID);
         }
@@ -1111,8 +1107,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   if ($options['cfields']) {
     // Get custom fields that has specification scope
     // Custom Field values at Test Case VERSION Level
-    
-
     foreach($st->locationFilters as $fkey => $fvalue) { 
       $cfields['specScope'][$fkey] = 
           $tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,

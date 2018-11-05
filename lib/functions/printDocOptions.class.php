@@ -55,7 +55,7 @@ class printDocOptions {
     $this->testSpec[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs');
 
     $this->exec = array(); 
-    $this->exec[] = array( 'value' => 'execResultByCFValueOnExec','description' => 'opt_cfexec_comb');
+    $this->exec[] = array( 'value' => 'execResultsByCFOnExecCombination','description' => 'opt_cfexec_comb');
 
     $this->exec[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes');
         
@@ -117,6 +117,20 @@ class printDocOptions {
     return $ov;
   }
 
+  /**
+   *
+   */
+  function getJSPrintPreferences() {
+
+    $ov = array();
+    $prop = array('doc','testSpec','reqSpec','exec');
+    foreach($prop as $pp) {
+      foreach($this->$pp as $ele) {
+        $ov[] = $ele['value']; 
+      }      
+    }
+    return json_encode($ov);
+  }
 
 
 

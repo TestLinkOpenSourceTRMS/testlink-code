@@ -62,12 +62,14 @@ editorType: used to understand if code for tinymce need to be loaded
 
 	<script type="text/javascript" src="{$basehref}third_party/prototype/prototype.js" language="javascript"></script>
 
+  {debug}
 	<script type="text/javascript" language="javascript">
 	//<!--
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';
 	var additionalArgs  = '{$additionalArgs}';
+	var printPreferences = {$printPreferences};
 	
 	// To solve problem diplaying help
 	var SP_html_help_file  = '{$SP_html_help_file}';

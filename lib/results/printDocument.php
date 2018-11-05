@@ -32,6 +32,7 @@ list($doc_info,$my) = initEnv($db,$args,$tproject_mgr,$args->user_id);
 $printingOptions = initPrintOpt($_REQUEST,$doc_info);
 
 $subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
+
 $treeForPlatform[0] = &$subtree;
 $doc_info->title = $doc_info->tproject_name;
 $doc_info->outputFormat = $printingOptions['outputFormat'] = $args->format;
@@ -128,8 +129,7 @@ switch ($doc_info->type) {
         $ctx->branchRoot =  $args->itemID;
         $opx = array_merge((array)$opx,$my['options']['prepareNode']);
         list($treeForPlatform,$items2use) = 
-             buildContentForTestPlanBranch($db,$subtree,$ctx,$doc_info,$decode,
-                                           $tplan_mgr,$opx);
+             buildContentForTestPlanBranch($db,$subtree,$ctx,$doc_info,$decode,$tplan_mgr,$opx);
       break;
     }
          
@@ -154,19 +154,15 @@ $topText .= renderFirstPage($doc_info);
 // Init table of content (TOC) data
 renderTOC($printingOptions);  // @TODO check if is really useful
 
-
 $tocPrefix = null;
-if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) )
-{
+if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) ) {
   $tocPrefix = 0;
 }
 
-if ($treeForPlatform)
-{
+if ($treeForPlatform) {
   // Things that have to be printed just once
   // 
-  switch ($doc_info->type)
-  {
+  switch ($doc_info->type) {
     case DOC_TEST_PLAN_DESIGN:
       $printingOptions['metrics'] = true; // FORCED
 
@@ -175,8 +171,7 @@ if ($treeForPlatform)
       $docText .= renderTestProjectItem($doc_info);
       $docText .= renderTestPlanItem($doc_info);
 
-      if($doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD)
-      {
+      if($doc_info->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) {
         $docText .= renderBuildItem($doc_info);
       } 
 
@@ -190,17 +185,14 @@ if ($treeForPlatform)
 
 
   $actionContext = (array)$args;
-  foreach ($treeForPlatform as $platform_id => $tree2work)            
-  {
+  foreach ($treeForPlatform as $platform_id => $tree2work) {
     $actionContext['platform_id'] = $platform_id;
 
-    if(isset($tree2work['childNodes']) && sizeof($tree2work['childNodes']) > 0)
-    {
+    if(isset($tree2work['childNodes']) && sizeof($tree2work['childNodes']) > 0) {
       $tree2work['name'] = $args->tproject_name;
       $tree2work['id'] = $args->tproject_id;
       $tree2work['node_type_id'] = $decode['node_descr_id']['testproject'];
-      switch ($doc_info->type)
-      {
+      switch ($doc_info->type) {
         case DOC_REQ_SPEC:
           $docText .= renderReqSpecTreeForPrinting($db, $tree2work, $printingOptions, 
                                                    null, 0, 1, $args->user_id,0,$args->tproject_id);
@@ -222,6 +214,7 @@ if ($treeForPlatform)
           $printingOptions['step_exec_notes'] = false;
           $printingOptions['step_exec_status'] = false;
 
+
           $actionContext['level'] = 0;
           $indentLevelStart = 1;
           $docText .= renderTestSpecTreeForPrinting($db,$tree2work,$printingOptions,$env,$actionContext,
@@ -241,16 +234,15 @@ if ($treeForPlatform)
           $env->testCounter = 1;
           $env->reportType = $doc_info->type;
 
-          if ($showPlatforms)
-          {
+          if ($showPlatforms) {
             $printingOptions['showPlatformNotes'] = true;
             $docText .= renderPlatformHeading($tocPrefix,$platforms[$platform_id],$printingOptions);
           }
 
           $actionContext['level'] = 0;
           $docText .= renderTestPlanForPrinting($db,$tree2work,$printingOptions,$env,$actionContext);
-          if( $printingOptions['metrics'] )
-          {
+
+          if( $printingOptions['metrics'] ) {
             $docText .= buildTestPlanMetrics($doc_data->statistics,$platform_id);
           }  
         break;
@@ -261,8 +253,7 @@ if ($treeForPlatform)
 $docText .= renderEOF();
 
 // Needed for platform feature
-if ($printingOptions['toc'])
-{
+if ($printingOptions['toc']) {
   $printingOptions['tocCode'] .= '</div>';
   $topText .= $printingOptions['tocCode'];
 }
@@ -398,8 +389,7 @@ function getDecode(&$treeMgr)
  * @internal revisions:
  * 
  **/
-function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
-{
+function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID) {
 
   $my = array();
   $doc = new stdClass(); 
@@ -426,8 +416,7 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
   $doc->author = '';
   $doc->title = '';
 
-  switch ($doc->type)
-  {
+  switch ($doc->type) {
     case DOC_TEST_PLAN_DESIGN: 
       $my['options']['order_cfg'] = array("type" =>'exec_order',"tplan_id" => $argsObj->tplan_id);
       break;
@@ -451,8 +440,7 @@ function initEnv(&$dbHandler,&$argsObj,&$tprojectMgr,$userID)
 
 
   $user = tlUser::getById($dbHandler,$userID);
-  if ($user)
-  {
+  if ($user) {
     $doc->author = htmlspecialchars($user->getDisplayName());
   }
   unset($user);
@@ -616,17 +604,17 @@ function buildContentForTestPlan(&$dbHandler,$itemsTree,$ctx,$decode,
   $pnOptions['setAssignedTo'] = $my['opt']['setAssignedTo'];
 
   $filters = null;
-  if( property_exists($ctx, 'build_id') )
-  {
-    $filters = array('build_id' => $ctx->build_id);
-  }  
-  if( property_exists($ctx, 'with_user_assignment') && $ctx->with_user_assignment == 0 )
-  {
+  $px = 'with_user_assignment';
+  if( property_exists($ctx, $px) && $ctx->$px == 0 ){
     $filters = null;
+  } else {
+    $px = 'build_id';
+    if( property_exists($ctx, $px) ) {
+      $filters = array($px => $ctx->$px);
+    }     
   }
-
-  foreach($platformIDSet as $platform_id)  
-  {
+ 
+  foreach($platformIDSet as $platform_id) {
     $filters['platform_id'] = $platform_id;
     $linkedBy[$platform_id] = $tplanMgr->getLinkedStaticView($tplanID,$filters);
 
@@ -634,18 +622,16 @@ function buildContentForTestPlan(&$dbHandler,$itemsTree,$ctx,$decode,
     // We are in a loop and we use tree on prepareNode, that changes it,
     // then we can not use anymore a reference BUT WE NEED A COPY.
     $tree2work = $itemsTree;
-    if (!$linkedBy[$platform_id])
-    {
+    if (!$linkedBy[$platform_id]) {
       $tree2work['childNodes'] = null;
     }
 
     $dummy4reference = null;
-    prepareNode($dbHandler,$tree2work,$decode,$dummy4reference,$dummy4reference,
-                $linkedBy[$platform_id],$pnFilters,$pnOptions);
+    prepareNode($dbHandler,$tree2work,$decode,$dummy4reference,$dummy4reference,$linkedBy[$platform_id],$pnFilters,$pnOptions);
   
     $contentByPlatform[$platform_id] = $tree2work; 
-
   }
+
   return $contentByPlatform;
 }
 
@@ -683,8 +669,7 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$ctx,&$docInfo,$de
   $filters = array( 'tsuites_id' => $branch_tsuites);
   
   $getLTCVOpt['addExecInfo'] = true;
-  if($docInfo->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD)
-  {
+  if($docInfo->type == DOC_TEST_PLAN_EXECUTION_ON_BUILD) {
     $getLTCVOpt['addExecInfo'] = true;
     $getLTCVOpt['ua_user_alias'] = ' AS assigned_to '; 
     $getLTCVOpt['ua_force_join'] = true;
@@ -693,8 +678,7 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$ctx,&$docInfo,$de
     $filters['build_id'] = $ctx->build_id;
   }  
   
-  foreach($platformIDSet as $platform_id)  
-  {
+  foreach($platformIDSet as $platform_id) {
     // IMPORTANTE NOTICE:
     // This need to be initialized on each iteration because prepareNode() make changes on it.
     $tInfo['childNodes'] = isset($itemsTree['childNodes']) ? $itemsTree['childNodes'] : null;
@@ -704,16 +688,12 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$ctx,&$docInfo,$de
     $metrics->realExecTime[$platform_id] = null;
     
     $avalon = $tplanMgr->getLTCVNewGeneration($tplanID, $filters, $getLTCVOpt); 
-    if(!is_null($avalon))
-    {
+    if(!is_null($avalon)) {
       $k2l = array_keys($avalon);
-      foreach($k2l as $key)
-      {
+      foreach($k2l as $key) {
         $linkedBy[$platform_id][$key] = $avalon[$key][$platform_id];
       } 
-    }  
-    else
-    {
+    } else {
       $linkedBy[$platform_id] = null;
     }  
   
@@ -721,10 +701,8 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$ctx,&$docInfo,$de
     // managed, we need the test case version ID and not test case ID
     // In addition if we loop over Platforms we need to save this set each time!!!
     $items2loop = !is_null($linkedBy[$platform_id]) ? array_keys($linkedBy[$platform_id]) : null;
-    if( !is_null($items2loop) )
-    { 
-      foreach($items2loop as $rdx)
-      {  
+    if( !is_null($items2loop) ) { 
+      foreach($items2loop as $rdx) {  
         $metrics->estimatedExecTime[$platform_id][] = $linkedBy[$platform_id][$rdx]['tcversion_id'];
       }    
     }
@@ -734,14 +712,14 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$ctx,&$docInfo,$de
     $dummy4reference = null;
     $contentByPlatform[$platform_id]['childNodes'] = array();
  
-    if(!is_null($linkedBy[$platform_id]))
-    {
+    if(!is_null($linkedBy[$platform_id])) {
       prepareNode($dbHandler,$tInfo,$decode,$dummy4reference,$dummy4reference,
                   $linkedBy[$platform_id],$pnFilters,$pnOptions);
     
       $contentByPlatform[$platform_id]['childNodes'] = array($tInfo);   
     }
   }
+
   $metrics->realExecTime = $linkedBy;
   return array($contentByPlatform,$metrics);
 }    
@@ -749,8 +727,7 @@ function buildContentForTestPlanBranch(&$dbHandler,$itemsTree,$ctx,&$docInfo,$de
 /**
  *
  */
-function timeStatistics($items,$context,$decode,$tplanMgr)
-{
+function timeStatistics($items,$context,$decode,$tplanMgr) {
   $stats = array();
   $stats['estimated_execution'] = 
     getStatsEstimatedExecTime($tplanMgr,$items->estimatedExecTime,$context->tplan_id);

@@ -126,6 +126,7 @@ class TLSmarty extends Smarty {
     $this->assign('args',null);
     $this->assign('additionalArgs',null);
     $this->assign('pageTitle',null);
+    $this->assign('printPreferences',null);
     
     $this->assign('css_only',null);
     $this->assign('body_onload',null);

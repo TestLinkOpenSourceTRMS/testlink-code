@@ -237,7 +237,6 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_linked_versions=null
                        args_has_testplans=$gui->has_testplans}
 
-              DEBUG-TCV={$tcv_frozen_version}
               {include file="attachments.inc.tpl" 
                        attach_attachmentInfos=$gui->attachments[$tcversion_id]  
                        attach_downloadOnly=($tcv_frozen_version=="yes")

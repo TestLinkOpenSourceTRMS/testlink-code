@@ -579,8 +579,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
     returns: array of rows
   */
-  function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null) 
-  {
+  function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null) {
 
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $my['options'] = array( 'order_by' => 
@@ -2672,7 +2671,7 @@ function get_requirement_child_by_id_req($id){
     $ltcv = null;
     if( null == $tcase_id ) {
       $tcversionJoin =  
-        " JOIN {$this->views['latest_tcase_version_id']} LTCV " .
+        " LEFT JOIN {$this->views['latest_tcase_version_id']} LTCV " .
         " ON LTCV.tcversion_id = RCOV.tcversion_id ";
     } else {
       $tcInfo = current($tcMgr->get_last_active_version($tcase_id));
@@ -2694,17 +2693,21 @@ function get_requirement_child_by_id_req($id){
            " SELECT NH_REQ.id,REQVER.scope, " .
            " CONCAT(NH_REQ.name,' [v', REQVER.version ,'] ' ) AS title," .
            " REQ.req_doc_id, REQVER.version," .
+           " (CASE WHEN REQVER.version IS NULL " . 
+           "       THEN 1 ELSE 0 END) AS can_be_deleted " .
 
            " FROM {$this->tables['nodes_hierarchy']} NH_REQ " .
-           " JOIN {$this->tables['req_coverage']} RCOV " .
+           " JOIN {$this->tables['requirements']} REQ " .
+           " ON REQ.id = NH_REQ.id " .
+
+
+           " LEFT JOIN {$this->tables['req_coverage']} RCOV " .
            " ON RCOV.req_id = NH_REQ.id " .
            $tcversionJoin .
 
-           " JOIN {$this->tables['req_versions']} REQVER " .
+           " LEFT JOIN {$this->tables['req_versions']} REQVER " .
            " ON REQVER.id = RCOV.req_version_id " .
            
-           " JOIN {$this->tables['requirements']} REQ " .
-           " ON REQ.id = NH_REQ.id " .
            
            " WHERE NH_REQ.parent_id=" . intval($id) .
            " AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']}";

@@ -123,7 +123,7 @@ function refreshAndClose(tcase_id,callback) {
 
       {$cbDisabled = 0}
       {* Has become complex & weird!! *}
-      {if $tlCfg->reqTCLink->freezeeLinkOnNewREQVersion != FALSE }
+      {if $tlCfg->reqTCLink->freezeeLinkOnNewREQVersion == TRUE }
         {if $gui->assignedReq[row].reqver_is_open == 0 || 
             $gui->assignedReq[row].can_be_removed == 0 }
           {$cbDisabled = 1}

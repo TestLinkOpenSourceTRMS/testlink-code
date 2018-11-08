@@ -123,13 +123,13 @@ class printDocOptions {
   function getJSPrintPreferences() {
 
     $ov = array();
-    $prop = array('doc','testSpec','reqSpec','exec');
+    $prop = array("doc","testSpec","reqSpec","exec");
     foreach($prop as $pp) {
       foreach($this->$pp as $ele) {
         $ov[] = $ele['value']; 
       }      
     }
-    return json_encode($ov);
+    return implode(',',$ov);
   }
 
 

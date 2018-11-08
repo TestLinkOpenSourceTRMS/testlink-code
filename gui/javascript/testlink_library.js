@@ -539,8 +539,9 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
 function tree_getPrintPreferences() {
 
   var params = [];
-  var fields = printPreferences;
-
+  var fields = printPreferences.split(',');
+  
+  alert(fields.length);
   for (var idx= 0;idx < fields.length;idx++) {
     var v = tree_getCheckBox(fields[idx]);
     if (v) {

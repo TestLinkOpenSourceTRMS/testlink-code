@@ -6,12 +6,10 @@
  * Management and assignment of keywords
  *
  * @package     TestLink
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @filesource  tlKeyword.class.php
  * @link        http://www.testlink.org 
  *
- * @internal revisions
- * @since 1.9.15
  **/
 
 require_once('object.class.php');
@@ -283,8 +281,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * 
    * @return array the keyword information
    */
-  public function getInfo()
-  {
+  public function getInfo() {
     return array("id" => $this->dbID,"keyword" => $this->name,
                "notes" => $this->notes,"testproject_id" => $this->testprojectID);
   }

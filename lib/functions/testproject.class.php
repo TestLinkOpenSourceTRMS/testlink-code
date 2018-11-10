@@ -40,14 +40,15 @@ class testproject extends tlObjectWithAttachments {
   var $tmp_dir;
   var $node_types_descr_id;
   var $my_node_type;
+  var $cfg;
 
   /** 
    * Class constructor
    * 
    * @param resource &$db reference to database handler
    */
-  function __construct(&$db)
-  {
+  function __construct(&$db) {
+
     $this->tmp_dir = config_get('temp_dir');
 
     $this->db = &$db;
@@ -59,6 +60,9 @@ class testproject extends tlObjectWithAttachments {
 
     $this->node_types_descr_id = &$this->tree_manager->node_descr_id;
     $this->my_node_type = $this->tree_manager->node_descr_id['testproject'];
+
+    $this->cfg = new stdClass();
+    $this->cfg->keywords = config_get('keywords');
   }
 
 /**
@@ -1177,8 +1181,7 @@ function setPublicStatus($id,$status)
    *
    * @param type $kwid
    **/
-  public function getKeyword($id)
-  {
+  public function getKeyword($id) {
     return tlKeyword::getByID($this->db,$id);
   }
   
@@ -1193,10 +1196,8 @@ function setPublicStatus($id,$status)
    *                keyword
    *                notes
    **/
-  public function getKeywords($testproject_id)
-  {
+  public function getKeywords($testproject_id) {
     $ids = $this->getKeywordIDsFor($testproject_id);
-
     return tlKeyword::getByIDs($this->db,$ids);
   }
 
@@ -1207,8 +1208,7 @@ function setPublicStatus($id,$status)
    * @return int returns 1 on success, 0 else
    *
    **/
-  function deleteKeyword($id, $opt=null)
-  {
+  function deleteKeyword($id, $opt=null) {
     $result = tl::ERROR;
     $my['opt'] = array('checkBeforeDelete' => true, 'nameForAudit' => null,
                        'context' => '', 'tproject_id' => null);
@@ -1217,24 +1217,30 @@ function setPublicStatus($id,$status)
 
     $doIt = !$my['opt']['checkBeforeDelete'];
     $keyword = $my['opt']['nameForAudit'];
-    if($my['opt']['checkBeforeDelete'])
-    {
-      $kw = $this->getKeyword($id);
-      if( $doIt = !is_null($kw) )
-      {
-        $keyword = $kw->name;
-      }  
+
+    if($my['opt']['checkBeforeDelete']) {      
+      $doIt = true;
+      if( $this->cfg->keywords->onDeleteCheckExecutedTCVersions ) {
+        $linkedAndNotExec = $this->checkKeywordIsLinkedAndNotExecuted($id);
+        $doIt = $doIt && $linkedAndNotExec;
+      }
+      
+      if( $this->cfg->keywords->onDeleteCheckFrozenTCVersions ) {
+        $linkedToFrozen = $this->checkKeywordIsLinkedToFrozenVersions($id);
+        $doIt = $doIt && $linkedToFrozen;
+      }
     }  
     
-    if($doIt)
-    {
+    if( $doIt ) {
+      if( $this->auditCfg->logEnabled ) {
+        $keyword = $this->getKeywordSimple($id);
+      }  
       $result = tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
     }
 
-    if ($result >= tl::OK && $this->auditCfg->logEnabled)
-    {
-      switch($my['opt']['context'])
-      {
+    if ($result >= tl::OK && $this->auditCfg->logEnabled) {
+
+      switch($my['opt']['context']) {
         case 'getTestProjectName':
           $dummy = $this->get_by_id($my['opt']['tproject_id'],array('output'=>'name'));
           $my['opt']['context'] = $dummy['name'];
@@ -1250,8 +1256,7 @@ function setPublicStatus($id,$status)
   /**
    * delete Keywords
    */
-  function deleteKeywords($tproject_id,$tproject_name=null)
-  {
+  function deleteKeywords($tproject_id,$tproject_name=null) {
     $result = tl::OK;
 
     $itemSet = (array)$this->getKeywordSet($tproject_id);
@@ -1261,13 +1266,11 @@ function setPublicStatus($id,$status)
                  'context' => $tproject_name);
 
     $loop2do = sizeof($kwIDs);
-    for($idx = 0;$idx < $loop2do; $idx++)
-    {
+    for($idx = 0;$idx < $loop2do; $idx++) {
       $opt['nameForAudit'] = $itemSet[$kwIDs[$idx]]['keyword'];
 
       $resultKw = $this->deleteKeyword($kwIDs[$idx],$opt);
-      if ($resultKw != tl::OK)
-      {  
+      if ($resultKw != tl::OK) {  
         $result = $resultKw;
       }  
     }
@@ -1279,8 +1282,7 @@ function setPublicStatus($id,$status)
    * 
    *
    */
-  protected function getKeywordIDsFor($testproject_id)
-  {
+  protected function getKeywordIDsFor($testproject_id) {
     $query = " SELECT id FROM {$this->tables['keywords']}  " .
              " WHERE testproject_id = {$testproject_id}" .
              " ORDER BY keyword ASC";
@@ -1292,11 +1294,11 @@ function setPublicStatus($id,$status)
    * 
    *
    */
-  function getKeywordSet($tproject_id)
-  {
+  function getKeywordSet($tproject_id) {
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']}  " .
            " WHERE testproject_id = {$tproject_id}" .
            " ORDER BY keyword ASC";
+
     $items = $this->db->fetchRowsIntoMap($sql,'id');
     return $items;
   }
@@ -1306,8 +1308,7 @@ function setPublicStatus($id,$status)
    * 
    *
    */
-  function hasKeywords($id)
-  {
+  function hasKeywords($id) {
     // seems that postgres PHP driver do not manage well UPPERCASE  in AS CLAUSE
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = "/* {$debugMsg} */ SELECT COUNT(0) AS qty FROM {$this->tables['keywords']}  " .
@@ -1914,8 +1915,7 @@ function setPublicStatus($id,$status)
    * @return integer status
    * 
    */
-  function delete($id)
-  {
+  function delete($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $ret['msg']='ok';
@@ -1964,21 +1964,17 @@ function setPublicStatus($id,$status)
     $this->deleteAttachments($id);
     
     $reqSpecSet=$reqspec_mgr->get_all_id_in_testproject($id);
-    if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 )
-    {
-      foreach($reqSpecSet as $reqSpec)
-      {
+    if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 ) {
+      foreach($reqSpecSet as $reqSpec) {
         $reqspec_mgr->delete_deep($reqSpec['id']);
       }      
     }
     
     $tplanSet = $this->get_all_testplans($id);
-    if( !is_null($tplanSet) && count($tplanSet) > 0 )
-    {
+    if( !is_null($tplanSet) && count($tplanSet) > 0 ) {
       $tplan_mgr = new testplan($this->db);
       $items=array_keys($tplanSet);     
-      foreach($items as $key)
-      {
+      foreach($items as $key) {
         $tplan_mgr->delete($key);
       }
     }
@@ -1995,10 +1991,8 @@ function setPublicStatus($id,$status)
     $inventory_mgr = new tlInventory($id,$this->db);
     $invOpt = array('detailLevel' => 'minimun', 'accessKey' => 'id');
     $inventorySet = $inventory_mgr->getAll($invOpt);
-    if( !is_null($inventorySet) )
-    {
-      foreach($inventorySet as $key => $dummy)
-      {
+    if( !is_null($inventorySet) ) {
+      foreach($inventorySet as $key => $dummy) {
         $inventory_mgr->deleteInventory($key);
       }    
     }
@@ -3921,16 +3915,192 @@ function getActiveTestPlansCount($id)
   return $rs[0]['qty'];       
 }
 
-/**
- *
- */
-static function getAPIKey(&$dbh,$id)
-{
-  $sch = tlDBObject::getDBTables('testprojects');
-  $sql = "SELECT api_key FROM {$sch['testprojects']} WHERE id=" . intval($id);
-  $rs = $dbh->get_recordset($sql);
+  /**
+   *
+   */
+  static function getAPIKey(&$dbh,$id) {
+    $sch = tlDBObject::getDBTables('testprojects');
+    $sql = "SELECT api_key FROM {$sch['testprojects']} WHERE id=" . intval($id);
+    $rs = $dbh->get_recordset($sql);
 
-  return is_null($rs) ? $rs : $rs[0]['api_key'];
-}
+    return is_null($rs) ? $rs : $rs[0]['api_key'];
+  }
+
+
+  /**
+   *
+   */
+  function checkKeywordIsLinkedAndNotExecuted($keyword_id,$tproject_id=null) {
+
+    $wheraAdd = '';
+    $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
+             WHERE id = {$keyword_id} ";
+
+    if( null != $tproject_id ) {
+      $whereAdd = " AND testproject_id = " . intval($tproject_id);
+    }         
+    $sql .= $whereAdd;
+
+    $rs = $this->db->get_recordset($sql);    
+    if( is_null($rs) ) {
+      return null;
+    }  
+
+    // Now try to understand if it is linked 
+    if( !is_null($rs) ) {
+      $sql = " SELECT DISTINCT keyword_id,keyword,
+                      CASE 
+                        WHEN EX.status IS NULL THEN 'NOT_RUN'
+                        ELSE 'EXECUTED'
+                      END AS exec_status 
+               FROM {$this->tables['keywords']} KW
+               JOIN {$this->tables['testcase_keywords']} TCKW
+               ON TCKW.keyword_id = KW.id
+
+               LEFT OUTER JOIN {$this->tables['executions']} EX 
+               ON EX.tcversion_id = TCKW.tcversion_id
+               
+               WHERE KW.id = {$keyword_id} {$whereAdd} ";
+    }         
+    $rs = $this->db->fetchRowsIntoMap($sql,'exec_status');
+
+    $rs = (array)$rs;
+    return isset($rs['EXECUTED']) ? 0 : 1;
+  }
+
+
+  /**
+   *
+   */
+  function checkKeywordIsLinkedToFrozenVersions($keyword_id,$tproject_id=null) {
+
+    $wheraAdd = '';
+    $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
+             WHERE id = {$keyword_id} ";
+
+    if( null != $tproject_id ) {
+      $whereAdd = " AND testproject_id = " . intval($tproject_id);
+    }         
+    $sql .= $whereAdd;
+
+    $rs = $this->db->get_recordset($sql);    
+    if( is_null($rs) ) {
+      return null;
+    }  
+
+    if( !is_null($rs) ) {
+      $sql = " SELECT DISTINCT keyword_id,keyword,
+               CASE 
+                 WHEN TCV.is_open=0 THEN 'FROZEN'
+                 ELSE 'FRESH'
+               END AS freeze_status  
+               FROM {$this->tables['keywords']} KW
+               JOIN {$this->tables['testcase_keywords']} TCKW
+               ON TCKW.keyword_id = KW.id
+
+               JOIN {$this->tables['tcversions']} TCV 
+               ON TCV.id = TCKW.tcversion_id
+               
+               WHERE KW.id = {$keyword_id} {$whereAdd} ";
+    }         
+    echo $sql;
+    $rs = $this->db->fetchRowsIntoMap($sql,'freeze_status');
+
+    $rs = (array)$rs;
+    return isset($rs['FROZEN']) ? 1 : 0;
+  }
+
+  /**
+   *
+   */
+  function getKeywordSimple( $keyword_id ) {
+    $sql = " SELECT keyword FROM {$this->tables['keywords']}
+             WHERE id = " . intval($keyword_id);
+    $rs = current($this->db->get_recordset($sql));
+
+    return $rs['keyword'];
+  }
+
+
+  /**
+   *
+   */
+  function getKeywordsExecStatus($keywordSet,$tproject_id=null) {
+
+    $wheraAdd = '';
+    if( null != $tproject_id ) {
+      $whereAdd = " AND testproject_id = " . intval($tproject_id);
+    }         
+
+    $idSet = implode(',', $keywordSet);
+    $sql = " SELECT DISTINCT keyword_id,keyword,
+                      CASE 
+                        WHEN EX.status IS NULL THEN 'NOT_RUN'
+                        ELSE 'EXECUTED'
+                      END AS exec_or_not 
+               FROM {$this->tables['keywords']} KW
+               JOIN {$this->tables['testcase_keywords']} TCKW
+               ON TCKW.keyword_id = KW.id
+
+               LEFT OUTER JOIN {$this->tables['executions']} EX 
+               ON EX.tcversion_id = TCKW.tcversion_id
+               
+               WHERE KW.id IN( {$idSet} )  {$whereAdd} ";
+
+    $rs = $this->db->fetchRowsIntoMap($sql,'keyword_id');
+
+    return $rs;
+  }
+
+  /**
+   *
+   */
+  function getKeywordsFreezeStatus($keywordSet,$tproject_id=null) {
+
+    $wheraAdd = '';
+    if( null != $tproject_id ) {
+      $whereAdd = " AND testproject_id = " . intval($tproject_id);
+    }         
+    
+    $idSet = implode(',', $keywordSet);
+    $sql = " SELECT DISTINCT keyword_id,keyword,
+               CASE 
+                 WHEN TCV.is_open=0 THEN 'FROZEN'
+                 ELSE 'FRESH'
+               END AS fresh_or_frozen  
+               FROM {$this->tables['keywords']} KW
+               JOIN {$this->tables['testcase_keywords']} TCKW
+               ON TCKW.keyword_id = KW.id
+
+               JOIN {$this->tables['tcversions']} TCV 
+               ON TCV.id = TCKW.tcversion_id
+               
+               WHERE KW.id IN( {$idSet} ) {$whereAdd} ";
+
+    $rs = $this->db->fetchRowsIntoMap($sql,'keyword_id');
+    return $rs;
+  }
+
+  /**
+   *
+   */
+  function countKeywordUsageInTCVersions($tproject_id) {
+
+    $pid = intval($tproject_id);
+    $sql = " SELECT KW.id AS keyword_id,
+                    CASE
+                      WHEN TCKW.keyword_id IS NULL THEN 0
+                      ELSE count(0)
+                    END AS tcv_qty
+             FROM {$this->tables['keywords']} KW
+             LEFT OUTER JOIN {$this->tables['testcase_keywords']} TCKW
+             ON TCKW.keyword_id = KW.id
+
+             WHERE testproject_id = {$pid}
+             GROUP BY KW.id ";
+
+    $rs = $this->db->fetchRowsIntoMap($sql,'keyword_id');
+    return $rs;
+  }
 
 } // end class

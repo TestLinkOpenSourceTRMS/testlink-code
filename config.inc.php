@@ -62,6 +62,12 @@ $tlCfg->proxy = new stdClass();
 
 $tlCfg->reqTCLinks = new stdClass();
 
+
+$tlCfg->keywords = new stdClass();
+$tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
+$tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
+
+
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
 if( !defined('DB_TABLE_PREFIX') ) {
@@ -1206,21 +1212,58 @@ $tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHI
 //         attachment on test case spec can not be added/removed
 //         
 // FALSE  
+//
+// This means that at GUI Level, will not be possible:
+// add a new attachment to an Executed Test Case Version
+// delete an attachment from Executed Test Case Version
 $tlCfg->testcase_cfg->downloadOnlyAfterExec = TRUE;
 
+// This means that at GUI Level, will not be possible:
+// add a new req version link to an Executed Test Case Version
+// delete a req version link from Executed Test Case Version
 $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec = TRUE;
 
+// Effects on Linked Requirements Version after 
+// execution of a Test Case Version
 $tlCfg->testcase_cfg->freezeReqVersionAfterExec = TRUE;
 
-$tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = TRUE;
 
+// Effects on TCVersion N when TCVersion N+1 is created 
+$tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = TRUE;
+$tlCfg->testcase_cfg->freezeTCVRelationsOnNewTCVersion = TRUE;
+
+
+$tlCfg->testcase_cfg->frozenNotExecutedTCVDelAttachtments = FALSE;
+$tlCfg->testcase_cfg->frozenNotExecutedTCVAddAttachtments = FALSE;
+$tlCfg->testcase_cfg->frozenNotExecutedTCVAddTCVRel = FALSE;
+$tlCfg->testcase_cfg->frozenNotExecutedTCVDelTCVRel = FALSE;
+$tlCfg->testcase_cfg->frozenNotExecutedTCVAddREQVLink = FALSE;
+$tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
+
+
+
+
+// Effects on Req Version to TCVersion LINK 
+// when a new version of a linked Test Case is created
 $tlCfg->reqTCLinks->freezeeLinkOnNewTCVersion = TRUE;
+
+// Effects on Req Version to TCVersion LINK 
+// when a new version of a linked Req Version is created
 $tlCfg->reqTCLinks->freezeeLinkOnNewREQVersion = TRUE;
 
+
+// Effects on BOTH ends of Req Version to TCVersion LINK 
+// when a new version of a linked TC Version is created
 $tlCfg->reqTCLinks->freezeeBothEndsOnNewTCVersion = TRUE;
+
+// Effects on BOTH ends of Req Version to TCVersion LINK 
+// when a new version of a linked REQ Version is created
 $tlCfg->reqTCLinks->freezeeBothEndsOnNewREQVersion = TRUE;
 
+
+// Effects on REQ Version N when REQ Version N+1 is created 
 $tlCfg->req_cfg->freezeREQVersionOnNewREQVersion = TRUE;
+
 
 
 

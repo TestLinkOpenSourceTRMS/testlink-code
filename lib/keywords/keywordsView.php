@@ -12,11 +12,7 @@ require_once("common.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$args = init_args($db);
-
-$gui = $args;
-$gui->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" .
-                "tproject_id={$gui->tproject_id}"; 
+$gui = $args = init_args($db);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -49,8 +45,37 @@ function init_args(&$dbHandler) {
   $tproject = new testproject($dbHandler);
   $args->keywords = $tproject->getKeywords($args->tproject_id);
 
+  $args->kwExecStatus = null;
+  $args->kwFreshStatus = null;
+  $args->kwOnTCV = null;
+
+  if( null != $args->keywords ) {
+    $kws = array();
+    foreach( $args->keywords as $kwo ) {
+      $kws[] = $kwo->dbID;
+    }
+
+    // Count how many times the keyword has been used
+    $args->kwOnTCV = $tproject->countKeywordUsageInTCVersions($args->tproject_id);
+
+    $kwCfg = config_get('keywords');
+
+    if( $kwCfg->onDeleteCheckExecutedTCVersions ) {
+      $args->kwExecStatus = 
+        $tproject->getKeywordsExecStatus($kws,$args->tproject_id);        
+    }
+
+    if( $kwCfg->onDeleteCheckFrozenTCVersions ) {
+      $args->kwFreshStatus = 
+        $tproject->getKeywordsFreezeStatus($kws,$args->tproject_id);  
+    }
+
+  }
+
   $args->canManage = $user->hasRight($dbHandler,"mgt_modify_key",$args->tproject_id);
   $args->canAssign = $user->hasRight($dbHandler,"keyword_assignment",$args->tproject_id);
 
+  $args->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" .
+                   "tproject_id={$args->tproject_id}"; 
   return $args;
 }

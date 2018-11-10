@@ -3911,5 +3911,5 @@ $TLS_API_MISSING_REQUIRED_PROP = 'Missing Required Input/Argument:';
 $TLS_API_TESTPLAN_ID_DOES_NOT_EXIST = 'Test Plan with ID: %s does not exist';
 $TLS_API_TESTPLAN_APIKEY_DOES_NOT_EXIST = 'Test Plan with API KEY: %s does not exist';
 
-
+$TLS_tcvqty_with_kw = 'Quantity of Test Case Versions using this keyword';
 // ----- END ------------------------------------------------------------------

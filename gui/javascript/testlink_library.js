@@ -541,7 +541,6 @@ function tree_getPrintPreferences() {
   var params = [];
   var fields = printPreferences.split(',');
   
-  alert(fields.length);
   for (var idx= 0;idx < fields.length;idx++) {
     var v = tree_getCheckBox(fields[idx]);
     if (v) {
@@ -652,9 +651,7 @@ function bug_dialog()
   this.NoRefresh = false;
 }
 
-function std_dialog(additional)
-{
-  // alert('std_dialog() - called');
+function std_dialog(additional) {
   this.refWindow = null;
   this.refLocation = null;
   this.refAdditional=additional;
@@ -662,8 +659,7 @@ function std_dialog(additional)
 }
 
 
-function dialog_onSubmit(odialog)
-{
+function dialog_onSubmit(odialog) {
   // In this way we do not do refresh.
   odialog.NoRefresh = true;
   return true;

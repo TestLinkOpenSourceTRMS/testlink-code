@@ -935,6 +935,7 @@ class testcase extends tlObjectWithAttachments
 
         // Logic on Current/Latest Test Case Version
         $tc_current = $tcvSet[0];
+        $tc_current['isTheLatest'] = 1;
         $currentVersionID = $tc_current['id'];
 
         $io = $idCard;
@@ -999,6 +1000,7 @@ class testcase extends tlObjectWithAttachments
         // Other versions (if exists)
         if(count($tcvSet) > 1) {
           $gui->testcase_other_versions[] = array_slice($tcvSet,1);
+
           $target_idx = count($gui->testcase_other_versions) - 1;
           $loop2do = count($gui->testcase_other_versions[$target_idx]);
 
@@ -1006,6 +1008,8 @@ class testcase extends tlObjectWithAttachments
 
           $ref = &$gui->testcase_other_versions[$target_idx];
           for($qdx=0; $qdx < $loop2do; $qdx++) {
+
+            $gui->testcase_other_versions[$target_idx][$qdx]['isTheLatest'] = 0;
             
             $ref[$qdx]['ghost'] = 
               sprintf(self::GHOSTMASK,$tcvSet[0]['tc_external_id'],
@@ -1971,11 +1975,15 @@ class testcase extends tlObjectWithAttachments
     $freezeLinkedRequirements = $freezeLinkOnNewTCVersion && 
       $reqTCLinksCfg->freezeBothEndsOnNewTCVersion;
 
+    $freezeTCVRelationsOnNewTCVersion = 
+      $this->cfg->testcase->freezeTCVRelationsOnNewTCVersion;
 
     $now = $this->db->db_now();
     $opt = array('is_open' => 1, 
                  'freezeLinkedRequirements' => $freezeLinkedRequirements,
-                 'freezeLinkOnNewTCVersion' => $freezeLinkOnNewTCVersion);
+                 'freezeLinkOnNewTCVersion' => $freezeLinkOnNewTCVersion,
+                 'freezeTCVRelationsOnNewTCVersion' =>
+                   $freezeTCVRelationsOnNewTCVersion);
 
     $opt = array_merge($opt,(array)$options);
 
@@ -2005,7 +2013,8 @@ class testcase extends tlObjectWithAttachments
     $this->copy_attachments($source['version_id'],$dest['version_id']);
     $this->copyTCVRelations($source['version_id'],$dest['version_id']);
 
-    if( $this->cfg->testcase->relations->enable ) {
+    if( $this->cfg->testcase->relations->enable && 
+        $freezeTCVRelationsOnNewTCVersion ) {
       $oldVerRel = $this->getTCVRelationsRaw($source['version_id']);
       if( null != $oldVerRel && count($oldVerRel) > 0 ) {
         $i2c = array_keys($oldVerRel);

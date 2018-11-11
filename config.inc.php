@@ -1233,12 +1233,15 @@ $tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = TRUE;
 $tlCfg->testcase_cfg->freezeTCVRelationsOnNewTCVersion = TRUE;
 
 
-$tlCfg->testcase_cfg->frozenNotExecutedTCVDelAttachtments = FALSE;
-$tlCfg->testcase_cfg->frozenNotExecutedTCVAddAttachtments = FALSE;
-$tlCfg->testcase_cfg->frozenNotExecutedTCVAddTCVRel = FALSE;
-$tlCfg->testcase_cfg->frozenNotExecutedTCVDelTCVRel = FALSE;
-$tlCfg->testcase_cfg->frozenNotExecutedTCVAddREQVLink = FALSE;
-$tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
+// Not Already Implemented
+//$tlCfg->testcase_cfg->allowAddTCVRelationsOnOldTCVersion = TRUE;
+
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVDelAttachtments = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVAddAttachtments = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVAddTCVRel = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVDelTCVRel = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVAddREQVLink = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
 
 
 

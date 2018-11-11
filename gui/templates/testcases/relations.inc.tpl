@@ -5,7 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get var='rel_labels' 
           s='relation_id, relation_type, relation_status, relation_project,
-             relation_set_by, relation_delete, relations, new_relation, by, title_created,
+             relation_set_by, relation_delete, relations, new_relation, by, title_created,can_not_delete_a_frozen_relation,
              in, btn_add, img_title_delete_relation,no_records_found,other_versions,version,
              title_test_case,match_count,warning,can_not_edit_frozen_tc,can_not_delete_relation_frozen_tc,
              commit_title,current_direct_link,current_testcase,test_case,relation_set_on,this_tcversion,can_not_delete_relation_tcversion_frozen,can_not_delete_relation_related_tcversion_frozen,
@@ -110,20 +110,40 @@ var pF_delete_relation = delete_relation;
         <th><nobr>&nbsp;</nobr></th>
       </tr>
       
+
       {foreach item=rx from=$args_relations.relations}
-        {$canDel = $args_edit_enabled && $args_frozen_version &&
+        {$canDel = $args_edit_enabled && ($args_frozen_version == 'no') &&
                    $rx.related_tcase.is_open && 
                    $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
+        <tr>
+          <td>
+          DEBUG  
+          $args_is_latest_tcv => {$args_is_latest_tcv}<br>
+          $args_edit_enabled => {$args_edit_enabled} <br>
+          $args_frozen_version => {$args_frozen_version}<br>  
+          $rx.related_tcase.is_open => {$rx.related_tcase.is_open}<br>
+          $rx.link_status => {$rx.link_status}<br>
+          {$smarty.const.LINK_TC_RELATION_OPEN}
+          <br>
+          canDel? {$canDel}<br>
+          </td>
+        </tr>  
 
-        {if $args_edit_enabled == 0 || 
-            $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
-          {$cannotDelMsg = ''}      
-        {else if $args_frozen_version == "yes"}
-          {$cannotDelMsg = $rel_labels.can_not_delete_relation_tcversion_frozen}
-        {else $rx.related_tcase.is_open == 0}
-          {$cannotDelMsg = $rel_labels.can_not_delete_relation_related_tcversion_frozen}
-        {/if}
+        {if $canDel == 0}
+          {* Build User Feedback Message *}
+          {if $args_edit_enabled == 0 || 
+              $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
+            {$cannotDelMsg = ''}      
+          {else if $args_frozen_version == "yes"}
+            {$cannotDelMsg = $rel_labels.can_not_delete_relation_tcversion_frozen}
+          {else if $rx.related_tcase.is_open == 0}
+            {$cannotDelMsg = $rel_labels.can_not_delete_relation_related_tcversion_frozen}
 
+          {else}
+            {$cannotDelMsg = $rel_labels.can_not_delete_a_frozen_relation}
+
+          {/if}
+        {/if}  
         <tr>
           <td class="bold"><nobr>{$rx.id} / {$rx.type_localized|escape}</nobr></td>
           <td>

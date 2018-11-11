@@ -511,6 +511,7 @@ function launchInsertStep(step_id)
 {if $show_relations}
   <br />
   {include file="testcases/relations.inc.tpl"
+           args_is_latest_tcv = $args_testcase.isTheLatest
            args_relations = $args_relations
            args_frozen_version = $args_frozen_version
            args_edit_enabled = $edit_enabled} 

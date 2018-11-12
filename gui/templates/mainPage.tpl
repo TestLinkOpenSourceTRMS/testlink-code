@@ -9,7 +9,6 @@
 
 {include file="inc_ext_js.tpl"}
 {include file="bootstrap.inc.tpl"}
-{include file="ace.inc.tpl"}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 <script type="text/javascript">

@@ -551,11 +551,8 @@ if(strcasecmp('ko', $yy['status']) == 0) {
 } 
 else 
 {
-*/
   echo "<span class='ok'>OK!</span>";
-/*
 }
-*/
 
 
 manual_operations($db_type);

@@ -42,29 +42,6 @@ $forum_url = 'forum.testlink.org';
 </head>
 
 <body id="tl-container" class="container-fluid">
-<div class="tlPager">
-<h1><img src="./img/dot.gif" alt="Dot" style="margin: 0px 10px;" />
-    TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</h1>
-<div class="tlLiner">&nbsp;</div>
-<div class="tlStory">
-    <p>You are installing TestLink <?php echo $_SESSION['testlink_version'] ?> </p>
-    <p><b><?php echo $prev_ver ?> Migration to latest version ( <?php echo $_SESSION['testlink_version'] ?>) requires Database changes that has to be done MANUALLY.
-          Please read README file provided with installation.</b></p> 
-    <p><b>For information about Migration from older version ( < 1.9.3 ) please read README file provided with installation.</b></p> 
-    <p><b>Please read Section on README file or go to <?php echo 'http://' .$forum_url ?> (Forum: TestLink 1.9.4 and greater News,changes, etc)</b> </p>
-    <p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
-    for more information or troubleshooting. You could also look at
-    <a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>.
-    You are welcome to visit our <a target="_blank" href="http://forum.testlink.org">
-    forum</a> to browse or discuss.
-    </p>
-    <p><h3>Some user contributed videos (You Tube)</h3></p>
-    <b>
-    <a href="https://www.youtube.com/watch?v=NOvTWZvc2x8" target="#">Installation of "Testlink" & Creating project.</a><br>
-    <a href="https://www.youtube.com/watch?v=P2zWScVjuag" target="#">TestLink Test Management Tool Tutorial</a><br>
-    <a href="https://www.youtube.com/watch?v=7xH1LKQU1TA" target="#">Introduction to TestLink</a><br>
-    <a href="https://www.youtube.com/watch?v=6s48WGuX2WE" target="#">TestLink Walkthrough</a><br>
-    </b>
 
   <section id="tl-section" class="row">
 

@@ -6,7 +6,7 @@
 
 /*Library functions*/
 function Init(e){
-  console.log("Tl_v1.9.17 : ready to use")
+  console.log("Tl_v1.9.19 [DEV] : ready to use")
 }
 
 /*Events*/

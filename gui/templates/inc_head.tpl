@@ -68,6 +68,7 @@ editorType: used to understand if code for tinymce need to be loaded
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';
 	var additionalArgs  = '{$additionalArgs}';
+	var printPreferences = '{$printPreferences}';
 	
 	// To solve problem diplaying help
 	var SP_html_help_file  = '{$SP_html_help_file}';

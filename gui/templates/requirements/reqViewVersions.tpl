@@ -5,7 +5,6 @@ Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 @internal revisions
-@since 1.9.11
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg"}
@@ -184,11 +183,9 @@ function tip4log(itemID)
 /**
  * Be Carefull this TRUST on existence of $gui->delAttachmentURL
  */
-function jsCallDeleteFile(btn, text, o_id)
-{ 
+function jsCallDeleteFile(btn, text, o_id) { 
   var my_action='';
-  if( btn == 'yes' )
-  {
+  if( btn == 'yes' ) {
     my_action='{$gui->delAttachmentURL}'+o_id;
     window.location=my_action;
   }
@@ -246,6 +243,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 {section name=idx loop=$gui->current_version}
 
   {$reqID=$gui->current_version[idx][0].id}
+  {$latestReqVersionID=$gui->current_version[idx][0].version_id}
+  
   {* Current active version *}
   {if $gui->other_versions[idx] neq null}
     {$my_delete_version=true}
@@ -267,7 +266,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
         {$path_part|escape} /
       {/foreach}
   {/if}
-  <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('control_panel','inline');"
+  <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('control_panel_{$latestReqVersionID}','inline');"
        title="{$labels.actions}" />
 
     {if !$gui->show_title }
@@ -278,8 +277,10 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
     <a href="{$gui->direct_link}&version={$gui->current_version[idx][0].version}" target="_blank">{$labels.specific_direct_link}</a><br/>
     </div>
 
+  {* Current *}
   {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
-           args_req_coverage=$gui->req_coverage
+           args_req_coverage=$gui->current_req_coverage
+           args_can_manage_coverage=$gui->canAddCoverage
            args_req=$gui->current_version[idx][0] 
            args_gui=$gui
            args_grants=$gui->grants 
@@ -373,7 +374,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
       </tr>
       
       {foreach item=relation from=$gui->req_relations.relations}
-      {assign var=status value=$relation.related_req.status}
+        {$status=$relation.related_req.status}
         <tr>
           <td>{$relation.id}</td>
           <td class="bold"><nobr>{$relation.type_localized|escape}</nobr></td>
@@ -393,9 +394,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
           <td align="center">
           {if $gui->req_relations.rw}
 			{if !$frozen_version && $relation.related_req.is_open}
-                <a href="javascript:relation_delete_confirmation({$gui->req_relations.req.id}, {$relation.id}, 
-                                                                 delete_rel_msgbox_title, delete_rel_msgbox_msg, 
-                                                                 pF_delete_req_relation);">
+                <a href="javascript:relation_delete_confirmation({$gui->req_relations.req.id}, {$relation.id},delete_rel_msgbox_title, delete_rel_msgbox_msg, 
+                pF_delete_req_relation);">
                   <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" 
                        title="{$labels.img_title_delete_relation}"  style="border:none" /></a>
 			{else}
@@ -420,15 +420,15 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 	{include file="$this_template_dir/reqMonitors.tpl"} 
   {/if}
   
+  {* Attachment for LATEST Version *}
   {include file="attachments.inc.tpl" 
-             attach_id=$reqID  
-             attach_tableName=$gui->attachmentTableName
-             attach_attachmentInfos=$gui->attachments[$reqID]  
+             attach_attachmentInfos=$gui->attachments[$latestReqVersionID]  
              attach_downloadOnly=$downloadOnly
+             attach_uploadURL=$gui->fileUploadURL[$latestReqVersionID]
              attach_loadOnCancelURL=$loadOnCancelURL}
              
   {* Other Versions *}
-    {if $gui->other_versions[idx] neq null}
+  {if $gui->other_versions[idx] neq null}
         {$vid=$gui->current_version[idx][0].id}
         {$div_id="vers_$vid"}
         {$memstatus_id="mem_$div_id"}
@@ -439,11 +439,11 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                  show_hide_container_draw=false
                  show_hide_container_class='exec_additional_info'
                  show_hide_container_view_status_id=$memstatus_id}
-               
+
         <div id="vers_{$vid}" class="workBack">
-        
         {foreach from=$gui->other_versions[idx] item=my_req key=rdx}
             {$version_num=$my_req.version}
+            {$reqVersionID=$my_req.version_id}
             {$title=$labels.version}
             {$title="$title $version_num"}
             {$div_id="v_$vid"}
@@ -451,10 +451,9 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
             {$div_id="$div_id$sep$version_num"}
             {$memstatus_id="mem_$div_id"}
 
+            {$frozen_version=true}
             {if $my_req.is_open}
               {$frozen_version=false}
-            {else}
-              {$frozen_version=true}
             {/if}
            
             {include file="inc_show_hide_mgmt.tpl" 
@@ -463,9 +462,20 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                      show_hide_container_draw=false
                      show_hide_container_class='exec_additional_info'
                      show_hide_container_view_status_id=$memstatus_id}
+
+              {* Other Versions *}     
+              {* args_can_manage_coverage=false *}  
               <div id="{$div_id}" class="workBack">
+               
+                <img class="clickable" src="{$tlImages.cog}" 
+                  onclick="javascript:toogleShowHide('control_panel_{$reqVersionID}','inline');"
+                  title="{$labels.actions}" />
+
               {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
-                       args_hide_coverage=true
+                       args_hide_coverage=false
+ 
+                       args_can_manage_coverage=!$frozen_version
+                       args_req_coverage=$gui->other_req_coverage[idx][$rdx]
                        args_req=$my_req 
                        args_gui=$gui
                        args_grants=$gui->grants 
@@ -476,6 +486,14 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_show_version=true 
                        args_show_title=true
                        args_cf=$gui->cfields_other_versions[idx][$rdx]}
+        
+             {include file="attachments.inc.tpl" 
+               attach_attachmentInfos=$gui->attachments[$reqVersionID]
+               attach_downloadOnly=($frozen_version == "yes")
+               attach_uploadURL=$gui->fileUploadURL[$reqVersionID]
+               attach_loadOnCancelURL=$loadOnCancelURL}
+
+
              </div>
              <br />
              

@@ -26,14 +26,13 @@ $op = new stdClass();
 $op->status = 0;
 
 $args = initEnv($db);
-$gui = initializeGui($args);
+$gui = initializeGui($db,$args);
 
 $tprojectMgr = new testproject($db);
 
 $action = $args->doAction;
 
-switch ($action)
-{
+switch ($action) {
   case "do_create":
   case "do_update":
   case "do_delete":
@@ -44,19 +43,15 @@ switch ($action)
 }
 
 
-if($op->status == 1)
-{
+if($op->status == 1) {
   $tpl = $op->template;
-}
-else
-{
+} else {
   $tpl = $tplCfg->default_template;
   $gui->user_feedback = getKeywordErrorMessage($op->status);
 }
 
 $gui->keywords = null;
-if ($tpl != $tplCfg->default_template)
-{
+if ($tpl != $tplCfg->default_template) {
   // I'm going to return to screen that display all keywords
   $gui->keywords = $tprojectMgr->getKeywords($args->tproject_id);
 }
@@ -69,8 +64,7 @@ $tplEngine->display($tplCfg->template_dir . $tpl);
 /**
  * @return object returns the arguments for the page
  */
-function initEnv(&$dbHandler)
-{
+function initEnv(&$dbHandler) {
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $source = sizeof($_POST) ? "POST" : "GET";
@@ -91,25 +85,24 @@ function initEnv(&$dbHandler)
   $args->keyword_id = $ip["id"];
   $args->tproject_id = $ip["tproject_id"];
  
-  if( $args->tproject_id <= 0 )
-  {
+  if( $args->tproject_id <= 0 ) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
 
   // Check rights before doing anything else
   // Abort if rights are not enough 
-  $user = $_SESSION['currentUser'];
+  $args->user = $_SESSION['currentUser'];
   $env['tproject_id'] = $args->tproject_id;
   $env['tplan_id'] = 0;
   
   $check = new stdClass();
   $check->items = array('mgt_modify_key','mgt_view_key');
   $check->mode = 'and';
-  checkAccess($dbHandler,$user,$env,$check);
+  checkAccess($dbHandler,$args->user,$env,$check);
 
   // OK Go ahead
   $args->canManage = true;
-  $args->mgt_view_events = $user->hasRight($dbHandler,"mgt_view_events",$args->tproject_id);
+  $args->mgt_view_events = $args->user->hasRight($dbHandler,"mgt_view_events",$args->tproject_id);
 
   $treeMgr = new tree($dbHandler);
   $dummy = $treeMgr->get_node_hierarchy_info($args->tproject_id);
@@ -122,8 +115,7 @@ function initEnv(&$dbHandler)
  *  initialize variables to launch user interface (smarty template)
  *  to get information to accomplish create task.
 */
-function create(&$argsObj,&$guiObj)
-{
+function create(&$argsObj,&$guiObj) {
   $guiObj->submit_button_action = 'do_create';
   $guiObj->submit_button_label = lang_get('btn_save');
   $guiObj->main_descr = lang_get('keyword_management');
@@ -139,8 +131,7 @@ function create(&$argsObj,&$guiObj)
  *  initialize variables to launch user interface (smarty template)
  *  to get information to accomplish edit task.
 */
-function edit(&$argsObj,&$guiObj,&$tproject_mgr)
-{
+function edit(&$argsObj,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_update';
   $guiObj->submit_button_label = lang_get('btn_save');
   $guiObj->main_descr = lang_get('keyword_management');
@@ -151,8 +142,7 @@ function edit(&$argsObj,&$guiObj,&$tproject_mgr)
   $ret->status = 1;
 
   $keyword = $tproject_mgr->getKeyword($argsObj->keyword_id);
-  if ($keyword)
-  {
+  if ($keyword) {
     $guiObj->keyword = $argsObj->keyword = $keyword->name;
     $guiObj->notes = $argsObj->notes = $keyword->notes;
     $guiObj->action_descr .= TITLE_SEP . $guiObj->keyword;
@@ -164,8 +154,7 @@ function edit(&$argsObj,&$guiObj,&$tproject_mgr)
 /*
  * Creates the keyword
  */
-function do_create(&$args,&$guiObj,&$tproject_mgr)
-{
+function do_create(&$args,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_create';
   $guiObj->submit_button_label = lang_get('btn_save');
   $guiObj->main_descr = lang_get('keyword_management');
@@ -181,23 +170,21 @@ function do_create(&$args,&$guiObj,&$tproject_mgr)
 /*
  * Updates the keyword
  */
-function do_update(&$argsObj,&$guiObj,&$tproject_mgr)
-{
+function do_update(&$argsObj,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_update';
   $guiObj->submit_button_label = lang_get('btn_save');
   $guiObj->main_descr = lang_get('keyword_management');
   $guiObj->action_descr = lang_get('edit_keyword');
 
   $keyword = $tproject_mgr->getKeyword($argsObj->keyword_id);
-  if ($keyword)
-  {
+  if ($keyword) {
     $guiObj->action_descr .= TITLE_SEP . $keyword->name;
   }
   
   $ret = new stdClass();
   $ret->template = 'keywordsView.tpl';
-  $ret->status = $tproject_mgr->updateKeyword($argsObj->tproject_id,$argsObj->keyword_id,
-                          $argsObj->keyword,$argsObj->notes);
+  $ret->status = $tproject_mgr->updateKeyword($argsObj->tproject_id,
+    $argsObj->keyword_id,$argsObj->keyword,$argsObj->notes);
 
   return $ret;
 }
@@ -205,8 +192,7 @@ function do_update(&$argsObj,&$guiObj,&$tproject_mgr)
 /*
  * Deletes the keyword 
  */
-function do_delete(&$args,&$guiObj,&$tproject_mgr)
-{
+function do_delete(&$args,&$guiObj,&$tproject_mgr) {
   $guiObj->submit_button_action = 'do_update';
   $guiObj->submit_button_label = lang_get('btn_save');
   $guiObj->main_descr = lang_get('keyword_management');
@@ -225,10 +211,9 @@ function do_delete(&$args,&$guiObj,&$tproject_mgr)
 /**
  *
  */
-function getKeywordErrorMessage($code)
-{
-  switch($code)
-  {
+function getKeywordErrorMessage($code) {
+
+  switch($code) {
     case tlKeyword::E_NAMENOTALLOWED:
       $msg = lang_get('keywords_char_not_allowed'); 
       break;
@@ -256,10 +241,17 @@ function getKeywordErrorMessage($code)
  *
  *
  */
-function initializeGui(&$args)
-{
+function initializeGui(&$dbH,&$args) {
+
   $gui = new stdClass();
   $gui->user_feedback = '';
+
+  // Needed by the smarty template to be launched
+  $kr = array('canManage' => "mgt_modify_key", 'canAssign' => "keyword_assignment");
+  foreach( $kr as $vk => $rk ) {
+    $gui->$vk = 
+      $args->user->hasRight($dbH,$rk,$args->tproject_id);
+  }
 
   $gui->tproject_id = $args->tproject_id;
   $gui->canManage = $args->canManage;

@@ -8,10 +8,6 @@
  *
  * SCOPE: Definition of report/metrics menu 
  * 
- * @internal revisions
- * @since 1.9.17
- *
- * 
  */
 
 /** type of documents */
@@ -33,16 +29,20 @@ define('FORMAT_PDF', 5);
 define('FORMAT_MAIL_HTML', 6);
 
 /** supported document formats (value = localization ID) */
-$tlCfg->reports_formats = array(FORMAT_HTML => 'format_html',FORMAT_MSWORD => 'format_pseudo_msword',
-								FORMAT_MAIL_HTML => 'format_mail_html');
+$tlCfg->reports_formats = array( FORMAT_HTML => 'format_html',
+	                               FORMAT_MSWORD => 'format_pseudo_msword',
+								                 FORMAT_MAIL_HTML => 'format_mail_html');
 
 /** Mime Content Type */
-$tlCfg->reports_applications = array(FORMAT_HTML => 'text/html',FORMAT_XLS => 'application/vnd.ms-excel', 
-									 FORMAT_MSWORD => 'application/vnd.ms-word');
+$tlCfg->reports_applications = 
+  array(FORMAT_HTML => 'text/html',
+  	    FORMAT_XLS => 'application/vnd.ms-excel', 
+				FORMAT_MSWORD => 'application/vnd.ms-word');
 
 
 /** Report file extenssion */
-$tlCfg->reports_file_extension = array(FORMAT_HTML => 'html',FORMAT_XLS => 'xls',FORMAT_MSWORD => 'doc');
+$tlCfg->reports_file_extension = 
+  array(FORMAT_HTML => 'html',FORMAT_XLS => 'xls',FORMAT_MSWORD => 'doc');
 
 
 /** 

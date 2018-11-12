@@ -55,10 +55,10 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   static $decodeReq;
   static $force = null;
   static $basehref;
+  static $repoDir;
 
   
-  if (!$req_mgr) 
-  {
+  if (!$req_mgr) {
     $basehref = $_SESSION['basehref'];
     $req_cfg = config_get('req_cfg');
     $req_spec_cfg = config_get('req_spec_cfg');
@@ -86,22 +86,21 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
     $title_separator = config_get('gui_title_separator_1');
     $req_mgr = new requirement_mgr($db);
     $tplan_mgr = new testplan($db);
+
+    $repoDir = config_get('repositoryPath');
   }
   
   $versionID = isset($node['version_id']) ? intval($node['version_id']) : requirement_mgr::LATEST_VERSION;
   $revision = isset($node['revision']) ? intval($node['revision']) : null;
 
   $getOpt = array('renderImageInline' => true);
-  if( is_null($revision) )
-  {
+  if( is_null($revision) ) {
     // will get last revision of requested req version 
     $dummy = $req_mgr->get_by_id($node['id'],$versionID,1,$getOpt);  
   }
-  else
-  {
+  else {
     $dummy = $req_mgr->get_version_revision($versionID,array('number' => $revision),$getOpt);  
-    if(!is_null($dummy))
-    {
+    if(!is_null($dummy)) {
       // do this way instead of using SQL alias on get_version_revision(), in order
       // to avoid issues (potential not confirmed)on different DBMS.
       $dummy[0]['id'] = $dummy[0]['req_id'];
@@ -273,25 +272,25 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
 
   // Display Images Inline (Always)
   $attachSet =  $req_mgr->getAttachmentInfos($req['id']);
-  if (count($attachSet))
-  {
+  if (count($attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                $labels['attached_files'] . "</span></td><td>";
     
-    foreach($attachSet as $fitem)
-    {
+    foreach($attachSet as $fitem) {
       $sec = hash('sha256',$fitem['file_name']);
       $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
                '&id=' . $fitem['id'];
 
       $safeFileName = htmlspecialchars($fitem['file_name']);
-      if($fitem['is_image'])
-      {
+      if($fitem['is_image']) {
         $output .= "<li>" . $safeFileName . "</li>";
-        $output .= '<li>' . '<img src="' . $basehref . $cmout . '">';
-      }  
-      else
-      {
+        
+        $pathname = $repoDir . $item['file_path'];
+        list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+        $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+        $output .= '<li>' . '<img ' . $iDim . 
+                   ' src="' . $basehref . $cmout . '">';
+      } else {
         $output .= '<li>' . '<a href="' . $basehref . 
                    $cmout . '" ' . ' target="#blank" > ' . $safeFileName . '</a>';
       }  
@@ -332,12 +331,14 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
   static $reqSpecTypeLabels;
   static $nodeTypes;
   static $basehref;
+  static $repoDir;
 
   $output = '';
   $reLevel = ($rsLevel > 0) ? $rsLevel : 1;
 
-  if (!$req_spec_mgr) 
-  {
+  if (!$req_spec_mgr) {
+     $repoDir = config_get('repositoryPath');
+
     $basehref = $_SESSION['basehref'];
     $req_spec_cfg = config_get('req_spec_cfg');
     $firstColWidth = '20%';
@@ -470,15 +471,13 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
   }
   
   $attachSet =  $req_spec_mgr->getAttachmentInfos($spec_id);
-  if (count($attachSet))
-  {
+  if (count($attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                $labels['attached_files'] . "</span></td><td><ul>";
-    foreach($attachSet as $item)
-    {
+
+    foreach($attachSet as $item) {
       $fname = "";
-      if ($item['title'])
-      {
+      if ($item['title']) {
         $fname .=  htmlspecialchars($item['title']) . " : ";
       }
       $fname .= htmlspecialchars($item['file_name']);
@@ -516,14 +515,15 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$options,$tocPrefix, $rsCnt
   static $tree_mgr;
   static $map_id_descr;
   static $tplan_mgr;
+  static $repoDir;
   $code = null;
 
-  if(!$tree_mgr)
-  { 
-       $tplan_mgr = new testplan($db);
-      $tree_mgr = new tree($db);
-       $map_id_descr = $tree_mgr->node_types;
-   }
+  if(!$tree_mgr) { 
+    $tplan_mgr = new testplan($db);
+    $tree_mgr = new tree($db);
+    $map_id_descr = $tree_mgr->node_types;
+    $repoDir = config_get('repositoryPath');
+  }
    $verbose_node_type = $map_id_descr[$node['node_type_id']];
    
     switch($verbose_node_type)
@@ -676,9 +676,12 @@ function renderFirstPage($doc_info)
       $height = "height=\"{$docCfg->company_logo_height}\"";
     }
     
+    $safePName = $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo;
+    list($iWidth, $iHeight, $iType, $iAttr) = getimagesize($safePName);
     $output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
-               'title="configure using $tlCfg->document_generator->company_logo" ' . $height .
-               ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" /></p>';
+               'title="configure using $tlCfg->document_generator->company_logo" ' . 
+               ' width=' . $iWidth . ' height=' . $iHeight .
+               ' src="' . $safePName . '" /></p>';
   }
   $output .= "</div>\n";
 
@@ -783,21 +786,22 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
   static $tree_mgr;
   static $id_descr;
   static $tplan_mgr;
+  static $repoDir;
+
   $code = null;
 
-  if(!$tree_mgr)
-  { 
+  if(!$tree_mgr) { 
     $tplan_mgr = new testplan($db);
     $tree_mgr = new tree($db);
     $id_descr = $tree_mgr->node_types;
+    $repoDir = config_get('repositoryPath');
 
     $k2i = array('tproject_id' => 0, 'tplan_id' => 0, 'platform_id' => 0,  'build_id' => 0, 'prefix' => null);
     $context = array_merge($k2i,$context);
   }
 
   $node_type = $id_descr[intval($node['node_type_id'])];
-  switch($node_type)
-  {
+  switch($node_type) {
     case 'testproject':
     break;
 
@@ -811,8 +815,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,&$options,$env,$context,$tocP
     break;
   }
   
-  if (isset($node['childNodes']) && $node['childNodes'])
-  {
+  if (isset($node['childNodes']) && $node['childNodes']) {
     // Need to be a LOCAL COUNTER for each PARENT
     $TOCCounter = 0;
     $childNodes = $node['childNodes'];
@@ -889,8 +892,7 @@ function gendocGetUserName(&$db, $userId)
  *
  * @internal revisions
  */
-function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLevel)
-{
+function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLevel) {
   
   static $req_mgr;
   static $tc_mgr;
@@ -908,8 +910,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   static $buildCfields;  
   static $statusL10N;
   static $docRepo;
-
   static $st;
+  static $repoDir;
 
   $code = null;
   $tcInfo = null;
@@ -930,8 +932,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $stepDesignType = $stepDesignCfg['type'];
 
   // init static elements
-  if (!$tables)
-  {
+  if (!$tables) {
+    $repoDir = config_get('repositoryPath');
+
     $st = new stdClass();
 
     $tables = tlDBObject::getDBTables(array('executions','builds','execution_tcsteps'));
@@ -943,12 +946,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
     list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr,$options);
 
-    if(!is_null($prefix))
-    {
+    if(!is_null($prefix)) {
       $tcase_prefix = $prefix;
-    }
-    else
-    {
+    } else {
       list($tcase_prefix,$dummy) = $tc_mgr->getPrefix($id);
     }
     $tcase_prefix .= $cfg['testcase']->glue_character;
@@ -960,18 +960,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $tproject_mgr = new testproject($db);
     $info = $tproject_mgr->get_by_id($tprojectID);
     $bugInterfaceOn = $info['issue_tracker_enabled'];
-    if($info['issue_tracker_enabled'])
-    {
+    if($info['issue_tracker_enabled']) {
       $it_mgr = new tlIssueTracker($db);
       $its = $it_mgr->getInterfaceObject($tprojectID);
       unset($it_mgr);
     }  
 
     $statusL10N = null;         
-    foreach($cfg['results']['code_status'] as $vc => $vstat)
-    {
-      if(isset($cfg['results']['status_label_for_exec_ui'][$vstat]))
-      {
+    foreach($cfg['results']['code_status'] as $vc => $vstat) {
+      if(isset($cfg['results']['status_label_for_exec_ui'][$vstat])) {
         $statusL10N[$vc] = lang_get($cfg['results']['status_label_for_exec_ui'][$vstat]);  
       }  
     }
@@ -981,8 +978,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   
     // change table style in case of single TC printing to not be indented
     $st->table_style = "";
-    if (isset($options['docType']) && $options['docType'] == SINGLE_TESTCASE) 
-    {
+    if (isset($options['docType']) && $options['docType'] == SINGLE_TESTCASE) {
       $st->table_style = 'style="margin-left: 0;"';
     }
 
@@ -1002,13 +998,11 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $exec_info = null;
   $getByID['filters'] = null;
 
-
   $opt = array();
   $opt['step_exec_notes'] = isset($options['step_exec_notes']) && $options['step_exec_notes'];
   $opt['step_exec_status'] = isset($options['step_exec_status']) && $options['step_exec_status'];          
 
-  switch($options["docType"])
-  {
+  switch($options["docType"]) {
     case DOC_TEST_SPEC:
       $getByID['tcversion_id'] = testcase::LATEST_VERSION;
       $getExecutions = false;
@@ -1027,8 +1021,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     break;
   }
 
-  if ($getExecutions)
-  {
+  if ($getExecutions) {
     // Thanks to Evelyn from Cortado, have found a very old issue never reported.
     // 1. create TC-1A VERSION 1
     // 2. add to test plan and execute FAILED ON BUILD 1
@@ -1051,19 +1044,19 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     // Get Linked test case version
     $linkedItem = $tplan_mgr->getLinkInfo($tplan_id,$id,$platform_id);
 
-    $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
-           " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
+    $sql = " SELECT E.id AS execution_id, E.status, E.execution_ts, 
+             E.tester_id, E.notes, E.build_id, E.tcversion_id,
+             E.tcversion_number,E.testplan_id," .
            " E.execution_type, E.execution_duration, " .
            " B.name AS build_name " .
            " FROM {$tables['executions']} E " .
            " JOIN {$tables['builds']} B ON B.id = E.build_id " .
            " WHERE 1 = 1 ";
-	
-	//Bugfix to show only active builds in Test Report view
-	$sql .= "AND B.active = 1";
-	
-    if(isset($context['exec_id']))
-    {
+  
+  //Bugfix to show only active builds in Test Report view
+  $sql .= "AND B.active = 1";
+  
+    if(isset($context['exec_id'])) {
       $sql .= " AND E.id=" . intval($context['exec_id']);
     }
     else
@@ -1071,32 +1064,29 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       $sql .= " AND E.testplan_id = " . intval($tplan_id) .
               " AND E.platform_id = " . intval($platform_id) .
               " AND E.tcversion_id = " . intval($linkedItem[0]['tcversion_id']);
-      if($build_id > 0)
-      {
+      if($build_id > 0) {
         $sql .= " AND E.build_id = " . intval($build_id);
-      }
-      else
-      {
+      } else {
         // We are looking for LATEST EXECUTION of CURRENT LINKED test case version
         $sql .= " AND E.tcversion_number=" . intval($linkedItem[0]['version']);
       }
       $sql .= " ORDER BY execution_id DESC";
     }
+
+    //echo $sql;
     $exec_info = $db->get_recordset($sql,null,1);
+    //$exec_info = $db->get_recordset($sql);
 
     $getByID['tcversion_id'] = $linkedItem[0]['tcversion_id'];
     $getByID['filters'] = null;
     $linkedItem = null;
 
-    if( !is_null($exec_info) )
-    {
+    if( !is_null($exec_info) ) {
       $getByID['tcversion_id'] = null;
       $getByID['filters'] = array('version_number' => $exec_info[0]['tcversion_number']);
       $tbuild_id = $exec_info[0]['build_id'];
-      if( isset($options['build_cfields']) && $options['build_cfields'] )
-      {
-        if( !isset($buildCfields[$tbuild_id]) )
-        {
+      if( isset($options['build_cfields']) && $options['build_cfields'] ) {
+        if( !isset($buildCfields[$tbuild_id]) ) {
           $buildCfields[$tbuild_id] = 
             $build_mgr->html_table_of_custom_field_values($tbuild_id,$tprojectID);
         }
@@ -1107,30 +1097,24 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
  
  $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
                                array('renderGhost' => true,'renderImageInline' => true));
-  if ($tcInfo)
-  {
+  if ($tcInfo) {
     $tcInfo = $tcInfo[0];
   }
   $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
   $name = htmlspecialchars($node['name']);
 
   $cfields = array('specScope' => null, 'execScope' => null);
-  if ($options['cfields'])
-  {
+  if ($options['cfields']) {
     // Get custom fields that has specification scope
     // Custom Field values at Test Case VERSION Level
-    
-
-    foreach($st->locationFilters as $fkey => $fvalue)
-    { 
+    foreach($st->locationFilters as $fkey => $fvalue) { 
       $cfields['specScope'][$fkey] = 
           $tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
                                                      $tprojectID,
                                                      $st->cfieldFormatting,$tcInfo['id']);             
     }           
 
-    if (!is_null($exec_info))
-    {
+    if (!is_null($exec_info)) {
       $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values(
                                        $tcInfo['id'],'execution',null,
                                        $exec_info[0]['execution_id'], $tplan_id,
@@ -1138,8 +1122,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }  
   }
 
-  if ($options['toc'])
-  {
+  if ($options['toc']) {
     // EXTERNAL ID added
     $options['tocCode'] .= '<p style="padding-left: ' . 
                           (15 * $level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
@@ -1153,8 +1136,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            htmlspecialchars($external_id) . ": " . $name;
 
   // add test case version
-  switch($env->reportType)
-  {
+  switch($env->reportType) {
     case DOC_TEST_PLAN_DESIGN:
       $version_number = isset($node['version']) ? $node['version'] : $tcInfo['version'];
     break;
@@ -1169,8 +1151,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     break;
   }
 
-  if($cfg['doc']->tc_version_enabled || $force['displayVersion'] )
-  {
+  if($cfg['doc']->tc_version_enabled || $force['displayVersion'] ) {
     $code .= '&nbsp;<span style="font-size: 80%;">' . $cfg['gui']->role_separator_open . 
              $labels['version'] . $cfg['gui']->title_separator_1 .  $version_number . 
              $cfg['gui']->role_separator_close . '</span>';
@@ -1178,22 +1159,19 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $code .= "</th></tr>\n";
 
 
-  if ($options['author'])
-  {
+  if ($options['author']) {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
              '<span class="label">'.$labels['author'].':</span></td>' .
              '<td colspan="' .  ($cfg['tableColspan']-1) . '">' . 
              gendocGetUserName($db, $tcInfo['author_id']);
 
-    if(isset($options['displayDates']) && $options['displayDates'])
-    {
+    if(isset($options['displayDates']) && $options['displayDates']) {
       $dummy = null;
       $code .= ' - ' . localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$tcInfo['creation_ts']);
     }
     $code .= "</td></tr>\n";
     
-    if ($tcInfo['updater_id'] > 0) 
-    {
+    if ($tcInfo['updater_id'] > 0)  {
       // add updater if available and differs from author OR forced
       if ($force['displayLastEdit'] > 0 || ($tcInfo['updater_id'] != $tcInfo['author_id']) )
       {
@@ -1235,22 +1213,18 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
     // $tprojectID = isset($context['tproject_id']) ? $context['tproject_id'] : 0;
     $canManageAttachments = false;
-    if(isset($context['user']) && !is_null($context['user']))
-    {
+    if(isset($context['user']) && !is_null($context['user'])) {
       $canManageAttachments = $context['user']->hasRight($db,'testplan_execute',$tprojectID,$tplan_id);
     }  
 
     // Multiple Test Case Steps Feature
-    foreach($tcase_pieces as $key)
-    {
-      if( $key == 'steps' )
-      {
-        if( isset($cfields['specScope']['before_steps_results']) )
-        {
+    foreach($tcase_pieces as $key) {
+      if( $key == 'steps' ) {
+        if( isset($cfields['specScope']['before_steps_results']) ) {
           $code .= $cfields['specScope']['before_steps_results'];    
         }
-        if (!is_null($tcInfo[$key]) && $tcInfo[$key] != '')
-        {
+
+        if (!is_null($tcInfo[$key]) && $tcInfo[$key] != '') {
           $td_colspan = 3;
           $code .= '<tr>' .
                    '<td><span class="label">' . $labels['step_number'] .':</span></td>' .
@@ -1258,12 +1232,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                    '<td><span class="label">' . $labels['expected_results'] .':</span></td>';
 
           $sxni = null;
-          if($opt['step_exec_notes'] || $opt['step_exec_status'])
-          {
+          if($opt['step_exec_notes'] || $opt['step_exec_status']) {
             $sxni = $tc_mgr->getStepsExecInfo($exec_info[0]['execution_id']);
 
-            if($opt['step_exec_notes'])
-            {
+            if($opt['step_exec_notes']) {
               $td_colspan++;
               $code .= '<td><span class="label">' . $labels['step_exec_notes'] .':</span></td>';
             }       
@@ -1282,7 +1254,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
           {
             $code .= '<tr>' .
                      '<td width="5">' .  $tcInfo[$key][$ydx]['step_number'] . '</td>' .
-					 '<td>' . ($stepDesignType == 'none' ? nl2br($tcInfo[$key][$ydx]['actions']) : $tcInfo[$key][$ydx]['actions'] ) . '</td>' .
+           '<td>' . ($stepDesignType == 'none' ? nl2br($tcInfo[$key][$ydx]['actions']) : $tcInfo[$key][$ydx]['actions'] ) . '</td>' .
                      '<td>' . ($stepDesignType == 'none' ? nl2br($tcInfo[$key][$ydx]['expected_results']) : $tcInfo[$key][$ydx]['expected_results'] ) . '</td>';
 
             $nike = !is_null($sxni) && isset($sxni[$tcInfo[$key][$ydx]['id']]) && 
@@ -1342,13 +1314,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                              $sec . '&id=' . $safeItemID;
 
 
-                    if($fitem['is_image'])
-                    {
+                    if($fitem['is_image']) {
                       $code .= "<li>{$safeFileName}</li>";
-                      $code .= '<li><img src="' . $env->base_href . $cmout . '">';
-                    }  
-                    else
-                    {
+
+                      $pathname = $repoDir . $item['file_path'];
+                      list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+                      $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+                      $code .= '<li><img ' . $iDim . 
+                               ' src="' . $env->base_href . $cmout . '">';
+                    } else {
                       $code .= '<li><a href="' . $env->base_href . $cmout .  
                                '" target="#blank" > ' . $safeFileName . '</a>';
                     }  
@@ -1513,33 +1487,32 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
   // Attachments
   $attachSet =  (array)$tc_mgr->getAttachmentInfos($id);
-  if (count($attachSet) > 0)
-  {
+  if (count($attachSet) > 0) {
+    $repoDir = config_get('repositoryPath');
     $code .= '<tr><td> <span class="label">' . $labels['attached_files'] . '</span></td>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-2) . '"><ul>';
 
-    foreach($attachSet as $item)
-    {
+    foreach($attachSet as $item) {
       $fname = "";
-      if ($item['title'])
-      {
+      if ($item['title']) {
         $fname .=  htmlspecialchars($item['title']) . " : ";
       }
       $fname .= htmlspecialchars($item['file_name']);
       $code .= "<li>$fname</li>";
-
 
       $sec = hash('sha256',$item['file_name']);
       
       $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
                '&id=' . $item['id'];
 
-      if($item['is_image'])
-      {
-        $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
-      }  
-      else
-      {
+      if($item['is_image']) {
+        $pathname = $repoDir . $item['file_path'];
+        list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+
+        $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+        $code .= '<li>' . '<img ' . $iDim . 
+                 ' src="' . $env->base_href . $cmout . '"> </li>';
+      } else {
         $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
                  '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
       }  
@@ -1643,13 +1616,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                    '&id=' . $fitem['id'];
 
           $safeFileName =  htmlspecialchars($fitem['file_name']);
-          if($fitem['is_image'])
-          {
+          if($fitem['is_image']) {
             $code .= "<li>{$safeFileName}</li>";
-            $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
-          }  
-          else
-          {
+
+            $pathname = $repoDir . $item['file_path'];
+            list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+            $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+            $code .= '<li>' . '<img ' . $iDim . 
+                     ' src="' . $env->base_href . $cmout . '"> </li>';
+          } else {
             $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
                               '" target="#blank" > ' . $safeFileName . '</a></li>';
           }  
@@ -1712,12 +1687,13 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   static $title_separator;
   static $cfieldFormatting;
   static $getOpt;
-  
+  static $reporDir;
+
   $designCfg = getWebEditorCfg('design');
   $designType = $designCfg['type'];
 
-  if(is_null($l10n))
-  {
+  if(is_null($l10n)) {
+    $repoDir = config_get('repositoryPath');
     $tsuite_mgr = new testsuite($db);
     
     $l10n = array('test_suite' => 'test_suite', 'details' => 'details', 
@@ -1739,14 +1715,12 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
     
   $docHeadingNumbering = $options['headerNumbering'] ? ($tocPrefix . ".") : '';
     
-  if ($options['toc'])
-  {
+  if ($options['toc']) {
     $spacing = ($indentLevel == 2 && $tocPrefix != 1) ? "<br/>" : "";
     $options['tocCode'] .= $spacing.'<p style="padding-left: '.(10 * $indentLevel).'px;"><b>' .
                            '<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . 
                            $name . "</a></b></p>\n";
     $code .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
-  
   }
 
   // we would like to have html top heading H1 - H6
@@ -1761,26 +1735,22 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
 
 
   // ----- get Test Suite text -----------------
-  if ($options['header'])
-  {
+  if ($options['header']) {
+
     $tInfo = $tsuite_mgr->get_by_id($node['id'],$getOpt['getByID']);
-    if ($tInfo['details'] != '')
-    {
+    if ($tInfo['details'] != '') {
       $code .= '<div>' . ($designType == 'none' ? nl2br($tInfo['details']) : $tInfo['details'] ) . '</div>';
     }
     $tInfo = null;
 
     $attachSet =  (array)$tsuite_mgr->getAttachmentInfos($node['id']);
-    if (count($attachSet) > 0)
-    {
+    if (count($attachSet) > 0) {
       $code .= '<table><caption style="text-align:left;">' . $l10n['attached_files'] . '</caption>';
       $code .= '<tr><td>&nbsp</td>';
       $code .= '<td><ul>';
-      foreach($attachSet as $item)
-      {
+      foreach($attachSet as $item) {
         $fname = "";
-        if ($item['title'])
-        {
+        if ($item['title']) {
           $fname .=  htmlspecialchars($item['title']) . " : ";
         }
         $fname .= htmlspecialchars($item['file_name']);
@@ -1788,15 +1758,16 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
 
         
         $sec = hash('sha256',$item['file_name']);
-        $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . $sec . 
-                 '&id=' . $item['id'];
+        $cmout = 'lib/attachments/attachmentdownload.php?skipCheck=' . 
+                  $sec . '&id=' . $item['id'];
 
-        if($item['is_image']) 
-        {
-          $code .= '<li>' . '<img src="' . $env->base_href . $cmout . '"> </li>';
-        }  
-        else
-        {
+        if($item['is_image'])  {
+          $pathname = $repoDir . $item['file_path'];
+          list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
+          $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
+          $code .= '<li>' . '<img ' . $iDim . 
+                   ' src="' . $env->base_href . $cmout . '"> </li>';
+        } else {
           $code .= '<li>' . '<a href="' . $env->base_href . $cmout . 
                    '" ' . ' target="#blank" > ' . htmlspecialchars($item['file_name']) . '</a></li>';
         }  
@@ -1809,12 +1780,12 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
     // get Custom fields    
     // Attention: for test suites custom fields can not be edited during execution,
     //            then we need to get just custom fields with scope  'design'
-    foreach($cfields as $key => $value)
-    {
-      $cfields[$key] = $tsuite_mgr->html_table_of_custom_field_values($node['id'],$key,null,
-                                                                      $context['tproject_id'],$cfieldFormatting);
-      if($cfields[$key] != "")
-      {
+    foreach($cfields as $key => $value) {
+      $cfields[$key] = 
+        $tsuite_mgr->html_table_of_custom_field_values($node['id'],$key,null,
+                                                       $context['tproject_id'],
+                                                       $cfieldFormatting);
+      if($cfields[$key] != "") {
         $add_br = true;
         $code .= '<p>' . $cfields[$key] . '</p>';    
       }
@@ -1834,12 +1805,11 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,$env,&$options,$context,$toc
   
   @internal revisions:
 */
-function renderTestPlanForPrinting(&$db,&$node,&$options,$env,$context)
-
-{
+function renderTestPlanForPrinting(&$db,&$node,&$options,$env,$context) {
   $tProjectMgr = new testproject($db);
   $context['prefix'] = $tProjectMgr->getTestCasePrefix($context['tproject_id']);
-  $code =  renderTestSpecTreeForPrinting($db,$node,$options,$env,$context,$env->tocPrefix,$context['level']);
+  $code =  
+    renderTestSpecTreeForPrinting($db,$node,$options,$env,$context,$env->tocPrefix,$context['level']);
   return $code;
 }
 
@@ -1850,40 +1820,31 @@ function renderTestPlanForPrinting(&$db,&$node,&$options,$env,$context)
  * @param array_of_strings $statistics
  * @return string HTML code
  */
-function renderTestDuration($statistics,$platform_id=0)
-{
+function renderTestDuration($statistics,$platform_id=0) {
   static $ecfg;
 
   $output = '';
   $hasOutput = false;
   
-  if(!$ecfg)
-  {
+  if(!$ecfg) {
     $ecfg = config_get('exec_cfg');    
   }  
   $estimatedTimeAvailable = isset($statistics['estimated_execution']) && !is_null($statistics['estimated_execution']);
   
-  if($ecfg->features->exec_duration->enabled)
-  {
-     $realTimeAvailable = isset($statistics['real_execution']) && 
+  if($ecfg->features->exec_duration->enabled) {
+    $realTimeAvailable = isset($statistics['real_execution']) && 
                           !is_null($statistics['real_execution']['platform'][$platform_id]);
-  }  
-  else
-  {
+  } else {
     $realTimeAvailable = null;
   }  
 
 
-  if( $estimatedTimeAvailable || $realTimeAvailable)
-  { 
-    if($estimatedTimeAvailable) 
-    {
+  if( $estimatedTimeAvailable || $realTimeAvailable) { 
+    if($estimatedTimeAvailable) {
       $estimated_minutes = $statistics['estimated_execution']['platform'][$platform_id]['minutes'];
       $tcase_qty = $statistics['estimated_execution']['platform'][$platform_id]['tcase_qty'];
-      if($estimated_minutes > 0)
-      {  
-        if($estimated_minutes > 60)
-        {
+      if($estimated_minutes > 0) {  
+        if($estimated_minutes > 60) {
           $estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
         }
         else
@@ -1895,18 +1856,13 @@ function renderTestDuration($statistics,$platform_id=0)
       }  
     }
       
-    if($realTimeAvailable) 
-    {
+    if($realTimeAvailable) {
       $real_minutes = $statistics['real_execution']['platform'][$platform_id]['minutes'];
       $tcase_qty = $statistics['real_execution']['platform'][$platform_id]['tcase_qty'];   
-      if( $real_minutes > 0 )
-      {
-        if($real_minutes > 60)
-        {
+      if( $real_minutes > 0 ) {
+        if($real_minutes > 60) {
           $real_string = lang_get('real_time_hours') . round($real_minutes/60,2) ;
-        }
-        else
-        {
+        } else {
           $real_string = lang_get('real_time_min') . $real_minutes;
         } 
         $real_string = sprintf($real_string,$tcase_qty);    
@@ -1915,8 +1871,7 @@ function renderTestDuration($statistics,$platform_id=0)
     }
   }
 
-  if($output != '')
-  {
+  if($output != '') {
     $output = "<div>\n" . $output . "</div>\n";
   }  
 
@@ -1929,8 +1884,7 @@ function renderTestDuration($statistics,$platform_id=0)
  * 
  * @return string HTML 
  **/
-function renderEOF()
-{
+function renderEOF() {
   return "\n</body>\n</html>";
 }
 
@@ -1940,11 +1894,9 @@ function renderEOF()
  * 
  * @return string html
  */
-function buildTestPlanMetrics($statistics,$platform_id = 0)
-{
+function buildTestPlanMetrics($statistics,$platform_id = 0) {
   static $lbl;
-  if(!$lbl)
-  {
+  if(!$lbl) {
     $lbl = lang_get('execution_time_metrics');
   }  
 
@@ -2172,7 +2124,7 @@ function renderTestProjectItem($info)
   $lbl = init_labels(array('testproject' => null, 'context' => null, 'scope' => null));
   $out = '';
   $out .= renderSimpleChapter($lbl['testproject'] . ': ' . htmlspecialchars($info->tproject_name), 
-							($testProjectType == 'none' ? nl2br($info->tproject_scope) : $info->tproject_scope ) );
+              ($testProjectType == 'none' ? nl2br($info->tproject_scope) : $info->tproject_scope ) );
   return $out;
 }
 

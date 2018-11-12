@@ -152,25 +152,21 @@ function fileUploadManagement(&$dbHandler,$id,$title,$table)
 /**
  *
  */
-function deleteAttachment(&$dbHandler,$fileID,$checkOnSession=true)
-{
+function deleteAttachment(&$dbHandler,$fileID,$checkOnSession=true) {
   $repo = tlAttachmentRepository::create($dbHandler);
   $info = $repo->getAttachmentInfo($fileID);
-  if( $info )
-  {
+  if( $info ) {
     $doIt = true;
-    if( $checkOnSession )
-    {
+    if( $checkOnSession ) {
       $doIt = checkAttachmentID($dbHandler,$fileID,$info);
     }
 
-    if( $doIt )
-    {  
-      if($repo->deleteAttachment($fileID,$info))
-      {
+    if( $doIt ) {  
+      if($repo->deleteAttachment($fileID,$info)) {
         logAuditEvent(TLS("audit_attachment_deleted",$info['title']),"DELETE",$fileID,"attachments");
       } 
     }
   }
+  return $info;
 }
 

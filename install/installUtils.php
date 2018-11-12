@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	installUtils.php
- * @package 	TestLink
- * @author 		Francisco Mancardi
+ * @package 	  TestLink
+ * @author 		  Francisco Mancardi
  * 
  * Functions for installation process
  *
@@ -105,7 +105,7 @@ function getUserList(&$db,$db_type)
       break;
    
       case 'mssql':
-	    case 'mssqlnative':
+	  case 'mssqlnative':
       // info about running store procedures, get form adodb manuals
       // Important:
       // From ADODB manual - Prepare() documentation
@@ -226,22 +226,20 @@ if @ in login ->  get the hostname using splitting, and use it
                 
 */
 function create_user_for_db($db_type,$db_name,$db_server, $db_admin_name, $db_admin_pass,
-                            $login, $passwd)
-{
+                            $login, $passwd) {
 $db = new database($db_type);
 
 $user_host = explode('@',$login);
 $the_host = 'localhost';
 
-if ( count($user_host) > 1 )
-{
+if ( count($user_host) > 1 ) {
   $login    = $user_host[0];    
   $the_host = trim($user_host[1]);  
 }
 
 $try_create_user=0;
-switch($db_type)
-{
+switch($db_type) {
+
     case 'mssql':
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
     $msg="For MSSQL, no attempt is made to check for user existence";
@@ -401,61 +399,74 @@ function check_pear_modules()
   rev :
 
 */
-function check_db_loaded_extension($db_type)
-{
+function check_db_loaded_extension($db_type) {
   $dbType2PhpExtension = array('postgres' => 'pgsql');
 
+  $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
+
   $ext2search = $db_type;  
-  if( $ext2search == 'mysql' && version_compare(phpversion(), "7.0.0", ">=") )
-  {
+  if( $ext2search == 'mysql' &&  $isPHPGTE7) {
     $ext2search = 'mysqli';
   }
 
-	if(PHP_OS == 'WINNT')
-	{
-		// Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
-		// From PHP MANUAL - reganding mssql_* functions
-		// These functions allow you to access MS SQL Server database.
-		// This extension is not available anymore on Windows with PHP 5.3 or later.
-		// SQLSRV, an alternative driver for MS SQL is available from Microsoft:
-		// http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx. 			
+	if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
+
+    // First Time:
+    // 
+		// Faced this problem when testing XAMPP 1.7.7 on 
+    // Windows 7 with MSSQL 2008 Express
 		//
+    // From PHP MANUAL - reganding mssql_* functions
+    // These functions allow you to access MS SQL Server database.
+    // This extension is not available anymore on Windows with 
+    // PHP 5.3 or later.
+    // 
+    // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+    // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
+    //
+    //
+    // Second Time: (2018) 
+    // When using PHP 7 or up
+    // Help from Bitnami
+    // PHP 7 does not support mssql anymore. 
+    // The PECL extension recommended is to use the "sqlsrv" module 
+    // but you will need to compile it on your own.
+    //
+    // 
 		// PHP_VERSION_ID is available as of PHP 5.2.7
-		if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
-		{
+		if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300){
 			$dbType2PhpExtension['mssql'] = 'sqlsrv';
 		}			
-	}	
 
+    if ( $isPHPGTE7 ){
+      $dbType2PhpExtension['mssql'] = 'sqlsrv';
+    }     
+	}	
     
-  if( isset($dbType2PhpExtension[$db_type]) )
-  {
+  if( isset($dbType2PhpExtension[$db_type]) ) {
     $ext2search=$dbType2PhpExtension[$db_type];  
   }
       
   $msg_ko = "<span class='notok'>Failed!</span>";
   $msg_ok = '<span class="ok">OK!</span>';
-  $tt=array_flip(get_loaded_extensions());
+  $tt = array_flip(get_loaded_extensions());
     
   $errors=0;	
   $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
     
-  if( !isset($tt[$ext2search]) )
-  {
+  if( !isset($tt[$ext2search]) ) {
     $final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search} " .
     	"without it is IMPOSSIBLE to use Testlink.</span>";
     $final_msg .= $msg_ko;
     $errors += 1;
-  }
-  else
-  {
+  } else {
     $final_msg .= $msg_ok;
   }
-  $ret = array ('errors' => $errors,
-                'msg' => $final_msg);
+  
+  $ret = array ('errors' => $errors, 'msg' => $final_msg);
     
-  return ($ret);
-}  //function end
+  return $ret;
+}
 
 
 

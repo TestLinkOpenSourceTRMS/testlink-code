@@ -4,8 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 View test specification containers
 
 @filesource containerView.tpl
-@internal revisions
-@since 1.9.12
 *}
 
 {lang_get var='labels' 
@@ -99,6 +97,14 @@ function jsCallDeleteFile(btn, text, o_id)
     <fieldset class="groupBtn">
     <b>{$labels.testsuite_operations}</b>
     <form method="post" action="{$basehref}lib/testcases/containerEdit.php">
+
+      {if property_exists($gui,'calledByMethod')} 
+        <input type="hidden" name="calledByMethod" id="calledByMethod" 
+               value="{$gui->calledByMethod}" />
+      {/if}
+
+      <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
+
       <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
       <input type="hidden" name="doAction" id="doAction" value="" />
       <input type="hidden" name="containerID" value="{$gui->container_data.id}" />

@@ -9,49 +9,30 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2017, TestLink community 
+ * @copyright 	2005-2018, TestLink community 
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
  *
  */
 
-
-if( defined('TL_SMARTY_VERSION') && TL_SMARTY_VERSION == 3 )
-{  
-  define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty3'.  
-  	     DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
-}
-else
-{
-  define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
-         DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
-}  
-
-define('SMARTY_CORE_DIR', SMARTY_DIR . 'internals' . DIRECTORY_SEPARATOR);
-require_once( SMARTY_DIR . 'Smarty.class.php');
-
 /** in this way you can switch ext js version in easy way,
 	To use a different version of Sencha (Old EXT-JS) that provided with TL */
-if( !defined('TL_EXTJS_RELATIVE_PATH') )
-{
+if( !defined('TL_EXTJS_RELATIVE_PATH') ) {
     define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );
 }
 
-if(!defined('TL_USE_LOG4JAVASCRIPT') )
-{
+if(!defined('TL_USE_LOG4JAVASCRIPT') ) {
   define('TL_USE_LOG4JAVASCRIPT',0);
 }
 
 
-/** @TODO martin: refactore + describe 
+/** 
  * The next two functions was moved here from common.php */
-function translate_tc_status($status_code)
-{
+function translate_tc_status($status_code) {
 	$resultsCfg = config_get('results'); 
 	$verbose = lang_get('test_status_not_run');
-	if( $status_code != '')
-	{
+	if( $status_code != '') {
 		$suffix = $resultsCfg['code_status'][$status_code];
 		$verbose = lang_get('test_status_' . $suffix);
 	}
@@ -63,15 +44,11 @@ function translate_tc_status($status_code)
  * @uses function translate_tc_status
  * @todo should be moved to tlSmarty class
  */
-function translate_tc_status_smarty($params, &$smarty)
-{
+function translate_tc_status_smarty($params, $smarty) {
 	$the_ret = translate_tc_status($params['s']);
-	if(	isset($params['var']) )
-	{
+	if(	isset($params['var']) ) {
 		$smarty->assign($params['var'], $the_ret);
-	}
-	else
-	{
+	} else {
 		return $the_ret;
 	}
 }
@@ -88,13 +65,11 @@ function translate_tc_status_smarty($params, &$smarty)
  * {/if}
  * </code>
  */
-function guard_header_smarty($file)
-{
+function guard_header_smarty($file) {
 	static $guarded = array();
 	$status_ok = false;
 	
-	if (!isset($guarded[$file]))
-	{
+	if (!isset($guarded[$file])) {
 		$guarded[$file] = true;
 		$status_ok = true;
 	}
@@ -105,13 +80,11 @@ function guard_header_smarty($file)
  * TestLink wrapper for external Smarty class
  * @package 	TestLink
  */
-class TLSmarty extends Smarty
-{
+class TLSmarty extends Smarty {
   private $tlImages;
   var $tlTemplateCfg;
 	
-  function __construct()
-  {
+  function __construct() {
     global $tlCfg;
     global $g_tpl;
     
@@ -121,13 +94,11 @@ class TLSmarty extends Smarty
     $this->config_dir = TL_ABS_PATH . 'gui/templates/';
     
     $testproject_coloring = $tlCfg->gui->testproject_coloring;
-    $testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
+    $testprojectColor = $tlCfg->gui->background_color ; 
     
-    if (isset($_SESSION['testprojectColor']))
-    {
+    if (isset($_SESSION['testprojectColor'])) {
       $testprojectColor =  $_SESSION['testprojectColor'];
-      if ($testprojectColor == "")
-      {
+      if ($testprojectColor == "") {
           $testprojectColor = $tlCfg->gui->background_color;
       }    
     }
@@ -136,13 +107,12 @@ class TLSmarty extends Smarty
     $my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
     $basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
     
-    if ($tlCfg->smarty_debug)
-    {
-        $this->debugging = true;
-        tLog("Smarty debug window = ON");
+    if ($tlCfg->smarty_debug) {
+      $this->debugging = true;
+      tLog("Smarty debug window = ON");
     }
     
-    // -------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     // Must be initialized to avoid log on TestLink Event Viewer due to undefined variable.
     // This means that optional/missing parameters on include can not be used.
     //
@@ -156,6 +126,7 @@ class TLSmarty extends Smarty
     $this->assign('args',null);
     $this->assign('additionalArgs',null);
     $this->assign('pageTitle',null);
+    $this->assign('printPreferences',null);
     
     $this->assign('css_only',null);
     $this->assign('body_onload',null);
@@ -181,8 +152,7 @@ class TLSmarty extends Smarty
     $this->assign('basehref', $basehref);
     $this->assign('css', $basehref . TL_TESTLINK_CSS);
     $this->assign('use_custom_css', 0);
-    if(!is_null($tlCfg->custom_css) && $tlCfg->custom_css != '')
-    {
+    if(!is_null($tlCfg->custom_css) && $tlCfg->custom_css != '') {
       $this->assign('use_custom_css', 1);
       $this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
     }
@@ -216,8 +186,7 @@ class TLSmarty extends Smarty
        
     $wkf = array();
     $xcfg = config_get('testCaseStatus');
-    foreach($xcfg as $human => $key)
-    {
+    foreach($xcfg as $human => $key) {
       $wkf[$key] = lang_get('testCaseStatus_' . $human);
     }  
     $this->assign('gsmarty_option_wkfstatus',$wkf);
@@ -295,53 +264,33 @@ class TLSmarty extends Smarty
     $this->assign("tlImages",$this->tlImages);
     
     // Register functions
-    if( defined('TL_SMARTY_VERSION') && TL_SMARTY_VERSION == 3 )
-    {  
-      $this->registerPlugin("function","lang_get", "lang_get_smarty");
-      $this->registerPlugin("function","localize_date", "localize_date_smarty");
-      $this->registerPlugin("function","localize_timestamp", "localize_timestamp_smarty");
-      $this->registerPlugin("function","localize_tc_status","translate_tc_status_smarty");
+    $this->registerPlugin("function","lang_get", "lang_get_smarty");
+    $this->registerPlugin("function","localize_date", "localize_date_smarty");
+    $this->registerPlugin("function","localize_timestamp", "localize_timestamp_smarty");
+    $this->registerPlugin("function","localize_tc_status","translate_tc_status_smarty");
       
-      $this->registerPlugin("modifier","basename","basename");
-      $this->registerPlugin("modifier","dirname","dirname");
+    $this->registerPlugin("modifier","basename","basename");
+    $this->registerPlugin("modifier","dirname","dirname");
 
-      // Call to smarty filter that adds a CSRF filter to all form elements
-      if(isset($tlCfg->csrf_filter_enabled) && $tlCfg->csrf_filter_enabled === TRUE && 
-         function_exists('smarty_csrf_filter')) 
-      {
+    // Call to smarty filter that adds a CSRF filter to all form elements
+    if(isset($tlCfg->csrf_filter_enabled) && 
+       $tlCfg->csrf_filter_enabled === TRUE && function_exists('smarty_csrf_filter')) {
           $this->registerFilter('output','smarty_csrf_filter');
-      }
-    }
-    else
-    {  
-      $this->register_function("lang_get", "lang_get_smarty");
-      $this->register_function("localize_date", "localize_date_smarty");
-      $this->register_function("localize_timestamp", "localize_timestamp_smarty");
-      $this->register_function("localize_tc_status","translate_tc_status_smarty");
-      
-      $this->register_modifier("basename","basename");
-      $this->register_modifier("dirname","dirname");
-      
-      // Call to smarty filter that adds a CSRF filter to all form elements
-      if(isset($tlCfg->csrf_filter_enabled) && $tlCfg->csrf_filter_enabled === TRUE && 
-         function_exists('smarty_csrf_filter')) 
-      {
-          $this->register_outputfilter('smarty_csrf_filter');
-      }
     }
 
   } // end of function TLSmarty()
 
-  function getImages()
-  {
+  /**
+   *
+   */
+  function getImages() {
     return $this->tlImages;
   }
 
   /**
    *
    */
-  static function getImageSet()
-  {
+  static function getImageSet() {
     $burl = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
     $imgLoc = $burl . TL_THEME_IMG_DIR;
 
@@ -359,6 +308,7 @@ class TLSmarty extends Smarty
                    'bug_create_into_bts_disabled' => $imgLoc . 'bug_add_disabled_famfamfam.png',
                    'bug_add_note' => $imgLoc . 'bug_edit.png',
                    'bullet' => $imgLoc . 'slide_gripper.gif',
+                   'bulkOperation' => $imgLoc . 'bulkAssignTransparent.png',
                    'calendar' => $imgLoc . 'calendar.gif',
                    'checked' => $imgLoc . 'apply_f2_16.png',
                    'choiceOn' => $imgLoc . 'accept.png',

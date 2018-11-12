@@ -22,8 +22,7 @@ if ($args->id)
   $attachmentRepository = tlAttachmentRepository::create($db);
   $attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
 
-  if ($attachmentInfo)
-  {
+  if ($attachmentInfo) {
     switch ($args->opmode) 
     {
       case 'API':
@@ -146,7 +145,6 @@ function init_args(&$dbHandler)
     $args->opmode = 'API';
     $args->skipCheck = true;
   } 
-
   return $args;
 }
 

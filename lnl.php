@@ -9,7 +9,7 @@
  * 
  * @package   TestLink
  * @author    franciscom
- * @copyright 2012,2017 TestLink community
+ * @copyright 2012,2018 TestLink community
  * @link      http://www.testlink.org/
  */
 
@@ -152,13 +152,12 @@ switch($args->light)
 /**
  *
  */
-function init_args(&$dbHandler)
-{
+function init_args(&$dbHandler) {
+
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $args = new stdClass();
 
-  try
-  {
+  try {
     // ATTENTION - give a look to $tlCfg->reports_list
     // format domain: see reports.cfg.php FORMAT_*
     $typeSize = 30;
@@ -169,6 +168,7 @@ function init_args(&$dbHandler)
                                        $userAPIkeyLen,$objectAPIkeyLen),
                      "tproject_id" => array(tlInputParameter::INT_N),
                      "tplan_id" => array(tlInputParameter::INT_N),
+                     "build_id" => array(tlInputParameter::INT_N),
                      "level" => array(tlInputParameter::STRING_N,0,16),
                      "type" => array(tlInputParameter::STRING_N,0,$typeSize),
                      'id' => array(tlInputParameter::INT_N),
@@ -218,13 +218,12 @@ function init_args(&$dbHandler)
       throw new Exception("Aborting - Bad type", 1);
     } 
 
-    if($args->type == 'exec')
-    {
+    if($args->type == 'exec') {
       $tex = DB_TABLE_PREFIX . 'executions';
       $sql = "SELECT testplan_id FROM $tex WHERE id=" . intval($args->id);
       $rs = $dbHandler->get_recordset($sql);
-      if( is_null($rs) )
-      {
+
+      if( is_null($rs) ) {
         die(__FILE__ . '-' . __LINE__);
       }  
 
@@ -232,8 +231,7 @@ function init_args(&$dbHandler)
       $tpl = DB_TABLE_PREFIX . 'testplans';
       $sql = "SELECT api_key FROM $tpl WHERE id=" . intval($rs['testplan_id']);
       $rs = $dbHandler->get_recordset($sql);
-      if( is_null($rs) )
-      {
+      if( is_null($rs) ) {
         die(__FILE__ . '-' . __LINE__);
       }  
       $rs = $rs[0];

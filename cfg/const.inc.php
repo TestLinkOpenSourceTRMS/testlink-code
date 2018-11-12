@@ -19,40 +19,42 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.18'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [Dev] (Gaura)'); 
+define('TL_VERSION_NUMBER', '1.9.19'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Metonic cycle)'); 
 define('TL_FACE_DIR', 'prague'); 
 
 /** Latest Database version that is used to give users feedback 
  *  about necesssary upgrades
  *  if you set this parameter also upgrade 
  *  lib/functions/configCheck.php - checkSchemaVersion() */
-define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.17');
+define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.19');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
-if (!defined('TL_ABS_PATH')) 
-{
+if (!defined('TL_ABS_PATH')) {
   define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
 }
 
 /** Setting up the global include path for testlink */
-ini_set('include_path',
-    ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEPARATOR . 
-    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR  . PATH_SEPARATOR .
-    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'issuetrackerintegration' . DIRECTORY_SEPARATOR . PATH_SEPARATOR .
-    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'codetrackerintegration' . DIRECTORY_SEPARATOR . PATH_SEPARATOR .
-    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'reqmgrsystemintegration' . DIRECTORY_SEPARATOR);
+$ds = DIRECTORY_SEPARATOR;
+$ps = PATH_SEPARATOR;
 
-ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
-         TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR . PATH_SEPARATOR .
-         TL_ABS_PATH . 'vendor' . DIRECTORY_SEPARATOR );
+ini_set('include_path', ini_get('include_path') . $ps . '.' . 
+  $ps . TL_ABS_PATH . 'lib' . $ds . 'functions' . $ds  . 
+  $ps . TL_ABS_PATH . 'lib' . $ds . 'issuetrackerintegration' . $ds . 
+  $ps . TL_ABS_PATH . 'lib' . $ds . 'codetrackerintegration' . $ds . 
+  $ps . TL_ABS_PATH . 'lib' . $ds . 'reqmgrsystemintegration' . $ds);
+
+ini_set('include_path',ini_get('include_path') . 
+        $ps . TL_ABS_PATH . 'third_party' . $ds . 
+        $ps . TL_ABS_PATH . 'vendor' . $ds .
+        $ps . TL_ABS_PATH . 'cfg' . $ds);
 
 /** Localization directory base */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 /* [GENERAL MAGIC NUMBERS] */
 
 /** PHPMAILER */
@@ -98,6 +100,8 @@ define('LANG_GET_NO_WARNING',true);
 define('DSN', FALSE);  // for method connect() of database.class
 define('ANY_BUILD', null);
 define('GET_NO_EXEC', 1);
+
+define('FILTER_OPTION_ANY', 0);
 
 /** @uses planTCNavigator.php */
 define('FILTER_BY_BUILD_OFF', 0);
@@ -192,7 +196,7 @@ define('EVENT_TYPE_OUTPUT', 4);
 
 
 
-// --------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
 /* [GUI] */
 
 /** 
@@ -360,8 +364,10 @@ $att_model_m2->show_upload_column = true;
  * The code is used in DB to store results (not GUI).  
  * Do not do localisation here, i.e do not change "passed" by your national language.
  */ 
-$tlCfg->results['status_code'] = array('failed' => 'f','blocked' => 'b','passed' => 'p','not_run' => 'n',
-                                       'not_available' => 'x','unknown' => 'u','all' => 'a'); 
+$tlCfg->results['status_code'] = array('failed' => 'f','blocked' => 'b',
+                                       'passed' => 'p','not_run' => 'n',
+                                       'not_available' => 'x','unknown' => 'u',
+                                       'all' => 'a'); 
 
 
 /** 
@@ -425,6 +431,14 @@ $tlCfg->results['status_icons_for_exec_next_ui'] =
                            'title' => 'click_blocked_next'));
 
 
+$tlCfg->results['execStatusToExclude'] = array();
+$tlCfg->results['execStatusToExclude']['testcase'] = 
+  array($tlCfg->results['status_code']['all']);
+
+$tlCfg->results['execStatusToExclude']['step'] = 
+  array($tlCfg->results['status_code']['all']);
+
+
 /** 
  * Selected execution result by default. Values is key from $tlCfg->results['status_label']
  * @var string 
@@ -475,7 +489,7 @@ $tlCfg->execution_assignment_filter_methods['status_label'] = array('latest_exec
 // $js_key_to_select on init_filter_result() in tlTestCaseFilterControl.class.php
 // 
 $tlCfg->execution_assignment_filter_methods['default_type'] = 
-$tlCfg->execution_assignment_filter_methods['status_code']['specific_build'];
+  $tlCfg->execution_assignment_filter_methods['status_code']['specific_build'];
 
 
 
@@ -921,5 +935,16 @@ $tlCfg->execution_type = array( 'manual' => 1, 'auto' => 2);
 // To be removed 
 define('TESTCASE_EXECUTION_TYPE_MANUAL', $tlCfg->execution_type['manual']);  
 define('TESTCASE_EXECUTION_TYPE_AUTO', $tlCfg->execution_type['auto']);
+
+// for link_status field on req_coverage table
+define('LINK_TC_REQ_OPEN', 1);
+define('LINK_TC_REQ_CLOSED_BY_EXEC', 2);
+define('LINK_TC_REQ_CLOSED_BY_NEW_TCVERSION', 3);
+define('LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION', 4);
+
+// for link_status field on testcase_relations table
+define('LINK_TC_RELATION_OPEN', 1);
+define('LINK_TC_RELATION_CLOSED_BY_EXEC', 2);
+define('LINK_TC_RELATION_CLOSED_BY_NEW_TCVERSION', 3);
 
 // END 

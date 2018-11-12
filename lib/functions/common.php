@@ -70,50 +70,53 @@ require_once("exec_cfield_mgr.class.php");
  * Automatic loader for PHP classes
  * See PHP Manual for details 
  */
-function tlAutoload($class_name) 
-{
+function tlAutoload($class_name)  {
 
   // exceptions
   // 1. remove prefix and convert lower case
   $tlClasses = null;
   $tlClassPrefixLen = 2;
   $classFileName = $class_name;
+
    
   // 2. add a lower case directory 
   $addDirToInclude = array('Kint' => true);
 
   // this way Zend_Loader_Autoloader will take care of these classes.
   // Needed in order to make work bugzillaxmlrpc interface
-  if( strstr($class_name,'Zend_') !== FALSE )
-  {
+  if( strstr($class_name,'Zend_') !== FALSE ) {
     return false;
   }
-    
-  if (isset($tlClasses[$classFileName]))
-  {
+
+  // Workaround
+  // https://github.com/smarty-php/smarty/issues/344 
+  // https://github.com/smarty-php/smarty/pull/345
+  if( strpos($class_name,'Smarty_Internal_Compile_') !== FALSE ) {
+    return false;
+  }
+
+  if (isset($tlClasses[$classFileName])) {
     $len = tlStringLen($classFileName) - $tlClassPrefixLen;
     $classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
   }
   
-  if (isset($addDirToInclude[$class_name]))
-  {
+  if (isset($addDirToInclude[$class_name])) {
     $classFileName = strtolower($class_name) . "/" . $class_name;
   }  
 
   // Plugin special processing, class name ends with Plugin (see plugin_register())
   // Does not use autoload
-  if( preg_match('/Plugin$/', $class_name) == 1 )
-  {
+  if( preg_match('/Plugin$/', $class_name) == 1 ) {
     return;
   }  
 
 
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 
-  // You can reproduce it installing ThinkUp and TestLink applications in the same stack.  
-  try 
-  {
-    include_once $classFileName . '.class.php';
+  // You can reproduce it installing ThinkUp and TestLink applications in the same stack. 
+
+  try {
+      include_once $classFileName . '.class.php';
   } 
   catch (Exception $e)
   {
@@ -138,18 +141,26 @@ $db = 0;
  *         aa['status'] = 1 -> OK , 0 -> KO
  *         aa['dbms_msg''] = 'ok', or $db->error_msg().
  */
-function doDBConnect(&$db,$onErrorExit=false)
-{
+function doDBConnect(&$db,$onErrorExit=false) {
   global $g_tlLogger;
   
   $charSet = config_get('charset');
   $result = array('status' => 1, 'dbms_msg' => 'ok');
 
-  $db = new database(DB_TYPE);
+  switch(DB_TYPE) {
+    case 'mssql':
+      $dbDriverName = 'mssqlnative';    
+    break;
+
+    default:
+      $dbDriverName = DB_TYPE;
+    break;  
+  }
+
+  $db = new database($dbDriverName);
   $result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-  if (!$result['status'])
-  {
+  if (!$result['status']) {
     echo $result['dbms_msg'];
     $result['status'] = 0;
     $search = array('<b>','</b>','<br>');
@@ -159,8 +170,7 @@ function doDBConnect(&$db,$onErrorExit=false)
     
     $logmsg  = $logtext . ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
     tLog(str_replace($search,$replace,$logmsg), 'ERROR');
-    if( $onErrorExit )
-    {
+    if( $onErrorExit ) {
       $smarty = new TLSmarty();
       $smarty->assign('title', lang_get('fatal_page_title'));
       $smarty->assign('content', $logtext);
@@ -169,10 +179,8 @@ function doDBConnect(&$db,$onErrorExit=false)
       exit();
     }
   }
-  else
-  {
-    if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
-    {
+  else {
+    if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8')) {
       $db->exec_query("SET CHARACTER SET utf8");
       $db->exec_query("SET collation_connection = 'utf8_general_ci'");
     }
@@ -193,10 +201,8 @@ function doDBConnect(&$db,$onErrorExit=false)
  * 
  * @param array $tplan_info result of DB query
  */
-function setSessionTestPlan($tplan_info)
-{
-  if ($tplan_info)
-  {
+function setSessionTestPlan($tplan_info) {
+  if ($tplan_info) {
     $_SESSION['testplanID'] = $tplan_info['id'];
     $_SESSION['testplanName'] = $tplan_info['name'];
 
@@ -211,8 +217,7 @@ function setSessionTestPlan($tplan_info)
 
     tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
   }
-  else
-  {
+  else {
     unset($_SESSION['testplanID']);
     unset($_SESSION['testplanName']);
   }
@@ -275,24 +280,22 @@ function checkSessionValid(&$db, $redirect=true)
 /**
  * Start session
  */
-function doSessionStart($setPaths=false)
-{
-  session_set_cookie_params(99999);
-  if(!isset($_SESSION))
-  {
+function doSessionStart($setPaths=false) {
+
+  if( PHP_SESSION_NONE == session_status() ) {
+    session_set_cookie_params(99999);
+  }
+  
+  if(!isset($_SESSION)) {
     session_start();
-    if(defined('KINT_ON') && KINT_ON)
-    {
+    if(defined('KINT_ON') && KINT_ON) {
       Kint::enabled(true);      
-    }  
-    else
-    {
+    } else {
       Kint::enabled(false);      
     }  
   }
   
-  if($setPaths)
-  {
+  if($setPaths) {
     unset($_SESSION['basehref']);
     setPaths();
   }

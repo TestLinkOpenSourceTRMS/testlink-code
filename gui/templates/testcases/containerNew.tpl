@@ -4,9 +4,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - create containers
 
 @filesource containerNew.tpl
-@internal revisions
-@since 1.9.13
-
 *}
 
 {config_load file="input_dimensions.conf" section="containerEdit"}

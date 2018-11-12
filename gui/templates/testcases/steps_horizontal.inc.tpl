@@ -106,7 +106,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
       <td>
         <select class="step_status" name="step_status[{$step_info.id}]" id="step_status_{$step_info.id}">
-          {html_options options=$gui->execStatusValues selected=$step_info.execution_status}
+          {html_options options=$gui->execStepStatusValues selected=$step_info.execution_status}
 
         </select> <br>
         

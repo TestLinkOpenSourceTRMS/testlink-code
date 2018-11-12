@@ -45,7 +45,12 @@ abstract class issueTrackerInterface
   var $interfaceViaDB = false;  // useful for connect/disconnect methods
   var $resolvedStatus;
   
-  var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
+  var $methodOpt = array('buildViewBugLink' => 
+                         array('addSummary' => false, 
+                               'colorByStatus' => false,
+                               'addReporter' => false,
+                               'addHandler' => false));
+
   var $guiCfg = array();
   var $summaryLengthLimit = 120;  // Mantis max is 128.  
 
@@ -55,17 +60,15 @@ abstract class issueTrackerInterface
    *
    * @param str $type (see tlIssueTracker.class.php $systems property)
    **/
-  function __construct($type,$config,$name)
-  {
+  function __construct($type,$config,$name) {
+
     $this->tlCharSet = config_get('charset');
     $this->guiCfg = array('use_decoration' => true); // add [] on summary and statusHTMLString
     $this->name = $name;
 
-    if( $this->setCfg($config) )
-    {     
+    if( $this->setCfg($config) ) {     
       // useful only for integration via DB
-      if( !property_exists($this->cfg,'dbcharset') )
-      {
+      if( !property_exists($this->cfg,'dbcharset') ) {
         $this->cfg->dbcharset = $this->tlCharSet;
       }
       $this->connect();
@@ -323,8 +326,15 @@ abstract class issueTrackerInterface
    * @return string returns a complete HTML HREF to view the bug (if found in db)
    *
    **/
-  function buildViewBugLink($issueID, $opt=null)
-  {
+  function buildViewBugLink($issueID, $opt=null) {
+
+    static $l10n;
+    
+    if( !$l10n ) {
+      $tg = array('issueReporter' => null, 'issueHandler' => null);
+      $l10n = init_labels($tg);
+    }
+
     $my['opt'] = $this->methodOpt[__FUNCTION__];
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
@@ -336,53 +346,77 @@ abstract class issueTrackerInterface
     $ret->isResolved = false;
     $ret->op = false;
 
-    if( is_null($issue) || !is_object($issue) )
-    {
+    if( is_null($issue) || !is_object($issue) ) {
       $ret->link = "TestLink Internal Message: getIssue($issueID) FAILURE on " . __METHOD__;
       return $ret;
     }
     
     $useIconv = property_exists($this->cfg,'dbcharset');
-    if($useIconv)
-    {
+    if($useIconv) {
       $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->IDHTMLString);
     }
-    else
-    {
+    else {
       $link .= $issue->IDHTMLString;
     }
     
-    if (!is_null($issue->statusHTMLString))
-    {
-      if($useIconv)
-      {
+    if (!is_null($issue->statusHTMLString)) {
+      if($useIconv) {
         $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->statusHTMLString);
-      }
-      else
-      {
+      } else {
         $link .= $issue->statusHTMLString;
       }
-    }
-    else
-    {
+    } else {
       $link .= $issueID;
     }
 
-    if($my['opt']['addSummary'])
-    {
-      if (!is_null($issue->summaryHTMLString))
-      {
+    if($my['opt']['addSummary']) {
+      if (!is_null($issue->summaryHTMLString)) {
         $link .= " : ";
-        if($useIconv)
-        {
+        if($useIconv) {
           $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->summaryHTMLString);
         }
-        else
-        {
+        else {
           $link .= (string)$issue->summaryHTMLString;
         }
       }
     }
+
+    if($my['opt']['addReporter']) {
+      if( property_exists($issue, 'reportedBy') ) {
+        $link .= "";
+        $who = trim((string)$issue->reportedBy);
+        if( '' != $who ) {
+          
+          $link .= '<br>' . $l10n['issueReporter'] . ':&nbsp;';            
+          if($useIconv) {
+            $link .= 
+             iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$who);
+          }
+          else {
+            $link .= $who;
+          }          
+        }
+      }
+    }
+
+    if($my['opt']['addHandler']) {
+      if( property_exists($issue, 'handledBy') ) {
+        $link .= "";
+        $who = trim((string)$issue->handledBy);
+        if( '' != $who ) {
+
+          $link .= '<br>' . $l10n['issueHandler'] . ':&nbsp;';           
+          if($useIconv) {
+            $link .= 
+             iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$who);
+          }
+          else {
+            $link .= $who;
+          }          
+        }
+      }
+    }
+
     $link .= "</a>";
 
     if($my['opt']['colorByStatus'] && property_exists($issue,'statusColor') )
@@ -578,8 +612,7 @@ abstract class issueTrackerInterface
    *
    * @return int 
    */
-  function getBugSummaryMaxLength()
-  {
+  function getBugSummaryMaxLength() {
     return $this->summaryLengthLimit;
   }
 

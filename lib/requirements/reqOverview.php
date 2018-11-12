@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
@@ -7,7 +6,7 @@
  *
  * @package     TestLink
  * @author      Andreas Simon
- * @copyright   2010,2014 TestLink community
+ * @copyright   2018 TestLink community
  * @filesource  reqOverview.php
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
@@ -33,8 +32,7 @@ $gui = init_gui($args);
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 
 $smarty = new TLSmarty();
-if(count($gui->reqIDs) > 0) 
-{
+if(count($gui->reqIDs) > 0)  {
   $chronoStart = microtime(true);
 
   $pathCache = null;
@@ -60,43 +58,35 @@ if(count($gui->reqIDs) > 0)
   $coverageSet = null;
   $relationCounters = null;
 
-  $version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
-  if( $version_option == requirement_mgr::LATEST_VERSION )
-  {
+  $version_option = $args->all_versions ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
+  if( $version_option == requirement_mgr::LATEST_VERSION ) {
     $reqSet = $req_mgr->getByIDBulkLatestVersionRevision($gui->reqIDs,array('outputFormat' => 'mapOfArray'));
   }
-  else
-  {
+  else {
     $reqSet = $req_mgr->get_by_id($gui->reqIDs, $version_option,null,array('output_format' => 'mapOfArray'));
-    // new dBug($reqSet);
   }  
 
   
-  if($cfg->req->expected_coverage_management) 
-  {
-    $coverageSet = $req_mgr->getCoverageCounterSet($gui->reqIDs);
+  if($cfg->req->expected_coverage_management)  {
+    $xSet = array_keys($reqSet);
+
+    foreach($xSet as $rqID) {
+      $reqVersionSet[] = $reqSet[$rqID][0]['version_id'];
+    }
+
+    $coverageSet = $req_mgr->getLatestReqVersionCoverageCounterSet($reqVersionSet);
+
   }
 
-  if($cfg->req->relations->enable) 
-  {
+  if($cfg->req->relations->enable) {
     $relationCounters = $req_mgr->getRelationsCounters($gui->reqIDs);
   }
 
   // array to gather table data row per row
   $rows = array();    
  
-  foreach($gui->reqIDs as $id) 
-  {
-    // now get the rest of information for this requirement
-    //if( $version_option == requirement_mgr::ALL_VERSIONS )
-    //{
-    //  // This need to be refactored in future to improve performance
-      //$req = $req_mgr->get_by_id($id, $version_option);
-    //}  
-    //else
-    //{
-    //  $req = $reqSet[$id];
-    //}  
+  foreach($gui->reqIDs as $id)  {
+
     $req = $reqSet[$id];
 
     // create the link to display
@@ -104,18 +94,15 @@ if(count($gui->reqIDs) > 0)
              htmlentities($req[0]['title'], ENT_QUOTES, $cfg->charset);
     
     // reqspec-"path" to requirement
-    if( !isset($pathCache[$req[0]['srs_id']]) )
-    {
+    if( !isset($pathCache[$req[0]['srs_id']]) ) {
       $path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
-      foreach ($path as $key => $p) 
-      {
+      foreach ($path as $key => $p) {
         $path[$key] = $p['name'];
       }
       $pathCache[$req[0]['srs_id']] = htmlentities(implode("/", $path), ENT_QUOTES, $cfg->charset);
     }         
 
-    foreach($req as $version) 
-    {
+    foreach($req as $version) {
       // get content for each row to display
       $result = array();
         
@@ -161,13 +148,11 @@ if(count($gui->reqIDs) > 0)
       // to do not use my other approach of firts assigning instead of using else.
       // 
       // use html comment to sort properly by this column (extjs)
-      if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $cfg->neverModifiedTS) )
-      {
+      if( !is_null($version['modification_ts']) && ($version['modification_ts'] != $cfg->neverModifiedTS) ) {
         $result[] = "<!--{$version['modification_ts']}-->" . localizeTimeStamp($version['modification_ts'],$cfg->datetime) . 
                     " ({$version['modifier']})";
       }
-      else
-      {
+      else {
         $result[] = "<!-- 0 -->" . $labels['never'];  
       }  
         
@@ -177,13 +162,11 @@ if(count($gui->reqIDs) > 0)
         
       // coverage
       // use html comment to sort properly by this columns (extjs)
-      if($cfg->req->expected_coverage_management) 
-      {
+      if($cfg->req->expected_coverage_management) {
         $tc_coverage = isset($coverageSet[$id]) ? $coverageSet[$id]['qty'] : 0;
         $expected = $version['expected_coverage'];
         $coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($tc_coverage/0)";
-        if ($expected > 0) 
-        {
+        if ($expected > 0) {
           $percentage = round(100 / $expected * $tc_coverage, 2);
           $padded_data = sprintf("%010d", $percentage); //bring all percentages to same length
           $coverage_string = "<!-- $padded_data --> {$percentage}% ({$tc_coverage}/{$expected})";
@@ -194,24 +177,20 @@ if(count($gui->reqIDs) > 0)
       $result[] = isset($type_labels[$version['type']]) ? $type_labels[$version['type']] : '';
       $result[] = isset($status_labels[$version['status']]) ? $status_labels[$version['status']] : '';
       
-      if ($cfg->req->relations->enable) 
-      {
+      if ($cfg->req->relations->enable) {
         $rx = isset($relationCounters[$id]) ? $relationCounters[$id] : 0;
         $result[] = "<!-- " . str_pad($rx,10,'0') . " -->" . $rx;
       }
      
       
-      if($gui->processCF)
-      {
+      if($gui->processCF) {
         // get custom field values for this req version
         $linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
 
-        foreach ($linked_cfields as $cf) 
-        {
+        foreach ($linked_cfields as $cf) {
           $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
           $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
-          if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 )
-          {
+          if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 ) {
             $value = strftime( $cfg->$verbose_type . " ({$label['week_short']} %W)" , $value);
           }  
           $result[] = $value;
@@ -226,8 +205,7 @@ if(count($gui->reqIDs) > 0)
   // die();
   // -------------------------------------------------------------------------------------------------- 
   // Construction of EXT-JS table starts here    
-  if(($gui->row_qty = count($rows)) > 0 ) 
-  {
+  if(($gui->row_qty = count($rows)) > 0 ) {
     $version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];
     $gui->pageTitle .= " - " . $version_string . ": " . $gui->row_qty;
        
@@ -260,8 +238,7 @@ if(count($gui->reqIDs) > 0)
     $columns[] = array('title_key' => 'frozen', 'width' => 30, 'filter' => 'list',
                        'filterOptions' => $frozen_for_filter);
         
-    if($cfg->req->expected_coverage_management) 
-    {
+    if($cfg->req->expected_coverage_management) {
       $columns[] = array('title_key' => 'th_coverage', 'width' => 80);
     }
               
@@ -270,13 +247,11 @@ if(count($gui->reqIDs) > 0)
     $columns[] = array('title_key' => 'status', 'width' => 60, 'filter' => 'list',
                        'filterOptions' => $status_labels);
       
-    if ($cfg->req->relations->enable) 
-    {
+    if ($cfg->req->relations->enable) {
       $columns[] = array('title_key' => 'th_relations', 'width' => 50, 'filter' => 'numeric');
     }
         
-    foreach($gui->cfields4req as $cf) 
-    {
+    foreach($gui->cfields4req as $cf) {
       $columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $cfg->charset), 'type' => 'text',
                          'col_id' => 'id_cf_' .$cf['name']);
     }
@@ -320,8 +295,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param resource &$tproject_mgr reference to testproject manager
  * @return array $args array with user input information
  */
-function init_args(&$tproject_mgr)
-{
+function init_args(&$tproject_mgr) {
   $args = new stdClass();
 
   $all_versions = isset($_REQUEST['all_versions']) ? true : false;
@@ -339,8 +313,8 @@ function init_args(&$tproject_mgr)
   
   $args->tproject_id = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
-  if($args->tproject_id > 0) 
-  {
+
+  if($args->tproject_id > 0)  {
     $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
     $args->tproject_name = $tproject_info['name'];
     $args->tproject_description = $tproject_info['notes'];
@@ -356,8 +330,7 @@ function init_args(&$tproject_mgr)
  * @param stdClass $argsObj reference to user input
  * @return stdClass $gui gui data
  */
-function init_gui(&$argsObj) 
-{
+function init_gui(&$argsObj) {
   $gui = new stdClass();
   
   $gui->pageTitle = lang_get('caption_req_overview');
@@ -373,8 +346,7 @@ function init_gui(&$argsObj)
 /**
  *
  */
-function getCfg()
-{
+function getCfg() {
   $cfg = new stdClass();
   $cfg->glue_char = config_get('gui_title_separator_1');
   $cfg->charset = config_get('charset');
@@ -394,8 +366,7 @@ function getCfg()
 /*
  * rights check function for testlinkInitPage()
  */
-function checkRights(&$db, &$user)
-{
+function checkRights(&$db, &$user) {
   return $user->hasRight($db,'mgt_view_req');
 }
 

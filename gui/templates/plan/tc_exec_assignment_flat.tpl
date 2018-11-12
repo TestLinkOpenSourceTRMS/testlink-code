@@ -7,13 +7,14 @@ generate the list of TC that can be removed from a Test Plan
 @internal revisions
 
 *}
+
 {lang_get var="labels" 
   s="user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
      btn_update_selected_tc,show_tcase_spec,can_not_execute,
      send_mail_to_tester,platform,no_testcase_available,chosen_blank_option,
      exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
      th_test_case,version,assigned_to,assign_to,note_keyword_filter,priority,
-     check_uncheck_all_tc,execution,design,execution_history,btn_apply_assign,no_user_selected,
+     check_uncheck_all_tc,execution,design,execution_history,btn_apply_assign,
      btn_save_assign,btn_remove_assignments,remove,btn_send_link,btn_remove_all_users,user_bulk_action"}
 
 {include file="inc_head.tpl" openHead="yes"}

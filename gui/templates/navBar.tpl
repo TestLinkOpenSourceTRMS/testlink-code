@@ -35,11 +35,12 @@ title bar + menu
         <li class="active"><a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i" tabindex="6"><img src="{$tlImages.account}" title="{$labels.title_edit_personal_data}"><span class="sr-only">(current)</span></a></li>
         <li><a href="{$gui->logout}" target="_parent" accesskey="q"><img src="{$tlImages.logout}" title="{$labels.link_logout}"></a></li>
       </ul>
-      <form class="navbar-form navbar-left">
-        <div class="form-group">
-          {$session.testprojectTopMenu}
-          {if $gui->tprojectID}
-            {if $gui->grants->view_testcase_spec == "yes"}
+      <div class="navbar-form">
+        <div class="navbar-left">
+        {$session.testprojectTopMenu}
+        {if $gui->tprojectID}
+          {if $gui->grants->view_testcase_spec == "yes"}
+          <div class="form-group">
             <form target="mainframe" name="searchTC" id="searchTC" action="lib/testcases/archiveData.php" method="get">
               <input type="text" size="{$gui->searchSize}" title="{$labels.search_testcase}" name="targetTestCase" value="{$gui->tcasePrefix}" class="form-control" placeholder="Search a testcase" />
               {* useful to avoid a call to method to get test case prefix in called page *}
@@ -50,18 +51,25 @@ title bar + menu
               <input type="hidden" name="edit" value="testcase" />
               <input type="hidden" name="allow_edit" value="0" />
             </form>
-            {/if}
-            {if $gui->grants->view_testcase_spec == "yes"}
+          </div>
+          {/if}
+        {/if}
+        </div>
+        <div class="navbar-nav navbar-middle">
+        {if $gui->tprojectID}
+          {if $gui->grants->view_testcase_spec == "yes"}
+          <div class="form-group">
             <form target="mainframe" name="fullTextSearch" id="fullTextSearch" action="lib/search/searchMgmt.php" method="post">
-              <input type="hidden" name="caller" value="navBar">
-              <input type="hidden" name="tproject_id" value="{$gui->tproject_id}">
-              <input type="text" size="50" title="{$labels.full_text_search}" name="target" value="" class="form-control" />
+              <input type="hidden" name="caller" value="navBar" />
+              <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+              <input id="txtFullSearch" type="text" title="{$labels.full_text_search}" name="target" value="" class="form-control" />
               <img src="{$tlImages.magnifier}" title="{$labels.full_text_search}" alt="{$labels.full_text_search}" onclick="document.getElementById('fullTextSearch').submit()" class="clickable" />
             </form>
-            {/if}
+          </div>
           {/if}
+        {/if}
         </div>
-      </form>
+      </div>
       <ul class="nav navbar-nav navbar-right">
         <li>
           <a href="#" class="bold">{$gui->whoami|escape}</a>

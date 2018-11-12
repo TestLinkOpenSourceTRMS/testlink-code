@@ -87,6 +87,20 @@ example:
   }
 
   /*TODO: add description here*/
+  #tl-container .tl-box-main-2 {
+    background-color: #c8ddf6;
+    border-left: 1px solid #003399;
+    border-right: 1px solid #003399;
+  }
+
+  /*TODO: add description here*/
+  #tl-container .tl-box-main-3 {
+    background-color: #EEEEEE;
+    border-left: 1px solid #003399;
+    border-right: 1px solid #003399;
+  }
+
+  /*TODO: add description here*/
   #tl-container .tl-box-header {
     background-color: #F4C057;
     border: 1px solid #003399;
@@ -109,3 +123,4 @@ example:
     list-style-type: circle !important;
     padding-left: 10px;
   }
+  

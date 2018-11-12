@@ -143,27 +143,38 @@ $the_title = $_SESSION['title'];
 <!DOCTYPE html>
 <head>
   <title><?php echo $the_title; ?></title>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-        <style type="text/css">
-             @import url('./css/style.css');
-       
-     ul li { margin-top: 7px; }
-        </style>
+  <link href="../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
+  <!-- Bootstrap Metas -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Reset CSS for Bootstrap+HTML5 -->
+  <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/reset.css">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap-theme.min.css">-->
+  <!-- Testlink CSS -->
+  <style type="text/css">@import url('../gui/themes/tmpl-bs/css/template.css');</style>
+  <style type="text/css">
+    @import url('./css/style.css');       
+    ul li { margin-top: 7px; }
+  </style>
 </head> 
 
-<body>
-<table border="0" cellpadding="0" cellspacing="0" class="mainTable">
-  <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;<?php echo $tl_and_version?></span></td>
-    <td align="right"><span class="headers"><?php echo $the_title ?> </span></td>
-  </tr>
-  <tr class="fancyRow2">
-    <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
-  </tr>
-  <tr align="left" valign="top">
-    <td colspan="2"><table width="100%"  border="0" cellspacing="0" cellpadding="1">
-      <tr align="left" valign="top">
-        <td class="pad" id="content" colspan="2">
+<body id="tl-container" class="container-fluid">
+<section id="tl-section" class="row">
+  <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
+    <tr class="fancyRow">
+      <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;<?php echo $tl_and_version?></span></td>
+      <td align="right"><span class="headers"><?php echo $the_title ?> </span></td>
+    </tr>
+    <tr class="fancyRow2">
+      <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
+    </tr>
+    <tr align="left" valign="top">
+      <td colspan="2"><table width="100%"  border="0" cellspacing="0" cellpadding="1">
+        <tr align="left" valign="top">
+          <td class="pad" id="content" colspan="2">
 
 <?php
 $check = check_db_loaded_extension($db_type);
@@ -540,8 +551,11 @@ if(strcasecmp('ko', $yy['status']) == 0) {
 } 
 else 
 {
+*/
   echo "<span class='ok'>OK!</span>";
+/*
 }
+*/
 
 
 manual_operations($db_type);

@@ -14,8 +14,13 @@
  * 	None.
  */
 ?>
-<div class="tlLiner">&nbsp;</div>
-
-</div>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+  </section> <!-- installHead.inc -->
+  <!-- Jquery 3.3.1 -->
+  <script type="text/javascript" src="../gui/themes/tmpl-bs/js/jquery.min.js"></script>
+  <!-- Bootstrap JS 3.3.7 -->
+  <script type="text/javascript" src="../gui/themes/tmpl-bs/js/bootstrap.min.js"></script>
+  <!-- Testlink JS -->
+  <script type="text/javascript" src="../gui/themes/tmpl-bs/js/template.js"></script>
 </body>
 </html>

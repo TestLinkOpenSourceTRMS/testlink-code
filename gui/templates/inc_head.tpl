@@ -21,8 +21,21 @@ editorType: used to understand if code for tinymce need to be loaded
 	<base href="{$basehref}"/>
 	<title>{$pageTitle|default:"TestLink"}</title>
 	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
+	<!-- Bootstrap Metas -->
+  	<meta charset="utf-8">
+  	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 {* ----- load CSS ------------------------------------------------------------------- *} 
+
+	<!-- Reset CSS for Bootstrap+HTML5 -->
+  	<link rel="stylesheet" href="../gui/themes/tmpl-bs/css/reset.css">
+  	<!-- Bootstrap CSS -->
+  	<link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap.min.css">
+  	<link rel="stylesheet" href="../gui/themes/tmpl-bs/css/bootstrap-theme.min.css">
+  	<!-- Testlink CSS -->
+  	<style type="text/css">@import url('../gui/themes/tmpl-bs/css/template.css');</style>
+
 	<style media="all" type="text/css">@import "{$css}";</style>
 
 	{if $use_custom_css}

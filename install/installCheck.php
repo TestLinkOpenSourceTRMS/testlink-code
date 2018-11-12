@@ -27,50 +27,51 @@ $inst_phase = 'checking';  // global variable -> absolutely wrong use as usual, 
 $msg='';
 include 'installHead.inc';
 ?>
-<div class="tlStory">
-
-<p>TestLink will carry out a number of checks to see if everything's ready to start 
-	the setup.</p>
-<table>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
+      <br/>
+      <p class="alert alert-warning text-center">TestLink will carry out a number of checks to see if everything's ready to start the setup</p>
+      <?php
+        // Check before DB installation
+        $inst_type = isset($_GET['type']) ? $_GET['type'] : '';
+        $errors = 0;
+        reportCheckingSystem($errors);
+        reportCheckingWeb($errors);
+        reportCheckingPermissions($errors,$inst_type);
+      ?>
+    </section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-footer"></section>
+    <section class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-md-offset-2 col-sm-offset-1 tl-box-main">
+    <?php
+      if($errors > 0) {
+        // Stop process because of error
+    ?>
+      <p class="text-warning">
+        Unfortunately, TestLink scripted setup cannot continue at the moment, due to the above
+        <?php echo $errors > 1 ? $errors." " : "" ; ?>
+        error<?php echo $errors > 1 ? "s" : "" ; ?>. 
+      </p>
+      <p class="text-danger">
+        Please correct the error<?php echo $errors > 1 ? "s" : "" ; ?>
+      </p>
+      <p>
+	Try again (reload page). If you need help figuring out how to fix the
+	problem<?php echo $errors > 1 ? "s" : "" ; ?>, 
+        please read Installation manual and visit
+        <a href="http://www.testlink.org" target="_blank">TestLink Forums [click here]</a>.
+      </p>
+    <?php
+      } else { // checking OK
+    ?>
+      <br />
+      <form action="installDbInput.php">
+        <p><input type="submit" id="submit" value="Continue" class="form-control btn btn-primary" /></p>
+      </form>
+      <p class="text-success tl-desc text-center">Your system is prepared for TestLink configuration (no fatal problem found).</p>
+    <?php 
+      } // else end - checking OK 
+    ?>
+    </section>
 
 <?php
-// Check before DB installation
-$inst_type = isset($_GET['type']) ? $_GET['type'] : '';
-$errors = 0;
-reportCheckingSystem($errors);
-reportCheckingWeb($errors);
-reportCheckingPermissions($errors,$inst_type);
-?>
-	</table>
-</div>
-<div class="tlLiner">&nbsp;</div>
-<div class="tlStory">
-
-<?php if($errors > 0) {
-	// Stop process because of error
-?>
-	<p>Unfortunately, TestLink scripted setup cannot continue at the moment, due to the above 
-	<?php echo $errors > 1 ? $errors." " : "" ; ?>error<?php echo $errors > 1 ? "s" : "" ; ?>. 
-	<br />Please correct the error<?php echo $errors > 1 ? "s" : "" ; ?>, 
-	and try again (reload page). If you need help figuring out how to fix the 
-	problem<?php echo $errors > 1 ? "s" : "" ; ?>, please read Installation manual and
-	visit <a href="http://www.testlink.org" target="_blank">TestLink Forums [click here]</a>.
-	</p>
-</div>
-<?php
-
-} else { // checking OK
-?>
-  	
-	<div style="float:right;"><form action="installDbInput.php">
-		<input type="submit" id="submit" value="Continue" />
-	</form></div>
-	<div>
-	<p class="success">Your system is prepared for TestLink configuration (no fatal problem found).</p>
-	</div>
-</div>
-<?php 
-} // else end - checking OK 
-
 include 'installFooter.inc';
 ?>

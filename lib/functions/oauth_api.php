@@ -32,16 +32,3 @@ function oauth_link($oauthCfg) {
   $url = $oauthCfg['oauth_url'] . '?' . http_build_query($oauth_params);
   return $url;
 }
-
-//Create new user
-function create_oauth_user_db(&$dbHandler, $login, $options) {
-  $user = new tlUser();
-  $user->login = $login;
-  $user->emailAddress = $login;
-  $user->firstName = $options->givenName;
-  $user->lastName = $options->familyName;
-  $user->authentication = 'OAUTH';
-  $user->isActive = true;
-  $user->setPassword('oauth');
-  return ($user->writeToDB($dbHandler) == tl::OK);
-}

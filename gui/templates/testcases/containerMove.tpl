@@ -3,7 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource containerMove.tpl
 Purpose: smarty template - form for move/copy container in test specification
 
-@since 1.9.14
 *}
 {lang_get s='container' var='parent'}
 {lang_get var="labels"
@@ -31,7 +30,7 @@ jQuery(".chosen-select").chosen({ width: "50%", search_contains: true });
 {if $containers eq ''}
 	{$labels.sorry_further} {$parent} {$labels.defined_exclam}
 {else}
-	<form method="post" action="{$basehref}lib/testcases/containerEdit.php?objectID={$objectID|escape}">
+	<form method="post" action="{$basehref}lib/testcases/containerEdit.php?objectID={$objectID|escape}&containerType={$level}">
 		<p>
 		{$labels.cont_move_first} {$level_translated} {$labels.cont_move_second} {$parent|escape}.<br />
 		{$labels.cont_copy_first} {$level_translated} {$labels.cont_copy_second} {$parent|escape}.

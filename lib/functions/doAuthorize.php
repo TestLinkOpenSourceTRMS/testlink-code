@@ -30,9 +30,12 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
 
   $result = array('status' => tl::ERROR, 'msg' => null);
   $_SESSION['locale'] = TL_DEFAULT_LOCALE; 
-  
-  $my['options'] = array('doSessionExistsCheck' => true); 
-  $my['options'] = array_merge($my['options'], (array)$options);
+
+  if( null == $options ) {
+    $options = new stdClass();   
+    $options->doSessionExistsCheck = true;
+    $options->auth = null;
+  }
 
   $login = trim($login);
   $pwd = trim($pwd);
@@ -42,7 +45,11 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
     $result['msg'] = ' ';    
   } 
 
-  $isOauth = (strpos($options->auth,'oauth') !== false);
+  $isOauth = false;
+  if( property_exists($options, 'auth') ) {
+    $isOauth = strpos($options->auth,'oauth') !== false;
+  }
+
   $loginExists = false;
   $loginExpired = false;
   $doLogin = false;
@@ -90,30 +97,49 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
         }
       }
     }
-  }  else {
-    // Will Try To Create a New User
-      $authCfg = config_get('authentication');
-      if ($isOauth){
-        $doLogin = create_oauth_user_db($db,$login,$options);
-      } else {
-        if( $authCfg['ldap_automatic_user_creation'] ) {
-          $user->authentication = 'LDAP';  // force for auth_does_password_match
-          $check = auth_does_password_match($user,$pwd);
-          if( $check->status_ok ) {
-            $user = new tlUser(); 
-            $user->login = $login;
-            $user->authentication = 'LDAP';
-            $user->isActive = true;
-            $user->setPassword($pwd);  // write password on DB anyway
+  } 
 
-            $uf = getUserFieldsFromLDAP($user->login,$authCfg['ldap'][$check->ldap_index]);
-            $user->emailAddress = $uf->emailAddress;
-            $user->firstName = $uf->firstName;
-            $user->lastName = $uf->lastName;
-            $doLogin = ($user->writeToDB($db) == tl::OK);
-          }  
-        }
-      }  
+  // Think not using else make things a little bit clear
+  // Will Try To Create a New User
+  if( FALSE == $loginExists ) {
+    $authCfg = config_get('authentication');
+    $forceUserCreation = false;
+  
+    $user = new tlUser(); 
+    $user->login = $login;
+    $user->isActive = true;
+
+    if ($isOauth){
+      $forceUserCreation = true;
+      $user->authentication = 'OAUTH';
+      $user->emailAddress = $login;
+      $user->firstName = $options->givenName;
+      $user->lastName = $options->familyName;
+    
+    } else {
+      if( $authCfg['ldap_automatic_user_creation'] ) {
+        $user->authentication = 'LDAP';  // force for auth_does_password_match
+        $check = auth_does_password_match($user,$pwd);
+    
+        if( $check->status_ok ) {
+          $forceUserCreation = true;
+          $uf = getUserFieldsFromLDAP($user->login,
+                  $authCfg['ldap'][$check->ldap_index]);
+            
+          $user->emailAddress = $uf->emailAddress;
+          $user->firstName = $uf->firstName;
+          $user->lastName = $uf->lastName;
+        }  
+      }
+    }  
+
+    if( $forceUserCreation ) {
+      // Anyway, write a password on the DB.
+      $fake = 'the quick brown fox jumps over the lazy dog';
+      $user->setPassword( $fake );  
+      $doLogin = ($user->writeToDB($db) == tl::OK);
+    }
+
   }
 
   if( $doLogin ) {
@@ -146,7 +172,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
     tlSetCookie($ckObj);
 
     // Disallow two sessions within one browser
-    if ($my['options']['doSessionExistsCheck'] && 
+    if ($options->doSessionExistsCheck && 
         isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser'])) {
       $result['msg'] = lang_get('login_msg_session_exists1') . 
                        ' <a style="color:white;" href="logout.php">' . 

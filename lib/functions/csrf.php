@@ -167,8 +167,7 @@ function csrfguard_replace_forms($form_data_html)
  * @param Smarty $smarty
  * @return CSRF filtered content
  */
-function smarty_csrf_filter($source, &$smarty) 
-{
+function smarty_csrf_filter($source, $smarty) {
   return csrfguard_replace_forms($source);
 }
 

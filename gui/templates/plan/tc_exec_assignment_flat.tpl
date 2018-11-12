@@ -24,15 +24,22 @@ generate the list of TC that can be removed from a Test Plan
 <script type="text/javascript">
 // Escape all messages (string)
 var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
+var check_user_msg="{$labels.no_user_selected|escape:'javascript'}";
+
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 function check_action_precondition(container_id,action)
 {
-	if(checkbox_count_checked(container_id) <= 0)
-	{
+	if(checkbox_count_checked(container_id) <= 0) {
 		alert_message(alert_box_title,check_msg);
 		return false;
 	}
+  
+  if (jQuery("#bulk_tester_div").val() == 0) {
+    alert_message(alert_box_title,check_user_msg);
+    return false;
+  }
+
 	return true;
 }
 
@@ -128,6 +135,7 @@ function setComboIfCbx(oid,combo_id_prefix,oid4value)
     <br>
 
 		<div>
+      <fieldset>
 			<img src="{$tlImages.user_group}" title="{$labels.user_bulk_assignment}">
       {$labels.user_bulk_action}<br>
       <select class="chosen-bulk-select" multiple="multiple"
@@ -142,17 +150,20 @@ function setComboIfCbx(oid,combo_id_prefix,oid4value)
 			<input type="submit" name="doActionButton" id="doActionButton" value="{$labels.btn_save_assign}" />
       <input type="hidden" name="doAction" id="doAction" value='std' />
 
+      <input type='button' name='bulk_user_remove' id='bulk_user_remove'
+        onclick='if(check_action_precondition("tc_exec_assignment","default"))
+                 { doAction.value="doBulkUserRemove"; tc_exec_assignment.submit(); }'
+        value="{$labels.btn_remove_assignments}" />
+
 			<span style="margin-left:20px;">
         <img src="{$tlImages.email}" title="{$labels.send_mail_to_tester}">
         <input type="checkbox" title="{$labels.send_mail_to_tester}"
           name="send_mail" id="send_mail" {$gui->send_mail_checked} />
 			</span>
+      </fieldset>
 
-      <input type='button' name='bulk_user_remove' id='bulk_user_remove'
-        onclick='if(check_action_precondition("tc_exec_assignment","default"))
-                 { doAction.value="doBulkUserRemove"; tc_exec_assignment.submit(); }'
-        value="{$labels.btn_remove_assignments}" />
 		</div>
+    <br>
 
     <div>
       <input type="submit" name="doRemoveAll" id="doRemoveAll" value="{$labels.btn_remove_all_users}" />

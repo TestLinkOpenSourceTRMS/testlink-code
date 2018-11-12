@@ -3,12 +3,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource tcView_viewer.tpl
 viewer for test case in test specification
 
-@internal revisions
 *}
 {lang_get var="tcView_viewer_labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
              btn_edit,btn_delete,btn_mv_cp,btn_del_this_version,btn_new_version,
-             btn_export,btn_execute_automatic_testcase,version,testplan_usage,
+             btn_export,btn_execute_automatic_testcase,version,
+             testplan_usage,version_short,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,applyExecTypeChangeToAllSteps,
              title_last_mod,title_created,by,expected_results,keywords,goto_execute,
              btn_create_step,step_number,btn_reorder_steps,step_actions,hint_new_sibling,
@@ -33,6 +33,10 @@ viewer for test case in test specification
 {$tcase_id=$args_testcase.testcase_id}
 {$tcversion_id=$args_testcase.id}
 {$showMode=$gui->show_mode} 
+
+{$openC = $gsmarty_gui->role_separator_open}
+{$closeC = $gsmarty_gui->role_separator_close}
+{$sepC = $gsmarty_gui->title_separator_1}
 
 
 {* Used on several operations to implement goback *}
@@ -134,7 +138,9 @@ viewer for test case in test specification
 {/if}
 
 <div style="display:{$tlCfg->gui->op_area_display->test_case};" 
-    id="tcView_viewer_tcase_control_panel">
+    id="tcView_viewer_tcase_control_panel_{$tcversion_id}">
+  
+  {if isset($args_tcase_operations_enabled) && $args_tcase_operations_enabled == "yes"}
   <fieldset class="groupBtn">
 	 <b>{$tcView_viewer_labels.testcase_operations}</b>
 
@@ -146,7 +152,7 @@ viewer for test case in test specification
 		<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
 		{* New TC sibling *}
-		{if $args_read_only != "yes" }
+		{if $args_new_sibling == "yes" }
 			<input type="hidden" name="containerID" value="{$args_testcase.testsuite_id}" />
 			<input type="submit" name="new_tc" title="{$tcView_viewer_labels.hint_new_sibling}"
 				   onclick="doAction.value='create';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_new_sibling}" />
@@ -158,13 +164,14 @@ viewer for test case in test specification
 		{/if}
 	  
 		{* Delete TC *}
-		{if $delete_enabled && $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
+		{if $delete_enabled && $args_can_do->delete_testcase == "yes" &&
+        $args_can_delete_testcase == "yes"}
 		  <input type="submit" name="delete_tc" value="{$tcView_viewer_labels.btn_delete}" />
 		{/if}
     </form>
   
 	{* bulk action *}
-	{if $edit_enabled}
+	{if $edit_enabled && $args_bulk_action=="yes"}
 	  <form style="display: inline;" id="tcbulkact" name="tcbulkact" 
 			method="post" action="{$bulkOpAction}" >
 		<input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />
@@ -187,6 +194,8 @@ viewer for test case in test specification
            value="{$tcView_viewer_labels.btn_show_exec_history}" />
     </span>
   </fieldset>
+  {/if}
+
   {* End of TC Section *}
 
   <fieldset class="groupBtn">
@@ -207,68 +216,75 @@ viewer for test case in test specification
 	{/if}
 
 	{* new TC version *}
-	{if $args_can_do->create_new_version == "yes" && $args_read_only != "yes"}
-	  <input type="submit" name="do_create_new_version" title="{$tcView_viewer_labels.hint_new_version}" 
-			 value="{$tcView_viewer_labels.btn_new_version}" />
-	{/if}
+  {if isset($args_tcversion_operation_only_edit_button) && 
+      $args_tcversion_operation_only_edit_button == "no" }
+  	{if $args_can_do->create_new_version == "yes" && $args_read_only != "yes"}
+  	  <input type="submit" name="do_create_new_version" title="{$tcView_viewer_labels.hint_new_version}" 
+  			 value="{$tcView_viewer_labels.btn_new_version}" />
+  	{/if}
 
-	{* activate/desactivate TC version *}
-	{if $args_can_do->edit == "yes" && $args_can_do->deactivate=='yes' && $args_frozen_version=="no"}
-		  {if $args_testcase.active eq 0}
-			  {$act_deact_btn="activate_this_tcversion"}
-			  {$act_deact_value="activate_this_tcversion"}
-			  {$version_title_class="inactivate_version"}
-		  {else}
-			  {$act_deact_btn="deactivate_this_tcversion"}
-			  {$act_deact_value="deactivate_this_tcversion"}
-			  {$version_title_class="activate_version"}
-		  {/if}
-		  <input type="submit" name="{$act_deact_btn}"
-							 value="{lang_get s=$act_deact_value}" />
-	{/if}
+  	{* activate/desactivate TC version *}
+  	{if $args_can_do->edit == "yes" && $args_can_do->deactivate=='yes' && $args_frozen_version=="no"}
+  		  {if $args_testcase.active eq 0}
+  			  {$act_deact_btn="activate_this_tcversion"}
+  			  {$act_deact_value="activate_this_tcversion"}
+  			  {$version_title_class="inactivate_version"}
+  		  {else}
+  			  {$act_deact_btn="deactivate_this_tcversion"}
+  			  {$act_deact_value="deactivate_this_tcversion"}
+  			  {$version_title_class="activate_version"}
+  		  {/if}
+  		  <input type="submit" name="{$act_deact_btn}"
+  							 value="{lang_get s=$act_deact_value}" />
+  	{/if}
 
-	{* freeze/unfreeze TC version *}
-	{if $args_read_only != "yes" && 
-		$args_can_do->freeze=='yes'}
-		  {if $args_frozen_version=="yes"}
-			  {$freeze_btn="unfreeze"}
-			  {$freeze_value="unfreeze_this_tcversion"}
-			  {$version_title_class="unfreeze_version"}
-		  {else}
-			  {$freeze_btn="freeze"}
-			  {$freeze_value="freeze_this_tcversion"}
-			  {$version_title_class="freeze_version"}
-		  {/if}
+  	{* freeze/unfreeze TC version *}
+  	{if $args_read_only != "yes" && 
+  		$args_can_do->freeze=='yes'}
+  		  {if $args_frozen_version=="yes"}
+  			  {$freeze_btn="unfreeze"}
+  			  {$freeze_value="unfreeze_this_tcversion"}
+  			  {$version_title_class="unfreeze_version"}
+  		  {else}
+  			  {$freeze_btn="freeze"}
+  			  {$freeze_value="freeze_this_tcversion"}
+  			  {$version_title_class="freeze_version"}
+  		  {/if}
 
-		 <input type="submit" name="{$freeze_btn}" 
-				onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
-	{/if}
+  		 <input type="submit" name="{$freeze_btn}" 
+  				onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
+  	{/if}
 
-	{* delete TC version *}
-	{if $args_frozen_version=="no" && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
-	   <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
-	{/if}
+  	{* delete TC version *}
+  	{if $args_frozen_version=="no" && $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
+  	   <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
+  	{/if}
 
   </form>
-  {* add TC version to testplan *}
-  {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
-	<span>
-	  <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
-		<input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
-		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
-		   value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
-	  </form>
-	</span>
   {/if}
-  {* Export TC version *}
-	<span>
-	  <form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
-		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
-	  </form>
-	</span>
+
+  {if isset($args_tcversion_operation_only_edit_button) &&
+      $args_tcversion_operation_only_edit_button == "no"}
+    {* add TC version to testplan *}
+    {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
+  	<span>
+  	  <form style="display: inline;" id="addToTestPlans" name="addToTestPlans" method="post" action="">
+  		<input type="hidden" name="testcase_id" id="versionControls_testcase_id" value="{$args_testcase.testcase_id}" />
+  		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+  		<input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
+  		   value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
+  	  </form>
+  	</span>
+    {/if}
+    {* Export TC version *}
+  	<span>
+  	  <form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
+  		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+  		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+  		<input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
+  	  </form>
+  	</span>
+  {/if}
 {/if} {* user can edit *}
 
 {* Print TC version *}
@@ -360,7 +376,7 @@ function launchInsertStep(step_id)
   {include file="testcases/inc_steps.tpl"
            layout=$gui->steps_results_layout
            edit_enabled=$edit_enabled
-		   args_frozen_version=$args_frozen_version
+		       args_frozen_version=$args_frozen_version
            ghost_control=true
            steps=$args_testcase.steps}
   {/if}
@@ -397,16 +413,43 @@ function launchInsertStep(step_id)
 
   <p>
   <div {$addInfoDivStyle}>
-   {include file="testcases/keywords.inc.tpl" args_edit_enabled=$edit_enabled} 
+   {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
+            $has_been_executed == 0} 
+
+   {if $args_frozen_version=="no" && 
+       $args_tcase_cfg->can_edit_executed == 1 &&
+       $has_been_executed == 1}
+     {$kwRW = 1}
+   {/if}
+   
+   {include file="testcases/keywords.inc.tpl" 
+            args_edit_enabled=$kwRW
+            args_tcase_id=$tcase_id
+            args_tcversion_id=$tcversion_id
+   } 
   </div>
   
-  {if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
+  {if $gui->requirementsEnabled == TRUE && 
+     ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
+
+     {$reqLinkingEnabled = 0}
+     {if $gui->req_tcase_link_management && $args_frozen_version=="no" &&
+         $edit_enabled == 1 }
+        {$reqLinkingEnabled = 1}
+     {/if}    
+
+     {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 && 
+         $has_been_executed == 1 && $args_tcase_cfg->can_edit_executed == 0}
+        {$reqLinkingEnabled = 0}
+     {/if}
+     
+
   <div {$addInfoDivStyle}>
     <table cellpadding="0" cellspacing="0" style="font-size:100%;">
              <tr>
                <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
                target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
-              {if $gui->req_tcase_link_management && $args_frozen_version=="no"}
+              {if $reqLinkingEnabled }
                 <img class="clickable" src="{$tlImages.item_link}"
                      onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
                      title="{$tcView_viewer_labels.link_unlink_requirements}" />
@@ -415,11 +458,16 @@ function launchInsertStep(step_id)
              </td>
               <td>
               {section name=item loop=$args_reqs}
+                {$reqID=$args_reqs[item].id}
+                {$reqVersionID=$args_reqs[item].req_version_id}
+                {$reqVersionNum=$args_reqs[item].version}
+                
+                
                 <img class="clickable" src="{$tlImages.edit}"
-                     onclick="javascript:openLinkedReqWindow({$args_reqs[item].id});"
+                     onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID});"
                      title="{$tcView_viewer_labels.requirement}" />
-                {$gsmarty_gui->role_separator_open}{$args_reqs[item].req_spec_title|escape}{$gsmarty_gui->role_separator_close}
-                {$args_reqs[item].req_doc_id|escape}{$gsmarty_gui->title_separator_1}{$args_reqs[item].title|escape}
+                {$openC}{$args_reqs[item].req_spec_title|escape}{$closeC}
+                {$args_reqs[item].req_doc_id|escape}&nbsp{$openC}{$tcView_viewer_labels.version_short}{$reqVersionNum}{$closeC}{$sepC}{$args_reqs[item].title|escape}
                 {if !$smarty.section.item.last}<br />{/if}
               {sectionelse}
                 {$tcView_viewer_labels.none}
@@ -462,7 +510,11 @@ function launchInsertStep(step_id)
   
 {if $show_relations}
   <br />
-  {include file="testcases/relations.inc.tpl" args_edit_enabled=$edit_enabled} 
+  {include file="testcases/relations.inc.tpl"
+           args_is_latest_tcv = $args_testcase.isTheLatest
+           args_relations = $args_relations
+           args_frozen_version = $args_frozen_version
+           args_edit_enabled = $edit_enabled} 
 {/if}
 
 {if $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}

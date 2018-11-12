@@ -20,6 +20,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	</tr>
 		
 	{* ----- keywords -------------------------------------- *}
+  {* 
 	<tr>
 	  	<td style="width: 20%">
     		<a href={$kwView}>{$labels.keywords}</a>{$tlCfg->gui_title_separator_1}
@@ -32,6 +33,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     		{/foreach}
     	</td>
 	</tr>
+  *}
+  <tr>
+    <td>
+    {include file="testcases/object_keywords.inc.tpl" 
+             args_keywords_map = $gui->keywords_map
+             args_edit_enabled = $gui->modify_tc_rights
+             args_item_id = $container_id
+    } 
+    </td>
+  </tr> 
+
 
 	{* ------ custom fields ------------------------------------- *}
 	<tr>

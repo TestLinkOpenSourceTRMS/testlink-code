@@ -8,9 +8,6 @@
  * @filesource	resultsNavigator.php
  * @author      Martin Havlat <havlat@users.sourceforge.net>
  * 
- *
- * @internal revisions
- * @since 1.9.10
  * 
  **/
 require('../../config.inc.php');
@@ -30,8 +27,7 @@ $reports_mgr = new tlReports($db, $gui->tplan_id);
 // Check if there are linked test cases to the choosen test plan.
 $tc4tp_count = $reports_mgr->get_count_testcase4testplan();
 tLog('TC in TP count = ' . $tc4tp_count);
-if( $tc4tp_count == 0)
-{
+if( $tc4tp_count == 0) {
   // Test plan without test cases
   $gui->do_report['status_ok'] = 0;
   $gui->do_report['msg'] = lang_get('report_tplan_has_no_tcases');       
@@ -40,8 +36,7 @@ if( $tc4tp_count == 0)
 // Build qty
 $build_count = $reports_mgr->get_count_builds();
 tLog('Active Builds count = ' . $build_count);
-if( $build_count == 0)
-{
+if( $build_count == 0) {
   // Test plan without builds can have execution data
   $gui->do_report['status_ok'] = 0;
   $gui->do_report['msg'] = lang_get('report_tplan_has_no_build');       
@@ -50,8 +45,7 @@ if( $build_count == 0)
 // -----------------------------------------------------------------------------
 // get navigation data
 $gui->menuItems = array();
-if($gui->do_report['status_ok'])
-{
+if($gui->do_report['status_ok']) {
   // create a list or reports
   $context = new stdClass();
   $context->tproject_id = $args->tproject_id;
@@ -63,8 +57,9 @@ if($gui->do_report['status_ok'])
 
   $context->apikey = $dmy['api_key'];
   $context->imgSet = $smarty->getImages();
-  $gui->menuItems = $reports_mgr->get_list_reports($context,$gui->btsEnabled,$args->optReqs, 
-                                                   $tlCfg->reports_formats[$args->format]);
+  $gui->menuItems = 
+    $reports_mgr->get_list_reports($context,$gui->btsEnabled,$args->optReqs, 
+                                   $tlCfg->reports_formats[$args->format]);
 }
 
 $gui->selectedReportType = $args->format;
@@ -78,40 +73,42 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * 
  *
  */
-function init_args()
-{
+function init_args() {
   $iParams = array("format" => array(tlInputParameter::INT_N),
                    "tplan_id" => array(tlInputParameter::INT_N),
                    "show_inactive_tplans" => array(tlInputParameter::CB_BOOL));
   $args = new stdClass();
   R_PARAMS($iParams,$args);
   
-  if (is_null($args->format))
-  {
+  if (is_null($args->format)) {
     $reports_formats = config_get('reports_formats');
     $args->format = sizeof($reports_formats) ? key($reports_formats) : null;
   }
   
-  if (is_null($args->tplan_id))
-  {
+  if (is_null($args->tplan_id)) {
     $args->tplan_id = $_SESSION['testplanID'];
   }
   
   $_SESSION['resultsNavigator_testplanID'] = $args->tplan_id;
   $_SESSION['resultsNavigator_format'] = $args->format;
   
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = 
+    isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
   $args->userID = $_SESSION['userID'];
   $args->user = $_SESSION['currentUser'];
   $args->optReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
-  $args->checked_show_inactive_tplans = $args->show_inactive_tplans ? 'checked="checked"' : 0;
+  $args->checked_show_inactive_tplans = 
+    $args->show_inactive_tplans ? 'checked="checked"' : 0;
   $args->show_only_active_tplans = !$args->show_inactive_tplans;
     
   return $args;
 }
 
-function initializeGui(&$dbHandler,$argsObj)
-{
+/**
+ *
+ */
+function initializeGui(&$dbHandler,$argsObj) {
   $gui = new stdClass();
   
   $gui->workframe = $_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
@@ -125,8 +122,9 @@ function initializeGui(&$dbHandler,$argsObj)
 
   // get Accessible Test Plans for combobox
   $activeAttr = $argsObj->show_only_active_tplans ? 1 : null;
-  $gui->tplans = $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,null,
-                                                        array('output' =>'combo', 'active' => $activeAttr));
+  $gui->tplans = 
+    $argsObj->user->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,null,
+                                           array('output' =>'combo', 'active' => $activeAttr));
   
   return $gui;
 }
@@ -137,8 +135,6 @@ function initializeGui(&$dbHandler,$argsObj)
  * 
  *
  */
-function checkRights(&$db,&$user)
-{
+function checkRights(&$db,&$user) {
   return $user->hasRight($db,'testplan_metrics');
 }
-?>

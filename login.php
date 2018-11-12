@@ -40,7 +40,8 @@ switch($args->action)
     // When doing ajax login we need to skip control regarding session already open
     // that we use when doing normal login.
     // If we do not proceed this way we will enter an infinite loop
-    $options = array('doSessionExistsCheck' => ($args->action=='doLogin'));
+    $options = new stdClass();
+    $options->doSessionExistsCheck = ($args->action =='doLogin');
     $op = doAuthorize($db,$args->login,$args->pwd,$options);
     $doAuthPostProcess = true;
     $gui->draw = true;

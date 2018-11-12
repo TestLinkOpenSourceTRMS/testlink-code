@@ -8,7 +8,7 @@
 --  -----------------------------------------------------------------
 
 --  Database version -
-INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.9.17',now(),'TestLink 1.9.17 Alan Turing');
+INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.9.19',now(),'TestLink 1.9.18 Metonic cycle');
 
 
 --  Node types -

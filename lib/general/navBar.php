@@ -58,10 +58,9 @@ function init_args(&$dbH)
     $sql = " SELECT NH.id FROM {$sch['nodes_hierarchy']} NH " .
            " JOIN {$sch['testprojects']} TPRJ " .
            " ON TPRJ.id = NH.id ";
-    $rs = $dbH->get_recordset($sql);
+    $rs = (array)$dbH->get_recordset($sql);
 
-    if(count($rs) == 0)
-    {
+    if(count($rs) == 0) {
       $args->newInstallation = true;
     }  
   }  
@@ -117,14 +116,12 @@ function initializeGui(&$db,&$args)
     $gui->tproject_id = 0;
   }
 
-  if($gui->tproject_id)
-  {
-    $testPlanSet = $args->user->getAccessibleTestPlans($db,$gui->tproject_id);
+  if($gui->tproject_id) {
+    $testPlanSet = (array)$args->user->getAccessibleTestPlans($db,$gui->tproject_id);
     $gui->TestPlanCount = sizeof($testPlanSet);
 
     $tplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : null;
-    if( !is_null($tplanID) )
-    {
+    if( !is_null($tplanID) ) {
       // Need to set this info on session with first Test Plan from $testPlanSet
       // if this test plan is present on $testPlanSet
       //    OK we will set it on $testPlanSet as selected one.
@@ -134,17 +131,15 @@ function initializeGui(&$db,&$args)
       $index=0;
       $testPlanFound=0;
       $loop2do=count($testPlanSet);
-      for($idx=0; $idx < $loop2do; $idx++)
-      {
-        if( $testPlanSet[$idx]['id'] == $tplanID )
-        {
+      for($idx=0; $idx < $loop2do; $idx++) {
+        if( $testPlanSet[$idx]['id'] == $tplanID ) {
           $testPlanFound = 1;
           $index = $idx;
           break;
         }
       }
-      if( $testPlanFound == 0 )
-      {
+
+      if( $testPlanFound == 0 ) {
         $tplanID = $testPlanSet[0]['id'];
         setSessionTestPlan($testPlanSet[0]);      
       } 
@@ -152,14 +147,11 @@ function initializeGui(&$db,&$args)
     }
   } 
 
-  if ($gui->tproject_id && isset($args->user->tprojectRoles[$gui->tproject_id]))
-  {
+  if ($gui->tproject_id && isset($args->user->tprojectRoles[$gui->tproject_id])) {
     // test project specific role applied
     $role = $args->user->tprojectRoles[$gui->tprojectID];
     $testprojectRole = $role->getDisplayName();
-  }
-  else
-  {
+  } else {
     // general role applied
     $testprojectRole = $args->user->globalRole->getDisplayName();
   } 
@@ -172,8 +164,7 @@ function initializeGui(&$db,&$args)
   // Use this clue to launch a refresh of other frames present on the screen
   // using the onload HTML body attribute
   $gui->updateMainPage = 0;
-  if ($args->testproject)
-  {
+  if ($args->testproject) {
     // set test project ID for the next session
     $gui->updateMainPage = is_null($args->caller);
 
@@ -189,8 +180,7 @@ function initializeGui(&$db,&$args)
   $gui->viewer = $args->viewer;
 
   $gui->plugins = array();
-  foreach(array('EVENT_TITLE_BAR') as $menu_item) 
-  {
+  foreach(array('EVENT_TITLE_BAR') as $menu_item) {
     $menu_content = event_signal($menu_item);
     $gui->plugins[$menu_item] = !empty($menu_content) ? $menu_content : null;
   }

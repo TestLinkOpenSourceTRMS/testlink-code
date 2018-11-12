@@ -10,14 +10,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {include file="inc_head.tpl" openHead="yes"}
 
 <script type="text/javascript">
-function reportPrint()
-{
+function reportPrint() {
   parent["workframe"].focus();
   parent["workframe"].print();
 }
 
-function pre_submit()
-{
+function pre_submit() {
  document.getElementById('called_url').value=parent.workframe.location;
  return true;
 }

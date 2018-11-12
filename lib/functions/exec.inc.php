@@ -7,7 +7,6 @@
  * Legacy code (party covered by classes now)
  *
  * @package     TestLink
- * @author      Martin Havlat
  * @copyright   2005-2018, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
@@ -24,19 +23,19 @@ require_once('attachments.inc.php');
  * 
  * @return array map of 'status_code' => localized string
  **/
-function createResultsMenu()
-{
+function createResultsMenu() {
   $resultsCfg = config_get('results');
   
   // Fixed values, that has to be added always
-  $my_all = isset($resultsCfg['status_label']['all'])?$resultsCfg['status_label']['all']:'';
+  $my_all = isset($resultsCfg['status_label']['all']) ? 
+            $resultsCfg['status_label']['all'] : '';
   $menu_data[$resultsCfg['status_code']['all']] = $my_all;
-  $menu_data[$resultsCfg['status_code']['not_run']] = lang_get($resultsCfg['status_label']['not_run']);
+  $menu_data[$resultsCfg['status_code']['not_run']] = 
+    lang_get($resultsCfg['status_label']['not_run']);
   
   // loop over status for user interface, because these are the statuses
   // user can assign while executing test cases
-  foreach($resultsCfg['status_label_for_exec_ui'] as $verbose_status => $status_label)
-  {
+  foreach($resultsCfg['status_label_for_exec_ui'] as $verbose_status => $status_label) {
     $code = $resultsCfg['status_code'][$verbose_status];
     $menu_data[$code] = lang_get($status_label); 
   }
@@ -51,25 +50,31 @@ function createResultsMenu()
  * @param resource &$db reference to database handler
  * @param obj &$execSign object with tproject_id,tplan_id,build_id,platform_id,user_id
  * 
- * @internal revisions
  * 
  */
-function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker)
-{
+function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
   static $docRepo;
   static $resultsCfg;
   static $execCfg;
+  static $tcaseCfg;
   static $executions_table;
-   
+  static $tcaseMgr;
+  static $cfield_mgr;
+  static $tprojectMgr;
+
   if(is_null($docRepo)) {
     $docRepo = tlAttachmentRepository::create($db);
     $resultsCfg = config_get('results');
     $execCfg = config_get('exec_cfg');
+    $tcaseCfg = config_get('testcase_cfg');
+
     $executions_table = DB_TABLE_PREFIX . 'executions';
+    $tcaseMgr = new testcase($db);
+    $cfield_mgr = New cfield_mgr($db);
+    $tprojectMgr = new testproject($db);
   }  
 
   $db_now = $db->db_now();
-  $cfield_mgr = New cfield_mgr($db);
   $cf_prefix = $cfield_mgr->get_name_prefix();
   $len_cfp = tlStringLen($cf_prefix);
   $cf_nodeid_pos = 4;
@@ -82,8 +87,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker)
   // extract custom fields id.
   $map_nodeid_array_cfnames=null;
   foreach($exec_data as $input_name => $value) {
-    if( strncmp($input_name,$cf_prefix,$len_cfp) == 0 )
-    {
+    if( strncmp($input_name,$cf_prefix,$len_cfp) == 0 ) {
       $dummy=explode('_',$input_name);
       $map_nodeid_array_cfnames[$dummy[$cf_nodeid_pos]][]=$input_name;
     } 
@@ -109,8 +113,8 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker)
     $current_status = $exec_data[$execStatusKey][$tcversion_id];
     $version_number=$exec_data['version_number'][$tcversion_id];;
     $has_been_executed = ($current_status != $resultsCfg['status_code']['not_run'] ? TRUE : FALSE);
-    if($has_been_executed)
-    { 
+
+    if($has_been_executed) { 
       $my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(trim($exec_data['notes'][$tcversion_id])); 
 
       $sql = "INSERT INTO {$executions_table} ".
@@ -121,14 +125,10 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker)
              "{$version_number},{$execSign->platform_id}";
 
       $dura = 'NULL ';
-      if(isset($exec_data['execution_duration']))
-      {
-        if(trim($exec_data['execution_duration']) == '')
-        {
+      if(isset($exec_data['execution_duration'])) {
+        if(trim($exec_data['execution_duration']) == '') {
           $dura = 'NULL ';  
-        } 
-        else
-        {
+        } else {
           $dura = floatval($exec_data['execution_duration']);
         }  
       }  
@@ -141,7 +141,27 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker)
       $execution_id = $db->insert_id($executions_table);
       
       $execSet[$tcversion_id] = $execution_id;
-      
+
+      // 
+      $tcvRelations = $tcaseMgr->getTCVRelationsRaw($tcversion_id);
+      if( count($tcvRelations) > 0 ) {
+        $itemSet = array_keys($tcvRelations);
+        $tcaseMgr->closeOpenTCVRelation($itemSet,LINK_TC_RELATION_CLOSED_BY_EXEC);
+      }
+
+      // DO FREEZE all OPEN Coverage Links
+      // Conditional DO: FREEZE all REQ Versions Linked To Test Case Version
+
+      // Check if Test Project has the requirement management feature enabled
+      $topt = $tprojectMgr->getOptions($execSign->tproject_id); 
+      if( $topt->requirementsEnabled ) {
+        $cOpt = array('freeze_req_version' => 
+                      $tcaseCfg->freezeReqVersionAfterExec); 
+        $tcaseMgr->closeOpenReqLinks($tcversion_id,
+          LINK_TC_REQ_CLOSED_BY_EXEC,$cOpt);        
+      }
+
+
       if( $has_custom_fields ) {
         // test useful when doing bulk update, because some type of custom fields
         // like checkbox can not exist on exec_data. => why ??
@@ -691,7 +711,7 @@ function copyIssues(&$dbHandler,$source,$dest)
 /**
  *
  */
-function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL) {
+function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL=false) {
   $ret = new stdClass();
 
   $opOK = false;             

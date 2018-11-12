@@ -141,7 +141,7 @@ switch($args->doAction)
   break;
 
   case 'doBulkUserRemove':
-    if(!is_null($args->achecked_tc)) {
+    if(!is_null($args->achecked_tc) && !is_null($args->userSet)) {
       doBulkUserRemove($db,$args,$gui,$cfg,$objMgr);    
     }  
   break; 
@@ -153,11 +153,10 @@ switch($args->doAction)
 
 
 
-switch($args->level)
-{
+switch($args->level) {
   case 'testcase':
     // build the data need to call gen_spec_view
-    $xx=$tcase_mgr->getPathLayered(array($args->id));
+    $xx = $tcase_mgr->getPathLayered(array($args->id));
     $yy = array_keys($xx);  // done to silence warning on end()
     $tsuite_data['id'] = end($yy);
     $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
@@ -200,7 +199,6 @@ switch($args->level)
     // platform filter is generated inside getFilteredSpecView() using $args->control_panel['setting_platform'];
     // $out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
 
-    // var_dump($filters);die();
     $out = getFilteredSpecViewFlat($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
   break;
 
@@ -259,12 +257,9 @@ function init_args()
   
   $args->userSet = null;
   $target = $_REQUEST['bulk_tester_div']; 
-  if(isset($target) && count($target) > 0)
-  {
-    foreach($target as $uid)
-    {
-      if($uid > 0)
-      {
+  if(isset($target) && count($target) > 0) {
+    foreach($target as $uid) {
+      if($uid > 0) {
         $args->userSet[$uid] = $uid;
       }  
     }  
@@ -592,6 +587,7 @@ function doRemoveAll(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
  */
 function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
   
+  $feat = null;
   if(!is_null($argsObj->achecked_tc)) {
     foreach($argsObj->achecked_tc as $key_tc => $ptc) {
       foreach($ptc as $platform_id => $tcversion_id) {
@@ -607,13 +603,12 @@ function doBulkUserRemove(&$dbH,&$argsObj,&$guiObj,$cfg,$oMgr) {
 
     // Must be done before delete
     if($argsObj->send_mail) {
-      $fSet = array_keys($features2[$op]);
+      $fSet = array_keys($feat);
       $items = $oMgr['tplan']->getFeatureByID($fSet);
       $testers = $oMgr['assign']->getUsersByFeatureBuild($fSet,$argsObj->build_id,$cfg['task_test_execution']);
 
       $f4mail = array();
-      foreach($items as $fid => $value)
-      {
+      foreach($items as $fid => $value) {
         $pid = $value['platform_id'];
         $f4mail[$pid][$fid]['previous_user_id'] = array_keys($testers[$fid]); 
         $f4mail[$pid][$fid]['tcase_id'] = $items[$fid]['tcase_id'];

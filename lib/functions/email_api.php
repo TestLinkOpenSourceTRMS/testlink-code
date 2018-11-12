@@ -1,5 +1,4 @@
 <?php
-/* vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
@@ -7,20 +6,15 @@
  *
  * Email API (adapted from third party code)
  *
- * @filesource  email_api.php
- * @package   TestLink
- * @author    franciscom
- * @author    2002 - 2004 Mantis Team (the code is based on mantis BT project code)
- * @copyright   2003-2015, TestLink community 
- * @link    http://www.teamst.org/
- *
- *
  */
 
+// Import PHPMailer classes into the global namespace
+// These must be at the top of your script, not inside a function
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-/** @uses class.phpmailer.php */
-define( 'PHPMAILER_PATH', dirname(__FILE__). '/../../third_party/phpmailer' . DIRECTORY_SEPARATOR );
-require_once( PHPMAILER_PATH . 'PHPMailerAutoload.php' );
+// Load Composer's autoloader
+require( 'autoload.php' );
 
 require_once( 'lang_api.php' );
 require_once( 'common.php');

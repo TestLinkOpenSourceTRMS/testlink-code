@@ -1,11 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource printDocOptions.tpl
-@internal revisions
-@since 1.9.14
 *}
 {lang_get var="labels"
-          s='doc_opt_title,doc_opt_guide,tr_td_show_as,check_uncheck_all_options,build,builds,onlywithuser'}
+          s='doc_opt_title,doc_opt_guide,tr_td_show_as,check_uncheck_all_options,build,builds,onlywithuser,direct_link'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
@@ -48,6 +46,14 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 jQuery( document ).ready(function() {
 jQuery(".chosen-select").chosen({ width: "100%" });
 });
+
+
+function showtr() {  
+  jQuery('.link4build').hide();
+  var selectVal = jQuery("#build_id option:selected").val();
+  jQuery("#link_" + selectVal).show();
+}
+
 </script>
 {/if}
 
@@ -74,7 +80,7 @@ jQuery(".chosen-select").chosen({ width: "100%" });
      <td><label for="build"> {$labels.build}</label></td>
      <td style="width:100px"> 
       <select class="chosen-select" name="build_id" id="build_id" 
-              data-placeholder="{$labels.builds}">
+              data-placeholder="{$labels.builds}" onchange="showtr();">
         {foreach key=build_id item=buildObj from=$gui->buildInfoSet}
           <option value="{$build_id}">{$buildObj.name|escape}</option>
         {/foreach}
@@ -85,6 +91,21 @@ jQuery(".chosen-select").chosen({ width: "100%" });
      <td><input type="checkbox" name="with_user_assignment" 
                 id="with_user_assignment"></td>
     </tr>
+   </table>
+
+   <table>
+    {$isFirst = 1}
+    {foreach key=build_id item=buildObj from=$gui->buildInfoSet}
+      {$dy = "display: none" }
+      {if $isFirst == 1}
+        {$dy = "display: block" }
+        {$isFirst=0}
+      {/if}
+      <tr class="link4build" id="link_{$build_id}" style="{$dy}">
+        <td><a href="{$gui->buildRptLinkSet[$build_id]}">{$labels.direct_link}</a></td>
+      </tr>
+    {/foreach}
+    <tr><td>&nbsp;</td></tr>
    </table>
   {/if}
 

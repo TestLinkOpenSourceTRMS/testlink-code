@@ -9,7 +9,7 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  **/
@@ -152,14 +152,12 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function createFromObject($item,$opt=null)
-  {
+  function createFromObject($item,$opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-    try 
-    {
+    try {
       // mandatory checks
       if(strlen($item->name)==0)
       {
@@ -728,8 +726,7 @@ class testplan extends tlObjectWithAttachments
    * 
    * @internal revisions:
    */
-  function get_linked_items_id($id)
-  {
+  function get_linked_items_id($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = " /* $debugMsg */ ". 
@@ -901,32 +898,27 @@ class testplan extends tlObjectWithAttachments
    * 
    * 
    */
-  function helper_keywords_sql($filter,$options=null)
-  {
+  function helper_keywords_sql($filter,$options=null) {
     
     $sql = array('filter' => '', 'join' => '');
 
-    if( is_array($filter) )
-    {
+    if( is_array($filter) ) {
       // 0 -> no keyword, remove 
-      if( $filter[0] == 0 )
-      {
+      if( $filter[0] == 0 ) {
         array_shift($filter);
       }
       
-      if(count($filter))
-      {
-        $sql['filter'] = " AND TK.keyword_id IN (" . implode(',',$filter) . ")";            
+      if(count($filter)) {
+        $sql['filter'] = " AND TK.keyword_id IN (" . implode(',',$filter) . ")"; 
       }  
     }
-    else if($filter > 0)
-    {
+    else if($filter > 0) {
       $sql['filter'] = " AND TK.keyword_id = {$filter} ";
     }
     
-    if( $sql['filter'] != '' )
-    {
-      $sql['join'] = " JOIN {$this->tables['testcase_keywords']} TK ON TK.testcase_id = NH_TCV.parent_id ";
+    if( $sql['filter'] != '' ) {
+      $sql['join'] = " JOIN {$this->tables['testcase_keywords']} TK
+                       ON TK.tcversion_id = NH_TCV.id ";
     }
 
     // mmm, here there is missing documentation
@@ -1273,45 +1265,32 @@ class testplan extends tlObjectWithAttachments
 
   /**
    * 
-   * @internal revisions
    */
-  function get_keywords_map($id,$order_by_clause='')
-  {
+  function get_keywords_map($id,$order_by_clause='') {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $map_keywords=null;
+    $keywords = null;
     
-    // keywords are associated to testcase id,
-    // we need to get the list of testcases linked to the testplan
-    //
-    // After several tests, this seems to be best option
-    // Tested on test plan with 14000 test cases, to get 60 keywords. (20120524)
-    //
-    $sql = " /* $debugMsg */ " .
-         " SELECT SQK.keyword_id ,KW.keyword " .
-         " FROM {$this->tables['keywords']} KW " .
-         " JOIN ( " .
-         "    SELECT DISTINCT TCKW.keyword_id  " .
-         "     FROM {$this->tables['testplan_tcversions']} TPTCV " .
-         "     JOIN {$this->tables['nodes_hierarchy']} NHTC " . 
-         "     ON TPTCV.tcversion_id = NHTC.id " .
-         "     JOIN {$this->tables['testcase_keywords']} TCKW " .
-         "     ON TCKW.testcase_id = NHTC.parent_id " .
-         "     WHERE TPTCV.testplan_id = " . intval($id) . 
-         "     ) AS SQK " .
-         " ON KW.id = SQK.keyword_id " .
-         $order_by_clause;
-    $map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+    $sql = " /* $debugMsg */ ";
+    $sql .= " SELECT TCKW.keyword_id,KW.keyword " .
+            " FROM {$this->tables['keywords']} KW " .
+            " JOIN {$this->tables['testcase_keywords']} TCKW " .
+            " ON KW.id = TCKW.keyword_id " .
+            " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+            " ON TCKW.tcversion_id = TPTCV.tcversion_id " .
+            " WHERE TPTCV.testplan_id = " . intval($id) . 
+            $order_by_clause;
+
+    $keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
   
-    return ($map_keywords);
+    return $keywords;
   }
   
 
-/*
-  args :
-        [$keyword_id]: can be an array
-*/
-  function get_keywords_tcases($id,$keyword_id=0)
-  {
+  /**
+   * args :
+   *     [$keyword_id]: can be an array
+   */
+  function DEPRECATED_get_keywords_tcases($id,$keyword_id=0) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $CUMULATIVE=1;
@@ -1353,6 +1332,45 @@ class testplan extends tlObjectWithAttachments
     
     return ($map_keywords);
   } // end function
+
+
+
+  /**
+   * args :
+   *     [$keyword_id]: can be an array
+   */
+  function getKeywordsLinkedTCVersions($id,$keyword_id=0) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $keywords=null;
+    $safeID = intval($id);
+
+    $kwFilter= '' ;
+    if( is_array($keyword_id) ) {
+        $kwFilter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")"; 
+    }
+    else if( $keyword_id > 0 ) {
+        $kwFilter = " AND keyword_id = {$keyword_id} ";
+    }
+
+    $sql = " /* $debugMsg */ ";
+    $sql .= " SELECT TCKW.testcase_id,TCKW.keyword_id,KW.keyword " .
+            " FROM {$this->tables['keywords']} KW " .
+            " JOIN {$this->tables['testcase_keywords']} TCKW " .
+            " ON KW.id = TCKW.keyword_id " .
+            " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+            " ON TCKW.tcversion_id = TPTCV.tcversion_id " .
+            " WHERE TPTCV.testplan_id = " . intval($id) . 
+            " {$kwFilter} ORDER BY keyword ASC ";
+
+    // CUMULATIVE is needed to get all keywords assigned 
+    // to each testcase linked to testplan         
+    $keywords = 
+        $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
+
+    return $keywords;
+  } // end function
+
 
 
   /*
@@ -2294,20 +2312,15 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function _natsort_builds($builds_map)
-  {
-    // BUGID - sort in natural order (see natsort in PHP manual)
-    foreach($builds_map as $key => $value)
-    {
-      $vk[$value['name']]=$key;
-      $build_names[$key]=$value['name'];
+  function _natsort_builds($builds_map) {
+    // sort in natural order (see natsort in PHP manual)
+    foreach($builds_map as $key => $value) {
+      $build_names[$key] = $value['name'];
     }
     
     natsort($build_names);
-    $build_num=count($builds_map);
-    foreach($build_names as $key => $value)
-    {
-      $dummy[$key]=$builds_map[$key];
+    foreach($build_names as $key => $value) {
+      $dummy[$key] = $builds_map[$key];
     }
     return $dummy;
   }
@@ -4227,23 +4240,19 @@ class testplan extends tlObjectWithAttachments
     $sql .= " ORDER BY node_order,id";
     
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
-    if( count($rs) == 0 )
-    {
+    if( null == $rs || count($rs) == 0 ) {
       return $qnum;
     }
   
 
-     foreach($rs as $row)
-     {
-      if(!isset($exclude_branches[$row['id']]))
-      {  
+    foreach($rs as $row) {
+      if(!isset($exclude_branches[$row['id']])) {  
         $node = $row + 
                 array('node_type' => $this->tree_manager->node_types[$row['node_type_id']],
                       'node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
         $node['childNodes'] = null;
         
-        if($node['node_table'] == 'testcases')
-        {
+        if($node['node_table'] == 'testcases') {
           $node['leaf'] = true; 
           $node['external_id'] = '';
           $itemSet['nindex'][] = $node['id'];
@@ -4254,8 +4263,7 @@ class testplan extends tlObjectWithAttachments
         // 1. Sometimes we don't want the children if the parent is a testcase,
         //    due to the version management
         //
-        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
-        {
+        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]])) {
           // Keep walking (Johny Walker Whisky)
           $this->_get_subtree_rec($tplan_id,$row['id'],$node,$itemSet,$my['filters'],$my['options']);
         }
@@ -4270,8 +4278,7 @@ class testplan extends tlObjectWithAttachments
         //
           $doRemove = is_null($node['childNodes']) && 
                     ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
-          if(!$doRemove)
-          {
+          if(!$doRemove) {
             $pnode['childNodes'][] = $node;
           }  
       } // if(!isset($exclude_branches[$rowID]))
@@ -4282,15 +4289,9 @@ class testplan extends tlObjectWithAttachments
 
   /**
    *
-   * 
-   * @return
-   *
-   * @internal revisions
-   * @since 1.9.4
    *
    */
-  function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null) 
-  {
+  function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null)  {
     // On Postgresql 
     // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
     // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
@@ -6148,23 +6149,28 @@ class testplan extends tlObjectWithAttachments
 
   /*
    *
-   * @used-by getLinkedForExecTree(),getLinkedForTesterAssignmentTree(), getLinkedTCVersionsSQL()
+   * @used-by 
+   * getLinkedForExecTree()
+   * getLinkedForTesterAssignmentTree()
+   * getLinkedTCVersionsSQL()
    *            
-   * filters => 'tcase_id','keyword_id','assigned_to','exec_status','build_id', 'cf_hash',
-   *            'urgencyImportance', 'tsuites_id','platform_id', 'exec_type','tcase_name'
+   * filters => 
+   * 'tcase_id','keyword_id','assigned_to','exec_status','build_id',
+   * 'cf_hash','urgencyImportance', 'tsuites_id','platform_id',
+   * 'exec_type','tcase_name'
    *
    *
-   *            CRITIC: cf_hash can contains Custom Fields that are applicable to DESIGN and
-   *                    TESTPLAN_DESIGN.
-   *                    Here we are generating SQL that will be used ON TESTPLAN related tables
-   *                    NOT ON TEST SPEC related tables.
-   *                    Due to this we are going to consider while building the query ONLY
-   *                    CF for TESTPLAN DESING
+   * CRITIC: 
+   * cf_hash can contains Custom Fields that are applicable to DESIGN and
+   * TESTPLAN_DESIGN.
    *
-   * @internal revisions
+   * Here we are generating SQL that will be used ON TESTPLAN 
+   * related tables NOT ON TEST SPEC related tables.
+   * Due to this we are going to consider while building 
+   * the query ONLY CF for TESTPLAN DESING
+   *
    */
-  function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg)
-  {
+  function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
 
@@ -6187,12 +6193,15 @@ class testplan extends tlObjectWithAttachments
     $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
                            'assigned_to' => null, 'exec_status' => null,
                            'build_id' => 0, 'cf_hash' => null,
-                           'urgencyImportance' => null, 'tsuites_id' => null,
+                           'urgencyImportance' => null, 
+                           'tsuites_id' => null,
                            'platform_id' => null, 'exec_type' => null,
                            'tcase_name' => null);
 
-    $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 
-                           'allow_empty_build' => 0, 'addTSuiteOrder' => false,
+    $ic['options'] = array('hideTestCases' => 0, 
+                           'include_unassigned' => false, 
+                           'allow_empty_build' => 0, 
+                           'addTSuiteOrder' => false,
                            'addImportance' => false, 'addPriority' => false);
     $ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
     $ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
@@ -6200,21 +6209,18 @@ class testplan extends tlObjectWithAttachments
 
     $ic['filters']['build_id'] = intval($ic['filters']['build_id']);
     
-
-    // 20150201
-    if($ic['options']['addTSuiteOrder'])
-    {
+    if($ic['options']['addTSuiteOrder']) {
       // PREFIX ALWAYS with COMMA
       $ic['fields']['tsuites'] = ', NH_TSUITE.node_order AS tsuite_order ';
-      $ic['join']['tsuites'] = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
-                               " ON NH_TSUITE.id = NH_TCASE.parent_id ";
+      $ic['join']['tsuites'] = 
+        " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
+        " ON NH_TSUITE.id = NH_TCASE.parent_id ";
     }  
 
     // This NEVER HAPPENS for Execution Tree, but if we want to reuse
     // this method for Tester Assignment Tree, we need to add this check
     //
-    if( !is_null($ic['filters']['platform_id']) && $ic['filters']['platform_id'] > 0)
-    {
+    if( !is_null($ic['filters']['platform_id']) && $ic['filters']['platform_id'] > 0) {
       $ic['filters']['platform_id'] = intval($ic['filters']['platform_id']);
       $ic['where']['platforms'] = " AND TPTCV.platform_id = {$ic['filters']['platform_id']} ";
     }
@@ -6223,146 +6229,127 @@ class testplan extends tlObjectWithAttachments
     $ic['where']['where'] .= $ic['where']['platforms'];
 
     $dk = 'exec_type';
-    if( !is_null($ic['filters'][$dk]) )
-    {
+    if( !is_null($ic['filters'][$dk]) ) {
       $ic['where'][$dk]= " AND TCV.execution_type IN (" . 
                          implode(",",(array)$ic['filters'][$dk]) . " ) ";     
       $ic['where']['where'] .= $ic['where'][$dk];
     }
 
     $dk = 'tcase_id';
-    if (!is_null($ic['filters'][$dk]) )
-    {
-      if( is_array($ic['filters'][$dk]) )
-      {
+    if (!is_null($ic['filters'][$dk]) ) {
+      if( is_array($ic['filters'][$dk]) ) {
         $ic['where'][$dk] = " AND NH_TCV.parent_id IN (" . implode(',',$ic['filters'][$dk]) . ")";            
       }
-      else if ($ic['filters'][$dk] > 0)
-      {
+      else if ($ic['filters'][$dk] > 0) {
         $ic['where'][$dk] = " AND NH_TCV.parent_id = " . intval($ic['filters'][$dk]);
       }
-      else
-      {
-        // Best Option on this situation will be signal that query will fail =>
-        // NO SENSE run the query
+      else {
+        // Best Option on this situation will be signal 
+        // that query will fail => NO SENSE run the query
         $ic['green_light'] = false;
       }
       $ic['where']['where'] .= $ic['where'][$dk];
     }
 
-    if (!is_null($ic['filters']['tsuites_id']))
-    {
+    if (!is_null($ic['filters']['tsuites_id'])) {
       $dummy = (array)$ic['filters']['tsuites_id'];
       $ic['where']['where'] .= " AND NH_TCASE.parent_id IN (" . implode(',',$dummy) . ")";
     }
 
-    if (!is_null($ic['filters']['urgencyImportance']))
-    {
+    if (!is_null($ic['filters']['urgencyImportance'])) {
       $ic['where']['where'] .= $this->helper_urgency_sql($ic['filters']['urgencyImportance']);
     }
 
-
-    if( !is_null($ic['filters']['keyword_id']) )
-    {    
+    if( !is_null($ic['filters']['keyword_id']) ) {    
       
       list($ic['join']['keywords'],$ic['where']['keywords']) = 
         $this->helper_keywords_sql($ic['filters']['keyword_id'],array('output' => 'array'));
 
-
-      $ic['where']['where'] .= $ic['where']['keywords']; // **** // CHECK THIS CAN BE NON OK
+      // **** // CHECK THIS CAN BE NON OK
+      $ic['where']['where'] .= $ic['where']['keywords']; 
     }
 
                               
     // If special user id TL_USER_ANYBODY is present in set of user id,
     // we will DO NOT FILTER by user ID
     if( !is_null($ic['filters']['assigned_to']) && 
-        !in_array(TL_USER_ANYBODY,(array)$ic['filters']['assigned_to']) )
-    {  
+        !in_array(TL_USER_ANYBODY,(array)$ic['filters']['assigned_to']) ) {  
       list($ic['join']['ua'],$ic['where']['ua']) = 
-        $this->helper_assigned_to_sql($ic['filters']['assigned_to'],$ic['options'],
-                        $ic['filters']['build_id']);            
+        $this->helper_assigned_to_sql($ic['filters']['assigned_to'],
+          $ic['options'],$ic['filters']['build_id']);            
 
       $ic['where']['where'] .= $ic['where']['ua']; 
 
-      // TICKET 5566: "Assigned to" does not work in "test execution" page
-      // $ic['where']['not_run'] .= $ic['where']['ua'];  
-
     }
     
-    
     if( isset($ic['options']['assigned_on_build']) && 
-       !is_null($ic['options']['assigned_on_build']) )
-    {
-      $ic['join']['ua'] = " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
-                          " ON UA.feature_id = TPTCV.id " . 
-                          " AND UA.build_id = " . $ic['options']['assigned_on_build'] . 
-                          " AND UA.type = {$this->execTaskCode} ";
+       !is_null($ic['options']['assigned_on_build']) ) {
+      $ic['join']['ua'] = 
+        " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
+        " ON UA.feature_id = TPTCV.id " . 
+        " AND UA.build_id = " . $ic['options']['assigned_on_build'] . 
+        " AND UA.type = {$this->execTaskCode} ";
     }
 
 
     if( !is_null($ic['filters']['tcase_name']) && 
-      ($dummy = trim($ic['filters']['tcase_name'])) != ''  )
-    {
+      ($dummy = trim($ic['filters']['tcase_name'])) != ''  ) {
       $ic['where']['where'] .= " AND NH_TCASE.name LIKE '%{$dummy}%' "; 
     }
                                
 
     // Custom fields on testplan_design ONLY => AFFECTS run and NOT RUN.
-    if( isset($ic['filters']['cf_hash']) && !is_null($ic['filters']['cf_hash']) )
-    {    
+    if( isset($ic['filters']['cf_hash']) && !is_null($ic['filters']['cf_hash']) ) {    
       $ic['where']['cf'] = ''; 
 
       list($ic['filters']['cf_hash'],$cf_sql) = $this->helperTestPlanDesignCustomFields($ic['filters']['cf_hash']);
-      if(strlen(trim($cf_sql)) > 0)
-      {
+
+      if(strlen(trim($cf_sql)) > 0) {
         $ic['where']['cf'] .= " AND ({$cf_sql}) ";
-        $ic['join']['cf'] = " JOIN {$this->tables['cfield_testplan_design_values']} CFTPD " .
-                            " ON CFTPD.link_id = TPTCV.id ";
+        $ic['join']['cf'] = 
+          " JOIN {$this->tables['cfield_testplan_design_values']} CFTPD " .
+          " ON CFTPD.link_id = TPTCV.id ";
       }  
       $ic['where']['where'] .= $ic['where']['cf'];
     }
 
 
-
-    // I've made the choice to create the not_run key, to manage the not_run part
-    // of UNION on getLinkedForExecTree().
+    // I've made the choice to create the not_run key, 
+    // to manage the not_run part of UNION on getLinkedForExecTree().
     //
     // ATTENTION:
-    // on other methods getLinkedForTesterAssignmentTree(), getLinkedTCVersionsSQL()
-    // Still is used $ic['where']['where'] on BOTH components of UNION
+    // on other methods:
+    //  getLinkedForTesterAssignmentTree()
+    //  getLinkedTCVersionsSQL()
+    //  Still is used $ic['where']['where'] on BOTH components of UNION
     //     
     // TICKET 5566: "Assigned to" does not work in "test execution" page
     // TICKET 5572: Filter by Platforms - Wrong test case state count in test plan execution
     $ic['where']['not_run'] = $ic['where']['where'];
 
 
-    // ****************************************************************************
+    // ************************************************************************
     // CRITIC - CRITIC - CRITIC 
     // Position on code flow is CRITIC
     // CRITIC - CRITIC - CRITIC 
-    // ****************************************************************************
-    if (!is_null($ic['filters']['exec_status']))
-    {
+    // ************************************************************************
+    if (!is_null($ic['filters']['exec_status'])) {
       // $ic['where']['not_run'] = $ic['where']['where'];
       $dummy = (array)$ic['filters']['exec_status'];
 
       $ic['where']['where'] .= " AND E.status IN ('" . implode("','",$dummy) . "')";
 
-      if( in_array($this->notRunStatusCode,$dummy) )
-      {
+      if( in_array($this->notRunStatusCode,$dummy) ) {
         $ic['where']['not_run'] .=  ' AND E.status IS NULL ';
       } 
-      else
-      {
+      else {
         $ic['where']['not_run'] = $ic['where']['where'];
       } 
     }
 
-
     // BUG ID HAS NO EFFECT ON NOT RUN (at least @20140126)
     // bug_id => will be a list to create an IN() clause
-    if( isset($ic['filters']['bug_id']) && !is_null($ic['filters']['bug_id']) )
-    {    
+    if( isset($ic['filters']['bug_id']) && !is_null($ic['filters']['bug_id']) ) {    
       list($ic['join']['bugs'],$ic['where']['bugs']) = $this->helper_bugs_sql($ic['filters']['bug_id']);
       $ic['where']['where'] .= $ic['where']['bugs'];
     }
@@ -7313,7 +7300,8 @@ class testplan extends tlObjectWithAttachments
                     "\t\t" . "<tester>put login here</tester>" . "\n" .
                     "\t\t" . "<!-- if not present now() will be used -->" . "\n" .
                     "\t\t" . "<timestamp>YYYY-MM-DD HH:MM:SS</timestamp>" . "\n" .  
-                    "\t\t" . "<bug_id>put your bug id here</bug_id>" . "\n" .  
+                    "\t\t" . "<bug_id>put one of your bugs id here (repeat the line as many times you need)</bug_id>" . "\n" .  
+                    "\t\t" . "<bug_id>put another of your bugs id here</bug_id>" . "\n" .  
                     "\t\t" . "||STEPS||" . "\n" .  
                     "\t\t" . "||CUSTOMFIELDS||" . "\n" .  
                     "\t</testcase>" . "\n";
@@ -7721,20 +7709,18 @@ class testplan extends tlObjectWithAttachments
  * Build Manager Class 
  * @package TestLink
  **/
-class build_mgr extends tlObject
-{
+class build_mgr extends tlObject {
   /** @var database handler */
   var $db;
   var $cfield_mgr;
 
 
   /** 
-   * class constructor 
+   * Build Manager class constructor 
    * 
    * @param resource &$db reference to database handler
    **/
-  function build_mgr(&$db)
-  {
+  function build_mgr(&$db) {
     parent::__construct();
     $this->db = &$db;
     $this->cfield_mgr = new cfield_mgr($this->db);
@@ -7742,10 +7728,9 @@ class build_mgr extends tlObject
 
 
   /**
-   *
+   * Build Manager
    */
-  function setZeroOneAttr($id,$attr,$zeroOne)
-  {
+  function setZeroOneAttr($id,$attr,$zeroOne) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = "/* $debugMsg */ " . 
@@ -7755,38 +7740,34 @@ class build_mgr extends tlObject
 
 
   /**
-   *
+   * Build Manager
    */
-  function setActive($id)
-  {
+  function setActive($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'active',1);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setInactive($id)
-  {
+  function setInactive($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'active',0);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setOpen($id)
-  {
+  function setOpen($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'is_open',1);
     $this->setClosedOnDate($id,null);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setClosed($id)
-  {
+  function setClosed($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'is_open',0);
     $timestamp = explode(' ',trim($this->db->db_now(),"'"));
@@ -7796,6 +7777,8 @@ class build_mgr extends tlObject
 
 
   /*
+    Build Manager 
+
     function: create
 
     args :
@@ -8230,6 +8213,29 @@ class build_mgr extends tlObject
 
     return $cf_smarty;
   }
+
+  /** 
+   *
+   *
+   */
+  function createFromObject($buildObj) {
+
+    $item = $buildObj;
+    $optProp = array('notes' => '', 'active' => 1, 'open' => 1,
+                     'release_date' => '');
+
+    foreach($optProp as $prop => $defa) {
+      if( !property_exists($item, $prop) ) {
+        $item->$prop = $defa;
+      }
+    }
+    
+    $id = $this->create($buildObj->tplan_id,$buildObj->name,
+                        $item->notes,$item->active,$item->open,
+                        $item->release_date);
+    return $id;
+  }
+
 
 
 

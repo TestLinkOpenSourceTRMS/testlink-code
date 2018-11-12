@@ -4,7 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	mainPage.php
- * @author      Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
  *
@@ -13,15 +12,10 @@
  * based upon the login. 
  * There is also some javascript that handles the form information.
  *
- *
  **/
 
 require_once('../../config.inc.php');
 require_once('common.php');
-if(function_exists('memory_get_usage') && function_exists('memory_get_peak_usage'))
-{
-  tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
-}
 
 testlinkInitPage($db,TRUE);
 
@@ -29,14 +23,23 @@ $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);
 $user = $_SESSION['currentUser'];
 
+
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-$testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+
+if( isset($_REQUEST['testplan']) ) {
+  $testplanID = $_REQUEST['testplan'];
+
+} else {
+  $testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+}
+$testplanID = intval($testplanID);
+
 
 $accessibleItems = $tproject_mgr->get_accessible_for_user($user->dbID,array('output' => 'map_name_with_inactive_mark'));
 $tprojectQty = $tproject_mgr->getItemCount();
 $userIsBlindFolded = (is_null($accessibleItems) || count($accessibleItems) == 0) && $tprojectQty > 0;
-if($userIsBlindFolded)
-{
+
+if($userIsBlindFolded) {
   $testprojectID = $testplanID = 0;
   $_SESSION['testprojectTopMenu'] = '';
 }
@@ -49,19 +52,17 @@ $gui = new stdClass();
 $gui->grants = getGrants($db,$user,$userIsBlindFolded);
 $gui->hasTestCases = false;
 
-if($gui->grants['view_tc'])
-{ 
+if($gui->grants['view_tc']) { 
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
 }
 
 $gui->hasKeywords = false;
-if($gui->hasTestCases)
-{
+if($gui->hasTestCases) {
   $gui->hasKeywords = $tproject_mgr->hasKeywords($testprojectID);
 }  
 
 
-// ----- Test Plan Section --------------------------------------------------------------
+// ----- Test Plan Section --------------------------------
 /** 
  * @TODO - franciscom - we must understand if these two calls are really needed,
  * or is enough just call to getAccessibleTestPlans()
@@ -69,13 +70,10 @@ if($gui->hasTestCases)
 $filters = array('plan_status' => ACTIVE);
 $gui->num_active_tplans = $tproject_mgr->getActiveTestPlansCount($testprojectID);
 
-//sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
-
 // get Test Plans available for the user 
-$arrPlans = $currentUser->getAccessibleTestPlans($db,$testprojectID);
+$arrPlans = (array)$currentUser->getAccessibleTestPlans($db,$testprojectID);
 
-if($testplanID > 0)
-{
+if($testplanID > 0) {
 	// if this test plan is present on $arrPlans
 	//	  OK we will set it on $arrPlans as selected one.
 	// else 
@@ -84,31 +82,42 @@ if($testplanID > 0)
 	$index=0;
 	$found=0;
 	$loop2do=count($arrPlans);
-	for($idx=0; $idx < $loop2do; $idx++)
-	{
-  	if( $arrPlans[$idx]['id'] == $testplanID )
-  	{
+	for($idx=0; $idx < $loop2do; $idx++) {
+  	if( $arrPlans[$idx]['id'] == $testplanID ) {
      	$found = 1;
      	$index = $idx;
      	break;
     }
   }
-  if( $found == 0 )
-  {
+  if( $found == 0 ) {
     // update test plan id
-    $testplanID = $arrPlans[0]['id'];
-	  setSessionTestPlan($arrPlans[0]);     	
+    $index = 0;
+    $testplanID = $arrPlans[$index]['id'];
   } 
+
+  setSessionTestPlan($arrPlans[$index]);         
   $arrPlans[$index]['selected']=1;
 }
 
 $gui->testplanRole = null;
-if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
-{
-	$role = $currentUser->tplanRoles[$testplanID];
-	$gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
-}
+if ($testplanID)  {
 
+  $rd = null; 
+  // Role can be configured or inherited
+  if( isset($currentUser->tplanRoles[$testplanID]) ) {
+    // Configured
+    $role = $currentUser->tplanRoles[$testplanID];
+    $rd = $role->getDisplayName();
+  } else {
+    if( config_get('testplan_role_inheritance_mode') == 'global' ) {
+      $rd = $currentUser->globalRole->name;
+    }
+  } 
+
+  if( null != $rd ) {
+    $gui->testplanRole = $tlCfg->gui->role_separator_open .$rd . $tlCfg->gui->role_separator_close;
+  }
+}
 $rights2check = array('testplan_execute','testplan_create_build',
                       'testplan_metrics','testplan_planning',
                       'testplan_user_role_assignment',
@@ -122,8 +131,7 @@ $rights2check = array('testplan_execute','testplan_create_build',
                       'testplan_set_urgent_testcases',
                       'testplan_show_testcases_newest_versions');
 
-foreach($rights2check as $key => $the_right)
-{
+foreach($rights2check as $key => $the_right) {
   $gui->grants[$the_right] = $userIsBlindFolded ? 'no' : $currentUser->hasRight($db,$the_right,$testprojectID,$testplanID);
 }
                          
@@ -174,8 +182,15 @@ foreach(array('EVENT_LEFTMENU_TOP',
   }
 }
 
+$tplKey = 'mainPage';
+$tpl = $tplKey . '.tpl';
+$tplCfg = config_get('tpl');
+if( null !== $tplCfg && isset($tplCfg[$tplKey]) ) {
+  $tpl = $tplCfg->$tplKey;
+} 
+
 $smarty->assign('gui',$gui);
-$smarty->display('mainPage.tpl');
+$smarty->display($tpl);
 
 
 /**

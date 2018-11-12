@@ -40,15 +40,11 @@ var alert_box_title = "{$labels.warning|escape:'javascript'}";
   returns:
 
 */
-function check_action_precondition(container_id,action,msg)
-{
+function check_action_precondition(container_id,action,msg) {
 	var containerSelect = document.getElementById('containerID');
-	if(checkbox_count_checked(container_id) > 0 && containerSelect.value > 0)
-	{
-	     return true;
-	}
-	else
-	{
+	if(checkbox_count_checked(container_id) > 0 && containerSelect.value > 0) {
+	  return true;
+	} else {
 	   alert_message(alert_box_title,msg);
 	   return false;
 	}
@@ -71,7 +67,11 @@ function check_action_precondition(container_id,action,msg)
 	<form id="move_copy_testcases" name="move_copy_testcases" method="post"
 	      action="{$basehref}lib/testcases/containerEdit.php?objectID={$objectID}">
 
-    <input type="hidden" name="form_token" id="form_token" value="{$gui->form_token}" />
+    <input type="hidden" name="form_token" id="form_token" 
+           value="{$gui->form_token}" />
+
+    <input type="hidden" name="containerType" id="containerType" 
+           value="testsuite" />
 
     {if !$gui->testCasesTableView}    
       {if $user_feedback != ''}

@@ -9,14 +9,11 @@
  *   
  * @package   TestLink
  * @author    Martin Havlat
- * @copyright 2005-2014, TestLink community 
+ * @copyright 2005-2018, TestLink community 
  * @version   reports.class.php
  * @link      http://testlink.sourceforge.net/
  * @uses      config.inc.php
  * @uses      common.php
- *
- * @internal revisions
- * @since 1.9.10
  *
  **/
 
@@ -69,8 +66,8 @@ class tlReports extends tlObjectWithDB
    * 
    * @return array of array - described for array $g_reports_list in const.inc.php
    **/
-   public function get_list_reports($context,$bug_interface_enabled, $req_mgmt_enabled, $format)
-   {
+   public function get_list_reports($context,$bug_interface_enabled, $req_mgmt_enabled, $format) {
+
     $reportList = config_get('reports_list');
     $items = array();
 
@@ -82,28 +79,25 @@ class tlReports extends tlObjectWithDB
     
     $xdx = 0;
     
-    foreach ($reportList as &$reportItem) 
-    {
+    foreach ($reportList as &$rptItem)  {
       // check validity of report   
-      if (($reportItem['enabled'] == 'all') || 
-          (($reportItem['enabled'] == 'req') && $req_mgmt_enabled) ||
-          (($reportItem['enabled'] == 'bts') && $bug_interface_enabled)) 
-      {
-        if (strpos(",".$reportItem['format'],$format) > 0)
-        {
-          $reportUrl = $reportItem['url'] . ( stristr($reportItem['url'], "?") ? '&' : '?');
-          $items[$xdx] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl,
-                               'directLink' => '');
+      if (($rptItem['enabled'] == 'all') || 
+          (($rptItem['enabled'] == 'req') && $req_mgmt_enabled) ||
+          (($rptItem['enabled'] == 'bts') && $bug_interface_enabled)) {
 
-          if(isset($reportItem['directLink']) && trim($reportItem['directLink']) != '')
-          {                     
-            if($apiKeyIsValid)
-            {
-              $items[$xdx]['directLink'] = sprintf($reportItem['directLink'],$_SESSION['basehref'],
-                                                   $context->apikey,$context->tproject_id,$context->tplan_id);
-            }                                     
-            else
-            {
+        if (strpos(",".$rptItem['format'],$format) > 0) {
+          $reportUrl = $rptItem['url'] . ( stristr($rptItem['url'], "?") ? '&' : '?');
+          $items[$xdx] = 
+            array('name' => lang_get($rptItem['title']), 
+                  'href' => $reportUrl, 'directLink' => '');
+
+          if(isset($rptItem['directLink']) && 
+             trim($rptItem['directLink']) != '') {                     
+            if($apiKeyIsValid) {
+              $items[$xdx]['directLink'] = 
+                sprintf($rptItem['directLink'],$_SESSION['basehref'],
+                        $context->apikey,$context->tproject_id,$context->tplan_id);
+            } else {
               $items[$xdx]['directLink'] = $canNotCreateDirectLink;
             }
           }
@@ -134,8 +128,7 @@ class tlReports extends tlObjectWithDB
    * 
    * @return integer count of builds
    */ 
-  public function get_count_builds($active=1, $open=0)
-  {
+  public function get_count_builds($active=1, $open=0) {
     $sql = " SELECT COUNT(0) FROM {$this->tables['builds']} builds " . 
            " WHERE builds.testplan_id = {$this->testPlanID} ";
            

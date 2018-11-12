@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_testsuite_viewer_rw.tpl
+@filesource: inc_testsuite_viewer_rw.tpl
 *}
 <p>
 <div class="labelHolder"><label for="name">{lang_get s='comp_name'}</label></div> 

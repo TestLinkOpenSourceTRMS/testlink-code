@@ -6,12 +6,10 @@
  * Management and assignment of keywords
  *
  * @package     TestLink
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @filesource  tlKeyword.class.php
  * @link        http://www.testlink.org 
  *
- * @internal revisions
- * @since 1.9.15
  **/
 
 require_once('object.class.php');
@@ -283,8 +281,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * 
    * @return array the keyword information
    */
-  public function getInfo()
-  {
+  public function getInfo() {
     return array("id" => $this->dbID,"keyword" => $this->name,
                "notes" => $this->notes,"testproject_id" => $this->testprojectID);
   }
@@ -477,16 +474,24 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    */
   static public function getSimpleSet(&$db,$opt=null)
   {
-    $options = array('tproject_id' => 0, 'cols' => '*', 'accessKey' => null);
+    $options = array('tproject_id' => 0, 'cols' => '*', 
+                     'accessKey' => null, 'kwSet' => null);
+
     $options = array_merge($options,(array)$opt);
     $tables = tlObjectWithDB::getDBTables("keywords");
 
     $sql = " SELECT {$options['cols']} FROM {$tables['keywords']} ";
-    $where = ''; 
-    if( $options['tproject_id'] > 0 )
-    {
-      $where = " WHERE testproject_id = " . intval($options['tproject_id']);
+    $where = ' WHERE 1=1 '; 
+
+    if( $options['tproject_id'] > 0 ) {
+      $where .= " AND testproject_id = " . intval($options['tproject_id']);
     } 
+
+    if( null != $options['kwSet'] ) {
+      $kwFilter = (array)$options['kwSet'];
+      $where .= " AND id IN(" . implode(',',$kwFilter)  . ")";
+    }  
+
     $sql .= $where;
     if( is_null($options['accessKey']) )
     {

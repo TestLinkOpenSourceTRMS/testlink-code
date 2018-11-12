@@ -60,17 +60,25 @@ $tlCfg->tplanDesign = new stdClass();
 $tlCfg->notifications = new stdClass();
 $tlCfg->proxy = new stdClass();
 
+$tlCfg->reqTCLinks = new stdClass();
+
+
+$tlCfg->keywords = new stdClass();
+$tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
+$tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 
 
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
-if( !defined('DB_TABLE_PREFIX') )
-{
+if( !defined('DB_TABLE_PREFIX') ) {
     define('DB_TABLE_PREFIX','' );
 }
 
 /** The root dir for the testlink installation with trailing slash */
 define('TL_ABS_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
+
+/** Just for documentation */
+$tlCfg->testlinkdotorg = 'http://www.testlink.org';
 
 /** GUI themes (base for CSS and images)- modify if you create own one */
 $tlCfg->theme_dir = 'gui/themes/default/';
@@ -148,7 +156,33 @@ $tlCfg->cookie->httponly = false;
  $tlCfg->cookie->path = '/';
 
 
-
+/* [ROLE INHERITANCE] */
+/**
+ * possible values
+ *
+ * 'testproject'
+ * 'global'
+ *
+ * 'testproject' 
+ * till a role is specifically assigned to test plan, test plan role 
+ * will be inherited from test project role.
+ *
+ * IMPORTANT NOTICE
+ * test project role can be specifically assigned or inherited from
+ * user's global role.
+ *
+ * if test project specifically assigned role changes, and test plan role was inherited, then it will also changes, due to inheritance.
+ *
+ *
+ * 'global'
+ * till a role is specifically assigned to test plan, test plan role 
+ * will be inherited from user's global role, and NOT from test project 
+ * specifically assigned role.
+ *
+ * if test project specifically assigned role changes, will not be changed.
+ *
+ */
+ $tlCfg->testplan_role_inheritance_mode = 'testproject';
 
 
 /* [LOCALIZATION] */
@@ -261,9 +295,9 @@ $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
 /**
  * @var string How to warning user when security weak points exists.
  *
- * 'SCREEN': messages will displayed on login screen, and tl desktop (default)
+ * 'SCREEN': messages will displayed on login screen, and tl desktop
  * 'FILE': a file with a list is created but users are not notified via GUI
- *         user will receive a message on screen.
+ *         user will receive a message on screen. (default)
  * 'SILENT': same that FILE, but user will not receive message on screen.
  */
 $tlCfg->config_check_warning_mode = 'FILE';
@@ -405,42 +439,44 @@ $tlCfg->noExpDateUsers = array('admin');
  * Configure this on custom_config.inc.php
  */
 
+$tlCfg->OAuthServers = array();
+
 // Google
-// $tlCfg->authentication['oauth'] = array();
-// $tlCfg->authentication['oauth'][1]['oauth_enabled'] = true;
-// $tlCfg->authentication['oauth'][1]['oauth_name'] = 'google';
+// $tlCfg->OAuthServers = array();
+// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
+// $tlCfg->OAuthServers[1]['oauth_name'] = 'google';
 
 // Get from /gui/themes/default/images
-// $tlCfg->authentication['oauth'][1]['oauth_icon'] = 'google.png'; 
-// $tlCfg->authentication['oauth'][1]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->authentication['oauth'][1]['oauth_client_secret'] = 'CLIENT_SECRET';
+// $tlCfg->OAuthServers[1]['oauth_icon'] = 'google.png'; 
+// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
 // Can be authorization_code (by default), client_credentials or password
-// $tlCfg->authentication['oauth'][1]['oauth_grant_type'] = 'authorization_code';  
-// $tlCfg->authentication['oauth'][1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
-// $tlCfg->authentication['oauth'][1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
+// $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
+// $tlCfg->OAuthServers[1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
+// $tlCfg->OAuthServers[1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
 // false => then the only user will be selected automatically (applied for google)
-// $tlCfg->authentication['oauth'][1]['oauth_force_single'] = false; 
+// $tlCfg->OAuthServers[1]['oauth_force_single'] = false; 
 // the domain you want to whitelist
-// $tlCfg->authentication['oauth'][1]['oauth_domain'] = 'google.com'; 
-// $tlCfg->authentication['oauth'][1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
-// $tlCfg->authentication['oauth'][1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+// $tlCfg->OAuthServers[1]['oauth_domain'] = 'google.com'; 
+// $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
+// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 
 // Github
-// $tlCfg->authentication['oauth'][2]['oauth_enabled'] = true;
-// $tlCfg->authentication['oauth'][2]['oauth_name'] = 'github';
-// $tlCfg->authentication['oauth'][2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
-// $tlCfg->authentication['oauth'][2]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->authentication['oauth'][2]['oauth_client_secret'] = 'CLIENT_SECRET';
+// $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
+// $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
+// $tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
+// $tlCfg->OAuthServers[2]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'CLIENT_SECRET';
 
 // Can be authorization_code (by default), client_credentials or password
-// $tlCfg->authentication['oauth'][2]['oauth_grant_type'] = 'authorization_code';  
-// $tlCfg->authentication['oauth'][2]['oauth_url'] = 'https://github.com/login/oauth/authorize';
+// $tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
+// $tlCfg->OAuthServers[2]['oauth_url'] = 'https://github.com/login/oauth/authorize';
 
-// $tlCfg->authentication['oauth'][2]['token_url'] = 'https://github.com/login/oauth/access_token';
+// $tlCfg->OAuthServers[2]['token_url'] = 'https://github.com/login/oauth/access_token';
 // false => then the only user will be selected automatically (applied for google)
-// $tlCfg->authentication['oauth'][2]['oauth_force_single'] = false; 
-// $tlCfg->authentication['oauth'][2]['oauth_profile'] = 'https://api.github.com/user';
-// $tlCfg->authentication['oauth'][2]['oauth_scope'] = 'user:email';
+// $tlCfg->OAuthServers[2]['oauth_force_single'] = false; 
+// $tlCfg->OAuthServers[2]['oauth_profile'] = 'https://api.github.com/user';
+// $tlCfg->OAuthServers[2]['oauth_scope'] = 'user:email';
 
 
 /**
@@ -810,12 +846,14 @@ $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 $tlCfg->reportsCfg->start_time = '00:00';
 
 // Result matrix (resultsTC.php)
-// Shows an extra column which gives the status of the last executed build
-$tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
+// Shows an extra column with the result of the latest execution on
+// the lastest CREATED build
+$tlCfg->resultMatrixReport->buildColumns['showExecutionResultLatestCreatedBuild'] = true;
 
 // Result matrix (resultsTC.php)
-// Shows an extra column which gives the note of the last executed build
-$tlCfg->resultMatrixReport->buildColumns['showNoteLastExecuted'] = true;
+// Shows an extra column with the note of latest execution on 
+// the lastest CREATED build
+$tlCfg->resultMatrixReport->buildColumns['showExecutionNoteLatestCreatedBuild'] = true;
 
 // Show build columns in revers order. The latest build is to the left
 $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
@@ -1169,6 +1207,69 @@ $tlCfg->testcase_cfg->relations->type_description = array(TL_REL_TYPE_PARENT_CHI
 
 
 
+// @since 1.9.18
+// TRUE => After a test case version has been executed 
+//         attachment on test case spec can not be added/removed
+//         
+// FALSE  
+//
+// This means that at GUI Level, will not be possible:
+// add a new attachment to an Executed Test Case Version
+// delete an attachment from Executed Test Case Version
+$tlCfg->testcase_cfg->downloadOnlyAfterExec = TRUE;
+
+// This means that at GUI Level, will not be possible:
+// add a new req version link to an Executed Test Case Version
+// delete a req version link from Executed Test Case Version
+$tlCfg->testcase_cfg->reqLinkingDisabledAfterExec = TRUE;
+
+// Effects on Linked Requirements Version after 
+// execution of a Test Case Version
+$tlCfg->testcase_cfg->freezeReqVersionAfterExec = TRUE;
+
+
+// Effects on TCVersion N when TCVersion N+1 is created 
+$tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = TRUE;
+$tlCfg->testcase_cfg->freezeTCVRelationsOnNewTCVersion = TRUE;
+
+
+// Not Already Implemented
+//$tlCfg->testcase_cfg->allowAddTCVRelationsOnOldTCVersion = TRUE;
+
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVDelAttachtments = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVAddAttachtments = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVAddTCVRel = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVDelTCVRel = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVAddREQVLink = FALSE;
+//$tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
+
+
+
+
+// Effects on Req Version to TCVersion LINK 
+// when a new version of a linked Test Case is created
+$tlCfg->reqTCLinks->freezeeLinkOnNewTCVersion = TRUE;
+
+// Effects on Req Version to TCVersion LINK 
+// when a new version of a linked Req Version is created
+$tlCfg->reqTCLinks->freezeeLinkOnNewREQVersion = TRUE;
+
+
+// Effects on BOTH ends of Req Version to TCVersion LINK 
+// when a new version of a linked TC Version is created
+$tlCfg->reqTCLinks->freezeeBothEndsOnNewTCVersion = TRUE;
+
+// Effects on BOTH ends of Req Version to TCVersion LINK 
+// when a new version of a linked REQ Version is created
+$tlCfg->reqTCLinks->freezeeBothEndsOnNewREQVersion = TRUE;
+
+
+// Effects on REQ Version N when REQ Version N+1 is created 
+$tlCfg->req_cfg->freezeREQVersionOnNewREQVersion = TRUE;
+
+
+
+
 /** text template for a new items:
     Test Case: summary, steps, expected_results, preconditions
 
@@ -1265,6 +1366,36 @@ $tlCfg->platform_template->notes->value = '';
 $g_attachments = new stdClass();
 $g_attachments->enabled = TRUE;
 
+// TRUE -> when you upload a file you can give no title
+$g_attachments->allow_empty_title = TRUE;
+
+// $g_attachments->allow_empty_title == TRUE, you can ask the system
+// to do something
+//
+// 'none'         -> just write on db an empty title
+// 'use_filename' -> use filename as title
+//$g_attachments->action_on_save_empty_title='use_filename';
+//
+$g_attachments->action_on_save_empty_title = 'none';
+
+// Remember that title is used as link description for download
+// then if title is empty, what the system has to do when displaying ?
+// 'show_icon'  -> the $g_attachments->access_icon will be used.
+// 'show_label' -> the value of $g_attachments->access_string will be used .
+$g_attachments->action_on_display_empty_title = 'show_icon';
+
+// Set display order of uploaded files 
+$g_attachments->order_by = " ORDER BY date_added DESC ";
+
+
+// need to be moved AFTER include of custom_config
+//
+// $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+$g_attachments->access_string = "[*]";
+
+
+
+
 /** the type of the repository can be database or filesystem
  * TL_REPOSITORY_TYPE_DB => database
  * TL_REPOSITORY_TYPE_FS => filesystem
@@ -1291,31 +1422,6 @@ $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 // Also check your PHP settings (default is usually 2MBs)
 $tlCfg->repository_max_filesize = 1; //MB
 
-// TRUE -> when you upload a file you can give no title
-$g_attachments->allow_empty_title = TRUE;
-
-// $g_attachments->allow_empty_title == TRUE, you can ask the system
-// to do something
-//
-// 'none'         -> just write on db an empty title
-// 'use_filename' -> use filename as title
-//$g_attachments->action_on_save_empty_title='use_filename';
-//
-$g_attachments->action_on_save_empty_title = 'none';
-
-// Remember that title is used as link description for download
-// then if title is empty, what the system has to do when displaying ?
-// 'show_icon'  -> the $g_attachments->access_icon will be used.
-// 'show_label' -> the value of $g_attachments->access_string will be used .
-$g_attachments->action_on_display_empty_title = 'show_icon';
-
-// need to be moved AFTER include of custom_config
-//
-// $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
-$g_attachments->access_string = "[*]";
-
-// Set display order of uploaded files 
-$g_attachments->order_by = " ORDER BY date_added DESC ";
 
 
 
@@ -1327,7 +1433,9 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 // false: you want req_doc_id UNIQUE INSIDE a SRS
 // $tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
 
-// 20101212 - truncate log message to this amount of chars for reqCompareVersions
+$tlCfg->req_cfg->monitor_enabled = true;
+
+// truncate log message to this amount of chars for reqCompareVersions
 $tlCfg->req_cfg->log_message_len = 200;
 
 /**
@@ -1823,7 +1931,7 @@ define('TL_PLUGIN_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'plugins' . D
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------
-// DO NOT CHANGE NOTHING BELOW
+// DO NOT DO CHANGES BELOW
 // --------------------------------------------------------------------------------------
 
 /** Functions for check request status */

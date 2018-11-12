@@ -6,7 +6,7 @@
  * @filesource  specview.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2004-2017, TestLink community 
+ * @copyright   2004-2018, TestLink community 
  * @link        http://www.testlink.org
  *
  *
@@ -593,10 +593,17 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
   $testCaseSet = null;
   $tryNextFilter = true;
   $filterApplied = false;
-  if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items))
-  { 
-    $keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,$my['filters']['keywordsFilter']->items,
-                                                           $my['filters']['keywordsFilter']->type);
+  if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items)) { 
+ 
+    /*
+    $keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
+      $my['filters']['keywordsFilter']->items,
+      $my['filters']['keywordsFilter']->type);
+
+    */
+    $keywordsTestCases = $tprojectMgr->getKeywordsLatestTCV($argsObj->tproject_id,
+                           $my['filters']['keywordsFilter']->items,
+                           $my['filters']['keywordsFilter']->type);
 
     $testCaseSet = array_keys((array)$keywordsTestCases);
     $tryNextFilter = !is_null($testCaseSet);
@@ -738,16 +745,22 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     $filters['keyword_id'] = array($filters['keyword_id']);
   }
 
-  if(($useFilter['keyword_id']=$filters['keyword_id'][0] > 0))
-  {
+  if(($useFilter['keyword_id']=$filters['keyword_id'][0] > 0)) {
     $applyFilters = true;
-    switch ($specViewType)
-    {
+    switch ($specViewType){
       case 'testplan':
         $tobj_mgr = new testplan($dbHandler); 
-      break;  
+        $tck_map = $tobj_mgr->getKeywordsLinkedTCVersions($masterContainerId,
+                                                          $filters['keyword_id']);
+      break;
+
+      default:
+        $tck_map = $tobj_mgr->getKeywordsLatestTCV($masterContainerId,
+                                                   $filters['keyword_id']);
+      break;
     }
-    $tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
+
+
   }  
 
 
@@ -1441,10 +1454,16 @@ function getFilteredSpecViewFlat(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr,
   $testCaseSet = null;
   $tryNextFilter = true;
   $filterApplied = false;
-  if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items))
-  { 
-    $keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,$my['filters']['keywordsFilter']->items,
-                                                           $my['filters']['keywordsFilter']->type);
+  if(!is_null($my['filters']['keywordsFilter']) && !is_null($my['filters']['keywordsFilter']->items)) { 
+
+    /*
+    $keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
+      $my['filters']['keywordsFilter']->items,
+      $my['filters']['keywordsFilter']->type);
+    */
+    $keywordsTestCases = $tprojectMgr->getKeywordsLatestTCV($argsObj->tproject_id,
+                           $my['filters']['keywordsFilter']->items,
+                           $my['filters']['keywordsFilter']->type);
 
     $testCaseSet = array_keys((array)$keywordsTestCases);
     $tryNextFilter = !is_null($testCaseSet);

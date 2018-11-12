@@ -3,14 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @package   TestLink
- * @author    Andreas Morsing
- * @copyright   2007-2015, TestLink community 
+ * @package     TestLink
+ * @author      Andreas Morsing
+ * @copyright   2007-2018, TestLink community 
  * @filesource  tlAttachmentRepository.class.php
- * @link    http://www.testlink.org/index.php
- *
- * @internal revisions
- * @since 1.9.15
+ * @link        http://www.testlink.org/index.php
  *
  */
 
@@ -453,24 +450,22 @@ class tlAttachmentRepository extends tlObjectWithDB
    * 
    * @return boolean returns bSuccess if all attachments are deleted, false else
    */
-  public function deleteAttachmentsFor($fkid,$fkTableName)
-  {
-    $bSuccess = true;
-    $attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-    for($i = 0;$i < sizeof($attachmentIDs);$i++)
-    {
+  public function deleteAttachmentsFor($fkid,$fkTableName) {
+    $statusOK = true;
+    $attachmentIDs = (array)$this->getAttachmentIDsFor($fkid,$fkTableName);
+    
+    for($i = 0;$i < sizeof($attachmentIDs);$i++) {
       $id = $attachmentIDs[$i];
-      $bSuccess = ($this->deleteAttachment($id) && $bSuccess);
+      $statusOK = ($this->deleteAttachment($id) && $statusOK);
     }
-    if ($bSuccess)
-    {
+
+    if ($statusOK) {
       $folder = $this->buildRepositoryFolderFor($fkTableName,$fkid);
-      if (is_dir($folder))
-      {
+      if (is_dir($folder)) {
         rmdir($folder);
       }
     }
-    return $bSuccess;
+    return $statusOK;
   }
 
   /**
@@ -501,20 +496,17 @@ class tlAttachmentRepository extends tlObjectWithDB
   public function getAttachmentInfosFor($fkid,$fkTableName,$accessKey='std')
   {
     $itemSet = null;
-    $idSet = $this->getAttachmentIDsFor($fkid,$fkTableName);
+    $idSet = (array)$this->getAttachmentIDsFor($fkid,$fkTableName);
     $loop2do = sizeof($idSet);
-    for($idx = 0;$idx < $loop2do; $idx++)
-    {
+    for($idx = 0;$idx < $loop2do; $idx++) {
       $attachmentInfo = $this->getAttachmentInfo($idSet[$idx]);
-      if ($attachmentInfo)
-      {
+      if (null != $attachmentInfo) {
         // needed because on inc_attachments.tpl this test:
         // {if $info.title eq ""}
         // is used to undertand if icon or other handle is needed to access
         // file content
         $attachmentInfo['title'] = trim($attachmentInfo['title']);
-        switch($accessKey)
-        {
+        switch($accessKey) {
           case 'id':
             $itemSet[$attachmentInfo['id']] = $attachmentInfo;
           break;
@@ -550,35 +542,28 @@ class tlAttachmentRepository extends tlObjectWithDB
     /*
      * @param $fkTableName the "type" of the object, or the table the object is stored in 
      */
-  function copyAttachments($source_id,$target_id,$fkTableName)
-  {
+  function copyAttachments($source_id,$target_id,$fkTableName) {
     $mapping = null;
     $f_parts = null;
     $destFPath = null;
     $mangled_fname = '';
     $status_ok = false;
     $attachments = $this->getAttachmentInfosFor($source_id,$fkTableName);
-    if(count($attachments) > 0)
-    {
-      foreach($attachments as $key => $value)
-      {
+    if( null != $attachments && count($attachments) > 0) {
+      foreach($attachments as $key => $value) {
         $file_contents = null;
         $f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
         $mangled_fname = $f_parts[count($f_parts)-1];
         
-        if ($this->repositoryType == TL_REPOSITORY_TYPE_FS)
-        {
+        if ($this->repositoryType == TL_REPOSITORY_TYPE_FS) {
           $destFPath = $this->buildRepositoryFilePath($mangled_fname,$fkTableName,$target_id);
           $status_ok = copy($this->repositoryPath . $value['file_path'],$destFPath);
-        }
-        else
-        {
+        } else {
           $file_contents = $this->getAttachmentContentFromDB($value['id']);
           $status_ok = sizeof($file_contents);
         }
         
-        if($status_ok)
-        {
+        if($status_ok) {
           $this->attmObj->create($target_id,$fkTableName,$value['file_name'],
                                  $destFPath,$file_contents,$value['file_type'],
                                  $value['file_size'],$value['title']);

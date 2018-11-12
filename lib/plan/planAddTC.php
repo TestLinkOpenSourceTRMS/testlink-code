@@ -33,8 +33,7 @@ $args = init_args($tproject_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
 $keywordsFilter = null;
-if(is_array($args->keyword_id))
-{
+if(is_array($args->keyword_id)) {
   $keywordsFilter = new stdClass();
   $keywordsFilter->items = $args->keyword_id;
   $keywordsFilter->type = $gui->keywordsFilterType->selected;
@@ -43,42 +42,40 @@ if(is_array($args->keyword_id))
 $do_display = 0;
 $do_display_coverage = 0;
 
-switch($args->item_level)
-{
+switch($args->item_level) {
   case 'testsuite':
   case 'req':
   case 'req_spec':
     $do_display = 1;
   break;
+
   case 'reqcoverage':
   case 'reqspeccoverage':
     $do_display_coverage = 1;
   break;
+  
   case 'testproject':
-	redirect($_SESSION['basehref'] . "lib/results/printDocOptions.php?activity=$args->activity");
+	  redirect($_SESSION['basehref'] . 
+      "lib/results/printDocOptions.php?activity=$args->activity");
     exit();
   break;
 }
 
-switch($args->doAction)
-{
+
+switch($args->doAction) {
   case 'doAddRemove':
     // Remember:  checkboxes exist only if are checked
     $gui->itemQty = count($args->testcases2add);
     
-    if( !is_null($args->testcases2add) )
-    {
+    if( !is_null($args->testcases2add) ) {
       addToTestPlan($db,$args,$gui,$tplan_mgr,$tcase_mgr);
     }  
 
-    if(!is_null($args->testcases2remove))
-    {
+    if(!is_null($args->testcases2remove)) {
       // remove without warning
       $items_to_unlink=null;
-      foreach ($args->testcases2remove as $tcase_id => $info) 
-      {
-        foreach ($info as $platform_id => $tcversion_id) 
-        {
+      foreach ($args->testcases2remove as $tcase_id => $info)  {
+        foreach ($info as $platform_id => $tcversion_id)  {
           $items_to_unlink['tcversion'][$tcase_id] = $tcversion_id;
           $items_to_unlink['platform'][$platform_id] = $platform_id;
           $items_to_unlink['items'][$tcase_id][$platform_id] = $tcversion_id;
@@ -88,50 +85,18 @@ switch($args->doAction)
     }
   
     doReorder($args,$tplan_mgr);
-    if($args->item_level == 'testsuite')
-    {
-    		$do_display = 1;
-    }
-    elseif($args->item_level == 'reqcoverage' || $args->item_level == 'reqspeccoverage')
-    {
-    		$do_display_coverage = 1;
-    }
   break;
   
   case 'doReorder':
     doReorder($args,$tplan_mgr);
-    if($args->item_level == 'testsuite')
-	{
-			$do_display = 1;
-	}
-	elseif($args->item_level == 'reqcoverage' || $args->item_level == 'reqspeccoverage')
-	{
-			$do_display_coverage = 1;
-	}
   break;
 
   case 'doSavePlatforms':
     doSavePlatforms($args,$tplan_mgr);
-	if($args->item_level == 'testsuite')
-	{
-			$do_display = 1;
-	}
-	elseif($args->item_level == 'reqcoverage' || $args->item_level == 'reqspeccoverage')
-	{
-			$do_display_coverage = 1;
-	}
   break;
 
   case 'doSaveCustomFields':
     doSaveCustomFields($args,$_REQUEST,$tplan_mgr,$tcase_mgr);
-	if($args->item_level == 'testsuite')
-	{
-			$do_display = 1;
-	}
-	elseif($args->item_level == 'reqcoverage' || $args->item_level == 'reqspeccoverage')
-	{
-			$do_display_coverage = 1;
-	}
   break;
 
   default:
@@ -140,31 +105,29 @@ switch($args->doAction)
 
 $smarty = new TLSmarty();
 
-// echo __LINE__ . __FILE__; die();
 
-if($do_display)
-{
+if($do_display) {
   $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
   // see development documentation on [INSTALL DIR]/docs/development/planAddTC.php.txt
   $tplan_linked_tcversions = getFilteredLinkedVersions($db,$args,$tplan_mgr,$tcase_mgr,array('addImportance' => true));
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   $testCaseSet = $args->control_panel['filter_tc_id'];   
-  if(!is_null($keywordsFilter) )
-  { 
+  if(!is_null($keywordsFilter) ) { 
+    
     // With this pieces we implement the AND type of keyword filter.
-    $keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
-                                                            $keywordsFilter->type);
-      
-    if (sizeof($keywordsTestCases))
-    {
+    $keywordsTestCases = 
+      $tproject_mgr->getKeywordsLatestTCV($args->tproject_id,
+        $keywordsFilter->items,$keywordsFilter->type);
+
+    if (sizeof($keywordsTestCases)) {
       $testCaseSet = array_keys($keywordsTestCases);
     }
   }
   
   // Choose enable/disable display of custom fields, analysing if this kind of custom fields
   // exists on this test project.
-  $cfields=$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
+  $cfields = (array)$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
   $opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
   $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
 
@@ -212,11 +175,8 @@ if($do_display)
     
   $smarty->assign('gui', $gui);
   $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
-} elseif ($do_display_coverage)
-{
-
-	if($args->item_level == 'reqcoverage')
-	{
+} elseif ($do_display_coverage) {
+	if($args->item_level == 'reqcoverage') {
 		// Select coverage
 	
 		$requirement_data = $req_mgr->get_by_id($args->object_id, requirement_mgr::LATEST_VERSION);
@@ -229,8 +189,7 @@ if($do_display)
 			$requirements_child = null;
 		}
 	}
-	elseif($args->item_level == 'reqspeccoverage')
-	{
+	elseif($args->item_level == 'reqspeccoverage') {
 	
 		// Select folder coverage
 		$getOptions = array('order_by' => " ORDER BY id");
@@ -281,14 +240,14 @@ if($do_display)
 
 	// Add Test Cases to Test plan - Right pane does not honor custom field filter
 	$testCaseSet = $args->control_panel['filter_tc_id'];
-	if(!is_null($keywordsFilter) )
-	{
-		// With this pieces we implement the AND type of keyword filter.
-		$keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
-		$keywordsFilter->type);
+	if(!is_null($keywordsFilter) ) {
 
-		if (sizeof($keywordsTestCases))
-		{
+		// With this pieces we implement the AND type of keyword filter.
+    $keywordsTestCases = 
+      $tproject_mgr->getKeywordsLatestTCV($args->tproject_id,
+        $keywordsFilter->items,$keywordsFilter->type);
+
+		if (sizeof($keywordsTestCases)) {
 			$testCaseSet = array_keys($keywordsTestCases);
 		}
 	}

@@ -66,37 +66,42 @@ var pF_delete_relation = delete_relation;
 
   <table class="simple" id="relations">
     {if $args_edit_enabled}
-      <tr><th colspan="7">{$rel_labels.relations} 
-        {if $args_relations.num_relations > 0} ({$args_relations.num_relations}) {/if}
-      </th></tr>
-      
-      {if $gui->add_relation_feedback_msg != ''}
-        <tr style="height:40px; vertical-align: middle;">
-          <td style="height:40px; vertical-align: middle;" colspan="7">
-            <div class="info">{$gui->add_relation_feedback_msg}</div>
-          </td>
-        </tr>
-      {/if}
-		
-		  {if $args_frozen_version == "no"}    
-        <tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
-        
-          <span class="bold">{$rel_labels.new_relation}:</span> {$rel_labels.this_tcversion}
+      {if $args_is_latest_tcv == 1 || 
+          $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion == 0}
+
+        <tr><th colspan="7">{$rel_labels.relations} 
+          {if $args_relations.num_relations > 0} ({$args_relations.num_relations}) {/if}
+        </th></tr>
+
+        {if $gui->add_relation_feedback_msg != ''}
+          <tr style="height:40px; vertical-align: middle;">
+            <td style="height:40px; vertical-align: middle;" colspan="7">
+              <div class="info">{$gui->add_relation_feedback_msg}</div>
+            </td>
+          </tr>
+        {/if}
+  		
+  		  {if $args_frozen_version == "no"}
+            <tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
             
-          <select name="relation_type">
-          {html_options options=$gui->relation_domain.items selected=$gui->relation_domain.selected}
-          </select>
-      
-          <input type="text" name="relation_destination_tcase" id="relation_destination_tcase"
-                 placeholder="{$rel_labels.tcase_relation_hint}"
-                 title="{$rel_labels.tcase_relation_help}"
-                 size="{#TC_EXTERNAL_ID_SIZE#}" maxlength="{#TC_EXTERNAL_ID_MAXLEN#}" 
-                 onclick="javascript:this.value=''" required />
-          <input type="submit" name="relation_submit_btn" value="{$rel_labels.btn_add}" />
+              <span class="bold">{$rel_labels.new_relation}:</span> {$rel_labels.this_tcversion}
+                
+              <select name="relation_type">
+              {html_options options=$gui->relation_domain.items selected=$gui->relation_domain.selected}
+              </select>
           
-          </td>
-        </tr>
-		  {/if}
+              <input type="text" name="relation_destination_tcase" id="relation_destination_tcase"
+                     placeholder="{$rel_labels.tcase_relation_hint}"
+                     title="{$rel_labels.tcase_relation_help}"
+                     size="{#TC_EXTERNAL_ID_SIZE#}" maxlength="{#TC_EXTERNAL_ID_MAXLEN#}" 
+                     onclick="javascript:this.value=''" required />
+              
+              <input type="submit" name="relation_submit_btn" value="{$rel_labels.btn_add}" />          
+              </td>
+            </tr>
+  		  {/if}
+
+      {/if}
     {/if} {* Relation can be Created *}
 
 
@@ -116,7 +121,7 @@ var pF_delete_relation = delete_relation;
                    $rx.related_tcase.is_open && 
                    $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
         <tr>
-          <td>
+          <td>            
           DEBUG  
           $args_is_latest_tcv => {$args_is_latest_tcv}<br>
           $args_edit_enabled => {$args_edit_enabled} <br>

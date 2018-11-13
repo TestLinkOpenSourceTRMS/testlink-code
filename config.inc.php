@@ -1232,6 +1232,16 @@ $tlCfg->testcase_cfg->freezeReqVersionAfterExec = TRUE;
 $tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = TRUE;
 $tlCfg->testcase_cfg->freezeTCVRelationsOnNewTCVersion = TRUE;
 
+// Because: 
+// The Relation must be frozen (cannot be deleted) when 
+// a new version of the test case is created.
+//
+// It seems confusing that relation can be added, then
+// this new configuration will allow this operation
+// only on latest test case version
+// 
+$tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
+
 
 // Not Already Implemented
 //$tlCfg->testcase_cfg->allowAddTCVRelationsOnOldTCVersion = TRUE;

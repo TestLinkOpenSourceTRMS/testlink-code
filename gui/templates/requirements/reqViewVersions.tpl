@@ -464,7 +464,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                      show_hide_container_view_status_id=$memstatus_id}
 
               {* Other Versions *}     
-              {* args_can_manage_coverage=false *}  
+              {* Design choice Coverage will be always OFF 
+                 for versions different than Latest *}
               <div id="{$div_id}" class="workBack">
                
                 <img class="clickable" src="{$tlImages.cog}" 
@@ -474,7 +475,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
               {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
                        args_hide_coverage=false
  
-                       args_can_manage_coverage=!$frozen_version
+                       args_can_manage_coverage=false
                        args_req_coverage=$gui->other_req_coverage[idx][$rdx]
                        args_req=$my_req 
                        args_gui=$gui

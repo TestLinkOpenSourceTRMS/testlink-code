@@ -165,8 +165,7 @@ function SP()
 /**
  *  EXecution DaShboard (EXDS)
  */
-function EXDS()
-{
+function EXDS() {
   var action_url = fRoot+'lib/execute/execDashboard.php';
   parent.workframe.location = action_url;
 }
@@ -1746,28 +1745,41 @@ function openTCW(tcase_external_id,version_number)
 /**
  *
  */
-function toogleShowHide(oid,display_type)
-{
+function toogleShowHide(oid,display_type) {
   var obj = document.getElementById(oid);
   
-  if (!obj)
-  {
+  if (!obj) {
     return;
   }                  
   
-  if(obj.style.display == 'none')
-  {
-    if(display_type != undefined)
-    {
+  if(obj.style.display == 'none') {
+    if(display_type != undefined) {
       obj.style.display = display_type;
-    } 
-    else
-    {
+    } else {
       obj.style.display = '';
     } 
+  } else {
+    obj.style.display = 'none';
   }
-  else
-  {
+}
+
+/**
+ *
+ */
+function toggleShowHide(oid,display_type) {
+  var obj = document.getElementById(oid);
+  
+  if (!obj) {
+    return;
+  }                  
+  
+  if(obj.style.display == 'none') {
+    if(display_type != undefined) {
+      obj.style.display = display_type;
+    } else {
+      obj.style.display = '';
+    } 
+  } else {
     obj.style.display = 'none';
   }
 }

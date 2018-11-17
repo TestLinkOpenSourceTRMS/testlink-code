@@ -2,14 +2,12 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @filesource	execDashboard.tpl
-@internal revisions
-@since 1.9.10
 *}
 {$title_sep=$smarty.const.TITLE_SEP}
 {$title_sep_type3=$smarty.const.TITLE_SEP_TYPE3}
 {lang_get var='labels'
           s='build_is_closed,test_cases_cannot_be_executed,build,builds_notes,testplan,
-             test_plan_notes,platform,platform_description'}
+             test_plan_notes,platform,platform_description,restAPIExecParameters'}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -62,6 +60,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {if $gui->buildEditorType == 'none'}{$gui->build_notes|nl2br}{else}{$gui->build_notes}{/if}
   {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
   </div>
+
+  <img class="clickable" src="{$tlImages.cog}" title="{$labels.restAPIExecParameters}"
+       onclick="javascript:toggleShowHide('restAPI','inline');" />
+
+  <div id="restAPI" style='display:none'>
+  {$gui->RESTArgsJSON}  
+  </div>  
 </div>
 </body>
 </html>

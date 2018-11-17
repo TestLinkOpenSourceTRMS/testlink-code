@@ -36,16 +36,13 @@ $control->build_tree_menu($gui);
 
 
 $smarty = new TLSmarty();
-if( $gui->execAccess )
-{
+if( $gui->execAccess ) {
   $smarty->assign('gui',$gui);
   $smarty->assign('control', $control);
   $smarty->assign('menuUrl',$gui->menuUrl);
   $smarty->assign('args', $gui->args);
   $tpl = $templateCfg->template_dir . $templateCfg->default_template;
-}  
-else
-{
+} else {
   $tpl = 'noaccesstofeature.tpl';
 }
 
@@ -56,28 +53,23 @@ $smarty->display($tpl);
  * 
  *
  */
-function initializeGui(&$dbH,&$control) 
-{
+function initializeGui(&$dbH,&$control) {
   $gui = new stdClass();
   
   // This logic is managed from execSetResults.php
   $gui->loadExecDashboard = true;
   if( isset($_SESSION['loadExecDashboard'][$control->form_token]) || 
       $control->args->loadExecDashboard == 0 
-    ) 
-  {
+    ) {
     $gui->loadExecDashboard = false;  
     unset($_SESSION['loadExecDashboard'][$control->form_token]);      
   }  
 
   $gui->menuUrl = 'lib/execute/execSetResults.php';
   $gui->args = $control->get_argument_string();
-  if($control->args->loadExecDashboard == false)
-  {
+  if($control->args->loadExecDashboard == false) {
     $gui->src_workframe = '';
-  } 
-  else
-  {
+  } else {
     $gui->src_workframe = $control->args->basehref . $gui->menuUrl .
                           "?edit=testproject&id={$control->args->testproject_id}" . 
                           $gui->args;
@@ -99,15 +91,13 @@ function initializeGui(&$dbH,&$control)
   // feature to enable/disable
   $gui->features = array('export' => false,'import' => false);
   $gui->execAccess = false;
-  if($grants['testplan_execute'])
-  {
+  if($grants['testplan_execute']) {
     $gui->features['export'] = true;
     $gui->features['import'] = true;
     $gui->execAccess = true;
   }  
 
-  if($grants['exec_ro_access'])
-  {
+  if($grants['exec_ro_access']) {
     $gui->execAccess = true;
   }  
 
@@ -122,8 +112,7 @@ function initializeGui(&$dbH,&$control)
 /**
  *
  */
-function checkAccessToExec(&$dbH,&$ct)
-{
+function checkAccessToExec(&$dbH,&$ct) {
   $tplan_id = intval($ct->args->testplan_id);
   $sch = tlObject::getDBTables(array('testplans'));
   $sql = "SELECT testproject_id FROM {$sch['testplans']} " .

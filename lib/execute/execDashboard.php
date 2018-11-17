@@ -4,8 +4,6 @@
  *
  * @filesource  execDashboard.php
  * 
- * @internal revisions
- * @since 1.9.13
  *
 **/
 require_once('../../config.inc.php');
@@ -37,8 +35,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   
   returns: 
 */
-function init_args(&$dbHandler,$cfgObj)
-{
+function init_args(&$dbHandler,$cfgObj) {
+
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $tplan_mgr = new testplan($dbHandler);
@@ -56,15 +54,14 @@ function init_args(&$dbHandler,$cfgObj)
   
   $args->tplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
   $args->tproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID']);
-  if($args->tproject_id <= 0)
-  {
+
+  if($args->tproject_id <= 0) {
     $tree_mgr = new tree($dbHandler);
     $dm = $tree_mgr->get_node_hierarchy_info($args->tplan_id);
     $args->tproject_id = $dm['parent_id']; 
   }
 
-  if(is_null($args->build_id) || ($args->build_id == 0) )
-  {
+  if(is_null($args->build_id) || ($args->build_id == 0) ) {
     // Go for the build
     // this info can be present in session, then we will try different ways
     // ATTENTION: 
@@ -72,26 +69,22 @@ function init_args(&$dbHandler,$cfgObj)
     //
     $key = $args->tplan_id . '_stored_setting_build';
     $args->build_id = isset($_SESSION[$key]) ? intval($_SESSION[$key]) : null;
-    if( is_null($args->build_id) )
-    {
+    if( is_null($args->build_id) ) {
       $args->build_id = $tplan_mgr->get_max_build_id($args->tplan_id,1,1);
     }  
   }  
 
-  if(is_null($args->platform_id) || ($args->platform_id <= 0) )
-  {
+  if(is_null($args->platform_id) || ($args->platform_id <= 0) ) {
     // Go for the platform (if any exists)
     // this info can be present in session, then we will try different ways
     // ATTENTION: 
     // give a look to tlTestCaseFilterControl.class.php method init_setting_platform()
     //
     $itemSet = $tplan_mgr->getPlatforms($args->tplan_id);
-    if(!is_null($itemSet))
-    {
+    if(!is_null($itemSet)) {
       $key = $args->tplan_id . '_stored_setting_platform';
       $args->platform_id = isset($_SESSION[$key]) ? intval($_SESSION[$key]) : null;
-      if( is_null($args->platform_id) || ($args->platform_id <= 0) )
-      {
+      if( is_null($args->platform_id) || ($args->platform_id <= 0) ) {
         $args->platform_id = $itemSet[0]['id'];
       }  
     }  
@@ -166,8 +159,8 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
   returns: 
 
 */
-function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
-{
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr) {
+
   $buildMgr = new build_mgr($dbHandler);
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
@@ -220,12 +213,21 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     
   $gui->platform_info['id']=0;
   $gui->platform_info['name']='';
-  if(!is_null($argsObj->platform_id) && $argsObj->platform_id > 0 )
-  { 
+  if(!is_null($argsObj->platform_id) && $argsObj->platform_id > 0 ) { 
     $gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
   }
 
   $gui->pageTitlePrefix = lang_get('execution_context') . ':';
+
+
+  // JSON for REST API
+  $gui->restArgs = new stdClass();
+  $gui->restArgs->testPlanID = intval($argsObj->tplan_id);
+  $gui->restArgs->buildID = intval($argsObj->build_id);
+  $gui->restArgs->platformID = intval($argsObj->platform_id);
+  
+  $gui->RESTArgsJSON = json_encode($gui->restArgs);
+
   return $gui;
 }
 

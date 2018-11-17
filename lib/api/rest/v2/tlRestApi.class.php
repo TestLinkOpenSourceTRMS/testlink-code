@@ -166,22 +166,17 @@ class tlRestApi
 
     $this->cfg = array();
     $conf = config_get('results');
-    foreach($conf['status_label_for_exec_ui'] as $key => $label )
-    {
+    foreach($conf['status_label_for_exec_ui'] as $key => $label ) {
       $this->cfg['exec']['statusCode'][$key] = $conf['status_code'][$key];  
     }
     
-    //if( isset($this->cfg['exec']['statusCode']['not_run']) )
-    //{
-    //  unset($this->cfg['exec']['statusCode']['not_run']);  
-    //}   
-
     $this->cfg['exec']['codeStatus'] = array_flip($this->cfg['exec']['statusCode']);
 
     $this->cfg['tcase']['defaults']['importance'] = config_get('testcase_importance_default');
     $this->cfg['tcase']['defaults']['executionType'] = TESTCASE_EXECUTION_TYPE_MANUAL;
     $this->cfg['tcase']['status'] = config_get('testCaseStatus'); 
 
+    $this->cfg['execType'] = config_get('execution_type');
 
     $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
   }  
@@ -409,7 +404,7 @@ class tlRestApi
    *
    * $ex->testPlanID
    * $ex->buildID
-   * $ex->platformID
+   * $ex->platformID  -> optional
    * $ex->testCaseExternalID
    * $ex->notes
    * $ex->statusCode
@@ -447,6 +442,15 @@ class tlRestApi
       $ex = json_decode($request->getBody());
       $util = $this->checkExecutionEnvironment($ex);
 
+      // Complete missing propertie
+      if( property_exists($ex, 'platformID') == FALSE ) {
+        $ex->platformID = 0;
+      }
+
+      if( property_exists($ex, 'executionType') == FALSE ) {
+        $ex->executionType = $this->cfg['execType']['auto'];
+      }
+
       // If we are here this means we can write execution status!!!
       $ex->testerID = $this->userID;
       foreach($util as $prop => $value) {
@@ -465,9 +469,11 @@ class tlRestApi
   //
   // Support methods
   //
-  private function checkExecutionEnvironment($ex)
-  {
+  private function checkExecutionEnvironment($ex) {
     // throw new Exception($message, $code, $previous);
+
+    // no platform
+    $platform = 0;
 
     // Test plan ID exists and is ACTIVE    
     $msg = 'invalid Test plan ID';
@@ -475,8 +481,7 @@ class tlRestApi
                     'testPlanFields' => 'id,testproject_id,is_public');
     $status_ok = !is_null($testPlan=$this->tplanMgr->get_by_id($ex->testPlanID,$getOpt));
     
-    if($status_ok)
-    {
+    if($status_ok) {
       // user has right to execute on Test plan ID
       // hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
       $msg = 'user has no right to execute';
@@ -484,100 +489,91 @@ class tlRestApi
                                          $testPlan['testproject_id'],$ex->testPlanID,true); 
     }  
 
-    if($status_ok)
-    {
+    if($status_ok) {
       // Check if couple (buildID,testPlanID) is valid
       $msg = '(buildID,testPlanID) couple is not valid';
       $getOpt = array('fields' => 'id,active,is_open', 'buildID' => $ex->buildID, 'orderBy' => null);
       $status_ok = !is_null($build = $this->tplanMgr->get_builds($ex->testPlanID,null,null,$getOpt));
 
-      if($status_ok)
-      {
+      if($status_ok) {
         // now check is execution can be done againts this build
         $msg = 'Build is not active and/or closed => execution can not be done';
         $status_ok = $build[$ex->buildID]['active'] && $build[$ex->buildID]['is_open'];
       }  
     }  
 
-    if($status_ok)
-    {
+    if($status_ok && property_exists($ex, 'platformID')) {
       // Get Test plan platforms
+      $platform = $ex->platformID;
+
       $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => false);
       $platformSet = $this->tplanMgr->getPlatforms($ex->testPlanID,$getOpt);
 
-      if( !($hasPlatforms = !is_null($platformSet)) && $ex->platformID !=0)
-      {
+      if( !($hasPlatforms = !is_null($platformSet)) && $platform !=0) {
         $status_ok = false;
         $msg = 'You can not execute against a platform, because Test plan has no platforms';
       }  
 
-      if($status_ok)
-      {
-        if($hasPlatforms)
-        {  
-          if($ex->platformID == 0)
-          {
+      if($status_ok) {
+        if($hasPlatforms) {  
+          if($platform == 0) {
             $status_ok = false;
             $msg = 'Test plan has platforms, you need to provide one in order to execute';
-          }
-          else if (!isset($platformSet[$ex->platformID]))
-          {
+          } else if (!isset($platformSet[$platform])) {
             $status_ok = false;
             $msg = '(platform,test plan) couple is not valid';
-          }  
+          }
         }
       }  
     } 
 
-    if($status_ok)
-    {
+    if($status_ok) {
       // Test case check
       $msg = 'Test case does not exist';
 
       $tcaseID = $this->tcaseMgr->getInternalID($ex->testCaseExternalID);
       $status_ok = ($tcaseID > 0);
-      if( $status_ok = ($tcaseID > 0) )
-      {
+      if( $status_ok = ($tcaseID > 0) ) {
         $msg = 'Test case doesn not belong to right test project';
         $testCaseTestProject = $this->tcaseMgr->getTestProjectFromTestCase($tcaseID,0);
         $status_ok = ($testCaseTestProject == $testPlan['testproject_id']);
       }  
-      if($status_ok)
-      {
+
+      if($status_ok) {
         // Does this test case is linked to test plan ?
         $msg = 'Test case is not linked to (test plan,platform) => can not be executed';
-        $getFilters = array('testplan_id' => $ex->testPlanID, 'platform_id' => $ex->platformID);
+        $getFilters = array('testplan_id' => $ex->testPlanID, 
+                            'platform_id' => $platform);
+
         $getOpt = array('output' => 'simple');
         $links = $this->tcaseMgr->get_linked_versions($tcaseID,$getFilters,$getOpt);
         $status_ok = !is_null($links);
       }  
     }  
 
-    if($status_ok)
-    {
+    if($status_ok) {
       // status code is OK ?
       $msg = 'not run status is not a valid execution status (can not be written to DB)';
       $status_ok = ($ex->statusCode != $this->cfg['exec']['statusCode']['not_run']);
 
-      if($status_ok)
-      {
+      if($status_ok) {
         $msg = 'Requested execution status is not configured on TestLink';
         $status_ok = isset($this->cfg['exec']['codeStatus'][$ex->statusCode]);
       }  
     }  
 
-    if($status_ok)
-    {
+    if($status_ok) {
       $ret = new stdClass();
       $ret->testProjectID = $testPlan['testproject_id'];
       $ret->testCaseVersionID = key($links);
-      $ret->testCaseVersionNumber = $links[$ret->testCaseVersionID][$ex->testPlanID][$ex->platformID]['version'];
+      $ret->testCaseVersionNumber = 
+        $links[$ret->testCaseVersionID][$ex->testPlanID][$platform]['version'];
     }
-      
-    if(!$status_ok)
-    {
+
+    if(!$status_ok) {
       throw new Exception($msg);
     }  
+
     return $ret;
   }
  

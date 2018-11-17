@@ -2926,8 +2926,7 @@ class testcase extends tlObjectWithAttachments
    *
    * @internal revisions
    */
-  function getInternalID($stringID,$opt = null)
-  {
+  function getInternalID($stringID,$opt = null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $internalID = 0;
     $my['opt'] = array('glue' => $this->cfg->testcase->glue_character,
@@ -2940,13 +2939,12 @@ class testcase extends tlObjectWithAttachments
     // When using this method on a context where caller certifies that
     // test project is OK, we will skip this check.
     $tproject_id = $my['opt']['tproject_id'];
-    if( !is_null($tproject_id) && !is_null($my['opt']['output']) )
-    {
+    if( !is_null($tproject_id) && !is_null($my['opt']['output']) ) {
       $sql = " SELECT id,is_public  FROM {$this->tables['testprojects']} " .
              " WHERE id = " . intval($tproject_id);
+
       $tproject_info = $this->db->get_recordset($sql);
-      if( !is_null($tproject_info) )
-      {
+      if( !is_null($tproject_info) ) {
         $tproject_info = current($tproject_info);
       }
     }
@@ -2955,43 +2953,35 @@ class testcase extends tlObjectWithAttachments
     // Find the last glue char
     $gluePos = strrpos($stringID, $my['opt']['glue']);
     $isFullExternal = ($gluePos !== false);
-    if($isFullExternal)
-    {
+    if($isFullExternal) {
       $rawTestCasePrefix = substr($stringID, 0, $gluePos);
       $rawExternalID = substr($stringID, $gluePos+1);
       $status_ok = ($externalID = is_numeric($rawExternalID) ?  intval($rawExternalID) : 0) > 0;
-    }
-    else
-    {
+    } else {
       $status_ok = (($externalID = intval($stringID)) > 0);
     }
 
-    if( $status_ok && is_null($tproject_id) )
-    {
+    if( $status_ok && is_null($tproject_id) ) {
       $status_ok = false;
-      if($isFullExternal)
-      {
+      if($isFullExternal) {
         // Check first if Test Project prefix is valid, if not abort
         $testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
         $sql = "SELECT id,is_public  FROM {$this->tables['testprojects']} " .
                "WHERE prefix = '" . $this->db->prepare_string($testCasePrefix) . "'";
+
         $tproject_info = $this->db->get_recordset($sql);
-        if( $status_ok = !is_null($tproject_info) )
-        {
+        if( $status_ok = !is_null($tproject_info) ) {
           $tproject_info = current($tproject_info);
           $tproject_id = $tproject_info['id'];
           // $tproject_id = $tproject_info[0]['id'];
         }
-      }
-      else
-      {
+      } else {
         throw new Exception(__METHOD__ .
                            ' EXCEPTION: When using just numeric part of External ID, test project ID, is mandatory');
       }
     }
 
-    if( $status_ok )
-    {
+    if( $status_ok ) {
       $internalID = 0;
 
       // get all test cases with requested external ID on all test projects.
@@ -3003,13 +2993,10 @@ class testcase extends tlObjectWithAttachments
              " WHERE  TCV.tc_external_id = " . intval($externalID);
 
       $testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-      if(!is_null($testCases))
-      {
-        foreach($testCases as $tcaseID => $value)
-        {
+      if(!is_null($testCases)) {
+        foreach($testCases as $tcaseID => $value) {
           $path2root = $this->tree_manager->get_path($tcaseID);
-          if($tproject_id == $path2root[0]['parent_id'])
-          {
+          if($tproject_id == $path2root[0]['parent_id']) {
             $internalID = $tcaseID;
             break;
           }
@@ -8816,6 +8803,21 @@ class testcase extends tlObjectWithAttachments
     $rs = current($this->db->get_recordset($sql));
             
     return $rs['tcversion_id'];
+  }
+
+  /**
+   *
+   */
+  function latestVersionHasBeenExecuted($tcaseID) {
+    $sql = "SELECT COALESCE(E.tcversion_id,0) AS executed 
+            FROM {$this->views['latest_tcase_version_id']} LTCV
+            LEFT OUTER JOIN {$this->tables['executions']} E 
+            ON E.tcversion_id = LTCV.tcversion_id
+            WHERE LTCV.testcase_id=" . intval($tcaseID);
+
+    $rs = current($this->db->get_recordset($sql));
+            
+    return ($rs['executed'] != 0);
   }
 
 

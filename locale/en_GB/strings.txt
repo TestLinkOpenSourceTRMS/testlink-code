@@ -3913,4 +3913,10 @@ $TLS_API_TESTPLAN_APIKEY_DOES_NOT_EXIST = 'Test Plan with API KEY: %s does not e
 
 $TLS_tcvqty_with_kw = 'Quantity of Test Case Versions using this keyword';
 $TLS_can_not_delete_a_frozen_relation = 'A Frozen relation can not be deleted';
+
+$TLS_cannot_link_latest_version_reason_has_been_exec = 'Link to latest version of test case <b>%s</b> cannot be added - REASON: has been executed';
+
+$TLS_reqLinkingDisabledAfterExec = 'System config blocks requirement version link management for executed test case versions';
+$TLS_yourRoleHasReqLinkingDisabled = 'Your Roles does not have requirement version link to test case version right';
+
 // ----- END ------------------------------------------------------------------

@@ -881,8 +881,7 @@ class reqCommands {
   /**
    *
    */ 
-  function addTestCase(&$argsObj,$request)
-  {
+  function addTestCase(&$argsObj,$request) {
 
     $obj = $this->initGuiBean();
     $node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
@@ -895,42 +894,55 @@ class reqCommands {
     $obj->template = "reqView.php?refreshTree=0&requirement_id={$argsObj->req_id}";
 
     // Analise test case identity
-    $cfg = config_get('testcase_cfg');
+    $tcaseCfg = config_get('testcase_cfg');
 
     $status_ok = false;
-    $msg = sprintf(lang_get('provide_full_external_tcase_id'),$argsObj->tcasePrefix, $cfg->glue_character); 
-    $gluePos = strrpos($argsObj->tcaseIdentity, $cfg->glue_character);
+    $msg = sprintf(lang_get('provide_full_external_tcase_id'),$argsObj->tcasePrefix, $tcaseCfg->glue_character); 
+    $gluePos = strrpos($argsObj->tcaseIdentity, $tcaseCfg->glue_character);
+
     $isFullExternal = ($gluePos !== false);
-    if($isFullExternal)
-    {
-      //echo __LINE__ . ' :: status ok:' . $status_ok . '<br>';
+    if($isFullExternal) {
       $status_ok = true;
       $rawTestCasePrefix = substr($argsObj->tcaseIdentity, 0, $gluePos);
+      
       $status_ok = (strcmp($rawTestCasePrefix,$argsObj->tcasePrefix) == 0);
-      //echo __LINE__ . ' :: status ok:' . $status_ok . '<br>';
-     
-      if(!$status_ok)
-      {
+      if(!$status_ok) {
         $msg = sprintf(lang_get('seems_to_belong_to_other_tproject'),$rawTestCasePrefix,$argsObj->tcasePrefix);
       }
     }
     
     if($status_ok) {            
-      // IMPORANT NOTICE: audit info is managed on reqMgr method
+      // IMPORTANT NOTICE: audit info is managed on reqMgr method
       $alienMgr = new testcase($this->db);
       $tcase_id = $alienMgr->getInternalID($argsObj->tcaseIdentity,array('tproject_id' => $argsObj->tproject_id)); 
+
+      // Design Choice
+      // 1. Only latest test case version will be added
+      // 2. Only if not executed
       if($tcase_id > 0) { 
-        $this->reqMgr->assign_to_tcase($argsObj->req_id,$tcase_id,intval($argsObj->user_id));
-      }
-      else {
+
+        $doLink = true;
+        if( $tcaseCfg->reqLinkingDisabledAfterExec ) {
+          if( $alienMgr->latestVersionHasBeenExecuted($tcase_id) == 0) {
+            $doLink = true;
+          } else {
+            $status_ok = false;
+            $msg = sprintf(lang_get('cannot_link_latest_version_reason_has_been_exec'),
+                           $argsObj->tcaseIdentity);
+          }
+        }
+        if( $doLink ) {
+          $this->reqMgr->assign_to_tcase($argsObj->req_id,$tcase_id,intval($argsObj->user_id));                    
+        }
+
+      } else {
         $status_ok = false;
         $msg = sprintf(lang_get('tcase_doesnot_exist'),$argsObj->tcaseIdentity);
       }  
     }
     
     
-    if(!$status_ok)
-    {
+    if(!$status_ok) {
       $obj->user_feedback = $msg;
       $obj->template .= "&user_feedback=" . urlencode($obj->user_feedback);
     }    

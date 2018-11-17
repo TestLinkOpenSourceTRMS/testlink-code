@@ -279,8 +279,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
 
   {* Current *}
   {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
-           args_req_coverage=$gui->current_req_coverage
-           args_can_manage_coverage=$gui->canAddCoverage
+           args_req_coverage = $gui->current_req_coverage
+           args_can_manage_coverage = $gui->canAddCoverage
            args_req=$gui->current_version[idx][0] 
            args_gui=$gui
            args_grants=$gui->grants 
@@ -472,9 +472,10 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                   onclick="javascript:toogleShowHide('control_panel_{$reqVersionID}','inline');"
                   title="{$labels.actions}" />
 
+              {* Req Version link to Test Case Version only
+                 for Latest Req Version *} 
               {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
                        args_hide_coverage=false
- 
                        args_can_manage_coverage=false
                        args_req_coverage=$gui->other_req_coverage[idx][$rdx]
                        args_req=$my_req 

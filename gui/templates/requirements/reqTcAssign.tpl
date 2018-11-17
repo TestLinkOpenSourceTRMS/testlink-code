@@ -10,7 +10,7 @@ assign REQ to one test case
           s="please_select_a_req,test_case,req_title_assign,btn_close,
              warning_req_tc_assignment_impossible,req_spec,warning,
              req_title_assigned,check_uncheck_all_checkboxes,version,
-             version_short,
+             version_short,reqLinkingDisabledAfterExec,
              req_msg_norequirement,btn_unassign,req_title_unassigned,
              check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign,
              req_doc_id,req,scope,assigned_by,timestamp,requirement"}
@@ -45,14 +45,17 @@ function refreshAndClose(tcase_id,callback) {
 </script>
 </head>
 
+{$msgReqLinkingEnabled = ''}
 {$reqLinkingEnabled = 0} 
 {if $gui->req_tcase_link_management}
   {$reqLinkingEnabled = 1}
+  {$msgReqLinkingEnabled = $labels.yourRoleHasReqLinkingDisabled}
 {/if}    
 
 {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 &&
     $gui->tcaseHasBeenExecuted == 1}
   {$reqLinkingEnabled = 0}
+  {$msgReqLinkingEnabled = $labels.reqLinkingDisabledAfterExec}
 {/if}    
 
 
@@ -123,12 +126,15 @@ function refreshAndClose(tcase_id,callback) {
 
       {$cbDisabled = 0}
       {* Has become complex & weird!! *}
+      {* can_be_removed check LINK STATUS *}
       {if $tlCfg->reqTCLink->freezeeLinkOnNewREQVersion == TRUE }
-        {if $gui->assignedReq[row].reqver_is_open == 0 || 
-            $gui->assignedReq[row].can_be_removed == 0 }
+        {if $gui->assignedReq[row].can_be_removed == 0 }
           {$cbDisabled = 1}
         {/if}
       {/if}      
+      {if $reqLinkingEnabled == 0}
+        {$cbDisabled = 1}
+      {/if}
     	<tr>
     		<td>
           {if $cbDisabled == 1}
@@ -159,6 +165,12 @@ function refreshAndClose(tcase_id,callback) {
     		       onclick="return check_action_precondition('reqList','unassign');"/>
     	</div>
     {/if}
+    {if $reqLinkingEnabled == 0}
+      <div class="groupBtn">
+        {$msgReqLinkingEnabled}
+      </div>
+    {/if}
+
   </form>
   {/if}
 
@@ -190,7 +202,7 @@ function refreshAndClose(tcase_id,callback) {
       	{section name=row2 loop=$gui->unassignedReq}
           {$freeReq = $gui->unassignedReq[row2]}
       	<tr>
-      		<td><input type="checkbox" {if $freeReq.reqver_is_open == 0} disabled="disabled" {/if}
+      		<td><input type="checkbox" 
       		           id="free_req{$freeReq.id}" value="{$freeReq.id}"
       		           name="req_id[{$freeReq.id}]" /></td>
 

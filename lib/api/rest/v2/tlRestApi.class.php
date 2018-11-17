@@ -440,26 +440,21 @@ class tlRestApi
    *
    * 
    */
-  public function createTestCaseExecution()
-  {
+  public function createTestCaseExecution() {
     $op = array('status' => ' ko', 'message' => 'ko', 'id' => -1);  
-    try 
-    {
+    try {
       $request = $this->app->request();
       $ex = json_decode($request->getBody());
       $util = $this->checkExecutionEnvironment($ex);
 
       // If we are here this means we can write execution status!!!
       $ex->testerID = $this->userID;
-      foreach($util as $prop => $value)
-      {
+      foreach($util as $prop => $value) {
         $ex->$prop = $value;
       }  
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tplanMgr->writeExecution($ex);
-    } 
-    catch (Exception $e) 
-    {
+    } catch (Exception $e) {
       $op['message'] = $e->getMessage();   
     }
     echo json_encode($op);

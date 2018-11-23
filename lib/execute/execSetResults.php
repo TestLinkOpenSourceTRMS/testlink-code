@@ -1539,9 +1539,8 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   $items_to_exec[$tcase_id] = $target['tcversion_id'];    
   $link_id = $target['feature_id'];
   $tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
-    
-  $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
-
+     
+  $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcversion_id,'tcversions',1);
 
   foreach($locationFilters as $locationKey => $filterValue) {
     $finalFilters=$cf_filters+$filterValue;

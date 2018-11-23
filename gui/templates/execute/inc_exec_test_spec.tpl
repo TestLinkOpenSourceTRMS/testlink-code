@@ -105,8 +105,7 @@ Author : franciscom
     <tr>
       <td colspan="{$tableColspan}">
       {if $args_tcAttachments[$testcase_id] neq null}
-        {include file="inc_attachments.tpl" 
-                 attach_tableName="nodes_hierarchy" 
+        {include file="attachments.inc.tpl" 
                  attach_downloadOnly=true 
                  attach_attachmentInfos=$args_tcAttachments[$testcase_id] 
                  attach_tableClassName="bordered"

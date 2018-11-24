@@ -120,6 +120,8 @@ var pF_delete_relation = delete_relation;
         {$canDel = $args_edit_enabled && ($args_frozen_version == 'no') &&
                    $rx.related_tcase.is_open && 
                    $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
+        
+        {* 
         <tr>
           <td>            
           DEBUG  
@@ -133,7 +135,8 @@ var pF_delete_relation = delete_relation;
           canDel? {$canDel}<br>
           </td>
         </tr>  
-
+        *}
+         
         {if $canDel == 0}
           {* Build User Feedback Message *}
           {if $args_edit_enabled == 0 || 

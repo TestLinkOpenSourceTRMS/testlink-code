@@ -436,7 +436,7 @@ CREATE TABLE /*prefix*/keywords(
   "keyword" VARCHAR(100) NOT NULL DEFAULT '',
   "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id) ON DELETE CASCADE,
   "notes" TEXT NULL DEFAULT NULL,
-  PRIMARY KEY ("id"),
+  PRIMARY KEY ("id")
 ); 
 CREATE INDEX /*prefix*/keywords_testproject_id ON /*prefix*/keywords ("testproject_id");
 CREATE INDEX /*prefix*/keywords_keyword ON /*prefix*/keywords ("keyword");

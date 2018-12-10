@@ -46,14 +46,12 @@
 {/if}
 
 {$display_right_block_top=false}
-{$display_right_block_bottom=false}
+{$display_right_block_bottom=true}
 
 {if isset($gui->plugins.EVENT_RIGHTMENU_TOP) &&  $gui->plugins.EVENT_RIGHTMENU_TOP}
   {$display_right_block_top=true}
 {/if}
-{if isset($gui->plugins.EVENT_RIGHTMENU_BOTTOM) &&  $gui->plugins.EVENT_RIGHTMENU_BOTTOM}
-  {$display_right_block_bottom=true}
-{/if}
+
 
 {$divStyle="width:300px;padding: 0px 0px 0px 10px;"}
 {$aStyle="padding: 3px 15px;font-size:16px"}
@@ -178,14 +176,22 @@
   {/if}
 
   {if $display_right_block_bottom}
+
+    <div class="list-group" style="{$divStyle}" id="plugin_right_bottom">
+    <br/>
+    <address>
+    {lang_get var="lbl_f" s="poweredBy,system_descr"}
+
+    <strong><h6>{$lbl_f.poweredBy|escape} <a href="{$tlCfg->testlinkdotorg}" title="{$lbl_f.system_descr|escape}">TestLink {$tlVersion|escape}</a></h6></strong> <br>
+    </address>
+
     {if isset($gui->plugins.EVENT_RIGHTMENU_BOTTOM)}
 	  <br/>
-	  <div class="list-group" style="{$divStyle}" id="plugin_right_bottom">
         {foreach from=$gui->plugins.EVENT_RIGHTMENU_BOTTOM item=menu_item}
 		  <a href="{$menu_item['href']}" class="list-group-item" style="{$aStyle}">{$menu_item['label']}</a>
         {/foreach}
-      </div>
     {/if}  
+    </div>
   {/if}
   {* ------------------------------------------------------------------------------------------ *}
 

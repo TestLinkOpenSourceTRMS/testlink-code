@@ -30,6 +30,8 @@ $tplan_mgr  = &$metricsMgr;
 list($gui,$tproject_info,$labels,$cfg) = initializeGui($db,$args,$smarty->getImages(),$tplan_mgr);
 $args->cfg = $cfg;
 
+$renderHTML = true;
+
 // Because we will try to send via email xls, we need to be careful
 // with logic regarding args->format.
 // may be we need to add in logic the media => email, download, etc
@@ -70,8 +72,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_actio
   }
 
   $renderHTML = false;
-  //echo 'MOMO';die();
-  //var_dump($gui->matrix); die();
+
   switch($args->format)
   {
     case FORMAT_XLS:
@@ -206,8 +207,7 @@ function checkRights(&$db,&$user,$context = null)
  * return tlExtTable
  *
  */
-function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null)
-{  
+function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null) {  
   $buildIDSet = $argsObj->builds->idSet;
   $latestBuild = $argsObj->builds->latest;
 
@@ -234,17 +234,14 @@ function buildMatrix(&$guiObj,&$argsObj,$forceFormat=null)
   
   // --------------------------------------------------------------------
   $guiObj->filterFeedback = null;
-  foreach($buildIDSet as $iix)
-  {
+  foreach($buildIDSet as $iix) {
     $buildSet[] = $guiObj->buildInfoSet[$iix];
-    if($guiObj->filterApplied)
-    {
+    if($guiObj->filterApplied) {
       $guiObj->filterFeedback[] = $guiObj->buildInfoSet[$iix]['name'];
     }
   }  
 
-  if( $guiObj->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'] )
-  {
+  if( $guiObj->matrixCfg->buildColumns['showExecutionResultLatestCreatedBuild'] ) {
     $buildSet[] = array('name' => $lbl['result_on_last_build'] . ' ' . $latestBuild->name);
   }
 
@@ -404,8 +401,7 @@ function initializeGui(&$dbHandler,&$argsObj,$imgSet,&$tplanMgr)
  *
  *
  */
-function createSpreadsheet($gui,$args,$media)
-{
+function createSpreadsheet($gui,$args,$media) {
   $buildIDSet = $args->builds->idSet;
   $latestBuild = $args->builds->latest;
 
@@ -571,7 +567,7 @@ function setUpBuilds(&$args,&$gui)
   {
     $args->builds->idSet = array_keys(array_flip($args->build_set));
     $gui->filterApplied = true;
-    $gui->buildListForExcel = implode(',',$buildIDSet); 
+    $gui->buildListForExcel = implode(',',$args->builds->idSet); 
   }
 
   $args->builds->latest = new stdClass();
@@ -772,7 +768,13 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
         //      getExecStatusMatrix($id, $filters=null, $opt=null)
         //
         $dfx = $latestExecution[$platformID][$tcaseID];
-        $nv = is_null($dfx['execution_notes']) ? '' : $dfx['execution_notes'];
+        
+        $nv = '';
+        if( isset($dfx['execution_notes']) ) {
+          $nv = is_null($dfx['execution_notes']) ? '' : $dfx['execution_notes'];
+        }
+
+
         if( $fo == FORMAT_XLS) {
           $rows[] = $nv;
         } 

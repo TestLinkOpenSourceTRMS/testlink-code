@@ -26,10 +26,7 @@ jQuery(".chosen-select").chosen({ width: "100%" });
       {if $gui->userFeedback != ''}
       <img src="{$tlImages.warning}"> <b>{$gui->userFeedback}</b>
       {/if}
-      <form action="lib/results/resultsTC.php" method="post">
-        <input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id}" />
-        <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
-        <input type="hidden" id="do_action" name="do_action" value="result" />
+      <form action="{$gui->url2call}" method="post">
         <div>
           <table class="simple" style="margin-left: 0px;width: 80%">
             <tr>

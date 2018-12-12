@@ -45,16 +45,20 @@ $renderHTML = true;
 // ACTIVE Build Qty > 20 => Ask user to select builds he/she wants to use
 // Cell Qty = (ACTIVE Build Qty x Test Cases on Test plan) > 2000 => said user I'm sorry
 //
-if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || $args->do_action == 'result')
+
+setUpBuilds($args,$gui);
+$buildSet = array('buildSet' => $args->builds->idSet);
+
+if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) || 
+    ($args->do_action == 'result' && count($args->builds->idSet) <= $gui->matrixCfg->buildQtyLimit) )
 {
-  setUpBuilds($args,$gui);
+  //setUpBuilds($args,$gui);
 
   $tpl = $templateCfg->default_template;
-  $buildSet = array('buildSet' => $args->builds->idSet);
+  //$buildSet = array('buildSet' => $args->builds->idSet);
 
   $opt = array('getExecutionNotes' => true);
-  if($args->format == FORMAT_XLS)
-  {
+  if($args->format == FORMAT_XLS) {
     $opt = array('getExecutionNotes' => true, 'getTester' => true,
                  'getUserAssignment' => true, 
                  'getExecutionTimestamp' => true, 'getExecutionDuration' => true);
@@ -89,9 +93,11 @@ else
 {
   // We need to ask user to do a choice
   $tpl = 'resultsTCLauncher.tpl';
+  $gui->url2call = "lib/results/resultsTC.php?tplan_id=$gui->tplan_id" .
+                   "&tproject_id=$gui->tproject_id&do_action=result";
+
   $gui->pageTitle = $labels['test_result_matrix_filters'];
-  if($gui->matrixCfg->buildQtyLimit > 0)
-  {  
+  if($gui->matrixCfg->buildQtyLimit > 0) {  
     $gui->userFeedback = $labels['too_much_data'] . '<br>' .
                          sprintf($labels['too_much_builds'],$gui->activeBuildsQty,$gui->matrixCfg->buildQtyLimit);
   }
@@ -119,7 +125,6 @@ function init_args(&$dbHandler)
                    "buildListForExcel" => array(tlInputParameter::STRING_N,0,100),
                    "format" => array(tlInputParameter::INT_N));
 
-  
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
@@ -133,7 +138,6 @@ function init_args(&$dbHandler)
   $args->addOpAccess = true;
   if( !is_null($args->apikey) )
   {
-    //var_dump($args);
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
@@ -499,8 +503,6 @@ function createSpreadsheet($gui,$args,$media) {
   $cellArea .= "{$cellAreaEnd}{$startingRow}";
   $objPHPExcel->getActiveSheet()->getStyle($cellArea)->applyFromArray($style['DataHeader']);	
 
-  //var_dump($gui->matrix);
-
   $startingRow++;
   $qta_loops = count($gui->matrix);
   for($idx = 0; $idx < $qta_loops; $idx++)
@@ -548,23 +550,18 @@ function createSpreadsheet($gui,$args,$media) {
 /**
  *
  */
-function setUpBuilds(&$args,&$gui)
-{ 
+function setUpBuilds(&$args,&$gui) { 
   $args->builds = new stdClass();
 
-  if( is_null($args->build_set) )
-  {
+  if( is_null($args->build_set) ) {
     $args->builds->idSet = null;
     
     $gui->buildListForExcel = '';
     $gui->filterApplied = false;
-    if( !is_null($gui->buildInfoSet) )
-    {
+    if( !is_null($gui->buildInfoSet) ) {
       $args->builds->idSet = array_keys($gui->buildInfoSet);
     }
-  }  
-  else
-  {
+  } else {
     $args->builds->idSet = array_keys(array_flip($args->build_set));
     $gui->filterApplied = true;
     $gui->buildListForExcel = implode(',',$args->builds->idSet); 

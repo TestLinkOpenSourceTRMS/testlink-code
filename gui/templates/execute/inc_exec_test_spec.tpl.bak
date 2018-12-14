@@ -57,15 +57,6 @@ Author : franciscom
         {$args_tc_exec.estimated_exec_duration}
       </td>
     </tr>
-    <tr>
-    	<td colspan="{$tableColspan}">
-    		<input type="hidden" name="save_backup" id="save_backup" value="0"/>
-    		 <img src="{$tlImages.test_backup}" title="{$args_labels.click_backup}"
-                        name="saveBackup[{$args_tcversion_id}]"
-                        id="saveBackup_{$args_tcversion_id}"
-                        onclick="javascript:doBackupSteps('{$args_labels.confirm_save_backup}');"/>
-    	</td>
-    </tr>
 
     {* relations - 20140814 *}
     {if $args_relations != '' && !is_null($args_relations)}

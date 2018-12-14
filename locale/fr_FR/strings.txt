@@ -3758,6 +3758,13 @@ $TLS_issueTracker_connection_ko = 'Test Connection KO';
 $TLS_click_passed = "Enregistrer un résultat réussi";
 $TLS_click_failed = "Enregistrer un résultat en échec";
 $TLS_click_blocked = "Enregistrer un résultat bloqué";
+$TLS_click_backup = "Enregistrer une exécution partielle";
+$TLS_confirm_save_backup = "Une exécution partielle existe pour cet enregistrement. Voulez vous continuer et écraser l\'ancienne exécution partielle ?";
+$TLS_confirm_save_execution = "Une exécution partielle existe pour cet enregistrement et n\'a pas été restaurée. L\'exécution partielle sera supprimée. Voulez vous enregistrer l\'exécution finale ?";
+
+
+$TLS_steps_backup_exist = "Il existe une exécution partielle";
+$TLS_restore = "Restaurer";
 
 $TLS_click_passed_next = "Enregistrer un résultat réussi, passer à l'exécution suivante";
 $TLS_click_failed_next = "Enregistrer un résultat en échec, passer à l'exécution suivante";

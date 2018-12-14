@@ -95,6 +95,10 @@ a:hover   {
 	text-decoration: none;
 }
 
+.btn-primary{
+	color: #900;
+}
+
 /* ***** Menu bar specific ******************************************* */
 div.menu_title {
 	margin-left:	135px;
@@ -605,6 +609,14 @@ div.blocked {
 
 div.not_run {
 	background:		black;
+}
+
+div.backup_exist {
+	color: 			black;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: 	center;
+	background:		#EEE;
 }
 
 

@@ -121,7 +121,7 @@ if(!is_null($linked_tcversions)) {
   // because in some situations args->save_results is a number (0) an in other is an array
   // with just one element with key => test case version ID executed.
   //
-  if ($args->doSave || $args->doNavigate) {
+  if ($args->doSave || $args->doNavigate || $args->doSaveBackupSteps) {
     // this has to be done to do not break logic present on write_execution()
     $args->save_results = $args->save_and_next ? $args->save_and_next : 
                           ($args->save_results ? $args->save_results : $args->save_and_exit);
@@ -134,7 +134,12 @@ if(!is_null($linked_tcversions)) {
         $lexid = $tcase_mgr->getSystemWideLastestExecutionID($args->version_id);
       }  
 
-      $_REQUEST['save_results'] = $args->save_results;
+      $_REQUEST['save_results'] = $args->save_results;      
+      
+      if (isset($_REQUEST['step_notes'])) {          
+          $tcase_mgr->deleteBackupSteps(array_keys($_REQUEST['step_notes']),$args->tplan_id,$args->platform_id,$args->build_id);
+      }
+      
       list($execSet,$gui->addIssueOp) = write_execution($db,$args,$_REQUEST,$its);
       
       if($args->assignTask) {
@@ -262,7 +267,12 @@ if(!is_null($linked_tcversions)) {
     else if($args->save_and_exit)
     {
       $args->reload_caller = true;
-    }  
+    } 
+    else if ($args->doSaveBackupSteps) 
+    {
+        $stepsData = array("notes"=>$_REQUEST['step_notes'], "status"=>$_REQUEST['step_status'] );
+        $tcase_mgr->saveBackupSteps($stepsData,$args->tplan_id,$args->platform_id,$args->build_id,$args->user_id);
+    }
   }
   
   if(!$args->reload_caller)
@@ -289,6 +299,8 @@ if(!is_null($linked_tcversions)) {
       getLatestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
 
     $gui->map_last_exec_any_build = null;
+    
+    $gui->backupSteps = getBackupSteps($tcase_mgr,$gui,$args->tplan_id,$args->platform_id,$args->build_id);
     $gui->other_execs=null;
     $testerid = null;
       
@@ -472,7 +484,7 @@ function init_args(&$dbHandler,$cfgObj)
 
   $key2loop = array('level' => '','status' => null, 'statusSingle' => null, 
                     'do_bulk_save' => 0,'save_results' => 0,'save_and_next' => 0, 
-                    'save_and_exit' => 0);
+                    'save_and_exit' => 0, 'save_backup' => 0);
   foreach($key2loop as $key => $value)
   {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
@@ -1358,6 +1370,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 
   $gui->map_last_exec_any_build=null;
   $gui->map_last_exec=null;
+  $gui->backupSteps = null;
 
   // 20081122 - franciscom
   // Just for the records:  
@@ -1622,6 +1635,29 @@ function getLatestExec(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tc
   }
 
   return $last_exec;
+}
+
+/**
+ * Function retrieve test steps backup
+ * 
+ * @param testcase $tcaseMgr the testcase Manager
+ * @param array $guiObj  
+ * @param int $testPlanId
+ * @param int $platformId
+ * @param int $buildId
+ * 
+ * return map
+ */
+function getBackupSteps(&$tcaseMgr,$guiObj,$testPlanId,$platformId,$buildId) {
+    
+    $stepsIds = array();
+    foreach($guiObj->map_last_exec as $tcId => $elements) {        
+        foreach ($guiObj->map_last_exec[$tcId]['steps'] as $step) {
+            array_push($stepsIds, $step["id"]);
+        }
+    }
+  
+    return $tcaseMgr->getBackupSteps($stepsIds,$testPlanId,$platformId,$buildId);
 }
 
 

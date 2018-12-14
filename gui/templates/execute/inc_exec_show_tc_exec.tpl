@@ -168,12 +168,18 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           {$drawNotRun=1}
    		  {/if}
      {/if}
+     
+     {if $gui->grants->execute && $gui->backupSteps}
+		 <div id="backupSteps" class="backup_exist">
+		 	{$labels.steps_backup_exist}
+		 	<input type="button" value="{$labels.restore}" onclick="javascript:restoreSteps({$gui->backupSteps|@json_encode|@htmlspecialchars});" />
+		 </div>
+	 {/if}
 	 
 	 {if $drawNotRun }
 	 	<div class="not_run">{$labels.test_status_not_run}</div>
     	{$labels.tc_not_tested_yet}
-	 {/if}
-     
+	 {/if}   
      
 
     {* -------------------------------------------------------------------------------------------------- *}

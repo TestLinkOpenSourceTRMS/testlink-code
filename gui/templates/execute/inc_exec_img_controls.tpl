@@ -77,8 +77,8 @@ Author : franciscom
                 {/if}
 
                  <input type="hidden" name="statusSingle[{$tcversion_id}]" 
-                        id="statusSingle_{$tcversion_id}" value="">
-                 <input type="hidden" name="save_results" id="save_results" value="0">
+                        id="statusSingle_{$tcversion_id}" value=""/>
+                 <input type="hidden" name="save_results" id="save_results" value="0"/>
                  <br />
                  <br />
                  <button style="display: none;" type="submit" 
@@ -89,12 +89,8 @@ Author : franciscom
                    <img src="{$tlImages.$in}" title="{$ikval.title}"
                         name="fastExec{$kode}[{$tcversion_id}]"
                         id="fastExec{$kode}_{$tcversion_id}"
-                        onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
-                        document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
-                        document.getElementById('save_results').value=1;
-                        doSubmitForHTML5();
-                        // document.forms['execSetResults'].submit();">&nbsp;
-                 {/foreach}  
+                        onclick="javascript:doExecStatus({$args_tcversion_id},'{$kode}','{$args_labels.confirm_save_execution}');"/>&nbsp;
+                 {/foreach}
                  <br />
                  <br />
 
@@ -105,11 +101,7 @@ Author : franciscom
                    <img src="{$tlImages.$in}" title="{$ikval.title}"
                         name="fastExecNext{$kode}[{$tcversion_id}]"
                         id="fastExecNext{$kode}_{$tcversion_id}"
-                        onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
-                        document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
-                        document.getElementById('save_and_next').value=1;
-                        doSubmitForHTML5();
-                        // document.forms['execSetResults'].submit();">&nbsp;
+                        onclick="javascript:doExecStatusAndNext({$args_tcversion_id},'{$kode}','{$args_labels.confirm_save_execution}')"/>&nbsp;
                  {/foreach}  
                  <br />
                  <br />

@@ -5,3 +5,7 @@ config_db.inc.php
 /custom_config.inc.php
 **/._*
 upload_area/**
+.buildpath
+.project
+.settings
+less.exe.stackdump

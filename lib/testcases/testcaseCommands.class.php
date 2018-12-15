@@ -501,13 +501,13 @@ class testcaseCommands {
 	  logAuditEvent(TLS("audit_testcase_deleted",$external_id),"DELETE",$argsObj->tcase_id,"testcases");
       $guiObj->user_feedback = sprintf(lang_get('tc_deleted'), ":" . $external_id . TITLE_SEP . $tcinfo[0]['name']);
     }
-	else{
+	  else{
       $guiObj->main_descr .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
 	  // When deleting JUST one version, there is no need to refresh tree
       $guiObj->refreshTree = 0;
 	  logAuditEvent(TLS("audit_testcase_version_deleted",$tcinfo[0]['version'],$external_id),"DELETE",$argsObj->tcase_id,"testcases");
       $guiObj->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
-	}
+	  }
 
     $guiObj->testcase_name = $tcinfo[0]['name'];
     $guiObj->testcase_id = $argsObj->tcase_id;
@@ -519,16 +519,14 @@ class testcaseCommands {
 
 
   /**
-      * createStep
-     *
-     * @internal revisions
-     * 20100927 - franciscom - BUGID 3810
-     */
-  function createStep(&$argsObj,$request)
-  {
+   * createStep
+   *
+   */
+  function createStep(&$argsObj,$request) {
     $guiObj = $this->initGuiBean($argsObj);
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
+
     $guiObj->main_descr = sprintf(lang_get('create_step'), $guiObj->testcase['tc_external_id'] . ':' . 
                     $guiObj->testcase['name'], $guiObj->testcase['version']); 
         
@@ -547,7 +545,7 @@ class testcaseCommands {
     $guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
         
     $templateCfg = templateConfiguration('tcStepEdit');
-    $guiObj->template=$templateCfg->default_template;
+    $guiObj->template = $templateCfg->default_template;
     $guiObj->action = __FUNCTION__;
     
     return $guiObj;

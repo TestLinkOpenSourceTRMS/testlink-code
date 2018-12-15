@@ -3275,7 +3275,7 @@ class testcase extends tlObjectWithAttachments
     }
 
     $result = $this->deleteKeywords($id,$version_id);
-    if ($result && sizeof($kw_ids)) {
+    if ($result && sizeof((array)$kw_ids)) {
       $result = $this->addKeywords($id,$version_id,$kw_ids);
     }
     return $result;

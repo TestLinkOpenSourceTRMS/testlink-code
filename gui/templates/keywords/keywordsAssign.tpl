@@ -31,7 +31,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 >
 
 <div class="workBack">
- {include file="inc_update.tpl" result=$sqlResult item=$level action='updated'}
+ {include file="inc_update.tpl" result=$sqlResult item=$gui->level action='updated'}
 
   <h1 class="title">{$labels.keyword_assignment}</h1>
   {if $gui->keyword_assignment_subtitle neq ''}

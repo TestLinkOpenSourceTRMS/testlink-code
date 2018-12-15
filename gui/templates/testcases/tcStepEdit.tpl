@@ -2,9 +2,6 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource tcStepEdit.tpl
 Purpose: create/edit test case step
-
-@internal revisions
-@since 1.9.13
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -124,7 +121,7 @@ var tc_editor = "{$gui->editorType}";
              inc_tcbody_labels=$labels
              inc_tcbody_author_userinfo=$gui->authorObj
              inc_tcbody_updater_userinfo=$gui->updaterObj
-			 inc_tcbody_editor_type=$gui->editorType
+			       inc_tcbody_editor_type=$gui->editorType
              inc_tcbody_cf=null}
 
 

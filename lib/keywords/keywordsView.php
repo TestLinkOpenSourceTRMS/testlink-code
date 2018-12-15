@@ -9,6 +9,7 @@
  */
 require_once("../../config.inc.php");
 require_once("common.php");
+require_once("keywordsEnv.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -23,17 +24,17 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args(&$dbHandler) {
   $args = new stdClass();
-  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
-  $args->tproject_id = intval($args->tproject_id);
+  $tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+  $tproject_id = intval($tproject_id);
 
-  if( $args->tproject_id <= 0 ) {
+  if( $tproject_id <= 0 ) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
 
   // Check rights before doing anything else
   // Abort if rights are not enough 
   $user = $_SESSION['currentUser'];
-  $env['tproject_id'] = $args->tproject_id;
+  $env['tproject_id'] = $tproject_id;
   $env['tplan_id'] = 0;
   
   $check = new stdClass();
@@ -42,40 +43,8 @@ function init_args(&$dbHandler) {
   checkAccess($dbHandler,$user,$env,$check);
   
   // OK, go ahead
-  $tproject = new testproject($dbHandler);
-  $args->keywords = $tproject->getKeywords($args->tproject_id);
+  $args = getKeywordsEnv($dbHandler,$user,$tproject_id);
+  $args->tproject_id = $tproject_id;
 
-  $args->kwExecStatus = null;
-  $args->kwFreshStatus = null;
-  $args->kwOnTCV = null;
-
-  if( null != $args->keywords ) {
-    $kws = array();
-    foreach( $args->keywords as $kwo ) {
-      $kws[] = $kwo->dbID;
-    }
-
-    // Count how many times the keyword has been used
-    $args->kwOnTCV = $tproject->countKeywordUsageInTCVersions($args->tproject_id);
-
-    $kwCfg = config_get('keywords');
-
-    if( $kwCfg->onDeleteCheckExecutedTCVersions ) {
-      $args->kwExecStatus = 
-        $tproject->getKeywordsExecStatus($kws,$args->tproject_id);        
-    }
-
-    if( $kwCfg->onDeleteCheckFrozenTCVersions ) {
-      $args->kwFreshStatus = 
-        $tproject->getKeywordsFreezeStatus($kws,$args->tproject_id);  
-    }
-
-  }
-
-  $args->canManage = $user->hasRight($dbHandler,"mgt_modify_key",$args->tproject_id);
-  $args->canAssign = $user->hasRight($dbHandler,"keyword_assignment",$args->tproject_id);
-
-  $args->editUrl = $_SESSION['basehref'] . "lib/keywords/keywordsEdit.php?" .
-                   "tproject_id={$args->tproject_id}"; 
   return $args;
 }

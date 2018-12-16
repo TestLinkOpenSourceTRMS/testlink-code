@@ -3920,4 +3920,8 @@ $TLS_reqLinkingDisabledAfterExec = 'System config blocks requirement version lin
 $TLS_yourRoleHasReqLinkingDisabled = 'Your Roles does not have requirement version link to test case version right';
 
 $TLS_restAPIExecParameters = "REST API create execution args";
+
+$TLS_can_not_delete_relation_because_this_is_not_the_latest =
+"Delete Disabled: test case version is not the LATEST";
+
 // ----- END ------------------------------------------------------------------

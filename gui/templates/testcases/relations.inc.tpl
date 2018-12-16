@@ -1,13 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource relations.inc.tpl
+@used_by 
 *}
 
 {lang_get var='rel_labels' 
           s='relation_id, relation_type, relation_status, relation_project,
              relation_set_by, relation_delete, relations, new_relation, by, title_created,can_not_delete_a_frozen_relation,
              in, btn_add, img_title_delete_relation,no_records_found,other_versions,version,
-             title_test_case,match_count,warning,can_not_edit_frozen_tc,can_not_delete_relation_frozen_tc,
+             title_test_case,match_count,warning,can_not_edit_frozen_tc,can_not_delete_relation_frozen_tc,can_not_delete_relation_because_this_is_not_the_latest,
              commit_title,current_direct_link,current_testcase,test_case,relation_set_on,this_tcversion,can_not_delete_relation_tcversion_frozen,can_not_delete_relation_related_tcversion_frozen,
              specific_direct_link,req_does_not_exist,actions,tcase_relation_hint,tcase_relation_help'}
 
@@ -66,9 +67,11 @@ var pF_delete_relation = delete_relation;
 
   <table class="simple" id="relations">
     {if $args_edit_enabled}
-      {if $args_is_latest_tcv == 1 || 
-          $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion == 0}
+      {$canWork = $args_is_latest_tcv == 1 || 
+                  $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion == 0}
 
+      <br>
+      {if $canWork}
         <tr><th colspan="7">{$rel_labels.relations} 
           {if $args_relations.num_relations > 0} ({$args_relations.num_relations}) {/if}
         </th></tr>
@@ -117,39 +120,31 @@ var pF_delete_relation = delete_relation;
       
 
       {foreach item=rx from=$args_relations.relations}
-        {$canDel = $args_edit_enabled && ($args_frozen_version == 'no') &&
+        {$canDel = $canWork && $args_edit_enabled && $args_frozen_version == 'no' &&
                    $rx.related_tcase.is_open && 
                    $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
         
-        {* 
-        <tr>
-          <td>            
-          DEBUG  
-          $args_is_latest_tcv => {$args_is_latest_tcv}<br>
-          $args_edit_enabled => {$args_edit_enabled} <br>
-          $args_frozen_version => {$args_frozen_version}<br>  
-          $rx.related_tcase.is_open => {$rx.related_tcase.is_open}<br>
-          $rx.link_status => {$rx.link_status}<br>
-          {$smarty.const.LINK_TC_RELATION_OPEN}
-          <br>
-          canDel? {$canDel}<br>
-          </td>
-        </tr>  
-        *}
-         
         {if $canDel == 0}
+          {$cannotDelMsg = '...'}      
           {* Build User Feedback Message *}
-          {if $args_edit_enabled == 0 || 
-              $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
+          {if $args_edit_enabled == 0 }
             {$cannotDelMsg = ''}      
+          {else if $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
+
+            {$cannotDelMsg = 'rop'}      
+            {if $args_is_latest_tcv == 0}
+              {$cannotDelMsg = 
+                $rel_labels.can_not_delete_relation_because_this_is_not_the_latest}
+            {/if}
+
           {else if $args_frozen_version == "yes"}
             {$cannotDelMsg = $rel_labels.can_not_delete_relation_tcversion_frozen}
           {else if $rx.related_tcase.is_open == 0}
             {$cannotDelMsg = $rel_labels.can_not_delete_relation_related_tcversion_frozen}
-
+          {else if $args_is_latest_tcv == 0}
+            {$cannotDelMsg = $rel_labels.can_not_delete_relation_because_this_is_not_the_latest}            
           {else}
             {$cannotDelMsg = $rel_labels.can_not_delete_a_frozen_relation}
-
           {/if}
         {/if}  
         <tr>
@@ -170,10 +165,10 @@ var pF_delete_relation = delete_relation;
            <img src="{$tlImages.delete}" title="{$rel_labels.img_title_delete_relation}"  style="border:none" /></a>
           </td>
 		  {else}
-		  <td align="center">
-			<img style="border:none;" 	alt="{$cannotDelMsg}"
-			   title="{$cannotDelMsg}"	src="{$tlImages.delete_disabled}" />
-		  </td>
+  		  <td align="center">
+  			<img style="border:none;" 	alt="{$cannotDelMsg}"
+  			   title="{$cannotDelMsg}"	src="{$tlImages.vorsicht}" />
+  		  </td>
 		  {/if}
         </tr>
       {/foreach}

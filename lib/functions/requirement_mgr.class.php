@@ -3855,19 +3855,13 @@ function getByIDBulkLatestVersionRevision($id,$opt=null)
          " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
          $where_clause;
 
-
-  // echo $sql;
   $sqlOpt = ($my['opt']['outputFormat'] == 'map' ? 0 : database::CUMULATIVE);        
   $recordset = $this->db->fetchRowsIntoMap($sql,'id',$sqlOpt);
 
 
   $rs = null;
-  // echo 'IN::' . __FUNCTION__ . '<br>';
-  // new dBug($recordset);
 
-
-  if(!is_null($recordset))
-  {
+  if(!is_null($recordset)) {
     // Decode users
     $rs = $recordset;
 
@@ -4776,8 +4770,8 @@ function getCoverageCounter($id) {
              " WHERE LRQV.req_version_id IN (" . 
                implode(',', $itemSet) . ")" .
              " AND is_active = 1" .
-             " GROUP BY req_id ";
-    // echo $sql;
+             " GROUP BY RCOV.req_id ";
+
     $rs = $this->db->fetchRowsIntoMap($sql,'req_id');
     return $rs;
   }
@@ -4912,8 +4906,6 @@ function getCoverageCounter($id) {
     $idList = implode(",",(array)$reqVersionID);
     
     $sql .= " WHERE RCOV.req_version_id IN (" . $idList . ")";
-
-    echo $sql;
 
     return $this->db->fetchRowsIntoMap($sql,'req_version_id',true);
   }

@@ -120,7 +120,7 @@ var pF_delete_relation = delete_relation;
       
 
       {foreach item=rx from=$args_relations.relations}
-        {$canDel = $canWork && $args_edit_enabled && $args_frozen_version == 'no' &&
+        {$canDel = $args_edit_enabled && $args_frozen_version == 'no' &&
                    $rx.related_tcase.is_open && 
                    $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
         
@@ -129,6 +129,9 @@ var pF_delete_relation = delete_relation;
           {* Build User Feedback Message *}
           {if $args_edit_enabled == 0 }
             {$cannotDelMsg = ''}      
+          {else if $rx.link_status != $smarty.const.LINK_TC_RELATION_OPEN}
+            {$cannotDelMsg = $rel_labels.can_not_delete_a_frozen_relation}
+
           {else if $rx.link_status == $smarty.const.LINK_TC_RELATION_OPEN}
 
             {$cannotDelMsg = 'rop'}      

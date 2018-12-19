@@ -7,9 +7,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	  <tr>
 	  	<th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">
 		{$tco.tc_external_id}{$smarty.const.TITLE_SEP}{$tco.name|escape}
-		{$smarty.const.TITLE_SEP_TYPE2}{$tco.version}{$tco.version|escape}
-
-		dddd
+		{$smarty.const.TITLE_SEP_TYPE2}{$inc_tcbody_labels.version|escape}{$tco.version}
 		<img class="clickable" src="{$tlImages.ghost_item}"
              title="{$inc_tcbody_labels.show_ghost_string}"
              onclick="showHideByClass('tr','ghostTC');">

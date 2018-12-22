@@ -65,7 +65,7 @@ switch($args->item_level) {
 switch($args->doAction) {
   case 'doAddRemove':
     // Remember:  checkboxes exist only if are checked
-    $gui->itemQty = count($args->testcases2add);
+    $gui->itemQty = count((array)$args->testcases2add);
     
     if( !is_null($args->testcases2add) ) {
       addToTestPlan($db,$args,$gui,$tplan_mgr,$tcase_mgr);

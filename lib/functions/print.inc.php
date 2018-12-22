@@ -8,7 +8,7 @@
  * @filesource  print.inc.php
  *
  * @package   TestLink
- * @copyright 2007-2017, TestLink community 
+ * @copyright 2007-2018, TestLink community 
  * @uses      printDocument.php
  *
  *
@@ -1317,7 +1317,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                     if($fitem['is_image']) {
                       $code .= "<li>{$safeFileName}</li>";
 
-                      $pathname = $repoDir . $item['file_path'];
+                      $pathname = $repoDir . $fitem['file_path'];
                       list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
                       $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
                       $code .= '<li><img ' . $iDim . 
@@ -1443,15 +1443,13 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   // collect REQ for TC
   if ($options['requirement'])
   {
-    $requirements = $req_mgr->get_all_for_tcase($id);
+    $requirements = (array)$req_mgr->get_all_for_tcase($id);
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['reqs'].'</span>'; 
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 
-    if (sizeof($requirements))
-    {
-      foreach ($requirements as $req)
-      {
+    if (sizeof($requirements)) {
+      foreach ($requirements as $req) {
         $code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) . "<br />";
       }
     }
@@ -1469,16 +1467,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['keywords'].':</span></td>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
-    $kwSet = $tc_mgr->getKeywords($id,null,array('fields' => 'keyword_id,keywords.keyword'));
-    if (sizeof($kwSet))
-    {
-      foreach ($kwSet as $kw)
-      {
+    $kwSet = (array)$tc_mgr->getKeywords($id,null,array('fields' => 'keyword_id,keywords.keyword'));
+    if (sizeof($kwSet)) {
+      foreach ($kwSet as $kw) {
         $code .= htmlspecialchars($kw['keyword']) . "<br />";
       }
-    }
-    else
-    {
+    } else {
       $code .= '&nbsp;' . $labels['none'] . '<br/>';
     }
     $code .= "</td></tr>\n";

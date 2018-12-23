@@ -147,10 +147,9 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
   $guiObj->pageTitle = lang_get('test_suite') . config_get('gui_title_separator_1') . $tsuite_info['name'];
      
   $guiObj->req_specs = $tproject_mgr->genComboReqSpec($argsObj->tproject_id,'dotted',"&nbsp;");
+  
   $guiObj->selectedReqSpec = $argsObj->idReqSpec;
-
-  $dummy = $guiObj->req_specs[$argsObj->idReqSpec];
-  $guiObj->selectedReqSpecName = trim($dummy,'&nbsp;');
+  $guiObj->selectedReqSpecName = '';
 
   $guiObj->tcase_number = 0;
   $guiObj->has_req_spec = false;
@@ -161,6 +160,8 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
     if(is_null($argsObj->idReqSpec)) {
       $guiObj->selectedReqSpec = key($guiObj->req_specs);
     }
+    $guiObj->selectedReqSpecName = 
+      trim($guiObj->req_specs[$guiObj->selectedReqSpec],'&nbsp;');
 
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
        
@@ -168,7 +169,7 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
     $guiObj->requirements = 
       $req_spec_mgr->getAllLatestRQVOnReqSpec($guiObj->selectedReqSpec,$getOpt);
 
-    $guiObj->reqCountOnReqSpec = count($guiObj->requirements);
+    $guiObj->reqCountOnReqSpec = count((array)$guiObj->requirements);
 
     $guiObj->reqCountFeedback = 
       sprintf(lang_get('req_on_req_spec'),$guiObj->reqCountOnReqSpec,

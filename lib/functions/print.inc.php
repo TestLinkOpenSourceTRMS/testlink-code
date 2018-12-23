@@ -919,6 +919,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $tcase_pieces = null;
 
   $id = $node['id'];
+  $tcversion_id = $node['tcversion_id'];
+
   $level = $indentLevel;
   $prefix = isset($context['prefix']) ? $context['prefix'] : null;
   $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
@@ -1095,7 +1097,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   
   }
  
- $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
+  $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
                                array('renderGhost' => true,'renderImageInline' => true));
   if ($tcInfo) {
     $tcInfo = $tcInfo[0];
@@ -1285,8 +1287,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
             $code .= '</tr>';
 
             // Attachment management
-            if($getExecutions)
-            {
+            if($getExecutions) {
               if( isset($sxni[$tcInfo[$key][$ydx]['id']]))
               {
                 $attachInfo = getAttachmentInfos($docRepo,$sxni[$tcInfo[$key][$ydx]['id']]['id'],
@@ -1441,8 +1442,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
 
   // collect REQ for TC
-  if ($options['requirement'])
-  {
+  if ($options['requirement']) {
     $requirements = (array)$req_mgr->get_all_for_tcase($id);
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['reqs'].'</span>'; 
@@ -1461,13 +1461,14 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   }
   $requirements = null;
 
-  // collect keywords for TC
-  if ($options['keyword'])
-  {
+  // collect keywords for TC VERSION
+  if ($options['keyword']) {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['keywords'].':</span></td>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
-    $kwSet = (array)$tc_mgr->getKeywords($id,null,array('fields' => 'keyword_id,keywords.keyword'));
+
+    // HERE WE NEED TO REFACTOR 20181222
+    $kwSet = (array)$tc_mgr->getKeywords($id,$tcversion_id,null,array('fields' => 'keyword_id,KW.keyword'));
     if (sizeof($kwSet)) {
       foreach ($kwSet as $kw) {
         $code .= htmlspecialchars($kw['keyword']) . "<br />";

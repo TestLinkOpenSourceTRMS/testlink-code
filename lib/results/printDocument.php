@@ -118,6 +118,8 @@ switch ($doc_info->type) {
         }
       }  
     }  
+
+    // var_dump($opx); die();
     
     switch($doc_info->content_range) {
       case 'testproject':
@@ -127,7 +129,7 @@ switch ($doc_info->type) {
              
       case 'testsuite':
         $ctx->branchRoot =  $args->itemID;
-        $opx = array_merge((array)$opx,$my['options']['prepareNode']);
+        $opx = array_merge((array)$opx,(array)$my['options']['prepareNode']);
         list($treeForPlatform,$items2use) = 
              buildContentForTestPlanBranch($db,$subtree,$ctx,$doc_info,$decode,$tplan_mgr,$opx);
       break;
@@ -288,6 +290,8 @@ function init_args(&$dbHandler) {
 
   $args = new stdClass();
   $pParams = R_PARAMS($iParams,$args);
+
+  //var_dump($_REQUEST); die();
 
   // really UGLY HACK
   $typeDomain = array('test_plan' => 'testplan','test_report' => 'testreport');

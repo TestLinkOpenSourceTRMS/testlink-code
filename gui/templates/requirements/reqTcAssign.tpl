@@ -127,7 +127,7 @@ function refreshAndClose(tcase_id,callback) {
       {$cbDisabled = 0}
       {* Has become complex & weird!! *}
       {* can_be_removed check LINK STATUS *}
-      {if $tlCfg->reqTCLinks->freezeeLinkOnNewREQVersion == TRUE }
+      {if $tlCfg->reqTCLinks->freezeLinkOnNewREQVersion == TRUE }
         {if $gui->assignedReq[row].can_be_removed == 0 }
           {$cbDisabled = 1}
         {/if}

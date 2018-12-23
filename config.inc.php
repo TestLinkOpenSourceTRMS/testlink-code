@@ -1258,20 +1258,20 @@ $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
 
 // Effects on Req Version to TCVersion LINK 
 // when a new version of a linked Test Case is created
-$tlCfg->reqTCLinks->freezeeLinkOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = TRUE;
 
 // Effects on Req Version to TCVersion LINK 
 // when a new version of a linked Req Version is created
-$tlCfg->reqTCLinks->freezeeLinkOnNewREQVersion = TRUE;
+$tlCfg->reqTCLinks->freezeLinkOnNewREQVersion = TRUE;
 
 
 // Effects on BOTH ends of Req Version to TCVersion LINK 
 // when a new version of a linked TC Version is created
-$tlCfg->reqTCLinks->freezeeBothEndsOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freezeBothEndsOnNewTCVersion = TRUE;
 
 // Effects on BOTH ends of Req Version to TCVersion LINK 
 // when a new version of a linked REQ Version is created
-$tlCfg->reqTCLinks->freezeeBothEndsOnNewREQVersion = TRUE;
+$tlCfg->reqTCLinks->freezeBothEndsOnNewREQVersion = TRUE;
 
 
 // Effects on REQ Version N when REQ Version N+1 is created 

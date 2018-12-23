@@ -175,6 +175,13 @@ function refreshAndClose(tcase_id,callback) {
   {/if}
 
   </div>
+
+    {if $reqLinkingEnabled == 0} 
+      <div class="groupBtn">
+        {$msgReqLinkingEnabled}
+      </div>
+    {/if}
+
     {if $gui->unassignedReq ne "" && $reqLinkingEnabled == 1}
       <div class="workBack">
       <h2>{$labels.req_title_unassigned}</h2>

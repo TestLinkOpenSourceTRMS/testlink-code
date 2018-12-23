@@ -314,13 +314,14 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj) {
   
   if($SRS_qty > 0) {
     $tc_mgr = new testcase($dbHandler);
-    $arrTc = $tc_mgr->get_by_id($argsObj->id,testcase::LATEST_VERSION);
-    if($arrTc) {
-      $guiObj->tcTitle = $arrTc[0]['name'];
-      $guiObj->tcVersion = $arrTc[0]['version'];
+    $tcase = $tc_mgr->get_by_id($argsObj->id,testcase::LATEST_VERSION);
+    $tcase = current($tcase);
+    if($tcase) {
+      $guiObj->tcTitle = $tcase['name'];
+      $guiObj->tcVersion = $tcase['version'];
 
       // get test case version execution status
-      $tcversion_id = $arrTc[0]['id'];
+      $tcversion_id = $tcase['id'];
       $statusQuo = $tc_mgr->get_versions_status_quo($argsObj->id,$tcversion_id);
 
       $statusQuo = current($statusQuo);

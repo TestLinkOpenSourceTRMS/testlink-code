@@ -361,7 +361,7 @@ function launchInsertStep(step_id)
   <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
   <input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
 
-    {include file="testcases/inc_tcbody.tpl" 
+    {include file="{$tplConfig.inc_tcbody}" 
              inc_tcbody_close_table=false
              inc_tcbody_testcase=$args_testcase
              inc_tcbody_show_title=$args_show_title
@@ -373,7 +373,7 @@ function launchInsertStep(step_id)
              inc_tcbody_cf=$args_cf}
     
   {if $args_testcase.steps != ''}
-  {include file="testcases/inc_steps.tpl"
+  {include file="{$tplConfig.inc_steps}"
            layout=$gui->steps_results_layout
            edit_enabled=$edit_enabled
 		       args_frozen_version=$args_frozen_version
@@ -402,7 +402,7 @@ function launchInsertStep(step_id)
 {/if}
 </form>
 
-{include file="testcases/attributesLinearForViewer.inc.tpl"} 
+{include file="{$tplConfig['attributesLinearForViewer.inc']}"} 
 
 
 {if $args_cf.standard_location neq ''}
@@ -422,7 +422,7 @@ function launchInsertStep(step_id)
      {$kwRW = 1}
    {/if}
    
-   {include file="testcases/keywords.inc.tpl" 
+   {include file="{$tplConfig['keywords.inc']}" 
             args_edit_enabled=$kwRW
             args_tcase_id=$tcase_id
             args_tcversion_id=$tcversion_id
@@ -497,7 +497,7 @@ function launchInsertStep(step_id)
       {* TestScript Links (if any) *}
       {if isset($gui->scripts[$tcversion_id]) && !is_null($gui->scripts[$tcversion_id])}
         <tr style="background-color: #d0d0d0">
-          {include file="inc_show_scripts_table.tpl"
+          {include file="{$tplConfig.inc_show_scripts_table}"
            scripts_map=$gui->scripts[$tcversion_id]
            can_delete=true
            tcase_id=$tcversion_id
@@ -511,7 +511,7 @@ function launchInsertStep(step_id)
   
 {if $show_relations}
   <br />
-  {include file="testcases/relations.inc.tpl"
+  {include file="{$tplConfig['relations.inc']}"
            args_is_latest_tcv = $args_testcase.isTheLatest
            args_relations = $args_relations
            args_frozen_version = $args_frozen_version
@@ -521,6 +521,7 @@ function launchInsertStep(step_id)
 {if $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}
   {* Test Case version Test Plan Assignment *}
   <br />
-  {include file="testcases/quickexec.inc.tpl" args_edit_enabled=$edit_enabled} 
+  {include file="{$tplConfig['quickexec.inc']}"
+           args_edit_enabled=$edit_enabled} 
 {/if}
 

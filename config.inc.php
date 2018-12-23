@@ -901,7 +901,7 @@ $tlCfg->document_generator->requirement_css_template = 'css/tl_documents.css';
 // Display test case version when creating:
 // - test spec document
 // - test reports
-$tlCfg->document_generator->tc_version_enabled = FALSE;
+$tlCfg->document_generator->tc_version_enabled = TRUE;
 
 
 
@@ -2065,6 +2065,9 @@ $tlCfg->gui->title_separator_1 =  $tlCfg->gui_title_separator_1;
 $tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
+
+$tlCfg->gui->version_separator_open =  $tlCfg->gui_separator_open;
+$tlCfg->gui->version_separator_close = $tlCfg->gui_separator_close;
 
 
 /**

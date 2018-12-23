@@ -11,10 +11,6 @@
  * @copyright 2007-2018, TestLink community 
  * @uses      printDocument.php
  *
- *
- * @internal revisions
- * @since 1.9.17
- *
  */ 
 
 /** uses get_bugs_for_exec() */
@@ -1154,9 +1150,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   }
 
   if($cfg['doc']->tc_version_enabled || $force['displayVersion'] ) {
-    $code .= '&nbsp;<span style="font-size: 80%;">' . $cfg['gui']->role_separator_open . 
+    $code .= '&nbsp;<span style="font-size: 80%;">' . 
+             $cfg['gui']->version_separator_open . 
              $labels['version'] . $cfg['gui']->title_separator_1 .  $version_number . 
-             $cfg['gui']->role_separator_close . '</span>';
+             $cfg['gui']->version_separator_close . '</span>';
   }
   $code .= "</th></tr>\n";
 
@@ -1441,20 +1438,24 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $relSet = null;
 
 
-  // collect REQ for TC
+  // collect REQ for Test Case Version
   if ($options['requirement']) {
-    $requirements = (array)$req_mgr->get_all_for_tcase($id);
+    // $requirements = (array)$req_mgr->get_all_for_tcase($id);
+    $requirements = (array)$req_mgr->getActiveForTCVersion($tcversion_id);
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['reqs'].'</span>'; 
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 
     if (sizeof($requirements)) {
       foreach ($requirements as $req) {
-        $code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) . "<br />";
+        $code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) .
+                  " " .
+                  $cfg['gui']->version_separator_open .  
+                  "{$labels['version']}: {$req['version']}" . 
+                  $cfg['gui']->version_separator_close .
+                  "<br />";
       }
-    }
-    else
-    {
+    } else {
       $code .= '&nbsp;' . $labels['none'] . '<br />';
     }
     $code .= "</td></tr>\n";

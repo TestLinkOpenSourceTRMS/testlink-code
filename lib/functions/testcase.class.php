@@ -5471,25 +5471,46 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-     *
-     *
-     *  @internal Revisions
-     *  20100821 - franciscom - $step_id can be an array
-     */
-  function delete_step_by_id($step_id)
-  {
+   *
+   *  $step_id can be an array
+   */
+  function delete_step_by_id($step_id) {
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $sql = array();
-    $whereClause = " WHERE id IN (" . implode(',',(array)$step_id) . ")";
+    $idSet = implode(',',(array)$step_id);
 
+    // Try to delete any children entity
+    // Execution Attachment
+    // Execution result
+    //
+    $dummy = " /* $debugMsg */ SELECT id FROM 
+               {$this->tables['attachments']} 
+               WHERE fk_table = 'execution_tcsteps' 
+               AND fk_id IN (
+               SELECT id FROM {$this->tables['execution_tcsteps']}
+               WHERE tcstep_id IN ($idSet)  )";
+
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
+      }  
+    }  
+
+    // Order is CRITIC due to Foreing Keys 
+    $sqlSet = array();
+    $sqlSet[] = "/* $debugMsg */ 
+              DELETE FROM {$this->tables['execution_tcsteps']} 
+              WHERE tcstep_id IN ($idSet)";
+
+    $whereClause = " WHERE id IN ($idSet) ";
     $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']} {$whereClause} ";
     $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} " .
                 " {$whereClause} AND node_type_id = " .
                 $this->node_types_descr_id['testcase_step'];
 
-    foreach($sqlSet as $sql)
-    {
+    foreach($sqlSet as $sql) {
       $this->db->exec_query($sql);
     }
   }

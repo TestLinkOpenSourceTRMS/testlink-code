@@ -570,6 +570,9 @@ function checkPhpExtensions(&$errCounter) {
   $checks[]=array('extension' => 'pgsql',
                   'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
 
+  $checks[]=array('extension' => 'pdo_pgsql',
+                  'msg' => array('feedback' => 'Postgres Database (PDO)', 'ok' => $td_ok, 'ko' => 'cannot be used') );
+
   $mysqlExt = 'mysql';
   if( version_compare(phpversion(), "5.5.0", ">=") ) {
     $mysqlExt = 'mysqli';

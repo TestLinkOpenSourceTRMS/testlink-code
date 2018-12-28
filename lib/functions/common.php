@@ -141,23 +141,28 @@ $db = 0;
  *         aa['status'] = 1 -> OK , 0 -> KO
  *         aa['dbms_msg''] = 'ok', or $db->error_msg().
  */
-function doDBConnect(&$db,$onErrorExit=false) {
+function doDBConnect(&$db, $onErrorExit=false) {
   global $g_tlLogger;
-  
+
   $charSet = config_get('charset');
   $result = array('status' => 1, 'dbms_msg' => 'ok');
-
-  switch(DB_TYPE) {
-    case 'mssql':
-      $dbDriverName = 'mssqlnative';    
-    break;
-
-    default:
-      $dbDriverName = DB_TYPE;
-    break;  
+  $dbType = DB_TYPE;
+  $dbDriverName = null;
+  if (defined('DB_DRIVER')) {
+    $dbDriverName = DB_DRIVER;
   }
+  if (is_null($dbDriverName)) {
+    switch(DB_TYPE) {
+      case 'mssql':
+        $dbDriverName = 'mssqlnative';
+      break;
 
-  $db = new database($dbDriverName);
+      default:
+        $dbDriverName = DB_TYPE;
+      break;
+    }
+  }
+  $db = new database($dbType, $dbDriverName);
   $result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
   if (!$result['status']) {

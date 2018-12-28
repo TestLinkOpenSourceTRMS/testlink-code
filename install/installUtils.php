@@ -400,8 +400,8 @@ function check_pear_modules()
 
 */
 function check_db_loaded_extension($db_type) {
-  $dbType2PhpExtension = array('postgres' => 'pgsql');
 
+  $dbType2PhpExtension = array('postgres' => array('pgsql', 'pdo_pgsql'));
   $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
 
   $ext2search = $db_type;  
@@ -453,9 +453,18 @@ function check_db_loaded_extension($db_type) {
     
   $errors=0;	
   $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
-    
-  if( !isset($tt[$ext2search]) ) {
-    $final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search} " .
+
+  if (is_string($ext2search)) {
+    $ext2search = array($ext2search);
+  }
+  $found = FALSE;
+  foreach ($ext2search as $ext) {
+    if( isset($tt[$ext]) ) {
+      $found = TRUE;
+    }
+  }
+  if( ! $found ) {
+    $final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension " . implode(", ", $ext2search);
     	"without it is IMPOSSIBLE to use Testlink.</span>";
     $final_msg .= $msg_ko;
     $errors += 1;

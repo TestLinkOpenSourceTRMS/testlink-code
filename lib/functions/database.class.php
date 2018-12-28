@@ -34,7 +34,8 @@
 $ADODB_COUNTRECS = TRUE;
 
 require_once( dirname(__FILE__). '/logging.inc.php' );
-
+require_once(dirname(__FILE__). '/../../vendor/adodb/adodb-php/adodb.inc.php');
+require_once(dirname(__FILE__). '/../../vendor/adodb/adodb-php/drivers/adodb-pdo.inc.php');
 /**
  * TestLink wrapper for ADODB component
  * @package   TestLink
@@ -50,7 +51,8 @@ class database {
   var $nQuery = 0;
   var $overallDuration = 0;
   var $dbType;
-  
+  var $adodb_driver;
+
   private $logEnabled=0;
   private $logQueries=0;
   
@@ -82,7 +84,7 @@ class database {
   }
 
   // TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
-  function __construct($db_type)
+  function __construct($db_type, $adodb_driver = null)
   {
     $fetch_mode = ADODB_FETCH_ASSOC;
 
@@ -91,11 +93,10 @@ class database {
     {
       $this->dbType = 'mysqli';
     }
-    $adodb_driver = $this->dbType;
-  
     // added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
     if($this->dbType == 'mssql')
     {
+      $adodb_driver = 'mssql';
       $fetch_mode = ADODB_FETCH_BOTH;
       if(PHP_OS == 'WINNT')
       {
@@ -110,11 +111,27 @@ class database {
         if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
         {
           $adodb_driver = 'mssqlnative';
-        }     
-      } 
+        }
+      }
+    }
+    else if($this->dbType == 'postgres') {
+      if (is_null($adodb_driver)) {
+        $db_exts = array('pgsql', 'pdo_pgsql');
+        $loaded_exts = array_flip(get_loaded_extensions());
+        foreach ($db_exts as $ext) {
+          if (isset($loaded_exts[$ext])) {
+            $adodb_driver = $ext;
+            break;
+          }
+        }
+      }
+    }
+    else {
+      $adodb_driver = $this->dbType;
     }
     $this->db = NewADOConnection($adodb_driver);
     $this->db->SetFetchMode($fetch_mode);
+    $this->adodb_driver = $adodb_driver;
   }
 
 
@@ -124,21 +141,34 @@ class database {
     return($this->db);
   }
 
-  
-  
+
+
   /** Make a connection to the database */
   # changed Connect() to NConnect() see ADODB Manuals
-  function connect( $p_dsn, $p_hostname = null, $p_username = null, 
-                            $p_password = null, $p_database_name = null ) 
+  function connect( $p_dsn, $p_hostname = null, $p_username = null,
+                            $p_password = null, $p_database_name = null )
   {
     $result = array('status' => 1, 'dbms_msg' => 'ok');
-    
+
     if(  $p_dsn === false ) {
+      if (substr( $this->adodb_driver, 0, 4 ) === "pdo_") {
+        $dbType = substr( $this->adodb_driver, 4);
+        $p_hostname = "$dbType:host=$p_hostname;user=$p_username";
+        if ($p_password) {
+          $p_hostname .= ";password=$p_password";
+        }
+        if ($p_database_name) {
+          $p_hostname .= ";dbname=$p_database_name";
+        }
+        $p_username = null;
+        $p_password = null;
+        $p_database_name = null;
+      }
       $t_result = $this->db->NConnect($p_hostname, $p_username, $p_password, $p_database_name );
     } else {
       $t_result = $this->db->IsConnected();
     }
-    
+
     if ( $t_result ) {
       $this->is_connected = true;
     } else {
@@ -851,12 +881,12 @@ class database {
   function build_sql_create_db($db_name)
   {
     $sql='';
-    
-    switch($this->db->databaseType)
+
+    $dbtype = $this->dbType;
+    switch($dbtype)
     {
-      case 'postgres7':
-      case 'postgres8':
-        $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
+      case 'postgres':
+        $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' ";
         break;
         
       case 'mssql':
@@ -865,6 +895,7 @@ class database {
         break;
         
       case 'mysql':
+      case 'mysqli':
       default:
         $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
       break;

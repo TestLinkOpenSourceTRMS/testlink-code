@@ -5,3 +5,7 @@ config_db.inc.php
 /custom_config.inc.php
 **/._*
 upload_area/**
+logsaudits.log
+logsconfig_check.txt
+logsuserlog0.log
+logsuserlog1.log

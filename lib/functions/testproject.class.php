@@ -4097,7 +4097,7 @@ function getActiveTestPlansCount($id)
              ON TCKW.keyword_id = KW.id
 
              WHERE testproject_id = {$pid}
-             GROUP BY KW.id ";
+             GROUP BY KW.id,TCKW.keyword_id ";
 
     $rs = $this->db->fetchRowsIntoMap($sql,'keyword_id');
     return $rs;

@@ -10,7 +10,7 @@ assign REQ to one test case
           s="please_select_a_req,test_case,req_title_assign,btn_close,
              warning_req_tc_assignment_impossible,req_spec,warning,
              req_title_assigned,check_uncheck_all_checkboxes,version,
-             version_short,reqLinkingDisabledAfterExec,
+             version_short,reqLinkingDisabledAfterExec,yourRoleHasReqLinkingDisabled,
              req_msg_norequirement,btn_unassign,req_title_unassigned,
              check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign,
              req_doc_id,req,scope,assigned_by,timestamp,requirement"}
@@ -127,7 +127,7 @@ function refreshAndClose(tcase_id,callback) {
       {$cbDisabled = 0}
       {* Has become complex & weird!! *}
       {* can_be_removed check LINK STATUS *}
-      {if $tlCfg->reqTCLink->freezeeLinkOnNewREQVersion == TRUE }
+      {if $tlCfg->reqTCLinks->freezeLinkOnNewREQVersion == TRUE }
         {if $gui->assignedReq[row].can_be_removed == 0 }
           {$cbDisabled = 1}
         {/if}
@@ -175,6 +175,13 @@ function refreshAndClose(tcase_id,callback) {
   {/if}
 
   </div>
+
+    {if $reqLinkingEnabled == 0} 
+      <div class="groupBtn">
+        {$msgReqLinkingEnabled}
+      </div>
+    {/if}
+
     {if $gui->unassignedReq ne "" && $reqLinkingEnabled == 1}
       <div class="workBack">
       <h2>{$labels.req_title_unassigned}</h2>

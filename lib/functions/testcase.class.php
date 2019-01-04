@@ -3275,7 +3275,7 @@ class testcase extends tlObjectWithAttachments
     }
 
     $result = $this->deleteKeywords($id,$version_id);
-    if ($result && sizeof($kw_ids)) {
+    if ($result && sizeof((array)$kw_ids)) {
       $result = $this->addKeywords($id,$version_id,$kw_ids);
     }
     return $result;
@@ -5471,25 +5471,46 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-     *
-     *
-     *  @internal Revisions
-     *  20100821 - franciscom - $step_id can be an array
-     */
-  function delete_step_by_id($step_id)
-  {
+   *
+   *  $step_id can be an array
+   */
+  function delete_step_by_id($step_id) {
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $sql = array();
-    $whereClause = " WHERE id IN (" . implode(',',(array)$step_id) . ")";
+    $idSet = implode(',',(array)$step_id);
 
+    // Try to delete any children entity
+    // Execution Attachment
+    // Execution result
+    //
+    $dummy = " /* $debugMsg */ SELECT id FROM 
+               {$this->tables['attachments']} 
+               WHERE fk_table = 'execution_tcsteps' 
+               AND fk_id IN (
+               SELECT id FROM {$this->tables['execution_tcsteps']}
+               WHERE tcstep_id IN ($idSet)  )";
+
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
+      }  
+    }  
+
+    // Order is CRITIC due to Foreing Keys 
+    $sqlSet = array();
+    $sqlSet[] = "/* $debugMsg */ 
+              DELETE FROM {$this->tables['execution_tcsteps']} 
+              WHERE tcstep_id IN ($idSet)";
+
+    $whereClause = " WHERE id IN ($idSet) ";
     $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']} {$whereClause} ";
     $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} " .
                 " {$whereClause} AND node_type_id = " .
                 $this->node_types_descr_id['testcase_step'];
 
-    foreach($sqlSet as $sql)
-    {
+    foreach($sqlSet as $sql) {
       $this->db->exec_query($sql);
     }
   }
@@ -8818,91 +8839,6 @@ class testcase extends tlObjectWithAttachments
     $rs = current($this->db->get_recordset($sql));
             
     return ($rs['executed'] != 0);
-  }
-  
-  /**
-  * Insert note and status for steps to DB
-  * Delete data before insert => this way we will not add duplicates
-  *
-  * @param array $stepsData array with notes and status for test_steps
-  * @param int $testPlanId  id's test plan
-  * @param int $platformId id's platform
-  * @param int $buildId id's build 
-  * @param int $testerId 
-  */
-  public function saveBackupSteps($stepsData,$testPlanId,$platformId,$buildId,$testerId) {
-      
-      $targetTable = $this->tables['execution_tcsteps_backup'];
-      if (!is_null($stepsData) && count($stepsData) > 0) {
-          //DELETE FIRST
-          $this->deleteBackupSteps(array_keys($stepsData['notes']),$testPlanId,$platformId,$buildId);
-          
-          // INSERT Query
-          $strSqlBegin = "INSERT INTO {$targetTable} (tcstep_id,testplan_id,platform_id,build_id,tester_id,notes,status) VALUES";
-          
-          foreach ($stepsData['notes'] as $stepId=>$note) {
-              $sql = $strSqlBegin;
-              
-              $sql .= "({$stepId} ,". $this->db->prepare_int($testPlanId).",".$this->db->prepare_int($platformId);
-              $sql .= ",".$this->db->prepare_int($buildId);
-              $sql .= ",".$this->db->prepare_int($testerId);
-              $sql .= ", '".$this->db->prepare_string(htmlspecialchars($note))."', '".$this->db->prepare_string($stepsData['status'][$stepId])."');";
-              
-              $this->db->exec_query($sql);
-          }
-      }
-  }
-  
-  /**
-   * Get backup setps result for testCase
-   * 
-   * @param array $stepsIds list of stepsid 
-   * @param int $testPlanId  id's test plan
-   * @param int $platformId id's platform
-   * @param int $buildId id's build 
-   * 
-   * @return array map of result with "tcstep_id" in keys. Return null if no record
-   */
-  public function getBackupSteps($stepsIds,$testPlanId,$platformId,$buildId) {
-      
-      $targetTable = $this->tables['execution_tcsteps_backup'];
-      
-      if (!is_null($stepsIds) && count($stepsIds) > 0) {
-          $sql = "SELECT * FROM {$targetTable} ";
-          $sql .= "WHERE tcstep_id IN (".implode(",", $stepsIds).") AND ";
-          $sql .= "testplan_id = ".$this->db->prepare_int($testPlanId)." AND ";
-          $sql .= "platform_id = ".$this->db->prepare_int($platformId)." AND ";
-          $sql .= "build_id = ".$this->db->prepare_int($buildId);
-          
-          $rs = $this->db->fetchRowsIntoMap($sql,"tcstep_id");
-          
-          return $rs;
-      } else {
-          return null;
-      }
-  }
-  
-  /**
-   * Delete the backup steps in DB
-   * @param array $stepsIds list of stepsid  to delete
-   * @param int $testPlanId  id's test plan
-   * @param int $platformId id's platform
-   * @param int $buildId id's build
-   * 
-   */
-  public function deleteBackupSteps($stepsIds,$testPlanId,$platformId,$buildId) {
-      
-      $targetTable = $this->tables['execution_tcsteps_backup'];
-      
-      $implodeStepsId = implode(",",$stepsIds);
-      if (!empty($implodeStepsId) && !is_null($testPlanId) && !is_null($platformId)) {
-          $sqlDelete = "DELETE FROM {$targetTable} WHERE tcstep_id IN (".$implodeStepsId.") AND ";
-          $sqlDelete .= "testplan_id = ".$this->db->prepare_int($testPlanId)." AND ";
-          $sqlDelete .= "platform_id = ".$this->db->prepare_int($platformId)." AND ";
-          $sqlDelete .= "build_id = ".$this->db->prepare_int($buildId);
-          
-          $this->db->exec_query($sqlDelete);
-      }
   }
 
 

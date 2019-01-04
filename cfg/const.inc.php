@@ -288,7 +288,7 @@ $tlCfg->locales_date_format = array('cs_CZ' => '%d.%m.%Y','de_DE' => '%d.%m.%Y',
                                     'fi_FI' => '%d/%m/%Y','fr_FR' => '%d/%m/%Y','id_ID' => '%d/%m/%Y',
                                     'it_IT' => '%d/%m/%Y','ja_JP' => '%Y/%m/%d','ko_KR' => '%Y/%m/%d',
                                     'nl_NL' => '%d-%m-%Y','pl_PL' => '%d.%m.%Y','pt_BR' => '%d/%m/%Y',
-                                    'pt_PT' => '%d/%m/%Y','ru_RU' => '%d/%m/%Y','zh_CN' => '%Y-%m-%d'); 
+                                    'pt_PT' => '%d/%m/%Y','ru_RU' => '%d.%m.%Y','zh_CN' => '%Y-%m-%d'); 
 
 /** @var array Localized format of full timestamp */
 $tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' => '%d.%m.%Y %H:%M:%S',
@@ -299,7 +299,7 @@ $tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' 
                                          'ja_JP' => '%Y/%m/%d %H:%M:%S','ko_KR' => '%Y/%m/%d %H:%M:%S',
                                          'nl_NL' => '%d-%m-%Y %H:%M:%S','pl_PL' => '%d.%m.%Y %H:%M:%S',
                                          'pt_BR' => '%d/%m/%Y %H:%M:%S','pt_PT' => '%d/%m/%Y %H:%M:%S',
-                                         'ru_RU' => '%d/%m/%Y %H:%M:%S','zh_CN' => '%Y-%m-%d %H:%M:%S'); 
+                                         'ru_RU' => '%d.%m.%Y %H:%M:%S','zh_CN' => '%Y-%m-%d %H:%M:%S'); 
 
 /** @var array localized date format for smarty templates (html_select_date function) 
  * deprecated since use of datepicker */

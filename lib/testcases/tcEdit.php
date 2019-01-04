@@ -39,7 +39,7 @@ $commandMgr->setTemplateCfg(templateConfiguration());
 $testCaseEditorKeys = array('summary' => 'summary','preconditions' => 'preconditions');
 $init_inputs = true;
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
-$gui = initializeGui($db,$args,$cfg,$tcase_mgr);
+$gui = initializeGui($db,$args,$cfg,$tcase_mgr,$tproject_mgr);
 
 $smarty = new TLSmarty();
 
@@ -300,9 +300,6 @@ else if($args->do_create_new_version) {
                           '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
                           "&show_mode={$args->show_mode}";
 
-  $gui->codeTrackerEnabled = $tproject_mgr->isCodeTrackerEnabled($args->tproject_id);
-
-  
   $identity = new stdClass();
   $identity->id = $args->tcase_id;
   $identity->tproject_id = $args->tproject_id;
@@ -605,8 +602,7 @@ function getGrants(&$dbHandler) {
  * 
  *
  */
-function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
-{
+function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
   $guiObj = new stdClass();
   $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->editorType = $cfgObj->webEditorCfg['type'];
@@ -653,6 +649,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
     $guiObj->$right = $guiObj->grants->$right = $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id);
   }
 
+  $guiObj->codeTrackerEnabled = $tprojMgr->isCodeTrackerEnabled($guiObj->tproject_id);
 
   return $guiObj;
 }

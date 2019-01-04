@@ -69,6 +69,7 @@ switch($args->edit) {
       if ($args->assignToTestSuite) {
         $result = 'ok';
         
+        $glOpt = array('output' => 'thin', 'active' => 1);
         for($idx = 0; $idx < $loop2do; $idx++) {
           $ltcv = $tcase_mgr->get_last_version_info($tcs[$idx],$glOpt);
           $latestActiveVersionID = $ltcv['tcversion_id'];

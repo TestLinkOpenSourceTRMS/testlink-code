@@ -8,12 +8,8 @@
  * @filesource  print.inc.php
  *
  * @package   TestLink
- * @copyright 2007-2017, TestLink community 
+ * @copyright 2007-2018, TestLink community 
  * @uses      printDocument.php
- *
- *
- * @internal revisions
- * @since 1.9.17
  *
  */ 
 
@@ -919,6 +915,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $tcase_pieces = null;
 
   $id = $node['id'];
+  $tcversion_id = $node['tcversion_id'];
+
   $level = $indentLevel;
   $prefix = isset($context['prefix']) ? $context['prefix'] : null;
   $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
@@ -1095,7 +1093,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   
   }
  
- $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
+  $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
                                array('renderGhost' => true,'renderImageInline' => true));
   if ($tcInfo) {
     $tcInfo = $tcInfo[0];
@@ -1152,9 +1150,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   }
 
   if($cfg['doc']->tc_version_enabled || $force['displayVersion'] ) {
-    $code .= '&nbsp;<span style="font-size: 80%;">' . $cfg['gui']->role_separator_open . 
+    $code .= '&nbsp;<span style="font-size: 80%;">' . 
+             $cfg['gui']->version_separator_open . 
              $labels['version'] . $cfg['gui']->title_separator_1 .  $version_number . 
-             $cfg['gui']->role_separator_close . '</span>';
+             $cfg['gui']->version_separator_close . '</span>';
   }
   $code .= "</th></tr>\n";
 
@@ -1285,8 +1284,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
             $code .= '</tr>';
 
             // Attachment management
-            if($getExecutions)
-            {
+            if($getExecutions) {
               if( isset($sxni[$tcInfo[$key][$ydx]['id']]))
               {
                 $attachInfo = getAttachmentInfos($docRepo,$sxni[$tcInfo[$key][$ydx]['id']]['id'],
@@ -1317,7 +1315,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                     if($fitem['is_image']) {
                       $code .= "<li>{$safeFileName}</li>";
 
-                      $pathname = $repoDir . $item['file_path'];
+                      $pathname = $repoDir . $fitem['file_path'];
                       list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
                       $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
                       $code .= '<li><img ' . $iDim . 
@@ -1440,45 +1438,43 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $relSet = null;
 
 
-  // collect REQ for TC
-  if ($options['requirement'])
-  {
-    $requirements = $req_mgr->get_all_for_tcase($id);
+  // collect REQ for Test Case Version
+  if ($options['requirement']) {
+    // $requirements = (array)$req_mgr->get_all_for_tcase($id);
+    $requirements = (array)$req_mgr->getActiveForTCVersion($tcversion_id);
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['reqs'].'</span>'; 
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 
-    if (sizeof($requirements))
-    {
-      foreach ($requirements as $req)
-      {
-        $code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) . "<br />";
+    if (sizeof($requirements)) {
+      foreach ($requirements as $req) {
+        $code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) .
+                  " " .
+                  $cfg['gui']->version_separator_open .  
+                  "{$labels['version']}: {$req['version']}" . 
+                  $cfg['gui']->version_separator_close .
+                  "<br />";
       }
-    }
-    else
-    {
+    } else {
       $code .= '&nbsp;' . $labels['none'] . '<br />';
     }
     $code .= "</td></tr>\n";
   }
   $requirements = null;
 
-  // collect keywords for TC
-  if ($options['keyword'])
-  {
+  // collect keywords for TC VERSION
+  if ($options['keyword']) {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['keywords'].':</span></td>';
     $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
-    $kwSet = $tc_mgr->getKeywords($id,null,array('fields' => 'keyword_id,keywords.keyword'));
-    if (sizeof($kwSet))
-    {
-      foreach ($kwSet as $kw)
-      {
+
+    // HERE WE NEED TO REFACTOR 20181222
+    $kwSet = (array)$tc_mgr->getKeywords($id,$tcversion_id,null,array('fields' => 'keyword_id,KW.keyword'));
+    if (sizeof($kwSet)) {
+      foreach ($kwSet as $kw) {
         $code .= htmlspecialchars($kw['keyword']) . "<br />";
       }
-    }
-    else
-    {
+    } else {
       $code .= '&nbsp;' . $labels['none'] . '<br/>';
     }
     $code .= "</td></tr>\n";

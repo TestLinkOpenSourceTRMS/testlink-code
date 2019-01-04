@@ -901,7 +901,7 @@ $tlCfg->document_generator->requirement_css_template = 'css/tl_documents.css';
 // Display test case version when creating:
 // - test spec document
 // - test reports
-$tlCfg->document_generator->tc_version_enabled = FALSE;
+$tlCfg->document_generator->tc_version_enabled = TRUE;
 
 
 
@@ -1258,20 +1258,20 @@ $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
 
 // Effects on Req Version to TCVersion LINK 
 // when a new version of a linked Test Case is created
-$tlCfg->reqTCLinks->freezeeLinkOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = TRUE;
 
 // Effects on Req Version to TCVersion LINK 
 // when a new version of a linked Req Version is created
-$tlCfg->reqTCLinks->freezeeLinkOnNewREQVersion = TRUE;
+$tlCfg->reqTCLinks->freezeLinkOnNewREQVersion = TRUE;
 
 
 // Effects on BOTH ends of Req Version to TCVersion LINK 
 // when a new version of a linked TC Version is created
-$tlCfg->reqTCLinks->freezeeBothEndsOnNewTCVersion = TRUE;
+$tlCfg->reqTCLinks->freezeBothEndsOnNewTCVersion = TRUE;
 
 // Effects on BOTH ends of Req Version to TCVersion LINK 
 // when a new version of a linked REQ Version is created
-$tlCfg->reqTCLinks->freezeeBothEndsOnNewREQVersion = TRUE;
+$tlCfg->reqTCLinks->freezeBothEndsOnNewREQVersion = TRUE;
 
 
 // Effects on REQ Version N when REQ Version N+1 is created 
@@ -2065,6 +2065,9 @@ $tlCfg->gui->title_separator_1 =  $tlCfg->gui_title_separator_1;
 $tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
+
+$tlCfg->gui->version_separator_open =  $tlCfg->gui_separator_open;
+$tlCfg->gui->version_separator_close = $tlCfg->gui_separator_close;
 
 
 /**

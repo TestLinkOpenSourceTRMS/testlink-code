@@ -22,7 +22,7 @@ $@filesource inc_steps.tpl
 {lang_get s='delete' var="del_msgbox_title"}
 
 {if $layout == 'horizontal'}
-    {include file="testcases/steps_horizontal.inc.tpl"}
+    {include file="{$tplConfig['steps_horizontal.inc']}"}
 {else}
-    {include file="testcases/steps_vertical.inc.tpl"}
+    {include file="{$tplConfig['steps_vertical.inc']}"}
 {/if}

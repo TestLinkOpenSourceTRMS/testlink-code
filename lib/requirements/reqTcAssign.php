@@ -147,10 +147,9 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
   $guiObj->pageTitle = lang_get('test_suite') . config_get('gui_title_separator_1') . $tsuite_info['name'];
      
   $guiObj->req_specs = $tproject_mgr->genComboReqSpec($argsObj->tproject_id,'dotted',"&nbsp;");
+  
   $guiObj->selectedReqSpec = $argsObj->idReqSpec;
-
-  $dummy = $guiObj->req_specs[$argsObj->idReqSpec];
-  $guiObj->selectedReqSpecName = trim($dummy,'&nbsp;');
+  $guiObj->selectedReqSpecName = '';
 
   $guiObj->tcase_number = 0;
   $guiObj->has_req_spec = false;
@@ -161,6 +160,8 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
     if(is_null($argsObj->idReqSpec)) {
       $guiObj->selectedReqSpec = key($guiObj->req_specs);
     }
+    $guiObj->selectedReqSpecName = 
+      trim($guiObj->req_specs[$guiObj->selectedReqSpec],'&nbsp;');
 
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
        
@@ -168,7 +169,7 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj) {
     $guiObj->requirements = 
       $req_spec_mgr->getAllLatestRQVOnReqSpec($guiObj->selectedReqSpec,$getOpt);
 
-    $guiObj->reqCountOnReqSpec = count($guiObj->requirements);
+    $guiObj->reqCountOnReqSpec = count((array)$guiObj->requirements);
 
     $guiObj->reqCountFeedback = 
       sprintf(lang_get('req_on_req_spec'),$guiObj->reqCountOnReqSpec,
@@ -313,13 +314,14 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj) {
   
   if($SRS_qty > 0) {
     $tc_mgr = new testcase($dbHandler);
-    $arrTc = $tc_mgr->get_by_id($argsObj->id,testcase::LATEST_VERSION);
-    if($arrTc) {
-      $guiObj->tcTitle = $arrTc[0]['name'];
-      $guiObj->tcVersion = $arrTc[0]['version'];
+    $tcase = $tc_mgr->get_by_id($argsObj->id,testcase::LATEST_VERSION);
+    $tcase = current($tcase);
+    if($tcase) {
+      $guiObj->tcTitle = $tcase['name'];
+      $guiObj->tcVersion = $tcase['version'];
 
       // get test case version execution status
-      $tcversion_id = $arrTc[0]['id'];
+      $tcversion_id = $tcase['id'];
       $statusQuo = $tc_mgr->get_versions_status_quo($argsObj->id,$tcversion_id);
 
       $statusQuo = current($statusQuo);

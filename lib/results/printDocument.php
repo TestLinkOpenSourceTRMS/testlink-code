@@ -118,6 +118,8 @@ switch ($doc_info->type) {
         }
       }  
     }  
+
+    // var_dump($opx); die();
     
     switch($doc_info->content_range) {
       case 'testproject':
@@ -127,7 +129,7 @@ switch ($doc_info->type) {
              
       case 'testsuite':
         $ctx->branchRoot =  $args->itemID;
-        $opx = array_merge((array)$opx,$my['options']['prepareNode']);
+        $opx = array_merge((array)$opx,(array)$my['options']['prepareNode']);
         list($treeForPlatform,$items2use) = 
              buildContentForTestPlanBranch($db,$subtree,$ctx,$doc_info,$decode,$tplan_mgr,$opx);
       break;
@@ -288,6 +290,8 @@ function init_args(&$dbHandler) {
 
   $args = new stdClass();
   $pParams = R_PARAMS($iParams,$args);
+
+  //var_dump($_REQUEST); die();
 
   // really UGLY HACK
   $typeDomain = array('test_plan' => 'testplan','test_report' => 'testreport');
@@ -505,28 +509,22 @@ function getStatsEstimatedExecTime(&$tplanMgr,&$items2use,$tplanID)
  * 
  * 
  **/
-function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode)
-{
+function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode) {
   $min = array();
   $stat = null;
   $executed_qty = 0;
   $items2use = array();
   
-  if( count($lastExecBy) > 0 )
-  {
+  if( !is_null($lastExecBy) && count($lastExecBy) > 0 ) {
     // divide execution by Platform ID
     $p2loop = array_keys($lastExecBy);
-    foreach($p2loop as $platfID)
-    {                    
-      if( !is_null($lastExecBy[$platfID]) )
-      {
+    foreach($p2loop as $platfID) {                    
+      if( !is_null($lastExecBy[$platfID]) ) {
         $i2loop = array_keys($lastExecBy[$platfID]);  
         $items2use[$platfID] = null;
-        foreach($i2loop as $xdx)
-        {
+        foreach($i2loop as $xdx) {
           $info = &$lastExecBy[$platfID][$xdx]; 
-          if( $info['exec_status'] != $decode['status_descr_code']['not_run'] )
-          {  
+          if( $info['exec_status'] != $decode['status_descr_code']['not_run'] ) {  
             $items2use[$platfID][] = $info['exec_id'];
             $executed_qty++;
           }    
@@ -534,22 +532,18 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode)
       }
     }     
 
-    if( $executed_qty > 0)
-    { 
+    if( $executed_qty > 0) { 
       $min['totalMinutes'] = 0;
       $min['totalTestCases'] = 0;
       $min['platform'] = array();
       $ecx = new stdClass();
       $ecx = $context;
 
-      foreach( $items2use as $platID => $itemsForPlat )
-      {  
+      foreach( $items2use as $platID => $itemsForPlat ) {  
         $min['platform'][$platID] = null;
-        if( !is_null($itemsForPlat) )
-        {  
+        if( !is_null($itemsForPlat) ) {  
           $ecx->platform_id = $platID; 
           
-          // $tmp = $tplanMgr->get_execution_time($context,$itemsForPlat,$platID);
           $tmp = $tplanMgr->getExecutionTime($context,$itemsForPlat);
 
           $min['platform'][$platID] = $tmp['platform'][$platID];
@@ -558,20 +552,16 @@ function getStatsRealExecTime(&$tplanMgr,&$lastExecBy,$context,$decode)
         }
       } 
     }
-  }
-  else
-  {
+  } else {
     $min = $tplanMgr->getExecutionTime($context);
   }
 
   // Arrange data for caller
-  if (isset($min['totalMinutes']) && $min['totalMinutes'] != 0)
-  {
+  if (isset($min['totalMinutes']) && $min['totalMinutes'] != 0) {
     $stat['minutes'] = $min['totalMinutes']; 
     $stat['tcase_qty'] = $min['totalTestCases']; 
   
-    foreach($min['platform'] as $platformID => $elem)
-    {
+    foreach($min['platform'] as $platformID => $elem) {
       $stat['platform'][$platformID] = $elem;      
     }  
   }

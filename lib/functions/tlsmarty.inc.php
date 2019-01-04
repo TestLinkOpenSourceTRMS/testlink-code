@@ -159,11 +159,29 @@ class TLSmarty extends Smarty {
     
     $this->assign('locale', $my_locale);
      
+    //
+    $stdTPLCfg = array();
+    $stdTPLCfg['inc_tcbody'] = 'testcases/inc_tcbody.tpl';
+    $stdTPLCfg['inc_steps'] = 'testcases/inc_steps.tpl';
+
+    $stdTPLCfg['inc_show_scripts_table'] = 'inc_show_scripts_table.tpl';
+    
+    $stdTPLCfg['keywords.inc'] = 'testcases/keywords.inc.tpl';
+
+    $stdTPLCfg['attributesLinearForViewer.inc'] = 
+      'testcases/attributesLinearForViewer.inc.tpl';
+
+    $stdTPLCfg['relations.inc'] = 'testcases/relations.inc.tpl'; 
+    $stdTPLCfg['quickexec.inc'] = 'testcases/quickexec.inc.tpl'; 
+
+    $stdTPLCfg['steps_horizontal.inc'] = 'testcases/steps_horizontal.inc.tpl';
+    $stdTPLCfg['steps_vertical.inc'] = 'testcases/steps_vertical.inc.tpl';
+
     // -----------------------------------------------------------------------------
     // load configuration
     $this->assign('session',isset($_SESSION) ? $_SESSION : null);
     $this->assign('tlCfg',$tlCfg);
-    $this->assign('tplConfig',$g_tpl);
+    $this->assign('tplConfig',array_merge($stdTPLCfg,(array)$g_tpl));
     $this->assign('gsmarty_gui',$tlCfg->gui);
     $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
     $this->assign('gsmarty_attachments',config_get('attachments'));

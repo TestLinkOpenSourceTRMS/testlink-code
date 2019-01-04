@@ -8,7 +8,7 @@
  * Allows users to manage keywords. 
  *
  * @package    TestLink
- * @copyright  2005,2016 TestLink community 
+ * @copyright  2005,2018 TestLink community 
  * @link       http://www.testlink.org/
  *  
 **/
@@ -16,6 +16,8 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
+require_once("keywordsEnv.php");
+
 
 testlinkInitPage($db);
 $tplCfg = templateConfiguration();
@@ -53,7 +55,10 @@ if($op->status == 1) {
 $gui->keywords = null;
 if ($tpl != $tplCfg->default_template) {
   // I'm going to return to screen that display all keywords
-  $gui->keywords = $tprojectMgr->getKeywords($args->tproject_id);
+  $kwe = getKeywordsEnv($db,$args->user,$args->tproject_id);
+  foreach($kwe as $prop => $val) {
+    $gui->$prop = $val;
+  }  
 }
 
 $tplEngine->assign('gui',$gui);

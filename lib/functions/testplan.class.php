@@ -1153,14 +1153,11 @@ class testplan extends tlObjectWithAttachments
    * @param integer $id   : test plan id
    * @param array $items: assoc array key=tc_id value=tcversion_id
    * 
-   * @internal revisions:
-   *    20100725 - asimon - BUGID 3497 and hopefully also 3530
    */
-  function unlink_tcversions($id,&$items)
-  {
+  function unlink_tcversions($id,&$items) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    if(is_null($items))
-    {
+
+    if(is_null($items)) {
       return;
     }
     
@@ -1171,11 +1168,9 @@ class testplan extends tlObjectWithAttachments
     $platformInfo = $this->platform_mgr->getLinkedToTestplanAsMap($id);
     $platformLabel = lang_get('platform');
 
-        $dummy = null;
-    foreach($items['items'] as $tcase_id => $elem) 
-    {
-      foreach($elem as $platform_id => $tcversion_id) 
-      {
+    $dummy = null;
+    foreach($items['items'] as $tcase_id => $elem)  {
+      foreach($elem as $platform_id => $tcversion_id)  {
         $dummy[] = "(tcversion_id = {$tcversion_id} AND platform_id = {$platform_id})";
       }
     }
@@ -1202,23 +1197,68 @@ class testplan extends tlObjectWithAttachments
     $where_clause = " ( {$where_clause} ) ";
     
     // First get the executions id if any exist
-    $sql = " SELECT id AS execution_id FROM {$this->tables['executions']} " .
-           " WHERE testplan_id = {$id} AND ${where_clause}";
+    $sql = " /* $debugMsg */ SELECT id AS execution_id 
+             FROM {$this->tables['executions']}
+             WHERE testplan_id = {$id} AND ${where_clause}";
+
     $exec_ids = $this->db->fetchRowsIntoMap($sql,'execution_id');
     
-    if( !is_null($exec_ids) and count($exec_ids) > 0 )
-    {
+    if( !is_null($exec_ids) and count($exec_ids) > 0 ) {
       // has executions
       $exec_ids = array_keys($exec_ids);
-      $exec_id_where= " WHERE execution_id IN (" . implode(",",$exec_ids) . ")";
-      
+      $exec_id_list = implode(",",$exec_ids);
+      $exec_id_where= " WHERE execution_id IN ($exec_id_list)";
+
       // Remove bugs if any exist
-      $sql=" DELETE FROM {$this->tables['execution_bugs']} {$exec_id_where} ";
+      // This will remove the bug @step level if any exists.
+      $sql = " /* $debugMsg */ DELETE FROM {$this->tables['execution_bugs']} 
+               {$exec_id_where} ";
       $result = $this->db->exec_query($sql);
-      
-      // now remove executions
-      $sql=" DELETE FROM {$this->tables['executions']} " .
-         " WHERE testplan_id = {$id} AND ${where_clause}";
+
+      // Remove CF exec values     
+      $sql = " /* $debugMsg */ 
+               DELETE FROM {$this->tables['cfield_execution_values']} 
+               {$exec_id_where} ";
+      $result = $this->db->exec_query($sql);
+
+      // execution attachments
+      $dummy = " /* $debugMsg */ SELECT id FROM {$this->tables['attachments']} 
+                 WHERE fk_table = 'executions'
+                 AND fk_id IN ({$exec_id_list}) ";
+    
+      $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+      if(!is_null($rs)) {
+        foreach($rs as $fik => $v) {
+          deleteAttachment($this->db,$fik,false);
+        }  
+      }  
+
+
+      // Work on Execution on Test Case Steps
+      // Attachments 
+      $dummy = " /* $debugMsg */ SELECT id FROM {$this->tables['attachments']} 
+                 WHERE fk_table = 'execution_tcsteps' 
+                 AND fk_id IN (
+                 SELECT id FROM {$this->tables['execution_tcsteps']}
+                 {$exec_id_where} )";
+
+      $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+      if(!is_null($rs)) {
+        foreach($rs as $fik => $v) {
+          deleteAttachment($this->db,$fik,false);
+        }  
+      }  
+
+     // Remove test case STEP executions if any exists 
+      // execution_id is an attribute.     
+      $sql = "/* $debugMsg */ DELETE FROM {$this->tables['execution_tcsteps']} 
+              {$exec_id_where} ";
+      $result = $this->db->exec_query($sql);
+
+ 
+      // Grand Finale now remove executions
+      $sql = " /* $debugMsg */ DELETE FROM {$this->tables['executions']}
+               WHERE testplan_id = {$id} AND ${where_clause}";
       $result = $this->db->exec_query($sql);
     }
     
@@ -1228,8 +1268,7 @@ class testplan extends tlObjectWithAttachments
        " WHERE testplan_id={$id} AND {$where_clause} ";
     $link_ids = $this->db->fetchRowsIntoMap($sql,'link_id');
     $features = array_keys($link_ids);
-    if( count($features) == 1)
-    {
+    if( count($features) == 1) {
       $features=$features[0];
     }
     $this->assignment_mgr->delete_by_feature_id($features);
@@ -1240,13 +1279,10 @@ class testplan extends tlObjectWithAttachments
        " WHERE testplan_id={$id} AND {$where_clause} ";
     $result = $this->db->exec_query($sql);
     
-    foreach($items['items'] as $tcase_id => $elem)
-    {
-      foreach($elem as $platform_id => $tcversion)
-      {
+    foreach($items['items'] as $tcase_id => $elem) {
+      foreach($elem as $platform_id => $tcversion) {
         $addInfo='';
-        if( isset($platformInfo[$platform_id]) )
-        {
+        if( isset($platformInfo[$platform_id]) ) {
           $addInfo = ' - ' . $platformLabel . ':' . $platformInfo[$platform_id];
         }
         $auditMsg=TLS("audit_tc_removed_from_testplan",
@@ -1847,9 +1883,8 @@ class testplan extends tlObjectWithAttachments
   /**
    * Delete test plan and all related link to other items
    *
-    */
-  function delete($id)
-  {
+   */
+  function delete($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $id = intval($id);
@@ -1885,14 +1920,11 @@ class testplan extends tlObjectWithAttachments
              " WHERE execution_id IN ({$execIDSetSQL}) ";
      
     $rs = $this->db->fetchRowsIntoMap($dummy,'id');
-    if(!is_null($rs))
-    {
-      foreach($rs as $fik => $v)
-      {
-        deleteAttachment($db,$fik,false);
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
       }  
     }  
-
 
     // execution attachments
     $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
@@ -1900,11 +1932,9 @@ class testplan extends tlObjectWithAttachments
              " AND fk_id IN ({$execIDSetSQL}) ";
   
     $rs = $this->db->fetchRowsIntoMap($dummy,'id');
-    if(!is_null($rs))
-    {
-      foreach($rs as $fik => $v)
-      {
-        deleteAttachment($db,$fik,false);
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
       }  
     }  
     
@@ -1918,8 +1948,7 @@ class testplan extends tlObjectWithAttachments
     $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; 
 
     
-    foreach($the_sql as $sql)
-    {
+    foreach($the_sql as $sql) {
       $this->db->exec_query($sql);
     }
     
@@ -7913,14 +7942,11 @@ class build_mgr extends tlObject {
              " WHERE execution_id IN ({$execIDSetSQL}) ";
      
     $rs = $this->db->fetchRowsIntoMap($dummy,'id');
-    if(!is_null($rs))
-    {
-      foreach($rs as $fik => $v)
-      {
-        deleteAttachment($db,$fik,false);
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
       }  
     }  
-
 
     // execution attachments
     $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
@@ -7928,11 +7954,9 @@ class build_mgr extends tlObject {
              " AND fk_id IN ({$execIDSetSQL}) ";
   
     $rs = $this->db->fetchRowsIntoMap($dummy,'id');
-    if(!is_null($rs))
-    {
-      foreach($rs as $fik => $v)
-      {
-        deleteAttachment($db,$fik,false);
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
       }  
     }  
 

@@ -11,7 +11,6 @@ Testlink: smarty template -
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl" css_only=1}
-
 {include file="bootstrap.inc.tpl"}
 
 <script language="JavaScript" type="text/javascript">
@@ -83,7 +82,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 {$my_feature_name=''}
 
 {include file="usermanagement/menu.inc.tpl"}
-<div class="workBack">
+<div>
 
 {include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
 
@@ -101,19 +100,19 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 	<input type="hidden" name="featureID" value="{$gui->featureID}" />
 	<input type="hidden" name="featureType" value="{$gui->featureType}" />
 
-  {$styleLH="padding: 0px 30px 10px 5px;"}
-  <div class="panel panel-default" style="background-color: #EAEAED;">
-    <div class="panel-body">
+	{$styleLH="padding: 0px 30px 10px 5px;"}
+	<div class="panel panel-default" style="background-color: #EAEAED;">
+    	<div class="panel-body">
 		<table style="border:0;">
     	{if $gui->featureType == 'testproject'}
-    		<tr>
-          <td class="labelHolder" style="{$styleLH}">{$labels.TestProject}{$gui->accessTypeImg}</td>
-          <td>&nbsp;</td>
+			<tr>
+                <td class="labelHolder" style="{$styleLH}">{$labels.TestProject}{$gui->accessTypeImg}</td>
+                <td>&nbsp;</td>
     	{else}
     		<tr>
-          <td class="labelHolder" style="{$styleLH}">{$labels.TestProject}{$gui->tprojectAccessTypeImg}</td>
-          <td>{$gui->tproject_name|escape}</td>
-        </tr>
+                <td class="labelHolder" style="{$styleLH}">{$labels.TestProject}{$gui->tprojectAccessTypeImg}</td>
+                <td>{$gui->tproject_name|escape}</td>
+            </tr>
     		<tr>
 				  <td class="labelHolder" style="{$styleLH}">{$labels.TestPlan}{$gui->accessTypeImg}
           </td>
@@ -148,24 +147,24 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 			  </select>
       </td>
       <td>
-          &nbsp;
-					<input type="button" value="{$labels.btn_do}" 
-					       onclick="javascript:set_combo_group('usersRoleTable','userRole_',
-					                                           document.getElementById('allUsersRole').value);"/>
-		  </td>
-			</tr>
+      &nbsp;
+	<input type="button" value="{$labels.btn_do}" onclick="javascript:set_combo_group('usersRoleTable','userRole_', document.getElementById('allUsersRole').value);"/>
+	</td>
+		</tr>
 
-		</table>
+	</table>
     </div>
     </div>
 
     <div id="usersRoleTable">
-	    <table class="common table table-bordered sortable" width="100%" id="item_view">
+	    <table class="table table-striped table-bordered sortable" width="100%" id="item_view">
+	   	<thead class="thead-dark">	    
     	<tr>
     		<th>{$tlImages.sort_hint}{$labels.User}</th>
     		{assign var="featureVerbose" value=$gui->featureType}
     		<th>{$tlImages.sort_hint}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
     	</tr>
+    	</thead>
     	{foreach from=$gui->users item=user}
     	    {$globalRoleName=$user->globalRole->name}
     			{$uID=$user->dbID}
@@ -236,7 +235,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
     	{if $tlCfg->demoMode}
 			{$labels.warn_demo}
 		{else}	
-    		<input type="submit" name="do_update" value="{$labels.btn_upd_user_data}" />
+    		<input class="btn btn-primary" type="submit" name="do_update" value="{$labels.btn_upd_user_data}" />
 		{/if}
 	</div>
   </form>

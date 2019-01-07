@@ -47,8 +47,7 @@ var del_action=fRoot+'{$deleteAction}';
   {include file="DataTables.inc.tpl" DataTablesOID="item_view"
                                      DataTableslengthMenu=$ll}
 {/if}
-
-
+{include file="bootstrap.inc.tpl"}
 </head>
 
 <body {$body_onload}>
@@ -60,7 +59,7 @@ var del_action=fRoot+'{$deleteAction}';
   </div>
 {/if}
 
-<div class="workBack">
+<div>
 {if $gui->grants->testplan_create && $gui->tproject_id > 0 && 
     count($gui->tplans) > $tlCfg->gui->planView->itemQtyForTopButton}
    <div class="groupBtn">
@@ -80,8 +79,8 @@ var del_action=fRoot+'{$deleteAction}';
     <input type="hidden" name="do_action" id="do_action" value="">
     <input type="hidden" name="tplan_id" id="tplan_id" value="">
 
-  <table id='item_view'class="simple_tableruler sortable">
-    <thead>
+  <table id='item_view'class="table table-striped table-bordered sortable">
+    <thead class="thead-dark">
     <tr>
       <th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th>       
       <th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
@@ -109,10 +108,10 @@ var del_action=fRoot+'{$deleteAction}';
           </a>
       </td>
 	  <td>{if $gui->editorType == 'none'}{$testplan.notes|nl2br}{else}{$testplan.notes}{/if}</td>
-      <td align="right" style="width:8%;">
+      <td align="right" style="width:10%;">
         {$testplan.tcase_qty}
       </td>
-      <td align="right" style="width:6%;">
+      <td align="right" style="width:12%;">
         {$testplan.build_qty}
       </td>
       {if $gui->drawPlatformQtyColumn}
@@ -121,7 +120,7 @@ var del_action=fRoot+'{$deleteAction}';
         </td>
       {/if} 
 
-      <td class="clickable_icon">
+      <td class="clickable_icon" align="right" style="width:5%;">
         {if $testplan.active==1} 
             <input type="image" style="border:none" 
                    title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
@@ -134,7 +133,7 @@ var del_action=fRoot+'{$deleteAction}';
                  src="{$tlImages.off}"/>
           {/if}
       </td>
-      <td class="clickable_icon">
+      <td class="clickable_icon" align="right" style="width:5%;">
         {if $testplan.is_public eq 1} 
             <img style="border:none" title="{$labels.public}"  alt="{$labels.public}" src="{$tlImages.checked}"/>
           {else}
@@ -180,7 +179,7 @@ var del_action=fRoot+'{$deleteAction}';
  {if $gui->grants->testplan_create && $gui->tproject_id > 0}
  <div class="groupBtn">
     <form method="post" action="{$createAction}" name="bottomCreateForm">
-      <input type="submit" name="create_testplan" value="{$labels.btn_testplan_create}" />
+      <input class="btn btn-primary" type="submit" name="create_testplan" value="{$labels.btn_testplan_create}" />
     </form>
   </div>
  {/if}

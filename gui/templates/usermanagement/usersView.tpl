@@ -9,18 +9,21 @@ users overview
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 <script type="text/javascript">
 var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 </script>
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+
   {$tableID="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
-        {include file="inc_ext_js.tpl" bResetEXTCss=1}
-        {include file="inc_ext_table.tpl"}
+    {$matrix|@print_r}
+<!--         {include file="inc_ext_js.tpl" bResetEXTCss=1} -->
+<!--         {include file="inc_ext_table.tpl"} -->
     {/if}
   {/if}
   {$matrix->renderHeadSection()}
@@ -39,8 +42,6 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
     background-image: url({$tlImages.demo_mode});
 {rdelim}
 </style>
-
-{include file="bootstrap.inc.tpl"}
 </head>
 
 {$userActionMgr="lib/usermanagement/usersEdit.php"}
@@ -60,7 +61,7 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 
   <h1 class="title">{$gui->main_title}</h1>
   {include file="usermanagement/menu.inc.tpl"}
-  <div class="workBack">
+  <div>
 
     {include file="inc_update.tpl" result=$gui->result item="user" 
              action=$gui->action user_feedback=$gui->user_feedback}

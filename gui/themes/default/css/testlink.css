@@ -231,7 +231,7 @@ div.menu_bubble h3{
  * Give buttons, submit, reset a gradient 3d look and other components
  * text/password-input, textarea and select a flat appearance.
  */
-input[type="button"],
+/* input[type="button"],
 input[type="password"],
 input[type="reset"],
 input[type="submit"],
@@ -248,7 +248,7 @@ button {
    -moz-border-radius: 3px;
    -webkit-border-radius: 3px;
    border-radius: 3px;
-}
+} */
 
 /* Reset to flat background */
 input[type="password"],
@@ -260,15 +260,15 @@ textarea {
 
 
 /* Animate */
-input[type="reset"]:hover,
+/* input[type="reset"]:hover,
 input[type="submit"]:hover,
 input[type="button"]:hover,
 button:hover {
    background-position: 0 -3px;
    border-color: #444;
-}
+} */
 
-input[type="reset"]:active,
+/* input[type="reset"]:active,
 input[type="submit"]:active,
 input[type="button"]:active,
 input[type="reset"]:focus,
@@ -278,7 +278,7 @@ button:active,
 button:focus {
    background-position: 0 -10px;
    border: 1px solid #123;
-}
+} */
 
 input[type="password"]:focus,
 input[type="text"]:focus,
@@ -607,6 +607,14 @@ div.not_run {
 	background:		black;
 }
 
+div.backup_exist {
+	color: 			black;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: 	center;
+	background:		#EEE;
+}
+
 
 /* ***** execution tree coloring ************************* */
 span.light_passed, span.light_failed, span.light_blocked,
@@ -865,7 +873,6 @@ div.login_form.medium {
 .clickable_icon
 {
   padding: 			2px;
-  width: 			5px;
   text-align: 		center;
   vertical-align: 	middle;
 }
@@ -1090,6 +1097,7 @@ th.testlink, td.testlink, tr.testlink td {
 /* To adjust Bootstrap tables */
 .table {
   font-size: 12px;
+  width: 100%;
 }
 
 .table th, .table tr, .table td {

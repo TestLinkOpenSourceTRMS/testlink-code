@@ -9,3 +9,7 @@ logsaudits.log
 logsconfig_check.txt
 logsuserlog0.log
 logsuserlog1.log
+.buildpath
+.project
+.settings/
+gui/templates_c/*

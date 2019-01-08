@@ -39,7 +39,7 @@ Purpose: smarty template - View defined roles
 {include file="inc_update.tpl" result=$sqlResult}
 
 {$draw_create_btn="1"}
-<div>
+<div class="page-content">
 {if $gui->affectedUsers neq null}
   {$draw_create_btn="0"}
 

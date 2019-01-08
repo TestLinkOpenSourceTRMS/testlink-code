@@ -59,7 +59,7 @@ var del_action=fRoot+'{$deleteAction}';
   </div>
 {/if}
 
-<div>
+<div class="page-content">
 {if $gui->grants->testplan_create && $gui->tproject_id > 0 && 
     count($gui->tplans) > $tlCfg->gui->planView->itemQtyForTopButton}
    <div class="groupBtn">

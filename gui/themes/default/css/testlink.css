@@ -227,67 +227,6 @@ div.menu_bubble h3{
 	line-height:1.4em;
 }
 
-/** Buttons
- * Give buttons, submit, reset a gradient 3d look and other components
- * text/password-input, textarea and select a flat appearance.
- */
-/* input[type="button"],
-input[type="password"],
-input[type="reset"],
-input[type="submit"],
-input[type="text"],
-select,
-textarea,
-button {
-   background: url(../images/navbar.gif);
-   background-position: 0 0;
-   border: 1px solid #888;
-   margin: 4px 0 0 0;
-   font-size: 9pt;
-   color: black;
-   -moz-border-radius: 3px;
-   -webkit-border-radius: 3px;
-   border-radius: 3px;
-} */
-
-/* Reset to flat background */
-input[type="password"],
-input[type="text"],
-select,
-textarea {
-	background: #f8f8f8;
-}
-
-
-/* Animate */
-/* input[type="reset"]:hover,
-input[type="submit"]:hover,
-input[type="button"]:hover,
-button:hover {
-   background-position: 0 -3px;
-   border-color: #444;
-} */
-
-/* input[type="reset"]:active,
-input[type="submit"]:active,
-input[type="button"]:active,
-input[type="reset"]:focus,
-input[type="submit"]:focus,
-input[type="button"]:focus,
-button:active,
-button:focus {
-   background-position: 0 -10px;
-   border: 1px solid #123;
-} */
-
-input[type="password"]:focus,
-input[type="text"]:focus,
-select:focus,
-textarea:focus {
-	background: #fff;
-	border: 1px solid #123;
-}
-
 fieldset.groupBtn {
 	border: 0;
 	margin-left: 5px;
@@ -1114,6 +1053,12 @@ th.testlink, td.testlink, tr.testlink td {
   color: #495057;
   background-color: #e9ecef;
   border-color: #dee2e6;
+}
+
+p.text-border {
+	border: 1px solid black;
+	background: white;
+	padding : 10px;
 }
 
 /* ----- END ------------------------------------------------------------------------- */

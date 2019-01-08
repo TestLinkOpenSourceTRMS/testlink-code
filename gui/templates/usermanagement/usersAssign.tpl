@@ -82,7 +82,7 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 {$my_feature_name=''}
 
 {include file="usermanagement/menu.inc.tpl"}
-<div>
+<div class="page-content">
 
 {include file="inc_update.tpl" result=$result item="$gui->featureType" action="$action" user_feedback=$gui->user_feedback}
 

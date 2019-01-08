@@ -11,6 +11,7 @@ Purpose: smarty template - View all platforms
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 {lang_get var='labels'
           s='th_notes,th_platform,th_delete,btn_import,btn_export,
@@ -41,47 +42,50 @@ Purpose: smarty template - View all platforms
 
 <h1 class="title">{$labels.menu_manage_platforms}</h1>
 {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
-<div class="workBack">
+<div class="page-content">
 {if $gui->platforms != ''}
-	<table class="simple_tableruler sortable">
-		<tr>
-			<th width="30%">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_platform}</th>
-			<th>{$tlImages.sort_hint}{$labels.th_notes}</th>
-			{if $gui->canManage != ""}
-				<th>{$labels.th_delete}</th>
-			{/if}
-		</tr>
-		{section name=platform loop=$gui->platforms}
-		<tr>
-			<td>
-				<span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$gui->platforms[platform].id}</span>
-				{if $gui->canManage != ""}
-					<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}">
-				{/if}
-				{$gui->platforms[platform].name|escape}
-				{if $gui->canManage != ""}
-					</a>
-				{/if}
-			</td>
-			{* when using rich webeditor strip_tags is needed - franciscom *}
-			 <td>{if $gui->editorType == 'none'}{$gui->platforms[platform].notes|nl2br}{else}{$gui->platforms[platform].notes|strip_tags|strip|truncate:#PLATFORM_NOTES_TRUNCATE_LEN#}{/if}</td>
-
-			{if $gui->canManage != ""}
-			<td class="clickable_icon">
-				{if $gui->platforms[platform].linked_count eq 0}
-				<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"
-						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete}"
-						onclick="delete_confirmation({$gui->platforms[platform].id},
-							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" />
-				{else}
-					<img style="border:none;cursor: pointer;" 	alt="{$labels.alt_delete_platform}"
-						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete_disabled}"
-						onclick="alert_message_html('{$del_msgbox_title|escape:'javascript'}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name|escape:'javascript'}');" />
-				{/if}
-			</td>
-			{/if}
-		</tr>
-		{/section}
+	<table class="table table-striped table-bordered sortable">
+		<thead class="thead-dark">
+    		<tr>
+    			<th width="30%">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_platform}</th>
+    			<th>{$tlImages.sort_hint}{$labels.th_notes}</th>
+    			{if $gui->canManage != ""}
+    				<th class="{$noSortableColumnClass}" width="10%">{$labels.th_delete}</th>
+    			{/if}
+    		</tr>
+		</thead>
+		<tbody>
+			{section name=platform loop=$gui->platforms}
+        		<tr>
+        			<td>
+        				<span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$gui->platforms[platform].id}</span>
+        				{if $gui->canManage != ""}
+        					<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}">
+        				{/if}
+        				{$gui->platforms[platform].name|escape}
+        				{if $gui->canManage != ""}
+        					</a>
+        				{/if}
+        			</td>
+    				{* when using rich webeditor strip_tags is needed - franciscom *}
+    			 	<td>{if $gui->editorType == 'none'}{$gui->platforms[platform].notes|nl2br}{else}{$gui->platforms[platform].notes|strip_tags|strip|truncate:#PLATFORM_NOTES_TRUNCATE_LEN#}{/if}</td>
+    				{if $gui->canManage != ""}
+    					<td class="clickable_icon">
+            				{if $gui->platforms[platform].linked_count eq 0}
+            				<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"
+            						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete}"
+            						onclick="delete_confirmation({$gui->platforms[platform].id},
+            							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" />
+    						{else}
+        					<img style="border:none;cursor: pointer;" 	alt="{$labels.alt_delete_platform}"
+        						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete_disabled}"
+        						onclick="alert_message_html('{$del_msgbox_title|escape:'javascript'}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name|escape:'javascript'}');" />
+    						{/if}
+    					</td>
+    				{/if}
+    			</tr>
+    		{/section}
+		</tbody>
 	</table>
  {/if}
 	
@@ -89,17 +93,14 @@ Purpose: smarty template - View all platforms
    		<form style="float:left" name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
 	  		<input type="hidden" name="doAction" value="" />
 		  	{if $gui->canManage ne ""}
-		    	<input type="submit" id="create_platform" name="create_platform" 	value="{$labels.btn_create_platform}"
-		           	 onclick="doAction.value='create'"/>
+		    	<input class="btn btn-primary" type="submit" id="create_platform" name="create_platform" value="{$labels.btn_create_platform}" onclick="doAction.value='create'"/>
 			  {/if}	
 		</form>
      	<form name="platformsExport" id="platformsExport" method="post" action="lib/platforms/platformsExport.php">
      		<input type="hidden" name="goback_url" value="{$basehref|escape}{$viewAction|escape}"/>
-			<input type="submit" name="export_platforms" id="export_platforms"
-		         style="margin-left: 3px;" value="{$labels.btn_export}" />
+			<input class="btn btn-primary" type="submit" name="export_platforms" id="export_platforms" style="margin-left: 3px;" value="{$labels.btn_export}" />
 		  	{if $gui->canManage ne ""}       
-		  		<input type="button" name="import_platforms" id="import_platforms" 
-		         	   onclick="location='{$importAction}'" value="{$labels.btn_import}" />
+		  		<input class="btn btn-primary" type="button" name="import_platforms" id="import_platforms" onclick="location='{$importAction}'" value="{$labels.btn_import}" />
        	  	{/if}
 	  	</form>
     </div>

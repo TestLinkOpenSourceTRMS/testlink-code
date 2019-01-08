@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -24,19 +25,20 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 <body {$body_onload}>
 <h1 class="title">{$labels.title_issuetracker_mgmt}</h1>
 
-<div class="workBack">
+<div class="page-content">
 	{include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 	{if $gui->items != ''}
-	<table class="simple_tableruler sortable">
-		<tr>
-			<th width="30%">{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
-			<th>{$tlImages.sort_hint}{$labels.th_issuetracker_type}</th>
-			<th>{$labels.th_issuetracker_env}</th>
-			{if $gui->canManage != ""}
-				<th style="min-width:70px">{$tlImages.sort_hint}{$labels.th_delete}</th>
-			{/if}
-		</tr>
-
+	<table class="table table-striped table-bordered sortable">
+		<thead class="thead-dark">
+    		<tr>
+    			<th width="30%">{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
+    			<th>{$tlImages.sort_hint}{$labels.th_issuetracker_type}</th>
+    			<th>{$labels.th_issuetracker_env}</th>
+    			{if $gui->canManage != ""}
+    				<th class="{$noSortableColumnClass}" width="10%">{$tlImages.sort_hint}{$labels.th_delete}</th>
+    			{/if}
+    		</tr>
+		</thead>
   	{foreach key=item_id item=item_def from=$gui->items}
 		<tr>
 			<td>
@@ -85,8 +87,7 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 	  	  <input type="hidden" name="doAction" value="" />
 	
 		{if $gui->canManage != ""}
-	  		<input type="submit" id="create" name="create" value="{$labels.btn_create}" 
-	  	           onclick="doAction.value='create'"/>
+	  		<input class="btn btn-primary" type="submit" id="create" name="create" value="{$labels.btn_create}" onclick="doAction.value='create'"/>
 		{/if}
 	  	</form>
 	</div>

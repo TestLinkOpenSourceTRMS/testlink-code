@@ -35,6 +35,7 @@ some variables smarty and javascript are created on the inc_*.tpl files.
 
 {include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
@@ -46,13 +47,13 @@ var del_action=fRoot+'{$deleteAction}';
   {include file="DataTables.inc.tpl" DataTablesOID="item_view"
                                      DataTableslengthMenu=$ll}
 {/if}
-{include file="bootstrap.inc.tpl"}
+
 </head>
 
 <body {$body_onload}>
 
 <h1 class="title">{$gui->pageTitle}</h1>
-<div>
+<div class="page-content">
     <!-- Groupe de boutons -->
     <div class="groupBtn">
       <form method="post" action="{$searchAction}" style="display:inline;">

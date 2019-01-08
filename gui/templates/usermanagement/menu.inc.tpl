@@ -14,7 +14,6 @@ include to generate menu when managing users and roles
 {$act['assign_users_tproject']['url'] = $lib|cat:'/usersAssign.php?featureType=testproject'}
 {$act['assign_users_tplan']['url'] = $lib|cat:'/usersAssign.php?featureType=testplan'}
 
-
 {lang_get var="menuLbl"
           s="menu_new_user,menu_view_users,menu_edit_user,menu_define_roles,menu_edit_role,menu_view_roles,menu_assign_testproject_roles,menu_assign_testplan_roles"}
 

@@ -10,49 +10,55 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @internal revisions
 *}
-  {if isset($add_exec_info) && $add_exec_info}
-    {$inExec = 1}
-  {else}
-    {$inExec = 0}
-  {/if}  
+{if isset($add_exec_info) && $add_exec_info}
+	{$inExec = 1}
+{else}
+	{$inExec = 0}
+{/if}  
 
-  <tr>
-    <th width="40px"><nobr>
-    {if $edit_enabled && $steps != '' && !is_null($steps) && $args_frozen_version=="no"}
-      <img class="clickable" src="{$tlImages.reorder}" align="left"
-           title="{$inc_steps_labels.show_hide_reorder}"
-           onclick="showHideByClass('span','order_info');">
-      <img class="clickable" src="{$tlImages.ghost_item}" align="left"
-           title="{$inc_steps_labels.show_ghost_string}"
-           onclick="showHideByClass('tr','ghost');">
-    {/if}
-    {$inc_steps_labels.step_number}
-    </th>
-    <th>{$inc_steps_labels.step_actions}
-    </th>
-    <th>{$inc_steps_labels.expected_results}</th>
-    {if $session['testprojectOptions']->automationEnabled}
-    <th width="25">{$inc_steps_labels.execution_type_short_descr}</th>
-    {/if}
-    {if $edit_enabled}
-    <th>&nbsp;</th>
-    <th>&nbsp;</th>
-    {/if}
-
-    {if $inExec}
-      <th>{if $tlCfg->exec_cfg->steps_exec_notes_default == 'latest'}{$inc_steps_labels.latest_exec_notes}
-          {else}{$inc_steps_labels.step_exec_notes}{/if}
-          <img class="clickable" src="{$tlImages.clear_notes}" 
-          onclick="javascript:clearTextAreaByClassName('step_note_textarea');" title="{$inc_steps_labels.clear_all_notes}"></th>
-
-      <th>{$inc_steps_labels.step_exec_status}
-       <img class="clickable" src="{$tlImages.reset}" 
-          onclick="javascript:clearSelectByClassName('step_status');" title="{$inc_steps_labels.clear_all_status}"></th>
-    {/if}    
-
-
-  </tr>
-  
+{if !$inExec}
+<thead class="thead-dark">
+{/if}
+	<tr>
+        <th width="50px"><nobr>
+            {if $edit_enabled && $steps != '' && !is_null($steps) && $args_frozen_version=="no"}
+              <img class="clickable" src="{$tlImages.reorder}" align="left"
+                   title="{$inc_steps_labels.show_hide_reorder}"
+                   onclick="showHideByClass('span','order_info');">
+              <img class="clickable" src="{$tlImages.ghost_item}" align="left"
+                   title="{$inc_steps_labels.show_ghost_string}"
+                   onclick="showHideByClass('tr','ghost');">
+            {/if}
+            {$inc_steps_labels.step_number}
+        </th>
+        <th>{$inc_steps_labels.step_actions}</th>
+        <th>{$inc_steps_labels.expected_results}</th>
+        {if $session['testprojectOptions']->automationEnabled}
+        	<th width="25">{$inc_steps_labels.execution_type_short_descr}</th>
+        {/if}
+        {if $edit_enabled}
+        	<th>&nbsp;</th>
+        	<th>&nbsp;</th>
+        {/if}
+    	{if $inExec}
+     		<th>
+     			{if $tlCfg->exec_cfg->steps_exec_notes_default == 'latest'}
+     				{$inc_steps_labels.latest_exec_notes}
+          		{else}
+          			{$inc_steps_labels.step_exec_notes}
+      			{/if}
+                <img class="clickable" src="{$tlImages.clear_notes}" onclick="javascript:clearTextAreaByClassName('step_note_textarea');" title="{$inc_steps_labels.clear_all_notes}">
+            </th>
+			<th>
+				{$inc_steps_labels.step_exec_status}
+				<img class="clickable" src="{$tlImages.reset}" onclick="javascript:clearSelectByClassName('step_status');" title="{$inc_steps_labels.clear_all_status}">
+			</th>
+    	{/if}
+	</tr>
+{if !$inExec}
+</head>
+<tbody>
+{/if}
   {$rowCount=$steps|@count} 
   {$row=0}
 
@@ -141,18 +147,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   {if $ghost_control}
     <tr class='ghost' style='display:none'><td></td><td>{$step_info.ghost_action}</td><td>{$step_info.ghost_result}</td></tr>    
   {/if}
-
-    {$rCount=$row+$step_info.step_number}
-    {if ($rCount < $rowCount) && ($rowCount>=1)}
-      <tr width="100%">
-        {if $session['testprojectOptions']->automationEnabled}
-        <td colspan=6>
-        {else}
-        <td colspan=5>
-        {/if}
-        <hr align="center" width="100%" color="grey" size="1">
-        </td>
-      </tr>
-    {/if}
-
   {/foreach}
+{if !$inExec}
+</tbody>
+{/if}

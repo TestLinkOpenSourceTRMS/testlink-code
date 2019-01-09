@@ -21,6 +21,7 @@ generate a list of TC for adding to Test Plan
 {config_load file="input_dimensions.conf" section="planAddTC"}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 {include file="inc_ext_js.tpl"}
 <script type="text/javascript">
@@ -118,11 +119,11 @@ Ext.onReady(function(){
 //-->
 </script>
 </head>
-<body class="fixedheader">
+<body>
 <form name="addTcForm" id="addTcForm" method="post" 
       onSubmit="javascript:return checkDelete(js_remove_executed_counter);">
 
-   <div id="header-wrap">
+   <div>
 	  	<h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$gui->actionTitle}
 	  	{include file="inc_help.tpl" helptopic="hlp_planAddTC" show_help_icon=true}
 	  	</h1>
@@ -169,24 +170,20 @@ Ext.onReady(function(){
 				{/if}
 				{$labels.for}
 				{if $gui->full_control}
-				<button onclick="cs_all_checkbox_in_div_with_platform('addTcForm', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.adding_tc}</button>
+				<button onclick="cs_all_checkbox_in_div_with_platform('addTcForm', '{$add_cb}', Ext.get('select_platform').getValue()); return false" class="btn btn-primary">{$labels.adding_tc}</button>
 				{/if}
-				<button onclick="cs_all_checkbox_in_div_with_platform('addTcForm', '{$rm_cb}', Ext.get('select_platform').getValue()); return false">{$labels.removal_tc}</button>
+				<button onclick="cs_all_checkbox_in_div_with_platform('addTcForm', '{$rm_cb}', Ext.get('select_platform').getValue()); return false" class="btn btn-primary">{$labels.removal_tc}</button>
 			</div>
 	  	  	<input type="hidden" name="doAction" id="doAction" value="default" />
-	  	  	<input type="submit" name="doAddRemove" value="{$gui->buttonValue}"
-	  	  		     onclick="doAction.value=this.name" />
+	  	  	<input type="submit" name="doAddRemove" value="{$gui->buttonValue}" onclick="doAction.value=this.name" class="btn btn-primary"/>
 	  	  	{if $gui->full_control eq 1}
-	  	  	  <input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}"
-	  	  		       onclick="doAction.value=this.name" />
+	  	  	  <input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" onclick="doAction.value=this.name" class="btn btn-primary"/>
         
 	  	  		{if $gui->drawSaveCFieldsButton}
-	  	  		  <input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}"
-	  	  			       onclick="doAction.value=this.name" />
+	  	  		  <input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}" onclick="doAction.value=this.name" class="btn btn-primary"/>
 	  	  		{/if}
 	  	  		{if $gui->drawSavePlatformsButton}
-	  	  		  <input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}"
-	  	  			       onclick="doAction.value=this.name" />
+	  	  		  <input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}" onclick="doAction.value=this.name" class="btn btn-primary"/>
 	  	  		{/if}
 	  	  	{/if}
 	  	  </div>
@@ -197,71 +194,73 @@ Ext.onReady(function(){
     </div> <!-- header-wrap -->
 
 {if $gui->has_tc}
-  <div class="workBack" id="workback">
-    <div style="margin-left: 20px; font-size: smaller;">
-  	{$gui->status_feeback|escape}<br />
-    {if $gui->keywords_filter_feedback != '' }
-  			<br />{$labels.note_keyword_filter}: {$gui->keywords_filter_feedback|escape}</p>
-  	{/if}
-    </div>
-
-    {* ======================================== *}
-    {* Loop over Test Suites to draw test cases *}
-  	{$item_number=0}
-  	{foreach name="tSuiteLoop" from=$gui->items item=ts}
-  		{$item_number=$item_number+1}
-  		{$ts_id=$ts.testsuite.id}
-  		{$div_id="div_$ts_id"}
-  	  {strip}
+	<div class="page-content">
+		<div>
+  			{$gui->status_feeback|escape}
+    		{if $gui->keywords_filter_feedback != '' }
+  				{$labels.note_keyword_filter}: {$gui->keywords_filter_feedback|escape}</p>
+  			{/if}
+    	</div>
+        {* Loop over Test Suites to draw test cases *}
+        {$item_number=0}
+        {foreach name="tSuiteLoop" from=$gui->items item=ts}
+      		{$item_number=$item_number+1}
+      		{$ts_id=$ts.testsuite.id}
+      		{$div_id="div_$ts_id"}
+  	  		{strip}
   	  
-  	  {* Title and clickable images to control toogle *}
-  		<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
+  	  	{* Title and clickable images to control toogle *}
+  		<div id="{$div_id}">
         <h2 class="testlink">{$ts.testsuite.name|escape}</h2> 
-        {if $item_number == 1}
-          <hr />
-        {/if} {* $item_number == 1 *}
-     
-        {* used as memory for the check/uncheck all checkbox javascript logic *}
+        	{if $item_number == 1}
+          		<hr />
+        	{/if}
+		{* used as memory for the check/uncheck all checkbox javascript logic *}
         <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  value="0" />
         <input type="hidden" name="rm_value_{$ts_id}"  id="rm_value_{$ts_id}"  value="0" />
-              
-       {* ------------------------------------------------------------------------- *}      
-       {if ($gui->full_control && $ts.testcase_qty gt 0) || $ts.linked_testcase_qty gt 0}
-          <table cellspacing="0" border="0" style="font-size:small;" width="100%">
-            <tr style="background-color:blue;font-weight:bold;color:white">
-  			     <td width="5" align="center">
-                {if $gui->full_control}
-  			          <img class="clickable" src="{$tlImages.toggle_all}"
-  			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}","add_value_{$ts_id}");'
-                       title="{$labels.check_uncheck_all_checkboxes}" />
+     
+		{if ($gui->full_control && $ts.testcase_qty gt 0) || $ts.linked_testcase_qty gt 0}
+		<table class="table table-striped table-bordered">
+			<thead class="thead-dark">
+    			<tr>
+     				<th>
+                    {if $gui->full_control}
+      			          <img class="clickable" src="{$tlImages.toggle_all}" onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}","add_value_{$ts_id}");'
+								title="{$labels.check_uncheck_all_checkboxes}" />
       			    {else}
-      			     &nbsp;
+          			     &nbsp;
   		    	    {/if}
-  			     </td>
-  
-             {if $gui->usePlatforms} <td>{$labels.th_platform}</td> {/if}
-  			     <td>{$labels.th_test_case}</td>
-  			     <td>{$labels.version}</td>
-             <td>{$labels.th_status}</td>
-  			     {if $gui->priorityEnabled} <td>{$labels.importance}</td> {/if}
-             		<td align="center">
-   				      <img src="{$tlImages.execution_order}" title="{$labels.execution_order}" />
-  				   	</td>
-
-             {if $ts.linked_testcase_qty gt 0}
-  				      <td>&nbsp;</td>
-  				      <td>
-  				      <img class="clickable" src="{$tlImages.disconnect}" 
-                     onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
-                     title="{$labels.check_uncheck_all_for_remove}" />
-  				      </td>
-  				      <td align="center">
-    				      <img src="{$tlImages.date}" title="{$labels.added_on_date}" />
-  				      </td>
-             {/if}
-            </tr>   
+					</th>
+                 	{if $gui->usePlatforms} 
+                 	<th>
+                 		{$labels.th_platform}
+             		</th> 
+             		{/if}
+  			     	<th>{$labels.th_test_case}</th>
+  			     	<th>{$labels.version}</th>
+                 	<th>{$labels.th_status}</th>
+  			     	{if $gui->priorityEnabled} 
+  			     	<th>
+  			     		{$labels.importance}
+		     		</th>
+		     		{/if}
+             		<th align="center">
+			      		<img src="{$tlImages.execution_order}" title="{$labels.execution_order}" />
+  				   	</th>    
+                 	{if $ts.linked_testcase_qty gt 0}
+			      		<th>&nbsp;</th>
+  				      	<th>
+  				      		<img class="clickable" src="{$tlImages.disconnect}" onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
+                         			title="{$labels.check_uncheck_all_for_remove}" />
+  				      	</th>
+  				      	<th align="center">
+    				      	<img src="{$tlImages.date}" title="{$labels.added_on_date}" />
+  				      	</th>
+             		{/if}
+                </tr>
+			</thead>  
             
-  			    {foreach name="tCaseLoop" from=$ts.testcases item=tcase}
+		    {foreach name="tCaseLoop" from=$ts.testcases item=tcase}
       			  {$is_active=0}
               	{$linked_version_id=$tcase.linked_version_id}
               {$tcID=$tcase.id}
@@ -518,7 +517,6 @@ Ext.onReady(function(){
                   {/if}
                   
                 {/foreach}
-               	<tr><td colspan="10"><hr/></td></tr>
               {/if}             
               {* ================================================================================================================ *} 
               

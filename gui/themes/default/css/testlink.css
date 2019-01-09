@@ -8,7 +8,7 @@ Purpose: Default TestLink CSS
 
 /* ***** GLOBAL HTML ***************************************************************** */
 body, body.testlink {
-	background:  	#EEE!important; 
+	/* background:  	#EEE!important; */
 	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
 	font-size: 		small;
 	margin:			0px;
@@ -371,7 +371,7 @@ span.unselected a, span.unselected a:visited {
 * "common" 		- often used for view arrays
 * "simple" 		- often used for forms
 * "smallGrey" 	- often used for options / filters
-* "invisible" 	- no borders
+* "no-border" 	- no border (former "invisible" but already used by bootstrap)
 * !!! Do not add new table kinds !!! (there is bunch of wild table definitions below)
 */
 
@@ -450,7 +450,7 @@ table.smallGrey {
 }
 
 
-table.invisible {
+table.no-border {
 	border: 		0px none;
 	font-size:		90%;
 	margin:			5px 0px;
@@ -1056,6 +1056,12 @@ th.testlink, td.testlink, tr.testlink td {
 }
 
 p.text-border {
+	border: 1px solid black;
+	background: white;
+	padding : 10px;
+}
+
+div.form-border {
 	border: 1px solid black;
 	background: white;
 	padding : 10px;

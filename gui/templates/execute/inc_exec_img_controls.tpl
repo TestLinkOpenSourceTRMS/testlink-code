@@ -13,7 +13,7 @@ Author : franciscom
       {/if}
 
       {if $gui->grants->execute}
-  		<table class="invisible">
+  		<table class="no-border">
   		<tr>
   			<td style="text-align: center;width:80%;">
   				<div class="title">{$args_labels.test_exec_notes}</div>

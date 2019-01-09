@@ -18,43 +18,36 @@ Purpose: smarty template - view test case in test specification
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$deleteStepAction}';
-
-
-function jsCallDeleteFile(btn, text, o_id) { 
-  var my_action='';
-  if( btn == 'yes' ) {
-    my_action='{$gui->delAttachmentURL}'+o_id;
-    window.location=my_action;
-  }
-}         
+    /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+	var del_action=fRoot+'{$deleteStepAction}';
+    
+    function jsCallDeleteFile(btn, text, o_id) { 
+		var my_action='';
+		if( btn == 'yes' ) {
+			my_action='{$gui->delAttachmentURL}'+o_id;
+			window.location=my_action;
+		}
+	}         
 </script>
 
 {include file="inc_ext_js.tpl" css_only=1}
 
 {* need by refresh on upload logic used when this template is called while executing *}
 {if $gui->bodyOnLoad != ''}
-<script language="JavaScript">
-var {$gui->dialogName} = new std_dialog('&refreshTree');
-</script>  
+    <script type="text/javascript">
+    	var {$gui->dialogName} = new std_dialog('&refreshTree');
+    </script>  
 {/if}
 
 </head>
 
-{$my_style=""}
-{if $gui->hilite_testcase_name}
-  {$my_style="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
-{/if}
-
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
-<h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
-</h1>
-
-{include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
-<div class="workBack">
+	<h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}</h1>
+	{include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
+	<div class="page-content">
 
 {if $gui->tc_current_version}
 {section name=idx loop=$gui->tc_current_version}
@@ -85,9 +78,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
     {/foreach}
   {/if}
 
-    <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel_{$tcVersionID}','inline');"
-         title="{$labels.actions}" />
-
+    <img class="clickable" src="{$tlImages.cog}" onclick="javascript:toogleShowHide('tcView_viewer_tcase_control_panel_{$tcVersionID}','inline');" title="{$labels.actions}" />
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 
     {include file="testcases/tcView_viewer.tpl" 
@@ -163,7 +154,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                  show_hide_container_class='exec_additional_info'
                  show_hide_container_view_status_id=$memstatus_id}
                
-        <div id="vers_{$vid}" class="workBack">
+        <div id="vers_{$vid}" class="page-content">
 
         {foreach from=$gui->testcase_other_versions[idx] 
                  item=my_testcase key=tdx}
@@ -189,7 +180,7 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                    show_hide_container_class='exec_additional_info'
                    show_hide_container_view_status_id=$memstatus_id}
                      
-              <div id="{$div_id}" class="workBack">
+              <div id="{$div_id}" class="page-content">
               {*
               BE CAREFUL
               args_cf=$gui->cf_other_versions[idx][tdx]  - KO

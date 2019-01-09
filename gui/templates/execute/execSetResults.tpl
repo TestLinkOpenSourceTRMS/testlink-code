@@ -60,8 +60,9 @@ var import_xml_results="{$labels.import_xml_results}";
 </script>
 
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 function load_notes(panel,exec_id)
 {
   // solved ONLY for  $webeditorType == 'none'

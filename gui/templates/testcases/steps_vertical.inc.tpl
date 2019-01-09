@@ -10,7 +10,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @internal revisions
 *}
+
   {if $edit_enabled && $args_frozen_version=="no"}
+  
   <tr><td>
     <img class="clickable" src="{$tlImages.reorder}" align="left" title="{$inc_steps_labels.show_hide_reorder}"
     onclick="showHideByClass('span','order_info');"></td>

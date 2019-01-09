@@ -26,7 +26,6 @@ viewer for test case in test specification
 
 {* will be useful in future to semplify changes *}
 {$tableColspan=$gui->tableColspan} 
-{$addInfoDivStyle='style="padding: 5px 3px 4px 10px;"'}
 
 
 {$module='lib/testcases/'}
@@ -353,175 +352,151 @@ function launchInsertStep(step_id)
 </script>
 
 <form id="stepsControls" name="stepsControls" method="post" action="{$basehref}lib/testcases/tcEdit.php">
-  <input type="hidden" name="goback_url" value="{$goBackAction}" />
-  <input type="hidden" id="stepsControls_doAction" name="doAction" value="" />
-  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
-  <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
-  <input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
+    <input type="hidden" name="goback_url" value="{$goBackAction}" />
+    <input type="hidden" id="stepsControls_doAction" name="doAction" value="" />
+    <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+    <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+    <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+    <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
+    <input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
 
-    {include file="{$tplConfig.inc_tcbody}" 
-             inc_tcbody_close_table=false
-             inc_tcbody_testcase=$args_testcase
-             inc_tcbody_show_title=$args_show_title
-             inc_tcbody_tableColspan=$tableColspan
-             inc_tcbody_labels=$tcView_viewer_labels
-             inc_tcbody_author_userinfo=$author_userinfo
-             inc_tcbody_updater_userinfo=$updater_userinfo
-             inc_tcbody_editor_type=$gui->designEditorType
-             inc_tcbody_cf=$args_cf}
-    
-  {if $args_testcase.steps != ''}
-  {include file="{$tplConfig.inc_steps}"
-           layout=$gui->steps_results_layout
-           edit_enabled=$edit_enabled
-		       args_frozen_version=$args_frozen_version
-           ghost_control=true
-           steps=$args_testcase.steps}
-  {/if}
-</table>
+	{include file="{$tplConfig.inc_tcbody}" 
+            inc_tcbody_close_table=true
+            inc_tcbody_testcase=$args_testcase
+            inc_tcbody_show_title=$args_show_title
+            inc_tcbody_tableColspan=$tableColspan
+            inc_tcbody_labels=$tcView_viewer_labels
+            inc_tcbody_author_userinfo=$author_userinfo
+            inc_tcbody_updater_userinfo=$updater_userinfo
+            inc_tcbody_editor_type=$gui->designEditorType
+            inc_tcbody_cf=$args_cf}
+   
+	<table class="table table-striped table-bordered">
+		{if $args_testcase.steps != ''}
+			{include file="{$tplConfig.inc_steps}"
+                layout=$gui->steps_results_layout
+                edit_enabled=$edit_enabled
+                args_frozen_version=$args_frozen_version
+                ghost_control=true
+                steps=$args_testcase.steps}
+		{/if}
+	</table>
 
 {if $edit_enabled && $args_frozen_version=="no"}
-<div {$addInfoDivStyle}>
-  <input type="submit" name="create_step" 
-          onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" />
-
-  {if $args_testcase.steps != ''}
-    <input type="submit" name="resequence_steps" id="resequence_steps" 
-            onclick="doAction.value='doResequenceSteps';{$gui->submitCode}" 
-            value="{$tcView_viewer_labels.btn_resequence_steps}" />
-  {/if}
-
-  <span class="order_info" style='display:none'>
-  <input type="submit" name="renumber_step" 
-          onclick="doAction.value='doReorderSteps';{$gui->submitCode};javascript: return validateStepsReorder('step_number{$args_testcase.id}');"
-          value="{$tcView_viewer_labels.btn_reorder_steps}" />
-  </span>
+<div>
+	<input type="submit" name="create_step" onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" class="btn btn-primary"/>
+	{if $args_testcase.steps != ''}
+		<input type="submit" name="resequence_steps" id="resequence_steps" onclick="doAction.value='doResequenceSteps';{$gui->submitCode}" 
+				value="{$tcView_viewer_labels.btn_resequence_steps}" class="btn btn-primary"/>
+	{/if}
+	<span class="order_info" style='display:none'>
+		<input type="submit" name="renumber_step" onclick="doAction.value='doReorderSteps';{$gui->submitCode};javascript: return validateStepsReorder('step_number{$args_testcase.id}');"
+				value="{$tcView_viewer_labels.btn_reorder_steps}" class="btn btn-primary"/>
+	</span>
 </div>
 {/if}
 </form>
 
-{include file="{$tplConfig['attributesLinearForViewer.inc']}"} 
-
+<hr>
 
 {if $args_cf.standard_location neq ''}
-  <div {$addInfoDivStyle}>
-        <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
-  </div>
-  {/if}
+	{$args_cf.standard_location}
+{/if}
+{include file="{$tplConfig['attributesLinearForViewer.inc']}"}
 
-  <p>
-  <div {$addInfoDivStyle}>
-   {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
-            $has_been_executed == 0} 
-
-   {if $args_frozen_version=="no" && 
-       $args_tcase_cfg->can_edit_executed == 1 &&
-       $has_been_executed == 1}
-     {$kwRW = 1}
-   {/if}
-   
-   {include file="{$tplConfig['keywords.inc']}" 
+<div>
+	{$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 && $has_been_executed == 0}
+	{if $args_frozen_version=="no" && $args_tcase_cfg->can_edit_executed == 1 && $has_been_executed == 1}
+		{$kwRW = 1}
+	{/if}
+	{include file="{$tplConfig['keywords.inc']}" 
             args_edit_enabled=$kwRW
             args_tcase_id=$tcase_id
-            args_tcversion_id=$tcversion_id
-   } 
-  </div>
-  
-  {if $gui->requirementsEnabled == TRUE && 
-     ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
+            args_tcversion_id=$tcversion_id} 
+</div>
+{if $gui->requirementsEnabled == TRUE && ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
+	{$reqLinkingEnabled = 0}
+	{if $gui->req_tcase_link_management && $args_frozen_version=="no" && $edit_enabled == 1 }
+    	{$reqLinkingEnabled = 1}
+ 	{/if}
+ 	{if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 && $has_been_executed == 1 && $args_tcase_cfg->can_edit_executed == 0}
+    	{$reqLinkingEnabled = 0}
+	{/if}
 
-     {$reqLinkingEnabled = 0}
-     {if $gui->req_tcase_link_management && $args_frozen_version=="no" &&
-         $edit_enabled == 1 }
-        {$reqLinkingEnabled = 1}
-     {/if}    
+	<div>		
+		<table class="table table-striped table-bordered">
+			<tr>
+       			<th colspan="{$tableColspan}" width="20%">
+       				<span>
+       					<a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}" target="mainframe" class="bold">
+       						{$tcView_viewer_labels.Requirements}
+   						</a>
+      					{if $reqLinkingEnabled && $args_testcase.isTheLatest == 1}
+                            <img class="clickable" src="{$tlImages.item_link}" onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
+                                 title="{$tcView_viewer_labels.link_unlink_requirements}" />
+      					{/if}
+      					: &nbsp;
+  					</span>
+     			</th>
+ 			
+      			<td>
+      				{section name=item loop=$args_reqs}
+            			{$reqID=$args_reqs[item].id}
+                        {$reqVersionID=$args_reqs[item].req_version_id}
+                        {$reqVersionNum=$args_reqs[item].version}
+                        <img class="clickable" src="{$tlImages.edit}" onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID});" title="{$tcView_viewer_labels.requirement}" />
+                        {$openC}{$args_reqs[item].req_spec_title|escape}{$closeC}
+                        {$args_reqs[item].req_doc_id|escape}&nbsp{$openC}{$tcView_viewer_labels.version_short}{$reqVersionNum}{$closeC}{$sepC}{$args_reqs[item].title|escape}
+                        {if !$smarty.section.item.last}<br />{/if}
+      				{sectionelse}
+        				{$tcView_viewer_labels.none}
+      				{/section}
+      			</td>
+    		</tr>
+		</table>
+	</div>
+{/if}
 
-     {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 && 
-         $has_been_executed == 1 && $args_tcase_cfg->can_edit_executed == 0}
-        {$reqLinkingEnabled = 0}
-     {/if}
-     
-
-  <div {$addInfoDivStyle}>
-    <table cellpadding="0" cellspacing="0" style="font-size:100%;">
-             <tr>
-               <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
-               target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
-
-              {if $reqLinkingEnabled && $args_testcase.isTheLatest == 1}
-                <img class="clickable" src="{$tlImages.item_link}"
-                     onclick="javascript:openReqWindow({$args_testcase.testcase_id},'a');"
-                     title="{$tcView_viewer_labels.link_unlink_requirements}" />
-              {/if}
-              : &nbsp;</span>
-             </td>
-              <td>
-              {section name=item loop=$args_reqs}
-                {$reqID=$args_reqs[item].id}
-                {$reqVersionID=$args_reqs[item].req_version_id}
-                {$reqVersionNum=$args_reqs[item].version}
-                
-                
-                <img class="clickable" src="{$tlImages.edit}"
-                     onclick="javascript:openLinkedReqVersionWindow({$reqID},{$reqVersionID});"
-                     title="{$tcView_viewer_labels.requirement}" />
-                {$openC}{$args_reqs[item].req_spec_title|escape}{$closeC}
-                {$args_reqs[item].req_doc_id|escape}&nbsp{$openC}{$tcView_viewer_labels.version_short}{$reqVersionNum}{$closeC}{$sepC}{$args_reqs[item].title|escape}
-                {if !$smarty.section.item.last}<br />{/if}
-              {sectionelse}
-                {$tcView_viewer_labels.none}
-              {/section}
-              </td>
-            </tr>
-    </table>
-  </div>
-  {/if}
-
-
-  {if $gui->codeTrackerEnabled}
-  <br>
-  <div {$addInfoDivStyle}>
-    <table cellpadding="0" cellspacing="0" style="font-size:100%;">
-      <tr>
-        <td colspan="{$tableColspan}" style="vertical-align:text-top;">
-          <span><a title="{$tcView_viewer_labels.code_mgmt}" href="{$gui->cts->cfg->uriview}"
-               target="_blank" class="bold">{$tcView_viewer_labels.code_mgmt}</a><b>: &nbsp;</b>
-            <a href="javascript:open_script_add_window({$gui->tproject_id},null,{$tcversion_id},'link')">
-            <img src="{$tlImages.new_f2_16}" title="{$tcView_viewer_labels.code_link_tl_to_cts}" style="border:none" /></a>
-              &nbsp;
-          </span>
-        </td>
-      </tr>
-      {* TestScript Links (if any) *}
-      {if isset($gui->scripts[$tcversion_id]) && !is_null($gui->scripts[$tcversion_id])}
-        <tr style="background-color: #d0d0d0">
-          {include file="{$tplConfig.inc_show_scripts_table}"
-           scripts_map=$gui->scripts[$tcversion_id]
-           can_delete=true
-           tcase_id=$tcversion_id
-           tproject_id=$tproject_id
-          }
+{if $gui->codeTrackerEnabled}
+<div>
+	<table class="table table-striped table-bordered">
+		<tr>
+			<td colspan="{$tableColspan}" style="vertical-align:text-top;">
+				<span>
+					<a title="{$tcView_viewer_labels.code_mgmt}" href="{$gui->cts->cfg->uriview}" target="_blank" class="bold">{$tcView_viewer_labels.code_mgmt}</a>
+					<b>: &nbsp;</b>
+            		<a href="javascript:open_script_add_window({$gui->tproject_id},null,{$tcversion_id},'link')">
+            			<img src="{$tlImages.new_f2_16}" title="{$tcView_viewer_labels.code_link_tl_to_cts}" style="border:none" />
+            		</a>
+              		&nbsp;
+          		</span>
+        	</td>
+		</tr>
+		{* TestScript Links (if any) *}
+		{if isset($gui->scripts[$tcversion_id]) && !is_null($gui->scripts[$tcversion_id])}
+		<tr style="background-color: #d0d0d0">
+			{include file="{$tplConfig.inc_show_scripts_table}"
+					scripts_map=$gui->scripts[$tcversion_id]
+                    can_delete=true
+                    tcase_id=$tcversion_id
+                    tproject_id=$tproject_id}
         </tr>
-      {/if}
-    </table>
-  </div>
-  {/if}
-  
+      	{/if}
+	</table>
+</div>
+{/if}
+
 {if $show_relations}
-  <br />
-  {include file="{$tplConfig['relations.inc']}"
-           args_is_latest_tcv = $args_testcase.isTheLatest
-           args_relations = $args_relations
-           args_frozen_version = $args_frozen_version
-           args_edit_enabled = $edit_enabled} 
+	{include file="{$tplConfig['relations.inc']}"
+            args_is_latest_tcv = $args_testcase.isTheLatest
+            args_relations = $args_relations
+            args_frozen_version = $args_frozen_version
+            args_edit_enabled = $edit_enabled} 
 {/if}
 
 {if $args_linked_versions != null && $tlCfg->spec_cfg->show_tplan_usage}
-  {* Test Case version Test Plan Assignment *}
-  <br />
-  {include file="{$tplConfig['quickexec.inc']}"
+	{* Test Case version Test Plan Assignment *}
+	{include file="{$tplConfig['quickexec.inc']}"
            args_edit_enabled=$edit_enabled} 
 {/if}
 

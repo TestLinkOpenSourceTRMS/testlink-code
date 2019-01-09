@@ -4819,7 +4819,6 @@ class testcase extends tlObjectWithAttachments
     $value_css_style = ' ';
 
     $add_table=true;
-    $table_style='';
     if( !is_null($formatOptions) )
     {
       $label_css_style = isset($formatOptions['label_css_style']) ?
@@ -4828,7 +4827,6 @@ class testcase extends tlObjectWithAttachments
                          $formatOptions['value_css_style'] : $value_css_style;
 
       $add_table = isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
-      $table_style = isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
     }
 
     $cf_smarty = '';
@@ -4877,7 +4875,7 @@ class testcase extends tlObjectWithAttachments
 
       if( (trim($cf_smarty) != "") && $add_table)
       {
-        $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
+        $cf_smarty = "<table class='table table-striped table-bordered'>" . $cf_smarty . "</table>";
       }
     }
     return $cf_smarty;

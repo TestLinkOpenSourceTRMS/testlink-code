@@ -100,21 +100,20 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 	<input type="hidden" name="featureID" value="{$gui->featureID}" />
 	<input type="hidden" name="featureType" value="{$gui->featureType}" />
 
-	{$styleLH="padding: 0px 30px 10px 5px;"}
-	<div class="panel panel-default" style="background-color: #EAEAED;">
+	<div class="panel panel-default">
     	<div class="panel-body">
-		<table style="border:0;">
+		<table>
     	{if $gui->featureType == 'testproject'}
 			<tr>
-                <td class="labelHolder" style="{$styleLH}">{$labels.TestProject}{$gui->accessTypeImg}</td>
+                <td class="labelHolder">{$labels.TestProject}{$gui->accessTypeImg}</td>
                 <td>&nbsp;</td>
     	{else}
     		<tr>
-                <td class="labelHolder" style="{$styleLH}">{$labels.TestProject}{$gui->tprojectAccessTypeImg}</td>
+                <td class="labelHolder">{$labels.TestProject}{$gui->tprojectAccessTypeImg}</td>
                 <td>{$gui->tproject_name|escape}</td>
             </tr>
     		<tr>
-				  <td class="labelHolder" style="{$styleLH}">{$labels.TestPlan}{$gui->accessTypeImg}
+				  <td class="labelHolder">{$labels.TestPlan}{$gui->accessTypeImg}
           </td>
     	{/if}
 
@@ -131,12 +130,12 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
 		    	</td>
 			<td>
           {* 
-					<input type="button" value="{$labels.btn_change}" onclick="changeFeature('{$gui->featureType}');"/>
+					<input type="button" value="{$labels.btn_change}" onclick="changeFeature('{$gui->featureType}');" class="btn btn-primary"/>
           *}
 		  </td>
 			</tr>
    		<tr>
-   		<td class="labelHolder" style="{$styleLH}"">{$labels.set_roles_to}</td>{if $gui->featureType == 'testproject'} <td>&nbsp;</td> {/if}
+   		<td class="labelHolder">{$labels.set_roles_to}</td>{if $gui->featureType == 'testproject'} <td>&nbsp;</td> {/if}
       <td>
         <select name="allUsersRole" id="allUsersRole">
 		      {foreach key=role_id item=role from=$gui->optRights}
@@ -148,7 +147,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
       </td>
       <td>
       &nbsp;
-	<input type="button" value="{$labels.btn_do}" onclick="javascript:set_combo_group('usersRoleTable','userRole_', document.getElementById('allUsersRole').value);"/>
+	<input type="button" value="{$labels.btn_do}" onclick="javascript:set_combo_group('usersRoleTable','userRole_', document.getElementById('allUsersRole').value);" class="btn btn-primary"/>
 	</td>
 		</tr>
 
@@ -184,7 +183,7 @@ during refresh feature, and then we have a bad refresh on page getting a bug.
             {$user_row_class='class="not_authorized_user"'}
           {/if}
 
-    	<tr {$user_row_class} bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
+    	<tr {$user_row_class}>
     		<td {if $gui->role_colour != '' && $gui->role_colour[$globalRoleName] != ''}  		
     		      style="background-color: {$gui->role_colour[$globalRoleName]};" {/if}>
     		    {$user->login|escape} ({$user->firstName|escape} {$user->lastName|escape}) </td>

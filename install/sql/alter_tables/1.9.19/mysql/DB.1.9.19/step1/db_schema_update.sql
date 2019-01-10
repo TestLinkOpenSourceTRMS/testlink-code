@@ -1,5 +1,5 @@
 
-CREATE TABLE /*prefix*/execution_tcsteps_backup (
+CREATE TABLE /*prefix*/execution_tcsteps_wip (
    id int(10) unsigned NOT NULL auto_increment,
    tcstep_id int(10) unsigned NOT NULL default '0',
    testplan_id int(10) unsigned NOT NULL default '0',

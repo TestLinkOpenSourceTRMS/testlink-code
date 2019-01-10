@@ -8832,7 +8832,7 @@ class testcase extends tlObjectWithAttachments
   */
   public function saveBackupSteps($stepsData,$testPlanId,$platformId,$buildId,$testerId) {
       
-      $targetTable = $this->tables['execution_tcsteps_backup'];
+      $targetTable = $this->tables['execution_tcsteps_wip'];
       if (!is_null($stepsData) && count($stepsData) > 0) {
           //DELETE FIRST
           $this->deleteBackupSteps(array_keys($stepsData['notes']),$testPlanId,$platformId,$buildId);
@@ -8865,7 +8865,7 @@ class testcase extends tlObjectWithAttachments
    */
   public function getBackupSteps($stepsIds,$testPlanId,$platformId,$buildId) {
       
-      $targetTable = $this->tables['execution_tcsteps_backup'];
+      $targetTable = $this->tables['execution_tcsteps_wip'];
       
       if (!is_null($stepsIds) && count($stepsIds) > 0) {
           $sql = "SELECT * FROM {$targetTable} ";
@@ -8873,10 +8873,8 @@ class testcase extends tlObjectWithAttachments
           $sql .= "testplan_id = ".$this->db->prepare_int($testPlanId)." AND ";
           $sql .= "platform_id = ".$this->db->prepare_int($platformId)." AND ";
           $sql .= "build_id = ".$this->db->prepare_int($buildId);
-          
-          $rs = $this->db->fetchRowsIntoMap($sql,"tcstep_id");
-          
-          return $rs;
+        
+          return $this->db->fetchRowsIntoMap($sql,"tcstep_id");
       } else {
           return null;
       }
@@ -8892,7 +8890,7 @@ class testcase extends tlObjectWithAttachments
    */
   public function deleteBackupSteps($stepsIds,$testPlanId,$platformId,$buildId) {
       
-      $targetTable = $this->tables['execution_tcsteps_backup'];
+      $targetTable = $this->tables['execution_tcsteps_wip'];
       
       $implodeStepsId = implode(",",$stepsIds);
       if (!empty($implodeStepsId) && !is_null($testPlanId) && !is_null($platformId)) {

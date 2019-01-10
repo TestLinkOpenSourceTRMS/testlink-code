@@ -169,16 +169,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
    		  {/if}
      {/if}
      
-     {if $gui->grants->execute && $gui->backupSteps && $gui->stepsWasSave != 1}
+     {if $gui->grants->execute && $gui->backupSteps}
 		 <div id="backupSteps" class="backup_exist">
 		 	{$labels.steps_backup_exist}
-		 	<input type="button" value="{$labels.restore}" onclick="javascript:restoreSteps({$gui->backupSteps|@json_encode|@htmlspecialchars},'{$labels.waning_backup_present_lost_change}');" />
-		 	{if isset($users[$gui->backupTesterId])}
-				<br/>{$labels.created_by}
-		 		{$users[$gui->backupTesterId]->getDisplayName()|escape} - 
-		 		{$gui->backupTimestamp|date_format:$gsmarty_timestamp_format}
-		 	{/if}
-		 	
+		 	<input type="button" value="{$labels.restore}" onclick="javascript:restoreSteps({$gui->backupSteps|@json_encode|@htmlspecialchars});" />
 		 </div>
 	 {/if}
 	 

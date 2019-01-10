@@ -3863,10 +3863,6 @@ $TLS_click_blocked = "Click to set to blocked";
 $TLS_click_backup = "Click to save partial execution";
 $TLS_confirm_save_backup = "There is a partial execution for this record. Do you want to delete the old partial execution ?";
 $TLS_confirm_save_execution = "There is a partial execution for this record. Partial execution will be delete. Do you want to save the final execution ?";
-$TLS_warning_steps_empty = "You must add one note or status.";
-$TLS_warning_attachement_present = "Warning : Attachements are not save.";
-$TLS_warning_backup_present = "There is a partial execution for this record.";
-$TLS_waning_backup_present_lost_change = "There is a partial execution for this record. Do you want to restore ?";
 
 
 $TLS_steps_backup_exist = "There is a partial execution ";

@@ -63,7 +63,7 @@ Author : franciscom
     		 <img src="{$tlImages.test_backup}" title="{$args_labels.click_backup}"
                         name="saveBackup[{$args_tcversion_id}]"
                         id="saveBackup_{$args_tcversion_id}"
-                        onclick="javascript:doBackupSteps('{$args_labels.warning_backup_present}','{$args_labels.confirm_save_backup}','{$args_labels.warning_steps_empty}','{$args_labels.warning_attachement_present}');"/>
+                        onclick="javascript:doBackupSteps('{$args_labels.confirm_save_backup}');"/>
     	</td>
     </tr>
 

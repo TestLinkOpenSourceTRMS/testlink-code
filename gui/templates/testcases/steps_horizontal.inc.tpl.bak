@@ -112,7 +112,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       <td>
         <select class="step_status" name="step_status[{$step_info.id}]" id="step_status_{$step_info.id}">
           {html_options options=$gui->execStepStatusValues selected=($gui->stepsWasSave == 1)? $gui->backupSteps[$step_info.id]["status"] : $step_info.execution_status}
-        </select> <br>
+        </select> <br/>
         
         {if $gui->tlCanCreateIssue}
           {include file="execute/add_issue_on_step.inc.tpl" 

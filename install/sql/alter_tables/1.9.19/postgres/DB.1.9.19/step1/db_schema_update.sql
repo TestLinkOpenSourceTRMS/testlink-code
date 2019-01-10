@@ -5,7 +5,7 @@
 -- 
 --
 --
--- Table structure for table "execution_tcsteps_backup"
+-- Table structure for table "execution_tcsteps_wip"
 --
 CREATE TABLE /*prefix*/execution_tcsteps_backup (
    "id" BIGSERIAL NOT NULL ,
@@ -19,4 +19,4 @@ CREATE TABLE /*prefix*/execution_tcsteps_backup (
    "status" CHAR(1) NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX /*prefix*/execution_tcsteps_backup_uidx1 ON  /*prefix*/execution_tcsteps_backup ("tcstep_id","testplan_id","platform_id","build_id");
+CREATE UNIQUE INDEX /*prefix*/execution_tcsteps_backup_uidx1 ON  /*prefix*/execution_tcsteps_wip ("tcstep_id","testplan_id","platform_id","build_id");

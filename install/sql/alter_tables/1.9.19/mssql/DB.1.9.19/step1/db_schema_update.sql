@@ -23,9 +23,9 @@
 --- 
 
 --
--- Table structure for table "execution_tcsteps_backup"
+-- Table structure for table "execution_tcsteps_wip"
 --
-CREATE TABLE /*prefix*/execution_tcsteps_backup (
+CREATE TABLE /*prefix*/execution_tcsteps_wip (
    id int IDENTITY(1,1) NOT NULL,
    tcstep_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_backup_tcstep_id DEFAULT ((0)),
    testplan_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_tcsteps_backup_testplan_id DEFAULT ((0)),

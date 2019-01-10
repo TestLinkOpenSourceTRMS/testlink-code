@@ -496,7 +496,7 @@ function init_args(&$dbHandler,$cfgObj)
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
 
-  $args->doSave = $args->save_results || $args->save_and_next || 
+	$args->doSave = $args->save_results || $args->save_and_next || 
                  $args->save_and_exit || $args->do_bulk_save;
  
   $args->doNavigate =  $args->doMoveNext || $args->doMovePrevious;

@@ -3761,11 +3761,6 @@ $TLS_click_blocked = "Enregistrer un résultat bloqué";
 $TLS_click_backup = "Enregistrer une exécution partielle";
 $TLS_confirm_save_backup = "Une exécution partielle existe pour cet enregistrement. Voulez vous continuer et écraser l\'ancienne exécution partielle ?";
 $TLS_confirm_save_execution = "Une exécution partielle existe pour cet enregistrement et n\'a pas été restaurée. L\'exécution partielle sera supprimée. Voulez vous enregistrer l\'exécution finale ?";
-$TLS_warning_steps_empty = "Vous devez saisir au moins un constat ou une note pour enregistrer.";
-$TLS_warning_attachement_present = "Attention : les pièces jointes ne sont pas sauvegardées.";
-$TLS_warning_backup_present = "Une exécution partielle existe pour cet enregistrement et n\'a pas été restaurée.";
-$TLS_waning_backup_present_lost_change = "Une exécution partielle existe pour cet enregistrement et n\'a pas été restaurée. Voulez-vous restaurer ?";
-
 
 
 $TLS_steps_backup_exist = "Il existe une exécution partielle";

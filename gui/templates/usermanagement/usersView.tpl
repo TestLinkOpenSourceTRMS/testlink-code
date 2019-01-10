@@ -21,9 +21,8 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
-    {$matrix|@print_r}
-<!--         {include file="inc_ext_js.tpl" bResetEXTCss=1} -->
-<!--         {include file="inc_ext_table.tpl"} -->
+         {include file="inc_ext_js.tpl" bResetEXTCss=1}
+         {include file="inc_ext_table.tpl"}
     {/if}
   {/if}
   {$matrix->renderHeadSection()}

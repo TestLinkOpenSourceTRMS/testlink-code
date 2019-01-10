@@ -29,6 +29,15 @@ var checkedImg = "{$tlImages.checked}";
 <script type="text/javascript">
 
 /*
+ * Color the role column with the correct color code
+ */
+function render_color (val, meta, record, rowIndex, colIndex, store) {
+	var x = record.get('role_id');
+	meta.css +=  ' roleCode' + x;
+	return val;
+};
+
+/*
  statusRenderer() 
  translate this code to a localized string and applies formatting
 */

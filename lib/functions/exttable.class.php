@@ -244,7 +244,12 @@ class tlExtTable extends tlTable
       {
         $s .= "{header: \"{$column['title']}\", dataIndex: '{$column['col_id']}'";
       }
-  
+      
+      if( isset($column['color']) )
+      {
+          $s .= ",renderer: {$column['color']}";
+      }
+      
       if (isset($column['filter']))
       {
         if( isset($column['filterOptions']) )
@@ -561,7 +566,7 @@ class tlExtTable extends tlTable
 
   function getGridViewConfig()
   {
-    $s = 'forceFit: true' . $this->moreViewConfig;
+    $s = 'forceFit: true';
     $s .= ',hideGroupedColumn:' . ($this->hideGroupedColumn ? 'true' : 'false');
     if( $this->showGroupItemsCount )
     {

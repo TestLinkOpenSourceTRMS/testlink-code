@@ -73,23 +73,21 @@ var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
       <span style="float:left;">  
         <form method="post" action="{$createUserAction}" name="launch_create">
           <input type="hidden" id="operation" name="operation" value="" />
-          <input type="submit" name="doCreate"  value="{$labels.btn_create}" />
+          <input type="submit" name="doCreate"  value="{$labels.btn_create}" class="btn btn-primary"/>
         </form>
       </span>
 
       <span>
         <form method="post" action="{$exportUsersAction}" name="launch_export" style="inline;">
-          <input type="submit" id="export"  name="export" value="{$labels.btn_export}" style="margin-left: 3px;">
+          <input type="submit" id="export"  name="export" value="{$labels.btn_export}" class="btn btn-primary" style="margin-left: 3px;">
         </form>
       </span>
 
     </div>
     <div class="groupBtn">
         <form method="post" action="{$editUserAction}" name="manage_user" style="inline;">
-          <input type="text" id="login"  name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
-                 placeholder="{$labels.th_login}" required> 
-          <input type="submit" id="manage_user"  name="manage_user" value="{$labels.btn_manage_user}" 
-                 style="margin-left: 3px;">
+          <input type="text" id="login"  name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" placeholder="{$labels.th_login}" required> 
+          <input type="submit" id="manage_user"  name="manage_user" value="{$labels.btn_manage_user}" class="btn btn-primary" style="margin-left: 3px;">
         </form>
     </div>
   </div>

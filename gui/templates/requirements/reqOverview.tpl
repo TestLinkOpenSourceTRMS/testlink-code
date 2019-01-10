@@ -33,7 +33,7 @@
 
 <h1 class="title">{$gui->pageTitle|escape}</h1>
 
-<div class="workBack" style="overflow-y: auto;">
+<div class="page-content">
 
 {if $gui->warning_msg == ''}
   <p>{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format} 

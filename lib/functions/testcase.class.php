@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2018, TestLink community
+ * @copyright   2005-2019, TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -1698,43 +1698,48 @@ class testcase extends tlObjectWithAttachments
     executions
     cfield_execution_values
   */
-  function _execution_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
-  {
+  function _execution_delete($id,$version_id=self::ALL_VERSIONS,$children=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = array();
 
-    if( $version_id == self::ALL_VERSIONS )
-    {
-      $tcversion_list=implode(',',$children['tcversion']);
+    if( $version_id == self::ALL_VERSIONS ) {
+      $tcversion_list = implode(',',$children['tcversion']);
+
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_tcsteps']} " .
+             " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
+             " WHERE tcversion_id IN ({$tcversion_list}))";
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_bugs']} " .
              " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
              " WHERE tcversion_id IN ({$tcversion_list}))";
 
-      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']}  " .
-             " WHERE tcversion_id IN ({$tcversion_list})";
+      $sql[] = "/* $debugMsg */ 
+                DELETE FROM {$this->tables['cfield_execution_values']}
+                WHERE tcversion_id IN ({$tcversion_list}) ";
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']}  " .
              " WHERE tcversion_id IN ({$tcversion_list})";
+    } else {
 
-      }
-      else
-      {
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_tcsteps']} " .
+             " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
+             " WHERE tcversion_id = {$version_id})";
+
       $sql[]="/* $debugMsg */  DELETE FROM {$this->tables['execution_bugs']} " .
              " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
              " WHERE tcversion_id = {$version_id})";
 
-      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
-             " WHERE tcversion_id = {$version_id}";
+      $sql[]="/* $debugMsg */ 
+              DELETE FROM {$this->tables['cfield_execution_values']}
+              WHERE tcversion_id = {$version_id}";
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']} " .
              " WHERE tcversion_id = {$version_id}";
-      }
+    }
 
-      foreach ($sql as $the_stm)
-      {
-          $result = $this->db->exec_query($the_stm);
-      }
+    foreach ($sql as $the_stm) {
+      $result = $this->db->exec_query($the_stm);
+    }
   }
 
 
@@ -4458,18 +4463,17 @@ class testcase extends tlObjectWithAttachments
     $viewerActions->add2tplan='no';
     $viewerActions->freeze='no';
 
-    switch ($mode)
-    {
+    switch ($mode) {
       case 'editOnExec':
         $viewerActions->edit='yes';
+        $viewerActions->create_new_version='yes';
       break;
 
       case 'editDisabled':
       break;
 
       default:
-        foreach($viewerActions as $key => $value)
-        {
+        foreach($viewerActions as $key => $value) {
           $viewerActions->$key='yes';
         }
       break;
@@ -6848,6 +6852,7 @@ class testcase extends tlObjectWithAttachments
     $dummy = getConfigAndLabels('testCaseStatus','code');
     $goo->domainTCStatus = $dummy['lbl'];
 
+    // editOnExec is part of show_mode Domain
     $goo->can_do = $this->getShowViewerActions($goo->show_mode);
     $key = 'testcase_freeze';
     if(property_exists($grantsObj, $key)) {
@@ -8841,5 +8846,36 @@ class testcase extends tlObjectWithAttachments
     return ($rs['executed'] != 0);
   }
 
+
+  /**
+   *
+   */
+  function updateTPlanLinkToLatestTCV($tcversionID,$tplanID,$platformID=null,$auditContext=null) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $fromTCV = intval($tcversionID);
+
+    $sql = "SELECT parent_id AS tc_id 
+            FROM {$this->tables['nodes_hierarchy']} 
+            WHERE id = $fromTCV";
+    $rs = current($this->db->get_recordset($sql));
+            
+    $ltcv = $this->getLatestVersionID($rs['tc_id']);
+
+    $sql = "/* $debugMsg */
+            UPDATE {$this->tables['testplan_tcversions']}
+            SET tcversion_id = " . $ltcv .
+            " WHERE testplan_id = " . intval($tplanID) .
+            " AND tcversion_id=$fromTCV";
+
+
+    if( ($plat = intval($platformID)) > 0 ) {
+      $sql .= " AND platform_id=$plat "; 
+    }    
+    $this->db->exec_query($sql);
+
+    return $ltcv;
+  }
 
 }  // Class end

@@ -279,7 +279,11 @@ else if($args->do_create_new_version) {
   $msg = lang_get('error_tc_add');
   $op = $tcase_mgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
 
+
+  $candidate = $args->tcversion_id;
   if ($op['msg'] == "ok") {
+
+    $candidate = $op['id'];
     $user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);
     $msg = 'ok';
   
@@ -287,7 +291,13 @@ else if($args->do_create_new_version) {
     
     $isOpen = !$tcCfg->freezeTCVersionOnNewTCVersion;
     $tcase_mgr->setIsOpen($args->tcase_id,$args->tcversion_id,$isOpen);
-  }
+  } 
+  $identity = new stdClass();
+  $identity->id = $args->tcase_id;
+  $identity->tproject_id = $args->tproject_id;
+  $identity->version_id = !is_null($args->show_mode) ? $candidate : testcase::ALL_VERSIONS;
+
+
 
   $gui->viewerArgs['action'] = $action_result;
   $gui->viewerArgs['refreshTree'] = DONT_REFRESH;
@@ -300,10 +310,6 @@ else if($args->do_create_new_version) {
                           '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
                           "&show_mode={$args->show_mode}";
 
-  $identity = new stdClass();
-  $identity->id = $args->tcase_id;
-  $identity->tproject_id = $args->tproject_id;
-  $identity->version_id = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
  
 
   $tcase_mgr->show($smarty,$gui,$identity,$gui->grants,array('getAttachments' => true));

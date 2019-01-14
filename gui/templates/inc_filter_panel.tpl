@@ -715,7 +715,8 @@
          onclick="javascript:delete_testers_from_build({$control->settings.setting_build.selected});"
   />
 {/if}
-{if $control->draw_tc_assignment_bulk_copy_button}
+{*  remove till more time to understand 20190114  *}
+{if false && $control->draw_tc_assignment_bulk_copy_button}
   <input type="button" style="font-size: 90%;"
          name="copy_tester_assignments"
          value="{$labels.btn_bulk_copy}"

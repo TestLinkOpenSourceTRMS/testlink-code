@@ -1986,8 +1986,13 @@ class testsuite extends tlObjectWithAttachments
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     // Get tree of Test Suites
-    $tsList = $rootTestSuiteID . ',';
-    $tsList .= $this->tree_manager->get_subtree_list($rootTestSuiteID,$this->my_node_type);    
+    $tsList = $rootTestSuiteID; 
+
+    $tsSubList = trim($this->tree_manager->get_subtree_list($rootTestSuiteID,$this->my_node_type));    
+
+    if( '' != $tsSubList ) {
+      $tsList .= ',' . $tsSubList;
+    }
 
     $tsSet = explode(',', $tsList);
     $kwForTS = $this->getKeywordsForTSSet($tsSet);

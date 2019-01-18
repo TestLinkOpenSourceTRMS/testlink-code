@@ -55,6 +55,21 @@ if( !is_null($args->doEditUser) )
         $user->lastName = $args->lastName;
         $result = $user->writeToDB($db);
 
+        //if user was created successfully check if any projects have default roles defined.
+        //in positive case assign the default project role to the new user as well.
+        if(!is_null($user->dbID))
+        {
+          $tplan_mgr = new testplan($db);
+          $plans = $tplan_mgr->get_all();
+          foreach($plans as $tplan)
+          {
+            if (isset($tplan['default_role']) && $tplan['default_role'] != TL_ROLES_INHERITED)
+            {
+              $tplan_mgr->addUserRole($user->dbID,$tplan['id'], $tplan['default_role']);
+            }
+          }
+        }
+
         $cfg = config_get('notifications');
         if($cfg->userSignUp->enabled)
         {  

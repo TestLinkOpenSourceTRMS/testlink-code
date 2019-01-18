@@ -162,6 +162,7 @@ CREATE TABLE /*prefix*/testplans(
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
   "is_public" INT2 NOT NULL DEFAULT '1',
+  "default_role" INT2 NOT NULL DEFAULT '0',
   "api_key" varchar(64) NOT NULL DEFAULT (MD5(RANDOM()::text) || MD5(RANDOM()::text)),
   PRIMARY KEY ("id")
 ); 

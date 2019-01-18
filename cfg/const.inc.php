@@ -503,6 +503,7 @@ define('TL_USER_ANYBODY', 0);
 
 /** Follows CODES present in roles table - DO NOT CHANGE ON ANY CIRCUNSTANCE */
 define('TL_ROLES_MANAGER', 1);
+define('TL_ROLES_RESERVED', 2);
 define('TL_ROLES_ADMIN', 8);
 define('TL_ROLES_LEADER', 9);
 define('TL_ROLES_TESTER', 7);

@@ -267,7 +267,9 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   }
 
   // Display Images Inline (Always)
-  $attachSet =  $req_mgr->getAttachmentInfos($req['id']);
+  // since 1.9.18 => we need to use req version
+  $attachSet =  $req_mgr->getAttachmentInfos($req['revision_id']);
+
   if (count($attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                $labels['attached_files'] . "</span></td><td>";
@@ -1051,8 +1053,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            " JOIN {$tables['builds']} B ON B.id = E.build_id " .
            " WHERE 1 = 1 ";
   
-  //Bugfix to show only active builds in Test Report view
-  $sql .= "AND B.active = 1";
+    //Bugfix to show only active builds in Test Report view
+    $sql .= "AND B.active = 1";
   
     if(isset($context['exec_id'])) {
       $sql .= " AND E.id=" . intval($context['exec_id']);
@@ -1089,8 +1091,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
             $build_mgr->html_table_of_custom_field_values($tbuild_id,$tprojectID);
         }
       }
-    }  
-  
+    }    
   }
  
   $tcInfo = $tc_mgr->get_by_id($id,$getByID['tcversion_id'],$getByID['filters'],
@@ -1189,24 +1190,19 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }
   }
 
-  if ($options['body'] || $options['summary'])
-  {
+  if ($options['body'] || $options['summary']) {
     $tcase_pieces = array('summary');
   }
     
-  if ($options['body'])
-  {
+  if ($options['body']) {
     $tcase_pieces[] = 'preconditions';
   }
 
-  if( $options['body'] || $options['step_exec_notes'] || $options['step_exec_status'] )
-  {
+  if( $options['body'] || $options['step_exec_notes'] || $options['step_exec_status'] ){
     $tcase_pieces[] = 'steps';
   }
     
-  if(!is_null($tcase_pieces))
-  {
-
+  if(!is_null($tcase_pieces)) {
     // Check user rights in order to understand if can delete attachments here
     //   function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
     // $tplan_id = isset($context['tplan_id']) ? $context['tplan_id'] : 0;
@@ -1482,7 +1478,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $kwSet = null;
 
   // Attachments
-  $attachSet =  (array)$tc_mgr->getAttachmentInfos($id);
+  $attachSet =  (array)$tc_mgr->getAttachmentInfos($tcversion_id);
+
+
   if (count($attachSet) > 0) {
     $repoDir = config_get('repositoryPath');
     $code .= '<tr><td> <span class="label">' . $labels['attached_files'] . '</span></td>';

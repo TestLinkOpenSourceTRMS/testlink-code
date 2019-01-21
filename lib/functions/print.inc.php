@@ -121,10 +121,8 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   $output = "<table class=\"req\" $table_style><tr><th colspan=\"$tableColspan\">" .
             "<span class=\"label\">{$labels['requirement']}:</span> " . $name . "</th></tr>\n"; 
   
-  if( $force['displayVersion'] )
-  {
-    foreach(array('version','revision') as $key)
-    {
+  if( $force['displayVersion'] ) {
+    foreach(array('version','revision') as $key) {
       $output .= '<tr><td valign="top">' . 
                  '<span class="label">'.$labels[$key].':</span></td>' .
                  '<td>' . $req[$key]. "</td></tr>\n";
@@ -132,8 +130,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   }
   
   
-  if ($options['toc']) 
-  {
+  if ($options['toc']) {
     $options['tocCode'] .= '<p style="padding-left: ' . 
                              (15 * $reqLevel).'px;"><a href="#' . prefixToHTMLID('req'.$node['id']) . '">' .
                            $name . '</a></p>';
@@ -183,13 +180,11 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
     }
   }            
   
-  if ($options['req_coverage']) 
-  {
+  if ($options['req_coverage'])  {
     $current = count($req_mgr->get_coverage($req['id']));
     $expected = $req['expected_coverage'];
     $coverage = $labels['not_aplicable'] . " ($current/0)";
-    if ($expected) 
-    {
+    if ($expected) {
       $percentage = round(100 / $expected * $current, 2);
       $coverage = "{$percentage}% ({$current}/{$expected})";
     }
@@ -203,12 +198,12 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
     $output .= "<tr><td colspan=\"$tableColspan\"> <br/>" . $req['scope'] . "</td></tr>";
   }
     
-  if ($options['req_relations']) 
-  {
+  if ($options['req_relations'])  {
+
+    // REQ relations are managed AT REQ level NOT REQV 
     $relations = $req_mgr->get_relations($req['id']);
 
-    if ($relations['num_relations']) 
-    {
+    if ($relations['num_relations']) {
       $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['relations'] . 
                  "</span></td><td>";
   
@@ -232,16 +227,13 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
     }
   } 
   
-  if ($options['req_linked_tcs']) 
-  {
+  if ($options['req_linked_tcs']) {
     $req_coverage = $req_mgr->get_coverage($req['id']);
     
-    if (count($req_coverage)) 
-    {
+    if (count($req_coverage)) {
       $output .=  "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['related_tcs'] . 
                   "</span></td>" . "<td>";
-      foreach ($req_coverage as $tc) 
-      {
+      foreach ($req_coverage as $tc) {
         $output .= htmlspecialchars($tc['tc_external_id'] . $title_separator . $tc['name']) . "<br/>";
       }
                  
@@ -1099,6 +1091,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   if ($tcInfo) {
     $tcInfo = $tcInfo[0];
   }
+  
+  $tcVersionID = $tcInfo['id'];
+
   $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
   $name = htmlspecialchars($node['name']);
 
@@ -1334,8 +1329,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
       else
       {
         // disable the field if it's empty
-        if ($tcInfo[$key] != '')
-        {
+        if ($tcInfo[$key] != '') {
           $code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '"><span class="label">' . $labels[$key] .
                    ':</span><br />' . ($designType == 'none' ? nl2br($tcInfo[$key]) : $tcInfo[$key] ) . "</td></tr>";
         }
@@ -1354,8 +1348,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   // After report on MANTIS, seems that we need to provide in output two values:
   // DESIGN execution type
   // EXECUTION execution type         
-  switch ($tcInfo['execution_type'])
-  {
+  switch ($tcInfo['execution_type']) {
     case TESTCASE_EXECUTION_TYPE_AUTO:
       $code .= $labels['execution_type_auto'];          
     break;
@@ -1373,8 +1366,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
            '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .  $tcInfo['estimated_exec_duration'];
   $code .= "</td></tr>\n";
 
-  if( isset($options['importance']) && $options['importance'] )
-  {
+  if( isset($options['importance']) && $options['importance'] ) {
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
              '<span class="label">'.$labels['importance'].':</span></td>' .
              '<td colspan="' .  ($cfg['tableColspan']-1) . '">' .
@@ -1384,8 +1376,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
 
   // print priority when printing test plan
-  if (isset($options['priority']) && $options['priority'])
-  {
+  if (isset($options['priority']) && $options['priority']) {
     // Get priority of this tc version for this test plan by using testplanUrgency class.
     // Is there maybe a better method than this one?
     $filters = array('tcversion_id' => $tcInfo['id']);
@@ -1407,27 +1398,30 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   $cfields = null;
   $prio_info = null;
 
-  $relSet = $tc_mgr->getRelations($id);
-  if(!is_null($relSet['relations']))
-  {
+  // since 1.9.18
+  // TC relations has been migrated to TCV relations
+  // $relSet = $tc_mgr->getRelations($id);
+  $greenCard = array('tcase_id' => $id, 'tcversion_id' => $tcVersionID);
+  $relSet = $tc_mgr->getTCVersionRelations($greenCard);
+
+  if(!is_null($relSet['relations'])) {
     // $fx = str_repeat('&nbsp;',5); // MAGIC allowed    
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . 
              '" valign="top"><span class="label">' . $labels['relations'] . '</span></td>'; 
 
     $code .= '<td>';
-    for($rdx=0; $rdx < $relSet['num_relations']; $rdx++)
-    {
-      if($relSet['relations'][$rdx]['source_id'] == $id)
-      {
+    for($rdx=0; $rdx < $relSet['num_relations']; $rdx++) {
+      if($relSet['relations'][$rdx]['source_id'] == $id) {
         $ak = 'source_localized';
       }
-      else
-      {
+      else {
         $ak = 'destination_localized';
       }
+
       $code .= htmlspecialchars($relSet['relations'][$rdx][$ak]) . ' - ' .
                htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['fullExternalID']) . ':' .
-               htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['name']) .  '<br/>';
+               htmlspecialchars($relSet['relations'][$rdx]['related_tcase']['name']) . " &nbsp;[{$labels['version']}:" .
+               $relSet['relations'][$rdx]['related_tcase']['version'] . "]";
     } 
     $code .= '</td></tr>';
   }  
@@ -2106,13 +2100,11 @@ function renderPlatformHeading($tocPrefix, $platform,&$options)
  * simple utility function, to avoid lot of copy and paste
  * given an string, return an string useful to jump to an anchor on document
  */
-function prefixToHTMLID($string2convert,$anchor_prefix='toc_')
-{
+function prefixToHTMLID($string2convert,$anchor_prefix='toc_') {
   return $anchor_prefix . str_replace('.', '_', $string2convert);
 }
 
-function renderTestProjectItem($info)
-{
+function renderTestProjectItem($info) {
   $testProjectCfg = getWebEditorCfg('testproject');
   $testProjectType = $testProjectCfg['type'];
   $lbl = init_labels(array('testproject' => null, 'context' => null, 'scope' => null));
@@ -2125,8 +2117,7 @@ function renderTestProjectItem($info)
 /**
  *
  */
-function renderTestPlanItem($info)
-{
+function renderTestPlanItem($info) {
   $testPlanCfg = getWebEditorCfg('testplan');
   $testPlanType = $testPlanCfg['type'];
   $lbl = init_labels(array('testplan' => null, 'scope' => null));

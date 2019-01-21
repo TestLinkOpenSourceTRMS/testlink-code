@@ -181,7 +181,12 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   }            
   
   if ($options['req_coverage'])  {
-    $current = count($req_mgr->get_coverage($req['id']));
+
+    // @since 1.9.18
+    // Coverage Link REQV to TCV
+    // $current = count($req_mgr->get_coverage($req['id']));
+    $current = count((array)$req_mgr->getGoodForReqVersion($req['version_id']));
+
     $expected = $req['expected_coverage'];
     $coverage = $labels['not_aplicable'] . " ($current/0)";
     if ($expected) {
@@ -228,13 +233,19 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
   } 
   
   if ($options['req_linked_tcs']) {
-    $req_coverage = $req_mgr->get_coverage($req['id']);
-    
-    if (count($req_coverage)) {
+
+    // @since 1.9.18
+    // Coverage links REQV to TCV
+    // $req_coverage = $req_mgr->get_coverage($req['id']);
+    $req_coverage = 
+      (array)$req_mgr->getGoodForReqVersion($req['version_id'],
+        array('verbose' => true, 'tproject_id' => $tprojectID));
+
+    if (count($req_coverage) > 0) {
       $output .=  "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['related_tcs'] . 
                   "</span></td>" . "<td>";
-      foreach ($req_coverage as $tc) {
-        $output .= htmlspecialchars($tc['tc_external_id'] . $title_separator . $tc['name']) . "<br/>";
+      foreach ($req_coverage[$req['version_id']] as $tc) {
+        $output .= htmlspecialchars($tc['tc_external_id'] . $title_separator . $tc['testcase_name']) . " &nbsp;[{$labels['version']}:" . $tc['version'] . "]";
       }
                  
       $output .= "</td></tr>";
@@ -260,7 +271,7 @@ function renderReqForPrinting(&$db,$node, &$options, $tocPrefix, $reqLevel, $tpr
 
   // Display Images Inline (Always)
   // since 1.9.18 => we need to use req version
-  $attachSet =  $req_mgr->getAttachmentInfos($req['revision_id']);
+  $attachSet =  (array)$req_mgr->getAttachmentInfos($req['revision_id']);
 
   if (count($attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
@@ -421,13 +432,11 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
     $output .= "</td></tr>";
   }
   
-  if ($options['req_spec_overwritten_count_reqs']) 
-  {
+  if ($options['req_spec_overwritten_count_reqs']) {
     $current = $req_spec_mgr->get_requirements_count($spec_id);   // NEEDS REFACTOR
     $expected = $spec['total_req'];
     $coverage = $labels['not_aplicable'] . " ($current/0)";
-    if ($expected) 
-    {
+    if ($expected) {
       $percentage = round(100 / $expected * $current, 2);
       $coverage = "{$percentage}% ({$current}/{$expected})";
     }
@@ -460,7 +469,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$options, $tocPrefix, $rsLe
     }
   }
   
-  $attachSet =  $req_spec_mgr->getAttachmentInfos($spec_id);
+  $attachSet =  (array)$req_spec_mgr->getAttachmentInfos($spec_id);
   if (count($attachSet)) {
     $output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" .
                $labels['attached_files'] . "</span></td><td><ul>";
@@ -1430,7 +1439,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
   // collect REQ for Test Case Version
   if ($options['requirement']) {
-    // $requirements = (array)$req_mgr->get_all_for_tcase($id);
+    // @since 1.9.18
+    // Coverage Links REQV to TCV
     $requirements = (array)$req_mgr->getActiveForTCVersion($tcversion_id);
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['reqs'].'</span>'; 

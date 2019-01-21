@@ -4881,27 +4881,54 @@ function getCoverageCounter($id) {
   * what is meaning of Good?
   * 
   */
-  function getGoodForReqVersion($reqVersionID) {                         
+  function getGoodForReqVersion($reqVersionID, $opt=null) {                         
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
+    $options = array('verbose' => false, 'tproject_id' => null);
+    $options = array_merge($options,(array)$opt);
     
     $sql = " /* $debugMsg */ " . 
            " SELECT REQ.id,REQ.id AS req_id,REQ.req_doc_id,
              NHREQ.name AS title, RCOV.is_active,
              RCOV.testcase_id,RCOV.tcversion_id,
              NHRS.name AS req_spec_title," . 
-           " REQV.id AS req_version_id, REQV.version " .
+           " REQV.id AS req_version_id, REQV.version ";
 
-           " FROM {$this->object_table} REQ " .
-           " JOIN {$this->tables['req_specs']} RSPEC " .
-           " ON REQ.srs_id = RSPEC.id " .
-           " JOIN {$this->tables['req_coverage']} RCOV " .
-           " ON RCOV.req_id = REQ.id " .
-           " JOIN {$this->tables['nodes_hierarchy']} NHRS " .
-           " ON NHRS.id=RSPEC.id " .
-           " JOIN {$this->tables['nodes_hierarchy']} NHREQ " .
-           " ON NHREQ.id=REQ.id " .
-           " JOIN {$this->tables['req_versions']} REQV " .
-           " ON RCOV.req_version_id=REQV.id ";
+    $addJoin = '';       
+    if($options['verbose']) {
+      $addFP = " TCV.tc_external_id AS external_id";
+      if( ($tprj = intval($options['tproject_id'])) > 0 ) {
+        $sqlP = " SELECT prefix FROM {$this->tables['testprojects']}
+                  WHERE id=$tprj";
+        $dummy = $this->db->get_recordset($sqlP);
+        
+        if( count($dummy) == 1 ) {
+          $prefix = $dummy[0]['prefix'];
+        }          
+        $glue = config_get('testcase_cfg');
+        $glue = $glue->glue_character;
+        $addFP = " CONCAT('$prefix','$glue',TCV.tc_external_id) AS tc_external_id ";
+      }            
+
+      $sql .= ",NH_TC.name AS testcase_name,$addFP";
+      $addJoin = " JOIN {$this->tables['nodes_hierarchy']} NH_TC
+                   ON NH_TC.id = RCOV.testcase_id
+                   JOIN {$this->tables['tcversions']} TCV
+                   ON TCV.id = RCOV.tcversion_id ";          
+    }
+
+    $sql .= " FROM {$this->object_table} REQ 
+              JOIN {$this->tables['req_specs']} RSPEC 
+              ON REQ.srs_id = RSPEC.id 
+              JOIN {$this->tables['req_coverage']} RCOV 
+              ON RCOV.req_id = REQ.id 
+              JOIN {$this->tables['nodes_hierarchy']} NHRS 
+              ON NHRS.id=RSPEC.id 
+              JOIN {$this->tables['nodes_hierarchy']} NHREQ 
+              ON NHREQ.id=REQ.id 
+              JOIN {$this->tables['req_versions']} REQV 
+              ON RCOV.req_version_id=REQV.id $addJoin ";
+
 
     $idList = implode(",",(array)$reqVersionID);
     

@@ -1188,31 +1188,25 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
  * 
  * @return array new tcase_set
  */
-function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
-{
+function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
   $buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
-  if( !is_null($buildSet) ) 
-  {
+  if( !is_null($buildSet) ) {
 
     $safe_platform = intval($filters->setting_platform);
-    if( $safe_platform > 0 )
-    {
+    if( $safe_platform > 0 ) {
       tLog(basename(__FILE__) . __FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullOnPlatform', 'DEBUG');
       $hits = $tplan_mgr->getHitsSameStatusFullOnPlatform($tplan_id,$safe_platform,
                                   (array)$filters->filter_result_result,$buildSet);
-    }
-    else
-    {
+    } else {
       tLog(basename(__FILE__) .__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullALOP', 'DEBUG');
+      
       $hits = $tplan_mgr->getHitsSameStatusFullALOP($tplan_id,
                                 (array)$filters->filter_result_result,$buildSet);
     }
-    if( is_null($hits) ) 
-    {
+
+    if( is_null($hits) ) {
       $tcase_set = array();
-    } 
-    else 
-    {
+    } else {
       helper_filter_cleanup($tcase_set,$hits);
       unset($hits);
     }

@@ -9,7 +9,7 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  **/
@@ -4322,8 +4322,10 @@ class testplan extends tlObjectWithAttachments
    */
   function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null)  {
     // On Postgresql 
-    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
-    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
+    // An output column’s name can be used to refer to the column’s value 
+    // in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must 
+    // write out the expression instead.
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
     
@@ -4882,31 +4884,35 @@ class testplan extends tlObjectWithAttachments
    *
    * If build set is NULL => ON LAST EXECUTION ON ALL ACTIVE builds (full), for a platform
    * 
-   * @internal revisions:
-   * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
    */
-  function getHitsSameStatusFullALOP($id,$statusSet,$buildSet=null)
-  {
+  function getHitsSameStatusFullALOP($id,$statusSet,$buildSet=null,$opt=null) {
     // On Postgresql 
     // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
     // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
 
+    $options = array('onlyActiveBuilds' => true);
+    $options = array_merge($options,(array)$opt);
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
                                                              array('ignorePlatform' => true));
+    if( $options['onlyActiveBuilds'] ) {
+      $buildsCfg['statusClause'] = " AND B.active = 1 ";
+    }
 
-    // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
+    // TICKET 5226: Filtering by test result did not always show the correct matches
     // The filtering for "not run" status was simply not implemented for the case 
-    // of not using platforms. Maybe that part was forgotten when refactoring the filters.
+    // of not using platforms. 
+    // Maybe that part was forgotten when refactoring the filters.
+    //
     // I adopted logic from helperGetHitsSameStatusOnPlatform() to get this working.
+    //
     $flippedStatusSet = array_flip($statusSet);  // (code => idx)
     $get = array('notRun' => isset($flippedStatusSet[$this->notRunStatusCode]), 'otherStatus' => false);
     $hits = array('notRun' => array(), 'otherStatus' => array());
 
-    if($get['notRun'])
-    {
+    if($get['notRun']) {
       $notRunSQL = " /* $debugMsg */ " .
                    " /* COUNT() is needed as parameter for HAVING clause */ " .
                    " SELECT COUNT(0) AS COUNTER, NHTCV.parent_id AS tcase_id" .
@@ -5704,8 +5710,7 @@ class testplan extends tlObjectWithAttachments
    *
    *
    */
-  function helperGetHits($id,$platformID,$buildSet=null,$options=null)
-  {
+  function helperGetHits($id,$platformID,$buildSet=null,$options=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my['options'] = array('buildID' => 0, 'ignorePlatform' => false, 'ignoreBuild' => false);
     $my['options'] = array_merge($my['options'],(array)$options);
@@ -5718,44 +5723,40 @@ class testplan extends tlObjectWithAttachments
     $buildsCfg['inClause'] = "";
     $buildsCfg['count'] = 0;
 
-    if($my['options']['buildID'] <= 0)
-    {
-      if( is_null($buildSet) )
-      {
+    if($my['options']['buildID'] <= 0) {
+      if( is_null($buildSet) ) {
         $buildSet = array_keys($this->get_builds($id, self::ACTIVE_BUILDS));
         $buildsCfg['statusClause'] = " AND B.active = 1 ";
       }
       $buildsCfg['count'] = count($buildSet);
       $buildsCfg['inClause'] = implode(",",$buildSet);
-    }
-    else
-    {
+    } else {
       $buildsCfg['inClause'] = intval($my['options']['buildID']);
     }
 
     $platformClause = " AND EE.platform_id = " . $safe_id['platform'];
     $platformField = " ,EE.platform_id ";
-    if( $my['options']['ignorePlatform'] )
-    {
+    if( $my['options']['ignorePlatform'] ) {
       $platformClause = " ";
       $platformField = " ";
     }
 
     $buildField = " ,EE.build_id ";
-    if( $my['options']['ignoreBuild'] )
-    {
+    if( $my['options']['ignoreBuild'] ) {
       $buildField = " ";
     }
 
 
 
-    $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id {$platformField} {$buildField} ," .
-          " MAX(EE.id) AS id " .
-          " FROM {$this->tables['executions']} EE " . 
-          " WHERE EE.testplan_id = " . $safe_id['tplan'] . 
-          " AND EE.build_id IN ({$buildsCfg['inClause']}) " .
-          $platformClause .
-          " GROUP BY EE.tcversion_id,EE.testplan_id {$platformField} {$buildField} ";
+    $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id 
+                {$platformField} {$buildField} ,
+                MAX(EE.id) AS id 
+                FROM {$this->tables['executions']} EE  
+                WHERE EE.testplan_id = " . $safe_id['tplan'] . 
+                " AND EE.build_id IN ({$buildsCfg['inClause']}) 
+                $platformClause 
+                GROUP BY EE.tcversion_id,EE.testplan_id 
+                {$platformField} {$buildField} ";
 
     return array($safe_id,$buildsCfg,$sqlLEX);
   }

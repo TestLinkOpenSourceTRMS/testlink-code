@@ -550,26 +550,22 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
   $methods = $fm['status_code'];
 
   $ffn = array($methods['any_build'] => 'filterStatusSetAtLeastOneOfActiveBuilds',
-             $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
-             $methods['specific_build'] => 'filter_by_status_for_build',
-             $methods['current_build'] => 'filter_by_status_for_build',
-             $methods['latest_execution'] => 'filter_by_status_for_latest_execution');
+               $methods['all_builds'] => 'filterStatusSetAllActiveBuilds',
+               $methods['specific_build'] => 'filter_by_status_for_build',
+               $methods['current_build'] => 'filter_by_status_for_build',
+               $methods['latest_execution'] => 'filter_by_status_for_latest_execution');
   
   $f_method = isset($fobj->filter_result_method) ? $fobj->filter_result_method : null;
   $f_result = isset($fobj->filter_result_result) ? $fobj->filter_result_result : null;
   $f_result = (array)$f_result;
 
-  // die();
-  
   // if "any" was selected as filtering status, don't filter by status
-  if (in_array($statusCfg['all'], $f_result)) 
-  {
+  if (in_array($statusCfg['all'], $f_result))  {
     $f_result = null;
     return $items2filter; // >>---> Bye!
   }
 
-  if( ($filter_done = !is_null($f_method) ) )
-  {
+  if( ($filter_done = !is_null($f_method) ) ) {
     $logMsg = 'FILTER METHOD:' . $f_method . '::' .  $ffn[$f_method];
     tLog($logMsg,'DEBUG');
     
@@ -578,8 +574,7 @@ function applyStatusFilters($tplan_id,&$items2filter,&$fobj,&$tplan_mgr,$statusC
     // to the build chosen in settings instead of the one in filters
     //
     // Need to understand why we need to do this 'dirty/brute force initialization'
-    if ($f_method == $methods['current_build']) 
-    {
+    if ($f_method == $methods['current_build']) {
       $fobj->filter_result_build = $fobj->setting_build;
     }
     

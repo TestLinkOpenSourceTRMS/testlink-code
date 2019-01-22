@@ -265,7 +265,7 @@ case steps and expected results, also test case ID's are empty in GUI
 
 ### Special Cases
 
- 1. Upgrade from 1.9.3 to 1.9.4/5/6/7/../16/17/18
+ 1. Upgrade from 1.9.3 to 1.9.4/5/6/7/../16/17/18/19
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 

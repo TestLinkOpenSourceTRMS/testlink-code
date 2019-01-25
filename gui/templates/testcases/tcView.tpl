@@ -169,6 +169,12 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                  item=my_testcase key=tdx}
   
           {$tcversion_id=$my_testcase.id}
+          
+          {$thisVersionIsExecuted = false}
+          {if $gui->status_quo[idx][$tcversion_id].executed != '' }
+            {$thisVersionIsExecuted = true}
+          {/if}
+
           {$version_num=$my_testcase.version}
           {$title=$labels.version}
           {$title="$title $version_num"}
@@ -237,9 +243,19 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
                        args_linked_versions=null
                        args_has_testplans=$gui->has_testplans}
 
+
+              {$downloadOnly = false} 
+              {if $thisVersionIsExecuted && 
+                  $tlCfg->testcase_cfg->downloadOnlyAfterExec == TRUE}
+                {$downloadOnly=true}
+              {/if}
+
+              {if $tcv_frozen_version=="yes"}
+                {$downloadOnly = true} 
+              {/if}
               {include file="attachments.inc.tpl" 
                        attach_attachmentInfos=$gui->attachments[$tcversion_id]  
-                       attach_downloadOnly=($tcv_frozen_version=="yes")
+                       attach_downloadOnly=$downloadOnly
                        attach_uploadURL=$gui->fileUploadURL[$tcversion_id]
                        attach_loadOnCancelURL=$gui->loadOnCancelURL}
 

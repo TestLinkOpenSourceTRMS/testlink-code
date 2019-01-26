@@ -926,7 +926,6 @@ class reqCommands {
           if( $alienMgr->latestVersionHasBeenExecuted($tcase_id) == 0) {
             $doLink = true;
           } else {
-            $doLink = false;
             $status_ok = false;
             $msg = sprintf(lang_get('cannot_link_latest_version_reason_has_been_exec'),
                            $argsObj->tcaseIdentity);

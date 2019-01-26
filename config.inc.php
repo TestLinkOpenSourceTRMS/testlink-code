@@ -1254,25 +1254,10 @@ $tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
 //$tlCfg->testcase_cfg->frozenNotExecutedTCVDelREQVLink = FALSE;
 
 
+
+
 // Effects on Req Version to TCVersion LINK 
 // when a new version of a linked Test Case is created
-// If LINK is frozen, then this means that link can not be deleted.
-// $tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = FALSE;
-//
-// Important Notice:
-// Req Version to TCVersion Link can be done ONLY TO LATEST TCV.
-// 
-// This means that :
-// 
-// on GUI on the Requirements Area on TEST CASE Specification Feature:
-// this option has NO EFFECT 
-//
-// on GUI on the Coverage Area on REQUIREMENT Specification Feature:
-// this option has EFFECT
-//
-// on GUI on the Assign Requirements Feature:
-// this option has EFFECT
-//
 $tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = TRUE;
 
 // Effects on Req Version to TCVersion LINK 
@@ -1291,6 +1276,8 @@ $tlCfg->reqTCLinks->freezeBothEndsOnNewREQVersion = TRUE;
 
 // Effects on REQ Version N when REQ Version N+1 is created 
 $tlCfg->req_cfg->freezeREQVersionOnNewREQVersion = TRUE;
+
+
 
 
 /** text template for a new items:

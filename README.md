@@ -1,4 +1,4 @@
-# TestLink 1.9.20 Raijin - Read me
+# TestLink 1.9.19 Metonic cycle - Read me
 
 ## Contents
  1. [Introduction](#1-introduction)

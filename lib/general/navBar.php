@@ -139,7 +139,7 @@ function initializeGui(&$db,&$args)
         }
       }
 
-      if( $testPlanFound == 0 ) {
+      if( $testPlanFound == 0 && is_array($testPlanSet) ) {
         $tplanID = $testPlanSet[0]['id'];
         setSessionTestPlan($testPlanSet[0]);      
       } 

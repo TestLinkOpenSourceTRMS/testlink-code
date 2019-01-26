@@ -7,7 +7,7 @@
  *
  * @filesource  projectEdit.php
  * @package     TestLink
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -126,21 +126,21 @@ switch($args->doAction) {
     $opt = array('output' => 'array_of_map', 'order_by' => " ORDER BY nodes_hierarchy.name ",
                  'add_issuetracker' => $addIssueTracker, 'add_codetracker' => $addCodeTracker,
                  'add_reqmgrsystem' => $addReqMgrSystem);
-    $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,$opt);
+    $gui->tprojects = (array)$tproject_mgr->get_accessible_for_user($args->userID,$opt);
       
     $gui->pageTitle = lang_get('title_testproject_management');
-    $gui->itemQty = count($gui->tprojects);
+    $gui->itemQty = $tprojQty = count($gui->tprojects);
+
     if($gui->itemQty > 0) {
       $gui->pageTitle .= ' ' . sprintf(lang_get('available_test_projects'),$gui->itemQty);
     }  
+    $imgSet = $smarty->getImages();
 
 
     if($addIssueTracker) {
-      $imgSet = $smarty->getImages();
-      $loop2do = count($gui->tprojects);
       $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
 
-      for($idx=0; $idx < $loop2do; $idx++) {
+      for($idx=0; $idx < $tprojQty; $idx++) {
         $gui->tprojects[$idx]['itstatusImg'] = '';
         if($gui->tprojects[$idx]['itname'] != '') {
           $ak = ($gui->tprojects[$idx]['issue_tracker_enabled']) ? 'active' : 'inactive';
@@ -152,11 +152,9 @@ switch($args->doAction) {
     }
         
     if($addCodeTracker) {
-      $imgSet = $smarty->getImages();
-      $loop2do = count($gui->tprojects);
       $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
 
-      for($idx=0; $idx < $loop2do; $idx++) {
+      for($idx=0; $idx < $tprojQty; $idx++) {
         $gui->tprojects[$idx]['ctstatusImg'] = '';
         if($gui->tprojects[$idx]['ctname'] != '') {
           $ak = ($gui->tprojects[$idx]['code_tracker_enabled']) ? 'active' : 'inactive';
@@ -168,11 +166,9 @@ switch($args->doAction) {
     }    
 
     if($addReqMgrSystem) {
-      $imgSet = $smarty->getImages();
-      $loop2do = count($gui->tprojects);
       $labels = init_labels(array('active_integration' => null, 'inactive_integration' => null));
 
-      for($idx=0; $idx < $loop2do; $idx++) {
+      for($idx=0; $idx < $tprojQty; $idx++) {
         $gui->tprojects[$idx]['rmsstatusImg'] = '';
         if($gui->tprojects[$idx]['rmsname'] != '') {
           $ak = ($gui->tprojects[$idx]['reqmgr_integration_enabled']) ? 'active' : 'inactive';

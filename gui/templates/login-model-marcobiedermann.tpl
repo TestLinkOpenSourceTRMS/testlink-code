@@ -60,7 +60,7 @@
             </div>
 
             <div class="form__field">
-              <input type="submit" value="{$labels.btn_login}">
+              <input id="tl_login_button" type="submit" value="{$labels.btn_login}">
             </div>
 
             {foreach from=$gui->oauth item=oauth_item}
@@ -74,12 +74,14 @@
 
           <p class="text--center">
           {if $gui->user_self_signup}
-            <a href="firstLogin.php?viewer=new">{$labels.new_user_q}</a> &nbsp; &nbsp;
+            <a href="firstLogin.php?viewer=new" id="tl_sign_up">
+            {$labels.new_user_q}</a> &nbsp; &nbsp;
           {/if}
 
           {* the configured authentication method don't allow users to reset his/her password *}    
           {if $gui->external_password_mgmt eq 0 && $tlCfg->demoMode eq 0}
-            <a href="lostPassword.php?viewer=new">{$labels.lost_password_q}</a>
+            <a href="lostPassword.php?viewer=new" id="tl_lost_password">
+            {$labels.lost_password_q}</a>
           {/if}
           </p> 
         </div>

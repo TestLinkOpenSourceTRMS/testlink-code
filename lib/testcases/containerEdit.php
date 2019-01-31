@@ -7,7 +7,7 @@
  *
  * @filesource  containerEdit.php
  * @package     TestLink
- * @copyright   2005-2018, TestLink community
+ * @copyright   2005-2019, TestLink community
  * @link        http://www.testlink.org
  *
  */
@@ -1339,15 +1339,20 @@ function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
 /**
  *
  */
-function initializeGui(&$objMgr,$id,$argsObj,$lbl) {
+function initializeGui(&$objMgr,$id,$argsObj,$lbl=null) {
   $guiObj = new stdClass();
+
+  $labels = $lbl;
+  if( null == $labels ) {
+    $labels = $argsObj->l10n;
+  }
 
   $guiObj->id = $id;
   $guiObj->user = $argsObj->user;
   $guiObj->tproject_id = $argsObj->tprojectID;
   $guiObj->refreshTree = $argsObj->refreshTree;
-  $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
-  $guiObj->page_title = $lbl['container_title_testsuite'];
+  $guiObj->btn_reorder_testcases = $labels['btn_reorder_testcases'];
+  $guiObj->page_title = $labels['container_title_testsuite'];
   $guiObj->attachments = getAttachmentInfosFrom($objMgr,$id);
   $guiObj->form_token = $argsObj->treeFormToken;
 

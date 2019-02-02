@@ -6,11 +6,9 @@
  * @filesource  tlPlatform.class.php
  * @package     TestLink
  * @author      Erik Eloff
- * @copyright   2006-2012, TestLink community
+ * @copyright   2006-2019, TestLink community
  * @link        http://www.teamst.org/index.php
  *
- * @internal revisions
- * @ since 1.9.6
  */
 
 /**
@@ -453,6 +451,22 @@ class tlPlatform extends tlObjectWithDB
     return !is_null($rs);
   }
 
-  
+  /**
+   *
+   */
+  function initViewGUI( &$userObj ) {
+    $gaga = new stdClass();
+    
+    $cfg = getWebEditorCfg('platform');
+    $gaga->editorType = $cfg['type'];
+    $gaga->user_feedback = null;
+    $gaga->user_feedback = array('type' => 'INFO', 'message' => '');
+
+    $gaga->platforms = $this->getAll(array('include_linked_count' => true));
+    $gaga->canManage = $userObj->hasRight($db,"platform_management");
+    $gaga->mgt_view_events = $userObj->hasRight($db,"mgt_view_events");
+
+    return $gaga;
+  }
 
 }

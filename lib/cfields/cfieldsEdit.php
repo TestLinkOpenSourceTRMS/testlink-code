@@ -22,8 +22,7 @@ $cfMix = getCFCfg($args,$cfield_mgr);
 $cfieldCfg = $cfMix->cfieldCfg;
 $gui->cfield = $cfMix->emptyCF;
 
-switch ($args->do_action)
-{
+switch ($args->do_action) {
 	case 'create':
   	$templateCfg->template=$templateCfg->default_template;
 		$user_feedback ='';
@@ -66,22 +65,18 @@ switch ($args->do_action)
 	break;
 }
 
-if( $do_control_combo_display )
-{
+if( $do_control_combo_display ) {
   $keys2loop = $cfield_mgr->get_application_areas();
-	foreach( $keys2loop as $ui_mode)
-	{
+	foreach( $keys2loop as $ui_mode) {
     $cfieldCfg->cf_enable_on[$ui_mode]['value']=0;
     $cfieldCfg->cf_show_on[$ui_mode]['disabled']='';
     $cfieldCfg->cf_show_on[$ui_mode]['style']='';
 
-    if($cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
-		{
+    if($cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']]) {
 	    $cfieldCfg->cf_enable_on[$ui_mode]['value']=1;
     }
         
-		if(!$cfieldCfg->show_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
-		{
+		if(!$cfieldCfg->show_on_cfg[$ui_mode][$gui->cfield['node_type_id']]) {
 			$cfieldCfg->cf_show_on[$ui_mode]['disabled']=' disabled="disabled" ';
 			$cfieldCfg->cf_show_on[$ui_mode]['style']=' style="display:none;" ';
 		}
@@ -89,14 +84,12 @@ if( $do_control_combo_display )
 }
 
 $gui->show_possible_values = 0;
-if(isset($gui->cfield['type']))
-{
+if(isset($gui->cfield['type'])) {
 	$gui->show_possible_values = $cfieldCfg->possible_values_cfg[$gui->cfield['type']];
 }
 
 // enable on 'execution' implies show on 'execution' then has nosense to display show_on combo
-if($args->do_action == 'edit' && $gui->cfield['enable_on_execution'] )
-{
+if($args->do_action == 'edit' && $gui->cfield['enable_on_execution'] ) {
   $cfieldCfg->cf_show_on['execution']['style']=' style="display:none;" ';
 } 
 
@@ -111,8 +104,7 @@ renderGui($smarty,$args,$gui,$cfield_mgr,$templateCfg);
 /**
  *
  */
-function getCFCfg(&$args,&$cfield_mgr)
-{
+function getCFCfg(&$args,&$cfield_mgr) {
   $cfg = new stdClass();
 
   $cfg->cfieldCfg = cfieldCfgInit($cfield_mgr);
@@ -134,16 +126,8 @@ function getCFCfg(&$args,&$cfield_mgr)
 /**
  *
  */
-function initializeGui(&$cfield_mgr)
-{
-  $gui = new stdClass();
-
-  $gui->cfield=null;
-  $gui->cfield_is_used=0;
-  $gui->cfield_is_linked=0;
-  $gui->linked_tprojects=null;
-  $gui->cfield_types=$cfield_mgr->get_available_types();
-
+function initializeGui(&$cfield_mgr) {
+  $gui = $cfield_mgr->initViewGUI();
   return $gui;
 }
 

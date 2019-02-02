@@ -6,7 +6,7 @@
  * @filesource  tree.class.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2005-2017, TestLink community 
+ * @copyright   2005-2019, TestLink community 
  * @link        http://www.testlink.org/
  *
  */
@@ -1398,9 +1398,8 @@ class tree extends tlObject
    * getTreeRoot()
    *
    */
-  function getTreeRoot($node_id)
-  {
-    $path = $this->get_path($node_id);
+  function getTreeRoot($node_id) {
+    $path = (array)$this->get_path($node_id);
     $path_len = count($path);
     $root_node_id = ($path_len > 0)? $path[0]['parent_id'] : $node_id;
     return $root_node_id;

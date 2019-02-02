@@ -13,14 +13,16 @@
 	<title>TestLink {$tlVersion|escape}</title>
 	<meta name="description" content="TestLink - {$gui->title|default:"Main page"}" />
 	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
+
+  <!-- for the iframes -->
+  <link rel="stylesheet" type="text/css" href="{$basehref}gui/themes/default/css/frame.css">
+
+
 </head>
 
-<frameset rows="{$gui->navbar_height},*" frameborder="0" framespacing="0">
-	<frame src="{$gui->titleframe}" name="titlebar" scrolling="no" noresize="noresize" />
-	<frame src="{$gui->mainframe}" scrolling='auto' name='mainframe' />
-	<noframes>
-		<body>TestLink required a frames supporting browser.</body>
-	</noframes>
-</frameset>
+<body>
+  <iframe src="{$gui->titleframe}" name="titlebar" class="navigationBar"></iframe>
+  <iframe src="{$gui->mainframe}" name="mainframe" class="siteContent"></iframe>
+</body>
 
 </html>

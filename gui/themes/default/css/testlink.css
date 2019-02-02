@@ -7,14 +7,72 @@ Purpose: Default TestLink CSS
 */
 
 /* ***** GLOBAL HTML ***************************************************************** */
+html, body {
+	height:100%;
+	width:100%;
+	margin: 0px;
+}
 body, body.testlink {
-	background:  	#EEE!important; 
+	background-color: white !important;
 	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
 	font-size: 		small;
 	margin:			0px;
 	padding:		0px;
+	height:100%;
 }
-
+iframe {
+ border:none;
+}
+iframe.sideBarFrame {
+	width:100%;
+	height:calc(100% - 57px);
+}
+iframe.contentFrame-small {
+	border: none;
+	height:calc(100% - 5px);
+	width: calc(100% - 150px);
+	padding-left: 2px;
+}
+iframe.contentFrame-large {
+	border: none;
+	height:calc(100% - 5px);
+	width: calc(100% - 50px);
+	padding-left: 2px;
+}
+iframe.treeframe {
+	width:calc(99% - 70%);
+	height:calc(100% - 35px);
+	float:left;
+}
+iframe.workframe {
+	width:calc(100% - 29%);
+	height:calc(100% - 35px);
+}
+.sidebar.compact.sidebar-large {
+	width:150px !important;
+}
+.sidebar.compact.sidebar-small{
+	width:50px !important;
+}
+span.menu-text-shown{
+	display:block;
+}
+span.menu-text-hidden{
+	display:none;
+}
+div.white-space{
+	height:20px;
+	background-color:whitesmoke;
+}
+table.table{
+	margin:0px;
+}
+ul.nav.nav-tabs.padding-18{
+	padding-top:5px;
+}
+.x-tree-node{
+	font-size:13px!important;
+}
 /** 
 use together with #header-wrap, to create a section on top of body
 that remain always visible while rest of body content scrolls,
@@ -112,7 +170,6 @@ div.menu_bar {
 }
 
 select.menu_combo {
-	background: 	#EEE;
 	border-style:	none;
 	font-size:	 	smaller;
 	font-weight:    bold;
@@ -144,7 +201,6 @@ present on page (example grid())
 On chrome seems not work
 */
 #header-wrap {
-	background:		#eee;
 	border-bottom:	1px solid #000;
 	height: 100px;
 	position: fixed;
@@ -186,7 +242,6 @@ span.form_label {
 
 /* for tree menu */
 div.tree {
-	background: 	#EEE;
 	padding: 		3px;
 	border: 		1px solid #808080;
 	margin:			3px;
@@ -198,7 +253,6 @@ div.groupBtn {
 }
 
 div.vertical_menu {
-	background: 	#EEE;
 	font-size:      90%;
 	margin: 		3px;
 	padding: 		2px;
@@ -226,68 +280,6 @@ div.menu_bubble h3{
 	margin: 0px 0px 8px 8px;
 	line-height:1.4em;
 }
-
-/** Buttons
- * Give buttons, submit, reset a gradient 3d look and other components
- * text/password-input, textarea and select a flat appearance.
- */
-input[type="button"],
-input[type="password"],
-input[type="reset"],
-input[type="submit"],
-input[type="text"],
-select,
-textarea,
-button {
-   background: url(../images/navbar.gif);
-   background-position: 0 0;
-   border: 1px solid #888;
-   margin: 4px 0 0 0;
-   font-size: 9pt;
-   color: black;
-   -moz-border-radius: 3px;
-   -webkit-border-radius: 3px;
-   border-radius: 3px;
-}
-
-/* Reset to flat background */
-input[type="password"],
-input[type="text"],
-select,
-textarea {
-	background: #f8f8f8;
-}
-
-
-/* Animate */
-input[type="reset"]:hover,
-input[type="submit"]:hover,
-input[type="button"]:hover,
-button:hover {
-   background-position: 0 -3px;
-   border-color: #444;
-}
-
-input[type="reset"]:active,
-input[type="submit"]:active,
-input[type="button"]:active,
-input[type="reset"]:focus,
-input[type="submit"]:focus,
-input[type="button"]:focus,
-button:active,
-button:focus {
-   background-position: 0 -10px;
-   border: 1px solid #123;
-}
-
-input[type="password"]:focus,
-input[type="text"]:focus,
-select:focus,
-textarea:focus {
-	background: #fff;
-	border: 1px solid #123;
-}
-
 fieldset.groupBtn {
 	border: 0;
 	margin-left: 5px;
@@ -432,13 +424,12 @@ span.unselected a, span.unselected a:visited {
 * "common" 		- often used for view arrays
 * "simple" 		- often used for forms
 * "smallGrey" 	- often used for options / filters
-* "invisible" 	- no borders
+* "no-border" 	- no border (former "invisible" but already used by bootstrap)
 * !!! Do not add new table kinds !!! (there is bunch of wild table definitions below)
 */
 
 /* ***** Common ********************* */
 table.common {
-	background:     #EEE;
 	border: 		1px solid black;
 	margin-bottom:	20px;
 	min-width:		50%;
@@ -479,7 +470,6 @@ table.common caption, table.smallGrey caption {
 
 /* ***** Simple Table (often used to show data) ***************** */
 table.simple, table.simple_tableruler {
-	background:     #EEE;
 	border: 		thin solid black;
 	font-size:		90%;
 	margin:			5px;
@@ -503,7 +493,6 @@ table.tableruler tbody tr:hover{
 
 /* Used for filters and options settings */
 table.smallGrey {
-	background:     #EEE;
 	border: 		1px solid black;
 	font-size:		smaller;
 	margin-bottom:	10px;
@@ -511,7 +500,7 @@ table.smallGrey {
 }
 
 
-table.invisible {
+table.no-border {
 	border: 		0px none;
 	font-size:		90%;
 	margin:			5px 0px;
@@ -519,7 +508,6 @@ table.invisible {
 }
 
 table.mainTable{
-	background: 	#EEE;
 	border: 		1px double black;
 	min-width:		200px;
 }
@@ -533,7 +521,6 @@ table.mainTable th {
 }
 
 table.link_and_exec {
-	background:     #EEE;
 	border: 		1px solid black;
 	margin-bottom:	10px;
 	margin-right:	0px;
@@ -545,7 +532,6 @@ table.link_and_exec th {
 
 /* *****  Table Execution History ********* */
 table.exec_history {
-	background:     #EEE;
 	border: 		thin solid black;
 	font-size:		90%;
 	margin:			20px;
@@ -605,6 +591,14 @@ div.blocked {
 
 div.not_run {
 	background:		black;
+}
+
+div.backup_exist {
+	color: 			black;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: 	center;
+	background:		#EEE;
 }
 
 
@@ -865,7 +859,6 @@ div.login_form.medium {
 .clickable_icon
 {
   padding: 			2px;
-  width: 			5px;
   text-align: 		center;
   vertical-align: 	middle;
 }
@@ -1088,8 +1081,10 @@ th.testlink, td.testlink, tr.testlink td {
 }
 
 /* To adjust Bootstrap tables */
+/* I think it's not necesseray. Better view without font-size **/
 .table {
   font-size: 12px;
+  width: 100%;
 }
 
 .table th, .table tr, .table td {
@@ -1107,5 +1102,34 @@ th.testlink, td.testlink, tr.testlink td {
   background-color: #e9ecef;
   border-color: #dee2e6;
 }
+p.text-border {
+	border: 1px solid black;
+	background: white;
+	padding : 10px;
+}
+div.form-border {
+	border: 1px solid black;
+	background: white;
+	padding : 10px;
+}
+.yellow {
+	color : yellow;
+}
+#footer{
+	width:100%;
+	border-top : 3px double #e3e3e3;
+	position: absolute;
+	bottom: 0;
+	padding-top:5px;
+	font-style: normal;
+}
 
+#footerIMG{
+	float :right;
+	padding-right: 20px;
+}
+
+#footerTXT{
+	float :left;
+}
 /* ----- END ------------------------------------------------------------------------- */

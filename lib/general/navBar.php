@@ -139,7 +139,7 @@ function initializeGui(&$db,&$args)
         }
       }
 
-      if( $testPlanFound == 0 ) {
+      if( $testPlanFound == 0 && is_array($testPlanSet) ) {
         $tplanID = $testPlanSet[0]['id'];
         setSessionTestPlan($testPlanSet[0]);      
       } 
@@ -170,7 +170,7 @@ function initializeGui(&$db,&$args)
 
     $ckCfg = config_get('cookie');    
     $ckObj = new stdClass();
-    $ckObj->name = $ckObj->prefix . 'TL_lastTestProjectForUserID_'. 
+    $ckObj->name = $ckCfg->prefix . 'TL_lastTestProjectForUserID_'. 
                    $args->user->dbID;
     $ckObj->value = $args->testproject;
     tlSetCookie($ckObj);

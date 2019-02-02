@@ -7,7 +7,7 @@
  *
  * @package     TestLink
  * @filesource  planAddTC.php
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * 
  **/
@@ -967,29 +967,29 @@ function setAdditionalGuiData($guiObj)
 function init_build_selector(&$testplan_mgr, &$argsObj) {
 
   // init array
-  $html_menu = array('items' => null, 'selected' => null, 'count' => 0);
+  $menu = array('items' => null, 'selected' => null, 'count' => 0);
 
-  $html_menu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id,
-                                                                   testplan::GET_ACTIVE_BUILD,
-                                                                   testplan::GET_OPEN_BUILD);
-  $html_menu['count'] = count($html_menu['items']);
+  $menu['items'] = 
+    (array)$testplan_mgr->get_builds_for_html_options($argsObj->tplan_id,
+                                                      testplan::GET_ACTIVE_BUILD,
+                                                      testplan::GET_OPEN_BUILD);
+  $menu['count'] = count($menu['items']);
   
   // if no build has been chosen yet, select the newest build by default
   $build_id = $argsObj->build_id;
-  if (!$build_id && $html_menu['count']) {
-    $keys = array_keys($html_menu['items']);
+  if (!$build_id && $menu['count']) {
+    $keys = array_keys($menu['items']);
     $build_id = end($keys);
   }
-  $html_menu['selected'] = $build_id;
+  $menu['selected'] = $build_id;
   
-  return $html_menu;
+  return $menu;
 } // end of method
 
 /**
  *
  */ 
-function addToTestPlan(&$dbHandler,&$argsObj,&$guiObj,&$tplanMgr,&$tcaseMgr)
-{
+function addToTestPlan(&$dbHandler,&$argsObj,&$guiObj,&$tplanMgr,&$tcaseMgr) {
   // items_to_link structure:
   // key: test case id , value: map 
   //                            key: platform_id value: test case VERSION ID

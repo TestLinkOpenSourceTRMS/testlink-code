@@ -5,7 +5,7 @@
  *
  * @package 	  TestLink
  * @author 		  franciscom
- * @copyright 	2005-2018, TestLink community
+ * @copyright 	2005-2019, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reused from the Mantis project) 
  * @filesource  cfield_mgr.class.php
  * @link 		    http://testlink.sourceforge.net
@@ -2978,50 +2978,24 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
   }
 
   /**
-   * value DD/MM/YYYY HH:MM:SS
-   * 
+   *
    *
    */
-  /*
-  function cfdatetime2mktime($value)
-  {
-    if ($value == '') 
-    {
-      return '';
-    }
-    else
-    {
-      $localesDateFormat = config_get('locales_date_format');
-      $locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
-      $date_format = str_replace('%', '', $localesDateFormat[$locale]);
+  function initViewGUI() {
+    $gogo = new stdClass();
 
-      // first replace multiple spaces with just one
-      $pc = explode(' ',$value);
-      $dpart = $pc[0];
-      $tpart = $pc[1];
-      $pvalue = split_localized_date($dpart, $date_format);
-      if($pvalue != null) 
-      {
-        // parse time part
-        $tt = explode(':', $tpart)
+    $gogo->cfield = null;
+    $gogo->cfield_is_used = 0;
+    $gogo->cfield_is_linked = 0;
+    $gogo->linked_tprojects = null;
 
-        if($value['hour'] == -1 || $value['minute'] == -1 || $value['second'] == -1) {
-                  $value['hour'] = $value['minute'] = $value['second'] = 0;
-        
+    $gogo->cf_map = $this->get_all(null,'transform');
+    $gogo->cf_types = $gogo->cfield_types = $this->get_available_types();
+    
+    // MAGIC 10
+    $gogo->drawControlsOnTop = (null != $gogo->cf_map && count($gogo->cf_map) > 10); 
 
-        $cfvalue = mktime($value['hour'], $value['minute'], 
-                                              $value['second'],
-                                                          $pvalue['month'], $parsed_value['day'], 
-                                                          $parsed_value['year']);
-      }
-      else
-      {
-        return '';
-      }  
-
-    } 
+    return $gogo;
   }
-  */
-
     
 } // end class

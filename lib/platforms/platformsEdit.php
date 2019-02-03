@@ -116,16 +116,26 @@ function init_args( &$dbH ) {
   } else if($args->doAction == "do_update") {
     $args->platform_id = $_SESSION['platform_id'];
   }
-  
-  $inputSource = $_REQUEST;
-  $args->testproject_id = isset($inputSource['testprojectID']) ? intval($inputSource['testprojectID']) : 0;
 
+  
+  $tables = tlDBObject::getDBTables(array('nodes_hierarchy','platforms'));
+  
+  if( 0 != $args->platform_id ) {
+    $sql = "SELECT testproject_id FROM {$tables['platforms']}  
+            WHERE id={$args->platform_id}";
+    $info = $dbH->get_recordset($sql);
+
+    $args->testproject_id = $info[0]['testproject_id'];    
+  } else {
+    $inputSource = $_REQUEST;
+    $args->testproject_id = isset($inputSource['testprojectID']) ? intval($inputSource['testprojectID']) : 0;    
+  }
+    
   if( 0 == $args->testproject_id ) {
     throw new Exception("Unable to Get Test Project ID, Aborting", 1);
   }
 
   $args->testproject_name = '';
-  $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
   $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
           WHERE id={$args->testproject_id}";
   $info = $dbH->get_recordset($sql);

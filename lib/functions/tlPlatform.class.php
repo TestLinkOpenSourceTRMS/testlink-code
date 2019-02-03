@@ -52,13 +52,11 @@ class tlPlatform extends tlObjectWithDB
    * Creates a new platform.
    * @return tl::OK on success otherwise E_DBERROR;
    */
-  public function create($name, $notes=null)
-  {
+  public function create($name, $notes=null) {
     $op = array('status' => self::E_DBERROR, 'id' => -1);
     $safeName = $this->throwIfEmptyName($name);
     $alreadyExists = $this->getID($name);
-    if ($alreadyExists)
-    {
+    if ($alreadyExists) {
       $op = array('status' => self::E_NAMEALREADYEXISTS, 'id' => -1);
     }
     else
@@ -83,9 +81,8 @@ class tlPlatform extends tlObjectWithDB
    *
    * @return array with keys id, name and notes
    */
-  public function getByID($id)
-  {
-    $sql =  " SELECT id, name, notes " .
+  public function getByID($id) {
+    $sql =  " SELECT id, name, notes,testproject_id " .
             " FROM {$this->tables['platforms']} " .
             " WHERE id = " . intval($id);
     return $this->db->fetchFirstRow($sql);

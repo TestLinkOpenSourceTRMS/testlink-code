@@ -8,7 +8,7 @@
  * @filesource  login.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2006,2018 TestLink community 
+ * @copyright   2006,2019 TestLink community 
  * @link        http://www.testlink.org
  * 
  **/
@@ -31,8 +31,7 @@ $gui = init_gui($db,$args);
 // if these checks fail => we will redirect to login screen with some message
 doBlockingChecks($db,$gui);
 
-switch($args->action) 
-{
+switch($args->action) {
   case 'doLogin':
   case 'ajaxlogin':
     doSessionStart(true);
@@ -90,15 +89,12 @@ switch($args->action)
     $op = null;
 
     // unfortunatelly we use $args->note in order to do some logic.
-    if( ($args->note=trim($args->note)) == "" )
-    {
-      if( $gui->authCfg['SSO_enabled'] )
-      {
+    if( ($args->note=trim($args->note)) == "" ) {
+      if( $gui->authCfg['SSO_enabled'] ) {
         doSessionStart(true);
         $doAuthPostProcess = true;
         
-        switch ($gui->authCfg['SSO_method']) 
-        {
+        switch ($gui->authCfg['SSO_method']) {
           case 'CLIENT_CERTIFICATE':
             $op = doSSOClientCertificate($db,$_SERVER,$gui->authCfg);
           break;
@@ -113,13 +109,11 @@ switch($args->action)
   break;
 }
 
-if( $doAuthPostProcess ) 
-{
+if( $doAuthPostProcess ) {
   list($doRenderLoginScreen,$gui->note) = authorizePostProcessing($args,$op);
 }
 
-if( $doRenderLoginScreen ) 
-{
+if( $doRenderLoginScreen ) {
   renderLoginScreen($gui);
 }
 
@@ -127,8 +121,7 @@ if( $doRenderLoginScreen )
  * 
  *
  */
-function init_args()
-{
+function init_args() {
   $pwdInputLen = config_get('loginPagePasswordMaxLenght');
 
   // 2010904 - eloff - Why is req and reqURI parameters to the login?
@@ -159,23 +152,15 @@ function init_args()
   $args->viewer = $pParams['viewer']; 
 
   $k2c = array('ajaxcheck' => 'do','ajaxlogin' => 'do');
-  if (isset($k2c[$pParams['action']])) 
-  {
+  if (isset($k2c[$pParams['action']]))  {
     $args->action = $pParams['action'];
-  } 
-  else if (!is_null($args->login)) 
-  {
+  } else if (!is_null($args->login)) {
     $args->action = 'doLogin';
-  } 
-  else if (!is_null($pParams['oauth']) && $pParams['oauth'])
-  {
+  } else if (!is_null($pParams['oauth']) && $pParams['oauth']) {
     $args->action = 'oauth';
-  }
-  else
-  {
+  } else {
     $args->action = 'loginform';
   }
-
 
   return $args;
 }
@@ -184,16 +169,14 @@ function init_args()
  * 
  *
  */
-function init_gui(&$db,$args)
-{
+function init_gui(&$db,$args) {
   $gui = new stdClass();
   $gui->viewer = $args->viewer;
 
   $secCfg = config_get('config_check_warning_frequence');
   $gui->securityNotes = '';
   if( (strcmp($secCfg, 'ALWAYS') == 0) || 
-      (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesDone'])) )
-  {
+      (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesDone'])) ) {
     $_SESSION['getSecurityNotesDone'] = 1;
     $gui->securityNotes = getSecurityNotes($db);
   }  
@@ -272,11 +255,9 @@ function init_gui(&$db,$args)
  * @param &$guiObj some gui elements that will be used to give feedback
  *  
  */
-function doBlockingChecks(&$dbHandler,&$guiObj)
-{
+function doBlockingChecks(&$dbHandler,&$guiObj) {
   $op = checkSchemaVersion($dbHandler);
-  if( $op['status'] < tl::OK ) 
-  {
+  if( $op['status'] < tl::OK ) {
     // Houston we have a problem
     // This check to kill session was added to avoid following situation
     // TestLink 1.9.5 installed
@@ -284,8 +265,7 @@ function doBlockingChecks(&$dbHandler,&$guiObj)
     // you logged in TL 1.9.5 => session is created
     // you try to login to 1.9.6, you get the Update DB Schema message but
     // anyway because a LIVE AND VALID session you are allowed to login => BAD
-    if(isset($op['kill_session']) && $op['kill_session'])
-    {
+    if(isset($op['kill_session']) && $op['kill_session']) {
       session_unset();
       session_destroy();
     } 
@@ -305,8 +285,7 @@ function doBlockingChecks(&$dbHandler,&$guiObj)
  * @global  $g_tlLogger
  * @param stdClassObject $guiObj
  */
-function renderLoginScreen($guiObj)
-{
+function renderLoginScreen($guiObj) {
   global $g_tlLogger; 
   $templateCfg = templateConfiguration();
   $logPeriodToDelete = config_get('removeEventsOlderThan');
@@ -317,6 +296,7 @@ function renderLoginScreen($guiObj)
 
   $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
   $tpl = 'login-model-marcobiedermann.tpl';
+  $tpl = 'login/' . $tpl;
   $smarty->display($tpl);
 }
 
@@ -326,29 +306,21 @@ function renderLoginScreen($guiObj)
  * @param stdClassObject $argsObj
  * @param hash $op
  */
-function authorizePostProcessing($argsObj,$op)
-{
+function authorizePostProcessing($argsObj,$op) {
   $note = null;
   $renderLoginScreen = false;
-  if($op['status'] == tl::OK)
-  {
+  if($op['status'] == tl::OK) {
     // Login successful, redirect to destination
     logAuditEvent(TLS("audit_login_succeeded",$argsObj->login,
                   $_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");
     
-    if ($argsObj->action == 'ajaxlogin') 
-    {
+    if ($argsObj->action == 'ajaxlogin') {
       echo json_encode(array('success' => true));
-    } 
-    else 
-    {
+    } else {
       // If destination param is set redirect to given page ...
-      if (!empty($argsObj->destination) && preg_match("/linkto.php/", $argsObj->destination)) 
-      {
+      if (!empty($argsObj->destination) && preg_match("/linkto.php/", $argsObj->destination)) {
         redirect($argsObj->destination);
-      }
-      else
-      {
+      } else {
         // ... or show main page
         $_SESSION['viewer'] = $argsObj->viewer;
         $ad = $argsObj->ssodisable ? '&ssodisable=1' : '';
@@ -361,21 +333,15 @@ function authorizePostProcessing($argsObj,$op)
       }
       exit(); // hmm seems is useless
     }
-  }
-  else
-  {
+  } else {
     $note = '';
-    if(!$argsObj->ssodisable) 
-    {
+    if(!$argsObj->ssodisable) {
       $note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];
     } 
 
-    if($argsObj->action == 'ajaxlogin') 
-    {
+    if($argsObj->action == 'ajaxlogin') {
       echo json_encode(array('success' => false,'reason' => $note));
-    }
-    else
-    {
+    } else {
       $renderLoginScreen = true;
     }
   }
@@ -387,8 +353,7 @@ function authorizePostProcessing($argsObj,$op)
  * 
  *
  */
-function processAjaxCheck(&$dbHandler)
-{
+function processAjaxCheck(&$dbHandler) {
    // Send a json reply, include localized strings for use in js to display a login form.
    doSessionStart(true);
    echo json_encode(array('validSession' => checkSessionValid($dbHandler, false),

@@ -44,7 +44,7 @@ Purpose: smarty template - Edit a platform
   	<table class="common" style="width:50%">
   		<tr>
   			<th>{$labels.th_platform}</th>
-  			<td><input type="text" name="name"
+  			<td><input type="text" name="name" id="name"
   			           size="{#PLATFORM_SIZE#}" maxlength="{#PLATFORM_MAXLEN#}"
   				         value="{$gui->name|escape}" required />
 			  </td>
@@ -55,18 +55,16 @@ Purpose: smarty template - Edit a platform
   		</tr>
   	</table>
   	<div class="groupBtn">	
-	  	<input type="hidden" name="doAction" value="" />
+	  	<input type="hidden" id="doAction" name="doAction" value="" />
       <input type="hidden" name="testprojectID" value="{$gui->tproject_id}" />
 
 	    <input type="submit" id="submitButton" name="submitButton" value="{$gui->submit_button_label}"
 		         onclick="doAction.value='{$gui->submit_button_action}'" />
-	  	<input type="button" value="{$labels.btn_cancel}"
+	  	<input type="button" id="cancelOp" value="{$labels.btn_cancel}"
 		         onclick="javascript:location.href=fRoot+'lib/platforms/platformsView.php?tproject_id={$gui->tproject_id}'" />
   	</div>
   	</form>
   </div>
 {/if}
-{* --------------------------------------------------------------------------------------   *}
-
 </body>
 </html>

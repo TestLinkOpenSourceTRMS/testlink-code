@@ -77,7 +77,7 @@ $smarty->display($templateCfg->template_dir . $default_template);
  */
 function initEnv(&$dbHandler) {
   testlinkInitPage($dbHandler);
-  $argsObj = init_args();
+  $argsObj = init_args($dbHandler);
   checkPageAccess($dbHandler,$argsObj);  // Will exit if check failed
 
   $platMgr = new tlPlatform($dbHandler, $argsObj->testproject_id);
@@ -93,7 +93,7 @@ function initEnv(&$dbHandler) {
  * 
  *
  */
-function init_args() {
+function init_args( &$dbH ) {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
@@ -117,8 +117,22 @@ function init_args() {
     $args->platform_id = $_SESSION['platform_id'];
   }
   
-  $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+  $inputSource = $_REQUEST;
+  $args->testproject_id = isset($inputSource['testprojectID']) ? intval($inputSource['testprojectID']) : 0;
+
+  if( 0 == $args->testproject_id ) {
+    throw new Exception("Unable to Get Test Project ID, Aborting", 1);
+  }
+
+  $args->testproject_name = '';
+  $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
+  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
+          WHERE id={$args->testproject_id}";
+  $info = $dbH->get_recordset($sql);
+  if( null != $info ) {
+    $args->testproject_name = $info[0]['name'];
+  }
+
   $args->currentUser = $_SESSION['currentUser'];
   
   

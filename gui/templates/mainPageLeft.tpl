@@ -75,10 +75,10 @@
 {$usersAssign="lib/usermanagement/usersAssign.php?featureType=testproject&featureID="}
 {$cfAssignment="lib/cfields/cfieldsTprojectAssign.php"}
 {$keywordsAssignment="lib/keywords/keywordsView.php?tproject_id="}
-{$platformsView="lib/platforms/platformsView.php"}
-{$cfieldsView="lib/cfields/cfieldsView.php"}
-{$issueTrackerView="lib/issuetrackers/issueTrackerView.php"}
-{$codeTrackerView="lib/codetrackers/codeTrackerView.php"}
+{$platformsView="lib/platforms/platformsView.php?tproject_id="}
+{$cfieldsView="lib/cfields/cfieldsView.php?tproject_id="}
+{$issueTrackerView="lib/issuetrackers/issueTrackerView.php?tproject_id="}
+{$codeTrackerView="lib/codetrackers/codeTrackerView.php?tproject_id="}
 {$reqOverView="lib/requirements/reqOverview.php"}
 {$reqMonOverView="lib/requirements/reqMonitorOverview.php?tproject_id="}
 {$tcSearch="lib/testcases/tcSearch.php?doAction=userInput&tproject_id="}
@@ -107,11 +107,11 @@
     {/if}
 
     {if $gui->grants.issuetracker_management || $gui->grants.issuetracker_view}
-      <a href="{$issueTrackerView}" class="list-group-item" style="{$aStyle}">{$labels.href_issuetracker_management}</a>
+      <a href="{$issueTrackerView}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_issuetracker_management}</a>
     {/if}
 
     {if $gui->grants.codetracker_management || $gui->grants.codetracker_view}
-      <a href="{$codeTrackerView}" class="list-group-item" style="{$aStyle}">
+      <a href="{$codeTrackerView}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">
       {$labels.href_codetracker_management}</a>
     {/if}
   </div>
@@ -137,7 +137,7 @@
     {/if}
 
     {if $gui->grants.platform_management || $gui->grants.platform_view}
-      <a href="{$platformsView}" class="list-group-item" style="{$aStyle}">{$labels.href_platform_management}</a>
+      <a href="{$platformsView}{$gui->testprojectID}" class="list-group-item" style="{$aStyle}">{$labels.href_platform_management}</a>
     {/if}
     
     {if $gui->grants.project_inventory_view || $gui->grants.project_inventory_management}

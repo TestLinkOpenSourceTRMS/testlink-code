@@ -4,11 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - View all platforms
 
 @filesource platformsView.tpl
-
-@internal revisions
-20110409 - franciscom - BUGID 4368: Provide WYSIWYG Editor for platform notes
-20100119 - Eloff	- added ability to show/hide platform id for API
 *}
+
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 
@@ -22,10 +19,10 @@ Purpose: smarty template - View all platforms
 {lang_get s='warning_cannot_delete_platform' var="warning_msg_cannot_del" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{assign var="viewAction" value="lib/platforms/platformsView.php"}
-{assign var="dummy" value="lib/platforms/platformsImport.php?goback_url="}
-{assign var="importAction" value="$basehref$dummy$basehref$viewAction"}
-
+{$viewAction="lib/platforms/platformsView.php?tproject_id=$gui->tproject_id"}
+{$tpid=$gui->tproject_id}
+{$dummy="lib/platforms/platformsImport.php?testprojectID="}
+{$importAction="$basehref$dummy$tpid"}
 
 <script type="text/javascript">
 <!--
@@ -36,7 +33,7 @@ Purpose: smarty template - View all platforms
  
 </head>
 <body {$body_onload}>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.menu_manage_platforms}</h1>
@@ -56,7 +53,7 @@ Purpose: smarty template - View all platforms
 			<td>
 				<span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$gui->platforms[platform].id}</span>
 				{if $gui->canManage != ""}
-					<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}">
+					<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}&testprojectID={$gui->tproject_id}">
 				{/if}
 				{$gui->platforms[platform].name|escape}
 				{if $gui->canManage != ""}
@@ -88,19 +85,24 @@ Purpose: smarty template - View all platforms
 	<div class="groupBtn">	
    		<form style="float:left" name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
 	  		<input type="hidden" name="doAction" value="" />
+	  		<input type="hidden" name="testprojectID" value="{$gui->tproject_id}" />
 		  	{if $gui->canManage ne ""}
 		    	<input type="submit" id="create_platform" name="create_platform" 	value="{$labels.btn_create_platform}"
 		           	 onclick="doAction.value='create'"/>
 			  {/if}	
 		</form>
-     	<form name="platformsExport" id="platformsExport" method="post" action="lib/platforms/platformsExport.php">
+     	<form name="platformsExport" id="platformsExport" method="post" 
+     	      action="lib/platforms/platformsExport.php">
      		<input type="hidden" name="goback_url" value="{$basehref|escape}{$viewAction|escape}"/>
-			<input type="submit" name="export_platforms" id="export_platforms"
-		         style="margin-left: 3px;" value="{$labels.btn_export}" />
+
+	  		<input type="hidden" name="testprojectID" value="{$gui->tproject_id}" />
+
+			  <input type="submit" name="export_platforms" id="export_platforms"
+		           style="margin-left: 3px;" value="{$labels.btn_export}" />
 		  	{if $gui->canManage ne ""}       
 		  		<input type="button" name="import_platforms" id="import_platforms" 
 		         	   onclick="location='{$importAction}'" value="{$labels.btn_import}" />
-       	  	{/if}
+       	{/if}
 	  	</form>
     </div>
 </div>

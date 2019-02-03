@@ -14,8 +14,7 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args();
 
-$platform_mgr = new tlPlatform($db, $args->testproject_id);
-
+$platform_mgr = new tlPlatform($db, $args->tproject_id);
 $gui = $platform_mgr->initViewGui($args->currentUser);	  
 
 $smarty = new TLSmarty();
@@ -29,7 +28,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args() {
 	$args = new stdClass();
-	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+
+  if( 0 == $args->tproject_id ) {
+    throw new Exception("Unable Get Test Project ID => Can Not Proceed", 1);
+  }
+
 	$args->currentUser = $_SESSION['currentUser']; 
 
 	return $args;

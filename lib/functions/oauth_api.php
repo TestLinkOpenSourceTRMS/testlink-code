@@ -12,23 +12,25 @@
 // Create correct link for oauth
 function oauth_link($oauthCfg) {
 
-  $oauth_params = array();
+  $oap = array();
 
-  $oauth_params['prompt'] = 'none';
-  if ($oauthCfg['oauth_force_single']) {
-    $oauth_params['prompt'] = 'consent';    
-  }  
-
-  $oauth_params['response_type'] = 'code';
-  $oauth_params['client_id'] = $oauthCfg['oauth_client_id'];
-  $oauth_params['scope'] = $oauthCfg['oauth_scope'];
-
-  $oauth_params['redirect_uri'] = $oauthCfg['redirect_uri'];  
+  $oap['redirect_uri'] = trim($oauthCfg['redirect_uri']);  
   if( isset($_SERVER['HTTPS']) ) {
-    $oauth_params['redirect_uri'] = 
-      str_replace('http://', 'https://', $oauth_params['redirect_uri']);  
+    $oap['redirect_uri'] = 
+      str_replace('http://', 'https://', $oaps['redirect_uri']);  
   }  
 
-  $url = $oauthCfg['oauth_url'] . '?' . http_build_query($oauth_params);
+  $oap['prompt'] = 'none';
+  if ($oauthCfg['oauth_force_single']) {
+    $oap['prompt'] = 'consent';    
+  }  
+
+  $oap['response_type'] = 'code';
+  $oap['client_id'] = $oauthCfg['oauth_client_id'];
+  $oap['scope'] = $oauthCfg['oauth_scope'];
+
+  // http_build_query — Generate URL-encoded query string
+  $url = $oauthCfg['oauth_url'] . '?' . http_build_query($oap);
+
   return $url;
 }

@@ -7,35 +7,41 @@
  *
  * Google OAUTH API (authentication)
  *
- * @internal revisions
- * @since 1.9.17
+ * Documentation:
+ * https://developers.google.com/actions/identity/google-sign-in-oauth
  *
  */
 
 //Get token
-function oauth_get_token($authCfg, $code)
-{
+function oauth_get_token($authCfg, $code) {
 
   $result = new stdClass();
   $result->status = array('status' => tl::OK, 'msg' => null);
 
   //Params to get token
   $oauthParams = array(
-     'code'          => $code,
-     'grant_type'    => $authCfg['oauth_grant_type'],
-     'client_id'     => $authCfg['oauth_client_id'],
-     'redirect_uri'  => isset($_SERVER['HTTPS']) ? 'https://' : 'http://' . $_SERVER[HTTP_HOST]. '/login.php?oauth=google',
-     'client_secret' => $authCfg['oauth_client_secret']
+    'code'          => $code,
+    'grant_type'    => $authCfg['oauth_grant_type'],
+    'client_id'     => $authCfg['oauth_client_id'],
+    'client_secret' => $authCfg['oauth_client_secret']
   );
+
+  $oauthParams['redirect_uri'] = trim($authCfg['redirect_uri']);  
+  if( isset($_SERVER['HTTPS']) ) {
+    $oauthParams['redirect_uri'] = 
+      str_replace('http://', 'https://', $oauthParams['redirect_uri']);  
+  }  
+
 
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_URL, $authCfg['token_url']);
   curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, urldecode(http_build_query($oauthParams)));
+  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($oauthParams));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
   $result_curl = curl_exec($curl);
   curl_close($curl);
+
   $tokenInfo = json_decode($result_curl, true);
 
   //If token is received start session

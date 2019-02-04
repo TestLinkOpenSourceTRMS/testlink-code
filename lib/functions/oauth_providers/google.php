@@ -7,8 +7,8 @@
  *
  * Google OAUTH API (authentication)
  *
- * Documentation:
- * https://developers.google.com/actions/identity/google-sign-in-oauth
+ * @internal revisions
+ * @since 1.9.17
  *
  */
 
@@ -32,7 +32,6 @@ function oauth_get_token($authCfg, $code) {
       str_replace('http://', 'https://', $oauthParams['redirect_uri']);  
   }  
 
-
   $curl = curl_init();
   curl_setopt($curl, CURLOPT_URL, $authCfg['token_url']);
   curl_setopt($curl, CURLOPT_POST, 1);
@@ -41,24 +40,26 @@ function oauth_get_token($authCfg, $code) {
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
   $result_curl = curl_exec($curl);
   curl_close($curl);
-
   $tokenInfo = json_decode($result_curl, true);
 
   //If token is received start session
   if (isset($tokenInfo['access_token'])){
     $oauthParams['access_token'] = $tokenInfo['access_token'];
-    $userInfo = json_decode(file_get_contents($authCfg['oauth_profile'] . '?' . urldecode(http_build_query($oauthParams))), true);
+    $userInfo = json_decode(file_get_contents($authCfg['oauth_profile'] . '?' . 
+          http_build_query($oauthParams)), true);
 
     if (isset($userInfo['id'])){
       if (isset($authCfg['oauth_domain'])) {
         $domain = substr(strrchr($userInfo['email'], "@"), 1);
         if ($domain !== $authCfg['oauth_domain']){
-          $result->status['msg'] = 'User doesn\'t correspond to Oauth policy';
+          $result->status['msg'] = 
+          "TestLink Oauth policy - User email domain:$domain does not 
+           match \$authCfg['oauth_domain']:{$authCfg['oauth_domain']} ";
           $result->status['status'] = tl::ERROR;
         }
       }
     } else {
-      $result->status['msg'] = 'User ID is empty';
+      $result->status['msg'] = 'TestLink - User ID is empty';
       $result->status['status'] = tl::ERROR;
     }
 
@@ -70,7 +71,7 @@ function oauth_get_token($authCfg, $code) {
 
     $result->options = $options;
   } else {
-    $result->status['msg'] = 'An error occurred during getting token';
+    $result->status['msg'] = 'TestLink - An error occurred during get token';
     $result->status['status'] = tl::ERROR;
   }
 

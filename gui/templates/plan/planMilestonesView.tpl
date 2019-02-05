@@ -29,31 +29,33 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'{$deleteAction}';
 </script>
+
+{include file="bootstrap.inc.tpl"}
 </head>
 
-
-{* ----------------------------------------------------------------------------------- *}
-
-<body>
+<body class="testlink">
 <h1 class="title">{$gui->main_descr|escape}</h1>
 
-<div class="workBack">
+<div class="page-content">
 	{if $gui->items != ""}
-		<table class="common" width="100%">
-		<tr>
-			<th>{$labels.th_name}</th>
-			<th>{$labels.th_date_format}</th>
-			<th>{$labels.start_date}</th>
-			{if $session['testprojectOptions']->testPriorityEnabled}
-				<th>{$labels.th_perc_a_prio}</th>
-				<th>{$labels.th_perc_b_prio}</th>
-				<th>{$labels.th_perc_c_prio}</th>
-			{else}
-				<th>{$labels.th_perc_testcases}</th>
-			{/if}
-			<th>{$labels.th_delete}</th>
-		</tr>
+		<table class="table table-bordered" width="100%">
+    <thead class="thead-dark">  
+  		<tr>
+  			<th>{$labels.th_name}</th>
+  			<th>{$labels.th_date_format}</th>
+  			<th>{$labels.start_date}</th>
+  			{if $session['testprojectOptions']->testPriorityEnabled}
+  				<th>{$labels.th_perc_a_prio}</th>
+  				<th>{$labels.th_perc_b_prio}</th>
+  				<th>{$labels.th_perc_c_prio}</th>
+  			{else}
+  				<th>{$labels.th_perc_testcases}</th>
+  			{/if}
+  			<th>{$labels.th_delete}</th>
+  		</tr>
+    </thead>
 
+    <tbody>
 		{foreach item=milestone from=$gui->items}
 		<tr>
 			<td>
@@ -84,14 +86,17 @@ var del_action=fRoot+'{$deleteAction}';
   				</td>
 		</tr>
 		{/foreach}
+    </tbody>
 		</table>
 
 
 		{if $gui->itemsLive != ""}
 			<h2>{$labels.title_report_milestones}</h2>
 
-			<table class="simple_tableruler sortable" style="text-align: center; margin-left: 0px;">
-			<tr>
+			<table class="table table-bordered sortable" 
+             style="text-align: center; margin-left: 0px;">
+			<thead class="thead-dark">
+      <tr>
 				<th>{$labels.th_milestone}</th>
 				<th>{$labels.th_tc_priority_high}</th>
 				<th>{$labels.th_expected}</th>
@@ -101,6 +106,9 @@ var del_action=fRoot+'{$deleteAction}';
 				<th>{$labels.th_expected}</th>
 				<th>{$labels.th_overall}</th>
 			</tr>
+      </thead>
+
+      <tbody>
  			{foreach item=res from=$gui->itemsLive}
   			<tr>
   				<td>{$res.name|escape} {$tlCfg->gui_separator_open}
@@ -123,16 +131,15 @@ var del_action=fRoot+'{$deleteAction}';
 				<td>{$res.percentage_completed} %</td>
   			</tr>
   			{/foreach}
+      </tbody>
 		</table>
 		{/if}
-
-
 
   {else}
 		<p>{$labels.no_milestones}</p>
   {/if}
 
-   <div class="groupBtn">
+   <div class="page-content">
     <form method="post" action="{$createAction}{$gui->tplan_id}">
       <input type="submit" name="create_milestone" value="{$labels.btn_new_milestone}" />
     </form>

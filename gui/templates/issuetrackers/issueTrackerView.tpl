@@ -20,14 +20,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&id=';
 </script> 
+
+{include file="bootstrap.inc.tpl"}
 </head>
-<body {$body_onload}>
+<body {$body_onload} class="testlink">
 <h1 class="title">{$labels.title_issuetracker_mgmt}</h1>
 
-<div class="workBack">
+<div class="page-content">
 	{include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 	{if $gui->items != ''}
-	<table class="simple_tableruler sortable">
+	<table class="table table-bordered sortable">
+    <thead class="thead-dark">
 		<tr>
 			<th width="30%">{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
 			<th>{$tlImages.sort_hint}{$labels.th_issuetracker_type}</th>
@@ -36,51 +39,54 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 				<th style="min-width:70px">{$tlImages.sort_hint}{$labels.th_delete}</th>
 			{/if}
 		</tr>
+    </thead>
 
-  	{foreach key=item_id item=item_def from=$gui->items}
-		<tr>
-			<td>
-				{if $gui->canManage != ""}
-					<a href="lib/issuetrackers/issueTrackerView.php?id={$item_def.id}">
-					  <img src="{$tlImages.wrench}" title="{$labels.check_bts_connection}">
-					</a>
-          {if $item_def.connection_status == "ok"}
-					  <img src="{$tlImages.check_ok}" title="{$labels.bts_check_ok}">
-				  {elseif $item_def.connection_status == "ko"}
-					  <img src="{$tlImages.check_ko}" title="{$labels.bts_check_ko}">
-				  {else}
-				    &nbsp;
-				  {/if}
-				{/if}
+    <tbody>
+	  	{foreach key=item_id item=item_def from=$gui->items}
+			<tr>
+				<td>
+					{if $gui->canManage != ""}
+						<a href="lib/issuetrackers/issueTrackerView.php?id={$item_def.id}">
+						  <img src="{$tlImages.wrench}" title="{$labels.check_bts_connection}">
+						</a>
+	          {if $item_def.connection_status == "ok"}
+						  <img src="{$tlImages.check_ok}" title="{$labels.bts_check_ok}">
+					  {elseif $item_def.connection_status == "ko"}
+						  <img src="{$tlImages.check_ko}" title="{$labels.bts_check_ko}">
+					  {else}
+					    &nbsp;
+					  {/if}
+					{/if}
 
-				{if $gui->canManage != ""}
-					<a href="lib/issuetrackers/issueTrackerEdit.php?doAction=edit&amp;id={$item_def.id}">
-				{/if}
-				{$item_def.name|escape}
-				{if $gui->canManage != ""}
-					</a>
-				{/if}
+					{if $gui->canManage != ""}
+						<a href="lib/issuetrackers/issueTrackerEdit.php?doAction=edit&amp;id={$item_def.id}">
+					{/if}
+					{$item_def.name|escape}
+					{if $gui->canManage != ""}
+						</a>
+					{/if}
 
-			</td>
-			<td>{$item_def.type_descr|escape}</td>
-			<td class="clickable_icon">{$item_def.env_check_msg|escape}</td>
-
-				<td class="clickable_icon">
-				{if $gui->canManage != ""  && $item_def.link_count == 0}
-			  		<img style="border:none;cursor: pointer;"
-			       		alt="{$labels.alt_delete}" title="{$labels.alt_delete}"   
-             		src="{$tlImages.delete}"			     
-				     	 onclick="delete_confirmation({$item_def.id},
-				              '{$item_def.name|escape:'javascript'|escape}',
-				              '{$del_msgbox_title}','{$warning_msg}');" />
-				{/if}
 				</td>
-		</tr>
-		{/foreach}
+				<td>{$item_def.type_descr|escape}</td>
+				<td class="clickable_icon">{$item_def.env_check_msg|escape}</td>
+
+					<td class="clickable_icon">
+					{if $gui->canManage != ""  && $item_def.link_count == 0}
+				  		<img style="border:none;cursor: pointer;"
+				       		alt="{$labels.alt_delete}" title="{$labels.alt_delete}"   
+	             		src="{$tlImages.delete}"			     
+					     	 onclick="delete_confirmation({$item_def.id},
+					              '{$item_def.name|escape:'javascript'|escape}',
+					              '{$del_msgbox_title}','{$warning_msg}');" />
+					{/if}
+					</td>
+			</tr>
+			{/foreach}
+		</tbody>	
 	</table>
 	{/if}
 	
-	<div class="groupBtn">	
+	<div class="page-content">	
 	  	<form name="item_view" id="item_view" method="post" action="lib/issuetrackers/issueTrackerEdit.php"> 
 	  	  <input type="hidden" name="doAction" value="" />
 	

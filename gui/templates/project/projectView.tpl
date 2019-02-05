@@ -6,8 +6,6 @@ Purpose: smarty template - display Test Project List
 Development hint:
 some variables smarty and javascript are created on the inc_*.tpl files.
 
-@internal revisions
-@since 1.9.15
 *}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -47,14 +45,16 @@ var del_action=fRoot+'{$deleteAction}';
                                      DataTableslengthMenu=$ll}
 {/if}
 
+{include file="bootstrap.inc.tpl"}
+
 </head>
 
-<body {$body_onload}>
+<body {$body_onload} class="testlink">
 
 <h1 class="title">{$gui->pageTitle}</h1>
-<div class="workBack">
+<div class="page-content">
 
-<div class="groupBtn">
+<div class="page-content">
   <form method="post" action="{$searchAction}" style="display:inline;">
     <input type="text" id="name" name="name" value="{$gui->name}"  
            size="{#TESTPROJECT_NAME_SIZE#}" maxlength="{#TESTPROJECT_NAME_MAXLEN#}"
@@ -85,21 +85,24 @@ var del_action=fRoot+'{$deleteAction}';
     <input type="hidden" name="doAction" id="doAction" value="">
     <input type="hidden" name="tprojectID" id="tprojectID" value="">
 
-  <table id="item_view" class="simple_tableruler sortable">
-    <tr>
-      <th>{$tlImages.toggle_api_info}
-      {$tlImages.sort_hint}{$labels.th_name}</th>
-      <th class="{$noSortableColumnClass}">{$labels.th_notes}</th>
-      <th>{$tlImages.sort_hint}{$labels.tcase_id_prefix}</th>
-      <th>{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
-      <th>{$tlImages.sort_hint}{$labels.th_codetracker}</th>
-      <th claiss="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
-      <th class="icon_cell">{$labels.th_active}</th>
-      <th class="icon_cell">{$labels.public}</th>
-      {if $gui->canManage == "yes"}
-      <th class="icon_cell">{$labels.th_delete}</th>
-      {/if}
-    </tr>
+  <table id="item_view" class="table table-bordered sortable">
+    <thead class="thead-dark">
+      <tr>
+        <th>{$tlImages.toggle_api_info}
+        {$tlImages.sort_hint}{$labels.th_name}</th>
+        <th class="{$noSortableColumnClass}">{$labels.th_notes}</th>
+        <th>{$tlImages.sort_hint}{$labels.tcase_id_prefix}</th>
+        <th>{$tlImages.sort_hint}{$labels.th_issuetracker}</th>
+        <th>{$tlImages.sort_hint}{$labels.th_codetracker}</th>
+        <th claiss="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
+        <th class="icon_cell">{$labels.th_active}</th>
+        <th class="icon_cell">{$labels.public}</th>
+        {if $gui->canManage == "yes"}
+        <th class="icon_cell">{$labels.th_delete}</th>
+        {/if}
+      </tr>
+    </thead>
+    <tbody>
     {foreach item=testproject from=$gui->tprojects}
     <tr>
       <td>    <a href="{$editAction}{$testproject.id}">
@@ -173,7 +176,7 @@ var del_action=fRoot+'{$deleteAction}';
       {/if}
     </tr>
     {/foreach}
-
+   </tbody>
   </table>
   </form>
 {/if}

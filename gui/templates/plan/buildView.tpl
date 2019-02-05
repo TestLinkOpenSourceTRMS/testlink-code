@@ -35,19 +35,20 @@ Purpose: smarty template - Show existing builds
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'{$deleteAction}';
 </script>
+
+{include file="bootstrap.inc.tpl"}
 </head>
 
-<body {$body_onload}>
+<body {$body_onload} class="testlink">
 
 <h1 class="title">{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->tplan_name|escape}</h1>
 
-<div class="workBack">
+<div class="page-content">
 {include file="inc_update.tpl" result=$sqlResult item="build" user_feedback=$gui->user_feedback}
 
-{* --------------------------------------------------------------------------------- *}
 
 {if count($gui->buildSet) > $tlCfg->gui->buildView->itemQtyForTopButton}
-<div class="groupBtn">
+<div class="page-content">
   <form method="post" action="{$createAction}" id="create_build_top">
     <input type="submit" name="create_build_top" value="{$labels.btn_build_create}" />
   </form>
@@ -63,15 +64,18 @@ var del_action=fRoot+'{$deleteAction}';
 
 
     {* table id MUST BE item_view to use show/hide API info *}
-  	<table id="item_view" class="simple_tableruler sortable">
-  		<tr>
-  			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_title}</th>
-  			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
-  			<th class="{$noSortableColumnClass}" style="width:90px;">{$labels.release_date}</th>
-  			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
-  			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>
-  			<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
-  		</tr>
+  	<table id="item_view" class="table table-bordered sortable">
+      <thead class="thead-dark">
+    		<tr>
+    			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_title}</th>
+    			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
+    			<th class="{$noSortableColumnClass}" style="width:90px;">{$labels.release_date}</th>
+    			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
+    			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>
+    			<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
+    		</tr>
+      </thead>
+      <tbody>
   		{foreach item=build from=$gui->buildSet}
         	<tr>
   				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
@@ -122,15 +126,16 @@ var del_action=fRoot+'{$deleteAction}';
   				</td>
   			</tr>
   		{/foreach}
+      </tbody>
   	</table>
    </form> 
   {else}
   	<p>{$labels.no_builds}</p>
   {/if}
 </div>
-{* ------------------------------------------------------------------------------------------- *}
 
-<div class="groupBtn">
+
+<div class="page-content">
   <form method="post" action="{$createAction}" id="create_build_bottom">
     <input type="submit" name="create_build_bottom" value="{$labels.btn_build_create}" />
   </form>

@@ -3,6 +3,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource: keywordsView.tpl
  smarty template - View all keywords 
 *}
+
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 
@@ -18,24 +22,27 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tproject_id}&doAction=do_delete&id=';
 </script>
- 
+
+{include file="bootstrap.inc.tpl"} 
 </head>
-<body {$body_onload}>
-{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
+<body {$body_onload} class="testlink">
 
 <h1 class="title">{$labels.menu_manage_keywords}</h1>
 
-<div class="workBack">
+<div class="page-content">
   {if $gui->keywords != ''}
-  <table class="simple_tableruler sortable">
-    <tr>
-      <th width="30%">{$tlImages.sort_hint}{$labels.th_keyword}</th>
-      <th>{$tlImages.sort_hint}{$labels.th_notes}</th>
-      {if $gui->canManage != ""}
-        <th style="min-width:70px">{$tlImages.sort_hint}{$labels.th_delete}</th>
-      {/if}
-    </tr>
+  <table class="table table-bordered sortable">
+    <thead class="thead-dark">
+      <tr>
+        <th width="30%">{$tlImages.sort_hint}{$labels.th_keyword}</th>
+        <th>{$tlImages.sort_hint}{$labels.th_notes}</th>
+        {if $gui->canManage != ""}
+          <th style="min-width:70px">{$tlImages.sort_hint}{$labels.th_delete}</th>
+        {/if}
+      </tr>
+    </thead>
+
+    <tbody>
     {section name=kwx loop=$gui->keywords}
       {$kwID=$gui->keywords[kwx]->dbID}
     <tr>
@@ -79,11 +86,12 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
       {/if}
     </tr>
     {/section}
+   </tbody>
   </table>
   {/if}
   
 
-  <div class="groupBtn">  
+  <div class="page-content">  
       <form name="keyword_view" id="keyword_view" method="post" action="lib/keywords/keywordsEdit.php"> 
         <input type="hidden" name="doAction" value="" />
         <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />

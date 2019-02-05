@@ -47,7 +47,8 @@ var del_action=fRoot+'{$deleteAction}';
 {include file="inc_update.tpl" result=$sqlResult item="build" user_feedback=$gui->user_feedback}
 
 
-{if count($gui->buildSet) > $tlCfg->gui->buildView->itemQtyForTopButton}
+{if null != $gui->buildSet && 
+   (count($gui->buildSet) > $tlCfg->gui->buildView->itemQtyForTopButton)}
 <div class="page-content">
   <form method="post" action="{$createAction}" id="create_build_top">
     <input type="submit" name="create_build_top" value="{$labels.btn_build_create}" />

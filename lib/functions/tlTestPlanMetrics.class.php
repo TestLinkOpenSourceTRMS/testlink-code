@@ -5,14 +5,11 @@
  *
  * @filesource  tlTestPlanMetrics.class.php
  * @package     TestLink
- * @author      Kevin Levy, franciscom
- * @copyright   2004-2015, TestLink community 
+ * @author      franciscom
+ * @copyright   2004-2019, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * @uses        config.inc.php 
  * @uses        common.php 
- *
- * @internal revisions
- * @since 1.9.14
  *
  **/
 
@@ -24,7 +21,6 @@
  * in smarty templates.
  * 
  * @package TestLink
- * @author kevinlevy
  */
 class tlTestPlanMetrics extends testplan
 {
@@ -912,28 +908,24 @@ class tlTestPlanMetrics extends testplan
 
   /**
    *
-   * @internal revisions
-   *
-   * @since 1.9.9
    *
    */
-  function getExecCountersByExecStatus($id, $filters=null, $opt=null)
-  {
+  function getExecCountersByExecStatus($id, $filters=null, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe_id = intval($id);  
     list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
-    if(count($builds) <= 0 || is_null($builds))
-    {
+
+    if(is_null($builds) || count($builds) <= 0) {
       return null;  // >>---> Bye!
     }  
 
 
     // Latest Executions By Platform (LEBP)
     $add2key = '';
-    if( isset($opt['getOnlyActiveTCVersions']) )
-    {
+    if( isset($opt['getOnlyActiveTCVersions']) ) {
       $add2key='Active';
     }
+    
     $sqlUnionAP  = $union['exec' . $add2key];  //echo 'QD - <br>' . $sqlUnionAP . '<br>';
     $sqlUnionBP  =  $union['not_run' . $add2key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
     

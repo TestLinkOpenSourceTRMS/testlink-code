@@ -48,10 +48,10 @@ var del_action=fRoot+'{$deleteAction}';
                                      DataTableslengthMenu=$ll}
 {/if}
 
-
+{include file="bootstrap.inc.tpl"}
 </head>
 
-<body {$body_onload}>
+<body {$body_onload} class="testlink">
 
 <h1 class="title">{$gui->main_descr|escape}</h1>
 {if $gui->user_feedback ne ""}
@@ -60,10 +60,10 @@ var del_action=fRoot+'{$deleteAction}';
   </div>
 {/if}
 
-<div class="workBack">
+<div class="page-content">
 {if $gui->grants->testplan_create && $gui->tproject_id > 0 && 
     count($gui->tplans) > $tlCfg->gui->planView->itemQtyForTopButton}
-   <div class="groupBtn">
+   <div class="page-content">
      <form method="post" action="{$createAction}" name="topCreateForm">
        <input type="submit" name="create_testplan_top" value="{$labels.btn_testplan_create}" />
      </form>
@@ -80,8 +80,8 @@ var del_action=fRoot+'{$deleteAction}';
     <input type="hidden" name="do_action" id="do_action" value="">
     <input type="hidden" name="tplan_id" id="tplan_id" value="">
 
-  <table id='item_view'class="simple_tableruler sortable">
-    <thead>
+  <table id='item_view' class="table table-bordered sortable">
+    <thead class="thead-dark">
     <tr>
       <th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th>       
       <th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>

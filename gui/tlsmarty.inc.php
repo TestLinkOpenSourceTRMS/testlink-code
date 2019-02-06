@@ -9,7 +9,7 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2019, TestLink community 
+ * @copyright 	2005-2018, TestLink community 
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
@@ -89,14 +89,10 @@ class TLSmarty extends Smarty {
     global $g_tpl;
     
     parent::__construct();
-  
-    $this->template_dir = TL_ABS_PATH . 'gui/templates/' . 
-                          $tlCfg->gui->ux . '/';
+    $this->template_dir = TL_ABS_PATH . 'gui/templates/tl-legacy/';
     $this->config_dir = $this->template_dir;
     $this->compile_dir = TL_TEMP_PATH;
     
-
-
     $testproject_coloring = $tlCfg->gui->testproject_coloring;
     $testprojectColor = $tlCfg->gui->background_color ; 
     

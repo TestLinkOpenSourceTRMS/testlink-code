@@ -7,7 +7,6 @@
  *
  * @filesource  login.php
  * @package     TestLink
- * @author      Martin Havlat
  * @copyright   2006,2019 TestLink community 
  * @link        http://www.testlink.org
  * 
@@ -294,9 +293,9 @@ function renderLoginScreen($guiObj) {
   $smarty = new TLSmarty();
   $smarty->assign('gui', $guiObj);
 
-  $tpl = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-  $tpl = 'login-model-marcobiedermann.tpl';
-  $tpl = 'login/' . $tpl;
+  $templ = config_get('tpl');
+  $tpl = $templ['login'];
+  
   $smarty->display($tpl);
 }
 

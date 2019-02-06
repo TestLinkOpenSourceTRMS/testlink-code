@@ -119,6 +119,7 @@ $tlCfg->instance_name = 'Main TestLink Instance';
 // do not use blanks or special characters, use a short string
 $tlCfg->instance_id = 'TLM';
 
+$tlCfg->gui->ux = 'tl-classic';
 
 /**
  * Copied from MantisBT
@@ -1949,8 +1950,8 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
  * See example below        
  */
 $g_tpl = array('inc_exec_controls' => 'inc_exec_img_controls.tpl');
-//$g_tpl = array('inc_exec_controls' => 'inc_exec_controls.tpl');
- 
+$g_tpl['login'] = 'login/login-model-marcobiedermann.tpl';
+
 
 // Example 
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',

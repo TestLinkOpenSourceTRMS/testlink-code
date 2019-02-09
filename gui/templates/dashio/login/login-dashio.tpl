@@ -111,9 +111,10 @@
   <!-- You can use an image of whatever size. This script will stretch to fit in any screen size.-->
   <script type="text/javascript" src="gui/templates/dashio/lib/jquery.backstretch.min.js"></script>
   <script>
-    $.backstretch("gui/templates/dashio/img/wp-testing04.jpg", {
-      speed: 500
-    });
+  var bg = "{$gui->loginBackgroundImg}";  
+  $.backstretch(bg, {
+    speed: 500
+  });
   </script>
 </body>
 

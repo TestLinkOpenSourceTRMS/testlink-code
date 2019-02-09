@@ -241,6 +241,23 @@ function init_gui(&$db,$args) {
   $gui->destination = $args->destination;
   $gui->pwdInputMaxLenght = config_get('loginPagePasswordMaxLenght');
   
+
+  // Random Background
+  $imgSet = array();
+  $imgSet[] = "wp-testing04.jpg";
+  $imgSet[] = "Fedora-24-Default-Wallpaper-1.png";
+  $imgSet[] = "fedora-76343.jpg";
+  $imgSet[] = "fedora-hex_0.002.png";
+  $imgSet[] = "fedora-x.jpeg";
+  $imgSet[] = "fedora21.png-1024x640.jpg";
+  $imgSet[] = "fedora28.png";
+
+  $itemQty = count($imgSet)-1;
+  $ixx = rand(0,$itemQty);
+
+  $gui->loginBackgroundImg = 
+    "gui/templates/dashio/img/login/" . $imgSet[$ixx]; 
+  
   return $gui;
 }
 

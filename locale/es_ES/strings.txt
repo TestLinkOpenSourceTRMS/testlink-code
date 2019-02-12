@@ -35,7 +35,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última actualización de idioma: 29/12/2012";
+$TLS_last_update = "Última actualización de idioma: 12/2/2019";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Activo (clic para inactivar)";
@@ -564,7 +564,7 @@ $TLS_passwd_lost = "Tu contraseña ha sido enviada a la dirección de e-mail que
                   "Si tienes algún otro problema, por favor, contacta con tu administrador de TestLink.";
 $TLS_password_reseted = "La nueva contraseña ha sido enviada por e-mail";
 $TLS_please_login = "Por favor, inicia la sesión ...";
-$TLS_session_expired = "¡La sesión ha espirado! Por favor, inicia la sesión de nuevo.";
+$TLS_session_expired = "¡La sesión ha expirado! Por favor, inicia la sesión de nuevo.";
 $TLS_your_first_login = "¡Bienvenido a TestLink! En este momento tienes acceso como invitado. Por favor, inicia la sesión ...";
 
 

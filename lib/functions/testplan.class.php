@@ -189,6 +189,8 @@ class testplan extends tlObjectWithAttachments
     $active_status = intval($item->active) > 0 ? 1 : 0;
     $public_status = intval($item->is_public) > 0 ? 1 : 0;
 
+    $api_key = md5(rand()) . md5(rand());
+
     $id = $this->tree_manager->new_node($item->testProjectID,$this->node_types_descr_id['testplan'],$name);
     $sql = "/* $debugMsg */ " . 
            " INSERT INTO {$this->tables['testplans']} (id,notes,api_key,testproject_id,active,is_public) " .

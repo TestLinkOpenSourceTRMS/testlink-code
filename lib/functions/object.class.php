@@ -305,7 +305,9 @@ abstract class tlObject implements iSerialization
                     'user_group_assign' => DB_TABLE_PREFIX . 'user_group_assign',
                     'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
                     'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-                    'users' => DB_TABLE_PREFIX . 'users'); 
+                    'users' => DB_TABLE_PREFIX . 'users',
+                    'execution_tcsteps_wip' => DB_TABLE_PREFIX . 'execution_tcsteps_wip'
+    ); 
 
     if ($tableNames != null)
     { 

@@ -8891,7 +8891,6 @@ class testcase extends tlObjectWithAttachments
   */
   public function saveStepsPartialExec($partialExec,$context) {
 
-      $tbl = $this->tables['execution_tcsteps_wip'];
       if (!is_null($partialExec) && count($partialExec) > 0) {
 
         $stepsIDSet = array_keys($partialExec['notes']);

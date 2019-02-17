@@ -7,7 +7,7 @@
  * Legacy code (party covered by classes now)
  *
  * @package     TestLink
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2019, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
  *
@@ -93,6 +93,22 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
     } 
   }
   
+  // Steps Partial Execution Feature
+  // When writting the execution, we will delete any partial execution
+  // if the test case version has steps defined.
+  // we check for the existence of inputs related to test case steps,
+  // because our choice is also get the test steps ids fromm these inputs.
+  //
+  if( isset($_REQUEST['step_notes']) ) {
+    $stepsIDSet = array_keys($_REQUEST['step_notes']);
+    $ctx = new stdClass();
+    $ctx->testplan_id = $execSign->tplan_id;
+    $ctx->platform_id = $execSign->platform_id;
+    $ctx->build_id = $execSign->build_id;
+    $tcaseMgr->deleteStepsPartialExec($stepsIDSet,$ctx);
+  }
+ 
+
   if( isset($exec_data['do_bulk_save']) ) {
     // create structure to use common algoritm
     $item2loop= $exec_data['status'];

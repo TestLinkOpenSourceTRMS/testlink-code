@@ -8878,4 +8878,92 @@ class testcase extends tlObjectWithAttachments
     return $ltcv;
   }
 
+
+  /**
+  * Insert note and status for steps to DB
+  * Delete data before insert => this way we will not add duplicates
+  *
+  * @param array $stepsData array with notes and status for test_steps
+  * @param int $testPlanId  id's test plan
+  * @param int $platformId id's platform
+  * @param int $buildId id's build 
+  * @param int $testerId 
+  */
+  public function saveStepsPartialExec($partialExec,$context) {
+
+      $tbl = $this->tables['execution_tcsteps_wip'];
+      if (!is_null($partialExec) && count($partialExec) > 0) {
+
+        $stepsIDSet = array_keys($partialExec['notes']);
+        $this->deleteStepsPartialExec($stepsIDSet,$context);
+          
+        $prop = get_object_vars($context);
+        $safeID = array();
+        foreach($prop as $key => $value) {
+          $safeID[$key] = $this->db->prepare_int($value);  
+        }  
+
+        foreach( $partialExec['notes'] as $stepID => $note ) {
+          $sql = " INSERT INTO {$this->tables['execution_tcsteps_wip']} 
+                   (tcstep_id,testplan_id,platform_id,build_id,tester_id,
+                   notes,status) VALUES 
+                   ({$stepID} ,{$safeID['testplan_id']}, 
+                   {$safeID['platform_id']},{$safeID['build_id']},
+                   {$safeID['tester_id']},'" . 
+                   $this->db->prepare_string(htmlspecialchars($note)) .
+                    "', '" . 
+                    $this->db->prepare_string($partialExec['status'][$stepID]) .
+                    "');";
+          $this->db->exec_query($sql);
+        }
+    }
+  }
+  
+  /**
+   * Get Steps Partial Execution record
+   * 
+   * 
+   * @return array map of result with "tcstep_id" in keys. 
+   *
+   */
+  public function getStepsPartialExec($stepsIds,$context) {
+    $rs = null;  
+    if (!is_null($stepsIds) && count($stepsIds) > 0) {
+
+      $fields2get = "tcstep_id,testplan_id,platform_id,build_id,
+                     tester_id,notes,status,creation_ts";
+
+      $sql = "SELECT {$fields2get} 
+              FROM {$this->tables['execution_tcsteps_wip']} 
+              WHERE tcstep_id IN (" . implode(",", $stepsIds) . ") " . 
+              " AND testplan_id = " . 
+              $this->db->prepare_int($context->testplan_id) . 
+              " AND platform_id = " . 
+              $this->db->prepare_int($context->platform_id) . 
+              " AND build_id = " . 
+              $this->db->prepare_int($context->build_id);
+      $rs = $this->db->fetchRowsIntoMap($sql,"tcstep_id");
+    } 
+    return $rs;
+  }
+  
+  /**
+   * 
+   */
+  public function deleteStepsPartialExec($stepsIds,$context) {
+    $inClause = implode(",",$stepsIds);
+    if( count($stepsIds) > 0 ) {
+      $sql = " DELETE FROM {$this->tables['execution_tcsteps_wip']} 
+               WHERE tcstep_id IN (" . $inClause . ") " .
+             " AND testplan_id = " . 
+               $this->db->prepare_int($context->testplan_id) . 
+             " AND platform_id = " . 
+               $this->db->prepare_int($context->platform_id) . 
+             " AND build_id = " . 
+               $this->db->prepare_int($context->build_id);
+      $this->db->exec_query($sql);
+    }
+  }
+
+
 }  // Class end

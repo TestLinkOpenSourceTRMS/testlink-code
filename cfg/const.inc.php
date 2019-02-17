@@ -27,7 +27,7 @@ define('TL_FACE_DIR', 'prague');
  *  about necesssary upgrades
  *  if you set this parameter also upgrade 
  *  lib/functions/configCheck.php - checkSchemaVersion() */
-define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.19');
+define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.20');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part

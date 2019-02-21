@@ -1264,7 +1264,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
                     if($fitem['is_image']) {
                       $code .= "<li>{$safeFileName}</li>";
 
-                      $pathname = $repoDir . $fitem['file_path'];
+                      $pathname = $st->repoDir . $fitem['file_path'];
                       list($iWidth, $iHeight, $iT, $iA) = getimagesize($pathname);
                       $iDim = ' width=' . $iWidth . ' height=' . $iHeight;
                       $code .= '<li><img ' . $iDim . 

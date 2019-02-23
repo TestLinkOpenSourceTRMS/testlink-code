@@ -407,14 +407,11 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
   // Then BE VERY Carefull if you plan to refactor, to avoid unexpected
   // side effects.
   // 
-  if($node_type == 'testcase')
-  {
-
+  if($node_type == 'testcase') {
     $tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
     $tcase_counters = array_fill_keys($status_descr_list, 0);
 
-    if( is_null($tpNode) )
-    {     
+    if( is_null($tpNode) ) {     
       // Dev Notes: when this happens ?
       // 1. two or more platforms on test plan (PLAT-A,PLAT-B)
       // 2. TC-1X => on PLAT-A
@@ -432,25 +429,19 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
       // $node = null;
       $node = REMOVEME;
     } 
-    else 
-    {
-
-      if( isset($tpNode['exec_status']) )
-      {
-        if( isset($resultsCfg['code_status'][$tpNode['exec_status']]) )
-        {
-          $tc_status_descr = $resultsCfg['code_status'][$tpNode['exec_status']];   
+    else {
+      if( isset($tpNode['exec_status']) ) {
+        if( isset($resultsCfg['code_status'][$tpNode['exec_status']]) ) {
+          $statusDescr = $resultsCfg['code_status'][$tpNode['exec_status']];   
         }  
-        else
-        {
-          throw new Exception("Config Issue - exec status code: {$tpNode['exec_status']}", 1);
+        else {
+          $msg = "Config Issue - No Human description for the following exec status code: '" . $tpNode['exec_status'] . "'"; 
+          throw new Exception($msg, 1);
         }  
+      } else {
+        $statusDescr = "not_run";
       }
-      else
-      {
-        $tc_status_descr = "not_run";
-      }
-      $tcase_counters[$tc_status_descr] = $tcase_counters['testcase_count'] = ($node ? 1 : 0);
+      $tcase_counters[$statusDescr] = $tcase_counters['testcase_count'] = ($node ? 1 : 0);
 
       if ( $my['options']['hideTestCases'] )
       {

@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2019, TestLink community
+ * @copyright   2005-2018, TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -1698,48 +1698,43 @@ class testcase extends tlObjectWithAttachments
     executions
     cfield_execution_values
   */
-  function _execution_delete($id,$version_id=self::ALL_VERSIONS,$children=null) {
+  function _execution_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
+  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = array();
 
-    if( $version_id == self::ALL_VERSIONS ) {
-      $tcversion_list = implode(',',$children['tcversion']);
-
-      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_tcsteps']} " .
-             " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
-             " WHERE tcversion_id IN ({$tcversion_list}))";
+    if( $version_id == self::ALL_VERSIONS )
+    {
+      $tcversion_list=implode(',',$children['tcversion']);
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_bugs']} " .
              " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
              " WHERE tcversion_id IN ({$tcversion_list}))";
 
-      $sql[] = "/* $debugMsg */ 
-                DELETE FROM {$this->tables['cfield_execution_values']}
-                WHERE tcversion_id IN ({$tcversion_list}) ";
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']}  " .
+             " WHERE tcversion_id IN ({$tcversion_list})";
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']}  " .
              " WHERE tcversion_id IN ({$tcversion_list})";
-    } else {
 
-      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_tcsteps']} " .
-             " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
-             " WHERE tcversion_id = {$version_id})";
-
+      }
+      else
+      {
       $sql[]="/* $debugMsg */  DELETE FROM {$this->tables['execution_bugs']} " .
              " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
              " WHERE tcversion_id = {$version_id})";
 
-      $sql[]="/* $debugMsg */ 
-              DELETE FROM {$this->tables['cfield_execution_values']}
-              WHERE tcversion_id = {$version_id}";
+      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
+             " WHERE tcversion_id = {$version_id}";
 
       $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']} " .
              " WHERE tcversion_id = {$version_id}";
-    }
+      }
 
-    foreach ($sql as $the_stm) {
-      $result = $this->db->exec_query($the_stm);
-    }
+      foreach ($sql as $the_stm)
+      {
+          $result = $this->db->exec_query($the_stm);
+      }
   }
 
 
@@ -3280,7 +3275,7 @@ class testcase extends tlObjectWithAttachments
     }
 
     $result = $this->deleteKeywords($id,$version_id);
-    if ($result && sizeof((array)$kw_ids)) {
+    if ($result && sizeof($kw_ids)) {
       $result = $this->addKeywords($id,$version_id,$kw_ids);
     }
     return $result;
@@ -4463,17 +4458,18 @@ class testcase extends tlObjectWithAttachments
     $viewerActions->add2tplan='no';
     $viewerActions->freeze='no';
 
-    switch ($mode) {
+    switch ($mode)
+    {
       case 'editOnExec':
         $viewerActions->edit='yes';
-        $viewerActions->create_new_version='yes';
       break;
 
       case 'editDisabled':
       break;
 
       default:
-        foreach($viewerActions as $key => $value) {
+        foreach($viewerActions as $key => $value)
+        {
           $viewerActions->$key='yes';
         }
       break;
@@ -5475,46 +5471,25 @@ class testcase extends tlObjectWithAttachments
 
 
   /**
-   *
-   *  $step_id can be an array
-   */
-  function delete_step_by_id($step_id) {
-
+     *
+     *
+     *  @internal Revisions
+     *  20100821 - franciscom - $step_id can be an array
+     */
+  function delete_step_by_id($step_id)
+  {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $idSet = implode(',',(array)$step_id);
+    $sql = array();
+    $whereClause = " WHERE id IN (" . implode(',',(array)$step_id) . ")";
 
-    // Try to delete any children entity
-    // Execution Attachment
-    // Execution result
-    //
-    $dummy = " /* $debugMsg */ SELECT id FROM 
-               {$this->tables['attachments']} 
-               WHERE fk_table = 'execution_tcsteps' 
-               AND fk_id IN (
-               SELECT id FROM {$this->tables['execution_tcsteps']}
-               WHERE tcstep_id IN ($idSet)  )";
-
-    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
-    if(!is_null($rs)) {
-      foreach($rs as $fik => $v) {
-        deleteAttachment($this->db,$fik,false);
-      }  
-    }  
-
-    // Order is CRITIC due to Foreing Keys 
-    $sqlSet = array();
-    $sqlSet[] = "/* $debugMsg */ 
-              DELETE FROM {$this->tables['execution_tcsteps']} 
-              WHERE tcstep_id IN ($idSet)";
-
-    $whereClause = " WHERE id IN ($idSet) ";
     $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']} {$whereClause} ";
     $sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} " .
                 " {$whereClause} AND node_type_id = " .
                 $this->node_types_descr_id['testcase_step'];
 
-    foreach($sqlSet as $sql) {
+    foreach($sqlSet as $sql)
+    {
       $this->db->exec_query($sql);
     }
   }
@@ -6852,7 +6827,6 @@ class testcase extends tlObjectWithAttachments
     $dummy = getConfigAndLabels('testCaseStatus','code');
     $goo->domainTCStatus = $dummy['lbl'];
 
-    // editOnExec is part of show_mode Domain
     $goo->can_do = $this->getShowViewerActions($goo->show_mode);
     $key = 'testcase_freeze';
     if(property_exists($grantsObj, $key)) {
@@ -8845,137 +8819,88 @@ class testcase extends tlObjectWithAttachments
             
     return ($rs['executed'] != 0);
   }
-
-
-  /**
-   *
-   */
-  function updateTPlanLinkToLatestTCV($tcversionID,$tplanID,$platformID=null,$auditContext=null) {
-
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-    $fromTCV = intval($tcversionID);
-
-    $sql = "SELECT parent_id AS tc_id 
-            FROM {$this->tables['nodes_hierarchy']} 
-            WHERE id = $fromTCV";
-    $rs = current($this->db->get_recordset($sql));
-            
-    $ltcv = $this->getLatestVersionID($rs['tc_id']);
-
-    $sql = "/* $debugMsg */
-            UPDATE {$this->tables['testplan_tcversions']}
-            SET tcversion_id = " . $ltcv .
-            " WHERE testplan_id = " . intval($tplanID) .
-            " AND tcversion_id=$fromTCV";
-
-
-    if( ($plat = intval($platformID)) > 0 ) {
-      $sql .= " AND platform_id=$plat "; 
-    }    
-    $this->db->exec_query($sql);
-
-    return $ltcv;
-  }
-
-
+  
   /**
   * Insert note and status for steps to DB
   * Delete data before insert => this way we will not add duplicates
   *
-  * IMPORTANT NOTICE:
-  * if status is not a valid one, blank will be written
-  *
+  * @param array $stepsData array with notes and status for test_steps
+  * @param int $testPlanId  id's test plan
+  * @param int $platformId id's platform
+  * @param int $buildId id's build 
+  * @param int $testerId 
   */
-  public function saveStepsPartialExec($partialExec,$context) {
-
-      if (!is_null($partialExec) && count($partialExec) > 0) {
-
-        $stepsIDSet = array_keys($partialExec['notes']);
-        $this->deleteStepsPartialExec($stepsIDSet,$context);
+  public function saveBackupSteps($stepsData,$testPlanId,$platformId,$buildId,$testerId) {
+      
+      $targetTable = $this->tables['execution_tcsteps_wip'];
+      if (!is_null($stepsData) && count($stepsData) > 0) {
+          //DELETE FIRST
+          $this->deleteBackupSteps(array_keys($stepsData['notes']),$testPlanId,$platformId,$buildId);
           
-        $prop = get_object_vars($context);
-        $safeID = array();
-        foreach($prop as $key => $value) {
-          $safeID[$key] = $this->db->prepare_int($value);  
-        }  
-
-        $rCfg = config_get('results');
-        $statusSet = $rCfg['status_code'];
-        $not_run = $statusSet['not_run'];
-        $statusSet = array_flip($statusSet);
-        
-        $statusToExclude = (array)$rCfg['execStatusToExclude']['step'];
-        $statusToExclude[] = $not_run;
-        $statusToExclude = array_flip($statusToExclude);
-
-        foreach( $partialExec['notes'] as $stepID => $note ) {
+          // INSERT Query
+          $strSqlBegin = "INSERT INTO {$targetTable} (tcstep_id,testplan_id,platform_id,build_id,tester_id,notes,status) VALUES";
           
-          $s2w = $partialExec['status'][$stepID];
-          if( isset($statusToExclude[$s2w]) || 
-              !isset($statusSet[$s2w]) ) {
-            $s2w = '';
+          foreach ($stepsData['notes'] as $stepId=>$note) {
+              $sql = $strSqlBegin;
+              
+              $sql .= "({$stepId} ,". $this->db->prepare_int($testPlanId).",".$this->db->prepare_int($platformId);
+              $sql .= ",".$this->db->prepare_int($buildId);
+              $sql .= ",".$this->db->prepare_int($testerId);
+              $sql .= ", '".$this->db->prepare_string(htmlspecialchars($note))."', '".$this->db->prepare_string($stepsData['status'][$stepId])."');";
+              
+              $this->db->exec_query($sql);
           }
-
-          $sql = " INSERT INTO {$this->tables['execution_tcsteps_wip']} 
-                   (tcstep_id,testplan_id,platform_id,build_id,tester_id,
-                   notes,status) VALUES 
-                   ({$stepID} ,{$safeID['testplan_id']}, 
-                   {$safeID['platform_id']},{$safeID['build_id']},
-                   {$safeID['tester_id']},'" . 
-                   $this->db->prepare_string(htmlspecialchars($note)) .
-                    "', '" . 
-                   $this->db->prepare_string($s2w) .
-                    "');";
-          $this->db->exec_query($sql);
-        }
-    }
+      }
   }
   
   /**
-   * Get Steps Partial Execution record
+   * Get backup setps result for testCase
    * 
+   * @param array $stepsIds list of stepsid 
+   * @param int $testPlanId  id's test plan
+   * @param int $platformId id's platform
+   * @param int $buildId id's build 
    * 
-   * @return array map of result with "tcstep_id" in keys. 
-   *
+   * @return array map of result with "tcstep_id" in keys. Return null if no record
    */
-  public function getStepsPartialExec($stepsIds,$context) {
-    $rs = null;  
-    if (!is_null($stepsIds) && count($stepsIds) > 0) {
-
-      $fields2get = "tcstep_id,testplan_id,platform_id,build_id,
-                     tester_id,notes,status,creation_ts";
-
-      $sql = "SELECT {$fields2get} 
-              FROM {$this->tables['execution_tcsteps_wip']} 
-              WHERE tcstep_id IN (" . implode(",", $stepsIds) . ") " . 
-              " AND testplan_id = " . 
-              $this->db->prepare_int($context->testplan_id) . 
-              " AND platform_id = " . 
-              $this->db->prepare_int($context->platform_id) . 
-              " AND build_id = " . 
-              $this->db->prepare_int($context->build_id);
-      $rs = $this->db->fetchRowsIntoMap($sql,"tcstep_id");
-    } 
-    return $rs;
+  public function getBackupSteps($stepsIds,$testPlanId,$platformId,$buildId) {
+      
+      $targetTable = $this->tables['execution_tcsteps_wip'];
+      
+      if (!is_null($stepsIds) && count($stepsIds) > 0) {
+          $sql = "SELECT * FROM {$targetTable} ";
+          $sql .= "WHERE tcstep_id IN (".implode(",", $stepsIds).") AND ";
+          $sql .= "testplan_id = ".$this->db->prepare_int($testPlanId)." AND ";
+          $sql .= "platform_id = ".$this->db->prepare_int($platformId)." AND ";
+          $sql .= "build_id = ".$this->db->prepare_int($buildId);
+        
+          return $this->db->fetchRowsIntoMap($sql,"tcstep_id");
+      } else {
+          return null;
+      }
   }
   
   /**
+   * Delete the backup steps in DB
+   * @param array $stepsIds list of stepsid  to delete
+   * @param int $testPlanId  id's test plan
+   * @param int $platformId id's platform
+   * @param int $buildId id's build
    * 
    */
-  public function deleteStepsPartialExec($stepsIds,$context) {
-    $inClause = implode(",",$stepsIds);
-    if( count($stepsIds) > 0 ) {
-      $sql = " DELETE FROM {$this->tables['execution_tcsteps_wip']} 
-               WHERE tcstep_id IN (" . $inClause . ") " .
-             " AND testplan_id = " . 
-               $this->db->prepare_int($context->testplan_id) . 
-             " AND platform_id = " . 
-               $this->db->prepare_int($context->platform_id) . 
-             " AND build_id = " . 
-               $this->db->prepare_int($context->build_id);
-      $this->db->exec_query($sql);
-    }
+  public function deleteBackupSteps($stepsIds,$testPlanId,$platformId,$buildId) {
+      
+      $targetTable = $this->tables['execution_tcsteps_wip'];
+      
+      $implodeStepsId = implode(",",$stepsIds);
+      if (!empty($implodeStepsId) && !is_null($testPlanId) && !is_null($platformId)) {
+          $sqlDelete = "DELETE FROM {$targetTable} WHERE tcstep_id IN (".$implodeStepsId.") AND ";
+          $sqlDelete .= "testplan_id = ".$this->db->prepare_int($testPlanId)." AND ";
+          $sqlDelete .= "platform_id = ".$this->db->prepare_int($platformId)." AND ";
+          $sqlDelete .= "build_id = ".$this->db->prepare_int($buildId);
+          
+          $this->db->exec_query($sqlDelete);
+      }
   }
 
 

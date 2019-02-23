@@ -1,8 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	inc_exec_show_tc_exec.tpl
-@internal revisions
-@since 1.9.13
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -160,23 +158,17 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
         </div>
         <hr>
         {/if}
-        {* ///////////////////////////// *}
-
-
-
   		  {else}
           {$drawNotRun=1}
    		  {/if}
      {/if}
-	 
 	 {if $drawNotRun }
 	 	<div class="not_run">{$labels.test_status_not_run}</div>
     	{$labels.tc_not_tested_yet}
-	 {/if}
-     
+	 {/if}   
      
 
-    {* -------------------------------------------------------------------------------------------------- *}
+    {* -------------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
       {$my_colspan=$attachment_model->num_cols}
 
@@ -463,7 +455,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     </div>
 
 
-  {* ----------------------------------------------------------------------------------- *}
+  {* ----------------------------------------------------------------- *}
   <div>
     {include file="execute/inc_exec_test_spec.tpl"
              args_tc_exec=$tc_exec

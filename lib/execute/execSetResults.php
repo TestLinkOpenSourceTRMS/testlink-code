@@ -121,7 +121,9 @@ if(!is_null($linked_tcversions)) {
   // because in some situations args->save_results is a number (0) an in other is an array
   // with just one element with key => test case version ID executed.
   //
-  if ($args->doSave || $args->doNavigate) {
+  // if ($args->doSave || $args->doNavigate || $args->doSaveBackupSteps) {
+  //
+  if ($args->doSave || $args->doNavigate || $args->saveStepsPartialExec) {
     // this has to be done to do not break logic present on write_execution()
     $args->save_results = $args->save_and_next ? $args->save_and_next : 
                           ($args->save_results ? $args->save_results : $args->save_and_exit);
@@ -134,7 +136,22 @@ if(!is_null($linked_tcversions)) {
         $lexid = $tcase_mgr->getSystemWideLastestExecutionID($args->version_id);
       }  
 
-      $_REQUEST['save_results'] = $args->save_results;
+      $_REQUEST['save_results'] = $args->save_results;      
+    
+      // Steps Partial Execution Feature   
+      if (isset($_REQUEST['step_notes'])) { 
+
+         /* 
+          $tcase_mgr->deleteBackupSteps(array_keys($_REQUEST['step_notes']),$args->tplan_id,$args->platform_id,$args->build_id);
+         */
+        $ctx = new stdClass();
+        $ctx->testplan_id = $args->tplan_id;
+        $ctx->platform_id = $args->platform_id;
+        $ctx->build_id = $args->build_id;
+
+        $tcase_mgr->deleteStepsPartialExec(array_keys($_REQUEST['step_notes']),$ctx);
+      }
+      
       list($execSet,$gui->addIssueOp) = write_execution($db,$args,$_REQUEST,$its);
       
       if($args->assignTask) {
@@ -259,23 +276,31 @@ if(!is_null($linked_tcversions)) {
         processTestCase($nextItem,$gui,$args,$cfg,$lt,$tree_mgr,$tcase_mgr,$attachmentRepository);
       }
     }
-    else if($args->save_and_exit)
-    {
+    else if($args->save_and_exit) {
       $args->reload_caller = true;
-    }  
+    } 
+    else if ($args->saveStepsPartialExec)  {
+      $partialExec = array("notes" => $_REQUEST['step_notes'], 
+                           "status" => $_REQUEST['step_status'] );
+
+      $ctx = new stdClass();
+      $ctx->testplan_id = $args->tplan_id;
+      $ctx->platform_id = $args->platform_id;
+      $ctx->build_id = $args->build_id;
+      $ctx->tester_id = $args->user_id;
+      $tcase_mgr->saveStepsPartialExec($partialExec,$ctx);
+    }
   }
   
-  if(!$args->reload_caller)
-  {  
-    if ($args->doDelete)
-    {
+  if(!$args->reload_caller) {  
+    if ($args->doDelete) {
       $dummy = delete_execution($db,$args->exec_to_delete);
-	  if ($dummy){
-	    $tc_info = $tcase_mgr->getExternalID($tcase_id);
-	    $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
-	    $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
-		logAuditEvent(TLS("audit_exec_deleted",$tc_info[0],$build_info['name'],$tp_info['name']),"DELETE",$args->exec_to_delete,"execution");
-	  }
+  	  if ($dummy){
+  	    $tc_info = $tcase_mgr->getExternalID($tcase_id);
+  	    $tp_info = $tplan_mgr->get_by_id($args->tplan_id);
+  	    $build_info = $tplan_mgr->get_build_by_id($args->tplan_id,$args->build_id);
+  		logAuditEvent(TLS("audit_exec_deleted",$tc_info[0],$build_info['name'],$tp_info['name']),"DELETE",$args->exec_to_delete,"execution");
+  	  }
     }
 
     // Important Notice: 
@@ -289,6 +314,57 @@ if(!is_null($linked_tcversions)) {
       getLatestExec($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
 
     $gui->map_last_exec_any_build = null;
+    
+
+    // need to get step info from gui
+    $stepSet = array();
+    foreach($gui->map_last_exec as $tcID => $dummy) { 
+      if( null != $gui->map_last_exec[$tcID]['steps'] ) {
+        foreach ($gui->map_last_exec[$tcID]['steps'] as $step) {
+          $stepSet[] = $step["id"];
+        }        
+      }       
+    }
+
+    if( count($stepSet) > 0 ) {
+      // test case version under exec has steps
+      $ctx = new stdClass();
+      $ctx->testplan_id = $args->tplan_id;
+      $ctx->platform_id = $args->platform_id;
+      $ctx->build_id = $args->build_id;
+  
+      $gui->stepsPartialExec = 
+        $tcase_mgr->getStepsPartialExec($stepSet,$ctx);
+      
+      if( null != $gui->stepsPartialExec ) {
+        // will reload it!
+        $kij = current(array_keys($gui->map_last_exec));
+        $cucu = &$gui->map_last_exec[$kij];
+        foreach($cucu['steps'] as $ccx => $se) {
+          $stepID = $se['id'];
+          if( isset($gui->stepsPartialExec[$stepID]) ) {
+           $cucu['steps'][$ccx]['execution_notes'] = 
+             $gui->stepsPartialExec[$stepID]['notes'];
+              
+           $cucu['steps'][$ccx]['execution_status'] = 
+             $gui->stepsPartialExec[$stepID]['status']; 
+          }
+        }
+      }
+    }
+    $testerIdKey = 'tester_id';
+
+    /*
+    $ctx = new stdClass();
+    $ctx->testplan_id = $args->tplan_id;
+    $ctx->platform_id = $args->platform_id;
+    $ctx->build_id = $args->build_id;
+    $gui->stepsPartialExec = $tcase_mgr->getStepsPartialExec($ctx);
+
+    $gui->backupTesterId = reset($gui->backupSteps)[$testerIdKey];
+    $gui->backupTimestamp = reset($gui->backupSteps)['backup_date'];
+    */
+
     $gui->other_execs=null;
     $testerid = null;
       
@@ -302,7 +378,7 @@ if(!is_null($linked_tcversions)) {
         // Get UserID and Updater ID for current Version
         $tc_current = $gui->map_last_exec_any_build;
         foreach ($tc_current as $key => $value) {
-          $testerid = $value['tester_id'];
+          $testerid = $value[$testerIdKey];
           $userid_array[$testerid] = $testerid;
         }      
       }
@@ -323,14 +399,11 @@ if(!is_null($linked_tcversions)) {
       $gui->other_execs = getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
         
       // Get attachment,bugs, etc
-      if(!is_null($gui->other_execs))
-      {
+      if(!is_null($gui->other_execs)) {
         //Get the Tester ID for all previous executions
-        foreach ($gui->other_execs as $key => $execution)
-        {      
-          foreach ($execution as $singleExecution)
-          {            
-            $testerid = $singleExecution['tester_id'];
+        foreach ($gui->other_execs as $key => $execution) {      
+          foreach ($execution as $singleExecution) {            
+            $testerid = $singleExecution[$testerIdKey];
             $userid_array[$testerid] = $testerid;
           }      
         }
@@ -343,12 +416,9 @@ if(!is_null($linked_tcversions)) {
         $gui->other_exec_cfields=$other_info['cfexec_values'];
          
         // this piece of code is useful to avoid error on smarty template due to undefined value   
-        if( is_array($tcversion_id) && (count($gui->other_execs) != count($gui->map_last_exec)) )
-        {
-          foreach($tcversion_id as $version_id)
-          {
-            if( !isset($gui->other_execs[$version_id]) )
-            {
+        if( is_array($tcversion_id) && (count($gui->other_execs) != count($gui->map_last_exec)) ) {
+          foreach($tcversion_id as $version_id) {
+            if( !isset($gui->other_execs[$version_id]) ) {
               $gui->other_execs[$version_id]=null;  
             }  
           }
@@ -360,38 +430,29 @@ if(!is_null($linked_tcversions)) {
 } // if(!is_null($linked_tcversions))
 
 
-if($args->reload_caller)
-{
+if($args->reload_caller) {
   windowCloseAndOpenerReload();
   exit();
-} 
-else
-{
+} else {
   // Removing duplicate and NULL id's
   unset($userid_array['']);
   $userSet = null;
-  if ($userid_array)
-  {
-    foreach($userid_array as $value)
-    {    
+  if ($userid_array) {
+    foreach($userid_array as $value) {    
       $userSet[] = $value;
     }
   }
   smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id,$cfg);
 
   // Bulk is possible when test suite is selected (and is allowed in config)
-  if( $gui->can_use_bulk_op = ($args->level == 'testsuite') )
-  {
+  if( $gui->can_use_bulk_op = ($args->level == 'testsuite') ) {
     $xx = null;
-    if( property_exists($gui, 'execution_time_cfields') )
-    {
+    if( property_exists($gui, 'execution_time_cfields') ) {
       $xx = current((array)$gui->execution_time_cfields);
     }  
 
     $gui->execution_time_cfields = null;
-    
-    if( !is_null($xx) )
-    {
+    if( !is_null($xx) ) {
       $gui->execution_time_cfields[0] = $xx;
     }  
   }  
@@ -407,17 +468,12 @@ else
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 } 
 
-/*
-  function: 
+/**
+ *
+ *
+ */
+function init_args(&$dbHandler,$cfgObj) {
 
-  args:
-  
-  returns: 
-  
-  @internal revisions
-*/
-function init_args(&$dbHandler,$cfgObj)
-{
   $args = new stdClass();
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -430,16 +486,14 @@ function init_args(&$dbHandler,$cfgObj)
   manageCookies($args,$cfgObj);
 
   // need to comunicate with left frame, will do via $_SESSION and form_token 
-  if( ($args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0) > 0 )
-  {
+  if( ($args->treeFormToken = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0) > 0 ) {
     // do not understand why this do not works OK
     // $_SESSION[$args->treeFormToken]['loadExecDashboard'] = false;
     $_SESSION['loadExecDashboard'][$args->treeFormToken] = false;
   }  
 
 
-  if(is_null($args->refreshTree))
-  {
+  if(is_null($args->refreshTree)) {
     $args->refreshTree = isset($_REQUEST['refresh_tree']) ? intval($_REQUEST['refresh_tree']) : 0;  
   }  
 
@@ -470,19 +524,21 @@ function init_args(&$dbHandler,$cfgObj)
   // can be a list, will arrive via form POST
   $args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
 
+  // it's a submit button!
+  $args->saveStepsPartialExec = isset($_REQUEST['saveStepsPartialExec']);
+
   $key2loop = array('level' => '','status' => null, 'statusSingle' => null, 
-                    'do_bulk_save' => 0,'save_results' => 0,'save_and_next' => 0, 
+                    'do_bulk_save' => 0,'save_results' => 0,
+                    'save_and_next' => 0, 
                     'save_and_exit' => 0);
-  foreach($key2loop as $key => $value)
-  {
+  foreach($key2loop as $key => $value) {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
 
- $args->doSave = $args->save_results || $args->save_and_next || 
+  $args->doSave = $args->save_results || $args->save_and_next || 
                  $args->save_and_exit || $args->do_bulk_save;
  
- $args->doNavigate =  $args->doMoveNext || $args->doMovePrevious;
-
+  $args->doNavigate =  $args->doMoveNext || $args->doMovePrevious;
 
   // See details on: "When nullify filter_status - 20080504" in this file
   if( $args->level == 'testcase' || is_null($args->filter_status) || 
@@ -1358,6 +1414,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
 
   $gui->map_last_exec_any_build=null;
   $gui->map_last_exec=null;
+  $gui->backupSteps = null;
 
   // 20081122 - franciscom
   // Just for the records:  
@@ -1622,6 +1679,30 @@ function getLatestExec(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tc
   }
 
   return $last_exec;
+}
+
+/**
+ * Function retrieve test steps backup
+ * 
+ * @param testcase $tcaseMgr the testcase Manager
+ * @param array $guiObj  
+ * @param int $testPlanId
+ * @param int $platformId
+ * @param int $buildId
+ * 
+ * return map
+ */
+// Has to be moved to testcase class
+function getBackupSteps(&$tcaseMgr,$guiObj,$testPlanId,$platformId,$buildId) {
+    
+    $stepsIds = array();
+    foreach($guiObj->map_last_exec as $tcId => $elements) {        
+        foreach ($guiObj->map_last_exec[$tcId]['steps'] as $step) {
+            array_push($stepsIds, $step["id"]);
+        }
+    }
+  
+    return $tcaseMgr->getBackupSteps($stepsIds,$testPlanId,$platformId,$buildId);
 }
 
 
@@ -2044,8 +2125,7 @@ function initWebEditors(&$guiObj,$cfgObj,$baseHREF)
       $guiObj->bulk_exec_notes_editor = $of->CreateHTML($rows,$cols);         
       unset($of);    
   }
-  else
-  {
+  else {
       $guiObj->exec_notes_editors=createExecNotesWebEditor($guiObj->map_last_exec,$baseHREF,$cfgObj->editorCfg);
   }
 }

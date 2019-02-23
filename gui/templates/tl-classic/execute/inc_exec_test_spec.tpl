@@ -17,21 +17,32 @@ Author : franciscom
      
     <div class="exec_test_spec">
     <table class="simple">
-    <tr>
-      <th colspan="{$tableColspan}" class="title">{$args_labels.test_exec_summary}</th>
-    </tr>
-    <tr>
-      <td colspan="{$tableColspan}">{if $gui->testDesignEditorType == 'none'}{$args_tc_exec.summary|nl2br}{else}{$args_tc_exec.summary}{/if}</td>
-    </tr>
-    <tr>
-      <th colspan="{$tableColspan}" class="title">{$args_labels.preconditions}</th>
-    </tr>
-    <tr>
-      <td colspan="{$tableColspan}">{if $gui->testDesignEditorType == 'none'}{$args_tc_exec.preconditions|nl2br}{else}{$args_tc_exec.preconditions}{/if}</td>
-    </tr>
-    <tr>
-      <td colspan="{$tableColspan}">&nbsp;</td>
-    </tr>
+    
+    {$freshAirBeforeSteps = 0}
+    {if '' != $args_tc_exec.summary }
+      {$freshAirBeforeSteps = 1}
+      <tr>
+        <th colspan="{$tableColspan}" class="title">{$args_labels.test_exec_summary}</th>
+      </tr>
+      <tr>
+        <td colspan="{$tableColspan}">{if $gui->testDesignEditorType == 'none'}{$args_tc_exec.summary|nl2br}{else}{$args_tc_exec.summary}{/if}</td>
+      </tr>
+    {/if}
+
+    {if '' != $args_tc_exec.preconditions }
+      {$freshAirBeforeSteps = 1}
+      <tr>
+        <th colspan="{$tableColspan}" class="title">{$args_labels.preconditions}</th>
+      </tr>
+      <tr>
+        <td colspan="{$tableColspan}">{if $gui->testDesignEditorType == 'none'}{$args_tc_exec.preconditions|nl2br}{else}{$args_tc_exec.preconditions}{/if}</td>
+      </tr>
+    {/if}
+
+    {* separator *}
+    {if 1 == $freshAirBeforeSteps }
+      <tr> <td colspan="{$tableColspan}">&nbsp;</td></tr>
+    {/if} 
 
     {if $args_design_time_cf[$testcase_id].before_steps_results != ''}
     <tr>
@@ -46,7 +57,23 @@ Author : franciscom
                ghost_control=false
                add_exec_info=$tlCfg->exec_cfg->steps_exec
                steps=$args_tc_exec.steps}
+
+    <tr>
+      <td colspan="{$tableColspan}" style="text-align: center;"> 
+      <b>{$args_labels.partialExecNoAttachmentsWarning}</b>
+      </td>
+    <tr>
+
+    <tr>
+      <td colspan="{$tableColspan}" style="text-align: center;"> 
+       <button class="btn btn-primary" name="saveStepsPartialExec"
+         id="saveStepsPartialExec" type="submit">{$args_labels.saveStepsForPartialExec}</button>
+      </td>
+    <tr>
     {/if}
+
+    <tr> <td colspan="{$tableColspan}"> &nbsp; </td></tr>
+    <tr> <td colspan="{$tableColspan}"> &nbsp; </td></tr>
 
     <tr>
       <td colspan="{$tableColspan}"><b>{$args_labels.execution_type}{$smarty.const.TITLE_SEP}</b>
@@ -79,7 +106,7 @@ Author : franciscom
     </tr>
  
     <tr>
-    {* ------------------------------------------------------------------------------------- *}
+    {* ------------------------------------------------------ *}
     {if $args_enable_custom_field and $args_tc_exec.active == 1}
       {if isset($args_execution_time_cf[$testcase_id]) && $args_execution_time_cf[$testcase_id] != ''}
         <tr>
@@ -91,7 +118,7 @@ Author : franciscom
         </tr>
       {/if}
     {/if} {* if $args_enable_custom_field *}
-    {* ------------------------------------------------------------------------------------- *}
+    {* ------------------------------------------------------ *}
     
       <td colspan="{$tableColspan}">
       {if $args_testplan_design_time_cf[$testcase_id] != ''}

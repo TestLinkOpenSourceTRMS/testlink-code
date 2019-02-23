@@ -2,7 +2,6 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @filesource	execSetResults.tpl
-@internal smarty template - show tests to add results
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -18,8 +17,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get 
   var='labels'
-  s='created_by,warning_partial_exec_present_lost_change,confirm_save_partial_exec,confirm_save_execution,restore,steps_partial_exec_exist,click_save_partial_exec,edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
-	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,design,execution,
+  s='created_by,saveStepsForPartialExec,partialExecNoAttachmentsWarning,
+  edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
+	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,design,execution,partialExecNothingToSave,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
   estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,btn_next_tcase,
@@ -62,8 +62,7 @@ var import_xml_results="{$labels.import_xml_results}";
 {include file="inc_del_onclick.tpl"}
 
 <script language="JavaScript" type="text/javascript">
-function load_notes(panel,exec_id)
-{
+function load_notes(panel,exec_id) {
   // solved ONLY for  $webeditorType == 'none'
   var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
   panel.load({ url:url2load });
@@ -72,20 +71,17 @@ function load_notes(panel,exec_id)
 /*
 Set value for a group of combo (have same prefix).
 */
-function set_combo_group(formid,combo_id_prefix,value_to_assign)
-{
+function set_combo_group(formid,combo_id_prefix,value_to_assign) {
 	var f=document.getElementById(formid);
 	var all_comboboxes = f.getElementsByTagName('select');
 	var input_element;
 	var idx=0;
 		
-	for(idx = 0; idx < all_comboboxes.length; idx++)
-	{
+	for(idx = 0; idx < all_comboboxes.length; idx++) {
 		input_element=all_comboboxes[idx];
 		if( input_element.type == "select-one" && 
 		    input_element.id.indexOf(combo_id_prefix)==0 &&
-		   !input_element.disabled)
-		{
+		   !input_element.disabled) {
 			input_element.value=value_to_assign;
 		}	
 	}
@@ -94,60 +90,30 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 // Escape all messages (string)
 var alert_box_title="{$labels.warning|escape:'javascript'}";
 var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved|escape:'javascript'}";
-function validateForm(f)
-{
-  var status_ok=true;
-  var cfields_inputs='';
-  var cfValidityChecks;
-  var cfield_container;
-  var access_key;
-  cfield_container=document.getElementById('save_button_clicked').value;
-  access_key='cfields_exec_time_tcversionid_'+cfield_container; 
-    
-  if( document.getElementById(access_key) != null )
-  {    
- 	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
-      cfValidityChecks=validateCustomFields(cfields_inputs);
-      if( !cfValidityChecks.status_ok )
-      {
-          var warning_msg=cfMessages[cfValidityChecks.msg_id];
-          alert_message(alert_box_title,warning_msg.replace(/%s/, cfValidityChecks.cfield_label));
-          return false;
-      }
+
+/**
+ *
+ */
+function validateForm(f) {
+  var status_ok = true;
+
+
+  if( status_ok ) {
+    status_ok = checkCustomFields(f);
   }
-  return true;
+
+  if( status_ok ) {
+    var msg="{$labels.partialExecNothingToSave}";
+    status_ok = checkStepsHaveContent(msg);
+  }
+
+  return status_ok;
 }
 
-/*
-  function: checkSubmitForStatusCombo
-            $statusCode has been checked, then false is returned to block form submit().
-            
-            Dev. Note - remember this:
-            
-            KO:
-               onclick="foo();checkSubmitForStatus('n')"
-            OK
-               onclick="foo();return checkSubmitForStatus('n')"
-                              ^^^^^^ 
-            
 
-  args :
-  
-  returns: 
 
-*/
-function checkSubmitForStatusCombo(oid,statusCode2block)
-{
-  var access_key;
-  var isChecked;
-  
-  if(document.getElementById(oid).value == statusCode2block)
-  {
-    alert_message(alert_box_title,warning_nothing_will_be_saved);
-    return false;
-  }  
-  return true;
-}
+
+
 
 
 /**
@@ -180,10 +146,8 @@ Ext.onReady(function() {
 /**
  * Be Carefull this TRUST on existence of $gui->delAttachmentURL
  */
-function jsCallDeleteFile(btn, text, o_id)
-{ 
-  if( btn == 'yes' )
-  {
+function jsCallDeleteFile(btn, text, o_id) { 
+  if( btn == 'yes' ) {
     var windowCfg="width=510,height=150,resizable=yes,dependent=yes";
     window.open(fRoot+"lib/attachments/attachmentdelete.php?id="+o_id,
                 "Delete",windowCfg);
@@ -192,6 +156,9 @@ function jsCallDeleteFile(btn, text, o_id)
 </script>
 
 <script src="third_party/clipboard/clipboard.min.js"></script>
+
+{* {include file="bootstrap.inc.tpl"} *}
+
 </head>
 {*
 IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
@@ -392,93 +359,18 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{/if}
 
   {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
-      <div>
-      <br />
-      <input type="button" id="do_export_testcases" name="do_export_testcases"  value="{$labels.btn_export_testcases}"
-    	         onclick="javascript: openExportTestCases('export_testcases',{$gui->node_id},{$gui->tproject_id},
-    	                                                  {$gui->tplan_id},{$gui->build_id},{$gui->platform_id},
-    	                                                  '{$gui->tcversionSet}');" />
-
-
-      {if $tlCfg->exec_cfg->enable_test_automation}
-        <input type="submit" id="execute_cases" name="execute_cases" value="{$labels.execute_and_save_results}"/>
-      {/if}
-
- 	    <table class="mainTable-x" width="100%">
- 	    <tr>
- 	    <th>{$labels.th_testsuite}</th>
-      <th>{$labels.title_test_case}</th>
- 	    <th>{$labels.exec_status}</th>
-      <th>{$labels.test_exec_result}</th>
- 	    </tr>
- 	    {foreach item=tc_exec from=$gui->map_last_exec name="tcSet"}
-      	  {if $tc_exec.active == 1}
-            {$tc_id=$tc_exec.testcase_id}
-	          {$tcversion_id=$tc_exec.id}
-	          {* IMPORTANT:
-	             Here we use version_number, which is related to tcversion_id SPECIFICATION.
-	             When we need to display executed version number, we use tcversion_number
-	          *}
-	          {$version_number=$tc_exec.version}
-	      
-	    	<input type="hidden" id="tc_version_{$tcversion_id}" name="tc_version[{$tcversion_id}]" value='{$tc_id}' />
-	    	<input type="hidden" id="version_number_{$tcversion_id}" name="version_number[{$tcversion_id}]" value='{$version_number}' />
-      
-	        {* ------------------------------------------------------------------------------------ *}
-	        <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
-	        <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
-	        <td>
-                  <img class="clickable" src="{$tlImages.history_small}"
-                       onclick="javascript:openExecHistoryWindow({$tc_exec.testcase_id});"
-                       title="{$labels.execution_history}" />
-                  <img class="clickable" src="{$tlImages.exec_icon}"
-                       onclick="javascript:openExecutionWindow({$tc_exec.testcase_id},{$tcversion_id},{$gui->build_id},{$gui->tplan_id},{$gui->platform_id});"
-                       title="{$labels.execution}" />
-                  <img class="clickable" src="{$tlImages.edit}"
-                       onclick="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id});"
-                       title="{$labels.design}" />        
-	        <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')" title="{$labels.show_tcase_spec}">
-	        {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
-	        </a>
-	        </td>
-	        <td class="{$tlCfg->results.code_status[$tc_exec.status]}">
-	        {$gui->execStatusValues[$tc_exec.status]}
-	        </td>
-	   			<td>
-	   			    {if $tc_exec.can_be_executed}
-	   			    <select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
-					    {html_options options=$gui->execStatusValues}
-					    </select>
-					    {else}
-					      &nbsp;
-					    {/if}
-				  </td>	        </tr>
-	    {/if}   {* Design only if test case version we want to execute is ACTIVE *}   
-      {/foreach}
-      </table>
-      </div>
+    {include file="execute/execSetResultsBulk.inc.tpl"}
   {else}
+  	{if $tlCfg->exec_cfg->enable_test_automation && 
+        $gui->remoteExecFeedback != ''}
+      {include file="execute/execSetResultsRemoteExec.inc.tpl"}
+  	{/if}
 
-	{if $tlCfg->exec_cfg->enable_test_automation && $gui->remoteExecFeedback != ''}
-		<b>{$labels.remoteExecFeeback}</b>
-		{if	$gui->remoteExecFeedback.system == ''}
-			<br>{$gui->remoteExecFeedback.statusVerbose|escape}
-			<br>{$gui->remoteExecFeedback.notes|escape}
-			{if $gui->remoteExecFeedback.status == ''}	
-				<br>{$gui->remoteExecFeedback.scheduled|escape}
-				<br>{$gui->remoteExecFeedback.timestamp|escape}
-			{/if}	
-		{else}
-			<br>{$gui->remoteExecFeedback.system.msg|escape}
-		{/if}
-		<p>
-	{/if}
-
-  {include file="execute/inc_exec_show_tc_exec.tpl"}
-  {if isset($gui->refreshTree) && $gui->refreshTree}
-    {include file="inc_refreshTreeWithFilters.tpl"}
+    {include file="execute/inc_exec_show_tc_exec.tpl"}
+    {if isset($gui->refreshTree) && $gui->refreshTree}
+      {include file="inc_refreshTreeWithFilters.tpl"}
+    {/if}
   {/if}
-{/if}
   
 </form>
 </div>

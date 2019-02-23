@@ -32,13 +32,6 @@ function saveExecStatus(tcvID, status, msg, goNext) {
 	jQuery('#save_results').val(0);
 	jQuery('#save_partial_steps_exec').val(0);
 
-  /*
-	if (!isStepsRestore()) {
-		if (!confirm(msg)) {
-			return;
-		}
-	}
-	*/
   jQuery('#save_button_clicked').val(tcvID);
   jQuery('#statusSingle_' + tcvID).val(status);
   if( goNext == undefined || goNext == 0 ) {
@@ -61,3 +54,86 @@ function moveToNextTC(tcvID) {
   jQuery('#save_button_clicked').val(tcvID);
 }
 
+/**
+ * Check before save partial execution if notes or Status are not empty
+ * 
+ * @returns true / false
+ */
+function checkStepsHaveContent(msg) {
+  var notes = jQuery(".step_note_textarea");
+
+  for (var idx = 0; idx < notes.length; idx++) {
+    if (notes[idx].value) {
+      return true;
+    }
+  }
+
+  var status = jQuery(".step_status");
+  for (var idx = 0; idx < status.length; idx++) {
+    if (status[idx].value && status[idx].value !== "n") {
+      return true;
+    }
+  }
+
+  if( msg !== undefined ) {
+    alert(msg);
+  }
+  return false;
+}
+
+/**
+ * Check if attachement is present
+ * 
+ * @returns
+ */
+function checkStepsHaveAttachments() {
+  var uploads = jQuery(".uploadedFile");
+  for (var idx = 0; idx < uploads.length; idx++) {
+    if (uploads[idx].value) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * uses globals alert_box_title,warning_msg
+ *
+ *
+ */
+function checkCustomFields(theForm) {
+  var cfields_inputs='';
+  var cfValidityChecks; 
+  var f = theForm;
+
+  var cfield_container = jQuery('#save_button_clicked').val();
+  var access_key='cfields_exec_time_tcversionid_'+cfield_container; 
+    
+  if( document.getElementById(access_key) != null ) {    
+      cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
+      cfValidityChecks=validateCustomFields(cfields_inputs);
+      if( !cfValidityChecks.status_ok ) {
+          var warning_msg=cfMessages[cfValidityChecks.msg_id];
+          alert_message(alert_box_title,warning_msg.replace(/%s/, cfValidityChecks.cfield_label));
+          return false;
+      }
+  }
+  return true;
+}
+
+/**
+ * checkSubmitForStatusCombo
+ * $statusCode has been checked, then false is returned to block form submit().
+ *           
+ * Dev. Note - remember this:
+ *  KO: onclick="foo();checkSubmitForStatus('n')"
+ *  OK: onclick="foo();return checkSubmitForStatus('n')"
+ *                            ^^^^^^ 
+ */
+function checkSubmitForStatusCombo(oid,statusCode2block) {
+  if(jQuery('#'+oid).val() == statusCode2block) {
+    alert_message(alert_box_title,warning_nothing_will_be_saved);
+    return false;
+  }  
+  return true;
+}

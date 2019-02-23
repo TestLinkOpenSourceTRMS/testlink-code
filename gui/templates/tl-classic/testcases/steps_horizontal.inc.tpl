@@ -10,10 +10,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @internal revisions
 *}
+  {$inExec = 0}
   {if isset($add_exec_info) && $add_exec_info}
     {$inExec = 1}
-  {else}
-    {$inExec = 0}
   {/if}  
 
   <tr>
@@ -100,8 +99,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
     {if $inExec}
       <td class="exec_tcstep_note">
-        <textarea class="step_note_textarea" name="step_notes[{$step_info.id}]" id="step_notes_{$step_info.id}" 
-                  cols="40" rows="5">{$step_info.execution_notes|escape}</textarea>
+        <textarea class="step_note_textarea" 
+          name="step_notes[{$step_info.id}]" id="step_notes_{$step_info.id}" 
+          cols="40" rows="5">{$step_info.execution_notes|escape}</textarea>
       </td>
 
       <td>

@@ -3924,4 +3924,10 @@ $TLS_restAPIExecParameters = "REST API create execution args";
 $TLS_can_not_delete_relation_because_this_is_not_the_latest =
 "Delete Disabled: test case version is not the LATEST";
 
+
+$TLS_saveStepsForPartialExec = 'Save Steps Work In Progress Execution';
+$TLS_partialExecNothingToSave = 'Steps Work In Progress Execution: There are no notes or results to save';
+
+$TLS_partialExecNoAttachmentsWarning = 'ATTENTION: When saving Steps Work In Progress Execution, Attachments will not be saved';
+
 // ----- END ------------------------------------------------------------------

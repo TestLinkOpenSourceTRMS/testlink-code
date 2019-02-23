@@ -1,10 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource inc_exec_controls.tpl
-Purpose: draw execution controls (input for notes and results)
-Author : franciscom
+Purpose: draw execution controls
+         input for notes and results
+         buttons
+         clickable images
 
+Author : franciscom
 *}	
+{* Russian Doll, make name shorter *}
+{$tcvID = $args_tcversion_id}  
       {$ResultsStatusCode=$tlCfg->results.status_code}
       {if $args_save_type == 'bulk'}
         {$radio_id_prefix = "bulk_status"}
@@ -28,8 +33,8 @@ Author : franciscom
     				<div class="resultBox">
               {if $args_save_type == 'bulk'}
                 {foreach key=verbose_status item=locale_status from=$tlCfg->results.status_label_for_exec_ui}
-    						      <input type="radio" {$args_input_enable_mgmt} name="{$radio_id_prefix}[{$args_tcversion_id}]" 
-    						      id="{$radio_id_prefix}_{$args_tcversion_id}_{$ResultsStatusCode.$verbose_status}" 
+    						      <input type="radio" {$args_input_enable_mgmt} name="{$radio_id_prefix}[{$tcvID}]" 
+    						      id="{$radio_id_prefix}_{$tcvID}_{$ResultsStatusCode.$verbose_status}" 
     							    value="{$ResultsStatusCode.$verbose_status}"
     											onclick="javascript:set_combo_group('execSetResults','status_','{$ResultsStatusCode.$verbose_status}');"
     							    {if $verbose_status eq $tlCfg->results.default_status}
@@ -71,7 +76,7 @@ Author : franciscom
                 {if $tlCfg->exec_cfg->copyLatestExecIssues->enabled}
                   {if $addBR}<br>{/if}
                   {$args_labels.bug_copy_from_latest_exec}&nbsp;
-                   <input type="checkbox" name="copyIssues[{$args_tcversion_id}]" id="copyIssues" 
+                   <input type="checkbox" name="copyIssues[{$tcvID}]" id="copyIssues" 
                     {if $tlCfg->exec_cfg->copyLatestExecIssues->default} checked {/if}>
                    <br />
                 {/if}
@@ -83,17 +88,12 @@ Author : franciscom
                  <br />
                  <button style="display: none;" type="submit" 
                          id="hidden-submit-button"></button>
-
                  {foreach key=kode item=ikval from=$gui->execStatusIcons}
                    {$in = $ikval.img}
                    <img src="{$tlImages.$in}" title="{$ikval.title}"
                         name="fastExec{$kode}[{$tcversion_id}]"
                         id="fastExec{$kode}_{$tcversion_id}"
-                        onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
-                        document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
-                        document.getElementById('save_results').value=1;
-                        doSubmitForHTML5();
-                        // document.forms['execSetResults'].submit();">&nbsp;
+                        onclick="javascript:saveExecStatus({$tcvID},'{$kode}');">&nbsp;
                  {/foreach}  
                  <br />
                  <br />
@@ -105,17 +105,13 @@ Author : franciscom
                    <img src="{$tlImages.$in}" title="{$ikval.title}"
                         name="fastExecNext{$kode}[{$tcversion_id}]"
                         id="fastExecNext{$kode}_{$tcversion_id}"
-                        onclick="document.getElementById('save_button_clicked').value='{$args_tcversion_id}';
-                        document.getElementById('statusSingle_{$tcversion_id}').value='{$kode}';
-                        document.getElementById('save_and_next').value=1;
-                        doSubmitForHTML5();
-                        // document.forms['execSetResults'].submit();">&nbsp;
+                        onclick="javascript:saveExecStatus({$tcvID},'{$kode}','',1);">&nbsp;
                  {/foreach}  
                  <br />
                  <br />
-                  <input type="submit" name="move2next[{$args_tcversion_id}]" 
+                  <input type="submit" name="move2next[{$tcvID}]" 
                       {$args_input_enable_mgmt}
-                      onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};"
+                      onclick="javascript:moveToNextTC({$tcvID});"
                       value="{$args_labels.btn_next_tcase}" />
     		 			  {else}
      	    	        <input type="submit" id="do_bulk_save" name="do_bulk_save"
@@ -126,7 +122,7 @@ Author : franciscom
     		</tr>
         {if $args_save_type == 'bulk' && $args_execution_time_cfields != ''}
           <tr><td colspan="2">
-  					<div id="cfields_exec_time_tcversionid_{$args_tcversion_id}" class="custom_field_container" 
+  					<div id="cfields_exec_time_tcversionid_{$tcvID}" class="custom_field_container" 
   						style="background-color:#dddddd;">
             {$args_labels.testcase_customfields}
             {$args_execution_time_cfields.0} {* 0 => bulk *}
@@ -136,9 +132,9 @@ Author : franciscom
   		</table>
       
       {else}
-        <input type="submit" name="move2next[{$args_tcversion_id}]" 
+        <input type="submit" name="move2next[{$tcvID}]" 
                {$args_input_enable_mgmt}
-               onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};"
+               onclick="javascript:moveToNextTC({$tcvID});"
                value="{$args_labels.btn_next_tcase}" />
       {/if}
 
@@ -275,21 +271,16 @@ Author : franciscom
 
 
       <script>
-      function doSubmitForHTML5() 
-      {
-        document.getElementById("hidden-submit-button").click();
-      }
-
       jQuery( document ).ready(function() {
+          // IMPORTANT
+          // For some chosen select I want on page load to be DISPLAY NONE
+          // That's why I've changes from original example on the line where styles were applied
+          // 
+          jQuery(".chosen-select-artifact").chosen({ width: "35%" });
 
-      // IMPORTANT
-      // For some chosen select I want on page load to be DISPLAY NONE
-      // That's why I've changes from original example on the line where styles were applied
-      // 
-      jQuery(".chosen-select-artifact").chosen({ width: "35%" });
-
-      // From https://github.com/harvesthq/chosen/issues/515
-      jQuery(".chosen-select-artifact").each(function(){
+          // From https://github.com/harvesthq/chosen/issues/515
+          jQuery(".chosen-select-artifact").each(function(){
+          
           // take each select and put it as a child of the chosen container
           // this mean it'll position any validation messages correctly
           jQuery(this).next(".chosen-container").prepend(jQuery(this).detach());

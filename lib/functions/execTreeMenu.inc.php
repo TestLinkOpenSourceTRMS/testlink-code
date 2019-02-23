@@ -435,7 +435,9 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,&$tplan_tcases = nul
           $statusDescr = $resultsCfg['code_status'][$tpNode['exec_status']];   
         }  
         else {
-          $msg = "Config Issue - No Human description for the following exec status code: '" . $tpNode['exec_status'] . "'"; 
+          $msg = "Config Issue - No Human description for the following exec status code: '" . $tpNode['exec_status'] . "'" .
+          ' - Test Case DBID:' . $tpNode['tcase_id'] . 
+          ' - Test Case Version DBID:' . $tpNode['tcversion_id']; 
           throw new Exception($msg, 1);
         }  
       } else {

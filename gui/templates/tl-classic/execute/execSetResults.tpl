@@ -18,7 +18,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get 
   var='labels'
-  s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
+  s='created_by,warning_partial_exec_present_lost_change,confirm_save_partial_exec,confirm_save_execution,restore,steps_partial_exec_exist,click_save_partial_exec,edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,design,execution,
 	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
@@ -486,8 +486,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 <script>
 jQuery( document ).ready(function() {
   clipboard = new Clipboard('.clip');
-  //alert('Clipboard Debug');
 });
 </script>
+<script language="JavaScript" src="gui/javascript/execSetResults.js" type="text/javascript"></script>
 </body>
 </html>

@@ -373,15 +373,15 @@ WARNING: if you are using a table prefix replace `prefix` with your prefix
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.17/step1/db_schema_update.sql`
-  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.17/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.18/step1/db_schema_update.sql`
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.18/<your_db>/DB.1.9.18/stepZ/z_final_step.sql`
 
 14. Upgrade from 1.9.18 to 1.9.19
 
 WARNING: if you are using a table prefix replace `prefix` with your prefix
 
-  a. Execute `install/sql/alter_tables/1.9.19/<your_db>/DB.1.9.18/step1/db_schema_update.sql`
-  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.19/<your_db>/DB.1.9.18/stepZ/z_final_step.sql`
+  a. Execute `install/sql/alter_tables/1.9.19/<your_db>/DB.1.9.19/step1/db_schema_update.sql`
+  b. Execute (IF EXISTS) `install/sql/alter_tables/1.9.19/<your_db>/DB.1.9.19/stepZ/z_final_step.sql`
 
 **Hint**: When using MySQL Query Browser make sure you are not using single
           command execution. (open script or use special script tab to

@@ -1059,16 +1059,12 @@ function tlSubStr($str,$start,$length = null)
  *        does not exists.
  *
  */
-function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='') 
-{
+function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='') {
     $editorTemplate = config_get($itemTemplate);
     $value=$defaultText;
-    if( !is_null($editorTemplate) )
-    {
-      if (property_exists($editorTemplate, $webEditorName)) 
-      {
-        switch($editorTemplate->$webEditorName->type)
-        {
+    if( !is_null($editorTemplate) ) {
+      if (property_exists($editorTemplate, $webEditorName)) {
+        switch($editorTemplate->$webEditorName->type) {
           case 'string':
             $value = $editorTemplate->$webEditorName->value;
           break;
@@ -1079,8 +1075,7 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
              
           case 'file':
             $value = getFileContents($editorTemplate->$webEditorName->value);
-            if (is_null($value))
-            {
+            if (is_null($value)) {
               $value = lang_get('problems_trying_to_access_template') . 
                        " {$editorTemplate->$webEditorName->value} ";
             } 

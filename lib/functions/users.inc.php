@@ -462,3 +462,13 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=nu
     
   return $grants;
 }
+
+
+/** 
+ * just a wrapper
+ *
+ */
+function setUserSessionFromObj(&$db,$userObj) {
+  return setUserSession($db,$userObj->login,$userObj->dbID,
+                        $userObj->globalRoleID,$userObj->emailAddress);
+}

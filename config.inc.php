@@ -504,6 +504,24 @@ $tlCfg->OAuthServers = array();
 // $tlCfg->OAuthServers[2]['oauth_profile'] = 'https://api.github.com/user';
 // $tlCfg->OAuthServers[2]['oauth_scope'] = 'user:email';
 
+//Microsoft
+//$tlCfg->OAuthServers[1]['oauth_enabled'] = true;
+//$tlCfg->OAuthServers[1]['oauth_name'] = 'microsoft';
+//$tlCfg->OAuthServers[1]['oauth_icon'] = 'mslogo.jpg';
+//$tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
+//$tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
+
+// Can be authorization_code (by default), client_credentials or password
+//$tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';
+//$tlCfg->OAuthServers[1]['oauth_url'] = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
+
+//$tlCfg->OAuthServers[1]['token_url'] = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
+//$tlCfg->OAuthServers[1]['oauth_force_single'] = true;
+//$tlCfg->OAuthServers[1]['oauth_profile'] = 'https://graph.microsoft.com/v1.0/me';
+//$tlCfg->OAuthServers[1]['oauth_scope'] = 'User.Read';
+
+//$tlCfg->OAuthServers[1]['redirect_uri'] = 'TESTLINKURL/microsoftoauth.php';
+
 
 /**
  * Single Sign On authentication

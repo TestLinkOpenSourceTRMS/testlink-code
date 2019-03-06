@@ -7,8 +7,7 @@
  *
  * @filesource  microsoftoauth.php
  * @package     TestLink
- * @author      Martin Havlat
- * @copyright   2006,2018 TestLink community 
+ * @copyright   2006,2019 TestLink community 
  * @link        http://www.testlink.org
  * 
  **/

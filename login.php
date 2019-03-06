@@ -77,7 +77,8 @@ switch($args->action)
       $op = doAuthorize($db,$user_token->options->user,'oauth',$user_token->options);
       $doAuthPostProcess = true;
     } else {
-        $gui->note = $user_token->status['msg'];
+	$gui->note = $user_token->status['msg'];
+	$gui->draw=true;    
         renderLoginScreen($gui);
         die();
     }

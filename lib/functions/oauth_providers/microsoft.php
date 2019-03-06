@@ -57,16 +57,12 @@ function oauth_get_token($authCfg, $code) {
   curl_close($curl);
   $tokenInfo = json_decode($result_curl);
 
-  //echo $tokenInfo->access_token;
-
   // If token is received start session
   if (isset($tokenInfo->access_token)) {
     $oauthParams['access_token'] = $tokenInfo->access_token;
 
-    //$queryString = http_build_query($tokenInfo);
     $targetURL = array();
     $targetURL['user'] = $authCfg['oauth_profile'];
-    //$targetURL['email'] = $authCfg['oauth_profile'] . '/emails?'. $queryString;
     $curlContentType[] = 'Authorization: Bearer '.$oauthParams['access_token'];
 
     // Get User
@@ -76,8 +72,6 @@ function oauth_get_token($authCfg, $code) {
     curl_setopt($curl, CURLOPT_HTTPHEADER, $curlContentType);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-    //var_dump( $curlContentType);
-
     $result_curl = curl_exec($curl);
     $userInfo = json_decode($result_curl, true);
     curl_close($curl);
@@ -86,17 +80,6 @@ function oauth_get_token($authCfg, $code) {
       $result->status['msg'] = 'User ID is empty';
       $result->status['status'] = tl::ERROR;
     }
-
-    // Get email
-    //$curl = curl_init();
-    //curl_setopt($curl, CURLOPT_URL, $targetURL['email'] );
-    //curl_setopt($curl, CURLOPT_USERAGENT, $curlAgent);
-    //curl_setopt($curl, CURLOPT_HTTPHEADER, $curlContentType);
-    //curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    //$result_curl = curl_exec($curl);
-    //$emailInfo = json_decode($result_curl, true);
-    //curl_close($curl);
-
 
     $result->options = new stdClass();
     $result->options->givenName = $userInfo['givenName'];

@@ -1227,7 +1227,7 @@ function setPublicStatus($id,$status)
       
       if( $this->cfg->keywords->onDeleteCheckFrozenTCVersions ) {
         $linkedToFrozen = $this->checkKeywordIsLinkedToFrozenVersions($id);
-        $doIt = $doIt && $linkedToFrozen;
+        $doIt = $doIt && !$linkedToFrozen;
       }
     }  
     
@@ -2659,12 +2659,6 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
     $oldNewMappings['requirements'] = 
       $this->copy_requirements($id,$new_id,$user_id);
   
-    /*echo '<pre>';
-    var_dump($oldNewMappings['requirements']);
-    echo '</pre>';
-    die();
-    */
-
     // need to copy relations between requirements
     $rel = null;
     foreach ($oldNewMappings['requirements']['req'] as $okey => $nkey)  {
@@ -3240,11 +3234,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
       }  
     }    
 
-    // 2018
     $ssx .= $kwJoin . $where;
-
-    //echo '<br>' . __LINE__ . '....' . __FILE__;
-    //echo '<br>' . $ssx; //die();
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
     if( $filterOnTC ) {
       $ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
@@ -3932,6 +3922,7 @@ function getActiveTestPlansCount($id)
    */
   function checkKeywordIsLinkedAndNotExecuted($keyword_id,$tproject_id=null) {
 
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $wheraAdd = '';
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
@@ -3948,7 +3939,8 @@ function getActiveTestPlansCount($id)
 
     // Now try to understand if it is linked 
     if( !is_null($rs) ) {
-      $sql = " SELECT DISTINCT keyword_id,keyword,
+      $sql = "/* $debugMsg */
+              SELECT DISTINCT keyword_id,keyword,
                       CASE 
                         WHEN EX.status IS NULL THEN 'NOT_RUN'
                         ELSE 'EXECUTED'
@@ -3974,6 +3966,7 @@ function getActiveTestPlansCount($id)
    */
   function checkKeywordIsLinkedToFrozenVersions($keyword_id,$tproject_id=null) {
 
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $wheraAdd = '';
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
@@ -3989,7 +3982,8 @@ function getActiveTestPlansCount($id)
     }  
 
     if( !is_null($rs) ) {
-      $sql = " SELECT DISTINCT keyword_id,keyword,
+      $sql = "/* $debugMsg */ 
+              SELECT DISTINCT keyword_id,keyword,
                CASE 
                  WHEN TCV.is_open=0 THEN 'FROZEN'
                  ELSE 'FRESH'
@@ -4003,7 +3997,6 @@ function getActiveTestPlansCount($id)
                
                WHERE KW.id = {$keyword_id} {$whereAdd} ";
     }         
-    echo $sql;
     $rs = $this->db->fetchRowsIntoMap($sql,'freeze_status');
 
     $rs = (array)$rs;
@@ -4027,13 +4020,15 @@ function getActiveTestPlansCount($id)
    */
   function getKeywordsExecStatus($keywordSet,$tproject_id=null) {
 
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $wheraAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
     }         
 
     $idSet = implode(',', $keywordSet);
-    $sql = " SELECT DISTINCT keyword_id,keyword,
+    $sql = "/* $debugMsg */ 
+            SELECT DISTINCT keyword_id,keyword,
                       CASE 
                         WHEN EX.status IS NULL THEN 'NOT_RUN'
                         ELSE 'EXECUTED'
@@ -4057,13 +4052,15 @@ function getActiveTestPlansCount($id)
    */
   function getKeywordsFreezeStatus($keywordSet,$tproject_id=null) {
 
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $wheraAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
     }         
     
     $idSet = implode(',', $keywordSet);
-    $sql = " SELECT DISTINCT keyword_id,keyword,
+    $sql = "/* $debugMsg */ 
+            SELECT DISTINCT keyword_id,keyword,
                CASE 
                  WHEN TCV.is_open=0 THEN 'FROZEN'
                  ELSE 'FRESH'

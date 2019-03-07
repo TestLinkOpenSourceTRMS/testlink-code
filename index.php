@@ -23,15 +23,13 @@ list($args,$gui) = initEnv();
 
 // verify the session during a work
 $redir2login = true;
-if( isset($_SESSION['currentUser']) )
-{
+if( isset($_SESSION['currentUser']) ) {
   // Session exists we need to do other checks.
   // we use/copy Mantisbt approach
   $securityCookie = tlUser::auth_get_current_user_cookie();
   $redir2login = is_null($securityCookie);
 
-  if(!$redir2login)
-  {
+  if(!$redir2login) {
     // need to get fresh info from db, before asking for securityCookie
     doDBConnect($db,database::ONERROREXIT);
     $user = new tlUser();
@@ -42,8 +40,7 @@ if( isset($_SESSION['currentUser']) )
   } 
 }
 
-if($redir2login)
-{
+if($redir2login) {
   // destroy user in session as security measure
   unset($_SESSION['currentUser']);
 
@@ -77,8 +74,7 @@ $tplEngine->display('main.tpl');
  *
  *
  */
-function initEnv()
-{
+function initEnv() {
   $iParams = array("reqURI" => array(tlInputParameter::STRING_N,0,4000));
   $pParams = G_PARAMS($iParams);
   
@@ -88,17 +84,30 @@ function initEnv()
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 
+  return $args;
+}
+
+/**
+ *
+ */
+function initGui(&$dbh,&$argsObj) {
+
   $gui = new stdClass();
   $gui->title = lang_get('main_page_title');
   $gui->mainframe = $args->reqURI;
   $gui->navbar_height = config_get('navbar_height');
 
-  $sso = ($args->ssodisable ? '&ssodisable' : '');
+  $sso = ($argsObj->ssodisable ? '&ssodisable' : '');
+  $gui->logout = 'logout.php?viewer=' . $sso;
+
+  if( $argsObj->tproject_id == 0 ) {
+
+  }
+  
   $gui->titleframe = "lib/general/navBar.php?" . 
                      "tproject_id={$args->tproject_id}&" .
                      "tplan_id={$args->tplan_id}&" .
                      "updateMainPage=1" . $sso;
-  $gui->logout = 'logout.php?viewer=' . $sso;
 
-  return array($args,$gui);
+  return $gui;
 }

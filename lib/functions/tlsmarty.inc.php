@@ -92,7 +92,8 @@ class TLSmarty extends Smarty {
   
     $this->template_dir = TL_ABS_PATH . 'gui/templates/' . 
                           $tlCfg->gui->ux . '/';
-    $this->config_dir = $this->template_dir;
+                          
+    $this->config_dir = TL_ABS_PATH . 'gui/templates/conf';
     $this->compile_dir = TL_TEMP_PATH;
     
 

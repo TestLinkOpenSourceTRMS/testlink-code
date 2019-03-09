@@ -84,30 +84,17 @@ function initEnv() {
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
 
-  return $args;
-}
-
-/**
- *
- */
-function initGui(&$dbh,&$argsObj) {
-
   $gui = new stdClass();
   $gui->title = lang_get('main_page_title');
   $gui->mainframe = $args->reqURI;
   $gui->navbar_height = config_get('navbar_height');
 
-  $sso = ($argsObj->ssodisable ? '&ssodisable' : '');
-  $gui->logout = 'logout.php?viewer=' . $sso;
-
-  if( $argsObj->tproject_id == 0 ) {
-
-  }
-  
+  $sso = ($args->ssodisable ? '&ssodisable' : '');
   $gui->titleframe = "lib/general/navBar.php?" . 
                      "tproject_id={$args->tproject_id}&" .
                      "tplan_id={$args->tplan_id}&" .
                      "updateMainPage=1" . $sso;
+  $gui->logout = 'logout.php?viewer=' . $sso;
 
-  return $gui;
+  return array($args,$gui);
 }

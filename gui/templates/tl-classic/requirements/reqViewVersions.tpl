@@ -139,7 +139,7 @@ function delete_req_relation(btn, text, req_id, relation_id)
 function relation_delete_confirmation(requirement_id, relation_id, title, msg, pFunction) 
 {
   var my_msg = msg.replace('%i',relation_id);
-  var safe_title = title.escapeHTML();
+  var safe_title = escapeHTML(title);
   Ext.Msg.confirm(safe_title, my_msg,
                   function(btn, text) { 
                     pFunction(btn,text,requirement_id, relation_id);

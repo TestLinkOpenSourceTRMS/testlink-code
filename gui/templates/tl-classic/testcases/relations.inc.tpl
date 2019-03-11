@@ -28,7 +28,7 @@ var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
 function relation_delete_confirmation(item_id, relation_id, title, msg, pFunction) 
 {
   var my_msg = msg.replace('%i',relation_id);
-  var safe_title = title.escapeHTML();
+  var safe_title = escapeHTML(title);
   Ext.Msg.confirm(safe_title, my_msg,
                   function(btn, text) { 
                     pFunction(btn,text,item_id, relation_id);

@@ -22,7 +22,7 @@ var remove_kw_msgbox_title = '{$remove_kw_msgbox_title|escape:'javascript'}';
  */
 function keyword_remove_confirmation(item_id, kw_link_id, keyword, title, msg, pFunction) {
   var my_msg = msg.replace('%i',keyword);
-  var safe_title = title.escapeHTML();
+  var safe_title = escapeHTML(title);
   Ext.Msg.confirm(safe_title, my_msg,
                   function(btn, text) { 
                     pFunction(btn,text,item_id,kw_link_id);

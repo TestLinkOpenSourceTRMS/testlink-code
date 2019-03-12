@@ -826,7 +826,7 @@ AS SELECT
    LRQVN.req_id AS req_id,
    LRQVN.version AS version,
    REQV.id AS req_version_id
-FROM latest_req_version LRQVN 
+FROM /*prefix*/latest_req_version LRQVN 
 JOIN /*prefix*/nodes_hierarchy NHRQV
 ON NHRQV.parent_id = LRQVN.req_id 
 JOIN /*prefix*/req_versions REQV 

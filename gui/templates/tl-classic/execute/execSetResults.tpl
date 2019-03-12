@@ -102,7 +102,7 @@ function validateForm(f) {
     status_ok = checkCustomFields(f);
   }
 
-  if( status_ok ) {
+  if( status_ok && saveStepsPartialExecClicked ) {
     var msg="{$labels.partialExecNothingToSave}";
     status_ok = checkStepsHaveContent(msg);
   }

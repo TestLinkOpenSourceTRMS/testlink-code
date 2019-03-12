@@ -61,7 +61,15 @@ function moveToNextTC(tcvID) {
  */
 function checkStepsHaveContent(msg) {
   var notes = jQuery(".step_note_textarea");
+  
+  // https://www.tutorialrepublic.com/faq/
+  //         how-to-check-if-an-element-exists-in-jquery.php
+  if( notes.length == 0 ) {
+    // there are no steps
+    return true;
+  }
 
+  
   for (var idx = 0; idx < notes.length; idx++) {
     if (notes[idx].value) {
       return true;
@@ -137,3 +145,11 @@ function checkSubmitForStatusCombo(oid,statusCode2block) {
   }  
   return true;
 }
+
+/**
+ *
+ */
+saveStepsPartialExecClicked = false;
+$("#saveStepsPartialExec").click(function() {
+   saveStepsPartialExecClicked = true;
+});

@@ -45,7 +45,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última atualização: 26/01/2018 (TestLink 1.9.17)";
+$TLS_last_update = "Última atualização: 12/03/2019 (TestLink 1.9.20)";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Ativo (clicar para inativar)";
@@ -97,6 +97,8 @@ $TLS_click_to_set_closed = "Aberto (clicar para fechar)";
 $TLS_click_to_disable = "Ativo (clicar para desativar)";
 $TLS_click_to_enable = "Desativo (clicar para ativar)";
 $TLS_current_testcase = "Este Caso de Teste";
+$TLS_this_tcversion = "Esta versão do Caso de Teste ";
+
 $TLS_confirm = "Confirmar";
 $TLS_config = "Configuração";
 $TLS_created_by = "Criado por";
@@ -277,6 +279,7 @@ $TLS_update_hint = "selecionar para atualizar ao guardar";
 // Buttons (used wide)
 $TLS_btn_apply   = "Aplicar";
 $TLS_btn_add   = "Adicionar";
+$TLS_btn_add_to_testsuites_deep = "Adicionar também aos filhos (Suítes de Teste)";
 $TLS_btn_add_to_testplans = "Adicionar aos Planos de Teste";
 $TLS_btn_assign  = "Atribuir";
 $TLS_btn_cancel  = "Cancelar";
@@ -319,6 +322,11 @@ $TLS_btn_reorder_steps = "Reordenar Passos";
 $TLS_btn_resequence_steps = "Resequenciar Passos";
 $TLS_btn_view_history = "Ver histórico";
 $TLS_btn_testcases_table_view = "Vista em Tabela dos Casos de Teste";
+$TLS_btn_remove_all_users = "Remover TODAS as Atribuições";
+$TLS_btn_apply_assign = "Aplicar Atribuição";
+$TLS_btn_save_assign = "Gravar Atribuições";
+$TLS_btn_remove = "Remover";
+$TLS_btn_remove_assignments = "Remover Atribuições";
 
 
 // Status (used wide)
@@ -391,6 +399,7 @@ $TLS_CSRF_attack = "Ataque de Falsificação de Pedido de Site Cruzado (Cross-Si
 $TLS_already_exists_not_updated = "Já existe => não atualizado";
 $TLS_assign_exec_task_to_me = "Atribuir tarefa a mim";
 $TLS_chosen_blank_option = "   ";
+$TLS_already_exists_skipped = "Já existe => saltou-se";
 
 $TLS_monitorable = "Monitorizável";
 
@@ -572,7 +581,7 @@ $TLS_page_title_lost_passwd = "TestLink - Senha Perdida";
 $TLS_your_info_for_passwd = "Entre com seu Usuário e sua nova senha será enviada por e-mail.";
 $TLS_your_password_is = "Sua nova senha de acesso ao TestLink é:";
 $TLS_password_set = "A senha foi definida como: ";
-$TLS_password_mgmt_feedback = 'Gestão de Senha para o Utilizador %s, não é permitido repor Senha';
+$TLS_password_mgmt_feedback = 'Gestão de Senha para o Usuário %s, não é permitido repor Senha';
 
 $TLS_your_apikey_is = "A sua nova Chave API do TestLink é:";
 $TLS_mail_apikey_subject = "A sua nova Chave API do TestLink.";
@@ -756,6 +765,7 @@ $TLS_title_change_node_order = "Mudar ordem do dir. filho";
 // ----- gui/templates/containerView.tpl -----
 $TLS_testsuite_operations = "Operações da Suíte de Teste";
 $TLS_testcase_operations = "Operações do Caso de Teste";
+$TLS_testcase_version_operations = "Operações de Versões de Casos de Teste";
 $TLS_alt_del_testsuite = "Excluir esta Suíte de Teste com todos os filhos (Suítes e Casos de Teste)";
 $TLS_alt_edit_testsuite = "Modifique esse dados e título da Suítes de Teste";
 $TLS_alt_move_cp_testsuite = "Mover ou copiar esta Suítes de Teste para outro Projeto";
@@ -1247,6 +1257,10 @@ $TLS_jolly_hint = "o valor será pesquisado tal como em modo OU no título, resu
 
 
 
+// ----- gui/templates/testcases/tcBulkOp.tpl -----
+$TLS_force_frozen_testcases_versions = "Forçar Congelar Versões de Casos de Teste";
+
+
 // ----- gui/templates/testcases/searchData.tpl -----
 $TLS_too_wide_search_criteria = "Muitos resultados. Por favor, seja mais específico " .
      "no critério da pesquisa.";
@@ -1258,7 +1272,9 @@ $TLS_too_wide_search_criteria = "Muitos resultados. Por favor, seja mais especí
 
 // ----- gui/templates/tcDelete.tpl -----
 $TLS_btn_yes_iw2del = "Sim, excluir Caso de Teste!";
+$TLS_btn_yes_iw2del_version = "Sim, apagar Versão de Caso de Teste!";
 $TLS_question_del_tc = "Deseja realmente excluir esse Caso de Teste?";
+$TLS_question_del_tc_version = "Deseja realmente apagar essa Versão de Caso de Teste?";
 $TLS_th_executed = "Executado";
 $TLS_th_linked_to_tplan = "Associado ao Plano de Teste";
 $TLS_th_version = "Versão";
@@ -1443,6 +1459,8 @@ $TLS_testcase_customfields = "Campos personalizados dos casos de teste";
 $TLS_test_exec_by = "Testador";
 $TLS_test_exec_expected_r = "<br>Resultados Esperados:";
 $TLS_test_exec_notes = "Notas / Descrição:";
+$TLS_test_exec_notes_latest_created_build = "Notas de Execução para a Baseline mais recentemente criada";
+
 $TLS_test_exec_result = "Resultados: ";
 $TLS_test_exec_steps = "<br>Passos: ";
 $TLS_test_exec_summary = "Sumário";
@@ -1703,6 +1721,8 @@ $TLS_hint_new_sibling = "Criar outro Caso de Teste na Suíte de Testes corrente"
 $TLS_hint_new_version = "Criar uma nova versão";
 
 $TLS_can_not_edit_tc = "Você não pode editar esta versão porque ela foi executada";
+$TLS_can_not_edit_frozen_tc = "Você não pode editar esta versão porque ela foi congelada";
+$TLS_can_not_delete_relation_frozen_tc = "Você não pode apagar esta relação : o Caso de Teste está congelado";
 $TLS_deactivate_this_tcversion = "Desativar esta versão";
 $TLS_execution_type= '<br />Tipo de Execução';
 $TLS_execution_type_short_descr = 'Execução';
@@ -2467,6 +2487,8 @@ $TLS_desc_testplan_execute = "Executar Plano de Teste";
 $TLS_desc_testplan_metrics = "Métricas do Plano de Teste";
 $TLS_desc_testplan_planning = "Planejamento do Plano de Teste";
 $TLS_desc_user_role_assignment = "Atribuição de Regras";
+$TLS_desc_testproject_user_role_assignment = "Atribuição de Perfís a usuários segundo Nível de Projeto de Teste";
+$TLS_desc_testplan_user_role_assignment = "Atribuição de Perfís a usuários segundo Nível de Plano de Teste";
 $TLS_desc_monitor_requirement = "Monitorizar Requisitos";
 
 
@@ -2527,6 +2549,9 @@ $TLS_create_new_version = "Criada nova versão %s";
 $TLS_testcase_name_already_exists = "Já existe um cado de teste com este título (%s)";
 $TLS_created_with_title = "Criado com título (%s)";
 $TLS_the_format_tc_xml_import = "";
+$TLS_relation_added = "Adicionada Relação a %s";
+$TLS_related_tcase_not_open = "A Relação a %s não pode ser adicionada : este Caso de Teste está congelado";
+$TLS_relation_already_exists = "A Relação a %s não pode ser adicionada : esta Relação já existe";
 
 
 // ----- lib/functions/testsuite.class.php -----
@@ -2719,6 +2744,9 @@ $TLS_opt_req_cf = "Campo Personalizado do Requisito";
 $TLS_opt_req_relations = "Relações do Requisito";
 $TLS_opt_req_linked_tcs = "Requisitos relacionados com os Casos de Teste";
 $TLS_opt_req_coverage = "Cobertura dos Requisitos";
+$TLS_opt_cfexec_comb = "Separar Resultados da Execução por Campos Peronalizados";
+
+
 $TLS_title_tc_print_navigator = "Navegador - Imprimir Especificações de Teste";
 $TLS_title_req_print_navigator = "Navegador - Imprimir Especificação de Requisitos";
 $TLS_title_tp_print_navigator = "Navegador - Imprimir Plano de Teste ";
@@ -2777,6 +2805,8 @@ $TLS_bulk_assigment_done = "foram feitas %s atribuições";
 $TLS_req_title_bulk_assign = 'Atribuição de massa de Requisitos ';
 $TLS_req_title_available = 'Requisitos disponiveis';
 $TLS_no_req_spec_available = "Projeto de Testes sem especificação de requisitos disponível";
+$TLS_req_on_req_spec = 'Requisito filho ( %s ) na especificação de requisito: %s';
+
 
 
 // ----- requirement relations (BUGID 1748)
@@ -2952,6 +2982,7 @@ $TLS_req_spec_ko_on_tcimport = "Req. Spec=%s não existe, requisitos não podem 
 $TLS_req_not_in_DB_on_tcimport = "O Requisito DOCID=%s não pode ser vinculado ao Caso de Teste," .
                                  "porque não existe.";
 
+'Não importar o caso de teste';
 $TLS_update_last_testcase_version='Atualizar dados na última versão';
 $TLS_create_new_testcase_version='Criar uma nova versão';
 $TLS_generate_new_testcase='Criar um novo caso de teste com um título diferente';
@@ -3303,7 +3334,8 @@ $TLS_audit_cfield_deactivated = "Campo personalizado '{%1}' foi desativado no Pr
 $TLS_audit_cfield_required_on = "Campo Personalizado '{%1}' foi definido como OBRIGATÓRIO no Projeto de Teste '{%2}'";
 $TLS_audit_cfield_required_off = "Campo Personalizado '{%1}' foi definido como NÃO OBRIGATÓRIO no Projeto de Teste '{%2}'";
 
-
+$TLS_audit_tcversion_activated = "A versão '{%2}' do caso de teste {%1} foi activada";
+$TLS_audit_tcversion_deactivated = "A versão '{%2}' do caso de teste {%1} foi desactivada";
 
 $TLS_audit_user_apikey_set = "Chave-API para '{%1}' foi gerada";
 $TLS_audit_user_saved = "Usuário '{%1}' foi salvo";
@@ -3357,7 +3389,16 @@ $TLS_audit_requirement_created = "Requisito '{%1}' foi criado";
 $TLS_audit_requirement_saved = "Requisito '{%1}' foi salvo";
 $TLS_audit_requirement_deleted = "Requisito '{%1}' foi deletado";
 $TLS_audit_req_assigned_tc = "Requisito com título '{%1}' foi atribuído ao Caso de Teste '{%2}'";
+
 $TLS_audit_req_assignment_removed_tc = "Requisito com título '{%1}' foi removido do Caso de Teste '{%2}'";
+
+
+$TLS_audit_reqv_assigned_tcv = "Requisito com título '{%1}' (Versão: {%2}) foi atribuído ao Caso de Teste '{%3}' (Versão:{%4}) ";
+
+$TLS_audit_reqv_assignment_removed_tcv = "Requisito com título '{%1}' (Versão: {%2}) foi removido do Caso de Teste '{%3}' (Version:{%4}) ";
+
+
+
 $TLS_audit_requirement_copy = "Req 'DOCID:{%1}' foi criado como uma cópia do Req 'DOCID:{%2}'";
 $TLS_audit_req_version_deleted = " Versão {%1} do Req 'DOCID:{%2}' - {%3} foi removida."; 
 $TLS_audit_req_version_frozen = " Versão {%1} do Req 'DOCID:{%2}' - {%3} foi congelada.";
@@ -3683,7 +3724,7 @@ $TLS_codetracker_deleted = "O  Gestor de Código  %s% foi removido";
 // codeTrackerEdit.tpl
 $TLS_codetracker_show_cfg_example = "Mostrar exemplo de configuração";
 $TLS_codetracker_cfg_example = "Exemplo de configuração";
-$TLS_used_on_testproject = "Usado no Projeto de Testes";
+$TLS_used_on_testproject = 'Usado no Projeto de Teste';
 
 // getcodetrackertemplate.php
 $TLS_codetracker_invalid_type = "O tipo do Gestor de Código %s é desconhecido";
@@ -3708,6 +3749,17 @@ $TLS_issue_build = " Baseline: %s \n";
 $TLS_issue_platform = " Plataforma: %s \n";
 $TLS_issue_exec_result = " Status de Execução: %s \n";
 $TLS_issue_generated_description = "ID de Execução: %s \n Testador: %s \n Plano de Teste: %s \n";
+
+$TLS_issue_subject_projectname = "Projeto de Teste";
+$TLS_issue_subject_planname = "Plano de Teste:";
+$TLS_issue_subject_buildname = "Baseline:";
+$TLS_issue_subject_platfname = "Plataforma:";
+$TLS_issue_subject_tcname = "Caso de Teste:";
+$TLS_issue_subject_tcpathname = $TLS_issue_subject_tcname;
+$TLS_issue_subject_execon = "Execução (Data-Hora ISO): ";
+
+
+
 
 $TLS_jira_bug_created = "JIRA Issue Criado (summary:%s) no projeto com chave:%s";
 $TLS_redmine_bug_created = "REDMINE Issue Criado (summary:%s) no projeto com identificador:%s";
@@ -3851,4 +3903,50 @@ $TLS_multiple_entities_search = "Pesquisar em múltiplas entidades";
 $TLS_no_access_to_feature = "Você não tem permissões para aceder a esta funcionalidade";
 
 $TLS_applyExecTypeChangeToAllSteps = "Aplicar a todos os Passos";
+
+$TLS_user_bulk_action = 'Usuários para acções em massa';
+$TLS_title_issuetracker_mgmt = 'Gestores de Bugs';
+$TLS_title_codetracker_mgmt = 'Gestores de Versão de Código';
+$TLS_desc_cfield_assignment = "Atribuição de Campo Personalizável";
+$TLS_desc_exec_assign_testcases = "Atribuir execução de caso de teste";
+$TLS_expiration_date = 'Data de Expiração';
+$TLS_system_descr = "software de gestão de testes e requisitos";
+$TLS_poweredBy = 'Produzido por';
+$TLS_expiration = 'Expiração';
+$TLS_no_user_selected = 'Você tem que selecionar pelo menos um usuário';
+
+$TLS_can_not_delete_relation_tcversion_frozen = "Deletar Desactivado: a versão do caso de teste está congelada";
+$TLS_can_not_delete_relation_related_tcversion_frozen =  "Deletar Desactivado: a versão do caso de teste relacionado está congelada";
+$TLS_obsolete = 'obsoleto';
+
+$TLS_tcversion_executed_keyword_assignment_blocked = ' A Versão do caso de teste Foi executada, a configuração do sistema não permite a gestão de palavras-chave';
+
+$TLS_select_keywords = 'Selecionar Palavras-Chave';
+
+$TLS_issueReporter = 'Reportado Por';
+$TLS_issueHandler = 'Atribuído A / Tratado Por';
+
+$TLS_API_MISSING_REQUIRED_PROP = 'Falta Entrada ou Argumento Obrigatório:';
+$TLS_API_TESTPLAN_ID_DOES_NOT_EXIST = 'O Plano de Teste com ID: %s não existe';
+$TLS_API_TESTPLAN_APIKEY_DOES_NOT_EXIST = 'O Plano de Teste com a API KEY: %s não existe';
+
+$TLS_tcvqty_with_kw = 'Quantidade de Versões de Casos de Teste usando esta palavra-chave';
+$TLS_can_not_delete_a_frozen_relation = 'Uma relação Congelada não pode ser removida';
+
+$TLS_cannot_link_latest_version_reason_has_been_exec = 'A Ligação para a versão mais recente do caso de teste <b>%s</b> não pode ser adicionada - MOTIVO: foi executado';
+
+$TLS_reqLinkingDisabledAfterExec = 'A configuração do sistema bloqueia a gestão de Ligações de Versões de Requisitos para versões de casos de teste executadas';
+$TLS_yourRoleHasReqLinkingDisabled = 'O seu Perfil não tem direitos de gestão de ligações de versão de Requisitos a versões de casos de teste';
+
+$TLS_restAPIExecParameters = "Argumentos para criar execução com REST API";
+
+$TLS_can_not_delete_relation_because_this_is_not_the_latest =
+"Apagar Desactivado: a versão do Caso de Teste não é a MAIS recente";
+
+
+$TLS_saveStepsForPartialExec = 'Guardar os Passos da Execução como Em Suspenso';
+$TLS_partialExecNothingToSave = 'Passos da Execução Em Suspenso: Não existem Notas ou Resultados para guardar';
+
+$TLS_partialExecNoAttachmentsWarning = 'ATENÇÃO: Ao guardar Passos da Execução Em Suspenso, os Anexos não serão guardados';
+
 // ----- END ------------------------------------------------------------------

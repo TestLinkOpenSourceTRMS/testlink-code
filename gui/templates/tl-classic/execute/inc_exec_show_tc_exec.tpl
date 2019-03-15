@@ -466,7 +466,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     </div>
 
 
-  {* ----------------------------------------------------------------------------------- *}
+  {* ---------------------------------------------------- *}
   <div>
     {include file="execute/inc_exec_test_spec.tpl"
              args_tc_exec=$tc_exec
@@ -495,6 +495,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {/if}
   <hr />
   </div>
-  {* ----------------------------------------------------------------------------------- *}
+  {* --------------------------------------------------------------- *}
 
 	{/foreach}

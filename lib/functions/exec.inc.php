@@ -194,6 +194,15 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
         $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $execSign->tplan_id,$cf_map);
       }               
 
+      // Attachment @exec level
+      // Available only in single test execution
+      //
+      if( isset($_FILES['uploadedFile']['name'][0]) && 
+          !is_null($_FILES['uploadedFile']['name'][0])) {
+        addAttachmentsToExec($execution_id,$docRepo);
+      }  
+
+
       $hasMoreData = new stdClass();
       $hasMoreData->step_notes = isset($exec_data['step_notes']);
       $hasMoreData->step_status = isset($exec_data['step_status']);
@@ -926,4 +935,41 @@ function completeIssueForStep(&$execContext,$execSigfrid,$exData,$stepID) {
   }
 
   return $addLink;
+}
+
+
+/**
+ *
+ */
+function addAttachmentsToExec($execID,&$docRepo) {
+
+  $tableRef = DB_TABLE_PREFIX . 'executions';
+  $repOpt = array('allow_empty_title' => TRUE);
+
+  // 0 is magic!!, 0 is used in the smarty template
+  // May be we have enabled MULTIPLE on file upload
+
+  $honeyPot = array('name' => null,'size' => null,
+                    'tmp_name' => null, 'type' => null);
+  foreach($honeyPot as $bee => $nuu) {
+   $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
+  }
+
+  $curly = count($honeyPot);
+  for($moe=0; $moe < $curly; $moe++) {
+    $fSize = isset($honeyPot['size'][$moe]) ? 
+             $honeyPot['size'][$moe] : 0;
+
+    $fTmpName = isset($honeyPot['tmp_name'][$moe]) ? 
+                $honeyPot['tmp_name'][$moe] : '';
+
+    if ($fSize && $fTmpName != "") {
+      $fk2loop = array_keys($_FILES['uploadedFile']);
+      foreach($fk2loop as $tk) {
+        $fInfo[$tk] = $honeyPot[$tk][$moe];
+      }  
+      $uploaded = $docRepo->insertAttachment($execID,$tableRef,'',
+                                               $fInfo,$repOpt);
+    }
+  } 
 }

@@ -18,13 +18,15 @@ Author : franciscom
       {/if}
 
       {if $gui->grants->execute}
-  		<table class="invisible">
-  		<tr>
-  			<td style="text-align: center;width:80%;">
+  		<table class="invisible" style="border: thick solid white">
+  		<tr border='0'>
+  			<td style="text-align: center;width:80%; border: 0px">
   				<div class="title">{$args_labels.test_exec_notes}</div>
           {$args_webeditor} 
+        <br>  
+        {include file="attachments_simple.inc.tpl" attach_id=0}
   			</td>
-  			<td valign="top" style="width:20%;">			
+  			<td valign="top" style="width:20%; border: 0px">			
     				{* status of test *}
       			<div class="title" style="text-align: center;">
             {if $args_save_type == 'bulk'} {$args_labels.test_exec_result} {else} &nbsp; {/if}
@@ -138,6 +140,7 @@ Author : franciscom
                value="{$args_labels.btn_next_tcase}" />
       {/if}
 
+
       {if $gui->addIssueOp != '' && !is_null($gui->addIssueOp) && 
           !is_null($gui->addIssueOp.type) }  
         {$ak = $gui->addIssueOp.type} 
@@ -182,6 +185,8 @@ Author : franciscom
       </tr>
 
       <tr>
+
+
       <td colspan="2">
      {if $gui->issueTrackerMetaData != ''}
       <p>

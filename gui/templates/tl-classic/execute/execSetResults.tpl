@@ -227,7 +227,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   <input type="hidden" id="refresh_tree"  name="refresh_tree" value="{$gui->refreshTree}" />
   <input type="hidden" id="{$gui->history_status_btn_name}" name="{$gui->history_status_btn_name}" value="1" />
 
-  {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
+  {$bulkExec = $cfg->exec_cfg->show_testsuite_contents && 
+               $gui->can_use_bulk_op }
+  {$singleExec = !$bulkExec}
+
+  {if $singleExec}
     <div class="groupBtn">
       <input type="hidden" id="history_on" name="history_on" value="{$gui->history_on}" />
       
@@ -271,9 +275,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     </div>
   {/if}
 
-  {* -------------------------------------------------------------------------------- *}
-  {* Test Plan notes show/hide management                                             *}
-  {* -------------------------------------------------------------------------------- *}
+  {* ------------------------------------ *}
+  {* Test Plan notes show/hide management *}
+  {* ------------------------------------ *}
   {$div_id='tplan_notes'}
   {$memstatus_id=$tplan_notes_view_memory_id}
   {include file="inc_show_hide_mgmt.tpl"
@@ -287,11 +291,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {if $gui->testPlanEditorType == 'none'}{$gui->testplan_notes|nl2br}{else}{$gui->testplan_notes}{/if}
     {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
   </div>
-  {* -------------------------------------------------------------------------------- *}
+  {* ---------------------------------------------------------------- *}
 
-  {* -------------------------------------------------------------------------------- *}
-  {* Platforms notes show/hide management                                                 *}
-  {* -------------------------------------------------------------------------------- *}
+  {* ---------------------------------------------------------------- *}
+  {* Platforms notes show/hide management *}
+  {* ---------------------------------------------------------------- *}
   {if $gui->platform_info.id > 0}
     {$div_id='platform_notes'}
     {$memstatus_id=$platform_notes_view_memory_id}
@@ -305,11 +309,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
              show_hide_container_class='exec_additional_info'
              show_hide_container_html=$content}
   {/if}         
-  {* -------------------------------------------------------------------------------- *}
+  {* ------------------------------------------------------- *}
 
-  {* -------------------------------------------------------------------------------- *}
-  {* Build notes show/hide management                                                 *}
-  {* -------------------------------------------------------------------------------- *}
+  {* ------------------------------------------------------- *}
+  {* Build notes show/hide management                        *}
+  {* ------------------------------------------------------- *}
   {$div_id='build_notes'}
   {$memstatus_id=$build_notes_view_memory_id}
   {include file="inc_show_hide_mgmt.tpl"
@@ -324,7 +328,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {if $gui->build_cfields != ''} <div id="cfields_build" class="custom_field_container">{$gui->build_cfields}</div>{/if}
   </div>
 
-  {* -------------------------------------------------------------------------------- *}
+  {* ------------------------------------------------------- *}
   {if $gui->map_last_exec eq ""}
      <div class="messages" style="text-align:center"> {$labels.no_data_available}</div>
   {else}
@@ -334,7 +338,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {$enable_custom_fields=true}
         {$draw_submit_button=true}
 
-        {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
+        {if $bulkExec}
             {$div_id='bulk_controls'}
             {$memstatus_id="$bulk_controls_view_memory_id"}
             {include file="inc_show_hide_mgmt.tpl"
@@ -358,9 +362,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     	{/if}
 	{/if}
 
-  {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
+  {if $bulkExec}
     {include file="execute/execSetResultsBulk.inc.tpl"}
-  {else}
+  {/if}
+
+  {if $singleExec}
   	{if $tlCfg->exec_cfg->enable_test_automation && 
         $gui->remoteExecFeedback != ''}
       {include file="execute/execSetResultsRemoteExec.inc.tpl"}

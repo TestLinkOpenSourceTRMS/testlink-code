@@ -31,7 +31,7 @@ function require_web_editor($editor_type=null) {
 	  
 	switch($webEditorType) {
 		case 'ckeditor':
-    	return "../../third_party/ckeditor/ckeditor.class.php";
+    	return "ckeditor.class.php";
     break;
    
     case 'tinymce':

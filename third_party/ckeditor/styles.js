@@ -1,6 +1,6 @@
 ﻿/**
- * Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 // This file contains style definitions that can be used by CKEditor plugins.
@@ -13,7 +13,7 @@
 // ignore it. Otherwise it is strongly recommended to customize this file to match your
 // website requirements and design properly.
 //
-// For more information refer to: http://docs.ckeditor.com/#!/guide/dev_styles-section-style-rules
+// For more information refer to: https://ckeditor.com/docs/ckeditor4/latest/guide/dev_styles.html#style-rules
 
 CKEDITOR.stylesSet.add( 'default', [
 	/* Block styles */
@@ -119,19 +119,19 @@ CKEDITOR.stylesSet.add( 'default', [
 
 	{ name: 'Featured Formula', type: 'widget', widget: 'mathjax', attributes: { 'class': 'math-featured' } },
 
-	{ name: '240p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-240p' } },
-	{ name: '360p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-360p' } },
-	{ name: '480p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-480p' } },
-	{ name: '720p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-720p' } },
-	{ name: '1080p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-1080p' } },
+	{ name: '240p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-240p' }, group: 'size' },
+	{ name: '360p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-360p' }, group: 'size' },
+	{ name: '480p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-480p' }, group: 'size' },
+	{ name: '720p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-720p' }, group: 'size' },
+	{ name: '1080p', type: 'widget', widget: 'embedSemantic', attributes: { 'class': 'embed-1080p' }, group: 'size' },
 
 	// Adding space after the style name is an intended workaround. For now, there
-	// is no option to create two styles with the same name for different widget types. See #16664.
-	{ name: '240p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-240p' } },
-	{ name: '360p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-360p' } },
-	{ name: '480p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-480p' } },
-	{ name: '720p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-720p' } },
-	{ name: '1080p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-1080p' } }
+	// is no option to create two styles with the same name for different widget types. See https://dev.ckeditor.com/ticket/16664.
+	{ name: '240p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-240p' }, group: 'size' },
+	{ name: '360p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-360p' }, group: 'size' },
+	{ name: '480p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-480p' }, group: 'size' },
+	{ name: '720p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-720p' }, group: 'size' },
+	{ name: '1080p ', type: 'widget', widget: 'embed', attributes: { 'class': 'embed-1080p' }, group: 'size' }
 
 ] );
 

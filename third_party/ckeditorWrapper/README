@@ -1,0 +1,21 @@
+README - CKEditorWrapperPHP.php
+
+This file was created using the php files that were provided
+to semplify the use of CKEditor with PHP.
+The files were provided with CKEditor version 3, but it were removed since version 4.
+
+This way to work with CKEditor was confortable, then I see no reason
+to change.
+
+Original Files
+
+ckeditor.php
+  just allowed to switch between PHP4 and PHP5 versions
+
+ckeditor_php5.php
+  class implementation, I've renamed to CKEditorWrapperPHP.php
+
+ckeditor.class.php
+  was created for TestLink, and moved since version 1.9.20 
+  to the [TL INSTALL DIR]/lib/functions/  folder.
+

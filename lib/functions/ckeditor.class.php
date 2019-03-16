@@ -7,7 +7,7 @@
  *
  **/
 
-require_once("../../third_party/ckeditor/ckeditor.php");
+require_once("../../third_party/ckeditor/CKEditorPHPWrapper.php");
 
 class ckeditorInterface {
 	var $InstanceName ;

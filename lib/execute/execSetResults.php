@@ -309,11 +309,9 @@ if(!is_null($linked_tcversions)) {
         
       $gui->req_details = $req_mgr->getActiveForTCVersion($tcversion_id);
 
-      // 2018 - to be refactored
-      // $gui->relations = $tcase_mgr->getRelations($tcase_id);
       $idCard = array('tcase_id' => $tcase_id, 'tcversion_id' => $tcversion_id);
+      $gui->relations = $tcase_mgr->getTCVRelations($idCard);
 
-      $gui->relations = $tcase_mgr->getRelations($idCard);
       $gui->kw = $tcase_mgr->getKeywordsByIdCard($idCard,array('output' => 'kwfull'));
 
       if(!is_null($cts)) {

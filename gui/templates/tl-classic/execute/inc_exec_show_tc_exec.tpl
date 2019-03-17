@@ -133,13 +133,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
      			{$title_sep_type3}
      			{$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
 
-          <span style="background: white;padding: 6px 15px 6px 40px;">
           {if $gui->issueTrackerIntegrationOn}
-              <a href="javascript:open_bug_add_window({$gui->tproject_id},
-              {$gui->tplan_id},{$abs_last_exec.id},{$abs_last_exec.execution_id},0,'link')">
-              <img src="{$tlImages.bug_link_tl_to_bts}" title="{$labels.bug_link_tl_to_bts}" style="border:none" /></a>
+            <span style="background: white;padding: 6px 15px 6px 40px;">
+                <a href="javascript:open_bug_add_window({$gui->tproject_id},
+                {$gui->tplan_id},{$abs_last_exec.id},{$abs_last_exec.execution_id},0,'link')">
+                <img src="{$tlImages.bug_link_tl_to_bts}" title="{$labels.bug_link_tl_to_bts}" style="border:none" /></a>
+            </span>
           {/if}
-          </span>
 
      			</div>
 

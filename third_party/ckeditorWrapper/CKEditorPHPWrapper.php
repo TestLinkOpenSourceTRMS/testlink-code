@@ -24,8 +24,11 @@ class CKEditor
 
 	/**
 	 * A constant string unique for each release of %CKEditor.
+	 * Get it from ckeditor.js
+	 *
+	 * @see also var timestamp
 	 */
-	const timestamp = 'GB8C';
+	const timestamp = 'J1QB';
 
 	/**
 	 * URL to the %CKEditor installation directory (absolute or relative to document root).
@@ -83,8 +86,12 @@ class CKEditor
   /**
 	 * A string indicating the creation date of %CKEditor.
 	 * Do not change it unless you want to force browsers to not use previously cached version of %CKEditor.
+
+	 * Get it from ckeditor.js
+	 *
+	 * @see also const timestamp
 	 */
-	public $timestamp = "GB8C";
+	public $timestamp = "J1QB";
 	
   /**
 	 * An array that holds event listeners.

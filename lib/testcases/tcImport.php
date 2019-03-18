@@ -1084,7 +1084,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
           // getTestCaseSetFromSimpleXMLObj() first argument must be an array
           $tcData = getTestCaseSetFromSimpleXMLObj(array($target));
           if( trim($tcData[0]['name']) == '' ) {
-            $xx = array('test case has no name',lang_get('testcase_has_no_name'));
+            $xx = array(lang_get('testcase_has_no_name'),lang_get('testcase_has_no_name'));
             $resultMap = array_merge($resultMap,array($xx));
           } else {
             $resultMap = array_merge($resultMap,

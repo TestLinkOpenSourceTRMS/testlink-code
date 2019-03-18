@@ -271,8 +271,7 @@ class testcase extends tlObjectWithAttachments
   function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
                   $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
                   $execution_type = TESTCASE_EXECUTION_TYPE_MANUAL,
-                  $importance=2,$options=null)
-  {
+                  $importance=2,$options=null) {
     $status_ok = 1;
 
     $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
@@ -381,8 +380,7 @@ class testcase extends tlObjectWithAttachments
 
   */
   function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-                             $options=null)
-  {
+                             $options=null) {
     $dummy = config_get('field_size');
     $name_max_len = $dummy->testcase_name;
     $name = trim($name);
@@ -406,28 +404,21 @@ class testcase extends tlObjectWithAttachments
     $getDupOptions['check_criteria'] = ($algo_cfg->type == 'counterSuffix') ? 'like' : '=';
     $getDupOptions['access_key'] = ($algo_cfg->type == 'counterSuffix') ? 'name' : 'id';
 
-
-
     // If external ID has been provided, check if exists.
     // If answer is yes, then
     // 1. collect current info
     // 2. if $my['options']['check_duplicate_name'] is create new version
     //    change to BLOCK
     //
-    if( !is_null($my['options']['importLogic']) )
-    {
+    if( !is_null($my['options']['importLogic']) ) {
       $doQuickReturn = false;
-      switch($my['options']['importLogic']['hitCriteria'])
-      {
+      switch($my['options']['importLogic']['hitCriteria']) {
         case 'externalID':
-          if( ($sf = intval($my['options']['external_id'])) > 0 )
-          {
+          if( ($sf = intval($my['options']['external_id'])) > 0 ) {
             // check if already exists a test case with this external id
             $info = $this->get_by_external($sf, $parent_id);
-            if( !is_null($info))
-            {
-              if( count($info) > 1)
-              {
+            if( !is_null($info)) {
+              if( count($info) > 1) {
                 // abort
                 throw new Exception("More than one test case with same external ID");
               }
@@ -471,16 +462,13 @@ class testcase extends tlObjectWithAttachments
     }
 
 
-    if ($my['options']['check_duplicate_name'])
-    {
+    if ($my['options']['check_duplicate_name']) {
       $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);
 
-      if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
-      {
+      if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 ) {
         $ret['has_duplicate'] = true;
 
-        switch($my['options']['action_on_duplicate_name'])
-        {
+        switch($my['options']['action_on_duplicate_name']) {
             case 'block':
               $doCreate=false;
               $ret['status_ok'] = 0;
@@ -495,14 +483,11 @@ class testcase extends tlObjectWithAttachments
               // (this seems the best alternative)
               $my['options']['external_id'] = null;
 
-              switch($algo_cfg->type)
-              {
+              switch($algo_cfg->type) {
                 case 'stringPrefix':
                   $doIt = true;
-                  while($doIt)
-                  {
-                    if( $doIt = !is_null($itemSet) )
-                    {
+                  while($doIt) {
+                    if( $doIt = !is_null($itemSet) ) {
                       $prefix = strftime($algo_cfg->text,time());
                       $target = $prefix . " " . $name ;
                       $final_len = strlen($target);
@@ -730,25 +715,24 @@ class testcase extends tlObjectWithAttachments
 
     returns: hash
   */
-  function getDuplicatesByName($name, $parent_id, $options=null)
-  {
+  function getDuplicatesByName($name, $parent_id, $options=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 'id2exclude' => null);
     $my['options'] = array_merge($my['options'], (array)$options);
 
     $target = $this->db->prepare_string($name);
-    switch($my['options']['check_criteria'])
-    {
+    switch($my['options']['check_criteria']) {
       case '=':
       default:
         $check_criteria = " AND NHA.name = '{$target}' ";
       break;
 
       case 'like':
+        // % and _ need to be escaped, but method is different
+        // according DBMS
         $check_criteria = " AND NHA.name LIKE '{$target}%' ";
       break;
-
     }
 
     $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
@@ -760,14 +744,13 @@ class testcase extends tlObjectWithAttachments
            " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
            " AND NHA.parent_id=" . $this->db->prepare_int($parent_id) . " {$check_criteria}";
 
-    if( !is_null($my['options']['id2exclude']) )
-    {
+    if( !is_null($my['options']['id2exclude']) ) {
       $sql .= " AND NHA.id <> " . intval($my['options']['id2exclude']);
     }
 
     $rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-    if( is_null($rs) || count($rs) == 0 )
-    {
+
+    if( is_null($rs) || count($rs) == 0 ) {
       $rs=null;
     }
     return $rs;

@@ -7,7 +7,7 @@
  *
  * @filesource  tcImport.php
  * @package     TestLink
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://testlink.sourceforge.net/ 
  * 
  */
@@ -817,13 +817,12 @@ function processAttachments( &$dbHandler, $tcaseName, $xmlInternalID, $fk_Id, $t
  * 
  *
  */
-function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic)
-{
+function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic) {
   $resultMap = null;
   $xmlTCs = $simpleXMLObj->xpath('//testcase');
   $tcData = getTestCaseSetFromSimpleXMLObj($xmlTCs);
-  if ($tcData)
-  {
+
+  if ($tcData) {
     $resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
   }  
   return $resultMap;
@@ -1077,17 +1076,21 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
     $childrenNodes = $xml->children();  
     $loop2do = sizeof($childrenNodes);
     
-    for($idx = 0; $idx < $loop2do; $idx++)
-    {
+    for($idx = 0; $idx < $loop2do; $idx++) {
+
       $target = $childrenNodes[$idx];
-      switch($target->getName())
-      {
+      switch($target->getName()) {
         case 'testcase':
           // getTestCaseSetFromSimpleXMLObj() first argument must be an array
           $tcData = getTestCaseSetFromSimpleXMLObj(array($target));
-          $resultMap = array_merge($resultMap,
-                       saveImportedTCData($dbHandler,$tcData,$tproject_id,
-                                          $tsuiteID,$userID,$kwMap,$duplicateLogic));
+          if( trim($tcData[0]['name']) == '' ) {
+            $xx = array('test case has no name',lang_get('testcase_has_no_name'));
+            $resultMap = array_merge($resultMap,array($xx));
+          } else {
+            $resultMap = array_merge($resultMap,
+                         saveImportedTCData($dbHandler,$tcData,$tproject_id,
+                                            $tsuiteID,$userID,$kwMap,$duplicateLogic));
+          }
           unset($tcData);
         break;
 
@@ -1182,10 +1185,9 @@ function processTestSuiteCF(&$tsuiteMgr,$xmlObj,&$cfDefinition,&$cfValues,$tsuit
 {
 
   static $messages;
-    static $missingCfMsg;
+  static $missingCfMsg;
 
-  if(is_null($messages))
-  {
+  if(is_null($messages)) {
       $messages = array();
       $messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
         $messages['start_warning'] = lang_get('start_warning');

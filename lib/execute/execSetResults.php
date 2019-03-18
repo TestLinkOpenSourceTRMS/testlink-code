@@ -310,7 +310,7 @@ if(!is_null($linked_tcversions)) {
       $gui->req_details = $req_mgr->getActiveForTCVersion($tcversion_id);
 
       $idCard = array('tcase_id' => $tcase_id, 'tcversion_id' => $tcversion_id);
-      $gui->relations = $tcase_mgr->getTCVRelations($idCard);
+      $gui->relations = $tcase_mgr->getTCVersionRelations($idCard);
 
       $gui->kw = $tcase_mgr->getKeywordsByIdCard($idCard,array('output' => 'kwfull'));
 

@@ -52,25 +52,25 @@ switch($args->action) {
 
   case 'oauth':
     //If code is empty then break
-    if (!isset($_GET['code'])){
+    if (!isset($args->oauth_code)){
         renderLoginScreen($gui);
         die();
     }
 
     //Switch between oauth providers
-    if (!include_once('lib/functions/oauth_providers/'.$_GET['oauth'].'.php')) {
+    if (!include_once('lib/functions/oauth_providers/'.$args->oauth_name.'.php')) {
         die("Oauth client doesn't exist");
     }
 
     $oau = config_get('OAuthServers');
     foreach ($oau as $oprov) {
-      if (strcmp($oprov['oauth_name'],$_GET['oauth']) == 0){
+      if (strcmp($oprov['oauth_name'],$args->oauth_name) == 0){
         $oauth_params = $oprov;
         break;
       }
     }
 
-    $user_token = oauth_get_token($oauth_params, $_GET['code']);
+    $user_token = oauth_get_token($oauth_params, $args->oauth_code);
     if($user_token->status['status'] == tl::OK) {
       doSessionStart(true);
       $op = doAuthorize($db,$user_token->options->user,'oauth',$user_token->options);
@@ -134,6 +134,8 @@ function init_args() {
                    "loginform_token" => array(tlInputParameter::STRING_N, 0, 255),
                    "viewer" => array(tlInputParameter::STRING_N, 0, 3),
                    "oauth" => array(tlInputParameter::STRING_N,0,100),
+                   "code" => array(tlInputParameter::STRING_N,0,4000),
+                   "state" => array(tlInputParameter::STRING_N,0,100),
                   );
   $pParams = R_PARAMS($iParams);
 
@@ -155,8 +157,15 @@ function init_args() {
     $args->action = $pParams['action'];
   } else if (!is_null($args->login)) {
     $args->action = 'doLogin';
+  // This 'if' branch may be removed in later versions. Kept for compatibility    
   } else if (!is_null($pParams['oauth']) && $pParams['oauth']) {
     $args->action = 'oauth';
+    $args->oauth_name = $pParams['oauth'];
+    $args->oauth_code = $pParams['code'];
+  } else if (!is_null($pParams['state']) && !is_null($pParams['code'])) {
+    $args->action = 'oauth';
+    $args->oauth_name = $pParams['state'];
+    $args->oauth_code = $pParams['code'];
   } else {
     $args->action = 'loginform';
   }

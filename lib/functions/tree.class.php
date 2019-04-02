@@ -937,10 +937,10 @@ class tree extends tlObject
                  " FROM {$this->object_table} AS NH_TC " .
                  " {$my['options']['addJoin']} " .
                  " JOIN {$this->tables['req_coverage']} RC " .
-                 " ON RC.testcase_id = id " .
+                 " ON RC.testcase_id = NH_TC.id " .
                  " WHERE RC.req_id = {$node_id} " .
                  " {$my['filters']['additionalWhereClause']}" .
-                 " ORDER BY node_order,id";
+                 " ORDER BY NH_TC.node_order,NH_TC.id";
         break;
 
       }

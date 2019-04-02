@@ -6,7 +6,7 @@
  * @filesource  specview.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2004-2018, TestLink community 
+ * @copyright   2004-2019, TestLink community 
  * @link        http://www.testlink.org
  *
  *
@@ -485,8 +485,9 @@ function getFilteredLinkedVersions(&$dbHandler,&$argsObj, &$tplanMgr, &$tcaseMgr
   // get_*_tcversions filters by keyword ALWAYS in OR mode.
   //
   $filters = array('keyword_id' => $argsObj->keyword_id, 'platform_id' => null);
-  if( property_exists($argsObj,'control_panel') && intval($argsObj->control_panel['setting_platform']) > 0 )
-  {
+  if( property_exists($argsObj,'control_panel') && 
+      isset($argsObj->control_panel['setting_platform']) && 
+      intval($argsObj->control_panel['setting_platform']) > 0 ) {
     $filters['platform_id'] = intval($argsObj->control_panel['setting_platform']);
   }          
   

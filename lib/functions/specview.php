@@ -175,10 +175,8 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   
   // transform in array to be gentle with getTestSpecFromNode()
   $t2a = array('importance','status');
-  foreach($t2a as $tortuga)
-  {
-    if(!is_null($pfFilters[$tortuga]))
-    {
+  foreach($t2a as $tortuga) {
+    if(!is_null($pfFilters[$tortuga])) {
       $pfFilters[$tortuga] = (array)$pfFilters[$tortuga];
     }  
   }  
@@ -681,7 +679,6 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  * 
  * @return array map with view (test cases subtree)
  * 
- * @internal revisions
  *
  */
 function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContainerId,$nodeId,$specViewType,$filters, $type='spec_order')
@@ -692,8 +689,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   $tobj_mgr = new testproject($dbHandler);
 
   $opt = array('order_cfg' => array("type" =>$type)); 
-  if($specViewType =='testplan')
-  {
+  if($specViewType =='testplan') {
     $opt['order_cfg']=array("type" =>'exec_order', 'tplan_id' => $masterContainerId);  
   }
   $test_spec = $tobj_mgr->get_subtree($nodeId,null,$opt);
@@ -701,54 +697,48 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
   $key2loop = null;
   $useAllowed = false;
   
-  $nullCheckFilter = array('tcase_id' => false, 'importance' => false,'tcase_name' => false, 
-                           'cfields' => false, 'status' => false);
+  $nullCheckFilter = array('tcase_id' => false, 'importance' => false,
+    'tcase_name' => false, 'cfields' => false, 'status' => false);
 
   $zeroNullCheckFilter = array('execution_type' => false);
   $useFilter = array('keyword_id' => false) + $nullCheckFilter + $zeroNullCheckFilter;
 
   $applyFilters = false;
 
-  foreach($nullCheckFilter as $key => $value)
-  {
+  foreach($nullCheckFilter as $key => $value) {
     $useFilter[$key] = !is_null($filters[$key]);
     $applyFilters = $applyFilters || $useFilter[$key];
   }
 
   // more specif analisys
-  if( ($useFilter['status']=($filters['status'][0] > 0)) )
-  {
+  if( ($useFilter['status']=($filters['status'][0] > 0)) ) {
     $applyFilters = true;
     $filtersByValue['status'] = array_flip((array)$filters['status']);
   }
   
-  if( ($useFilter['importance']=($filters['importance'][0] > 0)) )
-  {
+  if( ($useFilter['importance']=($filters['importance'][0] > 0)) ) {
     $applyFilters = true;
     $filtersByValue['importance'] = array_flip((array)$filters['importance']);
   }  
 
 
-  foreach($zeroNullCheckFilter as $key => $value)
-  {
+  foreach($zeroNullCheckFilter as $key => $value) {
     // need to check for > 0, because for some items 0 has same meaning that null -> no filter
     $useFilter[$key] = (!is_null($filters[$key]) && ($filters[$key] > 0));
     $applyFilters = $applyFilters || $useFilter[$key];
   }
 
-  if( $useFilter['tcase_id'] )
-  {
+  if( $useFilter['tcase_id'] ) {
     $testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
   }
   
-  if(!is_array($filters['keyword_id']) ) 
-  {
+  if(!is_array($filters['keyword_id']) ) {
     $filters['keyword_id'] = array($filters['keyword_id']);
   }
 
   if(($useFilter['keyword_id']=$filters['keyword_id'][0] > 0)) {
     $applyFilters = true;
-    switch ($specViewType){
+    switch ($specViewType) {
       case 'testplan':
         $tobj_mgr = new testplan($dbHandler); 
         $tck_map = $tobj_mgr->getKeywordsLinkedTCVersions($masterContainerId,
@@ -760,28 +750,22 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
                                                    $filters['keyword_id']);
       break;
     }
-
-
   }  
 
 
-  if( $applyFilters )
-  {
+  if( $applyFilters ) {
     $key2loop = array_keys($test_spec);
     
     // first step: generate list of TEST CASE NODES
     $itemSet = null ;
-    foreach($key2loop as $key)
-    {
-      if( ($test_spec[$key]['node_type_id'] == $filters['tcase_node_type_id']) )
-      {
+    foreach($key2loop as $key) {
+      if( ($test_spec[$key]['node_type_id'] == $filters['tcase_node_type_id']) ) {
         $itemSet[$test_spec[$key]['id']] = $key; 
       }
     }
     $itemKeys = $itemSet;
 
-    foreach($itemKeys as $key => $tspecKey)
-    {
+    foreach($itemKeys as $key => $tspecKey) {
       // case insensitive search 
       if( ($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) ||
           ($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) ||
@@ -796,62 +780,49 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     if( count($itemSet) > 0 && 
         ($useFilter['execution_type'] || $useFilter['importance'] || $useFilter['cfields'] || 
          $useFilter['status']) 
-      )
-    {
+      ) {
       // This logic can have some Potential Performance ISSUE - 20120619 - fman
       $targetSet = array_keys($itemSet);
       $options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
 
       $getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
       $s2h = config_get('tplanDesign')->hideTestCaseWithStatusIn;
-      if( !is_null($s2h) )
-      {
+      if( !is_null($s2h) ) {
         $getFilters['status'] = array('not_in' => array_keys($s2h));   
       }
       
       //var_dump($getFilters);
       $tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
       
-      switch($specViewType)
-      {
+      switch($specViewType) {
         case 'testPlanLinking':
           // We need to analise linked items and spec
-          foreach($targetSet as $idx => $key)
-          {
+          foreach($targetSet as $idx => $key) {
             $targetTestCase = isset($tcversionSet[$key]) ? $tcversionSet[$key]['testcase_id'] : null;     
 
-            if( is_null($targetTestCase) )
-            {
+            if( is_null($targetTestCase) ) {
               $test_spec[$itemSet[$key]]=null;
               $item = null;
-            }
-            else 
-            {
-              if( isset($linkedItems[$targetTestCase]) )
-              {
+            } else {
+              if( isset($linkedItems[$targetTestCase]) ) {
                 $item = current($linkedItems[$targetTestCase]);
-              }
-              else
-              {
+              } else {
                 // hmmm, does not understand this logic.
                 $item = null;
-                if( isset($test_spec[$itemSet[$targetTestCase]]) )
-                {
+                if( isset($test_spec[$itemSet[$targetTestCase]]) ) {
                   $item = $tcversionSet[$targetTestCase];
                 }
               }
             }
 
-            if( !is_null($item) )
-            {
+            if( !is_null($item) ) {
               if( $useFilter['execution_type'] && 
                     ($item['execution_type'] != $filters['execution_type']) || 
                   $useFilter['importance'] && 
                     (!isset($filtersByValue['importance'][$item['importance']])) || 
                   $useFilter['status'] && 
                     (!isset($filtersByValue['status'][$item['status']])) 
-                )
-              {
+                ) {
                 $tspecKey = $itemSet[$targetTestCase];  
                 $test_spec[$tspecKey]=null; 
               }
@@ -861,8 +832,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
         
         default:
           $tcvidSet = array_keys($tcversionSet);
-          foreach($tcvidSet as $zx)
-          {
+          foreach($tcvidSet as $zx) {
             $tcidSet[$tcversionSet[$zx]['testcase_id']] = $zx;  
           }  
 
@@ -873,39 +843,32 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
           // a first clean will not be bad, ok may be we are going to do more 
           // loops that needed, but think logic will be more clear 
           // (at least @20130426 is a little bit confusing ;) )
-          foreach($targetSet as $idx => $key)
-          {
-            if( !isset($tcidSet[$key]) )
-            {
+          foreach($targetSet as $idx => $key) {
+            if( !isset($tcidSet[$key]) ) {
               $test_spec[$itemSet[$key]]=null;
             }
           }
 
-          if( $useFilter['execution_type'] )
-          {
+          if( $useFilter['execution_type'] ) {
             // Potential Performance ISSUE
             $allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['execution_type'],$options);
             $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
           }
 
-          if( $doFilter )
-          {
+          if( $doFilter ) {
             // Add another filter on cascade mode
             // @20130426 - seems we are applying TWICE the Custom Fields Filter
             // because we have applied it before on:
             // $tcversionSet = $tcaseMgr->get_last_active_version()
-            if( $useFilter['cfields'] )
-            {
+            if( $useFilter['cfields'] ) {
               $filteredSet = (!is_null($allowedSet) &&  count($allowedSet) > 0) ? array_keys($allowedSet) : $tcvidSet;
               $dummySet = $tcaseMgr->filter_tcversions_by_cfields($filteredSet,$filters['cfields'],$options);
 
               // transform to make compatible with filter_tcversions_by_exec_type() return type
-              if( !is_null($dummySet) &&  count($dummySet) > 0 )
-              {
+              if( !is_null($dummySet) &&  count($dummySet) > 0 ) {
                 $allowedSet = null;
                 $work2do = array_keys($dummySet);
-                foreach($work2do as $wkey)
-                {
+                foreach($work2do as $wkey) {
                   $allowedSet[$wkey] = $dummySet[$wkey][0];
                 }
                 unset($dummySet);
@@ -913,11 +876,9 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
             }
           }
           
-          if( !is_null($allowedSet) &&  count($allowedSet) > 0 )
-          {
+          if( !is_null($allowedSet) &&  count($allowedSet) > 0 ) {
             $useAllowed = true;
-            foreach($allowedSet as $key => $value)
-            {
+            foreach($allowedSet as $key => $value) {
               $tspecKey = $itemSet[$value['testcase_id']];  
               $test_spec[$tspecKey]['version']=$value['version']; 
             }
@@ -925,10 +886,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
           }
              
           $setToRemove = array_diff_key($tcversionSet,$allowedSet);
-          if( !is_null($setToRemove) &&  count($setToRemove) > 0 )
-          {
-            foreach($setToRemove as $key => $value)
-            {
+          if( !is_null($setToRemove) &&  count($setToRemove) > 0 ) {
+            foreach($setToRemove as $key => $value) {
               $tspecKey = $itemSet[$value['testcase_id']];  
               $test_spec[$tspecKey]=null; 
             }

@@ -133,12 +133,21 @@ if($do_display) {
 
   // Add Test Cases to Test plan - Right pane does not honor custom field filter
   // filter by test case execution type
-  $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 
-                   'exec_type' => $args->executionType, 'importance' => $args->importance,
-                   'cfields' => $args->control_panel['filter_custom_fields'],
+  $filters = array('keywords' => $args->keyword_id, 
+                   'testcases' => $testCaseSet, 
+                   'exec_type' => $args->executionType, 
+                   'importance' => $args->importance,
                    'workflow_status' => $args->workflow_status,
-                   'tcase_name' => $args->control_panel['filter_testcase_name']);
+                   'cfields' => null, 'tcase_name' => null);
 
+  if( isset($args->control_panel['filter_custom_fields']) ) {
+    $filters['cfields'] = $args->control_panel['filter_custom_fields']; 
+  }
+
+  if( isset($args->control_panel['filter_testcase_name']) ) {
+    $filters['tcase_name'] = 
+      $args->control_panel['filter_testcase_name']; 
+  }
 
   $out = gen_spec_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$tsuite_data['name'],
                        $tplan_linked_tcversions,null,$filters,$opt);

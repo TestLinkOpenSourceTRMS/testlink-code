@@ -845,7 +845,15 @@ GROUP BY RSR.parent_id,RS.testproject_id;
 CREATE OR REPLACE VIEW /*prefix*/tcversions_without_keywords
 AS SELECT
    NHTCV.parent_id AS testcase_id,
-   NHTCV.id AS `id`
+   NHTCV.id AS id
 FROM /*prefix*/nodes_hierarchy NHTCV 
-WHERE NHTCV.node_type_id = 4 and 
-not(exists(select 1 from /*prefix*/testcase_keywords TCK where `TCK`.`tcversion_id` = `NHTCV`.`id`));
+WHERE NHTCV.node_type_id = 4 AND
+NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_keywords TCK 
+           WHERE TCK.tcversion_id = NHTCV.id));
+
+
+# 
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan 
+AS SELECT tcversion_id, testplan_id, MAX(id) AS id 
+FROM /*prefix*/executions 
+GROUP BY tcversion_id,testplan_id

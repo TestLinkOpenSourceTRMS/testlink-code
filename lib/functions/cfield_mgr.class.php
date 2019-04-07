@@ -1752,23 +1752,20 @@ function name_is_unique($id,$name)
         $sql = " SELECT value,field_id,execution_id " .
                " FROM {$this->tables['cfield_execution_values']} " . $where_clause;
 
-        $rs = $this->db->get_recordset($sql); 			   
+        $rs = (array)$this->db->get_recordset($sql); 			   
 
         // max_length_value = 0 => no limit
-        if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
-        {
+        if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value) {
            $value = substr($value,0,$this->max_length_value);
         }
         $safe_value=$this->db->prepare_string($value);
 
-        if( count($rs) > 0 && $value != "")   //$this->db->num_rows($result) > 0 )
-        {
+        $howMany = count($rs);
+        if( $howMany > 0 && $value != "" ) {
           $sql = " UPDATE {$this->tables['cfield_execution_values']} " .
                  " SET value='{$safe_value}' " .   $where_clause;
     	    $this->db->exec_query($sql);      
-        }
-        else if (count($rs) == 0 && $value != "")
-        {
+        } else if( $howMany == 0 && $value != "" ) {
 
           # Remark got from Mantis code:
   		    # Always store the value, even if it's the default value
@@ -1779,9 +1776,7 @@ function name_is_unique($id,$name)
   			         " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
 		      $this->db->exec_query($sql);
         
-        } 
-        else if (count($rs) > 0 && $value == "") 
-        {
+        } else if( $howMany > 0 && $value == "") {
   			  $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " . $where_clause;
   			  $this->db->exec_query($sql);
   		  }

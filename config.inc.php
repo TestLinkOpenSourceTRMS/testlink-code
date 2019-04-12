@@ -102,10 +102,6 @@ define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
 // null or '' => do not use
 $tlCfg->custom_css = null;
 
-// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
-define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
-
-
 /** Include constants and magic numbers (users should not change it)*/
 require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
@@ -119,6 +115,7 @@ $tlCfg->instance_name = 'Main TestLink Instance';
 // do not use blanks or special characters, use a short string
 $tlCfg->instance_id = 'TLM';
 
+$tlCfg->gui->ux = 'tl-classic';
 
 /**
  * Copied from MantisBT
@@ -441,32 +438,57 @@ $tlCfg->noExpDateUsers = array('admin');
 
 $tlCfg->OAuthServers = array();
 
-// Google
 // $tlCfg->OAuthServers = array();
-// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
-// $tlCfg->OAuthServers[1]['oauth_name'] = 'google';
-
-// Get from /gui/themes/default/images
-// $tlCfg->OAuthServers[1]['oauth_icon'] = 'google.png'; 
+//
+// Google
+//
 // $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
+// $tlCfg->OAuthServers[1]['redirect_uri'] = 'REDIRECT URI';
+//
+// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
+// $tlCfg->OAuthServers[1]['oauth_name'] = 'google';
+//
+// Get from /gui/themes/default/images
+// $tlCfg->OAuthServers[1]['oauth_icon'] = 'google.png'; 
+//
 // Can be authorization_code (by default), client_credentials or password
 // $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
 // $tlCfg->OAuthServers[1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
 // $tlCfg->OAuthServers[1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
-// false => then the only user will be selected automatically (applied for google)
-// $tlCfg->OAuthServers[1]['oauth_force_single'] = false; 
-// the domain you want to whitelist
+//
+// Default: true
+// false => if in the Browser there is JUST one user already logged in 
+// to google, then this user will be selected automatically
+//
+// $tlCfg->OAuthServers[1]['oauth_force_single'] = true; 
+//
+// 
+// ATTENTION - Optional
+// the domain you want to whitelist.
+// if your email is a gmail account and you use the following config
+//
 // $tlCfg->OAuthServers[1]['oauth_domain'] = 'google.com'; 
+//
+// then this check will block you!
+//
+//
+//
 // $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
 // $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-
+//
+//
 // Github
-// $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
-// $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
-// $tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
 // $tlCfg->OAuthServers[2]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'CLIENT_SECRET';
+// $tlCfg->OAuthServers[2]['redirect_uri'] = 'REDIRECT URI';
+//
+// $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
+// $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
+//
+// Get from /gui/themes/default/images
+//
+// $tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png'; 
 
 // Can be authorization_code (by default), client_credentials or password
 // $tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
@@ -1924,8 +1946,8 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
  * See example below        
  */
 $g_tpl = array('inc_exec_controls' => 'inc_exec_img_controls.tpl');
-//$g_tpl = array('inc_exec_controls' => 'inc_exec_controls.tpl');
- 
+$g_tpl['login'] = 'login/login-model-marcobiedermann.tpl';
+
 
 // Example 
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',

@@ -9,7 +9,7 @@
  * @filesource	tlsmarty.inc.php
  * @package 	  TestLink
  * @author 		  Martin Havlat
- * @copyright 	2005-2018, TestLink community 
+ * @copyright 	2005-2019, TestLink community 
  * @link 		    http://www.testlink.org/
  * @link 		    http://www.smarty.net/ 
  *
@@ -154,9 +154,10 @@ class TLSmarty extends Smarty {
     $this->assign('use_custom_css', 0);
     if(!is_null($tlCfg->custom_css) && $tlCfg->custom_css != '') {
       $this->assign('use_custom_css', 1);
-      $this->assign('custom_css', $basehref . TL_TESTLINK_CUSTOM_CSS);
+      $this->assign('custom_css', 
+        $basehref . TL_THEME_CSS_DIR . $tlCfg->custom_css);
     }
-    
+        
     $this->assign('locale', $my_locale);
      
     //

@@ -102,10 +102,6 @@ define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
 // null or '' => do not use
 $tlCfg->custom_css = null;
 
-// if you do not want to use this, redefine $tlCfg->custom_css as '' or null
-define('TL_TESTLINK_CUSTOM_CSS', TL_THEME_CSS_DIR . $tlCfg->custom_css);
-
-
 /** Include constants and magic numbers (users should not change it)*/
 require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 

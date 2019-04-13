@@ -23,7 +23,7 @@ require_once('attachments.inc.php');
  * 
  * @return array map of 'status_code' => localized string
  **/
-function createResultsMenu() {
+function createResultsMenu($statusToExclude = null) {
   $resultsCfg = config_get('results');
   
   // Fixed values, that has to be added always
@@ -40,6 +40,11 @@ function createResultsMenu() {
     $menu_data[$code] = lang_get($status_label); 
   }
   
+  if( null != $statusToExclude ) {
+    foreach($statusToExclude as $code) {
+      unset($menu_data[$code]);
+    }
+  }
   return $menu_data;
 }
   

@@ -2353,10 +2353,8 @@ function helperLabels($haystack) {
  */
 function initExecValuesMenus($tcStatusCfg, $execStatusToExclude) {
 
-  $execStatusTestCase = $execStatusTestCaseStep = createResultsMenu();
-
-  $execStatusTestCase[$tcStatusCfg['not_run']] = '';
-  $execStatusTestCaseStep[$tcStatusCfg['not_run']] = '';
+  $remove = array($tcStatusCfg['not_run']);
+  $execStatusTestCase = $execStatusTestCaseStep = createResultsMenu($remove);
 
   foreach($execStatusToExclude['testcase'] as $code) {  
     if( isset($execStatusTestCase[$code]) ) {
@@ -2372,3 +2370,4 @@ function initExecValuesMenus($tcStatusCfg, $execStatusToExclude) {
 
   return array($execStatusTestCase,$execStatusTestCaseStep);
 }
+

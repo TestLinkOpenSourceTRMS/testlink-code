@@ -7,9 +7,18 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 {include file="inc_head.tpl" openHead='yes' editorType=$gui->editorType}
 {include file="inc_ext_js.tpl"}
-</head>
 
-<body onUnload="storeWindowSize('ExecEditPopup')">
+{* need by refresh on upload logic used when this template is called while executing *}
+
+{if $gui->bodyOnLoad != ''}
+<script language="JavaScript">
+var {$gui->dialogName} = new std_dialog();
+</script>  
+{/if}
+</head>
+<body onLoad="{$gui->bodyOnLoad}"
+      onUnload="storeWindowSize('ExecEditPopup');{$gui->bodyOnUnload}">
+
 <h1 class="title">{lang_get s='title_execution_notes'}</h1>
 <div class="workBack">
   <form method="post">
@@ -39,7 +48,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <div class="groupBtn">
       <input type="hidden" name="doAction" value="doUpdate" />
       <input type="submit" value="{lang_get s='btn_save'}" />
-      <input type="button" value="{lang_get s='btn_close'}" onclick="window.close()" />
+      <input type="button" value="{lang_get s='btn_close'}" 
+             onclick="window.close()" />
     </div>
   </form>
 </div>

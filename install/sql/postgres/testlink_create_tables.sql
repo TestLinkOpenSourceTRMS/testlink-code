@@ -230,8 +230,8 @@ CREATE UNIQUE INDEX /*prefix*/execution_tcsteps_uidx1 ON  /*prefix*/execution_tc
 CREATE TABLE /*prefix*/execution_tcsteps_wip (
    "id" BIGSERIAL NOT NULL ,
    "tcstep_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcsteps (id),
-   "testplan_id" int(10) INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
-   "platform_id" int(10) INTEGER NOT NULL DEFAULT '0',
+   "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+   "platform_id" INTEGER NOT NULL DEFAULT '0',
    "build_id" INTEGER NOT NULL DEFAULT '0',
    "tester_id" BIGINT NULL DEFAULT NULL,
    "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),

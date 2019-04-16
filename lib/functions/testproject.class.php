@@ -3402,11 +3402,11 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
 
   if( $getWithOutKeywords && $hasTCases) {  
     $sql = " /* WITHOUT KEYWORDS */ " . 
-           " SELECT testcase_id FROM 
+           " SELECT TCVNO_KW.testcase_id FROM
              {$this->views['tcversions_without_keywords']} TCVNO_KW " .  
            " JOIN {$this->views['latest_tcase_version_id']} LTVC " .
            " ON LTVC.tcversion_id = TCVNO_KW.id " .
-           " WHERE testcase_id IN (" . $inTCaseClause . ") ";
+           " WHERE TCVNO_KW.testcase_id IN (" . $inTCaseClause . ") ";
 
   } else {  
     $kwFilter = " keyword_id IN (" . implode(',',$keySet) . ")";            

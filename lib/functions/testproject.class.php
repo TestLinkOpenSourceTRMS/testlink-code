@@ -3291,129 +3291,60 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
 
 
 /**
- * get just test case id filtered by keywords  
- * developed to be used on test spec tree generation
- *
- *
- * @internal revisions
- * @since 1.9.8
- * -1 => WITHOUT KEYWORDS
- * 
- */
-function DEPRECATED_getTCasesFilteredByKeywords($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
-{
-  $keySet = (array)$keyword_id;
-  $sql = null;
-
-  $tcaseSet = array();
-  if(in_array(-1,$keySet) || $keyword_filter_type == 'NotLinked')
-  {  
-    $this->get_all_testcases_id($testproject_id,$tcaseSet);
-  }
-  $hasTCases = count($tcaseSet) > 0;
-
-  if(in_array(-1,$keySet) && $hasTCases)
-  {  
-    $sql = " /* WITHOUT KEYWORDS */ " . 
-           " SELECT NHTC.id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NHTC " .  
-           " WHERE NHTC.id IN (" . implode(',',$tcaseSet) . ") AND NOT EXISTS " .
-           " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK WHERE TCK.testcase_id = NHTC.id) ";
-  }
-  else
-  {  
-    $keyword_filter = " keyword_id IN (" . implode(',',$keySet) . ")";            
-
-    switch($keyword_filter_type)
-    {
-
-      case 'NotLinked':
-        if($hasTCases)
-        {
-          $sql = " /* WITHOUT SPECIFIC KEYWORDS */ " . 
-                 " SELECT NHTC.id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NHTC " .  
-                 " WHERE NHTC.id IN (" . implode(',',$tcaseSet) . ") " .
-                 " AND NOT EXISTS " .
-                 " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK " . 
-                 "  WHERE TCK.testcase_id = NHTC.id AND {$keyword_filter} )";
-        } 
-      break;
-
-
-      case 'And':
-        $sql = " /* Filter Type = AND */ " .
-               " SELECT FOXDOG.testcase_id FROM " .
-               " ( SELECT COUNT(testcase_id) AS HITS,testcase_id " .
-               "   FROM {$this->tables['testcase_keywords']} " .
-               "   WHERE {$keyword_filter} " .
-               "   GROUP BY testcase_id ) AS FOXDOG " . 
-               " WHERE FOXDOG.HITS = " . count($keyword_id );
-      break;
-
-
-      case 'Or':
-      default:
-        $sql = " /* Filter Type = OR */ " .
-               " SELECT testcase_id " .
-               " FROM {$this->tables['testcase_keywords']} " .
-               " WHERE {$keyword_filter} ";
-      break;
-    }
-  }
-
-  $hits = !is_null($sql) ? $this->db->fetchRowsIntoMap($sql,'testcase_id') : null;
-  return $hits;
-}
-
-
-/**
  *
  * -1 => WITHOUT KEYWORDS
  * 
- * 20180615
  */
-function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyword_filter_type='Or')
-{
+function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyword_filter_type='Or') {
   $keySet = (array)$keyword_id;
   $sql = null;
-
   $tcaseSet = array();
+  $delTT = false;
+  $hasTCases = false;
 
   // -1 => WITHOUT KEYWORDS
   $getWithOutKeywords = in_array(-1,$keySet); 
   if( $getWithOutKeywords || $keyword_filter_type == 'NotLinked') {  
-    $this->get_all_testcases_id($tproject_id,$tcaseSet);
-  }
 
-  $inTCaseClause = '';
-  if( ($hasTCases = count($tcaseSet) > 0) ) {
-    $inTCaseClause = implode(',',$tcaseSet);    
+    $this->get_all_testcases_id($tproject_id,$tcaseSet);
+    if( ($hasTCases = count($tcaseSet) > 0) ) {
+      $delTT = true;
+      $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
+      $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS 
+              ( SELECT id FROM {$this->tables['nodes_hierarchy']} 
+                LIMIT 0 )";
+      $this->db->exec_query($sql);
+      $a4ins = array_chunk($tcaseSet, 2000); // MAGIC
+      foreach($a4ins as $chu) {
+        $sql = "INSERT INTO $tt (id) VALUES (" .
+               implode('),(',$chu) . ")"; 
+        $this->db->exec_query($sql);
+      }
+    }
   }
-  
 
   if( $getWithOutKeywords && $hasTCases) {  
-    $sql = " /* WITHOUT KEYWORDS */ " . 
-           " SELECT TCVNO_KW.testcase_id FROM
-             {$this->views['tcversions_without_keywords']} TCVNO_KW " .  
-           " JOIN {$this->views['latest_tcase_version_id']} LTVC " .
-           " ON LTVC.tcversion_id = TCVNO_KW.id " .
-           " WHERE TCVNO_KW.testcase_id IN (" . $inTCaseClause . ") ";
-
+    $sql = " /* WITHOUT KEYWORDS */  
+             SELECT TCVNO_KW.testcase_id FROM
+             {$this->views['tcversions_without_keywords']} TCVNO_KW   
+             JOIN {$this->views['latest_tcase_version_id']} LTVC
+             ON LTVC.tcversion_id = TCVNO_KW.id
+             JOIN $tt TT ON TT.id = TCVNO_KW.testcase_id ";
   } else {  
-    $kwFilter = " keyword_id IN (" . implode(',',$keySet) . ")";            
-
+    $kwFilter = " keyword_id IN (" . implode(',',$keySet) . ")";
     switch($keyword_filter_type) {
       case 'NotLinked':
         if($hasTCases) {
-          $sql = " /* WITHOUT SPECIFIC KEYWORDS */ " . 
-                 " SELECT NHTCV.parent_id AS testcase_id " . 
-                 " FROM {$this->tables['nodes_hierarchy']} NHTCV " .  
-                 " JOIN {$this->views['latest_tcase_version_id']} LTCV " .
-                 " ON NHTCV.id = LTCV.tcversion_id" .
-                 " WHERE NHTCV.parent_id IN (" . $inTCaseClause . ") " .
-                 " AND NOT EXISTS " .
-                 " (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK " . 
-                 "  WHERE TCK.tcversion_id = LTCV.tcversion_id " .
-                 "  AND {$kwFilter} )";
+          $sql = " /* WITHOUT SPECIFIC KEYWORDS */  
+                   SELECT NHTCV.parent_id AS testcase_id  
+                   FROM {$this->tables['nodes_hierarchy']} NHTCV   
+                   JOIN {$this->views['latest_tcase_version_id']} LTCV 
+                   ON NHTCV.id = LTCV.tcversion_id 
+                   JOIN $tt TT ON TT.id = NHTCV.parent_id 
+                   WHERE NOT EXISTS
+                   (SELECT 1 FROM {$this->tables['testcase_keywords']} TCK  
+                   WHERE TCK.tcversion_id = LTCV.tcversion_id 
+                   AND {$kwFilter} )";
         } 
       break;
 
@@ -3457,6 +3388,13 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
   }
 
   $hits = !is_null($sql) ? $this->db->fetchRowsIntoMap($sql,'testcase_id') : null;
+
+  // clean up
+  if( $delTT ) {
+    $sql = "DROP TABLE IF EXISTS $tt";
+    $this->db->exec_query($sql);
+  }
+
   return $hits;
 }
 

@@ -90,8 +90,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
   $nodeSet = $dbHandler->get_recordset($sql);
        
-  if($show_tcases)
-  {  
+  if($show_tcases) {  
     // Get external id, used on test case nodes   
     $sql =  " SELECT DISTINCT tc_external_id,NHA.parent_id " .
             " FROM {$tables['tcversions']} TCV " .
@@ -101,12 +100,8 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     $external = $dbHandler->fetchRowsIntoMap($sql,'parent_id');
   }
     
-  if(!is_null($nodeSet)) 
-  {
-    $tproject_mgr = new testproject($dbHandler);
-    
-    foreach($nodeSet as $key => $row)
-    {
+  if(!is_null($nodeSet)) {
+    foreach($nodeSet as $key => $row) {
       $path['text'] = htmlspecialchars($row['name']);
       $path['id'] = $row['id'];                                                           
       
@@ -130,7 +125,10 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
         break;
               
         case 'testsuite':
-          $tcase_qty = $tproject_mgr->count_testcases($row['id']);
+          $items = array();
+          getAllTCasesID($row['id'],$items);
+          $tcase_qty = sizeof($items);
+
           $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
           $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
         break;
@@ -171,3 +169,36 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
   }
   return $nodes;                                                                             
 }
+
+
+/**
+ *
+ */
+function getAllTCasesID($idList,&$tcIDs) {
+
+  global $db;  // I'm sorry for the global coupling
+  $tcNodeTypeID = 3;
+  $tsuiteNodeTypeID = 2;
+
+  $tbl = DB_TABLE_PREFIX . 'nodes_hierarchy';
+  $sql = " SELECT id,node_type_id FROM $tbl 
+           WHERE parent_id IN ($idList)
+           AND node_type_id IN (3,2) "; 
+    
+  $result = $db->exec_query($sql);
+  if ($result) {
+      $suiteIDs = array();
+      while($row = $db->fetch_array($result)) {
+        if ($row['node_type_id'] == $tcNodeTypeID) {
+            $tcIDs[] = $row['id'];
+        } else {
+          $suiteIDs[] = $row['id'];
+        }
+      }
+      if (sizeof($suiteIDs)) {
+        $suiteIDs  = implode(",",$suiteIDs);
+        getAllTCasesID($suiteIDs,$tcIDs);
+      }
+   }  
+}
+

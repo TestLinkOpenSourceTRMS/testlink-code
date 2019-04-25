@@ -20,4 +20,10 @@ CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_context AS
   FROM /*prefix*/executions 
   GROUP BY tcversion_id,testplan_id,build_id,platform_id
 );
+
+
+CREATE INDEX /*prefix*/nodes_hierarchy_node_type_id ON /*prefix*/nodes_hierarchy ("node_type_id");
+CREATE INDEX /*prefix*/idx02_testcase_keywords ON /*prefix*/testcase_keywords ("tcversion_id");
+
+
 -- END

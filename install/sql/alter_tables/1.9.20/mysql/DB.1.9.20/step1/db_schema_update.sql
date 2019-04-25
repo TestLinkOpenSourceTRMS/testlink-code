@@ -18,4 +18,7 @@ CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_context
 AS SELECT tcversion_id, testplan_id,build_id,platform_id,max(id) AS id
 FROM /*prefix*/executions 
 GROUP BY tcversion_id,testplan_id,build_id,platform_id;
+
+
+
 # END

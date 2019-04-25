@@ -317,7 +317,8 @@ CREATE TABLE /*prefix*/nodes_hierarchy (
   `node_type_id` int(10) unsigned NOT NULL default '1',
   `node_order` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`),
-  KEY /*prefix*/pid_m_nodeorder (`parent_id`,`node_order`)
+  KEY /*prefix*/pid_m_nodeorder (`parent_id`,`node_order`),
+  KEY /*prefix*/nodes_hierarchy_node_type_id (`node_type_id`)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -435,7 +436,8 @@ CREATE TABLE /*prefix*/testcase_keywords (
   `tcversion_id` int(10) unsigned NOT NULL default '0', 
   `keyword_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY /*prefix*/idx01_testcase_keywords (`testcase_id`,`tcversion_id`,`keyword_id`)
+  UNIQUE KEY /*prefix*/idx01_testcase_keywords (`testcase_id`,`tcversion_id`,`keyword_id`),
+  KEY /*prefix*/idx02_testcase_keywords (`tcversion_id`)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE /*prefix*/tcversions (

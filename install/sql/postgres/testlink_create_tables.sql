@@ -44,6 +44,7 @@ CREATE TABLE /*prefix*/nodes_hierarchy(
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX /*prefix*/nodes_hierarchy_pid_m_nodeorder ON /*prefix*/nodes_hierarchy ("parent_id","node_order");
+CREATE INDEX /*prefix*/nodes_hierarchy_node_type_id ON /*prefix*/nodes_hierarchy ("node_type_id");
 
 --
 --
@@ -604,6 +605,7 @@ CREATE TABLE /*prefix*/testcase_keywords(
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/idx01_testcase_keywords ON /*prefix*/testcase_keywords ("testcase_id","tcversion_id","keyword_id");
+CREATE INDEX /*prefix*/idx02_testcase_keywords ON /*prefix*/testcase_keywords ("tcversion_id");
 
 
 --

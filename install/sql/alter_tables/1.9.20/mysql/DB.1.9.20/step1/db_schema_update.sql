@@ -19,6 +19,7 @@ AS SELECT tcversion_id, testplan_id,build_id,platform_id,max(id) AS id
 FROM /*prefix*/executions 
 GROUP BY tcversion_id,testplan_id,build_id,platform_id;
 
-
+ALTER TABLE /*prefix*/nodes_hierarchy ADD INDEX /*prefix*/nodes_hierarchy_node_type_id (`node_type_id`);
+ALTER TABLE /*prefix*/testcase_keywords ADD INDEX /*prefix*/idx02_testcase_keywords (`tcversion_id`);
 
 # END

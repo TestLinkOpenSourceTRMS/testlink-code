@@ -801,6 +801,16 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL=false) {
                     $exec['execution_notes']);
  
     $ret->description = str_replace($tags,$values,$argsObj->bug_notes);
+
+    // 20190426
+    $target['value'] = '%%EXECPLINK%%';
+    $doIt = true;
+    $url2use = $argsObj->basehref . 'lnl.php?type=exec&id=' . 
+               $argsObj->exec_id . '&apikey=' . 
+               $exec['testplan_api_key'];
+
+    $ret->description = str_replace($target['value'],$url2use,$ret->description);
+
    
     // @since 1.9.14
     // %%EXECATT:1%% => lnl.php?type=file&id=1&apikey=gfhdgjfgdsjgfjsg

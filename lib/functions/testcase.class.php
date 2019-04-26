@@ -6648,14 +6648,15 @@ class testcase extends tlObjectWithAttachments
    */
   function getExecution($execID,$tcversionID) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = "/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id, NHTCV.id AS tcversion_id, " .
+    $sql = "/* $debugMsg */ SELECT NHTC.name,NHTCV.parent_id AS testcase_id,
+              NHTCV.id AS tcversion_id, " .
            " TCV.*, " .
            " U.login AS tester_login, U.first AS tester_first_name, U.last AS tester_last_name," .
            " E.tester_id AS tester_id,E.id AS execution_id, E.status,E.tcversion_number," .
            " E.notes AS execution_notes, E.execution_ts, E.execution_type AS execution_run_type," .
            " E.build_id AS build_id, B.name AS build_name, B.active AS build_is_active, " .
            " B.is_open AS build_is_open,E.platform_id, PLATF.name AS platform_name," .
-           " E.testplan_id,NHTPLAN.name AS testplan_name,TPTCV.id AS feature_id " .
+           " E.testplan_id,NHTPLAN.name AS testplan_name,TPTCV.id AS feature_id, TPLAN.api_key AS testplan_api_key" .
            " FROM {$this->tables['nodes_hierarchy']} NHTCV " .
            " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
            " JOIN {$this->tables['tcversions']} TCV ON TCV.id = NHTCV.id  " .
@@ -6665,6 +6666,9 @@ class testcase extends tlObjectWithAttachments
            " JOIN {$this->tables['builds']} B ON B.id=E.build_id " .
            " /* To get test plan name */ " .
            " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON NHTPLAN.id = E.testplan_id " .
+
+           " JOIN {$this->tables['testplans']} TPLAN ON TPLAN.id = E.testplan_id " .
+
            " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
            " ON  TPTCV.testplan_id = E.testplan_id " .
            " AND TPTCV.tcversion_id = E.tcversion_id " .

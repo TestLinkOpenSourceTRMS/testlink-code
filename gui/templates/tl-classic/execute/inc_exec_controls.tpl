@@ -242,6 +242,15 @@ Author : franciscom
         </td>
       </tr>
 
+      <tr>
+        <td colspan="2">
+          <input type="checkbox" name="addLinkToTLPrintView"
+                 id="addLinkToTLPrintView"
+                 {if $gui->addLinkToTLPrintViewChecked} checked {/if} >
+          <span class="label">{$args_labels.add_link_to_tlexec_print_view}</span>
+        </td>
+      </tr>
+
       </table>
       
       </br>

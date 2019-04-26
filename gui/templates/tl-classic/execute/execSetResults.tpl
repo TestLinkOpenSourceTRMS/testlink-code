@@ -20,7 +20,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   s='created_by,saveStepsForPartialExec,partialExecNoAttachmentsWarning,
   edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
 	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,design,execution,partialExecNothingToSave,
-	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,
+	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,add_link_to_tlexec_print_view,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
   estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,btn_next_tcase,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,

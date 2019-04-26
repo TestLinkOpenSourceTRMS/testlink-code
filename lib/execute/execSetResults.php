@@ -607,6 +607,7 @@ function init_args(&$dbHandler,$cfgObj) {
 
 
   $args->addLinkToTL = isset($_REQUEST['addLinkToTL']) ? TRUE : FALSE;
+  $args->addLinkToTLPrintView = isset($_REQUEST['addLinkToTLPrintView']) ? TRUE : FALSE;
 
   // Do this only on single execution mode
   // get issue tracker config and object to manage TestLink - BTS integration 
@@ -1337,7 +1338,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui = new stdClass();
   $gui->tcversionSet = null;
   $gui->plugins = null;
+
   $gui->addLinkToTLChecked = $cfgObj->exec_cfg->exec_mode->addLinkToTLChecked;
+  $gui->addLinkToTLPrintViewChecked = $cfgObj->exec_cfg->exec_mode->addLinkToTLPrintViewChecked;
+
 
   $k2i = array('import','attachments','exec','edit_exec');
   $gui->features = array();

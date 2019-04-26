@@ -31,7 +31,11 @@ if( ($args->user_action == 'create' || $args->user_action == 'doCreate') &&
 
      $dummy = generateIssueText($db,$args,$its); 
      $gui->bug_summary = $dummy->summary;
-     $ret = addIssue($db,$args,$its,$args->addLinkToTL);
+
+     $aop = array('addLinkToTL' => $args->addLinkToTL,
+                  'addLinkToTLPrintView' => $args->addLinkToTLPrintView);
+
+     $ret = addIssue($db,$args,$its,$aop);
      $gui->issueTrackerCfg->tlCanCreateIssue = $ret['status_ok'];
      $gui->msg = $ret['msg'];
     break;
@@ -57,13 +61,18 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note') {
               if($gui->issueTrackerCfg->tlCanAddIssueNote)  {
                 $hasNotes = (strlen($gui->bug_notes) > 0);
                 // will do call to update issue Notes
-                if($args->addLinkToTL) {
+                if($args->addLinkToTL || $args->addLinkToTLPrintView) {
                   $args->direct_link = getDirectLinkToExec($db,$args->exec_id);
-                  $dummy = generateIssueText($db,$args,$its,$args->addLinkToTL); 
+
+                  $aop = array('addLinkToTL' => $args->addLinkToTL,
+                               'addLinkToTLPrintView' => $args->addLinkToTLPrintView);
+
+                  $dummy = generateIssueText($db,$args,$its,$aop); 
                   $gui->bug_notes = $dummy->description;
                 }  
 
-                if( $args->addLinkToTL || $hasNotes ) {
+                if( $args->addLinkToTL || $args->addLinkToTLPrintView || 
+                    $hasNotes ) {
                   $opt = new stdClass();
                   $opt->reporter = $args->user->login;
                   $its->addNote($args->bug_id,$gui->bug_notes,$opt);
@@ -128,6 +137,7 @@ function initEnv(&$dbHandler)
 		               "user_action" => array("REQUEST",tlInputParameter::STRING_N,
                                           $user_action['minLengh'],$user_action['maxLengh']),
                    "addLinkToTL" => array("POST",tlInputParameter::CB_BOOL),
+                   "addLinkToTLPrintView" => array("POST",tlInputParameter::CB_BOOL),
                    "tcstep_id" => array("REQUEST",tlInputParameter::INT_N),);
 	
 	$args = new stdClass();
@@ -141,11 +151,16 @@ function initEnv(&$dbHandler)
 
   // it's a checkbox
   $args->addLinkToTL = isset($_REQUEST['addLinkToTL']);
+  $args->addLinkToTLPrintView = isset($_REQUEST['addLinkToTLPrintView']);
+  
   $args->user = $_SESSION['currentUser'];
 
   $gui = new stdClass();
   $cfg = config_get('exec_cfg');
   $gui->addLinkToTLChecked = $cfg->exec_mode->addLinkToTLChecked;
+  $gui->addLinkToTLPrintViewChecked = 
+    $cfg->exec_mode->addLinkToTLPrintViewChecked;
+
 
   switch($args->user_action) {
     case 'create':

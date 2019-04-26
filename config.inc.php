@@ -1037,11 +1037,9 @@ $tlCfg->exec_cfg->exec_mode->new_exec='clean';
 // save_and_move = 'unlimited'
 $tlCfg->exec_cfg->exec_mode->save_and_move='unlimited';
 
-/**
- * @since 1.9.17
- *
- */
 $tlCfg->exec_cfg->exec_mode->addLinkToTLChecked = false;
+$tlCfg->exec_cfg->exec_mode->addLinkToTLPrintViewChecked = false;
+
 
 /** User filter in Test Execution navigator - default value */
 // logged_user -> combo will be set to logged user

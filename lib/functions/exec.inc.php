@@ -304,6 +304,9 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
         $execContext->tplan_apikey = $execSign->tplan_apikey;
 
         $execContext->addLinkToTL = $execSign->addLinkToTL;
+        $execContext->addLinkToTLPrintView = 
+          $execSign->addLinkToTLPrintView;
+        
         $execContext->direct_link = $execSign->direct_link;
         $execContext->tcstep_id = 0;
 
@@ -311,8 +314,11 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
         if( isset($exec_data['createIssue']) ) {
           completeCreateIssue($execContext,$execSign);
           
+          $aop = array('addLinkToTL' => $execContext->addLinkToTL,
+                       'addLinkToTLPrintView' => $execContext->addLinkToTLPrintView);
+
           $addIssueOp['createIssue'] = addIssue($db,$execContext,$issueTracker,
-                                                $execContext->addLinkToTL);
+                                                $aop);
           $addIssueOp['type'] = 'createIssue';
         }  
         
@@ -630,8 +636,7 @@ function getBugsForExecutions(&$db,&$bug_interface,$execSet,$raw = null)
 /**
  *
  */
-function addIssue($dbHandler,$argsObj,$itsObj,$addLinkToTL)
-{
+function addIssue($dbHandler,$argsObj,$itsObj,$opt=null) {
   static $my;
 
   if(!$my) {
@@ -644,7 +649,7 @@ function addIssue($dbHandler,$argsObj,$itsObj,$addLinkToTL)
   $ret['status_ok'] = true;             
   $ret['msg'] = '';
 
-  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL);  
+  $issueText = generateIssueText($dbHandler,$argsObj,$itsObj,$opt);  
 
   $issueTrackerCfg = $itsObj->getCfg();
   if(property_exists($issueTrackerCfg, 'issuetype')) {
@@ -741,8 +746,11 @@ function copyIssues(&$dbHandler,$source,$dest)
 /**
  *
  */
-function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL=false) {
+function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
   $ret = new stdClass();
+
+  $options = array('addLinkToTL' => false, 'addLinkToTLPrintView' => false);
+  $options = array_merge($options,(array)$opt);
 
   $opOK = false;             
   $msg = '';
@@ -853,8 +861,14 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$addLinkToTL=false) {
     $ret->summary = $argsObj->bug_summary;
   }
 
-  if( $addLinkToTL ) {
+  if( $options['addLinkToTL'] ) {
     $ret->description .= "\n\n" . lang_get('dl2tl') . $argsObj->direct_link;
+  }  
+
+  if( $options['addLinkToTLPrintView'] ) {
+    $ret->description .= "\n\n" . lang_get('dl2tlpv') . $argsObj->basehref . 
+      'lnl.php?type=exec&id=' . $argsObj->exec_id . '&apikey=' . 
+      $exec['testplan_api_key'];
   }  
 
   return $ret;

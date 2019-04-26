@@ -12,7 +12,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {lang_get var='labels' 
           s='title_bug_add,link_bts_create_bug,bug_id,notes,hint_bug_notes,
              btn_close,btn_add_bug,btn_save,bug_summary,
-             add_link_to_tlexec,
+             add_link_to_tlexec,add_link_to_tlexec_print_view,
              issueType,issuePriority,artifactVersion,artifactComponent'} 
 
 
@@ -112,6 +112,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       <input type="checkbox" name="addLinkToTL" id="addLinkToTL"
       {if $gui->addLinkToTLChecked} checked {/if} >
       <span class="label">{$labels.add_link_to_tlexec}</span>
+      <br>
+      <input type="checkbox" name="addLinkToTLPrintView" id="addLinkToTLPrintView"
+      {if $gui->addLinkToTLPrintViewChecked} checked {/if} >
+      <span class="label">{$labels.add_link_to_tlexec_print_view}</span>
     {/if}
 
     <div class="groupBtn">

@@ -16,7 +16,8 @@
    href_platform_management, href_inventory_management,
    href_print_tc,href_keywords_assign, href_req_overview,
    href_print_req,title_plugins,title_documentation,href_issuetracker_management,
-   href_codetracker_management,href_reqmgrsystem_management,href_req_monitor_overview'}
+   href_codetracker_management,href_reqmgrsystem_management,href_req_monitor_overview,
+   access_doc'}
 
 {* Show / Hide section logic *}
 {$display_left_block_1=false}
@@ -191,6 +192,24 @@
     
     </div>
 {/if}
+
+  {if $display_left_block_5}
+    <div class="list-group" style="{$divStyle}">
+      <form style="display:inline;">
+        <select name="docs" style="width: 290px;">
+                onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, 
+                '{$basehref}');" >
+            <option value="leer"> -{$labels.access_doc}-</option>
+            {if $gui->docs}
+              {foreach from=$gui->docs item=doc}
+                  <option value="{$doc}">{$doc}</option>
+              {/foreach}
+            {/if}
+        </select>
+      </form>
+    </div>
+  {/if}
+
 
   {if $display_left_block_bottom}
     {if isset($gui->plugins.EVENT_LEFTMENU_BOTTOM)}

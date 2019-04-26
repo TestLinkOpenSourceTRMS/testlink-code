@@ -1482,6 +1482,7 @@ $TLS_keywords = "Palavras-chave";
 
 
 // ----- gui/templates/navBar.tpl -----
+$TLS_access_doc = "documentação";
 $TLS_home = "Projeto";
 $TLS_link_logout = "Sair";
 $TLS_product = "Projeto de Teste";

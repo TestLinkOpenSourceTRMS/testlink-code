@@ -1435,6 +1435,7 @@ $TLS_keywords = "Keywords";
 
 
 // ----- gui/templates/navBar.tpl -----
+$TLS_access_doc = "Choose Document";
 $TLS_home = "Project";
 $TLS_link_logout = "Logout";
 $TLS_product = "Test Project";

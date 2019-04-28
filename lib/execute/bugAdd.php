@@ -4,8 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	bugAdd.php
- * @internal revisions
- * @since 1.9.14
  * 
  */
 require_once('../../config.inc.php');
@@ -18,58 +16,70 @@ $templateCfg = templateConfiguration();
 list($args,$gui,$its,$issueT) = initEnv($db);
 
 if( ($args->user_action == 'create' || $args->user_action == 'doCreate') && 
-    $gui->issueTrackerCfg->tlCanCreateIssue)
-{
+    $gui->issueTrackerCfg->tlCanCreateIssue) {
   // get matadata
   $gui->issueTrackerMetaData = getIssueTrackerMetaData($its);
   
-  switch($args->user_action)
-  {
+  switch($args->user_action) {
     case 'create':
      $dummy = generateIssueText($db,$args,$its); 
      $gui->bug_summary = $dummy->summary;
     break;
 
     case 'doCreate':
-     $gui->bug_summary = $args->bug_summary;
-     $ret = addIssue($db,$args,$its);
+     $args->direct_link = getDirectLinkToExec($db,$args->exec_id);
+
+     $dummy = generateIssueText($db,$args,$its); 
+     $gui->bug_summary = $dummy->summary;
+
+     $aop = array('addLinkToTL' => $args->addLinkToTL,
+                  'addLinkToTLPrintView' => $args->addLinkToTLPrintView);
+
+     $ret = addIssue($db,$args,$its,$aop);
      $gui->issueTrackerCfg->tlCanCreateIssue = $ret['status_ok'];
      $gui->msg = $ret['msg'];
     break;
 
   }
 }  
-else if($args->user_action == 'link' || $args->user_action == 'add_note')
-{
+else if($args->user_action == 'link' || $args->user_action == 'add_note') {
   // Well do not think is very elegant to check for $args->bug_id != ""
   // to understand if user has pressed ADD Button
-  if(!is_null($issueT) && $args->bug_id != "")
-  {
+  if(!is_null($issueT) && $args->bug_id != "") {
   	$l18n = init_labels(array("error_wrong_BugID_format" => null,"error_bug_does_not_exist_on_bts" => null));
 
-    switch($args->user_action)
-    {
+    switch($args->user_action) {
       case 'link':
         $gui->msg = $l18n["error_wrong_BugID_format"];
-        if ($its->checkBugIDSyntax($args->bug_id))
-        {
-          if ($its->checkBugIDExistence($args->bug_id))
-          {     
-            if (write_execution_bug($db,$args->exec_id, $args->bug_id))
-            {
+        if ($its->checkBugIDSyntax($args->bug_id)) {
+          if ($its->checkBugIDExistence($args->bug_id)) {     
+            if (write_execution_bug($db,$args->exec_id, $args->bug_id,$args->tcstep_id)) {
               $gui->msg = lang_get("bug_added");
               logAuditEvent(TLS("audit_executionbug_added",$args->bug_id),"CREATE",$args->exec_id,"executions");
 
               // blank notes will not be added :).
-              if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
-              {
+              if($gui->issueTrackerCfg->tlCanAddIssueNote)  {
+                $hasNotes = (strlen($gui->bug_notes) > 0);
                 // will do call to update issue Notes
-                $its->addNote($args->bug_id,$gui->bug_notes);
+                if($args->addLinkToTL || $args->addLinkToTLPrintView) {
+                  $args->direct_link = getDirectLinkToExec($db,$args->exec_id);
+
+                  $aop = array('addLinkToTL' => $args->addLinkToTL,
+                               'addLinkToTLPrintView' => $args->addLinkToTLPrintView);
+
+                  $dummy = generateIssueText($db,$args,$its,$aop); 
+                  $gui->bug_notes = $dummy->description;
+                }  
+
+                if( $args->addLinkToTL || $args->addLinkToTLPrintView || 
+                    $hasNotes ) {
+                  $opt = new stdClass();
+                  $opt->reporter = $args->user->login;
+                  $its->addNote($args->bug_id,$gui->bug_notes,$opt);
+                }
               }  
             }
-          }
-          else
-          {
+          } else {
             $gui->msg = sprintf($l18n["error_bug_does_not_exist_on_bts"],$gui->bug_id);
           }  
         }
@@ -78,9 +88,14 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
       case 'add_note':
         // blank notes will not be added :).
         $gui->msg = '';
-        if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) )
-        {
-          $its->addNote($args->bug_id,$gui->bug_notes);
+        if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) ) {
+          $opt = new stdClass();
+          $opt->reporter = $args->user->login;
+          $ope = $its->addNote($args->bug_id,$gui->bug_notes,$opt);
+
+          if( !$ope['status_ok'] ) {
+            $gui->msg = $ope['msg'];
+          }  
         }  
       break;
     }
@@ -88,6 +103,7 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note')
 }
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
+
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -119,26 +135,34 @@ function initEnv(&$dbHandler)
                    "artifactComponent" => array("POST",tlInputParameter::ARRAY_INT),
                    "artifactVersion" => array("POST",tlInputParameter::ARRAY_INT),
 		               "user_action" => array("REQUEST",tlInputParameter::STRING_N,
-                                          $user_action['minLengh'],$user_action['maxLengh']));
-		             
+                                          $user_action['minLengh'],$user_action['maxLengh']),
+                   "addLinkToTL" => array("POST",tlInputParameter::CB_BOOL),
+                   "addLinkToTLPrintView" => array("POST",tlInputParameter::CB_BOOL),
+                   "tcstep_id" => array("REQUEST",tlInputParameter::INT_N),);
 	
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
-	if ($args->exec_id)
-	{
+	if ($args->exec_id) {
 		$_SESSION['bugAdd_execID'] = intval($args->exec_id);
 	}
-	else
-	{
+	else {
 		$args->exec_id = intval(isset($_SESSION['bugAdd_execID']) ? $_SESSION['bugAdd_execID'] : 0);
 	}	
 
-
+  // it's a checkbox
+  $args->addLinkToTL = isset($_REQUEST['addLinkToTL']);
+  $args->addLinkToTLPrintView = isset($_REQUEST['addLinkToTLPrintView']);
+  
   $args->user = $_SESSION['currentUser'];
 
   $gui = new stdClass();
-  switch($args->user_action)
-  {
+  $cfg = config_get('exec_cfg');
+  $gui->addLinkToTLChecked = $cfg->exec_mode->addLinkToTLChecked;
+  $gui->addLinkToTLPrintViewChecked = 
+    $cfg->exec_mode->addLinkToTLPrintViewChecked;
+
+
+  switch($args->user_action) {
     case 'create':
     case 'doCreate':
       $gui->pageTitle = lang_get('create_issue');
@@ -159,6 +183,8 @@ function initEnv(&$dbHandler)
   $gui->tproject_id = $args->tproject_id;
   $gui->tplan_id = $args->tplan_id;
   $gui->tcversion_id = $args->tcversion_id;
+  $gui->tcstep_id = $args->tcstep_id;
+
   $gui->user_action = $args->user_action;
   $gui->bug_id = $args->bug_id;
 
@@ -253,8 +279,30 @@ function getIssueTracker(&$dbHandler,$argsObj,&$guiObj)
   return array($its,$issueTrackerCfg); 
 }
 
+/**
+ *
+ */
+function getDirectLinkToExec(&$dbHandler,$execID)
+{
+  $tbk = array('executions','testplan_tcversions');
+  $tbl = tlObjectWithDB::getDBTables($tbk);
+  $sql = " SELECT EX.id,EX.build_id,EX.testplan_id," .
+         " EX.tcversion_id,TPTCV.id AS feature_id " .
+         " FROM {$tbl['executions']} EX " .
+         " JOIN {$tbl['testplan_tcversions']} TPTCV " .
+         " ON TPTCV.testplan_id=EX.testplan_id " .
+         " AND TPTCV.tcversion_id=EX.tcversion_id " .
+         " AND TPTCV.platform_id=EX.platform_id " .
+         " WHERE EX.id=" . intval($execID);
 
-
+  $rs = $dbHandler->get_recordset($sql);
+  $rs = $rs[0];
+  $dlk = trim($_SESSION['basehref'],'/') . 
+         "/ltx.php?item=exec&feature_id=" . $rs['feature_id'] .
+         "&build_id=" . $rs['build_id'];
+  
+  return $dlk;
+}
 
 /**
  * Checks the user rights for viewing the page

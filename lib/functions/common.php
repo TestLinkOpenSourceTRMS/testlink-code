@@ -13,18 +13,17 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2014 TestLink community 
+ * @Copyright   2005,2018 TestLink community 
  * @link        http://www.testlink.org
- * @since       1.5
- *
- * @internal revisions
- * @since 1.9.12
  *
  */
 
 /** core and parenthal classes */
 require_once('object.class.php');
 require_once('metastring.class.php');
+
+/** Testlink Plugin API helper methods, must be included before lang_api.php */
+require_once('plugin_api.php');
 
 /** library for localization */
 require_once('lang_api.php');
@@ -43,11 +42,18 @@ require_once('roles.inc.php');
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
 require_once('tlsmarty.inc.php');
 
+/** Initialize the Event System */
+require_once('event_api.php' );
+
 // Needed to avoid problems with Smarty 3
 spl_autoload_register('tlAutoload');
 
 /** CSRF security functions. */
-require_once("csrf.php");
+/** TL_APICALL => TICKET 0007190 */
+if( !defined('TL_APICALL') )
+{
+  require_once("csrf.php");
+}  
 
 /** Input data validation */
 require_once("inputparameter.inc.php");
@@ -64,32 +70,53 @@ require_once("exec_cfield_mgr.class.php");
  * Automatic loader for PHP classes
  * See PHP Manual for details 
  */
-function tlAutoload($class_name) 
-{
+function tlAutoload($class_name)  {
+
   // exceptions
+  // 1. remove prefix and convert lower case
   $tlClasses = null;
   $tlClassPrefixLen = 2;
   $classFileName = $class_name;
 
+   
+  // 2. add a lower case directory 
+  $addDirToInclude = array('Kint' => true);
+
   // this way Zend_Loader_Autoloader will take care of these classes.
   // Needed in order to make work bugzillaxmlrpc interface
-  if( strstr($class_name,'Zend_') !== FALSE )
-  {
+  if( strstr($class_name,'Zend_') !== FALSE ) {
     return false;
   }
-    
-  if (isset($tlClasses[$classFileName]))
-  {
+
+  // Workaround
+  // https://github.com/smarty-php/smarty/issues/344 
+  // https://github.com/smarty-php/smarty/pull/345
+  if( strpos($class_name,'Smarty_Internal_Compile_') !== FALSE ) {
+    return false;
+  }
+
+  if (isset($tlClasses[$classFileName])) {
     $len = tlStringLen($classFileName) - $tlClassPrefixLen;
     $classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
   }
   
+  if (isset($addDirToInclude[$class_name])) {
+    $classFileName = strtolower($class_name) . "/" . $class_name;
+  }  
+
+  // Plugin special processing, class name ends with Plugin (see plugin_register())
+  // Does not use autoload
+  if( preg_match('/Plugin$/', $class_name) == 1 ) {
+    return;
+  }  
+
+
   // fix provided by BitNami for:
   // Reason: We had a problem integrating TestLink with other apps. 
-  // You can reproduce it installing ThinkUp and TestLink applications in the same stack.  
-  try 
-  {
-    include_once $classFileName . '.class.php';
+  // You can reproduce it installing ThinkUp and TestLink applications in the same stack. 
+
+  try {
+      include_once $classFileName . '.class.php';
   } 
   catch (Exception $e)
   {
@@ -114,18 +141,26 @@ $db = 0;
  *         aa['status'] = 1 -> OK , 0 -> KO
  *         aa['dbms_msg''] = 'ok', or $db->error_msg().
  */
-function doDBConnect(&$db,$onErrorExit=false)
-{
+function doDBConnect(&$db,$onErrorExit=false) {
   global $g_tlLogger;
   
   $charSet = config_get('charset');
   $result = array('status' => 1, 'dbms_msg' => 'ok');
 
-  $db = new database(DB_TYPE);
+  switch(DB_TYPE) {
+    case 'mssql':
+      $dbDriverName = 'mssqlnative';    
+    break;
+
+    default:
+      $dbDriverName = DB_TYPE;
+    break;  
+  }
+
+  $db = new database($dbDriverName);
   $result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-  if (!$result['status'])
-  {
+  if (!$result['status']) {
     echo $result['dbms_msg'];
     $result['status'] = 0;
     $search = array('<b>','</b>','<br>');
@@ -135,8 +170,7 @@ function doDBConnect(&$db,$onErrorExit=false)
     
     $logmsg  = $logtext . ($onErrorExit ? '<br>Redirection to connection fail screen.' : '');
     tLog(str_replace($search,$replace,$logmsg), 'ERROR');
-    if( $onErrorExit )
-    {
+    if( $onErrorExit ) {
       $smarty = new TLSmarty();
       $smarty->assign('title', lang_get('fatal_page_title'));
       $smarty->assign('content', $logtext);
@@ -145,10 +179,8 @@ function doDBConnect(&$db,$onErrorExit=false)
       exit();
     }
   }
-  else
-  {
-    if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
-    {
+  else {
+    if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8')) {
       $db->exec_query("SET CHARACTER SET utf8");
       $db->exec_query("SET collation_connection = 'utf8_general_ci'");
     }
@@ -169,19 +201,23 @@ function doDBConnect(&$db,$onErrorExit=false)
  * 
  * @param array $tplan_info result of DB query
  */
-function setSessionTestPlan($tplan_info)
-{
-  if ($tplan_info)
-  {
+function setSessionTestPlan($tplan_info) {
+  if ($tplan_info) {
     $_SESSION['testplanID'] = $tplan_info['id'];
     $_SESSION['testplanName'] = $tplan_info['name'];
+
     // Save testplan id for next session
-    setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, '/');
+    $ckObj = new stdClass();
+
+    $ckCfg = config_get('cookie');
+    $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' . 1;
+    $ckObj->value = $tplan_info['id'];
+
+    tlSetCookie($ckObj);
 
     tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
   }
-  else
-  {
+  else {
     unset($_SESSION['testplanID']);
     unset($_SESSION['testplanName']);
   }
@@ -244,16 +280,22 @@ function checkSessionValid(&$db, $redirect=true)
 /**
  * Start session
  */
-function doSessionStart($setPaths=false)
-{
-  session_set_cookie_params(99999);
-  if(!isset($_SESSION))
-  {
-    session_start();
+function doSessionStart($setPaths=false) {
+
+  if( PHP_SESSION_NONE == session_status() ) {
+    session_set_cookie_params(99999);
   }
   
-  if($setPaths)
-  {
+  if(!isset($_SESSION)) {
+    session_start();
+    if(defined('KINT_ON') && KINT_ON) {
+      Kint::enabled(true);      
+    } else {
+      Kint::enabled(false);      
+    }  
+  }
+  
+  if($setPaths) {
     unset($_SESSION['basehref']);
     setPaths();
   }
@@ -379,15 +421,21 @@ function initProject(&$db,$hash_user_sel)
   // Refresh test project id after call to setSessionProject
   $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   $tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
+
   // Now we need to validate the TestPlan
-  // dolezalz, havlatm: added remember the last selection by cookie
-  $cookieName = "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
+  $ckObj = new stdClass();
+  $ckCfg = config_get('cookie');
+  $ckObj->name = $ckCfg->prefix .  "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
+
   if($user_sel["tplan_id"] != 0)
   {
-    $tplan_id = $user_sel["tplan_id"];
-    setcookie($cookieName, $tplan_id, time()+60*60*24*90, '/');
-  } elseif (isset($_COOKIE[$cookieName])) {
-    $tplan_id = intval($_COOKIE[$cookieName]);
+    $ckObj->value = $user_sel["tplan_id"];
+    $ckObj->expire = time()+60*60*24*90;
+    tlSetCookie($ckObj);
+  } 
+  elseif (isset($_COOKIE[$ckObj->name])) 
+  {
+    $tplan_id = intval($_COOKIE[$ckObj->name]);
   }
   
   // check if the specific combination of testprojectid and testplanid is valid
@@ -450,7 +498,10 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
   {
     checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
   }
-    
+   
+  // Init plugins
+  plugin_init_installed();
+   
   // adjust Product and Test Plan to $_SESSION
   if ($initProject)
   {
@@ -827,12 +878,13 @@ function templateConfiguration($template2get=null)
   }
   
   $path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
-    $last_part=array_pop($path_parts);
-    $tcfg = new stdClass();
-    $tcfg->template_dir = "{$last_part}/";
-    $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
-    $tcfg->template = null;
-    return $tcfg;
+  $last_part=array_pop($path_parts);
+  $tcfg = new stdClass();
+  $tcfg->template_dir = "{$last_part}/";
+  $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
+  $tcfg->template = null;
+  $tcfg->tpl = $tcfg->template_dir . $tcfg->default_template;
+  return $tcfg;
 }
 
 
@@ -1007,16 +1059,12 @@ function tlSubStr($str,$start,$length = null)
  *        does not exists.
  *
  */
-function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='') 
-{
+function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='') {
     $editorTemplate = config_get($itemTemplate);
     $value=$defaultText;
-    if( !is_null($editorTemplate) )
-    {
-      if (property_exists($editorTemplate, $webEditorName)) 
-      {
-        switch($editorTemplate->$webEditorName->type)
-        {
+    if( !is_null($editorTemplate) ) {
+      if (property_exists($editorTemplate, $webEditorName)) {
+        switch($editorTemplate->$webEditorName->type) {
           case 'string':
             $value = $editorTemplate->$webEditorName->value;
           break;
@@ -1027,8 +1075,7 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
              
           case 'file':
             $value = getFileContents($editorTemplate->$webEditorName->value);
-            if (is_null($value))
-            {
+            if (is_null($value)) {
               $value = lang_get('problems_trying_to_access_template') . 
                        " {$editorTemplate->$webEditorName->value} ";
             } 
@@ -1274,7 +1321,6 @@ function setUpEnvForAnonymousAccess(&$dbHandler,$apikey,$rightsCheck=null,$opt=n
       break;
     }  
   }  
-  
 
   $status_ok = false;
   if( !is_null($item) )
@@ -1342,6 +1388,10 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
     case 'testplan':
       $target = $tables['testplans'];
     break;
+
+    default:
+      throw new Exception("Aborting - Bad type", 1);
+    break;
   }
   
   $sql = "/* $debugMsg */ " .
@@ -1351,5 +1401,134 @@ function getEntityByAPIKey(&$dbHandler,$apiKey,$type)
  
   $rs = $dbHandler->get_recordset($sql);
   return ($rs ? $rs[0] : null);
+}
+
+/**
+ *
+ *
+ */
+function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
+{
+  // name of caller script
+  $script = basename($_SERVER['PHP_SELF']); 
+  $doExit = false;
+  $action = 'any';
+  $env = array('tproject_id' => 0, 'tplan_id' => 0);
+  $env = array_merge($env, $context);
+  foreach($env as $key => $val)
+  {
+    $env[$key] = intval($val);
+  }  
+  
+  if( $doExit = (is_null($env) || $env['tproject_id'] == 0) )
+  {
+    logAuditEvent(TLS("audit_security_no_environment",$script), $action,$userObj->dbID,"users");
+  }
+   
+  if( !$doExit )
+  {
+    foreach($rightsToCheck->items as $verboseRight)
+    {
+      $status = $userObj->hasRight($dbHandler,$verboseRight,
+                  $env['tproject_id'],$env['tplan_id'],true);
+      if( ($doExit = !$status) && ($rightsToCheck->mode == 'and'))
+      { 
+        $action = 'any';
+        logAuditEvent(TLS("audit_security_user_right_missing",$userObj->login,$script,$action),
+                  $action,$userObj->dbID,"users");
+        break;
+      }
+    }
+  }
+
+  if ($doExit)
+  {   
+    redirect($_SESSION['basehref'],"top.location");
+    exit();
+  }
+}
+
+/*
+  function: getWebEditorCfg
+
+  args:-
+
+  returns:
+
+*/
+function getWebEditorCfg($feature='all')
+{
+  $cfg = config_get('gui');
+  $defaultCfg = $cfg->text_editor['all'];
+  $webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
+  
+  foreach($defaultCfg as $key => $value)
+  {
+    if(!isset($webEditorCfg[$key]))
+    {
+      $webEditorCfg[$key] = $defaultCfg[$key];
+    }   
+  } 
+  return $webEditorCfg;
+}
+
+/**
+ *
+ */
+function downloadXls($fname,$xlsType,$gui,$filePrefix)
+{
+  $sets = array();
+  $sets['Excel2007'] = array('ext' => '.xlsx', 
+                             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  $sets['Excel5'] = array('ext' => '.xls', 
+                          'Content-Type' => 'application/vnd.ms-excel');
+
+
+  $dct = array('Content-Type' =>  $sets[$xlsType]['Content-Type']);
+  $content = file_get_contents($fname);
+  $f2d = $filePrefix . $gui->tproject_name . '_' . $gui->tplan_name . 
+         $sets[$xlsType]['ext'];
+
+  downloadContentsToFile($content,$f2d,$dct);
+  unlink($fname);
+  exit();    
+}
+
+/**
+ * POC on papertrailapp.com
+ */
+function syslogOnCloud($message, $component = "web", $program = "TestLink") 
+{
+  $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+  foreach(explode("\n", $message) as $line) 
+  {
+    $syslog_message = "<22>" . date('M d H:i:s ') . $program . ' ' . 
+                      $component . ': ' . $line;
+    socket_sendto($sock, $syslog_message, strlen($syslog_message), 0,
+                  'logs5.papertrailapp.com', 11613);
+  }
+  socket_close($sock);
+}
+
+/**
+ *
+ */
+function getSSODisable()
+{
+  return isset($_REQUEST['ssodisable']) ? 1 : 0;
+}
+
+/**
+ *
+ */
+function tlSetCookie($ckObj) {
+  $stdCk = config_get('cookie');
+
+  foreach($ckObj as $prop => $value) {
+    $stdCk->$prop = $value;
+  }
+  
+  setcookie($stdCk->name, $stdCk->value, $stdCk->expire,$stdCk->path,
+            $stdCk->domain,$stdCk->secure,$stdCk->httponly);
 }
 

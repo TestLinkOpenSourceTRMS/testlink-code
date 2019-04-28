@@ -8,7 +8,7 @@
  * View existing and create a new req. specification.
  *
  * @internal revisions
- * @since 1.9.10
+ * @since 1.9.15
  *
  */
 require_once("../../config.inc.php");
@@ -37,6 +37,7 @@ if(method_exists($commandMgr,$pFn))
 {
   $op = $commandMgr->$pFn($args,$_REQUEST);
 }
+
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 
@@ -85,6 +86,19 @@ function init_args()
                        ? $_SESSION['setting_refresh_tree_on_action'] : 0;
   
   $args->countReq = is_null($args->countReq) ? 0 : intval($args->countReq);
+  
+  // Process buttons
+  $args->op = null;
+  $btnSet = array('toogleMon','startMon','stopMon');
+  foreach( $btnSet as $btn )
+  {
+    if( isset($_REQUEST[$btn]) )
+    {
+      $args->op = $btn;
+      break;
+    }  
+  }  
+  
   return $args;
 }
 
@@ -108,7 +122,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                            'copyRequirements' => 'doCopyRequirements',
                            'doCopyRequirements' => 'doCopyRequirements',
                            'doCreateRevision' => 'doCreateRevision',
-                           'fileUpload' => '', 'deleteFile' => '');
+                           'fileUpload' => '', 'deleteFile' => '',
+                           'bulkReqMon' => 'doBulkReqMon',
+                           'doBulkReqMon' => 'doBulkReqMon');
   // ------------------------------------------------------------------------------------------------
   // Web Editor Processing
   $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
@@ -146,6 +162,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     case "doCopy":
     case "doFreeze":
     case "doDelete":
+    case "doBulkReqMon":
       $guiObj->refreshTree = $argsObj->refreshTree;
     break;
   }
@@ -169,10 +186,12 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     case "doCreateRevision":
     case "fileUpload":
     case "deleteFile":
+    case "bulkReqMon":
+    case "doBulkReqMon":
       $renderType = 'template';
       $key2loop = get_object_vars($opObj);
             
-      if($opObj->action_status_ok == false)  // TICKET 4661
+      if($opObj->action_status_ok == false)
       {
         // Remember that scope normally is a WebRichEditor, and that
         // we have already processed WebRichEditor

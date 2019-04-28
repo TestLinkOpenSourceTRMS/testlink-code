@@ -26,8 +26,8 @@ if($args->doAction == 'apply')
   {
     if($val > 0)
     {
-      $tcaseMgr->setIntAttrForAllVersions($args->tcase_id,$key,$val);
-    }  
+      $tcaseMgr->setIntAttrForAllVersions($args->tcase_id,$key,$val,$args->forceFrozenVersions);
+    }
   }  
 }  
 
@@ -47,8 +47,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args(&$tcaseMgr)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
-  
-  new dBug($_REQUEST);
 
   $args = new stdClass();
   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
@@ -79,7 +77,11 @@ function init_args(&$tcaseMgr)
   $args->domainTCExecType = $tcaseMgr->get_execution_types();
 
   $dummy = config_get('importance');
-  $args->domainTCImportance = $dummy['code_label'];
+  foreach ($dummy['code_label'] as $code => $label) 
+  {
+	$args->domainTCImportance[$code] =  lang_get($label);
+  }
+  $args->forceFrozenVersions = isset($_REQUEST['forceFrozenTestcasesVersions']) ? intval($_REQUEST['forceFrozenTestcasesVersions']) : 0;
 
   return $args;
 }

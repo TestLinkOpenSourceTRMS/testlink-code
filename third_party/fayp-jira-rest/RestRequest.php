@@ -7,6 +7,7 @@ class RestRequest
 
     public $username;
     public $password;
+    public $proxy;
 
     protected $url;
     protected $verb;
@@ -15,6 +16,7 @@ class RestRequest
     protected $acceptType;
     protected $responseBody;
     protected $responseInfo;
+
 
     public function openConnect($url = null, $verb = 'GET', $requestBody = null, $filename = null)
     {
@@ -176,6 +178,27 @@ class RestRequest
         );
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // ignore self signed certs
         //curl_setopt($ch, CURLOPT_VERBOSE, true); // set to true for CURL debug output
+
+        if( !is_null($this->proxy) && !is_null($this->proxy->host) )
+        {
+          $k2l = array('host' => CURLOPT_PROXY,
+                       'port' => CURLOPT_PROXYPORT);
+          foreach($k2l as $fi => $vx)
+          {
+            if(!is_null($this->proxy->$fi))
+            {
+              curl_setopt($ch, $vx, $this->proxy->$fi);
+            }
+          }  
+
+          // authentication: 'login:password';
+          if( !is_null($this->proxy->login) && 
+              !is_null($this->proxy->password) )
+          {
+            $auth = $this->proxy->login . ':' . $this->proxy->password;
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $auth);
+          }  
+        }
     }
 
     protected function setAuth(&$ch)

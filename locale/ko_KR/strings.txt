@@ -448,6 +448,11 @@ $TLS_invalid_query = "에러";
 $TLS_warning = "경고!!";
 $TLS_was_success = " 가 성공적으로 ";
 
+// ----- gui/templates/inc_filter.tpl -----
+$TLS_test_grouped_by = "그룹화 기준 테스트";
+$TLS_mode_test_suite = "테스트 스위트";
+$TLS_mode_req_coverage = "요건";
+$TLS_parent_child_relation = "자녀 양육 관계";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -2403,6 +2408,20 @@ $TLS_link_time_charts		= "Time Charts";
 $TLS_time_charts_metrics 	= "Time Charts Metrics";
 $TLS_time_charts_title 		= "Time Charts";
 
-
+// ----- pluginView.php -----       
+$TLS_title_plugins = "undefined";
+$TLS_title_plugin_mgmt = "undefined";
+$TLS_th_plugin = "undefined";
+$TLS_th_plugin_description = "undefined";
+$TLS_th_plugin_version = "undefined";
+$TLS_installed_plugins = "undefined";
+$TLS_available_plugins = "undefined";
+$TLS_plugin_uninstalled = "undefined";
+$TLS_plugin_installed = "undefined";
+$TLS_confirm_install_header = "undefined";
+$TLS_confirm_install_text = "undefined";
+$TLS_confirm_uninstall_header = "undefined";
+$TLS_confirm_uninstall_text = "undefined";
+$TLS_desc_mgt_plugins = "undefined";
 // ----- END ------------------------------------------------------------------
 ?>

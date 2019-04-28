@@ -5,11 +5,9 @@
  *
  * @filesource  metricsDashboard.php
  * @package     TestLink
- * @copyright   2007-2013, TestLink community 
+ * @copyright   2007-2017, TestLink community 
  * @author      franciscom
  *
- * @internal revisions
- * @since 1.9.9
  *
  **/
 require('../../config.inc.php');
@@ -17,7 +15,6 @@ require_once('common.php');
 require_once('exttable.class.php');
 $templateCfg = templateConfiguration();
 
-//testlinkInitPage($db,false,false,"checkRights");
 list($args,$gui) = initEnv($db);
 
 
@@ -47,8 +44,6 @@ if(count($gui->tplan_metrics) > 0)
     {
       foreach($tplan_metrics['platforms'] as $key => $platform_metric) 
       {
-        //new dBug($platform_metric);
-        
         $rowData = array();
         
         // if test plan does not use platforms a overall status is not necessary
@@ -77,13 +72,11 @@ if(count($gui->tplan_metrics) > 0)
                                        $round_precision) . "%";
         
         $rowData[] = $tplan_string;
-        
         if ($gui->show_platforms) 
         {
           $rowData[] = strip_tags($platform_metric['platform_name']);
         }
         
-        // $rowData[] = isset($platform_metric['total']) ? $platform_metric['total'] : $platform_metric['active'];
         $rowData[] = $platform_metric['total'];
         foreach ($statusSetForDisplay as $status_verbose => $status_label)
         {
@@ -108,7 +101,6 @@ if(count($gui->tplan_metrics) > 0)
     }
   }
   
-  //new dBug($matrixData);
   $table = new tlExtTable($columns, $matrixData, 'tl_table_metrics_dashboard');
 
   // if platforms are to be shown -> group by test plan
@@ -346,29 +338,40 @@ function initEnv(&$dbHandler)
   
   if( !is_null($args->apikey) )
   {
-  
+    
     $args->show_only_active = true;
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
-    $cerbero->args->tproject_id = $args->tproject_id;
-    $cerbero->args->tplan_id = $args->tplan_id;
-    $cerbero->args->getAccessAttr = true;
-    $cerbero->method = 'checkRights';
     $cerbero->redirect_target = "../../login.php?note=logout";
+
     if(strlen($args->apikey) == 32)
     {
+      $cerbero->args->tproject_id = $args->tproject_id;
+      $cerbero->args->tplan_id = $args->tplan_id;
+      $cerbero->args->getAccessAttr = true;
+      $cerbero->method = 'checkRights';
+    
       setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
     }
     else
     {
-      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
-    }  
+      // Have got OBJECT KEY
+      $cerbero->method = null;
+      $cerbero->args->getAccessAttr = false;
 
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    
+      // if we are here => everything seems OK
+      $tprojMgr = new testproject($dbHandler);
+      $dj = $tprojMgr->getByAPIKey($args->apikey);
+      $args->tproject_id = $dj['id'];
+    }  
   }
   else
   {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? 
+                         intval($_SESSION['testprojectID']) : 0;
   }
   
   if($args->tproject_id <= 0)
@@ -385,16 +388,10 @@ function initEnv(&$dbHandler)
   
   // I'm sorry for MAGIC
   $args->direct_link_ok = true;
-  if( strlen(trim($args->user->userApiKey)) == 32)
-  {
-    $args->direct_link = $_SESSION['basehref'] . "lnl.php?type=metricsdashboard&" .
-                         "apikey={$args->user->userApiKey}&tproject_id={$args->tproject_id}";
-  }
-  else
-  {
-    $args->direct_link_ok = false;
-    $args->direct_link = lang_get('can_not_create_direct_link');
-  }  
+  $ak = testproject::getAPIkey($dbHandler,$args->tproject_id);
+  $args->direct_link = $_SESSION['basehref'] . 
+                       "lnl.php?type=metricsdashboard&" .
+                       "apikey={$ak}";
 
   if ($args->show_only_active) 
   {

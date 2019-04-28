@@ -6,7 +6,6 @@
  * @filesource	editExecution.php
  *
  * Edit an execution notes and custom fields
- * @since 1.9.14
  * 
 **/
 require_once('../../config.inc.php');
@@ -24,8 +23,7 @@ $tcase_mgr = new testcase($db);
 $args = init_args();
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg);
-switch ($args->doAction)
-{
+switch ($args->doAction) {
   case 'edit':
 	break;
         
@@ -88,13 +86,18 @@ function init_args()
 function initializeGui(&$argsObj,&$tcaseMgr)
 {
   $guiObj = new stdClass();
+  $guiObj->dialogName='editexec_dialog';
+  $guiObj->bodyOnLoad="dialog_onLoad($guiObj->dialogName)";
+  $guiObj->bodyOnUnload="dialog_onUnload($guiObj->dialogName)";
+  $guiObj->submitCode="return dialog_onSubmit($guiObj->dialogName)";
+
   $guiObj->exec_id = $argsObj->exec_id;
   $guiObj->tcversion_id = $argsObj->tcversion_id;
   $guiObj->tplan_id = $argsObj->tplan_id;
   $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->edit_enabled = $argsObj->user->hasRight($db,"exec_edit_notes") == 'yes' ? 1 : 0;
   $guiObj->cfields_exec = $tcaseMgr->html_table_of_custom_field_inputs($argsObj->tcversion_id,null,'execution','_cf',
-                                                                       $argsObj->exec_id,$argsObj->tplan_id,$argsObj->tproject_id);
+    $argsObj->exec_id,$argsObj->tplan_id,$argsObj->tproject_id);
   return $guiObj;
 }
 

@@ -35,14 +35,11 @@
   returns:
 
 */
-function focusInputField(id,selectIt)
-{
+function focusInputField(id,selectIt) {
   var f = document.getElementById(id);
-  if (f)
-  {
+  if (f) {
     f.focus();
-    if(selectIt)
-    {
+    if(selectIt) {
       f.select();
     } 
   }
@@ -168,8 +165,7 @@ function SP()
 /**
  *  EXecution DaShboard (EXDS)
  */
-function EXDS()
-{
+function EXDS() {
   var action_url = fRoot+'lib/execute/execDashboard.php';
   parent.workframe.location = action_url;
 }
@@ -184,9 +180,9 @@ function EXDS()
   returns:
 
 */
-function EP(id)
-{
+function EP(id) {
   // menuUrl 99% => archiveData.php
+  // can be planAddTC.php
   var _FUNCTION_NAME_="EP";
 
   // get checkboxes status
@@ -208,15 +204,15 @@ function EP(id)
 
   rev :
 */
-function ETS(id)
-{
+function ETS(id) {
   // menuUrl 99% => archiveData.php
 
   // get checkboxes status
   var _FUNCTION_NAME_="ETS";
   var pParams = tree_getPrintPreferences();
   var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
-                 "&edit=testsuite&level=testsuite&containerType=testsuite&id="+id+args+"&"+pParams;
+                 "&edit=testsuite&level=testsuite&" + 
+                 "containerType=testsuite&id="+id+args+"&"+pParams;
 
   // alert(_FUNCTION_NAME_ + " " +action_url);
   parent.workframe.location = action_url;
@@ -279,6 +275,50 @@ function TPROJECT_PRS(id)
 
 
 /*
+function: Edit Rec Spec or launch print
+
+args :
+
+returns:
+
+rev :
+*/
+function ERS(id)
+{
+// get checkboxes status
+	var _FUNCTION_NAME_="ERS";
+	var pParams = tree_getPrintPreferences();
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=reqspeccoverage&level=reqspec&id="+id+args+"&"+pParams;
+
+	// alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+
+}
+
+/*
+function: Edit Rec or launch print
+
+args :
+
+returns:
+
+rev :
+*/
+function ER(id)
+{
+// get checkboxes status
+	var _FUNCTION_NAME_="ER";
+	var pParams = tree_getPrintPreferences();
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=reqcoverage&level=requirement&id="+id+args+"&"+pParams;
+
+	// alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+
+}
+
+/* 
   function: TPLAN_PTS
             Test PLAN Print Test Suite
 
@@ -287,8 +327,7 @@ function TPROJECT_PRS(id)
   returns:
 
 */
-function TPLAN_PTS(id)
-{
+function TPLAN_PTS(id) {
   var pParams = tree_getPrintPreferences();
   parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
 }
@@ -297,11 +336,10 @@ function TPLAN_PTS(id)
   function: TPLAN_PTP
             Test PLAN Print Test Plan
 */
-function TPLAN_PTP(id)
-{
+function TPLAN_PTP(id) {
   var pParams = tree_getPrintPreferences();
   var my_location = fRoot+menuUrl+"?level=testproject&id="+id+args+"&"+pParams;
-  parent.workframe.location =my_location;
+  parent.workframe.location = my_location;
 }
 
 
@@ -497,43 +535,32 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
   Symbiosis (from Ancient Greek σύν "together" and βίωσις "living")
 
 */
-function tree_getPrintPreferences()
-{
-  var params = [];
-  var fields = ['header','summary','toc','body','passfail', 'cfields','testplan', 'metrics', 
-                'author','requirement','keyword','notes','assigned_to_me',
-                'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
-                'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
-                'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 
-                'headerNumbering','displayVersion','build_cfields','step_exec_notes','step_exec_status'];
+function tree_getPrintPreferences() {
 
-  for (var idx= 0;idx < fields.length;idx++)
-  {
+  var params = [];
+  var fields = printPreferences.split(',');
+  
+  for (var idx= 0;idx < fields.length;idx++) {
     var v = tree_getCheckBox(fields[idx]);
-    if (v)
-    {
+    if (v) {
       params.push(v);
     } 
   }
 
   var f = document.getElementById('format');
-  if(f)
-  {
+  if(f) {
     params.push("format="+f.value);
   }
 
   var bx = document.getElementById('build_id');
-  if(bx)
-  {
+  if(bx) {
     params.push("build_id="+bx.value);
   }
 
   var bx = document.getElementById('with_user_assignment');
-  if(bx)
-  {
+  if(bx) {
     var vv = 0;
-    if(bx.checked)
-    {
+    if(bx.checked) {
       vv = 1;
     }  
     params.push("with_user_assignment=" + vv);
@@ -561,11 +588,34 @@ function tree_getCheckBox(id)
 /**
  *
  */
-function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,user_action)
+function open_script_add_window(tproject_id,tplan_id,tcversion_id,user_action)
+{
+  l2l = "lib/testcases/scriptAdd.php?user_action=" + user_action + 
+        "&tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + 
+        "&tplan_id=" + tplan_id;
+
+  switch(user_action)  
+  {
+    case 'create':
+      wh = "width=700,height=580";
+    break;
+
+    default:
+      wh = "width=610,height=650";
+    break;
+  }            
+ 
+  window.open(fRoot+l2l,"script_add",wh+",resizable=yes,dependent=yes");
+}
+
+/**
+ *
+ */
+function open_bug_add_window(tproject_id,tplan_id,tcversion_id,exec_id,tcstep_id,user_action)
 {
   l2l = "lib/execute/bugAdd.php?user_action=" + user_action + 
         "&tcversion_id="+tcversion_id +"&tproject_id=" + tproject_id + 
-        "&tplan_id=" + tplan_id + "&exec_id="+exec_id;
+        "&tplan_id=" + tplan_id + "&exec_id="+exec_id + "&tcstep_id="+tcstep_id;
 
   switch(user_action)  
   {
@@ -600,9 +650,7 @@ function bug_dialog()
   this.NoRefresh = false;
 }
 
-function std_dialog(additional)
-{
-  // alert('std_dialog() - called');
+function std_dialog(additional) {
   this.refWindow = null;
   this.refLocation = null;
   this.refAdditional=additional;
@@ -610,8 +658,7 @@ function std_dialog(additional)
 }
 
 
-function dialog_onSubmit(odialog)
-{
+function dialog_onSubmit(odialog) {
   // In this way we do not do refresh.
   odialog.NoRefresh = true;
   return true;
@@ -660,13 +707,15 @@ function dialog_onUnload(odialog)
  * 
  * @param btn string id of the button clicked
  * @param text string not used
- * @param combinedBugID string like <executionID-bugID>
+ * @param combinedBugID string like <executionID-tcStepID-bugID>
  */
 function deleteBug(btn,text,combinedBugID)
 {
   var idx;
   var executionID;
+  var tcStepID;
   var bugID;
+  var target;
   
   if (btn != 'yes')
   {
@@ -679,15 +728,55 @@ function deleteBug(btn,text,combinedBugID)
     return;
   }
   
-  executionID = combinedBugID.substr(0,idx)
+  executionID = combinedBugID.substr(0,idx);
+  
+  target = combinedBugID.substr(idx+1);
+  idx = target.indexOf('-');
+  tcStepID = target.substr(0,idx)
 
   // TICKET 4814: bug deletion may fails if bugID string contains special characters ('#', '&' , ...)
   // bugID string may contain special characters : 
   // must escape it to get correct bugID value in bugDelete.php
-  bugID = escape(combinedBugID.substr(idx+1));
+  bugID = escape(target.substr(idx+1));
   
-  window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&bug_id="+bugID,
+  window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&tcstep_id="+tcStepID+"&bug_id="+bugID,
                 "DeleteBug","width=510,height=150,resizable=yes,dependent=yes");
+}
+
+/**
+ * Calls the script link delete page when the 'yes' button in the delete confirmation dialog
+ * was clicked
+ * 
+ * @param btn string id of the button clicked
+ * @param text string not used
+ * @param combinedScriptID string like <tprojectID:tcversionID-scriptID>
+ */
+function deleteScript(btn,text,combinedScriptID)
+{
+  var idx1;
+  var idx2;
+  var tprojectID;
+  var tcversionID;
+  var scriptID;
+  
+  if (btn != 'yes')
+  {
+    return;
+  }
+ 
+  idx1 = combinedScriptID.indexOf(':');
+  idx2 = combinedScriptID.indexOf('-');
+  if (idx1 < 0 || idx2 < 0)
+  {
+    return;
+  }
+  
+  tprojectID = combinedScriptID.substr(0,idx1)
+  tcversionID = combinedScriptID.substr(idx1+1,idx2)
+  scriptID = escape(combinedScriptID.substr(idx2+1));
+ 
+  window.open(fRoot+"lib/testcases/scriptDelete.php?tproject_id="+tprojectID+"&tcversion_id="+tcversionID+"&script_id="+scriptID,
+                "DeleteScript","width=510,height=150,resizable=yes,dependent=yes");
 }
 
 // seems is not used => do more checks and remove
@@ -872,8 +961,7 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode)
  * @param req_version_id Requirement Version ID
  * @param anchor string with anchor name
  */
-function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
-{
+function openLinkedReqVersionWindow(req_id, req_version_id, anchor) {
   if (anchor == null) {
     anchor = '';
   } else {
@@ -887,13 +975,11 @@ function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
 
-  if (width == null)
-  {
+  if (width == null) {
     var width = "800";
   }
 
-  if (height == null)
-  {
+  if (height == null) {
     var height = "600";
   }
 
@@ -908,9 +994,7 @@ function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
  * @param req_id Requirement ID
  * @param anchor string with anchor name
  */
-function openLinkedReqWindow(req_id, anchor)
-{
-  // 20101008 - asimon - BUGID 3311
+function openLinkedReqWindow(req_id, anchor) {
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
   var windowCfg='';
@@ -923,13 +1007,11 @@ function openLinkedReqWindow(req_id, anchor)
     anchor = '#' + anchor;
   }
   
-  if (width == null)
-  {
+  if (width == null) {
     width = "800";
   }
 
-  if (height == null)
-  {
+  if (height == null) {
     height = "600";
   }
 
@@ -938,6 +1020,39 @@ function openLinkedReqWindow(req_id, anchor)
   window.open(fRoot+feature_url,"Requirement",windowCfg);
 }
 
+/**
+ * open a requirement in a popup window
+ * 
+ * @param req_id Requirement ID
+ * @param req_version_id Requirement Version ID
+ * @param anchor string with anchor name
+ */
+function openLinkedReqVersionWindow(req_id,req_version_id, anchor) {
+  var width = getCookie("ReqPopupWidth");
+  var height = getCookie("ReqPopupHeight");
+  var windowCfg='';
+  var feature_url = "lib/requirements/reqView.php";
+
+
+  if (anchor == null) {
+    anchor = '';
+  } else {
+    anchor = '#' + anchor;
+  }
+  
+  if (width == null) {
+    width = "800";
+  }
+
+  if (height == null) {
+    height = "600";
+  }
+
+  feature_url += "?&showReqSpecTitle=1&requirement_id=" + req_id + 
+                 "&req_version_id=" + req_version_id + anchor;
+  windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+  window.open(fRoot+feature_url,"Requirement",windowCfg);
+}
 
 /**
  * open a req spec in a popup window
@@ -1469,8 +1584,7 @@ function openReqRevisionWindow(item_id, anchor)
  * @param revision_id only used for requirements, null in case of testcases
  * @param print_action target url to open in popup
  */
-function openPrintPreview(type, id, child_id, revision, print_action) 
-{
+function openPrintPreview(type, id, child_id, revision, print_action) {
   // configure window size using cookies or default values if there are no cookies
   var width = getCookie("ReqPopupWidth");
   var height = getCookie("ReqPopupHeight");
@@ -1484,8 +1598,7 @@ function openPrintPreview(type, id, child_id, revision, print_action)
     height = "600";
   }
   
-  switch(type)
-  {
+  switch(type) {
 
     case 'req':
       feature_url += "?req_id=" + id + "&req_version_id=" + child_id + "&req_revision=" + revision;
@@ -1503,17 +1616,15 @@ function openPrintPreview(type, id, child_id, revision, print_action)
      feature_url += "?id=" + id;
     break;
 
-
-    
   }
+
   windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,toolbar=yes,dependent=yes,menubar=yes";
   window.open(fRoot+feature_url,"_blank",windowCfg); // TODO localize "Print Preview"!
 }
 
 
 
-function openExecHistoryWindow(tc_id,tplan_check) 
-{
+function openExecHistoryWindow(tc_id,tplan_check) {
   var url = "lib/execute/execHistory.php?tcase_id=" + tc_id;
 
   var width = getCookie("execHistoryPopupWidth");
@@ -1634,28 +1745,41 @@ function openTCW(tcase_external_id,version_number)
 /**
  *
  */
-function toogleShowHide(oid,display_type)
-{
+function toogleShowHide(oid,display_type) {
   var obj = document.getElementById(oid);
   
-  if (!obj)
-  {
+  if (!obj) {
     return;
   }                  
   
-  if(obj.style.display == 'none')
-  {
-    if(display_type != undefined)
-    {
+  if(obj.style.display == 'none') {
+    if(display_type != undefined) {
       obj.style.display = display_type;
-    } 
-    else
-    {
+    } else {
       obj.style.display = '';
     } 
+  } else {
+    obj.style.display = 'none';
   }
-  else
-  {
+}
+
+/**
+ *
+ */
+function toggleShowHide(oid,display_type) {
+  var obj = document.getElementById(oid);
+  
+  if (!obj) {
+    return;
+  }                  
+  
+  if(obj.style.display == 'none') {
+    if(display_type != undefined) {
+      obj.style.display = display_type;
+    } else {
+      obj.style.display = '';
+    } 
+  } else {
     obj.style.display = 'none';
   }
 }
@@ -1698,6 +1822,20 @@ function clearTextAreaByClassName(cssClassName)
     ol[idx].value = '';
   }   
 }
+
+/**
+ *
+ */
+function clearSelectByClassName(cssClassName)
+{
+  var ol = document.getElementsByClassName(cssClassName);
+  for (var idx= 0;idx < ol.length;idx++)
+  {
+    ol[idx].value = '';
+  }   
+}
+
+
 
 /**
  *
@@ -1779,4 +1917,30 @@ function toogleRequiredOnShowHide(oid,display_type)
     obj.style.display = 'none';
     obj.removeAttribute('required'); 
   }
+}
+
+/**
+ * Open testcase description in a popup window.
+ * @author Andreas Simon
+ * @param tc_id
+ */
+function openTSEditWindow(tsuite_id) 
+{
+
+  var url = "lib/testcases/archiveData.php?edit=testsuite&id=" + tsuite_id 
+  var width = getCookie("TSEditPopupWidth");
+  var height = getCookie("TSEditPopupHeight");
+  
+  if (width == null)
+  {
+    var width = "800";
+  }
+  
+  if (height == null)
+  {
+    var height = "600";
+  }
+  
+  var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+  window.open(fRoot+url, '_blank', windowCfg);
 }

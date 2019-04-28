@@ -8,9 +8,6 @@
  *
  * Screen to view existing requirements within a req. specification.
  *
- * @internal revision
- * @since 1.9.10
- *
  *
 **/
 require_once("../../config.inc.php");
@@ -34,13 +31,12 @@ $commandMgr = new reqCommands($db);
 $args = init_args($db);
 $gui = initialize_gui($db,$args,$commandMgr);
 
-
 $pFn = $args->doAction;
 $op = null;
-if(method_exists($commandMgr,$pFn))
-{
+if(method_exists($commandMgr,$pFn)) {
   $op = $commandMgr->$pFn($args,$_REQUEST);
 }
+
 renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
 
 
@@ -137,11 +133,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
                      'doDeleteVersion' => '', 'doFreezeVersion' => 'doFreezeVersion',
                      'doAddRelation' => 'doAddRelation', 'doDeleteRelation' => 'doDeleteRelation',
                      'doUnfreezeVersion' => 'doUnfreezeVersion',
-                     'fileUpload' => '', 'deleteFile' => '');
+                     'fileUpload' => '', 'deleteFile' => '',
+                     'startMonitoring' => '','stopMonitoring' => '');
 
   $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
-  switch($argsObj->doAction)
-  {
+  switch($argsObj->doAction) {
     case "edit":
     case "doCreate":
       $owebEditor->Value = $argsObj->scope;
@@ -149,6 +145,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 
     case "fileUpload":
     case "deleteFile":
+    case "startMonitoring":
+    case "stopMonitoring":
     break;
 
     default:
@@ -212,6 +210,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     case "removeTestCase":
     case "fileUpload":
     case "deleteFile":
+    case "stopMonitoring":
+    case "startMonitoring":
       $renderType = 'template';
       $key2loop = get_object_vars($opObj);
       foreach($key2loop as $key => $value)

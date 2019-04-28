@@ -171,7 +171,13 @@ function initializeGui(&$argsObj,&$tplanMgr)
   if( $argsObj->platform_id > 0 )
   {
     $dummy = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'mapAccessByID'));
-    $add2name = '_' . str_replace(' ','_',$dummy[$argsObj->platform_id]['name']);
+    $add2name .= '_' . str_replace(' ','_',$dummy[$argsObj->platform_id]['name']);
+  }
+  // If there is a build setted -> use in name.
+  if( $argsObj->build_id > 0 )
+  {
+    $dummy = $tplanMgr->get_builds($argsObj->tplan_id);
+    $add2name .= '_' . str_replace(' ','_',$dummy[$argsObj->build_id]['name']);
   }
   
   // TICKET 4996: Ignores change of XML export file name

@@ -6,9 +6,6 @@
  * @filesource  frmWorkArea.php
  * @author      Martin Havlat
  * 
- * @internal revisions
- * @since 1.9.10
- *
  *
 **/
 require_once('../../config.inc.php');
@@ -17,16 +14,14 @@ testlinkInitPage($db);
 
 $args = init_args();
 
-// --------------------------------------------------------------------------------------
 // Important Notes for Developers
-// --------------------------------------------------------------------------------------
 //
 // if key found in this map, at User Interface level, screen will be divided 
 // vertically in two frames.
 // Normally on left will exists a tree menu. 
 // On right frame an html named $key.html will be launched.
 // Example:
-//         if key = printTc, an html page printTc.html must exists on help directory
+// if key = printTc, an html page printTc.html must exists on help directory
 //
 // (aa_tfp -> Associative Array TreeFramePath)
 // key  : feature
@@ -34,7 +29,6 @@ $args = init_args();
 //
 $req_cfg = config_get('req_cfg');
 
-// 20131214
 // more info here
 // array(0) => left pane
 // array(1) => right pane
@@ -81,10 +75,34 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 // features that need to run the validate build function
 if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment')))
 {
-  // Check if for test project selected at least a test plan exist (BUGID 623)
+  // Check if for test project selected at least a test plan exist
   if( isset($_SESSION['testplanID']) || !is_null($args->tplan_id))
   {
-    $open = ($showFeature == 'executeTest') ? true : null;
+    // Filter on build attributes: ACTIVE,OPEN
+    switch($showFeature)
+    {
+      case 'executeTest':
+        $hasToBe['active'] = true;
+        $hasToBe['open'] = true;
+        $featureHint = lang_get('href_execute_test');
+      break;
+
+      case 'tc_exec_assignment':
+        $txcfg = config_get('tree_filter_cfg');
+        $cfg = $txcfg->testcases->plan_mode;
+        $hasToBe['active'] = $cfg->setting_build_inactive_out ? true : null;
+        $hasToBe['open'] = $cfg->setting_build_close_out ? true : null;        
+        $featureHint = lang_get('href_tc_exec_assignment');
+      break;
+
+      default:
+        $hasToBe['active'] = null;
+        $hasToBe['open'] = null; 
+        $featureHint = lang_get('href_rep_and_metrics');
+      break;  
+    }
+
+
     $tplanIDCard = new stdClass();
     $tplanIDCard->id = intval($_SESSION['testplanID']);
     $tplanIDCard->name = $_SESSION['testplanName'];
@@ -96,8 +114,12 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
       $dummy = $tplanMgr->tree_manager->get_node_hierarchy_info($tplanIDCard->id);
       $tplanIDCard->name = $dummy['name'];
     } 
-    validateBuildAvailability($db,$tplanMgr,$tplanIDCard->id,$tplanIDCard->name,
-                              $_SESSION['testprojectName'], $open);
+
+    $ctx = new stdClass();
+    $ctx->tplanIDCard = $tplanIDCard;
+    $ctx->featureTitle = $featureHint;
+
+    validateBuildAvailability($db,$tplanMgr,$ctx,$hasToBe);
   }
   else
   {
@@ -169,14 +191,36 @@ else
  *  to create link feature
  *
  *
- *  $open: if execution is wanted, check for open builds
+ * 
  *
  **/
-function validateBuildAvailability(&$db,&$tplanMgr,$tpID, $tpName, $prodName, $open)
+function validateBuildAvailability(&$db,&$tplanMgr,$context,$attrFilter)
 {
-  if (!$tplanMgr->getNumberOfBuilds($tpID, $open, $open))
+  $tpID = $context->tplanIDCard->id;
+  $tpName = $context->tplanIDCard->name;
+  
+  if (!$tplanMgr->getNumberOfBuilds($tpID, $attrFilter['active'], $attrFilter['open']))
   {            
-    $message = '<p>'  . lang_get('no_build_warning_part1') . 
+    $msx = null;
+    if($attrFilter['active'])
+    {
+      $msx[] = lang_get('active');
+    }  
+    
+    if($attrFilter['open'])
+    {
+      $msx[] = lang_get('open');
+    }  
+    
+    $mzx = '';
+    if(count($msx) > 0)
+    {
+      $mzx = "(" . implode(' & ',$msx) . ")";
+    }  
+
+
+    $message = "<p>" . $context->featureTitle .
+               "<p>" . sprintf(lang_get('no_good_build'),$mzx) .
                "<b> " . htmlspecialchars($tpName) . "</b>";
     
     $link_to_op = '';
@@ -185,7 +229,7 @@ function validateBuildAvailability(&$db,&$tplanMgr,$tpID, $tpName, $prodName, $o
     { 
       // final url will be composed adding to $basehref 
       // (one TL variable available on smarty templates) to $link_to_op
-      $link_to_op = "lib/plan/buildEdit.php?do_action=create";
+      $link_to_op = "lib/plan/buildEdit.php?do_action=create&tplan_id=$tpID";
       $hint_text = lang_get('create_a_build');
     }  
     else

@@ -5,12 +5,11 @@
  *
  * @filesource  platformsEdit.php
  * @package     TestLink
- * @copyright   2009-2013, TestLink community 
+ * @copyright   2009-2019, TestLink community 
  * @link        http://www.teamst.org/index.php
  *
  * allows users to manage platforms. 
  *
- * @internal revisions
  *
 **/
 require_once("../../config.inc.php");
@@ -23,7 +22,7 @@ $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
 // Security checks are done, if failed => exit()
-list($args,$gui) = initEnv($db);
+list($args,$gui,$platform_mgr) = initEnv($db);
 
 $templateCfg = templateConfiguration();
 $smarty = new TLSmarty();
@@ -36,11 +35,9 @@ $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('platform_template', $of->InstanceName, $args->notes);
 
 
-$platform_mgr = new tlPlatform($db, $args->testproject_id);
 
 $action = $args->doAction;
-switch ($action)
-{
+switch ($action) {
   case "do_create":
   case "do_update":
   case "do_delete":
@@ -78,15 +75,16 @@ $smarty->display($templateCfg->template_dir . $default_template);
  * 
  *
  */
-function initEnv(&$dbHandler)
-{
+function initEnv(&$dbHandler) {
   testlinkInitPage($dbHandler);
-  $argsObj = init_args();
+  $argsObj = init_args($dbHandler);
   checkPageAccess($dbHandler,$argsObj);  // Will exit if check failed
 
-  $guiObj = init_gui($dbHandler,$argsObj);
+  $platMgr = new tlPlatform($dbHandler, $argsObj->testproject_id);
 
-  return array($argsObj,$guiObj);
+  $guiObj = init_gui($dbHandler,$argsObj,$platMgr);
+
+  return array($argsObj,$guiObj,$platMgr);
 }
 
 
@@ -95,8 +93,7 @@ function initEnv(&$dbHandler)
  * 
  *
  */
-function init_args()
-{
+function init_args( &$dbH ) {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
@@ -114,17 +111,38 @@ function init_args()
   $args->notes = $pParams["notes"];
 
   // why we need this logic ????
-  if ($args->doAction == "edit")
-  {
+  if ($args->doAction == "edit") {
     $_SESSION['platform_id'] = $args->platform_id;
-  }
-  else if($args->doAction == "do_update")
-  {
+  } else if($args->doAction == "do_update") {
     $args->platform_id = $_SESSION['platform_id'];
   }
+
   
-  $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+  $tables = tlDBObject::getDBTables(array('nodes_hierarchy','platforms'));
+  
+  if( 0 != $args->platform_id ) {
+    $sql = "SELECT testproject_id FROM {$tables['platforms']}  
+            WHERE id={$args->platform_id}";
+    $info = $dbH->get_recordset($sql);
+
+    $args->testproject_id = $info[0]['testproject_id'];    
+  } else {
+    $inputSource = $_REQUEST;
+    $args->testproject_id = isset($inputSource['testprojectID']) ? intval($inputSource['testprojectID']) : 0;    
+  }
+    
+  if( 0 == $args->testproject_id ) {
+    throw new Exception("Unable to Get Test Project ID, Aborting", 1);
+  }
+
+  $args->testproject_name = '';
+  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
+          WHERE id={$args->testproject_id}";
+  $info = $dbH->get_recordset($sql);
+  if( null != $info ) {
+    $args->testproject_name = $info[0]['name'];
+  }
+
   $args->currentUser = $_SESSION['currentUser'];
   
   
@@ -141,8 +159,7 @@ function init_args()
   returns: - 
 
 */
-function create(&$args,&$gui)
-{
+function create(&$args,&$gui) {
   $ret = new stdClass();
   $ret->template = 'platformsEdit.tpl';
   $ret->status = 1;
@@ -165,8 +182,7 @@ function create(&$args,&$gui)
   returns: - 
 
 */
-function edit(&$args,&$gui,&$platform_mgr)
-{
+function edit(&$args,&$gui,&$platform_mgr) {
   $ret = new stdClass();
   $ret->template = 'platformsEdit.tpl';
   $ret->status = 1;
@@ -175,8 +191,7 @@ function edit(&$args,&$gui,&$platform_mgr)
   $gui->action_descr = lang_get('edit_platform');
   $platform = $platform_mgr->getById($args->platform_id);
   
-  if ($platform)
-  {
+  if ($platform) {
     $args->name = $platform['name'];
     $args->notes = $platform['notes'];
     $gui->name = $args->name;
@@ -200,8 +215,7 @@ function edit(&$args,&$gui,&$platform_mgr)
   returns: 
 
 */
-function do_create(&$args,&$gui,&$platform_mgr)
-{
+function do_create(&$args,&$gui,&$platform_mgr) {
   $gui->main_descr = lang_get('platform_management');
   $gui->action_descr = lang_get('create_platform');
   $gui->submit_button_label = lang_get('btn_save');
@@ -225,14 +239,12 @@ function do_create(&$args,&$gui,&$platform_mgr)
   returns: 
 
 */
-function do_update(&$args,&$gui,&$platform_mgr)
-{
+function do_update(&$args,&$gui,&$platform_mgr) {
   $action_descr = lang_get('edit_platform');
   $platform = $platform_mgr->getPlatform($args->platform_id);
-  if ($platform)
-  {
+  if ($platform) {
     $action_descr .= TITLE_SEP . $platform['name'];
-    }
+  }
     
   $gui->submit_button_label = lang_get('btn_save');
   $gui->submit_button_action = 'do_update';
@@ -256,8 +268,7 @@ function do_update(&$args,&$gui,&$platform_mgr)
   returns: 
 
 */
-function do_delete(&$args,&$gui,&$platform_mgr)
-{
+function do_delete(&$args,&$gui,&$platform_mgr) {
   $gui->main_descr = lang_get('testproject') . TITLE_SEP . $args->testproject_name;
 
   $gui->submit_button_label = lang_get('btn_save');
@@ -273,11 +284,11 @@ function do_delete(&$args,&$gui,&$platform_mgr)
   return $ret;
 }
 
-
-function getErrorMessage($code,$platform_name)
-{
-  switch($code)
-  {
+/**
+ *
+ */
+function getErrorMessage($code,$platform_name) {
+  switch($code) {
     case tlPlatform::E_NAMENOTALLOWED:
       $msg = lang_get('platforms_char_not_allowed'); 
       break;
@@ -304,12 +315,9 @@ function getErrorMessage($code,$platform_name)
 /**
  *
  */
-function init_gui(&$db,&$args)
-{
-  $gui = new stdClass();
-  $gui->canManage = $args->currentUser->hasRight($db,"platform_management");
-  $gui->mgt_view_events = $args->currentUser->hasRight($db,"mgt_view_events");
-  $gui->user_feedback = array('type' => 'INFO', 'message' => '');
+function init_gui(&$db,&$args,&$platMgr) {
+  $gui = $platMgr->initViewGui($args->currentUser);
+  
   $gui->name = $args->name;
   $gui->notes = $args->notes;
   $gui->platformID = $args->platform_id;
@@ -320,8 +328,7 @@ function init_gui(&$db,&$args)
 /**
  *
  */
-function checkPageAccess(&$db,&$argsObj)
-{
+function checkPageAccess(&$db,&$argsObj) {
   $env['script'] = basename(__FILE__);
   $env['tproject_id'] = isset($argsObj->testproject_id) ? $argsObj->testproject_id : 0;
   $env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;

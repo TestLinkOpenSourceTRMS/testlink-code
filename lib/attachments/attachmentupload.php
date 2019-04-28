@@ -27,12 +27,19 @@ if ($args->bPostBack)
   $fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
   $id = $_SESSION['s_upload_id'];
   $gui->tableName = $_SESSION['s_upload_tableName'];
-  
-  new dBug($fInfo);
-  // die();
+
+
   if ($fInfo && $id && $gui->tableName != "")
   {
+    $opt = null;
+    if(trim($gui->tableName) == 'executions')
+    {
+      $opt['allow_empty_title'] = true;
+    }  
+
     $l2d = count($fInfo);
+    new dBug($fInfo);
+    
     for($fdx=0; $fdx <= $l2d; $fdx++)
     {
       $fSize = isset($fInfo['size'][$fdx]) ? $fInfo['size'][$fdx] : 0;
@@ -48,10 +55,9 @@ if ($args->bPostBack)
       
       if ($fSize && $fTmpName != "")
       {
-        echo 'DOING'; 
-        $attachmentRepository = tlAttachmentRepository::create($db);
+        $docRepo = tlAttachmentRepository::create($db);
         
-        $gui->uploaded = $attachmentRepository->insertAttachment($id,$gui->tableName,$args->title,$fin);
+        $gui->uploaded = $docRepo->insertAttachment($id,$gui->tableName,$args->title,$fin,$opt);
         if ($gui->uploaded)
         {
           logAuditEvent(TLS("audit_attachment_created",$args->title,$fin['name']),

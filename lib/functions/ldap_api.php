@@ -15,22 +15,18 @@
  *
  *
  * @internal revisions
- * @since 1.9.4
- * 20111204 - franciscom - TICKET 4830: Login Failure message has to be improved when using LDAP
- * 20111203 - franciscom - some minor improvements on info when connect/auth fail
- *               based again on Mantis code 
+ * @since 1.9.16
  *
  */
   
 // Connect and bind to the LDAP directory
-function ldap_connect_bind( $p_binddn = '', $p_password = '', $context = '') 
+function ldap_connect_bind( $authCfg, $p_binddn = '', $p_password = '') 
 {
   $ret = new stdClass();
   $ret->status = 0;
   $ret->handler = null;
   $ret->info  = 'LDAP CONNECT OK';
 
-  $authCfg = config_get('authentication');
   $t_message = "Attempting connection to LDAP ";
   $t_ldap_uri = parse_url($authCfg['ldap_server']);
   if(count( $t_ldap_uri ) > 1) 
@@ -70,7 +66,7 @@ function ldap_connect_bind( $p_binddn = '', $p_password = '', $context = '')
       {
         $ret->status = ERROR_LDAP_START_TLS_FAILED;
         $ret->info = 'ERROR_LDAP_START_TLS_FAILED';
-        ldap_unbind($ts_ds);
+        ldap_unbind($t_ds);
         return $ret;  // >>>----> Bye!!!
       }
     }
@@ -149,62 +145,70 @@ function ldap_authenticate( $p_login_name, $p_password )
   $t_authenticated->status_ok = TRUE;
   $t_authenticated->status_code = null;
   $t_authenticated->status_verbose = '';
+  $t_authenticated->ldap_index = -1;
 
   $authCfg = config_get('authentication');
 
-  $t_ldap_organization = $authCfg['ldap_organization'];
-  $t_ldap_root_dn = $authCfg['ldap_root_dn'];
-  $t_ldap_uid_field = $authCfg['ldap_uid_field']; // 'uid' by default
-
   $t_username = $p_login_name;
 
-  $t_search_filter = "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
-  // $t_search_attrs = array( $t_ldap_uid_field, 'dn', 'mail','displayName');
-  $t_search_attrs = array( $t_ldap_uid_field, 'dn');
-  $t_connect = ldap_connect_bind();
-
-  if( $t_connect->status == 0 )
+  foreach($authCfg['ldap'] as $server_idx => $ldapCfg)
   {
-    $t_ds = $t_connect->handler;
-        
-    # Search for the user id
-    $t_sr = ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
-    $t_info = ldap_get_entries( $t_ds, $t_sr );
+    // echo '<br>DEBUG: using LDAP Server:' . $ldapCfg['ldap_server'] . '<br>';  
+    $t_ldap_organization = $ldapCfg['ldap_organization'];
+    $t_ldap_root_dn = $ldapCfg['ldap_root_dn'];
+    $t_ldap_uid_field = $ldapCfg['ldap_uid_field']; // 'uid' by default
 
-    $t_authenticated->status_ok = false;
-    $t_authenticated->status_code = ERROR_LDAP_AUTH_FAILED;
-    $t_authenticated->status_verbose = 'ERROR_LDAP_AUTH_FAILED';
+    $t_search_filter = "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
 
-    if ( $t_info ) 
+    // $t_search_attrs = array( $t_ldap_uid_field, 'dn', 'mail','displayName');
+    $t_search_attrs = array( $t_ldap_uid_field, 'dn');
+    $t_connect = ldap_connect_bind($ldapCfg);
+
+    if( $t_connect->status == 0 )
     {
-      # Try to authenticate to each until we get a match
-      for ( $idx = 0 ; $idx < $t_info['count'] ; $idx++ ) 
+      $t_ds = $t_connect->handler;
+          
+      # Search for the user id
+      $t_sr = ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
+      $t_info = ldap_get_entries( $t_ds, $t_sr );
+
+      $t_authenticated->status_ok = false;
+      $t_authenticated->status_code = ERROR_LDAP_AUTH_FAILED;
+      $t_authenticated->status_verbose = 'ERROR_LDAP_AUTH_FAILED';
+      $t_authenticated->ldap_index = $server_idx;
+
+      if ( $t_info ) 
       {
-        $t_dn = $t_info[$idx]['dn'];
-    
-        # Attempt to bind with the DN and password
-        if ( @ldap_bind( $t_ds, $t_dn, $p_password ) ) 
+        # Try to authenticate to each until we get a match
+        for ( $idx = 0 ; $idx < $t_info['count'] ; $idx++ ) 
         {
-          $t_authenticated->status_ok = true;
-          break; # Don't need to go any further
+          $t_dn = $t_info[$idx]['dn'];
+      
+          # Attempt to bind with the DN and password
+          if ( ldap_bind( $t_ds, $t_dn, $p_password ) ) 
+          {
+            $t_authenticated->status_ok = true;
+            break; # Don't need to go any further
+          }
         }
       }
+
+      ldap_free_result( $t_sr );
+      ldap_unbind( $t_ds );
     }
-    
-    ldap_free_result( $t_sr );
-    ldap_unbind( $t_ds );
-  }
-  else
-  {
-    $t_authenticated->status_ok = false;
-    $t_authenticated->status_code = $t_connect->status;
-    $t_authenticated->status_verbose = 'LDAP CONNECT FAILED';
-  }
-  
-  if($t_authenticated->status_ok)
-  {
-    $t_authenticated->status_code = 'OK';
-    $t_authenticated->status_verbose = 'OK';
+    else
+    {
+      $t_authenticated->status_ok = false;
+      $t_authenticated->status_code = $t_connect->status;
+      $t_authenticated->status_verbose = 'LDAP CONNECT FAILED';
+    }
+
+    if($t_authenticated->status_ok)
+    {
+      $t_authenticated->status_code = 'OK';
+      $t_authenticated->status_verbose = 'OK';
+      break;
+    }  
   }  
 
   return $t_authenticated;
@@ -249,16 +253,15 @@ function ldap_escape_string( $p_string )
  * @param string $p_field The LDAP field name.
  * @return string The field value or null if not found.
  */
-function ldap_get_field_from_username( $p_username, $p_field ) {
+function ldap_get_field_from_username($authCfg, $p_username, $p_field ) {
 
-  $authCfg = config_get('authentication');
   $t_ldap_organization = $authCfg['ldap_organization'];
   $t_ldap_root_dn = $authCfg['ldap_root_dn'];
   $t_ldap_uid_field = $authCfg['ldap_uid_field']; // 'uid' by default
 
   $c_username = ldap_escape_string( $p_username );
 
-  $t_connect = @ldap_connect_bind();
+  $t_connect = @ldap_connect_bind($authCfg);
   if ( $t_connect === false ) {
     return null;
   }

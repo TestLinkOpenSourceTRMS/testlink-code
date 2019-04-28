@@ -6,16 +6,9 @@
  * String Processing functions
  * 
  * @package 	TestLink
- * @copyright 	2007-2009, TestLink community
+ * @copyright 	2007-2016, TestLink community
  * @copyright 	Copyright (C) 2002 - 2004  Mantis Team
  * 				The base for certain code was adapted from Mantis - a php based bugtracking system
- * @version    	CVS: $Id: string_api.php,v 1.12 2009/09/04 19:22:37 schlundus Exp $
- * @link 		http://www.teamst.org/index.php
- * 
- * @internal rev: 
- *  20080822 - franciscom - restored missed string_email_links() 
- * 	20080606 - havlatm - remove useles mantis related code
- * 	20071104 - franciscom - changes to string_email_links()
  *     
  **/
 
@@ -262,58 +255,76 @@ function string_sanitize_url( $p_url ) {
 
 // ----- Tag Processing -------------------------------------------------------
 
-/** 
- * Detect URLs and email addresses in the string and replace them with href anchors 
- **/
-function string_insert_hrefs( $p_string ) 
-{
-	if ( !config_get('html_make_links') ) {
+/**
+ * Search email addresses and URLs for a few common protocols in the given
+ * string, and replace occurences with href anchors.
+ * @param string $p_string
+ * @return string
+ */
+function string_insert_hrefs( $p_string ) {
+	static $s_url_regex = null;
+	static $s_email_regex = null;
+	static $s_anchor_regex = '/(<a[^>]*>.*?<\/a>)/is';
+
+	if( !config_get( 'html_make_links' ) ) {
 		return $p_string;
 	}
 
 	$t_change_quotes = false;
-	if( ini_get_bool( 'magic_quotes_sybase' ) ) {
+	if( ini_get_bool( 'magic_quotes_sybase' ) && function_exists( 'ini_set' ) ) {
 		$t_change_quotes = true;
 		ini_set( 'magic_quotes_sybase', false );
 	}
 
-	// Find any URL in a string and replace it by a clickable link
-	$p_string = preg_replace( '/(([[:alpha:]][-+.[:alnum:]]*):\/\/(%[[:digit:]A-Fa-f]{2}|[-_.!~*\';\/?%^\\\\:@&={\|}+$#\(\),\[\][:alnum:]])+)/se',
-                              "'<a href=\"'.rtrim('\\1','.').'\">\\1</a> [<a href=\"'.rtrim('\\1','.').'\" target=\"_blank\">^</a>]'", $p_string);
-                              
+	# Initialize static variables
+	if ( is_null( $s_url_regex ) ) {
+		# URL protocol. The regex accepts a small subset from the list of valid
+		# IANA permanent and provisional schemes defined in
+		# http://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
+		$t_url_protocol = '(?:https?|s?ftp|file|irc[6s]?|ssh|telnet|nntp|git|svn(?:\+ssh)?|cvs):\/\/';
+
+		# %2A notation in url's
+		$t_url_hex = '%[[:digit:]A-Fa-f]{2}';
+
+		# valid set of characters that may occur in url scheme. Note: - should be first (A-F != -AF).
+		$t_url_valid_chars       = '-_.,!~*\';\/?%^\\\\:@&={\|}+$#[:alnum:]\pL';
+		$t_url_chars             = "(?:${t_url_hex}|[${t_url_valid_chars}\(\)\[\]])";
+		$t_url_chars2            = "(?:${t_url_hex}|[${t_url_valid_chars}])";
+		$t_url_chars_in_brackets = "(?:${t_url_hex}|[${t_url_valid_chars}\(\)])";
+		$t_url_chars_in_parens   = "(?:${t_url_hex}|[${t_url_valid_chars}\[\]])";
+
+		$t_url_part1 = "${t_url_chars}";
+		$t_url_part2 = "(?:\(${t_url_chars_in_parens}*\)|\[${t_url_chars_in_brackets}*\]|${t_url_chars2})";
+
+		$s_url_regex = "/(${t_url_protocol}(${t_url_part1}*?${t_url_part2}+))/su";
+
+		# e-mail regex
+		$s_email_regex = substr_replace( email_regex_simple(), '(?:mailto:)?', 1, 0 );
+	}
+
+	# Find any URL in a string and replace it by a clickable link
+	$t_function = create_function( '$p_match', '
+		$t_url_href = \'href="\' . rtrim( $p_match[1], \'.\' ) . \'"\';
+		return "<a ${t_url_href}>${p_match[1]}</a> [<a ${t_url_href} target=\"_blank\">^</a>]";
+	' );
+	$p_string = preg_replace_callback( $s_url_regex, $t_function, $p_string );
 	if( $t_change_quotes ) {
 		ini_set( 'magic_quotes_sybase', true );
 	}
 
-	# Set up a simple subset of RFC 822 email address parsing
-	#  We don't allow domain literals or quoted strings
-	#  We also don't allow the & character in domains even though the RFC
-	#  appears to do so.  This was to prevent &gt; etc from being included.
-	#  Note: we could use email_get_rfc822_regex() but it doesn't work well
-	#  when applied to data that has already had entities inserted.
-	#
-	# bpfennig: '@' doesn't accepted anymore
-	# achumakov: characters 0x80-0xFF aren't acceptable, too
-	$t_atom = '[^\'@\'](?:[^()<>@,;:\\\".\[\]\000-\037\177-\377 &]+)';
-
-	# In order to avoid selecting URLs containing @ characters as email
-	#  addresses we limit our selection to addresses that are preceded by:
-	#  * the beginning of the string
-	#  * a &lt; entity (allowing '<foo@bar.baz>')
-	#  * whitespace
-	#  * a : (allowing 'send email to:foo@bar.baz')
-	#  * a \n, \r, or > (because newlines have been replaced with <br />
-	#    and > isn't valid in URLs anyway
-	#
-	# At the end of the string we allow the opposite:
-	#  * the end of the string
-	#  * a &gt; entity
-	#  * whitespace
-	#  * a , character (allowing 'email foo@bar.baz, or ...')
-	#  * a \n, \r, or <
-
-	$p_string = preg_replace( '/(?<=^|&quot;|&lt;|[\s\:\>\n\r])('.$t_atom.'(?:\.'.$t_atom.')*\@'.$t_atom.'(?:\.'.$t_atom.')*)(?=$|&quot;|&gt;|[\s\,\<\n\r])/s',
-							'<a href="mailto:\1">\1</a>', $p_string);
+	# Find any email addresses in the string and replace them with a clickable
+	# mailto: link, making sure that we skip processing of any existing anchor
+	# tags, to avoid parts of URLs such as https://user@example.com/ or
+	# http://user:password@example.com/ to be not treated as an email.
+	$t_pieces = preg_split( $s_anchor_regex, $p_string, null, PREG_SPLIT_DELIM_CAPTURE );
+	$p_string = '';
+	foreach( $t_pieces as $piece ) {
+		if( preg_match( $s_anchor_regex, $piece ) ) {
+			$p_string .= $piece;
+		} else {
+			$p_string .= preg_replace( $s_email_regex, '<a href="mailto:\0">\0</a>', $piece );
+		}
+	}
 
 	return $p_string;
 }
@@ -489,4 +500,23 @@ function string_contains_scripting_chars( $p_string ) {
 	return false;
 }
 
-?>
+/**
+ * Use a simple perl regex for valid email addresses.  This is not a complete regex,
+ * as it does not cover quoted addresses or domain literals, but it is simple and
+ * covers the vast majority of all email addresses without being overly complex.
+ * @return string
+ */
+function email_regex_simple() {
+	static $s_email_regex = null;
+
+	if( is_null( $s_email_regex ) ) {
+		$t_recipient = "([a-z0-9!#*+\/=?^_{|}~-]+(?:\.[a-z0-9!#*+\/=?^_{|}~-]+)*)";
+
+		# a domain is one or more subdomains
+		$t_subdomain = "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)";
+		$t_domain    = "(${t_subdomain}(?:\.${t_subdomain})*)";
+
+		$s_email_regex = "/${t_recipient}\@${t_domain}/i";
+	}
+	return $s_email_regex;
+}

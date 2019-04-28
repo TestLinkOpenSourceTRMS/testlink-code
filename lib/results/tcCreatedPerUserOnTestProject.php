@@ -4,10 +4,9 @@
  *
  * @filesource  tcCreatedPerUserOnTestProject.php
  * @package     TestLink
- * @copyright   2005,2011 TestLink community 
+ * @copyright   2005,2018 TestLink community 
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @link        http://www.teamst.org/index.php
- * @since       1.9.6
+ * @link        http://www.testlink.org
  * 
  * @internal important development notice
  * Because we use ext-js grid is important/critic that you consider
@@ -20,8 +19,7 @@
  *  
  * Generates report of test cases created per user within a project. 
  * 
- * @internal revisions
- *                                                                   breaks filter behaivour
+ *                                                                    
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -42,8 +40,7 @@ $smarty->display($templateCfg->template_dir . $tpl);
 /**
 * initialize Gui
 */
-function initializeGui(&$dbHandler,&$args,$images)
-{
+function initializeGui(&$dbHandler,&$args,$images) {
   $gui = new stdClass();
   $gui->images = $images;
   $gui->glueChar = config_get('testcase_cfg')->glue_character;
@@ -52,16 +49,19 @@ function initializeGui(&$dbHandler,&$args,$images)
   $gui->warning_msg = '';
   $gui->tableSet = null;
   
-  $gui->l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
-                                 'testplan' => null, 'assigned_tc_overview' => null,'testcases_created_per_user' => null,
-                                 'design' => null, 'execution' => null, 'execution_history' => null,
-                                 'testproject' => null,'generated_by_TestLink_on' => null,'no_records_found' => null, 
-                                 'low' => null, 'medium' => null, 'high' => null));
+  $gui->l18n = init_labels(
+    array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
+          'testplan' => null, 'assigned_tc_overview' => null,
+          'testcases_created_per_user' => null,
+          'design' => null, 'execution' => null, 'execution_history' => null,
+          'testproject' => null,'generated_by_TestLink_on' => null,
+          'no_records_found' => null, 
+          'low' => null, 'medium' => null, 'high' => null));
   
   $gui->pageTitle = sprintf($gui->l18n['testcases_created_per_user'],$gui->tproject_name);
   $gui->context = $gui->l18n['testproject'] . ': ' . $args->tproject_name;
-  switch($args->do_action)
-  {
+
+  switch($args->do_action) {
     case 'uinput':
     default:
       initializeGuiForInput($dbHandler,$args,$gui);
@@ -80,17 +80,15 @@ function initializeGui(&$dbHandler,&$args,$images)
 /**
  *
  */
-function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
-{
+function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj) {
   $rcfg = config_get('results');
   $map_status_code = $rcfg['status_code'];
   $map_code_status = $rcfg['code_status'];
   $map_status_label = $rcfg['status_label'];
   $map_statuscode_css = array();
-  foreach($map_code_status as $code => $status) 
-  {
-    if (isset($map_status_label[$status])) 
-    {
+
+  foreach($map_code_status as $code => $status) {
+    if (isset($map_status_label[$status])) {
       $label = $map_status_label[$status];
       $map_statuscode_css[$code] = array();
       $map_statuscode_css[$code]['translation'] = lang_get($label);
@@ -103,13 +101,10 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
   // convert starttime to iso format for database usage
   $dateFormat = config_get('date_format');
   $k2l = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
-  foreach($k2l as $in => $opt)
-  {
-    if (isset($argsObj->$in) && sizeof($argsObj->$in) > 0) 
-    {
+  foreach($k2l as $in => $opt) {
+    if (isset($argsObj->$in) && sizeof($argsObj->$in) > 0) {
       $dd = split_localized_date(current($argsObj->$in), $dateFormat);
-      if ($dd != null) 
-      {
+      if ($dd != null) {
         $options[$opt] = $dd['year'] . "-" . $dd['month'] . "-" . $dd['day'];
       }
     }
@@ -121,15 +116,13 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
   $mgr = new testproject($dbHandler);
   $guiObj->searchDone = 1;
   $guiObj->resultSet = $mgr->getTestCasesCreatedByUser($argsObj->tproject_id,$argsObj->user_id,$options);
-  if(!is_null($guiObj->resultSet)) 
-  { 
+
+  if(!is_null($guiObj->resultSet)) { 
     // test case can exist multiple times, due to versions
     $rows = array();
-    foreach ($guiObj->resultSet as $idx => $itemInfo) 
-    {
+    foreach ($guiObj->resultSet as $idx => $itemInfo) {
       list($columns, $sortByColumn) = getColumnsDefinition();
-      foreach($itemInfo as $tcase)
-      {
+      foreach($itemInfo as $tcase) {
         $current_row = array();
         $tcase_id = $tcase['tcase_id'];
         $tcversion_id = $tcase['tcversion_id'];
@@ -181,10 +174,8 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
     $matrix->toolbarExpandCollapseGroupsButton = true;
     $matrix->toolbarShowAllColumnsButton = true;
 
-    // TICKET 5562: Test Cases created per User - toolbar refresh button breaks filter behaivour
     $matrix->toolbarDefaultStateButton = false;
     $matrix->toolbarRefreshButton = false;
-
 
     $matrix->setSortByColumnName($sortByColumn);
     $matrix->sortDirection = 'DESC';
@@ -197,8 +188,7 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj)
 /**
  *
  */
-function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj)
-{
+function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj) {
   
 	$room = config_get('gui_room');
 	$guiObj->str_option_any = sprintf($room,lang_get('any'));
@@ -216,16 +206,13 @@ function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj)
   $cfg = config_get('reportsCfg');
   $now = time();
 
-  if(is_null($argsObj->selected_start_date))
-  {
+  if(is_null($argsObj->selected_start_date)) {
     $guiObj->selected_start_date = strftime($dateFormat, $now - ($cfg->start_date_offset));
     $guiObj->selected_start_time = $cfg->start_time;
     
     $guiObj->selected_end_date = strftime($dateFormat, $now);
     $guiObj->selected_end_time = null;
-  }  
-  else
-  {
+  } else {
     $guiObj->selected_start_date = $argsObj->selected_start_date[0];
     $guiObj->selected_end_date = $argsObj->selected_end_date[0];
 
@@ -234,8 +221,6 @@ function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj)
     $guiObj->selected_start_time = sprintf('%02d:00',$argsObj->start_Hour);
     $guiObj->selected_end_time = sprintf('%02d:59',$argsObj->end_Hour);
   } 
-
-
 }
 
 /**
@@ -250,8 +235,7 @@ function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj)
  * 
  * @return object of stdClass
  */
-function init_args(&$dbHandler)
-{
+function init_args(&$dbHandler) {
   $args = new stdClass();
 
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
@@ -266,8 +250,7 @@ function init_args(&$dbHandler)
   $_REQUEST=strings_stripSlashes($_REQUEST);
   R_PARAMS($iParams,$args);
   
-  if( !is_null($args->apikey) )
-  {
+  if( !is_null($args->apikey) ) {
     $args->show_only_active = true;
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
@@ -276,14 +259,11 @@ function init_args(&$dbHandler)
     $cerbero->args->getAccessAttr = true;
     $cerbero->method = 'checkRights';
     setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);  
-  }
-  else
-  {
+  } else {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
   }
 
-  if($args->tproject_id < 0)
-  {
+  if($args->tproject_id < 0) {
     throw new Exception('Test project id can not be empty'); 
   }
   $mgr = new testproject($dbHandler);
@@ -292,7 +272,6 @@ function init_args(&$dbHandler)
   
 
   // Sanitize a little bit better
-  //$args->selected_end_date = '--></style></scRipt><scRipt>alert(0x008360)</scRipt>';
   sanitizeDates($args);
 
   return $args;
@@ -303,29 +282,26 @@ function init_args(&$dbHandler)
  * @link http://stackoverflow.com/questions/
  *              9293483/regular-expression-help-for-date-validation-dd-mm-yyyy-php
  */
-function sanitizeDates(&$obj)
-{
+function sanitizeDates(&$obj) {
   $validLenght = strlen('MM/DD/YYYY');
-  $validFormat = '#^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}$#';
+
+  // [./-] 
+  // . russian,pl
+  // - nl
+  $validFormat = '#^[0-9]{1,2}[./-][[0-9]{1,2}[./-][[0-9]{4}$#';
 
   $p2check = array('selected_end_date','selected_start_date');
-  foreach($p2check as $prop)
-  {
-    if(!is_null($obj->$prop))
-    {
+  foreach($p2check as $prop) {
+    if(!is_null($obj->$prop)) {
       // lenght check
       $val = $obj->$prop;
       $val = $val[0];
 
-      if( strlen($val) != $validLenght)
-      {
+      if( strlen($val) != $validLenght) {
         $obj->$prop = null;
-      }
-      else
-      {
+      } else {
         // check if format is valid
-        if(preg_match($validFormat, $val) === 0) 
-        {
+        if(preg_match($validFormat, $val) === 0) {
           $obj->$prop = null;
         }
       }  

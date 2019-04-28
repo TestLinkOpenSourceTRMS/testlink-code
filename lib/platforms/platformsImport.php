@@ -23,13 +23,12 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$args = init_args();
-$gui = initializeGui();
+$args = init_args($db);
+$gui = initializeGui($args);
 
 
 $resultMap = null;
-switch($args->doAction)
-{
+switch($args->doAction) {
   case 'doImport':
     $gui->file_check = doImport($db,$args->testproject_id);
   break;  
@@ -47,15 +46,28 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  *
  */
-function init_args()
-{
+function init_args(&$dbH) {
 	$args = new stdClass();
 	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50));
 		
 	R_PARAMS($iParams,$args);
 	$args->userID = $_SESSION['userID'];
-  $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+
+  $inputSource = $_REQUEST;
+  $args->testproject_id = isset($inputSource['testprojectID']) ? intval($inputSource['testprojectID']) : 0;
+
+  if( 0 == $args->testproject_id ) {
+    throw new Exception("Unable to Get Test Project ID, Aborting", 1);
+  }
+
+  $args->testproject_name = '';
+  $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
+  $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
+          WHERE id={$args->testproject_id}";
+  $info = $dbH->get_recordset($sql);
+  if( null != $info ) {
+    $args->testproject_name = $info[0]['name'];
+  }
 
 	return $args;
 }
@@ -63,15 +75,25 @@ function init_args()
 /**
  *
  */
-function initializeGui()
-{
+function initializeGui(&$argsObj) {
   $guiObj = new stdClass();
-  $guiObj->goback_url = $_SESSION['basehref'] . 'lib/platforms/platformsView.php'; 
+
+  $guiObj->tproject_id = $argsObj->testproject_id;
+
+  $guiObj->goback_url = 
+    $_SESSION['basehref'] . 'lib/platforms/platformsView.php?tproject_id=' .
+    $guiObj->tproject_id;
+
   $guiObj->page_title = lang_get('import_platforms');
-  $guiObj->file_check = array('show_results' => 0, 'status_ok' => 1, 'msg' => 'ok', 'filename' => '');
+  $guiObj->file_check = array('show_results' => 0, 'status_ok' => 1, 
+    'msg' => 'ok', 'filename' => '');
+
   $guiObj->importTypes = array('XML' => 'XML');
+
   $guiObj->importLimitBytes = config_get('import_file_max_size_bytes');
-  $guiObj->max_size_import_file_msg = sprintf(lang_get('max_size_file_msg'), $guiObj->importLimitBytes/1024);
+  $guiObj->max_size_import_file_msg = 
+    sprintf(lang_get('max_size_file_msg'), $guiObj->importLimitBytes/1024);
+
   return $guiObj;  
 }
 

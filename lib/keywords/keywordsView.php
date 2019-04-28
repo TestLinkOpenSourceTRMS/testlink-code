@@ -3,49 +3,48 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: keywordsView.php,v $
+ * @filesource: keywordsView.php
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
- *
- * allows users to manage keywords. 
+ * Display list of available keywords. 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db,false,false,"checkRights");
+require_once("keywordsEnv.php");
 
+testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$args = init_args();
-
-$tproject = new testproject($db);
-$keywords = $tproject->getKeywords($args->testproject_id);
+$gui = $args = init_args($db);
 
 $smarty = new TLSmarty();
-$smarty->assign('action',null);
-$smarty->assign('sqlResult',null);
-$smarty->assign('keywords', $keywords);
-$smarty->assign('canManage',has_rights($db,"mgt_modify_key"));
+$smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
  * @return object returns the arguments for the page
  */
-function init_args()
-{
-	$args = new stdClass();
-	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+function init_args(&$dbHandler) {
+  $args = new stdClass();
+  $tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+  $tproject_id = intval($tproject_id);
 
-	return $args;
-}
+  if( $tproject_id <= 0 ) {
+    throw new Exception("Error Invalid Test Project ID", 1);
+  }
 
-/**
- * @param $db resource the database connection handle
- * @param $user the current active user
- * 
- * @return boolean returns true if the page can be accessed
- */
-function checkRights(&$db,&$user)
-{
-	return $user->hasRight($db,'mgt_view_key');
+  // Check rights before doing anything else
+  // Abort if rights are not enough 
+  $user = $_SESSION['currentUser'];
+  $env['tproject_id'] = $tproject_id;
+  $env['tplan_id'] = 0;
+  
+  $check = new stdClass();
+  $check->items = array('mgt_view_key');
+  $check->mode = 'and';
+  checkAccess($dbHandler,$user,$env,$check);
+  
+  // OK, go ahead
+  $args = getKeywordsEnv($dbHandler,$user,$tproject_id);
+  $args->tproject_id = $tproject_id;
+
+  return $args;
 }
-?>

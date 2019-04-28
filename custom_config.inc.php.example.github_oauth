@@ -1,0 +1,20 @@
+<?php
+# ngrok http -region eu -subdomain=testlink 80
+$tlCfg->OAuthServers[2]['oauth_enabled'] = true;
+$tlCfg->OAuthServers[2]['oauth_name'] = 'github';
+$tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png';
+
+$tlCfg->OAuthServers[2]['oauth_client_id'] = '98e37f6f3f91602e9538';
+$tlCfg->OAuthServers[2]['oauth_client_secret'] = 'b66f036df4210af08a5d7b7fbf564e731e0ff189';
+
+// Can be authorization_code (by default), client_credentials or password
+$tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
+$tlCfg->OAuthServers[2]['oauth_url'] = 'https://github.com/login/oauth/authorize';
+
+$tlCfg->OAuthServers[2]['token_url'] = 'https://github.com/login/oauth/access_token';
+$tlCfg->OAuthServers[2]['oauth_force_single'] = false; 
+$tlCfg->OAuthServers[2]['oauth_profile'] = 'https://api.github.com/user';
+$tlCfg->OAuthServers[2]['oauth_scope'] = 'user:email';
+
+// ngrok http -subdomain=testlink 8888
+$tlCfg->OAuthServers[2]['redirect_uri'] = 'http://testlink.eu.ngrok.io/development/github/testlink-code/login.php?oauth=github';

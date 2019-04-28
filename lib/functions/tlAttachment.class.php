@@ -3,11 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * @filesource  tlAttachment.class.php
  * @package   TestLink
  * @author    Francisco Mancardi
- * @copyright   2007-2009, TestLink community 
- * @version     CVS: $Id: tlAttachment.class.php,v 1.2 2009/12/28 08:53:37 franciscom Exp $
- * @link    http://www.teamst.org/index.php
+ * @copyright 2007-2018, TestLink community 
+ * @link      http://www.teamst.org/index.php
  *
  */
 /** parenthal class */
@@ -174,10 +174,11 @@ class tlAttachment extends tlDBObject
    * 
    * @return integer returns tl::OK
    */
-  public function create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title)
+  public function create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,
+                         $fSize,$title,$opt=null)
   {
     $this->_clean();
-    
+ 
     $title = trim($title);
     $config = $this->attachmentCfg;
     if($title == "")
@@ -193,7 +194,14 @@ class tlAttachment extends tlDBObject
       }
 
     }
-    if(!$config->allow_empty_title && $title == "")
+
+    $allowEmptyTitle = $config->allow_empty_title;
+    if( isset($opt['allow_empty_title']) )
+    {
+      $allowEmptyTitle = $opt['allow_empty_title'];
+    }  
+
+    if( !$allowEmptyTitle && $title == "")
     {
       return self::E_TITLELENGTH; 
     }
@@ -254,11 +262,9 @@ class tlAttachment extends tlDBObject
 
       $this->isImage = !(strpos($this->fType,'image/') === FALSE);
       $this->inlineString = NULL;
-      if($this->isImage)
-      {
-        $this->inlineString = "[tlInlineImage]{$this->dbID}[/tlInlineImage]";  
+      if($this->isImage) {
+        $this->inlineString = "[tlInlineImage]{$this->dbID}[/tlInlineImage]";
       } 
-
     }
         
     return $info ? tl::OK : tl::ERROR;
@@ -269,8 +275,7 @@ class tlAttachment extends tlDBObject
    * 
    * @return array array with the attachment information
    */
-  public function getInfo()
-  {
+  public function getInfo() {
     return array("id" => $this->dbID,"title" => $this->title,
                "description" => $this->description,
                "file_name" => $this->fName, "file_type" => $this->fType,
@@ -288,17 +293,17 @@ class tlAttachment extends tlDBObject
    * 
    * @return integer returns tl::OK on success, tl::ERROR else
    */
-  public function writeToDB(&$db,&$itemID=null)
-  {
+  public function writeToDB(&$db,&$itemID=null) {
     $tableName = $db->prepare_string($this->fkTableName);
     $fName = $db->prepare_string($this->fName);
     $title = $db->prepare_string($this->title);
     $fType = $db->prepare_string($this->fType);
     
-    $destFPath = is_null($this->destFPath) ? 'NULL' : "'".$db->prepare_string($this->destFPath)."'";
+    $destFPath = 
+      is_null($this->destFPath) ? 'NULL' : "'" . $db->prepare_string($this->destFPath) . "'";
 
     // for FS-repository the contents are null
-    $fContents = is_null($this->fContents) ? 'NULL' : "'".$db->prepare_string($this->fContents)."'";
+    $fContents = is_null($this->fContents) ? 'NULL' : "'" . $db->prepare_string($this->fContents) . "'";
     
     $query = "INSERT INTO {$this->tables['attachments']} 
              (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 
@@ -306,8 +311,7 @@ class tlAttachment extends tlDBObject
              ",$fContents,{$this->compressionType},'{$title}')";
     
     $result = $db->exec_query($query);
-    if ($result)
-    {
+    if ($result) {
       $this->dbID = $db->insert_id();
       $itemID = $this->dbID;
     }
@@ -320,9 +324,9 @@ class tlAttachment extends tlDBObject
    * 
    * @return integer return tl::OK on success, tl::ERROR else
    */
-  public function deleteFromDB(&$db)
-  {
-    $query = "DELETE FROM {$this->tables['attachments']} WHERE id = {$this->dbID}";
+  public function deleteFromDB(&$db) {
+    $query = "DELETE FROM {$this->tables['attachments']} 
+              WHERE id = {$this->dbID}";
     $result = $db->exec_query($query);
     
     return $result ? tl::OK : tl::ERROR;
@@ -336,8 +340,7 @@ class tlAttachment extends tlDBObject
    * @param $detailLevel the detailLevel
    * @return tlAttachment the created attachment or null on failure
    */
-  static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
-  {
+  static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL) {
     return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlAttachment::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
   }
   

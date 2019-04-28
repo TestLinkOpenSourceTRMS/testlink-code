@@ -33,6 +33,7 @@ abstract class issueTrackerInterface
   // members to store the bugtracking information.
   // Values are set in the actual subclasses
   var $cfg = null;  // simpleXML object
+  var $xmlCfg = null; // xml string
   var $name = null;
 
   var $tlCharSet = null;
@@ -44,7 +45,12 @@ abstract class issueTrackerInterface
   var $interfaceViaDB = false;  // useful for connect/disconnect methods
   var $resolvedStatus;
   
-  var $methodOpt = array('buildViewBugLink' => array('addSummary' => false, 'colorByStatus' => false));
+  var $methodOpt = array('buildViewBugLink' => 
+                         array('addSummary' => false, 
+                               'colorByStatus' => false,
+                               'addReporter' => false,
+                               'addHandler' => false));
+
   var $guiCfg = array();
   var $summaryLengthLimit = 120;  // Mantis max is 128.  
 
@@ -54,17 +60,15 @@ abstract class issueTrackerInterface
    *
    * @param str $type (see tlIssueTracker.class.php $systems property)
    **/
-  function __construct($type,$config,$name)
-  {
+  function __construct($type,$config,$name) {
+
     $this->tlCharSet = config_get('charset');
     $this->guiCfg = array('use_decoration' => true); // add [] on summary and statusHTMLString
     $this->name = $name;
 
-    if( $this->setCfg($config) )
-    {     
+    if( $this->setCfg($config) ) {     
       // useful only for integration via DB
-      if( !property_exists($this->cfg,'dbcharset') )
-      {
+      if( !property_exists($this->cfg,'dbcharset') ) {
         $this->cfg->dbcharset = $this->tlCharSet;
       }
       $this->connect();
@@ -110,11 +114,11 @@ abstract class issueTrackerInterface
       return false;
     }
       
-    $xmlCfg = "<?xml version='1.0'?> " . $xmlString;
+    $this->xmlCfg = "<?xml version='1.0'?> " . $xmlString;
     libxml_use_internal_errors(true);
     try 
     {
-      $this->cfg = simplexml_load_string($xmlCfg);
+      $this->cfg = simplexml_load_string($this->xmlCfg);
       if (!$this->cfg) 
       {
         $msg = $signature . " - Failure loading XML STRING\n";
@@ -142,6 +146,25 @@ abstract class issueTrackerInterface
     }  
     $this->cfg->userinteraction = intval($this->cfg->userinteraction) > 0 ? 1 : 0;
 
+    // From 
+    // http://php.net/manual/it/function.unserialize.php#112823
+    //
+    // After PHP 5.3 an object made by 
+    // SimpleXML_Load_String() cannot be serialized.  
+    // An attempt to do so will result in a run-time 
+    // failure, throwing an exception.  
+    //
+    // If you store such an object in $_SESSION, 
+    // you will get a post-execution error that says this:
+    // Fatal error: Uncaught exception 'Exception' 
+    // with message 'Serialization of 'SimpleXMLElement' 
+    // is not allowed' in [no active file]:0 
+    // Stack trace: #0 {main} thrown in [no active file] 
+    // on line 0
+    //
+    // !!!!! The entire contents of the session will be lost.
+    // http://stackoverflow.com/questions/1584725/quickly-convert-simplexmlobject-to-stdclass
+    $this->cfg = json_decode(json_encode($this->cfg));
     return $retval;
   }
 
@@ -303,8 +326,15 @@ abstract class issueTrackerInterface
    * @return string returns a complete HTML HREF to view the bug (if found in db)
    *
    **/
-  function buildViewBugLink($issueID, $opt=null)
-  {
+  function buildViewBugLink($issueID, $opt=null) {
+
+    static $l10n;
+    
+    if( !$l10n ) {
+      $tg = array('issueReporter' => null, 'issueHandler' => null);
+      $l10n = init_labels($tg);
+    }
+
     $my['opt'] = $this->methodOpt[__FUNCTION__];
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
@@ -316,53 +346,77 @@ abstract class issueTrackerInterface
     $ret->isResolved = false;
     $ret->op = false;
 
-    if( is_null($issue) || !is_object($issue) )
-    {
+    if( is_null($issue) || !is_object($issue) ) {
       $ret->link = "TestLink Internal Message: getIssue($issueID) FAILURE on " . __METHOD__;
       return $ret;
     }
     
     $useIconv = property_exists($this->cfg,'dbcharset');
-    if($useIconv)
-    {
+    if($useIconv) {
       $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->IDHTMLString);
     }
-    else
-    {
+    else {
       $link .= $issue->IDHTMLString;
     }
     
-    if (!is_null($issue->statusHTMLString))
-    {
-      if($useIconv)
-      {
+    if (!is_null($issue->statusHTMLString)) {
+      if($useIconv) {
         $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->statusHTMLString);
-      }
-      else
-      {
+      } else {
         $link .= $issue->statusHTMLString;
       }
-    }
-    else
-    {
+    } else {
       $link .= $issueID;
     }
 
-    if($my['opt']['addSummary'])
-    {
-      if (!is_null($issue->summaryHTMLString))
-      {
+    if($my['opt']['addSummary']) {
+      if (!is_null($issue->summaryHTMLString)) {
         $link .= " : ";
-        if($useIconv)
-        {
+        if($useIconv) {
           $link .= iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$issue->summaryHTMLString);
         }
-        else
-        {
+        else {
           $link .= (string)$issue->summaryHTMLString;
         }
       }
     }
+
+    if($my['opt']['addReporter']) {
+      if( property_exists($issue, 'reportedBy') ) {
+        $link .= "";
+        $who = trim((string)$issue->reportedBy);
+        if( '' != $who ) {
+          
+          $link .= '<br>' . $l10n['issueReporter'] . ':&nbsp;';            
+          if($useIconv) {
+            $link .= 
+             iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$who);
+          }
+          else {
+            $link .= $who;
+          }          
+        }
+      }
+    }
+
+    if($my['opt']['addHandler']) {
+      if( property_exists($issue, 'handledBy') ) {
+        $link .= "";
+        $who = trim((string)$issue->handledBy);
+        if( '' != $who ) {
+
+          $link .= '<br>' . $l10n['issueHandler'] . ':&nbsp;';           
+          if($useIconv) {
+            $link .= 
+             iconv((string)$this->cfg->dbcharset,$this->tlCharSet,$who);
+          }
+          else {
+            $link .= $who;
+          }          
+        }
+      }
+    }
+
     $link .= "</a>";
 
     if($my['opt']['colorByStatus'] && property_exists($issue,'statusColor') )
@@ -558,8 +612,7 @@ abstract class issueTrackerInterface
    *
    * @return int 
    */
-  function getBugSummaryMaxLength()
-  {
+  function getBugSummaryMaxLength() {
     return $this->summaryLengthLimit;
   }
 

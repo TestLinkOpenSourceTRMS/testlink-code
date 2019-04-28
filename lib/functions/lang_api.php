@@ -5,8 +5,8 @@
  *
  * @filesource  lang_api.php
  * @package     TestLink
- * @copyright   2005-2013, TestLink community 
- * @link        http://www.teamst.org/index.php
+ * @copyright   2005-2016, TestLink community 
+ * @link        http://www.testlink.org
  *
  * @internal thanks
  * The functionality is based on Mantis BTS project code 
@@ -15,7 +15,7 @@
  *
  *
  * @internal revisions
- * @since 1.9.9
+ * @since 1.9.15
  * 20130913 - franciscom - TICKET 5916: It's impossible to login with browser set to italian language (or other language <> english)
  **/
 
@@ -64,6 +64,13 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
   }
   else
   {
+	$t_plugin_current = plugin_get_current();
+	if( !is_null( $t_plugin_current ) ) {
+		lang_load( $t_lang, TL_PLUGIN_PATH . $t_plugin_current . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $t_lang . DIRECTORY_SEPARATOR);
+		if( isset($g_lang_strings[$t_lang][$p_string]) ) {
+			$loc_str = $g_lang_strings[$t_lang][$p_string];
+		}
+	}
     if( $t_lang != 'en_GB' )
     {
       // force load of english strings
@@ -180,29 +187,21 @@ function langGetFormated( $text_key, $modifier )
  * instead of return a value, this value is assigned
  * to $params['var`]
  */
-function lang_get_smarty($params, &$smarty)
-  {
+function lang_get_smarty($params, $smarty) {
   $myLocale=isset($params['locale']) ? $params['locale'] : null;
-  if(  isset($params['var']) )
-  {
+  if(  isset($params['var']) ) {
     $labels2translate=explode(',',$params['s']);
-    if( count($labels2translate) == 1)
-    {
+    if( count($labels2translate) == 1) {
       $myLabels=lang_get($params['s'], $myLocale);
-    }
-    else
-    {
+    } else {
       $myLabels=array();
-      foreach($labels2translate as $str)
-      {
+      foreach($labels2translate as $str) {
         $str2search=trim($str);
         $myLabels[$str2search]=lang_get($str2search, $myLocale);
       }
     }
     $smarty->assign($params['var'], $myLabels);
-  }
-  else
-  {
+  } else {
     $the_ret = lang_get($params['s'], $myLocale);
     return $the_ret;
   }
@@ -211,20 +210,27 @@ function lang_get_smarty($params, &$smarty)
 
 /** 
  * Loads the specified language and stores it in $g_lang_strings,
+ * @param string $p_lang
+ * @param string $p_dir
  * to be used by lang_get
  */
-function lang_load( $p_lang ) {
+function lang_load( $p_lang, $p_dir = null ) {
   global $g_lang_strings, $g_active_language;
   global $TLS_STRINGFILE_CHARSET;
 
   $g_active_language  = $p_lang;
 
-  if ( isset( $g_lang_strings[ $p_lang ] ) ) {
-    return;
+  if( isset( $g_lang_strings[$p_lang] ) && is_null( $p_dir ) ) {
+	return;
   }
 
   $t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
   $lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
+  
+  if( !is_null( $p_dir ) && is_file( $p_dir . 'strings.txt' )) {
+	require( $p_dir . 'strings.txt' );
+  }
+  
   if (file_exists($lang_resource_path) && is_readable($lang_resource_path))
   {
     require($lang_resource_path);
@@ -242,7 +248,7 @@ function lang_load( $p_lang ) {
   else
   {
     require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php');
-    }
+  }
     
   // Allow overriding strings declared in the language file.
   // custom_strings_inc.php can use $g_active_language
@@ -329,7 +335,7 @@ function init_labels($label2translate)
  * if the key 'var' is found in the associative array instead of return a value,
  * this value is assigned to $params['var`]
  */
-function localize_date_smarty($params, &$smarty)
+function localize_date_smarty($params, $smarty)
 {
   return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
 }
@@ -339,7 +345,7 @@ function localize_date_smarty($params, &$smarty)
  * Add a time in smarty template (registered to Smarty class)
  * @uses localize_dateOrTimeStamp()
  */
-function localize_timestamp_smarty($params, &$smarty)
+function localize_timestamp_smarty($params, $smarty)
 {
   return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
 }
@@ -362,14 +368,13 @@ function localize_timestamp_smarty($params, &$smarty)
  * @since 1.9.6
  * 20130202 - franciscom - TICKET 
  */
-function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
+function localize_dateOrTimeStamp($params,$smarty,$what,$value)
 {
   // to supress E_STRICT messages
   setlocale(LC_ALL, TL_DEFAULT_LOCALE);
 
   $format = config_get($what);
-  if (!is_numeric($value))
-  {
+  if (!is_numeric($value)) {
     // in order to manage without error what seems to be 
     // a MSSQL PHP Drivers format
     // YYYY-MM-DDTHH:MM:SSZ
@@ -379,8 +384,7 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
   }
   
   $retVal = strftime($format, $value);
-  if(isset($params['var']))
-  {
+  if(isset($params['var'])) {
     $smarty->assign($params['var'],$retVal);
   }
   return $retVal;
@@ -405,5 +409,26 @@ function localizeTimeStamp($value,$format)
   return strftime($format, $value);
 }
 
+/**
+ *
+ */
+ function mailBodyGet($key,$locale=null)
+ {
+  
+  if (null === $locale)
+  {
+    $locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+  }
+  
+  $lzds = DIRECTORY_SEPARATOR;
+  $dir_base = TL_ABS_PATH . 'locale' . $lzds . $locale .
+              $lzds . 'text_templates' . $lzds . 'mail';
 
+  $rs = str_replace('/',$lzds,$key);
+  $resource_path = $dir_base . $lzds . $rs; 
+
+  $str = file_get_contents($resource_path);
+
+  return $str;
+ }
 

@@ -766,7 +766,10 @@ $TLS_collapse_tree = "Baum zuklappen";
 $TLS_filter_active_inactive = "Aktiv/Inaktiv";
 $TLS_show_only_active_testcases = "Nur aktive Testfälle";
 $TLS_show_only_inactive_testcases = "Nur inaktive Testfälle";
-
+$TLS_test_grouped_by = "Tests gruppiert nach";
+$TLS_mode_test_suite = "Testsuite";
+$TLS_mode_req_coverage = "Bedarf";
+$TLS_parent_child_relation = "Eltern-Kind-Beziehung";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -3642,6 +3645,21 @@ $TLS_testCaseStatus_final = 'Finale';
 $TLS_report_test_plan_design = 'Test Plan Design Bericht';	
 $TLS_report_test_plan_execution = 'Test Plan Ausführungs Bericht';	
 $TLS_execution_time_metrics = 'Ausführungs Zeit Metriken';			
-					
+
+// ----- pluginView.php -----       
+$TLS_desc_mgt_plugins = "undefined";                                                                                                                        
+$TLS_title_plugins = "undefined";
+$TLS_title_plugin_mgmt = "undefined";
+$TLS_th_plugin = "undefined";
+$TLS_th_plugin_description = "undefined";
+$TLS_th_plugin_version = "undefined";
+$TLS_installed_plugins = "undefined";
+$TLS_available_plugins = "undefined";
+$TLS_plugin_uninstalled = "undefined";
+$TLS_plugin_installed = "undefined";
+$TLS_confirm_install_header = "undefined";
+$TLS_confirm_install_text = "undefined";
+$TLS_confirm_uninstall_header = "undefined";
+$TLS_confirm_uninstall_text = "undefined";					
 // ----- END ------------------------------------------------------------------
 ?>

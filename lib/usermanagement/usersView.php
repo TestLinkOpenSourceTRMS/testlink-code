@@ -7,13 +7,10 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2012,2013 TestLink community 
+ * @copyright   2012,2018 TestLink community 
  * @filesource  usersViewNew.php
- * @link        http://www.teamst.org/index.php
+ * @link        http://www.testlink.org/
  *
- *
- * @internal revisions
- * @since 1.9.9
  * 
  */
 require_once("../../config.inc.php");            
@@ -22,8 +19,6 @@ require_once("users.inc.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();
-
-$templateCfg = templateConfiguration();
 
 
 list($args,$gui) = initEnv($db);
@@ -56,18 +51,13 @@ switch($args->operation)
 	break;
 }
 
-$gui->matrix = $users = getAllUsersForGrid($db);
 $gui->images = $smarty->getImages();
-$gui->tableSet[] =  buildMatrix($gui, $args);
+$gui->matrix = getAllUsersForGrid($db);
+$gui->tableSet[] = buildMatrix($gui, $args);
 
-$highlight = initialize_tabsmenu();
-$highlight->view_users = 1;
-$smarty->assign('highlight',$highlight);
-$smarty->assign('update_title_bar',0);
-$smarty->assign('reload',0);
-
+$tplCfg = templateConfiguration();
 $smarty->assign('gui',$gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($tplCfg->tpl);
 
 
 /**
@@ -101,10 +91,17 @@ function initEnv(&$dbHandler)
 
   $gui = new stdClass();
   $gui->grants = getGrantsForUserMgmt($dbHandler,$args->currentUser);
+  $gui->main_title = lang_get('title_user_mgmt');
   $gui->result = null;
   $gui->action = null;
   $gui->user_feedback = '';
+  $gui->update_title_bar = 0;
+  $gui->reload = 0;
+
   $gui->basehref = $args->basehref; 
+
+  $gui->highlight = initialize_tabsmenu();
+  $gui->highlight->view_users = 1;
 
   return array($args,$gui);
 }
@@ -126,17 +123,17 @@ function initEnv(&$dbHandler)
 */
 function getRoleColourCfg(&$db)
 {
-    $role_colour = config_get('role_colour');
-    $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-    unset($roles[TL_ROLES_UNDEFINED]);
-    foreach($roles as $roleObj)
+  $role_colour = config_get('role_colour');
+  $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+  unset($roles[TL_ROLES_UNDEFINED]);
+  foreach($roles as $roleObj)
+  {
+    if(!isset($role_colour[$roleObj->name]))
     {
-    	if(!isset($role_colour[$roleObj->name]))
-      {
-        $role_colour[$roleObj->name] = '';
-      }
+      $role_colour[$roleObj->name] = '';
     }
-    return $role_colour;
+  }
+  return $role_colour;
 }
 
 
@@ -165,23 +162,33 @@ function buildMatrix(&$guiObj,&$argsObj)
                    array('title_key' => 'th_role', 'width' => 150),
                    array('title_key' => 'th_locale', 'width' => 150),
                    array('title_key' => 'th_active', 'type' => 'oneZeroImage', 'width' => 50),
+                   array('title_key' => 'expiration_date', 'width' => 50),
                    array('title' => 'disableUser', 'tlType' => 'disableUser', 'width' => 150),
                    array('hidden' => true, 'title' => 'hidden_role_id', 'col_id' => 'role_id'),
                    array('hidden' => true, 'title' => 'hidden_user_id', 'col_id' => 'user_id'),
                    array('hidden' => true, 'title' => 'hidden_login', 'col_id' => 'login'),
                    array('hidden' => true, 'title' => 'hidden_is_special', 'col_id' => 'is_special'));
 
-  $lbl = init_labels(array('th_login' => null,'th_first_name' => null,'th_last_name' => null,
+  $lbl = init_labels(array('th_login' => null,'th_first_name' => null,
+                           'th_last_name' => null,'expiration' => null,
                            'th_email' => null));
 
   $loop2do = count($guiObj->matrix);
+ 
+  // login added as workaround for SORTING, because the whole string is used then user_id
+  // in url takes precedence over the login displayed 
+  $actionUrl = '<a href="' . $argsObj->basehref .  
+               'lib/usermanagement/usersEdit.php?doAction=edit&' .
+               'loginJustToFixSort=';
+
   for($zdx = 0; $zdx < $loop2do; $zdx++)
   {
-    $guiObj->matrix[$zdx]['handle'] = '<a href="' . $argsObj->basehref .  
-                                      'lib/usermanagement/usersEdit.php?doAction=edit&user_id=' .
-                                      $guiObj->matrix[$zdx]['user_id'] . '">' . $guiObj->matrix[$zdx]['login'] . "</a>";
+    $guiObj->matrix[$zdx]['handle'] = $actionUrl . 
+      urlencode($guiObj->matrix[$zdx]['login']) . '&user_id=' .
+      $guiObj->matrix[$zdx]['user_id'] . '">' . $guiObj->matrix[$zdx]['login'] . 
+      "</a>";
   }
- 
+  
 
   $matrix = new tlExtTable($columns, $guiObj->matrix, 'tl_users_list');
   
@@ -224,7 +231,8 @@ function getAllUsersForGrid(&$dbHandler)
   $tables = tlObject::getDBTables(array('users','roles'));
   
   // Column extraction order is CRITIC for correct behaviour of Ext-JS
-  $sql = " SELECT '' AS handle,U.first,U.last,U.email,R.description,U.locale,U.active," .
+  $sql = " SELECT '' AS handle,U.first,U.last,U.email,R.description," .
+         " U.locale,U.active,U.expiration_date," .
          " /* this columns will not visible on GUI */ " .
          " '' AS place_holder,R.id AS role_id,U.id AS user_id,U.login, 0 AS is_special " . 
          " FROM {$tables['users']} U " .
@@ -235,9 +243,18 @@ function getAllUsersForGrid(&$dbHandler)
   // because we need to render this on EXT-JS, we have issues with <no rights> role
   // due to <, then we are going to escape values in description column
   $loop2do = count($users);
+  $dummy = '';
   for($idx=0; $idx < $loop2do; $idx++)
   {
     $users[$idx]['description'] = htmlentities($users[$idx]['description']);    
+
+    // localize dates
+    $ed = trim($users[$idx]['expiration_date']);
+    if($ed != '')
+    {
+      $users[$idx]['expiration_date'] = 
+        localize_dateOrTimeStamp(null,$dummy,'date_format',$ed);
+    }  
   }  
 
 

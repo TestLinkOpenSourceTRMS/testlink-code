@@ -409,6 +409,11 @@ $TLS_invalid_query = "Query non valida";
 $TLS_warning = "Attenzione!!";
 $TLS_was_success = " è stato correttamente ";
 
+// ----- gui/templates/inc_filter.tpl -----
+$TLS_test_grouped_by = "Test raggruppati per";
+$TLS_mode_test_suite = "Test Suite";
+$TLS_mode_req_coverage = "Requisito";
+$TLS_parent_child_relation = "Relazione padre del bambino";
 
 // gui/templates/execNavigator.tpl
 $TLS_TestPlan = "TestPlan";
@@ -2332,5 +2337,20 @@ $TLS_desc_project_inventory_view = 'Visualizza Infrastruttura';
 $TLS_desc_platforms_management = 'Gestione Piattaforme';
 $TLS_desc_platforms_view = 'Visualizza Piattaforme';
 
+// ----- pluginView.php -----       
+$TLS_title_plugins = "undefined";
+$TLS_title_plugin_mgmt = "undefined";
+$TLS_th_plugin = "undefined";
+$TLS_th_plugin_description = "undefined";
+$TLS_th_plugin_version = "undefined";
+$TLS_installed_plugins = "undefined";
+$TLS_available_plugins = "undefined";
+$TLS_plugin_uninstalled = "undefined";
+$TLS_plugin_installed = "undefined";
+$TLS_confirm_install_header = "undefined";
+$TLS_confirm_install_text = "undefined";
+$TLS_confirm_uninstall_header = "undefined";
+$TLS_confirm_uninstall_text = "undefined";
+$TLS_desc_mgt_plugins = "undefined";
 // ----- END ------------------------------------------------------------------
 ?>

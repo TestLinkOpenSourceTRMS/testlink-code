@@ -7,14 +7,11 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @author      Mantis Team
- * @copyright   2006-2011 TestLink community 
+ * @copyright   2006-2018 TestLink community 
  * @copyright   2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  *             (Parts of code has been adapted from Mantis BT)
  * @link       http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.12 
-
  */
  
 /**
@@ -36,21 +33,14 @@
  */
 $ADODB_COUNTRECS = TRUE;
 
-// To use a different version of ADODB that provided with TL, use a similar bunch of lines
-// on custom_config.inc.php
-if( !defined('TL_ADODB_RELATIVE_PATH') )
-{
-    define('TL_ADODB_RELATIVE_PATH','/../../third_party/adodb/adodb.inc.php' );
-}
-require_once( dirname(__FILE__). TL_ADODB_RELATIVE_PATH );
 require_once( dirname(__FILE__). '/logging.inc.php' );
 
 /**
  * TestLink wrapper for ADODB component
  * @package   TestLink
  */
-class database 
-{
+class database {
+  
   const CUMULATIVE=1;
   const ONERROREXIT=1;
   
@@ -92,11 +82,17 @@ class database
   }
 
   // TICKET 4898: MSSQL - Add support for SQLSRV drivers needed for PHP on WINDOWS version 5.3 and higher
-  function database($db_type)
+  function __construct($db_type)
   {
-    $this->dbType = $adodb_driver = $db_type;
     $fetch_mode = ADODB_FETCH_ASSOC;
-    
+
+    $this->dbType = $db_type;
+    if( $this->dbType == 'mysql' && version_compare(phpversion(), "5.5.0", ">=") )
+    {
+      $this->dbType = 'mysqli';
+    }
+    $adodb_driver = $this->dbType;
+  
     // added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
     if($this->dbType == 'mssql')
     {
@@ -109,7 +105,7 @@ class database
         // This extension is not available anymore on Windows with PHP 5.3 or later.
         // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
         // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
-          //
+        //
         // PHP_VERSION_ID is available as of PHP 5.2.7
         if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
         {
@@ -211,7 +207,10 @@ class database
       if(defined('DBUG_ON') && DBUG_ON == 1)
       { 
         echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+        die();
       }   
+      echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+        die();
       
       //else
       //{
@@ -639,14 +638,14 @@ class database
     if ($result)
     {
       // -----------------------------------------------
-            // Error management Code         
-            $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
+      // Error management Code         
+      $errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
       if( ($empty_column = (trim($column)=='') ) )
       {
         $errorMsg .= 'empty column - SQL:' . $sql;
-          trigger_error($errorMsg,E_USER_NOTICE);
-          return null;
-        }
+        trigger_error($errorMsg,E_USER_NOTICE);
+        return null;
+      }
 
       while($row = $this->fetch_array($result))
       {
@@ -856,6 +855,7 @@ class database
     switch($this->db->databaseType)
     {
       case 'postgres7':
+      case 'postgres8':
         $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
         break;
         

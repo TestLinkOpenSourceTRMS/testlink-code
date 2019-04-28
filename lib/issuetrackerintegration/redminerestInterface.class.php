@@ -5,8 +5,6 @@
  * @filesource	redminerestInterface.class.php
  * @author Francisco Mancardi
  *
- * @internal revisions
- * @since 1.9.14
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/redmine-php-api/lib/redmine-rest-api.php");
@@ -25,29 +23,28 @@ class redminerestInterface extends issueTrackerInterface
 	 * @param str $type (see tlIssueTracker.class.php $systems property)
 	 * @param xml $cfg
 	 **/
-	function __construct($type,$config,$name)
-	{
-    $this->name = $name;
-		$this->interfaceViaDB = false;
-		$this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+	function __construct($type,$config,$name) {
+      $this->name = $name;
+	  $this->interfaceViaDB = false;
+	  $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
 
-    $this->defaultResolvedStatus = array();
-    $this->defaultResolvedStatus[] = array('code' => 3, 'verbose' => 'resolved');
-    $this->defaultResolvedStatus[] = array('code' => 5, 'verbose' => 'closed');
+      $this->defaultResolvedStatus = array();
+      $this->defaultResolvedStatus[] = array('code' => 3, 'verbose' => 'resolved');
+      $this->defaultResolvedStatus[] = array('code' => 5, 'verbose' => 'closed');
 		
-	  if( !$this->setCfg($config) )
-    {
-      return false;
-    }  
+      $this->canSetReporter = true;
+	  if( !$this->setCfg($config) ) {
+        return false;
+      }  
 
-    // http://www.redmine.org/issues/6843
-    // "Target version" is the new display name for this property, 
-    // but it's still named fixed_version internally and thus in the API.
-    // $issueXmlObj->addChild('fixed_version_id', (string)2);
-    $this->translate['targetversion'] = 'fixed_version_id';
+      // http://www.redmine.org/issues/6843
+      // "Target version" is the new display name for this property, 
+      // but it's still named fixed_version internally and thus in the API.
+      // $issueXmlObj->addChild('fixed_version_id', (string)2);
+      $this->translate['targetversion'] = 'fixed_version_id';
 
-		$this->completeCfg();
-		$this->setResolvedStatusCfg();
+      $this->completeCfg();
+	  $this->setResolvedStatusCfg();
 	  $this->connect();
 	}
 
@@ -114,8 +111,9 @@ class redminerestInterface extends issueTrackerInterface
     
     if( property_exists($this->cfg,'custom_fields') )
     {
-      $cf = $this->cfg->custom_fields;
-      $this->cfg->custom_fields = (string)$cf->asXML();
+      libxml_use_internal_errors(true);
+      $xcfg = simplexml_load_string($this->xmlCfg);
+      $this->cfg->custom_fields = (string)$xcfg->custom_fields->asXML();
     }   
   }
 
@@ -316,16 +314,21 @@ class redminerestInterface extends issueTrackerInterface
    * - custom_fields    - See Custom fields
    * - watcher_user_ids - Array of user ids to add as watchers (since 2.3.0)
    */
-  public function addIssue($summary,$description)
-  {
+  public function addIssue($summary,$description,$opt=null) {
+
+    $reporter = null;
+    if(!is_null($opt) && property_exists($opt, 'reporter')) {
+      $reporter = $opt->reporter;
+    }  
+
+
   	// Check mandatory info
-  	if( !property_exists($this->cfg,'projectidentifier') )
-  	{
+  	if( !property_exists($this->cfg,'projectidentifier') ) {
   	  throw new exception(__METHOD__ . " project identifier is MANDATORY");
   	}
-  	  
-    try
-    {
+
+
+    try {
        // needs json or xml
       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
 
@@ -342,28 +345,16 @@ class redminerestInterface extends issueTrackerInterface
       // Got from XML Configuration
       // improvement
       $pid = (string)$this->cfg->projectidentifier;
-      if(is_string($pid))
-      {
-        $pinfo = $this->APIClient->getProjectByIdentity($pid);
-        if(!is_null($pinfo))
-        {
-          $pid = (int)$pinfo->id;
-        }  
-      }  
-   		$issueXmlObj->addChild('project_id', (string)$pid);
+   	  $issueXmlObj->addChild('project_id',$pid);
 
-
-      if( property_exists($this->cfg,'trackerid') )
-      {
+      if( property_exists($this->cfg,'trackerid') ) {
         $issueXmlObj->addChild('tracker_id', (string)$this->cfg->trackerid);
       } 
 
       // try to be generic
-      if( property_exists($this->cfg,'parent_issue_id') )
-      {
+      if( property_exists($this->cfg,'parent_issue_id') ) {
         $issueXmlObj->addChild('parent_issue_id', (string)$this->cfg->parent_issue_id);
       } 
-
 
       // Why issuesAttr is issue ?
       // Idea was 
@@ -383,33 +374,39 @@ class redminerestInterface extends issueTrackerInterface
       // but it's still named fixed_version internally and thus in the API.
       // $issueXmlObj->addChild('fixed_version_id', (string)2);
       // 
-      if(!is_null($this->issueOtherAttr))
-      {
-        foreach($this->issueOtherAttr as $ka => $kv)
-        {
+      if(!is_null($this->issueOtherAttr)) {
+        foreach($this->issueOtherAttr as $ka => $kv) {
           // will treat everything as simple strings or can I check type
           // see completeCfg()
           $issueXmlObj->addChild((isset($this->translate[$ka]) ? $this->translate[$ka] : $ka), (string)$kv);
         }  
       }  
 
-      // 20150815 
       // In order to manage custom fields in simple way, 
       // it seems that is better create here plain XML String
       //
       $xml = $issueXmlObj->asXML();
-      if( property_exists($this->cfg,'custom_fields') )
-      {
+      if( property_exists($this->cfg,'custom_fields') ) {
         $cf = (string)$this->cfg->custom_fields;
+
+        // -- 
+        // Management of Dynamic Values From XML Configuration 
+        $safeVal = array();
+        foreach($opt->tagValue->value as $val) {
+          array_push($safeVal, htmlentities($val, ENT_XML1));
+        }
+        $cf = str_replace($opt->tagValue->tag,$safeVal,$cf);
+        // --
+
         $xml = str_replace('</issue>', $cf . '</issue>', $xml);
       }
 
       // $op = $this->APIClient->addIssueFromSimpleXML($issueXmlObj);
-      // file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
-      $op = $this->APIClient->addIssueFromXMLString($xml);
+      //file_put_contents('/var/testlink/' . __CLASS__ . '.log', $xml);
+      $op = $this->APIClient->addIssueFromXMLString($xml,$reporter);
 
-      if(is_null($op))
-      {
+      
+      if(is_null($op)) {
         $msg = "Error Calling " . __CLASS__ . 
                "->APIClient->addIssueFromXMLString() " .
                " check Communication TimeOut ";
@@ -420,11 +417,10 @@ class redminerestInterface extends issueTrackerInterface
                    'msg' => sprintf(lang_get('redmine_bug_created'),
                     $summary,$pid));
      }
-     catch (Exception $e)
-     {
+     catch (Exception $e) {
        $msg = "Create REDMINE Ticket FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
-       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($xml));
      }
      return $ret;
   }  
@@ -433,14 +429,20 @@ class redminerestInterface extends issueTrackerInterface
   /**
    *
    */
-  public function addNote($issueID,$noteText)
+  public function addNote($issueID,$noteText,$opt=null)
   {
     try
     {
        // needs json or xml
       $issueXmlObj = new SimpleXMLElement('<?xml version="1.0"?><issue></issue>');
       $issueXmlObj->addChild('notes', htmlspecialchars($noteText));
-      $op = $this->APIClient->addIssueNoteFromSimpleXML($issueID,$issueXmlObj);
+
+      $reporter = null;
+      if(!is_null($opt) && property_exists($opt, 'reporter'))
+      {
+        $reporter = $opt->reporter;
+      }  
+      $op = $this->APIClient->addIssueNoteFromSimpleXML($issueID,$issueXmlObj,$reporter);
       $ret = array('status_ok' => true, 'id' => (string)$op->id, 
                    'msg' => sprintf(lang_get('redmine_bug_created'),$summary,$issueXmlObj->project_id));
      }
@@ -448,7 +450,7 @@ class redminerestInterface extends issueTrackerInterface
      {
        $msg = "REDMINE Add Note to Ticket FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
-       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issue));
+       $ret = array('status_ok' => false, 'id' => -1, 'msg' => $msg . ' - serialized issue:' . serialize($issueXmlObj));
      }
      return $ret;
   }  

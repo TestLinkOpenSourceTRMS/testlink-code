@@ -5,14 +5,11 @@
  *
  * @filesource  tlTestPlanMetrics.class.php
  * @package     TestLink
- * @author      Kevin Levy, franciscom
- * @copyright   2004-2015, TestLink community 
+ * @author      franciscom
+ * @copyright   2004-2019, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * @uses        config.inc.php 
  * @uses        common.php 
- *
- * @internal revisions
- * @since 1.9.14
  *
  **/
 
@@ -24,7 +21,6 @@
  * in smarty templates.
  * 
  * @package TestLink
- * @author kevinlevy
  */
 class tlTestPlanMetrics extends testplan
 {
@@ -912,28 +908,24 @@ class tlTestPlanMetrics extends testplan
 
   /**
    *
-   * @internal revisions
-   *
-   * @since 1.9.9
    *
    */
-  function getExecCountersByExecStatus($id, $filters=null, $opt=null)
-  {
+  function getExecCountersByExecStatus($id, $filters=null, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe_id = intval($id);  
     list($my,$builds,$sqlStm,$union,$platformSet) = $this->helperBuildSQLExecCounters($id, $filters, $opt);
-    if(count($builds) <= 0 || is_null($builds))
-    {
+
+    if(is_null($builds) || count($builds) <= 0) {
       return null;  // >>---> Bye!
     }  
 
 
     // Latest Executions By Platform (LEBP)
     $add2key = '';
-    if( isset($opt['getOnlyActiveTCVersions']) )
-    {
+    if( isset($opt['getOnlyActiveTCVersions']) ) {
       $add2key='Active';
     }
+    
     $sqlUnionAP  = $union['exec' . $add2key];  //echo 'QD - <br>' . $sqlUnionAP . '<br>';
     $sqlUnionBP  =  $union['not_run' . $add2key]; //echo 'QD - <br>' . $sqlUnionBP . '<br>';
     
@@ -1512,6 +1504,7 @@ class tlTestPlanMetrics extends testplan
               $latestExec[$platform_id][$tcase_id]['id'] = $exec['executions_id'];
               $latestExec[$platform_id][$tcase_id]['status'] = $exec['status'];
               $latestExec[$platform_id][$tcase_id]['build_id'] = $exec['build_id'];
+              $latestExec[$platform_id][$tcase_id]['execution_notes'] = $exec['execution_notes'];
             }
             
             // -------------------------------------------------------------------
@@ -1870,7 +1863,7 @@ class tlTestPlanMetrics extends testplan
 
 
     // Additional Execution fields
-    $moreExecFields = '';
+    $moreExecFields = "";
     if($my['opt']['getExecutionNotes'])
     {
       $moreExecFields .= "E.notes AS execution_notes,";
@@ -1903,7 +1896,10 @@ class tlTestPlanMetrics extends testplan
               " SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
               " TPTCV.tcversion_id,TPTCV.platform_id," .
               " E.build_id,E.tcversion_number AS version,TCV.tc_external_id AS external_id, " .
-              " E.id AS executions_id, E.status AS status, " . $moreExecFields .
+              " E.id AS executions_id, E.status AS status, " . 
+              $moreExecFields .
+              " E.execution_type AS exec_type," .
+
               " (TPTCV.urgency * TCV.importance) AS urg_imp " .
               " FROM {$this->tables['testplan_tcversions']} TPTCV " .
   
@@ -1948,7 +1944,9 @@ class tlTestPlanMetrics extends testplan
               " TPTCV.tcversion_id, TPTCV.platform_id," .
               " BU.id AS build_id,TCV.version,TCV.tc_external_id AS external_id, " .
               " COALESCE(E.id,-1) AS executions_id, " .
-              " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " . $moreExecFields . 
+              " COALESCE(E.status,'{$this->notRunStatusCode}') AS status, " . 
+              $moreExecFields .
+              " TCV.execution_type AS exec_type," . 
               " (TPTCV.urgency * TCV.importance) AS urg_imp " .
               " FROM {$this->tables['testplan_tcversions']} TPTCV " .
   

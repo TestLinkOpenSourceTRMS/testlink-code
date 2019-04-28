@@ -5,8 +5,10 @@
  *
  * @filesource  rolesEdit.php
  *
- * @internal revisions 
- * @since 1.9.7
+ * @package     TestLink
+ * @copyright   2005-2018, TestLink community
+ * @link        http://www.testlink.org
+ *
  * 
 **/
 require_once("../../config.inc.php");
@@ -22,6 +24,7 @@ init_global_rights_maps();
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initialize_gui($args,$editorCfg['type']);
+$lbl = initLabels();
 $op = initialize_op();
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg) ;
@@ -31,10 +34,12 @@ $canManage = $args->user->hasRight($db,"role_management") ? true : false;
 switch($args->doAction)
 {
   case 'create':
+    $gui->main_title = $lbl["action_{$args->doAction}_role"];
   break;
 
   case 'edit':
     $op->role = tlRole::getByID($db,$args->roleid);
+    $gui->main_title = $lbl["action_{$args->doAction}_role"];
   break;
 
   case 'doCreate':
@@ -54,11 +59,16 @@ switch($args->doAction)
 $gui = complete_gui($db,$gui,$args,$op->role,$owebeditor);
 $gui->userFeedback = $op->userFeedback;
 
+// Kint::dump($gui);
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-$smarty->assign('highlight',$gui->highlight);
+// $smarty->assign('highlight',$gui->highlight);
 renderGui($smarty,$args,$templateCfg);
 
+/**
+ *
+ */
 function init_args()
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -77,10 +87,11 @@ function init_args()
   return $args;
 }
 
-
+/**
+ *
+ */
 function doOperation(&$dbHandler,$argsObj,$operation)
 {
-
   $op = new stdClass();
   $op->role = new tlRole();
   $op->userFeedback = null;
@@ -196,6 +207,7 @@ function getRightsCfg()
     $cfg->system_mgmt = config_get('rights_system');
     $cfg->platform_mgmt = config_get('rights_platforms');
     $cfg->issuetracker_mgmt = config_get('rights_issuetrackers');
+    $cfg->codetracker_mgmt = config_get('rights_codetrackers');
     $cfg->execution = config_get('rights_executions');
     // $cfg->reqmgrsystem_mgmt = config_get('rights_reqmgrsystems');
 
@@ -216,16 +228,21 @@ function initialize_gui(&$argsObj,$editorType)
     return $gui;
 }
 
-
+/**
+ *
+ */
 function initialize_op()
 {
-    $op = new stdClass();
-    $op->role = new tlRole();
-    $op->userFeedback = '';
+  $op = new stdClass();
+  $op->role = new tlRole();
+  $op->userFeedback = '';
     
-    return $op;
+  return $op;
 }
 
+/**
+ *
+ */
 function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 {
   $actionCfg['operation'] = array('create' => 'doCreate', 'edit' => 'doUpdate',
@@ -233,16 +250,19 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
                                   'duplicate' => 'duplicate');
 
   $actionCfg['highlight'] = array('create' => 'create_role', 'edit' => 'edit_role',
-                                  'doCreate' => 'create_role', 'doUpdate' => 'edit_role',
+                                  'doCreate' => 'create_role', 
+                                  'doUpdate' => 'edit_role',
                                   'duplicate' => 'create_role');
 
-
-  $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
+  $guiObj->highlight = new stdClass();
+  $kp = $actionCfg['highlight'][$argsObj->doAction];
+  $guiObj->highlight->$kp = 1;
   $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
+
   $guiObj->role = $roleObj;
   $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
+  $guiObj->grants->mgt_view_events = $argsObj->user->hasRight($db,"mgt_view_events");
   $guiObj->rightsCfg = getRightsCfg();
-  $guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
   
   $guiObj->disabledAttr = $guiObj->roleCanBeEdited ? ' ' : ' disabled="disabled" '; 
 
@@ -282,8 +302,18 @@ function generateUniqueName($s)
   return substr($s . ' - Copy - ' . substr(sha1(rand()), 0, 50),0,100);
 }
 
+
+/**
+ *
+ */
+function initLabels()
+{
+  $tg = array('action_create_role' => null,'action_edit_role' => null);
+  $labels = init_labels($tg);
+  return $labels;
+}
+
 function checkRights(&$db,&$user)
 {
   return $user->hasRight($db,"role_management");
 }
-?>

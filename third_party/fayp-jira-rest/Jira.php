@@ -6,6 +6,9 @@
  * @author     Francisco Mancardi <francisco.mancardi@gmail.com>
  *
  * @since TestLink 1.9.4
+ *
+ * @internal revision
+ * @since 1.9.16 
  */
 
 namespace JiraApi;
@@ -14,18 +17,38 @@ class Jira
 {
 
     protected $host;
+    protected $username;
+    protected $password;
+    protected $proxy;
 
-    public function __construct(array $config = array())
+    /**
+     * Having properties for saving connection config
+     * is needed because on TestLink I've implemented
+     * poor's man caching on $_SESSION, and then I need
+     * to save connection info in THIS OBJECT, because
+     * is not recreated.
+     *
+     */
+    public function __construct(array $cfg = array())
     {
-        // Check config before do nothing
-        $this->request = new RestRequest();
-        $this->request->username = (isset($config['username'])) ? trim($config['username']) : null;
-        $this->request->password = (isset($config['password'])) ? trim($config['password']) : null;
-        $this->host = (isset($config['host'])) ? trim($config['host']) : null; 
-        
-        $this->configCheck();
-        $this->host = trim($this->host,"/") . '/'; 
+        if( !is_null($cfg) )
+        {
+            $k2trim = array('username','password','host');
+            foreach( $k2trim as $tg )
+            {
+              $this->$tg = (isset($cfg[$tg])) ? trim($cfg[$tg]) : null;
+            }    
+            $this->proxy = isset($cfg['proxy']) ? $cfg['proxy'] : null;
 
+        }    
+        $this->request = new RestRequest();
+        $this->request->username = $this->username; 
+        $this->request->password = $this->password;
+        $this->request->proxy = $this->proxy;
+
+        $this->configCheck();
+    
+        $this->host = trim($this->host,"/") . '/'; 
         if( ($last = $this->host[strlen($this->host)-1]) != '/' )
         {
             $this->host .= '/';
@@ -57,7 +80,7 @@ class Jira
      */
     public function testLogin()
     {
-        $user = $this->getUser($this->request->username);
+        $user = $this->getMyself();
         if (!empty($user) && $this->request->lastRequestStatus()) {
             return true;
         }
@@ -66,11 +89,24 @@ class Jira
     }
 
     /**
-     *
+     * https://docs.atlassian.com/jira/REST/latest/#api/2/user-getUser
      */
     public function getUser($username)
     {
-        $this->request->openConnect($this->host . 'user/search/?username=' . $username, 'GET');
+        $this->request->openConnect($this->host . 'user/?username=' . $username, 'GET');
+        $this->request->execute();
+        $user = json_decode($this->request->getResponseBody());
+
+        return $user;
+    }
+
+    /**
+     * https://docs.atlassian.com/jira/REST/latest/
+     * https://docs.atlassian.com/jira/REST/latest/#api/2/myself
+     */
+    public function getMyself()
+    {
+        $this->request->openConnect($this->host . 'myself', 'GET');
         $this->request->execute();
         $user = json_decode($this->request->getResponseBody());
 
@@ -387,6 +423,104 @@ class Jira
             }    
         }
         return $obj;    
+    }
+
+    /**
+     * return a map where main key is projectkey (if call has returned infor
+     * for this key)
+     * Each element is an map with issueTypeID as key, and each element inside
+     * this map has to elements with two keys:
+     * - issueTypeName
+     * - fields => array with field names
+     *
+     * Here a partial example for project with key ZOFF
+     * array(1) {
+     *    ["ZOFF"]=>
+     *         array(7) {
+     *           [1]=>
+     *           array(2) {
+     *             ["issueTypeName"]=> "Bug"
+     *             ["fields"]=> array(21) {
+     *                           ["summary"] => "summary"
+     *                           ["reporter"] => "reporter" 
+     */
+    public function getCreateIssueFields($projectKeys=null)
+    {
+        $opt = 'expand=projects.issuetypes.fields';
+        $items = $this->getCreateIssueMetadata($projectKeys,$opt);
+        $ret = null;
+        if(!is_null($items) && count($items->projects) > 0)
+        {
+            $ro = &$items->projects;
+            foreach($ro as $ele)
+            {
+                $ret[$ele->key] = array();
+                $rx = &$ele->issuetypes;
+                foreach($rx as $it)
+                {
+                    $ret[$ele->key][$it->id]['issueTypeName'] = $it->name;
+                    foreach($it->fields as $field)
+                    {
+
+                      $ret[$ele->key][$it->id]['fields'][$field->key] = $field->name;
+                    } 
+                }    
+            }    
+            //return $items->projects;
+        }
+        return $ret; 
+    }
+
+
+
+    /**
+     * https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getCreateIssueMeta
+     *
+     * https://developer.atlassian.com/jiradev/jira-apis/jira-rest-apis/
+     *       jira-rest-api-tutorials/jira-rest-api-example-discovering-meta-data-for-creating-issues
+     *
+     *
+     * curl -D- -u fred:fred -X GET -H "Content-Type: application/json" \
+     *      http://kelpie9:8081/rest/api/2/issue/createmeta   
+     *
+     * curl -D- -u fred:fred -X GET -H "Content-Type: application/json" \
+     *      http://kelpie9:8081/rest/api/2/issue/createmeta?projectKeys=QA     
+     * 
+     * curl -D- -u fred:fred -X GET -H "Content-Type: application/json" \
+     *      http://kelpie9:8081/rest/api/2/issue/createmeta?projectKeys=QA,XSS     
+     *
+     * From Atlassian documentation
+     * projectKeys  string  
+     *              lists the projects with which to filter the results. 
+     *              If absent, all projects are returned. 
+     *              This parameter can be comma-separated list. 
+     *              Specifiying a project that does not exist 
+     *              (or that you cannot create issues in) is not an error, 
+     *              but it will not be in the results.
+     *
+     * opt can contain issuetypeIds, issuetypeNames, expand=projects.issuetypes.fields.
+     *     Fields will only be returned if expand=projects.issuetypes.fields.
+     */
+    public function getCreateIssueMetadata($projectKeys=null,$opt=null)
+    {
+        $cmd = $this->host . 'issue/createmeta';
+        $ope = '?';
+        if( !is_null($projectKeys) )
+        {
+           $cmd .= $ope . 'projectKeys=' . $projectKeys;
+           $ope = '&';
+        }
+
+        if( !is_null($opt) )
+        {
+           $cmd .= $ope . $opt;
+        }
+
+        $this->request->openConnect($cmd, 'GET');
+        $this->request->execute();
+        $items = json_decode($this->request->getResponseBody());
+
+        return $items;
     }
 
 

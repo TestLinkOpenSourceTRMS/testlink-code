@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
@@ -840,7 +840,10 @@ $TLS_filter_active_inactive = "Aktywne / nieaktywne";
 $TLS_show_only_active_testcases = "Tylko aktywne przypadki";
 $TLS_show_only_inactive_testcases = "Tylko nieaktywne przypadki";
 $TLS_show_whole_spec_on_right_panel = 'Pokaż całość (prawy panel)';
-
+$TLS_test_grouped_by = "Testy pogrupowane według";
+$TLS_mode_test_suite = "Zestaw testów";
+$TLS_mode_req_coverage = "Wymaganie";
+$TLS_parent_child_relation = "Relacje rodzic dziecko";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -3803,5 +3806,21 @@ $TLS_xls_jmexport_result_comment = 'Result comment';
 $TLS_link_report_test_plan_results_csv = 'Wyniki Planu Testów (XLSX)';
 
 $TLS_display_inline ="Pokaż w linii";
+
+// ----- pluginView.php -----       
+$TLS_title_plugins = "undefined";
+$TLS_title_plugin_mgmt = "undefined";
+$TLS_th_plugin = "undefined";
+$TLS_th_plugin_description = "undefined";
+$TLS_th_plugin_version = "undefined";
+$TLS_installed_plugins = "undefined";
+$TLS_available_plugins = "undefined";
+$TLS_plugin_uninstalled = "undefined";
+$TLS_plugin_installed = "undefined";
+$TLS_confirm_install_header = "undefined";
+$TLS_confirm_install_text = "undefined";
+$TLS_confirm_uninstall_header = "undefined";
+$TLS_confirm_uninstall_text = "undefined";
+$TLS_desc_mgt_plugins = "undefined";
 // ----- END ------------------------------------------------------------------
 ?>

@@ -9,13 +9,9 @@
  * @filesource  testplan.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
- *
- * @internal revisions
- * 
- * @since 1.9.14
  **/
 
 /** related functionality */
@@ -156,14 +152,12 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function createFromObject($item,$opt=null)
-  {
+  function createFromObject($item,$opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-    try 
-    {
+    try {
       // mandatory checks
       if(strlen($item->name)==0)
       {
@@ -470,10 +464,14 @@ class testplan extends tlObjectWithAttachments
       case 'full':
       default:
             $sql =   "/* $debugMsg */ " .
-                " SELECT TPLAN.*,NH_TPLAN.name,NH_TPLAN.parent_id " .
+                " SELECT TPLAN.*,NH_TPLAN.name,NH_TPLAN.parent_id, " .
+                " NH_TPROJ.id AS tproject_id, NH_TPROJ.name AS tproject_name,TPROJ.prefix " .
                " FROM {$this->tables['testplans']} TPLAN, " .
                " {$this->tables['nodes_hierarchy']} NH_TPLAN " .
+               " JOIN {$this->tables['nodes_hierarchy']} NH_TPROJ ON NH_TPROJ.id = NH_TPLAN.parent_id " .
+               " JOIN {$this->tables['testprojects']} TPROJ ON TPROJ.ID = NH_TPROJ.id " .
                " WHERE TPLAN.id = NH_TPLAN.id AND TPLAN.id = " . $safe_id;
+         
       break;  
     
     }
@@ -728,8 +726,7 @@ class testplan extends tlObjectWithAttachments
    * 
    * @internal revisions:
    */
-  function get_linked_items_id($id)
-  {
+  function get_linked_items_id($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = " /* $debugMsg */ ". 
@@ -749,19 +746,38 @@ class testplan extends tlObjectWithAttachments
   function get_linked_tcvid($id,$platformID,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $options = array('addEstimatedExecDuration' => false);
+    $options = array('addEstimatedExecDuration' => false,
+                     'tcase_id' => 0);
     $options = array_merge($options,(array)$opt);
 
-    $sql = " /* $debugMsg */ " . 
-           " SELECT tcversion_id " . 
-           ($options['addEstimatedExecDuration'] ? ",TCV.estimated_exec_duration" : '') . 
-           " FROM {$this->tables['testplan_tcversions']} ";
+    $addFields = '';
+    $addSql = ''; 
+    $addWhere = '';
 
     if($options['addEstimatedExecDuration'])
     {
-      $sql .= " JOIN {$this->tables['tcversions']} TCV ON TCV.id = tcversion_id ";
+      $addFields = ',TCV.estimated_exec_duration '; 
+      $addSql .= " JOIN {$this->tables['tcversions']} TCV ON TCV.id = tcversion_id ";
     }  
-    $sql .= " WHERE testplan_id = " . intval($id) . " AND platform_id = " . intval($platformID) ;
+
+    if($options['tcase_id'] > 0)
+    {
+      $addFields = ', NHTCV.parent_id AS tcase_id ';
+      $addSql .= " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+                 " ON NHTCV.id = tcversion_id ";
+
+      $addWhere = ' AND NHTCV.parent_id = ' . 
+                  intval($options['tcase_id']); 
+    }
+
+    $sql = " /* $debugMsg */ " . 
+           " SELECT tcversion_id {$addFields} " . 
+           " FROM {$this->tables['testplan_tcversions']} " .
+           $addSql;
+
+    $sql .= " WHERE testplan_id = " . intval($id) . 
+            " AND platform_id = " . intval($platformID) . 
+            $addWhere;
 
     $items = $this->db->fetchRowsIntoMap($sql,'tcversion_id');           
     return $items;
@@ -882,32 +898,27 @@ class testplan extends tlObjectWithAttachments
    * 
    * 
    */
-  function helper_keywords_sql($filter,$options=null)
-  {
+  function helper_keywords_sql($filter,$options=null) {
     
     $sql = array('filter' => '', 'join' => '');
 
-    if( is_array($filter) )
-    {
+    if( is_array($filter) ) {
       // 0 -> no keyword, remove 
-      if( $filter[0] == 0 )
-      {
+      if( $filter[0] == 0 ) {
         array_shift($filter);
       }
       
-      if(count($filter))
-      {
-        $sql['filter'] = " AND TK.keyword_id IN (" . implode(',',$filter) . ")";            
+      if(count($filter)) {
+        $sql['filter'] = " AND TK.keyword_id IN (" . implode(',',$filter) . ")"; 
       }  
     }
-    else if($filter > 0)
-    {
+    else if($filter > 0) {
       $sql['filter'] = " AND TK.keyword_id = {$filter} ";
     }
     
-    if( $sql['filter'] != '' )
-    {
-      $sql['join'] = " JOIN {$this->tables['testcase_keywords']} TK ON TK.testcase_id = NH_TCV.parent_id ";
+    if( $sql['filter'] != '' ) {
+      $sql['join'] = " JOIN {$this->tables['testcase_keywords']} TK
+                       ON TK.tcversion_id = NH_TCV.id ";
     }
 
     // mmm, here there is missing documentation
@@ -1142,14 +1153,11 @@ class testplan extends tlObjectWithAttachments
    * @param integer $id   : test plan id
    * @param array $items: assoc array key=tc_id value=tcversion_id
    * 
-   * @internal revisions:
-   *    20100725 - asimon - BUGID 3497 and hopefully also 3530
    */
-  function unlink_tcversions($id,&$items)
-  {
+  function unlink_tcversions($id,&$items) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    if(is_null($items))
-    {
+
+    if(is_null($items)) {
       return;
     }
     
@@ -1160,11 +1168,9 @@ class testplan extends tlObjectWithAttachments
     $platformInfo = $this->platform_mgr->getLinkedToTestplanAsMap($id);
     $platformLabel = lang_get('platform');
 
-        $dummy = null;
-    foreach($items['items'] as $tcase_id => $elem) 
-    {
-      foreach($elem as $platform_id => $tcversion_id) 
-      {
+    $dummy = null;
+    foreach($items['items'] as $tcase_id => $elem)  {
+      foreach($elem as $platform_id => $tcversion_id)  {
         $dummy[] = "(tcversion_id = {$tcversion_id} AND platform_id = {$platform_id})";
       }
     }
@@ -1191,23 +1197,68 @@ class testplan extends tlObjectWithAttachments
     $where_clause = " ( {$where_clause} ) ";
     
     // First get the executions id if any exist
-    $sql = " SELECT id AS execution_id FROM {$this->tables['executions']} " .
-           " WHERE testplan_id = {$id} AND ${where_clause}";
+    $sql = " /* $debugMsg */ SELECT id AS execution_id 
+             FROM {$this->tables['executions']}
+             WHERE testplan_id = {$id} AND ${where_clause}";
+
     $exec_ids = $this->db->fetchRowsIntoMap($sql,'execution_id');
     
-    if( !is_null($exec_ids) and count($exec_ids) > 0 )
-    {
+    if( !is_null($exec_ids) and count($exec_ids) > 0 ) {
       // has executions
       $exec_ids = array_keys($exec_ids);
-      $exec_id_where= " WHERE execution_id IN (" . implode(",",$exec_ids) . ")";
-      
+      $exec_id_list = implode(",",$exec_ids);
+      $exec_id_where= " WHERE execution_id IN ($exec_id_list)";
+
       // Remove bugs if any exist
-      $sql=" DELETE FROM {$this->tables['execution_bugs']} {$exec_id_where} ";
+      // This will remove the bug @step level if any exists.
+      $sql = " /* $debugMsg */ DELETE FROM {$this->tables['execution_bugs']} 
+               {$exec_id_where} ";
       $result = $this->db->exec_query($sql);
-      
-      // now remove executions
-      $sql=" DELETE FROM {$this->tables['executions']} " .
-         " WHERE testplan_id = {$id} AND ${where_clause}";
+
+      // Remove CF exec values     
+      $sql = " /* $debugMsg */ 
+               DELETE FROM {$this->tables['cfield_execution_values']} 
+               {$exec_id_where} ";
+      $result = $this->db->exec_query($sql);
+
+      // execution attachments
+      $dummy = " /* $debugMsg */ SELECT id FROM {$this->tables['attachments']} 
+                 WHERE fk_table = 'executions'
+                 AND fk_id IN ({$exec_id_list}) ";
+    
+      $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+      if(!is_null($rs)) {
+        foreach($rs as $fik => $v) {
+          deleteAttachment($this->db,$fik,false);
+        }  
+      }  
+
+
+      // Work on Execution on Test Case Steps
+      // Attachments 
+      $dummy = " /* $debugMsg */ SELECT id FROM {$this->tables['attachments']} 
+                 WHERE fk_table = 'execution_tcsteps' 
+                 AND fk_id IN (
+                 SELECT id FROM {$this->tables['execution_tcsteps']}
+                 {$exec_id_where} )";
+
+      $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+      if(!is_null($rs)) {
+        foreach($rs as $fik => $v) {
+          deleteAttachment($this->db,$fik,false);
+        }  
+      }  
+
+     // Remove test case STEP executions if any exists 
+      // execution_id is an attribute.     
+      $sql = "/* $debugMsg */ DELETE FROM {$this->tables['execution_tcsteps']} 
+              {$exec_id_where} ";
+      $result = $this->db->exec_query($sql);
+
+ 
+      // Grand Finale now remove executions
+      $sql = " /* $debugMsg */ DELETE FROM {$this->tables['executions']}
+               WHERE testplan_id = {$id} AND ${where_clause}";
       $result = $this->db->exec_query($sql);
     }
     
@@ -1217,8 +1268,7 @@ class testplan extends tlObjectWithAttachments
        " WHERE testplan_id={$id} AND {$where_clause} ";
     $link_ids = $this->db->fetchRowsIntoMap($sql,'link_id');
     $features = array_keys($link_ids);
-    if( count($features) == 1)
-    {
+    if( count($features) == 1) {
       $features=$features[0];
     }
     $this->assignment_mgr->delete_by_feature_id($features);
@@ -1229,13 +1279,10 @@ class testplan extends tlObjectWithAttachments
        " WHERE testplan_id={$id} AND {$where_clause} ";
     $result = $this->db->exec_query($sql);
     
-    foreach($items['items'] as $tcase_id => $elem)
-    {
-      foreach($elem as $platform_id => $tcversion)
-      {
+    foreach($items['items'] as $tcase_id => $elem) {
+      foreach($elem as $platform_id => $tcversion) {
         $addInfo='';
-        if( isset($platformInfo[$platform_id]) )
-        {
+        if( isset($platformInfo[$platform_id]) ) {
           $addInfo = ' - ' . $platformLabel . ':' . $platformInfo[$platform_id];
         }
         $auditMsg=TLS("audit_tc_removed_from_testplan",
@@ -1254,45 +1301,32 @@ class testplan extends tlObjectWithAttachments
 
   /**
    * 
-   * @internal revisions
    */
-  function get_keywords_map($id,$order_by_clause='')
-  {
+  function get_keywords_map($id,$order_by_clause='') {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $map_keywords=null;
+    $keywords = null;
     
-    // keywords are associated to testcase id,
-    // we need to get the list of testcases linked to the testplan
-    //
-    // After several tests, this seems to be best option
-    // Tested on test plan with 14000 test cases, to get 60 keywords. (20120524)
-    //
-    $sql = " /* $debugMsg */ " .
-         " SELECT SQK.keyword_id ,KW.keyword " .
-         " FROM {$this->tables['keywords']} KW " .
-         " JOIN ( " .
-         "    SELECT DISTINCT TCKW.keyword_id  " .
-         "     FROM {$this->tables['testplan_tcversions']} TPTCV " .
-         "     JOIN {$this->tables['nodes_hierarchy']} NHTC " . 
-         "     ON TPTCV.tcversion_id = NHTC.id " .
-         "     JOIN {$this->tables['testcase_keywords']} TCKW " .
-         "     ON TCKW.testcase_id = NHTC.parent_id " .
-         "     WHERE TPTCV.testplan_id = " . intval($id) . 
-         "     ) AS SQK " .
-         " ON KW.id = SQK.keyword_id " .
-         $order_by_clause;
-    $map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+    $sql = " /* $debugMsg */ ";
+    $sql .= " SELECT TCKW.keyword_id,KW.keyword " .
+            " FROM {$this->tables['keywords']} KW " .
+            " JOIN {$this->tables['testcase_keywords']} TCKW " .
+            " ON KW.id = TCKW.keyword_id " .
+            " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+            " ON TCKW.tcversion_id = TPTCV.tcversion_id " .
+            " WHERE TPTCV.testplan_id = " . intval($id) . 
+            $order_by_clause;
+
+    $keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
   
-    return ($map_keywords);
+    return $keywords;
   }
   
 
-/*
-  args :
-        [$keyword_id]: can be an array
-*/
-  function get_keywords_tcases($id,$keyword_id=0)
-  {
+  /**
+   * args :
+   *     [$keyword_id]: can be an array
+   */
+  function DEPRECATED_get_keywords_tcases($id,$keyword_id=0) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $CUMULATIVE=1;
@@ -1334,6 +1368,45 @@ class testplan extends tlObjectWithAttachments
     
     return ($map_keywords);
   } // end function
+
+
+
+  /**
+   * args :
+   *     [$keyword_id]: can be an array
+   */
+  function getKeywordsLinkedTCVersions($id,$keyword_id=0) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $keywords=null;
+    $safeID = intval($id);
+
+    $kwFilter= '' ;
+    if( is_array($keyword_id) ) {
+        $kwFilter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")"; 
+    }
+    else if( $keyword_id > 0 ) {
+        $kwFilter = " AND keyword_id = {$keyword_id} ";
+    }
+
+    $sql = " /* $debugMsg */ ";
+    $sql .= " SELECT TCKW.testcase_id,TCKW.keyword_id,KW.keyword " .
+            " FROM {$this->tables['keywords']} KW " .
+            " JOIN {$this->tables['testcase_keywords']} TCKW " .
+            " ON KW.id = TCKW.keyword_id " .
+            " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+            " ON TCKW.tcversion_id = TPTCV.tcversion_id " .
+            " WHERE TPTCV.testplan_id = " . intval($id) . 
+            " {$kwFilter} ORDER BY keyword ASC ";
+
+    // CUMULATIVE is needed to get all keywords assigned 
+    // to each testcase linked to testplan         
+    $keywords = 
+        $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
+
+    return $keywords;
+  } // end function
+
 
 
   /*
@@ -1810,10 +1883,11 @@ class testplan extends tlObjectWithAttachments
   /**
    * Delete test plan and all related link to other items
    *
-    */
-  function delete($id)
-  {
+   */
+  function delete($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $id = intval($id);
 
     $the_sql=array();
     $main_sql=array();
@@ -1836,15 +1910,45 @@ class testplan extends tlObjectWithAttachments
     $the_sql[]="DELETE FROM {$this->tables['cfield_execution_values']} WHERE testplan_id={$id}";
     $the_sql[]="DELETE FROM {$this->tables['user_testplan_roles']} WHERE testplan_id={$id}";
     
+
     
     // When deleting from executions, we need to clean related tables
-    $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
-           "IN (SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id})";
-    $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";
-    $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; //BUGID 3845    
+    $execIDSetSQL = " SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id} ";
+
+    // get test step exec attachments if any exists
+    $dummy = " SELECT id FROM {$this->tables['execution_tcsteps']} " . 
+             " WHERE execution_id IN ({$execIDSetSQL}) ";
+     
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
+      }  
+    }  
+
+    // execution attachments
+    $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
+             " WHERE fk_table = 'executions' " .
+             " AND fk_id IN ({$execIDSetSQL}) ";
+  
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
+      }  
+    }  
     
-    foreach($the_sql as $sql)
-    {
+
+    $the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
+           "IN ($execIDSetSQL)";
+    
+    $the_sql[]="DELETE FROM {$this->tables['execution_tcsteps']} WHERE execution_id ".
+           "IN ($execIDSetSQL) ";           
+    $the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";
+    $the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}"; 
+
+    
+    foreach($the_sql as $sql) {
       $this->db->exec_query($sql);
     }
     
@@ -1889,7 +1993,7 @@ class testplan extends tlObjectWithAttachments
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my = array();
-    $my['opt'] = array('orderByDir' => null);
+    $my['opt'] = array('orderByDir' => null,'excludeBuild' => 0);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     $sql = " /* $debugMsg */ SELECT id, name " .
@@ -1899,11 +2003,17 @@ class testplan extends tlObjectWithAttachments
     {
       $sql .= " AND active=" . intval($active) . " ";
     }
+    
     if( !is_null($open) )
     {
       $sql .= " AND is_open=" . intval($open) . " ";
     }
     
+    if( $my['opt']['excludeBuild'] > 0)
+    {
+      $sql .= " AND id <> " . intval($my['opt']['excludeBuild']) . " ";      
+    }
+
     $orderClause = " ORDER BY name ASC";
     if( !is_null($my['opt']['orderByDir']) )
     {
@@ -2231,20 +2341,15 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function _natsort_builds($builds_map)
-  {
-    // BUGID - sort in natural order (see natsort in PHP manual)
-    foreach($builds_map as $key => $value)
-    {
-      $vk[$value['name']]=$key;
-      $build_names[$key]=$value['name'];
+  function _natsort_builds($builds_map) {
+    // sort in natural order (see natsort in PHP manual)
+    foreach($builds_map as $key => $value) {
+      $build_names[$key] = $value['name'];
     }
     
     natsort($build_names);
-    $build_num=count($builds_map);
-    foreach($build_names as $key => $value)
-    {
-      $dummy[$key]=$builds_map[$key];
+    foreach($build_names as $key => $value) {
+      $dummy[$key] = $builds_map[$key];
     }
     return $dummy;
   }
@@ -2331,43 +2436,6 @@ class testplan extends tlObjectWithAttachments
     return $BuildID;  
   }
 
-
-  /*
-    function: create_build
-  
-    args :
-          $tplan_id
-          $name
-          $notes
-          [$active]: default: 1
-          [$open]: default: 1
-  
-  
-  
-    returns:
-  
-    rev :
-  */
-  function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
-  {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-    $sql = " /* $debugMsg */ INSERT INTO {$this->tables['builds']} (testplan_id,name,notes,active,is_open) " .
-           " VALUES ('". $tplan_id . "','" .
-           $this->db->prepare_string($name) . "','" .
-           $this->db->prepare_string($notes) . "'," .
-           "{$active},{$open})";
-    
-    $new_build_id = 0;
-    $result = $this->db->exec_query($sql);
-    if ($result)
-    {
-      $new_build_id = $this->db->insert_id($this->tables['builds']);
-    }
-    
-    return $new_build_id;
-  }
-  
 
   // --------------------------------------------------------------------------------------
   // Custom field related methods
@@ -3509,11 +3577,42 @@ class testplan extends tlObjectWithAttachments
    */
   function getTestCaseNextSibling($id,$tcversion_id,$platform_id,$opt=null)
   {
-    $my['opt'] = array_merge(array('move' => 'forward'),(array)$opt);
+    $my['opt'] = array('move' => 'forward', 'scope' => 'local');
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
 
     $sibling = null;
-    $brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$my['opt']);
-    $tcversionSet = array_keys($brothers_and_sisters);
+    switch($my['opt']['scope'])
+    {
+      case 'world':
+        $tptcv = $this->tables['testplan_tcversions'];
+
+        $subq = " SELECT node_order FROM {$this->tables['testplan_tcversions']} TX " .
+                " WHERE TX.testplan_id = {$id} AND " .
+                " TX.tcversion_id = {$tcversion_id} "; 
+
+        if( $platform_id > 0)
+        {
+          $subq .= " AND TX.platform_id = {$platform_id} ";
+        }  
+        $sql= " SELECT tcversion_id,node_order " .
+              " FROM {$tptcv} TZ " .
+              " WHERE TZ.testplan_id = {$id} AND " .
+              " TZ.tcversion_id <> {$tcversion_id} "; 
+        if( $platform_id > 0)
+        {
+          $sql .= " AND TZ.platform_id = {$platform_id} ";
+        }  
+
+        $sql .= " ORDER BY TZ.node_order >= ($subq) ";
+      break;
+
+      case 'local':
+      default:
+        $sib = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id,$my['opt']);
+      break;
+    }
+    $tcversionSet = array_keys($sib);
     $elemQty = count($tcversionSet);
     $dummy = array_flip($tcversionSet);
 
@@ -3534,8 +3633,8 @@ class testplan extends tlObjectWithAttachments
     $sibling_tcversion = $pos < $elemQty ? $tcversionSet[$pos] : 0;
     if( $sibling_tcversion > 0 )
     {
-        $sibling = array('tcase_id' => $brothers_and_sisters[$sibling_tcversion]['testcase_id'],
-                         'tcversion_id' => $sibling_tcversion);
+      $sibling = array('tcase_id' => $sib[$sibling_tcversion]['testcase_id'],
+                       'tcversion_id' => $sibling_tcversion);
     }
     return $sibling;
   }
@@ -3812,7 +3911,7 @@ class testplan extends tlObjectWithAttachments
     {
       $item_info['testsuites'] = '<testsuites>' . 
                                  $this->exportTestSuiteDataToXML($tplan_spec,$context['tproject_id'],$id,
-                                                                 $context['platform_id']) . 
+                                                                 $context['platform_id'],$context['build_id']) . 
                                  '</testsuites>';
     } 
     
@@ -3835,7 +3934,7 @@ class testplan extends tlObjectWithAttachments
    * 
    *
    */
-  private function exportTestSuiteDataToXML($container,$tproject_id,$tplan_id,$platform_id)
+  private function exportTestSuiteDataToXML($container,$tproject_id,$tplan_id,$platform_id,$build_id)
   {
     static $keywordMgr;
     static $getLastVersionOpt = array('output' => 'minimun');
@@ -3886,7 +3985,7 @@ class testplan extends tlObjectWithAttachments
         switch($cNode['node_table'])
         {
           case 'testsuites':
-            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id,$tplan_id,$platform_id);
+            $xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id,$tplan_id,$platform_id,$build_id);
           break;
             
           case 'testcases':
@@ -3896,13 +3995,44 @@ class testplan extends tlObjectWithAttachments
             }
             // testcase::LATEST_VERSION,
             $tcaseExportOptions['EXEC_ORDER'] = $linkedItems[$cNode['id']][$platform_id]['node_order'];
-            $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
+			
+			$filter_lv = array( 'exec_status' => 'ALL', 'active_status' => 'ALL','tplan_id' => $tplan_id, 'platform_id' => $platform_id );
+			$output_lv = array( 'output' => 'simple' );
+			// get tc versions linked in current testplan for current platform
+			$info = $tcaseMgr->get_linked_versions($cNode['id'],$filter_lv,$output_lv);
+			if( !is_null($info) )
+			{
+				$tcversID = key($info);
+			}
+
+			// get users assigned to tc version in current testplan for the current build
+			$versionAssignInfo = $tcaseMgr->get_version_exec_assignment($tcversID, $tplan_id, $build_id );
+			$userList = array();
+			// extract user names
+			if(!is_null($versionAssignInfo))
+			{
+				foreach($versionAssignInfo[$tcversID][$platform_id] as $vaInfo)
+				{
+					$assignedTesterId = intval($vaInfo['user_id']);
+					if($assignedTesterId)
+					{
+					  $user = tlUser::getByID($this->db,$assignedTesterId);
+					  if ($user)
+					  {
+						$userList[] = $user->getDisplayName();
+					  }
+					}
+				}
+			}
+			(count($userList) > 0) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
+			
+			$xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
                                                          $tproject_id,testcase::NOXMLHEADER,
                                                          $tcaseExportOptions);
           break;
         }
       }
-    }   
+    }
 
     if( isset($container['id']) )
     {
@@ -4001,8 +4131,17 @@ class testplan extends tlObjectWithAttachments
     }
     
     $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
-    $qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
-    return $items;
+    $tcaseSet = array();
+    if($my['options']['recursive'])
+    {
+      $qnum = $this->$method2call($id,$tprojectID,$items,$tcaseSet,
+                                  $my['filters'],$my['options']);
+    }
+    else
+    {
+      $qnum = $this->$method2call($id,$tprojectID,$items,$my['filters'],$my['options']);
+    }  
+    return array($items,$tcaseSet);
   }
   
   
@@ -4016,7 +4155,7 @@ class testplan extends tlObjectWithAttachments
    * @since 1.9.4
    *
    */
-  function _get_subtree_rec($tplan_id,$node_id,&$pnode,$filters = null, $options = null)
+  function _get_subtree_rec($tplan_id,$node_id,&$pnode,&$itemSet,$filters = null, $options = null)
   {
     static $qnum;
     static $my;
@@ -4130,36 +4269,32 @@ class testplan extends tlObjectWithAttachments
     $sql .= " ORDER BY node_order,id";
     
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
-    if( count($rs) == 0 )
-    {
+    if( null == $rs || count($rs) == 0 ) {
       return $qnum;
     }
   
 
-     foreach($rs as $row)
-     {
-      if(!isset($exclude_branches[$row['id']]))
-      {  
+    foreach($rs as $row) {
+      if(!isset($exclude_branches[$row['id']])) {  
         $node = $row + 
                 array('node_type' => $this->tree_manager->node_types[$row['node_type_id']],
                       'node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
         $node['childNodes'] = null;
         
-        if($node['node_table'] == 'testcases')
-        {
+        if($node['node_table'] == 'testcases') {
           $node['leaf'] = true; 
-          // $node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : '';
           $node['external_id'] = '';
+          $itemSet['nindex'][] = $node['id'];
         }      
         
+
         // why we use exclude_children_of ?
         // 1. Sometimes we don't want the children if the parent is a testcase,
         //    due to the version management
         //
-        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
-        {
+        if(!isset($exclude_children_of[$node_types[$row['node_type_id']]])) {
           // Keep walking (Johny Walker Whisky)
-          $this->_get_subtree_rec($tplan_id,$row['id'],$node,$my['filters'],$my['options']);
+          $this->_get_subtree_rec($tplan_id,$row['id'],$node,$itemSet,$my['filters'],$my['options']);
         }
   
            
@@ -4172,8 +4307,7 @@ class testplan extends tlObjectWithAttachments
         //
           $doRemove = is_null($node['childNodes']) && 
                     ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
-          if(!$doRemove)
-          {
+          if(!$doRemove) {
             $pnode['childNodes'][] = $node;
           }  
       } // if(!isset($exclude_branches[$rowID]))
@@ -4184,18 +4318,14 @@ class testplan extends tlObjectWithAttachments
 
   /**
    *
-   * 
-   * @return
-   *
-   * @internal revisions
-   * @since 1.9.4
    *
    */
-  function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null) 
-  {
+  function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null)  {
     // On Postgresql 
-    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
-    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
+    // An output column’s name can be used to refer to the column’s value 
+    // in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must 
+    // write out the expression instead.
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
     
@@ -4754,31 +4884,35 @@ class testplan extends tlObjectWithAttachments
    *
    * If build set is NULL => ON LAST EXECUTION ON ALL ACTIVE builds (full), for a platform
    * 
-   * @internal revisions:
-   * 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
    */
-  function getHitsSameStatusFullALOP($id,$statusSet,$buildSet=null)
-  {
+  function getHitsSameStatusFullALOP($id,$statusSet,$buildSet=null,$opt=null) {
     // On Postgresql 
     // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
     // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
 
+    $options = array('onlyActiveBuilds' => true);
+    $options = array_merge($options,(array)$opt);
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     list($safe_id,$buildsCfg,$sqlLEX) = $this->helperGetHits($id,null,$buildSet,
                                                              array('ignorePlatform' => true));
+    if( $options['onlyActiveBuilds'] ) {
+      $buildsCfg['statusClause'] = " AND B.active = 1 ";
+    }
 
-    // 20120919 - asimon - TICKET 5226: Filtering by test result did not always show the correct matches
+    // TICKET 5226: Filtering by test result did not always show the correct matches
     // The filtering for "not run" status was simply not implemented for the case 
-    // of not using platforms. Maybe that part was forgotten when refactoring the filters.
+    // of not using platforms. 
+    // Maybe that part was forgotten when refactoring the filters.
+    //
     // I adopted logic from helperGetHitsSameStatusOnPlatform() to get this working.
+    //
     $flippedStatusSet = array_flip($statusSet);  // (code => idx)
     $get = array('notRun' => isset($flippedStatusSet[$this->notRunStatusCode]), 'otherStatus' => false);
     $hits = array('notRun' => array(), 'otherStatus' => array());
 
-    if($get['notRun'])
-    {
+    if($get['notRun']) {
       $notRunSQL = " /* $debugMsg */ " .
                    " /* COUNT() is needed as parameter for HAVING clause */ " .
                    " SELECT COUNT(0) AS COUNTER, NHTCV.parent_id AS tcase_id" .
@@ -5576,8 +5710,7 @@ class testplan extends tlObjectWithAttachments
    *
    *
    */
-  function helperGetHits($id,$platformID,$buildSet=null,$options=null)
-  {
+  function helperGetHits($id,$platformID,$buildSet=null,$options=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my['options'] = array('buildID' => 0, 'ignorePlatform' => false, 'ignoreBuild' => false);
     $my['options'] = array_merge($my['options'],(array)$options);
@@ -5590,44 +5723,40 @@ class testplan extends tlObjectWithAttachments
     $buildsCfg['inClause'] = "";
     $buildsCfg['count'] = 0;
 
-    if($my['options']['buildID'] <= 0)
-    {
-      if( is_null($buildSet) )
-      {
+    if($my['options']['buildID'] <= 0) {
+      if( is_null($buildSet) ) {
         $buildSet = array_keys($this->get_builds($id, self::ACTIVE_BUILDS));
         $buildsCfg['statusClause'] = " AND B.active = 1 ";
       }
       $buildsCfg['count'] = count($buildSet);
       $buildsCfg['inClause'] = implode(",",$buildSet);
-    }
-    else
-    {
+    } else {
       $buildsCfg['inClause'] = intval($my['options']['buildID']);
     }
 
     $platformClause = " AND EE.platform_id = " . $safe_id['platform'];
     $platformField = " ,EE.platform_id ";
-    if( $my['options']['ignorePlatform'] )
-    {
+    if( $my['options']['ignorePlatform'] ) {
       $platformClause = " ";
       $platformField = " ";
     }
 
     $buildField = " ,EE.build_id ";
-    if( $my['options']['ignoreBuild'] )
-    {
+    if( $my['options']['ignoreBuild'] ) {
       $buildField = " ";
     }
 
 
 
-    $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id {$platformField} {$buildField} ," .
-          " MAX(EE.id) AS id " .
-          " FROM {$this->tables['executions']} EE " . 
-          " WHERE EE.testplan_id = " . $safe_id['tplan'] . 
-          " AND EE.build_id IN ({$buildsCfg['inClause']}) " .
-          $platformClause .
-          " GROUP BY EE.tcversion_id,EE.testplan_id {$platformField} {$buildField} ";
+    $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id 
+                {$platformField} {$buildField} ,
+                MAX(EE.id) AS id 
+                FROM {$this->tables['executions']} EE  
+                WHERE EE.testplan_id = " . $safe_id['tplan'] . 
+                " AND EE.build_id IN ({$buildsCfg['inClause']}) 
+                $platformClause 
+                GROUP BY EE.tcversion_id,EE.testplan_id 
+                {$platformField} {$buildField} ";
 
     return array($safe_id,$buildsCfg,$sqlLEX);
   }
@@ -6050,23 +6179,28 @@ class testplan extends tlObjectWithAttachments
 
   /*
    *
-   * @used-by getLinkedForExecTree(),getLinkedForTesterAssignmentTree(), getLinkedTCVersionsSQL()
+   * @used-by 
+   * getLinkedForExecTree()
+   * getLinkedForTesterAssignmentTree()
+   * getLinkedTCVersionsSQL()
    *            
-   * filters => 'tcase_id','keyword_id','assigned_to','exec_status','build_id', 'cf_hash',
-   *            'urgencyImportance', 'tsuites_id','platform_id', 'exec_type','tcase_name'
+   * filters => 
+   * 'tcase_id','keyword_id','assigned_to','exec_status','build_id',
+   * 'cf_hash','urgencyImportance', 'tsuites_id','platform_id',
+   * 'exec_type','tcase_name'
    *
    *
-   *            CRITIC: cf_hash can contains Custom Fields that are applicable to DESIGN and
-   *                    TESTPLAN_DESIGN.
-   *                    Here we are generating SQL that will be used ON TESTPLAN related tables
-   *                    NOT ON TEST SPEC related tables.
-   *                    Due to this we are going to consider while building the query ONLY
-   *                    CF for TESTPLAN DESING
+   * CRITIC: 
+   * cf_hash can contains Custom Fields that are applicable to DESIGN and
+   * TESTPLAN_DESIGN.
    *
-   * @internal revisions
+   * Here we are generating SQL that will be used ON TESTPLAN 
+   * related tables NOT ON TEST SPEC related tables.
+   * Due to this we are going to consider while building 
+   * the query ONLY CF for TESTPLAN DESING
+   *
    */
-  function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg)
-  {
+  function initGetLinkedForTree($tplanID,$filtersCfg,$optionsCfg) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $dummy = array('exec_type','tc_id','builds','keywords','executions','platforms');
 
@@ -6089,12 +6223,15 @@ class testplan extends tlObjectWithAttachments
     $ic['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
                            'assigned_to' => null, 'exec_status' => null,
                            'build_id' => 0, 'cf_hash' => null,
-                           'urgencyImportance' => null, 'tsuites_id' => null,
+                           'urgencyImportance' => null, 
+                           'tsuites_id' => null,
                            'platform_id' => null, 'exec_type' => null,
                            'tcase_name' => null);
 
-    $ic['options'] = array('hideTestCases' => 0, 'include_unassigned' => false, 
-                           'allow_empty_build' => 0, 'addTSuiteOrder' => false,
+    $ic['options'] = array('hideTestCases' => 0, 
+                           'include_unassigned' => false, 
+                           'allow_empty_build' => 0, 
+                           'addTSuiteOrder' => false,
                            'addImportance' => false, 'addPriority' => false);
     $ic['filters'] = array_merge($ic['filters'], (array)$filtersCfg);
     $ic['options'] = array_merge($ic['options'], (array)$optionsCfg);
@@ -6102,21 +6239,18 @@ class testplan extends tlObjectWithAttachments
 
     $ic['filters']['build_id'] = intval($ic['filters']['build_id']);
     
-
-    // 20150201
-    if($ic['options']['addTSuiteOrder'])
-    {
+    if($ic['options']['addTSuiteOrder']) {
       // PREFIX ALWAYS with COMMA
       $ic['fields']['tsuites'] = ', NH_TSUITE.node_order AS tsuite_order ';
-      $ic['join']['tsuites'] = " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
-                               " ON NH_TSUITE.id = NH_TCASE.parent_id ";
+      $ic['join']['tsuites'] = 
+        " JOIN {$this->tables['nodes_hierarchy']} NH_TSUITE " . 
+        " ON NH_TSUITE.id = NH_TCASE.parent_id ";
     }  
 
     // This NEVER HAPPENS for Execution Tree, but if we want to reuse
     // this method for Tester Assignment Tree, we need to add this check
     //
-    if( !is_null($ic['filters']['platform_id']) && $ic['filters']['platform_id'] > 0)
-    {
+    if( !is_null($ic['filters']['platform_id']) && $ic['filters']['platform_id'] > 0) {
       $ic['filters']['platform_id'] = intval($ic['filters']['platform_id']);
       $ic['where']['platforms'] = " AND TPTCV.platform_id = {$ic['filters']['platform_id']} ";
     }
@@ -6125,146 +6259,127 @@ class testplan extends tlObjectWithAttachments
     $ic['where']['where'] .= $ic['where']['platforms'];
 
     $dk = 'exec_type';
-    if( !is_null($ic['filters'][$dk]) )
-    {
+    if( !is_null($ic['filters'][$dk]) ) {
       $ic['where'][$dk]= " AND TCV.execution_type IN (" . 
                          implode(",",(array)$ic['filters'][$dk]) . " ) ";     
       $ic['where']['where'] .= $ic['where'][$dk];
     }
 
     $dk = 'tcase_id';
-    if (!is_null($ic['filters'][$dk]) )
-    {
-      if( is_array($ic['filters'][$dk]) )
-      {
+    if (!is_null($ic['filters'][$dk]) ) {
+      if( is_array($ic['filters'][$dk]) ) {
         $ic['where'][$dk] = " AND NH_TCV.parent_id IN (" . implode(',',$ic['filters'][$dk]) . ")";            
       }
-      else if ($ic['filters'][$dk] > 0)
-      {
+      else if ($ic['filters'][$dk] > 0) {
         $ic['where'][$dk] = " AND NH_TCV.parent_id = " . intval($ic['filters'][$dk]);
       }
-      else
-      {
-        // Best Option on this situation will be signal that query will fail =>
-        // NO SENSE run the query
+      else {
+        // Best Option on this situation will be signal 
+        // that query will fail => NO SENSE run the query
         $ic['green_light'] = false;
       }
       $ic['where']['where'] .= $ic['where'][$dk];
     }
 
-    if (!is_null($ic['filters']['tsuites_id']))
-    {
+    if (!is_null($ic['filters']['tsuites_id'])) {
       $dummy = (array)$ic['filters']['tsuites_id'];
       $ic['where']['where'] .= " AND NH_TCASE.parent_id IN (" . implode(',',$dummy) . ")";
     }
 
-    if (!is_null($ic['filters']['urgencyImportance']))
-    {
+    if (!is_null($ic['filters']['urgencyImportance'])) {
       $ic['where']['where'] .= $this->helper_urgency_sql($ic['filters']['urgencyImportance']);
     }
 
-
-    if( !is_null($ic['filters']['keyword_id']) )
-    {    
+    if( !is_null($ic['filters']['keyword_id']) ) {    
       
       list($ic['join']['keywords'],$ic['where']['keywords']) = 
         $this->helper_keywords_sql($ic['filters']['keyword_id'],array('output' => 'array'));
 
-
-      $ic['where']['where'] .= $ic['where']['keywords']; // **** // CHECK THIS CAN BE NON OK
+      // **** // CHECK THIS CAN BE NON OK
+      $ic['where']['where'] .= $ic['where']['keywords']; 
     }
 
                               
     // If special user id TL_USER_ANYBODY is present in set of user id,
     // we will DO NOT FILTER by user ID
     if( !is_null($ic['filters']['assigned_to']) && 
-        !in_array(TL_USER_ANYBODY,(array)$ic['filters']['assigned_to']) )
-    {  
+        !in_array(TL_USER_ANYBODY,(array)$ic['filters']['assigned_to']) ) {  
       list($ic['join']['ua'],$ic['where']['ua']) = 
-        $this->helper_assigned_to_sql($ic['filters']['assigned_to'],$ic['options'],
-                        $ic['filters']['build_id']);            
+        $this->helper_assigned_to_sql($ic['filters']['assigned_to'],
+          $ic['options'],$ic['filters']['build_id']);            
 
       $ic['where']['where'] .= $ic['where']['ua']; 
 
-      // TICKET 5566: "Assigned to" does not work in "test execution" page
-      // $ic['where']['not_run'] .= $ic['where']['ua'];  
-
     }
     
-    
     if( isset($ic['options']['assigned_on_build']) && 
-       !is_null($ic['options']['assigned_on_build']) )
-    {
-      $ic['join']['ua'] = " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
-                          " ON UA.feature_id = TPTCV.id " . 
-                          " AND UA.build_id = " . $ic['options']['assigned_on_build'] . 
-                          " AND UA.type = {$this->execTaskCode} ";
+       !is_null($ic['options']['assigned_on_build']) ) {
+      $ic['join']['ua'] = 
+        " LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
+        " ON UA.feature_id = TPTCV.id " . 
+        " AND UA.build_id = " . $ic['options']['assigned_on_build'] . 
+        " AND UA.type = {$this->execTaskCode} ";
     }
 
 
     if( !is_null($ic['filters']['tcase_name']) && 
-      ($dummy = trim($ic['filters']['tcase_name'])) != ''  )
-    {
+      ($dummy = trim($ic['filters']['tcase_name'])) != ''  ) {
       $ic['where']['where'] .= " AND NH_TCASE.name LIKE '%{$dummy}%' "; 
     }
                                
 
     // Custom fields on testplan_design ONLY => AFFECTS run and NOT RUN.
-    if( isset($ic['filters']['cf_hash']) && !is_null($ic['filters']['cf_hash']) )
-    {    
+    if( isset($ic['filters']['cf_hash']) && !is_null($ic['filters']['cf_hash']) ) {    
       $ic['where']['cf'] = ''; 
 
       list($ic['filters']['cf_hash'],$cf_sql) = $this->helperTestPlanDesignCustomFields($ic['filters']['cf_hash']);
-      if(strlen(trim($cf_sql)) > 0)
-      {
+
+      if(strlen(trim($cf_sql)) > 0) {
         $ic['where']['cf'] .= " AND ({$cf_sql}) ";
-        $ic['join']['cf'] = " JOIN {$this->tables['cfield_testplan_design_values']} CFTPD " .
-                            " ON CFTPD.link_id = TPTCV.id ";
+        $ic['join']['cf'] = 
+          " JOIN {$this->tables['cfield_testplan_design_values']} CFTPD " .
+          " ON CFTPD.link_id = TPTCV.id ";
       }  
       $ic['where']['where'] .= $ic['where']['cf'];
     }
 
 
-
-    // I've made the choice to create the not_run key, to manage the not_run part
-    // of UNION on getLinkedForExecTree().
+    // I've made the choice to create the not_run key, 
+    // to manage the not_run part of UNION on getLinkedForExecTree().
     //
     // ATTENTION:
-    // on other methods getLinkedForTesterAssignmentTree(), getLinkedTCVersionsSQL()
-    // Still is used $ic['where']['where'] on BOTH components of UNION
+    // on other methods:
+    //  getLinkedForTesterAssignmentTree()
+    //  getLinkedTCVersionsSQL()
+    //  Still is used $ic['where']['where'] on BOTH components of UNION
     //     
     // TICKET 5566: "Assigned to" does not work in "test execution" page
     // TICKET 5572: Filter by Platforms - Wrong test case state count in test plan execution
     $ic['where']['not_run'] = $ic['where']['where'];
 
 
-    // ****************************************************************************
+    // ************************************************************************
     // CRITIC - CRITIC - CRITIC 
     // Position on code flow is CRITIC
     // CRITIC - CRITIC - CRITIC 
-    // ****************************************************************************
-    if (!is_null($ic['filters']['exec_status']))
-    {
+    // ************************************************************************
+    if (!is_null($ic['filters']['exec_status'])) {
       // $ic['where']['not_run'] = $ic['where']['where'];
       $dummy = (array)$ic['filters']['exec_status'];
 
       $ic['where']['where'] .= " AND E.status IN ('" . implode("','",$dummy) . "')";
 
-      if( in_array($this->notRunStatusCode,$dummy) )
-      {
+      if( in_array($this->notRunStatusCode,$dummy) ) {
         $ic['where']['not_run'] .=  ' AND E.status IS NULL ';
       } 
-      else
-      {
+      else {
         $ic['where']['not_run'] = $ic['where']['where'];
       } 
     }
 
-
     // BUG ID HAS NO EFFECT ON NOT RUN (at least @20140126)
     // bug_id => will be a list to create an IN() clause
-    if( isset($ic['filters']['bug_id']) && !is_null($ic['filters']['bug_id']) )
-    {    
+    if( isset($ic['filters']['bug_id']) && !is_null($ic['filters']['bug_id']) ) {    
       list($ic['join']['bugs'],$ic['where']['bugs']) = $this->helper_bugs_sql($ic['filters']['bug_id']);
       $ic['where']['where'] .= $ic['where']['bugs'];
     }
@@ -6718,7 +6833,6 @@ class testplan extends tlObjectWithAttachments
       break;
     }
     
-    new dBug($rs);
     return $rs;
   }
 
@@ -6828,8 +6942,8 @@ class testplan extends tlObjectWithAttachments
                                     'addPriority' => false,'addImportance' => false,
                                     'ignorePlatformAndBuild' => false,
                                     'ignoreBuild' => false, 'ignorePlatform' => false,
-                                    'ua_user_alias' => '', 
-                                    'ua_force_join' => false));
+                                    'ua_user_alias' => '', 'ua_force_join' => false,
+                                    'build_is_active' => false));
 
     $my['options'] = array_merge($mop['options'],$my['options']);
       
@@ -6868,6 +6982,20 @@ class testplan extends tlObjectWithAttachments
       $platformEXEC = " ";
 
     }  
+    else if ($my['options']['ignoreBuild'] && $my['options']['build_is_active']) 
+    {
+      $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
+                " MAX(EE.id) AS id " .
+                " FROM {$this->tables['executions']} EE " . 
+                " JOIN {$this->tables['builds']} B " . 
+                " ON B.id = EE.build_id " .
+                " WHERE EE.testplan_id = " . $safe['tplan_id'] . " AND B.active = 1" .
+                " GROUP BY EE.tcversion_id,EE.testplan_id,EE.platform_id, B.id";
+         
+      $platformLEX = " AND LEX.platform_id = TPTCV.platform_id "; 
+      $platformEXEC = " AND E.platform_id = TPTCV.platform_id ";
+
+    }
     else if ($my['options']['ignoreBuild']) 
     {
       $sqlLEX = " SELECT EE.tcversion_id,EE.testplan_id,EE.platform_id," .
@@ -6951,7 +7079,6 @@ class testplan extends tlObjectWithAttachments
     {
       $my['join']['ua'] = str_replace('LEFT OUTER',' ', $my['join']['ua']);
     }  
-    new dBug($my['join']['ua']);
 
     $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" . $commonFields .
                          " FROM {$this->tables['testplan_tcversions']} TPTCV " .                          
@@ -7008,7 +7135,6 @@ class testplan extends tlObjectWithAttachments
                      " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] . ' ' .
                      $my['where']['where'];
 
-    new dBug($union);
     return $union;
   }
 
@@ -7204,7 +7330,8 @@ class testplan extends tlObjectWithAttachments
                     "\t\t" . "<tester>put login here</tester>" . "\n" .
                     "\t\t" . "<!-- if not present now() will be used -->" . "\n" .
                     "\t\t" . "<timestamp>YYYY-MM-DD HH:MM:SS</timestamp>" . "\n" .  
-                    "\t\t" . "<bug_id>put your bug id here</bug_id>" . "\n" .  
+                    "\t\t" . "<bug_id>put one of your bugs id here (repeat the line as many times you need)</bug_id>" . "\n" .  
+                    "\t\t" . "<bug_id>put another of your bugs id here</bug_id>" . "\n" .  
                     "\t\t" . "||STEPS||" . "\n" .  
                     "\t\t" . "||CUSTOMFIELDS||" . "\n" .  
                     "\t</testcase>" . "\n";
@@ -7252,9 +7379,12 @@ class testplan extends tlObjectWithAttachments
     $my['opt'] = array('checkIsValid' => false);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
     $fields2get = $my['opt']['checkIsValid'] ? 'id' : '*';
+    
+    $safe = $this->db->prepare_string($apiKey);
+
     $sql = "/* $debugMsg */ " .
            " SELECT {$fields2get} FROM {$this->tables['testplans']} " .
-           " WHERE api_key = '{$apiKey}'";
+           " WHERE api_key = '{$safe}'";
  
     $rs = $this->db->get_recordset($sql);
     return ($rs ? $rs[0] : null);
@@ -7575,6 +7705,32 @@ class testplan extends tlObjectWithAttachments
     return $rs[0]['qty'];
   }
 
+  /**
+   *
+   */
+  function getFeatureByID($feature_id)
+  {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $target = (array)$feature_id;
+    foreach($target as $idx => $tg)
+    {
+      $target[$idx] = intval($tg);
+    }  
+    $inSet = implode(',', $target);
+
+    $sql = " /* $debugMsg */ ". 
+           " SELECT parent_id AS tcase_id,tcversion_id,platform_id,TPTCV.id " .
+           " FROM {$this->tables['nodes_hierarchy']} NHTC " .
+           " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+           " ON TPTCV.tcversion_id = NHTC.id " .
+           " WHERE TPTCV.id IN (" . $inSet . ")";
+         
+    $items = $this->db->fetchRowsIntoMap($sql,'id');           
+    return $items;
+  }
+
+
 } // end class testplan
 
 
@@ -7583,20 +7739,18 @@ class testplan extends tlObjectWithAttachments
  * Build Manager Class 
  * @package TestLink
  **/
-class build_mgr extends tlObject
-{
+class build_mgr extends tlObject {
   /** @var database handler */
   var $db;
   var $cfield_mgr;
 
 
   /** 
-   * class constructor 
+   * Build Manager class constructor 
    * 
    * @param resource &$db reference to database handler
    **/
-  function build_mgr(&$db)
-  {
+  function build_mgr(&$db) {
     parent::__construct();
     $this->db = &$db;
     $this->cfield_mgr = new cfield_mgr($this->db);
@@ -7604,10 +7758,9 @@ class build_mgr extends tlObject
 
 
   /**
-   *
+   * Build Manager
    */
-  function setZeroOneAttr($id,$attr,$zeroOne)
-  {
+  function setZeroOneAttr($id,$attr,$zeroOne) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = "/* $debugMsg */ " . 
@@ -7617,38 +7770,34 @@ class build_mgr extends tlObject
 
 
   /**
-   *
+   * Build Manager
    */
-  function setActive($id)
-  {
+  function setActive($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'active',1);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setInactive($id)
-  {
+  function setInactive($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'active',0);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setOpen($id)
-  {
+  function setOpen($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'is_open',1);
     $this->setClosedOnDate($id,null);
   }
 
   /**
-   *
+   * Build Manager
    */
-  function setClosed($id)
-  {
+  function setClosed($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $this->setZeroOneAttr($id,'is_open',0);
     $timestamp = explode(' ',trim($this->db->db_now(),"'"));
@@ -7658,6 +7807,8 @@ class build_mgr extends tlObject
 
 
   /*
+    Build Manager 
+
     function: create
 
     args :
@@ -7675,7 +7826,7 @@ class build_mgr extends tlObject
   */
   function create($tplan_id,$name,$notes = '',$active=1,$open=1,$release_date='')
   {
-    $targetDate=trim($release_date);
+    $targetDate = trim($release_date);
     $sql = " INSERT INTO {$this->tables['builds']} " .
            " (testplan_id,name,notes,release_date,active,is_open,creation_ts) " .
            " VALUES ('". $tplan_id . "','" . $this->db->prepare_string($name) . "','" .
@@ -7690,18 +7841,16 @@ class build_mgr extends tlObject
       $sql .= "'" . $this->db->prepare_string($targetDate) . "',";
     }
     
-    // Important: MySQL do not support default values on datetime columns that are functions
-    // that's why we are using db_now().
     $sql .= "{$active},{$open},{$this->db->db_now()})";                        
-    
-    $new_build_id = 0;
+
+    $id = 0;
     $result = $this->db->exec_query($sql);
     if ($result)
     {
-      $new_build_id = $this->db->insert_id($this->tables['builds']);
+      $id = $this->db->insert_id($this->tables['builds']);
     }
     
-    return $new_build_id;
+    return $id;
   }
 
 
@@ -7784,14 +7933,57 @@ class build_mgr extends tlObject
 
     $safe_id = intval($id);
     $where = " WHERE build_id={$safe_id}";
+    $execIDSetSQL = " SELECT id FROM {$this->tables['executions']} {$where} ";
 
+
+    // Attachments NEED special processing.
+  
+    // get test step exec attachments if any exists
+    $dummy = " SELECT id FROM {$this->tables['execution_tcsteps']} " . 
+             " WHERE execution_id IN ({$execIDSetSQL}) ";
+     
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
+      }  
+    }  
+
+    // execution attachments
+    $dummy = " SELECT id FROM {$this->tables['attachments']} " . 
+             " WHERE fk_table = 'executions' " .
+             " AND fk_id IN ({$execIDSetSQL}) ";
+  
+    $rs = $this->db->fetchRowsIntoMap($dummy,'id');
+    if(!is_null($rs)) {
+      foreach($rs as $fik => $v) {
+        deleteAttachment($this->db,$fik,false);
+      }  
+    }  
+
+
+    // Execution Bugs
     $sql = " DELETE FROM {$this->tables['execution_bugs']} " .
-           " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} {$where}) ";
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
     $result = $this->db->exec_query($sql);
 
+    // Execution tcsteps results
+    $sql = "DELETE FROM {$this->tables['execution_tcsteps']} " .
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
+    $result = $this->db->exec_query($sql);
+
+    $sql = "DELETE FROM {$this->tables['cfield_execution_values']} " .
+           " WHERE execution_id IN ({$execIDSetSQL}) ";
+    $result = $this->db->exec_query($sql);
+
+
+    // Finally Executions table
     $sql = " DELETE FROM {$this->tables['executions']} {$where}";
     $result = $this->db->exec_query($sql);
 
+
+    // Build ID is the Access Key 
+    // User Task Assignment
     $sql = " DELETE FROM {$this->tables['user_assignments']}  {$where}";
     $result=$this->db->exec_query($sql);
 
@@ -7817,14 +8009,13 @@ class build_mgr extends tlObject
              active: build active status
              is_open: build open status
              testplan_id
-
-    rev :
   */
   function get_by_id($id,$opt=null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-    $my = array('options' => array('tplan_id' => null, 'output' => 'full'));
+    $my = array('options' => 
+                array('tplan_id' => null, 'output' => 'full', 'fields' => '*'));
     $my['options'] = array_merge($my['options'],(array)$opt);
     
     $safe_id = intval($id);  
@@ -7833,16 +8024,20 @@ class build_mgr extends tlObject
     switch($my['options']['output'])
     {
       case 'minimun':
-        $sql .= " SELECT id,is_open,active FROM {$this->tables['builds']} "; 
+        $sql .= " SELECT id,is_open,active ";  
+      break;
+
+      case 'fields':
+        $sql .= " SELECT {$my['options']['fields']} "; 
       break;
       
       case 'full':
       default:
-        $sql .= " SELECT * FROM {$this->tables['builds']} "; 
+        $sql .= " SELECT * "; 
       break;
     }
     
-    $sql .= " WHERE id = {$safe_id} ";
+    $sql .= " FROM {$this->tables['builds']} WHERE id = {$safe_id} ";
     if(!is_null($my['options']['tplan_id']) && ($safe_tplan = intval($my['options']['tplan_id'])) > 0)
     {
       $sql .= " AND testplan_id = {$safe_tplan} ";
@@ -7937,11 +8132,6 @@ class build_mgr extends tlObject
               
               
     args: $id
-          [$parent_id]: need when you call this method during the creation
-                        of a test suite, because the $id will be 0 or null.
-                        
-          [$scope]: 'design','execution'
-          
     returns: html string
     
   */
@@ -8048,6 +8238,29 @@ class build_mgr extends tlObject
 
     return $cf_smarty;
   }
+
+  /** 
+   *
+   *
+   */
+  function createFromObject($buildObj) {
+
+    $item = $buildObj;
+    $optProp = array('notes' => '', 'active' => 1, 'open' => 1,
+                     'release_date' => '');
+
+    foreach($optProp as $prop => $defa) {
+      if( !property_exists($item, $prop) ) {
+        $item->$prop = $defa;
+      }
+    }
+    
+    $id = $this->create($buildObj->tplan_id,$buildObj->name,
+                        $item->notes,$item->active,$item->open,
+                        $item->release_date);
+    return $id;
+  }
+
 
 
 

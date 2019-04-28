@@ -6,7 +6,7 @@
  * @filesource	execPrint.php 
  * @package 	  TestLink
  * @author		  Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2016, TestLink community 
  * @link 		    http://www.testlink.org
  *
  */

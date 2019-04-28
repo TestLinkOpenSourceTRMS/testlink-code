@@ -34,11 +34,9 @@
  * 
  * @package     TestLink
  * @author      asimon
- * @copyright   2007-2011, TestLink community
+ * @copyright   2007-2017, TestLink community
  * @link        http://www.teamst.org/index.php
  *
- * @internal revisions
- * @since 1.9.7
  */
 
 // use output buffer to prevent headers/data from being sent before 
@@ -82,6 +80,8 @@ if (!isset($_GET['load']))
       {
         $gui = new stdClass();
         $gui->titleframe = 'lib/general/navBar.php?caller=linkto';
+        $gui->navbar_height = config_get('navbar_height');
+        
         if( $args->tproject_id > 0)
         {
           $gui->titleframe .= '&testproject=' . $args->tproject_id;
@@ -260,8 +260,15 @@ function process_testcase(&$dbHandler,$externalID, $tprojectID, $tprojectPrefix,
   {
     $ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
     $ret['msg'] = 'ok';
-    $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,'ys-tproject_');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
+
+    $ckCfg = config_get('cookie');    
+    $ckCfg->prefix .= 'ys-tproject_';
+    $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,$ckCfg->prefix);
+
+    $ckObj = new stdClass();
+    $ckObj->name = $cookie['value'];
+    $ckObj->value = $cookie['path'];
+    tlSetCookie($ckObj);
   }
 
   return $ret;
@@ -320,8 +327,14 @@ function process_req(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $version
       $ret['url'] .= "&req_version_id=$version_id";
     } 
 
-    $cookie = buildCookie($dbHandler, $req_id, $tprojectID,'ys-requirement_spec');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
+    $ckCfg = config_get('cookie');    
+    $ckCfg->prefix .= 'requirement_spec';
+    $cookie = buildCookie($dbHandler,$req_id,$tprojectID,$ckCfg->prefix);
+
+    $ckObj = new stdClass();
+    $ckObj->name = $cookie['value'];
+    $ckObj->value = $cookie['path'];
+    tlSetCookie($ckObj);
   }
 
   return $ret;
@@ -348,8 +361,14 @@ function process_reqspec(&$dbHandler, $docID, $tprojectID, $tprojectPrefix, $ver
     $id = $reqSpec['id'];
     $ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}";
 
-    $cookie = buildCookie($dbHandler,$id,$tprojectID,'ys-requirement_spec');
-    setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
+    $ckCfg = config_get('cookie');    
+    $ckCfg->prefix .= 'ys-requirement_spec';
+    $cookie = buildCookie($dbHandler,$id,$tprojectID,$ckCfg->prefix);
+
+    $ckObj = new stdClass();
+    $ckObj->name = $cookie['value'];
+    $ckObj->value = $cookie['path'];
+    tlSetCookie($ckObj);
   }
   return $ret;
 }
@@ -393,8 +412,16 @@ function process_testsuite(&$dbHandler,$tsuiteID, $tprojectID, $tprojectPrefix)
                 '&edit=testsuite&level=testsuite&containerType=testsuite&id=' . $tsuiteID;
 
   $ret['msg'] = 'ok';
-  $cookie = buildCookie($dbHandler,$tsuiteID,$tprojectID,'ys-tproject_');
-  setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
+
+  $ckCfg = config_get('cookie');    
+  $ckCfg->prefix .= 'ys-tproject_';
+  $cookie = buildCookie($dbHandler,$tsuiteID,$tprojectID,$ckCfg->prefix);
+
+  $ckObj = new stdClass();
+  $ckObj->name = $cookie['value'];
+  $ckObj->value = $cookie['path'];
+  tlSetCookie($ckObj);
+
 
   return $ret;
 }

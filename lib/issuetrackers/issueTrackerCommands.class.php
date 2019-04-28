@@ -8,11 +8,10 @@
  * @filesource  issueTrackerCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2013, TestLink community 
+ * @copyright   2007-2018, TestLink community 
  * @link        http://testlink.sourceforge.net/
  *
  *
- * @internal revisions
  **/
 
 class issueTrackerCommands
@@ -24,9 +23,10 @@ class issueTrackerCommands
   private $guiOpWhiteList;  // used to sanitize inputs on different pages
   private $entitySpec;
 
-
-  function __construct(&$dbHandler)
-  {
+  /**
+   *
+   */
+  function __construct(&$dbHandler) {
     $this->db=$dbHandler;
     $this->issueTrackerMgr = new tlIssueTracker($dbHandler);
     $this->entitySpec = $this->issueTrackerMgr->getEntitySpec();
@@ -34,34 +34,41 @@ class issueTrackerCommands
     $this->grants=new stdClass();
     $this->grants->canManage = false; 
 
-    $this->guiOpWhiteList = array_flip(array('checkConnection','create','edit','delete','doCreate',
+    $this->guiOpWhiteList = array_flip(array('checkConnection','create','edit',
+                                             'delete','doCreate',
                                              'doUpdate','doDelete'));
   }
 
-  function setTemplateCfg($cfg)
-  {
-      $this->templateCfg = $cfg;
+  /**
+   *
+   */
+  function setTemplateCfg($cfg) {
+    $this->templateCfg = $cfg;
   }
 
-  function getGuiOpWhiteList()
-  {
-      return $this->guiOpWhiteList;
+  /**
+   *
+   */
+  function getGuiOpWhiteList() {
+    return $this->guiOpWhiteList;
   }
 
   /**
    * 
    *
    */
-  function initGuiBean(&$argsObj, $caller)
-  {
+  function initGuiBean(&$argsObj, $caller) {
     $obj = new stdClass();
     $obj->action = $caller;
     $obj->typeDomain = $this->issueTrackerMgr->getTypes();
     $obj->canManage = $argsObj->currentUser->hasRight($this->db,'issuetracker_management'); 
     $obj->user_feedback = array('type' => '', 'message' => '');
 
-    $obj->l18n = init_labels(array('issuetracker_management' => null, 'btn_save' => null,
-                                   'create' => null, 'edit' => null, 'issuetracker_deleted' => null));
+    $obj->l18n = init_labels(array('issuetracker_management' => null, 
+                                   'btn_save' => null,'create' => null, 
+                                   'edit' => null, 
+                                   'checkConnection' => 'btn_check_connection', 
+                                   'issuetracker_deleted' => null));
 
     // we experiment on way to get Action Description for GUI using __FUNCTION__
     $obj->l18n['doUpdate'] = $obj->l18n['edit'];
@@ -70,8 +77,9 @@ class issueTrackerCommands
     $obj->main_descr = $obj->l18n['issuetracker_management']; 
     $obj->action_descr = ucfirst($obj->l18n[$caller]);
 
-    switch($caller)
-    {
+    $obj->connectionStatus = '';
+
+    switch($caller) {
       case 'delete':
       case 'doDelete':
         $obj->submit_button_label = '';
@@ -194,6 +202,11 @@ class issueTrackerCommands
       $guiObj->main_descr = '';
       $guiObj->action_descr = '';
       $guiObj->template = "issueTrackerView.php";
+
+      if( isset($_SESSION['its'][$it->name]) )
+      {
+        unset($_SESSION['its'][$it->name]);
+      }
     }
     else
     {
@@ -234,17 +247,39 @@ class issueTrackerCommands
   }
 
 
+  /**
+   *
+   */
   function checkConnection(&$argsObj,$request)
   {
     $guiObj = $this->initGuiBean($argsObj,__FUNCTION__);
+    $guiObj->canManage = $argsObj->currentUser->hasRight($this->db,'issuetracker_management'); 
     
-    $xx = $this->issueTrackerMgr->getByID($argsObj->id);
-    $class2create = $xx['implementation'];
-    $its = new $class2create($xx['type'],$xx['cfg']);
+    $tplCfg = templateConfiguration('issueTrackerEdit');
+    $guiObj->template = $tplCfg->default_template;
+  
+    if( $argsObj->id > 0 )
+    {
+      $ixx = $this->issueTrackerMgr->getByID($argsObj->id);
+      $guiObj->item['id'] = $ixx['id']; 
+    }  
+    else
+    {
+      $guiObj->operation = 'doCreate';
+      $guiObj->item['id'] = 0; 
+    }  
 
-    
-    $guiObj->template = "issueTrackerView.php?";
+    $guiObj->item['name'] = $argsObj->name;
+    $guiObj->item['type'] = $argsObj->type;
+    $guiObj->item['cfg'] = $argsObj->cfg;
+    $guiObj->item['implementation'] = 
+             $this->issueTrackerMgr->getImplementationForType($argsObj->type);
+
+    $class2create = $guiObj->item['implementation'];
+
+    $its = new $class2create($argsObj->type,$argsObj->cfg,$argsObj->name);
     $guiObj->connectionStatus = $its->isConnected() ? 'ok' : 'ko';
+
     return $guiObj;
   }
   

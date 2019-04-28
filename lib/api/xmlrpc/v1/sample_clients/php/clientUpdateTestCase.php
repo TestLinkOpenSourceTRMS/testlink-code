@@ -40,16 +40,18 @@ $method='updateTestCase';
 
 // Update Only Summary
 $args=array();
-$args["devKey"]='21232f297a57a5a743894a0e4a801fc3';
-$args["testcaseexternalid"]='IU-5844-3';
+$args["devKey"]='985978c915f50e47a4b1a54a943d1b76';
+$args["testcaseexternalid"]='GG-9';
 $args["version"]=1;
 $args["summary"]='Updated via XML-RPC API';
+$args["status"]=1;
 
 $client = new IXR_Client($server_url);
 $client->debug=true;
 
 $tcCounter++;
 runTest($client,$method,$args,$tcCounter);
+
 
 
 // Update Only Summary + Setting updater

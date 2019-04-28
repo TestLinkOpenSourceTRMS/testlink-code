@@ -7,13 +7,10 @@
  * 
  * @filesource  treeMenu.inc.php
  * @package     TestLink
- * @author      Martin Havlat
- * @copyright   2005-2015, TestLink community 
+ * @copyright   2005-2018, TestLink community 
  * @link        http://www.testlink.org
  * @uses        config.inc.php
  *
- * @internal revisions
- * @since 1.9.14
  */
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 require_once("execTreeMenu.inc.php");
@@ -21,13 +18,17 @@ require_once("execTreeMenu.inc.php");
 /** 
  * generate data for tree menu of Test Specification
  *
- * @param boolean $ignore_inactive_testcases if all test case versions are inactive, 
+ * @param boolean $ignore_inactive_testcases 
+ *        if all test case versions are inactive, 
  *                            the test case will ignored.
  * @param array $exclude_branches map key=node_id
  * 
- * @internal revisions
- * @since 1.9.9
+ * @used_by: 
+ * listTestCases.php => viewType='testSpecTree'
  *
+ * planAddTCNavigator.php => viewType=testSpecTreeForTestPlan
+ * 
+ *  --> tlTestCaseFilterControl->build_tree_menu() - WHEN FILTER ADDED 
  */
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
@@ -41,7 +42,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
                          'ignore_inactive_testcases' => null,
                          'ignore_active_testcases' => null);
 
-  // testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
+  // testplan => 
+  // only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
+  //
   // 20120205 - franciscom - hmm seems this code is INCOMPLETE
   // may be we can remove ?
   $my['filters'] = array('keywords' => null, 'executionType' => null, 'importance' => null,
@@ -51,13 +54,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
 
   $my['filters'] = array_merge($my['filters'], (array)$filters);
-  
-  if( $my['options']['viewType'] == 'testSpecTree' )
-  {
+  if( $my['options']['viewType'] == 'testSpecTree' ) {
     $rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
     return $rr;
   }
-  
+
+  // OK - Go ahead here we have other type of features  
   $treeMenu = new stdClass(); 
   $treeMenu->rootnode = null;
   $treeMenu->menustring = '';
@@ -88,8 +90,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
                       is_array($filters['filter_toplevel_testsuite']) ?
                       $filters['filter_toplevel_testsuite'] : null;
   
-  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
+  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . 
+                  $glueChar;
   $test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
+
 
 
   // Added root node for test specification -> testproject
@@ -102,16 +106,14 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $tplan_tcs=null;
   $tc2show = null;
 
-  if($test_spec)
-  {
+  if($test_spec) {
     $tck_map = null;  // means no filter
-    if(!is_null($my['filters']['filter_keywords']))
-    {
-      $tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
-                                                    $my['filters']['filter_keywords'],
-                                                    $my['filters']['filter_keywords_filter_type']);
-      if( is_null($tck_map) )
-      {
+    if(!is_null($my['filters']['filter_keywords'])) {
+      $tck_map = $tproject_mgr->getKeywordsLatestTCV($tproject_id,
+                          $my['filters']['filter_keywords'],
+                          $my['filters']['filter_keywords_filter_type']);
+
+      if( is_null($tck_map) ) {
         $tck_map=array();  // means that tree will be EMPTY
       }
     }
@@ -1186,31 +1188,25 @@ function filterStatusSetAtLeastOneOfActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_
  * 
  * @return array new tcase_set
  */
-function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
-{
+function filterStatusSetAllActiveBuilds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
   $buildSet = array_keys($tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS));
-  if( !is_null($buildSet) ) 
-  {
+  if( !is_null($buildSet) ) {
 
     $safe_platform = intval($filters->setting_platform);
-    if( $safe_platform > 0 )
-    {
+    if( $safe_platform > 0 ) {
       tLog(basename(__FILE__) . __FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullOnPlatform', 'DEBUG');
       $hits = $tplan_mgr->getHitsSameStatusFullOnPlatform($tplan_id,$safe_platform,
                                   (array)$filters->filter_result_result,$buildSet);
-    }
-    else
-    {
+    } else {
       tLog(basename(__FILE__) .__FUNCTION__ . ':: $tplan_mgr->getHitsSameStatusFullALOP', 'DEBUG');
+      
       $hits = $tplan_mgr->getHitsSameStatusFullALOP($tplan_id,
                                 (array)$filters->filter_result_result,$buildSet);
     }
-    if( is_null($hits) ) 
-    {
+
+    if( is_null($hits) ) {
       $tcase_set = array();
-    } 
-    else 
-    {
+    } else {
       helper_filter_cleanup($tcase_set,$hits);
       unset($hits);
     }
@@ -1505,6 +1501,117 @@ function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testpr
   return $treeMenu;
 }
 
+/**
+ * Generate the necessary data object for the filtered requirement specification tree.
+ * 
+ * @author Andreas Simon
+ * @param Database $db reference to database handler object
+ * @param testproject $testproject_mgr reference to testproject manager object
+ * @param int $testproject_id ID of the project for which the tree shall be generated
+ * @param string $testproject_name Name of the test project
+ * @param array $filters Filter settings which shall be applied to the tree, possible values are:
+ *                       'filter_doc_id',
+ *                       'filter_title',
+ *                       'filter_status',
+ *                       'filter_type',
+ *                       'filter_spec_type',
+ *                        'filter_coverage',
+ *                       'filter_relation',
+ *                       'filter_tc_id',
+ *                       'filter_custom_fields'
+ * @param array $options Further options which shall be applied on generating the tree
+ * @return stdClass $treeMenu object with which ExtJS can generate the graphical tree
+ */
+function generateTestReqCoverageTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
+{
+
+  $tables = tlObjectWithDB::getDBTables(array('requirements', 'req_versions', 
+                                              'req_specs', 'req_relations', 
+                                              'req_specs_revisions',
+                                              'req_coverage', 'nodes_hierarchy'));
+  
+  $tproject_mgr = new testproject($db);
+  $tree_manager = &$tproject_mgr->tree_manager;
+  
+  $glue_char = config_get('testcase_cfg')->glue_character;
+  $tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id) . $glue_char;
+  
+  $req_node_type = $tree_manager->node_descr_id['testcase'];
+  $req_spec_node_type = $tree_manager->node_descr_id['testsuite'];
+  
+  $map_nodetype_id = $tree_manager->get_available_node_types();
+  $map_id_nodetype = array_flip($map_nodetype_id);
+  
+  $my = array();
+  
+  $my['options'] = array('for_printing' => 0,
+                         'exclude_branches' => null,
+                         'recursive' => true,
+                         'order_cfg' => array('type' => 'spec_order'));
+  
+  $my['filters'] = array('exclude_node_types' =>  array('testplan' => 'exclude me',
+                                                        'testsuite' => 'exclude me',
+                                                        'testcase' => 'exclude me',
+                                                        'requirement_spec_revision' => 'exclude me'),
+                         'exclude_children_of' => array('testcase' => 'exclude my children',
+                                                        'requirement' => 'exclude my children',
+                                                        'testsuite' => 'exclude my children'),
+                         'filter_doc_id' => null,
+                         'filter_title' => null,
+                         'filter_status' => null,
+                         'filter_type' => null,
+                         'filter_spec_type' => null,
+                         'filter_coverage' => null,
+                         'filter_relation' => null,
+                         'filter_tc_id' => null,
+                         'filter_custom_fields' => null);
+  
+  // merge with given parameters
+  $my['options'] = array_merge($my['options'], (array) $options);
+  $my['filters'] = array_merge($my['filters'], (array) $filters);
+
+  $req_spec = $tree_manager->get_subtree($tproject_id, $my['filters'], $my['options']);
+  
+  $req_spec['name'] = $tproject_name;
+  $req_spec['id'] = $tproject_id;
+  $req_spec['node_type_id'] = $map_nodetype_id['testproject'];
+  
+  $filtered_map = get_filtered_req_map($db, $tproject_id, $tproject_mgr,
+                                       $my['filters'], $my['options']);
+  
+  $level = 1;
+  $req_spec = prepare_reqspeccoverage_treenode($db, $level, $req_spec, $filtered_map, $map_id_nodetype,
+                                       $map_nodetype_id, $my['filters'], $my['options']);
+
+  $menustring = null;
+  $treeMenu = new stdClass();
+  $treeMenu->rootnode = new stdClass();
+  $treeMenu->rootnode->total_req_count = $req_spec['total_req_count'];
+  $treeMenu->rootnode->name = $req_spec['name'];
+  $treeMenu->rootnode->id = $req_spec['id'];
+  $treeMenu->rootnode->leaf = isset($req_spec['leaf']) ? $req_spec['leaf'] : false;
+  //$treeMenu->rootnode->text = $req_spec['name']; //not needed, accidentally duplicated
+  $treeMenu->rootnode->position = $req_spec['position'];      
+  $treeMenu->rootnode->href = $req_spec['href'];
+    
+  // replace key ('childNodes') to 'children'
+  if (isset($req_spec['childNodes']))
+  {
+    $menustring = str_ireplace('childNodes', 'children', 
+                               json_encode($req_spec['childNodes'])); 
+  }
+
+  if (!is_null($menustring))
+  {
+    // delete null elements for Ext JS
+    $menustring = str_ireplace(array(':null',',null','null,','null'),
+                               array(':[]','','',''),
+                               $menustring); 
+  }
+  $treeMenu->menustring = $menustring; 
+  
+  return $treeMenu;
+}
 
 /**
  * Generate a filtered map with all fitting requirements in it.
@@ -1553,7 +1660,7 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
     $tc_prefix .= $tc_cfg->glue_character;
     
     $tc_ext_id = $db->prepare_int(str_replace($tc_prefix, '', $filters['filter_tc_id']));
-    
+
     $sql .= " JOIN {$tables['req_coverage']} RC ON RC.req_id = R.id " .
             " JOIN {$tables['nodes_hierarchy']} NH_T ON NH_T.id = RC.testcase_id " .
             " JOIN {$tables['nodes_hierarchy']} NH_TV on NH_TV.parent_id = NH_T.id " .
@@ -1684,7 +1791,6 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
   
   $sql .= " ORDER BY RV.version DESC ";
   $filtered_map = $db->fetchRowsIntoMap($sql, 'id');
-    
   return $filtered_map;
 }
 
@@ -1770,6 +1876,84 @@ function prepare_reqspec_treenode(&$db, $level, &$node, &$filtered_map, &$map_id
 }
 
 /**
+ * Prepares nodes for the filtered requirement tree.
+ * Filters out those nodes which are not in the given map and counts the remaining subnodes.
+ * @author Andreas Simn
+ * @param Database $db reference to database handler object
+ * @param int $level gets increased by one for each sublevel in recursion
+ * @param array $node the tree structure to traverse
+ * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
+ * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
+ * @param array $map_nodetype_id array with node type descriptions as keys, node type IDs as values
+ * @param array $filters
+ * @param array $options
+ * @return array tree structure after filtering out unneeded nodes
+ */
+function prepare_reqspeccoverage_treenode(&$db, $level, &$node, &$filtered_map, &$map_id_nodetype,
+		&$map_nodetype_id, &$filters, &$options) {
+	$child_req_count = 0;
+
+	if (isset($node['childNodes']) && is_array($node['childNodes'])) {
+		// node has childs, must be a specification (or testproject)
+		foreach ($node['childNodes'] as $key => $childnode) {
+			$current_childnode = &$node['childNodes'][$key];
+			$current_childnode = prepare_reqspeccoverage_treenode($db, $level + 1, $current_childnode,
+					$filtered_map, $map_id_nodetype,
+					$map_nodetype_id,
+					$filters, $options);
+
+			// now count childnodes that have not been deleted and are requirements
+			if (!is_null($current_childnode)) {
+				switch ($current_childnode['node_type_id']) {
+					case $map_nodetype_id['requirement']:
+						$child_req_count ++;
+						break;
+
+					case $map_nodetype_id['requirement_spec']:
+						$child_req_count += $current_childnode['child_req_count'];
+						break;
+				}
+			}
+		}
+	}
+
+	$node_type = $map_id_nodetype[$node['node_type_id']];
+
+	$delete_node = false;
+
+	switch ($node_type) {
+		case 'testproject':
+			$node['total_req_count'] = $child_req_count;
+			break;
+
+		case 'requirement_spec':
+			// add requirement count
+			$node['child_req_count'] = $child_req_count;
+			// delete empty specs
+			if (!$child_req_count) {
+				$delete_node = true;
+			}
+			break;
+
+		case 'requirement':
+			// delete node from tree if it is not in $filtered_map
+			if (is_null($filtered_map) || !array_key_exists($node['id'], $filtered_map)) {
+				$delete_node = true;
+			}
+			break;
+	}
+
+	if ($delete_node) {
+		unset($node);
+		$node = null;
+	} else {
+		$node = render_reqspeccoverage_treenode($db, $node, $filtered_map, $map_id_nodetype);
+	}
+
+	return $node;
+}
+
+/**
  * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
  * @author Andreas Simon
  * @param Database $db reference to database handler object
@@ -1782,8 +1966,7 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
   static $js_functions;
   static $forbidden_parents;
   
-  if (!$js_functions) 
-  {
+  if (!$js_functions) {
     $js_functions = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
                           'requirement_spec' =>'REQ_SPEC_MGMT',
                           'requirement' => 'REQ_MGMT');
@@ -1822,7 +2005,7 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
       // get doc id from filtered array, it's already stored in there
       $doc_id = '';
       foreach($node['childNodes'] as $child) {
-        if (!is_null($child)) {
+        if ( is_array($child) ) {
           $child_id = $child['id'];
           if (isset($filtered_map[$child_id])) {
             $doc_id = htmlspecialchars($filtered_map[$child_id]['req_spec_doc_id']);
@@ -1854,6 +2037,96 @@ function render_reqspec_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype
   }
   
   return $node;       
+}
+
+
+
+
+/**
+ * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
+ * @author Andreas Simon
+ * @param Database $db reference to database handler object
+ * @param array $node the object to prepare
+ * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
+ * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
+ * @return array tree object with all needed data for ExtJS tree
+ */
+function render_reqspeccoverage_treenode(&$db, &$node, &$filtered_map, &$map_id_nodetype) {
+	static $js_functions;
+	static $forbidden_parents;
+
+	if (!$js_functions)
+	{
+		$js_functions = array('testproject' => 'EP',
+				'requirement_spec' =>'ERS',
+				'requirement' => 'ER');
+
+		$req_cfg = config_get('req_cfg');
+		$forbidden_parents['testproject'] = 'none';
+		$forbidden_parents['requirement'] = 'testproject';
+
+		// Hmm is ok ? (see next lines, may be it's time to remove this code)
+		$forbidden_parents['requirement_spec'] = 'requirement_spec';
+		if($req_cfg->child_requirements_mgmt)
+		{
+			$forbidden_parents['requirement_spec'] = 'none';
+		}
+	}
+
+	$node_type = $map_id_nodetype[$node['node_type_id']];
+	$node_id = $node['id'];
+
+	$node['href'] = "javascript:{$js_functions[$node_type]}({$node_id});";
+	$node['text'] = htmlspecialchars($node['name']);
+	$node['leaf'] = false; // will be set to true later for requirement nodes
+	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
+	$node['cls'] = 'folder';
+
+	// custom Properties that will be accessed by EXT-JS using node.attributes
+	$node['testlink_node_type'] = $node_type;
+	$node['forbidden_parent'] = $forbidden_parents[$node_type];
+	$node['testlink_node_name'] = $node['text'];
+
+	switch ($node_type) {
+		case 'testproject':
+			break;
+
+		case 'requirement_spec':
+			// get doc id from filtered array, it's already stored in there
+			$doc_id = '';
+			foreach($node['childNodes'] as $child) {
+				if (!is_null($child)) {
+					$child_id = $child['id'];
+					if (isset($filtered_map[$child_id])) {
+						$doc_id = htmlspecialchars($filtered_map[$child_id]['req_spec_doc_id']);
+					}
+					break; // only need to get one child for this
+				}
+			}
+			// BUGID 3765: load doc ID with  if this req spec has no direct req child nodes.
+			// Reason: in these cases we do not have a parent doc ID in $filtered_map
+			if ($doc_id == '') {
+				static $req_spec_mgr = null;
+				if (!$req_spec_mgr) {
+					$req_spec_mgr = new requirement_spec_mgr($db);
+				}
+				$tmp_spec = $req_spec_mgr->get_by_id($node_id);
+				$doc_id = $tmp_spec['doc_id'];
+				unset($tmp_spec);
+			}
+
+			$count = $node['child_req_count'];
+			$node['text'] = "{$doc_id}:{$node['text']} ({$count})";
+			break;
+
+		case 'requirement':
+			$node['leaf'] = true;
+			$doc_id = htmlspecialchars($filtered_map[$node_id]['req_doc_id']);
+			$node['text'] = "{$doc_id}:{$node['text']}";
+			break;
+	}
+
+	return $node;
 }
 
 
@@ -1966,7 +2239,6 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
   $chronos[] = microtime(true);
-  
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
   $my = array();
@@ -2016,8 +2288,7 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   $map_node_tccount=array();
   $tc2show = null;
 
-  if($test_spec)
-  {
+  if($test_spec) {
 
     if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
     {
@@ -2037,15 +2308,13 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
     $testcase_counters = prepareTestSpecNode($db, $tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,
                                              $pnFilters,$pnOptions);
 
-    if( is_null($test_spec) )
-    {
+    if( is_null($test_spec) ) {
       $test_spec['name'] = $tproject_name;
       $test_spec['id'] = $tproject_id;
       $test_spec['node_type_id'] = $hash_descr_id['testproject'];
     }
 
-    foreach($testcase_counters as $key => $value)
-    {
+    foreach($testcase_counters as $key => $value) {
       $test_spec[$key] = $testcase_counters[$key];
     }
 
@@ -2120,33 +2389,31 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
 
 /**
  * 
- * @internal revisions
- * @since 1.9.14
  * importance & status (workflow status) can be array
  */
-function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
-{
+function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj) {
   
   $flt = array();
-  $flt['exclude_branches'] = isset($fObj['filter_toplevel_testsuite']) && is_array($fObj['filter_toplevel_testsuite']) ?
-                             $fObj['filter_toplevel_testsuite'] : null;
+  $flt['exclude_branches'] = 
+    isset($fObj['filter_toplevel_testsuite']) && 
+    is_array($fObj['filter_toplevel_testsuite']) ?
+    $fObj['filter_toplevel_testsuite'] : null;
   
   $flt['testcase_name'] = null;
   $flt['testcase_id'] = null;
   $flt['execution_type'] = null;
   $flt['importance'] = null;
   $flt['status'] = null;
+  $flt['keywords'] = null;
 
   if( isset($fObj['filter_testcase_name']) && !is_null($fObj['filter_testcase_name']) )
   {
-    if( ($dummy = trim($fObj['filter_testcase_name'])) != '' )
-    {
+    if( ($dummy = trim($fObj['filter_testcase_name'])) != '' ) {
       $flt['testcase_name'] = $dummy;
     }
   }
   
-  if( isset($fObj['filter_tc_id']) && !is_null($fObj['filter_tc_id']) )
-  {
+  if( isset($fObj['filter_tc_id']) && !is_null($fObj['filter_tc_id']) ) {
     $flt['testcase_id'] = intval($fObj['filter_tc_id']);
   }
   
@@ -2158,8 +2425,7 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
   if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) )
   {
     $xx = (array)$fObj['filter_importance'];
-    if($xx[0] >0)
-    {
+    if($xx[0] >0) {
       $flt['importance'] = $xx;  
     } 
   }  
@@ -2167,8 +2433,7 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
   if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) )
   {
     $xx = (array)$fObj['filter_workflow_status'];
-    if($xx[0]>0)
-    {
+    if($xx[0]>0) {
       $flt['status'] = $xx;
     }  
   }
@@ -2181,8 +2446,8 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj)
 
 
 /**
- * @internal revisions
- * 20121010 - asimon - TICKET 4353: added active/inactive filter
+ * 
+ * 
  */
 function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_tccount,$filters=null,$options=null)
 {
@@ -2209,12 +2474,22 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
     $my['options'] = array_merge($my['options'], (array)$options);
     $my['filters'] = array_merge($my['filters'], (array)$filters);
     
-    if( ($doFilterOn['keywords'] = !is_null($my['filters']['keywords'])) )
-    {
-      $tcFilterByKeywords = $tprojectMgr->getTCasesFilteredByKeywords($tprojectID,$my['filters']['keywords'],
-                                                                      $my['filters']['keywords_filter_type']);
-      if( is_null($tcFilterByKeywords) )
-      {
+    if( ($doFilterOn['keywords'] = !is_null($my['filters']['keywords'])) ) {
+
+      /*
+      $tcFilterByKeywords = $tprojectMgr->getTCasesFilteredByKeywords($tprojectID,
+                             $my['filters']['keywords'],
+                             $my['filters']['keywords_filter_type']);
+
+      */
+      $tcFilterByKeywords = $tprojectMgr->getTCLatestVersionFilteredByKeywords(
+                              $tprojectID,
+                              $my['filters']['keywords'],
+                              $my['filters']['keywords_filter_type']);
+
+
+
+      if( is_null($tcFilterByKeywords) ) {
         // tree will be empty
         $node = null;
         $tcase_counters['testcase_count'] = 0;

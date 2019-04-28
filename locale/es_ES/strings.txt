@@ -35,7 +35,7 @@
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // Last Update of this file
-$TLS_last_update = "Última actualización de idioma: 29/12/2012";
+$TLS_last_update = "Última actualización de idioma: 12/2/2019";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active_click_to_change = "Activo (clic para inactivar)";
@@ -564,7 +564,7 @@ $TLS_passwd_lost = "Tu contraseña ha sido enviada a la dirección de e-mail que
                   "Si tienes algún otro problema, por favor, contacta con tu administrador de TestLink.";
 $TLS_password_reseted = "La nueva contraseña ha sido enviada por e-mail";
 $TLS_please_login = "Por favor, inicia la sesión ...";
-$TLS_session_expired = "¡La sesión ha espirado! Por favor, inicia la sesión de nuevo.";
+$TLS_session_expired = "¡La sesión ha expirado! Por favor, inicia la sesión de nuevo.";
 $TLS_your_first_login = "¡Bienvenido a TestLink! En este momento tienes acceso como invitado. Por favor, inicia la sesión ...";
 
 
@@ -820,7 +820,10 @@ $TLS_filter_active_inactive = "Activo/Inactivo";
 $TLS_show_only_active_testcases = "Al menos UNA versión está ACTIVA";
 $TLS_show_only_inactive_testcases = "TODAS las versiones están INACTIVAS";
 $TLS_show_whole_spec_on_right_panel = 'Mostrar Todo (en el panel derecho)';
-
+$TLS_test_grouped_by = "Agrupados por pruebas";
+$TLS_mode_test_suite = "Suite de Pruebas";
+$TLS_mode_req_coverage = "Requisitos";
+$TLS_parent_child_relation = "Relación padre hijo";
 
 // ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = $TLS_testplan;
@@ -3706,6 +3709,8 @@ $TLS_fogbugz_bug_created = "Defecto de FOGBUGZ Creado (nombre:%s) en el proyecto
 $TLS_youtrack_bug_created = "Defecto de YOUTRACK Creado (nombre:%s) en el proyecto con id:%s";
 $TLS_mantis_bug_created = "Defecto de MANTIS %s - Creado (nombre:%s) en el proyecto con key:%s";
 $TLS_bugzilla_bug_created = "Defecto de BUGZILLA Creado (nombre:%s) en el producto:%s";
+$TLS_gitlab_bug_created = "Defecto de GITLAB Creado (nombre:%s) en el proyecto con identificador:%s";
+$TLS_gitlab_bug_comment = "Commentario realizado en el defecto de GITLAB (nombre:%s)";
 $TLS_bts_check_ok = "La conexión es correcta";
 $TLS_bts_check_ko = "La conexión es correcta, comprueba la configuración";
 $TLS_check_bts_connection = "Comprueba la conexión";
@@ -3774,5 +3779,21 @@ $TLS_demo_usage = "Esto es una DEMO, úsala con RESPETO. <br>" .
                   "La web será re-instalada cada cierto tiempo SIN aviso previo.<br>" .
                   "Todos los datos serán eliminados en cada instalación.<br>" .
                   "<b>Si TestLink te resulta útil considera la posibilidad de financiar nuestro trabajo<br>";
+
+// ----- pluginView.php -----       
+$TLS_title_plugins = "undefined";
+$TLS_title_plugin_mgmt = "undefined";
+$TLS_th_plugin = "undefined";
+$TLS_th_plugin_description = "undefined";
+$TLS_th_plugin_version = "undefined";
+$TLS_installed_plugins = "undefined";
+$TLS_available_plugins = "undefined";
+$TLS_plugin_uninstalled = "undefined";
+$TLS_plugin_installed = "undefined";
+$TLS_confirm_install_header = "undefined";
+$TLS_confirm_install_text = "undefined";
+$TLS_confirm_uninstall_header = "undefined";
+$TLS_confirm_uninstall_text = "undefined";
+$TLS_desc_mgt_plugins = "undefined";
 // ----- END ------------------------------------------------------------------
 ?>

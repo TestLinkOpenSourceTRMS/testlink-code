@@ -6,11 +6,9 @@
  * @filesource  tlPlatform.class.php
  * @package     TestLink
  * @author      Erik Eloff
- * @copyright   2006-2012, TestLink community
+ * @copyright   2006-2019, TestLink community
  * @link        http://www.teamst.org/index.php
  *
- * @internal revisions
- * @ since 1.9.6
  */
 
 /**
@@ -35,8 +33,7 @@ class tlPlatform extends tlObjectWithDB
      * DO NOT USE this kind of code is not accepted have this kind of global coupling
      * for lazy users
    */
-  public function __construct(&$db, $tproject_id = null)
-  {
+  public function __construct(&$db, $tproject_id = null) {
     parent::__construct($db);
     $this->tproject_id = $tproject_id;
   }
@@ -55,13 +52,11 @@ class tlPlatform extends tlObjectWithDB
    * Creates a new platform.
    * @return tl::OK on success otherwise E_DBERROR;
    */
-  public function create($name, $notes=null)
-  {
+  public function create($name, $notes=null) {
     $op = array('status' => self::E_DBERROR, 'id' => -1);
     $safeName = $this->throwIfEmptyName($name);
     $alreadyExists = $this->getID($name);
-    if ($alreadyExists)
-    {
+    if ($alreadyExists) {
       $op = array('status' => self::E_NAMEALREADYEXISTS, 'id' => -1);
     }
     else
@@ -86,9 +81,8 @@ class tlPlatform extends tlObjectWithDB
    *
    * @return array with keys id, name and notes
    */
-  public function getByID($id)
-  {
-    $sql =  " SELECT id, name, notes " .
+  public function getByID($id) {
+    $sql =  " SELECT id, name, notes,testproject_id " .
             " FROM {$this->tables['platforms']} " .
             " WHERE id = " . intval($id);
     return $this->db->fetchFirstRow($sql);
@@ -234,8 +228,7 @@ class tlPlatform extends tlObjectWithDB
    *
    * @internal revisions
    */
-  public function getAll($options = null)
-  {
+  public function getAll($options = null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $default = array('include_linked_count' => false);
     $options = array_merge($default, (array)$options);
@@ -453,6 +446,29 @@ class tlPlatform extends tlObjectWithDB
     return !is_null($rs);
   }
 
-  
+  /**
+   *
+   */
+  function initViewGUI( &$userObj ) {
+    $gaga = new stdClass();
+    
+    $gaga->tproject_id = $this->tproject_id;
+    
+    $cfg = getWebEditorCfg('platform');
+    $gaga->editorType = $cfg['type'];
+    $gaga->user_feedback = null;
+    $gaga->user_feedback = array('type' => 'INFO', 'message' => '');
+
+    $gaga->platforms = $this->getAll(array('include_linked_count' => true));
+
+    $rx = array('canManage' => 'platform_management', 
+                'mgt_view_events' => 'mgt_view_events');
+    foreach($rx as $prop => $right) {
+      $gaga->$prop = $userObj->hasRight($this->db->db,$right,
+                                        $this->tproject_id);
+    }
+
+    return $gaga;
+  }
 
 }

@@ -9,6 +9,9 @@
  * @package 	TestLink
  * @since     1.9.7             
  * 
+ * Implemented using Slim framework Version 2.2.0
+ * 
+ * 
  * References
  * http://ericbrandel.com/2013/01/14/quickly-build-restful-apis-in-php-with-slim-part-2/
  * https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Add+Comment
@@ -22,9 +25,6 @@
  * http://nitschinger.at/A-primer-on-PHP-exceptions
  *
  *
- *
- * @internal revisions 
- * @since 1.9.14
  *
  */
 
@@ -58,6 +58,9 @@ class tlRestApi
   protected $reqSpecMgr = null;
   protected $reqMgr = null;
   protected $platformMgr = null;
+  protected $buildMgr = null;
+  protected $cfieldMgr = null; 
+
 
   /** userID associated with the apiKey provided */
   protected $userID = null;
@@ -84,37 +87,63 @@ class tlRestApi
   protected $debugMsg;
   
   protected $cfg;
+
+  protected $apiLogPathName;
+
+  protected $l10n;
+
   
   
   /**
    */
-  public function __construct()
-  {    
+  public function __construct() {
+
     // We are following Slim naming convention
     $this->app = new \Slim\Slim();
     $this->app->contentType('application/json');
 
+    $tl = array('API_MISSING_REQUIRED_PROP' => null,
+                'API_TESTPLAN_ID_DOES_NOT_EXIST' => null,
+                'API_TESTPLAN_APIKEY_DOES_NOT_EXIST' => null,
+                'API_BUILDNAME_ALREADY_EXISTS' => null);
 
+    $this->l10n = init_labels($tl);
+
+    // GET Routes
     // test route with anonymous function 
     $this->app->get('/who', function () { echo __CLASS__ . ' : Get Route /who';});
 
+    // using middleware for authentication
+    // https://docs.slimframework.com/routing/middleware/
+    //
     $this->app->get('/whoAmI', array($this,'authenticate'), array($this,'whoAmI'));
+
+    $this->app->get('/superman', array($this,'authenticate'), array($this,'superman'));
+
     $this->app->get('/testprojects', array($this,'authenticate'), array($this,'getProjects'));
 
     $this->app->get('/testprojects/:id', array($this,'authenticate'), array($this,'getProjects'));
     $this->app->get('/testprojects/:id/testcases', array($this,'authenticate'), array($this,'getProjectTestCases'));
     $this->app->get('/testprojects/:id/testplans', array($this,'authenticate'), array($this,'getProjectTestPlans'));
 
+
+    // POST Routes
+    $this->app->post('/builds', array($this,'authenticate'), array($this,'createBuild'));
+
+
     $this->app->post('/testprojects', array($this,'authenticate'), array($this,'createTestProject'));
+
     $this->app->post('/executions', array($this,'authenticate'), array($this,'createTestCaseExecution'));
     $this->app->post('/testplans', array($this,'authenticate'), array($this,'createTestPlan'));
     $this->app->post('/testplans/:id', array($this,'authenticate'), array($this,'updateTestPlan'));
 
     $this->app->post('/testsuites', array($this,'authenticate'), array($this,'createTestSuite'));
+
     $this->app->post('/testcases', array($this,'authenticate'), array($this,'createTestCase'));
 
-    // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
 
+    // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
+    $this->apiLogPathName = '/var/testlink/rest-api.log';
 
     $this->db = new database(DB_TYPE);
     $this->db->db->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -130,28 +159,24 @@ class tlRestApi
     $this->reqSpecMgr = new requirement_spec_mgr($this->db);
     $this->reqMgr = new requirement_mgr($this->db);
     $this->cfieldMgr = $this->tprojectMgr->cfield_mgr;
+    $this->buildMgr = new build_mgr($this->db);
 
     $this->tables = $this->tcaseMgr->getDBTables();
     
 
     $this->cfg = array();
     $conf = config_get('results');
-    foreach($conf['status_label_for_exec_ui'] as $key => $label )
-    {
+    foreach($conf['status_label_for_exec_ui'] as $key => $label ) {
       $this->cfg['exec']['statusCode'][$key] = $conf['status_code'][$key];  
     }
     
-    //if( isset($this->cfg['exec']['statusCode']['not_run']) )
-    //{
-    //  unset($this->cfg['exec']['statusCode']['not_run']);  
-    //}   
-
     $this->cfg['exec']['codeStatus'] = array_flip($this->cfg['exec']['statusCode']);
 
     $this->cfg['tcase']['defaults']['importance'] = config_get('testcase_importance_default');
     $this->cfg['tcase']['defaults']['executionType'] = TESTCASE_EXECUTION_TYPE_MANUAL;
     $this->cfg['tcase']['status'] = config_get('testCaseStatus'); 
 
+    $this->cfg['execType'] = config_get('execution_type');
 
     $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
   }  
@@ -197,6 +222,15 @@ class tlRestApi
     echo json_encode(array('name' => __CLASS__ . ' : Get Route /whoAmI'));
   }
   
+  /**
+   *
+   */
+  public function superman()
+  {    
+    echo json_encode(array('name' => __CLASS__ . ' : Get Route /superman'));
+  }
+
+
   /**
    *
    * @param mixed idCard if provided identifies test project
@@ -335,12 +369,25 @@ class tlRestApi
   public function createTestProject()
   {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+
+    
     try 
     {
-      $request = $this->app->request();
-      $item = json_decode($request->getBody());
-      $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
-      $op = array('status' => 'ok', 'message' => 'ok');
+      // file_put_contents('/var/testlink/rest-api.log', json_encode($this->user));
+      
+      // Check user grants for requested operation
+      // This is a global right
+      $rightToCheck="mgt_modify_product";
+      if( $this->userHasRight($rightToCheck) ) {
+        $request = $this->app->request();
+        $item = json_decode($request->getBody());
+        $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
+        $op = array('status' => 'ok', 'message' => 'ok');
+      } 
+      else {
+        $msg = lang_get('API_INSUFFICIENT_RIGHTS');
+        $op['message'] = sprintf($msg,$rightToCheck,0,0);
+      } 
     } 
     catch (Exception $e) 
     {
@@ -357,7 +404,7 @@ class tlRestApi
    *
    * $ex->testPlanID
    * $ex->buildID
-   * $ex->platformID
+   * $ex->platformID  -> optional
    * $ex->testCaseExternalID
    * $ex->notes
    * $ex->statusCode
@@ -388,26 +435,30 @@ class tlRestApi
    *
    * 
    */
-  public function createTestCaseExecution()
-  {
+  public function createTestCaseExecution() {
     $op = array('status' => ' ko', 'message' => 'ko', 'id' => -1);  
-    try 
-    {
+    try {
       $request = $this->app->request();
       $ex = json_decode($request->getBody());
       $util = $this->checkExecutionEnvironment($ex);
 
+      // Complete missing propertie
+      if( property_exists($ex, 'platformID') == FALSE ) {
+        $ex->platformID = 0;
+      }
+
+      if( property_exists($ex, 'executionType') == FALSE ) {
+        $ex->executionType = $this->cfg['execType']['auto'];
+      }
+
       // If we are here this means we can write execution status!!!
       $ex->testerID = $this->userID;
-      foreach($util as $prop => $value)
-      {
+      foreach($util as $prop => $value) {
         $ex->$prop = $value;
       }  
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tplanMgr->writeExecution($ex);
-    } 
-    catch (Exception $e) 
-    {
+    } catch (Exception $e) {
       $op['message'] = $e->getMessage();   
     }
     echo json_encode($op);
@@ -418,9 +469,11 @@ class tlRestApi
   //
   // Support methods
   //
-  private function checkExecutionEnvironment($ex)
-  {
+  private function checkExecutionEnvironment($ex) {
     // throw new Exception($message, $code, $previous);
+
+    // no platform
+    $platform = 0;
 
     // Test plan ID exists and is ACTIVE    
     $msg = 'invalid Test plan ID';
@@ -428,8 +481,7 @@ class tlRestApi
                     'testPlanFields' => 'id,testproject_id,is_public');
     $status_ok = !is_null($testPlan=$this->tplanMgr->get_by_id($ex->testPlanID,$getOpt));
     
-    if($status_ok)
-    {
+    if($status_ok) {
       // user has right to execute on Test plan ID
       // hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null,$getAccess=false)
       $msg = 'user has no right to execute';
@@ -437,100 +489,91 @@ class tlRestApi
                                          $testPlan['testproject_id'],$ex->testPlanID,true); 
     }  
 
-    if($status_ok)
-    {
+    if($status_ok) {
       // Check if couple (buildID,testPlanID) is valid
       $msg = '(buildID,testPlanID) couple is not valid';
       $getOpt = array('fields' => 'id,active,is_open', 'buildID' => $ex->buildID, 'orderBy' => null);
       $status_ok = !is_null($build = $this->tplanMgr->get_builds($ex->testPlanID,null,null,$getOpt));
 
-      if($status_ok)
-      {
+      if($status_ok) {
         // now check is execution can be done againts this build
         $msg = 'Build is not active and/or closed => execution can not be done';
         $status_ok = $build[$ex->buildID]['active'] && $build[$ex->buildID]['is_open'];
       }  
     }  
 
-    if($status_ok)
-    {
+    if($status_ok && property_exists($ex, 'platformID')) {
       // Get Test plan platforms
+      $platform = $ex->platformID;
+
       $getOpt = array('outputFormat' => 'mapAccessByID' , 'addIfNull' => false);
       $platformSet = $this->tplanMgr->getPlatforms($ex->testPlanID,$getOpt);
 
-      if( !($hasPlatforms = !is_null($platformSet)) && $ex->platformID !=0)
-      {
+      if( !($hasPlatforms = !is_null($platformSet)) && $platform !=0) {
         $status_ok = false;
         $msg = 'You can not execute against a platform, because Test plan has no platforms';
       }  
 
-      if($status_ok)
-      {
-        if($hasPlatforms)
-        {  
-          if($ex->platformID == 0)
-          {
+      if($status_ok) {
+        if($hasPlatforms) {  
+          if($platform == 0) {
             $status_ok = false;
             $msg = 'Test plan has platforms, you need to provide one in order to execute';
-          }
-          else if (!isset($platformSet[$ex->platformID]))
-          {
+          } else if (!isset($platformSet[$platform])) {
             $status_ok = false;
             $msg = '(platform,test plan) couple is not valid';
-          }  
+          }
         }
       }  
     } 
 
-    if($status_ok)
-    {
+    if($status_ok) {
       // Test case check
       $msg = 'Test case does not exist';
 
       $tcaseID = $this->tcaseMgr->getInternalID($ex->testCaseExternalID);
       $status_ok = ($tcaseID > 0);
-      if( $status_ok = ($tcaseID > 0) )
-      {
+      if( $status_ok = ($tcaseID > 0) ) {
         $msg = 'Test case doesn not belong to right test project';
         $testCaseTestProject = $this->tcaseMgr->getTestProjectFromTestCase($tcaseID,0);
         $status_ok = ($testCaseTestProject == $testPlan['testproject_id']);
       }  
-      if($status_ok)
-      {
+
+      if($status_ok) {
         // Does this test case is linked to test plan ?
         $msg = 'Test case is not linked to (test plan,platform) => can not be executed';
-        $getFilters = array('testplan_id' => $ex->testPlanID, 'platform_id' => $ex->platformID);
+        $getFilters = array('testplan_id' => $ex->testPlanID, 
+                            'platform_id' => $platform);
+
         $getOpt = array('output' => 'simple');
         $links = $this->tcaseMgr->get_linked_versions($tcaseID,$getFilters,$getOpt);
         $status_ok = !is_null($links);
       }  
     }  
 
-    if($status_ok)
-    {
+    if($status_ok) {
       // status code is OK ?
       $msg = 'not run status is not a valid execution status (can not be written to DB)';
       $status_ok = ($ex->statusCode != $this->cfg['exec']['statusCode']['not_run']);
 
-      if($status_ok)
-      {
+      if($status_ok) {
         $msg = 'Requested execution status is not configured on TestLink';
         $status_ok = isset($this->cfg['exec']['codeStatus'][$ex->statusCode]);
       }  
     }  
 
-    if($status_ok)
-    {
+    if($status_ok) {
       $ret = new stdClass();
       $ret->testProjectID = $testPlan['testproject_id'];
       $ret->testCaseVersionID = key($links);
-      $ret->testCaseVersionNumber = $links[$ret->testCaseVersionID][$ex->testPlanID][$ex->platformID]['version'];
+      $ret->testCaseVersionNumber = 
+        $links[$ret->testCaseVersionID][$ex->testPlanID][$platform]['version'];
     }
-      
-    if(!$status_ok)
-    {
+
+    if(!$status_ok) {
       throw new Exception($msg);
     }  
+
     return $ret;
   }
  
@@ -661,6 +704,149 @@ class tlRestApi
     echo json_encode($op);
   }
 
+
+  /**
+   *
+   * @param mixed testplan
+   *
+   *        step 1) testplan is a number ? 
+   *                use it as test plan id
+   * 
+   *        step 2) testplan is a string ?
+   *                use it as test plan apikey
+   *        
+   *        Is not possible to consider testplan as name
+   *        becase name can be used in several test projects.
+   *        One option can be request testprojectname/testplanname
+   *
+   * @param string name: build name
+   * @param string [notes]
+   * @param string [active]
+   * @param string [open]
+   * @param string [releasedate]: format YYYY-MM-DD;
+   * @param int    [copytestersfrombuild]
+   *
+   *               step 1) is a number ?
+   *                       will be considered a target build id.
+   *                       check will be done to verify that is a valid
+   *                       build id inside the test plan.
+   *
+   *               step 2) is a string ?
+   *                       will be used as build name to search inside
+   *                       the test plan.
+   * 
+   *               if check is OK, tester assignments will be copied.
+   *
+   */
+  public function createBuild() {
+
+    $op = array('status' => 'ko', 'message' => 'ko', 
+                'details' => array(), 'id' => -1);  
+
+    $rightToCheck = "testplan_create_build";
+
+    // need to get input, before doing right checks,
+    // because right can be tested against in this order
+    // Test Plan Right
+    // Test Project Right
+    // Default Right
+    $request = $this->app->request();
+    $item = json_decode($request->getBody());
+    $statusOK = true;
+
+    // Get mandatory inputs
+    $build = new stdClass();
+ 
+    $reqProps = array('testplan','name');
+    foreach( $reqProps as $prop ) {
+      if( !property_exists($item, $prop) ) {
+        $op['details'][] = $this->l10n['API_MISSING_REQUIRED_PROP'] .
+                           $prop;
+        $statusOK = false;
+      } 
+    }
+
+    if( $statusOK ) {
+      $build->name = $item->name;
+
+      if( is_numeric($item->testplan) ) {
+        // Check if is a valid test plan
+        // Get it's test project id
+        $tplan_id = intval($item->testplan);
+        $tplan = $this->tplanMgr->get_by_id( $tplan_id );
+
+        if( null == $tplan ) {
+          $statusOK = false;
+          $op['details'][] = 
+            sprintf($this->l10n['API_TESTPLAN_ID_DOES_NOT_EXIST'],$item->testplan);
+        }
+      } else {
+        $tplanAPIKey = trim($item->testplan);
+        $tplan = $this->tplanMgr->getByAPIKey( $tplanAPIKey );
+        if( null == $tplan ) {
+          $statusOK = false;
+          $op['details'][] = 
+            sprintf($this->l10n['API_TESTPLAN_APIKEY_DOES_NOT_EXIST'],$item->testplan);
+        }
+      }
+    }
+
+    if( $statusOK ) {
+      // Ready to check user permissions
+      $context = array('tplan_id' => $tplan['id'], 
+                       'tproject_id' => $tplan['testproject_id']);
+
+      if( !$this->userHasRight($rightToCheck,TRUE,$context) ) {
+        $statusOK = false;
+        $msg = lang_get('API_INSUFFICIENT_RIGHTS');
+
+        $op['message'] = 
+          sprintf($msg,$rightToCheck,$this->user->login,
+                  $context['tproject_id'],$context['tplan_id']);
+      } 
+    }  
+
+    // Go ahead, try create build!!
+    // Step 1 - Check if build name already exists
+    if( $statusOK ) {
+      $build->id = 
+        $this->tplanMgr->get_build_id_by_name( $context['tplan_id'], $build->name );
+
+      if( $build->id > 0 ) {
+        $statusOK = false;
+        $op['message'] = 
+          sprintf($this->l10n['API_BUILDNAME_ALREADY_EXISTS'], 
+                  $build->name, $build->id);
+      }
+
+      $build->tplan_id = $context['tplan_id'];
+    }    
+
+    // Step 2 - Finally Create It!!
+    if( $statusOK ) {
+      // key 2 check with default value is parameter is missing
+      $k2check = array('active' => 1, 'is_open' => 1,
+                       'releasedate' => null,
+                       'copytestersfrombuild' => null);
+
+      foreach( $k2check as $key => $value ) {
+        $build->$key = $value;
+        if( property_exists($item, $key) ) {
+          $build->$key = $item->$key;
+        }
+      }
+
+      $itemID = $this->buildMgr->createFromObject($build);
+      if( $itemID > 0 ) {
+        $op = array('status' => 'ok', 'message' => 'ok', 
+                    'details' => array(), 'id' => $itemID);  
+      } 
+    }    
+
+    echo json_encode($op);
+  }
+
+
   /**
    *
    *
@@ -695,10 +881,8 @@ class tlRestApi
    *
    *
    */ 
-  private function buildTestCaseObj(&$obj)
-  {
-    if(is_null($obj))
-    {
+  private function buildTestCaseObj(&$obj) {
+    if(is_null($obj)) {
       throw new Exception("Fatal Error - " . __METHOD__ . " arg is NULL");
     } 
 
@@ -854,6 +1038,55 @@ class tlRestApi
       throw new Exception("Test Suite does not belong to Test Project ID");
     }  
   }
+
+
+  /**
+   * checks if a user has requested right on test project, test plan pair.
+   * 
+   * @param string $rightToCheck  one of the rights defined in rights table
+   * @param boolean $checkPublicPrivateAttr (optional)
+   * @param map $context (optional)
+   *            keys tproject_id,tplan_id  (both are also optional)
+   *
+   * @return boolean
+   * @access protected
+   *
+   *
+   */
+  protected function userHasRight($rightToCheck,$checkPublicPrivateAttr=false,
+                                  $context=null)
+  {
+    $status_ok = true;
+
+    // for global rights context is NULL
+    if( is_null($context) ) {
+      $tproject_id = 0;
+      $tplan_id = null;      
+    } else {
+      $tproject_id = intval(isset($context['tproject_id']) ? 
+                    $context['tproject_id'] : 0);
+
+      $tplan_id = null;
+      if(isset($context['tplan_id'])) {
+        $tplan_id = intval($context['tplan_id']);
+      } 
+
+      if( $tproject_id <= 0 && !is_null($tplan_id) ) {
+        // get test project from test plan
+        $dummy = $this->tplanMgr->get_by_id($tplanid,array('output' => 'minimun'));  
+        $tproject_id = intval($dummy['tproject_id']);
+      }
+    }
+
+    // echo $rightToCheck;
+    if(!$this->user->hasRight($this->db,$rightToCheck,
+                              $tproject_id,$tplan_id,$checkPublicPrivateAttr)) {
+      $status_ok = false;
+    }
+    return $status_ok;
+  }
+
+
 
 
 

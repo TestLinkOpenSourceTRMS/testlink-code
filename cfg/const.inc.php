@@ -8,12 +8,8 @@
  * 
  * @filesource  const.inc.php
  * @package     TestLink
- * @author      Martin Havlat
- * @copyright   2007-2015, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @see         config.inc.php
- *
- * @internal revisions
- * No revisions logged here but each parameter must be described!
  *
  **/
  
@@ -23,36 +19,42 @@
 define('TL_SMARTY_VERSION',3);  // @since 1.9.8
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION_NUMBER', '1.9.15'); 
-define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Tauriel)'); 
+define('TL_VERSION_NUMBER', '1.9.20'); 
+define('TL_VERSION', TL_VERSION_NUMBER . ' [DEV] (Raijin)'); 
 define('TL_FACE_DIR', 'prague'); 
 
-/** Last Database version that is used to give users feedback about necesssary upgrades
- * if you set this parameter also upgrade lib/functions/configCheck.php - checkSchemaVersion() */
-define('TL_LAST_DB_VERSION', 'DB 1.9.14');
+/** Latest Database version that is used to give users feedback 
+ *  about necesssary upgrades
+ *  if you set this parameter also upgrade 
+ *  lib/functions/configCheck.php - checkSchemaVersion() */
+define('TL_LATEST_DB_VERSION', 'DB ' . '1.9.20');
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
-if (!defined('TL_ABS_PATH')) 
-{
-    define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
+if (!defined('TL_ABS_PATH')) {
+  define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
 }
 
 /** Setting up the global include path for testlink */
-ini_set('include_path',
-    ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEPARATOR . 
-    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR  . PATH_SEPARATOR .
-    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'issuetrackerintegration' . DIRECTORY_SEPARATOR . PATH_SEPARATOR .
-    TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'reqmgrsystemintegration' . DIRECTORY_SEPARATOR);
+$ds = DIRECTORY_SEPARATOR;
+$ps = PATH_SEPARATOR;
 
-ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
-         TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
+ini_set('include_path', ini_get('include_path') . $ps . '.' . 
+  $ps . TL_ABS_PATH . 'lib' . $ds . 'functions' . $ds  . 
+  $ps . TL_ABS_PATH . 'lib' . $ds . 'issuetrackerintegration' . $ds . 
+  $ps . TL_ABS_PATH . 'lib' . $ds . 'codetrackerintegration' . $ds . 
+  $ps . TL_ABS_PATH . 'lib' . $ds . 'reqmgrsystemintegration' . $ds);
+
+ini_set('include_path',ini_get('include_path') . 
+        $ps . TL_ABS_PATH . 'third_party' . $ds . 
+        $ps . TL_ABS_PATH . 'vendor' . $ds .
+        $ps . TL_ABS_PATH . 'cfg' . $ds);
 
 /** Localization directory base */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 /* [GENERAL MAGIC NUMBERS] */
 
 /** PHPMAILER */
@@ -83,10 +85,6 @@ define('LAST_USER_CHOICE',2);
 define('COLLAPSE', 0);
 define('EXPAND',1 );
 
-
-/** @TODO havlatm: remove, use ON || 'OFF' constant */
-define('TL_FILTER_OFF',null);
-
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS', 0);
 define('TP_ALL_STATUS', null);
@@ -102,6 +100,8 @@ define('LANG_GET_NO_WARNING',true);
 define('DSN', FALSE);  // for method connect() of database.class
 define('ANY_BUILD', null);
 define('GET_NO_EXEC', 1);
+
+define('FILTER_OPTION_ANY', 0);
 
 /** @uses planTCNavigator.php */
 define('FILTER_BY_BUILD_OFF', 0);
@@ -175,33 +175,35 @@ define('DO_PRUNE', 1);
 define('AUTOMATION_RESULT_KO', -1);
 define('AUTOMATION_NOTES_KO', -1);
 
-/** @uses testcase.class.php */
-define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
-define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
-
 define('REMOVEME', 'd8ba8cfb-ca92-4fa5-83c2-551977d405fb');
 
+/** Constants for plugins */
+/** Plugin configuration types */
+define('CONFIG_TYPE_STRING', 0);
+define('CONFIG_TYPE_INT', 1);
+define('CONFIG_TYPE_FLOAT', 2);
+define('CONFIG_TYPE_COMPLEX', 3);
 
-// --------------------------------------------------------------------------------------
+/** To indicate the plugin configuration belongs to ANY PROJECT */
+define('TL_ANY_PROJECT', -1);
+
+/** Constants for events */
+define('EVENT_TYPE_CREATE', 1);
+define('EVENT_TYPE_UPDATE', 2);
+define('EVENT_TYPE_DELETE', 3);
+define('EVENT_TYPE_OUTPUT', 4);
+
+
+
+
+// ---------------------------------------------------------------------------------
 /* [GUI] */
 
 /** 
- * @todo havlatm: remove (must be solved via css)
  * @uses planAddTC_m1-tpl 
  * 
- * @internal Francisco: DISAGREE, if we want give user possibility to reconfigure
- *                 how we can do this with CSS 
- *     Havlatm: User can create own theme with own colours
  **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
-
-/** default filenames of CSS files of current GUI theme */
-define('TL_CSS_MAIN', 'testlink.css');
-define('TL_CSS_PRINT', 'tl_print.css');
-define('TL_CSS_DOCUMENTS', 'tl_documents.css');
-
-/** @todo havlatm: remove - probably obsolete from 1.9 */
-define('TL_CSS_TREEMENU', 'tl_treemenu.css');
 
 /** Browser Cookie keeptime */
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
@@ -273,7 +275,8 @@ $tlCfg->locales = array('cs_CZ' => 'Czech','de_DE' => 'German','en_GB' => 'Engli
                         'es_ES' => 'Spanish','fi_FI' => 'Finnish','fr_FR' => 'Fran&ccedil;ais',
                         'id_ID' => 'Indonesian','it_IT' => 'Italian','ja_JP' => 'Japanese',
                         'ko_KR' => 'Korean','nl_NL' => 'Dutch','pl_PL' => 'Polski',
-                        'pt_BR' => 'Portuguese (Brazil)','ru_RU' => 'Russian','zh_CN' => 'Chinese Simplified');
+                        'pt_BR' => 'Portuguese (Brazil)','pt_PT' => 'Portuguese',
+                        'ru_RU' => 'Russian','zh_CN' => 'Chinese Simplified');
 
 /** 
  * Format of date - see strftime() in PHP manual
@@ -285,7 +288,7 @@ $tlCfg->locales_date_format = array('cs_CZ' => '%d.%m.%Y','de_DE' => '%d.%m.%Y',
                                     'fi_FI' => '%d/%m/%Y','fr_FR' => '%d/%m/%Y','id_ID' => '%d/%m/%Y',
                                     'it_IT' => '%d/%m/%Y','ja_JP' => '%Y/%m/%d','ko_KR' => '%Y/%m/%d',
                                     'nl_NL' => '%d-%m-%Y','pl_PL' => '%d.%m.%Y','pt_BR' => '%d/%m/%Y',
-                                    'ru_RU' => '%d/%m/%Y','zh_CN' => '%Y-%m-%d'); 
+                                    'pt_PT' => '%d/%m/%Y','ru_RU' => '%d.%m.%Y','zh_CN' => '%Y-%m-%d'); 
 
 /** @var array Localized format of full timestamp */
 $tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' => '%d.%m.%Y %H:%M:%S',
@@ -295,8 +298,8 @@ $tlCfg->locales_timestamp_format = array('cs_CZ' => '%d.%m.%Y %H:%M:%S','de_DE' 
                                          'id_ID' => '%d/%m/%Y %H:%M:%S','it_IT' => '%d/%m/%Y %H:%M:%S',
                                          'ja_JP' => '%Y/%m/%d %H:%M:%S','ko_KR' => '%Y/%m/%d %H:%M:%S',
                                          'nl_NL' => '%d-%m-%Y %H:%M:%S','pl_PL' => '%d.%m.%Y %H:%M:%S',
-                                         'pt_BR' => '%d/%m/%Y %H:%M:%S','ru_RU' => '%d/%m/%Y %H:%M:%S',
-                                         'zh_CN' => '%Y-%m-%d %H:%M:%S'); 
+                                         'pt_BR' => '%d/%m/%Y %H:%M:%S','pt_PT' => '%d/%m/%Y %H:%M:%S',
+                                         'ru_RU' => '%d.%m.%Y %H:%M:%S','zh_CN' => '%Y-%m-%d %H:%M:%S'); 
 
 /** @var array localized date format for smarty templates (html_select_date function) 
  * deprecated since use of datepicker */
@@ -304,7 +307,7 @@ $tlCfg->locales_html_select_date_field_order = array('cs_CZ' => 'dmY','de_DE' =>
                                                      'en_US' => 'mdY','es_AR' => 'dmY','es_ES' => 'dmY','fi_FI' => 'dmY',
                                                      'fr_FR' => 'dmY','id_ID' => 'dmY','it_IT' => 'dmY','ja_JP' => 'Ymd',
                                                      'ko_KR' => 'Ymd','nl_NL' => 'dmY','pl_PL' => 'dmY','pt_BR' => 'dmY',
-                                                     'ru_RU' => 'dmY','zh_CN' => 'Ymd'); 
+                                                     'pt_PT' => 'dmY','ru_RU' => 'dmY','zh_CN' => 'Ymd'); 
 
 
 
@@ -361,8 +364,10 @@ $att_model_m2->show_upload_column = true;
  * The code is used in DB to store results (not GUI).  
  * Do not do localisation here, i.e do not change "passed" by your national language.
  */ 
-$tlCfg->results['status_code'] = array('failed' => 'f','blocked' => 'b','passed' => 'p','not_run' => 'n',
-                                       'not_available' => 'x','unknown' => 'u','all' => 'a'); 
+$tlCfg->results['status_code'] = array('failed' => 'f','blocked' => 'b',
+                                       'passed' => 'p','not_run' => 'n',
+                                       'not_available' => 'x','unknown' => 'u',
+                                       'all' => 'a'); 
 
 
 /** 
@@ -407,6 +412,32 @@ $tlCfg->results['status_label_for_exec_ui'] = array('not_run' => 'test_status_no
                                                     'passed'  => 'test_status_passed',
                                                     'failed'  => 'test_status_failed',
                                                     'blocked' => 'test_status_blocked');
+
+
+$tlCfg->results['status_icons_for_exec_ui'] = 
+  array('passed' => array('img' => 'test_status_passed',
+                          'title' => 'click_passed'),
+        'failed' => array('img' => 'test_status_failed',
+                          'title' => 'click_failed'),
+        'blocked' => array('img' => 'test_status_blocked',
+                           'title' => 'click_blocked'));
+
+$tlCfg->results['status_icons_for_exec_next_ui'] = 
+  array('passed' => array('img' => 'test_status_passed_next',
+                          'title' => 'click_passed_next'),
+        'failed' => array('img' => 'test_status_failed_next',
+                          'title' => 'click_failed_next'),
+        'blocked' => array('img' => 'test_status_blocked_next',
+                           'title' => 'click_blocked_next'));
+
+
+$tlCfg->results['execStatusToExclude'] = array();
+$tlCfg->results['execStatusToExclude']['testcase'] = 
+  array($tlCfg->results['status_code']['all']);
+
+$tlCfg->results['execStatusToExclude']['step'] = 
+  array($tlCfg->results['status_code']['all']);
+
 
 /** 
  * Selected execution result by default. Values is key from $tlCfg->results['status_label']
@@ -458,7 +489,7 @@ $tlCfg->execution_assignment_filter_methods['status_label'] = array('latest_exec
 // $js_key_to_select on init_filter_result() in tlTestCaseFilterControl.class.php
 // 
 $tlCfg->execution_assignment_filter_methods['default_type'] = 
-$tlCfg->execution_assignment_filter_methods['status_code']['specific_build'];
+  $tlCfg->execution_assignment_filter_methods['status_code']['specific_build'];
 
 
 
@@ -530,6 +561,9 @@ $tlCfg->testcase_urgency_default = MEDIUM;
  */
 $tlCfg->urgency['code_label'] = array(HIGH => 'urgency_high',MEDIUM => 'urgency_medium',LOW => 'urgency_low');
 
+
+/* priority is calculated using importance and urgency */
+$tlCfg->priority['code_label'] = array(HIGH => 'high_priority',MEDIUM => 'medium_priority',LOW => 'low_priority');
 
 // --------------------------------------------------------------------------------------
 /* [States & Review] */
@@ -821,19 +855,22 @@ $tlCfg->guiTopMenu[1] = array('label' => 'home','url' => 'index.php','right' => 
 $tlCfg->guiTopMenu[2] = array('label' => 'title_requirements',
                               'imgKey' => 'requirements',
                               'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
-                              'right' => 'mgt_view_req','condition'=>'ReqMgmtEnabled',
+                              'right' => array('mgt_view_req','mgt_modify_req'),
+                              'condition'=>'ReqMgmtEnabled',
                               'shortcut'=>'r','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[3] = array('label' => 'title_specification',
                               'imgKey' => 'test_specification', 
                               'url' => 'lib/general/frmWorkArea.php?feature=editTc',
-                              'right' => 'mgt_view_tc','condition'=>'',
+                              'right' => array('mgt_view_tc','mgt_modify_tc'),
+                              'condition'=>'',
                               'shortcut'=>'t','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[4] = array('label' => 'title_execute',
                               'imgKey' => 'execution',
                               'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
-                              'right' => 'testplan_execute','condition'=>'TestPlanAvailable',
+                              'right' => array('testplan_execute','exec_ro_access'),
+                              'condition'=>'TestPlanAvailable',
                               'shortcut'=>'e','target'=>'mainframe'); 
 
 $tlCfg->guiTopMenu[5] = array('label' => 'title_results',
@@ -853,6 +890,11 @@ $tlCfg->guiTopMenu[7] = array('label' => 'title_events',
                               'url' => 'lib/events/eventviewer.php',
                               'right' => array('events_mgt', 'mgt_view_events'),'condition'=>'',
                               'shortcut'=>'v','target'=>'mainframe'); 
+$tlCfg->guiTopMenu[8] = array('label' => 'title_plugins',
+                              'imgKey' => 'plugins',
+                              'url' => 'lib/plugins/pluginView.php',
+                              'right' => array('mgt_plugins'),'condition'=>'',
+                              'shortcut'=>'p','target'=>'mainframe');
 
 
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',  'docs/tl-file-formats.pdf');
@@ -882,4 +924,27 @@ $tlCfg->results['charts']['dimensions'] =
 $tlCfg->testCaseStatus = array( 'draft' => 1, 'readyForReview' => 2, 
                                 'reviewInProgress' => 3, 'rework' => 4, 
                                 'obsolete' => 5, 'future' => 6, 'final' => 7 );   
+
+
+/** @uses testcase.class.php */
+// if you need to define new one, start on 20 please.
+// see strings.txt for labels
+// $TLS_execution_type_KEY => $TLS_execution_type_manual
+$tlCfg->execution_type = array( 'manual' => 1, 'auto' => 2);  
+
+// To be removed 
+define('TESTCASE_EXECUTION_TYPE_MANUAL', $tlCfg->execution_type['manual']);  
+define('TESTCASE_EXECUTION_TYPE_AUTO', $tlCfg->execution_type['auto']);
+
+// for link_status field on req_coverage table
+define('LINK_TC_REQ_OPEN', 1);
+define('LINK_TC_REQ_CLOSED_BY_EXEC', 2);
+define('LINK_TC_REQ_CLOSED_BY_NEW_TCVERSION', 3);
+define('LINK_TC_REQ_CLOSED_BY_NEW_REQVERSION', 4);
+
+// for link_status field on testcase_relations table
+define('LINK_TC_RELATION_OPEN', 1);
+define('LINK_TC_RELATION_CLOSED_BY_EXEC', 2);
+define('LINK_TC_RELATION_CLOSED_BY_NEW_TCVERSION', 3);
+
 // END 

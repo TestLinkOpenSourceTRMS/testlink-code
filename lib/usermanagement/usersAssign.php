@@ -10,12 +10,12 @@
  * then to change Test Project user need to use main Test Project Combo
  * 
  * @package 	  TestLink
- * @copyright   2005-2015, TestLink community
+ * @copyright   2005-2016, TestLink community
  * @filesource  usersAssign.php
  * @link 		    http://www.testlink.org
  *
  * @internal revisions
- * @since 1.9.14
+ * @since 1.9.15
  *
  */
 
@@ -25,6 +25,8 @@ require_once('users.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();
+$imgSet = $smarty->getImages();
+
 $templateCfg = templateConfiguration();
 
 $assignRolesFor = null;
@@ -38,6 +40,8 @@ $tplanMgr = new testplan($db);
 $args = init_args();
 $gui = initializeGui($db,$args);
 
+$lbl = initLabels();
+
 $target = new stdClass();
 $target->testprojectID = null;
 $target->testplanID = null;
@@ -47,9 +51,11 @@ switch($args->featureType)
 {
     case "testproject":
     	$gui->highlight->assign_users_tproject = 1;
-    	$gui->roles_updated = lang_get("test_project_user_roles_updated");
-    	$gui->not_for_you = lang_get("testproject_roles_assign_disabled");
-    	$assignRolesFor = $args->featureType;
+    	$gui->roles_updated = $lbl["test_project_user_roles_updated"];
+    	$gui->not_for_you = $lbl["testproject_roles_assign_disabled"];
+    	$gui->main_title = $lbl["assign_tproject_roles"];
+
+      $assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->featureID > 0 ? $args->featureID : null;
     	$featureMgr = &$tprojectMgr;
     break;
@@ -58,9 +64,19 @@ switch($args->featureType)
       $gui->highlight->assign_users_tplan = 1;
     	$gui->roles_updated = lang_get("test_plan_user_roles_updated");
     	$gui->not_for_you = lang_get("testplan_roles_assign_disabled");
+      $gui->main_title = $lbl["assign_tplan_roles"];
+
     	$assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->testprojectID;
     	$featureMgr = &$tplanMgr;
+
+      $accessKey = 'private';
+      if( $tprojectMgr->getPublicAttr($args->testprojectID) )
+      {
+        $accessKey = 'public';
+      }  
+      $gui->tprojectAccessTypeImg = '<img src="' . $imgSet[$accessKey] . 
+                                    '" title="' . lang_get('access_' . $accessKey) . '" >';
     break;
 }
 
@@ -68,10 +84,10 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
 {
     if(checkRightsForUpdate($db,$args->user,$args->testprojectID,$args->featureType,$args->featureID))
     {
-        doUpdate($db,$args,$featureMgr);
-        if( $gui->user_feedback == '' )
-        {
-        	$gui->user_feedback = $gui->roles_updated;
+      doUpdate($db,$args,$featureMgr);
+      if( $gui->user_feedback == '' )
+      {
+        $gui->user_feedback = $gui->roles_updated;
     	}
     }
 }
@@ -85,27 +101,28 @@ $args->user = $_SESSION['currentUser'];
 
 switch($assignRolesFor)
 {
-    case 'testproject':
-        $info = getTestProjectEffectiveRoles($db,$tprojectMgr,$args,$gui->users);
-        list($gui->userFeatureRoles,$gui->features,$gui->featureID) = $info;
-        $target->testprojectID = $gui->featureID;
-    break;
+  case 'testproject':
+    $info = getTestProjectEffectiveRoles($db,$tprojectMgr,$args,$gui->users);
+    list($gui->userFeatureRoles,$gui->features,$gui->featureID) = $info;
+    $target->testprojectID = $gui->featureID;
+  break;
         
-    case 'testplan':
-      $info = getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
-		  if( is_null($info) )
-		  {
-			  $gui->user_feedback = lang_get('no_test_plans_available');
-		  }
-      list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
-    break;
+  case 'testplan':
+    $info = getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
+		if( is_null($info) )
+		{
+			$gui->user_feedback = lang_get('no_test_plans_available');
+		}
+    list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
+  break;
 
 }
 
 
 $gui->grants = getGrantsForUserMgmt($db,$args->user,$target->testprojectID,-1);
-
 $gui->accessTypeImg = '';
+
+
 if(is_null($gui->features) || count($gui->features) == 0)
 {
   $gui->features = null;
@@ -116,7 +133,6 @@ if(is_null($gui->features) || count($gui->features) == 0)
 }
 else
 {
-  $imgSet = $smarty->getImages();
   $accessKey = 'vorsicht';
   if( isset($gui->features[$gui->featureID]) )
   {
@@ -124,7 +140,6 @@ else
     $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
   }  
   $gui->accessTypeImg = '<img src="' . $imgSet[$accessKey] . '" title="' . lang_get('access_' . $accessKey) . '" >';
-
 }
 
 $gui->hintImg = '<img src="' . $imgSet['heads_up'] . '" title="' . 
@@ -151,20 +166,22 @@ function init_args()
     
 	$args = new stdClass();
 	$args->featureType = $pParams["featureType"];
-    $args->featureID = $pParams["featureID"];
-    $args->map_userid_roleid = $pParams["userRole"];
-    $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
+  $args->featureID = $pParams["featureID"];
+  $args->map_userid_roleid = $pParams["userRole"];
+  $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
    
-    // Warning: 
-    // This value is used when doing Test Plan role assignment
-    $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    $args->testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+  // Warning: 
+  // This value is used when doing Test Plan role assignment
+  $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  
+  $args->testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+  
+  $args->testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 
-    $args->user = $_SESSION['currentUser'];
-    $args->userID = $args->user->dbID;
+  $args->user = $_SESSION['currentUser'];
+  $args->userID = $args->user->dbID;
     
-    return $args;
+  return $args;
 }
 
 
@@ -422,7 +439,6 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
     }
       
     $tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
-      
     $effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
     $ret = array($effectiveRoles,$features,$argsObj->featureID);
   }
@@ -534,7 +550,7 @@ function getTestPlanEffectiveRolesNEW(&$dbHandler,&$tplanMgr,$tprojectMgr,&$args
 		}
     	
 		$tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
-    	
+      
 		$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
 
     // it seems that here is the best place to check if current logged user
@@ -602,6 +618,7 @@ function initializeGui(&$dbHandler,$argsObj)
   $gui->features = null;
   $gui->featureID = null;
   $gui->role_colour = null;
+  $gui->tprojectAccessTypeImg = '';
 
   $guiCfg = config_get('gui');
   if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 
@@ -611,4 +628,15 @@ function initializeGui(&$dbHandler,$argsObj)
   return $gui;
 }
 
-?>
+/**
+ *
+ */
+function initLabels()
+{
+  $tg = array('test_project_user_roles_updated' => null,
+              'testproject_roles_assign_disabled' => null,
+              'assign_tproject_roles' => null,
+              'assign_tplan_roles' => null);
+  $labels = init_labels($tg);
+  return $labels;
+}

@@ -17,21 +17,18 @@ testlinkInitPage($db);
 $_REQUEST=strings_stripSlashes($_REQUEST);
 
 $tcase_mgr = new testcase($db);
-$tcase_id = isset($_REQUEST['tcase_id']) ? $_REQUEST['tcase_id']: null;
-$tcversion_id = isset($_REQUEST['tcversion_id']) ? $_REQUEST['tcversion_id']: 0;
+$tcase_id = intval(isset($_REQUEST['tcase_id']) ? $_REQUEST['tcase_id']: 0);
+$tcversion_id = intval(isset($_REQUEST['tcversion_id']) ? $_REQUEST['tcversion_id']: 0);
+
+
 $info = '';
-if( !is_null($tcase_id) )
-{
-  if($tcversion_id > 0 )
-  { 
+if( $tcase_id > 0 ) {
+  if($tcversion_id > 0 ) { 
     $tcase = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
-    if(!is_null($tcase))
-    {
+    if(!is_null($tcase)) {
       $tcase = $tcase[0];
     } 
-  }
-  else
-  {
+  } else {
     $tcase = $tcase_mgr->get_last_version_info($tcase_id);
   } 
   $info = $tcase['summary'];
@@ -41,12 +38,9 @@ if( !is_null($tcase_id) )
   $info = str_replace("<p>","",$info);
   $info = str_replace("</p>","<br>",$info);
     
-  if ($info == "") 
-  {
+  if ($info == "")  {
     $info = lang_get("empty_tc_summary");
-  }
-  else
-  {
+  } else {
     $info = '<b>' . lang_get('summary') . '</b><br>' . $info;  
   } 
 }

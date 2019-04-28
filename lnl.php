@@ -5,17 +5,12 @@
  *
  * Direct links for external access to reports
  *
- *
  * How this feature works:
  * 
  * @package   TestLink
  * @author    franciscom
- * @copyright 2012,2015 TestLink community
+ * @copyright 2012,2018 TestLink community
  * @link      http://www.testlink.org/
- * @since     1.9.14
- *
- * @internal revisions
- *
  */
 
 // some session and settings stuff from original index.php 
@@ -23,7 +18,6 @@ require_once('config.inc.php');
 require_once('./cfg/reports.cfg.php');
 require_once('common.php');
 
-// testlinkInitPage($db,false,true);
 doDBConnect($db);
 $args = init_args($db);
 switch($args->light)
@@ -50,8 +44,7 @@ switch($args->light)
       break;
 
       case 'metricsdashboard':
-        $param =  "&tproject_id={$args->tproject_id}";
-        $what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey{$param}";
+        $what2launch = "lib/results/metricsDashboard.php?apikey=$args->apikey";
       break;
 
 
@@ -62,11 +55,19 @@ switch($args->light)
                  "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=" . FORMAT_HTML;
         $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
       break;
+      
+      case 'testreport_onbuild':
+        $param = "&type={$args->type}&level=testproject" .
+                 "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}&build_id={$args->build_id}" .
+                 "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
+                 "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=" . FORMAT_HTML;
+        $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
+      break;
 
       case 'test_plan':
         $param = "&type={$args->type}&level=testproject" .
                  "&tproject_id={$args->tproject_id}&tplan_id={$args->tplan_id}" .
-                 "&header=y&summary=y&toc=y&body=y&passfail=y&cfields=y&metrics=y&author=y" .
+                 "&header=y&summary=y&toc=y&body=y&passfail=n&cfields=y&metrics=y&author=y" .
                  "&requirement=y&keyword=y&notes=y&headerNumbering=y&format=" . FORMAT_HTML;
         $what2launch = "lib/results/printDocument.php?apikey=$args->apikey{$param}";         
       break;
@@ -131,7 +132,7 @@ switch($args->light)
   
     if(!is_null($what2launch))
     {
-      // 20150312 - changed to be able to get XLS file using wget
+      // changed to be able to get XLS file using wget
       // redirect(TL_BASE_HREF . $what2launch);
       //echo $what2launch;
       //die();
@@ -151,19 +152,23 @@ switch($args->light)
 /**
  *
  */
-function init_args(&$dbHandler)
-{
+function init_args(&$dbHandler) {
+
   $_REQUEST = strings_stripSlashes($_REQUEST);
   $args = new stdClass();
 
-  try
-  {
+  try {
     // ATTENTION - give a look to $tlCfg->reports_list
     // format domain: see reports.cfg.php FORMAT_*
     $typeSize = 30;
-    $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
+    $userAPIkeyLen = 32;
+    $objectAPIkeyLen = 64;
+
+    $iParams = array("apikey" => array(tlInputParameter::STRING_N,
+                                       $userAPIkeyLen,$objectAPIkeyLen),
                      "tproject_id" => array(tlInputParameter::INT_N),
                      "tplan_id" => array(tlInputParameter::INT_N),
+                     "build_id" => array(tlInputParameter::INT_N),
                      "level" => array(tlInputParameter::STRING_N,0,16),
                      "type" => array(tlInputParameter::STRING_N,0,$typeSize),
                      'id' => array(tlInputParameter::INT_N),
@@ -177,14 +182,29 @@ function init_args(&$dbHandler)
                   
   R_PARAMS($iParams,$args);
 
-  // new dBug($args);
   $args->format = intval($args->format);
   $args->format = ($args->format <= 0) ? FORMAT_HTML : $args->format;
 
   $args->envCheckMode = $args->type == 'file' ? 'hippie' : 'paranoic';
   $args->light = 'red';
   $opt = array('setPaths' => true,'clearSession' => true);
-  if(strlen($args->apikey) == 32)
+  
+  // validate apikey to avoid SQL injection
+  $args->apikey = trim($args->apikey);
+  $akl = strlen($args->apikey);
+  
+  switch($akl)
+  {
+    case $userAPIkeyLen:
+    case $objectAPIkeyLen:
+    break;
+
+    default:
+     throw new Exception("Aborting - Bad API Key lenght", 1);
+    break;  
+  }
+
+  if($akl == $userAPIkeyLen)
   {
     $args->debug = 'USER-APIKEY';
     setUpEnvForRemoteAccess($dbHandler,$args->apikey,null,$opt);
@@ -193,23 +213,26 @@ function init_args(&$dbHandler)
   }
   else
   {
-    if($args->type == 'exec')
+    if(is_null($args->type) || trim($args->type) == '')
     {
+      throw new Exception("Aborting - Bad type", 1);
+    } 
+
+    if($args->type == 'exec') {
       $tex = DB_TABLE_PREFIX . 'executions';
       $sql = "SELECT testplan_id FROM $tex WHERE id=" . intval($args->id);
       $rs = $dbHandler->get_recordset($sql);
-      if( is_null($rs) )
-      {
-        die();
+
+      if( is_null($rs) ) {
+        die(__FILE__ . '-' . __LINE__);
       }  
 
       $rs = $rs[0];
       $tpl = DB_TABLE_PREFIX . 'testplans';
       $sql = "SELECT api_key FROM $tpl WHERE id=" . intval($rs['testplan_id']);
       $rs = $dbHandler->get_recordset($sql);
-      if( is_null($rs) )
-      {
-        die();
+      if( is_null($rs) ) {
+        die(__FILE__ . '-' . __LINE__);
       }  
       $rs = $rs[0];
       $args->apikey = $rs['api_key'];
@@ -220,11 +243,11 @@ function init_args(&$dbHandler)
     $kerberos = new stdClass();
     $kerberos->args = $args;
     $kerberos->method = null;
-    
+
     if( setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$kerberos,$opt) )
     {
       $args->light = 'green';
-    }  
+    }
   }
   return $args;
 }

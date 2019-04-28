@@ -9,12 +9,10 @@
  * @filesource  configCheck.php
  * @package     TestLink
  * @author      Martin Havlat
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org/
  * @see         sysinfo.php
  *
- * @internal revisions
- * @since 1.9.9
  **/
 
 /**
@@ -106,14 +104,12 @@ function get_home_url($opt)
 
 
 /** check language acceptance by web client */
-function checkServerLanguageSettings($defaultLanguage)
-{
+function checkServerLanguageSettings($defaultLanguage) {
   $language = $defaultLanguage;
 
   // check for !== false because getenv() returns false on error
   $serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-  if(false !== $serverLanguage)
-  {
+  if(false !== $serverLanguage) {
     $localeSet = config_get('locales');
     if (array_key_exists($serverLanguage,$localeSet))
     {
@@ -121,7 +117,7 @@ function checkServerLanguageSettings($defaultLanguage)
     }  
   }
 
-  return ($language);
+  return $language;
 }
 
 
@@ -147,8 +143,8 @@ function checkConfiguration()
  **/
 function checkInstallStatus()
 {
-    $status=defined('DB_TYPE') ? true : false;
-    return $status;
+  $status=defined('DB_TYPE') ? true : false;
+  return $status;
 }
 
 
@@ -164,7 +160,8 @@ function checkLibGd()
   {
     $arrLibConf = gd_info();
     $msg = lang_get("error_gd_png_support_disabled");
-    if ($arrLibConf["PNG Support"]){
+    if ($arrLibConf["PNG Support"])
+    {
       $msg = 'OK';
     }  
   }
@@ -182,9 +179,6 @@ function checkLibGd()
  * @param array [ref] msgs will be appended
  * @return bool returns true if all extension or functions ar present or defined
  *
- * @author Andreas Morsing 
- * @todo Martin: it's used in getSecurityNotes() ... but it's not consistent with 
- *     checkPhpExtensions() - refactore
  **/
 function checkForExtensions(&$msg)
 {
@@ -200,7 +194,6 @@ function checkForExtensions(&$msg)
  * checks if the install dir is present
  *
  * @return bool returns true if the install dir is present, false else
- * @author Andreas Morsing 
  **/
 function checkForInstallDir()
 {
@@ -216,7 +209,6 @@ function checkForInstallDir()
  *
  * @return boolean returns true if the default password for the admin account is set, 
  *         false else
- * @author Andreas Morsing 
  **/
 function checkForAdminDefaultPwd(&$db)
 {
@@ -234,8 +226,6 @@ function checkForAdminDefaultPwd(&$db)
 
 /*
   function: checkForLDAPExtension
-  args :
-  returns: 
 */
 function checkForLDAPExtension()
 {
@@ -247,9 +237,7 @@ function checkForLDAPExtension()
  * these notes should be displayed!
  *
  * @return array returns the security issues, or null if none found!
- * @author Andreas Morsing 
  *
- * @internal rev :
  **/
 function getSecurityNotes(&$db)
 {
@@ -378,8 +366,6 @@ function isMSWindowsServer()
 
 /*
   function: checkForRepositoryDir
-  args :
-  returns: 
 */
 function checkForRepositoryDir($the_dir)
 {
@@ -392,42 +378,23 @@ function checkForRepositoryDir($the_dir)
   {
     $ret['msg'] .= lang_get('exists') . ' ';
     $ret['status_ok'] = true;
-
-    // There is a note on PHP manual that points that on windows
-    // is_writable() has problems => need a workaround
-    /** @TODO verify if it's valid for PHP5 */
-    // if( isMSWindowsServer() )
-    // {
-    //     $test_dir= $the_dir . '/requirements/';
-    //     if(!is_dir($test_dir))
-    //     {
-    //       // try to make the dir
-    //       $stat = @mkdir($test_dir);
-    //       $ret['status_ok']=$stat;
-    //     }
-    // }
-    // else
-    // {
-    //   $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
-    // }
-    // 20090713 - franciscom - tested on windows XP with PHP 5.2.9 seems OK
     $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
 
     if($ret['status_ok']) 
     {
-           $ret['msg'] .= lang_get('directory_is_writable');
-       }
-         else
-         {
-           $ret['msg'] .= lang_get('but_directory_is_not_writable');
-         }  
+      $ret['msg'] .= lang_get('directory_is_writable');
+    }
+    else
+    {
+      $ret['msg'] .= lang_get('but_directory_is_not_writable');
+    }  
   } 
   else
   {
     $ret['msg'] .= lang_get('does_not_exist');
   }
   
-  return($ret);
+  return $ret;
 }
 
 
@@ -441,7 +408,7 @@ function checkForRepositoryDir($the_dir)
 function checkSchemaVersion(&$db)
 {
   $result = array('status' => tl::ERROR, 'msg' => null, 'kill_session' => true);
-  $last_version = TL_LAST_DB_VERSION; 
+  $latest_version = TL_LATEST_DB_VERSION; 
   $db_version_table = DB_TABLE_PREFIX . 'db_version';
   
   $sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
@@ -453,13 +420,13 @@ function checkSchemaVersion(&$db)
     
   $myrow = $db->fetch_array($res);
   
-  $upgrade_msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
+  $upgrade_msg = "You need to upgrade your Testlink Database to {$latest_version} - <br>" .
                  '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
 
-  $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$last_version} - Read README file!";
+  $manualop_msg = "You need to proceed with Manual upgrade of your DB scheme to {$latest_version} - Read README file!";
 
-  switch (trim($myrow['version']))
-  {
+  switch (trim($myrow['version'])) {
+    
     case '1.7.0 Alpha':
     case '1.7.0 Beta 1':
     case '1.7.0 Beta 2':
@@ -482,17 +449,23 @@ function checkSchemaVersion(&$db)
     case 'DB 1.9.11':
     case 'DB 1.9.12':
     case 'DB 1.9.13':
+    case 'DB 1.9.14':
+    case 'DB 1.9.15':
+    case 'DB 1.9.16':
+    case 'DB 1.9.17':
+    case 'DB 1.9.18':
+    case 'DB 1.9.19':
       $result['msg'] = $manualop_msg;
     break;
 
-    case $last_version:
+    case $latest_version:
       $result['status'] = tl::OK;
       $result['kill_session'] = 'false';
     break;
     
     default:
       $result['msg'] = "Unknown Schema version " .  trim($myrow['version']) . 
-                       ", please upgrade your Testlink Database to " . $last_version;
+                       ", please upgrade your Testlink Database to " . $latest_version;
       break;
   }
   
@@ -585,8 +558,7 @@ function check_php_settings(&$errCounter)
  * @todo martin: Do we require "Checking DOM XML support"? It seems that we use internal library.
  *      if (function_exists('domxml_open_file'))
  */
-function checkPhpExtensions(&$errCounter)
-{
+function checkPhpExtensions(&$errCounter) {
  
   $cannot_use='cannot be used';
   $td_ok = "<td><span class='tab-success'>OK</span></td></tr>\n";
@@ -595,32 +567,47 @@ function checkPhpExtensions(&$errCounter)
   $msg_support='<tr><td>Checking %s </td>';
   $checks=array();
 
-
   // Database extensions  
-  $checks[]=array('extension' => 'mysql',
-                  'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
- 
   $checks[]=array('extension' => 'pgsql',
                   'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
- 
 
-  // ---------------------------------------------------------------------------------------------------------    
-  // special check for MSSQL - TICKET 4898
+  $mysqlExt = 'mysql';
+  if( version_compare(phpversion(), "5.5.0", ">=") ) {
+    $mysqlExt = 'mysqli';
+  } 
+  $checks[]=array('extension' => $mysqlExt,
+                  'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
+ 
+  // ----------------------------------------------------------------------------    
+  // special check for MSSQL
+  $isPHPGTE7 = version_compare(phpversion(), "7.0.0", ">=");
+
   $extid = 'mssql';
-  if(PHP_OS == 'WINNT')
-  {
-  // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
-  // From PHP MANUAL - reganding mssql_* functions
-  // These functions allow you to access MS SQL Server database.
-  // This extension is not available anymore on Windows with PHP 5.3 or later.
-  // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
-  // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
-  //
-  // PHP_VERSION_ID is available as of PHP 5.2.7
-  if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300)  
-  {
-    $extid = 'sqlsrv';
-  }      
+  if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
+    // Faced this problem when testing XAMPP 1.7.7 on Windows 7 with MSSQL 2008 Express
+    // From PHP MANUAL - reganding mssql_* functions
+    // These functions allow you to access MS SQL Server database.
+    // This extension is not available anymore on Windows with PHP 5.3 or later.
+    // SQLSRV, an alternative driver for MS SQL is available from Microsoft:
+    // http://msdn.microsoft.com/en-us/sqlserver/ff657782.aspx.       
+    //
+    // Second Time: (2018) 
+    // When using PHP 7 or up
+    // Help from Bitnami
+    // PHP 7 does not support mssql anymore. 
+    // The PECL extension recommended is to use the "sqlsrv" module 
+    // but you will need to compile it on your own.
+    //
+    //    
+    // PHP_VERSION_ID is available as of PHP 5.2.7
+    if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300 ) {
+      $extid = 'sqlsrv';
+    } 
+
+    if ( $isPHPGTE7 ) {
+      $extid = 'sqlsrv';
+    } 
+
   }  
   $checks[] = array('extension' => $extid,
                     'msg' => array('feedback' => 'MSSQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );    
@@ -641,6 +628,10 @@ function checkPhpExtensions(&$errCounter)
                   'msg' => array('feedback' => 'JSON library', 'ok' => $td_ok, 
                                  'ko' => " not enabled. You MUST install it to use EXT-JS tree component. "));
   
+  $checks[]=array('extension' => 'curl',
+                  'msg' => array('feedback' => 'cURL library', 'ok' => $td_ok, 
+                                 'ko' => " not enabled. You MUST install it to use REST Integration with issue trackers. "));
+
   $out='';
   foreach($checks as $test)
   {
@@ -656,7 +647,7 @@ function checkPhpExtensions(&$errCounter)
     $out .= $msg;
   }
 
-  return ($out);
+  return $out;
 }  
 
 
@@ -667,8 +658,7 @@ function checkPhpExtensions(&$errCounter)
  * @param integer &$errCounter reference to error counter
  * @return string html row with result 
  */
-function check_session(&$errCounter)
-{
+function check_session(&$errCounter) {
   $out = "<tr><td>Checking if sessions are properly configured</td>";
 
   if( !isset($_SESSION) )
@@ -740,6 +730,7 @@ function checkDbType(&$errCounter, $type)
   switch ($type)
   {
       case 'mysql':
+      case 'mysqli':
       case 'mssql':
       case 'postgres':
         $out .= '<td><span class="tab-success">'.$type.'</span></td></tr>';
@@ -747,7 +738,7 @@ function checkDbType(&$errCounter, $type)
         
       default:
         $out .= '<td><span class="tab-warning">Unsupported type: '.$type.
-                '. MySQL,Postgres and MsSql 2000 are supported DB types. Of course' .
+                '. MySQL,Postgres and MSSQL are supported DB types. Of course' .
                 ' you can use also other ones without migration support.</span></td></tr>';
       break;
   }
@@ -778,9 +769,7 @@ function checkServerOs()
  */
 function checkPhpVersion(&$errCounter)
 {
-  // 5.2 is required because json is used in ext-js component
-  // 20131001 - 5.4 to avoid the issue with issuetracker interface
-  $min_version = '5.4.0'; 
+  $min_version = '5.5.0'; 
   $my_version = phpversion();
 
   // version_compare:
@@ -804,7 +793,7 @@ function checkPhpVersion(&$errCounter)
     $final_msg .= " ) </span></td></tr>";
   }
 
-  return ($final_msg);
+  return $final_msg;
 }  
 
 
@@ -1043,14 +1032,12 @@ function reportCheckingDatabase(&$errCounter, $type = null)
  * @param integer &$errCounter reference to error counter
  * @author Martin Havlat
  **/
-function reportCheckingWeb(&$errCounter)
-{
+function reportCheckingWeb(&$errCounter) {
   echo '<h2>Web and PHP configuration</h2><table class="common" style="width: 100%;">';
   echo check_timeout($errCounter);
   echo check_php_settings($errCounter);
   echo checkPhpExtensions($errCounter);
   echo '</table>';
-
 }
 
 

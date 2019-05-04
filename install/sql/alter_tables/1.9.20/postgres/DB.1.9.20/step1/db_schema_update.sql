@@ -3,6 +3,9 @@
 --
 -- SQL script - Postgres
 
+-- since 1.9.20
+INSERT INTO /*prefix*/rights (id,description) VALUES (55,'testproject_add_remove_keywords_executed_tcversions');
+
 -- 
 --
 CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan AS 

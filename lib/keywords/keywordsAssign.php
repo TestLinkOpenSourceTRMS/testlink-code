@@ -45,6 +45,7 @@ $opt_cfg->additional_global_lbl = null;
 $opt_cfg->from->lbl = lang_get('available_kword');
 $opt_cfg->from->map = $tproject_mgr->get_keywords_map($args->testproject_id);
 
+
 switch($args->edit) {
 
   case 'testsuite':
@@ -70,13 +71,15 @@ switch($args->edit) {
         $result = 'ok';
         
         $glOpt = array('output' => 'thin', 'active' => 1);
+     
         for($idx = 0; $idx < $loop2do; $idx++) {
           $ltcv = $tcase_mgr->get_last_version_info($tcs[$idx],$glOpt);
           $latestActiveVersionID = $ltcv['tcversion_id'];
           $statusQuo = current($tcase_mgr->get_versions_status_quo($tcs[$idx],$latestActiveVersionID));
          
           $hasBeenExecuted = intval($statusQuo['executed']) > 0;
-          if( $hasBeenExecuted == false ) {
+          if( $gui->canAddRemoveKWFromExecuted || 
+              $hasBeenExecuted == false ) {
             if(is_null($args->keywordArray)) { 
               $tcase_mgr->deleteKeywords($tcs[$idx],$latestActiveVersionID);
             }
@@ -107,7 +110,8 @@ switch($args->edit) {
     $statusQuo = current($tcase_mgr->get_versions_status_quo($args->id,$latestActiveVersionID));
     $gui->hasBeenExecuted = intval($statusQuo['executed']) > 0;
 
-    if($args->assignToTestCase && !$gui->hasBeenExecuted) {
+    if( $args->assignToTestCase && 
+        ($gui->canAddRemoveKWFromExecuted || !$gui->hasBeenExecuted) ) {
       $result = 'ok';
       $tcase_mgr->setKeywords($args->id,$latestActiveVersionID,$args->keywordArray);
       $doRecall = !is_null($args->keywordArray);  
@@ -163,6 +167,7 @@ function init_args(&$opt_cfg) {
     $args->keywordArray = explode(",",$args->keywordList);
   }
 
+  $args->user = $_SESSION['currentUser'];
   return $args;
 }
 
@@ -177,6 +182,12 @@ function initializeGui(&$argsObj) {
   $guiObj->id = $argsObj->id;
   $guiObj->level = $argsObj->edit;
   $guiObj->keyword_assignment_subtitle = null;
+
+  $guiObj->canAddRemoveKWFromExecuted = 
+    $argsObj->user->hasRight($db,
+    'testproject_add_remove_keywords_executed_tcversions') ||
+    $argsObj->user->hasRight($db,'testproject_edit_executed_testcases');
+
   return $guiObj;
 }
 

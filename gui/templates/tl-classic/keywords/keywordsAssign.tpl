@@ -51,7 +51,8 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
       {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	    <br />
-      {if $gui->hasBeenExecuted == 0}
+      {if $gui->hasBeenExecuted == 0 || 
+          $gui->canAddRemoveKWFromExecuted == 1}
     	<input type="submit" name="assign{$gui->level}" id="assign{$gui->level}" value="{$labels.btn_save}" />
       {else}
         {$labels.tcversion_executed_keyword_assignment_blocked}

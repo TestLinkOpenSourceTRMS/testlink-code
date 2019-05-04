@@ -98,6 +98,9 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (52,'codetracker_view');
 INSERT INTO /*prefix*/rights (id,description) VALUES (53,'cfield_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (54,'exec_assign_testcases');
 
+-- since 1.9.20
+INSERT INTO /*prefix*/rights (id,description) VALUES (55,'testproject_add_remove_keywords_executed_tcversions');
+
 # Rights for Administrator role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,1 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,2 );

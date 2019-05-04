@@ -58,10 +58,14 @@ var pF_remove_keyword = remove_keyword;
       <td width="35%" style="vertical-align:top;"><a href={$kwView}>{$tcView_viewer_labels.keywords}</a>: &nbsp;
       </td>
       {*debug*}
+
+      {$removeEnabled = $args_edit_enabled && $gui->assign_keywords &&
+                        $args_frozen_version == "no"}
+
       <td style="vertical-align:top;">
           {foreach item=tckw_link_item from=$args_keywords_map}
                 {$tckw_link_item.keyword|escape}
-            {if $args_edit_enabled && $gui->assign_keywords && $args_frozen_version == "no"}
+            {if $removeEnabled}
             <a href="javascript:keyword_remove_confirmation({$gui->tcase_id},
                      {$tckw_link_item.tckw_link},
                      '{$tckw_link_item.keyword|escape:'javascript'}', 
@@ -76,7 +80,8 @@ var pF_remove_keyword = remove_keyword;
       </td>      
     </tr>
     <tr>
-      {if $args_edit_enabled && null != $gui->currentVersionFreeKeywords} 
+      {$addEnabled = $args_edit_enabled}
+      {if $addEnabled && null != $gui->currentVersionFreeKeywords} 
       <td>
        &nbsp;  
       <td>

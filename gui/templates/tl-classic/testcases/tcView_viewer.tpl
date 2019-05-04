@@ -93,30 +93,35 @@ viewer for test case in test specification
 {$warning_delete_msg=""}
 {$edit_enabled=0}
 {$delete_enabled=0}
-{$has_been_executed=0}
 {$show_relations=1}
-{if $args_can_do->edit == "yes"}
 
-  {$has_been_executed=0}
+{$has_been_executed=0}
+{if $args_status_quo != null || 
+    $args_status_quo[$args_testcase.id].executed}
+  {$has_been_executed=1}  
+{/if}
+
+{if $args_can_do->edit == "yes"}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
   {lang_get s='system_blocks_delete_executed_tc' var="warning_delete_msg"}
 
-  {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
+  {if $args_status_quo == null || 
+      $args_status_quo[$args_testcase.id].executed == null}
       {$edit_enabled=1}
       {$delete_enabled=1}
       {$warning_edit_msg=""}
       {$warning_delete_msg=""}
   {else} 
-    {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed == 1}
+
+    {if isset($args_tcase_cfg) && 
+        $args_tcase_cfg->can_edit_executed == 1}
       {$edit_enabled=1} 
-      {$has_been_executed=1} 
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
     
     {if isset($args_tcase_cfg)}
       {if $args_tcase_cfg->can_delete_executed == 1}
         {$delete_enabled=1} 
-        {$has_been_executed=1} 
         {$warning_delete_msg=""}
       {else}
         {if ($args_can_do->delete_testcase == "yes" &&  
@@ -415,11 +420,12 @@ function launchInsertStep(step_id)
   <div {$addInfoDivStyle}>
    {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
             $has_been_executed == 0} 
-
-   {if $args_frozen_version=="no" && 
-       $args_tcase_cfg->can_edit_executed == 1 &&
-       $has_been_executed == 1}
-     {$kwRW = 1}
+   
+   {if $args_frozen_version=="no" && $has_been_executed == 1 }
+     {if $args_tcase_cfg->can_edit_executed == 1 || 
+         $args_tcase_cfg->can_add_remove_kw_on_executed == 1}
+       {$kwRW = 1}
+     {/if}
    {/if}
    
    {include file="{$tplConfig['keywords.inc']}" 
@@ -439,7 +445,8 @@ function launchInsertStep(step_id)
      {/if}    
 
      {if $tlCfg->testcase_cfg->reqLinkingDisabledAfterExec == 1 && 
-         $has_been_executed == 1 && $args_tcase_cfg->can_edit_executed == 0}
+         $has_been_executed == 1 && 
+         $args_tcase_cfg->can_edit_executed == 0}
         {$reqLinkingEnabled = 0}
      {/if}
      

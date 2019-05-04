@@ -2498,7 +2498,8 @@ $TLS_right_testplan_show_testcases_newest_versions = 'Show Test Cases Newest Ver
 
 $TLS_right_testcase_freeze = 'Freeze/Unfreeze Test Case Version';
 
-
+$TLS_right_testproject_add_remove_keywords_executed_tcversions =
+ 'Add/Remove Keywords from Executed Test Case Versions';
 
 
 

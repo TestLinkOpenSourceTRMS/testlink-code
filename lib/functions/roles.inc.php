@@ -34,8 +34,7 @@ init_global_rights_maps();
 /**
  * init global map with user rights and user rights description localized.
  */
-function init_global_rights_maps()
-{
+function init_global_rights_maps() {
   // Every array, defines a section in the define role page => HAS EFFECTS ONLY ON LAYOUT
   global $g_rights_tp;
   global $g_rights_mgttc;
@@ -89,15 +88,17 @@ function init_global_rights_maps()
                    'right_testplan_set_urgent_testcases' => null,
                    'right_testplan_show_testcases_newest_versions' => null,
                    'right_testcase_freeze' => null,
-                   'right_exec_ro_access' => null);
+                   'right_exec_ro_access' => null,
+                   'right_testproject_add_remove_keywords_executed_tcversions' => null);
 
 
 
   $l18n = init_labels($l18nCfg);
 
-  $g_rights_executions = array('exec_edit_notes' => $l18n['right_exec_edit_notes'], 
-                               'exec_delete' => $l18n['right_exec_delete'],
-                               'exec_ro_access' => $l18n['right_exec_ro_access']);
+  $g_rights_executions = 
+    array('exec_edit_notes' => $l18n['right_exec_edit_notes'], 
+          'exec_delete' => $l18n['right_exec_delete'],
+          'exec_ro_access' => $l18n['right_exec_ro_access']);
 
   // order is important ?
   $g_rights_tp = 
@@ -116,11 +117,20 @@ function init_global_rights_maps()
           'testplan_set_urgent_testcases' => $l18n['right_testplan_set_urgent_testcases'],
           'testplan_show_testcases_newest_versions' => $l18n['right_testplan_show_testcases_newest_versions']);
             
+
   $g_rights_mgttc = array("mgt_view_tc" => $l18n['desc_mgt_view_tc'],
                           "mgt_modify_tc" => $l18n['desc_mgt_modify_tc'],
-                          "testproject_delete_executed_testcases" => $l18n['right_testproject_delete_executed_testcases'],
-                          "testproject_edit_executed_testcases" => $l18n['right_testproject_edit_executed_testcases'],
-                          "testcase_freeze" => $l18n['right_testcase_freeze']);
+                          "testproject_delete_executed_testcases" => null,
+                          "testproject_edit_executed_testcases" => null ,
+                          "testproject_add_remove_keywords_executed_tcversions" => null,
+                          "testcase_freeze" => null);
+
+  foreach( $g_rights_mgttc as $tr => $lbl ) {
+    if( null == $lbl ) {
+      $g_rights_mgttc[$tr] = $l18n['right_' . $tr];
+    }
+  }
+
   
   $g_rights_kw = array("mgt_view_key" => $l18n['desc_mgt_view_key'],
                        "keyword_assignment" => $l18n['desc_keyword_assignment'],
@@ -191,20 +201,19 @@ function init_global_rights_maps()
  * 
  * @see tlUser
  */
-function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
-{
+function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null) {
   return $_SESSION['currentUser']->hasRight($db,$roleQuestion,$tprojectID,$tplanID);
 }
 
 
-function propagateRights($fromRights,$propRights,&$toRights)
-{
+/**
+ *
+ */
+function propagateRights($fromRights,$propRights,&$toRights) {
   // the mgt_users right isn't test project related so this right is inherited from
   // the global role (if set)
-  foreach($propRights as $right => $desc)
-  {
-    if (in_array($right,$fromRights) && !in_array($right,$toRights))
-    {
+  foreach($propRights as $right => $desc) {
+    if (in_array($right,$fromRights) && !in_array($right,$toRights)) {
       $toRights[] = $right;
     }  
   }
@@ -223,32 +232,23 @@ function propagateRights($fromRights,$propRights,&$toRights)
  * @since 20.02.2006, 20:30:07
  *
  **/
-function checkForRights($rights,$roleQuestion,$bAND = 1)
-{
+function checkForRights($rights,$roleQuestion,$bAND = 1) {
   $ret = null;
   //check to see if the $roleQuestion variable appears in the $roles variable
-  if (is_array($roleQuestion))
-  {
+  if (is_array($roleQuestion)) {
     $r = array_intersect($roleQuestion,$rights);
-    if ($bAND)
-    {
+    if ($bAND) {
       //for AND all rights must be present
-      if (sizeof($r) == sizeof($roleQuestion))
-      {
+      if (sizeof($r) == sizeof($roleQuestion)) {
         $ret = 'yes';
       }  
-    }  
-    else 
-    {
+    } else {
       //for OR one of all must be present
-      if (sizeof($r))
-      {
+      if (sizeof($r)) {
         $ret = 'yes';
       }  
     }  
-  }
-  else
-  {
+  } else {
     $ret = (in_array($roleQuestion,$rights) ? 'yes' : null);
   }
   return $ret;
@@ -276,8 +276,7 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
  *                 effective_role_id  user role for test project
  *                 is_inherited
  */
-function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = null)
-{
+function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = null) {
   $effective_role = array();
   $tproject_id = $tproject['id'];
   if (!is_null($user_id))

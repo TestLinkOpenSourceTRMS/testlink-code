@@ -208,9 +208,14 @@ function initializeEnv($dbHandler) {
   $args = init_args($dbHandler);
   $gui = new stdClass();
 
-  $grant2check = array('mgt_modify_tc','mgt_view_req','testplan_planning','mgt_modify_product',
-                       'mgt_modify_req','testcase_freeze','keyword_assignment','req_tcase_link_management',
-                       'testproject_edit_executed_testcases','testproject_delete_executed_testcases');
+  $grant2check = 
+    array('mgt_modify_tc','mgt_view_req','testplan_planning',
+          'mgt_modify_product','mgt_modify_req','testcase_freeze',
+          'keyword_assignment','req_tcase_link_management',
+          'testproject_edit_executed_testcases',
+          'testproject_delete_executed_testcases',
+          'testproject_add_remove_keywords_executed_tcversions');
+
   $grants = new stdClass();
   foreach($grant2check as $right) {
     $grants->$right = $_SESSION['currentUser']->hasRight($dbHandler,$right,$args->tproject_id);

@@ -6765,6 +6765,9 @@ class testcase extends tlObjectWithAttachments
     // In order to refactor less code, we will remap to OLD config options present on config file.
     $goo->tcase_cfg->can_edit_executed = $grantsObj->testproject_edit_executed_testcases == 'yes' ? 1 : 0;
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
+    $goo->tcase_cfg->can_add_remove_kw_on_executed = 
+      $grantsObj->testproject_add_remove_keywords_executed_tcversions == 'yes' ? 1 : 0;
+
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
     $goo->assign_keywords = property_exists($grantsObj, 'keyword_assignment') ? $grantsObj->keyword_assignment : 0;
 	  $goo->req_tcase_link_management = property_exists($grantsObj, 'req_tcase_link_management') ? $grantsObj->req_tcase_link_management : 0;

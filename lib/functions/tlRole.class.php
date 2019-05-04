@@ -178,43 +178,36 @@ class tlRole extends tlDBObject
   /** 
    * @param resource &$db reference to database handler
    **/    
-  public function writeToDB(&$db)
-  {
+  public function writeToDB(&$db) {
     //@TODO schlundus, now i removed the potentially modified object from the cache
     //another optimization could be: read the new contents if storing was successfully into the
     //cache
     $this->removeFromCache();
     
     $result = $this->checkDetails($db);
-    if ($result >= tl::OK)
-    {   
-      if ($this->dbID)
-      {
+
+    if ($result >= tl::OK) {   
+      if ($this->dbID) {
         $result = $this->deleteRightsFromDB($db);
-        if ($result >= tl::OK)
-        {
+        if ($result >= tl::OK) {
           $sql = "UPDATE {$this->object_table} " .
                  " SET description = '".$db->prepare_string($this->name)."',".
                " notes ='".$db->prepare_string($this->description)."'".
                " WHERE id = {$this->dbID}";
           $result = $db->exec_query($sql);  
         }
-      }
-      else
-      {
+      } else {
         $sql = "INSERT INTO {$this->object_table} (description,notes) " .
                " VALUES ('".$db->prepare_string($this->name)."',".
                "'" . $db->prepare_string($this->description)."')";
         $result = $db->exec_query($sql);  
-        if($result)
-        {  
+        if($result) {  
           $this->dbID = $db->insert_id($this->object_table);
         }  
       }
       
       $result = $result ? tl::OK : self::E_DBERROR;
-      if ($result >= tl::OK)
-      {  
+      if ($result >= tl::OK) {  
         $result = $this->addRightsToDB($db);
       }  
     }
@@ -225,21 +218,23 @@ class tlRole extends tlDBObject
   /** 
    * @param resource &$db reference to database handler
    **/    
-  public function checkDetails(&$db)
-  {
+  public function checkDetails(&$db) {
     $this->name = trim($this->name);
     $this->description = trim($this->description);
     
     $result = tl::OK;
-    if (!sizeof($this->rights))
+    if (!sizeof($this->rights)) {
       $result = self::E_EMPTYROLE;
-    
-    if ($result >= tl::OK)
+    }
+
+    if ($result >= tl::OK) {
       $result = self::checkRoleName($this->name);
+    }
     
-    if ($result >= tl::OK)
+    if ($result >= tl::OK) {
       $result = self::doesRoleExist($db,$this->name,$this->dbID) ? self::E_NAMEALREADYEXISTS : tl::OK;
-    
+    }
+
     return $result;
   }
   
@@ -455,24 +450,29 @@ class tlRole extends tlDBObject
     return $result ? tl::OK : tl::ERROR;
   }
 
-  protected function addRightsToDB(&$db)
-  {
+  /**
+   *
+   *
+   */
+  protected function addRightsToDB(&$db) {
     $status_ok = 1;
-    if ($this->rights)
-    {
-      foreach($this->rights as $right)
-      {
+    if ($this->rights) {
+      foreach($this->rights as $right) {
         $rightID = $right->dbID;
         $sql = "INSERT INTO {$this->tables['role_rights']} (role_id,right_id) " .
                "VALUES ({$this->dbID},{$rightID})";
+
         $status_ok = $status_ok && ($db->exec_query($sql) ? 1 : 0);
       }
     }
     return $status_ok ? tl::OK : tl::ERROR;
   }
   
-  protected function readRights(&$db)
-  {
+  /**
+   *
+   *
+   */
+  protected function readRights(&$db) {
     $sql = "SELECT right_id,description FROM {$this->tables['role_rights']} a " .
            "JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
              "WHERE role_id = {$this->dbID}";

@@ -302,6 +302,12 @@ CREATE TABLE /*prefix*/milestones (
   UNIQUE KEY /*prefix*/name_testplan_id (`name`,`testplan_id`)
 ) DEFAULT CHARSET=utf8;
 
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` TRIGGER `milestones_BEFORE_INSERT` BEFORE INSERT ON `milestones` FOR EACH ROW
+BEGIN
+	SET NEW.start_date = IFNULL(NEW.start_date, NOW());
+END$$
+DELIMITER ;
 
 CREATE TABLE /*prefix*/node_types (
   `id` int(10) unsigned NOT NULL auto_increment,

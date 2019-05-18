@@ -1464,6 +1464,7 @@ $TLS_edit_execution = "edit execution";
 $TLS_platform_description = "Platform description";
 $TLS_remoteExecFeeback = "Remote Test Case Execution Feedback";
 
+$TLS_updateLinkToLatestTCVersion = 'Update Linked TCV To The Latest';
 // ----- gui/templates/inc_testsuite_viewer_ro.tpl -----
 $TLS_keywords = "Keywords";
 
@@ -1705,6 +1706,7 @@ $TLS_btn_del_this_version = "Delete this version";
 $TLS_btn_execute_automatic_testcase = "Execute automatic test case";
 $TLS_btn_mv_cp = "Move / Copy";
 $TLS_btn_new_version = "New version";
+$TLS_btn_new_version_from_latest = "Create New Version From Latest";
 $TLS_btn_new_sibling = "New sibling";
 $TLS_hint_new_sibling = "Create another test case under current Test Suite";
 $TLS_hint_new_version = "Create a new version";
@@ -3929,6 +3931,8 @@ $TLS_restAPIExecParameters = "REST API create execution args";
 $TLS_can_not_delete_relation_because_this_is_not_the_latest =
 "Delete Disabled: test case version is not the LATEST";
 
+$TLS_updateLinkToThisTCVersion = 'Update Linked TCV To This one';
+$TLS_hasNewestVersionMsg = 'Attention: This is not the latest available version';
 
 $TLS_saveStepsForPartialExec = 'Save Steps Work In Progress Execution';
 $TLS_partialExecNothingToSave = 'Steps Work In Progress Execution: There are no notes or results to save';

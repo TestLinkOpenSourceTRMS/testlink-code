@@ -162,7 +162,7 @@ class TLSmarty extends Smarty {
       $this->assign('custom_css', 
         $basehref . TL_THEME_CSS_DIR . $tlCfg->custom_css);
     }
-        
+    
     $this->assign('locale', $my_locale);
      
     //
@@ -431,8 +431,7 @@ class TLSmarty extends Smarty {
                    'test_status_blocked_next' => $imgLoc . 'test_status_blocked_next.png');
 
     $imi = config_get('images');
-    if(count($imi) >0)
-    {
+    if(count($imi) >0) {
       $dummy = array_merge($dummy,$imi);
     }                 
     return $dummy;

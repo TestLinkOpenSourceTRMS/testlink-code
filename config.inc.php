@@ -102,6 +102,7 @@ define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
 // null or '' => do not use
 $tlCfg->custom_css = null;
 
+
 /** Include constants and magic numbers (users should not change it)*/
 require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
@@ -438,57 +439,32 @@ $tlCfg->noExpDateUsers = array('admin');
 
 $tlCfg->OAuthServers = array();
 
-// $tlCfg->OAuthServers = array();
-//
 // Google
-//
-// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-// $tlCfg->OAuthServers[1]['redirect_uri'] = 'REDIRECT URI';
-//
+// $tlCfg->OAuthServers = array();
 // $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
 // $tlCfg->OAuthServers[1]['oauth_name'] = 'google';
-//
+
 // Get from /gui/themes/default/images
 // $tlCfg->OAuthServers[1]['oauth_icon'] = 'google.png'; 
-//
+// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
 // Can be authorization_code (by default), client_credentials or password
 // $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
 // $tlCfg->OAuthServers[1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';
 // $tlCfg->OAuthServers[1]['token_url'] = 'https://accounts.google.com/o/oauth2/token';
-//
-// Default: true
-// false => if in the Browser there is JUST one user already logged in 
-// to google, then this user will be selected automatically
-//
-// $tlCfg->OAuthServers[1]['oauth_force_single'] = true; 
-//
-// 
-// ATTENTION - Optional
-// the domain you want to whitelist.
-// if your email is a gmail account and you use the following config
-//
+// false => then the only user will be selected automatically (applied for google)
+// $tlCfg->OAuthServers[1]['oauth_force_single'] = false; 
+// the domain you want to whitelist
 // $tlCfg->OAuthServers[1]['oauth_domain'] = 'google.com'; 
-//
-// then this check will block you!
-//
-//
-//
 // $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://www.googleapis.com/oauth2/v1/userinfo';
 // $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-//
-//
+
 // Github
-// $tlCfg->OAuthServers[2]['oauth_client_id'] = 'CLIENT_ID';
-// $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'CLIENT_SECRET';
-// $tlCfg->OAuthServers[2]['redirect_uri'] = 'REDIRECT URI';
-//
 // $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
 // $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
-//
-// Get from /gui/themes/default/images
-//
-// $tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png'; 
+// $tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
+// $tlCfg->OAuthServers[2]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'CLIENT_SECRET';
 
 // Can be authorization_code (by default), client_credentials or password
 // $tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
@@ -930,6 +906,8 @@ $tlCfg->document_generator->tc_version_enabled = TRUE;
 // ----------------------------------------------------------------------------
 /* [Test Executions] */
 
+// $tlCfg->exec_cfg->enable_test_automation = DISABLED;
+
 // ENABLED -> enable XML-RPC calls to external test automation server
 //            new buttons will be displayed on execution pages
 // DISABLED -> disable
@@ -960,6 +938,14 @@ $tlCfg->exec_cfg->show_history_all_platforms = FALSE;
 // $att_model_m1 ->  shows upload button and title
 // $att_model_m2 ->  hides upload button and title
 $tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
+
+// IVU
+// Default Value
+// USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS
+// USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS
+$tlCfg->exec_cfg->tcases_counters_mode = 
+  USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS;
+
 
 
 // ENABLED -> test cases will be coloured according to test case status
@@ -1944,8 +1930,8 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
  * See example below        
  */
 $g_tpl = array('inc_exec_controls' => 'inc_exec_img_controls.tpl');
-$g_tpl['login'] = 'login/login-model-marcobiedermann.tpl';
-
+//$g_tpl = array('inc_exec_controls' => 'inc_exec_controls.tpl');
+$g_tpl['login'] = 'login/login-model-marcobiedermann.tpl'; 
 
 // Example 
 // $g_tpl = array('tcView'  => 'custom_tcView.tpl',

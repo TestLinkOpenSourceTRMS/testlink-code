@@ -11,25 +11,23 @@
  * That template was also the base for most of the html code used in here.
  *
  * @author Andreas Simon
- * @internal revisions
- *
- * @since 1.9.15
  *}
 
-{lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
-                        build,filter_tcID,filter_on,filter_result,status,
-                        btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
-                        filter_owner,TestPlan,test_plan,caption_nav_filters,
-                        platform, include_unassigned_testcases, filter_active_inactive,
-                        btn_remove_all_tester_assignments, execution_type, 
-                        do_auto_update, testsuite, btn_reset_filters,hint_list_of_bugs,
-                        btn_bulk_update_to_latest_version, priority, tc_title,
-                        custom_field, search_type_like, importance,import_xml_results,
-                        document_id, req_expected_coverage, title,bugs_on_context,
-                        status, req_type, req_spec_type, th_tcid, has_relation_type,
-                        btn_export_testplan_tree,btn_export_testplan_tree_for_results,
-                        tester_works_with_settings,btn_bulk_remove,btn_bulk_copy,
-						test_grouped_by, parent_child_relation'}
+{lang_get var=labels 
+  s='caption_nav_settings, platform, test_plan,
+     build,filter_tcID,filter_on,filter_result,status,
+     btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
+     filter_owner,TestPlan,test_plan,caption_nav_filters,
+     platform, include_unassigned_testcases, filter_active_inactive,
+     btn_remove_all_tester_assignments, execution_type, 
+     do_auto_update, testsuite, btn_reset_filters,hint_list_of_bugs,
+     btn_bulk_update_to_latest_version, priority, tc_title,
+     custom_field, search_type_like, importance,import_xml_results,
+     document_id, req_expected_coverage, title,bugs_on_context,
+     status, req_type, req_spec_type, th_tcid, has_relation_type,
+     btn_export_testplan_tree,btn_export_testplan_tree_for_results,
+     tester_works_with_settings,btn_bulk_remove,btn_bulk_copy,
+     test_grouped_by, parent_child_relation, exec_tree_counters_logic'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -121,18 +119,18 @@
         </tr>
       {/if}
 
-	  {if $control->settings.setting_testsgroupby}
-		<tr>
-			<td>{$labels.test_grouped_by}</td>
-			<td>
-				<select name="setting_testsgroupby" class="chosen-select" onchange="this.form.submit()">
-				{html_options options=$control->settings.setting_testsgroupby.items
-							  selected=$control->settings.setting_testsgroupby.selected}
-				 </select>
-			</td>
-		</tr>
-	  {/if}
-	  
+      {if $control->settings.setting_testsgroupby}
+        <tr>
+          <td>{$labels.test_grouped_by}</td>
+          <td>
+            <select name="setting_testsgroupby" class="chosen-select" onchange="this.form.submit()">
+            {html_options options=$control->settings.setting_testsgroupby.items
+                    selected=$control->settings.setting_testsgroupby.selected}
+             </select>
+          </td>
+        </tr>
+      {/if}
+    
       {if $control->settings.setting_refresh_tree_on_action}
         <tr>
             <td>{$labels.do_auto_update}</td>
@@ -150,37 +148,57 @@
             </td>
           </tr>
       {/if}
-	  
-	  {if $control->settings.setting_get_parent_child_relation}
+    
+      {if $control->settings.setting_get_parent_child_relation}
         <tr>
             <td>{$labels.parent_child_relation}</td>
             <td>
-				<input type="hidden" 
+        <input type="hidden" 
                       id="hidden_setting_get_parent_child_relation"
                       name="hidden_setting_get_parent_child_relation" 
                       value="{$control->settings.setting_get_parent_child_relation.hidden_setting_get_parent_child_relation}" />
-			
-				<input type="checkbox"
-					   id="cbsetting_get_parent_child_relation"
-					   name="setting_get_parent_child_relation"
-					   {if $control->settings.setting_get_parent_child_relation.selected} checked {/if}
-					   style="font-size: 90%;" onclick="this.form.submit()"/>
+      
+        <input type="checkbox"
+             id="cbsetting_get_parent_child_relation"
+             name="setting_get_parent_child_relation"
+             {if $control->settings.setting_get_parent_child_relation.selected} checked {/if}
+             style="font-size: 90%;" onclick="this.form.submit()"/>
             </td>
           </tr>
+      {/if}
+
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+
+      {if $control->settings.setting_exec_tree_counters_logic}
+        <tr>
+          <td>
+          {$labels.exec_tree_counters_logic}
+          </td>
+          <td>
+            <select class="chosen-select" name="setting_exec_tree_counters_logic" onchange="this.form.submit()">
+            {html_options 
+              options=$control->settings.setting_exec_tree_counters_logic.items
+              selected=$control->settings.setting_exec_tree_counters_logic.selected}
+            </select>
+          </td>
+        </tr>   
       {/if}
 
       {if $control->draw_export_testplan_button || $control->draw_import_xml_results_button}
         <tr>
           <td>&nbsp;</td><td>&nbsp;</td>
         </tr>   
+
         <tr>
           <td>&nbsp;</td>
           <td>
             {if $control->draw_export_testplan_button}
             <image src="{$tlImages.export}" title="{$labels.btn_export_testplan_tree}"
                    onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
-                                                           '{$control->settings.setting_testplan.selected}','{$platformID}',
-                                                           '{$control->settings.setting_build.selected}','tree',
+                  '{$control->settings.setting_testplan.selected}','{$platformID}',
+                  '{$control->settings.setting_build.selected}','tree',
                                                            '{$control->form_token}');" />
             &nbsp;                                               
             <image src="{$tlImages.export_for_results_import}" title="{$labels.btn_export_testplan_tree_for_results}"

@@ -40,12 +40,13 @@ function relation_delete_confirmation(item_id, relation_id, title, msg, pFunctio
  * 
  *
  */
-function delete_relation(btn, text, item_id, relation_id) 
-{
-  var my_action = fRoot + 'lib/testcases/tcEdit.php?doAction=doDeleteRelation&tcase_id='
-                     + item_id + '&relation_id=' + relation_id;
-  if( btn == 'yes' ) 
-  {
+function delete_relation(btn, text, item_id, relation_id)  {
+  
+  var my_url = "{$gui->delTCVRelationURL}";
+  var dummy = my_url.replace('%1',item_id);
+  var my_action = dummy.replace('%2',relation_id);
+
+  if( btn == 'yes' ) {
     window.location=my_action;
   }
 }
@@ -64,6 +65,13 @@ var pF_delete_relation = delete_relation;
              
   <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
   <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}" />
+
+  {if property_exists($gui,'tplan_id') } 
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+  {/if}
+  {if property_exists($gui,'show_mode') } 
+    <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+  {/if}
 
   <table class="simple" id="relations">
     {if $args_edit_enabled}

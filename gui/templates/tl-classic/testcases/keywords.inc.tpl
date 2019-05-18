@@ -35,8 +35,12 @@ function keyword_remove_confirmation(item_id, tckw_link_id, keyword, title, msg,
  *
  */
 function remove_keyword(btn, text, item_id, tckw_link_id) {
-  var my_action = fRoot + 'lib/testcases/tcEdit.php?doAction=removeKeyword&tcase_id='
-                     + item_id + '&tckw_link_id=' + tckw_link_id;
+
+  var my_url = "{$gui->delTCVKeywordURL}";
+  var dummy = my_url.replace('%1',item_id);
+  var my_action = dummy.replace('%2',tckw_link_id);
+
+
   if( btn == 'yes' ) {
     window.location=my_action;
   }
@@ -50,6 +54,14 @@ var pF_remove_keyword = remove_keyword;
   <input type="hidden" id="kwf_doAction" name="doAction" value="removeKeyword" />
   <input type="hidden" name="tcase_id" id="tcase_id" value="{$args_tcase_id}" />
   <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$args_tcversion_id}" />
+
+  {if property_exists($gui,'tplan_id') } 
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+  {/if}
+  {if property_exists($gui,'show_mode') } 
+    <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+  {/if}
+
 
   {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id}
 

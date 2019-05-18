@@ -47,6 +47,7 @@ $name_ok = 1;
 $doRender = false;
 $pfn = $args->doAction;
 
+
 $testCaseEditorKeys = null;
 switch($args->doAction) {
   case "create":  
@@ -68,16 +69,16 @@ switch($args->doAction) {
   case "doReorderSteps":
   case "doInsertStep":
   case "doResequenceSteps":
+  case "doStepOperationExit":
     $testCaseEditorKeys = array('steps' => 'steps', 'expected_results' => 'expected_results');
   break;
 
 }
 
-
-switch($args->doAction)
-{
+switch($args->doAction) {
   case "doUpdate":
   case "doAdd2testplan":
+  case 'updateTPlanLinkToTCV':
     $op = $commandMgr->$pfn($args,$_REQUEST);
   break;
 
@@ -111,6 +112,7 @@ switch($args->doAction)
   case "addKeyword":
   case "freeze":
   case "unfreeze":
+  case "doStepOperationExit":
     $op = $commandMgr->$pfn($args,$_REQUEST);
     $doRender = true;
   break;
@@ -273,46 +275,11 @@ else if($args->do_copy || $args->do_copy_ghost_zone)
 
 }
 else if($args->do_create_new_version) {
-  $user_feedback = '';
-  $show_newTC_form = 0;
-  $action_result = "do_update";
-  $msg = lang_get('error_tc_add');
-  $op = $tcase_mgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
-
-
-  $candidate = $args->tcversion_id;
-  if ($op['msg'] == "ok") {
-
-    $candidate = $op['id'];
-    $user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);
-    $msg = 'ok';
-  
-    $tcCfg = config_get('testcase_cfg');
-    
-    $isOpen = !$tcCfg->freezeTCVersionOnNewTCVersion;
-    $tcase_mgr->setIsOpen($args->tcase_id,$args->tcversion_id,$isOpen);
-  } 
-  $identity = new stdClass();
-  $identity->id = $args->tcase_id;
-  $identity->tproject_id = $args->tproject_id;
-  $identity->version_id = !is_null($args->show_mode) ? $candidate : testcase::ALL_VERSIONS;
-
-
-
-  $gui->viewerArgs['action'] = $action_result;
-  $gui->viewerArgs['refreshTree'] = DONT_REFRESH;
-  $gui->viewerArgs['msg_result'] = $msg;
-  $gui->viewerArgs['user_feedback'] = $user_feedback;
-  $gui->path_info = null;
-  
-  // used to implement go back ??
-  $gui->loadOnCancelURL = $_SESSION['basehref'] . 
-                          '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
-                          "&show_mode={$args->show_mode}";
-
- 
-
-  $tcase_mgr->show($smarty,$gui,$identity,$gui->grants,array('getAttachments' => true));
+  createNewVersion($smarty,$args,$gui,$tcase_mgr,$args->tcversion_id);
+}
+else if($args->do_create_new_version_from_latest) { 
+  $ltcv = $tcase_mgr->getLatestVersionID($args->tcase_id);
+  createNewVersion($smarty,$args,$gui,$tcase_mgr,$ltcv);
 
 }
 else if($args->do_activate_this || $args->do_deactivate_this) {
@@ -358,6 +325,7 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
     $nu = key($tcaseMgr->get_last_active_version($args->tcase_id));
   }
 
+
   $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
 
   // Normally Rich Web Editors  
@@ -390,8 +358,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
   }
 
    
-  $key2loop = array('move_copy_tc','delete_tc_version','do_move','do_copy','do_copy_ghost_zone',
-                    'do_create_new_version','do_delete_tc_version');
+  $key2loop = array('move_copy_tc','delete_tc_version','do_move','do_copy',
+                    'do_copy_ghost_zone','do_delete_tc_version',
+                    'do_create_new_version','do_create_new_version_from_latest');
   foreach($key2loop as $key) {
     $args->$key = isset($_REQUEST[$key]) ? 1 : 0;
   }
@@ -440,9 +409,11 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
 
 
   // Specialized webEditorConfiguration
-  $action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,
+  $action2check = array("editStep" => true,"createStep" => true, 
+                        "doCreateStep" => true,
                         "doUpdateStep" => true, "doInsertStep" => true, 
-                        "doCopyStep" => true,"doUpdateStepAndInsert" => true);
+                        "doCopyStep" => true,
+                        "doUpdateStepAndInsert" => true);
   if( isset($action2check[$args->doAction]) ) {
     $cfgObj->webEditorCfg = getWebEditorCfg('steps_design');  
   }   
@@ -610,6 +581,7 @@ function getGrants(&$dbHandler) {
  */
 function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
   $guiObj = new stdClass();
+  $guiObj->tplan_id = $argsObj->tplan_id;
   $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->editorType = $cfgObj->webEditorCfg['type'];
   $guiObj->grants = getGrants($dbHandler);
@@ -831,4 +803,46 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys) {
       break;
     }
 
+}
+
+
+/**
+ *
+ */
+function createNewVersion(&$tplEng,&$argsObj,&$guiObj,&$tcaseMgr,$sourceTCVID) {
+  $user_feedback = '';
+  $msg = lang_get('error_tc_add');
+
+  $op = $tcaseMgr->create_new_version($argsObj->tcase_id,
+          $argsObj->user_id,$sourceTCVID);
+
+  $candidate = $sourceTCVID;
+  if ($op['msg'] == "ok") {
+    $candidate = $op['id'];
+    $user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);
+    $msg = 'ok';
+    $tcCfg = config_get('testcase_cfg');
+    $isOpen = !$tcCfg->freezeTCVersionOnNewTCVersion;
+    $tcaseMgr->setIsOpen($argsObj->tcase_id,$sourceTCVID,$isOpen);
+  } 
+  $identity = new stdClass();
+  $identity->id = $argsObj->tcase_id;
+  $identity->tproject_id = $argsObj->tproject_id;
+  $identity->version_id = !is_null($argsObj->show_mode) ? $candidate : testcase::ALL_VERSIONS;
+
+  $guiObj->viewerArgs['action'] = "do_update";
+  $guiObj->viewerArgs['refreshTree'] = DONT_REFRESH;
+  $guiObj->viewerArgs['msg_result'] = $msg;
+  $guiObj->viewerArgs['user_feedback'] = $user_feedback;
+  $guiObj->path_info = null;
+  
+  // used to implement go back ??
+  $guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
+    '/lib/testcases/archiveData.php?edit=testcase&id=' . $argsObj->tcase_id .
+    "&show_mode={$argsObj->show_mode}";
+
+
+  $tcaseMgr->show($tplEng,$guiObj,$identity,$guiObj->grants,
+                  array('getAttachments' => true));
+  exit();
 }

@@ -30,12 +30,10 @@ $gsmarty_attachments
 {lang_get s='delete' var="del_msgbox_title"}
 
 <script type="text/javascript">
-function checkFileSize()
-{
+function checkFileSize() {
   if (typeof FileReader !== "undefined") {
     var bytes = document.getElementById('uploadedFile').files[0].size;
-    if( bytes > {$gui->import_limit} )
-    {
+    if( bytes > {$gui->import_limit} ) {
       var msg = "{$labels.max_size_file_upload}: {$gui->import_limit} Bytes < " + bytes + ' Bytes';
       alert(msg);
       return false;
@@ -127,6 +125,13 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
     <div  style="text-align:left;margin:3px;background:#CDE;padding: 3px 3px 3px 3px;border-style: groove;border-width: thin;">
       <form action="{$upURL}" method="post" enctype="multipart/form-data" 
             id="aForm" onsubmit="javascript:return checkFileSize();">
+
+        {if property_exists($gui,'tplan_id') } 
+          <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />         
+        {/if}
+        {if property_exists($gui,'show_mode') } 
+          <input type="hidden" name="show_mode" value="{$gui->show_mode}" />         
+        {/if}
 
         <label for="uploadedFile" class="labelHolder">{$labels.local_file} </label>
         <img class="clickable" src="{$tlImages.activity}" 

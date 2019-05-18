@@ -37,8 +37,11 @@ var warning_step_number = "{$labels.warning_step_number|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_step_number_already_exists = "{$labels.warning_step_number_already_exists|escape:'javascript'}";
 
-function validateForm(the_form,step_set,step_number_on_edit)
-{
+/**
+ *
+ *
+ */
+function validateForm(the_form,step_set,step_number_on_edit) {
   var value = '';
   var status_ok = true;
   var feedback = '';
@@ -46,19 +49,16 @@ function validateForm(the_form,step_set,step_number_on_edit)
   var value_step_mistmatch=false;
   value = parseInt(the_form.step_number.value);
 
-  if( isNaN(value) || value <= 0)
-  {
+  if( isNaN(value) || value <= 0) {
     alert_message(alert_box_title,warning_step_number);
     selectField(the_form,'step_number');
     return false;
   }
 
-  if( step_set.length > 0 )
-  {
+  if( step_set.length > 0 ) {
     value_found_on_set = (step_set.indexOf(value) >= 0);
     value_step_mistmatch = (value != step_number_on_edit);
-    if(value_found_on_set && value_step_mistmatch)
-    {
+    if(value_found_on_set && value_step_mistmatch) {
       feedback = warning_step_number_already_exists.replace('%s',value);
       alert_message(alert_box_title,feedback);
       selectField(the_form,'step_number');
@@ -101,7 +101,8 @@ var tc_editor = "{$gui->editorType}";
     <div class="messages" align="center">{$warning_edit_msg}</div>
 {/if}
 
-<form method="post" action="{$basehref}lib/testcases/tcEdit.php" name="tcStepEdit"
+<form method="post" action="{$basehref}lib/testcases/tcEdit.php" 
+      name="tcStepEdit"
       onSubmit="return validateForm(this,'{$gui->step_set}',{$gui->step_number});">
 
   <input type="hidden" name="testcase_id" value="{$gui->tcase_id}" />
@@ -111,7 +112,7 @@ var tc_editor = "{$gui->editorType}";
   <input type="hidden" name="step_id" value="{$gui->step_id}" />
   <input type="hidden" name="step_number" value="{$gui->step_number}" />
   <input type="hidden" name="goback_url" value="{$goBackAction}" />
-
+  <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
 
     {include file="testcases/inc_tcbody.tpl" 
              inc_tcbody_close_table=true
@@ -143,10 +144,9 @@ var tc_editor = "{$gui->editorType}";
       <input id="do_copy_step" type="submit" name="do_copy_step" 
              onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
     {/if}
-
-    <input type="button" name="cancel" value="{$labels.btn_cancel}"
-           {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}';"
-           {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
+    <input id="doExit153" type="submit" name="doExit" 
+      onclick="doAction.value='doStepOperationExit'" 
+      value="{$labels.btn_cancel}" />
   </div>  
 
   <table class="simple">
@@ -191,10 +191,9 @@ var tc_editor = "{$gui->editorType}";
           <input id="do_copy_step" type="submit" name="do_copy_step" 
                  onclick="doAction.value='doCopyStep'" value="{$labels.btn_cp}" />
         {/if}
-
-        <input type="button" name="cancel" value="{$labels.btn_cancel}"
-               {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}';"
-               {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
+        <input id="doExit206" type="submit" name="doExit" 
+          onclick="doAction.value='doStepOperationExit'" 
+          value="{$labels.btn_cancel}" />
       </div>  
     
 
@@ -340,9 +339,9 @@ var tc_editor = "{$gui->editorType}";
              onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
     {/if}
 
-    <input type="button" name="cancel" value="{$labels.btn_cancel}"
-           {if $gui->goback_url != ''}  onclick="show_modified_warning=false; location='{$gui->goback_url}';"
-           {else}  onclick="show_modified_warning=false; javascript:history.back();" {/if} />
+   <input id="doExit361" type="submit" name="doExit" 
+      onclick="doAction.value='doStepOperationExit'" 
+      value="{$labels.btn_cancel}" />
   </div>  
 </form>
 

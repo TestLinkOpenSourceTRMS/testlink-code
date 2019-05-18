@@ -3,8 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource tcView.tpl
 Purpose: smarty template - view test case in test specification
 
-@internal revisions
-@since 1.9.18
 *}
 
 {config_load file="input_dimensions.conf"}
@@ -13,7 +11,11 @@ Purpose: smarty template - view test case in test specification
 
 {* Configure Actions *}
 {$showMode=$gui->show_mode}
-{$deleteStepAction="lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep&step_id="}
+{$tplanID=intval($gui->tplan_id)}
+{$deleteStepAction = 
+  "lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep"}
+
+{$deleteStepAction = "$deleteStepAction&tplan_id=$tplanID&step_id="}
 
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
@@ -21,7 +23,7 @@ Purpose: smarty template - view test case in test specification
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$deleteStepAction}';
+var del_action = fRoot+'{$deleteStepAction}';
 
 
 function jsCallDeleteFile(btn, text, o_id) { 
@@ -37,11 +39,17 @@ function jsCallDeleteFile(btn, text, o_id) {
 
 {* need by refresh on upload logic used when this template is called while executing *}
 {if $gui->bodyOnLoad != ''}
-<script language="JavaScript">
-var {$gui->dialogName} = new std_dialog('&refreshTree');
-</script>  
-{/if}
 
+  <script language="JavaScript">
+  var urlP ='';
+  {if '' != $gui->additionalURLPar}
+    urlP = '{$gui->additionalURLPar}';
+  {/if}
+  // alert('urlP->' + urlP);
+  var addStr = '&refreshTree=0' + urlP;
+  var {$gui->dialogName} = new std_dialog(addStr);
+  </script>  
+{/if}
 </head>
 
 {$my_style=""}
@@ -151,7 +159,8 @@ var {$gui->dialogName} = new std_dialog('&refreshTree');
            attach_loadOnCancelURL=$gui->loadOnCancelURL}
   
   {* Other Versions *}
-  {if $gui->testcase_other_versions[idx] neq null}
+  {if 'editOnExec' != $gui->show_mode && 
+      $gui->testcase_other_versions[idx] neq null}
         {$vid=$gui->tc_current_version[idx][0].id}
         {$div_id="vers_$vid"}
         {$memstatus_id="mem_$div_id"}

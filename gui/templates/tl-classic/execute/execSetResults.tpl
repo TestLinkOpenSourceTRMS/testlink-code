@@ -2,6 +2,7 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @filesource	execSetResults.tpl
+@internal smarty template - show tests to add results
 *}
 {$attachment_model=$cfg->exec_cfg->att_model}
 {$title_sep=$smarty.const.TITLE_SEP}
@@ -17,10 +18,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get 
   var='labels'
-  s='created_by,saveStepsForPartialExec,partialExecNoAttachmentsWarning,
-  edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
-	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,design,execution,partialExecNothingToSave,
-	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,add_link_to_tlexec_print_view,
+  s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,btn_next,
+	th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,keywords,design,execution,hasNewestVersionMsg,
+	version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,add_link_to_tlexec,
 	execution_type_short_descr,expected_results,testcase_customfields,builds_notes,
   estimated_execution_duration,version,btn_save_and_exit,test_plan_notes,bug_copy_from_latest_exec,btn_next_tcase,
 	last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
@@ -33,10 +33,11 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
 	deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
-	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,bug_summary,bug_description,
+	btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,bug_summary,bug_description,updateLinkToLatestTCVersion,
   bug_link_tl_to_bts,bug_create_into_bts,execution_duration,execution_duration_short,
   issueType,issuePriority,artifactVersion,artifactComponent,
-  add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback,create_issue_feedback'}
+  add_issue_note,bug_add_note,preconditions,platform,platform_description,exec_not_run_result_note,remoteExecFeeback,
+  create_issue_feedback,partialExecNothingToSave,add_link_to_tlexec_print_view,'}
 
 
 
@@ -115,6 +116,61 @@ function validateForm(f) {
 
 
 
+function OLDvalidateForm(f)
+{
+  var status_ok=true;
+  var cfields_inputs='';
+  var cfValidityChecks;
+  var cfield_container;
+  var access_key;
+  cfield_container=document.getElementById('save_button_clicked').value;
+  access_key='cfields_exec_time_tcversionid_'+cfield_container; 
+    
+  if( document.getElementById(access_key) != null )
+  {    
+ 	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
+      cfValidityChecks=validateCustomFields(cfields_inputs);
+      if( !cfValidityChecks.status_ok )
+      {
+          var warning_msg=cfMessages[cfValidityChecks.msg_id];
+          alert_message(alert_box_title,warning_msg.replace(/%s/, cfValidityChecks.cfield_label));
+          return false;
+      }
+  }
+  return true;
+}
+
+/*
+  function: checkSubmitForStatusCombo
+            $statusCode has been checked, then false is returned to block form submit().
+            
+            Dev. Note - remember this:
+            
+            KO:
+               onclick="foo();checkSubmitForStatus('n')"
+            OK
+               onclick="foo();return checkSubmitForStatus('n')"
+                              ^^^^^^ 
+            
+
+  args :
+  
+  returns: 
+
+*/
+function checkSubmitForStatusCombo(oid,statusCode2block)
+{
+  var access_key;
+  var isChecked;
+  
+  if(document.getElementById(oid).value == statusCode2block)
+  {
+    alert_message(alert_box_title,warning_nothing_will_be_saved);
+    return false;
+  }  
+  return true;
+}
+
 
 /**
  * 
@@ -156,9 +212,6 @@ function jsCallDeleteFile(btn, text, o_id) {
 </script>
 
 <script src="third_party/clipboard/clipboard.min.js"></script>
-
-{* {include file="bootstrap.inc.tpl"} *}
-
 </head>
 {*
 IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
@@ -263,6 +316,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         <input type="submit" id="execute_cases" name="execute_cases"
                  value="{$labels.execute_and_save_results}"/>
       {/if}
+
+      {if $gui->hasNewestVersion && 1==0} 
+        <input type="hidden" id="TCVToUpdate" name="TCVToUpdate"
+          value="{$gui->tcversionSet}">
+        <input type="submit" id="linkLatestVersion" name="linkLatestVersion"
+                 value="{$labels.updateLinkToLatestTCVersion}"/>
+      {/if}
+
     </div>
   {/if}
 

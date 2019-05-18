@@ -743,8 +743,7 @@ class testplan extends tlObjectWithAttachments
    * @internal revisions
    * 
    */
-  function get_linked_tcvid($id,$platformID,$opt=null)
-  {
+  function get_linked_tcvid($id,$platformID,$opt=null){
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $options = array('addEstimatedExecDuration' => false,
                      'tcase_id' => 0);
@@ -4322,10 +4321,8 @@ class testplan extends tlObjectWithAttachments
    */
   function getNotRunAllBuildsForPlatform($id,$platformID,$buildSet=null)  {
     // On Postgresql 
-    // An output column’s name can be used to refer to the column’s value 
-    // in ORDER BY and GROUP BY clauses, 
-    // but not in the WHERE or HAVING clauses; there you must 
-    // write out the expression instead.
+    // An output column’s name can be used to refer to the column’s value in ORDER BY and GROUP BY clauses, 
+    // but not in the WHERE or HAVING clauses; there you must write out the expression instead.
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     list($safe_id,$buildsCfg,$sqlLEBBP) = $this->helperGetHits($id,$platformID,$buildSet);
     
@@ -7689,8 +7686,7 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function getExecCountOnBuild($id,$build_id)
-  {
+  function getExecCountOnBuild($id,$build_id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe['tplan_id'] = intval($id);
     $safe['build_id'] = intval($build_id);
@@ -7708,8 +7704,7 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function getFeatureByID($feature_id)
-  {
+  function getFeatureByID($feature_id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $target = (array)$feature_id;
@@ -7729,6 +7724,31 @@ class testplan extends tlObjectWithAttachments
     $items = $this->db->fetchRowsIntoMap($sql,'id');           
     return $items;
   }
+
+
+  /**
+   *
+   */
+  function getVersionLinked($tplan_id, $tcase_id) {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $sql = "/* $debugMsg */
+            SELECT tcversion_id 
+            FROM {$this->tables['testplan_tcversions']} TPTCV
+            JOIN {$this->tables['nodes_hierarchy']} NH_TCV
+            ON NH_TCV.id = TPTCV.tcversion_id
+            WHERE TPTCV.testplan_id = $tplan_id 
+            AND NH_TCV.parent_id = $tcase_id";
+
+    $rs = $this->db->get_recordset($sql);
+    
+    // We trust DB is OK => no matter the record I use
+    // testcase version id will be the same.
+    //
+    return $rs[0]['tcversion_id'];
+
+  }
+
 
 
 } // end class testplan

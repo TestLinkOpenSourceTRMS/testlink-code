@@ -280,6 +280,68 @@ div.menu_bubble h3{
 	margin: 0px 0px 8px 8px;
 	line-height:1.4em;
 }
+
+/** Buttons
+ * Give buttons, submit, reset a gradient 3d look and other components
+ * text/password-input, textarea and select a flat appearance.
+ */
+input[type="button"],
+input[type="password"],
+input[type="reset"],
+input[type="submit"],
+input[type="text"],
+select,
+textarea,
+button {
+   background: url(../images/navbar.gif);
+   background-position: 0 0;
+   border: 1px solid #888;
+   margin: 4px 0 0 0;
+   font-size: 9pt;
+   color: black;
+   -moz-border-radius: 3px;
+   -webkit-border-radius: 3px;
+   border-radius: 3px;
+}
+
+/* Reset to flat background */
+input[type="password"],
+input[type="text"],
+select,
+textarea {
+	background: #f8f8f8;
+}
+
+
+/* Animate */
+input[type="reset"]:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+button:hover {
+   background-position: 0 -3px;
+   border-color: #444;
+}
+
+input[type="reset"]:active,
+input[type="submit"]:active,
+input[type="button"]:active,
+input[type="reset"]:focus,
+input[type="submit"]:focus,
+input[type="button"]:focus,
+button:active,
+button:focus {
+   background-position: 0 -10px;
+   border: 1px solid #123;
+}
+
+input[type="password"]:focus,
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+	background: #fff;
+	border: 1px solid #123;
+}
+
 fieldset.groupBtn {
 	border: 0;
 	margin-left: 5px;
@@ -424,7 +486,7 @@ span.unselected a, span.unselected a:visited {
 * "common" 		- often used for view arrays
 * "simple" 		- often used for forms
 * "smallGrey" 	- often used for options / filters
-* "no-border" 	- no border (former "invisible" but already used by bootstrap)
+* "invisible" 	- no borders
 * !!! Do not add new table kinds !!! (there is bunch of wild table definitions below)
 */
 
@@ -499,8 +561,14 @@ table.smallGrey {
 	margin-right:	0px;
 }
 
-
 table.no-border {
+	border: 		0px none;
+	font-size:		90%;
+	margin:			5px 0px;
+	width:			auto;
+}
+
+table.invisible {
 	border: 		0px none;
 	font-size:		90%;
 	margin:			5px 0px;
@@ -859,6 +927,7 @@ div.login_form.medium {
 .clickable_icon
 {
   padding: 			2px;
+  width: 			5px;
   text-align: 		center;
   vertical-align: 	middle;
 }
@@ -870,7 +939,6 @@ div.login_form.medium {
   vertical-align: 	middle;
 }
 
-/* havlatm: @TODO title must be header markup */
 .exec_tc_title {
 	background:		#059;
 	color:			white;
@@ -878,6 +946,16 @@ div.login_form.medium {
 	padding: 		3px;
 	text-align: 	left;
 }
+
+.exec_tc_title_alert {
+	background:		#B22222;
+	color:			white;
+	margin-bottom:	4px;
+	padding: 		3px;
+	text-align: 	left;
+	border-radius: 10px;
+}
+
 
 .exec_additional_info{
 	background-color: 	#F0F4F0; /* whitesmoke=F0F4F0, #FFC*/
@@ -1081,7 +1159,6 @@ th.testlink, td.testlink, tr.testlink td {
 }
 
 /* To adjust Bootstrap tables */
-/* I think it's not necesseray. Better view without font-size **/
 .table {
   font-size: 12px;
   width: 100%;
@@ -1124,12 +1201,4 @@ div.form-border {
 	font-style: normal;
 }
 
-#footerIMG{
-	float :right;
-	padding-right: 20px;
-}
-
-#footerTXT{
-	float :left;
-}
 /* ----- END ------------------------------------------------------------------------- */

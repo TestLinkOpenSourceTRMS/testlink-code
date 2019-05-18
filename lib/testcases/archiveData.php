@@ -84,6 +84,7 @@ function init_args(&$dbHandler) {
                    "id" => array(tlInputParameter::INT_N),
                    "tcase_id" => array(tlInputParameter::INT_N),
                    "tcversion_id" => array(tlInputParameter::INT_N),
+                   "tplan_id" => array(tlInputParameter::INT_N),
                    "targetTestCase" => array(tlInputParameter::STRING_N,0,24),
                    "show_path" => array(tlInputParameter::INT_N),
                    "show_mode" => array(tlInputParameter::STRING_N,0,50),
@@ -224,6 +225,8 @@ function initializeEnv($dbHandler) {
   
   $gui->form_token = $args->form_token;
   $gui->tproject_id = $args->tproject_id;
+  $gui->tplan_id = $args->tplan_id;
+
   $gui->page_title = lang_get('container_title_' . $args->feature);
   $gui->requirementsEnabled = $args->requirementsEnabled; 
   $gui->automationEnabled = $args->automationEnabled; 

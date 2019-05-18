@@ -9,9 +9,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <form style="display:inline;" 
       id="statusForm_{$args_testcase.id}" name="statusForm_{$args_testcase.id}"  
       method="post" action="{$basehref}lib/testcases/tcEdit.php">
+
+  <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
   <input type="hidden" name="doAction" id="doAction" value="setStatus">
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+  <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
 
   <span class="labelHolder" title="{$tcView_viewer_labels.onchange_save}">
   {$tcView_viewer_labels.status}{$smarty.const.TITLE_SEP}</span>
@@ -29,6 +32,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
          name="importanceForm_{$args_testcase.id}" method="post" 
          action="{$basehref}lib/testcases/tcEdit.php">
 
+    <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
     <input type="hidden" name="doAction" id="doAction" value="setImportance">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
@@ -49,6 +54,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 {if $session['testprojectOptions']->automationEnabled}
 <form style="display:inline;" id="execTypeForm_{$args_testcase.id}" 
       name="execTypeForm_{$args_testcase.id}" method="post" action="{$basehref}lib/testcases/tcEdit.php">
+  
+    <input type="hidden" name="show_mode" value="{$gui->show_mode}" />  
+    <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
     <input type="hidden" name="doAction" id="doAction" value="setExecutionType">
     <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
     <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
@@ -69,6 +77,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 <form style="display:inline;" id="estimatedExecDurationForm_{$args_testcase.id}" 
       name="estimatedExecDurationForm_{$args_testcase.id}" method="post"
       action="{$basehref}lib/testcases/tcEdit.php">
+
+  <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+  <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />      
   <input type="hidden" name="doAction" id="doAction" value="setEstimatedExecDuration">
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />

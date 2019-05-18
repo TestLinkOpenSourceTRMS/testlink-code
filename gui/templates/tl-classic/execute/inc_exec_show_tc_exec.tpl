@@ -111,23 +111,21 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 		{* The very last execution for any build of this test plan *}
 		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on == 0}
-      {if $abs_last_exec.status != '' and 
-          $abs_last_exec.status != $tlCfg->results.status_code.not_run}
-
+      {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
 			    {$status_code=$abs_last_exec.status}
      			<div class="{$tlCfg->results.code_status.$status_code}">
           {$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
      			{$labels.test_exec_by} {$title_sep} 
   				
-    				{if isset($users[$abs_last_exec.tester_id])}
-    				  {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
-    				{else}
-    				  {$deletedTester=$abs_last_exec.tester_id}
-           	  {$deletedUserString=$labels.deleted_user|replace:"%s":$deletedTester}
-           	  {$deletedUserString}
-    				{/if}  
-       			
+  				{if isset($users[$abs_last_exec.tester_id])}
+  				  {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
+  				{else}
+  				  {$deletedTester=$abs_last_exec.tester_id}
+         	  {$deletedUserString=$labels.deleted_user|replace:"%s":$deletedTester}
+         	  {$deletedUserString}
+  				{/if}  
+     			
      			{$title_sep_type3}
      			{$labels.build}{$title_sep} {$abs_last_exec.build_name|escape}
      			{$title_sep_type3}
@@ -144,42 +142,48 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
      			</div>
 
           {* ///////////////////////////////////////// *}
-          {if $abs_last_exec.execution_notes neq ""}
-            <script>
-             {* Initialize panel if notes exists. There might be multiple note panels
-             visible at the same time, so we need to collect those init functions in
-             an array and execute them from Ext.onReady(). See execSetResults.tpl *}
-              var panel_init = function(){
-                  var p = new Ext.Panel({
-                  title:'{$labels.exec_notes}',
-                  collapsible:true,
-                  collapsed: true,
-                  baseCls: 'x-tl-panel',
-                  renderTo:'latest_exec_any_build_notes'{literal},
-                  width:'100%',
-                  html:''
-                  });
-                  p.on({'expand' : 
-                         function(){load_notes(this,{/literal}{$abs_last_exec.execution_id});}
-                       });
-              };
-              panel_init_functions.push(panel_init);
-            </script>
-            <div id="latest_exec_any_build_notes" style="margin:8px;">
-            </div>
-            <hr>
-          {/if}
+        {if $abs_last_exec.execution_notes neq ""}
+        <script>
+       {* Initialize panel if notes exists. There might be multiple note panels
+       visible at the same time, so we need to collect those init functions in
+       an array and execute them from Ext.onReady(). See execSetResults.tpl *}
+        var panel_init = function(){
+            var p = new Ext.Panel({
+            title:'{$labels.exec_notes}',
+            collapsible:true,
+            collapsed: true,
+            baseCls: 'x-tl-panel',
+            renderTo:'latest_exec_any_build_notes'{literal},
+            width:'100%',
+            html:''
+            });
+            p.on({'expand' : 
+                   function(){load_notes(this,{/literal}{$abs_last_exec.execution_id});}
+                 });
+        };
+        panel_init_functions.push(panel_init);
+        </script>
+        <div id="latest_exec_any_build_notes" style="margin:8px;">
+        </div>
+        <hr>
+        {/if}
         {* ///////////////////////////// *}
-  		{else}
+
+
+
+  		  {else}
           {$drawNotRun=1}
-   		{/if}
-    {/if}
-  	{if $drawNotRun }
-  	 	<div class="not_run">{$labels.test_status_not_run}</div>
-      	{$labels.tc_not_tested_yet}
-  	{/if}
-       
+   		  {/if}
+     {/if}
+	 
+	 {if $drawNotRun }
+	 	<div class="not_run">{$labels.test_status_not_run}</div>
+    	{$labels.tc_not_tested_yet}
+	 {/if}
      
+     
+
+    {* -------------------------------------------------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
       {$my_colspan=$attachment_model->num_cols}
 
@@ -448,9 +452,30 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   </div>
 
   <br />
-    <div class="exec_tc_title">
+    {$theClass = "exec_tc_title"}
+    {$hasNewestVersionMsg = ''}
+    {if $gui->hasNewestVersion}
+      {$theClass = "exec_tc_title_alert"}
+      {$hasNewestVersionMsg = $labels.hasNewestVersionMsg}
+    {/if}
+    <div class="{$theClass}">
+    {if '' !== $hasNewestVersionMsg}  
+      <div style="text-align: center;">{$hasNewestVersionMsg}</div>
+
+      {if $gui->hasNewestVersion} 
+        <div style="text-align: center;">
+          <input type="hidden" id="TCVToUpdate" name="TCVToUpdate"
+            value="{$gui->tcversionSet}">
+          <input type="submit" id="linkLatestVersion" name="linkLatestVersion"
+                   value="{$labels.updateLinkToLatestTCVersion}"/>
+        </div>     
+        <br>    
+      {/if}
+    {/if}
     {if $gui->grants->edit_testcase}
-      <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
+      {$tplan=$gui->tplan_id}
+      {$metaMode="editOnExec&tplan_id=$tplan"}                    
+      <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'{$metaMode}')">
       <img src="{$tlImages.note_edit}"  title="{$labels.show_tcase_spec}">
       </a>
     {/if}
@@ -466,7 +491,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     </div>
 
 
-  {* ---------------------------------------------------- *}
+  {* ----------------------------------------------------------------------------------- *}
   <div>
     {include file="execute/inc_exec_test_spec.tpl"
              args_tc_exec=$tc_exec
@@ -495,6 +520,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     {/if}
   <hr />
   </div>
-  {* --------------------------------------------------------------- *}
+  {* ----------------------------------------------------------------------------------- *}
 
 	{/foreach}

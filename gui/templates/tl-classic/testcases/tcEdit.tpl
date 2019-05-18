@@ -112,6 +112,7 @@ function validateForm(the_form)
   <input type="hidden" name="version" value="{$gui->tc.version}" />
   <input type="hidden" name="doAction" value="" />
   <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+  <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
   
   {* when save or cancel is pressed do not show modification warning *}
   <div class="groupBtn">

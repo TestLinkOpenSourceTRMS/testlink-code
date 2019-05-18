@@ -674,7 +674,17 @@ function dialog_onLoad(odialog)
     odialog.refLocation = top.opener.location;
     if(odialog.refAdditional != undefined)
     {
-       odialog.refLocation += odialog.refAdditional;
+      // Only add odialog.refAdditional if not already present
+      // IMPORTANT
+      // cast to string, is neeed to avoid issues with
+      // str.replace() => will return undefined
+      var haystack = String(odialog.refLocation);
+      var needle = String(odialog.refAdditional);
+
+      odialog.refLocation = haystack.replace(needle,'');
+      odialog.refLocation += odialog.refAdditional;
+
+      // alert(odialog.refLocation);
     } 
   }
   catch(e)
@@ -933,7 +943,6 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode)
   feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
           tcase_id+"&tcversion_id="+tcversion_id;
 
-  // 20101111 - asimon - now also remembers popup size
   var width = getCookie("TCEditPopupWidth");
   var height = getCookie("TCEditPopupHeight");
 

@@ -4834,6 +4834,9 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *            Developer key
      * @param int $args["testcaseid"]
      *            Test Case INTERNAL ID
+     * @param int $args["version"]
+     *            version number
+     *
      * @param string $args["title"]
      *           (Optional) The title of the Attachment
      * @param string $args["description"]
@@ -4845,7 +4848,6 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["content"]
      *            The content(Base64 encoded) of the Attachment
      *
-     * @since 1.9beta6
      * @return mixed $resultInfo an array containing the fk_id, fk_table, title,
      *         description, file_name, file_size and file_type. If any errors occur it
      *         returns the erros map.
@@ -4854,15 +4856,25 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $ret = null;
         $msg_prefix = "(" . __FUNCTION__ . ") - ";
 
-        $args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
-        $args[self::$foreignKeyIdParamName] = $args[self::$testCaseIDParamName];
         $this->_setArgs( $args );
-        $checkFunctions = array(
-                'authenticate',
-                'checkTestCaseIdentity'
-        );
+
+        // Mandatory Parameters
+        $prm = self::$versionNumberParamName;
+        $statusOK = $this->_isParamPresent( $prm, $msgPrefix, self::SET_ERROR );
+
+        if($statusOk) {
+          $checkFunctions = array('authenticate',
+                                  'checkTestCaseIdentity',
+                                  'checkTestCaseVersionNumberAncestry');          
+        }
 
         if($statusOk = $this->_runChecks( $checkFunctions, $msg_prefix )) {
+
+          $args[self::$foreignKeyTableNameParamName] = 'tcversions';
+          $args[self::$foreignKeyIdParamName] = $this->tcVersionID;
+          $this->_setArgs( $args );
+        
+
             // Need to get test project information from test case in order to be able
             // to do RIGHTS check on $this->userHasRight()
             // !!! Important Notice!!!!:
@@ -4961,7 +4973,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         // would authenticate, check if the nodes_hierarchy is type TestCase
         // and then call uploadAttachment that would, authenticate again.
         // What do you think?
-        if(! $this->authenticated) {
+        if(!$this->authenticated) {
             $checkFunctions[] = 'authenticate';
         }
         // check if :
@@ -5050,11 +5062,14 @@ class TestlinkXMLRPCServer extends IXR_Server {
     protected function checkForeignKey($msg_prefix = '') {
         $statusOk = true;
 
+        
         $fkId = $this->args[self::$foreignKeyIdParamName];
         $fkTable = $this->args[self::$foreignKeyTableNameParamName];
-
+        
         if(isset( $fkId ) && isset( $fkTable )) {
-            $query = "SELECT id FROM {$this->tables[$fkTable]} WHERE id={$fkId}";
+            $query = "SELECT id FROM {$this->tables[$fkTable]} 
+                      WHERE id={$fkId}";
+
             $result = $this->dbObj->fetchFirstRowSingleColumn( $query, "id" );
         }
 
@@ -5137,11 +5152,9 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *         int map['error_code']
      */
     protected function checkTestCaseVersionNumberAncestry($messagePrefix = '') {
-        $ret = array(
-                'status_ok' => true,
-                'error_msg' => '',
-                'error_code' => 0
-        );
+        $ret = array('status_ok' => true,
+                     'error_msg' => '',
+                     'error_code' => 0 );
 
         $tcase_id = $this->args[self::$testCaseIDParamName];
         $version_number = $this->args[self::$versionNumberParamName];
@@ -5156,11 +5169,9 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $status_ok = false;
             $tcase_info = $this->tcaseMgr->tree_manager->get_node_hierarchy_info( $tcase_id );
             $msg = sprintf( TCASE_VERSION_NUMBER_KO_STR, $version_number, $this->args[self::$testCaseExternalIDParamName], $tcase_info['name'] );
-            $ret = array(
-                    'status_ok' => false,
-                    'error_msg' => $msg,
-                    'error_code' => TCASE_VERSION_NUMBER_KO
-            );
+            $ret = array('status_ok' => false,
+                         'error_msg' => $msg,
+                         'error_code' => TCASE_VERSION_NUMBER_KO);
         }
         return $ret;
     }

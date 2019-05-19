@@ -4688,7 +4688,7 @@ class testcase extends tlObjectWithAttachments
                        null -> use testcase_id as starting point.
                        !is_null -> use this value as starting point.
   */
-  function getTestProjectFromTestCase($id,$parent_id)
+  function getTestProjectFromTestCase($id,$parent_id=null)
   {
     $the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
     $path_len = count($the_path);

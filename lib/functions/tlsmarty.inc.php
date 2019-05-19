@@ -90,8 +90,9 @@ class TLSmarty extends Smarty {
     
     parent::__construct();
   
-    $this->template_dir = TL_ABS_PATH . 'gui/templates/' . 
-                          $tlCfg->gui->ux . '/';
+    $this->template_dir = 
+      array('main' => TL_ABS_PATH . 'gui/templates/' . 
+                      $tlCfg->gui->ux . '/');
                           
     $this->config_dir = TL_ABS_PATH . 'gui/templates/conf';
     $this->compile_dir = TL_TEMP_PATH;

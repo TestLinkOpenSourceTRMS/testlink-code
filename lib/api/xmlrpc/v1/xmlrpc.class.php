@@ -52,6 +52,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
     const BUILD_GUESS_DEFAULT_MODE = OFF;
     const SET_ERROR = true;
     const CHECK_PUBLIC_PRIVATE_ATTR = true;
+    const THROW_ON_ERROR = true;
 
     /**
      * The DB object used throughout the class
@@ -3628,7 +3629,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
         if( $status_ok && 
             !$this->_isParamPresent( self::$versionNumberParamName ) ) {
           try {
-            $tc = $this->getTestCase($args);
+            $tc = $this->getTestCase($args,self::THROW_ON_ERROR);
             $this->args[self::$versionNumberParamName] = $tc[0][self::$versionNumberParamName];
           } catch (Exception $e) {
             return $this->errors;
@@ -3950,7 +3951,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *
      * @return mixed $resultInfo
      */
-    public function getTestCase($args) {
+    public function getTestCase($args,$throwOnError=false) {
         $msg_prefix = "(" . __FUNCTION__ . ") - ";
         $status_ok = true;
         $this->_setArgs( $args );
@@ -4005,10 +4006,15 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $this->args[self::$testProjectIDParamName] = $this->tcaseMgr->get_testproject( $result[0]['id'] );
             $status_ok = $this->userHasRight( "mgt_view_tc", self::CHECK_PUBLIC_PRIVATE_ATTR );
         }
+
         if( $status_ok ) {
           return  $result;
         } else {
-          throw new Exception("Test Case Does Not Exist", 1);
+          if( $throwOnError ) {
+            throw new Exception("Test Case Does Not Exist", 1);
+          } else {
+            return $this->errors;
+          }
         }
     }
 

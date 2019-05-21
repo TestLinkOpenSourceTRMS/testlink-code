@@ -3940,6 +3940,7 @@ $TLS_partialExecNothingToSave = 'Steps Work In Progress Execution: There are no 
 $TLS_partialExecNoAttachmentsWarning = 'ATTENTION: When saving Steps Work In Progress Execution, Attachments will not be saved';
 
 $TLS_testcase_has_no_name = 'Test Case has empty name';
+$TLS_copy_attachments_from_latest_exec = 'Copy Latest Exec Attachments';
 
 $TLS_exec_tree_counters_logic = 'Tree Counters Latest Exec On';
 $TLS_use_latest_exec_on_testplan_for_counters = 'Test Plan';

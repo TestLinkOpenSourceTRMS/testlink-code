@@ -47,7 +47,7 @@ function createResultsMenu($statusToExclude = null) {
   }
   return $menu_data;
 }
-  
+   
   
 /**
  * write execution result to DB
@@ -288,6 +288,9 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
           }         
         }  
       }  
+
+      // Copy attachments from latest execution ?
+
 
       $itCheckOK = !is_null($issueTracker) && 
                    method_exists($issueTracker,'addIssue');
@@ -706,8 +709,7 @@ function addIssue($dbHandler,$argsObj,$itsObj,$opt=null) {
  * copy issues from execution to another execution
  *
  */
-function copyIssues(&$dbHandler,$source,$dest)
-{
+function copyIssues(&$dbHandler,$source,$dest) {
   $debugMsg = 'FILE:: ' . __FILE__ . ' :: FUNCTION:: ' . __FUNCTION__;
 
   $tables = tlObjectWithDB::getDBTables(array('execution_bugs'));
@@ -964,4 +966,41 @@ function completeIssueForStep(&$execContext,$execSigfrid,$exData,$stepID) {
   }
 
   return $addLink;
+}
+
+
+/**
+ *
+ */
+function addAttachmentsToExec($execID,&$docRepo) {
+
+  $tableRef = DB_TABLE_PREFIX . 'executions';
+  $repOpt = array('allow_empty_title' => TRUE);
+
+  // 0 is magic!!, 0 is used in the smarty template
+  // May be we have enabled MULTIPLE on file upload
+
+  $honeyPot = array('name' => null,'size' => null,
+                    'tmp_name' => null, 'type' => null);
+  foreach($honeyPot as $bee => $nuu) {
+   $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
+  }
+
+  $curly = count($honeyPot);
+  for($moe=0; $moe < $curly; $moe++) {
+    $fSize = isset($honeyPot['size'][$moe]) ? 
+             $honeyPot['size'][$moe] : 0;
+
+    $fTmpName = isset($honeyPot['tmp_name'][$moe]) ? 
+                $honeyPot['tmp_name'][$moe] : '';
+
+    if ($fSize && $fTmpName != "") {
+      $fk2loop = array_keys($_FILES['uploadedFile']);
+      foreach($fk2loop as $tk) {
+        $fInfo[$tk] = $honeyPot[$tk][$moe];
+      }  
+      $uploaded = $docRepo->insertAttachment($execID,$tableRef,'',
+                                               $fInfo,$repOpt);
+    }
+  } 
 }

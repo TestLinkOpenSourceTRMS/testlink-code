@@ -20,13 +20,13 @@ Author : franciscom
       {if $gui->grants->execute}
   		<table class="invisible" style="border: thick solid white">
   		<tr border='0'>
-  			<td style="text-align: center;width:80%; border: 0px">
+  			<td style="text-align: center;width:75%; border: 0px">
   				<div class="title">{$args_labels.test_exec_notes}</div>
           {$args_webeditor} 
         <br>  
         {include file="attachments_simple.inc.tpl" attach_id=0}
   			</td>
-  			<td valign="top" style="width:20%; border: 0px">			
+  			<td valign="top" style="width:25%; border: 0px">			
     				{* status of test *}
       			<div class="title" style="text-align: center;">
             {if $args_save_type == 'bulk'} {$args_labels.test_exec_result} {else} &nbsp; {/if}
@@ -47,13 +47,15 @@ Author : franciscom
 
               {if $tlCfg->exec_cfg->features->exec_duration->enabled}	
                 <br />	
-                {$args_labels.execution_duration}&nbsp;
+                <img src="{$tlImages.execution_duration}" 
+                       title="{$args_labels.execution_duration}">
                 <input type="text" name="execution_duration" id="execution_duration"
                        size="{#EXEC_DURATION_SIZE#}" 
                        onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
                        maxlength="{#EXEC_DURATION_MAXLEN#}">  
                 {/if}       		 			
               {if $args_save_type == 'single'}
+                <br />
                 <br />
                 {$addBR=0}
                 {if $tc_exec.assigned_user == ''}
@@ -62,6 +64,16 @@ Author : franciscom
                   <input type="checkbox" name="assignTask"  id="assignTask">
                   &nbsp;
                 {/if}
+
+                {if $tlCfg->exec_cfg->exec_mode->new_exec == 'latest'}
+                  {$addBR=1}
+                 <img src="{$tlImages.copy_attachments}" 
+                       title="{$args_labels.copy_attachments_from_latest_exec}">
+                  <input type="checkbox" name="copyAttFromLEXEC"  id="copyAttFromLEXEC">
+                  &nbsp;
+                {/if}
+
+
                 
                 {if $gui->tlCanCreateIssue}
                   {$addBR=1}

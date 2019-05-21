@@ -2749,12 +2749,11 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
         break;
       }
 			
-			if (isset($input_values[$cf_info['html_input_name']])) 
-			{
+			if (isset($input_values[$cf_info['html_input_name']])) {
 				$value = $input_values[$cf_info['html_input_name']];
-			} 
-			else if (isset($cf_info['value'])) 
-			{
+			} else if (isset($input_values[$cf_info['id']])) {
+        $value = $input_values[$cf_info['id']]['value'];
+      } else if (isset($cf_info['value'])) {
 				$value = $cf_info['value'];
 			}
 	

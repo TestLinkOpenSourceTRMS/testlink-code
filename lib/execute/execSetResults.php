@@ -57,7 +57,7 @@ $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
-$attachmentRepository = tlAttachmentRepository::create($db);
+$fileRepo = tlAttachmentRepository::create($db);
 $req_mgr = new requirement_mgr($db);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr,$its,$cts);
@@ -94,17 +94,18 @@ list($linked_tcversions,$itemSet) =
 $tcase_id = 0;
 $userid_array = null;
 if(!is_null($linked_tcversions)) {
+ 
   $items_to_exec = array();
   $_SESSION['s_lastAttachmentInfos'] = null;
   if($args->level == 'testcase') {
     // passed by reference to be updated inside function
     // $gui, $args
     $tcase = null;
-    list($tcase_id,$tcversion_id) = 
+    list($tcase_id,$tcversion_id,$latestExecIDInContext,$hasCFOnExec) = 
       processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
-                      $tree_mgr,$tcase_mgr,$attachmentRepository);
+                      $tree_mgr,$tcase_mgr,$fileRepo);
   } else {
-    processTestSuite($db,$gui,$args,$itemSet,$tree_mgr,$tcase_mgr,$attachmentRepository);
+    processTestSuite($db,$gui,$args,$itemSet,$tree_mgr,$tcase_mgr,$fileRepo);
     $tcase_id = $itemSet->tcase_id;
     $tcversion_id = $itemSet->tcversion_id;
   }
@@ -141,19 +142,15 @@ if(!is_null($linked_tcversions)) {
      
     if( $args->save_results || $args->do_bulk_save) {  
       // Need to get Latest execution ID before writing
-      $lexid = 0;
+      $lexidSysWide = 0;
       if($args->copyIssues && $args->level == 'testcase') {
-        $lexid = $tcase_mgr->getSystemWideLastestExecutionID($args->version_id);
+        $lexidSysWide = $tcase_mgr->getSystemWideLastestExecutionID($args->version_id);
       }  
 
       $_REQUEST['save_results'] = $args->save_results;
     
       // Steps Partial Execution Feature   
       if (isset($_REQUEST['step_notes'])) { 
-
-         /* 
-          $tcase_mgr->deleteBackupSteps(array_keys($_REQUEST['step_notes']),$args->tplan_id,$args->platform_id,$args->build_id);
-         */
         $ctx = new stdClass();
         $ctx->testplan_id = $args->tplan_id;
         $ctx->platform_id = $args->platform_id;
@@ -164,6 +161,46 @@ if(!is_null($linked_tcversions)) {
       
       list($execSet,$gui->addIssueOp) = write_execution($db,$args,$_REQUEST,$its);
       
+      // Copy Attachments from latest exec ?
+      if($args->copyAttFromLEXEC && $cfg->exec_cfg->exec_mode->new_exec && 
+         $args->level == 'testcase') {
+
+        // we have got Latest Execution on Context on processTestCase()
+        if( $latestExecIDInContext > 0 ) {
+
+          // need to copy :
+          // attachments at execution level 
+          // attachments at step execution level
+          
+          // attachments at execution level 
+          $fileRepo->copyAttachments($latestExecIDInContext,
+            $execSet[$tcversion_id],'executions');
+
+          // attachments at step execution level
+          $tbl = array();
+          $tbl['exec_tcsteps'] = DB_TABLE_PREFIX . 'execution_tcsteps';
+          $tbl['tcsteps'] = DB_TABLE_PREFIX . 'tcsteps';
+          $sql = "SELECT step_number,tcstep_id,
+                         EXTCS.id AS tcsexe_id 
+                  FROM {$tbl['tcsteps']} TCS
+                  JOIN {$tbl['exec_tcsteps']} EXTCS ON
+                  EXTCS.tcstep_id = TCS.id 
+                  WHERE EXTCS.execution_id = ";
+
+          $from = (array)$db->fetchRowsIntoMap($sql . $latestExecIDInContext,'step_number');
+
+          $to = (array)$db->fetchRowsIntoMap($sql . $execSet[$tcversion_id],'step_number');
+
+          foreach($from as $step_num => $sxelem) {
+            if( isset($to[$step_num]) ) {
+              $fileRepo->copyAttachments($sxelem['tcsexe_id'],
+                $to[$step_num]['tcsexe_id'],'execution_tcsteps');
+            }
+          }
+        }
+      }
+
+
       if($args->assignTask) {
         $fid = $tplan_mgr->getFeatureID($args->tplan_id,$args->platform_id,$args->version_id);
         $taskMgr = new assignment_mgr($db);
@@ -177,8 +214,8 @@ if(!is_null($linked_tcversions)) {
         $taskMgr->assign($fmap);
       }  
 
-      if($lexid > 0 && $args->copyIssues && $args->level == 'testcase') {
-        copyIssues($db,$lexid,$execSet[$args->version_id]);
+      if($lexidSysWide > 0 && $args->copyIssues && $args->level == 'testcase') {
+        copyIssues($db,$lexidSysWide,$execSet[$args->version_id]);
       }
 
       // Propagate events
@@ -283,7 +320,7 @@ if(!is_null($linked_tcversions)) {
         // need info about this test case => need to update linked_tcversions info
         $identity = array('id' => $nextItem['tcase_id'], 'version_id' => $nextItem['tcversion_id']);
         list($lt,$xdm) = getLinkedItems($args,$gui->history_on,$cfg,$tcase_mgr,$tplan_mgr,$identity);
-        processTestCase($nextItem,$gui,$args,$cfg,$lt,$tree_mgr,$tcase_mgr,$attachmentRepository);
+        processTestCase($nextItem,$gui,$args,$cfg,$lt,$tree_mgr,$tcase_mgr,$fileRepo);
       }
     }
     else if($args->save_and_exit) {
@@ -364,17 +401,6 @@ if(!is_null($linked_tcversions)) {
     }
     $testerIdKey = 'tester_id';
 
-    /*
-    $ctx = new stdClass();
-    $ctx->testplan_id = $args->tplan_id;
-    $ctx->platform_id = $args->platform_id;
-    $ctx->build_id = $args->build_id;
-    $gui->stepsPartialExec = $tcase_mgr->getStepsPartialExec($ctx);
-
-    $gui->backupTesterId = reset($gui->backupSteps)[$testerIdKey];
-    $gui->backupTimestamp = reset($gui->backupSteps)['backup_date'];
-    */
-
     $gui->other_execs=null;
     $testerid = null;
       
@@ -415,7 +441,7 @@ if(!is_null($linked_tcversions)) {
             $userid_array[$testerid] = $testerid;
           }      
         }
-        $other_info = exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
+        $other_info = exec_additional_info($db,$fileRepo,$tcase_mgr,$gui->other_execs,
                                            $args->tplan_id,$args->tproject_id, 
                                            $args->issue_tracker_enabled,$its);
                              
@@ -463,8 +489,30 @@ if($args->reload_caller) {
     if( !is_null($xx) ) {
       $gui->execution_time_cfields[0] = $xx;
     }  
-  }  
+  }
+
+  // has sense only if there are cf for execution
+  // may be can improve check
+  if( $gui->can_use_bulk_op == false && 
+      $cfg->exec_cfg->exec_mode->new_exec == 'latest' ) {
+
+     list($tcase_id,$tcversion_id,$latestExecIDInContext,$hasCFOnExec) =
+      processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
+                      $tree_mgr,$tcase_mgr,$fileRepo);
+
+      if($latestExecIDInContext > 0) {
+        $tbl = DB_TABLE_PREFIX . 'executions';
+        $sql = "SELECT notes FROM $tbl 
+                WHERE id = $latestExecIDInContext";
+        $rs = $db->get_recordset($sql);
+        $gui->lexNotes = $rs != null ? $rs[0]['notes'] : null; 
+      }
+
+  }
+
   initWebEditors($gui,$cfg,$_SESSION['basehref']);
+
+
 
   // To silence smarty errors
   //  future must be initialized in a right way
@@ -510,6 +558,7 @@ function init_args(&$dbHandler,$cfgObj) {
   $args->assignTask = isset($_REQUEST['assignTask']) ? 1: 0;
   $args->createIssue = isset($_REQUEST['createIssue']) ? 1: 0;
   $args->copyIssues = isset($_REQUEST['copyIssues']) ? 1: 0;
+  $args->copyAttFromLEXEC = isset($_REQUEST['copyAttFromLEXEC']) ? 1: 0;
 
 
   $args->tc_id = null;
@@ -785,8 +834,7 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
                                [tcid] => 5343
                                [tsuite_name] => ts1)
 */
-function get_ts_name_details(&$db,$tcase_id)
-{
+function get_ts_name_details(&$db,$tcase_id) {
   $tables = array();
   $tables['testsuites'] = DB_TABLE_PREFIX . 'testsuites';
   $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
@@ -926,7 +974,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
 
   @internal revisions:
 */
-function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_execs, 
+function exec_additional_info(&$db, $fileRepo, &$tcase_mgr, $other_execs, 
                               $tplan_id, $tproject_id, $bugInterfaceOn, $bugInterface)
 {
   $attachmentInfos = null;
@@ -934,31 +982,26 @@ function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_e
   $cfexec_values = null;
 
   
-  foreach($other_execs as $tcversion_id => $execInfo)
-  {
+  foreach($other_execs as $tcversion_id => $execInfo) {
     $num_elem = sizeof($execInfo);   
-    for($idx = 0;$idx < $num_elem;$idx++)
-    {
+    for($idx = 0;$idx < $num_elem;$idx++) {
       $exec_id = $execInfo[$idx]['execution_id'];
-      $aInfo = getAttachmentInfos($attachmentRepository,$exec_id,'executions',true,1);
-      if ($aInfo)
-      {
+      $aInfo = getAttachmentInfos($fileRepo,$exec_id,'executions',true,1);
+      if ($aInfo) {
         $attachmentInfos[$exec_id] = $aInfo;
       }
       
-      if($bugInterfaceOn)
-      {
+      if($bugInterfaceOn) {
         $the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
-        if(count($the_bugs) > 0)
-        {
+        if(count($the_bugs) > 0) {
           $bugs[$exec_id] = $the_bugs;
         }  
       }
 
-
       // Custom fields
-      $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values($tcversion_id,'execution',null,
-                                                                               $exec_id,$tplan_id,$tproject_id);
+      $cfexec_values[$exec_id] = 
+        $tcase_mgr->html_table_of_custom_field_values($tcversion_id,
+          'execution',null,$exec_id,$tplan_id,$tproject_id);
     }
   }
   
@@ -1230,14 +1273,11 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
            key: testcase id
            value: html to display web editor.
 
-  rev : 20080104 - creation  
 */
-function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
-{
+function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg,$execCfg,$initValue=null) {
   
-    if(is_null($tcversions) || count($tcversions) == 0 )
-    {
-        return null;  // nothing todo >>>------> bye!  
+    if(is_null($tcversions) || count($tcversions) == 0 ) {
+      return null;  // nothing todo >>>------> bye!  
     }
      
     // Important Notice:
@@ -1248,13 +1288,18 @@ function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
     //
     // Rows and Cols values are useless for FCKeditor.
     //
-    $itemTemplateValue = getItemTemplateContents('execution_template', 'notes', null);
-    foreach($tcversions as $key => $tcv)
-    {
+
+    if( $execCfg->exec_mode->new_exec == 'latest') {
+      $itemTemplateValue = $initValue != null ? $initValue : '';
+    } else {
+      $itemTemplateValue = getItemTemplateContents('execution_template', 'notes', null);      
+    }
+
+    foreach($tcversions as $key => $tcv) {
       $tcversion_id=$tcv['id'];
       $tcase_id=$tcv['testcase_id'];
 
-      $of=web_editor("notes[{$tcversion_id}]",$basehref,$editorCfg) ;
+      $of = web_editor("notes[{$tcversion_id}]",$basehref,$editorCfg) ;
       $of->Value = $itemTemplateValue;
        
       // Magic numbers that can be determined by trial and error
@@ -1362,6 +1407,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+  $gui->lexNotes = null;
   $gui->tcversionSet = null;
   $gui->plugins = null;
   $gui->hasNewestVersion = 0;
@@ -1627,7 +1673,27 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   $ltcvID = $tcaseMgr->getLatestVersionID($tcase_id);
   $guiObj->hasNewestVersion = ($ltcvID != $tcversion_id);
 
-     
+  $eid = -1;  
+  if($cfgObj->exec_cfg->exec_mode->new_exec == 'latest' ) {
+    // Need latest exec id on context
+    $eid = $tcaseMgr->getLatestExecIDInContext($tcversion_id,$argsObj);
+  }
+
+  $cf_map = null;
+  if($guiObj->grants->execute) {
+    if( $eid > 0 ) {
+      // I'm getting the values saved on latest execution
+      $cf_map = $tcaseMgr->get_linked_cfields_at_execution(
+        $tcversion_id,null,null,$eid,
+        $argsObj->tplan_id,$argsObj->tproject_id);
+    }
+
+    $guiObj->execution_time_cfields[$tcase_id] = 
+      $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,
+        'execution',"_{$tcase_id}",null,null,
+        $argsObj->tproject_id,null,$cf_map);
+  }
+
   $guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcversion_id,'tcversions',1);
 
   foreach($locationFilters as $locationKey => $filterValue) {
@@ -1637,15 +1703,11 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
                                                    $argsObj->tproject_id,null,$tcversion_id);
       
     $guiObj->testplan_design_time_cfields[$tcase_id] = 
-      $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
-                                                   null,null,$argsObj->tproject_id,null,$link_id);
+      $tcaseMgr->html_table_of_custom_field_values($tcversion_id,
+        'testplan_design',$cf_filters,null,null,
+        $argsObj->tproject_id,null,$link_id);
   }
 
-  if($guiObj->grants->execute) {
-    $guiObj->execution_time_cfields[$tcase_id] = 
-      $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
-                                                   null,$argsObj->tproject_id);
-  }
 
   $tc_info = $treeMgr->get_node_hierarchy_info($tcase_id);
   $guiObj->tSuiteAttachments[$tc_info['parent_id']] = 
@@ -1670,7 +1732,8 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   list($guiObj->bug_summary,$guiObj->issueSummaryForStep) = 
     genIssueSummary($tcaseMgr,$signature,$guiObj->executionContext);
 
-  return array($tcase_id,$tcversion_id);
+  // return more data eid, has cf on exec
+  return array($tcase_id,$tcversion_id,$eid,($cf_map != null));
 }
 
 
@@ -1820,7 +1883,7 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$testSet,&$treeMgr,&$tc
     $suffix = '_' . $index;
     $execution_time_cfields = 
         $tcaseMgr->html_table_of_custom_field_inputs($dummy_id,$argsObj->tproject_id,'execution',$suffix,
-                                                      null,null,$argsObj->tproject_id);
+          null,null,$argsObj->tproject_id);
     
     $guiObj->execution_time_cfields[$index] = $execution_time_cfields;
     $gdx=0;
@@ -1835,25 +1898,24 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$testSet,&$treeMgr,&$tc
           // ID of branch starting node is in $argsObj->id
           $guiObj->tcAttachments[$testcase_id] = getAttachmentInfos($docRepository,$testcase_id,'nodes_hierarchy',true,1);
                   
-          foreach($locationFilters as $locationKey => $filterValue)
-          {
+          foreach($locationFilters as $locationKey => $filterValue) {
             $finalFilters = $cf_filters+$filterValue;
             $guiObj->design_time_cfields[$testcase_id][$locationKey] = 
                      $tcaseMgr->html_table_of_custom_field_values($testcase_id,'design',$finalFilters,null,null,
-                                                                  $argsObj->tproject_id,null,$testSet->tcversion_id[$gdx]);
+            $argsObj->tproject_id,null,$testSet->tcversion_id[$gdx]);
 
             $guiObj->testplan_design_time_cfields[$testcase_id] = 
                      $tcaseMgr->html_table_of_custom_field_values($testcase_id,'testplan_design',$cf_filters,
-                                                                         null,null,$argsObj->tproject_id);
+                       null,null,$argsObj->tproject_id);
                                                                                           
           }                       
-          if($guiObj->grants->execute)
-          {
+
+          if($guiObj->grants->execute) {
             $guiObj->execution_time_cfields[$testcase_id] = 
-                    $tcaseMgr->html_table_of_custom_field_inputs($testcase_id, null,'execution',   
-                                                                 "_".$testcase_id,null,null,
-                                                                 $argsObj->tproject_id);
+              $tcaseMgr->html_table_of_custom_field_inputs($testcase_id, null,'execution', "_".$testcase_id,null,null,
+                $argsObj->tproject_id);
           }
+
         } // if( $path_elem['parent_id'] == $argsObj->id )
               
         // We do this because do not know if some test case not yet analised will be direct
@@ -2123,10 +2185,8 @@ function getLinkedItems($argsObj,$historyOn,$cfgObj,$tcaseMgr,$tplanMgr,$identit
  *
  *
  */
-function initWebEditors(&$guiObj,$cfgObj,$baseHREF)
-{
-  if( $guiObj->can_use_bulk_op )
-  {
+function initWebEditors(&$guiObj,$cfgObj,$baseHREF) {
+  if( $guiObj->can_use_bulk_op ) {
       $of = web_editor("bulk_exec_notes",$baseHREF,$cfgObj->editorCfg);
       $of->Value = getItemTemplateContents('execution_template', $of->InstanceName, null);
       
@@ -2135,10 +2195,9 @@ function initWebEditors(&$guiObj,$cfgObj,$baseHREF)
       $rows = intval(isset($editorCfg['rows']) ? $cfgObj->editorCfg['rows'] : 10);       
       $guiObj->bulk_exec_notes_editor = $of->CreateHTML($rows,$cols);         
       unset($of);    
-  }
-  else
-  {
-      $guiObj->exec_notes_editors=createExecNotesWebEditor($guiObj->map_last_exec,$baseHREF,$cfgObj->editorCfg);
+  } else {
+      $guiObj->exec_notes_editors = createExecNotesWebEditor($guiObj->map_last_exec,$baseHREF,$cfgObj->editorCfg,
+        $cfgObj->exec_cfg,$guiObj->lexNotes);
   }
 }
 

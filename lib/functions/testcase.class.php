@@ -178,7 +178,7 @@ class testcase extends tlObjectWithAttachments
   function getDeleteAttachmentByIDRelativeURL($identity,&$guiObj=null) {
     $url = "lib/testcases/tcEdit.php?doAction=deleteFile&tcase_id=" . 
            intval($identity->tcase_id) .
-           "&tproject_id=" . intval($identity->tproject_id);
+           "&tproject_id=" . intval($identity->tproject_id) . "&file_id=" ;
 
     // needed for IVU 2019 implementation
     if( null != $guiObj ) {
@@ -467,20 +467,15 @@ class testcase extends tlObjectWithAttachments
     // 2. if $my['options']['check_duplicate_name'] is create new version
     //    change to BLOCK
     //
-    if( !is_null($my['options']['importLogic']) )
-    {
+    if( !is_null($my['options']['importLogic']) ) {
       $doQuickReturn = false;
-      switch($my['options']['importLogic']['hitCriteria'])
-      {
+      switch($my['options']['importLogic']['hitCriteria']) {
         case 'externalID':
-          if( ($sf = intval($my['options']['external_id'])) > 0 )
-          {
+          if( ($sf = intval($my['options']['external_id'])) > 0 ) {
             // check if already exists a test case with this external id
             $info = $this->get_by_external($sf, $parent_id);
-            if( !is_null($info))
-            {
-              if( count($info) > 1)
-              {
+            if( !is_null($info)) {
+              if( count($info) > 1) {
                 // abort
                 throw new Exception("More than one test case with same external ID");
               }
@@ -524,16 +519,13 @@ class testcase extends tlObjectWithAttachments
     }
 
 
-    if ($my['options']['check_duplicate_name'])
-    {
+    if ($my['options']['check_duplicate_name']) {
       $itemSet = $this->getDuplicatesByName($name,$parent_id,$getDupOptions);
 
-      if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
-      {
+      if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 ) {
         $ret['has_duplicate'] = true;
 
-        switch($my['options']['action_on_duplicate_name'])
-        {
+        switch($my['options']['action_on_duplicate_name']) {
             case 'block':
               $doCreate=false;
               $ret['status_ok'] = 0;
@@ -548,14 +540,11 @@ class testcase extends tlObjectWithAttachments
               // (this seems the best alternative)
               $my['options']['external_id'] = null;
 
-              switch($algo_cfg->type)
-              {
+              switch($algo_cfg->type) {
                 case 'stringPrefix':
                   $doIt = true;
-                  while($doIt)
-                  {
-                    if( $doIt = !is_null($itemSet) )
-                    {
+                  while($doIt) {
+                    if( $doIt = !is_null($itemSet) ) {
                       $prefix = strftime($algo_cfg->text,time());
                       $target = $prefix . " " . $name ;
                       $final_len = strlen($target);
@@ -4775,10 +4764,9 @@ class testcase extends tlObjectWithAttachments
   BUGID 3431 -
 
   */
-  function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
-                                             $link_id=null,$tplan_id=null,
-                                             $tproject_id = null,$filters=null, $input_values = null)
-  {
+  function html_table_of_custom_field_inputs($id,$parent_id=null,
+    $scope='design',$name_suffix='',$link_id=null,$tplan_id=null,
+    $tproject_id = null,$filters=null, $input_values = null) {
     $cf_smarty = '';
     $cf_scope=trim($scope);
     $method_name='get_linked_cfields_at_' . $cf_scope;
@@ -4799,8 +4787,7 @@ class testcase extends tlObjectWithAttachments
 
     }
 
-    if(!is_null($cf_map))
-    {
+    if(!is_null($cf_map)) {
       $cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
     }
     return $cf_smarty;
@@ -4892,10 +4879,10 @@ class testcase extends tlObjectWithAttachments
     returns: html string
 
   */
-  function html_table_of_custom_field_values($id,$scope='design',$filters=null,
-                                             $execution_id=null,
-                                             $testplan_id=null,$tproject_id = null,
-                                             $formatOptions=null,$link_id=null)
+  function html_table_of_custom_field_values($id,$scope='design',
+    $filters=null,$execution_id=null,
+    $testplan_id=null,$tproject_id = null,
+    $formatOptions=null,$link_id=null)
   {
     $label_css_style = ' class="labelHolder" ';
     $value_css_style = ' ';
@@ -4935,7 +4922,7 @@ class testcase extends tlObjectWithAttachments
 
       case 'execution':
         $cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,$execution_id,
-                                                         $testplan_id,$tproject_id,$location);
+          $testplan_id,$tproject_id,$location);
       break;
     }
 
@@ -5009,8 +4996,8 @@ class testcase extends tlObjectWithAttachments
 
   */
   function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
-                                           $execution_id=null,$testplan_id=null,
-                                           $tproject_id = null, $location=null)
+    $execution_id=null,$testplan_id=null,
+    $tproject_id = null, $location=null)
   {
     $thisMethod=__FUNCTION__;
     if (!$tproject_id)
@@ -5023,8 +5010,7 @@ class testcase extends tlObjectWithAttachments
     // execution data is related to tcversion NO testcase
     //
     $cf_map = $this->cfield_mgr->$thisMethod($tproject_id,self::ENABLED,'testcase',
-                                             $id,$execution_id,$testplan_id,'id',
-                                             $location);
+      $id,$execution_id,$testplan_id,'id',$location);
     return $cf_map;
   }
 
@@ -9171,6 +9157,34 @@ class testcase extends tlObjectWithAttachments
       $this->db->exec_query($sql);
     }
   }
-  
+
+  /**
+   *
+   */
+  function getLatestExecIDInContext($tcversion_id,$ctx) {
+
+    $tplan_id = -1;
+    $p2c = array('tplan_id','testplan_id');
+    foreach( $p2c as $pp ) {
+      if( property_exists($ctx, $pp) ) {
+        $tplan_id = $ctx->$pp;
+        break;
+      } 
+    }
+
+    $sql = "SELECT id 
+            FROM {$this->views['latest_exec_by_context']} 
+            WHERE tcversion_id= $tcversion_id 
+            AND testplan_id = $tplan_id
+            AND platform_id = $ctx->platform_id
+            AND build_id = $ctx->build_id";
+
+    $rs = $this->db->get_recordset($sql);
+    
+    if( null != $rs ) {
+      return $rs[0]['id'];
+    }        
+    return -1;
+  }
 
 }  // Class end

@@ -7805,7 +7805,6 @@ class testplan extends tlObjectWithAttachments
         FROM {$this->views['latest_exec_by_testplan']} LEBTP  
         WHERE LEBTP.testplan_id = {$safe['tplan_id']} ";
 
-
     // When there is request to filter by BUG ID, 
     // because BUGS are linked only to EXECUTED test case versions, 
     // the not_run piece of union is USELESS
@@ -7826,6 +7825,9 @@ class testplan extends tlObjectWithAttachments
           FROM {$this->tables['testplan_tcversions']} TPTCV                 
           JOIN $nht NH_TCV ON NH_TCV.id = TPTCV.tcversion_id 
           JOIN $nht NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+          $my['join']['keywords'] .
+          $my['join']['ua'] .
+          $my['join']['cf'] .
 
         " /* Get REALLY NOT RUN => 
              BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
@@ -7849,6 +7851,9 @@ class testplan extends tlObjectWithAttachments
         JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id
         JOIN $nht NH_TCV ON NH_TCV.id = TPTCV.tcversion_id
         JOIN $nht NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+        $my['join']['keywords'] .
+        $my['join']['ua'] .
+        $my['join']['cf'] .
 
         " JOIN ({$sqlLatestExecOnTPLAN}) AS LEXBTPLAN " .
         " ON  LEXBTPLAN.testplan_id = TPTCV.testplan_id " .
@@ -7859,7 +7864,8 @@ class testplan extends tlObjectWithAttachments
         " AND E.testplan_id = LEXBTPLAN.testplan_id " .        
         $my['where']['where'];
 
-    return (is_null($union['not_run']) ? $union['exec'] : $union);
+    $xql = is_null($union['not_run']) ? $union['exec'] : $union;
+    return $xql;
   }
 
 } // end class testplan

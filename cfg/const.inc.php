@@ -53,6 +53,12 @@ ini_set('include_path',ini_get('include_path') .
 /** Localization directory base */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 
+clearstatcache();
+$tf = 'custom_const.inc.php';
+if ( file_exists($tf) ) {
+  require_once($tf);
+}
+
 
 // --------------------------------------------------------------------------------
 /* [GENERAL MAGIC NUMBERS] */

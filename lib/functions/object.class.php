@@ -332,6 +332,7 @@ abstract class tlObject implements iSerialization
                    'latest_exec_by_testplan' => null,
                    'latest_exec_by_context' => null,
                    'latest_tcase_version_id' => null,
+                   'latest_tcase_version_number' => null,
                    'latest_req_version' => null,
                    'latest_req_version_id' => null,
                    'latest_rspec_revision' => null,); 
@@ -339,8 +340,6 @@ abstract class tlObject implements iSerialization
     foreach($items as $key => $value) {
       $items[$key] = DB_TABLE_PREFIX . $key;
     }
-
-
 
     if ($itemNames != null) { 
       $itemNames = (array)$itemNames;

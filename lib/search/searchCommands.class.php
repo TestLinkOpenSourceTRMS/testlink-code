@@ -177,21 +177,17 @@ class searchCommands
   /**
    *
    */
-  function initSchema()
-  {
-    $this->tables = tlObjectWithDB::getDBTables(array('cfield_design_values',
-                                                'nodes_hierarchy',
-                                                'requirements','tcsteps',
-                                                'testcase_keywords',
-                                                'req_specs_revisions',
-                                                'req_versions',
-                                                'testsuites','tcversions',
-                                                'users',
-                                                'object_keywords'));
+  function initSchema() {
+    $this->tables = tlObjectWithDB::getDBTables(
+      array('cfield_design_values','nodes_hierarchy',
+            'requirements','tcsteps','testcase_keywords',
+            'req_specs_revisions','req_versions',
+            'testsuites','tcversions','users',
+            'object_keywords'));
                                   
-    $this->views = tlObjectWithDB::getDBViews(array('latest_rspec_revision',
-                                               'latest_req_version',
-                                               'latest_tcase_version_number'));
+    $this->views = tlObjectWithDB::getDBViews(
+      array('latest_rspec_revision','latest_req_version',
+            'latest_tcase_version_number'));
   }
 
 

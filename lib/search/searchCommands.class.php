@@ -80,9 +80,9 @@ class searchCommands
   /**
    *
    */
-  function getTestSuiteIDSet($tproject_id)
-  {
-    $nt2ex = array('testcase' => 'exclude_me','testplan' => 'exclude_me',
+  function getTestSuiteIDSet($tproject_id) {
+    $nt2ex = array('testcase' => 'exclude_me',
+                   'testplan' => 'exclude_me',
                    'requirement_spec'=> 'exclude_me',
                    'requirement'=> 'exclude_me');
 

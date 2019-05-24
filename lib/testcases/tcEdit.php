@@ -467,6 +467,8 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
   $k2c = 'free_keywords';
   $args->free_keywords = isset($_REQUEST[$k2c]) ? $_REQUEST[$k2c] : null;
 
+  $tcaseMgr->setTestProject($args->tproject_id);
+
   return $args;
 }
 

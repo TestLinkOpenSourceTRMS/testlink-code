@@ -25,8 +25,7 @@ $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
  * class for Test case CRUD
  * @package   TestLink
  */
-class testcase extends tlObjectWithAttachments
-{
+class testcase extends tlObjectWithAttachments {
   const AUTOMATIC_ID=0;
   const DEFAULT_ORDER=0;
   const ALL_VERSIONS=0;
@@ -76,6 +75,7 @@ class testcase extends tlObjectWithAttachments
   var $debugMsg;
   var $layout;
   var $XMLCfg;
+  var $tproject_id;
 
   /**
    * testcase class constructor
@@ -119,9 +119,14 @@ class testcase extends tlObjectWithAttachments
     // ORIGINAL
     // parent::__construct($this->db,"nodes_hierarchy");
     parent::__construct($this->db,"tcversions");
-
   }
 
+  /**
+   *
+   */
+  function setTestProject($tproject_id) {
+    $this->tproject_id = intval($tproject_id);
+  }
 
   /**
    *
@@ -2041,14 +2046,28 @@ class testcase extends tlObjectWithAttachments
   */
   function create_new_version($id,$user_id,$source_version_id=null, $options=null) {
 
-    $reqTCLinksCfg = config_get('reqTCLinks');    
-    $freezeLinkOnNewTCVersion = $reqTCLinksCfg->freezeLinkOnNewTCVersion;
-    $freezeLinkedRequirements = $freezeLinkOnNewTCVersion && 
-      $reqTCLinksCfg->freezeBothEndsOnNewTCVersion;
+    // Before working on requirements it will be useful
+    // to understand if req management is enabled
+    // for the Test Project
+    //
+    $freezeLinkOnNewTCVersion = false;
+    $freezeLinkedRequirements = false;
+    $freezeTCVRelationsOnNewTCVersion =false;
+    $reqTCLinksCfg = config_get('reqTCLinks'); 
 
-    $freezeTCVRelationsOnNewTCVersion = 
-      $this->cfg->testcase->freezeTCVRelationsOnNewTCVersion;
+    if( $this->tproject_id > 0 ) {
 
+      $po = $this->tproject_mgr->getOptions($this->tproject_id);
+      if($po->requirementsEnabled) {
+        $freezeLinkOnNewTCVersion = $reqTCLinksCfg->freezeLinkOnNewTCVersion;
+        $freezeLinkedRequirements = $freezeLinkOnNewTCVersion && 
+          $reqTCLinksCfg->freezeBothEndsOnNewTCVersion;
+
+        $freezeTCVRelationsOnNewTCVersion = 
+          $this->cfg->testcase->freezeTCVRelationsOnNewTCVersion;
+      }
+    }
+    
     $now = $this->db->db_now();
     $opt = array('is_open' => 1, 
                  'freezeLinkedRequirements' => $freezeLinkedRequirements,
@@ -6851,8 +6870,15 @@ class testcase extends tlObjectWithAttachments
     // In order to refactor less code, we will remap to OLD config options present on config file.
     $goo->tcase_cfg->can_edit_executed = $grantsObj->testproject_edit_executed_testcases == 'yes' ? 1 : 0;
     $goo->tcase_cfg->can_delete_executed = $grantsObj->testproject_delete_executed_testcases == 'yes' ? 1 : 0;
-    $goo->tcase_cfg->can_add_remove_kw_on_executed = 
-      $grantsObj->testproject_add_remove_keywords_executed_tcversions == 'yes' ? 1 : 0;
+
+
+    $goo->tcase_cfg->can_add_remove_kw_on_executed = 0;
+    $g2c = 'testproject_add_remove_keywords_executed_tcversions';
+    if( property_exists($grantsObj,$g2c) ) {
+      $goo->tcase_cfg->can_add_remove_kw_on_executed =       
+        ($grantsObj->$g2c == 'yes' ? 1 : 0);
+    }
+    
 
     $goo->view_req_rights = property_exists($grantsObj, 'mgt_view_req') ? $grantsObj->mgt_view_req : 0;
     $goo->assign_keywords = property_exists($grantsObj, 'keyword_assignment') ? $grantsObj->keyword_assignment : 0;

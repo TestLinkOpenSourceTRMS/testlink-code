@@ -28,6 +28,8 @@ class testcaseCommands {
     
     $this->db = $db;
     $this->tcaseMgr = new testcase($db);
+    $this->tcaseMgr->setTestProject($tproject_id);
+
     $this->tprojectMgr = &$this->tcaseMgr->tproject_mgr;
     $this->tproject_id = $tproject_id;
 

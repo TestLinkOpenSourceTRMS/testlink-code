@@ -118,8 +118,7 @@ function tlAutoload($class_name)  {
   try {
       include_once $classFileName . '.class.php';
   } 
-  catch (Exception $e)
-  {
+  catch (Exception $e) {
   }  
   
 }
@@ -640,13 +639,11 @@ function check_string($str2check, $regexp_forbidden_chars)
  * 
  * @internal Revisions
  */
-function config_get($config_id)
-{
-  $t_value = '';  
+function config_get($config_id, $default=null) {
+  $t_value = (null == $default) ? '' : $default;  
   $t_found = false;  
   $logInfo = array('msg' => "config option not available: {$config_id}", 'level' => 'WARNING');
-  if(!$t_found)
-  {
+  if(!$t_found) {
     $my = "g_" . $config_id;
     if( ($t_found = isset($GLOBALS[$my])) )
     {

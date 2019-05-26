@@ -48,6 +48,13 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
 
   $renderTreeNodeOpt = array();
   $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
+
+  $renderTreeNodeOpt['alertOnTestSuiteTCQty'] = 0;
+  if(property_exists($objOptions, 'alertOnTestSuiteTCQty')) {
+    $renderTreeNodeOpt['alertOnTestSuiteTCQty'] = $objOptions->alertOnTestSuiteTCQty;
+  }
+
+
   list($filters,$options,
        $renderTreeNodeOpt['showTestSuiteContents'],
        $renderTreeNodeOpt['useCounters'],
@@ -644,6 +651,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
   $renderTreeNodeOpt = null;
   $renderTreeNodeOpt['showTestCaseID'] = config_get('treemenu_show_testcase_id');
 
+ $renderTreeNodeOpt['alertOnTestSuiteTCQty'] = 0;
+  if(property_exists($objOptions, 'alertOnTestSuiteTCQty')) {
+    $renderTreeNodeOpt['alertOnTestSuiteTCQty'] = $objOptions->alertOnTestSuiteTCQty;
+  }
+
+
+
   list($filters,$options,
        $renderTreeNodeOpt['showTestSuiteContents'],
        $renderTreeNodeOpt['useCounters'],
@@ -805,6 +819,13 @@ function testPlanTree(&$dbHandler,&$menuUrl,$tproject_id,$tproject_name,$tplan_i
     // here we have LOT OF CONFUSION, sometimes we use $my['options'] other $options
     $pnFilters = null;    
     $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 'viewType' => 'executionTree');
+
+    if( property_exists($objOptions, 'alertOnTestSuiteTCQty') ) {
+      $pnOptions['alertOnTestSuiteTCQty'] = $objOptions->alertOnTestSuiteTCQty;
+    }
+
+
+    
     $testcase_counters = prepareExecTreeNode($dbHandler,$test_spec,$map_node_tccount,
                                              $tplan_tcases,$pnFilters,$pnOptions);
 

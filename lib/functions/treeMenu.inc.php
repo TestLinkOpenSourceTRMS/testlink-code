@@ -803,16 +803,15 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
     $pf['testsuite'] = $opt['hideTestCases'] ? 'TPLAN_PTS' : ($opt['showTestSuiteContents'] ? 'STS' : null); 
     $pf['testproject'] = $opt['hideTestCases'] ? 'TPLAN_PTP' : 'SP';
 
-    if( isset($opt['actionJS']) )
-    {
-      if( isset($opt['actionJS']['testproject']) )
-      {  
-        $pf['testproject'] = $opt['actionJS']['testproject'];
-      }
-
-      if( isset($opt['actionJS']['testsuite']) )
-      {  
-        $pf['testsuite'] = $opt['actionJS']['testsuite'];
+    if( isset($opt['actionJS']) ) {
+      $k2l = array('testproject','testsuite','testcase','testplan','default');
+      foreach($k2l as $kiki) {
+        if( isset($opt['actionJS'][$kiki]) ){
+          $pf[$kiki] = null; 
+          if( '' != $opt['actionJS'][$kiki] ) {
+            $pf[$kiki] = $opt['actionJS'][$kiki];
+          }  
+        }
       }
     }  
 
@@ -828,12 +827,10 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
   $node['testlink_node_name'] = $name;
   $node['testlink_node_type'] = $node_type;
 
-  switch($node_type)
-  {
+  switch($node_type) {
     case 'testproject':
     case 'testsuite':
       $node['leaf'] = false;
-      $pfn = !is_null($pf[$node_type]) ? $pf[$node_type] . "({$node['id']})" : null;
 
       $testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0; 
       $node['text'] = $name ." (" . $testcase_count . ")";
@@ -846,11 +843,28 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
       {
         $node['text'] = '<span title="' . $opt['nodeHelpText'][$node_type] . '">' . $node['text'] . '</span>';
       }  
+
+      $pfn = !is_null($pf[$node_type]) ? $pf[$node_type] . "({$node['id']})" : null;
+      if( 'testsuite' == $node_type && ($opt['alertOnTestSuiteTCQty'] >0) ) {
+        if( $testcase_count > $opt['alertOnTestSuiteTCQty'] ) {
+          $jfn = config_get('jsAlertOnTestSuiteTCQty');
+          $pfn = $jfn;
+        }
+      }
+
+
     break;
       
     case 'testcase':
       $node['leaf'] = true;
-      $pfn = $opt['tc_action_enabled'] ? "ST({$node['id']},{$node['tcversion_id']})" :null;
+      $pfn = null;
+      if($opt['tc_action_enabled']) {
+        $pfx = "ST";
+        if(isset($pf[$node_type])) {
+          $pfx = "$pf[$node_type]";
+        }
+        $pfn = $pfx . "({$node['id']},{$node['tcversion_id']})";
+      }
 
       $node['text'] = "<span ";
       if( isset($tcase_node[$node['id']]) )
@@ -872,8 +886,24 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,$linkto,$t
       $node['text'] .= "{$name}</span>";
     break;
 
+    case 'testplan':
+      $pfn = "ST({$node['id']})";
+      if( isset($pf[$node_type]) ){
+        $pfn = null;
+        if( '' != $pf[$node_type] ) {
+          $pfn = $pf[$node_type] . "({$node['id']})";
+        } 
+      }
+    break;
+
     default:
       $pfn = "ST({$node['id']})";
+      if( isset($pf['default']) ){
+        $pfn = null;
+        if( '' != $pf['default'] ) {
+          $pfn = $pf['default'] . "({$node['id']})";
+        } 
+      }
     break;
   }
   

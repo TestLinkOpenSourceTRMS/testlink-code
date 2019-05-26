@@ -84,6 +84,9 @@ editorType: used to understand if code for tinymce need to be loaded
 	
 	//-->
 	</script> 
+
+    {include file="custom_inc_head.tpl"}
+
 {if $openHead == "no"} {* 'no' is default defined in config *}
 </head>
 {/if}

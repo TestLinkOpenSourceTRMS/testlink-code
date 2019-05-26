@@ -21,7 +21,8 @@ $method='getTestCase';
 $test_num=0;
 
 $args=array();
-$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$devKey = isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : 'developer';
+$args["devKey"] = $devKey;
 
 $args["testcaseexternalid"]='AF-2';
 $additionalInfo='';
@@ -40,7 +41,7 @@ runTest($client,$method,$args,$test_num);
 
 
 $args=array();
-$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : $devKey;
 $args["testcaseexternalid"]='API-2';
 $args["version"]=1;
 $additionalInfo='';
@@ -58,7 +59,7 @@ runTest($client,$method,$args);
 // ---------------------------------------------------------------------------------
 
 $args=array();
-$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : $devKey;
 $args["testcaseid"]='1667';
 $args["version"]=1;
 $additionalInfo='';
@@ -76,7 +77,7 @@ runTest($client,$method,$args);
 // ---------------------------------------------------------------------------------
 
 $args=array();
-$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : DEV_KEY;
+$args["devKey"]=isset($_REQUEST['apiKey']) ? $_REQUEST['apiKey'] : $devKey;
 $args["testcaseexternalid"]='API-2';
 $args["version"]=3;
 $additionalInfo='';

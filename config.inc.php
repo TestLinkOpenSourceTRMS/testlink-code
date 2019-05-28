@@ -39,6 +39,9 @@ $tlCfg->exec_cfg = new stdClass();
 $tlCfg->exec_cfg->view_mode = new stdClass();
 $tlCfg->exec_cfg->exec_mode = new stdClass();
 
+
+$tlCfg->UDFStripHTMLTags = true;
+
 // allow to define additional execution types other than 
 // defined in testcase.class.php
 // array(code => lblkey)

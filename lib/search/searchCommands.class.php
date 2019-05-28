@@ -497,11 +497,13 @@ class searchCommands
   /** 
    *
    */
-  function searchReqSpec($targetSet,$canUseTarget)
-  {
-    // shotcuts
+  function searchReqSpec($targetSet,$canUseTarget) {
+    // shortcuts
     $args = &$this->args;
     $db = &$this->db;
+
+    $cfg = config_get('UDFStripHTMLTags');
+    $udf = $cfg ? 'UDFStripHTMLTags' : '';
 
     $mapRSpec = null;
     $sql = "SELECT RSRV.name, RSRV.scope, LRSR.req_spec_id, RSRV.id," .
@@ -512,38 +514,24 @@ class searchCommands
            "AND RSRV.revision = LRSR.revision " .
            "WHERE LRSR.testproject_id = " . $args->tproject_id;
 
-    //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
     $doFilter = true;
     
-    /*
-    if(!is_null($args->rspecType))
-    {
-      $doFilter = true;
-      $sql .= " AND RSRV.type='" . $db->prepare_string($args->rspecType) . "' ";
-
-      //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
-    } 
-    */
-
 
     $filterRS = null;
-    if( $canUseTarget )
-    {
+    if( $canUseTarget ) {
       $doFilter = true;
       $filterRS['tricky'] = " 1=0 ";
       
       $filterRS['scope'] = ' OR ( ';
       $filterRS['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-      foreach($targetSet as $target)
-      {
-        $filterRS['scope'] .= $args->and_or . " UDFStripHTMLTags(RSRV.scope) $this->likeOp '%{$target}%' ";  
+      foreach($targetSet as $target) {
+        $filterRS['scope'] .= $args->and_or . " $udf(RSRV.scope) $this->likeOp '%{$target}%' ";  
       }  
       $filterRS['scope'] .= ')';
   
       $filterRS['name'] = ' OR ( ';
       $filterRS['name'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-      foreach($targetSet as $trgt)
-      {
+      foreach($targetSet as $trgt) {
         $target = trim($trgt);
         $filterRS['name'] .= $args->and_or . " RSRV.name $this->likeOp '%{$target}%' ";  
       }  
@@ -551,16 +539,12 @@ class searchCommands
     }  
 
     $otherFRS = '';  
-    if(!is_null($filterRS))
-    {
+    if(!is_null($filterRS)) {
       $otherFRS = " AND (" . implode("",$filterRS) . ")";
     }  
 
     $sql .= $otherFRS;
-    //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
-
-    if($doFilter)
-    {
+    if($doFilter) {
       $mapRSpec = $db->fetchRowsIntoMap($sql,'req_spec_id'); 
     }  
     return $mapRSpec;
@@ -569,14 +553,17 @@ class searchCommands
   /**
    *
    */
-  function searchReq($targetSet,$canUseTarget,$req_cf_id)
-  {
+  function searchReq($targetSet,$canUseTarget,$req_cf_id) {
     // shortcuts
     $args = &$this->args;
     $gui = &$this->gui;
     $db = &$this->db;
     $tables = &$this->tables;
     $views = &$this->views;
+
+    $cfg = config_get('UDFStripHTMLTags');
+    $udf = $cfg ? 'UDFStripHTMLTags' : '';
+
 
     $reqSet = $this->getReqIDSet($args->tproject_id);
 
@@ -638,8 +625,7 @@ class searchCommands
                             "       UPDATER.last $this->likeOp '%{$args->edited_by}%') ";
     }  
 
-    if( $doSql )
-    {  
+    if( $doSql ) {  
       $doFilter = true;
   
       $sql = " /* " . __LINE__ . " */ " . 
@@ -652,38 +638,26 @@ class searchCommands
              $from['users'] . $from['by_custom_field'] .
              " WHERE RQ.id IN(" . implode(',', $reqSet) . ")";
 
-      //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
- 
-
-      if(!is_null($args->reqType))
-      {
+      if(!is_null($args->reqType)) {
         $doFilter = true;
         $sql .= " AND RQV.type ='" . $db->prepare_string($args->reqType) . "' ";
-
-        //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
       }  
 
-      if($args->reqStatus != '')
-      {
+      if($args->reqStatus != '') {
         $doFilter = true;
         $sql .= " AND RQV.status='" . $db->prepare_string($args->reqStatus) . "' ";
-
-        //DEBUGecho __FUNCTION__ . ' SQL Line:' . __LINE__ . $sql .'<br>';
       }  
 
       $filterRQ = null;
-      if( $canUseTarget )
-      {
+      if( $canUseTarget ) {
         $doFilter = true;
         $filterRQ['tricky'] = " 1=0 ";
 
-        if( $args->rq_scope )
-        {
+        if( $args->rq_scope ) {
           $filterRQ['scope'] = ' OR ( ';
           $filterRQ['scope'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
-          foreach($targetSet as $target)
-          {
-            $filterRQ['scope'] .= $args->and_or . " UDFStripHTMLTags(RQV.scope) $this->likeOp '%{$target}%' "; 
+          foreach($targetSet as $target) {
+            $filterRQ['scope'] .= $args->and_or . " $udf(RQV.scope) $this->likeOp '%{$target}%' "; 
           }  
           $filterRQ['scope'] .= ')';
         }  
@@ -739,8 +713,7 @@ class searchCommands
   /**
    *
    */
-  function searchTestSuites($targetSet,$canUseTarget)
-  {
+  function searchTestSuites($targetSet,$canUseTarget) {
 
     // shortcuts
     $args = &$this->args;
@@ -748,6 +721,8 @@ class searchCommands
     $db = &$this->db;
     $tables = &$this->tables;
     $views = &$this->views;
+    $cfg = config_get('UDFStripHTMLTags');
+    $udf = $cfg ? 'UDFStripHTMLTags' : '';
 
     $mapTS = null;
     $tsuiteSet = $this->getTestSuiteIDSet($args->tproject_id);
@@ -759,26 +734,22 @@ class searchCommands
     $filterSpecial = null;
     $filterSpecial['tricky'] = " 1=0 ";
 
-    if( ($doIt = $args->ts_summary && $canUseTarget) )
-    {
+    if( ($doIt = $args->ts_summary && $canUseTarget) ) {
       $filterSpecial['ts_summary'] = ' OR ( ';
       $filterSpecial['ts_summary'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
-      foreach($targetSet as $target)
-      {
+      foreach($targetSet as $target) {
         $filterSpecial['ts_summary'] .= $args->and_or . 
-          " UDFStripHTMLTags(TS.details) $this->likeOp '%{$target}%' ";
+          " $udf(TS.details) $this->likeOp '%{$target}%' ";
       }  
       $filterSpecial['ts_summary'] .= ')';
     }  
 
-    if( ($doIt = $args->ts_title && $canUseTarget) )
-    {
+    if( ($doIt = $args->ts_title && $canUseTarget) ) {
       $filterSpecial['ts_title'] = ' OR ( ';
       $filterSpecial['ts_title'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
 
-      foreach($targetSet as $target)
-      {
+      foreach($targetSet as $target) {
         $filterSpecial['ts_title'] .= $args->and_or . " NH_TS.name $this->likeOp '%{$target}%' ";
       }  
       $filterSpecial['ts_title'] .= ')';
@@ -819,14 +790,15 @@ class searchCommands
   /**
    *
    */
-  function searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id)
-  {
+  function searchTestCases($tcaseSet,$targetSet,$canUseTarget,$tc_cf_id) {
     // shortcuts
     $args = &$this->args;
     $gui = &$this->gui;
     $db = &$this->db;
     $tables = &$this->tables;
     $views = &$this->views;
+    $cfg = config_get('UDFStripHTMLTags');
+    $udf = $cfg ? 'UDFStripHTMLTags' : '';
 
 
     $from['tc_steps'] = "";
@@ -901,28 +873,24 @@ class searchCommands
                           " ON NH_TCSTEPS.id = TCSTEPS.id  ";
     }
 
-    if($args->tc_steps && $canUseTarget)
-    {
+    if($args->tc_steps && $canUseTarget) {
       $filterSpecial['by_steps'] = ' OR ( ';
       $filterSpecial['by_steps'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
-      foreach($targetSet as $target)
-      {
+      foreach($targetSet as $target) {
         $filterSpecial['by_steps'] .= $args->and_or . 
-          " UDFStripHTMLTags(TCSTEPS.actions) $this->likeOp '%{$target}%' ";  
+          " $udf(TCSTEPS.actions) $this->likeOp '%{$target}%' ";  
       }  
       $filterSpecial['by_steps'] .= ')';
     }    
 
-    if($args->tc_expected_results && $canUseTarget)
-    {
+    if($args->tc_expected_results && $canUseTarget) {
       $filterSpecial['by_expected_results'] = ' OR ( ';
       $filterSpecial['by_expected_results'] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
       
-      foreach($targetSet as $target)
-      {
+      foreach($targetSet as $target) {
         $filterSpecial['by_expected_results'] .= $args->and_or . 
-          " UDFStripHTMLTags(TCSTEPS.expected_results) $this->likeOp '%{$target}%' "; 
+          " $udf(TCSTEPS.expected_results) $this->likeOp '%{$target}%' "; 
       }  
       $filterSpecial['by_expected_results'] .= ')';
     }    
@@ -942,15 +910,13 @@ class searchCommands
           $filterSpecial[$kf] = ' OR ( ';
           $filterSpecial[$kf] .= $args->and_or == 'or' ? ' 1=0 ' : ' 1=1 ';
      
-          foreach($targetSet as $target)
-          {
+          foreach($targetSet as $target) {
             $filterSpecial[$kf] .= " {$args->and_or} ";
             $xx = "{$alias}.{$kf}";
-            switch($kf)
-            {
+            switch($kf) {
               case 'summary':
               case 'preconditions':
-                $xx = " UDFStripHTMLTags(" . $xx . ") ";
+                $xx = " $udf(" . $xx . ") ";
               break;
             }
             $filterSpecial[$kf] .= "{$xx} {$this->likeOp}  '%{$target}%' "; 
@@ -1046,11 +1012,9 @@ class searchCommands
   /**
    *
    */
-  static function getTestCaseWKFStatusDomain()
-  {
+  static function getTestCaseWKFStatusDomain() {
     $cv = array_flip(config_get('testCaseStatus'));
-    foreach($cv as $cc => $vv)
-    {
+    foreach($cv as $cc => $vv) {
       $lbl = lang_get('testCaseStatus_' . $vv);
       $cv[$cc] = lang_get('testCaseStatus_' . $vv);
     }  

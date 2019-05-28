@@ -5,7 +5,6 @@
  *
  * @filesource	clientUploadTestCaseAttachment.php
  *
- * @version $Revision: 1.1 $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -48,7 +47,7 @@ $encoded = base64_encode($attach);
 $args=array();
 $args["devKey"]='developer';
 $args["testcaseid"]=118951;
-//$args["version"] = 2;
+$args["version"] = 2;
 $args["title"] = 'Marilyn Monroe';
 $args["filename"] = 'marilyn-monroe.jpg';
 $args["content"] = $encoded;

@@ -1116,12 +1116,12 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @access protected
      */
     protected function _runChecks($checkFunctions, $messagePrefix = '') {
-        foreach( $checkFunctions as $pfn ) {
-            if(!($status_ok = $this->$pfn( $messagePrefix ))) {
-                break;
-            }
+      foreach( $checkFunctions as $pfn ) {
+        if(!($status_ok = $this->$pfn( $messagePrefix ))) {
+          break;
         }
-        return $status_ok;
+      }
+      return $status_ok;
     }
 
     /**
@@ -3193,8 +3193,6 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
             if(! $doLink) {
                 // Are we going to update ?
-                // var_dump($rs);die();
-                // echo $target_tcversion[$version_number]['id']; die();
                 if(isset( $rs[$target_tcversion[$version_number]['id']] )) {
                     if($hasPlatforms) {
                         $plat_keys = array_flip( array_keys( $rs[$target_tcversion[$version_number]['id']] ) );
@@ -3553,7 +3551,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *
      * @param struct $args
      * @param string $args["devKey"]
-     *            Developer key
+  attachm   *            Developer key
      * @param int $args["testsuiteid"]:
      *            id of the testsuite
      *
@@ -4778,8 +4776,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'authenticate',
                 'checkTestProjectID'
         );
-        $statusOk = $this->_runChecks( $checkFunctions ) && $this->userHasRight( "mgt_view_tc", self::CHECK_PUBLIC_PRIVATE_ATTR );
-        $ret = $statusOk ? $this->uploadAttachment( $args, $msg_prefix, false ) : $this->errors;
+        $statusOK = $this->_runChecks( $checkFunctions ) && $this->userHasRight( "mgt_view_tc", self::CHECK_PUBLIC_PRIVATE_ATTR );
+        $ret = $statusOK ? $this->uploadAttachment( $args, $msg_prefix, false ) : $this->errors;
         return $ret;
     }
 
@@ -4819,8 +4817,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'authenticate',
                 'checkTestSuiteID'
         );
-        $statusOk = $this->_runChecks( $checkFunctions ) && $this->userHasRight( "mgt_view_tc", self::CHECK_PUBLIC_PRIVATE_ATTR );
-        $ret = $statusOk ? $this->uploadAttachment( $args, $msg_prefix, false ) : $this->errors;
+        $statusOK = $this->_runChecks( $checkFunctions ) && $this->userHasRight( "mgt_view_tc", self::CHECK_PUBLIC_PRIVATE_ATTR );
+        $ret = $statusOK ? $this->uploadAttachment( $args, $msg_prefix, false ) : $this->errors;
         return $ret;
     }
 
@@ -4862,30 +4860,30 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $prm = self::$versionNumberParamName;
         $statusOK = $this->_isParamPresent( $prm, $msgPrefix, self::SET_ERROR );
 
-        if($statusOk) {
+        if($statusOK) {
           $checkFunctions = array('authenticate',
                                   'checkTestCaseIdentity',
                                   'checkTestCaseVersionNumberAncestry');          
         }
 
-        if($statusOk = $this->_runChecks( $checkFunctions, $msg_prefix )) {
+        if($statusOK = $this->_runChecks( $checkFunctions, $msg_prefix )) {
 
           $args[self::$foreignKeyTableNameParamName] = 'tcversions';
           $args[self::$foreignKeyIdParamName] = $this->tcVersionID;
           $this->_setArgs( $args );
-        
+          // Need to get test project information 
+          // from test case in order to be able
+          // to do RIGHTS check on $this->userHasRight()
+          // !!! Important Notice!!!!:
+          // method checkTestCaseIdentity sets $this->args[self::$testCaseIDParamName]
 
-            // Need to get test project information from test case in order to be able
-            // to do RIGHTS check on $this->userHasRight()
-            // !!! Important Notice!!!!:
-            // method checkTestCaseIdentity sets $this->args[self::$testCaseIDParamName]
+          $this->args[self::$testProjectIDParamName] = 
+            $this->tcaseMgr->getTestProjectFromTestCase( $this->args[self::$testCaseIDParamName] );
 
-            $this->args[self::$testProjectIDParamName] = $this->tcaseMgr->getTestProjectFromTestCase( $this->args[self::$testCaseIDParamName] );
-
-            $statusOk = $this->userHasRight( "mgt_modify_tc", self::CHECK_PUBLIC_PRIVATE_ATTR );
+            $statusOK = $this->userHasRight( "mgt_modify_tc", self::CHECK_PUBLIC_PRIVATE_ATTR );
         }
 
-        $ret = $statusOk ? $this->uploadAttachment( $args, $msg_prefix, false ) : $this->errors;
+        $ret = $statusOK ? $this->uploadAttachment( $args, $msg_prefix, false ) : $this->errors;
         return $ret;
     }
 
@@ -4953,29 +4951,33 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["content"]
      *            The content(Base64 encoded) of the Attachment
      *
-     * @since 1.9beta6
-     * @return mixed $resultInfo an array containing the fk_id, fk_table, title,
-     *         description, file_name, file_size and file_type. If any errors occur it
-     *         returns the erros map.
+     * @return mixed $resultInfo an array containing 
+     *         the fk_id, fk_table, title,
+     *         description, file_name, file_size and file_type. 
+     *         If any errors occur it
+     *         returns the errors map.
      */
     public function uploadAttachment($args, $messagePrefix = '', $setArgs = true) {
         $resultInfo = array();
         if($setArgs) {
-            $this->_setArgs( $args );
+          $this->_setArgs( $args );
         }
         $msg_prefix =($messagePrefix == '') ?("(" . __FUNCTION__ . ") - ") : $messagePrefix;
 
         $checkFunctions = array();
 
-        // TODO: please, somebody review if this is valid. I added this property
+        // TODO: please, somebody review if this is valid. 
+        // I added this property
         // to avoid the upload method of double authenticating the user.
-        // Otherwise, when uploadTestCaseAttachment was called, for instante, it
+        // Otherwise, when uploadTestCaseAttachment was called, 
+        // for instante, it
         // would authenticate, check if the nodes_hierarchy is type TestCase
         // and then call uploadAttachment that would, authenticate again.
         // What do you think?
         if(!$this->authenticated) {
-            $checkFunctions[] = 'authenticate';
+          $checkFunctions[] = 'authenticate';
         }
+
         // check if :
         // TL has attachments enabled
         // provided FK is valid
@@ -4984,52 +4986,56 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $checkFunctions[] = 'checkForeignKey';
         $checkFunctions[] = 'checkUploadAttachmentRequest';
 
-        $statusOk = $this->_runChecks( $checkFunctions, $msg_prefix );
+        $statusOK = $this->_runChecks( $checkFunctions, $msg_prefix );
+        if($statusOK) {
 
-        if($statusOk) {
-            $fkId = $this->args[self::$foreignKeyIdParamName];
-            $fkTable = $this->args[self::$foreignKeyTableNameParamName];
-            $title = $this->args[self::$titleParamName];
+          $fkId = $this->args[self::$foreignKeyIdParamName];
+          $fkTable = $this->args[self::$foreignKeyTableNameParamName];
+          $title = $this->args[self::$titleParamName];
 
-            // creates a temp file and returns an array with size and tmp_name
-            $fInfo = $this->createAttachmentTempFile();
-            if(! $fInfo) {
-                // Error creating attachment temp file. Ask user to check temp dir
-                // settings in php.ini and security and rights of this dir.
-                $msg = $msg_prefix . ATTACH_TEMP_FILE_CREATION_ERROR_STR;
-                $this->errors[] = new IXR_ERROR( ATTACH_TEMP_FILE_CREATION_ERROR, $msg );
-                $statusOk = false;
-            } else {
-                // The values have already been validated in the method
-                // checkUploadAttachmentRequest()
-                $fInfo['name'] = $args[self::$fileNameParamName];
-                $fInfo['type'] = $args[self::$fileTypeParamName];
-
-                $docRepo = tlAttachmentRepository::create( $this->dbObj );
-                $uploadedFile = $docRepo->insertAttachment( $fkId, $fkTable, $title, $fInfo );
-                if(! $uploadedFile) {
-                    $msg = $msg_prefix . ATTACH_DB_WRITE_ERROR_STR;
-                    $this->errors[] = new IXR_ERROR( ATTACH_DB_WRITE_ERROR, $msg );
-                    $statusOk = false;
-                } else {
-                    // We are returning some data that the user originally sent.
-                    // Perhaps we could return only new data, like the file size?
-                    $resultInfo['fk_id'] = $args[self::$foreignKeyIdParamName];
-                    $resultInfo['fk_table'] = $args[self::$foreignKeyTableNameParamName];
-                    $resultInfo['title'] = $args[self::$titleParamName];
-                    $resultInfo['description'] = $args[self::$descriptionParamName];
-                    $resultInfo['file_name'] = $args[self::$fileNameParamName];
-
-                    // It would be nice have all info available in db
-                    // $resultInfo['file_path'] = $args[""];
-                    // we could also return the tmp_name, but would it be useful?
-                    $resultInfo['file_size'] = $fInfo['size'];
-                    $resultInfo['file_type'] = $args[self::$fileTypeParamName];
-                }
+          // creates a temp file and returns an array with size and tmp_name
+          $fInfo = $this->createAttachmentTempFile();
+          if(!$fInfo) {
+            // Error creating attachment temp file. Ask user to check temp dir
+            // settings in php.ini and security and rights of this dir.
+            $msg = $msg_prefix . ATTACH_TEMP_FILE_CREATION_ERROR_STR;
+            $this->errors[] = new IXR_ERROR( ATTACH_TEMP_FILE_CREATION_ERROR, $msg );
+            $statusOK = false;
+          } else {
+            // The values have already been validated in the method
+            // checkUploadAttachmentRequest()
+            $fInfo['name'] = $args[self::$fileNameParamName];
+            $fInfo['type'] = $args[self::$fileTypeParamName];
+            if( trim($fInfo['type']) == '' ) {
+              $fInfo['type'] = mime_content_type($fInfo['tmp_name']);
             }
+
+            $docRepo = tlAttachmentRepository::create( $this->dbObj );
+            $uploadedFile = $docRepo->insertAttachment( $fkId, $fkTable, $title, $fInfo );
+            
+            if(!$uploadedFile) {
+              $msg = $msg_prefix . ATTACH_DB_WRITE_ERROR_STR;
+              $this->errors[] = new IXR_ERROR( ATTACH_DB_WRITE_ERROR, $msg );
+              $statusOK = false;
+            } else {
+              // We are returning some data that the user originally sent.
+              // Perhaps we could return only new data, like the file size?
+              $resultInfo['fk_id'] = $args[self::$foreignKeyIdParamName];
+              $resultInfo['fk_table'] = $args[self::$foreignKeyTableNameParamName];
+              $resultInfo['title'] = $args[self::$titleParamName];
+              $resultInfo['description'] = $args[self::$descriptionParamName];
+              $resultInfo['file_name'] = $args[self::$fileNameParamName];
+
+              // It would be nice have all info available in db
+              // $resultInfo['file_path'] = $args[""];
+              // we could also return the tmp_name, but would it be useful?
+              $resultInfo['file_size'] = $fInfo['size'];
+              $resultInfo['file_type'] = $args[self::$fileTypeParamName];
+            }
+          }
         }
 
-        return $statusOk ? $resultInfo : $this->errors;
+        return $statusOK ? $resultInfo : $this->errors;
     }
 
     /**
@@ -5060,7 +5066,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @return boolean true if the given foreign key exists, false otherwise.
      */
     protected function checkForeignKey($msg_prefix = '') {
-        $statusOk = true;
+        $statusOK = true;
 
         
         $fkId = $this->args[self::$foreignKeyIdParamName];
@@ -5076,10 +5082,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
         if(null == $result) {
             $msg = $msg_prefix . sprintf( ATTACH_INVALID_FK_STR, $fkId, $fkTable );
             $this->errors[] = new IXR_ERROR( ATTACH_INVALID_FK, $msg );
-            $statusOk = false;
+            $statusOK = false;
         }
 
-        return $statusOk;
+        return $statusOK;
     }
 
     /**
@@ -5674,7 +5680,6 @@ class TestlinkXMLRPCServer extends IXR_Server {
                             // First action renumber existent steps
                             $renumberedSet = null;
                             foreach( $stepNumberIDSet as $tsn => $dim ) {
-                                // echo $tsn;
                                 if($tsn < $si['step_number']) {
                                     unset( $stepNumberIDSet[$tsn] );
                                 } else {

@@ -2,13 +2,12 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @filesource tcCreatedPerUserOnTestProject.tpl
-@since      1.9.6
-
-Purpose: smarty template - Report of Test Cases created per tester
+smarty template - Report of Test Cases created per tester
 *}
 
-{lang_get var='labels'  s='th_user,th_start_time,th_end_time,date,hour,submit_query,show_calender'}
-
+{lang_get var='labels'  
+  s='th_user,th_start_time,th_end_time,date,hour,submit_query,
+     show_calender,download_csv'}
 
 {include file="inc_head.tpl" openHead='yes'}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}

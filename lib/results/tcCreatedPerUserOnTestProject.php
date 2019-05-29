@@ -50,10 +50,12 @@ function initializeGui(&$dbHandler,&$args,$images) {
   $gui->tableSet = null;
   
   $gui->l18n = init_labels(
-    array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
+    array('tcversion_indicator' => null,'goto_testspec' => null, 
+          'version' => null, 
           'testplan' => null, 'assigned_tc_overview' => null,
           'testcases_created_per_user' => null,
-          'design' => null, 'execution' => null, 'execution_history' => null,
+          'design' => null, 'execution' => null, 
+          'execution_history' => null,
           'testproject' => null,'generated_by_TestLink_on' => null,
           'no_records_found' => null, 
           'low' => null, 'medium' => null, 'high' => null));
@@ -71,6 +73,12 @@ function initializeGui(&$dbHandler,&$args,$images) {
       initializeGuiForInput($dbHandler,$args,$gui);
       initializeGuiForResult($dbHandler,$args,$gui);
     break;
+
+    case 'csv':
+      initializeGuiForInput($dbHandler,$args,$gui);
+      initGuiForCSVDownload($dbHandler,$args,$gui);
+    break;
+
   }
 
   return $gui;
@@ -120,28 +128,30 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj) {
   if(!is_null($guiObj->resultSet)) { 
     // test case can exist multiple times, due to versions
     $rows = array();
+    list($columns, $sortByColumn) = getColumnsDefinition();
+    var_dump($columns);
+      die();
     foreach ($guiObj->resultSet as $idx => $itemInfo) {
-      list($columns, $sortByColumn) = getColumnsDefinition();
       foreach($itemInfo as $tcase) {
-        $current_row = array();
+        $cuRow = array();
         $tcase_id = $tcase['tcase_id'];
         $tcversion_id = $tcase['tcversion_id'];
-        $current_row[] = htmlspecialchars($tcase['login']);
-        $current_row[] = htmlspecialchars($tcase['path']);
+        $cuRow[] = htmlspecialchars($tcase['login']);
+        $cuRow[] = htmlspecialchars($tcase['path']);
         
         // Create linked icons
         $edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id},{$tcversion_id});\">" .
                      "<img title=\"{$guiObj->l18n['design']}\" src=\"{$guiObj->images['edit']}\" /></a> ";
             
-        $current_row[] = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" .
+        $cuRow[] = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" .
                              $edit_link . htmlspecialchars($tcase['external_id']) . " : " . 
                              htmlspecialchars($tcase['tcase_name']) .
                              sprintf($guiObj->l18n['tcversion_indicator'],$tcase['version']);
 
-        $current_row[] = $tcase['importance'];
-        $current_row[] = $tcase['creation_ts'];
-        $current_row[] = $tcase['modification_ts'];
-        $rows[] = $current_row;
+        $cuRow[] = $tcase['importance'];
+        $cuRow[] = $tcase['creation_ts'];
+        $cuRow[] = $tcase['modification_ts'];
+        $rows[] = $cuRow;
       }
     }
       
@@ -184,12 +194,100 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj) {
   }
 }
 
+/**
+ *
+ */
+function initGuiForCSVDownload(&$dbHandler,$argsObj,&$guiObj) {
+
+  $fromDate = current($argsObj->selected_start_date);
+  $toDate = current($argsObj->selected_end_date);
+
+  $impCfg = config_get('importance');
+  $impL10N = $impCfg['code_label'];
+  foreach( $impL10N as $ci => $lc ) {
+    $impL10N[$ci] = lang_get($lc);
+  } 
+
+  $colHeaders = getCSVColumnsDefinition();
+
+  $options = array();
+
+  // convert starttime to iso format for database usage
+  $dateFormat = config_get('date_format');
+  $k2l = array('selected_start_date' => 'startTime','selected_end_date' => 'endTime');
+  foreach($k2l as $in => $opt) {
+    if (isset($argsObj->$in) && sizeof($argsObj->$in) > 0) {
+      $dd = split_localized_date(current($argsObj->$in), $dateFormat);
+      if ($dd != null) {
+        $options[$opt] = $dd['year'] . "-" . $dd['month'] . "-" . $dd['day'];
+      }
+    }
+  }
+  
+  $options['startTime'] .= " " . (isset($argsObj->start_Hour) ? $argsObj->start_Hour : "00") . ":00:00";
+  $options['endTime'] .= " " . (isset($argsObj->end_Hour) ? $argsObj->end_Hour : "00") . ":59:59";
+
+  $mgr = new testproject($dbHandler);
+  $guiObj->searchDone = 1;
+  $guiObj->resultSet = $mgr->getTestCasesCreatedByUser($argsObj->tproject_id,$argsObj->user_id,$options);
+
+  if(!is_null($guiObj->resultSet)) { 
+    // test case can exist multiple times, due to versions
+    $rows = array();
+    foreach ($guiObj->resultSet as $idx => $itemInfo) {
+      foreach($itemInfo as $tcase) {
+        $cuRow = array();
+        $tcase_id = $tcase['tcase_id'];
+        $tcversion_id = $tcase['tcversion_id'];
+        $cuRow[] = htmlspecialchars($tcase['login']);
+        $cuRow[] = htmlspecialchars($tcase['path']);
+        
+        $cuRow[] = htmlspecialchars($tcase['external_id']) . 
+                   " : " . 
+                   htmlspecialchars($tcase['tcase_name']) .
+                   sprintf($guiObj->l18n['tcversion_indicator'],$tcase['version']);
+
+        $cuRow[] = '(' . $tcase['importance'] . ') ' .
+                   $impL10N[$tcase['importance']];
+
+        $cuRow[] = $tcase['creation_ts'];
+        $cuRow[] = $tcase['modification_ts'];
+        $cuRow[] = $fromDate;
+        $cuRow[] = $toDate;
+
+        $rows[] = $cuRow;
+      }
+    }
+
+    if( count($rows) == 0 ) {
+      return;
+    }
+
+    $tmpfname = tempnam(sys_get_temp_dir(), "nuwow");
+    unlink($tmpfname);
+    $csvfile = $tmpfname . '.csv';
+    $fp = fopen($csvfile, 'w'); 
+    fputcsv($fp, $colHeaders);
+    foreach ($rows as $fields) {
+      fputcsv($fp, $fields);
+    }
+    fclose($fp);
+    $fcont = file_get_contents($csvfile);
+    unlink($csvfile);
+    $f2d = __FILE__ . '.csv';
+    $cty = array('Content-Type' => 'text/csv');
+    downloadContentsToFile($fcont,$f2d,$cty);
+    exit();
+  }
+
+}
+
+
 
 /**
  *
  */
 function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj) {
-  
 	$room = config_get('gui_room');
 	$guiObj->str_option_any = sprintf($room,lang_get('any'));
 	$guiObj->str_option_none = sprintf($room,lang_get('nobody'));
@@ -198,7 +296,7 @@ function initializeGuiForInput(&$dbHandler,$argsObj,&$guiObj) {
   
 	$guiObj->users = new stdClass();
 	$guiObj->users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER,
-									                               array(TL_USER_ANYBODY => $guiObj->str_option_any) );
+		array(TL_USER_ANYBODY => $guiObj->str_option_any) );
 
   $guiObj->user_id = intval($argsObj->user_id);
 
@@ -239,7 +337,7 @@ function init_args(&$dbHandler) {
   $args = new stdClass();
 
   $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,32),
-                   "do_action" => array(tlInputParameter::STRING_N,6,6),
+                   "do_action" => array(tlInputParameter::STRING_N,3,6),
                    "tproject_id" => array(tlInputParameter::INT_N),
                    "user_id" => array(tlInputParameter::INT_N),
                    "selected_start_date" => array(tlInputParameter::ARRAY_STRING_N),
@@ -309,21 +407,19 @@ function sanitizeDates(&$obj) {
   } // foreach 
 }   
 
-
-
 /**
  * Gets the columns definitions used in the report table.
  * 
  * @return array containing columns and sort information
  */
-function getColumnsDefinition()
-{
+function getColumnsDefinition() {
+
   static $labels;
-  if( is_null($labels) )
-  {
-    $lbl2get = array('user' => null, 'testsuite' => null,'testcase' => null,'importance' => null,'status' => null,
-                     'version' => null,'title_created' => null,
-                     'low' => null,'medium' => null, 'high' => null);
+  if( is_null($labels) ) {
+    $lbl2get = array('user' => null, 'testsuite' => null,
+      'testcase' => null,'importance' => null,'status' => null,
+      'version' => null,'title_created' => null,
+      'low' => null,'medium' => null, 'high' => null);
     $labels = init_labels($lbl2get);
   }
 
@@ -342,8 +438,37 @@ function getColumnsDefinition()
   return array($colDef, $sortByCol);
 }
 
-function checkRights(&$db,&$user)
-{
+
+/**
+ * Gets the columns definitions used in the report table.
+ * 
+ * @return array containing columns
+ */
+function getCSVColumnsDefinition() {
+
+  $lbl2get = array('user' => null, 'testsuite' => null,
+    'testcase' => null,'importance' => null,'status' => null,
+    'version' => null,'title_created' => null,
+    'title_last_mod' => null,
+    'th_start_time' => null, 'th_end_time' => null,
+    'low' => null,'medium' => null, 'high' => null);
+  $lbl = init_labels($lbl2get);
+
+  
+  // this is the row layout
+  $colDef = array($lbl['user'],$lbl['testsuite'],
+      $lbl['testcase'],$lbl['importance'],
+      $lbl['title_created'],$lbl['title_last_mod'],
+      $lbl['th_start_time'],$lbl['th_end_time']      
+    );
+
+  return $colDef;
+}
+
+
+/**
+ *
+ */
+function checkRights(&$db,&$user) {
   return $user->hasRight($db,'testplan_metrics');
 }
-?>

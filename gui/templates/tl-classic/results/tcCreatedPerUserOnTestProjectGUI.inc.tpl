@@ -3,13 +3,12 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @filesource tcCreatedPerUserOnTestProjectGUI.tpl
 @author     Bruno P. Kinoshita
-
-
+@used-by    tcCreatedPerUserOnTestProjectGUI.inc.tpl 
 *}
     <div class="workBack">
-      <form action="lib/results/tcCreatedPerUserOnTestProject.php" method="post">
+      <form action="lib/results/tcCreatedPerUserOnTestProject.php" method="post" enctype="multipart/form-data">
         <input type="hidden" id="tproject_id" name="tproject_id" value="{$gui->tproject_id|escape}" />
-        <input type="hidden" id="do_action" name="do_action" value="result" />
+        <input type="hidden" id="do_action" name="do_action" value="" />
         <div>
           <table class="simple" style="text-align: center; margin-left: 0px;">
             <tr>
@@ -75,7 +74,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
           </table>
         </div>
         <div>
-        	<input type="submit" value="{$labels.submit_query}"/>
+        	<input type="submit" name="doReport" id="doReport"
+            value="{$labels.submit_query}"
+            onclick="do_action.value='result'" />
+
+          <input type="submit" name="doExport" id="doExport" 
+            value="{$labels.download_csv}"
+            onclick="do_action.value='csv'"/>
         </div>
       </form>
     </div>

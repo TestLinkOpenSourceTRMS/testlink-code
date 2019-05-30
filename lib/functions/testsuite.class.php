@@ -1140,17 +1140,14 @@ class testsuite extends tlObjectWithAttachments
     args :
     
     returns: 
-    
-    @internal revisions
+
   */
-  function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
-  {
+  function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array()) {
     static $keywordMgr;
     static $getLastVersionOpt = array('output' => 'minimun');
     static $tcase_mgr;
     
-    if(is_null($keywordMgr))
-    {
+    if(is_null($keywordMgr)) {
       $keywordMgr = new tlKeyword();      
     } 
     
@@ -1158,25 +1155,20 @@ class testsuite extends tlObjectWithAttachments
     $relCache = array();
 
     $doRecursion = isset($optExport['RECURSIVE']) ? $optExport['RECURSIVE'] : 0;
-    if($doRecursion)
-    {
+    if($doRecursion) {
       $cfXML = null;
       $attachmentsXML = null;
       $kwXML = null;
       $tsuiteData = $this->get_by_id($container_id);
-      if( isset($optExport['KEYWORDS']) && $optExport['KEYWORDS'])
-      {
+      if( isset($optExport['KEYWORDS']) && $optExport['KEYWORDS']) {
         $kwMap = $this->getKeywords($container_id);
-        if ($kwMap)
-        {
+        if ($kwMap) {
           $kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
         } 
       }
-      if (isset($optExport['CFIELDS']) && $optExport['CFIELDS'])
-      {
+      if (isset($optExport['CFIELDS']) && $optExport['CFIELDS']) {
         $cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
-        if( count($cfMap) > 0 )
-        {
+        if( count($cfMap) > 0 ) {
           $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
         } 
       }
@@ -1188,15 +1180,12 @@ class testsuite extends tlObjectWithAttachments
 		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($container_id,$this->attachmentTableName,'id');
 	  
 		// get all attachments content and encode it in base64	  
-		if ($attachmentInfos)
-		{
-			foreach ($attachmentInfos as $attachmentInfo)
-			{
+		if ($attachmentInfos) {
+			foreach ($attachmentInfos as $attachmentInfo) {
 				$aID = $attachmentInfo["id"];
 				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
 				
-				if ($content != null)
-				{
+				if ($content != null) {
 					$attachments[$aID]["id"] = $aID;
 					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
 					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
@@ -1207,8 +1196,7 @@ class testsuite extends tlObjectWithAttachments
 			}
 		}
 	  
-		if( !is_null($attachments) && count($attachments) > 0 )
-		{
+		if( !is_null($attachments) && count($attachments) > 0 ) {
 			$attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
 			$attchElemTemplate = "\t<attachment>\n" .
 							   "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
@@ -1233,9 +1221,7 @@ class testsuite extends tlObjectWithAttachments
                'name="' . htmlspecialchars($tsuiteData['name']). '" >' .
                "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
                "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}{$attachmentsXML}";
-    }
-    else
-    {
+    } else {
       $xmlTC = "<testcases>";
     }
     
@@ -1244,25 +1230,20 @@ class testsuite extends tlObjectWithAttachments
     $childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null ;
     $tcase_mgr=null;
     $relXmlData = '';
-    if( !is_null($childNodes) )
-    {
+    if( !is_null($childNodes) ) {
       $loop_qty=sizeof($childNodes); 
-      for($idx = 0;$idx < $loop_qty;$idx++)
-      {
+      for($idx = 0;$idx < $loop_qty;$idx++) {
         $cNode = $childNodes[$idx];
         $nTable = $cNode['node_table'];
-        if ($doRecursion && $nTable == 'testsuites')
-        {
+        if ($doRecursion && $nTable == 'testsuites') {
           $xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
-        }
-        else if ($nTable == 'testcases')
-        {
-          if( is_null($tcase_mgr) )
-          {
+        } else if ($nTable == 'testcases') {
+          if( is_null($tcase_mgr) ) {
             $tcase_mgr = new testcase($this->db);
           }
-          $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
-                                                        $tproject_id,true,$optExport);
+          $xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],
+            testcase::LATEST_VERSION,
+            $tproject_id,true,$optExport);
 
 
           // 20140816

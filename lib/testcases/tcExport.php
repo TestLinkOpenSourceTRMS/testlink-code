@@ -139,9 +139,10 @@ function init_args(&$dbHandler) {
   $args = new stdClass();
   $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
 
-  $k2l = array('useRecursion','exportReqs','exportCFields','exportKeywords',
-               'exportTestCaseExternalID','exportTCSummary','exportTCPreconditions',
-               'exportTCSteps', 'exportAttachments');
+  $k2l = array('useRecursion','exportReqs','exportCFields',
+    'exportKeywords','exportTestCaseExternalID','exportTCSummary',
+    'exportTCPreconditions','exportTCSteps', 'exportAttachments');
+
   foreach ($k2l as $key) {
     $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
   }

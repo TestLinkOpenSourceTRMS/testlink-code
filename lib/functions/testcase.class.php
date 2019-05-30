@@ -3955,8 +3955,9 @@ class testcase extends tlObjectWithAttachments {
 
 
   */
-  function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
-                                   $bNoXMLHeader = false,$optExport = array()) {
+  function exportTestCaseDataToXML($tcase_id,$tcversion_id,
+    $tproject_id=null,$bNoXMLHeader = false,$optExport = array()) {
+
     static $reqMgr;
     static $keywordMgr;
     static $cfieldMgr;
@@ -3974,13 +3975,14 @@ class testcase extends tlObjectWithAttachments {
       $tcase_id = $info['parent_id'];
     }
 
+
     $opt = array('getPrefix' => false);
     if(!isset($optExport['EXTERNALID']) || $optExport['EXTERNALID']) {
       $opt = array('getPrefix' => (isset($optExport['ADDPREFIX']) && $optExport['ADDPREFIX']));
     }
     $tc_data = $this->get_by_id($tcase_id,$tcversion_id,null,$opt);
-
     $testCaseVersionID = $tc_data[0]['id'];
+
     if (!$tproject_id) {
       $tproject_id = $this->getTestProjectFromTestCase($tcase_id);
     }
@@ -4014,7 +4016,7 @@ class testcase extends tlObjectWithAttachments {
       // $requirements = $reqMgr->get_all_for_tcase($tcase_id);
       // Need to get only for test case version
       
-      $req4version = $reqMgr->getGoodForTCVersion($tcversion_id);
+      $req4version = $reqMgr->getGoodForTCVersion($testCaseVersionID);
 
       if( !is_null($req4version) && count($req4version) > 0 ) {
         $tc_data[0]['xmlrequirements'] = 

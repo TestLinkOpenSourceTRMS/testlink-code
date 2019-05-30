@@ -129,8 +129,6 @@ function initializeGuiForResult(&$dbHandler,$argsObj,&$guiObj) {
     // test case can exist multiple times, due to versions
     $rows = array();
     list($columns, $sortByColumn) = getColumnsDefinition();
-    var_dump($columns);
-      die();
     foreach ($guiObj->resultSet as $idx => $itemInfo) {
       foreach($itemInfo as $tcase) {
         $cuRow = array();

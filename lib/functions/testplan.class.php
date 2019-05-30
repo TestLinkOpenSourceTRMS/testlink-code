@@ -2152,10 +2152,9 @@ class testplan extends tlObjectWithAttachments
            "WHERE NH.node_type_id <> {$this->node_types_descr_id['testproject']} " .
            "AND NH.id = " . $id;
         
-      $recordset = $this->db->get_recordset($sql);
+      $recordset = (array)$this->db->get_recordset($sql);
       $myarray = array();
-      if (count($recordset) > 0)
-      {        
+      if (count($recordset) > 0) {        
         $myarray = array($recordset[0]);
         $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
       }

@@ -7,9 +7,6 @@
  *
  * Scope: test case and test suites export
  *
- * @internal revisions
- * @since 1.9.15
- *
  */
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -28,8 +25,7 @@ $check_children = 0;
 
 
 
-if($args->useRecursion)
-{
+if($args->useRecursion) {
   // Exporting situations:
   // All test suites in test project
   // One test suite
@@ -40,8 +36,7 @@ if($args->useRecursion)
   $gui->page_title=lang_get('title_tsuite_export');
 
   $dummy = '.testsuite-deep.xml';
-  if($node_id == $args->tproject_id)
-  {
+  if($node_id == $args->tproject_id) {
     $gui->page_title = lang_get('title_tsuite_export_all');
     $dummy = '.testproject-deep.xml';
     $check_children=1;
@@ -49,23 +44,18 @@ if($args->useRecursion)
   }
   $gui->export_filename .= $dummy;
 
-}
-else
-{
+} else {
   // Exporting situations:
   // All test cases in test suite.
   // One test case.
-  if($gui->oneTestCaseExport)
-  {
+  if($gui->oneTestCaseExport) {
     $tcase_mgr = new testcase($db);
     $tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id,null,array('output' => 'essential'));
     $tcinfo = $tcinfo[0];
     $node_id = $args->tcase_id;
     $gui->export_filename = $tcinfo['name'] . '.version' . $tcinfo['version'] . '.testcase.xml';
     $gui->page_title = lang_get('title_tc_export');
-  }
-  else
-  {
+  } else {
     $check_children = 1;
     $node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
     $gui->export_filename = $node_info['name'] . '.testsuite-children-testcases.xml';
@@ -76,8 +66,7 @@ else
 $gui->export_filename = is_null($args->export_filename) ? $gui->export_filename : $args->export_filename;
 
 
-if( $check_children )
-{
+if( $check_children ) {
   // Check if there is something to export
   $children=$tree_mgr->get_children($node_id,
                                     array("testplan" => "exclude_me",
@@ -85,44 +74,35 @@ if( $check_children )
                                           "requirement" => "exclude_me"));
 
   $gui->nothing_todo_msg='';
-  if(count($children)==0)
-  {
+  if(count($children)==0) {
     $gui->do_it = 0 ;
   }
 }
 $node = $tree_mgr->get_node_hierarchy_info($node_id);
 
 
-if ($args->doExport)
-{
-  if( is_null($tcase_mgr) )
-  {
+if ($args->doExport) {
+  if( is_null($tcase_mgr) ) {
     $tcase_mgr = new testcase($db);
   }
   $tsuite_mgr = new testsuite($db);
 
   $pfn = null;
-  switch($args->exportType)
-  {
+  switch($args->exportType) {
     case 'XML':
       $pfn = 'exportTestSuiteDataToXML';
-      if ($gui->oneTestCaseExport)
-      {
+      if ($gui->oneTestCaseExport) {
         $pfn = 'exportTestCaseDataToXML';
       }
       break;
   }
 
-  if ($pfn)
-  {
-    if ($gui->oneTestCaseExport)
-    {
+  if ($pfn) {
+    if ($gui->oneTestCaseExport) {
       $args->optExport['RELATIONS'] = true;
       $args->optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
       $content = $tcase_mgr->$pfn($args->tcase_id,$args->tcversion_id,$args->tproject_id,null,$args->optExport);
-    }
-    else
-    {
+    } else {
       $content = TL_XMLEXPORT_HEADER;
       $content .= $tsuite_mgr->$pfn($args->container_id,$args->tproject_id,$args->optExport);
     }
@@ -153,8 +133,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns:
 
 */
-function init_args(&$dbHandler)
-{
+function init_args(&$dbHandler) {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
@@ -163,33 +142,31 @@ function init_args(&$dbHandler)
   $k2l = array('useRecursion','exportReqs','exportCFields','exportKeywords',
                'exportTestCaseExternalID','exportTCSummary','exportTCPreconditions',
                'exportTCSteps', 'exportAttachments');
-  foreach ($k2l as $key)
-  {
+  foreach ($k2l as $key) {
     $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
   }
 
   $args->addPrefix = 0;
-  if($args->exportTestCaseExternalID)
-  {
+  if($args->exportTestCaseExternalID) {
     $args->addPrefix = isset($_REQUEST['addPrefix']) ? 1 : 0;
   }
 
-  $args->optExport = array('REQS' => $args->exportReqs, 'CFIELDS' => $args->exportCFields,
-                           'KEYWORDS' => $args->exportKeywords,
-                           'EXTERNALID' => $args->exportTestCaseExternalID,
-                           'ADDPREFIX' => $args->addPrefix,
-                           'RECURSIVE' => $args->useRecursion,
-                           'TCSUMMARY' => $args->exportTCSummary,
-                           'TCPRECONDITIONS' => $args->exportTCPreconditions,
-                           'ATTACHMENTS' => $args->exportAttachments,
-                           'TCSTEPS' => $args->exportTCSteps);
+  $args->optExport = array('REQS' => $args->exportReqs, 
+    'CFIELDS' => $args->exportCFields,
+    'KEYWORDS' => $args->exportKeywords,
+    'EXTERNALID' => $args->exportTestCaseExternalID,
+    'ADDPREFIX' => $args->addPrefix,
+    'RECURSIVE' => $args->useRecursion,
+    'TCSUMMARY' => $args->exportTCSummary,
+    'TCPRECONDITIONS' => $args->exportTCPreconditions,
+    'ATTACHMENTS' => $args->exportAttachments,
+    'TCSTEPS' => $args->exportTCSteps);
     
   
   $omgr = $args->useRecursion ? new testsuite($dbHandler) : new testcase($dbHandler); 
   $args->exportTypes = $omgr->get_export_file_types();
   $args->exportType = null;
-  if( isset($_REQUEST['exportType']) )
-  {
+  if( isset($_REQUEST['exportType']) ) {
     $xd = strtoupper(trim($_REQUEST['exportType']));
     $args->exportType = isset($args->exportTypes[$xd]) ? $args->exportTypes[$xd] : null;
   }  
@@ -202,20 +179,14 @@ function init_args(&$dbHandler)
 
   // To be replaced with $_REQUEST value
   $args->tproject_id = intval(isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0);
-  if($args->tproject_id > 0)
-  {
+  if($args->tproject_id > 0) {
     $dummy = $omgr->tree_manager->get_node_hierarchy_info($args->tproject_id);
-    if(!is_null($dummy))
-    {
+    if(!is_null($dummy)) {
       $args->tproject_name = $dummy['name'];
-    }  
-    else
-    {
+    } else {
       throw new Exception("BAD Test Project ID={$args->tproject_id}", 1);
     }  
-  }  
-  else
-  {
+  } else {
     throw new Exception("Test Project ID=0", 1);
   }  
 
@@ -226,8 +197,10 @@ function init_args(&$dbHandler)
 }
 
 
-function initializeGui($argsObj)
-{
+/**
+ *
+ */
+function initializeGui($argsObj) {
   $guiObj = new stdClass();
   $guiObj->do_it = 1;
   $guiObj->nothing_todo_msg = '';
@@ -241,15 +214,14 @@ function initializeGui($argsObj)
   $guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : '';
   $guiObj->oneTestCaseExport = ($argsObj->tcase_id && $argsObj->tcversion_id);
 
-  if($argsObj->useRecursion || !$guiObj->oneTestCaseExport)
-  {
-    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?" .
-                              'edit=testsuite&id=' . intval($argsObj->container_id) . "'";
-  }
-  else
-  {
-    $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . "lib/testcases/archiveData.php?" .
-                              'edit=testcase&id=' . intval($argsObj->tcase_id) . "'";
+  $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
+    "lib/testcases/archiveData.php?";
+  if($argsObj->useRecursion || !$guiObj->oneTestCaseExport) {
+    $guiObj->cancelActionJS .= 'edit=testsuite&id=' . 
+      intval($argsObj->container_id) . "'";
+  } else {
+    $guiObj->cancelActionJS .= 'edit=testcase&id=' . 
+      intval($argsObj->tcase_id) . "'";
   }
   return $guiObj;
 }

@@ -42,8 +42,7 @@ class tlPlatform extends tlObjectWithDB
    * 
    * 
    */
-  public function setTestProjectID($tproject_id)
-  {
+  public function setTestProjectID($tproject_id) {
     $this->tproject_id = intval($tproject_id);  
   }
 

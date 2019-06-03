@@ -121,8 +121,7 @@ function init_args(&$dbHandler) {
   $args->refreshTree = getSettingFromFormNameSpace('edit_mode','setting_refresh_tree_on_action');
 
   // Try to understan how this script was called.
-  switch($args->caller)
-  {
+  switch($args->caller) {
     case 'navBar':
       systemWideTestCaseSearch($dbHandler,$args,$cfg->glue_character);
     break;
@@ -136,24 +135,20 @@ function init_args(&$dbHandler) {
     break;
 
     default:
-      if (!$args->tcversion_id)
-      {
+      if (!$args->tcversion_id) {
         $args->tcversion_id = testcase::ALL_VERSIONS;
       }
     break;
-
   }
 
 
   // used to manage goback  
-  if(intval($args->tcase_id) > 0)
-  {
+  if(intval($args->tcase_id) > 0) {
     $args->feature = 'testcase';
     $args->id = intval($args->tcase_id);
   }
     
-  switch($args->feature)
-  {
+  switch($args->feature) {
     case 'testsuite':
       $args->viewerArgs = null;
       $_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
@@ -167,15 +162,13 @@ function init_args(&$dbHandler) {
       $args->id = is_null($args->id) ? 0 : $args->id;
       $args->tcase_id = $args->id;
 
-      if( is_null($args->tcaseTestProject) && $args->id > 0 )
-      {
+      if( is_null($args->tcaseTestProject) && $args->id > 0 ) {
         $args->tcaseTestProject = $tprojectMgr->getByChildID($args->id);
       }
     break;
   }
 
-  if(is_null($args->tcaseTestProject))
-  {  
+  if(is_null($args->tcaseTestProject)) {  
     $args->tcaseTestProject = $tprojectMgr->get_by_id($args->tproject_id);
   }
   $args->requirementsEnabled = $args->tcaseTestProject['opt']->requirementsEnabled;
@@ -187,8 +180,7 @@ function init_args(&$dbHandler) {
   $args->cts = null;
 
   unset($tprojectMgr);
-  if( ($args->codeTrackerEnabled = intval($args->tcaseTestProject['code_tracker_enabled'])) )
-  {
+  if( ($args->codeTrackerEnabled = intval($args->tcaseTestProject['code_tracker_enabled'])) ) {
     $ct_mgr = new tlCodeTracker($dbHandler);
     $args->ctsCfg = $ct_mgr->getLinkedTo($args->tproject_id);
     $args->cts = $ct_mgr->getInterfaceObject($args->tproject_id);

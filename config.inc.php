@@ -1733,6 +1733,8 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_platforms = ENABLED;
+
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_active_inactive = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_importance = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;

@@ -8,7 +8,7 @@
  * @filesource  tcEdit.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
@@ -113,6 +113,14 @@ switch($args->doAction) {
   case "freeze":
   case "unfreeze":
   case "doStepOperationExit":
+  case "removePlatform":
+  case "addPlatform":
+
+/*
+var_dump($_REQUEST);
+die();
+    die();
+*/
     $op = $commandMgr->$pfn($args,$_REQUEST);
     $doRender = true;
   break;
@@ -456,6 +464,8 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
 
   $args->tckw_link_id = isset($_GET['tckw_link_id']) ? intval($_GET['tckw_link_id']) : 0;
 
+ $args->tcplat_link_id = isset($_GET['tcplat_link_id']) ? intval($_GET['tcplat_link_id']) : 0;
+
 
   $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
   $args->platform_id = isset($_REQUEST['platform_id']) ? intval($_REQUEST['platform_id']) : 0;
@@ -464,8 +474,10 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
   $cbk = 'changeExecTypeOnSteps';
   $args->applyExecTypeChangeToAllSteps = isset($_REQUEST[$cbk]);
 
-  $k2c = 'free_keywords';
-  $args->free_keywords = isset($_REQUEST[$k2c]) ? $_REQUEST[$k2c] : null;
+  $k2c = array('free_keywords','free_platforms');
+  foreach ($k2c as $kv) {
+    $args->$kv = isset($_REQUEST[$kv]) ? $_REQUEST[$kv] : null;
+  }
 
   $tcaseMgr->setTestProject($args->tproject_id);
 
@@ -669,7 +681,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys) {
   $nak = array('doDelete','doDeleteStep','doReorderSteps','doResequenceSteps',
                'setImportance','setStatus','setExecutionType', 
                'setEstimatedExecDuration','doAddRelation','doDeleteRelation',
-               'removeKeyword','freeze','unfreeze','addKeyword');
+               'removeKeyword','freeze','unfreeze','addKeyword',
+               'removePlatform','addPlatform');
 
   foreach($nak as $ak) {
     $actionOperation[$ak] = '';
@@ -682,14 +695,12 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys) {
 
   $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg,$editorKeys); 
 
-  foreach ($oWebEditor->cfg as $key => $value)
-  {
+  foreach ($oWebEditor->cfg as $key => $value) {
     $of = &$oWebEditor->editor[$key];
     $rows = $oWebEditor->cfg[$key]['rows'];
     $cols = $oWebEditor->cfg[$key]['cols'];
     
-    switch($argsObj->doAction)
-    {
+    switch($argsObj->doAction) {
       case "edit":
       case "delete":
       case "editStep":
@@ -719,91 +730,83 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj,$editorKeys) {
     }
     $guiObj->operation = $actionOperation[$argsObj->doAction];
   
-    if($initWebEditorFromTemplate)
-    {
+    if($initWebEditorFromTemplate) {
       $of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');  
-    }
-    else if( $cleanUpWebEditor )
-    {
+    } else if( $cleanUpWebEditor ) {
       $of->Value = '';
     }
     $smartyObj->assign($key, $of->CreateHTML($rows,$cols));
   }
       
-  switch($argsObj->doAction) 
-  {
+  switch($argsObj->doAction) {
     case "doDelete":
       $guiObj->refreshTree = $argsObj->refreshTree;
     break;
   }
 
-  switch($argsObj->doAction)
-  {
-        case "edit":
-        case "create":
-        case "delete":
-        case "createStep":
-        case "editStep":
-        case "doCreate":
-        case "doDelete":
-        case "doCreateStep":
-        case "doUpdateStep":
-        case "doDeleteStep":
-        case "doReorderSteps":
-        case "doCopyStep":
-        case "doInsertStep":
-        case "doResequenceSteps":
-        case "setImportance":
-        case "setStatus":
-        case "setExecutionType":
-        case "setEstimatedExecDuration":
-        case "doAddRelation":
-        case "doDeleteRelation":
-        case "doUpdateStepAndInsert":
-        case "removeKeyword":  
-        case "addKeyword":  
-        case "freeze":        
-        case "unfreeze":        
-            $renderType = 'template';
-            
-            // Document this !!!!
-            $key2loop = get_object_vars($opObj);
-            foreach($key2loop as $key => $value)
-            {
-             $guiObj->$key = $value;
-            }
-            $guiObj->operation = $actionOperation[$argsObj->doAction];
-            
-            $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
-            $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
+  switch($argsObj->doAction) {
+    case "edit":
+    case "create":
+    case "delete":
+    case "createStep":
+    case "editStep":
+    case "doCreate":
+    case "doDelete":
+    case "doCreateStep":
+    case "doUpdateStep":
+    case "doDeleteStep":
+    case "doReorderSteps":
+    case "doCopyStep":
+    case "doInsertStep":
+    case "doResequenceSteps":
+    case "setImportance":
+    case "setStatus":
+    case "setExecutionType":
+    case "setEstimatedExecDuration":
+    case "doAddRelation":
+    case "doDeleteRelation":
+    case "doUpdateStepAndInsert":
+    case "removeKeyword":  
+    case "addKeyword":  
+    case "freeze":        
+    case "unfreeze":        
+    case "removePlatform":  
+    case "addPlatform":  
+      $renderType = 'template';
+      
+      // Document this !!!!
+      $key2loop = get_object_vars($opObj);
+      foreach($key2loop as $key => $value) {
+       $guiObj->$key = $value;
+      }
+      $guiObj->operation = $actionOperation[$argsObj->doAction];
+        
+      $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
+      $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
 
-            $pos = strpos($tpl, '.php');
-            if($pos === false)
-            {
-              $tpl = $tplDir . $tpl;      
-            }
-            else
-            {
-              $renderType = 'redirect';  
-            } 
-        break;
-    }
+      $pos = strpos($tpl, '.php');
+      if($pos === false) {
+        $tpl = $tplDir . $tpl;      
+      } else {
+        $renderType = 'redirect';  
+      } 
+    break;
+  }
 
-    switch($renderType)
-    {
-      case 'template':
-        $smartyObj->assign('gui',$guiObj);
-        $smartyObj->display($tpl);
-      break;  
- 
-      case 'redirect':
-        header("Location: {$tpl}");
-        exit();
-      break;
+  switch($renderType) {
+    case 'template':
+      $smartyObj->assign('gui',$guiObj);
+      $smartyObj->display($tpl);
+    break;  
 
-      default:
-      break;
-    }
+    case 'redirect':
+      header("Location: {$tpl}");
+      exit();
+    break;
+
+    default:
+    break;
+  }
 
 }
 

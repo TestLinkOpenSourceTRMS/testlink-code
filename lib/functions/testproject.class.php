@@ -2651,7 +2651,7 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
   // Platforms
   $oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
   
-  var_dump($my['options']);
+  //var_dump($my['options']);
   //die();
 
   // Requirements
@@ -2972,15 +2972,13 @@ private function copy_requirements($source_id,$target_id,$user_id) {
  *        will depend of DBMS.
  *
  * 
- * @return
- *
- * @internal revisions
  */
 function getTestSpec($id,$filters=null,$options=null) {
 
   $items = array();
 
-  $my['options'] = array('recursive' => false, 'exclude_testcases' => false, 
+  $my['options'] = array('recursive' => false, 
+                         'exclude_testcases' => false, 
                          'remove_empty_branches' => false);
                  
   $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
@@ -2989,7 +2987,8 @@ function getTestSpec($id,$filters=null,$options=null) {
                          'testcase_name' => null, 'importance' => null, 
                          'testcase_id' => null, 'execution_type' => null,
                          'status' => null, 'keywords' => null,
-                         'additionalWhereClause' => null);      
+                         'additionalWhereClause' => null,
+                         'platforms' => null);      
  
 
   $my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -3012,6 +3011,8 @@ function getTestSpec($id,$filters=null,$options=null) {
   }
   
   $method2call = $my['options']['recursive'] ? '_get_subtree_rec' : '_get_subtree';
+
+  // var_dump($method2call);
   $qnum = $this->$method2call($id,$items,$my['filters'],$my['options']);
   return $items;
 }
@@ -3060,7 +3061,8 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
     $tcaseFilter['is_active'] = !is_null($my['filters']['active_testcase']) && $my['filters']['active_testcase'];
     $tcaseFilter['enabled'] = $tcaseFilter['name'] || $tcaseFilter['id'] || $tcaseFilter['is_active'];
 
-    $actOnVersion = array('execution_type','importance','status','keywords');
+    $actOnVersion = array('execution_type','importance','status',
+                          'keywords', 'platforms');
     foreach($actOnVersion as $ck) {
       $tcversionFilter[$ck] = !is_null($my['filters'][$ck]);
     }
@@ -3093,25 +3095,6 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
         $inClause[$tgf] = 
           " TCV.$tgf IN (" . implode(',',$my['filters'][$tgf]) . ')';
       }
-    }
-
-
-    // 2018 
-    // Keywords, very special processing
-    if( $tcversionFilter['keywords'] ) {
-      
-      /*
-      $kwftype = $my['filters']['keywords']['type'];
-
-      switch( $kwftype ) {
-        case 'Or':
-          $kwJoin = " JOIN {$this->tables['testcase_keywords']} KW ";  
-        break;
-
-        default:
-        break;
-      }
-      */
     }
   }
 
@@ -3215,32 +3198,25 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
         $addAnd = true;
       }  
 
+      /*
       if( $addAnd && $tcversionFilter['keywords']) {
         $where .= " AND ";
       }
 
       if( $tcversionFilter['keywords'] ) {
-
-        // $my['filters']
-        // $ssx .= $inClause['status'];
-        //switch() {
-
-        //}
-
         $kwJoin = '';
-
-        //$filterOnTC = true;
-        //$addAnd = true;
       }  
+      */
     }    
 
-    $ssx .= $kwJoin . $where;
+    // $ssx .= $kwJoin . $where;
+    $ssx .= $where;
+
     $highlander = $this->db->fetchRowsIntoMap($ssx,'tc_id');
     if( $filterOnTC ) {
       $ky = !is_null($highlander) ? array_diff_key($tclist,$highlander) : $tclist;
       if( count($ky) > 0 ) {
-        foreach($ky as $tcase)
-        {
+        foreach($ky as $tcase) {
           unset($rs[$tcase]);            
         }
       }
@@ -3248,27 +3224,24 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
     
   }
   
-   foreach($rs as $row)
-   {
-    if(!isset($exclude_branches[$row['id']]))
-    {  
+  foreach($rs as $row) {
+  if(!isset($exclude_branches[$row['id']])) {  
       $node = $row + array('node_table' => $this->tree_manager->node_tables_by['id'][$row['node_type_id']]);
       $node['childNodes'] = null;
-      if($node['node_table'] == 'testcases')
-      {
+
+      if($node['node_table'] == 'testcases') {
         $node['leaf'] = true; 
         $node['external_id'] = isset($highlander[$row['id']]) ? $highlander[$row['id']]['external_id'] : null;
       }      
       
       // why we use exclude_children_of ?
-          // 1. Sometimes we don't want the children if the parent is a testcase,
-          //    due to the version management
-          //
-          if(!isset($exclude_children_of[$node_types[$row['node_type_id']]]))
-          {
+      // 1. Sometimes we don't want the children if the parent is a testcase,
+      //    due to the version management
+      //
+      if(!isset($exclude_children_of[$node_types[$row['node_type_id']]])) {
             // Keep walking (Johny Walker Whisky)
-            $this->_get_subtree_rec($row['id'],$node,$my['filters'],$my['options']);
-          }
+        $this->_get_subtree_rec($row['id'],$node,$my['filters'],$my['options']);
+      }
 
          
       // Have added this logic, because when export test plan will be developed
@@ -3278,14 +3251,15 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
       // If node has no childNodes, we check if this kind of node without children
       // can be removed.
       //
-        $doRemove = is_null($node['childNodes']) && 
+      $doRemove = is_null($node['childNodes']) && 
                   ($node['node_type_id'] == $my['options']['remove_empty_nodes_of_type']);
-        if(!$doRemove)
-        {
-          $pnode['childNodes'][] = $node;
-        }  
+      if(!$doRemove) {
+        $pnode['childNodes'][] = $node;
+      } 
+
     } // if(!isset($exclude_branches[$rowID]))
   } //while
+  
   return $qnum;
 }
 
@@ -4037,5 +4011,148 @@ function getActiveTestPlansCount($id)
     $rs = $this->db->fetchRowsIntoMap($sql,'keyword_id');
     return $rs;
   }
+
+/**
+ *
+ */
+function getPlatformsLatestTCV($tproject_id, $platform_id=0) {
+
+  $filter= '' ;
+  $subquery='';
+  $ltcvJoin = " JOIN {$this->views['latest_tcase_version_id']} LTCV
+                ON LTCV.tcversion_id = TPL.tcversion_id ";
+
+  if( is_array($platform_id) ) {
+    $filter = " AND platform_id IN (" . implode(',',$platform_id) . ")";   
+  }
+  else if( $keyword_id > 0 ) {
+    $filter = " AND platform_id = {$platform_id} ";
+  }
+  
+  $items = null;
+  $sql = " SELECT TPL.testcase_id,TPL.platform_id,PL.name
+           FROM {$this->tables['platforms']} PL
+           JOIN {$this->tables['testcase_platforms']} TPL
+           ON TK.platform_id = PL.id
+           {$ltcvJoin}
+           WHERE PL.testproject_id = {$tproject_id}
+           {$filter} {$subquery}
+           ORDER BY name ASC ";
+
+  $items = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','platform_id');
+
+  return $items;
+} //end function
+
+
+/**
+ *
+ * -1 => WITHOUT PLATFORMS
+ * 
+ */
+function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
+  $platSet = (array)$platform_id;
+  $sql = null;
+  $tcaseSet = array();
+  $delTT = false;
+  $hasTCases = false;
+
+  // -1 => WITHOUT PLATFORMS
+  $getWithOutPlatforms = in_array(-1,$platSet); 
+  if( $getWithOutPlatforms ) {  
+    $this->get_all_testcases_id($tproject_id,$tcaseSet);
+    if( ($hasTCases = count($tcaseSet) > 0) ) {
+      $delTT = true;
+      $tt = 'temp_tcset_' . $tproject_id . md5(microtime());
+      $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS $tt AS 
+              ( SELECT id FROM {$this->tables['nodes_hierarchy']} 
+                LIMIT 0 )";
+      $this->db->exec_query($sql);
+      $a4ins = array_chunk($tcaseSet, 2000); // MAGIC
+      foreach($a4ins as $chu) {
+        $sql = "INSERT INTO $tt (id) VALUES (" .
+               implode('),(',$chu) . ")"; 
+        $this->db->exec_query($sql);
+      }
+    }
+  }
+
+  if( $getWithOutPlatforms && $hasTCases) {  
+    $sql = " /* WITHOUT PLATFORMS */  
+             SELECT TCVNO_PL.testcase_id FROM
+             {$this->views['tcversions_without_platforms']} TCVNO_PL   
+             JOIN {$this->views['latest_tcase_version_id']} LTVC
+             ON LTVC.tcversion_id = TCVNO_PL.id
+             JOIN $tt TT ON TT.id = TCVNO_PL.testcase_id ";
+  } else {  
+    $filter = " platform_id IN (" . implode(',',$platSet) . ")";
+    $filter_type = 'And';
+    switch($filter_type) {
+      case 'NotLinked':
+        if($hasTCases) {
+          $sql = " /* WITHOUT SPECIFIC KEYWORDS */  
+                   SELECT NHTCV.parent_id AS testcase_id  
+                   FROM {$this->tables['nodes_hierarchy']} NHTCV   
+                   JOIN {$this->views['latest_tcase_version_id']} LTCV 
+                   ON NHTCV.id = LTCV.tcversion_id 
+                   JOIN $tt TT ON TT.id = NHTCV.parent_id 
+                   WHERE NOT EXISTS
+                   (SELECT 1 FROM {$this->tables['testcase_platforms']} TCPL  
+                   WHERE TCPL.tcversion_id = LTCV.tcversion_id 
+                   AND {$filter} )";
+        } 
+      break;
+
+
+      case 'And':
+        // MAX(TK.testcase_id) needed to be able to extract
+        // Test case id.
+        $sqlCount = " /* SQL COUNT */ " .
+                    " SELECT COUNT(TPL.tcversion_id) AS HITS,
+                             MAX(TPL.testcase_id) AS testcase_id,
+                             TPL.tcversion_id
+                      FROM {$this->tables['platforms']} PL
+                      JOIN {$this->tables['testcase_platforms']} TPL
+                      ON platform_id = PL.id
+                      JOIN {$this->views['latest_tcase_version_id']} LTCV
+                      ON LTCV.tcversion_id = TPL.tcversion_id
+                      WHERE testproject_id = {$tproject_id}
+                      AND {$filter}
+                      GROUP BY tcversion_id ";
+
+        $sql = "/* Filter Type = AND */
+                SELECT FOXDOG.testcase_id 
+                FROM ( $sqlCount ) AS FOXDOG 
+                WHERE FOXDOG.HITS=" . count($platform_id);
+      break;
+
+
+      case 'Or':
+      default:
+        $sql = " /* Filter Type = OR */ " .
+               " SELECT TK.testcase_id " .
+               " FROM {$this->tables['testcase_platforms']} TPL" .
+               " JOIN {$this->views['latest_tcase_version_id']} LTVC " .
+               " ON LTVC.tcversion_id = TPL.tcversion_id " .
+               " JOIN {$this->tables['platforms']} PL " .
+               " ON PL.id = TK.platform_id " .
+               " WHERE {$filter} " .
+               " AND PL.testproject_id=" . $tproject_id;
+      break;
+    }
+  }
+
+  $hits = !is_null($sql) ? $this->db->fetchRowsIntoMap($sql,'testcase_id') : null;
+
+  // clean up
+  if( $delTT ) {
+    $sql = "DROP TABLE IF EXISTS $tt";
+    $this->db->exec_query($sql);
+  }
+
+  return $hits;
+}
+
+
 
 } // end class

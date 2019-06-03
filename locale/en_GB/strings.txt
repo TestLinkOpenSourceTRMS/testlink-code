@@ -3947,5 +3947,8 @@ $TLS_use_latest_exec_on_testplan_for_counters = 'Test Plan';
 $TLS_use_latest_exec_on_contex_for_counters = 'Chosen Build';
 
 $TLS_download_csv = 'Download As CSV';
+$TLS_select_platforms = "Select Platforms";
+$TLS_without_platforms = "without platforms";
+$TLS_platforms = "Platforms";
 
 // ----- END ------------------------------------------------------------------

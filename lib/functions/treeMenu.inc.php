@@ -32,13 +32,17 @@ require_once("execTreeMenu.inc.php");
  */
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
+
+  // TESTING @20190603 var_dump(__FUNCTION__);
+
   $chronos[] = microtime(true);
 
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
   $my = array();
   $my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
-                         'tc_action_enabled' => 1, 'viewType' => 'testSpecTree',
+                         'tc_action_enabled' => 1, 
+                         'viewType' => 'testSpecTree',
                          'ignore_inactive_testcases' => null,
                          'ignore_active_testcases' => null);
 
@@ -47,8 +51,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   //
   // 20120205 - franciscom - hmm seems this code is INCOMPLETE
   // may be we can remove ?
-  $my['filters'] = array('keywords' => null, 'executionType' => null, 'importance' => null,
-                         'testplan' => null, 'filter_tc_id' => null);
+  $my['filters'] = array('keywords' => null, 'executionType' => null, 
+    'importance' => null,
+    'testplan' => null, 'filter_tc_id' => null);
 
   $my['options'] = array_merge($my['options'], (array)$options);
   $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
@@ -77,8 +82,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $status_code_descr=$resultsCfg['code_status'];
   
   $decoding_hash=array('node_id_descr' => $hash_id_descr,
-                     'status_descr_code' =>  $status_descr_code,
-                     'status_code_descr' =>  $status_code_descr);
+                       'status_descr_code' =>  $status_descr_code,
+                       'status_code_descr' =>  $status_code_descr);
   
   // IMPORTANT NOTICE
   // $filters['filter_toplevel_testsuite'] is managed in REVERSE form
@@ -94,7 +99,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
                   $glueChar;
   $test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
 
-
+  // where the Keyword filter will be applied?
 
   // Added root node for test specification -> testproject
   $test_spec['name'] = $tproject_name;
@@ -106,32 +111,54 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $tplan_tcs=null;
   $tc2show = null;
 
-  if($test_spec) {
-    $tck_map = null;  // means no filter
-    if(!is_null($my['filters']['filter_keywords'])) {
-      $tck_map = $tproject_mgr->getKeywordsLatestTCV($tproject_id,
-                          $my['filters']['filter_keywords'],
-                          $my['filters']['filter_keywords_filter_type']);
+  // MORE FILTERS
+  echo __LINE__;
+  var_dump($test_spec);
 
-      if( is_null($tck_map) ) {
-        $tck_map=array();  // means that tree will be EMPTY
+  if($test_spec) {
+    $attr_map['keywords'] = null;  // means no filter
+    if(!is_null($my['filters']['filter_keywords'])) {
+      $attr_map['keywords'] = 
+        $tproject_mgr->getKeywordsLatestTCV($tproject_id,
+           $my['filters']['filter_keywords'],
+           $my['filters']['filter_keywords_filter_type']);
+
+      if( is_null($attr_map['keywords']) ) {
+        // means that tree will be EMPTY
+        $attr_map['keywords'] = array();  
       }
     }
 
-    // Important: prepareNode() will make changes to $test_spec like filtering by test case 
-    // keywords using $tck_map;
+    $attr_map['platforms'] = null;  // means no filter
+    if(!is_null($my['filters']['filter_platforms'])) {
+      $attr_map['keywords'] = 
+        $tproject_mgr->getPlatformsLatestTCV($tproject_id,
+           $my['filters']['filter_platforms']);
+
+      if( is_null($attr_map['platforms']) ) {
+        // means that tree will be EMPTY
+        $attr_map['platforms'] = array();  
+      }
+    }
+    var_dump($attr_map);
+
+
+
+
+    // Important: prepareNode() will make changes to 
+    // $test_spec like filtering by test case 
+    // keywords using $attr_map['keywords'];
     $pnFilters = null;
     $keys2init = array('filter_testcase_name','filter_execution_type','filter_priority','filter_tc_id');
-    foreach ($keys2init as $keyname) 
-    {
+    foreach ($keys2init as $keyname) {
       $pnFilters[$keyname] = isset($my['filters'][$keyname]) ? $my['filters'][$keyname] : null;
     }
       
     $pnFilters['setting_testplan'] = $my['filters']['setting_testplan'];
-    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
-    {
-      $test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
-                                 $my['filters']['filter_custom_fields'],$hash_descr_id);
+    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) {
+      $test_spec['childNodes'] = filter_by_cf_values($db, 
+        $test_spec['childNodes'],
+        $my['filters']['filter_custom_fields'],$hash_descr_id);
     }
     
     // TICKET 4496: added inactive testcase filter
@@ -140,11 +167,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
                        'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
                        'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
 
-    $testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
-                                     $tplan_tcs,$pnFilters,$pnOptions);
+    $testcase_counters = prepareNode($db,$test_spec,
+      $map_node_tccount,$attr_map,$tplan_tcs,$pnFilters,$pnOptions);
 
-    foreach($testcase_counters as $key => $value)
-    {
+    foreach($testcase_counters as $key => $value) {
       $test_spec[$key] = $testcase_counters[$key];
     }
     
@@ -244,12 +270,17 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  * status can be an array with multple values, to do OR search.
  * added version info from test cases in return data structure.
  * ignore_inactive_testcases: useful when building a Test Project Specification tree 
- *                            to be used in the add/link test case to Test Plan.
- * tck_map: Test Case Keyword map:
+ *     to be used in the add/link test case to Test Plan.
+ *
+ * attr_map['keywords']: Test Case Keyword map:
  *          null            => no filter
  *          empty map       => filter out ALL test case ALWAYS
  *          initialized map => filter out test case ONLY if NOT present in map.
  *
+ * attr_map['platforms']: Test Case platforms map:
+ *          null            => no filter
+ *          empty map       => filter out ALL test case ALWAYS
+ *          initialized map => filter out test case ONLY if NOT present in map.
  *
  * added argument:
  *                $map_node_tccount
@@ -270,7 +301,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *
  * @internal revisions
  */
-function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
+function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
                      &$tplan_tcases = null,$filters=null, $options=null)
 {
   static $status_descr_list;
@@ -284,14 +315,26 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
   static $users2filter;
   static $results2filter;
   static $testPlanIsNotEmpty;
+  //static $hash_descr_id;
+  //static $hash_id_descr;
+  //static $status_descr_code;
+  //static $status_code_descr;
+
 
   $tpNode = null;
-  if (!$tables)
-  {
+  if (!$tables) {
     $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
-    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
+    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','node_types','testplan_tcversions'));
 
-    $status_descr_list = array_keys($decoding_info['status_descr_code']);
+    /*
+    $sql = " SELECT * FROM {$tables['node_types']} ";     
+    $hash_descr_id = $this->db->fetchColumnsIntoMap($sql,'description','id');
+    $hash_id_descr = array_flip($nodeTypes);
+    */
+
+    // $status_descr_code = $resultsCfg['status_code'];
+    // $status_code_descr = $resultsCfg['code_status'];
+    $status_descr_list = array_keys($status_descr_code);
     $status_descr_list[] = 'testcase_count';
     
     $my = array();
@@ -312,14 +355,17 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     $enabledFiltersOn['executionType'] = isset($my['filters']['filter_execution_type']);
     $enabledFiltersOn['importance'] = isset($my['filters']['filter_priority']);
     $enabledFiltersOn['custom_fields'] = isset($my['filters']['filter_custom_fields']);
-    $enabledFiltersOn['keywords'] = isset($tck_map);
+    $enabledFiltersOn['keywords'] = 
+      (null != $attr_map && isset($attr_map['keywords']));
+
+    $enabledFiltersOn['platforms'] = 
+      (null != $attr_map && isset($attr_map['platforms']));
 
 
     $filterOnTCVersionAttribute = $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'];
           
     $filtersApplied = false;
-    foreach($enabledFiltersOn as $filterValue)
-    {
+    foreach($enabledFiltersOn as $filterValue) {
       $filtersApplied = $filtersApplied || $filterValue; 
     }
     
@@ -338,25 +384,22 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
   $tcase_counters = array_fill_keys($status_descr_list, 0);
   $node_type = isset($node['node_type_id']) ? $decoding_info['node_id_descr'][$node['node_type_id']] : null;
 
-  if($node_type == 'testcase')
-  {
+  if($node_type == 'testcase') {
     // ABSOLUTELY First implicit filter to be applied when test plan is not empty.
     // is our test case present on Test Spec linked to Test Plan ?
-    if( $testPlanIsNotEmpty && !isset($tplan_tcases[$node['id']]))
-    {
+    if( $testPlanIsNotEmpty && !isset($tplan_tcases[$node['id']])) {
       $node = null;
-      //$node = REMOVEME;
     }  
-    else if( ($enabledFiltersOn['keywords'] && !isset($tck_map[$node['id']])) ||
-             ($enabledFiltersOn['testcase_name'] &&  
+    else if( 
+      ($enabledFiltersOn['keywords'] && 
+       !isset($attr_map['keywords'][$node['id']])) ||
+      ($enabledFiltersOn['testcase_name'] &&  
               stripos($node['name'], $my['filters']['filter_testcase_name']) === FALSE)  ||
-             ($enabledFiltersOn['testcase_id'] && ($node['id'] != $my['filters']['filter_tc_id'])) )  
-    {
+      ($enabledFiltersOn['testcase_id'] && ($node['id'] != $my['filters']['filter_tc_id'])) ) {
       unset($tplan_tcases[$node['id']]);
       $node = null;  // OK - 20150129 
     }
-    else
-    {
+    else {
       if($my['options']['viewType'] == 'executionTree')
       {
         $tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
@@ -597,8 +640,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
         $childNodes[$idx] = REMOVEME;
         continue;
       }
-      $counters_map = prepareNode($db,$current,$decoding_info,$map_node_tccount,
-                                  $tck_map,$tplan_tcases,$my['filters'],$my['options']);
+      $counters_map = prepareNode($db,$current,$map_node_tccount,
+                                  $attr_map,$tplan_tcases,$my['filters'],$my['options']);
       foreach($counters_map as $key => $value)
       {
         $tcase_counters[$key] += $counters_map[$key];   
@@ -2268,6 +2311,8 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
  */
 function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
+  //var_dump(__FUNCTION__);
+  //var_dump($filters);
   $chronos[] = microtime(true);
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
@@ -2277,7 +2322,8 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
                          'tc_action_enabled' => 1, 'viewType' => 'testSpecTree');
   
 
-  $my['filters'] = array('keywords' => null, 'testplan' => null);
+  $my['filters'] = array('keywords' => null, 
+                         'plaftorms' => null,'testplan' => null);
 
   $my['options'] = array_merge($my['options'], (array)$options);
   $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
@@ -2327,7 +2373,9 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
     }
     
     $pnFilters = array('keywords' => $my['filters']['filter_keywords'],
-                       'keywords_filter_type' => $my['filters']['filter_keywords_filter_type']);
+                       'keywords_filter_type' => $my['filters']['filter_keywords_filter_type'],
+                       'platforms' => $my['filters']['filter_platforms'],
+                       );
 
     $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'],
                        'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
@@ -2335,8 +2383,7 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
     
     // Important/CRITIC: 
     // prepareTestSpecNode() will make changes to $test_spec like filtering by test case keywords.
-    $testcase_counters = prepareTestSpecNode($db, $tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,
-                                             $pnFilters,$pnOptions);
+    $testcase_counters = prepareTestSpecNode($db, $tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,$pnFilters,$pnOptions);
 
     if( is_null($test_spec) ) {
       $test_spec['name'] = $tproject_name;
@@ -2435,6 +2482,7 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj) {
   $flt['importance'] = null;
   $flt['status'] = null;
   $flt['keywords'] = null;
+  $flt['platforms'] = null;
 
   if( isset($fObj['filter_testcase_name']) && !is_null($fObj['filter_testcase_name']) )
   {
@@ -2447,21 +2495,18 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj) {
     $flt['testcase_id'] = intval($fObj['filter_tc_id']);
   }
   
-  if( isset($fObj['filter_execution_type']) && !is_null($fObj['filter_execution_type']) )
-  {
+  if( isset($fObj['filter_execution_type']) && !is_null($fObj['filter_execution_type']) ) {
     $flt['execution_type'] = intval($fObj['filter_execution_type']);
   }
 
-  if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) )
-  {
+  if( isset($fObj['filter_importance']) && !is_null($fObj['filter_importance']) ) {
     $xx = (array)$fObj['filter_importance'];
     if($xx[0] >0) {
       $flt['importance'] = $xx;  
     } 
   }  
 
-  if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) )
-  {
+  if( isset($fObj['filter_workflow_status']) && !is_null($fObj['filter_workflow_status']) ) {
     $xx = (array)$fObj['filter_workflow_status'];
     if($xx[0]>0) {
       $flt['status'] = $xx;
@@ -2479,8 +2524,7 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj) {
  * 
  * 
  */
-function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_tccount,$filters=null,$options=null)
-{
+function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_tccount,$filters=null,$options=null) {
     
   static $status_descr_list;
   static $debugMsg;
@@ -2491,27 +2535,20 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
   static $tcFilterByKeywords;
   static $doFilterOn;
 
-  if (!$tables)
-  {
+  if (!$tables) {
     $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
     $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
     $decoding_info = array('node_id_descr' => 
                            array_flip($tprojectMgr->tree_manager->get_available_node_types()));
     $my = array();
     $my['options'] = array('hideTestCases' => 0);
-    $my['filters'] = array('keywords' => null);
+    $my['filters'] = array('keywords' => null, 'platforms' => null);
 
     $my['options'] = array_merge($my['options'], (array)$options);
     $my['filters'] = array_merge($my['filters'], (array)$filters);
     
     if( ($doFilterOn['keywords'] = !is_null($my['filters']['keywords'])) ) {
 
-      /*
-      $tcFilterByKeywords = $tprojectMgr->getTCasesFilteredByKeywords($tprojectID,
-                             $my['filters']['keywords'],
-                             $my['filters']['keywords_filter_type']);
-
-      */
       $tcFilterByKeywords = $tprojectMgr->getTCLatestVersionFilteredByKeywords(
                               $tprojectID,
                               $my['filters']['keywords'],
@@ -2527,11 +2564,27 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
       }
     }
     
+    if( ($doFilterOn['platforms'] = !is_null($my['filters']['platforms'])) ) {
+      $tcFilterByPlatforms = 
+        $tprojectMgr->getTCLatestVersionFilteredByPlatforms(
+                              $tprojectID,
+                              $my['filters']['platforms']);
+
+      if( is_null($tcFilterByPlatforms) ) {
+        // tree will be empty
+        $node = null;
+        $tcase_counters['testcase_count'] = 0;
+        return($tcase_counters);
+      }
+    }
     
+
     // Critic for logic that prune empty branches
     // TICKET 4353: added active/inactive filter
-    $filtersApplied = $doFilterOn['keywords'] || $my['options']['ignoreInactiveTestCases'] || 
-                      $my['options']['ignoreActiveTestCases'];
+    $filtersApplied = $doFilterOn['keywords'] || 
+      $my['options']['ignoreInactiveTestCases'] || 
+      $my['options']['ignoreActiveTestCases'] || 
+      $doFilterOn['platforms'];
   }
     
   $tcase_counters['testcase_count'] = 0;

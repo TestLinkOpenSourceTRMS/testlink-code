@@ -1416,6 +1416,60 @@ class testcaseCommands {
     exit();
   }
 
+  /**
+   * 
+   *
+   */
+  function addPlatform(&$argsObj,&$request) {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    if( null != $argsObj->free_platforms ) {
+      $this->tcaseMgr->addPlatforms($guiObj->tcase_id,
+        $guiObj->tcversion_id, $argsObj->free_platforms);
+    }
+
+    // set up for rendering
+    $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" . "&caller=addPlatform";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
+   
+    return $guiObj;
+  }
+
+  /**
+   * 
+   *
+   */
+  function removePlatform(&$argsObj,&$request) {
+    $guiObj = $this->initGuiBean($argsObj);
+    $guiObj->user_feedback = '';
+
+    $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
+
+    if($argsObj->tcplat_link_id > 0) {
+      $this->tcaseMgr->deletePlatformsByLink(
+        $guiObj->tcase_id, $argsObj->tcplat_link_id,testcase::AUDIT_ON);
+    } 
+
+    // set up for rendering
+    $guiObj->template = 
+      "archiveData.php?edit=testcase&id={$guiObj->tcase_id}" .
+      "&show_mode={$guiObj->show_mode}" . 
+      "&caller=removePlatform";
+
+    if( property_exists($guiObj, 'tplan_id') ) {
+      $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
+    }
+    return $guiObj;
+  }
+
+
+
 
 
 } // end class  

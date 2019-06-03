@@ -184,6 +184,9 @@ class TLSmarty extends Smarty {
     $stdTPLCfg['steps_horizontal.inc'] = 'testcases/steps_horizontal.inc.tpl';
     $stdTPLCfg['steps_vertical.inc'] = 'testcases/steps_vertical.inc.tpl';
 
+    $stdTPLCfg['platforms.inc'] = 'testcases/platforms.inc.tpl';
+
+
     // -----------------------------------------------------------------------------
     // load configuration
     $this->assign('session',isset($_SESSION) ? $_SESSION : null);
@@ -237,11 +240,15 @@ class TLSmarty extends Smarty {
     $this->assign('result', null);
     
     // $this->assign('optLocale',config_get('locales'));
-    
     $this->assign('gsmarty_href_keywordsView',
     			        ' "lib/keywords/keywordsView.php?tproject_id=%s%" ' . ' target="mainframe" class="bold" ' .
     			        ' title="' . lang_get('menu_manage_keywords') . '"');
     
+
+    $this->assign('gsmarty_href_platformsView',
+                  ' "lib/platforms/platformsView.php?tproject_id=%s%" ' . ' target="mainframe" class="bold" ' .
+                  ' title="' . lang_get('menu_manage_platforms') . '"');
+
     $this->assign('gsmarty_html_select_date_field_order',
                   $tlCfg->locales_html_select_date_field_order[$my_locale]);
                   

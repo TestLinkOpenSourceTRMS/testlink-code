@@ -263,17 +263,20 @@ abstract class tlFilterControl extends tlObjectWithDB
    * Function has protected (in subclasses private) visibility because it will only be called by __construct().
    * @return bool
    */
-  protected function read_config() 
-  {
+  protected function read_config() {
     // opening and closing brackets
-    $gui_open = config_get('gui_separator_open');
-    $gui_close = config_get('gui_separator_close');
+    $go = config_get('gui_separator_open');
+    $gc = config_get('gui_separator_close');
 
     // configure string options for select inputs
-    $this->option_strings['any'] = $gui_open . lang_get('any') . $gui_close;
-    $this->option_strings['none'] = $gui_open . lang_get('nobody') . $gui_close;
-    $this->option_strings['somebody'] = $gui_open . lang_get('filter_somebody') . $gui_close;
-    $this->option_strings['without_keywords'] = $gui_open . lang_get('without_keywords') . $gui_close;
+    $this->option_strings['any'] = $go . lang_get('any') . $gc;
+    $this->option_strings['none'] = $go . lang_get('nobody') . $gc;
+    $this->option_strings['somebody'] = $go . lang_get('filter_somebody') . $gc;
+    $this->option_strings['without_keywords'] = $go . 
+      lang_get('without_keywords') . $gc;
+
+    $this->option_strings['without_platforms'] = $go . 
+      lang_get('without_platforms') . $gc;
 
     return tl::OK;
   } // end of method
@@ -286,11 +289,9 @@ abstract class tlFilterControl extends tlObjectWithDB
    * test case or requirements for the tree), it will be extended by
    * child classes to load input specific for requirements and test cases.
    */
-  protected function init_args() 
-  {
+  protected function init_args() {
 
     $this->args = new stdClass();
-
     $this->args->basehref = $_SESSION['basehref'];
     
     // get user's data
@@ -324,8 +325,7 @@ abstract class tlFilterControl extends tlObjectWithDB
       isset($_REQUEST[self::ADVANCED_FILTER_BUTTON_LABEL]) ? true : false;  
 
     $this->args->loadExecDashboard = true;
-    if( isset($_REQUEST['loadExecDashboard']) )
-    {
+    if( isset($_REQUEST['loadExecDashboard']) ) {
       $this->args->loadExecDashboard = intval($_REQUEST['loadExecDashboard']);
     }  
 

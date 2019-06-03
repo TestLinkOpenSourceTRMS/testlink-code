@@ -290,6 +290,8 @@ abstract class tlObject implements iSerialization
                     'tcversions' => DB_TABLE_PREFIX . 'tcversions',
                     'tcsteps' => DB_TABLE_PREFIX . 'tcsteps',
                     'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
+                    'testcase_platforms' => DB_TABLE_PREFIX . 'testcase_platforms',
+
                     'testplan_platforms' => DB_TABLE_PREFIX . 'testplan_platforms',
                     'testcase_script_links' => DB_TABLE_PREFIX . 'testcase_script_links',
                     'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',

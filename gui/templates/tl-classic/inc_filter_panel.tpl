@@ -27,7 +27,8 @@
      status, req_type, req_spec_type, th_tcid, has_relation_type,
      btn_export_testplan_tree,btn_export_testplan_tree_for_results,
      tester_works_with_settings,btn_bulk_remove,btn_bulk_copy,
-     test_grouped_by, parent_child_relation, exec_tree_counters_logic'}
+     test_grouped_by, parent_child_relation, exec_tree_counters_logic,
+     platforms'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -288,6 +289,22 @@
       </tr>
       <tr><td>&nbsp;</td></tr>
     {/if}
+
+    {if $control->filters.filter_platforms}
+      <tr>
+        <td>{$labels.platforms}</td>
+        <td><select class="chosen-select" name="filter_platforms[]"
+                    title=""
+                    multiple="multiple"
+                    size="{$control->filters.filter_platforms.size}">
+            {html_options options=$control->filters.filter_platforms.items
+                          selected=$control->filters.filter_platforms.selected}
+          </select>
+      </td>
+      </tr>
+      <tr><td>&nbsp;</td></tr>
+    {/if}
+
 
     {* TICKET 4353: added filter for active/inactive test cases *}
     {if isset($control->filters.filter_active_inactive) && $control->filters.filter_active_inactive}

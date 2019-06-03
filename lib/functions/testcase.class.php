@@ -1015,6 +1015,10 @@ class testcase extends tlObjectWithAttachments {
         $gui->delTCVKeywordURL = $_SESSION['basehref'] . 
           $this->getDeleteTCVKeywordRelativeURL($io,$gui);
 
+        $gui->delTCVPlatformURL = $_SESSION['basehref'] . 
+          $this->getDeleteTCVPlatformRelativeURL($io,$gui);
+
+
         // Impacted for version management
         $gui->fileUploadURL[$currentVersionID] = 
           $_SESSION['basehref'] . $this->getFileUploadRelativeURL($io);
@@ -1038,11 +1042,20 @@ class testcase extends tlObjectWithAttachments {
         $gui->currentVersionKeywords = 
           $this->getKeywords($tc_id,$currentVersionID);
 
+        $gui->currentVersionPlatforms = 
+          $this->getPlatforms($tc_id,$currentVersionID);
+
+
         $whoami = array('tcase_id' => $tc_id, 
                         'tcversion_id' => $currentVersionID);
 
         $of = array('output' => 'html_options','add_blank' => true);
         $gui->currentVersionFreeKeywords = $this->getFreeKeywords($whoami,$of);
+
+
+        $gui->currentVersionFreePlatforms = 
+          $this->getFreePlatforms($whoami,$of);
+
 
         if( $my['opt']['getAttachments'] ) {
           $gui->attachments[$currentVersionID] = 
@@ -1143,6 +1156,9 @@ class testcase extends tlObjectWithAttachments {
 
             $gui->otherVersionsKeywords[] = 
               $this->getKeywords($version['testcase_id'],$version['id']);
+
+            $gui->otherVersionsPlatforms[] = 
+              $this->getPlatforms($version['testcase_id'],$version['id']);
 
           }
         } // Other versions exist
@@ -3346,8 +3362,6 @@ class testcase extends tlObjectWithAttachments {
       
     return true;
   }
-
-
 
 
   /*
@@ -9214,5 +9228,311 @@ class testcase extends tlObjectWithAttachments {
     }        
     return -1;
   }
+
+  /**
+   *
+   *
+   */
+  function getFreePlatforms($idCard,$opt = null) {
+    $my['opt'] = array('accessKey' => 'platform_id', 'fields' => null, 
+                       'orderBy' => null, 'tproject_id' => null,
+                       'output' => 'std', 'add_blank' => false);
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $safe = array();
+    foreach($idCard as $key => $val) {
+      $safe[$key] = intval($val);
+    }
+
+    // CRITIC
+    $tproject_id = $my['opt']['tproject_id'];
+    if( null == $tproject_id ) {
+      $tproject_id = $this->get_testproject($safe['tcase_id']);
+    }
+    $tproject_id = intval($tproject_id);
+
+    $sql = " SELECT PL.id AS platform_id, PL.name AS platform
+             FROM {$this->tables['platforms']} PL
+             WHERE PL.testproject_id = {$tproject_id}
+             AND PL.id NOT IN 
+             (
+               SELECT TCPL.platform_id 
+               FROM {$this->tables['testcase_platforms']} TCPL
+               WHERE TCPL.testcase_id = {$safe['tcase_id']}
+               AND TCPL.tcversion_id = {$safe['tcversion_id']}
+             ) ";
+
+    if (!is_null($my['opt']['orderBy'])) {
+      $sql .= ' ' . $my['opt']['orderBy'];
+    }
+
+    switch($my['opt']['output']) {
+      case 'html_options':
+        $items = $this->db->fetchColumnsIntoMap($sql,'platform_id','platform');
+        if( null != $items && $my['opt']['add_blank']) {
+          $items = array(0 => '') + $items;
+        }
+
+      break;
+
+      default:
+        $items = $this->db->fetchRowsIntoMap($sql,$my['opt']['accessKey']);
+      break;
+    }
+   
+    return $items;
+  }
+
+  /**
+   *
+   */
+  function deletePlatformsByLink($tcID, $linkID, $audit=null) {
+    
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;   
+    $safeTCID = intval($tcID); 
+
+    $links = (array)$linkID;
+    $inClause = implode(',',$links);
+
+    $sql = " /* $debugMsg */ 
+             SELECT TCPL.tcversion_id, TCPL.platform_id
+             FROM {$this->tables['testcase_platforms']} TCPL
+             WHERE TCPL.testcase_id = {$safeTCID}
+             AND TCPL.id IN ($inClause) ";
+
+
+    $rs = $this->db->get_recordset($sql);
+    
+    foreach($rs as $link) {
+      $this->deletePlatforms($safeTCID, $link['tcversion_id'], 
+        $link['platform_id'],$audit);
+    }  
+  }
+
+  /**
+   *
+   */
+  function deletePlatforms($tcID,$versionID,$platID=null,$audit=null) {
+
+    $sql = " DELETE FROM {$this->tables['testcase_platforms']} " .
+           " WHERE testcase_id = " . intval($tcID) . 
+           " AND tcversion_id = " . intval($versionID);
+
+    $adt = array('on' => self::AUDIT_ON);
+    $adt = array_merge($adt,(array)$audit);
+
+    if (!is_null($platID)) {
+      if(is_array($platID)) {
+          $sql .= " AND platform_id IN (" . implode(',',$platID) . ")";
+          $key4log=$platID;
+      }
+      else {
+          $sql .= " AND platform_id = {$platID}";
+          $key4log = array($platID);
+      }
+    }
+    else {
+      $key4log = 
+        array_keys((array)$this->getPlatformsMap($tcID,$versionID));
+    }
+
+    $result = $this->db->exec_query($sql);
+
+    /*
+    if ($result) {
+      $tcInfo = $this->tree_manager->get_node_hierarchy_info($tcID);
+      if ($tcInfo && $key4log) {
+        foreach($key4log as $key2get) {
+          $keyword = tlKeyword::getByID($this->db,$key2get);
+          if ($keyword && $adt['on']==self::AUDIT_ON) {
+            logAuditEvent(TLS("audit_keyword_assignment_removed_tc",$keyword->name,$tcInfo['name']),
+                          "ASSIGN",$tcID,"nodes_hierarchy");
+          }
+        }
+      }
+    }
+    */
+
+    return $result;
+  }
+
+  /**
+   *
+   */
+  function getPlatformsMap($id,$version_id,$opt=null) {
+    $my['opt'] = array('orderByClause' => '', 'output' => null);
+    $my['opt'] = array_merge($my['opt'], (array)$opt);
+
+
+    switch($my['opt']['output']) {
+      case 'full':
+        $sql = "SELECT TCPL.platform_id,PL.name,PL.notes";
+      break;
+
+      default:
+        $sql = "SELECT TCPL.platform_id,PL.name";
+      break;
+    }
+    $sql .= " FROM {$this->tables['testcase_platforms']} TCPL,
+              {$this->tables['platforms']} PL 
+              WHERE platform_id = PL.id ";
+
+    $sql .= " AND TCPL.testcase_id = " . intval($id) . 
+            " AND TCPL.tcversion_id = " . intval($version_id); 
+
+    $sql .= $my['opt']['orderByClause'];
+
+
+    switch($my['opt']['output']) {
+      case 'full':
+        $items = $this->db->fetchRowsIntoMap($sql,'platform_id');
+      break;
+
+      default:
+        $items = $this->db->fetchColumnsIntoMap($sql,'platform_id','name');
+      break;
+    }
+
+    return $items;
+  }
+
+  /**
+   *
+   */
+  function addPlatforms($id,$version_id,$idSet,$audit=null) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $adt = array('on' => self::AUDIT_ON, 'version' => null);
+    $adt = array_merge($adt, (array)$audit);
+
+    if( count($idSet) == 0 ) {
+      return true;
+    }
+
+    $safeID = array('tc' => intval($id), 'tcv' => intval($version_id));
+    foreach($safeID as $key => $val ) {
+      if($val <= 0) {
+        throw new Exception(__METHOD__ . " $key cannot be $val ", 1);
+      }
+    } 
+
+    // Firts check if records exist    
+    $sql = "/* $debugMsg */
+            SELECT platform_id FROM 
+            {$this->tables['testcase_platforms']} 
+            WHERE testcase_id = {$safeID['tc']} 
+            AND tcversion_id = {$safeID['tcv']} 
+            AND platform_id IN (" . implode(',',$idSet) . ")";
+
+    $nuCheck = $this->db->fetchRowsIntoMap($sql,'platform_id');
+
+    $sql = "/* $debugMsg */" .
+           " INSERT INTO {$this->tables['testcase_platforms']} " .
+           " (testcase_id,tcversion_id,platform_id) VALUES ";
+
+    $dummy = array();
+    foreach( $idSet as $kiwi ) {
+      if( !isset($nuCheck[$kiwi]) ) {
+        $dummy[] = "($id,$version_id,$kiwi)";
+      }
+    }
+
+    if( count($dummy) <= 0 ) {
+      return;
+    }
+
+    // Go ahead
+    $sql .= implode(',', $dummy);
+    $this->db->exec_query($sql);
+ 
+    // Now AUDIT
+    if ( $adt['on'] == self::AUDIT_ON ) {
+
+      // Audit Context
+      $tcPath = $this->getPathName( $id );
+
+      /*
+      $kwOpt = array('cols' => 'id,keyword', 
+                     'accessKey' => 'id', 'kwSet' => $kw_ids);
+      $keywordSet = tlKeyword::getSimpleSet($this->db,$kwOpt);
+      */
+
+      /*
+      foreach($keywordSet as $elem ) {
+        logAuditEvent(TLS("audit_keyword_assigned_tc",$elem['keyword'],
+                      $tcPath,$adt['version']), 
+                      "ASSIGN",$version_id,"nodes_hierarchy");
+      }
+      */
+    }
+      
+    return true;
+  }
+
+  /**
+   *
+   */
+  function getPlatforms($tcID,$versionID,$platID = null,$opt = null) {
+    $my['opt'] = array('accessKey' => 'platform_id', 'fields' => null, 
+                       'orderBy' => null);
+
+    $my['opt'] = array_merge($my['opt'],(array)$opt);
+
+    $f2g = is_null($my['opt']['fields']) ?
+           ' TCPL.id AS tcplat_link,platform_id,PL.name,PL.notes,
+             testcase_id,tcversion_id ' :
+           $my['opt']['fields'];
+
+    $sql = " SELECT {$f2g}
+             FROM {$this->tables['testcase_platforms']} TCPL
+             JOIN {$this->tables['platforms']} PL
+             ON platform_id = PL.id ";
+             
+    $sql .=  " WHERE testcase_id = " . intval($tcID) . 
+             " AND tcversion_id=" . intval($versionID);
+
+    if (!is_null($platID)) {
+      $sql .= " AND platform_id = " . intval($platID);
+    }
+
+    if (!is_null($my['opt']['orderBy'])) {
+      $sql .= ' ' . $my['opt']['orderBy'];
+    }
+
+    switch( $my['opt']['accessKey'] ) {
+      case 'testcase_id,tcversion_id';
+        $items = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','tcversion_id',database::CUMULATIVE);
+      break;
+
+      default:
+        $items = $this->db->fetchRowsIntoMap($sql,$my['opt']['accessKey']);
+      break;
+    }
+
+    return $items;
+  }
+
+
+  /**
+   *
+   */
+  function getDeleteTCVPlatformRelativeURL($identity,&$guiObj=null) {
+    $url = "lib/testcases/tcEdit.php?doAction=removePlatform";
+
+    if( null != $guiObj ) {
+      $p2l = array('show_mode','tplan_id');
+      foreach($p2l as $pr) {
+        if( property_exists($guiObj, $pr) ) {
+          $url .= "&$pr=" . $guiObj->$pr;
+        }        
+      }
+    }        
+           
+    $url .= '&tcase_id=%1&tcplat_link_id=%2';
+    return $url;
+  }
+
 
 }  // Class end

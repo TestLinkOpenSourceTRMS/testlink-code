@@ -440,6 +440,17 @@ CREATE TABLE /*prefix*/testcase_keywords (
   KEY /*prefix*/idx02_testcase_keywords (`tcversion_id`)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE /*prefix*/testcase_platforms (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `testcase_id` int(10) unsigned NOT NULL default '0',
+  `tcversion_id` int(10) unsigned NOT NULL default '0', 
+  `platform_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/idx01_testcase_platform (`testcase_id`,`tcversion_id`,`platform_id`),
+  KEY /*prefix*/idx02_testcase_platform (`tcversion_id`)
+) DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE /*prefix*/tcversions (
   `id` int(10) unsigned NOT NULL,
   `tc_external_id` int(10) unsigned NULL,

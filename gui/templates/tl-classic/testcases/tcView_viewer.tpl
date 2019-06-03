@@ -477,6 +477,26 @@ function launchInsertStep(step_id)
    } 
   </div>
   
+  <p>
+  <div {$addInfoDivStyle}>
+   {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
+            $has_been_executed == 0} 
+   
+   {if $args_frozen_version=="no" && $has_been_executed == 1 }
+     {if $args_tcase_cfg->can_edit_executed == 1}
+       {$platRW = 1}
+     {/if}
+   {/if}
+   
+   {include file="{$tplConfig['platforms.inc']}" 
+            args_edit_enabled=$platRW
+            args_tcase_id=$tcase_id
+            args_tcversion_id=$tcversion_id
+   } 
+  </div>
+
+
+
   {if $gui->requirementsEnabled == TRUE && 
      ($gui->view_req_rights == "yes" || $gui->req_tcase_link_management) }
 

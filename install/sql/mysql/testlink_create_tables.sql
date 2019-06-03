@@ -790,6 +790,18 @@ CREATE TABLE /*prefix*/plugins_configuration (
 ) DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE /*prefix*/testcase_platforms (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  testcase_id int(10) unsigned NOT NULL DEFAULT '0',
+  tcversion_id int(10) unsigned NOT NULL DEFAULT '0',
+  platform_id int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (id),
+  UNIQUE KEY idx01_testcase_platform (testcase_id,tcversion_id,platform_id),
+  KEY idx02_testcase_platform (tcversion_id)
+) DEFAULT CHARSET=utf8;
+
+
+
 # VIEWS
 #
 # @used_by latest_tcase_version_id
@@ -876,3 +888,13 @@ CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_context
 AS SELECT tcversion_id, testplan_id,build_id,platform_id,max(id) AS id
 FROM /*prefix*/executions 
 GROUP BY tcversion_id,testplan_id,build_id,platform_id;
+
+#
+CREATE OR REPLACE VIEW /*prefix*/tcversions_without_platforms
+AS SELECT
+   NHTCV.parent_id AS testcase_id,
+   NHTCV.id AS id
+FROM /*prefix*/nodes_hierarchy NHTCV 
+WHERE NHTCV.node_type_id = 4 AND
+NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
+           WHERE TCK.tcversion_id = NHTCV.id));

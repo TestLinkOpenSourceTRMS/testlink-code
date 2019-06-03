@@ -1900,6 +1900,9 @@ class testcase extends tlObjectWithAttachments {
     $copyKW = ( isset($my['options']['copy_also']['keyword_assignments']) &&
                 $my['options']['copy_also']['keyword_assignments'] );
 
+    $copyPL = ( isset($my['options']['copy_also']['platform_assignments']) &&
+                $my['options']['copy_also']['platform_assignments'] );
+
     $uglyKey = 'requirement_assignments';
     $copyReqLinks = ( isset($my['options']['copy_also'][$uglyKey]) &&
                       $my['options']['copy_also'][$uglyKey]);
@@ -2032,6 +2035,10 @@ class testcase extends tlObjectWithAttachments {
             $this->copyKeywordsTo($source,$dest,$my['mappings']['keywords']);
           }
 
+          if( $opCV['status_ok'] && $copyPL ) {
+            $this->copyPlatformsTo($source,$dest,$my['mappings']['platforms']);
+          }
+
           if( $opCV['status_ok'] && $copyReqLinks ) {
             $this->copyReqVersionLinksTo($source,$dest,
               $my['mappings']['requirements'],$ix->authorID);
@@ -2118,6 +2125,9 @@ class testcase extends tlObjectWithAttachments {
     $this->copyKeywordsTo($source,$dest,null,$auditContext,array('delete' => false));
     $this->copy_attachments($source['version_id'],$dest['version_id']);
     $this->copyTCVRelations($source['version_id'],$dest['version_id']);
+
+    $this->copyPlatformsTo($source,$dest,null,$auditContext,array('delete' => false));
+
 
     if( $this->cfg->testcase->relations->enable && 
         $freezeTCVRelationsOnNewTCVersion ) {
@@ -9533,6 +9543,52 @@ class testcase extends tlObjectWithAttachments {
     $url .= '&tcase_id=%1&tcplat_link_id=%2';
     return $url;
   }
+
+  /**
+   * mappings is only useful when source_id and target_id do not belong 
+   * to same Test Project.
+   * Because platforms are defined INSIDE a Test Project, 
+   * ID will be different for same keyword
+   * in a different Test Project.
+   *
+   */
+  function copyPlatformsTo($source,$dest,$platMap,$auditContext=null,$opt=null) {
+
+    $adt = array('on' => self::AUDIT_ON);
+    if( isset($dest['version']) ) {
+      $adt['version'] = $dest['version'];
+    }
+    $adt = array_merge($adt,(array)$auditContext);
+
+    $what = array('delete' => true);
+    $what = array_merge($what,(array)$opt);
+
+    // Not sure that this delete is needed (@20180610)
+    if( $what['delete'] ) {
+      $this->deletePlatforms($dest['id'],$dest['version_id'],null,$auditContext);
+    }
+
+    $sourceIT = $this->getPlatforms($source['id'],$source['version_id']);
+
+    if( !is_null($sourceIT) ) {
+      
+      // build item id list
+      $itSet = array_keys($sourceIT);
+      if( null != $platMap ) {
+        foreach($itSet as $itemPos => $itemID) {
+          if( isset($mappings[$itemID]) ) {
+            $itSet[$itemPos] = $mappings[$itemID];
+          } 
+        }        
+      }
+
+      $this->addPlatforms($dest['id'],$dest['version_id'],$itSet,$adt);
+    }
+
+    return true;
+  }
+
+
 
 
 }  // Class end

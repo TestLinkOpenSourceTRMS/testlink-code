@@ -1428,6 +1428,25 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
   }
   $kwSet = null;
 
+  // collect platforms for TC VERSION
+  if ($options['platform']) {
+    $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
+             $labels['platforms'].':</span></td>';
+    $code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
+
+    $itSet = (array)$st->tc_mgr->getPlatforms($id,$tcVersionID,null,array('fields' => 'platform_id,PL.name'));
+    if (sizeof($itSet)) {
+      foreach ($itSet as $it) {
+        $code .= htmlspecialchars($it['name']) . "<br />";
+      }
+    } else {
+      $code .= '&nbsp;' . $labels['none'] . '<br/>';
+    }
+    $code .= "</td></tr>\n";
+  }
+  $itSet = null;
+
+
   // Attachments
   $attachSet =  (array)$st->tc_mgr->getAttachmentInfos($tcVersionID);
   if (count($attachSet) > 0) {
@@ -1892,7 +1911,7 @@ function initRenderTestCaseCfg($options) {
                     'high_importance','medium_importance','low_importance',
                     'execution_duration',
                     'priority', 'high_priority','medium_priority','low_priority',
-                    'attached_files');
+                    'attached_files','platforms');
                       
   $labelsQty=count($labelsKeys);         
   for($idx=0; $idx < $labelsQty; $idx++) {

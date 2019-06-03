@@ -44,7 +44,7 @@ AS SELECT
 FROM /*prefix*/nodes_hierarchy NHTCV 
 WHERE NHTCV.node_type_id = 4 AND
 NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
-           WHERE TCK.tcversion_id = NHTCV.id));
+           WHERE TCPL.tcversion_id = NHTCV.id));
 
 
 # END

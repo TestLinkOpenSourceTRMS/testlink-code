@@ -4018,20 +4018,18 @@ function getCoverageCounter($id) {
    * render Image Attachments INLINE
    * 
    */
-  function renderImageAttachments($id,&$item2render,$basehref=null)
-  {
+  function renderImageAttachments($id,&$item2render,$basehref=null) {
     static $attSet;
     static $targetTag;
 
-    if(!$attSet || !isset($attSet[$id]))
-    {
-      $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName,'id');
+    $version_id = intval($item2render['version_id']);
+    if(!$attSet || !isset($attSet[$id])) {
+      $attSet[$id] = $this->attachmentRepository->getAttachmentInfosFor($version_id,$this->attachmentTableName,'id');
       $beginTag = '[tlInlineImage]';
       $endTag = '[/tlInlineImage]';
     }  
 
-    if(is_null($attSet[$id]))
-    {
+    if(is_null($attSet[$id])) {
       return;
     } 
 
@@ -4043,51 +4041,39 @@ function getCoverageCounter($id) {
 
     $key2check = array('scope');
     $rse = &$item2render;
-    foreach($key2check as $item_key)
-    {
+    foreach($key2check as $item_key) {
       $start = strpos($rse[$item_key],$beginTag);
       $ghost = $rse[$item_key];
 
       // There is at least one request to replace ?
-      if($start !== FALSE)
-      {
+      if($start !== FALSE) {
         $xx = explode($beginTag,$rse[$item_key]);
 
         // How many requests to replace ?
         $xx2do = count($xx);
         $ghost = '';
-        for($xdx=0; $xdx < $xx2do; $xdx++)
-        {
+        for($xdx=0; $xdx < $xx2do; $xdx++) {
           // Hope was not a false request.
-          if( strpos($xx[$xdx],$endTag) !== FALSE)
-          {
+          if( strpos($xx[$xdx],$endTag) !== FALSE) {
             // Separate command string from other text
             // Theorically can be just ONE, but it depends
             // is user had not messed things.
             $yy = explode($endTag,$xx[$xdx]);
-            if( ($elc = count($yy)) > 0)
-            {
+            if( ($elc = count($yy)) > 0) {
               $atx = $yy[0];
-              try
-              {
-                if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image'])
-                {
+              try {
+                if(isset($attSet[$id][$atx]) && $attSet[$id][$atx]['is_image']) {
                   $ghost .= str_replace('%id%',$atx,$img);
                 } 
                 $lim = $elc-1;
-                for($cpx=1; $cpx <= $lim; $cpx++) 
-                {
+                for($cpx=1; $cpx <= $lim; $cpx++) {
                   $ghost .= $yy[$cpx];
                 }  
-              } 
-              catch (Exception $e)
-              {
+              } catch (Exception $e) {
                 $ghost .= $rse[$item_key];
               }
             }  
-          }
-          else
-          {
+          } else {
             // nothing to do
             $ghost .= $xx[$xdx];
           }  
@@ -4095,8 +4081,7 @@ function getCoverageCounter($id) {
       }
 
       // reconstruct field contents
-      if($ghost != '')
-      {
+      if($ghost != '') {
         $rse[$item_key] = $ghost;
       }
     }   
@@ -4108,8 +4093,7 @@ function getCoverageCounter($id) {
    * scope is managed at revision and version level
    * @since 1.9.13
    */ 
-  function inlineImageProcessing($idCard,$scope,$rosettaStone)
-  {
+  function inlineImageProcessing($idCard,$scope,$rosettaStone) {
     // get all attachments, then check is there are images
     $att = $this->attachmentRepository->getAttachmentInfosFor($idCard->id,$this->attachmentTableName,'id');
     foreach($rosettaStone as $oid => $nid)

@@ -1332,18 +1332,21 @@ class TestlinkXMLRPCServer extends IXR_Server {
     /**
      * Gets ALL EXECUTIONS for a particular testcase on a test plan.
      * If there are no filter criteria regarding platform and build,
-     * result will be get WITHOUT checking for a particular platform and build.
+     * result will be get WITHOUT checking for a particular platform 
+     * and build.
      *
      * @param struct $args
      * @param string $args["devKey"]
      * @param int $args["tplanid"]
      * @param int $args["testcaseid"]:
      *            Pseudo optional.
-     *            if does not is present then testcaseexternalid MUST BE present
+     *            if does not is present then 
+     *            testcaseexternalid MUST BE present
      *
      * @param int $args["testcaseexternalid"]:
      *            Pseudo optional.
-     *            if does not is present then testcaseid MUST BE present
+     *            if does not is present then testcaseid 
+     *            MUST BE present
      *
      * @param string $args["platform_id"]:
      *            optional.
@@ -1368,7 +1371,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *         If user has requested getbugs, then a key bugs(that is an array)
      *         will also exists.
      *
-     *         if test case has not been execute, the first map will be returned with -1 as 'id'
+     *         if test case has not been execute, the first map 
+     *         will be returned with -1 as 'id'
      *
      * @access public
      */
@@ -1384,81 +1388,83 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $options->getBugs = 0;
 
         // Checks are done in order
-        $checkFunctions = array(
-                'authenticate',
-                'checkTestPlanID',
-                'checkTestCaseIdentity'
-        );
+        $checkFunctions = array('authenticate',
+                                'checkTestPlanID',
+                                'checkTestCaseIdentity');
 
         $status_ok = $this->_runChecks( $checkFunctions, $msg_prefix ) && $this->_checkTCIDAndTPIDValid( null, $msg_prefix ) && $this->userHasRight( "mgt_view_tc", self::CHECK_PUBLIC_PRIVATE_ATTR );
 
         $execContext = array(
-                'tplan_id' => $this->args[self::$testPlanIDParamName],
-                'platform_id' => null,
-                'build_id' => null
-        );
+          'tplan_id' => $this->args[self::$testPlanIDParamName],
+          'platform_id' => null, 'build_id' => null);
 
-        if($status_ok) {
-            if($this->_isParamPresent( self::$optionsParamName, $msg_prefix )) {
-                $dummy = $this->args[self::$optionsParamName];
-                if(is_array( $dummy )) {
-                    foreach( $dummy as $key => $value ) {
-                        $options->$key =($value > 0) ? 1 : 0;
-                    }
-                }
+      if($status_ok) {
+        if($this->_isParamPresent( self::$optionsParamName, $msg_prefix )) {
+          $dummy = $this->args[self::$optionsParamName];
+          if(is_array( $dummy )) {
+            foreach( $dummy as $key => $value ) {
+                $options->$key =($value > 0) ? 1 : 0;
             }
+          }
+        }
 
-            // Now we can check for Optional parameters
-            if($this->_isBuildIDPresent() || $this->_isBuildNamePresent()) {
-                if(($status_ok = $this->checkBuildID( $msg_prefix ))) {
-                    $execContext['build_id'] = $this->args[self::$buildIDParamName];
-                }
-            }
-
-            if($status_ok) {
-                if($this->_isParamPresent( self::$platformIDParamName, $msg_prefix ) || $this->_isParamPresent( self::$platformNameParamName, $msg_prefix )) {
-                    $status_ok = $this->checkPlatformIdentity( $this->args[self::$testPlanIDParamName] );
-
-                    if($status_ok) {
-                        $execContext['platform_id'] = $this->args[self::$platformIDParamName];
-                    }
-                }
-            }
+        // Now we can check for Optional parameters
+        if($this->_isBuildIDPresent() || $this->_isBuildNamePresent()) {
+          if(($status_ok = $this->checkBuildID( $msg_prefix ))) {
+            $execContext['build_id'] = $this->args[self::$buildIDParamName];
+          }
         }
 
         if($status_ok) {
+          if($this->_isParamPresent( self::$platformIDParamName, $msg_prefix ) || $this->_isParamPresent( self::$platformNameParamName, $msg_prefix )) {
+                $status_ok = $this->checkPlatformIdentity( $this->args[self::$testPlanIDParamName] );
 
-            $sql = " SELECT(id) AS exec_id FROM {$this->tables['executions']} " . " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " . " AND tcversion_id IN(" . " SELECT id FROM {$this->tables['nodes_hierarchy']} " . " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})";
-
-            if(! is_null( $execContext['build_id'] )) {
-                $sql .= " AND build_id = " . intval( $execContext['build_id'] );
-            }
-
-            if(! is_null( $execContext['platform_id'] )) {
-                $sql .= " AND platform_id = " . intval( $execContext['platform_id'] );
-            }
-
-            $rs = $this->dbObj->fetchRowsIntoMap( $sql, 'exec_id' );
-            if(is_null( $rs )) {
-                // has not been executed
-                // execution id = -1 => test case has not been runned.
-                $resultInfo[0] = array(
-                        'id' => - 1
-                );
-            } else {
-                foreach( $rs as $tcExecId => $dummy ) {
-                    $sql = "SELECT * FROM {$this->tables['executions']} WHERE id=" . $tcExecId;
-                    $resultInfo[$tcExecId] = $this->dbObj->fetchFirstRow( $sql );
-                    if($options->getBugs) {
-                        $resultInfo[$tcExecId]['bugs'] = array();
-                        $sql = " SELECT DISTINCT bug_id FROM {$this->tables['execution_bugs']} " . " WHERE execution_id = " . $tcExecId;
-                        $resultInfo[$tcExecId]['bugs'] =( array ) $this->dbObj->get_recordset( $sql );
-                    }
+                if($status_ok) {
+                    $execContext['platform_id'] = $this->args[self::$platformIDParamName];
                 }
-            }
+          }
+        }
+      }
+
+      if($status_ok) {
+
+        $sql = " SELECT(id) AS exec_id FROM {$this->tables['executions']} 
+                 WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} 
+                 AND tcversion_id IN(" . 
+                 " SELECT id FROM {$this->tables['nodes_hierarchy']} 
+                   WHERE parent_id = {$this->args[self::$testCaseIDParamName]})";
+
+        if(!is_null( $execContext['build_id'] )) {
+          $sql .= " AND build_id = " . intval( $execContext['build_id'] );
         }
 
-        return $status_ok ? $resultInfo : $this->errors;
+        if(!is_null( $execContext['platform_id'] )) {
+           $sql .= " AND platform_id = " . intval( $execContext['platform_id'] );
+        }
+
+        $rs = $this->dbObj->fetchRowsIntoMap( $sql, 'exec_id' );
+        if(is_null( $rs )) {
+          // has not been executed
+          // execution id = -1 => test case has not been runned.
+          $resultInfo[0] = array('id' => - 1);
+        } else {
+          foreach( $rs as $tcExecId => $dummy ) {
+            $sql = "SELECT * FROM {$this->tables['executions']} WHERE id=" . 
+                   $tcExecId;
+            $resultInfo[$tcExecId] = $this->dbObj->fetchFirstRow( $sql );
+            if($options->getBugs) {
+              $resultInfo[$tcExecId]['bugs'] = array();
+              $sql = " SELECT DISTINCT bug_id FROM 
+                       {$this->tables['execution_bugs']}
+                       WHERE execution_id = " . $tcExecId;
+              $resultInfo[$tcExecId]['bugs'] = 
+                (array)$this->dbObj->get_recordset( $sql );
+            }
+          }
+        }
+      }
+
+      return $status_ok ? $resultInfo : $this->errors;
     }
 
     /**

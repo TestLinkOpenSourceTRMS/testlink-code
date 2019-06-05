@@ -106,15 +106,6 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
     
    
   // Document why this is needed, please  
-  
-  // this filters are not the target of implementation
-  //echo __LINE__;
-  //var_dump($my['filters']);
-  //die();
-
-  //var_dump($my['options']);
-  //die();
-  
   $spec = $tplan_mgr->getSkeleton($context['tplan_id'],
             $context['tproject_id'],$my['filters'],$my['options']);
 
@@ -149,11 +140,6 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       // 2019 - here I need to do changes!!!
       //$sql2do = 
       //$tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options);
-
-      //echo '<pre>';
-      //var_dump($sql2do); //die();
-      //echo '</pre>';
-
       $applyTCCAlgo = false;
       $tcc = null;
       if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options)) ) {
@@ -415,8 +401,6 @@ function prepareExecTreeNode(&$db,&$node,&$map_node_tccount,
   static $my;
   static $resultsCfg;
 
-  //debug_print_backtrace();
-  //echo __FUNCTION__; die();
   $tpNode = null;
   if (!$debugMsg) {
     $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';

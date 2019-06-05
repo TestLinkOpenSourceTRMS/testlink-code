@@ -112,9 +112,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $tc2show = null;
 
   // MORE FILTERS
-  echo __LINE__;
-  var_dump($test_spec);
-
   if($test_spec) {
     $attr_map['keywords'] = null;  // means no filter
     if(!is_null($my['filters']['filter_keywords'])) {

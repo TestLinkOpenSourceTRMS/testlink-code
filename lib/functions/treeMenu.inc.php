@@ -34,7 +34,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 {
 
   // TESTING @20190603 var_dump(__FUNCTION__);
-
   $chronos[] = microtime(true);
 
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
@@ -137,10 +136,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
         $attr_map['platforms'] = array();  
       }
     }
-    var_dump($attr_map);
-
-
-
 
     // Important: prepareNode() will make changes to 
     // $test_spec like filtering by test case 
@@ -2308,8 +2303,6 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
  */
 function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
-  //var_dump(__FUNCTION__);
-  //var_dump($filters);
   $chronos[] = microtime(true);
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 

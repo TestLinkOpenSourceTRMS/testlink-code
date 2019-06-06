@@ -33,7 +33,6 @@ require_once("execTreeMenu.inc.php");
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
 
-  // TESTING @20190603 var_dump(__FUNCTION__);
   $chronos[] = microtime(true);
 
   $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
@@ -58,6 +57,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   $my['options']['showTestCaseID'] = config_get('treemenu_show_testcase_id');
 
   $my['filters'] = array_merge($my['filters'], (array)$filters);
+
   if( $my['options']['viewType'] == 'testSpecTree' ) {
     $rr = generateTestSpecTreeNew($db,$tproject_id,$tproject_name,$linkto,$filters,$options);
     return $rr;
@@ -77,13 +77,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
   
   $hash_descr_id = $tree_manager->get_available_node_types();
   $hash_id_descr = array_flip($hash_descr_id);
-  $status_descr_code=$resultsCfg['status_code'];
-  $status_code_descr=$resultsCfg['code_status'];
+  $status_descr_code = $resultsCfg['status_code'];
+  $status_code_descr = $resultsCfg['code_status'];
   
-  $decoding_hash=array('node_id_descr' => $hash_id_descr,
-                       'status_descr_code' =>  $status_descr_code,
-                       'status_code_descr' =>  $status_code_descr);
-  
+
   // IMPORTANT NOTICE
   // $filters['filter_toplevel_testsuite'] is managed in REVERSE form
   // it contains NOT WHAT user wants, but all that we need to exclude
@@ -307,26 +304,21 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
   static $users2filter;
   static $results2filter;
   static $testPlanIsNotEmpty;
-  //static $hash_descr_id;
-  //static $hash_id_descr;
-  //static $status_descr_code;
-  //static $status_code_descr;
-
+  static $nodesTypeCode;
+  static $nodesCodeType;
 
   $tpNode = null;
   if (!$tables) {
+
     $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
     $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','node_types','testplan_tcversions'));
 
-    /*
-    $sql = " SELECT * FROM {$tables['node_types']} ";     
-    $hash_descr_id = $this->db->fetchColumnsIntoMap($sql,'description','id');
-    $hash_id_descr = array_flip($nodeTypes);
-    */
+    $sql = " SELECT * FROM {$tables['node_types']} "; 
+    $nodesTypeCode = $db->fetchColumnsIntoMap($sql,'description','id');
+    $nodesCodeType = array_flip($nodesTypeCode);
 
-    // $status_descr_code = $resultsCfg['status_code'];
-    // $status_code_descr = $resultsCfg['code_status'];
-    $status_descr_list = array_keys($status_descr_code);
+    $resultsCfg = config_get('results');
+    $status_descr_list = array_keys($resultsCfg['status_code']);
     $status_descr_list[] = 'testcase_count';
     
     $my = array();
@@ -360,7 +352,7 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
     foreach($enabledFiltersOn as $filterValue) {
       $filtersApplied = $filtersApplied || $filterValue; 
     }
-    
+
     $activeVersionClause = $filterOnTCVersionAttribute ? " AND TCV.active=1 " : '';
     
     $users2filter = isset($my['filters']['filter_assigned_user']) ?
@@ -374,11 +366,14 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
   }
     
   $tcase_counters = array_fill_keys($status_descr_list, 0);
-  $node_type = isset($node['node_type_id']) ? $decoding_info['node_id_descr'][$node['node_type_id']] : null;
+  $nodeV = 
+  $node_type = isset($node['node_type_id']) ? 
+               $nodesCodeType[$node['node_type_id']] : null;
 
   if($node_type == 'testcase') {
     // ABSOLUTELY First implicit filter to be applied when test plan is not empty.
     // is our test case present on Test Spec linked to Test Plan ?
+
     if( $testPlanIsNotEmpty && !isset($tplan_tcases[$node['id']])) {
       $node = null;
     }  
@@ -768,8 +763,8 @@ function renderTreeNode($level,&$node,$hash_id_descr,$linkto,$testCasePrefix,$op
   
   if (isset($node['childNodes']) && $node['childNodes'])
   {
-    // 20090118 - franciscom - need to work always original object
-    //                         in order to change it's values using reference .
+    // need to work always original object
+    // in order to change it's values using reference .
     // Can not assign anymore to intermediate variables.
     //
     $nChildren = sizeof($node['childNodes']);
@@ -2337,11 +2332,6 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   $status_descr_code=$resultsCfg['status_code'];
   $status_code_descr=$resultsCfg['code_status'];
   
-  $decoding_hash=array('node_id_descr' => $hash_id_descr,
-                       'status_descr_code' =>  $status_descr_code,
-                       'status_code_descr' =>  $status_code_descr);
-  
-
   $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
   $test_spec = getTestSpecTree($tproject_id,$tproject_mgr,$filters);
 

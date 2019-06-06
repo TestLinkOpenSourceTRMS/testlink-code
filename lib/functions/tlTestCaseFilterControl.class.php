@@ -592,7 +592,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
     foreach ($this->all_filters as $name => $info) {
       $init_method = "init_$name";
 
-      //var_dump($this->configuration);
       if( $this->configuration->show_filters == ENABLED && 
           property_exists($this->configuration, $name) && $this->configuration->{$name} == ENABLED &&
           in_array($name, $this->mode_filter_mapping[$this->mode]) &&  method_exists($this, $init_method) ) 

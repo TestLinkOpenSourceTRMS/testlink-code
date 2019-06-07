@@ -444,8 +444,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * @param string $csv the CSV representation of the keyword will be appended here
    * @param string $delimiter an optional delimited for the CSV format
    */
-  public function writeToCSV(&$csv,$delimiter = ';')
-  {
+  public function writeToCSV(&$csv,$delimiter = ';') {
     $keyword = array($this->getInfo());
     $sKeys = array( "keyword","notes" );
     $csv .= exportDataToCSV($keyword,$sKeys,$sKeys);
@@ -457,8 +456,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * 
    * @return integer returns tl::OK on success, tl::ERROR else
    */
-  public function readFromCSV($csv,$delimiter = ';')
-  {
+  public function readFromCSV($csv,$delimiter = ';') {
     $data = explode($delimiter,$csv);
             
     $this->name = isset($data[0]) ? $data[0] : null;

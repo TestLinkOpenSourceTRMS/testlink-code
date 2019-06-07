@@ -1349,12 +1349,10 @@ function setPublicStatus($id,$status)
    *
    * @return string the generated CSV code
    **/
-  function exportKeywordsToCSV($testproject_id,$delim = ';')
-  {
+  function exportKeywordsToCSV($testproject_id,$delim = ';') {
     $kwIDs = $this->getKeywordIDsFor($testproject_id);
     $csv = null;
-    for($idx = 0;$idx < sizeof($kwIDs);$idx++)
-    {
+    for($idx = 0;$idx < sizeof($kwIDs);$idx++) {
       $keyword = new tlKeyword($kwIDs[$idx]);
       $keyword->readFromDb($this->db);
       $keyword->writeToCSV($csv,$delim);

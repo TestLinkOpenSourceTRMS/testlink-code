@@ -5,22 +5,22 @@
  *
  * @filesource  keywordsExport.php
  * @package     TestLink
- * @copyright   2005,2015 TestLink community 
+ * @copyright   2005,2019 TestLink community 
  * @link        http://www.testlink.org/
- **
-**/
+ *
+ */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
+require_once("keywordsEnv.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args($db);
 $gui = initializeGui($args);
 
-switch ($args->doAction)
-{
+switch ($args->doAction) {
   case "do_export":
     $op = do_export($db,$smarty,$args);
   break;
@@ -33,8 +33,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  *
  */
-function init_args(&$dbHandler)
-{
+function init_args(&$dbHandler) {
   $ipcfg = array("doAction" => array("GET",tlInputParameter::STRING_N,0,50),
                  "tproject_id" => array("GET",tlInputParameter::INT_N),
                  "export_filename" => array("POST", tlInputParameter::STRING_N,0,255),
@@ -43,21 +42,20 @@ function init_args(&$dbHandler)
   $args = new stdClass();
   $pps = I_PARAMS($ipcfg,$args);
 
-  if( $args->tproject_id <= 0 )
-  {
+  if( $args->tproject_id <= 0 ) {
     throw new Exception("Error Invalid Test Project ID", 1);
   }
   
   // Check rights before doing anything else
   // Abort if rights are not enough 
-  $user = $_SESSION['currentUser'];
+  $args->user = $_SESSION['currentUser'];
   $env['tproject_id'] = $args->tproject_id;
   $env['tplan_id'] = 0;
   
   $check = new stdClass();
   $check->items = array('mgt_view_key');
   $check->mode = 'and';
-  checkAccess($dbHandler,$user,$env,$check);
+  checkAccess($dbHandler,$args->user,$env,$check);
  
   $tproj_mgr = new testproject($dbHandler);
   $dm = $tproj_mgr->get_by_id($args->tproject_id,array('output' => 'name'));
@@ -76,13 +74,13 @@ function init_args(&$dbHandler)
   returns: 
 
 */
-function do_export(&$db,&$smarty,&$args)
-{
+function do_export(&$db,&$smarty,&$args) {
   $pfn = null;
-  switch($args->exportType)
-  {
+  $pfx = null;
+  switch($args->exportType) {
     case 'iSerializationToCSV':
-      $pfn = "exportKeywordsToCSV";
+      $pfn = null;
+      $pfx = "exportKeywordsToCSV";
     break;
 
     case 'iSerializationToXML':
@@ -90,20 +88,28 @@ function do_export(&$db,&$smarty,&$args)
     break;
   }
 
-  if ($pfn)
-  {
+  if (null != $pfn) {
     $tprojectMgr = new testproject($db);
     $content = $tprojectMgr->$pfn($args->tproject_id);
     downloadContentsToFile($content,$args->export_filename);
     exit();
   }
+
+  if (null != $pfx) {
+    $cu = getKeywordsEnv($db,$args->user,$args->tproject_id,
+            array('usage' => 'csvExport'));
+
+    $content = exportKeywordsToCSV($cu->kwOnTCV);
+    downloadContentsToFile($content,$args->export_filename);
+    exit();
+  }
+
 }
 
 /**
  *
  */
-function initializeGui(&$argsObj)
-{
+function initializeGui(&$argsObj) {
   $kw = new tlKeyword();
   $gui = new stdClass();
   $gui->tproject_id = $argsObj->tproject_id;
@@ -116,3 +122,13 @@ function initializeGui(&$argsObj)
   $gui->cancelUrl = "lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id}";
   return $gui;
 } 
+
+
+/**
+ *
+ */
+function exportKeywordsToCSV($kwSet) {
+  $keys = array( "keyword","notes","tcv_qty" );
+  $csv = exportDataToCSV($kwSet,$keys,$keys,array('addHeader' => 1));
+  return $csv;
+}

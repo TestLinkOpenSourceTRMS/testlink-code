@@ -100,11 +100,10 @@ function close_help()
   returns:
 
 */
-function open_popup(page)
-{
+function open_popup(page) {
   var windowCfg="left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes," + 
                 "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no," +
-                "width=400,height=650";
+                "width=600,height=500";
   window.open(page, "_blank",windowCfg);
   return true;
 }
@@ -405,8 +404,10 @@ function changeFeature(feature)
   } 
 }
 
-function openFileUploadWindow(id,tableName)
-{
+/**
+ *
+ */
+function openFileUploadWindow(id,tableName) {
   var windowCfg="width=510,height=300,resizable=yes,dependent=yes";
   window.open(fRoot+"lib/attachments/attachmentupload.php?id="+id+"&tableName="+tableName,
               "FileUpload",windowCfg);
@@ -848,8 +849,7 @@ function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
  * @author Andreas Simon
  * @param tc_id
  */
-function openTCEditWindow(tcase_id,tcversion_id) 
-{
+function openTCEditWindow(tcase_id,tcversion_id)  {
   var url = "lib/testcases/archiveData.php?edit=testcase&id=" + tcase_id + "&tcversion_id=" + tcversion_id;
   var width = getCookie("TCEditPopupWidth");
   var height = getCookie("TCEditPopupHeight");
@@ -937,8 +937,7 @@ function open_help_window(help_page,locale)
   rev :
 
 */
-function openTCaseWindow(tcase_id,tcversion_id,show_mode)
-{
+function openTCaseWindow(tcase_id,tcversion_id,show_mode) {
   var feature_url = "lib/testcases/archiveData.php";
   feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
           tcase_id+"&tcversion_id="+tcversion_id;
@@ -946,13 +945,11 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode)
   var width = getCookie("TCEditPopupWidth");
   var height = getCookie("TCEditPopupHeight");
 
-  if (width == null)
-  {
+  if (width == null) {
     var width = "800";
   }
 
-  if (height == null)
-  {
+  if (height == null) {
     var height = "600";
   }
 
@@ -1933,8 +1930,7 @@ function toogleRequiredOnShowHide(oid,display_type)
  * @author Andreas Simon
  * @param tc_id
  */
-function openTSEditWindow(tsuite_id) 
-{
+function openTSEditWindow(tsuite_id)  {
 
   var url = "lib/testcases/archiveData.php?edit=testsuite&id=" + tsuite_id 
   var width = getCookie("TSEditPopupWidth");
@@ -1952,4 +1948,30 @@ function openTSEditWindow(tsuite_id)
   
   var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
   window.open(fRoot+url, '_blank', windowCfg);
+}
+
+/**
+ *
+ */
+function openKWMgmtWindow(page) {
+ 
+  var width = getCookie("KWMgmtPopupWidth");
+  var height = getCookie("KWMgmtPopupHeight");
+
+
+alert(page);
+
+  if (width == null) {
+    var width = "800";
+  }
+
+  if (height == null) {
+    var height = "600";
+  }
+
+  var windowCfg = "width="+width+",height="+height+
+                  ",resizable=yes,scrollbars=yes,dependent=yes";
+
+  // second parameter(window name) with spaces caused bug on IE
+  window.open(fRoot+feature_url,"Keywords",windowCfg);
 }

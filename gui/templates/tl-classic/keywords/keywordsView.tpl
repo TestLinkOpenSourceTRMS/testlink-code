@@ -20,12 +20,22 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tproject_id}&doAction=do_delete&id=';
+var del_action = fRoot+'lib/keywords/keywordsEdit.php'+
+                 '?tproject_id={$gui->tproject_id}&doAction=do_delete'+
+                 '&openByOther={$gui->openByOther}&id=';
 </script>
+
+{if $gui->bodyOnLoad != ''}
+  <script language="JavaScript">
+  var {$gui->dialogName} = new std_dialog();
+  </script>  
+{/if}
+
 
 {include file="bootstrap.inc.tpl"} 
 </head>
-<body {$body_onload} class="testlink">
+<body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}"
+      class="testlink">
 
 <h1 class="title">{$labels.menu_manage_keywords}</h1>
 
@@ -48,7 +58,7 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
     <tr>
       <td>
         {if $gui->canManage != ""}
-          <a href="{$gui->editUrl}&doAction=edit&id={$gui->keywords[kwx]->dbID}">
+          <a href="{$gui->editUrl}&doAction=edit&id={$gui->keywords[kwx]->dbID}&openByOther={$gui->openByOther}">
         {/if}
         {$gui->keywords[kwx]->name|escape}
 
@@ -95,6 +105,8 @@ var del_action = fRoot+'lib/keywords/keywordsEdit.php?tproject_id={$gui->tprojec
       <form name="keyword_view" id="keyword_view" method="post" action="lib/keywords/keywordsEdit.php"> 
         <input type="hidden" name="doAction" value="" />
         <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
+        <input type="hidden" name="openByOther"
+               value="{$gui->openByOther}" />
 
     {if $gui->canManage != ""}
         <input type="submit" id="create_keyword" name="create_keyword" 

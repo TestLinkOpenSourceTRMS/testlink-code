@@ -46,5 +46,20 @@ function init_args(&$dbHandler) {
   $args = getKeywordsEnv($dbHandler,$user,$tproject_id);
   $args->tproject_id = $tproject_id;
 
+  $args->dialogName = '';
+  $args->bodyOnLoad = $args->bodyOnUnload = '';       
+  if(isset($_REQUEST['openByKWInc'])) {
+    $args->openByOther = 1;
+  } else {
+    // Probably useless
+    $args->openByOther = 
+      isset($_REQUEST['openByOther']) ? intval($_REQUEST['openByOther']) : 0;
+    if( $args->openByOther ) {
+      $args->dialogName = 'kw_dialog';
+      $args->bodyOnLoad = "dialog_onLoad($args->dialogName)";
+      $args->bodyOnUnload = "dialog_onUnload($args->dialogName)";  
+    }    
+  }
+
   return $args;
 }

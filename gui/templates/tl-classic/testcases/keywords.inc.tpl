@@ -63,13 +63,15 @@ var pF_remove_keyword = remove_keyword;
   {/if}
 
 
-  {$kwView = $gsmarty_href_keywordsView|replace:'%s%':$gui->tproject_id}
+  {$kwView = 
+  "lib/keywords/keywordsView.php?tproject_id=%s%&openByKWInc=1"|replace:'%s%':$gui->tproject_id}
 
-  <table cellpadding="0" cellspacing="0" style="font-size:100%;">
+  <table cellpadding="0" cellspacing="0" style="font-size:100%;" width="30%">
     <tr>
-      <td width="35%" style="vertical-align:top;"><a href={$kwView}>{$tcView_viewer_labels.keywords}</a>: &nbsp;
+      <td width="35%" style="vertical-align:top;">
+    <a href="javascript:open_popup('{$kwView}')">{$tcView_viewer_labels.keywords}</a> &nbsp; 
       </td>
-      {*debug*}
+
 
       {$removeEnabled = $args_edit_enabled && $gui->assign_keywords &&
                         $args_frozen_version == "no"}

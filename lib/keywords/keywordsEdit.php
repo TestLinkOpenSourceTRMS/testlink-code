@@ -58,7 +58,15 @@ if ($tpl != $tplCfg->default_template) {
   $kwe = getKeywordsEnv($db,$args->user,$args->tproject_id);
   foreach($kwe as $prop => $val) {
     $gui->$prop = $val;
-  }  
+  }
+  
+  if( $gui->openByOther ) {
+    // @used by keywordsView.tpl, to refresh callers feature
+    // when called from inside a feature and not from menu
+    $gui->dialogName = 'kw_dialog';
+    $gui->bodyOnLoad = "dialog_onLoad($gui->dialogName)";
+    $gui->bodyOnUnload = "dialog_onUnload($gui->dialogName)";  
+  }
 }
 
 $tplEngine->assign('gui',$gui);
@@ -79,7 +87,8 @@ function initEnv(&$dbHandler) {
            "id" => array($source, tlInputParameter::INT_N),
            "keyword" => array($source, tlInputParameter::STRING_N,0,100),
            "notes" => array($source, tlInputParameter::STRING_N),
-           "tproject_id" => array($source, tlInputParameter::INT_N));
+           "tproject_id" => array($source, tlInputParameter::INT_N),
+           "openByOther" => array($source, tlInputParameter::INT_N));
     
   $ip = I_PARAMS($ipcfg);
 
@@ -89,6 +98,7 @@ function initEnv(&$dbHandler) {
   $args->keyword = $ip["keyword"];
   $args->keyword_id = $ip["id"];
   $args->tproject_id = $ip["tproject_id"];
+  $args->openByOther = $ip["openByOther"];
  
   if( $args->tproject_id <= 0 ) {
     throw new Exception("Error Invalid Test Project ID", 1);
@@ -190,7 +200,6 @@ function do_update(&$argsObj,&$guiObj,&$tproject_mgr) {
   $ret->template = 'keywordsView.tpl';
   $ret->status = $tproject_mgr->updateKeyword($argsObj->tproject_id,
     $argsObj->keyword_id,$argsObj->keyword,$argsObj->notes);
-
   return $ret;
 }
 
@@ -249,6 +258,7 @@ function getKeywordErrorMessage($code) {
 function initializeGui(&$dbH,&$args) {
 
   $gui = new stdClass();
+  $gui->openByOther = $args->openByOther;
   $gui->user_feedback = '';
 
   // Needed by the smarty template to be launched

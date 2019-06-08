@@ -2654,18 +2654,19 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
 
   // Requirements
   if( $my['options']['copy_requirements'] ) {
-    $oldNewMappings['requirements'] = 
+    list($oldNewMappings['requirements'],$onReqSet) = 
       $this->copy_requirements($id,$new_id,$user_id);
   
     // need to copy relations between requirements
     $rel = null;
-    foreach ($oldNewMappings['requirements']['req'] as $okey => $nkey)  {
-      $sql = "/* $debugMsg */ SELECT id, source_id, destination_id," .
-             " relation_type, author_id, creation_ts " . 
-             " FROM {$this->tables['req_relations']} " .
-             " WHERE source_id=$okey OR destination_id=$okey ";
-
-      $rel[$okey] = $this->db->get_recordset($sql);
+    foreach ($oldNewMappings['requirements'] as $erek) {
+      foreach ($erek['req'] as $okey => $nkey) {
+        $sql = "/* $debugMsg */ SELECT id, source_id, destination_id," .
+               " relation_type, author_id, creation_ts " . 
+               " FROM {$this->tables['req_relations']} " .
+               " WHERE source_id=$okey OR destination_id=$okey ";
+        $rel[$okey] = $this->db->get_recordset($sql);
+      }
     }
 
     if(!is_null($rel)) {
@@ -2682,8 +2683,8 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null) {
                      INSERT INTO {$this->tables['req_relations']} "  . 
                    " (source_id, destination_id, relation_type, author_id, creation_ts) " .
                    " values (" .
-                   $oldNewMappings['requirements']['req'][$rval['source_id']] . "," .
-                   $oldNewMappings['requirements']['req'][$rval['destination_id']] . "," .
+                   $onReqSet[$rval['source_id']] . "," .
+                   $onReqSet[$rval['destination_id']] . "," .
                    $rval['relation_type'] . "," . $rval['author_id'] . "," .
                    "$totti)";
             $this->db->exec_query($sql);
@@ -2909,6 +2910,7 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
  */
 private function copy_requirements($source_id,$target_id,$user_id) {
   $mappings = null;
+  $or = array();
 
   // need to get subtree and create a new one
   $filters = array();
@@ -2929,18 +2931,21 @@ private function copy_requirements($source_id,$target_id,$user_id) {
     // when we ask to copy requirements WE DO NOT HAVE 
     // TEST CASES on new test project.
     //
-    $options = array('copy_also' => array('testcase_assignments' => false), 
-                     'caller' => 'copy_testproject');
+    $options = array('copy_also' => 
+                 array('testcase_assignments' => false), 
+                       'caller' => 'copy_testproject');
     
     $rel = null;
     foreach($elements as $piece) {
+      //echo '<br>RS:' . $piece['id'];
       $op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
-      $mappings += $op['mappings'];
+      
+      $mappings[] = $op['mappings'];
+      $or += $op['mappings']['req'];
     }
   }
 
-  // return (!is_null($mappings) && isset($mappings['req'])) ? $mappings['req'] : null;
-  return $mappings;
+  return array($mappings,$or);
 }
 
 

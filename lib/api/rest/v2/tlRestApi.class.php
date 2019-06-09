@@ -141,6 +141,7 @@ class tlRestApi
 
     $this->app->post('/testcases', array($this,'authenticate'), array($this,'createTestCase'));
 
+    $this->app->post('/keywords', array($this,'authenticate'), array($this,'createKeyword'));
 
     // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
     $this->apiLogPathName = '/var/testlink/rest-api.log';
@@ -1086,8 +1087,42 @@ class tlRestApi
     return $status_ok;
   }
 
+  /**
+   * "keyword"
+   * "notes"
+   * "testProject": {"prefix":"APR"}
+   */
+  public function createKeyword() {
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+    try {
+      $request = $this->app->request();
+      $item = json_decode($request->getBody());
+      if(is_null($item)) {
+        throw new Exception("Fatal Error " . __METHOD__ . " json_decode(requestBody) is NULL", 1);
+      }
 
-
+      // create obj with standard properties
+      // $tcase = $this->buildTestCaseObj($item);
+      //$op = $tproject_mgr->addKeyword($args->tproject_id,$args->keyword,$args->notes);
+      $pfx = $item->testProject->prefix;
+      $pid = $this->tprojectMgr->get_by_prefix((string)$pfx);
+      if( null == $pid ) {
+          $op['status'] = 'ko';
+          $op['message'] = "Can't get test project ID";
+      } else {
+        $pid = $pid['id'];
+        $ou = $this->tprojectMgr->addKeyword($pid,$item->keyword,$item->notes);       
+        $op = array('status' => 'ok', 'message' => 'ok', 'id' => -1);
+        if( ($op['id'] = $ou['id']) <= 0) {
+          $op['status'] = 'ko';
+          $op['message'] = $ou['msg'];
+        }        
+      }
+    } catch (Exception $e) {
+      $op['message'] = $e->getMessage();   
+    }
+    echo json_encode($op);
+  }
 
 
 } // class end

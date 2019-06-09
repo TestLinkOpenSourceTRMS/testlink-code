@@ -416,9 +416,8 @@ public function get_by_id($id, $opt=null)
  * 
  * @return array map with test project info; null if query fails
  */
-public function get_by_prefix($prefix, $addClause = null)
-{
-    $safe_prefix = $this->db->prepare_string($prefix);
+public function get_by_prefix($prefix, $addClause = null) {
+  $safe_prefix = $this->db->prepare_string($prefix);
   $condition = "testprojects.prefix='{$safe_prefix}'";
   $condition .= is_null($addClause) ? '' : " AND {$addClause} ";
 
@@ -433,8 +432,7 @@ public function get_by_prefix($prefix, $addClause = null)
  * @param string 64 chars
  * @return array map with test project info; null if query fails
  */
-public function getByAPIKey($apiKey, $opt=null)
-{
+public function getByAPIKey($apiKey, $opt=null) {
   $condition = "testprojects.api_key='{$apiKey}'";
   $result = $this->getTestProject($condition,$opt);
   return $result[0];

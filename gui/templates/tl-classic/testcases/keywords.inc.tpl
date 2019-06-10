@@ -4,7 +4,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 *}
 
 {lang_get var='kw_labels' 
-          s='btn_add,img_title_remove_keyword,warning,select_keywords'}
+          s='btn_add,img_title_remove_keyword,warning,select_keywords,
+             createKW'}
 
 
 {lang_get s='remove_kw_msgbox_msg' var='remove_kw_msgbox_msg'}
@@ -75,7 +76,7 @@ var pF_remove_keyword = remove_keyword;
     <a href="javascript:open_popup('{$kwView}')">{$tcView_viewer_labels.keywords}</a> &nbsp; 
 
       <a href="javascript:open_popup('{$kwAdd}')">
-      <img src="{$tlImages.add}" title="add"  style="border:none" /></a>&nbsp; 
+      <img src="{$tlImages.add}" title="{$kw_labels.createKW}"  style="border:none" /></a>&nbsp; 
       </td>
 
 

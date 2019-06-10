@@ -3951,6 +3951,7 @@ $TLS_select_platforms = "Select Platforms";
 $TLS_without_platforms = "without platforms";
 $TLS_platforms = "Platforms";
 $TLS_tcv_qty = "Number of Test Case Linked";
+$TLS_createKW = 'Create Keyword';
 
 
 // ----- END ------------------------------------------------------------------

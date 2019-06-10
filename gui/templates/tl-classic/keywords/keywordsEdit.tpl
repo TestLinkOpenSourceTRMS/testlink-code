@@ -2,6 +2,10 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource	keywordsEdit.tpl
 *}
+
+{$cfg_section = $smarty.template|basename|replace:".tpl":""}
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {$url_args = "lib/keywords/keywordsEdit.php"}
 {$keyword_edit_url = "$basehref$url_args"}
 
@@ -22,11 +26,17 @@ function validateForm(f)
   return true;
 }
 </script>
+
+{if $gui->bodyOnLoad != ''}
+  <script language="JavaScript">
+  var {$gui->dialogName} = new std_dialog();
+  </script>  
+{/if}
+
 </head>
 
-<body>
-{$cfg_section = $smarty.template|basename|replace:".tpl":""}
-{config_load file="input_dimensions.conf" section=$cfg_section}
+<body onLoad="{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
+
 
 <h1 class="title">{$gui->main_descr|escape}</h1>
 
@@ -63,11 +73,16 @@ function validateForm(f)
 	<input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
   	<input type="hidden" id=="doAction" name="doAction" value="" />
     <input type="hidden" name="openByOther" value="{$gui->openByOther}" />
+    <input type="hidden" name="directAccess" value="{$gui->directAccess}" />
 
-    <input type="submit" name="actionButton" value="{$gui->submit_button_label}"
-	       onclick="doAction.value='{$gui->submit_button_action}'" />
+    <input type="submit" name="actionButton"
+      value="{$gui->submit_button_label}"
+	    onclick="doAction.value='{$gui->submit_button_action}'"/>
+
+    {if $gui->directAccess == 0}     
   	<input type="button" value="{$labels.btn_cancel}"
 	         onclick="javascript:location.href=fRoot+'lib/keywords/keywordsView.php?tproject_id={$gui->tproject_id}&openByOther={$gui->openByOther}'" />
+    {/if}       
   	</div>
   	</form>
   </div>

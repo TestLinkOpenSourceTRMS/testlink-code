@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource: keywordsView.php
+ * @filesource: keywordsEdit.php
  *
- * Allows users to manage keywords. 
+ * Allows users to create/edit keywords. 
  *
  * @package    TestLink
- * @copyright  2005,2018 TestLink community 
+ * @copyright  2005,2019 TestLink community 
  * @link       http://www.testlink.org/
  *  
 **/
@@ -53,25 +53,31 @@ if($op->status == 1) {
 }
 
 $gui->keywords = null;
+$gui->submitCode = "";
 if ($tpl != $tplCfg->default_template) {
   // I'm going to return to screen that display all keywords
   $kwe = getKeywordsEnv($db,$args->user,$args->tproject_id);
   foreach($kwe as $prop => $val) {
     $gui->$prop = $val;
-  }
-  
-  if( $gui->openByOther ) {
-    // @used by keywordsView.tpl, to refresh callers feature
-    // when called from inside a feature and not from menu
-    $gui->dialogName = 'kw_dialog';
-    $gui->bodyOnLoad = "dialog_onLoad($gui->dialogName)";
-    $gui->bodyOnUnload = "dialog_onUnload($gui->dialogName)";  
-  }
+  }  
+  $setUpDialog = $gui->openByOther;  
+} else {
+  $setUpDialog = $gui->directAccess;  
+  $gui->submitCode="return dialog_onSubmit($gui->dialogName)";
+}
+
+if( $setUpDialog ) {
+  $gui->dialogName = 'kw_dialog';
+  $gui->bodyOnLoad = "dialog_onLoad($gui->dialogName)";
+  $gui->bodyOnUnload = "dialog_onUnload($gui->dialogName)";  
+
+  if( $gui->directAccess ) {
+    $gui->submitCode = "return dialog_onSubmit($gui->dialogName)";
+  }  
 }
 
 $tplEngine->assign('gui',$gui);
 $tplEngine->display($tplCfg->template_dir . $tpl);
-
 
 
 /**
@@ -88,7 +94,8 @@ function initEnv(&$dbHandler) {
            "keyword" => array($source, tlInputParameter::STRING_N,0,100),
            "notes" => array($source, tlInputParameter::STRING_N),
            "tproject_id" => array($source, tlInputParameter::INT_N),
-           "openByOther" => array($source, tlInputParameter::INT_N));
+           "openByOther" => array($source, tlInputParameter::INT_N),
+           "directAccess" => array($source, tlInputParameter::INT_N));
     
   $ip = I_PARAMS($ipcfg);
 
@@ -98,7 +105,9 @@ function initEnv(&$dbHandler) {
   $args->keyword = $ip["keyword"];
   $args->keyword_id = $ip["id"];
   $args->tproject_id = $ip["tproject_id"];
-  $args->openByOther = $ip["openByOther"];
+  $args->openByOther = intval($ip["openByOther"]);
+  $args->directAccess = intval($ip["directAccess"]);
+
  
   if( $args->tproject_id <= 0 ) {
     throw new Exception("Error Invalid Test Project ID", 1);
@@ -259,6 +268,8 @@ function initializeGui(&$dbH,&$args) {
 
   $gui = new stdClass();
   $gui->openByOther = $args->openByOther;
+  $gui->directAccess = $args->directAccess;
+
   $gui->user_feedback = '';
 
   // Needed by the smarty template to be launched

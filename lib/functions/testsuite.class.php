@@ -44,9 +44,9 @@ class testsuite extends tlObjectWithAttachments
   var $export_file_types = array("XML" => "XML");
  
   // Node Types (NT)
-  var $nt2exclude=array('testplan' => 'exclude_me',
-                        'requirement_spec'=> 'exclude_me',
-                        'requirement'=> 'exclude_me');
+  var $nt2exclude = array('testplan' => 'exclude_me',
+                          'requirement_spec'=> 'exclude_me',
+                          'requirement'=> 'exclude_me');
                                                   
 
   var $nt2exclude_children=array('testcase' => 'exclude_my_children',
@@ -775,10 +775,19 @@ class testsuite extends tlObjectWithAttachments
              see tree->get_subtree() for details.
   
   */
-  function get_subtree($id,$recursive_mode=false) {
-    $my['options'] = array('recursive' => $recursive_mode);
+  function get_subtree($id,$opt=null) {
+    $my['options'] = array('recursive' => 0, 'excludeTC' => 0);
+    $my['options'] = array_merge($my['options'],(array)$opt);
+
     $my['filters'] = array('exclude_node_types' => $this->nt2exclude,
                            'exclude_children_of' => $this->nt2exclude_children);
+
+    if( $my['options']['excludeTC'] ) {
+      $my['filters']['exclude_node_types']['testcase'] = 'exclude_me';
+    }
+
+    // var_dump($my['filters']);
+    //die();
     $subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
     return $subtree;
   }
@@ -1148,13 +1157,16 @@ class testsuite extends tlObjectWithAttachments
     static $tcase_mgr;
     
     if(is_null($keywordMgr)) {
-      $keywordMgr = new tlKeyword();      
+      $keywordMgr = new tlKeyword();
+
+
     } 
     
     $xmlTC = null;
     $relCache = array();
 
     $doRecursion = isset($optExport['RECURSIVE']) ? $optExport['RECURSIVE'] : 0;
+    
     if($doRecursion) {
       $cfXML = null;
       $attachmentsXML = null;
@@ -1172,60 +1184,65 @@ class testsuite extends tlObjectWithAttachments
           $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
         } 
       }
-	  if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS'])
-      {
-		$attachments=null;
+	    if (isset($optExport['ATTACHMENTS']) && $optExport['ATTACHMENTS']) {
+	  	  $attachments=null;
 	
-		// get all attachments
-		$attachmentInfos = $this->attachmentRepository->getAttachmentInfosFor($container_id,$this->attachmentTableName,'id');
+    		// get all attachments
+    		$attInfos = $this->attachmentRepository->getAttachmentInfosFor($container_id,$this->attachmentTableName,'id');
+    	  
+    		// get all attachments content and encode it in base64	  
+    		if ($attInfos) {
+    			foreach ($attInfos as $axInfo) {
+    				$aID = $axInfo["id"];
+    				$content = $this->attachmentRepository->getAttachmentContent($aID, $axInfo);
+    				
+    				if ($content != null) {
+    					$attach[$aID]["id"] = $aID;
+    					$attach[$aID]["name"] = $axInfo["file_name"];
+    					$attach[$aID]["file_type"] = $axInfo["file_type"];
+    					$attach[$aID]["title"] = $axInfo["title"];
+    					$attach[$aID]["date_added"] = $axInfo["date_added"];
+    					$attach[$aID]["content"] = base64_encode($content);
+    				}
+    			}
+    		}
 	  
-		// get all attachments content and encode it in base64	  
-		if ($attachmentInfos) {
-			foreach ($attachmentInfos as $attachmentInfo) {
-				$aID = $attachmentInfo["id"];
-				$content = $this->attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
-				
-				if ($content != null) {
-					$attachments[$aID]["id"] = $aID;
-					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
-					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
-					$attachments[$aID]["title"] = $attachmentInfo["title"];
-					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
-					$attachments[$aID]["content"] = base64_encode($content);
-				}
-			}
-		}
-	  
-		if( !is_null($attachments) && count($attachments) > 0 ) {
-			$attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
-			$attchElemTemplate = "\t<attachment>\n" .
-							   "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
-							   "\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
-							   "\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
-							   "\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
-							   "\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
-							   "\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
-							   "\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
-							   "\t</attachment>\n";
+    		if( !is_null($attach) && count($attach) > 0 ) {
+    			$attchRootElem = "<attachments>\n{{XMLCODE}}</attachments>\n";
+    			$attchElemTemplate = "\t<attachment>\n" .
+    							   "\t\t<id><![CDATA[||ATTACHMENT_ID||]]></id>\n" .
+    							   "\t\t<name><![CDATA[||ATTACHMENT_NAME||]]></name>\n" .
+    							   "\t\t<file_type><![CDATA[||ATTACHMENT_FILE_TYPE||]]></file_type>\n" .
+    							   "\t\t<file_size><![CDATA[||ATTACHMENT_FILE_SIZE||]]></file_size>\n" .
+    							   "\t\t<title><![CDATA[||ATTACHMENT_TITLE||]]></title>\n" .
+    							   "\t\t<date_added><![CDATA[||ATTACHMENT_DATE_ADDED||]]></date_added>\n" .
+    							   "\t\t<content><![CDATA[||ATTACHMENT_CONTENT||]]></content>\n" .
+    							   "\t</attachment>\n";
 
-			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
-								"||ATTACHMENT_FILE_TYPE||" => "file_type",
-								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
-								"||ATTACHMENT_TITLE||" => "title",
-								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
-								"||ATTACHMENT_CONTENT||" => "content");
-			$attachmentsXML = exportDataToXML($attachments,$attchRootElem,$attchElemTemplate,$attchDecode,true);
-		} 
+    			$attchDecode = array ("||ATTACHMENT_ID||" => "id", "||ATTACHMENT_NAME||" => "name",
+    								"||ATTACHMENT_FILE_TYPE||" => "file_type",
+    								"||ATTACHMENT_FILE_SIZE||" => "file_size", 
+    								"||ATTACHMENT_TITLE||" => "title",
+    								"||ATTACHMENT_DATE_ADDED||" => "date_added", 
+    								"||ATTACHMENT_CONTENT||" => "content");
+    			$attachXML = exportDataToXML($attach,$attchRootElem,$attchElemTemplate,$attchDecode,true);
+    		} 
       }
+
       $xmlTC = '<testsuite id="' . $tsuiteData['id'] . '" ' .
                'name="' . htmlspecialchars($tsuiteData['name']). '" >' .
                "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
                "<details><![CDATA[{$tsuiteData['details']}]]></details> \n{$kwXML}{$cfXML}{$attachmentsXML}";
+    
     } else {
       $xmlTC = "<testcases>";
     }
     
-    $test_spec = $this->get_subtree($container_id,self::USE_RECURSIVE_MODE);
+    $topt = array('recursive' => self::USE_RECURSIVE_MODE);
+    if( isset($optExport['skeleton']) && $optExport['skeleton'] ) {
+      $topt['excludeTC'] = true;
+    }
+    $test_spec = $this->get_subtree($container_id,$topt);
     
     $childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null ;
     $tcase_mgr=null;
@@ -1245,17 +1262,13 @@ class testsuite extends tlObjectWithAttachments
             testcase::LATEST_VERSION,
             $tproject_id,true,$optExport);
 
-
           // 20140816
           // Collect and do cache of all test case relations that exists inside this test suite.
           $relSet = $tcase_mgr->getRelations($cNode['id']);
-          if($relSet['num_relations'] >0)
-          {
-            foreach($relSet['relations'] as $key => $rel) 
-            {
+          if($relSet['num_relations'] >0) {
+            foreach($relSet['relations'] as $key => $rel) {
               // If we have already found this relation, skip it.
-              if ( !in_array($rel['id'], $relCache) ) 
-              {
+              if ( !in_array($rel['id'], $relCache) ) {
                 $relXmlData .= $tcase_mgr->exportRelationToXML($rel,$relSet['item']);
                 $relCache[] = $rel['id'];
               }  

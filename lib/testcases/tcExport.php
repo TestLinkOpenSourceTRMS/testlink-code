@@ -80,8 +80,7 @@ if( $check_children ) {
 }
 $node = $tree_mgr->get_node_hierarchy_info($node_id);
 
-
-if ($args->doExport) {
+if( $args->doExport || ( $args->doExportSkel && !$gui->oneTestCaseExport ) ) {
   if( is_null($tcase_mgr) ) {
     $tcase_mgr = new testcase($db);
   }
@@ -103,8 +102,13 @@ if ($args->doExport) {
       $args->optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
       $content = $tcase_mgr->$pfn($args->tcase_id,$args->tcversion_id,$args->tproject_id,null,$args->optExport);
     } else {
+      
+      $opt = $args->optExport; 
+      if( $args->doExportSkel ) {
+        $opt['skeleton'] = 1;
+      }
       $content = TL_XMLEXPORT_HEADER;
-      $content .= $tsuite_mgr->$pfn($args->container_id,$args->tproject_id,$args->optExport);
+      $content .= $tsuite_mgr->$pfn($args->container_id,$args->tproject_id,$opt);
     }
 
     downloadContentsToFile($content,$gui->export_filename);
@@ -137,7 +141,8 @@ function init_args(&$dbHandler) {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
-  $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
+  $args->doExport = isset($_REQUEST['export']) ? 1 : 0;
+  $args->doExportSkel = isset($_REQUEST['exportSkel']) ? 1 : 0;
 
   $k2l = array('useRecursion','exportReqs','exportCFields',
     'exportKeywords','exportTestCaseExternalID','exportTCSummary',

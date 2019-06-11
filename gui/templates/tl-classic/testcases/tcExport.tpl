@@ -1,19 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcExport.tpl,v 1.14 2010/11/06 11:42:47 amkhullar Exp $
-
-test case export initial page
-
-@internal revisions
-@since 1.9.15
-
+@filesource: tcExport.tpl
+test case export
 *}
 
 {lang_get var="labels"
           s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,export_tcase_external_id,btn_cancel,
              view_file_format_doc,export_with_prefix,export_summary,export_steps,export_preconditions,
-             export_testcase_requirements,export_attachments'}
+             export_testcase_requirements,export_attachments,
+             export_skel'}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -34,23 +30,20 @@ function validateForm(f)
   return true;
 }
 
-function mirrorCheckbox(sourceOID,targetOID)
-{
+/**
+ *
+ */
+function mirrorCheckbox(sourceOID,targetOID) {
   var scb = document.getElementById(sourceOID);
   var tcb = document.getElementById(targetOID);
 
-  if(scb.checked)
-  {
+  if(scb.checked) {
     tcb.disabled = 0;
-  }
-  else
-  {
+  } else {
     tcb.checked = 0;
     tcb.disabled = 1;
   }
 }
-
-
 </script>
 </head>
 
@@ -125,10 +118,6 @@ function mirrorCheckbox(sourceOID,targetOID)
     <td>{$labels.export_attachments}</td>
     <td><input type="checkbox" name="exportAttachments" value="1" /></td>
     </tr>
-
-
-
-
   	</table>
 
   	<div class="groupBtn">
@@ -138,6 +127,7 @@ function mirrorCheckbox(sourceOID,targetOID)
   		<input type="hidden" name="containerID" value="{$gui->containerID}" />
   		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
   		<input type="submit" name="export" value="{$labels.btn_export}" />
+      <input type="submit" name="exportSkel" value="{$labels.export_skel}" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
              {elseif $gui->cancelActionJS != ''} onclick="javascript:{$gui->cancelActionJS};"

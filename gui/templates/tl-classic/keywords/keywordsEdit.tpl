@@ -74,6 +74,7 @@ function validateForm(f)
   	<input type="hidden" id=="doAction" name="doAction" value="" />
     <input type="hidden" name="openByOther" value="{$gui->openByOther}" />
     <input type="hidden" name="directAccess" value="{$gui->directAccess}" />
+    <input type="hidden" name="tcversion_id" value="{$gui->tcversion_id}" />
 
     <input type="submit" name="actionButton"
       value="{$gui->submit_button_label}"

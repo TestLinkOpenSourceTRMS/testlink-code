@@ -40,6 +40,8 @@ switch ($action) {
   case "do_delete":
   case "edit":
   case "create":
+  case "cfl":
+  case "do_cfl":
     $op = $action($args,$gui,$tprojectMgr);
   break;
 }
@@ -95,7 +97,8 @@ function initEnv(&$dbHandler) {
            "notes" => array($source, tlInputParameter::STRING_N),
            "tproject_id" => array($source, tlInputParameter::INT_N),
            "openByOther" => array($source, tlInputParameter::INT_N),
-           "directAccess" => array($source, tlInputParameter::INT_N));
+           "directAccess" => array($source, tlInputParameter::INT_N),
+           "tcversion_id" => array($source, tlInputParameter::INT_N));
     
   $ip = I_PARAMS($ipcfg);
 
@@ -107,6 +110,7 @@ function initEnv(&$dbHandler) {
   $args->tproject_id = $ip["tproject_id"];
   $args->openByOther = intval($ip["openByOther"]);
   $args->directAccess = intval($ip["directAccess"]);
+  $args->tcversion_id = intval($ip["tcversion_id"]);
 
  
   if( $args->tproject_id <= 0 ) {
@@ -231,6 +235,52 @@ function do_delete(&$args,&$guiObj,&$tproject_mgr) {
   return $ret;
 }
 
+/*
+ *  initialize variables to launch user interface (smarty template)
+ *  to get information to accomplish create task.
+*/
+function cfl(&$argsObj,&$guiObj) {
+  $guiObj->submit_button_action = 'do_cfl';
+  $guiObj->submit_button_label = lang_get('btn_create_and_link');
+  $guiObj->main_descr = lang_get('keyword_management');
+  $guiObj->action_descr = lang_get('create_keyword_and_link');
+
+  $ret = new stdClass();
+  $ret->template = 'keywordsEdit.tpl';
+  $ret->status = 1;
+  return $ret;
+}
+
+/*
+ * Creates the keyword
+ */
+function do_cfl(&$args,&$guiObj,&$tproject_mgr) {
+  $guiObj->submit_button_action = 'do_cfl';
+  $guiObj->submit_button_label = lang_get('btn_save');
+  $guiObj->main_descr = lang_get('keyword_management');
+  $guiObj->action_descr = lang_get('create_keyword');
+
+  $op = $tproject_mgr->addKeyword($args->tproject_id,$args->keyword,$args->notes);
+  
+  if( $op['status'] ) {
+    $tcaseMgr = new testcase($tproject_mgr->db);
+    $tbl = tlObject::getDBTables('nodes_hierarchy');
+    $sql = "SELECT parent_id FROM {$tbl['nodes_hierarchy']}
+            WHERE id=" . intval($args->tcversion_id);
+    $rs = $tproject_mgr->db->get_recordset($sql);
+    $tcase_id = intval($rs[0]['parent_id']);
+    $tcaseMgr->addKeywords($tcase_id,$args->tcversion_id,
+        array($op['id']));
+  }
+
+  $ret = new stdClass();
+  $ret->template = 'keywordsView.tpl';
+  $ret->status = $op['status'];
+  return $ret;
+}
+
+
+
 /**
  *
  */
@@ -269,6 +319,7 @@ function initializeGui(&$dbH,&$args) {
   $gui = new stdClass();
   $gui->openByOther = $args->openByOther;
   $gui->directAccess = $args->directAccess;
+  $gui->tcversion_id = $args->tcversion_id;
 
   $gui->user_feedback = '';
 

@@ -438,7 +438,8 @@ class TLSmarty extends Smarty {
                    'test_status_blocked' => $imgLoc . 'test_status_blocked.png',
                    'test_status_passed_next' => $imgLoc . 'test_status_passed_next.png',
                    'test_status_failed_next' => $imgLoc . 'test_status_failed_next.png',
-                   'test_status_blocked_next' => $imgLoc . 'test_status_blocked_next.png');
+                   'test_status_blocked_next' => $imgLoc . 'test_status_blocked_next.png',
+                   'keyword_add' => $imgLoc . 'tag_blue_add.png');
 
     $imi = config_get('images');
     if(count($imi) >0) {

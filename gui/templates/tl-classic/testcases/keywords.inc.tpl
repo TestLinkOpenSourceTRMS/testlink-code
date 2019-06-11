@@ -5,7 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 {lang_get var='kw_labels' 
           s='btn_add,img_title_remove_keyword,warning,select_keywords,
-             createKW'}
+             createKW,btn_create_and_link'}
 
 
 {lang_get s='remove_kw_msgbox_msg' var='remove_kw_msgbox_msg'}
@@ -70,6 +70,9 @@ var pF_remove_keyword = remove_keyword;
   {$kwAdd = 
   "lib/keywords/keywordsEdit.php?doAction=create&tproject_id=%s%&directAccess=1"|replace:'%s%':$gui->tproject_id}
 
+  {$kwAL = 
+  "lib/keywords/keywordsEdit.php?doAction=cfl&tproject_id=%s%&directAccess=1&tcversion_id=$args_tcversion_id"|replace:'%s%':$gui->tproject_id}
+
   <table cellpadding="0" cellspacing="0" style="font-size:100%;" width="30%">
     <tr>
       <td width="35%" style="vertical-align:top;">
@@ -77,6 +80,10 @@ var pF_remove_keyword = remove_keyword;
 
       <a href="javascript:open_popup('{$kwAdd}')">
       <img src="{$tlImages.add}" title="{$kw_labels.createKW}"  style="border:none" /></a>&nbsp; 
+
+      <a href="javascript:open_popup('{$kwAL}')">
+      <img src="{$tlImages.keyword_add}" title="{$kw_labels.btn_create_and_link}"  style="border:none" /></a>&nbsp; 
+
       </td>
 
 

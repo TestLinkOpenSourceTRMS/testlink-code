@@ -3953,5 +3953,7 @@ $TLS_platforms = "Platforms";
 $TLS_tcv_qty = "Number of Test Case Linked";
 $TLS_createKW = 'Create Keyword';
 
+$TLS_btn_create_and_link = 'Create & Link';
+$TLS_create_keyword_and_link = 'Create Keyword and Link to TCV';
 
 // ----- END ------------------------------------------------------------------

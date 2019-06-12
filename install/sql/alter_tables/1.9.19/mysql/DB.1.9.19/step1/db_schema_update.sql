@@ -7,5 +7,5 @@
 # 
 #
 #
-ALTER TABLE /*prefix*/keywords ADD UNIQUE KEY /*prefix*/keyword_testproject_id (`keyword`,`testproject_id`)  
+ALTER TABLE /*prefix*/keywords ADD UNIQUE KEY /*prefix*/keyword_testproject_id (`keyword`,`testproject_id`);
 # END

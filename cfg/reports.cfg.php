@@ -218,7 +218,6 @@ $tlCfg->reports_list['free_tcases'] = array(
 // Add custom configuration
 clearstatcache();
 $f2inc = TL_ABS_PATH . 'cfg/custom_reports.cfg.php';
-if ( file_exists($f2inc) )
-{
+if ( file_exists($f2inc) ) {
   require_once($f2inc);
 }

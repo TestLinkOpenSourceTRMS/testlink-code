@@ -6,6 +6,20 @@
  *
  */
 
+/*
+add on example
+list($myPath) = get_included_files();
+$bub = explode('/lib/',$myPath);
+if( count($bub) == 1 ) {
+  $bub = explode('/addon/',$myPath);
+}
+if( count($bub) == 1 ) {
+  $php = basename($myPath);
+  $bub = explode($php,$myPath);
+}
+$base = $bub[0];
+require($base . '/addon/emailReports/config/reports.cfg.php');
+*/
 /** 
  * @VAR $tlCfg->reports_list['report_identifier'] 
  * definition of default set of reports

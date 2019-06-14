@@ -71,6 +71,9 @@ $tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
 $tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 
 
+$tlCfg->accessWithoutLogin = array();
+
+
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
 if( !defined('DB_TABLE_PREFIX') ) {

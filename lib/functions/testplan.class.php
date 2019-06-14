@@ -434,8 +434,7 @@ class testplan extends tlObjectWithAttachments
    is_open
    parent_id
    */
-  function get_by_id($id, $opt=null)
-  {
+  function get_by_id($id, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $my = array();
@@ -443,8 +442,7 @@ class testplan extends tlObjectWithAttachments
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
     $safe_id = intval($id);
-    switch($my['opt']['output'])
-    {
+    switch($my['opt']['output']) {
       case 'testPlanFields':
         $sql = "/* $debugMsg */ " .
                " SELECT {$my['opt']['testPlanFields']} FROM {$this->tables['testplans']} " .
@@ -463,21 +461,22 @@ class testplan extends tlObjectWithAttachments
       
       case 'full':
       default:
-            $sql =   "/* $debugMsg */ " .
-                " SELECT TPLAN.*,NH_TPLAN.name,NH_TPLAN.parent_id, " .
-                " NH_TPROJ.id AS tproject_id, NH_TPROJ.name AS tproject_name,TPROJ.prefix " .
-               " FROM {$this->tables['testplans']} TPLAN, " .
-               " {$this->tables['nodes_hierarchy']} NH_TPLAN " .
-               " JOIN {$this->tables['nodes_hierarchy']} NH_TPROJ ON NH_TPROJ.id = NH_TPLAN.parent_id " .
-               " JOIN {$this->tables['testprojects']} TPROJ ON TPROJ.ID = NH_TPROJ.id " .
-               " WHERE TPLAN.id = NH_TPLAN.id AND TPLAN.id = " . $safe_id;
-         
-      break;  
-    
+        $sql = "/* $debugMsg */ " .
+               " SELECT TPLAN.*,NH_TPLAN.name,NH_TPLAN.parent_id, 
+                 NH_TPROJ.id AS tproject_id, 
+                 NH_TPROJ.name AS tproject_name,TPROJ.prefix 
+                 FROM {$this->tables['testplans']} TPLAN, 
+                 {$this->tables['nodes_hierarchy']} NH_TPLAN
+                 JOIN {$this->tables['nodes_hierarchy']} NH_TPROJ 
+                 ON NH_TPROJ.id = NH_TPLAN.parent_id 
+                 JOIN {$this->tables['testprojects']} TPROJ 
+                 ON TPROJ.ID = NH_TPROJ.id 
+                 WHERE TPLAN.id = NH_TPLAN.id AND 
+                 TPLAN.id = " . $safe_id;
+      break;      
     }
 
-    if(!is_null($my['opt']['active']))
-    {
+    if(!is_null($my['opt']['active'])) {
       $sql .= " AND active=" . (intval($my['opt']['active']) > 0 ? 1 : 0) . " ";
     }
 

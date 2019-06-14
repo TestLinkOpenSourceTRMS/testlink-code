@@ -2042,9 +2042,9 @@ $TLS_no_notrun = "未実行のテストケースはありません";
 $TLS_no_not_run = $TLS_no_notrun;
 
 $TLS_with_tester = '担当者ありで';
-$TLS_no_not_run_with_tester = $TLS_with_tester + $TLS_no_notrun;
-$TLS_no_failed_with_tester = $TLS_with_tester + $TLS_no_failed;
-$TLS_no_blocked_with_tester = $TLS_with_tester + $TLS_no_blocked;
+$TLS_no_not_run_with_tester = $TLS_with_tester . $TLS_no_notrun;
+$TLS_no_failed_with_tester = $TLS_with_tester . $TLS_no_failed;
+$TLS_no_blocked_with_tester = $TLS_with_tester . $TLS_no_blocked;
 
 
 
@@ -3262,7 +3262,7 @@ $TLS_show_closed_builds_btn = "クローズしたテストケースも表示";
 
 // ----- lib/testcases/tcCreatedPerUser.php -----
 $TLS_link_report_test_cases_created_per_user = "作成者でテストケースを検索"; // "Test Cases created per User";
-$TLS_testcases_created_per_user = 'テストプロジェクト: %s - ' + $TLS_link_report_test_cases_created_per_user;
+$TLS_testcases_created_per_user = 'テストプロジェクト: %s - ' . $TLS_link_report_test_cases_created_per_user;
 
 
 

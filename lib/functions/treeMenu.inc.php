@@ -2514,6 +2514,7 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
   static $decoding_info;
   static $tcFilterByKeywords;
   static $doFilterOn;
+  static $tcFilterByPlatforms;
 
   if (!$tables) {
     $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
@@ -2570,20 +2571,17 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
   $tcase_counters['testcase_count'] = 0;
   $node_type = isset($node['node_type_id']) ? $decoding_info['node_id_descr'][$node['node_type_id']] : null;
 
-  if($node_type == 'testcase')
-  {
+  if($node_type == 'testcase') {
     $remove_node = false;
         
-    if ($my['options']['ignoreInactiveTestCases'])
-    {
+    if ($my['options']['ignoreInactiveTestCases']) {
       $sql = " SELECT COUNT(TCV.id) AS count_active_versions " .
              " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
              " WHERE NH.parent_id=" . $node['id'] .
              " AND NH.id = TCV.id AND TCV.active=1";
       $result = $db->exec_query($sql);
       $row = $db->fetch_array($result);
-      if ($row['count_active_versions'] == 0)
-      {
+      if ($row['count_active_versions'] == 0) {
         $remove_node = true;
       }
     }
@@ -2595,20 +2593,18 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
              " AND NH.id = TCV.id AND TCV.active=1";
       $result = $db->exec_query($sql);
       $row = $db->fetch_array($result);
-      if ($row['count_active_versions'] != 0)
-      {
+      if ($row['count_active_versions'] != 0) {
         $remove_node = true;
       }
    }
         
    if( $my['options']['hideTestCases'] || $remove_node ||
-      ($doFilterOn['keywords'] && !isset($tcFilterByKeywords[$node['id']])) )
-   {
+       ($doFilterOn['keywords'] && 
+        !isset($tcFilterByKeywords[$node['id']])) ||
+       ($doFilterOn['platforms'] && 
+        !isset($tcFilterByPlatforms[$node['id']])) ) {
      $node = REMOVEME;
-     // $node = null;
-   } 
-   else 
-   {
+   } else {
       // needed to avoid problems when using json_encode with EXTJS
       unset($node['childNodes']);
       $node['leaf']=true;
@@ -2617,30 +2613,28 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
   }  // if($node_type == 'testcase')
   
   
-  // ================================================================================
-  if( !is_null($node) && isset($node['childNodes']) && is_array($node['childNodes']) )
-  {
+  // ================================================================
+  if( !is_null($node) && isset($node['childNodes']) && is_array($node['childNodes']) ) {
+  
     // node has to be a Test Suite ?
     $childNodes = &$node['childNodes'];
     $childNodesQty = count($childNodes);
     
     //$pos2unset = array();
-    for($idx = 0;$idx < $childNodesQty ;$idx++)
-    {
+    for($idx = 0;$idx < $childNodesQty ;$idx++) {
       $current = &$childNodes[$idx];
       // I use set an element to null to filter out leaf menu items
-      if(is_null($current) || $current== REMOVEME)
-      {
+      if(is_null($current) || $current== REMOVEME) {
         $childNodes[$idx] = REMOVEME;
         continue;
       }
 
       $counters_map = prepareTestSpecNode($db, $tprojectMgr,$tprojectID,$current,$map_node_tccount);
       
-      // 20120831 - to be analized carefully, because this can be solution
+      // 20120831 - 
+      // to be analized carefully, because this can be solution
       // to null issue with json and ext-js
-      if( is_null($current) )
-      {
+      if( is_null($current) ) {
         $childNodes[$idx] = REMOVEME;
       }
       
@@ -2648,27 +2642,22 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
     }
     $node['testcase_count'] = $tcase_counters['testcase_count'];
     
-    if (isset($node['id']))
-    {
+    if (isset($node['id'])) {
       $map_node_tccount[$node['id']] = array('testcount' => $node['testcase_count'],
                                              'name' => $node['name']);
     }
 
     // node must be destroyed if empty had we have using filtering conditions
-    if( $filtersApplied && !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
-    {
+    if( $filtersApplied && !$tcase_counters['testcase_count'] && ($node_type != 'testproject')) {
       $node = null;
     }
-  }
-  else if ($node_type == 'testsuite')
-  {
+  } else if ($node_type == 'testsuite') {
     // does this means is an empty test suite ??? - franciscom 20080328
     $map_node_tccount[$node['id']] = array( 'testcount' => 0,'name' => $node['name']);
   
     // If is an EMPTY Test suite and we have added filtering conditions,
     // We will destroy it.
-    if( $filtersApplied )
-    {
+    if( $filtersApplied ) {
       $node = null;
     } 
   }

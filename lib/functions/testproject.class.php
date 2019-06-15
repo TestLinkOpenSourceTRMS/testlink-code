@@ -2935,7 +2935,6 @@ private function copy_requirements($source_id,$target_id,$user_id) {
     
     $rel = null;
     foreach($elements as $piece) {
-      //echo '<br>RS:' . $piece['id'];
       $op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
       
       $mappings[] = $op['mappings'];
@@ -4047,7 +4046,7 @@ function getPlatformsLatestTCV($tproject_id, $platform_id=0) {
 
 
 /**
- *
+ * @used-by getTestSpecTree()@treeMenu.inc.php
  * -1 => WITHOUT PLATFORMS
  * 
  */
@@ -4122,9 +4121,9 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
                       GROUP BY tcversion_id ";
 
         $sql = "/* Filter Type = AND */
-                SELECT FOXDOG.testcase_id 
-                FROM ( $sqlCount ) AS FOXDOG 
-                WHERE FOXDOG.HITS=" . count($platform_id);
+                SELECT PLTFOXDOG.testcase_id 
+                FROM ( $sqlCount ) AS PLTFOXDOG 
+                WHERE PLTFOXDOG.HITS=" . count($platform_id);
       break;
 
 

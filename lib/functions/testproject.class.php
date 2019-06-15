@@ -2250,7 +2250,7 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
                       
                       WHERE testproject_id = {$tproject_id}
                       {$kwFilter}
-                      GROUP BY tcversion_id ";
+                      GROUP BY TK.tcversion_id ";
 
         $subquery = " AND tcversion_id IN (" .
                     " SELECT FOXDOG.tcversion_id FROM
@@ -3337,7 +3337,7 @@ function getTCLatestVersionFilteredByKeywords($tproject_id, $keyword_id=0, $keyw
                       ON LTCV.tcversion_id = TK.tcversion_id
                       WHERE testproject_id = {$tproject_id}
                       AND {$kwFilter}
-                      GROUP BY tcversion_id ";
+                      GROUP BY TK.tcversion_id ";
 
         $sql = "/* Filter Type = AND */
                 SELECT FOXDOG.testcase_id 
@@ -4118,7 +4118,7 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
                       ON LTCV.tcversion_id = TPL.tcversion_id
                       WHERE testproject_id = {$tproject_id}
                       AND {$filter}
-                      GROUP BY tcversion_id ";
+                      GROUP BY TPL.tcversion_id ";
 
         $sql = "/* Filter Type = AND */
                 SELECT PLTFOXDOG.testcase_id 

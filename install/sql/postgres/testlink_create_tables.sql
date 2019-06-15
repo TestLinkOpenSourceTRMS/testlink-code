@@ -895,6 +895,21 @@ CREATE TABLE /*prefix*/testproject_codetracker (
 
 
 --
+-- Table structure for table "testcase_platforms"
+--
+CREATE TABLE /*prefix*/testcase_platforms( 
+  "id" BIGSERIAL NOT NULL , 
+  "testcase_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),
+  "platform_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/platforms (id) ON DELETE CASCADE,
+  PRIMARY KEY ("id")
+); 
+CREATE UNIQUE INDEX /*prefix*/idx01_testcase_platforms ON /*prefix*/testcase_platforms ("testcase_id","tcversion_id","platform_id");
+CREATE INDEX /*prefix*/idx02_testcase_platforms ON /*prefix*/testcase_platforms ("tcversion_id");
+
+
+
+--
 -- VIEWS
 --
 CREATE OR REPLACE VIEW /*prefix*/tcases_active AS 
@@ -1024,4 +1039,16 @@ CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_context AS
   SELECT tcversion_id, testplan_id,build_id,platform_id,max(id) AS id
   FROM /*prefix*/executions 
   GROUP BY tcversion_id,testplan_id,build_id,platform_id
+);
+
+
+--
+--
+CREATE OR REPLACE VIEW /*prefix*/tcversions_without_platforms AS 
+( 
+  SELECT NHTCV.parent_id AS testcase_id, NHTCV.id AS id
+  FROM /*prefix*/nodes_hierarchy NHTCV 
+  WHERE NHTCV.node_type_id = 4 
+  AND NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
+                 WHERE TCPL.tcversion_id = NHTCV.id ) )
 );

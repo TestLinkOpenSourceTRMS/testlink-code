@@ -330,7 +330,7 @@ abstract class tlObject implements iSerialization
     $items = array('tcversions_last_active' => null,
                    'tcversions_without_keywords' => null,
                    'last_executions' => null,
-                   'last_executions_by_platforms' => null,
+                   'last_executions_by_platform' => null,
                    'latest_exec_by_testplan' => null,
                    'latest_exec_by_context' => null,
                    'latest_tcase_version_id' => null,

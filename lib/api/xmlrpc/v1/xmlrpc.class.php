@@ -3638,11 +3638,11 @@ class TestlinkXMLRPCServer extends IXR_Server {
           } catch (Exception $e) {
             return $this->errors;
           }  
-
-          $map = $this->checkTestCaseVersionNumberAncestry();
-          $status_ok = $map["status_ok"];
         }
-
+        
+        $map = $this->checkTestCaseVersionNumberAncestry();
+        $status_ok = $map["status_ok"];
+        
         if($status_ok) {
             $tcvid = $this->tcVersionID;
             $docRepo = tlAttachmentRepository::create( $this->dbObj );

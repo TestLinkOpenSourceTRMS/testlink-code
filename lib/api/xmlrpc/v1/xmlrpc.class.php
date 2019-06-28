@@ -2590,6 +2590,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *            'full':(default) get summary,steps,expected_results,test suite name
      *            'simple':
      *            'details':
+     * @param array $args["customfields"]
+     *             - optional can be a boolean or an array with the requested fields
      * @return mixed $resultInfo
      *
      * @internal revisions
@@ -2611,6 +2613,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 self::$executeStatusParamName => null,
                 self::$executionTypeParamName => null,
                 self::$getStepsInfoParamName => false,
+                self::$customFieldsParamName => false,
                 self::$detailsParamName => 'full',
                 self::$platformIDParamName => null
         );
@@ -2687,7 +2690,72 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
         }
 
+        // Do we need the custom fields?
+        if (! is_null( $recordset ) && ($opt[self::$customFieldsParamName] || is_array($opt[self::$customFieldsParamName]))) {
+            $itemSet = array_keys( $recordset );
+            switch($options['output']) {
+                case 'mapOfArray' :
+                case 'mapOfMap' :
+                    foreach( $itemSet as $itemKey ) {
+                        $keySet = array_keys( $recordset[$itemKey] );
+                        $target = &$recordset[$itemKey];
+                        foreach( $keySet as $accessKey ) {
+                            $target[$accessKey]['customfields'] = $this->_testcaseCustomFieldData(
+                                $target[$accessKey], $tplanInfo['parent_id'], $opt[self::$customFieldsParamName]);
+                        }
+                    }
+                    break;
+
+                case 'array' :
+                case 'map' :
+                default :
+                    foreach( $itemSet as $accessKey ) {
+                        $recordset[$accessKey]['customfields'] = $this->_testcaseCustomFieldData(
+                            $recordset[$accessKey], $tplanInfo['parent_id'], $opt[self::$customFieldsParamName]);
+                    }
+                    break;
+            }
+        }
+
         return $recordset;
+    }
+
+    /**
+     * Get a map of all custom fields from the given testcase.
+     *
+     * This can be filtered by providing an array with the allowed
+     * custom field names as $cf_options.
+     *
+     * @param mixed $testcase
+     *              The testcase to query for.
+     * @param int $project_id
+     *              The project to query for.
+     * @param array $cf_options
+     *              The optional name filter.
+     * @return array
+     * @access private
+     */
+    private function _testcaseCustomFieldData(&$testcase, $project_id, &$cf_options) {
+        $cf = $this->tcaseMgr->get_linked_cfields_at_design(
+            $testcase['tcase_id'], $testcase['tcversion_id'],
+            null, null, $project_id);
+        $filtered_cf = array();
+
+        $cfieds_selected = is_array($cf_options);
+        foreach ($cf as $cf_id => $cfield) {
+            if ($cfieds_selected && !in_array($cfield['name'], $cf_options)) {
+                continue;
+            }
+
+            $filtered_cf[$cfield['name']] = array(
+              'name' => $cfield['id']['name'],
+              'label' => $cfield['id']['label'],
+              'type' => $cfield['id']['type'],
+              'value' => $cfield['id']['value']
+            );
+        }
+
+        return $filtered_cf;
     }
 
     /**

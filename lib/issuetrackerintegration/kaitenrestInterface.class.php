@@ -3,13 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * @filesource	kaitenrestInterface.class.php
- * @author Francisco Mancardi
+ * @author 
  *
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/kaiten-php-api/lib/kaiten-rest-api.php");
-class kaitenrestInterface extends issueTrackerInterface
-{
+
+class kaitenrestInterface extends issueTrackerInterface {
   private $APIClient;
   private $options = [];
   private $conditionMap = [
@@ -54,14 +54,11 @@ class kaitenrestInterface extends issueTrackerInterface
 	/**
 	 *
 	 **/
-	function completeCfg()
-	{
-		$this->cfg->uribase = trim($this->cfg->uribase,"/"); // be sure no / at end
-    if( property_exists($this->cfg,'options') )
-    {
+	function completeCfg() {
+		$this->cfg->uribase = trim($this->cfg->uribase,"/"); 
+    if( property_exists($this->cfg,'options') ) {
       $option = get_object_vars($this->cfg->options);
-      foreach ($option as $name => $elem)
-      {
+      foreach ($option as $name => $elem) {
         $name = (string)$name;
         $this->options[$name] = (string)$elem;     
       }
@@ -73,8 +70,7 @@ class kaitenrestInterface extends issueTrackerInterface
    *
    *
    **/
-	function getAPIClient()
-	{
+	function getAPIClient() {
 		return $this->APIClient;
 	}
 
@@ -85,8 +81,7 @@ class kaitenrestInterface extends issueTrackerInterface
    *
    * @return bool returns true if the bugid has the right format, false else
    **/
-  function checkBugIDSyntax($issueID)
-  {
+  function checkBugIDSyntax($issueID) {
     return $this->checkBugIDSyntaxNumeric($issueID);
   }
 
@@ -96,17 +91,14 @@ class kaitenrestInterface extends issueTrackerInterface
    * @return bool 
    *
    **/
-  function connect()
-  {
+  function connect() {
     $processCatch = false;
 
-    try
-    {
+    try {
   	  // CRITIC NOTICE for developers
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
       $url = (string)trim($this->cfg->uribase);
-      // $apiKey = (string)trim($this->cfg->apikey);
       $login = (string)trim($this->cfg->login);
       $password = (string)trim($this->cfg->password);
       $boardId = (string)trim($this->cfg->boardid);
@@ -116,27 +108,22 @@ class kaitenrestInterface extends issueTrackerInterface
       $pxy->proxy = config_get('proxy');
   	  $this->APIClient = new kaiten($url,$login,$password,$boardId,$options,$pxy);
       // to undestand if connection is OK, I will ask for users.
-      try
-      {
+      try {
         $items = $this->APIClient->getUsers();
         $this->connected = count($items) > 0 ? true : false;
         unset($items);
       }
-      catch(Exception $e)
-      {
+      catch(Exception $e) {
         $processCatch = true;
       }
     }
-  	catch(Exception $e)
-  	{
+  	catch(Exception $e) {
   	  $processCatch = true;
   	}
   	
-  	if($processCatch)
-  	{
+  	if($processCatch) {
   		$logDetails = '';
-  		foreach(['uribase','login'] as $v)
-  		{
+  		foreach(['uribase','login'] as $v) {
   			$logDetails .= "$v={$this->cfg->$v} / "; 
   		}
   		$logDetails = trim($logDetails,'/ ');
@@ -149,8 +136,7 @@ class kaitenrestInterface extends issueTrackerInterface
    * 
    *
    **/
-	function isConnected()
-	{
+	function isConnected() {
 		return $this->connected;
 	}
 
@@ -158,8 +144,7 @@ class kaitenrestInterface extends issueTrackerInterface
    * 
    *
    **/
-  function buildViewBugURL($issueID)
-  {
+  function buildViewBugURL($issueID) {
     return $this->APIClient->getIssueURL($issueID);
   }
 
@@ -167,21 +152,17 @@ class kaitenrestInterface extends issueTrackerInterface
    * 
    *
    **/
-	public function getIssue($issueID)
-  {
-    if (!$this->isConnected())
-    {
+	public function getIssue($issueID) {
+    if (!$this->isConnected()) {
       tLog(__METHOD__ . '/Not Connected ', 'ERROR');
       return false;
     }
     
     $issue = null;
-    try
-    {
+    try {
       $jsonObj = $this->APIClient->getIssue($issueID);
 
-      if( !is_null($jsonObj) && is_object($jsonObj))
-      {
+      if( !is_null($jsonObj) && is_object($jsonObj)) {
         $conditionData = isset($this->conditionMap[$jsonObj->condition]) ? ' / '.$this->conditionMap[$jsonObj->condition] : '';
         $issue = new stdClass();
         $issue->IDHTMLString = "<b>{$issueID} : </b>";
@@ -192,8 +173,7 @@ class kaitenrestInterface extends issueTrackerInterface
         $issue->isResolved = (int)$jsonObj->state == 3;
       }
     }
-    catch(Exception $e)
-    {
+    catch(Exception $e) {
       tLog(__METHOD__ . '/' . $e->getMessage(),'ERROR');
       $issue = null;
     }	
@@ -208,8 +188,7 @@ class kaitenrestInterface extends issueTrackerInterface
 	 *
 	 * @return 
 	 **/
-	function getIssueStatusCode($issueID)
-	{
+	function getIssueStatusCode($issueID) {
 		$issue = $this->getIssue($issueID);
 		return !is_null($issue) ? $issue->state : false;
 	}
@@ -222,8 +201,7 @@ class kaitenrestInterface extends issueTrackerInterface
 	 * @return string 
 	 *
 	 **/
-	function getIssueStatusVerbose($issueID)
-  {
+	function getIssueStatusVerbose($issueID) {
     $state = $this->getIssueStatusCode($issueID);
     if ($state) {
       return $this->resolvedStatus->byCode[$state];
@@ -238,8 +216,7 @@ class kaitenrestInterface extends issueTrackerInterface
 	 * @return string 
 	 *
 	 **/
-	function getIssueSummaryHTMLString($issueID)
-	{
+	function getIssueSummaryHTMLString($issueID) {
     $issue = $this->getIssue($issueID);
     return $issue->summaryHTMLString;
 	}
@@ -249,10 +226,8 @@ class kaitenrestInterface extends issueTrackerInterface
    *
    * @return bool true if issue exists on BTS
    **/
-  function checkBugIDExistence($issueID)
-  {
-    if(($status_ok = $this->checkBugIDSyntax($issueID)))
-    {
+  function checkBugIDExistence($issueID) {
+    if(($status_ok = $this->checkBugIDSyntax($issueID))) {
       $issue = $this->getIssue($issueID);
       $status_ok = is_object($issue) && !is_null($issue);
     }
@@ -297,12 +272,11 @@ class kaitenrestInterface extends issueTrackerInterface
     $tags = null;
     if (!empty($opt)) {
       $tags = [
-        ['name' => $opt->tagValue->value[2]], // plan
-        ['name' => $opt->tagValue->value[4]]  // build
+        ['name' => $opt->execContext['testplan_name']],
+        ['name' => $opt->execContext['build_name']] 
       ];
     }
-    try
-    {
+    try {
       $op = $this->APIClient->addIssue($summary, $descriptionData['description']);
       if(is_null($op)){
         throw new Exception("Error creating issue", 1);
@@ -316,11 +290,10 @@ class kaitenrestInterface extends issueTrackerInterface
       }
 
       $ret = ['status_ok' => true, 'id' => (string)$op->id, 
-                   'msg' => sprintf(lang_get('kaiten_bug_created'),
-                    $summary, (string)$op->board_id)];
+              'msg' => sprintf(lang_get('kaiten_bug_created'),
+              $summary, (string)$op->board_id)];
     }
-    catch (Exception $e)
-    {
+    catch (Exception $e) {
        $msg = "Create KAITEN Card FAILURE => " . $e->getMessage();
        tLog($msg, 'WARNING');
        $ret = ['status_ok' => false, 'id' => -1, 'msg' => $msg];

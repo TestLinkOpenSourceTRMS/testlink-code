@@ -686,9 +686,14 @@ function addIssue($dbHandler,$argsObj,$itsObj,$opt=null) {
     }   
   }  
 
+  $opt->execContext = $issueText->execContext;
+  $opt->execSignature = $issueText->execSignature;
+
+
   // Management of Dynamic Values From XML Configuration 
   // (@20180120 only works for redmine)  
   $opt->tagValue = $issueText->tagValue;
+
  
   $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
   
@@ -788,6 +793,13 @@ function generateIssueText($dbHandler,$argsObj,$itsObj,$opt=null) {
                                 $exec['build_name'],$exec['execution_ts'],
                                 $exec['statusVerbose']); 
 
+  $ret->execContext = array('testplan_name' => $exec['testplan_name'],
+                            'platform_name' => $platform_identity,
+                            'build_name' => $exec['build_name']);
+  
+  $ret->execSignature = array('id' => $argsObj->exec_id,
+                              'timestamp' => $exec['execution_ts'],
+                              'status' => $exec['statusVerbose']); 
 
   if(property_exists($argsObj, 'bug_notes')) {  
     $lblKeys = array('issue_exec_id','issue_tester','issue_tplan','issue_build',

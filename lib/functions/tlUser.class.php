@@ -945,13 +945,13 @@ class tlUser extends tlDBObject {
     
 
     // Construct where sentence
-    $where = " WHERE testproject_id = " . intval($testprojectID) . " AND ";
+    $where = " WHERE testproject_id = " . intval($testprojectID);
     if (!is_null($my['options']['active'])) {
-      $where .= " active = {$my['options']['active']} AND ";
+      $where .= " AND active = {$my['options']['active']}";
     }
   
     if (!is_null($testplanID)) {
-      $where .= " NH.id = " . intval($testplanID) . " AND ";
+      $where .= " AND NH.id = " . intval($testplanID);
     }
     
     $analyseGlobalRole = 1;

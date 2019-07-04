@@ -189,12 +189,18 @@ class tlRestApi
   function authenticate(\Slim\Route $route)
   {
     $apiKey = null;
-    if(is_null($apiKey))
-    {  
+    if(is_null($apiKey)) {  
       $request = $this->app->request();
-      $apiKey  = $request->headers('PHP_AUTH_USER');
-    } 
+      $hh = $request->headers();
 
+      if( isset($hh['APIKEY']) ) {
+        $apiKey = $hh['APIKEY'];
+      } else {
+        $apiKey = $hh['PHP_AUTH_USER'];
+      }
+    } 
+    echo $apiKey;
+    die();
     $sql = "SELECT id FROM {$this->tables['users']} " .
            "WHERE script_key='" . $this->db->prepare_string($apiKey) . "'";
 

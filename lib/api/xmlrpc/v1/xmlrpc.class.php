@@ -7128,6 +7128,33 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
+     * Gets list of requirements for a given Test case
+     *
+     * @param $testcaseexternalid
+     *
+     * @return requirement list
+     *
+     * @access public
+     */
+    public function getTestCaseRequirements($args)
+    {
+      $msgPrefix="(" .__FUNCTION__ . ") - ";
+      $this->_setArgs($args);
+      $checkFunctions = array('authenticate','checkTestCaseIdentity');
+      $status_ok=$this->_runChecks($checkFunctions,$msgPrefix);
+
+      if($status_ok)
+      {
+        $itemSet = $this->reqMgr->get_all_for_tcase($this->args[self::$testCaseIDParamName]);
+        return $itemSet;
+      }
+      else
+      {
+        return $this->errors;
+      }
+    }
+
+    /**
      * Delete a test plan and all related link to other items
      *
      * @param struct $args
@@ -8320,6 +8347,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'tl.getTestCaseAssignedTester' => 'this:getTestCaseAssignedTester',
                 'tl.getTestCaseBugs' => 'this:getTestCaseBugs',
                 'tl.getTestCaseKeywords' => 'this:getTestCaseKeywords',
+                'tl.getTestCaseRequirements' => 'this:getTestCaseRequirements',
                 'tl.getTestProjectByName' => 'this:getTestProjectByName',
                 'tl.getTestPlanByName' => 'this:getTestPlanByName',
                 'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',

@@ -299,7 +299,7 @@ class kaitenrestInterface extends issueTrackerInterface {
   /**
    *
    */
-  public function addNote($issueID,$noteText,$opt=null) {
+  public function addNote($issueID,$noteText) {
     $op = $this->APIClient->addNote($issueID, $noteText);
     if(is_null($op)){
       throw new Exception("Error setting note", 1);

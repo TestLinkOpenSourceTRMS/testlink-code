@@ -989,14 +989,14 @@ class tlUser extends tlDBObject {
         if( $userProjectRoleIsNoRights || 
             ($analyseGlobalRole && $userGlobalRoleIsNoRights) ) {
           // In order to access he/she needs specific configuration.
-          $where .= "(USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
+          $where .= " AND (USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
         }  
         else {
           // in this situation:
           // We can use what we have inherited from test project 
           // OR 
           // We can use specific test plan role if defined            
-          $where .= "(USER_TPLAN_ROLES.role_id IS NULL OR ";
+          $where .= " AND (USER_TPLAN_ROLES.role_id IS NULL OR ";
         }
         $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")"; 
 
@@ -1012,7 +1012,7 @@ class tlUser extends tlDBObject {
         // on test plan
         if( $userGlobalRoleIsNoRights ) {
           // In order to access he/she needs specific configuration.
-          $where .= "(USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
+          $where .= " AND (USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
         }  
         else {
           // in this situation:
@@ -1020,7 +1020,7 @@ class tlUser extends tlDBObject {
           // 
           // OR 
           // We can use specific test plan role if defined            
-          $where .= "(USER_TPLAN_ROLES.role_id IS NULL OR ";
+          $where .= " AND (USER_TPLAN_ROLES.role_id IS NULL OR ";
         }
         $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")"; 
       break;

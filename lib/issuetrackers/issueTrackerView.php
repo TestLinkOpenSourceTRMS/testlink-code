@@ -58,8 +58,9 @@ function init_args() {
   return $args;
 }
 
-
-function checkRights(&$db,&$user)
-{
+/**
+ *
+ */
+function checkRights(&$db,&$user) {
   return $user->hasRight($db,"issuetracker_view") || $user->hasRight($db,"issuetracker_management");
 }

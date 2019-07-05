@@ -12,10 +12,9 @@
 /**
  *
  */
-class kaiten
-{
+class kaiten {
   /**
-   * Url to site, http:[yoursite].xxxx.com
+   * Url to site, http:[yourcompany].kaiten.com
    * @var string 
    */
   public $url = '';
@@ -33,7 +32,7 @@ class kaiten
 
   public $proxy = null;
   
-  public $api = '/api/testlink';
+  public $api = '/api/latest';
   public $summaryLengthLimit = 1024;
 
   /**
@@ -42,32 +41,27 @@ class kaiten
    *
    * @return void
    */
-  public function __construct($url,$login,$password,$boardId,$options,$cfg=null) 
-  {
-    // if the values are not empty, we'll assign them to our matching properties
-    $args = ['url','login','password','boardId', 'options'];
-    foreach ($args as $arg) 
-    {
-      if (!empty($$arg)) 
-      {
+  public function __construct($url,$apikey,$boardId,$options,$cfg=null)  {
+
+    // if the values are not empty, 
+    // we'll assign them to our matching properties
+    $args = ['url','apikey','boardId', 'options'];
+    foreach ($args as $arg) {
+      if (!empty($$arg)) {
         $this->$arg = $$arg;
       }
     }
 
-    if(!is_null($cfg))
-    {
-      if(!is_null($cfg->proxy))
-      {
+    if(!is_null($cfg)) {
+      if(!is_null($cfg->proxy)) {
         $this->proxy = new stdClass();
         $this->proxy->port = null;
         $this->proxy->host = null;
         $this->proxy->login = null;
         $this->proxy->password = null;
 
-        foreach($cfg->proxy as $prop => $value)
-        {
-          if(isset($cfg->proxy->$prop))
-          {
+        foreach($cfg->proxy as $prop => $value) {
+          if(isset($cfg->proxy->$prop)) {
             $this->proxy->$prop = $value; 
           }  
         }  
@@ -81,27 +75,24 @@ class kaiten
    * 
    *
    */
-  public function initCurl($cfg=null) 
-  {
+  public function initCurl($cfg=null) {
     $agent = "TestLink ".TL_VERSION_NUMBER;
-    try
-    {
+    try {
       $this->curl = curl_init();
     }
-    catch (Exception $e)
-    {
+    catch (Exception $e) {
       var_dump($e);
     }
     
     // set the agent, forwarding, and turn off ssl checking
     // Timeout in Seconds
     $curlCfg = [CURLOPT_USERAGENT => $agent,
-                     CURLOPT_VERBOSE => 0,
-                     CURLOPT_FOLLOWLOCATION => TRUE,
-                     CURLOPT_RETURNTRANSFER => TRUE,
-                     CURLOPT_AUTOREFERER => TRUE,
-                     CURLOPT_TIMEOUT => 60,
-                     CURLOPT_SSL_VERIFYPEER => FALSE];
+                CURLOPT_VERBOSE => 0,
+                CURLOPT_FOLLOWLOCATION => TRUE,
+                CURLOPT_RETURNTRANSFER => TRUE,
+                CURLOPT_AUTOREFERER => TRUE,
+                CURLOPT_TIMEOUT => 60,
+                CURLOPT_SSL_VERIFYPEER => FALSE];
 
     if(!is_null($this->proxy))
     {
@@ -138,8 +129,10 @@ class kaiten
     curl_setopt_array($this->curl,$curlCfg);
   }
 
-  function getIssueURL($issueID)
-  {
+  /**
+   *
+   */
+  function getIssueURL($issueID) {
     return "{$this->url}/c/{$issueID}";
   }
 
@@ -147,10 +140,8 @@ class kaiten
    * 
    *
    */
-  function getIssue($issueID)
-  {
-    try
-    {
+  function getIssue($issueID) {
+    try {
       $item = $this->_get("/cards/{$issueID}");    
       $ret = is_object($item) ? $item : null;
       return $ret;
@@ -268,23 +259,29 @@ class kaiten
   /**
    *
    */
-  public function getUsers() 
-  {                        
+  public function getUsers() {   
     $items = $this->_get("/users");
     return $items;
   }                                                   
 
-  /* -------------------------------------------------------------------------------------- */
-  /* General Methods used to build up communication process                                 */
-  /* -------------------------------------------------------------------------------------- */
+ /**
+  *
+  */
+  public function getBoard() {
+    $items = $this->_get("/boards/{$this->boardId}");
+    return $items;
+  }  
+
+  /* ------------------------------------------------------ */
+  /* General Methods used to build up communication process */
+  /* ------------------------------------------------------ */
 
   /** 
    *
    * @internal notice
    * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
    **/
-  protected function _get($url) 
-  {
+  protected function _get($url) {
     return $this->_request_json('GET', $url);
   }
 
@@ -293,9 +290,7 @@ class kaiten
   * @internal notice
   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
   **/
-  protected function _request_json($method, $url, $body = NULL, $ignore_status = 0,
-                                  $reporter=null) 
-  {
+  protected function _request_json($method, $url, $body = NULL, $ignore_status = 0,$reporter=null) {
     $r = $this->_request($method, $url, $body, $ignore_status,$reporter);
     $response = $r['response'];
     $content = $r['content'];
@@ -311,35 +306,28 @@ class kaiten
   {
     // this can happens because if I save object on _SESSION PHP is not able to
     // save resources.
-    if( !is_resource($this->curl) )
-    {
+    if( !is_resource($this->curl) ) {
       $this->initCurl();
     }  
     $url = $this->url . $this->api . $cmd;
-
     curl_setopt($this->curl, CURLOPT_URL, $url);
-
-    if(empty($this->login) || empty($this->password))
-    {
-      throw new exception(__METHOD__ . " Can not work without login and password");
+    if( empty($this->apikey) ){
+      throw new exception(__METHOD__ . 
+        " Can not work without apikey");
     } 
 
     curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
   
-    $header = [];
-    $resultString = base64_encode("{$this->login}:{$this->password}");
-    $header[] = "Authorization: Basic {$resultString}";
-        
-    $header[] = "Content-Type: application/json";
-    $header[] = "Agent-Name: testlink";
-    $header[] = "Agent-Version: ".TL_VERSION_NUMBER;
+    $header = [ "Authorization: Bearer {$this->apikey}",       
+                "Content-Type: application/json",
+                "Agent-Name: testlink",
+                "Agent-Version: ".TL_VERSION_NUMBER ];
 
     curl_setopt($this->curl, CURLOPT_HEADER, 0); 
     curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header); 
 
-    switch ($method) 
-    {
+    switch ($method) {
       case 'GET':
         curl_setopt($this->curl, CURLOPT_HTTPGET, TRUE);
       break;
@@ -347,8 +335,7 @@ class kaiten
       case 'POST':
       case 'PATCH':
         curl_setopt($this->curl, CURLOPT_POST, TRUE);
-        if (!empty($body)) 
-        {
+        if (!empty($body)) {
           curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($body));
         }
       break;

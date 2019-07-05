@@ -19,8 +19,6 @@ class kaitenrestInterface extends issueTrackerInterface {
 
   public $defaultResolvedStatus;
 
-  
-
 
 	/**
 	 * Construct and connect to BTS.
@@ -99,14 +97,13 @@ class kaitenrestInterface extends issueTrackerInterface {
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
       $url = (string)trim($this->cfg->uribase);
-      $login = (string)trim($this->cfg->login);
-      $password = (string)trim($this->cfg->password);
+      $apiKey = (string)trim($this->cfg->apikey);
       $boardId = (string)trim($this->cfg->boardid);
       $options = $this->options;
 
       $pxy = new stdClass();
       $pxy->proxy = config_get('proxy');
-  	  $this->APIClient = new kaiten($url,$login,$password,$boardId,$options,$pxy);
+  	  $this->APIClient = new kaiten($url,$apiKey,$boardId,$options,$pxy);
       // to undestand if connection is OK, I will ask for users.
       try {
         $items = $this->APIClient->getUsers();
@@ -123,7 +120,7 @@ class kaitenrestInterface extends issueTrackerInterface {
   	
   	if($processCatch) {
   		$logDetails = '';
-  		foreach(['uribase','login'] as $v) {
+  		foreach(['uribase'] as $v) {
   			$logDetails .= "$v={$this->cfg->$v} / "; 
   		}
   		$logDetails = trim($logDetails,'/ ');
@@ -304,27 +301,25 @@ class kaitenrestInterface extends issueTrackerInterface {
   /**
    *
    */
-  public function addNote($issueID,$noteText,$opt=null)
-  {
+  public function addNote($issueID,$noteText,$opt=null) {
     $op = $this->APIClient->addNote($issueID, $noteText);
     if(is_null($op)){
       throw new Exception("Error setting note", 1);
     }
     $ret = ['status_ok' => true, 'id' => (string)$op->iid, 
-                   'msg' => sprintf(lang_get('kaiten_bug_comment'),$op->body, $this->APIClient->projectId)];
+            'msg' => sprintf(lang_get('kaiten_bug_comment'),
+                       $op->body, $this->APIClient->projectId)];
     return $ret;
   }
 
   /**
    *
    **/
-	public static function getCfgTemplate()
-  {
+	public static function getCfgTemplate() {
     $tpl = "<!-- Template " . __CLASS__ . " -->\n" .
            "<issuetracker>\n" .
            "<!-- Mandatory parameters: -->\n" .
-           "<login>KAITEN LOGIN</login>\n" .
-           "<password>KAITEN PASSWORD</password>\n" .
+           "<apikey>KAITEN API KEY</apikey>\n" .
            "<uribase>https://company.kaiten.io</uribase>\n" .
            "<boardid>BOARD IDENTIFICATOR</boardid>\n" .
            "<!-- Optional parameters (see API documentation on https://kaiten.io): -->\n" .

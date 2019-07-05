@@ -6,11 +6,9 @@
  * @filesource  tlIssueTracker.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2012,2013 TestLink community
+ * @copyright   2012,2019 TestLink community
  * @link        http://testlink.sourceforge.net/
  *
- * @internal revisions
- * @since 1.9.10
  *
 **/
 
@@ -685,8 +683,7 @@ class tlIssueTracker extends tlObject
    *
    *
    */
-  function checkConnection($its)
-  {
+  function checkConnection($its) {
     $xx = $this->getByID($its);
     $class2create = $xx['implementation'];
     $its = new $class2create($xx['type'],$xx['cfg'],$xx['name']);

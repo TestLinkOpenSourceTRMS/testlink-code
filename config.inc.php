@@ -501,6 +501,29 @@ $tlCfg->OAuthServers = array();
 //$tlCfg->OAuthServers[1]['redirect_uri'] = 'TESTLINKURL/microsoftoauth.php';
 
 
+// Azure AD 
+// Fill in CLIENT_ID,CLIENT_SECRET,YOURTESTLINKSERVER and TENANTID with your information
+// See this article for registering an application: https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code
+// Make sure, you grant admint consent for it: https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent
+
+// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
+// $tlCfg->OAuthServers[1]['oauth_name'] = 'azuread'; //do not change this
+// $tlCfg->OAuthServers[1]['oauth_icon'] = 'azuread.png'; 
+
+// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
+// $tlCfg->OAuthServers[1]['redirect_uri'] = 'https://YOURTESTLINKSERVER/login.php';
+
+// $tlCfg->OAuthServers[1]['oauth_force_single'] = true; 
+
+// $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
+// $tlCfg->OAuthServers[1]['oauth_url'] = 'https://login.microsoftonline.com/TENANTID/oauth2/authorize';
+// $tlCfg->OAuthServers[1]['token_url'] = 'https://login.microsoftonline.com/TENANTID/oauth2/token';
+// the domain you want to whitelist (email domains)
+// $tlCfg->OAuthServers[1]['oauth_domain'] = 'autsoft.hu'; 
+// $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://login.microsoftonline.com/TENANTID/openid/userinfo';
+// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read';
+
 /**
  * Single Sign On authentication
  *

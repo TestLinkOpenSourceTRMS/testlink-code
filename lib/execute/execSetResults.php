@@ -49,7 +49,6 @@ $tcversion_id = null;
 $submitResult = null;
 list($args,$its,$cts) = init_args($db,$cfg);
 
-
 $smarty = new TLSmarty();
 $smarty->assign('tsuite_info',null);
 

@@ -75,6 +75,11 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note') {
                     $hasNotes ) {
                   $opt = new stdClass();
                   $opt->reporter = $args->user->login;
+                  $opt->reporter_email = trim($args->user->emailAddress);
+                  if( '' == $opt->reporter_email ) {
+                    $opt->reporter_email = $opt->reporter;
+                  }
+
                   $its->addNote($args->bug_id,$gui->bug_notes,$opt);
                 }
               }  
@@ -91,6 +96,11 @@ else if($args->user_action == 'link' || $args->user_action == 'add_note') {
         if($gui->issueTrackerCfg->tlCanAddIssueNote && (strlen($gui->bug_notes) > 0) ) {
           $opt = new stdClass();
           $opt->reporter = $args->user->login;
+          $opt->reporter_email = trim($args->user->emailAddress);
+          if( '' == $opt->reporter_email ) {
+            $opt->reporter_email = $opt->reporter;
+          }
+          
           $ope = $its->addNote($args->bug_id,$gui->bug_notes,$opt);
 
           if( !$ope['status_ok'] ) {
@@ -312,8 +322,7 @@ function getDirectLinkToExec(&$dbHandler,$execID)
  *
  * @return boolean return true if the page can be viewed, false if not
  */
-function checkRights(&$db,&$user)
-{
+function checkRights(&$db,&$user) {
 	$hasRights = $user->hasRight($db,"testplan_execute");
 	return $hasRights;
 }

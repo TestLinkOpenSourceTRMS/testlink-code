@@ -156,16 +156,28 @@ class kaiten {
    * 
    *
    */
-  public function addIssue($title, $description)
-  {
-    $safeTitle = (strlen($title) > $this->summaryLengthLimit) ? '...' . substr($title, -1*($this->summaryLengthLimit + 3)) : $title;
+  public function addIssue($title, $descr, $opt=null) {
+
+    // Limit title length
+    $ellipsis = '...';
+    $safeTitle = $title;
+    $titleLen = strlen($title);
+    if( $titleLen > $this->summaryLengthLimit ) {
+      $safeTitle = $ellipsis . 
+        substr($title, -1*($this->summaryLengthLimit + strlen($ellipsis)));
+    }
+
     $url = '/cards';
     $body = [
       'title' => $safeTitle,
-      'description' => $description,
+      'description' => $descr,
       'board_id' => (int)$this->boardId,
     ];
-    $intOptions = [
+
+    $options = array('int' => array(),'string' => array(),
+                     'bool' => array());
+
+    $options['int'] = [
       'columnid' => 'column_id',
       'laneid' => 'lane_id',
       'ownerid' => 'owner_id',
@@ -173,32 +185,48 @@ class kaiten {
       'sortorder' => 'sort_order',
       'position' => 'position'
     ];
-    $boolOptions = ['asap' => 'asap'];
-    $stringOptions = [
+
+    $options['string'] = [
       'sizetext' => 'size_text', 
-      'businessvalue' => 'business_value'
+      'businessvalue' => 'business_value',
+      'reporter_email' => 'owner_email'
     ];
-    foreach ($intOptions as $opt => $name) 
-    {
-      if (!empty($this->options[$opt])) 
-      {
-        $body[$name] = (int)$this->options[$opt];
+
+    $options['bool'] = ['asap' => 'asap'];
+
+    foreach ($options as $optType => $elem) {
+      foreach ($elem as $key => $name) {
+        $doSetValue = false;
+        if( !empty($this->options[$key]) ) {
+          $value = $this->options[$key];
+          $doSetValue = true;
+        }
+        if( null != $opt && property_exists($opt,$key) && 
+            !empty( $opt->$key ) ) {
+          $value = $opt->$key;
+          $doSetValue = true;
+        }
+
+        if( $doSetValue == false ) {
+          continue;
+        }
+
+        switch($optType) {
+          case 'int':
+            $body[$name] = (int)$value;
+          break;
+
+          case 'string':
+            $body[$name] = (string)$value;
+          break;
+
+          case 'bool':
+            $body[$name] = (bool)$value;
+          break;
+        }
       }
     }
-    foreach ($boolOptions as $opt => $name) 
-    {
-      if (!empty($this->options[$opt])) 
-      {
-        $body[$name] = (bool)$this->options[$opt];
-      }
-    }
-    foreach ($stringOptions as $opt => $name) 
-    {
-      if (!empty($this->options[$opt])) 
-      {
-        $body[$name] = (string)$this->options[$opt];
-      }
-    }
+
     $op = $this->_request_json('POST',$url, $body);
 
     return $op;
@@ -208,12 +236,9 @@ class kaiten {
    * 
    *
    */
-  public function addNote($issueID, $noteText)
-  {
+  public function addNote($issueID, $noteText) {
     $url = "/cards/{$issueID}/comments";
-    $body = [
-      'text' => $noteText
-    ];
+    $body = [ 'text' => $noteText ];
     $op = $this->_request_json('POST',$url,$body);
     return $op;
   }
@@ -222,15 +247,12 @@ class kaiten {
    * 
    *
    */
-  function addExternalLinks($cardID, $links)
-  {
+  function addExternalLinks($cardID, $links) {
     $url = "/cards/{$cardID}/external-links";
     $op = null;
-    foreach ($links as $link)
-    {
+    foreach ($links as $link) {
       $op = $this->_request_json('POST',$url,$link);
-      if (is_null($op))
-      {
+      if (is_null($op)) {
         break;
       }
     }
@@ -241,15 +263,12 @@ class kaiten {
    * 
    *
    */
-  function addTags($cardID, $tags)
-  {
+  function addTags($cardID, $tags) {
     $url = "/cards/{$cardID}/tags";
     $op = null;
-    foreach ($tags as $tag)
-    {
+    foreach ($tags as $tag) {
       $op = $this->_request_json('POST',$url,$tag);
-      if (is_null($op))
-      {
+      if (is_null($op)) {
         break;
       }
     }

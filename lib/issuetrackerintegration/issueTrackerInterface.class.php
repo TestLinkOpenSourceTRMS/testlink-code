@@ -100,14 +100,12 @@ abstract class issueTrackerInterface
    *
    * 
    **/
-  function setCfg($xmlString)
-  {
+  function setCfg($xmlString) {
     $msg = null;
     $signature = 'Source:' . __METHOD__;
 
     // check for empty string
-    if(strlen(trim($xmlString)) == 0)
-    {
+    if(strlen(trim($xmlString)) == 0) {
       // Bye,Bye
       $msg = " - Issue tracker:$this->name - XML Configuration seems to be empty - please check";
       tLog(__METHOD__ . $msg, 'ERROR');  
@@ -116,11 +114,9 @@ abstract class issueTrackerInterface
       
     $this->xmlCfg = "<?xml version='1.0'?> " . $xmlString;
     libxml_use_internal_errors(true);
-    try 
-    {
+    try {
       $this->cfg = simplexml_load_string($this->xmlCfg);
-      if (!$this->cfg) 
-      {
+      if (!$this->cfg) {
         $msg = $signature . " - Failure loading XML STRING\n";
         foreach(libxml_get_errors() as $error) 
         {
@@ -449,8 +445,7 @@ abstract class issueTrackerInterface
    * @return string returns a complete URL
    *
    **/
-  function getEnterBugURL()
-  {
+  function getEnterBugURL() {
     return $this->cfg->uricreate;
   }
 
@@ -464,8 +459,7 @@ abstract class issueTrackerInterface
    * 
    * @return string 
    **/
-  function buildViewBugURL($issueID)
-  {
+  function buildViewBugURL($issueID) {
     return $this->cfg->uriview . urlencode($issueID);
   }
 

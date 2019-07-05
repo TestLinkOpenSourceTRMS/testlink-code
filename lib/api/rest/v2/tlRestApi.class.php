@@ -186,8 +186,7 @@ class tlRestApi
   /**
    *
    */
-  function authenticate(\Slim\Route $route)
-  {
+  function authenticate(\Slim\Route $route) {
     $apiKey = null;
     if(is_null($apiKey)) {  
       $request = $this->app->request();
@@ -199,8 +198,6 @@ class tlRestApi
         $apiKey = $hh['PHP_AUTH_USER'];
       }
     } 
-    echo $apiKey;
-    die();
     $sql = "SELECT id FROM {$this->tables['users']} " .
            "WHERE script_key='" . $this->db->prepare_string($apiKey) . "'";
 

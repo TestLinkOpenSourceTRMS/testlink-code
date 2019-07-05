@@ -42,10 +42,10 @@ class kaiten
    *
    * @return void
    */
-  public function __construct($url,$login,$password,$boardId,$options,$cfg=null) 
+  public function __construct($url,$apikey,$boardId,$options,$cfg=null) 
   {
     // if the values are not empty, we'll assign them to our matching properties
-    $args = ['url','login','password','boardId', 'options'];
+    $args = ['url','apikey','boardId', 'options'];
     foreach ($args as $arg) 
     {
       if (!empty($$arg)) 
@@ -274,6 +274,15 @@ class kaiten
     return $items;
   }                                                   
 
+  /**
+   *
+   */
+  public function getBoard() 
+  {
+    $items = $this->_get("/boards/{$this->boardId}");
+    return $items;
+  }  
+
   /* -------------------------------------------------------------------------------------- */
   /* General Methods used to build up communication process                                 */
   /* -------------------------------------------------------------------------------------- */
@@ -319,17 +328,16 @@ class kaiten
 
     curl_setopt($this->curl, CURLOPT_URL, $url);
 
-    if(empty($this->login) || empty($this->password))
+    if(empty($this->apikey))
     {
-      throw new exception(__METHOD__ . " Can not work without login and password");
+      throw new exception(__METHOD__ . " Can not work without api key");
     } 
 
     curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
   
     $header = [];
-    $resultString = base64_encode("{$this->login}:{$this->password}");
-    $header[] = "Authorization: Basic {$resultString}";
+    $header[] = "Authorization: Bearer {$this->apikey}";
         
     $header[] = "Content-Type: application/json";
     $header[] = "Agent-Name: testlink";

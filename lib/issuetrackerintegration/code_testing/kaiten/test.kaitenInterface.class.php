@@ -15,12 +15,11 @@ require_once('common.php');
  * To test this module: 
  *  - Create an account on a https://kaiten.io
  *  - Create a Board, and get the ID from the context menu
- *  - Setup your login and password, uribase (https://yourcompany.kaiten.io), boardId (Board ID) in cfg
+ *  - Setup your apikey, uribase (https://yourcompany.kaiten.io), boardId (Board ID) in cfg
 */
 
 $cfg =  "<issuetracker>\n" .
-        "<login>YOR LOGIN HERE</login>\n".
-        "<password>YOR PASSWORD HERE</password>\n".
+        "<apikey>YOR APIKEY HERE</apikey>\n".
         "<uribase>https://yourcompany.kaiten.io</uribase>\n".
         "<boardid>REPLACE_ME</boardid>\n".
         "</issuetracker>\n";
@@ -42,7 +41,7 @@ $issueId = null;
 if( $its->isConnected() )
 { 
   $today = date("Y-m-d H:i:s"); 
-  $issue = array('summary' => '112New issue card Via API' . $today,'description' => 'Some text');
+  $issue = array('summary' => 'New issue card Via API' . $today,'description' => 'Some text');
   $resp = $its->addIssue($issue['summary'],$issue['description']);
   echo '<br>' . __FILE__ . '<br>';
   echo '<pre>';

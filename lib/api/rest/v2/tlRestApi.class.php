@@ -325,14 +325,16 @@ class tlRestApi
 
     if( !is_null($tproject) ) {
       $tcaseIDSet = array();
-      $this->tprojectMgr->get_all_testcases_id($tproject[0]['id'],$tcaseIDSet);
+      $this->tprojectMgr->get_all_testcases_id($tproject['id'],$tcaseIDSet);
+
       if( !is_null($tcaseIDSet) && count($tcaseIDSet) > 0 ) {
         $op['items'] = array();
         foreach( $tcaseIDSet as $key => $tcaseID ) {
           $item = $this->tcaseMgr->get_last_version_info($tcaseID);
-          $item['keywords'] = $this->tcaseMgr->get_keywords_map($tcaseID);
+          $item['keywords'] = 
+            $this->tcaseMgr->get_keywords_map($tcaseID,$item['tcversion_id']);
           $item['customfields'] = 
-            $this->tcaseMgr->get_linked_cfields_at_design($tcaseID,$item['tcversion_id'],null,null,$tproject[0]['id']);
+            $this->tcaseMgr->get_linked_cfields_at_design($tcaseID,$item['tcversion_id'],null,null,$tproject['id']);
           $op['items'][] = $item;
         }
       }

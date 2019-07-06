@@ -135,7 +135,9 @@ class tlRestApi
     $this->app->post('/testprojects', array($this,'authenticate'), array($this,'createTestProject'));
 
     $this->app->post('/executions', array($this,'authenticate'), array($this,'createTestCaseExecution'));
+    
     $this->app->post('/testplans', array($this,'authenticate'), array($this,'createTestPlan'));
+
     $this->app->post('/testplans/:id', array($this,'authenticate'), array($this,'updateTestPlan'));
 
     $this->app->post('/testsuites', array($this,'authenticate'), array($this,'createTestSuite'));
@@ -175,10 +177,14 @@ class tlRestApi
     $this->cfg['exec']['codeStatus'] = array_flip($this->cfg['exec']['statusCode']);
 
     $this->cfg['tcase']['defaults']['importance'] = config_get('testcase_importance_default');
-    $this->cfg['tcase']['defaults']['executionType'] = TESTCASE_EXECUTION_TYPE_MANUAL;
+
+
     $this->cfg['tcase']['status'] = config_get('testCaseStatus'); 
 
     $this->cfg['execType'] = config_get('execution_type');
+
+    $this->cfg['tcase']['defaults']['executionType'] = 
+      $this->cfg['execType']['manual'];
 
     $this->debugMsg = ' Class:' . __CLASS__ . ' - Method: ';
   }  
@@ -303,6 +309,7 @@ class tlRestApi
     } else {
       $op['message'] = "No Test Project identified by '" . $idCard . "'!";
       $op['status']  = 'error';
+      $this->app->status(500);
     }
 
     echo json_encode($op);
@@ -369,12 +376,14 @@ class tlRestApi
         $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
         $op = array('status' => 'ok', 'message' => 'ok');
       } else {
+        $this->app->status(403);
         $msg = lang_get('API_INSUFFICIENT_RIGHTS');
         $op['message'] = sprintf($msg,$rightToCheck,0,0);
       } 
     } 
     catch (Exception $e) {
-      $op['message'] = $e->getMessage();   
+      $this->app->status(500);
+      $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();  
     }
     echo json_encode($op);
   }
@@ -442,7 +451,8 @@ class tlRestApi
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tplanMgr->writeExecution($ex);
     } catch (Exception $e) {
-      $op['message'] = $e->getMessage();   
+      $this->app->status(500);
+      $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();  
     }
     echo json_encode($op);
   }
@@ -570,19 +580,17 @@ class tlRestApi
    * 'is_public'
    *
    */
-  public function createTestPlan()
-  {
+  public function createTestPlan() {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
-    {
+    try {
       $request = $this->app->request();
       $item = json_decode($request->getBody());
+
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tplanMgr->createFromObject($item,array('doChecks' => true));
-    } 
-    catch (Exception $e) 
-    {
-      $op['message'] = $e->getMessage();   
+    } catch (Exception $e) {
+      $this->app->status(500);
+      $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();   
     }
     echo json_encode($op);
   }
@@ -595,21 +603,18 @@ class tlRestApi
    * 'is_public'
    *
    */
-  public function updateTestPlan($id)
-  {
+  public function updateTestPlan($id) {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
-    {
+    try {
       $op = array('status' => 'ok', 'message' => 'ok');
 
       $request = $this->app->request();
       $item = json_decode($request->getBody());
       $item->id = $id;
       $op['id'] = $this->tplanMgr->updateFromObject($item);
-    } 
-    catch (Exception $e) 
-    {
-      $op['message'] = $e->getMessage();   
+    } catch (Exception $e) {
+      $this->app->status(500);
+      $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();  
     }
     echo json_encode($op);
   }
@@ -622,27 +627,24 @@ class tlRestApi
    * 'notes'
    * 'order'
    */
-  public function createTestSuite()
-  {
+  public function createTestSuite() {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
-    {
+    try {
       $request = $this->app->request();
       $item = json_decode($request->getBody());
       $op = array('status' => 'ok', 'message' => 'ok');
       $op['id'] = $this->tsuiteMgr->createFromObject($item,array('doChecks' => true));
-    } 
-    catch (Exception $e) 
-    {
-      $op['message'] = $e->getMessage();   
+    } catch (Exception $e) {
+      $this->app->status(500);
+      $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();  
     }
     echo json_encode($op);
   }
 
   /**
    * "name"
-   * "testSuiteID"
-   * "testProjectID"
+   * "testSuite": {"id": xxx}
+   * "testProject" : {"id": xxx} or {"prefix": yyy}
    * "authorLogin"
    * "authorID"
    * "summary"
@@ -653,36 +655,38 @@ class tlRestApi
    *
    * "estimatedExecutionDuration"  // to be implemented
    */
-  public function createTestCase()
-  {
+  public function createTestCase() {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
-    try 
-    {
+    try {
       $request = $this->app->request();
       $item = json_decode($request->getBody());
-      if(is_null($item))
-      {
+      if(is_null($item)) {
         throw new Exception("Fatal Error " . __METHOD__ . " json_decode(requesBody) is NULL", 1);
       }
 
       // create obj with standard properties
-      $tcase = $this->buildTestCaseObj($item);
-
-      $this->checkRelatives($tcase->testProjectID,$tcase->testSuiteID);
+      try {
+        $tcase = $this->buildTestCaseObj($item);
+        $this->checkRelatives($tcase->testProjectID,$tcase->testSuiteID);
+      } catch (Exception $e) {
+        $this->app->status(500);
+        $op['message'] = 'After buildTestCaseObj() >> ' .
+                         $e->getMessage();  
+        echo json_encode($op);
+        return;
+      }
+      
 
       $ou = $this->tcaseMgr->createFromObject($tcase);
-     
       $op = array('status' => 'ok', 'message' => 'ok', 'id' => -1);
-      if( ($op['id']=$ou['id']) <= 0)
-      {
+      if( ($op['id']=$ou['id']) <= 0) {
         $op['status'] = 'ko';
         $op['message'] = $ou['msg'];
+        $this->app->status(409);
       }
-
-    } 
-    catch (Exception $e) 
-    {
-      $op['message'] = $e->getMessage();   
+    } catch (Exception $e) {
+      $this->app->status(500);
+      $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();   
     }
     echo json_encode($op);
   }
@@ -886,18 +890,15 @@ class tlRestApi
     // May be is time to add a field that provide info about source of action
     // GUI, API
     // 
-    if(property_exists($obj, 'author'))
-    {
-      if(property_exists($obj->author, 'login') || property_exists($obj->author, 'id'))
-      {
+    if(property_exists($obj, 'author')) {
+      if(property_exists($obj->author, 'login') || property_exists($obj->author, 'id')) {
         $tcase->authorID = $this->getUserIDByAttr($obj->author);
       } 
     }  
 
     // Last resort: get author from credentials use to make the call.
     // no error message returned.
-    if($tcase->authorID <= 0)
-    {
+    if($tcase->authorID <= 0) {
       $tcase->authorID = $this->userID;
     }  
 
@@ -906,30 +907,23 @@ class tlRestApi
     $ma = array('name' => null,'testProject' => array('id','prefix'),
                 'testSuite' => array('id'));
 
-    foreach ($ma as $key => $dummy) 
-    {
-      if( !($isOK = $isOK && property_exists($obj, $key)) )
-      {
-        throw new Exception("Missing Attribute:{$key}");
+    foreach ($ma as $key => $dummy) {
+      if( !($isOK = $isOK && property_exists($obj, $key)) ) {
+        throw new Exception("Missing Attribute: {$key} ");
       }  
     }
 
-    foreach ($ma as $key => $attr) 
-    {
-      if( !is_null($attr) )
-      {
+    foreach ($ma as $key => $attr) {
+      if( !is_null($attr) ) {
         $attrOK = false;
-        foreach($attr as $ak)
-        {
+        foreach($attr as $ak) {
           $accessKey[$key][$ak] = property_exists($obj->$key,$ak);
           $attrOK = $attrOK || $accessKey[$key][$ak];
         }  
 
-        if(!$attrOK)
-        {
-          $msg = "Attribute:{$key} mandatory key (";
-          if(count($attr) > 1)
-          {
+        if(!$attrOK) {
+          $msg = "Attribute: {$key} mandatory key (";
+          if(count($attr) > 1) {
             $msg .= "one of set: ";
           }  
           $msg .= implode('/',$attr) . ") is missing";
@@ -938,52 +932,51 @@ class tlRestApi
       }  
     }
 
+    $tcase->name = trim($obj->name);
+    $tcase->testSuiteID = intval($obj->testSuite->id);
+
     $gOpt = array('output' => 'array_of_map', 'field_set' => 'prefix',
                   'add_issuetracker' => false, 'add_reqmgrsystem' => false);
 
+
     $msg = "Test project with ";        
-    if($accessKey['testProject']['id'])
-    {
+    if($accessKey['testProject']['id']) {
       $safeID = intval($obj->testProject->id);
       $gFilters = array('id' => array('op' => '=', 'value' => $safeID));
       $msg .= "id={$safeID} ";
     }  
 
-    if($accessKey['testProject']['prefix'])
-    {
+    if($accessKey['testProject']['prefix']) {
       $gFilters = array('prefix' => 
                         array('op' => '=', 'value' => trim($obj->testProject->prefix)) );
       $msg .= "prefix={$obj->testProject->prefix} ";
     }
     
     $info = $this->tprojectMgr->get_accessible_for_user($this->userID,$gOpt,$gFilters);
-    if(is_null($info))
-    {
+
+    if(is_null($info)) {
       $msg .= "does not exist or you have no rights to use it";
       throw new Exception($msg,999);            
     } 
 
+    $tcase->testProjectID = intval($info[0]['id']);
 
     $sk2d = array('summary' => '','preconditions' => '',
-                  'order' => 100, 'estimatedExecutionTime' => 0);
-    foreach($sk2d as $key => $value)
-    {
-      $tcase->$key = property_exists($obj, $key) ? $obj->key : $value;
+                  'order' => 100, 'estimatedExecutionTime' => 0,
+                  'executionType' => 
+                    $this->cfg['tcase']['defaults']['executionType'],
+                  'importance' => 
+                    $this->cfg['tcase']['defaults']['importance'],
+                  'status' => $this->cfg['tcase']['status']['draft']);
+    foreach($sk2d as $key => $value) {
+      $tcase->$key = property_exists($obj, $key) ? $obj->$key : $value;
     } 
 
-    $ck2d = array('importance' => $this->cfg['tcase']['defaults']['importance'], 
-                  'status' => $this->cfg['tcase']['status']['draft']);
-
-  
-    var_dump($tcase);
-    die();
-
-
-
-    if(property_exists($obj, 'steps'))
-    {
+    if(property_exists($obj, 'steps')) {
       $tcase->steps = $obj->steps;
     }
+
+    return $tcase;
   }
 
 
@@ -991,33 +984,27 @@ class tlRestApi
    *
    *
    */ 
-  private function checkRelatives($testProjectID,$testSuiteID)
-  {
+  private function checkRelatives($testProjectID,$testSuiteID) {
     if($testProjectID <= 0)
     {
       throw new Exception("Test Project ID is invalid (<=0)");
     }  
 
-    if($testSuiteID <= 0)
-    {
+    if($testSuiteID <= 0) {
       throw new Exception("Test Suite ID is invalid (<=0)");
     }  
 
     $pinfo = $this->tprojectMgr->get_by_id($testProjectID);
-    if( is_null($pinfo) )
-    {
+    if( is_null($pinfo) ) {
       throw new Exception("Test Project ID is invalid (does not exist)");
     }  
 
     $pinfo = $this->tsuiteMgr->get_by_id($testSuiteID);
-    if( is_null($pinfo) )
-    {
+    if( is_null($pinfo) ) {
       throw new Exception("Test Suite ID is invalid (does not exist)");
     }  
 
-
-    if( $testProjectID != $this->tsuiteMgr->getTestProjectFromTestSuite($testSuiteID,$testSuiteID) )
-    {
+    if( $testProjectID != $this->tsuiteMgr->getTestProjectFromTestSuite($testSuiteID,$testSuiteID) ) {
       throw new Exception("Test Suite does not belong to Test Project ID");
     }  
   }
@@ -1084,8 +1071,6 @@ class tlRestApi
       }
 
       // create obj with standard properties
-      // $tcase = $this->buildTestCaseObj($item);
-      //$op = $tproject_mgr->addKeyword($args->tproject_id,$args->keyword,$args->notes);
       $pfx = $item->testProject->prefix;
       $pid = $this->tprojectMgr->get_by_prefix((string)$pfx);
       if( null == $pid ) {
@@ -1101,7 +1086,8 @@ class tlRestApi
         }        
       }
     } catch (Exception $e) {
-      $op['message'] = $e->getMessage();   
+      $this->app->status(500);
+      $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();  
     }
     echo json_encode($op);
   }

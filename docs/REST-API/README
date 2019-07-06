@@ -1,0 +1,17 @@
+# How to generate this documentation #
+
+## References ##
+
+https://stackoverflow.com/questions/48113414/
+  how-to-export-download-response-body-into-an-external-file-from-postman-collecti/54124127#54124127
+
+## Quick steps ##
+sudo npm install -g newman
+sudo npm install -g newman-reporter-html
+newman run TestLink.postman_collection.json -r cli,html --reporter-html-template newman-tpl.hbs
+
+## Regarding API Call Authentication ##
+you need the CUSTOM HTTP HEADER APIKEY with the value of
+your TestLink user script_key (see users table)
+
+

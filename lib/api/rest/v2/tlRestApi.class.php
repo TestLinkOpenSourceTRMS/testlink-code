@@ -126,6 +126,7 @@ class tlRestApi
     $this->app->get('/testprojects/:id/testcases', array($this,'authenticate'), array($this,'getProjectTestCases'));
     $this->app->get('/testprojects/:id/testplans', array($this,'authenticate'), array($this,'getProjectTestPlans'));
 
+    $this->app->get('/testplans/:id/builds', array($this,'authenticate'), array($this,'getPlanBuilds'));
 
     // POST Routes
     $this->app->post('/builds', array($this,'authenticate'), array($this,'createBuild'));
@@ -202,12 +203,9 @@ class tlRestApi
            "WHERE script_key='" . $this->db->prepare_string($apiKey) . "'";
 
     $this->userID = $this->db->fetchFirstRowSingleColumn($sql, "id");
-    if( ($ok=!is_null($this->userID)) )
-    {
+    if( ($ok=!is_null($this->userID)) ) {
       $this->user = tlUser::getByID($this->db,$this->userID);  
-    }  
-    else
-    {
+    } else {
       $this->app->status(400);
       echo json_encode(array('status' => 'ko', 'message' => 'authentication error'));  
       $this->app->stop();
@@ -240,8 +238,7 @@ class tlRestApi
    *                     if intval() > 0 => is considered DBID
    *                     else => is used as PROJECT NAME
    */
-  public function getProjects($idCard=null, $opt=null)
-  {
+  public function getProjects($idCard=null, $opt=null) {
     $options = array_merge(array('output' => 'rest'), (array)$opt);
     $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
     if(is_null($idCard)) {
@@ -1106,6 +1103,27 @@ class tlRestApi
     } catch (Exception $e) {
       $op['message'] = $e->getMessage();   
     }
+    echo json_encode($op);
+  }
+
+
+  /**
+   *
+   * @param mixed idCard identifies test plan via apikey
+   *              
+   */
+  public function getPlanBuilds($idCard) {
+    $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
+    $tplan = $this->tplanMgr->getByAPIKey($idCard);
+ 
+    if( !is_null($tplan) ) {
+      $items = $this->tplanMgr->get_builds($tplan['id']);
+      $op['items'] = (!is_null($items) && count($items) > 0) ? $items : null;
+    } else {
+      $op['message'] = "No Test Plan identified by '" . $idCard . "'!";
+      $op['status']  = 'error';
+    }
+
     echo json_encode($op);
   }
 

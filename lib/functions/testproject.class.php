@@ -2300,19 +2300,18 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
          [options]:
          
   returns:
-    20100821 - franciscom - added options
 
 */
-function get_all_testplans($testproject_id,$filters=null,$options=null)
-{
+function get_all_testplans($id,$filters=null,$options=null) {
 
-  $my['options'] = array('fields2get' => 'NH.id,NH.name,notes,active,is_public,testproject_id',
+  $my['options'] = array('fields2get' => 
+                           'NH.id,NH.name,notes,active,
+                            is_public,testproject_id,api_key',
                          'outputType' => null);
   $my['options'] = array_merge($my['options'], (array)$options);
 
   $forHMLSelect = false;
-  if( !is_null($my['options']['outputType']) && $my['options']['outputType'] == 'forHMLSelect')
-  {
+  if( !is_null($my['options']['outputType']) && $my['options']['outputType'] == 'forHMLSelect') {
     $forHMLSelect = true;
     $my['options']['fields2get'] = 'NH.id,NH.name';
   }
@@ -2320,47 +2319,37 @@ function get_all_testplans($testproject_id,$filters=null,$options=null)
   $sql = " SELECT {$my['options']['fields2get']} " .
          " FROM {$this->tables['nodes_hierarchy']} NH,{$this->tables['testplans']} TPLAN";
          
-  $where = " WHERE NH.id=TPLAN.id ";
-  $where .= " AND (testproject_id = " . $this->db->prepare_int($testproject_id) . " ";
-  if( !is_null($filters) )
-  {
+  $where = " WHERE NH.id=TPLAN.id AND (testproject_id = " . 
+             $this->db->prepare_int($id) . " ";
+  if( !is_null($filters) ) {
     $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,'tplan2exclude' => null);
     
-    foreach($key2check as $varname => $defValue)
-    {
+    foreach($key2check as $varname => $defValue) {
       $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
     }                
         
     $where .= " ) ";
     
-    if(!is_null($plan_status))
-    {
+    if(!is_null($plan_status)) {
       $my_active = to_boolean($plan_status);
       $where .= " AND active = " . $my_active;
     }
     
-    if(!is_null($tplan2exclude))
-    {
+    if(!is_null($tplan2exclude)) {
       $where .= " AND TPLAN.id != {$tplan2exclude} ";
     }
-  }
-  else
-  {
+  } else {
     $where .= ")";  
   }  
   
   $sql .= $where . " ORDER BY name";
-  if( $forHMLSelect )
-  {
+  if( $forHMLSelect ) {
     $map = $this->db->fetchColumnsIntoMap($sql,'id','name');
-  }
-  else
-  {
+  } else {
     $map = $this->db->fetchRowsIntoMap($sql,'id');
   }
 
-  return($map);
-
+  return $map;
 }
 
 

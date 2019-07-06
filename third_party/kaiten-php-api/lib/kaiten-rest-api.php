@@ -22,7 +22,7 @@ class kaiten {
   /**
    * @var string 
    */
-  public $apiKey = '';
+  public $apikey = '';
   
   /**
    * Curl interface with specific settings
@@ -41,27 +41,22 @@ class kaiten {
    *
    * @return void
    */
-  public function __construct($url,$apikey,$boardId,$options,$cfg=null)  {
+  public function __construct($kaitenContext,$cfg=null)  {
 
     // if the values are not empty, 
     // we'll assign them to our matching properties
-    $args = ['url','apikey','boardId', 'options'];
-    foreach ($args as $arg) {
-      if (!empty($$arg)) {
-        $this->$arg = $$arg;
+    foreach ($kaitenContext as $arg => $val) {
+      if (!empty($val)) {
+        $this->$arg = $val;
       }
     }
-
+    
     if(!is_null($cfg)) {
-      if(!is_null($cfg->proxy)) {
-        $this->proxy = new stdClass();
-        $this->proxy->port = null;
-        $this->proxy->host = null;
-        $this->proxy->login = null;
-        $this->proxy->password = null;
-
-        foreach($cfg->proxy as $prop => $value) {
-          if(isset($cfg->proxy->$prop)) {
+      if(!is_null($cfg['proxy'])) {
+        $this->proxy = (object)['port' => null, 'host' => null,
+                                'login' => null, 'password' => null];
+        foreach($cfg['proxy'] as $prop => $value) {
+          if(isset($cfg['proxy']->$prop)) {
             $this->proxy->$prop = $value; 
           }  
         }  
@@ -191,6 +186,10 @@ class kaiten {
       'businessvalue' => 'business_value',
       'reporter_email' => 'owner_email'
     ];
+
+    if( 1 == 0 ) {
+      $options['string']['reporter_email'] = 'owner_email';
+    }
 
     $options['bool'] = ['asap' => 'asap'];
 

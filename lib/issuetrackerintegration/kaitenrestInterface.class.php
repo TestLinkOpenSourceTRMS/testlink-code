@@ -102,14 +102,15 @@ class kaitenrestInterface extends issueTrackerInterface {
   	  // CRITIC NOTICE for developers
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
-      $url = (string)trim($this->cfg->uribase);
-      $apiKey = (string)trim($this->cfg->apikey);
-      $boardId = (string)trim($this->cfg->boardid);
-      $options = $this->options;
+      $kaitenContext = [
+        'url' => (string)trim($this->cfg->uribase),
+        'apikey' => (string)trim($this->cfg->apikey),
+        'boardId' => (string)trim($this->cfg->boardid),
+        'options' => $this->options ];
 
-      $pxy = new stdClass();
-      $pxy->proxy = config_get('proxy');
-  	  $this->APIClient = new kaiten($url,$apiKey,$boardId,$options,$pxy);
+      $tlContext = [ 'proxy' => config_get('proxy'), ];
+
+      $this->APIClient = new kaiten($kaitenContext,$tlContext);
       // to undestand if connection is OK, I will ask for users.
       try {
         $items = $this->APIClient->getUsers();

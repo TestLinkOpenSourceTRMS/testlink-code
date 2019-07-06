@@ -294,20 +294,16 @@ class tlRestApi
    *
    * @param mixed idCard if provided identifies test project
    *                     if intval() > 0 => is considered DBID
-   *                     else => is used as PROJECT NAME
+   *                     else => is used as PROJECT NAME Or Prefix
    */
-  public function getProjectTestPlans($idCard)
-  {
+  public function getProjectTestPlans($idCard) {
     $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
     $tproject = $this->getProjects($idCard, array('output' => 'internal'));
-
-    if( !is_null($tproject) )
-    {
-      $items = $this->tprojectMgr->get_all_testplans($tproject[0]['id']);
+ 
+    if( !is_null($tproject) ) {
+      $items = $this->tprojectMgr->get_all_testplans($tproject['id']);
       $op['items'] = (!is_null($items) && count($items) > 0) ? $items : null;
-    }
-    else 
-    {
+    } else {
       $op['message'] = "No Test Project identified by '" . $idCard . "'!";
       $op['status']  = 'error';
     }
@@ -323,30 +319,24 @@ class tlRestApi
    *                     if intval() > 0 => is considered DBID
    *                     else => is used as PROJECT NAME
    */ 
-  public function getProjectTestCases($idCard)
-  {
+  public function getProjectTestCases($idCard) {
     $op  = array('status' => 'ok', 'message' => 'ok', 'items' => null);
     $tproject = $this->getProjects($idCard, array('output' => 'internal'));
 
-    if( !is_null($tproject) )
-    {
+    if( !is_null($tproject) ) {
       $tcaseIDSet = array();
       $this->tprojectMgr->get_all_testcases_id($tproject[0]['id'],$tcaseIDSet);
-      if( !is_null($tcaseIDSet) && count($tcaseIDSet) > 0 )
-      {
+      if( !is_null($tcaseIDSet) && count($tcaseIDSet) > 0 ) {
         $op['items'] = array();
-        foreach( $tcaseIDSet as $key => $tcaseID )
-        {
+        foreach( $tcaseIDSet as $key => $tcaseID ) {
           $item = $this->tcaseMgr->get_last_version_info($tcaseID);
           $item['keywords'] = $this->tcaseMgr->get_keywords_map($tcaseID);
-          $item['customfields'] = $this->tcaseMgr->get_linked_cfields_at_design($tcaseID,$item['tcversion_id'],
-                                                                                null,null,$tproject[0]['id']);
+          $item['customfields'] = 
+            $this->tcaseMgr->get_linked_cfields_at_design($tcaseID,$item['tcversion_id'],null,null,$tproject[0]['id']);
           $op['items'][] = $item;
         }
       }
-    }
-    else 
-    {
+    } else {
       $op['message'] = "No Test Project identified by '" . $idCard . "'!";
       $op['status']  = 'error';
     }
@@ -354,7 +344,6 @@ class tlRestApi
     echo json_encode($op);
   }
 
-// ==============================================
   /**
    * 
    *        $item->name               
@@ -368,15 +357,10 @@ class tlRestApi
    *        $item->options->automationEnabled
    *        $item->options->inventoryEnabled
    */
-  public function createTestProject()
-  {
+  public function createTestProject() {
     $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
 
-    
-    try 
-    {
-      // file_put_contents('/var/testlink/rest-api.log', json_encode($this->user));
-      
+    try {
       // Check user grants for requested operation
       // This is a global right
       $rightToCheck="mgt_modify_product";
@@ -385,14 +369,12 @@ class tlRestApi
         $item = json_decode($request->getBody());
         $op['id'] = $this->tprojectMgr->create($item,array('doChecks' => true));
         $op = array('status' => 'ok', 'message' => 'ok');
-      } 
-      else {
+      } else {
         $msg = lang_get('API_INSUFFICIENT_RIGHTS');
         $op['message'] = sprintf($msg,$rightToCheck,0,0);
       } 
     } 
-    catch (Exception $e) 
-    {
+    catch (Exception $e) {
       $op['message'] = $e->getMessage();   
     }
     echo json_encode($op);

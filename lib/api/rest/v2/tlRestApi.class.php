@@ -111,7 +111,7 @@ class tlRestApi
 
     // GET Routes
     // test route with anonymous function 
-    $this->app->get('/who', function () { echo __CLASS__ . ' : Get Route /who';});
+    $this->app->get('/who', function () { echo __CLASS__ . ' : You have called the Get Route /who';});
 
     // using middleware for authentication
     // https://docs.slimframework.com/routing/middleware/
@@ -221,17 +221,16 @@ class tlRestApi
   /**
    *
    */
-  public function whoAmI()
-  {    
-    echo json_encode(array('name' => __CLASS__ . ' : Get Route /whoAmI'));
+  public function whoAmI() {    
+    echo json_encode(array('name' => __CLASS__ . ' : You have called Get Route /whoAmI'));
   }
   
   /**
    *
    */
-  public function superman()
-  {    
-    echo json_encode(array('name' => __CLASS__ . ' : Get Route /superman'));
+  public function superman() {    
+    echo json_encode(
+      array('name' => __CLASS__ . ' : You have called the Get Route /superman'));
   }
 
 
@@ -245,42 +244,41 @@ class tlRestApi
   {
     $options = array_merge(array('output' => 'rest'), (array)$opt);
     $op = array('status' => 'ok', 'message' => 'ok', 'item' => null);
-    if(is_null($idCard))
-    {
+    if(is_null($idCard)) {
       $opOptions = array('output' => 'array_of_map', 'order_by' => " ORDER BY name ", 'add_issuetracker' => true,
                           'add_reqmgrsystem' => true);
       $op['item'] = $this->tprojectMgr->get_accessible_for_user($this->userID,$opOptions);
-    }  
-    else
-    {
-      $opOptions = array('output' => 'map','field_set' => 'id', 'format' => 'simple');
+    } else {
+      $opOptions = array('output' => 'map',
+                         'field_set' => 'prefix', 
+                         'format' => 'simple');
       $zx = $this->tprojectMgr->get_accessible_for_user($this->userID,$opOptions);
-      if( ($safeID = intval($idCard)) > 0)
-      {
-        if( isset($zx[$safeID]) )
-        {
-          $op['item'] = $this->tprojectMgr->get_by_id($safeID);  
+
+      $targetID = null;
+      if( ($safeID = intval($idCard)) > 0) {
+        if( isset($zx[$safeID]) ) {
+          $targetID = $safeID;
         } 
       } 
-      else
-      {
-        // Will consider id = name
-        foreach( $zx as $key => $value ) 
-        {
-          if( strcmp($value['name'],$idCard) == 0 )
-          {
-            $safeString = $this->db->prepare_string($idCard);
-            $op['item'] = $this->tprojectMgr->get_by_name($safeString);
+      else {
+        // Will consider id = name or prefix
+        foreach( $zx as $itemID => $value ) {
+          if( strcmp($value['name'],$idCard) == 0 || 
+              strcmp($value['prefix'],$idCard) == 0 ) {
+            $targetID = $itemID;
             break;   
           }  
         }
-      } 
+      }
+
+      if( null != $targetID ) {
+        $op['item'] = $this->tprojectMgr->get_by_id($targetID);  
+      }  
     } 
 
     // Developer (silly?) information
     // json_encode() transforms maps in objects.
-    switch($options['output'])
-    {
+    switch($options['output']) {
       case 'internal':
         return $op['item'];
       break;

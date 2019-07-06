@@ -46,9 +46,6 @@ class kaitenrestInterface extends issueTrackerInterface {
     $this->completeCfg();
 	  $this->setResolvedStatusCfg();
 	  $this->connect();
-
-    //var_dump($this->cfg);
-    //die();
 	}
 
 	/**
@@ -108,7 +105,10 @@ class kaitenrestInterface extends issueTrackerInterface {
         'boardId' => (string)trim($this->cfg->boardid),
         'options' => $this->options ];
 
-      $tlContext = [ 'proxy' => config_get('proxy'), ];
+      $tlContext = [ 'proxy' => config_get('proxy'), 
+                     'cfg' => ['setcardowneremail' => 
+                                 $this->cfg->setcardowneremail] ];
+      $tlContext['cfg'] = (object)$tlContext['cfg'];
 
       $this->APIClient = new kaiten($kaitenContext,$tlContext);
       // to undestand if connection is OK, I will ask for users.
@@ -327,6 +327,8 @@ class kaitenrestInterface extends issueTrackerInterface {
            "<apikey>KAITEN API KEY</apikey>\n" .
            "<uribase>https://company.kaiten.io</uribase>\n" .
            "<boardid>BOARD IDENTIFICATOR</boardid>\n" .
+           "<!-- TestLink Optional parameters --> \n" .
+           "<setcardowneremail>0</setcardowneremail>\n" .          
            "<!-- Optional parameters (see API documentation on https://kaiten.io): -->\n" .
            "<options>\n" .
            "<columnid></columnid>\n" .

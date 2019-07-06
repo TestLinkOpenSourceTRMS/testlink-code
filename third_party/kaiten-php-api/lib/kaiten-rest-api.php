@@ -32,8 +32,20 @@ class kaiten {
 
   public $proxy = null;
   
-  public $api = '/api/latest';
+  /** 
+   * From Kaiten.io Team
+   *
+   * /api/testlink is special endpoint for testlink, 
+   * it's because Katein Team found out that they 
+   * can't control request rate from testlink and 
+   * if yog exceed 5 req / sec in Kaiten normal endpoints 
+   * (/api/latest or /api/v1) you'll start receiving 429 error. 
+   * On /api/testlink no request limits applied.
+   */
+  public $api = '/api/testlink';  
+
   public $summaryLengthLimit = 1024;
+  public $cfg;  
 
   /**
    * Constructor
@@ -61,8 +73,11 @@ class kaiten {
           }  
         }  
       }  
-    }  
 
+      if(!is_null($cfg['cfg'])) {
+        $this->cfg = $cfg['cfg'];
+      }  
+    }  
     $this->initCurl();
   }
 
@@ -172,6 +187,8 @@ class kaiten {
     $options = array('int' => array(),'string' => array(),
                      'bool' => array());
 
+    $options['bool'] = ['asap' => 'asap'];
+
     $options['int'] = [
       'columnid' => 'column_id',
       'laneid' => 'lane_id',
@@ -183,15 +200,13 @@ class kaiten {
 
     $options['string'] = [
       'sizetext' => 'size_text', 
-      'businessvalue' => 'business_value',
-      'reporter_email' => 'owner_email'
+      'businessvalue' => 'business_value'
     ];
 
-    if( 1 == 0 ) {
+    if( property_exists($this->cfg,'setcardowneremail') &&
+        $this->cfg->setcardowneremail ) {
       $options['string']['reporter_email'] = 'owner_email';
     }
-
-    $options['bool'] = ['asap' => 'asap'];
 
     foreach ($options as $optType => $elem) {
       foreach ($elem as $key => $name) {

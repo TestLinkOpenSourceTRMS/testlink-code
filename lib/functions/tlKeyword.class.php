@@ -44,13 +44,11 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * Brings the object to a clean state
    * @param integer $options additional initialization options, can be TLOBJ_O_SEARCH_BY_ID
    */
-  protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
-  {
+  protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID) {
     $this->name = null;
     $this->notes = null;
     $this->testprojectID = null;
-    if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
-    {
+    if (!($options & self::TLOBJ_O_SEARCH_BY_ID)) {
       $this->dbID = null;
     } 
   }
@@ -60,20 +58,50 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * 
    * @param integer $dbID the database identifier of the keywords
    */
-  function __construct($dbID = null)
-  {
+  function __construct($dbID = null) {
     parent::__construct($dbID);
   }
   
   /* 
    * Class destructor
    */
-  function __destruct()
-  {
+  function __destruct() {
     parent::__destruct();
     $this->_clean();
   }
   
+  /* 
+   * error pseudo verbose
+   */
+  static function getError($code) {
+    switch($code) {
+      case self::E_NAMENOTALLOWED:
+        $v = 'E_NAMENOTALLOWED';
+      break;
+      
+      case self::E_NAMELENGTH:
+        $v = 'E_NAMENOTALLOWED';
+      break;
+  
+      case self::E_NAMEALREADYEXISTS:
+        $v = 'E_NAMEALREADYEXISTS';
+      break;
+
+      case self::E_DBERROR:
+        $v = 'E_DBERROR';
+      break;
+
+      case self::E_WRONGFORMAT:
+        $v = 'E_WRONGFORMAT';
+      break;
+    }
+
+    return $v;
+  }
+
+
+
+
   /**
    * Initializes the keyword object
    * 
@@ -155,29 +183,23 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * 
    * @return integer returns tl::OK on success, tl::ERROR else
    */
-  public function writeToDB(&$db)
-  {
+  public function writeToDB(&$db) {
     $result = $this->checkKeyword($db);
-    if ($result >= tl::OK)
-    {
+    if ($result >= tl::OK) {
       $name = $db->prepare_string($this->name);
       $notes = $db->prepare_string($this->notes);
 
-      if ($this->dbID)
-      {
+      if ($this->dbID) {
         $query = "UPDATE {$this->tables['keywords']} " .
                  " SET keyword = '{$name}',notes = '{$notes}',testproject_id = {$this->testprojectID}" .
              " WHERE id = {$this->dbID}";
         $result = $db->exec_query($query);
-      }
-      else
-      {
+      } else {
         $query = " INSERT INTO {$this->tables['keywords']} (keyword,testproject_id,notes) " .
              " VALUES ('" . $name . "'," . $this->testprojectID . ",'" . $notes . "')";
         
         $result = $db->exec_query($query);
-        if ($result)
-        {
+        if ($result) {
           $this->dbID = $db->insert_id($this->tables['keywords']);
         } 
       }
@@ -193,14 +215,12 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * 
    * @return integer returns tl::OK on success, error code else
    */
-  protected function checkKeyword(&$db)
-  {
+  protected function checkKeyword(&$db) {
     $this->name = trim($this->name);
     $this->notes = trim($this->notes);
     
     $result = tlKeyword::doesKeywordExist($db,$this->name,$this->testprojectID,$this->dbID);
-    if ($result >= tl::OK)
-    {
+    if ($result >= tl::OK) {
       $result = tlKeyword::checkKeywordName($this->name);
     } 
     return $result;
@@ -296,17 +316,14 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
   static public function checkKeywordName($name)
   {
     $result = tl::OK;
-    if ($name != "")
-    {
+    if ($name != "") {
       //we shouldnt allow " and , in keywords any longer
       $dummy = null;
       if (preg_match("/(\"|,)/",$name,$dummy))
         $result = self::E_NAMENOTALLOWED;
-    }
-    else
-    {
+    } else {
       $result = self::E_NAMELENGTH;
-        }
+    }
     return $result;
   }
   
@@ -319,23 +336,20 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
    * @param integer $kwID an additional keyword id which is excluded in the search 
    * @return integer return tl::OK if the keyword is found, else tlKeyword::E_NAMEALREADYEXISTS 
    */
-  static public function doesKeywordExist(&$db,$name,$tprojectID,$kwID = null)
-  {
+  static public function doesKeywordExist(&$db,$name,$tprojectID,$kwID = null) {
     $result = tl::OK;
     $tables = tlObjectWithDB::getDBTables("keywords");
     
     $name = $db->prepare_string(strtoupper($name));
-    $query = " SELECT id FROM {$tables['keywords']} " .
-         " WHERE UPPER(keyword) ='" . $name.
-           "' AND testproject_id = " . $tprojectID ;
+    $query = " SELECT id FROM {$tables['keywords']}
+               WHERE UPPER(keyword) ='{$name}' 
+               AND testproject_id = " . $tprojectID ;
     
-    if ($kwID)
-    {
+    if ($kwID) {
       $query .= " AND id <> " .$kwID;
     }  
     
-    if ($db->fetchFirstRow($query))
-    {
+    if ($db->fetchFirstRow($query)) {
       $result = self::E_NAMEALREADYEXISTS;
     }
     return $result;

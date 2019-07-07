@@ -1144,12 +1144,16 @@ function setPublicStatus($id,$status)
   public function addKeyword($testprojectID,$keyword,$notes) {
     $kw = new tlKeyword();
     $kw->initialize(null,$testprojectID,$keyword,$notes);
-    $op = array('status' => tlKeyword::E_DBERROR, 'id' => -1);
+    $op = array('status' => tlKeyword::E_DBERROR, 'id' => -1, 
+                'msg' => 'ko DB Error');
     $op['status'] = $kw->writeToDB($this->db);
     if ($op['status'] >= tl::OK) {
       $op['id'] = $kw->dbID;
       logAuditEvent(TLS("audit_keyword_created",$keyword),"CREATE",$op['id'],"keywords");
+    } else {
+      $op['msg'] = tlKeyword::getError($op['status']);
     }
+
     return $op;
   }
 
@@ -1162,13 +1166,11 @@ function setPublicStatus($id,$status)
    * @param type $notes
    *
    **/
-  function updateKeyword($testprojectID,$id,$keyword,$notes)
-  {
+  function updateKeyword($testprojectID,$id,$keyword,$notes) {
     $kw = new tlKeyword($id);
     $kw->initialize($id,$testprojectID,$keyword,$notes);
     $result = $kw->writeToDB($this->db);
-    if ($result >= tl::OK)
-    {  
+    if ($result >= tl::OK) {  
       logAuditEvent(TLS("audit_keyword_saved",$keyword),"SAVE",$kw->dbID,"keywords");
     }
     return $result;
@@ -2824,10 +2826,8 @@ private function copy_keywords($source_id, $target_id)
        " WHERE testproject_id = {$source_id}";
        
   $itemSet = $this->db->fetchRowsIntoMap($sql,'id');
-  if( !is_null($itemSet) )
-  {
-    foreach($itemSet as $item)
-    {
+  if( !is_null($itemSet) ) {
+    foreach($itemSet as $item) {
       $op = $this->addKeyword($target_id,$item['keyword'],$item['notes']);
       $old_new[$item['id']] = $op['id'];
     }

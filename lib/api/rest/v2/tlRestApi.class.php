@@ -786,10 +786,10 @@ class tlRestApi
       if( !$this->userHasRight($rightToCheck,TRUE,$context) ) {
         $statusOK = false;
         $msg = lang_get('API_INSUFFICIENT_RIGHTS');
-
         $op['message'] = 
           sprintf($msg,$rightToCheck,$this->user->login,
                   $context['tproject_id'],$context['tplan_id']);
+        $this->app->status(403);
       } 
     }  
 
@@ -804,6 +804,7 @@ class tlRestApi
         $op['message'] = 
           sprintf($this->l10n['API_BUILDNAME_ALREADY_EXISTS'], 
                   $build->name, $build->id);
+        $this->app->status(409);
       }
 
       $build->tplan_id = $context['tplan_id'];

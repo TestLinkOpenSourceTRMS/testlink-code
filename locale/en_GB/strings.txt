@@ -3835,6 +3835,9 @@ $TLS_add_link_to_tlexec_print_view = "Add Link in Issue Tracker to Test Case Exe
 $TLS_dl2tl = 'Link to TestLink Execution: ';
 $TLS_dl2tlpv = 'Link to TestLink Execution Print View: ';
 
+$TLS_dlToTCSpecPV = 'Link to TestLink Test Case: ';
+$TLS_dlToTCSpecPVCode = '[TLTC@:%s]';
+
 $TLS_old_style_login = 'Well known login screen';
 $TLS_new_style_login = 'Try the new login screen';
 

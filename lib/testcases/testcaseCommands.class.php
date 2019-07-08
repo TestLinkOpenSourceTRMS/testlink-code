@@ -1363,10 +1363,46 @@ class testcaseCommands {
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
-    if( null != $argsObj->free_keywords ) {
+    $tcExternalID = $guiObj->testcase['tc_external_id'];
+    if( null != $argsObj->free_keywords || 1==1) {
       $this->tcaseMgr->addKeywords($guiObj->tcase_id,$guiObj->tcversion_id,
         $argsObj->free_keywords);
-    }
+
+      $info = $this->tprojectMgr->get_by_id($this->tproject_id);
+      $cfx = config_get('keywords')->byTestProject;
+      if( isset($cfx[$info['prefix']]) && 
+        $cfx[$info['prefix']]['addTCLinkIntoITS'] &&
+        $info['issue_tracker_enabled'] ) {
+
+        $it_mgr = new tlIssueTracker($this->db);
+        $argsObj->itsCfg = $it_mgr->getLinkedTo($this->tproject_id);
+        $its = $it_mgr->getInterfaceObject($this->tproject_id);
+        if( method_exists($its,'addNote') ) {
+          $dl = sprintf(lang_get('dlToTCSpecPVCode'), $tcExternalID) . 
+                ' ' . lang_get('dlToTCSpecPV') . ' ' . 
+                $this->tcaseMgr->buildDirectWebLink($_SESSION['basehref'],
+                $argsObj->tcase_id,$argsObj->testproject_id);
+
+          // Get keyword for human beins
+          $tbl = tlObject::getDBTables(array('keywords'));
+          $inClause = "'" . implode("','",$argsObj->free_keywords) . 
+                      "'";
+          $sql = "SELECT id,keyword FROM {$tbl['keywords']} 
+                  WHERE id IN($inClause) ";
+          $kwSet = $this->db->fetchRowsIntoMap($sql,'id');        
+          foreach( $argsObj->free_keywords as $kw ) {
+            
+            $kwv = str_replace($cfx[$info['prefix']]['prefix'],
+                               '',$kwSet[$kw]['keyword']);
+            try {
+              $opStatus = $its->addNote($kwv,$dl);
+            } catch(Exception $e) {
+              echo 'Silent Failure?';
+            }
+          }
+        }  
+      }    
+    } 
 
     // set up for rendering
     $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" . "&caller=addKeyword";

@@ -70,6 +70,15 @@ $tlCfg->keywords = new stdClass();
 $tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
 $tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 
+// main key testproject PREFIX
+// element array 
+// 'addTCLinkIntoITS' true => add note to Issue Tracker to issue with
+// ISSUE ID similar to the KEYWORD (see kwPrefix below) 
+//                     
+// 'kwPrefix' to remove from keyword to create the ISSUE ID
+//
+$tlCfg->keywords->byTestProject = array();
+
 
 $tlCfg->accessWithoutLogin = array();
 

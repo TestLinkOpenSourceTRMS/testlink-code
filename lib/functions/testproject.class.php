@@ -1035,8 +1035,7 @@ function count_testcases($id)
    returns: null if query fails
    string
    */
-  function getTestCasePrefix($id)
-  {
+  function getTestCasePrefix($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $ret=null;
     $sql = "/* $debugMsg */ SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
@@ -3487,9 +3486,10 @@ function setCodeTrackerEnabled($id,$value)
   $ret = $this->db->exec_query($sql);
 }
 
-
-function getItemCount()
-{
+/**
+ *
+ */
+function getItemCount() {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
          " SELECT COUNT(0) AS qty FROM {$this->object_table} ";

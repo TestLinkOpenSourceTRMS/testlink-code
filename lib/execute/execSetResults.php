@@ -417,8 +417,11 @@ if(!is_null($linked_tcversions)) {
           $userid_array[$testerid] = $testerid;
         }      
       }
-        
-      $gui->req_details = $req_mgr->getActiveForTCVersion($tcversion_id);
+      
+      $gui->req_details = null;
+      if( $args->reqEnabled ) {
+        $gui->req_details = $req_mgr->getActiveForTCVersion($tcversion_id);
+      }
 
       $idCard = array('tcase_id' => $tcase_id, 'tcversion_id' => $tcversion_id);
       $gui->relations = $tcase_mgr->getTCVersionRelations($idCard);
@@ -680,6 +683,8 @@ function init_args(&$dbHandler,$cfgObj) {
 
   $tproject_mgr = new testproject($dbHandler);
   $info = $tproject_mgr->get_by_id($args->tproject_id);
+  $args->reqEnabled = intval($info['option_reqs']);
+
   unset($tproject_mgr);  
   $bug_summary['minLengh'] = 1; 
   $bug_summary['maxLengh'] = 1; 

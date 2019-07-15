@@ -77,8 +77,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
 
   $renderHTML = false;
 
-  switch($args->format)
-  {
+  switch($args->format) {
     case FORMAT_XLS:
       createSpreadsheet($gui,$args,$args->getSpreadsheetBy);
     break;  
@@ -88,9 +87,7 @@ if( ($gui->activeBuildsQty <= $gui->matrixCfg->buildQtyLimit) ||
       $gui->tableSet[] = buildMatrix($gui, $args);
     break;
   }
-}  
-else
-{
+}  else {
   // We need to ask user to do a choice
   $tpl = 'resultsTCLauncher.tpl';
   $gui->url2call = "lib/results/resultsTC.php?tplan_id=$gui->tplan_id" .
@@ -129,15 +126,14 @@ function init_args(&$dbHandler)
   R_PARAMS($iParams,$args);
 
   $args->getSpreadsheetBy = isset($_REQUEST['sendSpreadSheetByMail_x']) ? 'email' : null;
-  if( is_null($args->getSpreadsheetBy) )
-  {
+
+  if( is_null($args->getSpreadsheetBy) ) {
     $args->getSpreadsheetBy = isset($_REQUEST['exportSpreadSheet_x']) ? 'download' : null;
   }  
 
 
   $args->addOpAccess = true;
-  if( !is_null($args->apikey) )
-  {
+  if( !is_null($args->apikey) ) {
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
@@ -792,8 +788,7 @@ function buildDataSet(&$db,&$args,&$gui,&$exec,$labels,$forceFormat=null)
 /**
  *
  */
-function initLblSpreadsheet()
-{
+function initLblSpreadsheet() {
   $lbl = init_labels(array('title_test_suite_name' => null,
                            'platform' => null,'priority' => null,
                            'build' => null, 'title_test_case_title' => null,'test_exec_by' => null,
@@ -807,8 +802,7 @@ function initLblSpreadsheet()
 /**
  *
  */  
-function initStyleSpreadsheet()
-{
+function initStyleSpreadsheet() {
   $style = array();
   $style['ReportContext'] = array('font' => array('bold' => true));
   $style['DataHeader'] = array('font' => array('bold' => true),
@@ -823,14 +817,11 @@ function initStyleSpreadsheet()
 /**
  *
  */
-function setCellRangeSpreadsheet()
-{
+function setCellRangeSpreadsheet() {
   $cr = range('A','Z');
   $crLen = count($cr);
-  for($idx = 0; $idx < $crLen; $idx++)
-  {
-    for($jdx = 0; $jdx < $crLen; $jdx++) 
-    {
+  for($idx = 0; $idx < $crLen; $idx++) {
+    for($jdx = 0; $jdx < $crLen; $jdx++) {
       $cr[] = $cr[$idx] . $cr[$jdx];
     }
   }
@@ -840,8 +831,7 @@ function setCellRangeSpreadsheet()
 /**
  *
  */
-function xlsStepOne(&$oj,$style,&$lbl,&$gui)
-{
+function xlsStepOne(&$oj,$style,&$lbl,&$gui) {
   $dummy = '';
   $lines2write = array(array($lbl['testproject'],$gui->tproject_name),
                        array($lbl['testplan'],$gui->tplan_name),
@@ -849,8 +839,7 @@ function xlsStepOne(&$oj,$style,&$lbl,&$gui)
                        localize_dateOrTimeStamp(null,$dummy,'timestamp_format',time())));
 
   $cellArea = "A1:"; 
-  foreach($lines2write as $zdx => $fields)
-  {
+  foreach($lines2write as $zdx => $fields) {
     $cdx = $zdx+1;
     $oj->setActiveSheetIndex(0)->setCellValue("A{$cdx}", current($fields))
                   ->setCellValue("B{$cdx}", end($fields));

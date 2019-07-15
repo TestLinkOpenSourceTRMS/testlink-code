@@ -3962,4 +3962,14 @@ $TLS_btn_create_and_link = 'Create & Link';
 $TLS_create_keyword_and_link = 'Create Keyword and Link to TCV';
 $TLS_export_skel = 'Export Skeleton';
 
+$TLS_title_res_by_kw_on_plat = "Results by Keyword on Platform: ";
+$TLS_title_res_by_prio_on_plat = "Results by Priority on Platform: ";
+$TLS_title_res_by_tl_testsuite_on_plat = 
+  "Results by Top Level Test Suite on Platform: ";
+
+$TLS_title_res_by_tl_testsuite = "Results by Top Level Test Suite";
+
+$TLS_title_res_by_build_on_plat = "Results by Build on Platform:";
+$TLS_title_res_build = 'Results by Build';
+
 // ----- END ------------------------------------------------------------------

@@ -20,8 +20,8 @@
   <link href="gui/templates/dashio/css/style.css" rel="stylesheet">
   <link href="gui/templates/dashio/css/style-responsive.css" rel="stylesheet">
   <script src="gui/templates/dashio/lib/chart-master/Chart.js"></script>
-<link rel="stylesheet" type="text/css" href="{$basehref}gui/themes/default/css/frame.css">
-  
+<link rel="stylesheet" type="text/css" href="{$basehref}{$tlCfg->theme_dir}frame.css">
+
 </head>
 
 <body>

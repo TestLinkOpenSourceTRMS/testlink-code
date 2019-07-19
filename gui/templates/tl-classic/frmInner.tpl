@@ -15,7 +15,7 @@
     	<base href="{$basehref}" />
     	<title>TestLink Inner Frame</title>
     	<style media="all" type="text/css">@import "{$css}";</style>
-    	<link rel="stylesheet" type="text/css" href="{$basehref}gui/themes/default/css/frame.css">
+    	<link rel="stylesheet" type="text/css" href="{$basehref}{$tlCfg->theme_dir}css/frame.css">
     	<script type="text/javascript" src="{$basehref}third_party/jquery/{$smarty.const.TL_JQUERY}" language="javascript"></script>
     	<script type="text/javascript" src="{$basehref}third_party/chosen/chosen.jquery.js"></script>
     	{include file="bootstrap.inc.tpl"}

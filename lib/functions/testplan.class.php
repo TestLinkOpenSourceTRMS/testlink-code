@@ -3379,55 +3379,46 @@ class testplan extends tlObjectWithAttachments
    *        'mapAccessByName' => map access key: name
    *
    */
-    function getPlatforms($id,$options=null)
-    {
-      $my['options'] = array('outputFormat' => 'array', 'outputDetails' => 'full', 'addIfNull' => false);
-      $my['options'] = array_merge($my['options'], (array)$options);
-      
-      switch($my['options']['outputFormat'])
-      {
-        case 'map':
-          $platforms = $this->platform_mgr->getLinkedToTestplanAsMap($id);
-        break;
-          
-        default:
-          $opt = array('outputFormat' => $my['options']['outputFormat']);
-          $platforms = $this->platform_mgr->getLinkedToTestplan($id,$opt);
-        break;
-      }   
-      
-      if( !is_null($platforms) )
-      {
-        switch($my['options']['outputDetails'])
-        {
-          case 'name':
-            foreach($platforms as $id => $elem)
-            {
-              $platforms[$id] = $elem['name'];    
-            }
-          break;
-          
-          default:
-          break;  
-        }
+  function getPlatforms($id,$options=null) {
+    $my['options'] = array('outputFormat' => 'array', 'outputDetails' => 'full', 'addIfNull' => false);
+    $my['options'] = array_merge($my['options'], (array)$options);
+    
+    switch($my['options']['outputFormat']) {
+      case 'map':
+        $platforms = $this->platform_mgr->getLinkedToTestplanAsMap($id);
+      break;
         
-      }
-      else if( $my['options']['addIfNull'] )
-      {
-        $platforms = array( 0 => '');
-      }
-      return $platforms; 
+      default:
+        $opt = array('outputFormat' => $my['options']['outputFormat']);
+        $platforms = $this->platform_mgr->getLinkedToTestplan($id,$opt);
+      break;
+    }   
+    
+    if( !is_null($platforms) ) {
+      switch($my['options']['outputDetails']) {
+        case 'name':
+          foreach($platforms as $id => $elem) {
+            $platforms[$id] = $elem['name'];    
+          }
+        break;
+        
+        default:
+        break;  
+      }      
+    } else if( $my['options']['addIfNull'] ) {
+      $platforms = array( 0 => '');
     }
+    return $platforms; 
+  }
 
   /**
    * Logic to determine if platforms should be visible for a given testplan.
    * @return bool true if the testplan has one or more linked platforms;
    *              otherwise false.
    */
-    function hasLinkedPlatforms($id)
-    {
-      return $this->platform_mgr->platformsActiveForTestplan($id);
-    }  
+  function hasLinkedPlatforms($id) {
+    return $this->platform_mgr->platformsActiveForTestplan($id);
+  }  
 
 
 

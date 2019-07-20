@@ -2464,11 +2464,7 @@ class tlTestPlanMetrics extends testplan
   /*
    *
    * @used-by lib/results/testCasesWithoutTester.php
-   * @internal revisions
-   * @since 1.9.4
-   *                     
-   * @internal revisions
-   * @since 1.9.6
+   *
    * IMPORTANT NOTICE
    * When doing count() with having, if there are platforms defined
    * we have to consider for having clause BuildQty * PlatformQty,
@@ -2977,4 +2973,74 @@ class tlTestPlanMetrics extends testplan
     }
     return $renObj;
   }
+
+  /**
+   * 
+   *
+   */
+  function getNeverRunByPlatform($tplanID,$platformSet=null) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $safeID = intval($tplanID);
+
+    $fullEID = $this->helperConcatTCasePrefix($safeID);
+
+    // Because we now allow assignment of MULTIPLE testers to same test case
+    // we need to remove UA.user_id, in order to avoid duplication
+    // UA.user_id,
+    // we will need a second step to populate this info.
+    //
+    $sql =  "/* {$debugMsg} Not Run */" . 
+          "SELECT COUNT(0) AS qty,
+          NHTC.parent_id AS tsuite_id,
+          NHTC.id AS tcase_id, TPTCV.platform_id,
+          NHTC.name AS name, PLAT.name AS platform_name,
+          $fullEID AS full_external_id
+          FROM {$this->tables['testplan_tcversions']} TPTCV 
+          
+          JOIN {$this->tables['builds']} B
+          ON  B.testplan_id = TPTCV.testplan_id 
+
+          /* Get Test Case info from Test Case Version */ 
+          JOIN {$this->tables['nodes_hierarchy']} NHTCV 
+          ON  NHTCV.id = TPTCV.tcversion_id
+  
+          /* Get Test Suite info from Test Case  */         
+          JOIN {$this->tables['nodes_hierarchy']} NHTC
+          ON  NHTC.id = NHTCV.parent_id
+        
+          /* Get Test Case Version attributes */
+          JOIN {$this->tables['tcversions']} TCV
+          ON  TCV.id = TPTCV.tcversion_id 
+
+          JOIN {$this->tables['platforms']} PLAT
+          ON  PLAT.id = TPTCV.platform_id 
+
+
+          LEFT OUTER JOIN {$this->tables['executions']} E 
+          ON  E.testplan_id = TPTCV.testplan_id
+          AND E.platform_id = TPTCV.platform_id
+          AND E.tcversion_id = TPTCV.tcversion_id
+          AND E.build_id = B.id
+          
+          WHERE TPTCV.testplan_id=$safeID
+          AND E.id IS NULL";
+
+    if( null != $platformSet ) {
+      $sql .= " AND TPTCV.platform_id IN (" . 
+                implode(",", $platformSet) . ")";
+    }      
+    $sql .= " GROUP BY tsuite_id, tcase_id, 
+              TPTCV.platform_id,NHTC.name,platform_name,
+              full_external_id ";
+    
+    $buildSet = $this->get_builds($safeID,testplan::ACTIVE_BUILDS,
+                                  testplan::OPEN_BUILDS);
+
+    $sql .= " HAVING COUNT(0) = " . count($buildSet);
+    $sql .= " ORDER BY platform_name,full_external_id ";
+    
+    return $this->db->get_recordset($sql);      
+  }
+
 }

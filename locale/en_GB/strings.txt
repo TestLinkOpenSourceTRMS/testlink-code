@@ -3971,5 +3971,12 @@ $TLS_title_res_by_tl_testsuite = "Results by Top Level Test Suite";
 
 $TLS_title_res_by_build_on_plat = "Results by Build on Platform:";
 $TLS_title_res_build = 'Results by Build';
+$TLS_info_neverRunByPP_report = 
+  "This report shows test cases that have not been run in each active build present on selected Test Plan (and Platform). <br>
+   Test cases <b>with and without tester assignment</b>
+   are considered<br />";
+
+$TLS_neverRunByPP_title = "Test Cases Never Runned"; 
+$TLS_link_report_never_run = "Test Cases Never Runned";
 
 // ----- END ------------------------------------------------------------------

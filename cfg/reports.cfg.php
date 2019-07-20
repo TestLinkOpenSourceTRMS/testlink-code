@@ -137,6 +137,7 @@ $tlCfg->reports_list['list_tc_blocked'] = array(
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=list_tc_blocked',
 	'format' => 'format_html,format_pseudo_ods'
 );
+
 $tlCfg->reports_list['list_tc_not_run'] = array( 
 	'title' => 'link_report_not_run',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['not_run'],
@@ -145,6 +146,16 @@ $tlCfg->reports_list['list_tc_not_run'] = array(
 	'format' => 'format_html,format_pseudo_ods',
 	'misc' => array('bugs_not_linked' => false)
 );
+
+$tlCfg->reports_list['never_run'] = array( 
+	'title' => 'link_report_never_run',
+	'url' => 'lib/results/neverRunByPP.php',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=never_run',
+	'format' => 'format_html,format_pseudo_ods',
+	'misc' => array('bugs_not_linked' => false)
+);
+
 
 $tlCfg->reports_list['tcases_without_tester'] = array(
 	'title' => 'link_report_tcases_without_tester',

@@ -159,29 +159,24 @@ class testplan extends tlObjectWithAttachments
 
     try {
       // mandatory checks
-      if(strlen($item->name)==0)
-      {
+      if(strlen($item->name)==0) {
         throw new Exception('Empty name is not allowed');      
       }  
     
       // what checks need to be done ?
       // 1. test project exist
       $pinfo = $this->tree_manager->get_node_hierarchy_info($item->testProjectID);
-      if(is_null($pinfo) || $this->node_types_id_descr[$pinfo['node_type_id']] != 'testproject')
-      {
+      if(is_null($pinfo) || $this->node_types_id_descr[$pinfo['node_type_id']] != 'testproject') {
         throw new Exception('Test project ID does not exist');      
       }  
 
       // 2. there is NO other test plan on test project with same name
       $name = trim($item->name);
       $op = $this->checkNameExistence($name,$item->testProjectID);
-      if(!$op['status_ok'])
-      {
+      if(!$op['status_ok']) {
         throw new Exception('Test plan name is already in use on Test project');      
       }  
-    }   
-    catch (Exception $e) 
-    {
+    } catch (Exception $e) {
       throw $e;  // rethrow
     }
 

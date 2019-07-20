@@ -755,6 +755,7 @@ class tlRestApi
 
     if( $statusOK ) {
       $build->name = $item->name;
+      $build->notes = $item->notes;
 
       if( is_numeric($item->testplan) ) {
         // Check if is a valid test plan

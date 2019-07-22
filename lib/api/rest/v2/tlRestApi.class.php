@@ -105,7 +105,8 @@ class tlRestApi
     $tl = array('API_MISSING_REQUIRED_PROP' => null,
                 'API_TESTPLAN_ID_DOES_NOT_EXIST' => null,
                 'API_TESTPLAN_APIKEY_DOES_NOT_EXIST' => null,
-                'API_BUILDNAME_ALREADY_EXISTS' => null);
+                'API_BUILDNAME_ALREADY_EXISTS' => null,
+                'API_INVALID_BUILDID' => null);
 
     $this->l10n = init_labels($tl);
 
@@ -145,6 +146,11 @@ class tlRestApi
     $this->app->post('/testcases', array($this,'authenticate'), array($this,'createTestCase'));
 
     $this->app->post('/keywords', array($this,'authenticate'), array($this,'createKeyword'));
+
+
+    // update routes
+    $this->app->post('/builds/:id', array($this,'authenticate'), array($this,'updateBuild'));
+
 
     // $this->app->get('/testplans/:id', array($this,'getTestPlan'));
     $this->apiLogPathName = '/var/testlink/rest-api.log';
@@ -840,29 +846,26 @@ class tlRestApi
    *
    *
    */ 
-  private function getUserIDByAttr($user)
-  {
+  private function getUserIDByAttr($user) {
     $debugMsg = $this->debugMsg . __FUNCTION__;
     $run = false;
     $udi = -1;
 
     $sql = "/* $debugMsg */ SELECT id FROM {$this->tables['users']} ";
-    if(property_exists($user, 'login'))
-    {
+    if(property_exists($user, 'login')) {
       $run = true;
       $sql .= " WHERE login='" . $this->db->prepare_string(trim($user->login)) . "'";
     }
 
-    if($run==false && property_exists($user, 'id'))
-    {
+    if($run==false && property_exists($user, 'id')) {
       $run = true;
       $sql .= " WHERE id=" . intval($user->id);
     } 
 
-    if($run)
-    {
+    if($run) {
       $rs = $this->db->get_recordset($sql);
     }  
+
     return ($run && !is_null($rs)) ? $rs[0]['id'] : $uid;
   }
 
@@ -1111,6 +1114,138 @@ class tlRestApi
       $op['message'] = "No Test Plan identified by '" . $idCard . "'!";
       $op['status']  = 'error';
     }
+
+    echo json_encode($op);
+  }
+
+
+  /**
+   *
+   * @param string id: build id
+   * @param string [notes]
+   * @param string [active]
+   * @param string [open]
+   * @param string [releasedate]: format YYYY-MM-DD;
+   * @param int    [copytestersfrombuild]
+   *
+   *               step 1) is a number ?
+   *                       will be considered a target build id.
+   *                       check will be done to verify that is a valid
+   *                       build id inside the test plan.
+   *
+   *               step 2) is a string ?
+   *                       will be used as build name to search inside
+   *                       the test plan.
+   * 
+   *               if check is OK, tester assignments will be copied.
+   *
+   */
+  public function updateBuild($id) {
+
+    $op = array('status' => 'ko', 'message' => 'ko', 
+                'details' => array(), 'id' => -1);  
+
+    $rightToCheck = "testplan_create_build";
+
+    // need to get input, before doing right checks,
+    // because right can be tested against in this order
+    // Test Plan Right
+    // Test Project Right
+    // Default Right
+    $request = $this->app->request();
+    $item = json_decode($request->getBody());
+    $statusOK = true;
+
+    // Get mandatory inputs
+    if( intval($id) <= 0 ) {
+        $op['details'][] = $this->l10n['API_MISSING_REQUIRED_PROP'] .
+                           'id - the build ID';
+        $statusOK = false;
+    } 
+
+    if( $statusOK ) {
+      $build = $this->buildMgr->get_by_id( $id );      
+      
+      if( null == $build ) {
+        $statusOK = false;
+        $op['message'] = 
+          sprintf($this->l10n['API_INVALID_BUILDID'],$id);
+        $this->app->status(404);
+      }
+    }
+
+    if( $statusOK ) {
+      $tplan = $this->tplanMgr->get_by_id( $build['testplan_id'] );
+
+      // Ready to check user permissions
+      $context = array('tplan_id' => $tplan['id'], 
+                       'tproject_id' => $tplan['testproject_id']);
+
+      if( !$this->userHasRight($rightToCheck,TRUE,$context) ) {
+        $statusOK = false;
+        $msg = lang_get('API_INSUFFICIENT_RIGHTS');
+        $op['message'] = 
+          sprintf($msg,$rightToCheck,$this->user->login,
+                  $context['tproject_id'],$context['tplan_id']);
+        $this->app->status(403);
+      } 
+    }  
+
+    // Go ahead, try to update build!!
+    if( $statusOK ) {
+
+      // Step 1 - Check if build name already exists
+      if( property_exists($item,'name') ) {
+        if( $this->tplanMgr->check_build_name_existence(
+                             $tplan['id'],$item->name,$id) ) {
+          $statusOK = false;
+          $op['message'] = 
+            sprintf($this->l10n['API_BUILDNAME_ALREADY_EXISTS'], 
+                      $item->name, $id);
+          $this->app->status(409);
+        }
+      }
+    }    
+
+    // Step 2 - Finally Update It!!
+    if( $statusOK ) {
+      // key 2 check 
+      // $id,$name,$notes,$active=null,$open=null,
+      // $release_date='',$closed_on_date='') {
+
+      $k2check = array('name','notes','active','is_open',
+                       'release_date');
+
+      foreach( $k2check as $key ) {
+        if( property_exists($item, $key) ) {
+          $$key = $item->$key;
+        } else {
+          $$key = $build[$key];
+        }
+      }
+      $ox = $this->buildMgr->update($id,$name,
+                               $notes,$active,$is_open,$release_date);
+      if( $ox ) {
+        $op = array('status' => 'ok', 'message' => 'ok', 
+                    'details' => array(), 'id' => $id);  
+      
+        // Special processing Build Closing/Opening
+        // we need also to manage close on date.
+        if( property_exists($item,'is_open') ) {
+          $oio = intval($build['is_open']);
+          $nio = intval($item->is_open);
+          if( $oio != $nio ) {
+            if( $nio ) {
+              $this->buildMgr->setOpen($id);
+            } else {
+              $this->buildMgr->setClosed($id);
+            }
+          }
+        }
+
+
+      } 
+    }    
 
     echo json_encode($op);
   }

@@ -200,46 +200,36 @@ class testplan extends tlObjectWithAttachments
   /**
    *
    */
-  function updateFromObject($item,$opt=null)
-  {
+  function updateFromObject($item,$opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my['opt'] = array('doChecks' => false, 'setSessionProject' => true);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
-    if( !property_exists($item, 'id') )
-    {
+    if( !property_exists($item, 'id') ) {
       throw new Exception('Test plan ID is missing');      
     }  
 
-    if( ($safeID = intval($item->id)) == 0 )
-    {
+    if( ($safeID = intval($item->id)) == 0 ) {
       throw new Exception('Test plan ID 0 is not allowed');      
     }  
 
     $pinfo = $this->get_by_id($safeID, array( 'output' => 'minimun'));
-
-    if(is_null($pinfo))
-    {
+    if(is_null($pinfo)) {
       throw new Exception('Test plan ID does not exist');      
     }  
 
     $attr = array();
     $upd = '';
-    try 
-    {
-
-      if( property_exists($item, 'name') )
-      {
+    try {
+      if( property_exists($item, 'name') ) {
         $name = trim($item->name);
-        if(strlen($name)==0)
-        {
+        if(strlen($name)==0) {
           throw new Exception('Empty name is not allowed');      
         }  
       
         // 1. NO other test plan on test project with same name
         $op = $this->checkNameExistence($name,$pinfo['testproject_id'],$safeID);
-        if(!$op['status_ok'])
-        {
+        if(!$op['status_ok']) {
           throw new Exception('Test plan name is already in use on Test project');      
         }  
       
@@ -250,29 +240,23 @@ class testplan extends tlObjectWithAttachments
         $result = $this->db->exec_query($sql);
       }  
 
-      if( property_exists($item, 'notes') )
-      {
+      if( property_exists($item, 'notes') ) {
         $upd = ($upd != '' ? ',' : '') . " notes = '" . $this->db->prepare_string($item->notes) . "' ";
       }
 
       $intAttr = array('active','is_public');
-      foreach($intAttr as $key)
-      {
-        if( property_exists($item, $key) )
-        {
+      foreach($intAttr as $key) {
+        if( property_exists($item, $key) ) {
           $upd = ($upd != '' ? ',' : '') . $key . ' = ' . (intval($item->$key) > 0 ? 1 : 0);
         }
       }  
 
-      if($upd != '')
-      {
+      if($upd != '') {
         $sql = " UPDATE {$this->tables['testplans']} " .
                " SET {$upd} WHERE id=" . $safeID;
         $result = $this->db->exec_query($sql);
       }  
-    }   
-    catch (Exception $e) 
-    {
+    } catch (Exception $e) {
       throw $e;  // rethrow
     }
     return $safeID;
@@ -309,8 +293,7 @@ class testplan extends tlObjectWithAttachments
    * 
    * @return integer result code (1=ok)
    */
-  function update($id,$name,$notes,$is_active=null,$is_public=null)
-  {
+  function update($id,$name,$notes,$is_active=null,$is_public=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $do_update = 1;
     $result = null;
@@ -2361,12 +2344,9 @@ class testplan extends tlObjectWithAttachments
                     while managing update operations via GUI
   
     returns: 1 => name exists
-  
-    rev: 20080217 - franciscom - added build_id argument
-  
+    
   */
-  function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_sensitive=0)
-  {
+  function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_sensitive=0) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $sql = " /* $debugMsg */ SELECT id, name, notes " .
@@ -2374,22 +2354,17 @@ class testplan extends tlObjectWithAttachments
       " WHERE testplan_id = {$tplan_id} ";
     
     
-    if($case_sensitive)
-    {
+    if($case_sensitive) {
       $sql .= " AND name=";
-    }
-    else
-    {
+    } else {
       $build_name=strtoupper($build_name);
       $sql .= " AND UPPER(name)=";
     }
     $sql .= "'" . $this->db->prepare_string($build_name) . "'";
     
-    if( !is_null($build_id) )
-    {
+    if( !is_null($build_id) ) {
       $sql .= " AND id <> " . $this->db->prepare_int($build_id);
     }
-    
     
     $result = $this->db->exec_query($sql);
     $status= $this->db->num_rows($result) ? 1 : 0;
@@ -7993,44 +7968,34 @@ class build_mgr extends tlObject {
 
     rev :
   */
-  function update($id,$name,$notes,$active=null,$open=null,$release_date='',$closed_on_date='')
-  {
+  function update($id,$name,$notes,$active=null,$open=null,$release_date='',$closed_on_date='') {
     $closure_date = '';
     $targetDate=trim($release_date);
     $sql = " UPDATE {$this->tables['builds']} " .
            " SET name='" . $this->db->prepare_string($name) . "'," .
            "     notes='" . $this->db->prepare_string($notes) . "'";
     
-    if($targetDate == '')
-    {
+    if($targetDate == '') {
       $sql .= ",release_date=NULL";
-    }       
-    else
-    {
+    } else {
       $sql .= ",release_date='" . $this->db->prepare_string($targetDate) . "'";
     }
-    if( !is_null($active) )
-    {
+    if( !is_null($active) ) {
       $sql .=" , active=" . intval($active);
     }
     
-    if( !is_null($open) )
-    {
+    if( !is_null($open) ) {
       $open_status=intval($open) ? 1 : 0; 
       $sql .=" , is_open=" . $open_status;
       
-      if($open_status == 1)
-      {
+      if($open_status == 1) {
         $closure_date = ''; 
       }
     }
     
-    if($closure_date == '')
-    {
+    if($closure_date == '') {
       $sql .= ",closed_on_date=NULL";
-    }       
-    else
-    {
+    } else {
       // may be will be useful validate date format
       $sql .= ",closed_on_date='" . $this->db->prepare_string($closure_date) . "'";
     }

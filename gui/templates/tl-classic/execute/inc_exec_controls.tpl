@@ -57,7 +57,8 @@ Author : franciscom
                 {$addBR=0}
                 {if $tc_exec.assigned_user == ''}
                   {$args_labels.assign_exec_task_to_me}&nbsp;
-                  <input type="checkbox" name="assignTask"  id="assignTask">
+                  <input type="checkbox" name="assignTask"  id="assignTask"
+                  {if $gui->assignTaskChecked} checked {/if}>
                   {$addBR=1}
                 {/if}
                 

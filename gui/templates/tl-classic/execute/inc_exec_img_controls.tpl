@@ -61,7 +61,8 @@ Author : franciscom
                 {if $tc_exec.assigned_user == ''}
                  <img src="{$tlImages.assign_task}" 
                        title="{$args_labels.assign_exec_task_to_me}">
-                  <input type="checkbox" name="assignTask"  id="assignTask">
+                  <input type="checkbox" name="assignTask"  id="assignTask"
+                  {if $gui->assignTaskChecked} checked {/if}>
                   &nbsp;
                 {/if}
 

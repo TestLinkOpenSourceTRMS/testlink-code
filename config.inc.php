@@ -1081,6 +1081,7 @@ $tlCfg->exec_cfg->exec_mode->save_and_move='unlimited';
 
 $tlCfg->exec_cfg->exec_mode->addLinkToTLChecked = false;
 $tlCfg->exec_cfg->exec_mode->addLinkToTLPrintViewChecked = false;
+$tlCfg->exec_cfg->exec_mode->assignTaskChecked = false;
 
 
 /** User filter in Test Execution navigator - default value */
@@ -1175,9 +1176,7 @@ $tlCfg->exec_cfg->issues->tcstep_level->subject =
 $tlCfg->exec_cfg->issues->tcstep_level->subject = '$$issue_on_step %%STEPNUMBER%% - $$issue_subject_tcname %%TCNAME%% ';
 
 
-
-
-// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------
 /* [Test Specification] */
 
 // TRUE will be displayed when displayed a test case

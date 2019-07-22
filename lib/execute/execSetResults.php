@@ -1418,6 +1418,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->addLinkToTLChecked = $cfgObj->exec_cfg->exec_mode->addLinkToTLChecked;
   $gui->addLinkToTLPrintViewChecked = $cfgObj->exec_cfg->exec_mode->addLinkToTLPrintViewChecked;
 
+  $gui->assignTaskChecked = $cfgObj->exec_cfg->exec_mode->assignTaskChecked;
+
 
   $k2i = array('import','attachments','exec','edit_exec');
   $gui->features = array();

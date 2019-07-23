@@ -1685,8 +1685,7 @@ class testcase extends tlObjectWithAttachments {
     testcase_script_links
 
   */
-  function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
-  {
+  function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = array();
 
@@ -1694,8 +1693,7 @@ class testcase extends tlObjectWithAttachments {
     $item_id = $version_id;
     $tcversion_list = $version_id;
     $target_nodes = $version_id;
-    if( $version_id == self::ALL_VERSIONS)
-    {
+    if( $version_id == self::ALL_VERSIONS) {
       $destroyTC = true;
       $item_id = $id;
       $tcversion_list = implode(',',$children['tcversion']);
@@ -1704,41 +1702,53 @@ class testcase extends tlObjectWithAttachments {
 
     $this->cfield_mgr->remove_all_design_values_from_node($target_nodes);
 
-    $sql[] = "/* $debugMsg */ DELETE FROM {$this->tables['user_assignments']} " .
-             " WHERE feature_id in (" .
+    $sql[] = "/* $debugMsg */ 
+              DELETE FROM {$this->tables['user_assignments']} 
+              WHERE feature_id in (" .
              " SELECT id FROM {$this->tables['testplan_tcversions']}  " .
              " WHERE tcversion_id IN ({$tcversion_list}))";
 
-    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testplan_tcversions']}  " .
-           " WHERE tcversion_id IN ({$tcversion_list})";
+    $sql[]="/* $debugMsg */ 
+            DELETE FROM {$this->tables['testplan_tcversions']} 
+            WHERE tcversion_id IN ({$tcversion_list})";
 
     // Multiple Test Case Steps Feature
-    if( !is_null($children['step']) )
-    {
+    if( !is_null($children['step']) ) {
       // remove null elements
-      foreach($children['step'] as $key => $value)
-      {
-        if(is_null($value))
-        {
+      foreach($children['step'] as $key => $value) {
+        if(is_null($value)) {
           unset($children['step'][$key]);
         }
       }
 
-      if( count($children['step']) > 0)
-      {
+      if( count($children['step']) > 0) {
         $step_list=trim(implode(',',$children['step']));
         $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
                " WHERE id IN ({$step_list})";
       }
     }
-    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
-           " WHERE id IN ({$tcversion_list})";
+    $sql[]="/* $debugMsg */  
+            DELETE FROM {$this->tables['testcase_script_links']} 
+            WHERE tcversion_id IN ({$tcversion_list})";
 
-    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_script_links']}  " .
-           " WHERE tcversion_id IN ({$tcversion_list})";
+    $sql[]="/* $debugMsg */ 
+             DELETE FROM {$this->tables['testcase_keywords']} 
+             WHERE testcase_id = {$id} 
+             AND tcversion_id IN ({$tcversion_list})";
 
-    foreach ($sql as $the_stm)
-    {
+    $sql[]="/* $debugMsg */ 
+            DELETE FROM {$this->tables['req_coverage']}  
+            WHERE testcase_id = {$id}
+            AND tcversion_id IN ({$tcversion_list})";
+
+
+    // This has to be the last, to avoid FK issues
+    $sql[]="/* $debugMsg */ 
+            DELETE FROM {$this->tables['tcversions']} 
+            WHERE id IN ({$tcversion_list})";
+
+
+    foreach ($sql as $the_stm) {
       $result = $this->db->exec_query($the_stm);
     }
 
@@ -1749,20 +1759,22 @@ class testcase extends tlObjectWithAttachments {
       }
     }
 
-    if($destroyTC)
-    {
+    if($destroyTC) {
       // Remove data that is related to Test Case => must be deleted when there is no more trace
       // of test case => when all version are deleted
       $sql = null;
-      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
-      $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
+      $sql[]="/* $debugMsg */ 
+             DELETE FROM {$this->tables['testcase_keywords']} 
+             WHERE testcase_id = {$id}";
 
-      foreach ($sql as $the_stm)
-      {
+      $sql[]="/* $debugMsg */ 
+              DELETE FROM {$this->tables['req_coverage']}  
+              WHERE testcase_id = {$id}";
+
+      foreach ($sql as $the_stm) {
         $result = $this->db->exec_query($the_stm);
       }
 
-      // 2018
       // $this->deleteAttachments($id);
       if( $version_id == self::ALL_VERSIONS ) {
         $toloop = explode(',',$tcversion_list);

@@ -761,7 +761,6 @@ class tlRestApi
 
     if( $statusOK ) {
       $build->name = $item->name;
-      $build->notes = $item->notes;
 
       if( is_numeric($item->testplan) ) {
         // Check if is a valid test plan
@@ -821,7 +820,7 @@ class tlRestApi
     if( $statusOK ) {
       // key 2 check with default value is parameter is missing
       $k2check = array('active' => 1, 'is_open' => 1,
-                       'releasedate' => null,
+                       'releasedate' => null, 'notes' => null,
                        'copytestersfrombuild' => null);
 
       foreach( $k2check as $key => $value ) {

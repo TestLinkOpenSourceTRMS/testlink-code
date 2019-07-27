@@ -479,33 +479,28 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
 
   doSessionStart();
   setPaths();
-  if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
-  {
+  if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) ) {
     setDateTimeFormats($_SESSION['locale']);
   } 
   doDBConnect($db);
   
-  if (!$pageStatistics && (config_get('log_level') == 'EXTENDED'))
-  {
+  if (!$pageStatistics && (config_get('log_level') == 'EXTENDED')) {
     $pageStatistics = new tlPageStatistics($db);
   }
   
-  if (!$dontCheckSession)
-  {
+  if (!$dontCheckSession) {
     checkSessionValid($db);
   }
   
-  if ($userRightsCheckFunction)
-  {
+  if ($userRightsCheckFunction) {
     checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
   }
    
   // Init plugins
   plugin_init_installed();
    
-  // adjust Product and Test Plan to $_SESSION
-  if ($initProject)
-  {
+  // adjust Test Project and Test Plan to $_SESSION
+  if ($initProject) {
     initProject($db,$_REQUEST);
   }
    
@@ -515,11 +510,9 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
   global $g_attachments;
   global $g_repositoryPath;
   $g_attachments->disabled_msg = "";
-  if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
-  {
+  if($g_repositoryType == TL_REPOSITORY_TYPE_FS) {
     $ret = checkForRepositoryDir($g_repositoryPath);
-    if(!$ret['status_ok'])
-    {
+    if(!$ret['status_ok']) {
       $g_attachments->enabled = FALSE;
       $g_attachments->disabled_msg = $ret['msg'];
     }

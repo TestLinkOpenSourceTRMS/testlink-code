@@ -52,10 +52,9 @@ function init_args(&$dbH)
 
   // Check if any project exists to display error
   $args->newInstallation = false;
-  if($args->testproject <= 0)
-  {
+  if($args->testproject <= 0) {
     $sch = tlObject::getDBTables(array('testprojects','nodes_hierarchy'));
-    $sql = " SELECT NH.id FROM {$sch['nodes_hierarchy']} NH " .
+    $sql = " SELECT NH.id, NH.name FROM {$sch['nodes_hierarchy']} NH " .
            " JOIN {$sch['testprojects']} TPRJ " .
            " ON TPRJ.id = NH.id ";
     $rs = (array)$dbH->get_recordset($sql);
@@ -71,19 +70,48 @@ function init_args(&$dbH)
 /**
  *
  */
-function initializeGui(&$db,&$args)
-{
+function initializeGui(&$db,&$args) {
   $tproject_mgr = new testproject($db);
   $guiCfg = config_get("gui");
 
   $gui = new stdClass();  
 
+  $opx = array('output' => 'map_name_with_inactive_mark',
+               'field_set' => $guiCfg->tprojects_combo_format,
+               'order_by' => $guiCfg->tprojects_combo_order_by);
+
+  $gui->TestProjects = $tproject_mgr->get_accessible_for_user($args->user->dbID,$opx);
+
+  $gui->TestProjectCount = sizeof($gui->TestProjects);
+  if($gui->TestProjectCount == 0) {
+    $gui->TestProjects = null;
+  } 
+
   $gui->tprojectID = intval(isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0);
   $gui->tproject_id = $gui->tprojectID;
 
-  if($gui->tproject_id <= 0 && !$args->newInstallation)
-  {
-    throw new Exception("Can't work without Test Project ID", 1);
+  if($gui->tproject_id <= 0 ) {
+    $ckObj = new stdClass();
+    $ckCfg = config_get('cookie');
+
+    // Try to get from Cookie
+    $ckObj->name = $ckCfg->prefix . 
+       "TL_user${_SESSION['userID']}_testProject";
+
+    if( isset($_COOKIE[$ckObj->name]) ) {
+      $gui->tproject_id = $gui->tprojectID = intval($_COOKIE[$ckObj->name]);
+    }  
+  }
+
+
+  if($gui->tproject_id <= 0 && !$args->newInstallation) {
+    // Well instead of this, try to get the firts test project 
+    // user is enabled to.
+    if( 0 == $gui->TestProjectCount ) {
+      throw new Exception("Can't work without Test Project ID", 1);
+    }
+    $theOne = current(array_keys($gui->TestProjects));
+    $gui->tproject_id = $gui->tprojectID = $theOne;
   }  
 
   $gui->tcasePrefix = '';
@@ -94,17 +122,6 @@ function initializeGui(&$db,&$args)
                      $guiCfg->dynamic_quick_tcase_search_input_size;
 
 
-  $opx = array('output' => 'map_name_with_inactive_mark',
-               'field_set' => $guiCfg->tprojects_combo_format,
-               'order_by' => $guiCfg->tprojects_combo_order_by);
-
-  $gui->TestProjects = $tproject_mgr->get_accessible_for_user($args->user->dbID,$opx);
-
-  $gui->TestProjectCount = sizeof($gui->TestProjects);
-  if($gui->TestProjectCount == 0)
-  {
-    $gui->TestProjects = null;
-  } 
 
   $gui->TestPlanCount = 0; 
 

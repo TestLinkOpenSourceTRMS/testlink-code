@@ -532,8 +532,7 @@ args:
      [order_by]: default: ORDER BY name
 
 */
-function get_accessible_for_user($user_id,$opt = null,$filters = null)
-{
+function get_accessible_for_user($user_id,$opt = null,$filters = null) {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $my = array();
   $my['opt'] = array('output' => 'map', 'order_by' => ' ORDER BY name ', 'field_set' => 'full',

@@ -85,6 +85,10 @@ CREATE TABLE /*prefix*/builds (
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `release_date` date NULL,
   `closed_on_date` date NULL,
+  `commit_id` varchar(64) NULL,
+  `tag` varchar(64) NULL,
+  `branch` varchar(64) NULL,
+  `release_candidate` varchar(100)
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/name (`testplan_id`,`name`),
   KEY /*prefix*/testplan_id (`testplan_id`)

@@ -745,9 +745,11 @@ class tlRestApi
     // Default Right
     $request = $this->app->request();
     $item = json_decode($request->getBody());
-    $statusOK = true;
+    if( null == $item ) {
+      $this->byeHTTP500();
+    }
 
-    // Get mandatory inputs
+    $statusOK = true;
     $build = new stdClass();
  
     $reqProps = array('testplan','name');
@@ -772,6 +774,7 @@ class tlRestApi
           $statusOK = false;
           $op['details'][] = 
             sprintf($this->l10n['API_TESTPLAN_ID_DOES_NOT_EXIST'],$item->testplan);
+          $this->app->status(404);
         }
       } else {
         $tplanAPIKey = trim($item->testplan);
@@ -780,6 +783,7 @@ class tlRestApi
           $statusOK = false;
           $op['details'][] = 
             sprintf($this->l10n['API_TESTPLAN_APIKEY_DOES_NOT_EXIST'],$item->testplan);
+          $this->app->status(404);
         }
       }
     }
@@ -819,14 +823,40 @@ class tlRestApi
     // Step 2 - Finally Create It!!
     if( $statusOK ) {
       // key 2 check with default value is parameter is missing
-      $k2check = array('active' => 1, 'is_open' => 1,
-                       'releasedate' => null, 'notes' => null,
+      $k2check = array('is_open' => 1,
+                       'release_candidate' => null,
+                       'notes' => null,
+                       'commit_id' => null, 'tag' => null,
+                       'branch' => null,
+                       'is_active' => 1,'active' => 1, 
+                       'releasedate' => null,'release_date' => null,
+                       'copy_testers_from_build' => null,
                        'copytestersfrombuild' => null);
 
+      $buildProp = array('tplan_id' => 'tplan_id',
+                         'release_date' => 'release_date',
+                         'releasedate' => 'release_date',
+                         'active' => 'is_active',
+                         'is_active' => 'is_active',
+                         'notes' => 'notes',
+                         'commit_id' => 'commit_id', 
+                         'tag' => 'tag', 'branch' => 'branch', 
+                         'release_candidate' =>'release_candidate',
+                         'is_open' => 'is_open',
+                         'copytestersfrombuild' => 
+                              'copytestersfrombuild',                         
+                         'copy_testers_from_build' => 
+                              'copytestersfrombuild');
+
+      $skipKey = array();
       foreach( $k2check as $key => $value ) {
-        $build->$key = $value;
-        if( property_exists($item, $key) ) {
-          $build->$key = $item->$key;
+        $translate = $buildProp[$key]; 
+        if( !isset($skipKey[$translate]) ) {
+          $build->$translate = $value;
+          if( property_exists($item, $key) ) {
+            $build->$translate = $item->$key;
+            $skipKey[$translate] = true;
+          }
         }
       }
 
@@ -1153,9 +1183,12 @@ class tlRestApi
     // Default Right
     $request = $this->app->request();
     $item = json_decode($request->getBody());
-    $statusOK = true;
+    if( null == $item ) {
+      $this->byeHTTP500();
+    }
 
-    // Get mandatory inputs
+    
+    $statusOK = true;
     if( intval($id) <= 0 ) {
         $op['details'][] = $this->l10n['API_MISSING_REQUIRED_PROP'] .
                            'id - the build ID';
@@ -1208,10 +1241,59 @@ class tlRestApi
 
     // Step 2 - Finally Update It!!
     if( $statusOK ) {
+
+      $k2check = array('is_open', 'name',
+                       'release_candidate',
+                       'notes','commit_id','tag',
+                       'branch','is_active','active', 
+                       'releasedate','release_date',
+                       'copy_testers_from_build',
+                       'copytestersfrombuild');
+
+      $buildProp = array('name' => 'name',
+                         'tplan_id' => 'tplan_id',
+                         'release_date' => 'release_date',
+                         'releasedate' => 'release_date',
+                         'active' => 'is_active',
+                         'is_active' => 'is_active',
+                         'notes' => 'notes',
+                         'commit_id' => 'commit_id', 
+                         'tag' => 'tag', 'branch' => 'branch', 
+                         'release_candidate' =>'release_candidate',
+                         'is_open' => 'is_open',
+                         'copytestersfrombuild' => 
+                              'copytestersfrombuild',                         
+                         'copy_testers_from_build' => 
+                              'copytestersfrombuild');
+
+      $skipKey = array();
+      $buildObj = new stdClass();
+      $attr = array();
+      foreach( $k2check as $key ) {
+        $translate = $buildProp[$key]; 
+        if( !isset($skipKey[$translate]) ) {
+
+          // init with value got from DB.
+          if( isset($build[$translate]) ) {
+            $buildObj->$translate = $build[$translate];
+          }
+
+          if( property_exists($item, $key) ) {
+            $buildObj->$translate = $item->$key;
+            $skipKey[$translate] = true;
+          }
+          
+          if( property_exists($buildObj, $translate) ) {
+            $attr[$translate] = $buildObj->$translate;
+          }  
+        }
+      }
+
       // key 2 check 
       // $id,$name,$notes,$active=null,$open=null,
       // $release_date='',$closed_on_date='') {
 
+      /*
       $k2check = array('name','notes','active','is_open',
                        'release_date');
 
@@ -1222,8 +1304,13 @@ class tlRestApi
           $$key = $build[$key];
         }
       }
+
       $ox = $this->buildMgr->update($id,$name,
                                $notes,$active,$is_open,$release_date);
+      */
+      $ox = $this->buildMgr->update($build['id'],
+              $buildObj->name,$buildObj->notes,$attr);
+
       if( $ox ) {
         $op = array('status' => 'ok', 'message' => 'ok', 
                     'details' => array(), 'id' => $id);  
@@ -1249,5 +1336,18 @@ class tlRestApi
     echo json_encode($op);
   }
 
-
+  /**
+   *
+   */
+  function byeHTTP500($msg=null) {
+    $op = array();
+    if( null == $msg ) {
+      $msg = 'TestLink Fatal Error - Malformed Request Body - ' .
+             ' json_decode() issue';
+    }
+    $op['details'][] = sprintf($msg);
+    $this->app->status(500);
+    echo json_encode($op);
+    exit();  // Bye!
+  }
 } // class end

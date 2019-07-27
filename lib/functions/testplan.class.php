@@ -269,13 +269,11 @@ class testplan extends tlObjectWithAttachments
    * with different id but same name
    *
    **/
-  function checkNameExistence($name,$tprojectID,$id=0)
-  {
+  function checkNameExistence($name,$tprojectID,$id=0) {
     $check_op['msg'] = '';
     $check_op['status_ok'] = 1;
        
-    if($this->get_by_name($name,intval($tprojectID), array('id' => intval($id))) )
-    {
+    if($this->get_by_name($name,intval($tprojectID), array('id' => intval($id))) ) {
       $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
       $check_op['status_ok'] = 0;
     }
@@ -7842,7 +7840,6 @@ class build_mgr extends tlObject {
   var $db;
   var $cfield_mgr;
 
-
   /** 
    * Build Manager class constructor 
    * 
@@ -7904,6 +7901,107 @@ class build_mgr extends tlObject {
 
 
 
+  /**
+   * Build Manager 
+   *
+   * createFromObject
+   */
+  function createFromObject($item,$opt=null) {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    try {
+      // mandatory checks
+      if(strlen($item->name)==0) {
+        throw new Exception('Build - Empty name is not allowed');      
+      }  
+    
+      // what checks need to be done ?
+      // 1. does test plan exist?
+      $item->tplan_id = intval($item->tplan_id);
+      $tm = new tree($this->db);
+      $ntv = array_flip($tm->get_available_node_types());
+      $pinfo = $tm->get_node_hierarchy_info($item->tplan_id);
+      if(is_null($pinfo) || 
+         $ntv[$pinfo['node_type_id']] != 'testplan') {
+        throw new Exception(
+          "Build - Test Plan ID {$item->tplan_id} does not exist");    
+      }  
+
+      // 2. there is NO other build on test plan with same name
+      $name = trim($item->name);
+      $op = $this->checkNameExistence($item->tplan_id,$name);
+      if(!$op['status_ok']) {
+        throw new Exception(
+          "Build name {$name} is already in use on Test Plan {$item->tplan_id}");      
+      }  
+    } catch (Exception $e) {
+      throw $e;  // rethrow
+    }
+
+    // seems OK => check all optional attributes
+    $build = new stdClass();
+    $prop = array('release_date' => '','notes' => '',
+                  'commit_id' => '', 'tag' => '',
+                  'branch' => '', 'release_candidate' => '',
+                  'is_active' => 1,'is_open' => 1,
+                  'creation_ts' => $this->db->db_now());
+
+    $build->name = $item->name;
+    $build->tplan_id = $item->tplan_id;
+    foreach( $prop as $nu => $value  ) {      
+      $build->$nu = $value;
+      if( property_exists($item, $nu) ) {
+        switch( $nu ) {
+          case 'creation_ts':
+            if(null != $item->$nu && '' == trim($item->$nu) ) {
+              $build->$nu = $item->$nu;
+            }
+          break;
+          
+          case 'is_active':
+          case 'is_open':
+            $build->$nu = intval($item->$nu) > 0 ? 1 : 0;
+          break;
+
+          default:
+            $build->$nu = $item->$nu;
+          break; 
+        }
+      }  
+    }
+    $build->release_date = trim($build->release_date);
+    $ps = 'prepare_string';
+    $sql = " INSERT INTO {$this->tables['builds']} " .
+           " (testplan_id,name,notes,
+              commit_id,tag,branch,release_candidate,
+              active,is_open,creation_ts,release_date) " .
+           " VALUES ('". $build->tplan_id . "','" . 
+             $this->db->$ps($build->name) . "','" .
+             $this->db->$ps($build->notes) . "',";
+
+    $sql .=  "'" . $this->db->$ps($build->commit_id) . "'," . 
+             "'" . $this->db->$ps($build->tag) . "'," .
+             "'" . $this->db->$ps($build->branch) . "'," .
+             "'" . $this->db->$ps($build->release_candidate) . "',";
+
+    $sql .= "{$build->is_active},{$build->is_open},{$build->creation_ts}";
+
+    if($build->release_date == '') {
+      $sql .= ",NULL)";
+    } else {
+      $sql .= ",'" . $this->db->$ps($build->release_date) . "')";
+    }
+
+    $id = 0;
+    $result = $this->db->exec_query($sql);
+    if ($result) {
+      $id = $this->db->insert_id($this->tables['builds']);
+    }
+    
+    return $id;
+  }
+
+
   /*
     Build Manager 
 
@@ -7930,12 +8028,10 @@ class build_mgr extends tlObject {
            " VALUES ('". $tplan_id . "','" . $this->db->prepare_string($name) . "','" .
            $this->db->prepare_string($notes) . "',";
 
-    if($targetDate == '')
-    {
+    if($targetDate == '') {
       $sql .= "NULL,";
     }       
-    else
-    {
+    else {
       $sql .= "'" . $this->db->prepare_string($targetDate) . "',";
     }
     
@@ -7943,8 +8039,7 @@ class build_mgr extends tlObject {
 
     $id = 0;
     $result = $this->db->exec_query($sql);
-    if ($result)
-    {
+    if ($result) {
       $id = $this->db->insert_id($this->tables['builds']);
     }
     
@@ -7968,9 +8063,22 @@ class build_mgr extends tlObject {
 
     rev :
   */
-  function update($id,$name,$notes,$active=null,$open=null,$release_date='',$closed_on_date='') {
+  function update($id,$name,$notes,$attr=null) {
+
+    $members = array('is_active' => null, 'is_open' => null,
+                     'release_date' => '', 'closed_on_date=' => '',
+                     'commit_id' => '', 'tag' => '', 
+                     'branch' => '', 'release_candidate' => '');
+
+    $members = array_merge($members,(array)$attr);
+
+ /*   echo '<pre>';
+    var_dump($attr);
+    var_dump($members);
+    echo '</pre>';
+    die(); */
     $closure_date = '';
-    $targetDate=trim($release_date);
+    $targetDate = trim($members['release_date']);
     $sql = " UPDATE {$this->tables['builds']} " .
            " SET name='" . $this->db->prepare_string($name) . "'," .
            "     notes='" . $this->db->prepare_string($notes) . "'";
@@ -7980,17 +8088,25 @@ class build_mgr extends tlObject {
     } else {
       $sql .= ",release_date='" . $this->db->prepare_string($targetDate) . "'";
     }
-    if( !is_null($active) ) {
-      $sql .=" , active=" . intval($active);
+
+    if( !is_null($members['is_active']) ) {
+      $sql .=" , active=" . intval($members['is_active']);
     }
     
-    if( !is_null($open) ) {
-      $open_status=intval($open) ? 1 : 0; 
+    if( !is_null($members['is_open']) ) {
+      $open_status=intval($members['is_open']) ? 1 : 0; 
       $sql .=" , is_open=" . $open_status;
       
       if($open_status == 1) {
         $closure_date = ''; 
       }
+    }
+
+    // New attributes
+    $ps = 'prepare_string';
+    $ax = array('commit_id','tag','branch','release_candidate');
+    foreach( $ax as $fi ) {
+      $sql .= ", $fi='" . $this->db->$ps($members[$fi]) . "'";
     }
     
     if($closure_date == '') {
@@ -8011,12 +8127,8 @@ class build_mgr extends tlObject {
    * @param integer $id
    * @return integer status code
    * 
-   * @internal revisions:
-   * @since 1.9.9
-   * 
    */
-  function delete($id)
-  {
+  function delete($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $safe_id = intval($id);
@@ -8098,8 +8210,7 @@ class build_mgr extends tlObject {
              is_open: build open status
              testplan_id
   */
-  function get_by_id($id,$opt=null)
-  {
+  function get_by_id($id,$opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
     $my = array('options' => 
@@ -8109,10 +8220,9 @@ class build_mgr extends tlObject {
     $safe_id = intval($id);  
     
     $sql = "/* {$debugMsg} */";
-    switch($my['options']['output'])
-    {
+    switch($my['options']['output']) {
       case 'minimun':
-        $sql .= " SELECT id,is_open,active ";  
+        $sql .= " SELECT id,is_open,active,active AS is_active ";  
       break;
 
       case 'fields':
@@ -8121,13 +8231,12 @@ class build_mgr extends tlObject {
       
       case 'full':
       default:
-        $sql .= " SELECT * "; 
+        $sql .= " SELECT *, active AS is_active "; 
       break;
     }
     
     $sql .= " FROM {$this->tables['builds']} WHERE id = {$safe_id} ";
-    if(!is_null($my['options']['tplan_id']) && ($safe_tplan = intval($my['options']['tplan_id'])) > 0)
-    {
+    if(!is_null($my['options']['tplan_id']) && ($safe_tplan = intval($my['options']['tplan_id'])) > 0) {
       $sql .= " AND testplan_id = {$safe_tplan} ";
     }
     
@@ -8327,29 +8436,38 @@ class build_mgr extends tlObject {
     return $cf_smarty;
   }
 
-  /** 
-   *
+ 
+
+  /**
+   * Build Manager
    *
    */
-  function createFromObject($buildObj) {
+  function checkNameExistence($tplan_id,$build_name,$build_id=null,
+                              $caseSens=0) {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-    $item = $buildObj;
-    $optProp = array('notes' => '', 'active' => 1, 'open' => 1,
-                     'release_date' => '');
-
-    foreach($optProp as $prop => $defa) {
-      if( !property_exists($item, $prop) ) {
-        $item->$prop = $defa;
-      }
-    }
+    $sql = " /* $debugMsg */ SELECT id, name, notes " .
+      " FROM {$this->tables['builds']} " .
+      " WHERE testplan_id = {$tplan_id} ";
     
-    $id = $this->create($buildObj->tplan_id,$buildObj->name,
-                        $item->notes,$item->active,$item->open,
-                        $item->release_date);
-    return $id;
+    if($caseSens) {
+      $sql .= " AND name=";
+    } else {
+      $build_name = strtoupper($build_name);
+      $sql .= " AND UPPER(name)=";
+    }
+    $sql .= "'" . $this->db->prepare_string($build_name) . "'";
+    
+    if( !is_null($build_id) ) {
+      $sql .= " AND id <> " . $this->db->prepare_int($build_id);
+    }
+
+    $result = $this->db->exec_query($sql);
+    $rn = $this->db->num_rows($result);
+    $status = array();
+    $status['status_ok'] = $rn == 0 ? 1 : 0;    
+    return $status;
   }
-
-
 
 
 

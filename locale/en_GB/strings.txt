@@ -3979,4 +3979,10 @@ $TLS_info_neverRunByPP_report =
 $TLS_neverRunByPP_title = "Test Cases Never Runned"; 
 $TLS_link_report_never_run = "Test Cases Never Runned";
 
+
+$TLS_commit_id = 'commit id';
+$TLS_branch = 'branch';
+$TLS_tag = 'tag';
+$TLS_release_candidate = 'release candidate';
+
 // ----- END ------------------------------------------------------------------

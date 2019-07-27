@@ -10,6 +10,13 @@
 -- since 1.9.20
 INSERT INTO /*prefix*/rights (id,description) VALUES (55,'testproject_add_remove_keywords_executed_tcversions');
 
+-- 
+ALTER TABLE /*prefix*/builds ADD COLUMN commit_id varchar(64) NULL;
+ALTER TABLE /*prefix*/builds ADD COLUMN tag varchar(64) NULL;
+ALTER TABLE /*prefix*/builds ADD COLUMN branch varchar(64) NULL;
+ALTER TABLE /*prefix*/builds ADD COLUMN release_candidate varchar(100) NULL;
+
+
 CREATE TABLE /*prefix*/testcase_platforms (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   testcase_id int(10) unsigned NOT NULL DEFAULT '0',

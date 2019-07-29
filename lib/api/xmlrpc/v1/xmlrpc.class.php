@@ -216,6 +216,10 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $testCaseVersionParamName = "tcversion";
     public static $itsNameParamName = "itsname";
     public static $itsEnabledParamName = "itsenabled";
+    public static $itsTypeParamName = "itstype";
+    public static $itsCfgParamName = "itscfg";
+    public static $itsIDParamName ="itsid";
+
     public static $copyTestersFromBuildParamName = "copytestersfrombuild";
 
     /**
@@ -8283,6 +8287,117 @@ class TestlinkXMLRPCServer extends IXR_Server {
         return $xx;
     }
 
+
+    /**
+     * Create an Issue Tracker System
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param string $args["itsname"] ITS name
+     * @param string $args["itstype"] ITS name
+     * @param string $args["itscfg"] ITS name
+     * @access public
+     */
+    public function createIssueTrackerSystem($args) {
+        $operation=__FUNCTION__;
+        $msg_prefix="({$operation}) - ";
+
+        $this->_setArgs($args);
+
+        if ($this->authenticate($msg_prefix)) {
+            $item = new stdClass();
+            $item->name = $this->args[self::$itsNameParamName];
+            $item->type = $this->args[self::$itsTypeParamName];
+            $item->cfg  = $this->args[self::$itsCfgParamName];
+
+            if(is_null( $this->itsMgr )) {
+                $this->itsMgr = new tlIssueTracker( $this->dbObj );
+            }
+
+            return $this->itsMgr->create($item);
+        } else {
+            return $this->errors;
+        }
+
+    }
+
+
+    /**
+     * Update Issue Tracker System
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param string $args["itsname"] ITS name
+     * @param string $args["itstype"] ITS name
+     * @param string $args["itscfg"] ITS name
+     * @access public
+     */
+    public function updateIssueTrackerSystem($args) {
+        $operation=__FUNCTION__;
+        $msg_prefix="({$operation}) - ";
+
+        $this->_setArgs($args);
+
+        if($this->authenticate($msg_prefix)) {
+            $item = new stdClass();
+            $item->name = $this->args[self::$itsNameParamName];
+            $item->type = $this->args[self::$itsTypeParamName];
+            $item->cfg  = $this->args[self::$itsCfgParamName];
+            $item->id   = $this->args[self::$itsIDParamName];
+
+            if(is_null( $this->itsMgr )) {
+                $this->itsMgr = new tlIssueTracker( $this->dbObj );
+            }
+
+            return $this->itsMgr->update($item);
+
+        } else {
+            return $this->errors;
+        }
+
+    }
+
+    /**
+     * Set link between a project and an ITS
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param string $args["itsid"] ITS ID
+     * @param string $args["testprojectid"] Project ID
+     * @access public
+     */
+    public function setTestProjectITS($args) {
+        $operation=__FUNCTION__;
+        $msg_prefix="({$operation}) - ";
+
+        $this->_setArgs($args);
+
+        if($this->authenticate($msg_prefix)) {
+            if(!($this->_isTestProjectIDPresent())) {
+                $this->errors[] = new IXR_Error(NO_TESTPROJECTID, $messagePrefix . NO_TESTPROJECTID_STR);
+                return $this->errors;
+            }
+
+            if ($this->args[self::$itsIDParamName] != "") {
+                if(is_null( $this->itsMgr )) {
+                    $this->itsMgr = new tlIssueTracker( $this->dbObj );
+                }
+
+                $this->itsMgr->link($this->args[self::$itsIDParamName], $this->args[self::$testProjectIDParamName]);
+                $resultInfo = array();
+                $resultInfo[]= array("operation" => __FUNCTION__,
+                                     "additionalInfo" => null,
+                                     "status" => true, "id" => $this->args[self::$testProjectIDParamName], "message" => GENERAL_SUCCESS_STR);
+                return $resultInfo;
+            } else {
+                $this->errors[] = new IXR_Error(NO_ITSID, $messagePrefix . NO_ITSID_STR);
+                return $this->errors;
+            }
+        } else {
+            return $this->errors;
+        }
+    }
+
     /**
      */
     function initMethodYellowPages() {
@@ -8313,6 +8428,9 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'tl.removePlatformFromTestPlan' => 'this:removePlatformFromTestPlan',
                 'tl.getExecCountersByBuild' => 'this:getExecCountersByBuild',
                 'tl.getIssueTrackerSystem' => 'this:getIssueTrackerSystem',
+                'tl.createIssueTrackerSystem' => 'this:createIssueTrackerSystem',
+                'tl.updateIssueTrackerSystem' => 'this:updateIssueTrackerSystem',
+                'tl.setTestProjectITS' => 'this:setTestProjectITS',
                 'tl.getProjects' => 'this:getProjects',
                 'tl.getProjectKeywords' => 'this:getProjectKeywords',
                 'tl.getProjectPlatforms' => 'this:getProjectPlatforms',

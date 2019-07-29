@@ -363,3 +363,5 @@ define('PLATFORM_REMOVETC_NEEDED_BEFORE_UNLINK_STR', lang_get('API_PLATFORM_REMO
  */
 define('ITS_NOT_FOUND',13000);
 define('ITS_NOT_FOUND_STR', lang_get('API_ITS_NOT_FOUND',null,1));
+define('NO_ITSID', 13001);
+define('NO_ITSID_STR', lang_get('API_NO_ITSID',null,1));

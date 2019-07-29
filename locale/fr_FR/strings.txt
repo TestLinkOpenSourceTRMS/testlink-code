@@ -3162,6 +3162,7 @@ $TLS_API_NO_TESTSUITEID = "Aucun ID de dossier de test fourni.";
 $TLS_API_NO_TPID = "Aucun ID de campagne de test fourni.";
 $TLS_API_NO_TCID = "Aucun ID de fiche de test fourni.";
 $TLS_API_NO_PLATFORMID = "Aucun ID de plateforme fourni.";
+$TLS_API_NO_ITSID = "Aucun ID de gestionnaire d’anomalie (itsid) fourni.";
 
 
 $TLS_API_INVALID_TCASEID = "ID de fiche de test %s inconnu.";

@@ -2052,12 +2052,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
   protected function init_setting_exec_tree_counters_logic() {
     $key = str_replace('init_','',__FUNCTION__);
 
+    $lblKS = $this->configuration->exec_cfg->tcases_counters_mode_domain;
 
-    $lblKS = array('use_latest_exec_on_contex_for_counters',
-                   'use_latest_exec_on_testplan_for_counters');
     foreach( $lblKS as $lblKey ) {
-      $code = constant(strtoupper($lblKey));
-      $this->settings[$key]['items'][$code] = lang_get($lblKey);
+      $code = constant($lblKey);
+      $ak = strtolower($lblKey);
+      $this->settings[$key]['items'][$code] = lang_get($ak);
     } 
    
     
@@ -2065,6 +2065,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
     switch($algo) {
       case USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS:
       case USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS:
+      case USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS:
       break;
 
       default:

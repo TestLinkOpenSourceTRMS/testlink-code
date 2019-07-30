@@ -999,8 +999,14 @@ $tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 // Default Value
 // USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS
 // USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS
+// USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS
 $tlCfg->exec_cfg->tcases_counters_mode = 
   USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS;
+
+$tlCfg->exec_cfg->tcases_counters_mode_domain =
+  array('USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS',
+        'USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS',
+        'USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS'); 
 
 
 

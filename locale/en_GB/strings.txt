@@ -3950,6 +3950,9 @@ $TLS_copy_attachments_from_latest_exec = 'Copy Latest Exec Attachments';
 $TLS_exec_tree_counters_logic = 'Tree Counters Latest Exec On';
 $TLS_use_latest_exec_on_testplan_for_counters = 'Test Plan';
 $TLS_use_latest_exec_on_contex_for_counters = 'Chosen Build';
+$TLS_use_latest_exec_on_testplan_plat_for_counters = 
+  'Test Plan on Platform';
+
 
 $TLS_download_csv = 'Download As CSV';
 $TLS_select_platforms = "Select Platforms";

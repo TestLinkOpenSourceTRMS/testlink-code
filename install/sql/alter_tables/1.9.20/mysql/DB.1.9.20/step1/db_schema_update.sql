@@ -53,5 +53,8 @@ WHERE NHTCV.node_type_id = 4 AND
 NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
            WHERE TCPL.tcversion_id = NHTCV.id));
 
-
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan_plat
+AS SELECT tcversion_id, testplan_id,platform_id,max(id) AS id
+FROM /*prefix*/executions 
+GROUP BY tcversion_id,testplan_id,platform_id;
 # END

@@ -404,6 +404,7 @@ function initProject(&$db,$hash_user_sel) {
 
   // test project is Test Plan container, then we start 
   // checking the container
+  /*
   $ckObj->name = $ckCfg->prefix . 
     "TL_user${_SESSION['userID']}_testProject";
 
@@ -414,6 +415,7 @@ function initProject(&$db,$hash_user_sel) {
   } else {
     $tproject_id = intval($_COOKIE[$ckObj->name]);
   }
+  */
 
   // We need to do checks before updating the SESSION to cover the case that not defined but exists
   if (!$tproject_id) {

@@ -88,7 +88,7 @@ CREATE TABLE /*prefix*/builds (
   `commit_id` varchar(64) NULL,
   `tag` varchar(64) NULL,
   `branch` varchar(64) NULL,
-  `release_candidate` varchar(100)
+  `release_candidate` varchar(100),
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/name (`testplan_id`,`name`),
   KEY /*prefix*/testplan_id (`testplan_id`)

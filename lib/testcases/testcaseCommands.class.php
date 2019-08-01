@@ -337,7 +337,9 @@ class testcaseCommands {
 
     $guiObj->cancelActionJS = 
       'location.href=fRoot+' . "'" . 
-      "lib/testcases/archiveData.php?version_id=" . $argsObj->tcversion_id . 
+      "lib/testcases/archiveData.php?version_id=" . 
+      $argsObj->tcversion_id . 
+      "&tcversion_id=" . $argsObj->tcversion_id .
       '&edit=testcase&id=' . intval($argsObj->tcase_id); 
 
     if( property_exists($argsObj, 'tplan_id') ) {
@@ -953,6 +955,7 @@ class testcaseCommands {
 
     $guiObj->template = 
       "archiveData.php?version_id={$guiObj->tcversion_id}&" .
+      "tcversion_id={$guiObj->tcversion_id}&" .
       "edit=testcase&id={$guiObj->tcase_id}&" .
       "show_mode={$guiObj->show_mode}";
 
@@ -986,6 +989,7 @@ class testcaseCommands {
     // set up for rendering
     $guiObj->template = 
       "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&".
       "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
@@ -1016,6 +1020,7 @@ class testcaseCommands {
     // set up for rendering
     $guiObj->template = 
       "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
       "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
@@ -1052,8 +1057,10 @@ class testcaseCommands {
     
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
       $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
@@ -1081,8 +1088,10 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
       $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
@@ -1208,7 +1217,8 @@ class testcaseCommands {
 
     // set up for rendering
     // It's OK put fixed 0 on version_id other functions on the chain to do the display know how to manage this
-    $guiObj->template = "archiveData.php?version_id=0&" . 
+    $guiObj->template = "archiveData.php?version_id=0&" .
+      "tcversion_id={$guiObj->tcversion_id}&" . 
       "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
@@ -1310,8 +1320,10 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
       $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";

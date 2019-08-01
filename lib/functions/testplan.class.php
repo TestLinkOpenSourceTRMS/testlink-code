@@ -7769,9 +7769,11 @@ class testplan extends tlObjectWithAttachments
       return null;  
     }
 
-    
+    $safe['platform_id'] = intval($my['filters']['platform_id']);
+
     $sqlLExecOnTPLANPL = 
-      " SELECT LEBTPPL.tcversion_id,LEBTPPL.testplan_id, LEBTPPL.id
+      " SELECT LEBTPPL.tcversion_id,LEBTPPL.testplan_id, 
+               LEBTPPL.platform_id, LEBTPPL.id
         FROM {$this->views['latest_exec_by_testplan_plat']} LEBTPPL  
         WHERE LEBTPPL.testplan_id = {$safe['tplan_id']} 
         AND LEBTPPL.platform_id = {$safe['platform_id']} ";
@@ -7783,17 +7785,24 @@ class testplan extends tlObjectWithAttachments
 
     $nht = $this->tables['nodes_hierarchy'];
 
+    $theView = $this->views['latest_exec_by_testplan_plat'];
+
     if(!isset($my['filters']['bug_id'])) {
       // adding tcversion on output can be useful for 
       // Filter on Custom Field values,
       // because we are saving values at TCVERSION LEVEL
       //  
 
+
+      // no need to add
+      // " AND TPTCV.platform_id =" . $safe['platform_id'] .
+      // Because is added in $where
+      //
       $notrun = $this->notRunStatusCode;
       $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" .
         " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,
-          COALESCE(E.status,'" . $notrun . "') AS exec_status 
-          FROM {$this->tables['testplan_tcversions']} TPTCV                 
+          '" . $this->notRunStatusCode . "' AS exec_status 
+          FROM {$this->tables['testplan_tcversions']} TPTCV       
           JOIN $nht NH_TCV ON NH_TCV.id = TPTCV.tcversion_id 
           JOIN $nht NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
           $my['join']['keywords'] .
@@ -7801,23 +7810,27 @@ class testplan extends tlObjectWithAttachments
           $my['join']['cf'] .
 
         " /* Get REALLY NOT RUN => 
-             BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
-        " LEFT OUTER JOIN ({$sqlLExecOnTPLANPL}) AS LEXBTPLANPL " .
-        " ON  LEXBTPLANPL.testplan_id = TPTCV.testplan_id " .
-        " AND LEXBTPLANPL.tcversion_id = TPTCV.tcversion_id " .
-        " AND LEXBTPLANPL.testplan_id = " . $safe['tplan_id'] .
-        " LEFT OUTER JOIN {$this->tables['executions']} E " .
-        " ON  E.tcversion_id = TPTCV.tcversion_id " .
-        " AND E.testplan_id = TPTCV.testplan_id " .
+             BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ 
+          LEFT OUTER JOIN {$theView} AS LEXBTPLANPL 
+          ON  LEXBTPLANPL.testplan_id = TPTCV.testplan_id 
+          AND LEXBTPLANPL.tcversion_id = TPTCV.tcversion_id " .
+
+        "/* 
+          mmm, we want not run => why to use Executions? 
+          LEFT OUTER JOIN {$this->tables['executions']} E 
+          ON  E.tcversion_id = TPTCV.tcversion_id 
+          AND E.testplan_id = TPTCV.testplan_id 
+         */ " .
+        
+
         " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
         $my['where']['not_run'] .
-        " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
         " AND LEXBTPLANPL.id IS NULL";
     }         
 
     $union['exec'] = "/* {$debugMsg} sqlUnion - executions */" . 
       " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,
-        COALESCE(E.status,'" . $this->notRunStatusCode . "') AS exec_status 
+        E.status AS exec_status 
         FROM {$this->tables['testplan_tcversions']} TPTCV
         JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id
         JOIN $nht NH_TCV ON NH_TCV.id = TPTCV.tcversion_id
@@ -7826,17 +7839,23 @@ class testplan extends tlObjectWithAttachments
         $my['join']['ua'] .
         $my['join']['cf'] .
 
-        " JOIN ({$sqlLExecOnTPLANPL}) AS LEXBTPLANPL " .
-        " ON  LEXBTPLANPL.testplan_id = TPTCV.testplan_id " .
-        " AND LEXBTPLANPL.tcversion_id = TPTCV.tcversion_id " .
-        " AND LEXBTPLANPL.testplan_id = " . $safe['tplan_id'] .
-        " JOIN {$this->tables['executions']} E " .
-        " ON  E.id = LEXBTPLANPL.id " .
-        " AND E.testplan_id = LEXBTPLANPL.testplan_id " .        
-        " AND E.platform_id = LEXBTPLANPL.platform_id " .        
+        " JOIN {$theView} AS LEXBTPLANPL
+          ON  LEXBTPLANPL.testplan_id = TPTCV.testplan_id 
+          AND LEXBTPLANPL.platform_id = TPTCV.platform_id
+          AND LEXBTPLANPL.tcversion_id = TPTCV.tcversion_id
+          JOIN {$this->tables['executions']} E 
+          ON  E.id = LEXBTPLANPL.id 
+          AND E.testplan_id = LEXBTPLANPL.testplan_id         
+          AND E.platform_id = LEXBTPLANPL.platform_id 
+          WHERE TPTCV.testplan_id = {$safe['tplan_id']} " .
         $my['where']['where'];
 
     $xql = is_null($union['not_run']) ? $union['exec'] : $union;
+    //echo '<pre>';
+    //var_dump($xql);
+    //echo '</pre>';
+    //die();
+
     return $xql;
   }
 

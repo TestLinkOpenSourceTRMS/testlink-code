@@ -141,11 +141,14 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       //$sql2do = 
       //$tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options);
       $applyTCCAlgo = false;
+
       $tcc = null;
       if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options)) ) {
 
         $applyTCCAlgo = 
-          ($objOptions->exec_tree_counters_logic == USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS) ;
+          ($objOptions->exec_tree_counters_logic == USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS || 
+           $objOptions->exec_tree_counters_logic == 
+            USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS ) ;
 
         $kmethod = "fetchRowsIntoMap";
         if( is_array($sql2do) ) {       

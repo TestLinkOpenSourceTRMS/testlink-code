@@ -9025,12 +9025,6 @@ class testcase extends tlObjectWithAttachments {
             SET tcversion_id = " . $ltcv . $whereClause;
     $this->db->exec_query($sql);
 
-      // Update link in cfields values
-    $sql = "/* $debugMsg */
-            UPDATE {$this->tables['cfield_execution_values']} 
-            SET tcversion_id = " . $ltcv . $whereClause;
-    $this->db->exec_query($sql);
-
     return $ltcv;
   }
 

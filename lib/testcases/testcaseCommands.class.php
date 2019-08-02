@@ -1401,17 +1401,26 @@ class testcaseCommands {
                       "'";
           $sql = "SELECT id,keyword FROM {$tbl['keywords']} 
                   WHERE id IN($inClause) ";
-          $kwSet = $this->db->fetchRowsIntoMap($sql,'id');        
+          $kwSet = $this->db->fetchRowsIntoMap($sql,'id'); 
+          
+          $strToDel = isset($cfx[$info['prefix']]['prefix']) ?
+                      $cfx[$info['prefix']]['prefix'] : '';
+          $strToDel = trim($strToDel);
           foreach( $argsObj->free_keywords as $kw ) {
-            
-            $kwv = str_replace($cfx[$info['prefix']]['prefix'],
-                               '',$kwSet[$kw]['keyword']);
+            if( '' == $strToDel ) {
+              $kwv = $kwSet[$kw]['keyword'];
+            } else {
+              $kwv = str_replace($strToDel,'',
+                                 $kwSet[$kw]['keyword']);
+            }           
             try {
               $opStatus = $its->addNote($kwv,$dl);
             } catch(Exception $e) {
               echo 'Silent Failure?';
             }
-          }
+          }            
+
+
         }  
       }    
     } 

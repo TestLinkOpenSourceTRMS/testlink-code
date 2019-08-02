@@ -540,15 +540,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
     foreach ($this->all_settings as $name => $info) {
       $init_method = "init_$name";
+      //echo '<br>'; echo $init_method; echo '<br>';
       if (in_array($name, $this->mode_setting_mapping[$this->mode]) && 
         method_exists($this, $init_method)) 
       {
         // is valid, configured, exists and therefore can be used, so initialize this setting
         $this->$init_method();
         $at_least_one_active = true;
-      } 
-      else 
-      {
+      } else {
         // is not needed, simply deactivate it by setting it to false in main array
         $this->settings[$name] = false;
       }
@@ -2052,28 +2051,38 @@ class tlTestCaseFilterControl extends tlFilterControl {
   protected function init_setting_exec_tree_counters_logic() {
     $key = str_replace('init_','',__FUNCTION__);
 
-
-    $lblKS = array('use_latest_exec_on_contex_for_counters',
-                   'use_latest_exec_on_testplan_for_counters');
-    foreach( $lblKS as $lblKey ) {
-      $code = constant(strtoupper($lblKey));
-      $this->settings[$key]['items'][$code] = lang_get($lblKey);
-    } 
-   
-    
-    $algo = intval( isset($_REQUEST[$key]) ? $_REQUEST[$key] : 0);
-    switch($algo) {
-      case USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS:
-      case USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS:
-      break;
-
-      default:
-        $algo = intval($this->configuration->exec_cfg->tcases_counters_mode);
-        if( isset($_SESSION[$key]) ) {
-          $algo = intval($_SESSION[$key]);         
-        }
-      break;
+    // we need to understand if select Test Plan has platforms
+    $cfx = $this->configuration->exec_cfg->tcases_counters_mode_domain;
+    $logic = $this->configuration->exec_cfg->tcases_counters_mode;
+    $wow = 'without_platforms';
+    if( $this->settings['setting_platform'] != false ) {
+      $wow = 'with_platforms';
     }
+    $defaultAlgo = $logic[$wow];
+    $lblKS = $cfx[$wow];
+    $flipper = array();
+    foreach($cfx[$wow] as $def ) {
+      $flipper[constant($def)] = $def;
+    }
+
+    foreach( $lblKS as $lblKey ) {
+      $code = constant($lblKey);
+      $ak = strtolower($lblKey);
+      $this->settings[$key]['items'][$code] = lang_get($ak);
+    } 
+       
+    $algo = intval( isset($_REQUEST[$key]) ? $_REQUEST[$key] : 0);
+    if( $algo == 0 ) {
+      if( isset($_SESSION[$key]) ) {
+        $algo = intval($_SESSION[$key]);         
+      } 
+    }
+
+    // Validate Domain
+    if( !isset($flipper[$algo]) ) {
+      $algo = intval($defaultAlgo);
+    }
+
     $_SESSION[$key] = $this->args->{$key} = 
       $this->settings[$key]['selected'] = $algo;
 

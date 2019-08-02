@@ -88,7 +88,7 @@ CREATE TABLE /*prefix*/builds (
   `commit_id` varchar(64) NULL,
   `tag` varchar(64) NULL,
   `branch` varchar(64) NULL,
-  `release_candidate` varchar(100)
+  `release_candidate` varchar(100),
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/name (`testplan_id`,`name`),
   KEY /*prefix*/testplan_id (`testplan_id`)
@@ -892,3 +892,10 @@ FROM /*prefix*/nodes_hierarchy NHTCV
 WHERE NHTCV.node_type_id = 4 AND
 NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
            WHERE TCPL.tcversion_id = NHTCV.id));
+
+
+#
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan_plat
+AS SELECT tcversion_id, testplan_id,platform_id,max(id) AS id
+FROM /*prefix*/executions 
+GROUP BY tcversion_id,testplan_id,platform_id;

@@ -6138,6 +6138,8 @@ class testplan extends tlObjectWithAttachments
    * getLinkedForExecTree()
    * getLinkedForTesterAssignmentTree()
    * getLinkedTCVersionsSQL()
+   * getLinkedForExecTreeCross()
+   * getLinkedForExecTreeIVU()
    *            
    * filters => 
    * 'tcase_id','keyword_id','assigned_to','exec_status','build_id',
@@ -7707,10 +7709,12 @@ class testplan extends tlObjectWithAttachments
 
   }
 
-
+  //  
   // This method is intended to return minimal data useful 
   // to create Execution Tree.
-  // Status on Latest execution on Build,Platform is needed
+  //
+  // The Status on Latest execution:
+  // is computed considering only the selected Platform 
   // 
   // @param int $id test plan id
   // @param mixed $filters
@@ -7736,16 +7740,168 @@ class testplan extends tlObjectWithAttachments
   // [cf_hash]: default null => do not filter by Custom Fields values
   //
   //
-  // [urgencyImportance] : filter only Tc's with certain (urgency*importance)-value 
+  // [urgencyImportance] : 
+  //    filter only Tc's with certain (urgency*importance)-value 
   //
   // [tsuites_id]: default null.
-  //               If present only tcversions that are children of this testsuites
-  //               will be included
+  //               If present only tcversions that are children 
+  //               of this testsuites will be included
   //              
   // [exec_type] default null -> all types. 
   // [platform_id]              
   //       
   function getLinkedForExecTreeIVU($id,$filters=null,$options=null) {
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+
+    $safe['tplan_id'] = intval($id);
+    $my = $this->initGetLinkedForTree($safe['tplan_id'],$filters,$options);
+   
+    if( !isset($my['filters']['platform_id']) || 
+        $my['filters']['platform_id'] == 0 ) {
+      throw new Exception(__FUNCTION__ . " Needs Platform ID", 1);
+    }
+
+
+    if( !$my['green_light'] )  {
+      // No query has to be run, because we know in advance that we are
+      // going to get NO RECORDS
+      return null;  
+    }
+
+    $safe['platform_id'] = intval($my['filters']['platform_id']);
+
+    $sqlLExecOnTPLANPL = 
+      " SELECT LEBTPPL.tcversion_id,LEBTPPL.testplan_id, 
+               LEBTPPL.platform_id, LEBTPPL.id
+        FROM {$this->views['latest_exec_by_testplan_plat']} LEBTPPL  
+        WHERE LEBTPPL.testplan_id = {$safe['tplan_id']} 
+        AND LEBTPPL.platform_id = {$safe['platform_id']} ";
+
+    // When there is request to filter by BUG ID, 
+    // because BUGS are linked only to EXECUTED test case versions, 
+    // the not_run piece of union is USELESS
+    $union['not_run'] = null;        
+
+    $nht = $this->tables['nodes_hierarchy'];
+
+    $theView = $this->views['latest_exec_by_testplan_plat'];
+
+    if(!isset($my['filters']['bug_id'])) {
+      // adding tcversion on output can be useful for 
+      // Filter on Custom Field values,
+      // because we are saving values at TCVERSION LEVEL
+      //  
+
+
+      // no need to add
+      // " AND TPTCV.platform_id =" . $safe['platform_id'] .
+      // Because is added in $where
+      //
+      $notrun = $this->notRunStatusCode;
+      $union['not_run'] = "/* {$debugMsg} sqlUnion - not run */" .
+        " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,
+          '" . $this->notRunStatusCode . "' AS exec_status 
+          FROM {$this->tables['testplan_tcversions']} TPTCV       
+          JOIN $nht NH_TCV ON NH_TCV.id = TPTCV.tcversion_id 
+          JOIN $nht NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+          $my['join']['keywords'] .
+          $my['join']['ua'] .
+          $my['join']['cf'] .
+
+        " /* Get REALLY NOT RUN => 
+             BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ 
+          LEFT OUTER JOIN {$theView} AS LEXBTPLANPL 
+          ON  LEXBTPLANPL.testplan_id = TPTCV.testplan_id 
+          AND LEXBTPLANPL.tcversion_id = TPTCV.tcversion_id " .
+
+        "/* 
+          mmm, we want not run => why to use Executions? 
+          LEFT OUTER JOIN {$this->tables['executions']} E 
+          ON  E.tcversion_id = TPTCV.tcversion_id 
+          AND E.testplan_id = TPTCV.testplan_id 
+         */ " .
+        
+
+        " WHERE TPTCV.testplan_id =" . $safe['tplan_id'] .
+        $my['where']['not_run'] .
+        " AND LEXBTPLANPL.id IS NULL";
+    }         
+
+    $union['exec'] = "/* {$debugMsg} sqlUnion - executions */" . 
+      " SELECT NH_TCASE.id AS tcase_id,TPTCV.tcversion_id,
+        E.status AS exec_status 
+        FROM {$this->tables['testplan_tcversions']} TPTCV
+        JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTCV.tcversion_id
+        JOIN $nht NH_TCV ON NH_TCV.id = TPTCV.tcversion_id
+        JOIN $nht NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
+        $my['join']['keywords'] .
+        $my['join']['ua'] .
+        $my['join']['cf'] .
+
+        " JOIN {$theView} AS LEXBTPLANPL
+          ON  LEXBTPLANPL.testplan_id = TPTCV.testplan_id 
+          AND LEXBTPLANPL.platform_id = TPTCV.platform_id
+          AND LEXBTPLANPL.tcversion_id = TPTCV.tcversion_id
+          JOIN {$this->tables['executions']} E 
+          ON  E.id = LEXBTPLANPL.id 
+          AND E.testplan_id = LEXBTPLANPL.testplan_id         
+          AND E.platform_id = LEXBTPLANPL.platform_id 
+          WHERE TPTCV.testplan_id = {$safe['tplan_id']} " .
+        $my['where']['where'];
+
+    $xql = is_null($union['not_run']) ? $union['exec'] : $union;
+    //echo '<pre>';
+    //var_dump($xql);
+    //echo '</pre>';
+    //die();
+
+    return $xql;
+  }
+
+  //  
+  // This method is intended to return minimal data useful 
+  // to create Execution Tree.
+  //
+  // The Status on Latest execution:
+  // is computed considering only the test plan, doing
+  // logic ignoring selected build & selected platform 
+  // 
+  // @param int $id test plan id
+  // @param mixed $filters
+  // @param mixed $options  
+  // 
+  // [tcase_id]: default null => get any testcase
+  //             numeric      => just get info for this testcase
+  // 
+  // 
+  // [keyword_id]: default 0 => do not filter by keyword id
+  //               numeric/array()   => filter by keyword id
+  // 
+  // 
+  // [assigned_to]: default NULL => do not filter by user assign.
+  //                array() with user id to be used on filter
+  //                IMPORTANT NOTICE: this argument is affected by
+  //             [assigned_on_build]                 
+  // 
+  // [build_id]: default 0 or null => do not filter by build id
+  //             numeric        => filter by build id
+  // 
+  // 
+  // [cf_hash]: default null => do not filter by Custom Fields values
+  //
+  //
+  // [urgencyImportance] : 
+  //    filter only Tc's with certain (urgency*importance)-value 
+  //
+  // [tsuites_id]: default null.
+  //               If present only tcversions that are children 
+  //               of this testsuites will be included
+  //              
+  // [exec_type] default null -> all types. 
+  // [platform_id]              
+  //       
+  function getLinkedForExecTreeCross($id,$filters=null,$options=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 
@@ -7826,6 +7982,8 @@ class testplan extends tlObjectWithAttachments
     $xql = is_null($union['not_run']) ? $union['exec'] : $union;
     return $xql;
   }
+
+
 
 } // end class testplan
 

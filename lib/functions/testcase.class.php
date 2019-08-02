@@ -9025,10 +9025,19 @@ class testcase extends tlObjectWithAttachments {
             SET tcversion_id = " . $ltcv . $whereClause;
     $this->db->exec_query($sql);
 
-      // Update link in cfields values
+    // Update link in cfields values for executions
+    // ATTENTION: 
+    // platform seems not to be important because
+    // each execution in each platform has a new id.
+    // mmm, maybe this will create some minor issue 
+    // in the future.
+    //
     $sql = "/* $debugMsg */
             UPDATE {$this->tables['cfield_execution_values']} 
-            SET tcversion_id = " . $ltcv . $whereClause;
+            SET tcversion_id = $ltcv 
+            WHERE testplan_id = {$safeTP}
+            AND tcversion_id = $fromTCV ";
+
     $this->db->exec_query($sql);
 
     return $ltcv;

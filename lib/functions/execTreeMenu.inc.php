@@ -141,11 +141,14 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       //$sql2do = 
       //$tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options);
       $applyTCCAlgo = false;
+
       $tcc = null;
       if( !is_null($sql2do = $tplan_mgr->getLinkedForExecTree($context['tplan_id'],$filters,$options)) ) {
 
         $applyTCCAlgo = 
-          ($objOptions->exec_tree_counters_logic == USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS) ;
+          ($objOptions->exec_tree_counters_logic == USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS || 
+           $objOptions->exec_tree_counters_logic == 
+            USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS ) ;
 
         $kmethod = "fetchRowsIntoMap";
         if( is_array($sql2do) ) {       
@@ -166,8 +169,21 @@ function execTree(&$dbHandler,&$menuUrl,$context,$objFilters,$objOptions)
       }
 
       if( $applyTCCAlgo ) {
-        $n3 = 
-          $tplan_mgr->getLinkedForExecTreeIVU($context['tplan_id'],$filters,$options);
+
+        // But what algo?
+        switch ($objOptions->exec_tree_counters_logic) {
+          case USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS:
+            $n3 = 
+              $tplan_mgr->getLinkedForExecTreeCross($context['tplan_id'],
+                             $filters,$options);
+          break;
+          
+          case USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS:
+            $n3 = 
+              $tplan_mgr->getLinkedForExecTreeIVU($context['tplan_id'],
+                             $filters,$options);
+          break;
+        }
         $ssx = $n3['exec'];
         if( is_array($n3) ) {
            $ssx .= ' UNION ' . $n3['not_run'];

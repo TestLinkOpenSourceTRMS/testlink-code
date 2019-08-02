@@ -394,7 +394,7 @@ function initProject(&$db,$hash_user_sel) {
 
   $ckObj = new stdClass();
   $ckCfg = config_get('cookie');
-
+  
   $tproject = new testproject($db);
   $user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
   $user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
@@ -402,19 +402,11 @@ function initProject(&$db,$hash_user_sel) {
 
   $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-  // test project is Test Plan container, then we start 
-  // checking the container
-  $ckObj->name = $ckCfg->prefix . 
-    "TL_user${_SESSION['userID']}_testProject";
-
+  // test project is Test Plan container, then we start checking the container
   if( $user_sel["tproject_id"] != 0 ) {
-    $ckObj->value = $tproject_id = $user_sel["tproject_id"];
-    $ckObj->expire = time()+60*60*24*90;
-    tlSetCookie($ckObj);
-  } else {
-    $tproject_id = intval($_COOKIE[$ckObj->name]);
+    $tproject_id = $user_sel["tproject_id"];
   }
-
+  
   // We need to do checks before updating the SESSION to cover the case that not defined but exists
   if (!$tproject_id) {
     $all_tprojects = $tproject->get_all();
@@ -433,22 +425,27 @@ function initProject(&$db,$hash_user_sel) {
   // Now we need to validate the TestPlan
   $ckObj->name = $ckCfg->prefix .  "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
 
-  if($user_sel["tplan_id"] != 0) {
+  if($user_sel["tplan_id"] != 0)
+  {
     $ckObj->value = $user_sel["tplan_id"];
     $ckObj->expire = time()+60*60*24*90;
     tlSetCookie($ckObj);
-  } elseif (isset($_COOKIE[$ckObj->name])) {
+  } 
+  elseif (isset($_COOKIE[$ckObj->name])) 
+  {
     $tplan_id = intval($_COOKIE[$ckObj->name]);
   }
   
   // check if the specific combination of testprojectid and testplanid is valid
   $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,$tplan_id);
-  if(is_null($tplan_data)) {
+  if(is_null($tplan_data))
+  {
     // Need to get first accessible test plan for user, if any exists.
     $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
   }
   
-  if(!is_null($tplan_data) && is_array($tplan_data)) {
+  if(!is_null($tplan_data) && is_array($tplan_data))
+  {
     $tplan_data = $tplan_data[0];
     setSessionTestPlan($tplan_data);
   }
@@ -479,28 +476,33 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
 
   doSessionStart();
   setPaths();
-  if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) ) {
+  if( isset($_SESSION['locale']) && !is_null($_SESSION['locale']) )
+  {
     setDateTimeFormats($_SESSION['locale']);
   } 
   doDBConnect($db);
   
-  if (!$pageStatistics && (config_get('log_level') == 'EXTENDED')) {
+  if (!$pageStatistics && (config_get('log_level') == 'EXTENDED'))
+  {
     $pageStatistics = new tlPageStatistics($db);
   }
   
-  if (!$dontCheckSession) {
+  if (!$dontCheckSession)
+  {
     checkSessionValid($db);
   }
   
-  if ($userRightsCheckFunction) {
+  if ($userRightsCheckFunction)
+  {
     checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
   }
    
   // Init plugins
   plugin_init_installed();
    
-  // adjust Test Project and Test Plan to $_SESSION
-  if ($initProject) {
+  // adjust Product and Test Plan to $_SESSION
+  if ($initProject)
+  {
     initProject($db,$_REQUEST);
   }
    
@@ -510,9 +512,11 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
   global $g_attachments;
   global $g_repositoryPath;
   $g_attachments->disabled_msg = "";
-  if($g_repositoryType == TL_REPOSITORY_TYPE_FS) {
+  if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
+  {
     $ret = checkForRepositoryDir($g_repositoryPath);
-    if(!$ret['status_ok']) {
+    if(!$ret['status_ok'])
+    {
       $g_attachments->enabled = FALSE;
       $g_attachments->disabled_msg = $ret['msg'];
     }

@@ -216,8 +216,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
     public static $testCaseVersionParamName = "tcversion";
     public static $itsNameParamName = "itsname";
     public static $itsEnabledParamName = "itsenabled";
-    public static $itsTypeParamName = "itstype";
-    public static $itsCfgParamName = "itscfg";
+    public static $itsTypeParamName = "type";
+    public static $itsCfgParamName = "cfg";
     public static $itsIDParamName ="itsid";
 
     public static $copyTestersFromBuildParamName = "copytestersfrombuild";
@@ -8364,6 +8364,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["devKey"]
      * @param string $args["itsid"] ITS ID
      * @param string $args["testprojectid"] Project ID
+     * @param boolean $args["itsenabled"] Enabled the ITS or not
+     *                OPTIONAL
      * @access public
      */
     public function setTestProjectITS($args) {
@@ -8378,16 +8380,34 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 return $this->errors;
             }
 
+            $itsID = $this->args[self::$itsIDParamName];
             if ($this->args[self::$itsIDParamName] != "") {
                 if(is_null( $this->itsMgr )) {
                     $this->itsMgr = new tlIssueTracker( $this->dbObj );
                 }
 
-                $this->itsMgr->link($this->args[self::$itsIDParamName], $this->args[self::$testProjectIDParamName]);
+                $projectID = $this->args[self::$testProjectIDParamName];
+                $this->itsMgr->link($itsID, $projectID);
                 $resultInfo = array();
-                $resultInfo[]= array("operation" => __FUNCTION__,
-                                     "additionalInfo" => null,
-                                     "status" => true, "id" => $this->args[self::$testProjectIDParamName], "message" => GENERAL_SUCCESS_STR);
+                $resultInfo[]= array("operation" => "link ITS",
+                                     "additionalInfo" => "ITS ID " . $itsID,
+                                     "status" => true,
+                                     "id" => $projectID, "message" => GENERAL_SUCCESS_STR);
+
+                // enable the ITS if needed
+                $isEnabled = false;
+                if ($this->_isParamPresent(self::$itsEnabledParamName)) {
+                    $isEnabled = ($this->args[self::$itsEnabledParamName] > 0);
+                }
+
+                if ($isEnabled) {
+                    $this->tprojectMgr->enableIssueTracker($projectID);
+                    $resultInfo[]= array("operation" => "enable ITS",
+                                         "additionalInfo" => null,
+                                         "status" => true,
+                                         "id" => $projectID, "message" => GENERAL_SUCCESS_STR);
+                }
+
                 return $resultInfo;
             } else {
                 $this->errors[] = new IXR_Error(NO_ITSID, $messagePrefix . NO_ITSID_STR);

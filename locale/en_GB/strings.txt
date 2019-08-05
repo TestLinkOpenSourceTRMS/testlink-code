@@ -3162,7 +3162,7 @@ $TLS_API_NO_TESTSUITEID = "No testsuiteid provided.";
 $TLS_API_NO_TPID = "No testplan ID (testplanid) provided.";
 $TLS_API_NO_TCID = "No testcase ID (testcaseid) provided.";
 $TLS_API_NO_PLATFORMID = "No Platform ID (platformid) provided.";
-$TLS_API_NO_ITSID = "NO ITS ID (itsid) provided.";
+$TLS_API_NO_ITSID = "No Issue Tracker System ID (itsid) provided.";
 
 
 $TLS_API_INVALID_TCASEID = "The Test Case ID (testcaseid: %s) provided does not exist!";

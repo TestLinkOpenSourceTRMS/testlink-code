@@ -661,6 +661,31 @@ class TestlinkXMLRPCServer extends IXR_Server {
     }
 
     /**
+     * Helper method to see if the ItsID provided is valid
+     *
+     * This is the only method that should be called directly to check the ItsID
+     *
+     * @param string $messagePrefix
+     *            used to be prepended to error message
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function checkItsID($messagePrefix = '') {
+        $status = true;
+        if(! $this->_isItsIDPresent()) {
+            $this->errors[] = new IXR_Error( NO_ITSID, $messagePrefix . NO_ITSID_STR );
+            $status = false;
+        } else {
+            // See if this ITS ID exists in the db
+            $its = $this->getIssueTrackerSystem( $this->args, 'internal' );
+            $status = is_null($its);
+        }
+
+        return $status;
+    }
+
+    /**
      * Helper method to see if the guess is set
      *
      * This is the only method that should be called directly to check the guess param
@@ -799,6 +824,17 @@ class TestlinkXMLRPCServer extends IXR_Server {
      */
     protected function _isTestCaseExternalIDPresent() {
         $status = isset( $this->args[self::$testCaseExternalIDParamName] ) ? true : false;
+        return $status;
+    }
+
+    /**
+     * Helper method to see if an itsid is given as one of the arguments
+     *
+     * @return boolean
+     * @access protected
+     */
+    protected function _isItsIDPresent() {
+        $status = isset( $this->args[self::$itsIDParamName] ) ? true : false;
         return $status;
     }
 
@@ -8294,9 +8330,11 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param struct $args
      * @param string $args["devKey"]
      * @param string $args["itsname"] ITS name
-     * @param string $args["itstype"] ITS name
-     * @param string $args["itscfg"] ITS name
+     * @param string $args["type"] ITS type
+     * @param string $args["cfg"] ITS config
+     *
      * @access public
+     * @since 1.9.20
      */
     public function createIssueTrackerSystem($args) {
         $operation=__FUNCTION__;
@@ -8304,7 +8342,9 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $this->_setArgs($args);
 
-        if ($this->authenticate($msg_prefix)) {
+        if ($this->authenticate($msg_prefix)&&
+            $this->userHasRight("issuetracker_management", self::CHECK_PUBLIC_PRIVATE_ATTR)) {
+
             $item = new stdClass();
             $item->name = $this->args[self::$itsNameParamName];
             $item->type = $this->args[self::$itsTypeParamName];
@@ -8327,10 +8367,13 @@ class TestlinkXMLRPCServer extends IXR_Server {
      *
      * @param struct $args
      * @param string $args["devKey"]
+     * @param string $args["itsid"] ITS ID
      * @param string $args["itsname"] ITS name
-     * @param string $args["itstype"] ITS name
-     * @param string $args["itscfg"] ITS name
+     * @param string $args["type"] ITS type
+     * @param string $args["cfg"] ITS config
+     *
      * @access public
+     * @since 1.9.20
      */
     public function updateIssueTrackerSystem($args) {
         $operation=__FUNCTION__;
@@ -8338,12 +8381,17 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $this->_setArgs($args);
 
-        if($this->authenticate($msg_prefix)) {
+        $checkFunctions = array('authenticate',
+                                'checkITSID');
+
+        if ($this->_runChecks($checkFunctions, $msg_prefix) &&
+            $this->userHasRight("issuetracker_management", self::CHECK_PUBLIC_PRIVATE_ATTR)) {
+
             $item = new stdClass();
+            $item->id   = $this->args[self::$itsIDParamName];
             $item->name = $this->args[self::$itsNameParamName];
             $item->type = $this->args[self::$itsTypeParamName];
             $item->cfg  = $this->args[self::$itsCfgParamName];
-            $item->id   = $this->args[self::$itsIDParamName];
 
             if(is_null( $this->itsMgr )) {
                 $this->itsMgr = new tlIssueTracker( $this->dbObj );
@@ -8364,9 +8412,11 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["devKey"]
      * @param string $args["itsid"] ITS ID
      * @param string $args["testprojectid"] Project ID
-     * @param boolean $args["itsenabled"] Enabled the ITS or not
+     * @param boolean $args["itsenabled"] Enable the ITS or not
      *                OPTIONAL
+     *
      * @access public
+     * @since 1.9.20
      */
     public function setTestProjectITS($args) {
         $operation=__FUNCTION__;
@@ -8374,45 +8424,44 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $this->_setArgs($args);
 
-        if($this->authenticate($msg_prefix)) {
-            if(!($this->_isTestProjectIDPresent())) {
-                $this->errors[] = new IXR_Error(NO_TESTPROJECTID, $messagePrefix . NO_TESTPROJECTID_STR);
-                return $this->errors;
-            }
+        $checkFunctions = array('authenticate',
+                                'checkTestProjectID',
+                                'checkITSID');
+
+        if($this->_runChecks($checkFunctions, $msg_prefix) && $this->userHasRight( "mgt_modify_product" )) {
 
             $itsID = $this->args[self::$itsIDParamName];
-            if ($this->args[self::$itsIDParamName] != "") {
-                if(is_null( $this->itsMgr )) {
-                    $this->itsMgr = new tlIssueTracker( $this->dbObj );
-                }
+            $projectID = $this->args[self::$testProjectIDParamName];
 
-                $projectID = $this->args[self::$testProjectIDParamName];
-                $this->itsMgr->link($itsID, $projectID);
-                $resultInfo = array();
-                $resultInfo[]= array("operation" => "link ITS",
-                                     "additionalInfo" => "ITS ID " . $itsID,
-                                     "status" => true,
-                                     "id" => $projectID, "message" => GENERAL_SUCCESS_STR);
-
-                // enable the ITS if needed
-                $isEnabled = false;
-                if ($this->_isParamPresent(self::$itsEnabledParamName)) {
-                    $isEnabled = ($this->args[self::$itsEnabledParamName] > 0);
-                }
-
-                if ($isEnabled) {
-                    $this->tprojectMgr->enableIssueTracker($projectID);
-                    $resultInfo[]= array("operation" => "enable ITS",
-                                         "additionalInfo" => null,
-                                         "status" => true,
-                                         "id" => $projectID, "message" => GENERAL_SUCCESS_STR);
-                }
-
-                return $resultInfo;
-            } else {
-                $this->errors[] = new IXR_Error(NO_ITSID, $messagePrefix . NO_ITSID_STR);
-                return $this->errors;
+            if(is_null( $this->itsMgr )) {
+                $this->itsMgr = new tlIssueTracker( $this->dbObj );
             }
+
+            $this->itsMgr->link($itsID, $projectID);
+            $resultInfo = array();
+            $resultInfo[]= array("operation" => "link ITS",
+                                 "additionalInfo" => "ITS ID " . $itsID,
+                                 "status" => true,
+                                 "id" => $projectID,
+                                 "message" => GENERAL_SUCCESS_STR);
+
+            // enable the ITS if needed
+            $isEnabled = false;
+            if ($this->_isParamPresent(self::$itsEnabledParamName)) {
+                $isEnabled = ($this->args[self::$itsEnabledParamName] > 0);
+            }
+
+            if ($isEnabled) {
+                $this->tprojectMgr->enableIssueTracker($projectID);
+                $resultInfo[]= array("operation" => "enable ITS",
+                                     "additionalInfo" => null,
+                                     "status" => true,
+                                     "id" => $projectID,
+                                     "message" => GENERAL_SUCCESS_STR);
+            }
+
+            return $resultInfo;
+
         } else {
             return $this->errors;
         }

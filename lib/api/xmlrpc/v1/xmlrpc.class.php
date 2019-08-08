@@ -8342,7 +8342,19 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         $this->_setArgs($args);
 
-        if ($this->authenticate($msg_prefix)&&
+        $params = array(self::$$itsNameParamName,
+                        self::$itsTypeParamName,
+                        self::$itsCfgParamName);
+
+        $missingArg = false;
+        foreach($params as $param) {
+            $missingArg = $missingArg || _isParamPresent($param);
+        }
+        if ($missingArg) {
+            return $this->errors;
+        }
+
+        if ($this->authenticate($msg_prefix) &&
             $this->userHasRight("issuetracker_management", self::CHECK_PUBLIC_PRIVATE_ATTR)) {
 
             $item = new stdClass();
@@ -8380,6 +8392,18 @@ class TestlinkXMLRPCServer extends IXR_Server {
         $msg_prefix="({$operation}) - ";
 
         $this->_setArgs($args);
+
+        $params = array(self::$$itsNameParamName,
+                        self::$itsTypeParamName,
+                        self::$itsCfgParamName);
+
+        $missingArg = false;
+        foreach($params as $param) {
+            $missingArg = $missingArg || _isParamPresent($param);
+        }
+        if ($missingArg) {
+            return $this->errors;
+        }
 
         $checkFunctions = array('authenticate',
                                 'checkITSID');

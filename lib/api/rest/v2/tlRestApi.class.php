@@ -593,7 +593,10 @@ class tlRestApi
       $item = json_decode($request->getBody());
 
       $op = array('status' => 'ok', 'message' => 'ok');
-      $op['id'] = $this->tplanMgr->createFromObject($item,array('doChecks' => true));
+      $opeOpt = array('setSessionProject' => false,
+                      'doChecks' => true);
+      $op['id'] = $this->tplanMgr->createFromObject($item,$opeOpt);
+      
     } catch (Exception $e) {
       $this->app->status(500);
       $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();   

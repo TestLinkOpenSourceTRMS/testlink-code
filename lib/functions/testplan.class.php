@@ -43,6 +43,7 @@ class testplan extends tlObjectWithAttachments
   var $assignment_mgr;
   var $cfield_mgr;
   var $tcase_mgr;
+  var $tproject_mgr; 
    
   var $assignment_types;
   var $assignment_status;
@@ -89,6 +90,8 @@ class testplan extends tlObjectWithAttachments
     $this->cfield_mgr = new cfield_mgr($this->db);
     $this->tcase_mgr = New testcase($this->db);
     $this->platform_mgr = new tlPlatform($this->db);
+    $this->tproject_mgr = new testproject($this->db);
+
      
     $this->resultsCfg = config_get('results');
     $this->tcaseCfg = config_get('testcase_cfg');
@@ -165,14 +168,24 @@ class testplan extends tlObjectWithAttachments
     
       // what checks need to be done ?
       // 1. test project exist
-      $pinfo = $this->tree_manager->get_node_hierarchy_info($item->testProjectID);
-      if(is_null($pinfo) || $this->node_types_id_descr[$pinfo['node_type_id']] != 'testproject') {
+      $pinfo = null;
+      if( is_numeric($item->testProjectID) ) {
+        $pinfo = $this->tproject_mgr->get_by_id(intval($item->testProjectID));
+      }
+      
+      if( null == $pinfo || count($pinfo) == 0 ) {
+        $pinfo = $this->tproject_mgr->get_by_prefix($item->testProjectID);            
+      }
+      
+      if( is_null($pinfo) || count($pinfo) == 0 ) {
         throw new Exception('Test project ID does not exist');      
       }  
 
+      $tproject_id = intval($pinfo['id']);
+
       // 2. there is NO other test plan on test project with same name
       $name = trim($item->name);
-      $op = $this->checkNameExistence($name,$item->testProjectID);
+      $op = $this->checkNameExistence($name,$tproject_id);
       if(!$op['status_ok']) {
         throw new Exception('Test plan name is already in use on Test project');      
       }  
@@ -186,12 +199,13 @@ class testplan extends tlObjectWithAttachments
 
     $api_key = md5(rand()) . md5(rand());
 
-    $id = $this->tree_manager->new_node($item->testProjectID,$this->node_types_descr_id['testplan'],$name);
+    $id = $this->tree_manager->new_node($tproject_id,$this->node_types_descr_id['testplan'],$name);
     $sql = "/* $debugMsg */ " . 
            " INSERT INTO {$this->tables['testplans']} (id,notes,api_key,testproject_id,active,is_public) " .
            " VALUES ( {$id} " . ", '" . $this->db->prepare_string($item->notes) . "'," . 
              "'" .  $this->db->prepare_string($api_key) . "'," .
-              $item->testProjectID . "," . $active_status . "," . $public_status . ")";
+              $tproject_id . "," . 
+              $active_status . "," . $public_status . ")";
     $result = $this->db->exec_query($sql);
     return $result ? $id : 0;
   }
@@ -3953,38 +3967,38 @@ class testplan extends tlObjectWithAttachments
             }
             // testcase::LATEST_VERSION,
             $tcaseExportOptions['EXEC_ORDER'] = $linkedItems[$cNode['id']][$platform_id]['node_order'];
-			
-			$filter_lv = array( 'exec_status' => 'ALL', 'active_status' => 'ALL','tplan_id' => $tplan_id, 'platform_id' => $platform_id );
-			$output_lv = array( 'output' => 'simple' );
-			// get tc versions linked in current testplan for current platform
-			$info = $tcaseMgr->get_linked_versions($cNode['id'],$filter_lv,$output_lv);
-			if( !is_null($info) )
-			{
-				$tcversID = key($info);
-			}
+      
+      $filter_lv = array( 'exec_status' => 'ALL', 'active_status' => 'ALL','tplan_id' => $tplan_id, 'platform_id' => $platform_id );
+      $output_lv = array( 'output' => 'simple' );
+      // get tc versions linked in current testplan for current platform
+      $info = $tcaseMgr->get_linked_versions($cNode['id'],$filter_lv,$output_lv);
+      if( !is_null($info) )
+      {
+        $tcversID = key($info);
+      }
 
-			// get users assigned to tc version in current testplan for the current build
-			$versionAssignInfo = $tcaseMgr->get_version_exec_assignment($tcversID, $tplan_id, $build_id );
-			$userList = array();
-			// extract user names
-			if(!is_null($versionAssignInfo))
-			{
-				foreach($versionAssignInfo[$tcversID][$platform_id] as $vaInfo)
-				{
-					$assignedTesterId = intval($vaInfo['user_id']);
-					if($assignedTesterId)
-					{
-					  $user = tlUser::getByID($this->db,$assignedTesterId);
-					  if ($user)
-					  {
-						$userList[] = $user->getDisplayName();
-					  }
-					}
-				}
-			}
-			(count($userList) > 0) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
-			
-			$xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
+      // get users assigned to tc version in current testplan for the current build
+      $versionAssignInfo = $tcaseMgr->get_version_exec_assignment($tcversID, $tplan_id, $build_id );
+      $userList = array();
+      // extract user names
+      if(!is_null($versionAssignInfo))
+      {
+        foreach($versionAssignInfo[$tcversID][$platform_id] as $vaInfo)
+        {
+          $assignedTesterId = intval($vaInfo['user_id']);
+          if($assignedTesterId)
+          {
+            $user = tlUser::getByID($this->db,$assignedTesterId);
+            if ($user)
+            {
+            $userList[] = $user->getDisplayName();
+            }
+          }
+        }
+      }
+      (count($userList) > 0) ? $tcaseExportOptions['ASSIGNED_USER'] = $userList : $tcaseExportOptions['ASSIGNED_USER'] = null;
+      
+      $xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
                                                          $tproject_id,testcase::NOXMLHEADER,
                                                          $tcaseExportOptions);
           break;

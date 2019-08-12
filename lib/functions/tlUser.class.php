@@ -5,7 +5,7 @@
  * 
  * @filesource  tlUser.class.php
  * @package     TestLink
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -1524,6 +1524,19 @@ class tlUser extends tlDBObject {
 
     $rx = $dbHandler->exec_query($sql);
     return tl::OK;
+  }
+
+  /**
+   *
+   */
+  function hasRightWrap(&$db,$roleQuestion,$context=null) {
+
+    $cx = array('tproject_id' => null,'tplan_id' => null,
+                'checkPublicPrivateAttr' => false);
+    $cx = array_merge($cx,(array)$context);
+    return $this->hasRight($db,$roleQuestion,
+                           $cx['tproject_id'],$cx['tplan_id'],
+                           $cx['checkPublicPrivateAttr']);
   }
 
 }

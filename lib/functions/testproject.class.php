@@ -330,8 +330,7 @@ protected function getTestProject($condition = null, $opt=null)
   $doParse = true;
   $tprojCols = ' testprojects.* ';
 
-  switch($my['options']['output'])
-  {
+  switch($my['options']['output']) {
     case 'existsByID':
       $doParse = false;
       $sql = "/* debugMsg */ SELECT testprojects.id ".

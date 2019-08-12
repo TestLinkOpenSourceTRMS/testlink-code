@@ -8437,7 +8437,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
      * @param string $args["itsid"] ITS ID
      * @param string $args["testprojectid"] Project ID
      * @param boolean $args["itsenabled"] Enable the ITS or not
-     *                OPTIONAL
+     *                OPTIONAL default is false
      *
      * @access public
      * @since 1.9.20
@@ -8454,8 +8454,8 @@ class TestlinkXMLRPCServer extends IXR_Server {
 
         if($this->_runChecks($checkFunctions, $msg_prefix) && $this->userHasRight( "mgt_modify_product" )) {
 
-            $itsID = $this->args[self::$itsIDParamName];
-            $projectID = $this->args[self::$testProjectIDParamName];
+            $itsID = intval($this->args[self::$itsIDParamName]);
+            $projectID = intval($this->args[self::$testProjectIDParamName]);
 
             if(is_null( $this->itsMgr )) {
                 $this->itsMgr = new tlIssueTracker( $this->dbObj );
@@ -8472,7 +8472,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             // enable the ITS if needed
             $isEnabled = false;
             if ($this->_isParamPresent(self::$itsEnabledParamName)) {
-                $isEnabled = ($this->args[self::$itsEnabledParamName] > 0);
+                $isEnabled = ($this->args[self::$itsEnabledParamName]);
             }
 
             if ($isEnabled) {
@@ -8490,6 +8490,50 @@ class TestlinkXMLRPCServer extends IXR_Server {
             return $this->errors;
         }
     }
+
+    /**
+     * Remove the link between a project and an ITS
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param string $args["itsid"] ITS ID
+     * @param string $args["testprojectid"] Project ID
+     *
+     * @access public
+     * @since 1.9.20
+     */
+    public function removeTestProjectITS($args) {
+        $operation=__FUNCTION__;
+        $msg_prefix="({$operation}) - ";
+
+        $this->_setArgs($args);
+
+        $checkFunctions = array('authenticate',
+                                'checkTestProjectID');
+
+        if($this->_runChecks($checkFunctions, $msg_prefix) && $this->userHasRight( "mgt_modify_product" )) {
+
+            if(is_null( $this->itsMgr )) {
+                $this->itsMgr = new tlIssueTracker( $this->dbObj );
+            }
+
+            $itsID = intval($this->args[self::$itsIDParamName]);
+            $projectID = intval($this->args[self::$testProjectIDParamName]);
+
+            $this->itsMgr->unlink($itsID, $projectID);
+            $resultInfo = array();
+            $resultInfo[]= array("operation" => "unlink ITS",
+                                 "status" => true,
+                                 "id" => $projectID,
+                                 "message" => GENERAL_SUCCESS_STR);
+
+            return $resultInfo;
+
+        } else {
+            return $this->errors;
+        }
+    }
+
 
     /**
      */
@@ -8524,6 +8568,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
                 'tl.createIssueTrackerSystem' => 'this:createIssueTrackerSystem',
                 'tl.updateIssueTrackerSystem' => 'this:updateIssueTrackerSystem',
                 'tl.setTestProjectITS' => 'this:setTestProjectITS',
+                'tl.removeTestProjectITS' => 'this:removeTestProjectITS',
                 'tl.getProjects' => 'this:getProjects',
                 'tl.getProjectKeywords' => 'this:getProjectKeywords',
                 'tl.getProjectPlatforms' => 'this:getProjectPlatforms',

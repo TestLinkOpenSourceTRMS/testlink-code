@@ -68,7 +68,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
       </p>
 
       <p> 
-      {if $gui->issueTrackerMetaData.versions != ''}
+      {if $gui->issueTrackerMetaData.versions != '' && 
+          $gui->issueTrackerMetaData.versions.items != '' &&
+          is_array($gui->issueTrackerMetaData.versions.items)}
         <label for="artifactVersion">{$labels.artifactVersion}</label> 
         <select class="chosen-select" data-placeholder=" " required 
                 {if $gui->issueTrackerMetaData.versions.isMultiSelect}

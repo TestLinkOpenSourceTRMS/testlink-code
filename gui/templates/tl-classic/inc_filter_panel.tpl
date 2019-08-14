@@ -762,8 +762,9 @@
 <p>
 
 <script>
+/* Chosen Config */
 jQuery( document ).ready(function() {
-jQuery(".chosen-select").chosen({ width: "85%" , allow_single_deselect: true});
-jQuery('select[data-cfield="list"]').chosen({ width: "85%" , allow_single_deselect: true});
+jQuery(".chosen-select").chosen({ width: "85%" , allow_single_deselect: true, search_contains: true});
+jQuery('select[data-cfield="list"]').chosen({ width: "85%" , allow_single_deselect: true, search_contains: true});
 });
 </script>

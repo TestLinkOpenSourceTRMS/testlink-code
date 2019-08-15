@@ -197,13 +197,16 @@ Author : franciscom
         </td>
       </tr>
 
-      <tr>
-
-
-      <td colspan="2">
-      {include file="./issueTrackerMetadata.inc.tpl"}  
-      </td>
-      </tr>
+      {$itMetaData = $gui->issueTrackerMetaData}
+      {if '' != $itMetaData && null != $itMetaData}
+        <tr>
+        <td colspan="2">
+        {include file="./issueTrackerMetadata.inc.tpl"
+                 useOnSteps=0
+        }  
+        </td>
+        </tr>
+      {/if}
 
       <tr>
         <td colspan="2">

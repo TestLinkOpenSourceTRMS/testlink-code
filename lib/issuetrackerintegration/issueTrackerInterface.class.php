@@ -20,9 +20,6 @@
  * other properties can be present depending on ITS.
  * =============================================================================
  *
- * @internal revisions
- * @since 1.9.14
- *
  *
 **/
 require_once(TL_ABS_PATH . "/lib/functions/database.class.php");
@@ -377,7 +374,7 @@ abstract class issueTrackerInterface
       }
     }
 
-    if($my['opt']['addReporter']) {
+    if ($my['opt']['addReporter']) {
       if( property_exists($issue, 'reportedBy') ) {
         $link .= "";
         $who = trim((string)$issue->reportedBy);

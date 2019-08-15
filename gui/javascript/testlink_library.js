@@ -1900,26 +1900,19 @@ function validateStepsReorder(cssClassName)
 function toogleRequiredOnShowHide(oid,display_type)
 {
   var obj = document.getElementById(oid);
-  if (!obj)
-  {
+  if (!obj) {
     return;
   }                  
 
-  if(obj.style.display == 'none')
-  {
-    if(display_type != undefined)
-    {
+  if(obj.style.display == 'none') {
+    if(display_type != undefined) {
       obj.style.display = display_type;
-    } 
-    else
-    {
+    } else {
       // SHOW, then field has to be Required
       obj.style.display = '';
       obj.setAttribute('required','required');
     } 
-  }
-  else
-  {
+  } else {
     obj.style.display = 'none';
     obj.removeAttribute('required'); 
   }

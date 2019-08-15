@@ -22,63 +22,12 @@
 
       <tr>
       <td colspan="2">
-     {if $gui->issueTrackerMetaData != ''}
-      <p>
-      {if $gui->issueTrackerMetaData.issueTypes != ''}
-       <label for="issueTypeForStep[{$args_step_id}]">{$labels.issueType}</label>
-       {html_options name="issueTypeForStep[{$args_step_id}]" 
-         options=$gui->issueTrackerMetaData.issueTypes.items 
-       }
-      {/if}
-
-      {if $gui->issueTrackerMetaData.priorities != ''}
-       <label for="issuePriorityForStep[{$args_step_id}]">{$labels.issuePriority}</label> 
-       {html_options name="issuePriorityForStep[{$args_step_id}]" 
-        options=$gui->issueTrackerMetaData.priorities.items
-       }
-      {/if}
-      </p>
-
-      <p> 
-      {* 
-         IMPORTANT:
-         Via Javascript the required attribute will be added when this input will be 
-         done visible because user has clicked on 'Create Issue' checkbox
-      *}
-      {if $gui->issueTrackerMetaData.versions != ''}
-        <label for="artifactVersionForStep[{$args_step_id}]">{$labels.artifactVersion}</label> 
-        <select class="chosen-select-artifact" data-placeholder=" " id="artifactVersionForStep_{$args_step_id}" 
-                {if $gui->issueTrackerMetaData.versions.isMultiSelect}
-                 name="artifactVersionForStep[{$args_step_id}][]" size="2" multiple
-                {else}
-                 name="artifactVersionForStep[{$args_step_id}]"
-                {/if} 
-                >
-        {html_options options=$gui->issueTrackerMetaData.versions.items
-        }
-        </select>
-      {/if}
-      
-      {* 
-         IMPORTANT:
-         Via Javascript the required attribute will be added when this input will be 
-         done visible because user has clicked on 'Create Issue' checkbox
-      *}
-      {if $gui->issueTrackerMetaData.components.items != ''}
-        <label for="artifactComponentForStep[{$args_step_id}]">{$labels.artifactComponent}</label>         
-         <select class="chosen-select-artifact" data-placeholder=" " id="artifactComponentForStep_{$args_step_id}" 
-                 {if $gui->issueTrackerMetaData.components.isMultiSelect}
-                   name="artifactComponentForStep[{$args_step_id}][]" size="2" multiple
-                 {else}
-                   name="artifactComponentForStep[{$args_step_id}]"
-                 {/if} 
-                 >
-         {html_options options=$gui->issueTrackerMetaData.components.items
-         }
-         </select>
-      {/if}
-     </p>
-     {/if}  {* $gui->issueTrackerMetaData *}      
+        {$itMetaData = $gui->issueTrackerMetaData}
+        {if '' != $itMetaData && null != $itMetaData}
+          {include file="./issueTrackerMetadata.inc.tpl"
+                   useOnSteps=1
+          }  
+        {/if}  {* $itMetaData *}
       </td>
       </tr>
 

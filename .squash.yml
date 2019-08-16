@@ -2,5 +2,7 @@ deployments:
   TestLink:
     filename:
       ./Dockerfile
-    subdomain_port_mapping:
-      - nyc:8000
+    ready_wait:
+      7200
+    vm_size:
+      2GB

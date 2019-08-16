@@ -1,0 +1,6 @@
+deployments:
+  TestLink:
+    filename:
+      ./Dockerfile
+    subdomain_port_mapping:
+      - nyc:8000

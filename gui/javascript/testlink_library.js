@@ -141,7 +141,7 @@ function ST(id,version)
 function STS(id)
 {
   var _FUNCTION_NAME_='STS';
-  var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+  var action_url = fRoot+menuUrl+"?level=testsuite&id="+id+args;
   // alert(args);
   parent.workframe.location = action_url;
 }

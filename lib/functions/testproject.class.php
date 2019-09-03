@@ -3822,7 +3822,7 @@ function getActiveTestPlansCount($id)
   function checkKeywordIsLinkedAndNotExecuted($keyword_id,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
 
@@ -3866,7 +3866,7 @@ function getActiveTestPlansCount($id)
   function checkKeywordIsLinkedToFrozenVersions($keyword_id,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
 
@@ -3920,7 +3920,7 @@ function getActiveTestPlansCount($id)
   function getKeywordsExecStatus($keywordSet,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
     }         
@@ -3952,7 +3952,7 @@ function getActiveTestPlansCount($id)
   function getKeywordsFreezeStatus($keywordSet,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
     }         

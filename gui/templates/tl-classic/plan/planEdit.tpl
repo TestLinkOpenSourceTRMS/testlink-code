@@ -3,8 +3,6 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource planEdit.tpl
 
 Purpose: smarty template - create Test Plan
-@internal revisions
-@since 1.9.10
 *}
 
 {lang_get var="labels"
@@ -102,11 +100,9 @@ function jsCallDeleteFile(btn, text, o_id)
 
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
-  {$form_action='create'}
   {if $gui->tplan_id neq 0}
     <h2>
     {$labels.testplan_title_edit} {$gui->testplan_name|escape}
-    {$form_action='update'}
     {if $gui->grants->mgt_view_events eq "yes"}
       <img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
            onclick="showEventHistoryFor('{$gui->tplan_id}','testplans')" alt="{$labels.show_event_history}" 
@@ -116,7 +112,7 @@ function jsCallDeleteFile(btn, text, o_id)
   {/if}
 
   <form method="post" name="testplan_mgmt" id="testplan_mgmt"
-        action="lib/plan/planEdit.php?action={$form_action}"
+        action="lib/plan/planEdit.php"
         onSubmit="javascript:return validateForm(this);">
   <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
   <table class="common" width="80%">

@@ -15,7 +15,7 @@
 	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
 
   <!-- for the iframes -->
-  <link rel="stylesheet" type="text/css" href="{$basehref}gui/themes/default/css/frame.css">
+  <link rel="stylesheet" type="text/css" href="{$basehref}{$tlCfg->theme_dir}/css/frame.css">
 
 
 </head>

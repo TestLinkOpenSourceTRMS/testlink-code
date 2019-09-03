@@ -10,6 +10,13 @@
 -- since 1.9.20
 INSERT INTO /*prefix*/rights (id,description) VALUES (55,'testproject_add_remove_keywords_executed_tcversions');
 
+-- 
+ALTER TABLE /*prefix*/builds ADD COLUMN commit_id varchar(64) NULL;
+ALTER TABLE /*prefix*/builds ADD COLUMN tag varchar(64) NULL;
+ALTER TABLE /*prefix*/builds ADD COLUMN branch varchar(64) NULL;
+ALTER TABLE /*prefix*/builds ADD COLUMN release_candidate varchar(100) NULL;
+
+
 CREATE TABLE /*prefix*/testcase_platforms (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   testcase_id int(10) unsigned NOT NULL DEFAULT '0',
@@ -46,5 +53,8 @@ WHERE NHTCV.node_type_id = 4 AND
 NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
            WHERE TCPL.tcversion_id = NHTCV.id));
 
-
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan_plat
+AS SELECT tcversion_id, testplan_id,platform_id,max(id) AS id
+FROM /*prefix*/executions 
+GROUP BY tcversion_id,testplan_id,platform_id;
 # END

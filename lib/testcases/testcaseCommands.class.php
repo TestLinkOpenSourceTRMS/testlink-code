@@ -337,7 +337,9 @@ class testcaseCommands {
 
     $guiObj->cancelActionJS = 
       'location.href=fRoot+' . "'" . 
-      "lib/testcases/archiveData.php?version_id=" . $argsObj->tcversion_id . 
+      "lib/testcases/archiveData.php?version_id=" . 
+      $argsObj->tcversion_id . 
+      "&tcversion_id=" . $argsObj->tcversion_id .
       '&edit=testcase&id=' . intval($argsObj->tcase_id); 
 
     if( property_exists($argsObj, 'tplan_id') ) {
@@ -953,6 +955,7 @@ class testcaseCommands {
 
     $guiObj->template = 
       "archiveData.php?version_id={$guiObj->tcversion_id}&" .
+      "tcversion_id={$guiObj->tcversion_id}&" .
       "edit=testcase&id={$guiObj->tcase_id}&" .
       "show_mode={$guiObj->show_mode}";
 
@@ -986,6 +989,7 @@ class testcaseCommands {
     // set up for rendering
     $guiObj->template = 
       "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&".
       "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
@@ -1016,6 +1020,7 @@ class testcaseCommands {
     // set up for rendering
     $guiObj->template = 
       "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
       "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
@@ -1052,8 +1057,10 @@ class testcaseCommands {
     
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
       $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
@@ -1081,8 +1088,10 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
       $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
@@ -1208,7 +1217,8 @@ class testcaseCommands {
 
     // set up for rendering
     // It's OK put fixed 0 on version_id other functions on the chain to do the display know how to manage this
-    $guiObj->template = "archiveData.php?version_id=0&" . 
+    $guiObj->template = "archiveData.php?version_id=0&" .
+      "tcversion_id={$guiObj->tcversion_id}&" . 
       "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
@@ -1310,8 +1320,10 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 
     // set up for rendering
-    $guiObj->template = "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
-                        "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    $guiObj->template = 
+      "archiveData.php?version_id={$guiObj->tcversion_id}&" . 
+      "tcversion_id={$guiObj->tcversion_id}&" .
+      "edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}";
 
     if( property_exists($guiObj, 'tplan_id') ) {
       $guiObj->template .= "&tplan_id={$guiObj->tplan_id}";
@@ -1363,10 +1375,55 @@ class testcaseCommands {
 
     $this->initTestCaseBasicInfo($argsObj,$guiObj,array('accessByStepID' => false));
 
-    if( null != $argsObj->free_keywords ) {
+    $tcExternalID = $guiObj->testcase['tc_external_id'];
+    if( null != $argsObj->free_keywords || 1==1) {
       $this->tcaseMgr->addKeywords($guiObj->tcase_id,$guiObj->tcversion_id,
         $argsObj->free_keywords);
-    }
+
+      $info = $this->tprojectMgr->get_by_id($this->tproject_id);
+      $cfx = config_get('keywords')->byTestProject;
+      if( isset($cfx[$info['prefix']]) && 
+        $cfx[$info['prefix']]['addTCLinkIntoITS'] &&
+        $info['issue_tracker_enabled'] ) {
+
+        $it_mgr = new tlIssueTracker($this->db);
+        $argsObj->itsCfg = $it_mgr->getLinkedTo($this->tproject_id);
+        $its = $it_mgr->getInterfaceObject($this->tproject_id);
+        if( method_exists($its,'addNote') ) {
+          $dl = sprintf(lang_get('dlToTCSpecPVCode'), $tcExternalID) . 
+                ' ' . lang_get('dlToTCSpecPV') . ' ' . 
+                $this->tcaseMgr->buildDirectWebLink($_SESSION['basehref'],
+                $argsObj->tcase_id,$argsObj->testproject_id);
+
+          // Get keyword for human beins
+          $tbl = tlObject::getDBTables(array('keywords'));
+          $inClause = "'" . implode("','",$argsObj->free_keywords) . 
+                      "'";
+          $sql = "SELECT id,keyword FROM {$tbl['keywords']} 
+                  WHERE id IN($inClause) ";
+          $kwSet = $this->db->fetchRowsIntoMap($sql,'id'); 
+          
+          $strToDel = isset($cfx[$info['prefix']]['prefix']) ?
+                      $cfx[$info['prefix']]['prefix'] : '';
+          $strToDel = trim($strToDel);
+          foreach( $argsObj->free_keywords as $kw ) {
+            if( '' == $strToDel ) {
+              $kwv = $kwSet[$kw]['keyword'];
+            } else {
+              $kwv = str_replace($strToDel,'',
+                                 $kwSet[$kw]['keyword']);
+            }           
+            try {
+              $opStatus = $its->addNote($kwv,$dl);
+            } catch(Exception $e) {
+              echo 'Silent Failure?';
+            }
+          }            
+
+
+        }  
+      }    
+    } 
 
     // set up for rendering
     $guiObj->template = "archiveData.php?edit=testcase&id={$guiObj->tcase_id}&show_mode={$guiObj->show_mode}" . "&caller=addKeyword";

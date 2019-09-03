@@ -2391,7 +2391,7 @@ $TLS_error_ldap_update_failed = "Updating LDAP failed";
 $TLS_error_ldap_user_not_found = "LDAP user not found";
 $TLS_error_ldap_start_tls_failed = "LDAP start TLS failed";
 $TLS_unknown_authentication_method = "Do not know how to handle %s authentication method";
-
+$TLS_tluser_account_expired = "The user account has expired";
 
 // ----- lib/functions/product.inc.php -----
 $TLS_info_product_delete_fails = "An error occurred while deleting the Test Project";
@@ -3835,6 +3835,9 @@ $TLS_add_link_to_tlexec_print_view = "Add Link in Issue Tracker to Test Case Exe
 $TLS_dl2tl = 'Link to TestLink Execution: ';
 $TLS_dl2tlpv = 'Link to TestLink Execution Print View: ';
 
+$TLS_dlToTCSpecPV = 'Link to TestLink Test Case: ';
+$TLS_dlToTCSpecPVCode = '[TLTC@:%s]';
+
 $TLS_old_style_login = 'Well known login screen';
 $TLS_new_style_login = 'Try the new login screen';
 
@@ -3947,6 +3950,9 @@ $TLS_copy_attachments_from_latest_exec = 'Copy Latest Exec Attachments';
 $TLS_exec_tree_counters_logic = 'Tree Counters Latest Exec On';
 $TLS_use_latest_exec_on_testplan_for_counters = 'Test Plan';
 $TLS_use_latest_exec_on_contex_for_counters = 'Chosen Build';
+$TLS_use_latest_exec_on_testplan_plat_for_counters = 
+  'Test Plan on Platform';
+
 
 $TLS_download_csv = 'Download As CSV';
 $TLS_select_platforms = "Select Platforms";
@@ -3958,5 +3964,28 @@ $TLS_createKW = 'Create Keyword';
 $TLS_btn_create_and_link = 'Create & Link';
 $TLS_create_keyword_and_link = 'Create Keyword and Link to TCV';
 $TLS_export_skel = 'Export Skeleton';
+
+$TLS_title_res_by_kw_on_plat = "Results by Keyword on Platform: ";
+$TLS_title_res_by_prio_on_plat = "Results by Priority on Platform: ";
+$TLS_title_res_by_tl_testsuite_on_plat = 
+  "Results by Top Level Test Suite on Platform: ";
+
+$TLS_title_res_by_tl_testsuite = "Results by Top Level Test Suite";
+
+$TLS_title_res_by_build_on_plat = "Results by Build on Platform:";
+$TLS_title_res_build = 'Results by Build';
+$TLS_info_neverRunByPP_report = 
+  "This report shows test cases that have not been run in each active build present on selected Test Plan (and Platform). <br>
+   Test cases <b>with and without tester assignment</b>
+   are considered<br />";
+
+$TLS_neverRunByPP_title = "Test Cases Never Runned"; 
+$TLS_link_report_never_run = "Test Cases Never Runned";
+
+
+$TLS_commit_id = 'commit id';
+$TLS_branch = 'branch';
+$TLS_tag = 'tag';
+$TLS_release_candidate = 'release candidate';
 
 // ----- END ------------------------------------------------------------------

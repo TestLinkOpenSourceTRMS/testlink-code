@@ -5,7 +5,7 @@
  * 
  * @filesource  tlUser.class.php
  * @package     TestLink
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -945,13 +945,13 @@ class tlUser extends tlDBObject {
     
 
     // Construct where sentence
-    $where = " WHERE testproject_id = " . intval($testprojectID) . " AND ";
+    $where = " WHERE testproject_id = " . intval($testprojectID);
     if (!is_null($my['options']['active'])) {
-      $where .= " active = {$my['options']['active']} AND ";
+      $where .= " AND active = {$my['options']['active']}";
     }
   
     if (!is_null($testplanID)) {
-      $where .= " NH.id = " . intval($testplanID) . " AND ";
+      $where .= " AND NH.id = " . intval($testplanID);
     }
     
     $analyseGlobalRole = 1;
@@ -989,14 +989,14 @@ class tlUser extends tlDBObject {
         if( $userProjectRoleIsNoRights || 
             ($analyseGlobalRole && $userGlobalRoleIsNoRights) ) {
           // In order to access he/she needs specific configuration.
-          $where .= "(USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
+          $where .= " AND (USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
         }  
         else {
           // in this situation:
           // We can use what we have inherited from test project 
           // OR 
           // We can use specific test plan role if defined            
-          $where .= "(USER_TPLAN_ROLES.role_id IS NULL OR ";
+          $where .= " AND (USER_TPLAN_ROLES.role_id IS NULL OR ";
         }
         $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")"; 
 
@@ -1012,7 +1012,7 @@ class tlUser extends tlDBObject {
         // on test plan
         if( $userGlobalRoleIsNoRights ) {
           // In order to access he/she needs specific configuration.
-          $where .= "(USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
+          $where .= " AND (USER_TPLAN_ROLES.role_id IS NOT NULL AND ";
         }  
         else {
           // in this situation:
@@ -1020,7 +1020,7 @@ class tlUser extends tlDBObject {
           // 
           // OR 
           // We can use specific test plan role if defined            
-          $where .= "(USER_TPLAN_ROLES.role_id IS NULL OR ";
+          $where .= " AND (USER_TPLAN_ROLES.role_id IS NULL OR ";
         }
         $where .= " USER_TPLAN_ROLES.role_id != " . TL_ROLES_NO_RIGHTS .")"; 
       break;
@@ -1524,6 +1524,19 @@ class tlUser extends tlDBObject {
 
     $rx = $dbHandler->exec_query($sql);
     return tl::OK;
+  }
+
+  /**
+   *
+   */
+  function hasRightWrap(&$db,$roleQuestion,$context=null) {
+
+    $cx = array('tproject_id' => null,'tplan_id' => null,
+                'checkPublicPrivateAttr' => false);
+    $cx = array_merge($cx,(array)$context);
+    return $this->hasRight($db,$roleQuestion,
+                           $cx['tproject_id'],$cx['tplan_id'],
+                           $cx['checkPublicPrivateAttr']);
   }
 
 }

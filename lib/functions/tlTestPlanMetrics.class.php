@@ -221,8 +221,7 @@ class tlTestPlanMetrics extends testplan
       // amount of all executed tc with any priority before target_date / all test cases
       $item['percentage_completed'] = $this->get_percentage($item['tc_total'], $item['tc_completed']);
 
-      foreach( $checks as $key => $item_key)
-      {
+      foreach( $checks as $key => $item_key) {
         // add 1 decimal places to expected percentages
         $item[$checks[$key]] = number_format($item[$checks[$key]], 1);
               
@@ -280,77 +279,77 @@ class tlTestPlanMetrics extends testplan
    *               'getPlatformSet' => false, 'processClosedBuilds' => true);
    *  filters => array('buildSet' => null);
    *
-   * @internal revisions
-   * @since 1.9.12
-   * 20140819 - test case exec assignment to MULTIPLE TESTERS
-   *
    */
-  function getExecCountersByBuildExecStatus($id, $filters=null, $opt=null)
-  {
+  function getExecCountersByBuildExecStatus($id, $filters=null, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe_id = intval($id);
-    list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
+    list($my,$builds,$sqlStm) = 
+      $this->helperGetExecCounters($safe_id, $filters, $opt);
     
+    $fields = "";    
+    if( $my['opt']['groupByPlatform'] ) {
+      $fields = ",platform_id";
+    }
 
     // This subquery is BETTER than the VIEW, need to understand why
     // Last Executions By Build and Platform (LEBBP)
     $sqlLEBBP =  $sqlStm['LEBBP'];
 
     $sqlUnionAB  =  "/* {$debugMsg} sqlUnionAB - executions */" . 
-                  " SELECT DISTINCT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
-                  " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-                  " FROM {$this->tables['testplan_tcversions']} TPTCV " .
-                  " JOIN {$this->tables['user_assignments']} UA " .
-                  " ON UA.feature_id = TPTCV.id " .
-                  " AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
+      " SELECT DISTINCT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
+      " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+      " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+      " JOIN {$this->tables['user_assignments']} UA " .
+      " ON UA.feature_id = TPTCV.id " .
+      " AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
 
-                  " /* GO FOR Absolute LATEST exec ID ON BUILD and PLATFORM */ " .
-                  " JOIN ({$sqlLEBBP}) AS LEBBP " .
-                  " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-                  " AND LEBBP.platform_id = TPTCV.platform_id " .
-                  " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
-                  " AND LEBBP.testplan_id = " . $safe_id .
+      " /* GO FOR Absolute LATEST exec ID ON BUILD and PLATFORM */ " .
+      " JOIN ({$sqlLEBBP}) AS LEBBP " .
+      " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+      " AND LEBBP.platform_id = TPTCV.platform_id " .
+      " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+      " AND LEBBP.testplan_id = " . $safe_id .
 
-                  " /* Get execution status WRITTEN on DB */ " .
-                  " JOIN {$this->tables['executions']} E " .
-                  " ON  E.id = LEBBP.id " .
-                  " AND E.build_id = UA.build_id " .
-      
-                  " WHERE TPTCV.testplan_id=" . $safe_id .
-                  " AND UA.build_id IN ({$builds->inClause}) ";
+      " /* Get execution status WRITTEN on DB */ " .
+      " JOIN {$this->tables['executions']} E " .
+      " ON  E.id = LEBBP.id " .
+      " AND E.build_id = UA.build_id " .
+
+      " WHERE TPTCV.testplan_id=" . $safe_id .
+      " AND UA.build_id IN ({$builds->inClause}) ";
       
     $sqlUnionBB  =  "/* {$debugMsg} sqlUnionBB - NOT RUN */" . 
-                   " SELECT DISTINCT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
-                  " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-                  " FROM {$this->tables['testplan_tcversions']} TPTCV " .
-                  " JOIN {$this->tables['user_assignments']} UA " .
-                  " ON UA.feature_id = TPTCV.id " .
-                  " AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
+      " SELECT DISTINCT UA.build_id, TPTCV.tcversion_id, TPTCV.platform_id, " . 
+      " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+      " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+      " JOIN {$this->tables['user_assignments']} UA " .
+      " ON UA.feature_id = TPTCV.id " .
+      " AND UA.build_id IN ({$builds->inClause}) AND UA.type = {$this->execTaskCode} " .
 
-                  " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
-                  " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
-                  " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
-                  " AND LEBBP.platform_id = TPTCV.platform_id " .
-                  " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
+      " /* Get REALLY NOT RUN => BOTH LE.id AND E.id ON LEFT OUTER see WHERE  */ " .
+      " LEFT OUTER JOIN ({$sqlLEBBP}) AS LEBBP " .
+      " ON  LEBBP.testplan_id = TPTCV.testplan_id " .
+      " AND LEBBP.platform_id = TPTCV.platform_id " .
+      " AND LEBBP.tcversion_id = TPTCV.tcversion_id " .
 
-                  // Without this I've created issue 5272
-                  " AND LEBBP.build_id = UA.build_id " .
+      // Without this I've created issue 5272
+      " AND LEBBP.build_id = UA.build_id " .
 
-                  " AND LEBBP.testplan_id = " . $safe_id .
-                  " LEFT OUTER JOIN {$this->tables['executions']} E " .
-                  " ON  E.tcversion_id = TPTCV.tcversion_id " .
-                  " AND E.testplan_id = TPTCV.testplan_id " .
-                  " AND E.platform_id = TPTCV.platform_id " .
+      " AND LEBBP.testplan_id = " . $safe_id .
+      " LEFT OUTER JOIN {$this->tables['executions']} E " .
+      " ON  E.tcversion_id = TPTCV.tcversion_id " .
+      " AND E.testplan_id = TPTCV.testplan_id " .
+      " AND E.platform_id = TPTCV.platform_id " .
 
-                  // Without this I've created issue 5272
-                  " AND E.build_id = LEBBP.build_id " .
+      // Without this I've created issue 5272
+      " AND E.build_id = LEBBP.build_id " .
 
-                  " /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
-                  " WHERE TPTCV.testplan_id=" . $safe_id . 
-                  " AND UA.build_id IN ({$builds->inClause}) " .
-  
-                  " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-                  " AND E.id IS NULL AND LEBBP.id IS NULL";
+      " /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
+      " WHERE TPTCV.testplan_id=" . $safe_id . 
+      " AND UA.build_id IN ({$builds->inClause}) " .
+
+      " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+      " AND E.id IS NULL AND LEBBP.id IS NULL";
       
 
     // 20140819 - I've not documented why I've use UNION ALL
@@ -360,43 +359,94 @@ class tlTestPlanMetrics extends testplan
     // My choice was: add DISTINCT to each union piece.
     // May be is a wrong choice, but I need to read and test more to understand  
     $sql =  " /* {$debugMsg} UNION WITH ALL CLAUSE */" .
-            " SELECT build_id,status, count(0) AS exec_qty " .
+            " SELECT count(0) AS exec_qty, build_id,status $fields " .
             " FROM ($sqlUnionAB UNION ALL $sqlUnionBB ) AS SQBU " .
-            " GROUP BY build_id,status ";
-    $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','status');              
+            " GROUP BY build_id,status $fields";
+    // 366
+    if( $my['opt']['groupByPlatform'] ) {
+      $kol = array('platform_id','build_id','status');
+      $exec['with_tester'] = 
+        (array)$this->db->fetchRowsIntoMap3l($sql,$kol);
 
-    // Need to Add info regarding:
-    // - Add info for ACTIVE BUILD WITHOUT any execution. ???
-    //   Hmm, think about Need to check is this way is better that request DBMS to do it.
-    // - Execution status that have not happened
-    foreach($exec as &$elem)
-    {                             
-      $itemSet = array_keys($elem);
-      foreach($itemSet as $itemID)
-      {
-        foreach($this->statusCode as $verbose => $code)
-        {
-          if(!isset($elem[$itemID][$code]))
-          {
-            $elem[$itemID][$code] = array('build_id' => $itemID,'status' => $code, 'exec_qty' => 0);      
-          }                           
+      // Need to Add info regarding:
+      // - Add info for ACTIVE BUILD WITHOUT any execution. ???
+      //   Hmm, think about Need to check is this way is better that request DBMS to do it.
+      // - Execution status that have not happened
+      foreach($exec as $dum => &$elem) {                            
+        $platSet = array_keys($elem);
+        foreach($platSet as $platId ) {
+          $itemSet = array_keys($elem[$platId]);
+          foreach($itemSet as $itemID) {
+            foreach($this->statusCode as $verbose => $code) {
+              if(!isset($elem[$platId][$itemID][$code])) {
+                $elem[$platId][$itemID][$code] = 
+                  array('build_id' => $itemID,'status' => $code, 'exec_qty' => 0);
+              }                           
+            }
+          }
         }
       }
-    }
-    
+    } else {
+      $exec['with_tester'] = 
+        (array)$this->db->fetchMapRowsIntoMap($sql,'build_id','status');      
+      // Need to Add info regarding:
+      // - Add info for ACTIVE BUILD WITHOUT any execution. ???
+      //   Hmm, think about Need to check is this way is better that request DBMS to do it.
+      // - Execution status that have not happened
+      foreach($exec as &$elem) {                             
+        $itemSet = array_keys($elem);
+        foreach($itemSet as $itemID) {
+          foreach($this->statusCode as $verbose => $code) {
+            if(!isset($elem[$itemID][$code])) {
+              $elem[$itemID][$code] = 
+                array('build_id' => $itemID,'status' => $code, 'exec_qty' => 0);
+            }                           
+          }
+        }
+      }
+    }       
+              
     // get total assignments by BUILD ID
-    // 20140819 - changes due to test case exec assignment to MULTIPLE TESTERS
-    $sql =  "/* $debugMsg */ ".
-            " SELECT COUNT(0) AS qty, TT.build_id FROM ( " .
-            " SELECT DISTINCT UA.build_id, UA.feature_id " . 
-            " FROM {$this->tables['user_assignments']} UA " .
-            " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
-            " WHERE UA. build_id IN ( " . $builds->inClause . " ) " .
-            " AND UA.type = {$this->execTaskCode} " . 
-            " GROUP BY build_id,feature_id) TT " .
-            " GROUP BY build_id ";
+    // changes due to test case exec assignment to MULTIPLE TESTERS
 
-    $exec['total'] = (array)$this->db->fetchRowsIntoMap($sql,'build_id');
+    if( $my['opt']['groupByPlatform'] ) {
+
+      $sql = " /* $debugMsg */ 
+               SELECT COUNT(0) AS qty, TT.build_id, TT.platform_id 
+                FROM ( 
+                  SELECT DISTINCT UA.build_id, UA.feature_id,
+                  TPTCV.platform_id  
+                  FROM {$this->tables['user_assignments']} UA
+                  JOIN {$this->tables['testplan_tcversions']} TPTCV 
+                  ON TPTCV.id = UA.feature_id 
+                  WHERE UA. build_id IN ( {$builds->inClause} )
+                  AND UA.type = {$this->execTaskCode} 
+                  GROUP BY build_id,feature_id, platform_id
+                ) TT 
+                GROUP BY build_id, platform_id ";
+
+      $exec['total'] = 
+        (array)$this->db->fetchMapRowsIntoMap(
+                 $sql,'platform_id','build_id');
+
+    } else {  
+      $sql = " /* $debugMsg */ 
+               SELECT COUNT(0) AS qty, TT.build_id 
+                FROM ( 
+                  SELECT DISTINCT UA.build_id, UA.feature_id 
+                  FROM {$this->tables['user_assignments']} UA
+                  JOIN {$this->tables['testplan_tcversions']} TPTCV 
+                  ON TPTCV.id = UA.feature_id 
+                  WHERE UA. build_id IN ( {$builds->inClause} )
+                  AND UA.type = {$this->execTaskCode} 
+                  GROUP BY build_id,feature_id
+                ) TT 
+                GROUP BY build_id ";
+
+     $exec['total'] = 
+       (array)$this->db->fetchRowsIntoMap($sql,'build_id');
+    }
+
     $exec['active_builds'] = $builds->infoSet;
 
     return $exec;
@@ -405,19 +455,15 @@ class tlTestPlanMetrics extends testplan
                                       
   /**
    *
-   * @internal revisions
    *
-   * @since 1.9.4
    **/
-  function getOverallBuildStatusForRender($id, $totalKey='total_assigned')
-  {
+  function getOverallBuildStatusForRender($id, $totalKey='total_assigned') {
     $renderObj = null;
     $code_verbose = $this->getStatusForReports();
     $labels = $this->resultsCfg['status_label'];
       
     $metrics = $this->getExecCountersByBuildExecStatus($id);
-    if( !is_null($metrics) )
-    {
+    if( !is_null($metrics) ) {
        $renderObj = new stdClass();
 
       // Creating item list this way will generate a row also for
@@ -451,12 +497,12 @@ class tlTestPlanMetrics extends testplan
           
           $totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
         }
-        $renderObj->info[$buildID]['percentage_completed'] =  number_format(100 * 
-                                                             ($totalRun / $renderObj->info[$buildID][$totalKey]),1);
+        $renderObj->info[$buildID]['percentage_completed'] =  
+          number_format(100 * 
+            ($totalRun / $renderObj->info[$buildID][$totalKey]),1);
       }
          
-      foreach($code_verbose as $human)
-      {
+      foreach($code_verbose as $human) {
         $l10n = isset($labels[$human]) ? lang_get($labels[$human]) : lang_get($human); 
         $renderObj->colDefinition[$human]['qty'] = $l10n;
         $renderObj->colDefinition[$human]['percentage'] = '[%]';
@@ -470,12 +516,12 @@ class tlTestPlanMetrics extends testplan
 
   /** 
    * Important Notice about algorithm
-   * We are trying to provide WHOLE Test Plan metrics, then BUILD INFO
-   * will not be IMPORTANT.
+   * We are trying to provide WHOLE Test Plan metrics, 
+   * then BUILD INFO will not be IMPORTANT.
    *
-   * In addition, Keywords are attributes used on Test Case specification,
-   * for this reason, our choice is that platforms will be ignored
-   * for this metrics.
+   * In addition, Keywords are attributes used on 
+   * Test Case specification, for this reason, 
+   * our choice is that platforms will be ignored for this metrics.
    *
    * Example: Platform X and Y
    * Test Case: TC1 with one Keyword K1
@@ -483,10 +529,10 @@ class tlTestPlanMetrics extends testplan
    * we can develop this data in this way
    *
    * Test Case - Platform - Keyword - Build - Exec. ID - Exec. Status
-   *       TC1          X        K1     1.0        11         FAILED
-   *       TC1          Y        K1     1.0         13         BLOCKED
-   *       TC1          X        K1     2.0        16         PASSED
-   *       TC1          Y        K1     2.0         15         BLOCKED
+   *       TC1          X        K1     1.0        11    FAILED
+   *       TC1          Y        K1     1.0        13    BLOCKED
+   *       TC1          X        K1     2.0        16    PASSED
+   *       TC1          Y        K1     2.0        15    BLOCKED
    *
    *
    * We have two choices:
@@ -499,22 +545,26 @@ class tlTestPlanMetrics extends testplan
    * find ONLY ONE.
    *
    * OPT 2. IGNORE PLAFORMS
-   * Consider only LATEST execution, means we are going to count ONE test case
-   * no matter how many Platforms exists on test plan.
+   * Consider only LATEST execution, means we are going 
+   * to count ONE test case no matter how many Platforms 
+   * exists on test plan.
    *    
    * Our design choice is on OPT 1
    * 
+   * @used-by 
+   *
+   * 20190711 - things are changing need to relaborate
+   *            
    */    
-  function getExecCountersByKeywordExecStatus($id, $filters=null, $opt=null)
-  {
+  function getExecCountersByKeywordExecStatus($id, $filters=null, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe_id = intval($id);
-    list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
+    list($my,$builds,$sqlStm) = 
+      $this->helperGetExecCounters($safe_id, $filters, $opt);
     
     
     // may be too brute force but ...
-    if( ($tprojectID = $my['opt']['tprojectID']) == 0 )
-    {
+    if( ($tprojectID = $my['opt']['tprojectID']) == 0 ) {
       $info = $this->tree_manager->get_node_hierarchy_info($safe_id);
       $tprojectID = $info['parent_id'];
     } 
@@ -536,7 +586,7 @@ class tlTestPlanMetrics extends testplan
     // be careful before changing other queries.
     // 
     $sqlUnionAK  =  "/* {$debugMsg} sqlUnionAK - executions */" . 
-            " SELECT DISTINCT NHTCV.parent_id, TCK.keyword_id, TPTCV.platform_id," .
+            " SELECT DISTINCT NHTCV.parent_id, TCK.keyword_id, TPTCV.platform_id,KW.keyword," .
             " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
             " FROM {$this->tables['testplan_tcversions']} TPTCV " .
             
@@ -558,13 +608,16 @@ class tlTestPlanMetrics extends testplan
             " ON NHTCV.id = TPTCV.tcversion_id " .
             " JOIN {$this->tables['testcase_keywords']} TCK " .
             " ON TCK.testcase_id = NHTCV.parent_id " .
+
+            " JOIN {$this->tables['keywords']} KW " .
+            " ON  KW.id = TCK.keyword_id " .
           
             " WHERE TPTCV.testplan_id=" . $safe_id .
             $builds->whereAddExec;
 
     // See Note about DISTINCT, on sqlUnionAK
     $sqlUnionBK  =  "/* {$debugMsg} sqlUnionBK - NOT RUN */" . 
-            " SELECT DISTINCT NHTCV.parent_id, TCK.keyword_id, TPTCV.platform_id," .
+            " SELECT DISTINCT NHTCV.parent_id, TCK.keyword_id, TPTCV.platform_id,KW.keyword," .
             " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
             " FROM {$this->tables['testplan_tcversions']} TPTCV " .
             
@@ -585,8 +638,12 @@ class tlTestPlanMetrics extends testplan
             " /* Get ONLY Test case versions that has AT LEAST one Keyword assigned */ ".
             " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
             " ON NHTCV.id = TPTCV.tcversion_id " .
+
             " JOIN {$this->tables['testcase_keywords']} TCK " .
             " ON TCK.testcase_id = NHTCV.parent_id " .
+
+            " JOIN {$this->tables['keywords']} KW " .
+            " ON  KW.id = TCK.keyword_id " .
 
             " /* FILTER BUILDS in set on target test plan */ " .
             " WHERE TPTCV.testplan_id=" . $safe_id . 
@@ -596,26 +653,42 @@ class tlTestPlanMetrics extends testplan
             " AND E.id IS NULL AND LEBP.id IS NULL";
 
     // Due to PLATFORMS we will have MULTIPLIER EFFECT
-    $sql =  " /* {$debugMsg} UNION Without ALL CLAUSE => DISCARD Duplicates */" .
-        " SELECT keyword_id,status, count(0) AS exec_qty " .
+    $fields = "keyword_id";    
+    if( $my['opt']['groupByPlatform'] ) {
+      $fields = "platform_id,keyword_id";
+    }
+    $sql =  
+        " /* {$debugMsg} UNION Without ALL CLAUSE => DISCARD Duplicates */" .
+        " SELECT status,keyword,$fields,count(0) AS exec_qty " .
         " FROM ($sqlUnionAK UNION $sqlUnionBK ) AS SQK " .
-        " GROUP BY keyword_id,status ";
+        " GROUP BY status,keyword,$fields 
+          ORDER BY keyword ";
 
-    $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'keyword_id','status');              
-    $this->helperCompleteStatusDomain($exec,'keyword_id');
-           
+    if( $my['opt']['groupByPlatform'] ) {
+      $kol = array('platform_id','keyword_id','status');
+      $exec['with_tester'] = 
+        (array)$this->db->fetchRowsIntoMap3l($sql,$kol);
+
+      $this->helperStatusDomainMatrix($exec,'platform_id','keyword_id');
+
+    } else {
+      $exec['with_tester'] = 
+        (array)$this->db->fetchMapRowsIntoMap($sql,'keyword_id','status');
+      $this->helperCompleteStatusDomain($exec,'keyword_id');
+    }
+    
     // On next queries:
-    // we need to use distinct, because IF NOT we are going to get one record
-    // for each build where test case has TESTER ASSIGNMENT
+    // we need to use distinct, because IF NOT we are going 
+    // to get one record for each build where test case 
+    // has TESTER ASSIGNMENT
     //
     // $exec['total_assigned'] = null;
     $exec['total'] = null;
     $exec['key4total'] = 'total';
-    if( $my['opt']['getOnlyAssigned'] )
-    {
+    if( $my['opt']['getOnlyAssigned'] ) {
       // $exec['key4total'] = 'total_assigned';
       $sql =   "/* $debugMsg */ ".
-          " SELECT COUNT(0) AS qty, keyword_id " .
+          " SELECT COUNT(0) AS qty,$fields " .
           " FROM " . 
           " ( /* Get test case,keyword pairs */ " .
           "  SELECT DISTINCT NHTCV.parent_id, TCK.keyword_id,TPTCV.platform_id " . 
@@ -629,12 +702,10 @@ class tlTestPlanMetrics extends testplan
           "  ON TCK.testcase_id = NHTCV.parent_id " .
           "  WHERE UA. build_id IN ( " . $builds->inClause . " ) " .
           "  AND UA.type = {$execCode} ) AS SQK ".
-          " GROUP BY keyword_id";
-    }
-    else
-    {
+          " GROUP BY $fields";
+    } else {
       $sql =   "/* $debugMsg */ ".
-          " SELECT COUNT(0) AS qty, keyword_id " .
+          " SELECT COUNT(0) AS qty, $fields" .
           " FROM " . 
           " ( /* Get test case,keyword pairs */ " .
           "  SELECT DISTINCT NHTCV.parent_id, TCK.keyword_id,TPTCV.platform_id " . 
@@ -646,10 +717,17 @@ class tlTestPlanMetrics extends testplan
           "  JOIN {$this->tables['testcase_keywords']} TCK " .
           "  ON TCK.testcase_id = NHTCV.parent_id " .
           "  WHERE TPTCV.testplan_id = " . $safe_id . " ) AS SQK ".
-          " GROUP BY keyword_id";
+          " GROUP BY $fields";
     }  
 
-    $exec[$exec['key4total']] = (array)$this->db->fetchRowsIntoMap($sql,'keyword_id');
+    if( $my['opt']['groupByPlatform'] ) {
+
+      $exec[$exec['key4total']] = 
+        (array)$this->db->fetchMapRowsIntoMap($sql,
+                 'platform_id','keyword_id');
+    } else {
+      $exec[$exec['key4total']] = (array)$this->db->fetchRowsIntoMap($sql,'keyword_id');      
+    }
     $exec['keywords'] = $keywordSet;
 
     return $exec;
@@ -658,13 +736,8 @@ class tlTestPlanMetrics extends testplan
 
   /**
    *
-   * @internal revisions
-   *
-   * @since 1.9.4
-   * 20120429 - franciscom - 
    */
-  function getStatusTotalsByKeywordForRender($id,$filters=null,$opt=null)
-  {
+  function getStatusTotalsByKeywordForRender($id,$filters=null,$opt=null) {
     $renderObj = $this->getStatusTotalsByItemForRender($id,'keyword',$filters,$opt);
     return $renderObj;
   }
@@ -725,11 +798,8 @@ class tlTestPlanMetrics extends testplan
    *
    * @internal revisions
    *
-   * @since 1.9.4
-   * 20120429 - franciscom - 
    */
-  function getStatusTotalsByPlatformForRender($id,$filters=null,$opt=null)
-  {
+  function getStatusTotalsByPlatformForRender($id,$filters=null,$opt=null) {
     $renderObj = $this->getStatusTotalsByItemForRender($id,'platform',$filters,$opt);
     return $renderObj;
   }
@@ -738,20 +808,21 @@ class tlTestPlanMetrics extends testplan
 
   /**
    *
-   * If no build set providede, ONLY ACTIVE BUILDS will be considered
+   * If no build set provided, ONLY ACTIVE BUILDS will be considered
    *
-   * @internal revisions
-   *
-   * @since 1.9.4
    *
    */
-  function getExecCountersByPriorityExecStatus($id, $filters=null, $opt=null)
-  {
+  function getExecCountersByPriorityExecStatus($id, $filters=null, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safe_id = intval($id);
     list($my,$builds,$sqlStm) = $this->helperGetExecCounters($safe_id, $filters, $opt);
   
-    
+    // Due to PLATFORMS we will have MULTIPLIER EFFECT
+    $fields = "";    
+    if( $my['opt']['groupByPlatform'] ) {
+      $fields = ",platform_id";
+    }
+  
     $sqlLEBP = $sqlStm['LEBP'];
 
     $sqlUnionA  =  "/* {$debugMsg} sqlUnionA - executions */" . 
@@ -825,65 +896,107 @@ class tlTestPlanMetrics extends testplan
     // If we have PLATFORM we are going to get a MULTIPLIER EFFECT
     //
     $sql =  " /* {$debugMsg} UNION WITHOUT ALL => DISCARD Duplicates */" .
-            " SELECT count(0) as exec_qty, urg_imp,status " .
+            " SELECT count(0) as exec_qty, urg_imp,status $fields " .
             " FROM ($sqlUnionA UNION $sqlUnionB ) AS SU " .
-            " GROUP BY urg_imp,status ";
-            $rs = $this->db->get_recordset($sql);
-  
+            " GROUP BY urg_imp,status $fields";
+    
+    if( $my['opt']['groupByPlatform'] ) {
+      $kol = array('platform_id','urg_imp','status');
+      $rs = (array)$this->db->fetchRowsIntoMap3l($sql,$kol);
+    } else {
+      $rs = $this->db->get_recordset($sql);
+    }  
 
     // Now we need to get priority LEVEL from (urgency * importance)
     $out = array();
     $totals = array();
-    if( !is_null($rs) )
-    {
-      $priorityCfg = config_get('urgencyImportance');
+    $priorityCfg = config_get('urgencyImportance');
+    if( !is_null($rs) ) {
       $loop2do = count($rs);
-      for($jdx=0; $jdx < $loop2do; $jdx++)
-      {
-        if ($rs[$jdx]['urg_imp'] >= $priorityCfg->threshold['high']) 
-        {            
-          $rs[$jdx]['priority_level'] = HIGH;
-          $hitOn = HIGH;
-        } 
-        else if( $rs[$jdx]['urg_imp'] < $priorityCfg->threshold['low']) 
-        {
-          $rs[$jdx]['priority_level'] = LOW;
-          $hitOn = LOW;
-        }        
-        else
-        {
-          $rs[$jdx]['priority_level'] = MEDIUM;
-          $hitOn = MEDIUM;
+      if( $my['opt']['groupByPlatform'] ) {
+        // loop2do => platform Qty
+        foreach( $rs as $platID => $elem ) {
+          foreach( $elem as $urgImpVal => $statusUrgImp ) {
+
+            if ($urgImpVal >= $priorityCfg->threshold['high']) {
+              $hitOn = HIGH;
+            } else if( $urgImpVal < $priorityCfg->threshold['low']) {
+              $hitOn = LOW;
+            } else {
+              $hitOn = MEDIUM;
+            }
+            
+            $llx = 0;            
+            foreach( $statusUrgImp as $statusCode => $dummy ) {
+              
+              $rz = &$rs[$platID][$urgImpVal][$statusCode];
+              $rz['priority_level'] = $hitOn;
+
+              // to improve readability
+              if( !isset($out[$hitOn][$statusCode]) ) {
+                $out[$platID][$hitOn][$statusCode] = $rz;
+              } else {
+                $out[$platID][$hitOn][$statusCode]['exec_qty'] += 
+                  $rz['exec_qty'];
+              }
+              if( !isset($totals[$platID][$hitOn]) ) {
+                $totals[$platID][$hitOn] = 
+                  array('priority_level' => $hitOn, 'qty' => 0);
+              }
+              $totals[$platID][$hitOn]['qty'] += $rz['exec_qty'];
+            }
+          }
         }
-                                      
-                                                     
-        // to improve readability                                                       
-        $status = $rs[$jdx]['status'];
-        if( !isset($out[$hitOn][$status]) )
-        {
-          $out[$hitOn][$status] = $rs[$jdx];
+      } else {
+        // The OLD WAY 
+        if( !is_null($rs) ) {
+          for($jdx=0; $jdx < $loop2do; $jdx++) {
+            if ($rs[$jdx]['urg_imp'] >= $priorityCfg->threshold['high']) {            
+              $rs[$jdx]['priority_level'] = HIGH;
+              $hitOn = HIGH;
+            } else if( $rs[$jdx]['urg_imp'] < $priorityCfg->threshold['low']) {
+              $rs[$jdx]['priority_level'] = LOW;
+              $hitOn = LOW;
+            } else {
+              $rs[$jdx]['priority_level'] = MEDIUM;
+              $hitOn = MEDIUM;
+            }
+                                          
+            // to improve readability
+            $status = $rs[$jdx]['status'];
+            if( !isset($out[$hitOn][$status]) ) {
+              $out[$hitOn][$status] = $rs[$jdx];
+            } else {
+              $out[$hitOn][$status]['exec_qty'] += $rs[$jdx]['exec_qty'];
+            }
+            
+            if( !isset($totals[$hitOn]) ) {
+              $totals[$hitOn] = array('priority_level' => $hitOn, 'qty' => 0);
+            }
+            $totals[$hitOn]['qty'] += $rs[$jdx]['exec_qty'];
+          }
         }
-        else
-        {
-          $out[$hitOn][$status]['exec_qty'] += $rs[$jdx]['exec_qty'];
-        }
-        
-        if( !isset($totals[$hitOn]) )
-        {
-          $totals[$hitOn] = array('priority_level' => $hitOn, 'qty' => 0);
-        }
-        $totals[$hitOn]['qty'] += $rs[$jdx]['exec_qty'];
       }
       $exec['with_tester'] = $out;
       $out = null; 
+  
+      //echo '<pre>';
+      //var_dump(__LINE__ . 'with_tester',$exec['with_tester']);      
+      //echo '<pre>';
+      
     }
-    
-    $this->helperCompleteStatusDomain($exec,'priority_level');
+
+    // $this->helperCompleteStatusDomain($exec,'priority_level');
+    if( $my['opt']['groupByPlatform'] ) {
+      $this->helperStatusDomainMatrix($exec,'platform_id','priority_level');
+    } else {
+      $this->helperCompleteStatusDomain($exec,'priority_level');
+    }
+
     $exec['total'] = $totals;
 
     $levels = config_get('urgency');
-    foreach($levels['code_label'] as $lc => $lbl)
-    {
+    foreach($levels['code_label'] as $lc => $lbl) {
       $exec['priority_levels'][$lc] = lang_get($lbl);
     }
 
@@ -899,8 +1012,7 @@ class tlTestPlanMetrics extends testplan
    * @since 1.9.4
    * 20120429 - franciscom - 
    */
-  function getStatusTotalsByPriorityForRender($id,$filters=null,$opt=null)
-  {
+  function getStatusTotalsByPriorityForRender($id,$filters=null,$opt=null) {
     $renderObj = $this->getStatusTotalsByItemForRender($id,'priority_level',$filters,$opt);
     return $renderObj;
   }
@@ -1103,25 +1215,25 @@ class tlTestPlanMetrics extends testplan
 
 
   /**
+   * 
+   * @used-by getStatusTotalsByKeywordForRender()
    *
-   * @internal revisions
-   *
-   * @since 1.9.4
-   * 20120429 - franciscom - 
    */
-  function getStatusTotalsByItemForRender($id,$itemType,$filters=null,$opt=null)
-  {
+  function getStatusTotalsByItemForRender($id,$itemType,$filters=null,$opt=null) {
     $renderObj = null;
     $code_verbose = $this->getStatusForReports();
     $labels = $this->resultsCfg['status_label'];
 
     
     $returnArray = false;
-    switch($itemType)
-    {  
+    $byPlatform = false;
+
+    switch($itemType) {  
       case 'keyword':    
         $metrics = $this->getExecCountersByKeywordExecStatus($id,$filters,$opt);
         $setKey = 'keywords';
+        $byPlatform = isset($opt['groupByPlatform']) && 
+                      $opt['groupByPlatform'];
       break;
 
       case 'platform':    
@@ -1133,72 +1245,103 @@ class tlTestPlanMetrics extends testplan
       case 'priority_level':    
         $metrics = $this->getExecCountersByPriorityExecStatus($id,$filters,$opt);
         $setKey = 'priority_levels';
+        $byPlatform = isset($opt['groupByPlatform']) && 
+                      $opt['groupByPlatform'];
       break;
       
       case 'tsuite':    
         $metrics = $this->getExecCountersByTestSuiteExecStatus($id,$filters,$opt);
         $setKey = 'tsuites';
         $returnArray = true;
+        $byPlatform = isset($opt['groupByPlatform']) && 
+                      $opt['groupByPlatform'];
       break;
-      
-    
     }
 
+    if( !is_null($metrics) && !is_null($metrics[$setKey]) > 0) {
+      $renderObj = new stdClass();
+      $renderObj->info = array(); 
 
-       if( !is_null($metrics) && !is_null($metrics[$setKey]) > 0)
-       {
-         $renderObj = new stdClass();
-      $itemList = array_keys($metrics[$setKey]);      
-      $renderObj->info = array();  
-        foreach($itemList as $itemID)
-        {
-          if( isset($metrics['with_tester'][$itemID]) )
-          {
-          $totalRun = 0;
+      if( $byPlatform == false ) { 
+        $itemList = array_keys($metrics[$setKey]);      
+        foreach($itemList as $itemID) {
+          if( isset($metrics['with_tester'][$itemID]) ) {
+            $totalRun = 0;
             $renderObj->info[$itemID]['type'] = $itemType;
             $renderObj->info[$itemID]['name'] = $metrics[$setKey][$itemID];   
             $renderObj->info[$itemID]['total_tc'] = $metrics['total'][$itemID]['qty'];   
-          $renderObj->info[$itemID]['details'] = array();
-          
-          $rf = &$renderObj->info[$itemID]['details'];
-          $doPerc = ($renderObj->info[$itemID]['total_tc'] > 0); 
-          foreach($code_verbose as $statusCode => $statusVerbose)
-          {
-            $rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
-            $rf[$statusVerbose]['qty'] = $metrics['with_tester'][$itemID][$statusCode]['exec_qty'];   
+            $renderObj->info[$itemID]['details'] = array();
             
-            if($doPerc) 
-            {
-              $rf[$statusVerbose]['percentage'] = number_format(100 * 
-                                        ($rf[$statusVerbose]['qty'] / 
-                                          $renderObj->info[$itemID]['total_tc']),1);
+            $rf = &$renderObj->info[$itemID]['details'];
+            $doPerc = ($renderObj->info[$itemID]['total_tc'] > 0); 
+            foreach($code_verbose as $statusCode => $statusVerbose) {
+              $rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
+              $rf[$statusVerbose]['qty'] = $metrics['with_tester'][$itemID][$statusCode]['exec_qty'];   
+              
+              if($doPerc) {
+                $rf[$statusVerbose]['percentage'] = 
+                  number_format(100 * ($rf[$statusVerbose]['qty'] / 
+                    $renderObj->info[$itemID]['total_tc']),1);
+              }
+              $totalRun += 
+                ($statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty']);
             }
-            $totalRun += $statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty'];
-          }
-          if($doPerc) 
-          {
-            $renderObj->info[$itemID]['percentage_completed'] =  number_format(100 * 
-                                       ($totalRun/$renderObj->info[$itemID]['total_tc']),1);
-                    }                                             
+            if($doPerc) {
+              $renderObj->info[$itemID]['percentage_completed'] =  number_format(100 * 
+                  ($totalRun/$renderObj->info[$itemID]['total_tc']),1);
+            }                                             
           }
         }
-         
-        foreach($code_verbose as $status_verbose)
-        {
-          $l10n = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : lang_get($status_verbose); 
+      } else {
+        // mainKey is Platform ID
+        $platList = array_keys($metrics['with_tester']); 
+        $mex = &$metrics['with_tester']; 
+        foreach($platList as $platID) {
+          $itemList = array_keys($mex[$platID]);
+          foreach($itemList as $itemID) {
+            if( isset($mex[$platID]) ) {
+              $totalRun = 0;
+              $renderObj->info[$platID][$itemID]['type'] = $itemType;
+              $renderObj->info[$platID][$itemID]['name'] = $metrics[$setKey][$itemID];   
+              $renderObj->info[$platID][$itemID]['total_tc'] = $metrics['total'][$platID][$itemID]['qty'];   
+              $renderObj->info[$platID][$itemID]['details'] = array();
+            
+              $rf = &$renderObj->info[$platID][$itemID]['details'];
+              $doPerc = ($renderObj->info[$platID][$itemID]['total_tc'] > 0); 
+              foreach($code_verbose as $statusCode => $statusVerbose) {
+                $rf[$statusVerbose] = array('qty' => 0, 'percentage' => 0);
+                $rf[$statusVerbose]['qty'] = $mex[$platID][$itemID][$statusCode]['exec_qty'];   
+                
+                if($doPerc) {
+                  $rf[$statusVerbose]['percentage'] = 
+                    number_format(100 * ($rf[$statusVerbose]['qty'] / 
+                      $renderObj->info[$platID][$itemID]['total_tc']),1);
+                }
+                $totalRun += 
+                  ($statusVerbose == 'not_run' ? 0 : $rf[$statusVerbose]['qty']);
+              }
+              if($doPerc) {
+                $renderObj->info[$platID][$itemID]['percentage_completed'] =  number_format(100 * 
+                    ($totalRun/$renderObj->info[$platID][$itemID]['total_tc']),1);
+              }                                             
+            }
+          }
+        }
+      }
+
+      // Verbosity!   
+      foreach($code_verbose as $status_verbose) {
+        $l10n = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : lang_get($status_verbose); 
         
-          $renderObj->colDefinition[$status_verbose]['qty'] = $l10n;
-          $renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
-        }
-  
+        $renderObj->colDefinition[$status_verbose]['qty'] = $l10n;
+        $renderObj->colDefinition[$status_verbose]['percentage'] = '[%]';
+      }
     }
     
-    if($returnArray)
-    {
+    // How to return things
+    if($returnArray) {
       return array($renderObj,$metrics['staircase']);
-    }
-    else
-    {
+    } else {
       unset($metrics);
       return $renderObj;
     }
@@ -1227,90 +1370,156 @@ class tlTestPlanMetrics extends testplan
    */
   function getStatusTotalsByTopLevelTestSuiteForRender($id,$filters=null,$opt=null)
   {
-    list($rObj,$staircase) = $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
+
+    list($rx,$staircase) = $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
+
+    //echo '<pre>';
+    //var_dump('$rx',$rx);
   
-    $key2loop = array_keys($rObj->info);
+    //var_dump('$staircase',$staircase);
+    //echo '</pre>';
+    //die();
+  
+    // ??? $key2loop = array_keys($rx->info);
     $template = array('type' => 'tsuite', 'name' => '','total_tc' => 0,
               'percentage_completed' => 0, 'details' => array());  
 
-    foreach($this->statusCode as $verbose => $code)
-    {
+    foreach($this->statusCode as $verbose => $code) {
       $template['details'][$verbose] = array('qty' => 0, 'percentage' => 0);
     }
     
     $renderObj = new stdClass();
-    $renderObj->colDefinition = $rObj->colDefinition;
+    $renderObj->colDefinition = $rx->colDefinition;
     
     // collect qty
     $topNameCache = null;
     $execQty = null;
-    foreach($key2loop as $tsuite_id)
-    {
-      // (count() == 1) => is a TOP LEVEL SUITE, 
-      // only element contains Root node, is useless for this algorithm
-      // 
-      
-      if( count($staircase[$tsuite_id]) > 1)
-      {
-        // element at position 1 is a TOP LEVEL SUITE
-        $topSuiteID = &$staircase[$tsuite_id][1];
-        $initName = false;
+
+    $key2loop = array_keys($staircase);
+    $wp = isset($opt['groupByPlatform']) && $opt['groupByPlatform'];
+
+    if( $wp ) {
+      $plat2loop = array_keys($rx->info);
+      foreach($key2loop as $tsuite_id) {
+        // (count() == 1) => is a TOP LEVEL SUITE, 
+        // only element contains Root node, is useless for this algorithm
+        // 
+        
+        if( count($staircase[$tsuite_id]) > 1) {
+          // element at position 1 is a TOP LEVEL SUITE
+          //$topSuiteID = &$staircase[$tsuite_id][1];
+          $topSuiteID = $staircase[$tsuite_id][1];
+          $initName = false;
+        } else {
+          $topSuiteID = $tsuite_id;
+          $initName = true;
+        }     
+    
+        // Over Platform
+        foreach( $plat2loop as $platId ) {
+          if( !isset($renderObj->info[$platId][$topSuiteID]) ) {
+            $renderObj->info[$platId][$topSuiteID] = $template;
+            $execQty[$platId][$topSuiteID] = 0;
+            $initName = true;
+          }              
+
+          if( $initName ) {
+            $dummy = $this->tree_manager->get_node_hierarchy_info($topSuiteID);
+            $renderObj->info[$platId][$topSuiteID]['name'] = 
+              $dummy['name'];
+            unset($dummy);
+          }  
+          
+          // Loop to get executions counters
+          $r2d2 = &$rx->info[$platId][$tsuite_id];
+          if( null !== $r2d2 ) {
+            foreach($r2d2['details'] as $code => &$elem) {
+              $renderObj->info[$platId][$topSuiteID]['details'][$code]
+                ['qty'] += $elem['qty'];    
+              $renderObj->info[$platId][$topSuiteID]['total_tc'] += 
+                $elem['qty'];
+
+              if( $code != 'not_run' ) {
+                $execQty[$platId][$topSuiteID] += $elem['qty'];
+              }
+            }
+          }  
+        }  
       }
-      else
-      {
-        $topSuiteID = $tsuite_id;
-        $initName = true;
-      }     
-      
-      
-      
-        if( !isset($renderObj->info[$topSuiteID]) )
-        {
+
+      // Last step: get percentages
+      foreach($renderObj->info as $platID => &$tsuiteMetrics) {
+        foreach($tsuiteMetrics as $tsuite_id => &$elem) {
+          if( $execQty[$platID][$tsuite_id] > 0 ) {
+            $elem['percentage_completed'] = number_format( 100 * 
+              ($execQty[$platID][$tsuite_id] / $elem['total_tc']),1);
+          }  
+          if( $elem['total_tc'] > 0 ) {
+            foreach($elem['details'] as $code => &$yumyum) {
+              $yumyum['percentage'] = number_format( 100 * ($yumyum['qty'] / $elem['total_tc']),1);    
+            }
+          }
+        }
+      } 
+
+    } else {
+
+      // OLD WAY
+      foreach($key2loop as $tsuite_id) {
+        // (count() == 1) => is a TOP LEVEL SUITE, 
+        // only element contains Root node, is useless for this algorithm
+        // 
+        
+        if( count($staircase[$tsuite_id]) > 1) {
+          // element at position 1 is a TOP LEVEL SUITE
+          $topSuiteID = &$staircase[$tsuite_id][1];
+          $initName = false;
+        } else {
+          $topSuiteID = $tsuite_id;
+          $initName = true;
+        }     
+        
+        if( !isset($renderObj->info[$topSuiteID]) ) {
           $renderObj->info[$topSuiteID] = $template;
           $execQty[$topSuiteID] = 0;
           $initName = true;
         }  
 
-        if( $initName )
-        {
+        if( $initName ) {
           $dummy = $this->tree_manager->get_node_hierarchy_info($topSuiteID);
           $renderObj->info[$topSuiteID]['name'] = $dummy['name'];
           unset($dummy);
         }        
-        
-        
+          
+          
         // Loop to get executions counters
-        foreach($rObj->info[$tsuite_id]['details'] as $code => &$elem)
-        {
+        foreach($rx->info[$tsuite_id]['details'] as $code => &$elem) {
           $renderObj->info[$topSuiteID]['details'][$code]['qty'] += $elem['qty'];    
           $renderObj->info[$topSuiteID]['total_tc'] += $elem['qty'];
 
-          if(  $code != 'not_run' )
-          {
-            $execQty[$topSuiteID] += $elem['qty'];
+          if(  $code != 'not_run' ) {
+              $execQty[$topSuiteID] += $elem['qty'];
           }
         }
       }  
-       
-    // Last step: get percentages
-    foreach($renderObj->info as $tsuite_id => &$elem)
-    {
-      if( $execQty[$tsuite_id] > 0 )
-      {
-        $elem['percentage_completed'] = number_format( 100 * ($execQty[$tsuite_id] / $elem['total_tc']),1);
-      }  
+         
+      // Last step: get percentages
+      foreach($renderObj->info as $tsuite_id => &$elem) {
+        if( $execQty[$tsuite_id] > 0 ) {
+          $elem['percentage_completed'] = number_format( 100 * ($execQty[$tsuite_id] / $elem['total_tc']),1);
+        }  
 
-      if( $elem['total_tc'] > 0 )
-      {
-        foreach($elem['details'] as $code => &$yumyum)
-        {
-          $yumyum['percentage'] = number_format( 100 * ($yumyum['qty'] / $elem['total_tc']),1);    
+        if( $elem['total_tc'] > 0 ) {
+          foreach($elem['details'] as $code => &$yumyum) {
+            $yumyum['percentage'] = number_format( 100 * ($yumyum['qty'] / $elem['total_tc']),1);    
+          }
         }
-      }
+      }      
     }
-    
+
+
     unset($topNameCache);
-    unset($rObj);
+    unset($rx);
     unset($staircase);
     unset($template);
     unset($key2loop);
@@ -1331,97 +1540,111 @@ class tlTestPlanMetrics extends testplan
     $safe_id = intval($id);
     list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
 
+    $fields = "";    
+    if( $my['opt']['groupByPlatform'] ) {
+      $fields = ",platform_id";
+    }
+
+
     // Latest Execution Ignoring Build
     $sqlLEBP = $sqlStm['LEBP'];
 
     $sqlUnionAT  =  "/* {$debugMsg} sqlUnionAT - executions */" . 
-            " SELECT NHTC.parent_id AS tsuite_id,TPTCV.platform_id," .
-            " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-            " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+      " SELECT NHTC.parent_id AS tsuite_id,TPTCV.platform_id," .
+      " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+      " FROM {$this->tables['testplan_tcversions']} TPTCV " .
 
-            $sqlStm['getAssignedFeatures'] .
-            
-            " /* GO FOR Absolute LATEST exec ID IGNORE BUILD */ " .
-            " JOIN ({$sqlLEBP}) AS LEBP " .
-            " ON  LEBP.testplan_id = TPTCV.testplan_id " .
-            " AND LEBP.platform_id = TPTCV.platform_id " .
-            " AND LEBP.tcversion_id = TPTCV.tcversion_id " .
-            " AND LEBP.testplan_id = " . $safe_id .
-
-            " /* Get execution status WRITTEN on DB */ " .
-            " JOIN {$this->tables['executions']} E " .
-            " ON  E.id = LEBP.id " .
-
-            " /* Get Test Case info from Test Case Version */ " .
-            " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
-            " ON  NHTCV.id = TPTCV.tcversion_id " .
-
-            " /* Get Test Suite info from Test Case  */ " .
-            " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
-            " ON  NHTC.id = NHTCV.parent_id " .
+      $sqlStm['getAssignedFeatures'] .
       
-            " WHERE TPTCV.testplan_id=" . $safe_id .
-            $builds->whereAddExec;
+      " /* GO FOR Absolute LATEST exec ID IGNORE BUILD */ " .
+      " JOIN ({$sqlLEBP}) AS LEBP " .
+      " ON  LEBP.testplan_id = TPTCV.testplan_id " .
+      " AND LEBP.platform_id = TPTCV.platform_id " .
+      " AND LEBP.tcversion_id = TPTCV.tcversion_id " .
+      " AND LEBP.testplan_id = " . $safe_id .
+
+      " /* Get execution status WRITTEN on DB */ " .
+      " JOIN {$this->tables['executions']} E " .
+      " ON  E.id = LEBP.id " .
+
+      " /* Get Test Case info from Test Case Version */ " .
+      " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+      " ON  NHTCV.id = TPTCV.tcversion_id " .
+
+      " /* Get Test Suite info from Test Case  */ " .
+      " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
+      " ON  NHTC.id = NHTCV.parent_id " .
+
+      " WHERE TPTCV.testplan_id=" . $safe_id .
+      $builds->whereAddExec;
             
 
 
     $sqlUnionBT  =  "/* {$debugMsg} sqlUnionBK - NOT RUN */" . 
-            " SELECT NHTC.parent_id AS tsuite_id,TPTCV.platform_id," .
-            " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
-            " FROM {$this->tables['testplan_tcversions']} TPTCV " .
-            
-            $sqlStm['getAssignedFeatures'] .
+      " SELECT NHTC.parent_id AS tsuite_id,TPTCV.platform_id," .
+      " COALESCE(E.status,'{$this->notRunStatusCode}') AS status " .
+      " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+      
+      $sqlStm['getAssignedFeatures'] .
 
-            " /* Get REALLY NOT RUN => BOTH LEBP.id AND E.id ON LEFT OUTER see WHERE  */ " .
-            " LEFT OUTER JOIN ({$sqlLEBP}) AS LEBP " .
-            " ON  LEBP.testplan_id = TPTCV.testplan_id " .
-            " AND LEBP.platform_id = TPTCV.platform_id " .
-            " AND LEBP.tcversion_id = TPTCV.tcversion_id " .
-            " AND LEBP.testplan_id = " . $safe_id .
-            " LEFT OUTER JOIN {$this->tables['executions']} E " .
-            " ON  E.tcversion_id = TPTCV.tcversion_id " .
-            " AND E.testplan_id = TPTCV.testplan_id " .
-            " AND E.platform_id = TPTCV.platform_id " .
+      " /* Get REALLY NOT RUN => BOTH LEBP.id AND E.id ON LEFT OUTER see WHERE  */ " .
+      " LEFT OUTER JOIN ({$sqlLEBP}) AS LEBP " .
+      " ON  LEBP.testplan_id = TPTCV.testplan_id " .
+      " AND LEBP.platform_id = TPTCV.platform_id " .
+      " AND LEBP.tcversion_id = TPTCV.tcversion_id " .
+      " AND LEBP.testplan_id = " . $safe_id .
+      " LEFT OUTER JOIN {$this->tables['executions']} E " .
+      " ON  E.tcversion_id = TPTCV.tcversion_id " .
+      " AND E.testplan_id = TPTCV.testplan_id " .
+      " AND E.platform_id = TPTCV.platform_id " .
 
-            $builds->joinAdd .
+      $builds->joinAdd .
 
-            " /* Get Test Case info from Test Case Version */ " .
-            " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
-            " ON  NHTCV.id = TPTCV.tcversion_id " .
+      " /* Get Test Case info from Test Case Version */ " .
+      " JOIN {$this->tables['nodes_hierarchy']} NHTCV " .
+      " ON  NHTCV.id = TPTCV.tcversion_id " .
 
-            " /* Get Test Suite info from Test Case  */ " .
-            " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
-            " ON  NHTC.id = NHTCV.parent_id " .
+      " /* Get Test Suite info from Test Case  */ " .
+      " JOIN {$this->tables['nodes_hierarchy']} NHTC " .
+      " ON  NHTC.id = NHTCV.parent_id " .
 
-            " /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
-            " WHERE TPTCV.testplan_id=" . $safe_id . 
-            $builds->whereAddNotRun .
-  
-            " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
-            " AND E.id IS NULL AND LEBP.id IS NULL";
+      " /* FILTER BUILDS in set on target test plan (not alway can be applied) */ " .
+      " WHERE TPTCV.testplan_id=" . $safe_id . 
+      $builds->whereAddNotRun .
+
+      " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
+      " AND E.id IS NULL AND LEBP.id IS NULL";
 
     
-    $sql =  " /* {$debugMsg} UNION ALL => DO NOT DISCARD Duplicates */" .
-        " SELECT tsuite_id,status, count(0) AS exec_qty " .
+    $sql =  " /* {$debugMsg} UNION ALL DO NOT DISCARD Duplicates */" .
+        " SELECT count(0) AS exec_qty, tsuite_id, status $fields" .
         " FROM ($sqlUnionAT UNION ALL $sqlUnionBT ) AS SQT " .
-        " GROUP BY tsuite_id,status ";
+        " GROUP BY tsuite_id ,status $fields";
 
-    $exec['with_tester'] = (array)$this->db->fetchMapRowsIntoMap($sql,'tsuite_id','status');              
+    if( $my['opt']['groupByPlatform'] ) {
+      $kol = array('platform_id','tsuite_id','status');
+      $exec['with_tester'] = 
+        (array)$this->db->fetchRowsIntoMap3l($sql,$kol);
+      $this->helperStatusDomainMatrix($exec,'platform_id','tsuite_id');
+
+    } else {
+      $exec['with_tester'] = 
+        (array)$this->db->fetchMapRowsIntoMap($sql,'tsuite_id','status');
+
+      // now we need to complete status domain
+      $this->helperCompleteStatusDomain($exec,'tsuite_id');
+    }
         
-    // now we need to complete status domain
-    $this->helperCompleteStatusDomain($exec,'tsuite_id');
   
     // Build item set
     $exec['tsuites_full'] = $this->get_testsuites($safe_id);
     $loop2do = count($exec['tsuites_full']);
-    for($idx=0; $idx < $loop2do; $idx++)
-    {
+    for($idx=0; $idx < $loop2do; $idx++) {
       $keySet[] = $exec['tsuites_full'][$idx]['id'];
 
     }
     $dx = $this->tree_manager->get_full_path_verbose($keySet,array('output_format' => 'stairway2heaven'));
-    for($idx=0; $idx < $loop2do; $idx++)
-    {
+    for($idx=0; $idx < $loop2do; $idx++) {
       $exec['tsuites'][$exec['tsuites_full'][$idx]['id']] = $dx['flat'][$exec['tsuites_full'][$idx]['id']];
     }
     $exec['staircase'] = $dx['staircase'];
@@ -1440,8 +1663,7 @@ class tlTestPlanMetrics extends testplan
    *    
    *    
    */    
-  function getExecStatusMatrix($id, $filters=null, $opt=null)
-  {
+  function getExecStatusMatrix($id, $filters=null, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $my = array();
@@ -1553,13 +1775,15 @@ class tlTestPlanMetrics extends testplan
    *  @internal revisions
    *  
    */    
-  function helperGetExecCounters($id, $filters, $opt)
-  {
+  function helperGetExecCounters($id, $filters, $opt) {
     $sql = array();
     $my = array();
-    $my['opt'] = array('getOnlyAssigned' => false, 'tprojectID' => 0, 
+    $my['opt'] = array('getOnlyAssigned' => false, 
+                       'tprojectID' => 0, 
                        'getUserAssignment' => false,
-                       'getPlatformSet' => false, 'processClosedBuilds' => true);
+                       'getPlatformSet' => false, 
+                       'processClosedBuilds' => true,
+                       'groupByPlatform' => false);
     $my['opt'] = array_merge($my['opt'], (array)$opt);
     
     $my['filters'] = array('buildSet' => null);
@@ -1685,24 +1909,19 @@ class tlTestPlanMetrics extends testplan
    *    
    *    
    */    
-  function helperCompleteStatusDomain(&$out,$key)
-  {                       
+  function helperCompleteStatusDomain(&$out,$key) {                       
     $totalByItemID = array();
     
     // refence is critic  
-    foreach($out as &$elem)
-    {                             
+    foreach($out as &$elem) {                             
       $itemSet = array_keys($elem);
-      foreach($itemSet as $itemID)
-      {             
+      foreach($itemSet as $itemID) {             
         $totalByItemID[$itemID]['qty'] = 0;
-        foreach($this->statusCode as $verbose => $code)
-        {
-          if(!isset($elem[$itemID][$code]))
-          {
+        foreach($this->statusCode as $verbose => $code) {
+          if(!isset($elem[$itemID][$code])) {
             $elem[$itemID][$code] = array($key => $itemID,'status' => $code, 'exec_qty' => 0);      
           }                           
-                $totalByItemID[$itemID]['qty'] += $elem[$itemID][$code]['exec_qty'];
+          $totalByItemID[$itemID]['qty'] += $elem[$itemID][$code]['exec_qty'];
         }
       }
     }
@@ -1935,9 +2154,6 @@ class tlTestPlanMetrics extends testplan
 
               " WHERE TPTCV.testplan_id=" . $safe_id .
               $builds->whereAddExec;
-
-    //echo 'QD - <br>' . $union['exec'] . '<br>';
-    // die();
 
     $union['not_run'] =  "/* {$debugMsg} sqlUnion Test suites - not run */" . 
               " SELECT NHTC.parent_id AS tsuite_id,NHTC.id AS tcase_id, NHTC.name AS name," .
@@ -2248,11 +2464,7 @@ class tlTestPlanMetrics extends testplan
   /*
    *
    * @used-by lib/results/testCasesWithoutTester.php
-   * @internal revisions
-   * @since 1.9.4
-   *                     
-   * @internal revisions
-   * @since 1.9.6
+   *
    * IMPORTANT NOTICE
    * When doing count() with having, if there are platforms defined
    * we have to consider for having clause BuildQty * PlatformQty,
@@ -2473,8 +2685,7 @@ class tlTestPlanMetrics extends testplan
               $my['where']['where'] .
               " /* Get REALLY NOT RUN => BOTH LE.id AND E.id NULL  */ " .
               " AND E.id IS NULL AND LEX.id IS NULL";
-    // die();    
-    
+
     
     // executions
     $sex = "/* $debugMsg */" .
@@ -2573,8 +2784,7 @@ class tlTestPlanMetrics extends testplan
    *    
    *    
    */    
-  function getExecStatusMatrixFlat($id, $filters=null, $opt=null)
-  {
+  function getExecStatusMatrixFlat($id, $filters=null, $opt=null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     $my = array();
@@ -2650,6 +2860,187 @@ class tlTestPlanMetrics extends testplan
   }
 
 
+ /** 
+   *    
+   *    
+   *    
+   *    
+   */    
+  function helperStatusDomainMatrix(&$out,$rowKey,$colKey) {                       
+    $totalByMatrix = array();
+
+    foreach($out as &$elem) {   
+
+      $rowSet = array_keys($elem);
+      foreach($rowSet as $rowID) {
+
+        $colSet = array_keys($elem[$rowID]);
+        foreach($colSet as $colID) {             
+          $totalByMatrix[$rowID][$colID]['qty'] = 0;
+          foreach($this->statusCode as $verbose => $code) {
+            if(!isset($elem[$rowID][$colID][$code])) {
+              $elem[$rowID][$colID][$code] = 
+                array($rowKey => $rowID, $colKey => $colID,
+                      'status' => $code, 'exec_qty' => 0);      
+            }                           
+            $totalByMatrix[$rowID][$colID]['qty'] += 
+              $elem[$rowID][$colID][$code]['exec_qty'];
+          }
+        }
+      }
+    }
+    $out['total'] = $totalByMatrix;
+  }
   
+  /**
+   *
+   * NEWZ
+   **/
+  function getBuildByPlatStatusForRender($id, $totalKey='total_assigned') {
+
+    $renderObj = null;
+    $codeSet = $this->getStatusForReports();
+    $labels = $this->resultsCfg['status_label'];
+    
+    $opt = array('groupByPlatform' => true);  
+    $metrics = $this->getExecCountersByBuildExecStatus($id,null,$opt);
+
+    // Creating item list this way will generate a row also for
+    // ACTIVE BUILDS were ALL TEST CASES HAVE NO TESTER ASSIGNMENT
+    // $buildList = array_keys($metrics['active_builds']);
+    
+    // Creating item list this way will generate a row ONLY FOR
+    // ACTIVE BUILDS were TEST CASES HAVE TESTER ASSIGNMENT
+    if( !is_null($metrics) ) {
+      $renObj = new stdClass();
+      $renObj->info = array();  
+
+      $platList = array_keys($metrics['with_tester']);
+      $mwt = &$metrics['with_tester'];
+      foreach( $mwt as $platID => $buildMetrics ) {
+        foreach($buildMetrics as $buildID => $met ) {
+          $totalRun = 0;
+          $yo = &$renObj->info[$platID][$buildID];
+          $yo['build_name'] = 
+            $metrics['active_builds'][$buildID]['name']; 
+          $yo[$totalKey] = 
+            $metrics['total'][$platID][$buildID]['qty'];   
+          $yo['details'] = array();
+
+          $rf = &$yo['details'];
+          foreach($codeSet as $cCode => $code4h) {
+            $rf[$code4h] = array('qty' => 0, 'percentage' => 0);
+            $rf[$code4h]['qty'] = $buildMetrics[$buildID][$cCode]['exec_qty'];   
+            
+            if( $yo[$totalKey] > 0 ) {
+              $rf[$code4h]['percentage'] = 
+                number_format(100 * ($rf[$code4h]['qty'] / $yo[$totalKey]),1);
+            }
+            //$totalRun += 
+            //  $code4h == 'not_run' ? 0 : $rf[$code4h]['qty'];
+          }        
+        }
+      }  
+
+      foreach($codeSet as $human) {
+        $l10n = isset($labels[$human]) ? lang_get($labels[$human]) : lang_get($human); 
+        $renObj->colDefinition[$human]['qty'] = $l10n;
+        $renObj->colDefinition[$human]['percentage'] = '[%]';
+      }
+  
+      // Last step: get completness percentages
+      $platList = array_keys($renObj->info); 
+      $tk = 'total_assigned';
+      foreach($platList as $platID) {
+        $itemList = array_keys($renObj->info[$platID]);
+        foreach($itemList as $itemID) {
+          if( isset($renObj->info[$platID]) ) {
+            $totalRun = 0;
+            $rf = &$renObj->info[$platID][$itemID]['details'];
+            $doPerc = ($renObj->info[$platID][$itemID][$tk] > 0); 
+            foreach($codeSet as $sCode => $c4human) {
+              $totalRun += ($c4human == 'not_run' ? 0 : 
+                            $rf[$c4human]['qty']);
+            }
+            if($doPerc) {
+              $renObj->info[$platID][$itemID]['percentage_completed'] = 
+                number_format(100 * 
+                  ($totalRun/$renObj->info[$platID][$itemID][$tk]),1);
+            }                                             
+          }
+        }
+      }
+    }
+    return $renObj;
+  }
+
+  /**
+   * 
+   *
+   */
+  function getNeverRunByPlatform($tplanID,$platformSet=null) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $safeID = intval($tplanID);
+
+    $fullEID = $this->helperConcatTCasePrefix($safeID);
+
+    // Because we now allow assignment of MULTIPLE testers to same test case
+    // we need to remove UA.user_id, in order to avoid duplication
+    // UA.user_id,
+    // we will need a second step to populate this info.
+    //
+    $sql =  "/* {$debugMsg} Not Run */" . 
+          "SELECT COUNT(0) AS qty,
+          NHTC.parent_id AS tsuite_id,
+          NHTC.id AS tcase_id, TPTCV.platform_id,
+          NHTC.name AS name, PLAT.name AS platform_name,
+          $fullEID AS full_external_id
+          FROM {$this->tables['testplan_tcversions']} TPTCV 
+          
+          JOIN {$this->tables['builds']} B
+          ON  B.testplan_id = TPTCV.testplan_id 
+
+          /* Get Test Case info from Test Case Version */ 
+          JOIN {$this->tables['nodes_hierarchy']} NHTCV 
+          ON  NHTCV.id = TPTCV.tcversion_id
+  
+          /* Get Test Suite info from Test Case  */         
+          JOIN {$this->tables['nodes_hierarchy']} NHTC
+          ON  NHTC.id = NHTCV.parent_id
+        
+          /* Get Test Case Version attributes */
+          JOIN {$this->tables['tcversions']} TCV
+          ON  TCV.id = TPTCV.tcversion_id 
+
+          JOIN {$this->tables['platforms']} PLAT
+          ON  PLAT.id = TPTCV.platform_id 
+
+
+          LEFT OUTER JOIN {$this->tables['executions']} E 
+          ON  E.testplan_id = TPTCV.testplan_id
+          AND E.platform_id = TPTCV.platform_id
+          AND E.tcversion_id = TPTCV.tcversion_id
+          AND E.build_id = B.id
+          
+          WHERE TPTCV.testplan_id=$safeID
+          AND E.id IS NULL";
+
+    if( null != $platformSet ) {
+      $sql .= " AND TPTCV.platform_id IN (" . 
+                implode(",", $platformSet) . ")";
+    }      
+    $sql .= " GROUP BY tsuite_id, tcase_id, 
+              TPTCV.platform_id,NHTC.name,platform_name,
+              full_external_id ";
+    
+    $buildSet = $this->get_builds($safeID,testplan::ACTIVE_BUILDS,
+                                  testplan::OPEN_BUILDS);
+
+    $sql .= " HAVING COUNT(0) = " . count($buildSet);
+    $sql .= " ORDER BY platform_name,full_external_id ";
+    
+    return $this->db->get_recordset($sql);      
+  }
 
 }

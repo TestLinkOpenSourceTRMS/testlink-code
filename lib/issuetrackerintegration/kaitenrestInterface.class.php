@@ -19,8 +19,6 @@ class kaitenrestInterface extends issueTrackerInterface {
 
   public $defaultResolvedStatus;
 
-  
-
 
 	/**
 	 * Construct and connect to BTS.
@@ -32,9 +30,8 @@ class kaitenrestInterface extends issueTrackerInterface {
     $this->name = $name;
 	  $this->interfaceViaDB = false;
 	  $this->methodOpt['buildViewBugLink'] = [
-      'addSummary' => true,
-      'colorByStatus' => false
-    ];
+      'addSummary' => true,'colorByStatus' => false,
+      'addReporter' => false, 'addHandler' => false ];
 
     $this->defaultResolvedStatus = [];
     $this->defaultResolvedStatus[] = ['code' => 1, 'verbose' => 'queue'];
@@ -56,6 +53,10 @@ class kaitenrestInterface extends issueTrackerInterface {
 	 **/
 	function completeCfg() {
 		$this->cfg->uribase = trim($this->cfg->uribase,"/"); 
+    if(!property_exists($this->cfg, 'uricreate') ) {
+      $this->cfg->uricreate = $this->cfg->uribase; 
+    }
+
     if( property_exists($this->cfg,'options') ) {
       $option = get_object_vars($this->cfg->options);
       foreach ($option as $name => $elem) {
@@ -98,15 +99,18 @@ class kaitenrestInterface extends issueTrackerInterface {
   	  // CRITIC NOTICE for developers
   	  // $this->cfg is a simpleXML Object, then seems very conservative and safe
   	  // to cast properties BEFORE using it.
-      $url = (string)trim($this->cfg->uribase);
-      $login = (string)trim($this->cfg->login);
-      $password = (string)trim($this->cfg->password);
-      $boardId = (string)trim($this->cfg->boardid);
-      $options = $this->options;
+      $kaitenContext = [
+        'url' => (string)trim($this->cfg->uribase),
+        'apikey' => (string)trim($this->cfg->apikey),
+        'boardId' => (string)trim($this->cfg->boardid),
+        'options' => $this->options ];
 
-      $pxy = new stdClass();
-      $pxy->proxy = config_get('proxy');
-  	  $this->APIClient = new kaiten($url,$login,$password,$boardId,$options,$pxy);
+      $tlContext = [ 'proxy' => config_get('proxy'), 
+                     'cfg' => ['setcardowneremail' => 
+                                 $this->cfg->setcardowneremail] ];
+      $tlContext['cfg'] = (object)$tlContext['cfg'];
+
+      $this->APIClient = new kaiten($kaitenContext,$tlContext);
       // to undestand if connection is OK, I will ask for users.
       try {
         $items = $this->APIClient->getUsers();
@@ -123,7 +127,7 @@ class kaitenrestInterface extends issueTrackerInterface {
   	
   	if($processCatch) {
   		$logDetails = '';
-  		foreach(['uribase','login'] as $v) {
+  		foreach(['uribase'] as $v) {
   			$logDetails .= "$v={$this->cfg->$v} / "; 
   		}
   		$logDetails = trim($logDetails,'/ ');
@@ -237,28 +241,26 @@ class kaitenrestInterface extends issueTrackerInterface {
   /**
    *
    */
-  function parseDescription($description) {
-    $result = [
-      'description' => $description,
-      'links' => []
-    ];
-    preg_match('/^'.lang_get('dl2tl').'(.+)$/imu', $description, $matches_link1);
-    preg_match('/^'.lang_get('dl2tlpv').'(.+)$/imu', $description, $matches_link2);
-    if (count($matches_link1) > 1) {
-      $result['links'][] = [
-        'description' => lang_get('dl2tl'),
-        'url' => $matches_link1[1]
-      ];
-    }
-    if (count($matches_link2) > 1) {
-      $result['links'][] = [
-        'description' => lang_get('dl2tlpv'),
-        'url' => $matches_link2[1]
-      ];
+  function parseAddInfo($info) {
+    $result = [ 'descr' => $info, 'links' => [] ];
+
+    $pik = array('dl2tl' => lang_get('dl2tl'),
+                 'dl2tlpv' => lang_get('dl2tlpv'));
+
+    $matches = array('dl2tl' => 0, 'dl2tlpv' => 0);
+
+    foreach($pik as $ky => $vy ) {
+      preg_match('/^' . $vy . '(.+)$/imu', $info, $matches[$ky]);    
+      if( count($matches[$ky]) > 1 ) {
+        $result['links'][] = [
+          'descr' => $vy,
+          'url' => $matches[$ky][1]
+        ];
+      }
     }
 
     if (!empty($result['links'])) {
-      $result['description'] = strstr($description, $result['links'][0]['description'], true);
+      $result['descr'] = strstr($info, $result['links'][0]['descr'], true);
     }
     return $result;
   }
@@ -266,26 +268,26 @@ class kaitenrestInterface extends issueTrackerInterface {
   /**
    *
    */
-  public function addIssue($summary,$description,$opt=null) {
-    
-    $descriptionData = $this->parseDescription($description);
-    $tags = null;
-    if (!empty($opt)) {
-      $tags = [
-        ['name' => $opt->execContext['testplan_name']],
-        ['name' => $opt->execContext['build_name']] 
-      ];
-    }
+  public function addIssue($summary,$moreInfo,$opt=null) {
+    $more = $this->parseAddInfo($moreInfo);
     try {
-      $op = $this->APIClient->addIssue($summary, $descriptionData['description']);
+      $op = $this->APIClient->addIssue($summary, $more['descr'],$opt);
       if(is_null($op)){
         throw new Exception("Error creating issue", 1);
       }
 
-      if (count($descriptionData['links']) > 0) {
-        $this->APIClient->addExternalLinks($op->id,$descriptionData['links']);
+      if (count($more['links']) > 0) {
+        $this->APIClient->addExternalLinks($op->id,$more['links']);
       }
-      if ($tags) {
+  
+      $tags = null;
+      if (!empty($opt)) {
+        $tags = [
+          ['name' => $opt->execContext['testplan_name']],
+          ['name' => $opt->execContext['build_name']] 
+        ];
+      }
+      if (null !== $tags) {
         $this->APIClient->addTags($op->id,$tags);
       }
 
@@ -304,29 +306,29 @@ class kaitenrestInterface extends issueTrackerInterface {
   /**
    *
    */
-  public function addNote($issueID,$noteText,$opt=null)
-  {
+  public function addNote($issueID,$noteText,$opt=null) {
     $op = $this->APIClient->addNote($issueID, $noteText);
     if(is_null($op)){
       throw new Exception("Error setting note", 1);
     }
     $ret = ['status_ok' => true, 'id' => (string)$op->iid, 
-                   'msg' => sprintf(lang_get('kaiten_bug_comment'),$op->body, $this->APIClient->projectId)];
+            'msg' => sprintf(lang_get('kaiten_bug_comment'),
+                       $op->body, $this->APIClient->projectId)];
     return $ret;
   }
 
   /**
    *
    **/
-	public static function getCfgTemplate()
-  {
+	public static function getCfgTemplate() {
     $tpl = "<!-- Template " . __CLASS__ . " -->\n" .
            "<issuetracker>\n" .
            "<!-- Mandatory parameters: -->\n" .
-           "<login>KAITEN LOGIN</login>\n" .
-           "<password>KAITEN PASSWORD</password>\n" .
+           "<apikey>KAITEN API KEY</apikey>\n" .
            "<uribase>https://company.kaiten.io</uribase>\n" .
            "<boardid>BOARD IDENTIFICATOR</boardid>\n" .
+           "<!-- TestLink Optional parameters --> \n" .
+           "<setcardowneremail>0</setcardowneremail>\n" .          
            "<!-- Optional parameters (see API documentation on https://kaiten.io): -->\n" .
            "<options>\n" .
            "<columnid></columnid>\n" .

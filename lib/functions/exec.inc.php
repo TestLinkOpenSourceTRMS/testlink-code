@@ -672,10 +672,13 @@ function addIssue($dbHandler,$argsObj,$itsObj,$opt=null) {
     $setReporter = isset($issueFields[$issueType]['fields']['reporter']);
   }  
 
-
   $opt = new stdClass();
   if( $setReporter ) {
     $opt->reporter = $argsObj->user->login;
+    $opt->reporter_email = trim($argsObj->user->emailAddress);
+    if( '' == $opt->reporter_email ) {
+      $opt->reporter_email = $opt->reporter;
+    }
   }
 
   $p2check = array('issueType','issuePriority',
@@ -694,8 +697,7 @@ function addIssue($dbHandler,$argsObj,$itsObj,$opt=null) {
   // (@20180120 only works for redmine)  
   $opt->tagValue = $issueText->tagValue;
 
- 
-  $rs = $itsObj->addIssue($issueText->summary,$issueText->description,$opt); 
+  $rs = $itsObj->addIssue($issueText->summary, $issueText->description,$opt); 
   
   $ret['msg'] = $rs['msg'];
   if( ($ret['status_ok'] = $rs['status_ok']) ) {                   

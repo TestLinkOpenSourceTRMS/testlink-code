@@ -85,6 +85,10 @@ CREATE TABLE /*prefix*/builds (
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `release_date` date NULL,
   `closed_on_date` date NULL,
+  `commit_id` varchar(64) NULL,
+  `tag` varchar(64) NULL,
+  `branch` varchar(64) NULL,
+  `release_candidate` varchar(100),
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/name (`testplan_id`,`name`),
   KEY /*prefix*/testplan_id (`testplan_id`)
@@ -438,16 +442,6 @@ CREATE TABLE /*prefix*/testcase_keywords (
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/idx01_testcase_keywords (`testcase_id`,`tcversion_id`,`keyword_id`),
   KEY /*prefix*/idx02_testcase_keywords (`tcversion_id`)
-) DEFAULT CHARSET=utf8;
-
-CREATE TABLE /*prefix*/testcase_platforms (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `testcase_id` int(10) unsigned NOT NULL default '0',
-  `tcversion_id` int(10) unsigned NOT NULL default '0', 
-  `platform_id` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY /*prefix*/idx01_testcase_platform (`testcase_id`,`tcversion_id`,`platform_id`),
-  KEY /*prefix*/idx02_testcase_platform (`tcversion_id`)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -898,3 +892,10 @@ FROM /*prefix*/nodes_hierarchy NHTCV
 WHERE NHTCV.node_type_id = 4 AND
 NOT(EXISTS(SELECT 1 FROM /*prefix*/testcase_platforms TCPL
            WHERE TCPL.tcversion_id = NHTCV.id));
+
+
+#
+CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan_plat
+AS SELECT tcversion_id, testplan_id,platform_id,max(id) AS id
+FROM /*prefix*/executions 
+GROUP BY tcversion_id,testplan_id,platform_id;

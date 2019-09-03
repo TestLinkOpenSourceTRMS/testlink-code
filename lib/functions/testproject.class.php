@@ -330,8 +330,7 @@ protected function getTestProject($condition = null, $opt=null)
   $doParse = true;
   $tprojCols = ' testprojects.* ';
 
-  switch($my['options']['output'])
-  {
+  switch($my['options']['output']) {
     case 'existsByID':
       $doParse = false;
       $sql = "/* debugMsg */ SELECT testprojects.id ".
@@ -532,8 +531,7 @@ args:
      [order_by]: default: ORDER BY name
 
 */
-function get_accessible_for_user($user_id,$opt = null,$filters = null)
-{
+function get_accessible_for_user($user_id,$opt = null,$filters = null) {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $my = array();
   $my['opt'] = array('output' => 'map', 'order_by' => ' ORDER BY name ', 'field_set' => 'full',
@@ -1035,8 +1033,7 @@ function count_testcases($id)
    returns: null if query fails
    string
    */
-  function getTestCasePrefix($id)
-  {
+  function getTestCasePrefix($id) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $ret=null;
     $sql = "/* $debugMsg */ SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
@@ -1144,12 +1141,16 @@ function setPublicStatus($id,$status)
   public function addKeyword($testprojectID,$keyword,$notes) {
     $kw = new tlKeyword();
     $kw->initialize(null,$testprojectID,$keyword,$notes);
-    $op = array('status' => tlKeyword::E_DBERROR, 'id' => -1);
+    $op = array('status' => tlKeyword::E_DBERROR, 'id' => -1, 
+                'msg' => 'ko DB Error');
     $op['status'] = $kw->writeToDB($this->db);
     if ($op['status'] >= tl::OK) {
       $op['id'] = $kw->dbID;
       logAuditEvent(TLS("audit_keyword_created",$keyword),"CREATE",$op['id'],"keywords");
+    } else {
+      $op['msg'] = tlKeyword::getError($op['status']);
     }
+
     return $op;
   }
 
@@ -1162,13 +1163,11 @@ function setPublicStatus($id,$status)
    * @param type $notes
    *
    **/
-  function updateKeyword($testprojectID,$id,$keyword,$notes)
-  {
+  function updateKeyword($testprojectID,$id,$keyword,$notes) {
     $kw = new tlKeyword($id);
     $kw->initialize($id,$testprojectID,$keyword,$notes);
     $result = $kw->writeToDB($this->db);
-    if ($result >= tl::OK)
-    {  
+    if ($result >= tl::OK) {  
       logAuditEvent(TLS("audit_keyword_saved",$keyword),"SAVE",$kw->dbID,"keywords");
     }
     return $result;
@@ -2300,19 +2299,18 @@ function getKeywordsLatestTCV($tproject_id, $keyword_id=0, $kwFilterType='Or') {
          [options]:
          
   returns:
-    20100821 - franciscom - added options
 
 */
-function get_all_testplans($testproject_id,$filters=null,$options=null)
-{
+function get_all_testplans($id,$filters=null,$options=null) {
 
-  $my['options'] = array('fields2get' => 'NH.id,NH.name,notes,active,is_public,testproject_id',
+  $my['options'] = array('fields2get' => 
+                           'NH.id,NH.name,notes,active,
+                            is_public,testproject_id,api_key',
                          'outputType' => null);
   $my['options'] = array_merge($my['options'], (array)$options);
 
   $forHMLSelect = false;
-  if( !is_null($my['options']['outputType']) && $my['options']['outputType'] == 'forHMLSelect')
-  {
+  if( !is_null($my['options']['outputType']) && $my['options']['outputType'] == 'forHMLSelect') {
     $forHMLSelect = true;
     $my['options']['fields2get'] = 'NH.id,NH.name';
   }
@@ -2320,47 +2318,37 @@ function get_all_testplans($testproject_id,$filters=null,$options=null)
   $sql = " SELECT {$my['options']['fields2get']} " .
          " FROM {$this->tables['nodes_hierarchy']} NH,{$this->tables['testplans']} TPLAN";
          
-  $where = " WHERE NH.id=TPLAN.id ";
-  $where .= " AND (testproject_id = " . $this->db->prepare_int($testproject_id) . " ";
-  if( !is_null($filters) )
-  {
+  $where = " WHERE NH.id=TPLAN.id AND (testproject_id = " . 
+             $this->db->prepare_int($id) . " ";
+  if( !is_null($filters) ) {
     $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,'tplan2exclude' => null);
     
-    foreach($key2check as $varname => $defValue)
-    {
+    foreach($key2check as $varname => $defValue) {
       $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
     }                
         
     $where .= " ) ";
     
-    if(!is_null($plan_status))
-    {
+    if(!is_null($plan_status)) {
       $my_active = to_boolean($plan_status);
       $where .= " AND active = " . $my_active;
     }
     
-    if(!is_null($tplan2exclude))
-    {
+    if(!is_null($tplan2exclude)) {
       $where .= " AND TPLAN.id != {$tplan2exclude} ";
     }
-  }
-  else
-  {
+  } else {
     $where .= ")";  
   }  
   
   $sql .= $where . " ORDER BY name";
-  if( $forHMLSelect )
-  {
+  if( $forHMLSelect ) {
     $map = $this->db->fetchColumnsIntoMap($sql,'id','name');
-  }
-  else
-  {
+  } else {
     $map = $this->db->fetchRowsIntoMap($sql,'id');
   }
 
-  return($map);
-
+  return $map;
 }
 
 
@@ -2835,10 +2823,8 @@ private function copy_keywords($source_id, $target_id)
        " WHERE testproject_id = {$source_id}";
        
   $itemSet = $this->db->fetchRowsIntoMap($sql,'id');
-  if( !is_null($itemSet) )
-  {
-    foreach($itemSet as $item)
-    {
+  if( !is_null($itemSet) ) {
+    foreach($itemSet as $item) {
       $op = $this->addKeyword($target_id,$item['keyword'],$item['notes']);
       $old_new[$item['id']] = $op['id'];
     }
@@ -3498,9 +3484,10 @@ function setCodeTrackerEnabled($id,$value)
   $ret = $this->db->exec_query($sql);
 }
 
-
-function getItemCount()
-{
+/**
+ *
+ */
+function getItemCount() {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $sql = "/* $debugMsg */ " .
          " SELECT COUNT(0) AS qty FROM {$this->object_table} ";
@@ -3835,7 +3822,7 @@ function getActiveTestPlansCount($id)
   function checkKeywordIsLinkedAndNotExecuted($keyword_id,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
 
@@ -3879,7 +3866,7 @@ function getActiveTestPlansCount($id)
   function checkKeywordIsLinkedToFrozenVersions($keyword_id,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     $sql = " SELECT id,keyword FROM {$this->tables['keywords']} KW
              WHERE id = {$keyword_id} ";
 
@@ -3933,7 +3920,7 @@ function getActiveTestPlansCount($id)
   function getKeywordsExecStatus($keywordSet,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
     }         
@@ -3965,7 +3952,7 @@ function getActiveTestPlansCount($id)
   function getKeywordsFreezeStatus($keywordSet,$tproject_id=null) {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $wheraAdd = '';
+    $whereAdd = '';
     if( null != $tproject_id ) {
       $whereAdd = " AND testproject_id = " . intval($tproject_id);
     }         

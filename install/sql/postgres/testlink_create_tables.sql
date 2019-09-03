@@ -184,6 +184,10 @@ CREATE TABLE /*prefix*/builds(
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "release_date" DATE NULL,
   "closed_on_date" DATE NULL,
+  "commit_id" VARCHAR(64) NULL,
+  "tag" VARCHAR(64) NULL,
+  "branch" VARCHAR(64) NULL,
+  "release_candidate" VARCHAR(100) NULL,
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/builds_uidx1 ON /*prefix*/builds  ("testplan_id","name");

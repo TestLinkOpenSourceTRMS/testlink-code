@@ -17,14 +17,22 @@ Purpose: smarty template - show Test Results and Metrics
          th_build, th_tc_assigned, th_perc_completed, from, until,
          info_res_by_top_level_suites, info_report_tc_priorities, info_res_by_platform,send_by_email_to_me,
          info_report_milestones_prio, info_report_milestones_no_prio, info_res_by_kw,send_test_report,
-         info_gen_test_rep'}
+         info_gen_test_rep,title_res_by_kw_on_plat,title_res_by_prio_on_plat,test_suite,title_res_by_tl_testsuite_on_plat,title_res_by_prio,title_res_by_tl_testsuite,title_res_build,title_res_by_build_on_plat,export_as_spreadsheet'}
 
 {include file="inc_head.tpl"}
+
+{if $gui->showPlatforms}
+  {$platforms = $gui->platformSet}
+{else}
+  {$platforms = $gui->fakePlatform}    
+{/if}
+
 <body>
 <h1 class="title">{$gui->title}</h1>
 
-
-<form name="send_by_email_to_me" id="send_by_email_to_me"
+<div style="display: flex;">
+<form name="send_by_email_to_me" 
+      id="send_by_email_to_me"
       action="{$gui->actionSendMail}" method="POST">
   &nbsp;&nbsp;
   <input hidden name="sendByEmail" value="1">
@@ -34,8 +42,16 @@ Purpose: smarty template - show Test Results and Metrics
          onclick="submit();">
 </form>
 
-{if $mailFeedBack->msg != ""}
-  <p class='info'>{$mailFeedBack->msg}</p>
+<form name="exportSpreadsheet" id="exportSpreadsheet" method="POST"
+      action={$gui->actionSpreadsheet}>
+  &nbsp;&nbsp;
+  <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
+         src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
+</form>
+</div>
+
+{if null != $gui->mailFeedBack && $gui->mailFeedBack->msg != ""}
+  <p class='info'>{$gui->mailFeedBack->msg}</p>
 {/if}
 
 
@@ -52,53 +68,99 @@ Purpose: smarty template - show Test Results and Metrics
    {$labels.report_tcase_platorm_relationship}
    <hr>
   {/if}  
-  	{* ----- results by builds -------------------------------------- *}
-	<h2>{$labels.title_metrics_x_build}</h1>
 
+
+    <br>
+    {if $gui->showPlatforms}
+      <h1>{$labels.title_res_by_platform}</h1>
+      {include file="results/inc_results_show_table.tpl"
+             args_title=''
+             args_first_column_header=$labels.th_platform
+             args_first_column_key='name'
+             args_show_percentage=true
+             args_column_definition=$gui->columnsDefinition->platform
+             args_column_data=$gui->statistics->platform}
+      
+      {if $gui->columnsDefinition->platform != ""}
+        <p class="italic">{$labels.info_res_by_platform}</p>
+        <br />
+      {/if}
+    {/if}
+
+
+  {* ----- results by builds -------------------------------------- *}
+	<h1>{$labels.title_metrics_x_build}</h1>
 	{if $gui->displayBuildMetrics}
-	<table class="simple_tableruler sortable" style="text-align: center; margin-left: 0px;">
-  	<tr>
-  		<th style="width: 10%;">{$labels.th_build}</th>
-    	{* <th>{$labels.th_tc_total}</th> *}
-    	<th>{$labels.th_tc_assigned}</th>
-      	{foreach item=the_column from=$gui->statistics->overallBuildStatus->colDefinition}
-        	<th>{$the_column.qty}</th>
-        	<th>{$the_column.percentage}</th>
-    	{/foreach}
-    	<th>{$labels.th_perc_completed}</th>
-  	</tr>
+    {include file="results/inc_results_show_table.tpl"
+       args_title=''
+       args_column_for_total='total_assigned'
+       args_first_column_header=$labels.th_build
+       args_first_column_key='build_name'
+       args_show_percentage=true
+       args_column_definition=
+         $gui->columnsDefinition->overallBuildStatus
+       args_column_data=$gui->statistics->overallBuildStatus}
 
-	{foreach item=res from=$gui->statistics->overallBuildStatus->info}
-  	<tr>
-  		<td>{$res.build_name|escape}</td>
-  		<td>{$res.total_assigned}</td>
-	    	{foreach key=status item=the_column from=$gui->statistics->overallBuildStatus->colDefinition}
-	        	<td>{$res.details[$status].qty}</td>
-	        	<td>{$res.details[$status].percentage}</td>
-	    	{/foreach}
-  		<td>{$res.percentage_completed}</td>
-  	</tr>
-	{/foreach}
-	</table>
+    {* Display message explaining that only Active Builds 
+       with test cases assigned to tester will be displayed *}
+    {if $gui->buildMetricsFeedback != ''}
+      <p class="italic">{$gui->buildMetricsFeedback|escape}</p>
+    {/if}
+
+    <br />
 	{/if}
 	
-	{* Display message explaining that only Active Builds with test cases *}
-	{* assigned to tester will be displayed *}
-	{if $gui->buildMetricsFeedback != ''}
-		<p class="italic">{$gui->buildMetricsFeedback|escape}</p>
-	{/if}
-	<br />
-  	{* ----- results by test suites -------------------------------------- *}
 
+  {* NEW *}
+  {if $gui->displayBuildByPlatMetrics && $gui->showPlatforms}
+    <h1>{$labels.title_res_build}</h1>
+    {foreach from=$platforms key=platId item=pname}
+      {if isset($gui->statistics->buildByPlatMetrics[$platId]) }
+        {$tit = $labels.title_res_by_build_on_plat}
+        {$tit = "$tit $pname"}         
+        {include file="results/inc_results_show_table.tpl"
+           args_title=$tit
+           args_column_for_total='total_assigned'
+           args_first_column_header=$labels.th_build
+           args_first_column_key='build_name'
+           args_show_percentage=true
+           args_column_definition=
+             $gui->columnsDefinition->buildByPlatMetrics
+           args_column_data=$gui->statistics->buildByPlatMetrics[$platId] 
+        }
+      {/if}    
+    {/foreach}
+
+    {* Display message explaining that only Active Builds 
+       with test cases assigned to tester will be displayed *}
+    {if $gui->buildMetricsFeedback != ''}
+      <p class="italic">{$gui->buildMetricsFeedback|escape}</p>
+    {/if}
+    <br />
+  {/if}
+
+
+  	{* ----- results by test suites ------------------- *}
   	{* by TestSuite *}
-  	{include file="results/inc_results_show_table.tpl"
-           args_title=$labels.title_res_by_top_level_suites
-           args_first_column_header=$labels.trep_comp
+    <h1>{$labels.title_res_by_tl_testsuite}</h1>
+    {foreach from=$platforms key=platId item=pname}
+      {if isset($gui->statistics->testsuites[$platId]) }
+        {$tit = ''}
+        {if $pname != ''}
+          {$tit = $labels.title_res_by_tl_testsuite_on_plat}
+          {$tit = "$tit $pname"}
+        {/if}         
+        {include file="results/inc_results_show_table.tpl"
+           args_title=$tit
+           args_first_column_header=$labels.test_suite
            args_first_column_key='name'
            args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->testsuites
-           args_column_data=$gui->statistics->testsuites}
-           
+           args_column_data=$gui->statistics->testsuites[$platId] 
+        }
+      {/if} 
+    {/foreach}
+
     {if $gui->columnsDefinition->testsuites != ""}
   	  <p class="italic">{$labels.info_res_by_top_level_suites}</p>
   	  <br />
@@ -114,30 +176,29 @@ Purpose: smarty template - show Test Results and Metrics
            args_column_definition=$gui->columnsDefinition->assigned_testers
            args_column_data=$gui->statistics->assigned_testers} *}
 
-    {if $gui->showPlatforms}
-      {include file="results/inc_results_show_table.tpl"
-             args_title=$labels.title_res_by_platform
-             args_first_column_header=$labels.th_platform
-             args_first_column_key='name'
-             args_show_percentage=true
-             args_column_definition=$gui->columnsDefinition->platform
-             args_column_data=$gui->statistics->platform}
-             
-      {if $gui->columnsDefinition->platform != ""}
-        <p class="italic">{$labels.info_res_by_platform}</p>
-        <br />
-      {/if}
-    {/if}
-    
+
     {if $gui->testprojectOptions->testPriorityEnabled}
-      {include file="results/inc_results_show_table.tpl"
-             args_title=$labels.title_report_tc_priorities
+      <h1>{$labels.title_res_by_prio}</h1>
+      {foreach from=$platforms key=platId item=pname}
+        {if isset($gui->statistics->priorities[$platId]) }
+          
+          {$tit = ""}
+          {if $pname != ''}
+            {$tit = $labels.title_res_by_prio_on_plat}
+            {$tit = "$tit $pname"}
+          {/if}  
+
+          {include file="results/inc_results_show_table.tpl"
+             args_title=$tit
              args_first_column_header=$labels.priority
              args_first_column_key='name'
              args_show_percentage=true
              args_column_definition=$gui->columnsDefinition->priorities
-             args_column_data=$gui->statistics->priorities}
-             
+             args_column_data=$gui->statistics->priorities[$platId] 
+          }
+        {/if} 
+      {/foreach}
+      
       {if $gui->columnsDefinition->priorities != ""}
         <p class="italic">{$labels.info_report_tc_priorities}</p>
         <br />
@@ -145,18 +206,38 @@ Purpose: smarty template - show Test Results and Metrics
     {/if}
   
   	{* Keywords 
-     Warning: args_first_column_key='keyword_name' is related to name used 
-              on method that generate statistics->keywords map.
+     Warning: 
+     args_first_column_key='keyword_name' is related to name used 
+     on method that generate statistics->keywords map.
   	*}
-  	{include file="results/inc_results_show_table.tpl"
-           args_title=$labels.title_res_by_kw
-           args_first_column_header=$labels.trep_kw
-           args_first_column_key='name'
-           args_show_percentage=true
-           args_column_definition=$gui->columnsDefinition->keywords
-           args_column_data=$gui->statistics->keywords}
-           
-    {if $gui->columnsDefinition->keywords != ""}
+
+    {$writeTitle=true}
+    {$dataExists=false}
+    {foreach from=$platforms key=platId item=pname}
+      {if isset($gui->statistics->keywords[$platId]) }
+        {if $writeTitle}
+          <h1>{$labels.title_res_by_kw}</h1>
+          {$writeTitle=fals}
+        {/if}  
+        
+        {$dataExists=true}
+        {$tit = ""}
+        {if $pname != ''}
+          {$tit = $labels.title_res_by_kw_on_plat}
+          {$tit = "$tit $pname"}
+        {/if}
+
+        {include file="results/inc_results_show_table.tpl"
+               args_title=$tit
+               args_first_column_header=$labels.trep_kw
+               args_first_column_key='name'
+               args_show_percentage=true
+               args_column_definition=$gui->columnsDefinition->keywords
+               args_column_data=$gui->statistics->keywords[$platId]}
+      {/if}        
+    {/foreach}
+
+    {if $dataExists && $gui->columnsDefinition->keywords != ""}
       <p class="italic">{$labels.info_res_by_kw}</p>
       <br />
     {/if}

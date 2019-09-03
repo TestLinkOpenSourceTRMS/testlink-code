@@ -814,28 +814,19 @@ class database {
   {
     $items = null;
     $result = $this->exec_query($sql,$limit);
-    if ($result)
-    {
-      while($row = $this->fetch_array($result))
-      {
-        if($cumulative)
-        {
+    if ($result) {
+      while($row = $this->fetch_array($result)) {
+        if($cumulative) {
           $items[$row[$main_key]][$row[$sec_key]][] = $row;
-        }
-        else if($col2implode !='')
-        {
-          if(isset($items[$row[$main_key]][$row[$sec_key]]))
-          {
+        } else if($col2implode !='') {
+          if(isset($items[$row[$main_key]][$row[$sec_key]])) {
             $items[$row[$main_key]][$row[$sec_key]][$col2implode] .= 
               ',' . $row[$col2implode];
-          } 
-          else
-          {
+          } else {
             $items[$row[$main_key]][$row[$sec_key]] = $row;   
           } 
         }  
-        else
-        {
+        else {
           $items[$row[$main_key]][$row[$sec_key]] = $row;
         } 
       }
@@ -900,22 +891,16 @@ class database {
    * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
    * 
    **/
-  function fetchRowsIntoMap3l($sql,$keyCols,$cumulative = 0,$limit = -1)
-  {
+  function fetchRowsIntoMap3l($sql,$keyCols,$cumulative = 0,$limit = -1) {
     $items = null;
     $result = $this->exec_query($sql,$limit);
     
     // new dBug($result);
-    if ($result)
-    {
-      while($row = $this->fetch_array($result))
-      {
-        if($cumulative)
-        {
+    if ($result) {
+      while($row = $this->fetch_array($result)) {
+        if($cumulative) {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]][] = $row;
-        }
-        else
-        {
+        } else {
           $items[$row[$keyCols[0]]][$row[$keyCols[1]]][$row[$keyCols[2]]] = $row;
         } 
       }
@@ -1020,16 +1005,12 @@ class database {
   /**
    * @used-by testplan.class.php
    */
-  function fetchMapRowsIntoMapStackOnCol($sql,$column_main_key,$column_sec_key,$stackOnCol)
-  {
+  function fetchMapRowsIntoMapStackOnCol($sql,$column_main_key,$column_sec_key,$stackOnCol) {
     $items = null;
     $result = $this->exec_query($sql);
-    if ($result)
-    {
-      while($row = $this->fetch_array($result))
-      {
-        if( !isset($items[$row[$column_main_key]][$row[$column_sec_key]]) )
-        {
+    if ($result) {
+      while($row = $this->fetch_array($result)) {
+        if( !isset($items[$row[$column_main_key]][$row[$column_sec_key]]) ) {
           $items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
           $items[$row[$column_main_key]][$row[$column_sec_key]][$stackOnCol] = array();
         }

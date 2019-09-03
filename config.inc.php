@@ -70,6 +70,15 @@ $tlCfg->keywords = new stdClass();
 $tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
 $tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 
+// main key testproject PREFIX
+// element array 
+// 'addTCLinkIntoITS' true => add note to Issue Tracker to issue with
+// ISSUE ID similar to the KEYWORD (see kwPrefix below) 
+//                     
+// 'kwPrefix' to remove from keyword to create the ISSUE ID
+//
+$tlCfg->keywords->byTestProject = array();
+
 
 $tlCfg->accessWithoutLogin = array();
 
@@ -482,6 +491,47 @@ $tlCfg->OAuthServers = array();
 // $tlCfg->OAuthServers[2]['oauth_profile'] = 'https://api.github.com/user';
 // $tlCfg->OAuthServers[2]['oauth_scope'] = 'user:email';
 
+//Microsoft
+//$tlCfg->OAuthServers[1]['oauth_enabled'] = true;
+//$tlCfg->OAuthServers[1]['oauth_name'] = 'microsoft';
+//$tlCfg->OAuthServers[1]['oauth_icon'] = 'mslogo.jpg';
+//$tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
+//$tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
+
+// Can be authorization_code (by default), client_credentials or password
+//$tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';
+//$tlCfg->OAuthServers[1]['oauth_url'] = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
+
+//$tlCfg->OAuthServers[1]['token_url'] = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
+//$tlCfg->OAuthServers[1]['oauth_force_single'] = true;
+//$tlCfg->OAuthServers[1]['oauth_profile'] = 'https://graph.microsoft.com/v1.0/me';
+//$tlCfg->OAuthServers[1]['oauth_scope'] = 'User.Read';
+
+//$tlCfg->OAuthServers[1]['redirect_uri'] = 'TESTLINKURL/microsoftoauth.php';
+
+
+// Azure AD 
+// Fill in CLIENT_ID,CLIENT_SECRET,YOURTESTLINKSERVER and TENANTID with your information
+// See this article for registering an application: https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-protocols-oauth-code
+// Make sure, you grant admint consent for it: https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent
+
+// $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
+// $tlCfg->OAuthServers[1]['oauth_name'] = 'azuread'; //do not change this
+// $tlCfg->OAuthServers[1]['oauth_icon'] = 'azuread.png'; 
+
+// $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
+// $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
+// $tlCfg->OAuthServers[1]['redirect_uri'] = 'https://YOURTESTLINKSERVER/login.php';
+
+// $tlCfg->OAuthServers[1]['oauth_force_single'] = true; 
+
+// $tlCfg->OAuthServers[1]['oauth_grant_type'] = 'authorization_code';  
+// $tlCfg->OAuthServers[1]['oauth_url'] = 'https://login.microsoftonline.com/TENANTID/oauth2/authorize';
+// $tlCfg->OAuthServers[1]['token_url'] = 'https://login.microsoftonline.com/TENANTID/oauth2/token';
+// the domain you want to whitelist (email domains)
+// $tlCfg->OAuthServers[1]['oauth_domain'] = 'autsoft.hu'; 
+// $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://login.microsoftonline.com/TENANTID/openid/userinfo';
+// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read';
 
 /**
  * Single Sign On authentication
@@ -949,8 +999,25 @@ $tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 // Default Value
 // USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS
 // USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS
-$tlCfg->exec_cfg->tcases_counters_mode = 
+// USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS
+$tlCfg->exec_cfg->tcases_counters_mode = array();
+$tlCfg->exec_cfg->tcases_counters_mode['with_platforms'] =
   USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS;
+
+$tlCfg->exec_cfg->tcases_counters_mode['without_platforms'] =
+  USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS;
+
+
+$tlCfg->exec_cfg->tcases_counters_mode_domain = array();
+$tlCfg->exec_cfg->tcases_counters_mode_domain['with_platforms'] =
+  array('USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS',
+        'USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS',
+        'USE_LATEST_EXEC_ON_TESTPLAN_PLAT_FOR_COUNTERS'); 
+
+$tlCfg->exec_cfg->tcases_counters_mode_domain['without_platforms'] =
+  array('USE_LATEST_EXEC_ON_CONTEX_FOR_COUNTERS',
+        'USE_LATEST_EXEC_ON_TESTPLAN_FOR_COUNTERS'); 
+
 
 
 
@@ -1031,6 +1098,7 @@ $tlCfg->exec_cfg->exec_mode->save_and_move='unlimited';
 
 $tlCfg->exec_cfg->exec_mode->addLinkToTLChecked = false;
 $tlCfg->exec_cfg->exec_mode->addLinkToTLPrintViewChecked = false;
+$tlCfg->exec_cfg->exec_mode->assignTaskChecked = false;
 
 
 /** User filter in Test Execution navigator - default value */
@@ -1125,9 +1193,7 @@ $tlCfg->exec_cfg->issues->tcstep_level->subject =
 $tlCfg->exec_cfg->issues->tcstep_level->subject = '$$issue_on_step %%STEPNUMBER%% - $$issue_subject_tcname %%TCNAME%% ';
 
 
-
-
-// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------
 /* [Test Specification] */
 
 // TRUE will be displayed when displayed a test case

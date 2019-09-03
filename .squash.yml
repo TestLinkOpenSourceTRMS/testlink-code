@@ -1,0 +1,8 @@
+deployments:
+  TestLink:
+    filename:
+      ./Dockerfile
+    ready_wait:
+      7200
+    vm_size:
+      2GB

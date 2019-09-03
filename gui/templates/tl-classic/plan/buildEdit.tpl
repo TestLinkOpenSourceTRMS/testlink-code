@@ -12,7 +12,7 @@ Purpose: smarty template - Add new build and show existing
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
              open,builds_description,cancel,release_date,closure_date,closed_on_date,
              copy_tester_assignments, assignment_source_build,show_event_history,
-             show_calender,clear_date,with_exec_status"}
+             show_calender,clear_date,with_exec_status,commit_id,branch,tag,release_candidate"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
@@ -110,7 +110,38 @@ function validateForm(f)
         </td>
     </tr>
 
+    <tr>
+      <th style="background:none;">{$labels.commit_id}</th>
+      <td><input type="text" name="commit_id" id="commit_id" 
+                 maxlength="64" 
+                 value="{$gui->commit_id|escape}" size="64"/>
+      </td>
+    </tr>
 
+    <tr>
+      <th style="background:none;">{$labels.tag}</th>
+      <td><input type="text" name="tag" id="tag" 
+                 maxlength="64" 
+                 value="{$gui->tag|escape}" size="64"/>
+      </td>
+    </tr>
+
+    <tr>
+      <th style="background:none;">{$labels.branch}</th>
+      <td><input type="text" name="branch" id="branch" 
+                 maxlength="64" 
+                 value="{$gui->branch|escape}" size="64"/>
+      </td>
+    </tr>
+
+    <tr>
+      <th style="background:none;">{$labels.release_candidate}</th>
+      <td><input type="text" 
+             name="release_candidate" id="release_candidate" 
+             maxlength="100" 
+             value="{$gui->release_candidate|escape}" size="100"/>
+      </td>
+    </tr>
 
   {* show this only if we create a new build and there are other builds to copy from *}
   {if !$gui->build_id && $gui->source_build.build_count}

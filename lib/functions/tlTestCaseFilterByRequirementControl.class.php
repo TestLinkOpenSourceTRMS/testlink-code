@@ -6,7 +6,7 @@
  * @filesource tlTestCaseFilterByRequirementControl.class.php
  * @package    TestLink
  * @author     Tanguy Oger
- * @copyright  2006-2016, TestLink community
+ * @copyright  2006-2019, TestLink community
  * @link       http://testlink.sourceforge.net/
  * 
  *
@@ -884,21 +884,22 @@ class tlTestCaseFilterByRequirementControl extends tlFilterControl {
   }
 
   
-    /**
+  /**
    *
    */ 
-  protected function init_setting_testsgroupby()
-  {
-	$key = 'setting_testsgroupby';
-	
-	// now load info from session
-	$mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
-	$this->args->testsgroupedby_mode = $mode;
-	$this->args->{$key} = $mode;
-	$this->settings[$key]['selected'] = $mode;
-	
-	$this->settings[$key]['items']['mode_test_suite'] = lang_get('mode_test_suite');
-	$this->settings[$key]['items']['mode_req_coverage'] = lang_get('mode_req_coverage');
+  protected function init_setting_testsgroupby() {
+    $key = 'setting_testsgroupby';
+    
+    // now load info from session
+    $mode = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : 0;
+    $this->args->testsgroupedby_mode = $mode;
+    $this->args->{$key} = $mode;
+    $this->settings[$key]['selected'] = $mode;
+  
+    $k2l = array('mode_test_suite','mode_req_coverage');
+    foreach( $k2l as $ak ) {
+      $this->settings[$key]['items'][$ak] = lang_get($ak);      
+    } 
   } // end of method
 
   /*

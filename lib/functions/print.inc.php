@@ -866,14 +866,12 @@ function gendocGetUserName(&$db, $userId)
   else
   {
     $user = tlUser::getByID($db,$userId);
-    if ($user)
-    {
+    if ($user) {
       $authorName = $user->getDisplayName();
       $authorName = htmlspecialchars($authorName);
       $_SESSION['userNamePool'][$userId] = $authorName;
     }
-    else
-    {
+    else {
       $authorName = lang_get('undefined');
       tLog('tlUser::getByID($db,$userId) failed', 'ERROR');
     }
@@ -1045,15 +1043,30 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
     }    
   }
  
-  $tcInfo = $st->tc_mgr->get_by_id($id,$getByID['tcversion_id'],
-                                   $getByID['filters'],
-                                    array('renderGhost' => true,
-                                          'renderImageInline' => true));
-  if ($tcInfo) {
+  $tcInfo = (array)$st->tc_mgr->get_by_id($id,$getByID['tcversion_id'],
+                      $getByID['filters'],
+                      array('renderGhost' => true,
+                            'renderImageInline' => true));
+
+
+  if( null != $tcInfo && count($tcInfo) > 0) {
     $tcInfo = $tcInfo[0];
   } else {
-    $msg = "Failed to get Test Case Info for ID=" . $id .
-           " tcversion id:" . $getByID['tcversion_id']; 
+    $msg = basename(__FILE__) . ' >' .
+           'Line: ' . __LINE__ . ' > ' .
+           'Function: ' . __FUNCTION__ . ' > ' .
+           "Failed to get Test Case Info for ID=" . $id;
+
+    if( $getByID['tcversion_id'] == testcase::ALL_VERSIONS ) {
+      $msg .= " ALL VERSIONS "; 
+    } else if ( $getByID['tcversion_id'] == testcase::LATEST_VERSION ) {
+      $msg .= " LATEST VERSION ";     
+    } else {
+      $msg .= " tcversion id:" . $getByID['tcversion_id']; 
+    }
+
+    tLog( $msg , 'ERROR');
+
     throw new Exception($msg, 1);
   }
   
@@ -1386,9 +1399,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
   // collect REQ for Test Case Version
   if ($options['requirement']) {
-    // @since 1.9.18
     // Coverage Links REQV to TCV
-
     $requirements = (array)$st->req_mgr->getActiveForTCVersion($tcVersionID);
     $code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
              $labels['reqs'].'</span>'; 

@@ -49,7 +49,6 @@ $tcversion_id = null;
 $submitResult = null;
 list($args,$its,$cts) = init_args($db,$cfg);
 
-
 $smarty = new TLSmarty();
 $smarty->assign('tsuite_info',null);
 
@@ -418,8 +417,11 @@ if(!is_null($linked_tcversions)) {
           $userid_array[$testerid] = $testerid;
         }      
       }
-        
-      $gui->req_details = $req_mgr->getActiveForTCVersion($tcversion_id);
+      
+      $gui->req_details = null;
+      if( $args->reqEnabled ) {
+        $gui->req_details = $req_mgr->getActiveForTCVersion($tcversion_id);
+      }
 
       $idCard = array('tcase_id' => $tcase_id, 'tcversion_id' => $tcversion_id);
       $gui->relations = $tcase_mgr->getTCVersionRelations($idCard);
@@ -681,6 +683,8 @@ function init_args(&$dbHandler,$cfgObj) {
 
   $tproject_mgr = new testproject($dbHandler);
   $info = $tproject_mgr->get_by_id($args->tproject_id);
+  $args->reqEnabled = intval($info['option_reqs']);
+
   unset($tproject_mgr);  
   $bug_summary['minLengh'] = 1; 
   $bug_summary['maxLengh'] = 1; 
@@ -1402,17 +1406,21 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id) {
   returns: 
 
 */
-function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$issueTracker,&$codeTracker) {
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$issueTracker,&$codeTracker) 
+{
   $buildMgr = new build_mgr($dbHandler);
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+  $gui->allIssueAttrOnScreen = 0;
   $gui->lexNotes = null;
   $gui->tcversionSet = null;
   $gui->plugins = null;
   $gui->hasNewestVersion = 0;
   $gui->addLinkToTLChecked = $cfgObj->exec_cfg->exec_mode->addLinkToTLChecked;
   $gui->addLinkToTLPrintViewChecked = $cfgObj->exec_cfg->exec_mode->addLinkToTLPrintViewChecked;
+
+  $gui->assignTaskChecked = $cfgObj->exec_cfg->exec_mode->assignTaskChecked;
 
 
   $k2i = array('import','attachments','exec','edit_exec');
@@ -1507,13 +1515,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
   $gui->execution_types=$tcaseMgr->get_execution_types();
 
-  if($argsObj->filter_assigned_to)
-  {
+  if ($argsObj->filter_assigned_to) {
     $userSet = tlUser::getByIds($dbHandler,array_values($argsObj->filter_assigned_to));
-    if ($userSet)
-    {
-      foreach($userSet as $key => $userObj) 
-      {
+    if ($userSet) {
+      foreach ($userSet as $key => $userObj) {
         $gui->ownerDisplayName[$key] = $userObj->getDisplayName();
       }    
     }    
@@ -1542,15 +1547,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   // Important note: 
   // custom fields for test plan can be edited ONLY on design, that's reason why we are using 
   // scope = 'design' instead of 'execution'
-  $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'design',
-                                                                        array('show_on_execution' => 1));
+  $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values(
+                             $argsObj->tplan_id,'design',
+                             array('show_on_execution' => 1));
+    
+  $gui->build_cfields = $buildMgr->html_table_of_custom_field_values(
+                          $argsObj->build_id,$argsObj->tproject_id,
+                          'design',array('show_on_execution' => 1));
     
 
-  $gui->build_cfields = $buildMgr->html_table_of_custom_field_values($argsObj->build_id,$argsObj->tproject_id,
-                                                                     'design',array('show_on_execution' => 1));
-    
-
-  
   $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
                                        'btn_history_on','btn_history_off','history_on');
   $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';
@@ -1574,17 +1579,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $gui->node_id = $argsObj->id;
   $gui->draw_save_and_exit = ($argsObj->caller == 'tcAssignedToMe');
 
-  
+  $gui->bug_summary = '';  
   $gui->issueTrackerCfg = new stdClass(); 
   $gui->issueTrackerCfg->bugSummaryMaxLength = 100;  // MAGIC I'm sorry
   $gui->issueTrackerCfg->editIssueAttr = false;
-  
 
-  
-  if(!is_null($issueTracker))
-  {    
-    if( $issueTracker->isConnected() )
-    {
+  $issueTrackerUpAndRunning = 0;
+  if(!is_null($issueTracker)) {    
+    if( $issueTracker->isConnected() ) {
+      $issueTrackerUpAndRunning = 1;
       $itsCfg = $issueTracker->getCfg();
 
       $gui->issueTrackerCfg->bugSummaryMaxLength = $issueTracker->getBugSummaryMaxLength();
@@ -1599,41 +1602,54 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
                                $issueTracker->canCreateViaAPI();
 
       $gui->tlCanAddIssueNote = method_exists($issueTracker,'addNote');
-    }  
-    else
-    {
+    } else {
       $gui->user_feedback = lang_get('issue_tracker_integration_problems');
     }
   }
   
   // get matadata
+
   $gui->issueTrackerMetaData = null;
-  if($gui->issueTrackerCfg->editIssueAttr == 1)
-  {
-    $gui->issueTrackerMetaData = !is_null($issueTracker) ? 
-                                 getIssueTrackerMetaData($issueTracker) : null; 
-    
-  
+  $gui->issueTrackerMetaData = !is_null($issueTracker) ? 
+    getIssueTrackerMetaData($issueTracker) : null;
+
+  if ($gui->issueTrackerCfg->editIssueAttr == 1) {
     $k2c = array('issueType','issuePriority','artifactVersion',
                  'artifactComponent');
-    foreach($k2c as $kj)
-    {
+    foreach ($k2c as $kj) {
       $gui->$kj = $argsObj->$kj;  
 
+      // To manage issue at step level
       $kx = $kj . 'ForStep';
       $gui->$kx = $argsObj->$kx;  
     }  
-  }  
- 
-  $gui->bug_summary = '';
+  } else {
+    if( null != $gui->issueTrackerMetaData ) {
+      $singleVal = array('issuetype' => 'issueType',
+                         'issuepriority' => 'issuePriority');
+      foreach ($singleVal as $kj => $attr) {
+        $gui->$attr = $itsCfg->$kj;  
+        $forStep = $attr . 'ForStep';
+        $gui->$forStep = $gui->$attr; 
+      }  
 
+      $multiVal = array('version' => 'artifactVersion',
+                        'component' => 'artifactComponent');
+      foreach ($multiVal as $kj => $attr) {
+        $gui->$attr = (array)$itsCfg->$kj;  
+        $forStep = $attr . 'ForStep';
+        $gui->$forStep = $gui->$attr; 
+      }  
+
+      // something similar needs to be done for steps      
+    }
+  }
 
   $gui->executionContext = array();
   $gui->executionContext['tproject_name'] = $gui->testproject_name;
   $gui->executionContext['tplan_name'] = $gui->testplan_name;
   $gui->executionContext['platform_name'] = $gui->platform_info['name'];
   $gui->executionContext['build_name'] = $gui->build_name;
-
 
   return $gui;
 }
@@ -2328,10 +2344,8 @@ function getResultsIcons()
   $resultsCfg = config_get('results');
   // loop over status for user interface, because these are the statuses
   // user can assign while executing test cases
-  foreach($resultsCfg['status_icons_for_exec_ui'] as $verbose_status => $ele)
-  {
-    if( $verbose_status != 'not_run' )
-    {  
+  foreach ($resultsCfg['status_icons_for_exec_ui'] as $verbose_status => $ele) {
+    if ($verbose_status != 'not_run') {  
       $code = $resultsCfg['status_code'][$verbose_status];
       $items[$code] = $ele;
       $items[$code]['title'] = lang_get($items[$code]['title']);

@@ -155,9 +155,10 @@ function init_args(&$dbHandler) {
     break;
      
     case 'testcase':
-      $args->viewerArgs = array('action' => '', 'msg_result' => '', 'user_feedback' => '',
-                                'disable_edit' => 0, 'refreshTree' => 0,
-                                'add_relation_feedback_msg' => $args->add_relation_feedback_msg);
+      $args->viewerArgs = array('action' => '', 'msg_result' => '', 
+        'user_feedback' => '',
+        'disable_edit' => 0, 'refreshTree' => 0,
+        'add_relation_feedback_msg' => $args->add_relation_feedback_msg);
             
       $args->id = is_null($args->id) ? 0 : $args->id;
       $args->tcase_id = $args->id;
@@ -257,20 +258,17 @@ function systemWideTestCaseSearch(&$dbHandler,&$argsObj,$glue)
   // in situation where it's role is not this.
   // Anyway i will work on this in the future (if I've time)
   //
-  if (strpos($argsObj->targetTestCase,$glue) === false)
-  {
+  if (strpos($argsObj->targetTestCase,$glue) === false) {
     // We suppose user was lazy enough to do not provide prefix,
     // then we will try to help him/her
     $argsObj->targetTestCase = $argsObj->tcasePrefix . $argsObj->targetTestCase;
   }
 
-  if( !is_null($argsObj->targetTestCase) )
-  {
+  if( !is_null($argsObj->targetTestCase) ) {
     // parse to get JUST prefix, find the last glue char.
     // This useful because from navBar, user can request search of test cases that belongs
     // to test project DIFFERENT to test project setted in environment
-    if( ($gluePos = strrpos($argsObj->targetTestCase, $glue)) !== false)
-    {
+    if( ($gluePos = strrpos($argsObj->targetTestCase, $glue)) !== false) {
       $tcasePrefix = substr($argsObj->targetTestCase, 0, $gluePos);
     }
 
@@ -280,8 +278,7 @@ function systemWideTestCaseSearch(&$dbHandler,&$argsObj,$glue)
     $tcaseMgr = new testcase($dbHandler);
     $argsObj->tcase_id = $tcaseMgr->getInternalID($argsObj->targetTestCase);
     $dummy = $tcaseMgr->get_basic_info($argsObj->tcase_id,array('number' => $argsObj->tcaseVersionNumber));
-    if(!is_null($dummy))
-    {
+    if(!is_null($dummy)) {
       $argsObj->tcversion_id = $dummy[0]['tcversion_id'];
     }
   }

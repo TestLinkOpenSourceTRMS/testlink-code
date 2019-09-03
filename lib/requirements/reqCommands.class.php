@@ -17,6 +17,7 @@ class reqCommands {
   private $reqStatusDomain;
   private $reqTypeDomain;
   private $attrCfg;
+  private $reqCfg;
 
   const OVERWRITESCOPE=true;
   
@@ -25,12 +26,12 @@ class reqCommands {
       $this->reqSpecMgr = new requirement_spec_mgr($db);
       $this->reqMgr = new requirement_mgr($db);
       
-      $reqCfg = config_get('req_cfg');
-      $this->reqStatusDomain = init_labels($reqCfg->status_labels);
-      $this->reqTypeDomain = init_labels($reqCfg->type_labels);
-      $this->reqRelationTypeDescr = init_labels($reqCfg->rel_type_description);
+      $this->reqCfg = config_get('req_cfg');
+      $this->reqStatusDomain = init_labels($this->reqCfg->status_labels);
+      $this->reqTypeDomain = init_labels($this->reqCfg->type_labels);
+      $this->reqRelationTypeDescr = init_labels($this->reqCfg->rel_type_description);
       
-      $type_ec = $reqCfg->type_expected_coverage;
+      $type_ec = $this->reqCfg->type_expected_coverage;
       $this->attrCfg = array();
       $this->attrCfg['expected_coverage'] = array();
       foreach($this->reqTypeDomain as $type_code => $dummy) {

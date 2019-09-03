@@ -39,10 +39,16 @@ class jirarestInterface extends issueTrackerInterface
     $this->support = new jiraCommons();
     $this->support->guiCfg = array('use_decoration' => true);
 
-	  $this->methodOpt['buildViewBugLink'] = array('addSummary' => true, 'colorByStatus' => false);
+    // This is the right way to overwrite ONLY 
+    // the keys we want, and preserve the default 
+    // configuration present in the issueTrackerInterface class
+	  $this->methodOpt['buildViewBugLink'] = 
+      array_merge($this->methodOpt['buildViewBugLink'], 
+                  array('addSummary' => true, 
+                        'colorByStatus' => false)
+                  );
 
-    if($this->setCfg($config) && $this->checkCfg())
-    {
+    if ($this->setCfg($config) && $this->checkCfg()) {
       $this->completeCfg();
       $this->connect();
       $this->guiCfg = array('use_decoration' => true);

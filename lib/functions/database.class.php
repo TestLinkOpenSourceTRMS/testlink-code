@@ -209,7 +209,7 @@ class database {
         echo "<pre>"; debug_print_backtrace(); echo "</pre>";
         die();
       }   
-      echo "<pre>"; debug_print_backtrace(); echo "</pre>";
+      echo "<pre>"; debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS); echo "</pre>";
         die();
       
       //else

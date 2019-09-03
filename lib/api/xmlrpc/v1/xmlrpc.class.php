@@ -7130,9 +7130,16 @@ class TestlinkXMLRPCServer extends IXR_Server {
     /**
      * Gets list of requirements for a given Test case
      *
-     * @param $testcaseexternalid
+     * The user must have Req view mgt privilege on the project
+     * containing the given TC
      *
-     * @return requirement list
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param int $args["testcaseid"]
+     *
+     * @return array
+     *         requirement list, if success
+     *         error info, if failure
      *
      * @access public
      */
@@ -7141,11 +7148,17 @@ class TestlinkXMLRPCServer extends IXR_Server {
       $msgPrefix="(" .__FUNCTION__ . ") - ";
       $this->_setArgs($args);
       $checkFunctions = array('authenticate','checkTestCaseIdentity');
-      $status_ok=$this->_runChecks($checkFunctions,$msgPrefix);
+
+      // set the project as context
+      $tcaseID = $this->args[self::$testCaseIDParamName];
+      $tcase_tprojectID = $this->tcaseMgr->get_testproject( $tcaseID );
+      $context[self::$testProjectIDParamName] = $tcase_tprojectID;
+
+      $status_ok=$this->_runChecks($checkFunctions,$msgPrefix) && $this->userHasRight("mgt_view_req", false, $context);
 
       if($status_ok)
       {
-        $itemSet = $this->reqMgr->get_all_for_tcase($this->args[self::$testCaseIDParamName]);
+        $itemSet = $this->reqMgr->get_all_for_tcase($tcaseID);
         return $itemSet;
       }
       else

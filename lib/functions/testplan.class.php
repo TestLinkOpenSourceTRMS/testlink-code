@@ -2145,7 +2145,7 @@ class testplan extends tlObjectWithAttachments
         
       $recordset = (array)$this->db->get_recordset($sql);
       $myarray = array();
-      if (count($recordset) > 0) {        
+      if (!is_null($recordset) && count($recordset) > 0) {        
         $myarray = array($recordset[0]);
         $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
       }

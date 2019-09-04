@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      Andreas Morsing
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @filesource  tlAttachmentRepository.class.php
  * @link        http://www.testlink.org/index.php
  *
@@ -123,39 +123,50 @@ class tlAttachmentRepository extends tlObjectWithDB
     $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
     $fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
 
-    $fContents = null;
+    if (null == $fName || '' == $fType || 0 == $fSize) {
+      return false;
+    }
 
-    $fExt = getFileExtension(isset($fInfo['name']) ? ($fInfo['name']) : '',"bin");
+    // Process filename against XSS
+    // Thanks to http://owasp.org/index.php/Unrestricted_File_Upload
+    $pattern = '/^[a-zA-Z0-9]{1,20}\.[a-zA-Z0-9]{1,10}$/';
+    if( !preg_match($pattern,$fName) ){
+      return false; 
+    }
+    
+    $fExt = getFileExtension($fName,"");
+    if( '' == $fExt ) {
+      return false; 
+    }
+
+    $allowed = explode(',',$this->attachmentCfg->allowed_files);
+    if (!in_array($fExt, $allowed)) {
+      return false; 
+    }
+
+    // Go ahead
+    $fContents = null;
     $destFPath = null;
     $destFName = getUniqueFileName($fExt);
 
-    if ($this->repositoryType == TL_REPOSITORY_TYPE_FS)
-    {
+    if ($this->repositoryType == TL_REPOSITORY_TYPE_FS) {
       $destFPath = $this->buildRepositoryFilePath($destFName,$fkTableName,$fkid);
       $fileUploaded = $this->storeFileInFSRepository($fTmpName,$destFPath);
-    }
-    else
-    {
+    } else {
       $fContents = $this->getFileContentsForDBRepository($fTmpName,$destFName);
       $fileUploaded = sizeof($fContents);
-      if($fileUploaded)
-      {
-          @unlink($fTmpName); 
+      if($fileUploaded) {
+        @unlink($fTmpName); 
       } 
     }
 
-    if ($fileUploaded)
-    {
+    if ($fileUploaded) {
       $fileUploaded = 
-      ($this->attmObj->create($fkid,$fkTableName,$fName,$destFPath,$fContents,
-                              $fType,$fSize,$title,$opt) >= tl::OK);
+      ($this->attmObj->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title,$opt) >= tl::OK);
       
-      if ($fileUploaded)
-      {
+      if ($fileUploaded) {
         $fileUploaded = $this->attmObj->writeToDb($this->db);
-      }
-      else
-      { 
+      } else { 
         @unlink($destFPath);
       }
     }

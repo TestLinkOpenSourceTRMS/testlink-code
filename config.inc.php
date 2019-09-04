@@ -1494,7 +1494,11 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 // $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 $g_attachments->access_string = "[*]";
 
-
+/**
+ * Files that are allowed.  Separate items by commas.
+ * eg. 'doc,xls,gif,png,jpg'
+ */
+$g_attachments->allowed_files = 'doc,xls,gif,png,jpg,xlsx,csv';
 
 
 /** the type of the repository can be database or filesystem

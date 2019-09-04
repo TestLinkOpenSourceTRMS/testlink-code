@@ -212,46 +212,20 @@ function init_args($dateFormat) {
   }
   
   // convert "creation date from" to iso format for database usage
-  if (isset($args->creation_date_from) && $args->creation_date_from != '') {
-     $date_array = split_localized_date($args->creation_date_from, $dateFormat);
-      
-     if ($date_array != null) {
-       // set date in iso format
-       $args->creation_date_from = $date_array['year'] . "-" . 
-         $date_array['month'] . "-" . $date_array['day'];
-     }
-  }
-  
-  // convert "creation date to" to iso format for database usage
-  if (isset($args->creation_date_to) && $args->creation_date_to != '') {
-    $date_array = split_localized_date($args->creation_date_to, $dateFormat);
-    
-    if ($date_array != null) {
-      // set date in iso format
-      // date to means end of selected day -> add 23:59:59 to selected date
-      $args->creation_date_to = $date_array['year'] . "-" . $date_array['month'] . 
-                                  "-" . $date_array['day'] . " 23:59:59";
-    }
-  }
-  
-  // convert "modification date from" to iso format for database usage
-  if (isset($args->modification_date_from) && $args->modification_date_from != '') {
-    $date_array = split_localized_date($args->modification_date_from, $dateFormat);
-    if ($date_array != null) {
-      // set date in iso format
-      $args->modification_date_from= $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
-    }
-  }
-  
-  //$args->modification_date_to = strtotime($args->modification_date_to);
-  // convert "creation date to" to iso format for database usage
-  if (isset($args->modification_date_to) && $args->modification_date_to != '') {
-    $date_array = split_localized_date($args->modification_date_to, $dateFormat);
-    if ($date_array != null) {
-      // set date in iso format
-      // date to means end of selected day -> add 23:59:59 to selected date
-      $args->modification_date_to = $date_array['year'] . "-" . $date_array['month'] . "-" .
-                                $date_array['day'] . " 23:59:59";
+  $dk = array('creation_date_from' => ' 00:00:00',
+              'creation_date_to' => ' 23:59:59',
+              'modification_date_from' => ' 00:00:00',
+              'modification_date_to' => ' 23:59:59');
+  foreach( $dk as $tdk => $hhmmss ) {
+    if (isset($args->$tdk) && trim($args->$tdk) != '') {
+      $l10ndate = split_localized_date($args->$tdk, $dateFormat);
+      $args->$tdk = null;   
+      if ($l10ndate != null && is_array($l10ndate)) {
+        // set date in iso format
+        $args->$tdk = $l10ndate['year'] . "-" . 
+                      $l10ndate['month'] . "-" . 
+                      $l10ndate['day'] . $hhmmss;
+      }
     }
   }
   
@@ -289,6 +263,7 @@ function build_search_sql(&$dbHandler,&$argsObj,&$guiObj) {
 
   // -----------------------------------------------------------------------
   // date filters can be build using algorithm
+  // Need to sanitize!!! 2019
   $date_fields = array('creation_ts' => 'ts' ,'modification_ts' => 'ts');
   $date_keys = array('date_from' => '>=' ,'date_to' => '<=');
   foreach($date_fields as $fx => $needle) {

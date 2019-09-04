@@ -71,9 +71,6 @@ function displayReport($template_file, &$smarty, $doc_format, $mailCfg = null)
       {
         case 'results/resultsGeneral.tpl'; 
          flushHttpHeader(FORMAT_HTML, $doc_kind = 0);
-         $message =   
-           
-
          $mf->msg = $op->status_ok ? '' : lang_get('send_mail_ko');
          $mf->msg .= ' ' . $op->msg;
          $mf->title = ''; //$mailCfg->subject;

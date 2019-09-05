@@ -7,8 +7,7 @@
  *
  * @filesource  doAuthorize.php
  * @package     TestLink
- * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
- * @copyright   2003-2018, TestLink community 
+ * @copyright   2003-2019, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -420,7 +419,7 @@ function doSessionSetUp(&$dbHandler,&$userObj) {
 
   $ckObj = new stdClass();
   $ckObj->name = config_get('auth_cookie');
-  $ckObj->value = $user->getSecurityCookie();
+  $ckObj->value = $userObj->getSecurityCookie();
   $ckObj->expire = $expireOnBrowserClose = false;
   tlSetCookie($ckObj);
 

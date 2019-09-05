@@ -577,8 +577,7 @@ class testcase extends tlObjectWithAttachments {
                   // Anyway right now I will not change.
                   $target = $name . ($suffix = sprintf($mask,++$siblingQty));
                   $final_len = strlen($target);
-                  if( $final_len > $name_max_len)
-                  {
+                  if( $final_len > $name_max_len) {
                     $target = substr($target,strlen($suffix),$name_max_len);
                   }
 
@@ -594,8 +593,7 @@ class testcase extends tlObjectWithAttachments {
                   {
                     $target = $name . ($suffix = sprintf($mask,++$siblingQty));
                     $final_len = strlen($target);
-                    if( $final_len > $name_max_len)
-                    {
+                    if( $final_len > $name_max_len) {
                       $target = substr($target,strlen($suffix),$name_max_len);
                     }
                   }
@@ -1237,19 +1235,15 @@ class testcase extends tlObjectWithAttachments {
       $mi = $this->tree_manager->get_node_hierarchy_info($id);
       $itemSet = $this->getDuplicatesByName($name,$mi['parent_id'],array('id2exclude' => $id));
 
-      if(!is_null($itemSet))
-      {
+      if(!is_null($itemSet)) {
         $ret['status_ok'] = false;
         $ret['msg'] = sprintf(lang_get('name_already_exists'),$name);
         $ret['reason'] = 'already_exists';
         $ret['hit_on'] = current($itemSet);
       }
 
-
-      if( $ret['status_ok'] == false )
-      {
+      if( $ret['status_ok'] == false ) {
         // get more info for feedback
-
       }
     }
 
@@ -7308,8 +7302,7 @@ class testcase extends tlObjectWithAttachments {
    * @param int  $id test case id
    * @param string $name
    *
-   * @internal revisions
-   *
+   * @used-by XML-RPC API
    */
   function updateName($id,$name)
   {
@@ -7322,22 +7315,19 @@ class testcase extends tlObjectWithAttachments {
     $field_size = config_get('field_size');
     $new_name = trim($name);
 
-    if( ($nl = strlen($new_name)) <= 0 )
-    {
+    if( ($nl = mb_strlen($new_name)) <= 0 ) {
       $ret['status_ok'] = false;
       $ret['API_error_code'] = 'TESTCASE_EMPTY_NAME';
       $ret['msg'] = lang_get('API_' . $ret['API_error_code']);
     }
 
-    if( $ret['status_ok'] && $nl > $field_size->testcase_name)
-    {
+    if( $ret['status_ok'] && $nl > $field_size->testcase_name) {
       $ret['status_ok'] = false;
       $ret['API_error_code'] = 'TESTCASE_NAME_LEN_EXCEEDED';
       $ret['msg'] = sprintf(lang_get('API_' . $ret['API_error_code']),$nl,$field_size->testcase_name);
     }
 
-    if( $ret['status_ok'] )
-    {
+    if( $ret['status_ok'] ) {
       // Go ahead
       $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
       $ret['status_ok'] = !$check['status'];
@@ -7346,12 +7336,9 @@ class testcase extends tlObjectWithAttachments {
       $ret['debug'] = '';
     }
 
-    if($ret['status_ok'])
-    {
-
+    if($ret['status_ok']) {
       $rs = $this->tree_manager->get_node_hierarchy_info($id);
-      if( !is_null($rs) && $rs['node_type_id'] == $this->my_node_type)
-      {
+      if( !is_null($rs) && $rs['node_type_id'] == $this->my_node_type) {
         $sql = "/* {$debugMsg} */ UPDATE {$this->tables['nodes_hierarchy']} " .
                " SET name='" . $this->db->prepare_string($name) . "' " .
                " WHERE id= {$id}";

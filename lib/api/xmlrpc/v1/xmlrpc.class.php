@@ -6432,9 +6432,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
 
             if($checkRight) {
-                $r2c = array(
-                        'testproject_edit_executed_testcases'
-                );
+                $r2c = array('testproject_edit_executed_testcases' );
                 foreach( $r2c as $right ) {
                     $status_ok = $this->userHasRight( $right, $ck, $ctx );
                     if(! $status_ok) {

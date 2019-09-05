@@ -5,7 +5,7 @@
  * 
  * @filesource  testsuite.class.php
  * @package     TestLink
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2019, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
@@ -529,7 +529,9 @@ class testsuite extends tlObjectWithAttachments
                   'output' => 'with_link_id');
     $gui->keywords_map = $this->get_keywords_map($id,$kopt);
 
-    $of = array('output' => 'html_options','add_blank' => true);
+    $of = array('output' => 'html_options',
+                'add_blank' => true,
+                'tproject_id' => $gui->tproject_id);
     $gui->freeKeywords = $this->getFreeKeywords($id,$of);
 
     $smarty->assign('gui',$gui);
@@ -1910,17 +1912,26 @@ class testsuite extends tlObjectWithAttachments
    *
    *
    */
-  function getFreeKeywords($tsuiteID,$opt = null) {
+  function getFreeKeywords($tsuiteID, $opt = null) {
     $my['opt'] = array('accessKey' => 'keyword_id', 'fields' => null, 
                        'orderBy' => null, 'tproject_id' => null,
                        'output' => 'std', 'add_blank' => false);
 
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
+    // CRITIC
+    $tproject_id = $my['opt']['tproject_id'];
+    if( null == $tproject_id ) {
+      $root = $this->getTestProjectFromTestSuite($tsuiteID,null);
+    }
+    $tproject_id = intval($tproject_id);
+
+
     $safeID = intval($tsuiteID);
     $sql = " SELECT KW.id AS keyword_id, KW.keyword
              FROM {$this->tables['keywords']} KW
-             WHERE KW.id NOT IN 
+             WHERE KW.project_id = {$tproject_id} 
+             AND KW.id NOT IN 
              (
                SELECT TSKW.keyword_id 
                FROM {$this->tables['object_keywords']} TSKW

@@ -529,7 +529,8 @@ class testsuite extends tlObjectWithAttachments
                   'output' => 'with_link_id');
     $gui->keywords_map = $this->get_keywords_map($id,$kopt);
 
-    $of = array('output' => 'html_options','add_blank' => true);
+    // get keywords for the selected project
+    $of = array('output' => 'html_options','add_blank' => true,'tproject_id' => $gui->tproject_id);
     $gui->freeKeywords = $this->getFreeKeywords($id,$of);
 
     $smarty->assign('gui',$gui);

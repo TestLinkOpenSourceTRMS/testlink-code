@@ -101,6 +101,9 @@ $tlCfg->theme_dir = 'gui/themes/default/';
 /** Dir for compiled templates */
 $tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 
                    'templates_c' . DIRECTORY_SEPARATOR;
+if (($tpltmp = getenv('TESTLINK_TEMPLATES_C'))) {
+  $tlCfg->temp_dir = trim($tpltmp);
+}
 
 /** default filenames of CSS files of current GUI theme */
 define('TL_CSS_MAIN', 'testlink.css');
@@ -303,7 +306,9 @@ $tlCfg->smarty_debug = false;
  *  put it out of reach via web or configure access denied.
  */
 $tlCfg->log_path = '/var/testlink/logs/'; /* unix example */
-
+if (($lp = getenv('TESTLINK_LOG_PATH'))) {
+  $tlCfg->log_path = trim($lp);
+}
 
 /**
  * @var string How to warning user when security weak points exists.
@@ -1515,6 +1520,9 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
  *
  **/
 $g_repositoryPath = '/var/testlink/upload_area/';  /* unix example */
+if (($upa = getenv('TESTLINK_UPLOAD_AREA'))) {
+  $g_repositoryPath = trim($upa);
+}
 
 /**
  * compression used within the repository

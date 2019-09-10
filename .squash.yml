@@ -9,4 +9,3 @@ deployments:
     run_options: --env TESTLINK_UPLOAD_AREA=${TESTLINK_UPLOAD_AREA} 
                  --env TESTLINK_LOG_PATH=${TESTLINK_LOG_PATH}
                  --env TESTLINK_TEMPLATE_C=${TESTLINK_TEMPLATE_C}
-                 --env MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}

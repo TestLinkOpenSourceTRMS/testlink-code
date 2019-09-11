@@ -1930,7 +1930,7 @@ class testsuite extends tlObjectWithAttachments
     $safeID = intval($tsuiteID);
     $sql = " SELECT KW.id AS keyword_id, KW.keyword
              FROM {$this->tables['keywords']} KW
-             WHERE KW.project_id = {$tproject_id} 
+             WHERE KW.testproject_id = {$tproject_id} 
              AND KW.id NOT IN 
              (
                SELECT TSKW.keyword_id 

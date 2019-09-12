@@ -1506,6 +1506,18 @@ $g_attachments->access_string = "[*]";
 $g_attachments->allowed_files = 'doc,xls,gif,png,jpg,xlsx,csv';
 
 
+/**
+ * Process filename against XSS
+ * Thanks to http://owasp.org/index.php/Unrestricted_File_Upload
+ *   '/^[a-zA-Z0-9]{1,20}\.[a-zA-Z0-9]{1,10}$/'; 
+ *   added - and _.
+ * 
+ * NO CHECK if -> $g_attachments->allowed_filenames_regexp = '';
+ *
+ */
+$g_attachments->allowed_filenames_regexp = '/^[a-zA-Z0-9_-]{1,20}\.[a-zA-Z0-9]{1,10}$/';
+
+
 /** the type of the repository can be database or filesystem
  * TL_REPOSITORY_TYPE_DB => database
  * TL_REPOSITORY_TYPE_FS => filesystem

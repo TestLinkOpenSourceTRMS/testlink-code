@@ -129,8 +129,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 
     // Process filename against XSS
     // Thanks to http://owasp.org/index.php/Unrestricted_File_Upload
-    $pattern = '/^[a-zA-Z0-9_-]{1,20}\.[a-zA-Z0-9]{1,10}$/';
-    if( !preg_match($pattern,$fName) ){
+    $pattern = trim($this->attachmentCfg->allowed_filenames_regexp);
+    if( '' != $pattern && !preg_match($pattern,$fName) ){
       return false; 
     }
     

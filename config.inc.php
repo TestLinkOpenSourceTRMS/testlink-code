@@ -1469,41 +1469,41 @@ $tlCfg->platform_template->notes->value = '';
 /* [ATTACHMENTS] */
 
 /** Attachment feature availability */
-$g_attachments = new stdClass();
-$g_attachments->enabled = TRUE;
+$tlCfg->attachments = new stdClass();
+$tlCfg->attachments->enabled = TRUE;
 
 // TRUE -> when you upload a file you can give no title
-$g_attachments->allow_empty_title = TRUE;
+$tlCfg->attachments->allow_empty_title = TRUE;
 
-// $g_attachments->allow_empty_title == TRUE, you can ask the system
+// $tlCfg->attachments->allow_empty_title == TRUE, you can ask the system
 // to do something
 //
 // 'none'         -> just write on db an empty title
 // 'use_filename' -> use filename as title
-//$g_attachments->action_on_save_empty_title='use_filename';
+//$tlCfg->attachments->action_on_save_empty_title='use_filename';
 //
-$g_attachments->action_on_save_empty_title = 'none';
+$tlCfg->attachments->action_on_save_empty_title = 'none';
 
 // Remember that title is used as link description for download
 // then if title is empty, what the system has to do when displaying ?
-// 'show_icon'  -> the $g_attachments->access_icon will be used.
-// 'show_label' -> the value of $g_attachments->access_string will be used .
-$g_attachments->action_on_display_empty_title = 'show_icon';
+// 'show_icon'  -> the $tlCfg->attachments->access_icon will be used.
+// 'show_label' -> the value of $tlCfg->attachments->access_string will be used .
+$tlCfg->attachments->action_on_display_empty_title = 'show_icon';
 
 // Set display order of uploaded files 
-$g_attachments->order_by = " ORDER BY date_added DESC ";
+$tlCfg->attachments->order_by = " ORDER BY date_added DESC ";
 
 
 // need to be moved AFTER include of custom_config
 //
-// $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
-$g_attachments->access_string = "[*]";
+// $tlCfg->attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+$tlCfg->attachments->access_string = "[*]";
 
 /**
  * Files that are allowed.  Separate items by commas.
  * eg. 'doc,xls,gif,png,jpg'
  */
-$g_attachments->allowed_files = 'doc,xls,gif,png,jpg,xlsx,csv';
+$tlCfg->attachments->allowed_files = 'doc,xls,gif,png,jpg,xlsx,csv';
 
 
 /**
@@ -1515,7 +1515,7 @@ $g_attachments->allowed_files = 'doc,xls,gif,png,jpg,xlsx,csv';
  * NO CHECK if -> $g_attachments->allowed_filenames_regexp = '';
  *
  */
-$g_attachments->allowed_filenames_regexp = '/^[a-zA-Z0-9_-]{1,20}\.[a-zA-Z0-9]{1,10}$/';
+$tlCfg->attachments->allowed_filenames_regexp = '/^[a-zA-Z0-9_-]{1,20}\.[a-zA-Z0-9]{1,10}$/';
 
 
 /** the type of the repository can be database or filesystem
@@ -2087,9 +2087,10 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
 }
 
 
-if( !isset($g_attachments->access_icon) )
-{
-  $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+if( !isset($tlCfg->attachments->access_icon) ) {
+  $tlCfg->attachments->access_icon = 
+    '<img src="' . $tlCfg->theme_dir . 
+    'images/new_f2_16.png" style="border:none" />';
 }
 
 

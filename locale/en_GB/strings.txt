@@ -3988,4 +3988,8 @@ $TLS_branch = 'branch';
 $TLS_tag = 'tag';
 $TLS_release_candidate = 'release candidate';
 
+$TLS_allowed_files = "Allowed files:";
+$TLS_allowed_filenames_regexp = "Filename must verify this regexp:";
+
+
 // ----- END ------------------------------------------------------------------

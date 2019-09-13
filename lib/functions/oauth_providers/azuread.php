@@ -3,22 +3,21 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource  google.php
+ * @filesource  azuread.php
  *
- * Google OAUTH API (authentication)
+ * Azure OAUTH API (authentication)
  *
  * @internal revisions
- * @since 1.9.20
  *
  */
 
-//Get token
+// Get token
 function oauth_get_token($authCfg, $code) {
 
   $result = new stdClass();
   $result->status = array('status' => tl::OK, 'msg' => null);
 
-  //Params to get token
+  // Params to get token
   $oauthParams = array(
     'code'          => $code,
     'grant_type'    => $authCfg['oauth_grant_type'],
@@ -77,5 +76,4 @@ function oauth_get_token($authCfg, $code) {
   }
 
   return $result;
-
 }

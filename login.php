@@ -51,13 +51,13 @@ switch($args->action) {
 
 
   case 'oauth':
-    //If code is empty then break
+    // If code is empty then break
     if (!isset($args->oauth_code)){
         renderLoginScreen($gui);
         die();
     }
 
-    //Switch between oauth providers
+    // Switch between oauth providers
     if (!include_once('lib/functions/oauth_providers/'.$args->oauth_name.'.php')) {
         die("Oauth client doesn't exist");
     }
@@ -171,7 +171,31 @@ function init_args() {
     $args->action = 'loginform';
   }
 
+  // whitelist oauth_name
+  if (strcasecmp($args->action,'oauth') == 0) {
+    validateOauth($args->oauth_name);
+  }
+
   return $args;
+}
+
+/**
+ *
+ */
+function validateOauth($name) {
+  $name = trim($name);
+  $oauthServers = config_get('OAuthServers');
+  $whitelistOK = false;
+  foreach ($oauthServers as $serverCfg) {
+    if (strcasecmp($name, $serverCfg['oauth_name']) == 0) {
+      $whitelistOK = true;
+      break;
+    }
+  }
+
+  if ($whitelistOK == false) {
+    die("Invalid Oauth Service");
+  } 
 }
 
 /**

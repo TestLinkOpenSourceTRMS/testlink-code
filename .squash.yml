@@ -1,0 +1,9 @@
+deployments:
+  TestLink:
+    filename:
+      ./Dockerfile
+    ready_wait:
+      7200
+    vm_size:
+      2GB
+    run_options: --env TESTLINK_UPLOAD_AREA=${TESTLINK_UPLOAD_AREA} --env TESTLINK_LOG_PATH=${TESTLINK_LOG_PATH}

@@ -1,5 +1,7 @@
 # TestLink 1.9.20 Raijin - Read me
 
+[![](https://codescene.io/projects/5570/status.svg) Get more details at **codescene.io**.](https://codescene.io/projects/5570/jobs/latest-successful/results)
+
 ## Contents
  1. [Introduction](#1-introduction)
  2. [Release notes / Critical Configuration Notes](2-release-notes--critical-configuration-notes)

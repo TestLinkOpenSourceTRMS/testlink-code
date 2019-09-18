@@ -526,7 +526,7 @@ $tlCfg->OAuthServers = array();
 
 // $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
-// $tlCfg->OAuthServers[1]['redirect_uri'] = 'https://YOURTESTLINKSERVER/login.php';
+// $tlCfg->OAuthServers[1]['redirect_uri'] = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'] . '/login.php';
 
 // $tlCfg->OAuthServers[1]['oauth_force_single'] = true; 
 
@@ -536,7 +536,7 @@ $tlCfg->OAuthServers = array();
 // the domain you want to whitelist (email domains)
 // $tlCfg->OAuthServers[1]['oauth_domain'] = 'autsoft.hu'; 
 // $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://login.microsoftonline.com/TENANTID/openid/userinfo';
-// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read';
+// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read https://graph.microsoft.com/user.read openid profile email';
 
 /**
  * Single Sign On authentication

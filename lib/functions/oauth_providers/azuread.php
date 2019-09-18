@@ -31,26 +31,41 @@ function oauth_get_token($authCfg, $code) {
       str_replace('http://', 'https://', $oauthParams['redirect_uri']);  
   }  
 
-  $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL, $authCfg['token_url']);
-  curl_setopt($curl, CURLOPT_POST, 1);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($oauthParams));
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-  $result_curl = curl_exec($curl);
-  curl_close($curl);
-  $tokenInfo = json_decode($result_curl, true);
+  $token_curl = curl_init();
+  curl_setopt($token_curl, CURLOPT_URL, $authCfg['token_url']);
+  curl_setopt($token_curl, CURLOPT_POST, 1);
+  curl_setopt($token_curl, CURLOPT_POSTFIELDS, http_build_query($oauthParams));
+  curl_setopt($token_curl, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($token_curl, CURLOPT_SSL_VERIFYPEER, false);
+  $result_token_curl = curl_exec($token_curl);
+  curl_close($token_curl);
+  $tokenInfo = json_decode($result_token_curl, true);
+
+  // To get user principal name, given name, and surname from token endpoint, Directory.ReadWriteAll permission is required.
+  // However, it is too much to give Write permission, so if you get them via the graph API, only User.Read and Email.Read will be sufficient.
+  $graph_curl = curl_init();
+  $graph_api_header = [
+    'Content-Type: application/json',
+    'Authorization: Bearer ' . $tokenInfo['access_token']
+  ];
+  curl_setopt($graph_curl, CURLOPT_URL, 'https://graph.microsoft.com/v1.0/me');
+  curl_setopt($graph_curl, CURLOPT_HTTPHEADER, $graph_api_header);
+  curl_setopt($graph_curl, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($graph_curl, CURLOPT_SSL_VERIFYPEER, false);
+  $result_graph_curl = curl_exec($graph_curl);
+  curl_close($graph_curl);
+  $userInfo = json_decode($result_graph_curl, true);
 
   // At this point we may turn to the user_info endpoint for additional information
   // but for now, we are going to ignore it, as all neccessary information is available
   // in the id_token
   if (isset($tokenInfo['id_token'])){
     list($header, $payload, $signature) = explode(".", $tokenInfo['id_token']);
-    $userInfo = json_decode(base64_decode ($payload), true);
+    $jwtInfo = json_decode(base64_decode ($payload), true);
 
-    if (isset($userInfo['oid'])){
+    if (isset($jwtInfo['oid'])){
       if (isset($authCfg['oauth_domain'])) {
-        $domain = substr(strrchr($userInfo['upn'], "@"), 1);
+        $domain = substr(strrchr($userInfo['userPrincipalName'], "@"), 1);
         if ($domain !== $authCfg['oauth_domain']){
           $result->status['msg'] = 
           "TestLink Oauth policy - User email domain:$domain does not 
@@ -64,9 +79,9 @@ function oauth_get_token($authCfg, $code) {
     }
 
     $options = new stdClass();
-    $options->givenName = $userInfo['given_name'];
-    $options->familyName = $userInfo['family_name'];
-    $options->user = $userInfo['upn'];
+    $options->givenName = $userInfo['givenName'];
+    $options->familyName = $userInfo['surname'];
+    $options->user = $userInfo['userPrincipalName'];
     $options->auth = 'oauth';
 
     $result->options = $options;

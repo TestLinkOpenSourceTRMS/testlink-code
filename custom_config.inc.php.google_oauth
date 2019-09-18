@@ -19,7 +19,6 @@
 // $tlCfg->authentication['oauth'][1]['oauth_name'] = 'google';
 
 // Get from /gui/themes/default/images
-// $tlCfg->authentication['oauth'][1]['oauth_icon'] = 'google.png'; 
 // Can be authorization_code (by default), client_credentials or password
 // $tlCfg->authentication['oauth'][1]['oauth_grant_type'] = 'authorization_code';  
 // $tlCfg->authentication['oauth'][1]['oauth_url'] = 'https://accounts.google.com/o/oauth2/auth';

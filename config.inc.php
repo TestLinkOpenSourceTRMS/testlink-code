@@ -465,7 +465,6 @@ $tlCfg->OAuthServers = array();
 // $tlCfg->OAuthServers[1]['oauth_name'] = 'google';
 
 // Get from /gui/themes/default/images
-// $tlCfg->OAuthServers[1]['oauth_icon'] = 'google.png'; 
 // $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
 // Can be authorization_code (by default), client_credentials or password
@@ -482,7 +481,6 @@ $tlCfg->OAuthServers = array();
 // Github
 // $tlCfg->OAuthServers[2]['oauth_enabled'] = true;
 // $tlCfg->OAuthServers[2]['oauth_name'] = 'github';
-// $tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
 // $tlCfg->OAuthServers[2]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[2]['oauth_client_secret'] = 'CLIENT_SECRET';
 
@@ -499,7 +497,6 @@ $tlCfg->OAuthServers = array();
 //Microsoft
 //$tlCfg->OAuthServers[1]['oauth_enabled'] = true;
 //$tlCfg->OAuthServers[1]['oauth_name'] = 'microsoft';
-//$tlCfg->OAuthServers[1]['oauth_icon'] = 'mslogo.jpg';
 //$tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
 //$tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';
 
@@ -522,7 +519,6 @@ $tlCfg->OAuthServers = array();
 
 // $tlCfg->OAuthServers[1]['oauth_enabled'] = true;
 // $tlCfg->OAuthServers[1]['oauth_name'] = 'azuread'; //do not change this
-// $tlCfg->OAuthServers[1]['oauth_icon'] = 'azuread.png'; 
 
 // $tlCfg->OAuthServers[1]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->OAuthServers[1]['oauth_client_secret'] = 'CLIENT_SECRET';

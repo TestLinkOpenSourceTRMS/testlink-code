@@ -151,7 +151,7 @@ function init_gui(&$db,$args)
         $gui->oauth[$name] = new stdClass();
         $gui->oauth[$name]->name = ucfirst($name);
         $gui->oauth[$name]->link = oauth_link($oauth_prov);
-        $gui->oauth[$name]->icon = $oauth_prov['oauth_icon'];
+        $gui->oauth[$name]->icon = $name . '.png';
     }
   }
   $gui->external_password_mgmt = false;

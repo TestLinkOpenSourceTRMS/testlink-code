@@ -94,7 +94,6 @@
 // $tlCfg->authentication['oauth'][1]['oauth_name'] = 'google';
 
 // Get from /gui/themes/default/images
-// $tlCfg->authentication['oauth'][1]['oauth_icon'] = 'google.png'; 
 // $tlCfg->authentication['oauth'][1]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->authentication['oauth'][1]['oauth_client_secret'] = 'CLIENT_SECRET';
 // Can be authorization_code (by default), client_credentials or password
@@ -111,7 +110,6 @@
 // Github
 // $tlCfg->authentication['oauth'][2]['oauth_enabled'] = true;
 // $tlCfg->authentication['oauth'][2]['oauth_name'] = 'github';
-// $tlCfg->authentication['oauth'][2]['oauth_icon'] = 'github.png'; //Get from /gui/themes/default/images
 // $tlCfg->authentication['oauth'][2]['oauth_client_id'] = 'CLIENT_ID';
 // $tlCfg->authentication['oauth'][2]['oauth_client_secret'] = 'CLIENT_SECRET';
 

@@ -1,0 +1,231 @@
+{
+	"info": {
+		"_postman_id": "6f2d6cdd-59b9-474b-8acd-30d2751f0748",
+		"name": "TestLink",
+		"description": "Test Link Rest API, tested against localhost installation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Test Projects",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKEY",
+						"value": "b8359492ca233fd1ce55d6363cd026cf",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/development/github/testlink-code/lib/api/rest/v2/testprojects/133649",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"development",
+						"github",
+						"testlink-code",
+						"lib",
+						"api",
+						"rest",
+						"v2",
+						"testprojects",
+						"133649"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ONE Test Project by DBID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKEY",
+						"type": "text",
+						"value": "b8359492ca233fd1ce55d6363cd026cf"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/development/github/testlink-code/lib/api/rest/v2/testprojects/133649",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"development",
+						"github",
+						"testlink-code",
+						"lib",
+						"api",
+						"rest",
+						"v2",
+						"testprojects",
+						"133649"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ONE Test Project by PREFIX",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKEY",
+						"type": "text",
+						"value": "b8359492ca233fd1ce55d6363cd026cf"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/development/github/testlink-code/lib/api/rest/v2/testprojects/OC",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"development",
+						"github",
+						"testlink-code",
+						"lib",
+						"api",
+						"rest",
+						"v2",
+						"testprojects",
+						"OC"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ONE Test Project by NAME",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKEY",
+						"type": "text",
+						"value": "b8359492ca233fd1ce55d6363cd026cf"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/development/github/testlink-code/lib/api/rest/v2/testprojects/LUCUBZ",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"development",
+						"github",
+						"testlink-code",
+						"lib",
+						"api",
+						"rest",
+						"v2",
+						"testprojects",
+						"LUCUBZ"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "who ( just to understand API is working)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKEY",
+						"type": "text",
+						"value": "b8359492ca233fd1ce55d6363cd026cf"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/development/github/testlink-code/lib/api/rest/v2/who",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"development",
+						"github",
+						"testlink-code",
+						"lib",
+						"api",
+						"rest",
+						"v2",
+						"who"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "whoAmI ( just to understand API is working) Copy",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKEY",
+						"type": "text",
+						"value": "b8359492ca233fd1ce55d6363cd026cf"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/development/github/testlink-code/lib/api/rest/v2/whoAmI",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"development",
+						"github",
+						"testlink-code",
+						"lib",
+						"api",
+						"rest",
+						"v2",
+						"whoAmI"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "superman ( just to understand API is working) Copy Copy",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKEY",
+						"type": "text",
+						"value": "b8359492ca233fd1ce55d6363cd026cf"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/development/github/testlink-code/lib/api/rest/v2/superman",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"development",
+						"github",
+						"testlink-code",
+						"lib",
+						"api",
+						"rest",
+						"v2",
+						"superman"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,230 @@
+<?php
+//require('addon/sdlcSanityChecks/config/config.inc.php');
+
+
+//$tlCfg->reqCfgByTestProject['JUN'] = ['quick' => true];
+$tlCfg->exec_cfg->exec_mode->assignTaskChecked = true;
+$tlCfg->keywords->byTestProject['PPT'] = 
+  array('addTCLinkIntoITS' => true,'kwPrefix' => 'OP#');
+
+# ------------------------------------------------------
+# Configure using custom_config.inc.php
+$g_smtp_host = 'localhost';  # SMTP server MUST BE configured  
+
+$g_tl_admin_email  = 'Xadmin.testlink@service.tesisquare.com'; # for problem/error notification 
+$g_from_email  = 'francisco.mancardi@service.tesisquare.com';  
+# email sender
+$g_return_path_email  = 'francisco.mancardi@service.tesisquare.com';
+
+# Urgent = 1, Not Urgent = 5, Disable = 0
+$g_mail_priority = 5;   
+
+# Taken from mantis for phpmailer config
+define ("SMTP_SEND",2);
+$g_phpMailer_method = SMTP_SEND;
+# ------------------------------------------------------
+
+
+
+
+
+$tlCfg->config_check_warning_mode = 'SILENT';
+
+
+/*
+$tlCfg->authentication['method'] = 'LDAP';
+$tlCfg->authentication['ldap_automatic_user_creation'] = true;
+
+$tlCfg->authentication['ldap'][1]['ldap_server'] = 'tesi.loc';
+$tlCfg->authentication['ldap'][1]['ldap_port'] = '389';
+$tlCfg->authentication['ldap'][1]['ldap_root_dn'] = 'ou=tesiusers,dc=tesi,dc=loc';
+$tlCfg->authentication['ldap'][1]['ldap_organization'] = '';
+$tlCfg->authentication['ldap'][1]['ldap_uid_field'] = 'sAMAccountName';
+
+$tlCfg->authentication['ldap'][1]['ldap_bind_dn'] = 'LdapBind';
+$tlCfg->authentication['ldap'][1]['ldap_bind_passwd'] = 'Ldap$$44';
+*/
+
+// ====
+$tlCfg->UDFStripHTMLTags = false;
+
+// 20190407
+$tlCfg->exec_cfg->steps_exec_notes_default = 'latest';
+$tlCfg->exec_cfg->steps_exec_status_default = 'latest';
+
+$tlCfg->exec_cfg->exec_mode->new_exec='latest';
+
+
+
+$tlCfg->testcase_template->summary->type = 'file';
+$tlCfg->testcase_template->summary->value = 
+ '/development/github/testlink-code/gui/item-templates/testcases/summary.txt';
+
+# For the UX 
+define('TL_BOOSTRAP_VERSION',3);
+
+# ngrok http -region eu -subdomain=testlink 80
+$tlCfg->OAuthServers[2]['oauth_enabled'] = true;
+$tlCfg->OAuthServers[2]['oauth_name'] = 'github';
+$tlCfg->OAuthServers[2]['oauth_icon'] = 'github.png';
+
+/*
+$tlCfg->OAuthServers[2]['oauth_client_id'] = '98e37f6f3f91602e9538';
+$tlCfg->OAuthServers[2]['oauth_client_secret'] = 'b66f036df4210af08a5d7b7fbf564e731e0ff189';
+*/
+
+// github user: TestlinkOauthProvider
+$tlCfg->OAuthServers[2]['oauth_client_id'] ='39eaa098ffffcda54b63';
+$tlCfg->OAuthServers[2]['oauth_client_secret'] = 
+  'd5dbe0344ca9b5f0857769d87ba14cf99bdc2b1c';
+
+
+// Can be authorization_code (by default), client_credentials or password
+$tlCfg->OAuthServers[2]['oauth_grant_type'] = 'authorization_code';  
+$tlCfg->OAuthServers[2]['oauth_url'] = 'https://github.com/login/oauth/authorize';
+
+$tlCfg->OAuthServers[2]['token_url'] = 'https://github.com/login/oauth/access_token';
+$tlCfg->OAuthServers[2]['oauth_force_single'] = false; 
+$tlCfg->OAuthServers[2]['oauth_profile'] = 'https://api.github.com/user';
+$tlCfg->OAuthServers[2]['oauth_scope'] = 'user:email';
+
+// ngrok http -subdomain=testlink 8888
+$tlCfg->OAuthServers[2]['redirect_uri'] = 'http://testlink.eu.ngrok.io/development/github/testlink-code/login.php?oauth=github';
+
+
+
+# custom_config.inc.php for PDS
+
+# Standard Configuration, execution control with menu instead of icons
+#$g_tpl['inc_exec_controls'] = 'inc_exec_controls.tpl';
+
+
+// $g_tpl['login'] = '../dashio/login/login-dashio.tpl';
+
+# manage Role Inheritance as requested by PDS (TL Version >= 1.9.18)
+$tlCfg->testplan_role_inheritance_mode = 'global';
+
+# Log File used by PDS Custom Reports 
+# --> configure according it's infrastructure
+#define('PRINTDOCX_REPORT_LOG_FILE', 'D:/Bitnami/testlink-1.9.17-1/apps/testlink/htdocs/logs/docxreport.log');
+
+# BEGIN - Define new execution status code
+$tlCfg->results['status_code']['ongoing'] = 'k';
+
+//$tlCfg->results['status_label']['ongoing'] = 'test_status_ongoing';
+$tlCfg->results['status_label_for_exec_ui']['ongoing'] = 'test_status_ongoing';
+
+$tlCfg->results['execStatusToExclude']['step'][]= 
+  $tlCfg->results['status_code']['ongoing'];  
+# END - Define new execution status code
+
+
+// @since 1.9.18
+
+// Keyword delete operation will check if TCVersion is frozen
+// TRUE => keyword deleting can be blocked  
+$tlCfg->keywords->onDeleteCheckFrozenTCVersions = TRUE;
+
+// Keyword delete operation will check if TCVersion is executed
+// TRUE => keyword deleting can be blocked  
+$tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
+
+
+// Test Case Version Specification Attachment Management (add/remove)
+//  
+// Controls what operations will be can be done on a Test Case Version 
+// Specification AFTER it has been executed.
+//   
+// TRUE => After a test case version has been executed 
+//         attachment on test case spec can not be added/removed
+//
+// This means that at GUI Level, will not be possible:
+//
+// add a new attachment to Test Case Specification of 
+// an Executed Test Case Version
+//
+// delete an attachment from Test Case Specification of 
+// an Executed Test Case Version
+//         
+// FALSE: any operation will be allowed.   
+//
+$tlCfg->testcase_cfg->downloadOnlyAfterExec = TRUE;
+
+
+// Test Case Version Spec., Requirements Version Link Management 
+// (add/remove)
+//
+// TRUE: 
+// This means that at GUI Level, will not be possible:
+// add a new req version link to an Executed Test Case Version
+// delete a req version link from Executed Test Case Version
+$tlCfg->testcase_cfg->reqLinkingDisabledAfterExec = TRUE;
+
+// Effects on Linked Requirements Version after 
+// execution of a Test Case Version
+$tlCfg->testcase_cfg->freezeReqVersionAfterExec = TRUE;
+
+// Effects on TCVersion N when TCVersion N+1 is created 
+// NO MATTER if TCVersion N has been executed or not.
+$tlCfg->testcase_cfg->freezeTCVersionOnNewTCVersion = FALSE;
+
+// This will set TCVersion Relation Link Status to:
+// LINK_TC_RELATION_CLOSED_BY_NEW_TCVERSION
+//
+// then blocking TCVersion Delete
+$tlCfg->testcase_cfg->freezeTCVRelationsOnNewTCVersion = TRUE;
+
+// Because: 
+// The Relation must be frozen (cannot be deleted) when 
+// a new version of the test case is created.
+//
+// It seems confusing that relation can be added, then
+// this new configuration will allow this operation
+// only on latest test case version
+// 
+$tlCfg->testcase_cfg->addTCVRelationsOnlyOnLatestTCVersion = TRUE;
+
+
+// Effects on Req Version to TCVersion LINK 
+// when a new version of a linked Test Case is created
+// If LINK is frozen, then this means that link can not be deleted.
+// $tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = FALSE;
+//
+// Important Notice:
+// Req Version to TCVersion Link can be done ONLY TO LATEST TCV.
+// 
+// This means that :
+// 
+// on GUI on the Requirements Area on TEST CASE Specification Feature:
+// this option has NO EFFECT 
+//
+// on GUI on the Assign Requirements Feature:
+// this option has EFFECT
+//
+// on GUI on Coverage Area on REQUIREMENT Specification Feature:
+// this option has EFFECT
+//
+$tlCfg->reqTCLinks->freezeLinkOnNewTCVersion = TRUE;
+
+// Effects on Req Version to TCVersion LINK 
+// when a new version of a linked Req Version is created
+$tlCfg->reqTCLinks->freezeLinkOnNewREQVersion = FALSE;
+
+
+// Effects on BOTH ends of Req Version to TCVersion LINK 
+// when a new version of a linked TC Version is created
+$tlCfg->reqTCLinks->freezeBothEndsOnNewTCVersion = FALSE;
+
+// Effects on BOTH ends of Req Version to TCVersion LINK 
+// when a new version of a linked REQ Version is created
+$tlCfg->reqTCLinks->freezeBothEndsOnNewREQVersion = FALSE;
+
+
+// Effects on REQ Version N when REQ Version N+1 is created 
+$tlCfg->req_cfg->freezeREQVersionOnNewREQVersion = FALSE;
+
+# End Of File
+
+
+
+

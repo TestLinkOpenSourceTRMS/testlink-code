@@ -1466,28 +1466,30 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   static $doProcessCF = false;
   static $debugMsg;
   static $getByAttributeOpt;
-  static $getLastChildInfoOpt;  // TICKET 5528: Importing a requirement with CF fails after the first time
+  static $getLastChildInfoOpt;  
   
-  if(is_null($linkedCF) )
-  {
+  if(is_null($linkedCF) ) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $fieldSize = config_get('field_size');
     
-    $linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
-                                                                'requirement',null,'name');
+    $linkedCF = $this->cfield_mgr->get_linked_cfields_at_design(
+      $tproject_id,cfield_mgr::CF_ENABLED,null,'requirement',null,'name');
     $doProcessCF = true;
 
     $messages = array();
     $messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
     $messages['cfield'] = lang_get('cf_value_not_imported_missing_cf_on_testproject');
 
-    $labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '', 
-                    'frozen_req_unable_to_import' => '', 'requirement' => '', 'import_req_new_version_created' => '',
+    $labels = array('import_req_created' => '',
+                    'import_req_skipped' =>'', 'import_req_updated' => '', 
+                    'frozen_req_unable_to_import' => '', 'requirement' => '', 
+                    'import_req_new_version_created' => '',
                     'import_req_update_last_version_failed' => '',
-                    'import_req_new_version_failed' => '', 'import_req_skipped_plain' => '',
-                    'req_title_lenght_exceeded' => '', 'req_docid_lenght_exceeded' => '');
-    foreach($labels as $key => $dummy)
-    {
+                    'import_req_new_version_failed' => '', 
+                    'import_req_skipped_plain' => '',
+                    'req_title_lenght_exceeded' => '', 
+                    'req_docid_lenght_exceeded' => '');
+    foreach($labels as $key => $dummy) {
       $labels[$key] = lang_get($key);
     }  
     $getByAttributeOpt = array('output' => 'id');
@@ -1749,9 +1751,9 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 		return $knownAttachments;
 	}
   
-// ---------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // Custom field related functions
-// ---------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 /*
   function: get_linked_cfields
@@ -1761,9 +1763,9 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
 
   args: id: requirement id
-    $child_id: requirement version id or requirement revision id
-        [parent_id]:
-                     this information is vital, to get the linked custom fields.
+        $child_id: requirement version id or requirement revision id
+        [parent_id]: this information is vital, 
+                     to get the linked custom fields.
                      null -> use requirement_id as starting point.
                      !is_null -> use this value as testproject id
 
@@ -1791,27 +1793,18 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
                   node_id: requirement id
                            null if for this requirement, custom field was never edited.
-
-  
-
-
-  20111110 - franciscom - TICKET 4802: Exporting large amount of requirements ( qty > 1900) fails
 */
 function get_linked_cfields($id,$child_id,$parent_id=null)
 {
-  if( !is_null($parent_id) )
-  {
+  if( !is_null($parent_id) ) {
       $tproject_id = $parent_id;
-  }
-  else
-  {
-      $req_info = $this->get_by_id($id);
-      $tproject_id = $req_info[0]['testproject_id'];
-      unset($req_info);
+  } else {
+    $req_info = $this->get_by_id($id);
+    $tproject_id = $req_info[0]['testproject_id'];
+    unset($req_info);
   }
 
-  $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::ENABLED,null,
-                                                            'requirement',$child_id);
+  $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::ENABLED,null,'requirement',$child_id);
   return $cf_map;
 }
 
@@ -1839,9 +1832,6 @@ function get_linked_cfields($id,$child_id,$parent_id=null)
 
 
   returns: html string
-
-
-  @internal revisions
 */
 function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name_suffix='', $input_values = null)
 {
@@ -1864,31 +1854,23 @@ function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name
 
   returns: html string
 
-  revision:
-  BUGID 4056
-
 */
 function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 {
-    $NO_WARNING_IF_MISSING=true;
+  $NO_WARNING_IF_MISSING=true;
   $cf_smarty = '';
 
   $root_id = is_null($id) ? $tproject_id : null;  
   $cf_map = $this->get_linked_cfields($id,$child_id,$root_id);
 
-  // BUGID 3989
   $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
   
-  if(!is_null($cf_map))
-  {
-    foreach($cf_map as $cf_id => $cf_info)
-    {
+  if(!is_null($cf_map)) {
+    foreach($cf_map as $cf_id => $cf_info) {
       // if user has assigned a value, then node_id is not null
-      // BUGID 3989
-      if($cf_info['node_id'] || $show_cf)
-      {
+      if($cf_info['node_id'] || $show_cf) {
         $label = str_replace(TL_LOCALIZE_TAG,'',
-                                   lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
+                    lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
         $cf_smarty .= '<tr><td class="labelHolder">' .
                 htmlspecialchars($label) . ":</td><td>" .
@@ -1949,9 +1931,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
  {
     $xml = null;
     $cfMap=$this->get_linked_cfields($id,$version_id,$tproject_id);
-  if( !is_null($cfMap) && count($cfMap) > 0 )
-  {
-        $xml = $this->cfield_mgr->exportValueAsXML($cfMap);
+    if( !is_null($cfMap) && count($cfMap) > 0 ) {
+      $xml = $this->cfield_mgr->exportValueAsXML($cfMap);
     }
     return $xml;
  }
@@ -2182,10 +2163,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   {
     $cfmap_from = $this->get_linked_cfields($source['id'],$source['version_id'],$tproject_id);
     $cfield=null;
-    if( !is_null($cfmap_from) )
-    {
-      foreach($cfmap_from as $key => $value)
-      {
+    if( !is_null($cfmap_from) ) {
+      foreach($cfmap_from as $key => $value) {
         $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
       }
       $this->cfield_mgr->design_values_to_db($cfield,$destination['version_id'],null,'reqversion_copy_cfields');

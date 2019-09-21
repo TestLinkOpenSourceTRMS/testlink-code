@@ -69,15 +69,22 @@ if(count($gui->reqIDs) > 0)  {
   }
   else {
     $reqSet = $req_mgr->get_by_id($gui->reqIDs, $version_option,null,array('output_format' => 'mapOfArray'));
-  }  
+  }
 
-  
-  if($cfg->req->expected_coverage_management)  {
+  // conditions to generate reqVersion Set
+  // having this set, is useful to try to improve performance
+  // to get Custom Fields when req qty > 2000
+  //
+  if ( $cfg->req->expected_coverage_management ||
+       $gui->processCF )  {
     $xSet = array_keys($reqSet);
 
     foreach($xSet as $rqID) {
       $reqVersionSet[] = $reqSet[$rqID][0]['version_id'];
     }
+  }  
+  
+  if($cfg->req->expected_coverage_management)  {
 
     $coverageSet = $req_mgr->getLatestReqVersionCoverageCounterSet($reqVersionSet);
   }
@@ -85,6 +92,12 @@ if(count($gui->reqIDs) > 0)  {
   if($cfg->req->relations->enable) {
     $relationCounters = $req_mgr->getRelationsCounters($gui->reqIDs);
   }
+
+  if ($gui->processCF) {
+    // get custom field values bulk
+    $cfByReqVer = (array)$req_mgr->get_linked_cfields(null,$reqVersionSet,$args->tproject_id,array('access_key' => 'node_id'));
+  }  
+        
 
   // array to gather table data row per row
   $rows = array();    
@@ -190,7 +203,7 @@ if(count($gui->reqIDs) > 0)  {
       
       if($gui->processCF) {
         // get custom field values for this req version
-        $linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id'],$args->tproject_id);
+        $linked_cfields = $cfByReqVer[$version['version_id']];
 
         foreach ($linked_cfields as $cf) {
           $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];

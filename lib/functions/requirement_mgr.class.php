@@ -6,7 +6,7 @@
  * @package     TestLink
  * @filesource  requirement_mgr.class.php
  * @author      Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright   2007-2018, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
@@ -1794,8 +1794,11 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
                   node_id: requirement id
                            null if for this requirement, custom field was never edited.
 */
-function get_linked_cfields($id,$child_id,$parent_id=null)
+function get_linked_cfields($id,$child_id,$parent_id=null,$opt=null)
 {
+  $options = array('access_key' => null);
+  $options = array_merge($options,(array)$opt);
+  
   if( !is_null($parent_id) ) {
       $tproject_id = $parent_id;
   } else {
@@ -1804,7 +1807,8 @@ function get_linked_cfields($id,$child_id,$parent_id=null)
     unset($req_info);
   }
 
-  $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::ENABLED,null,'requirement',$child_id);
+  $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::ENABLED,null,'requirement',
+    $child_id,$options['access_key']);
   return $cf_map;
 }
 

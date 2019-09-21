@@ -441,7 +441,8 @@ class cfield_mgr extends tlObject
 
   */
   function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
-                                        $node_type=null,$node_id=null,$access_key='id')
+                                        $node_type=null,$node_id=null,
+                                        $access_key='id')
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   	
@@ -449,8 +450,17 @@ class cfield_mgr extends tlObject
     $additional_values="";
     $additional_filter="";
 
-    switch($node_type)
-    {
+    switch ($access_key) {
+      case 'id':
+      case 'node_id':
+      break;
+      
+      default:
+        $access_key = 'id';
+      break;  
+    }
+
+    switch($node_type) {
       case 'build':
         $table_key = 'cfield_build_design_values'; 
       break;
@@ -460,24 +470,33 @@ class cfield_mgr extends tlObject
       break;
     }
 
-    if( !is_null($node_type) )
-    {
-      $additional_join .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
-                          " AND CFNT.node_type_id=" . 
-                          $this->db->prepare_int($this->decode['nodes'][$node_type]);
+    if( !is_null($node_type) ) {
+      $additional_join .= 
+        " JOIN {$this->tables['cfield_node_types']} CFNT 
+          ON CFNT.field_id=CF.id AND CFNT.node_type_id=" . 
+        $this->db->prepare_int($this->decode['nodes'][$node_type]);
     }
 
-    if( !is_null($node_id) )
-    {
+    $targetIsArray = false;
+    if( !is_null($node_id) ) {
       $additional_values .= ",CFDV.value AS value,CFDV.node_id AS node_id";
-      $additional_join .= " LEFT OUTER JOIN {$this->tables[$table_key]} CFDV ON CFDV.field_id=CF.id " .
-                          " AND CFDV.node_id=" . $this->db->prepare_int($node_id);
+      
+      if( is_array($node_id) ) {
+        $targetIsArray = true;
+        $sane = array_map('intval', $node_id);
+        $inClause = implode(',',$sane);
+      } else {
+        $inClause = $this->db->prepare_int($node_id);
+      }
+      
+      $additional_join .= 
+        " LEFT OUTER JOIN {$this->tables[$table_key]} CFDV ON CFDV.field_id=CF.id 
+          AND CFDV.node_id IN ($inClause) "; 
     }
 
-    if( !is_null($filters) )
-    {
-      if( isset($filters['show_on_execution']) && !is_null($filters['show_on_execution']) )
-      {
+    if (!is_null($filters)) {
+      if (isset($filters['show_on_execution']) && 
+          !is_null($filters['show_on_execution']) ) {
         $additional_filter .= " AND CF.show_on_execution=1 ";
       }   
         
@@ -487,19 +506,18 @@ class cfield_mgr extends tlObject
       // {
       //     $additional_filter .= " AND CF.show_on_testplan_design=1 ";
       // }   
-      if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
-      {
+      if (isset($filters['show_on_testplan_design']) && 
+          !is_null($filters['show_on_testplan_design'])) {
         $additional_filter .= " AND CF.enable_on_testplan_design=1 ";
       }   
            
       if( isset($filters['cfield_id']) && !is_null($filters['cfield_id']) )
       {
-        $additional_filter .= " AND CF.id={$filters['cfield_id']} ";
+        $additional_filter .= " AND CF.id = {$filters['cfield_id']} ";
       }
         
       $filterKey='location';
-      if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
-      {
+      if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) ) {
         $additional_filter .= " AND CFTP.$filterKey={$filters[$filterKey]} ";
       }
     }
@@ -515,7 +533,12 @@ class cfield_mgr extends tlObject
          $additional_filter .
          " ORDER BY display_order,CF.id ";
 
-    $map = $this->db->fetchRowsIntoMap($sql,$access_key);
+    if ( $targetIsArray ) {
+      $map = $this->db->fetchArrayRowsIntoMap($sql,$access_key); 
+    } else {
+      $map = $this->db->fetchRowsIntoMap($sql,$access_key); 
+    }
+
     return $map;
   }
 

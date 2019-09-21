@@ -1915,7 +1915,7 @@ class testcase extends tlObjectWithAttachments
                   $pfx = $pfx[0] . $this->cfg->testcase->glue_character . $tcversion['tc_external_id'];
 
                   foreach($stepsSet as $key => $step) {
-                    $act = sprintf(self::GHOSTSTEPMASK,$step['step_number'],
+                    $act = sprtinf(self::GHOSTSTEPMASK,$step['step_number'],
                                    $pfx,$tcversion['version']); 
 
                     $this->create_step($to_tcversion_id,

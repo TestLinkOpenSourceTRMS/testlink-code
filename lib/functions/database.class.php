@@ -620,11 +620,15 @@ class database {
    *                 X      B     Z
    *                 Y      B     0
    *
-   *        cumulative=0 -> return items= array('X' => array('A','C'), 'Y' => array('B','0') )
+   *        cumulative=0 -> 
+   *        return items= array('X' => array('A','C'), 'Y' => array('B','0') )
    *
-   *        cumulative=1 -> return items= 
-   *                        array('X' => array( 0 => array('A','C'), 1 => array('B','Z')),
-   *                              'Y' => array( 0 => array('B','0')I )
+   *        cumulative=1 -> 
+   *        return items= 
+   *                      array('X' => 
+   *                                   array( 0 => array('A','C'), 
+   *                                          1 => array('B','Z')),
+   *                            'Y' => array( 0 => array('B','0') )
    *
    * @param integer $limit (optional) number of rows
    *

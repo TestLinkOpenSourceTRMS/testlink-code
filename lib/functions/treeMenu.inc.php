@@ -124,7 +124,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
     $attr_map['platforms'] = null;  // means no filter
     if(!is_null($my['filters']['filter_platforms'])) {
-      $attr_map['keywords'] = 
+      $attr_map['platforms'] = 
         $tproject_mgr->getPlatformsLatestTCV($tproject_id,
            $my['filters']['filter_platforms']);
 

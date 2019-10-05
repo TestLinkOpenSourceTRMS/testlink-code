@@ -1452,6 +1452,27 @@ function setPublicStatus($id,$status)
     }
     return $keywordMap;
   }
+
+  /**
+   * Returns keywords that are linked to test cases
+   *
+   *  @param  integer $id testproject
+   *  @return array   map: key: keyword_id, value: keyword
+   */
+  function getUsedKeywordsMap($id) {
+    $debugMsg = $this->debugMsg . __FUNCTION__;
+    $sql = "/* $debugMsg */
+            SELECT DISTINCT KW.id,KW.keyword
+            FROM {$this->tables['keywords']} KW
+            JOIN {$this->tables['testcase_keywords']} TCKW
+            ON TCKW.keyword_id = KW.id
+            WHERE KW.testproject_id =" . intval($id);  
+    $sql .= " ORDER BY keyword";
+    $rs = $this->db->fetchColumnsIntoMap($sql,'id','keyword');        
+    return $rs;
+  }
+
+
   /* END KEYWORDS RELATED */
 
   /* REQUIREMENTS RELATED */

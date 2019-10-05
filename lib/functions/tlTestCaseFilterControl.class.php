@@ -33,8 +33,6 @@
  *    --> assign keywords
  *    --> assign requirements
  *
- * @internal revisions
- * @since 1.9.13
  */
 
 /*
@@ -1455,7 +1453,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         if (!$this->testproject_mgr) {
           $this->testproject_mgr = new testproject($this->db);
         }
-        $keywords = $this->testproject_mgr->get_keywords_map($this->args->testproject_id);
+        $keywords = $this->testproject_mgr->getUsedKeywordsMap($this->args->testproject_id);
       break;
 
       default:

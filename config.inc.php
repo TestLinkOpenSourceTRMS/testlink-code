@@ -2004,7 +2004,7 @@ $tlCfg->enableTableExportButton = DISABLED;
  * Taken from Mantis to implement better login security, and solve
  * TICKET 4342
  */
-$tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
+$tlCfg->auth_cookie = $tlCfg->cookie->prefix . "TL_USER_AUTH_COOKIE";
 
 /** 
 Used when creating a Test Suite using copy

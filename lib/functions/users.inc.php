@@ -72,7 +72,8 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
       $_SESSION['testprojectID'] = $tpID;
   }
   // Validation is done in navBar.php
-  $tplan_cookie = 'TL_lastTestPlanForUserID_' . $id;
+  $ckCfg = config_get('cookie');
+  $tplan_cookie = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' . $id;
   if (isset($_COOKIE[$tplan_cookie]))
   {
     $_SESSION['testplanID'] = $_COOKIE[$tplan_cookie];

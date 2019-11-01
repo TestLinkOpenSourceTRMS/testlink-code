@@ -1050,12 +1050,10 @@ class tlUser extends tlDBObject {
                                            
     // Admin exception
     $doReindex = false;
-    if( $this->globalRoleID != TL_ROLES_ADMIN && count($testPlanSet) > 0 )
-    {
-      foreach($testPlanSet as $idx => $item)
-      {
-        if( $item['is_public'] == 0 && $item['has_role'] == 0 )
-        {
+    if ($this->globalRoleID != TL_ROLES_ADMIN 
+        && null != $testPlanSet && count($testPlanSet) > 0) {
+      foreach ($testPlanSet as $idx => $item) {
+        if ($item['is_public'] == 0 && $item['has_role'] == 0) {
           unset($testPlanSet[$idx]);
           $doReindex = true;
         }         

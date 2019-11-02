@@ -13,7 +13,7 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2018 TestLink community 
+ * @Copyright   2005,2019 TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -1521,3 +1521,33 @@ function tlSetCookie($ckObj) {
             $stdCk->domain,$stdCk->secure,$stdCk->httponly);
 }
 
+/**
+ * context is defined by:
+ *  - test project id
+ *  - test plan id
+ * @return array 
+ *         element 1 is an object with 
+ *           tproject_id and tplan_id properties
+ *         element 2 query string with the properties
+ *                 
+ */
+function initContext()
+{
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  $context = new stdClass();
+  $env = '';
+  $k2ctx = array('tproject_id' => 0,
+                 'tplan_id' => 0);
+  foreach ($k2ctx as $prop => $defa) {
+    $context->$prop = isset($_REQUEST[$prop]) ? $_REQUEST[$prop] : $defa;
+    if( is_numeric($defa) ) {
+      $context->$prop = intval($context->$prop);    
+    } 
+    if ($env != '') {
+      $env .= "&";
+    }
+    $env .= "$prop=" . $context->$prop;
+  }
+
+  return array($context,$env);
+}

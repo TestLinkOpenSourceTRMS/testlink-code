@@ -1794,10 +1794,14 @@ class tlTestPlanMetrics extends testplan
     $bi->idSet = $my['filters']['buildSet']; 
     $bi->inClause = '';
     $bi->infoSet = null;
-    if( is_null($bi->idSet) )
-    {
+    if (is_null($bi->idSet)) {
       $openStatus = $my['opt']['processClosedBuilds'] ? null : 1;
-      $bi->idSet = array_keys($bi->infoSet = $this->get_builds($id,testplan::ACTIVE_BUILDS,$openStatus));
+
+      $bi->infoSet = $this->get_builds($id,testplan::ACTIVE_BUILDS,
+                                       $openStatus);
+      if (!is_null($bi->infoSet)) {
+       $bi->idSet = array_keys();
+      }
     }
     
     // ==========================================================================

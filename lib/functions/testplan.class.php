@@ -8011,7 +8011,19 @@ class testplan extends tlObjectWithAttachments
     return $sane; 
   }
 
-
+  /**
+   *
+   */
+  static function getName(&$dbh,$id) {
+    $sch = tlDBObject::getDBTables(array('nodes_hierarchy','testplans'));
+    $sql = "SELECT name FROM {$sch['nodes_hierarchy']} NH
+            JOIN {$sch['testplans']} TPLAN
+            ON TPLAN.id = NH.id
+            WHERE TPLAN.id=" . intval($id);
+    $rs = $dbh->get_recordset($sql);
+    return is_null($rs) ? $rs : $rs[0]['name'];
+  }
+  
 } // end class testplan
 
 

@@ -61,8 +61,9 @@ var del_action=fRoot+'{$deleteAction}';
 {/if}
 
 <div class="page-content">
-{if $gui->grants->testplan_create && $gui->tproject_id > 0 && 
-    count($gui->tplans) > $tlCfg->gui->planView->itemQtyForTopButton}
+{if $gui->grants->testplan_create && $gui->tproject_id > 0
+    && is_array($gui->tplans)
+    && count($gui->tplans) > $tlCfg->gui->planView->itemQtyForTopButton}
    <div class="page-content">
      <form method="post" action="{$createAction}" name="topCreateForm">
        <input type="submit" name="create_testplan_top" value="{$labels.btn_testplan_create}" />

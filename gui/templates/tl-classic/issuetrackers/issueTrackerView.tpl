@@ -91,7 +91,7 @@ var del_action=fRoot+'lib/issuetrackers/issueTrackerEdit.php?doAction=doDelete&i
 	  	  <input type="hidden" name="doAction" value="" />
 	
 		{if $gui->canManage != ""}
-	  		<input type="submit" id="create" name="create" value="{$labels.btn_create}" 
+	  		<input class="btn btn-primary" type="submit" id="create" name="create" value="{$labels.btn_create}" 
 	  	           onclick="doAction.value='create'"/>
 		{/if}
 	  	</form>

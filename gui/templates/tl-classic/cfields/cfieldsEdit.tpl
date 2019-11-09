@@ -38,6 +38,7 @@ This is done to simplify logic.
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="bootstrap.inc.tpl"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
@@ -326,7 +327,8 @@ function initShowOnExec(id_master,show_on_cfg)
 {if $user_action eq "do_delete"}
   <form method="post" name="cfields_edit" action="{$viewAction}">
    <div class="groupBtn">
-		<input type="submit" name="ok" value="{$labels.btn_ok}" />
+		<input class="btn btn-primary" type="submit" 
+           name="ok" value="{$labels.btn_ok}" />
 	 </div>
   </form>
 
@@ -455,24 +457,26 @@ function initShowOnExec(id_master,show_on_cfg)
 	<div class="groupBtn">
 	<input type="hidden" name="do_action" value="" />
 	{if $user_action eq 'edit'  or $user_action eq 'do_update'}
-		<input type="submit" name="do_update" value="{$labels.btn_upd}"
+		<input class="btn btn-primary" type="submit" name="do_update" 
+           value="{$labels.btn_upd}"
 		       onclick="do_action.value='do_update'"/>
 
-		{*  {if $gui->cfield_is_used eq 0} *}
 		{* Allow delete , just give warning *}
-  		<input type="button" name="do_delete" value="{$labels.btn_delete}"
+  		<input class="btn btn-primary" type="button" name="do_delete" 
+             value="{$labels.btn_delete}"
   		       onclick="delete_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'|escape}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
-    {* {/if} *}
-
 	{else}
-		<input type="submit" name="do_update" value="{$labels.btn_add}"
+		<input class="btn btn-primary" type="submit" name="do_update" 
+           value="{$labels.btn_add}"
 		       onclick="do_action.value='do_add'"/>
 
-    <input type="submit" name="do_add_and_assign" id="do_add_and_assign" value="{$labels.btn_add_and_assign_to_current}"
+    <input class="btn btn-primary" type="submit" 
+           name="do_add_and_assign" id="do_add_and_assign" value="{$labels.btn_add_and_assign_to_current}"
            onclick="do_action.value='do_add_and_assign'"/>
 	{/if}
-		<input type="button" name="cancel" value="{$labels.btn_cancel}"
+		<input class="btn btn-primary" type="button" name="cancel" 
+           value="{$labels.btn_cancel}"
 			onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php';" />
 
 	</div>

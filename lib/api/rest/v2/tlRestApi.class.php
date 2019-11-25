@@ -39,7 +39,7 @@ require 'Slim/Slim.php';
  */
 class tlRestApi
 {
-  public static $version = "2.0";
+  public static $version = "2.1";
     
     
   /**
@@ -140,6 +140,9 @@ class tlRestApi
     $this->app->post('/testplans', array($this,'authenticate'), array($this,'createTestPlan'));
 
     $this->app->post('/testplans/:id', array($this,'authenticate'), array($this,'updateTestPlan'));
+
+
+    $this->app->post('/testplans/:id/platforms', array($this,'authenticate'), array($this,'addPlatformsToTestPlan'));
 
     $this->app->post('/testsuites', array($this,'authenticate'), array($this,'createTestSuite'));
 
@@ -1338,6 +1341,121 @@ class tlRestApi
 
     echo json_encode($op);
   }
+
+  /**
+   * body will contain an array of objects
+   * that can be 
+   * {'name': platform name}
+   * {'id': platform id}
+   *
+   * Check if done to understand if all platforms
+   * exist before doing any action
+   *
+   *
+   */
+  public function addPlatformsToTestPlan($tplan_id) {
+    $op = array('status' => 'ko', 'message' => 'ko', 'id' => -1);  
+    try {
+      $request = $this->app->request();
+      $plat2link = json_decode($request->getBody());
+
+      $op = array('status' => 'ok', 'message' => 'ok');
+      $statusOK = true;  
+      if (null == $plat2link || !is_array($plat2link)) {
+        $statusOK = false;
+        $op['status'] = 'ko';
+        $op['message'] = 'Bad Body';
+      }
+      
+      if ($statusOK) {
+        // Validate Test plan existence.
+        // Get Test Project ID before doing anything
+        $getOpt = array('output' => 'testPlanFields','active' => 1,
+                    'testPlanFields' => 'id,testproject_id,is_public');
+        
+        $testPlan = $this->tplanMgr->get_by_id($tplan_id,$getOpt);
+        $statusOK = !is_null($testPlan);
+
+        if ($statusOK) {
+          $tproject_id = $testPlan['testproject_id'];
+        } else {
+          $op['status'] = 'ko';
+          $op['message'] = 'Invalid Test Plan ID';
+        }
+      }
+
+      if ($statusOK) {
+        // Get all test project platforms, then validate
+        $platMgr = new tlPlatform($this->db,$tproject_id);
+        $platDomain = $platMgr->getAll();
+        $idToLink = [];
+        $op['message'] = [];
+
+        foreach ($plat2link as $accessObj) {
+          $checkOK = false;
+          if (property_exists($accessObj, 'name')) {
+            $needle = trim($accessObj->name);
+            foreach ($platDomain as $target) {
+              if ($target['name'] == $needle) {
+                $checkOK = true;
+                $idToLink[$target['id']] = $target['id'];
+              }
+            }
+            $statusOK = $statusOK && $checkOK; 
+            if ($checkOK == false) {
+              $op['message'][] = "Platform with name:" .
+                                 $needle .
+                                 " does not exist"; 
+            }
+          }
+
+          if (property_exists($accessObj, 'id')) {
+            $needle = intval($accessObj->id);
+            foreach ($platDomain as $target) {
+              if ($target['id'] == $needle) {
+                $checkOK = true;
+                $idToLink[$target['id']] = $target['id'];
+              }
+            }
+            $statusOK = $statusOK && $checkOK; 
+            if ($checkOK == false) {
+              $op['message'][] = "Platform with id:" .
+                                 $needle .
+                                 " does not exist"; 
+            }
+          }
+        }
+
+        $op['status'] = $statusOK;
+      }
+
+      if ($statusOK) {
+        $p2link = [];
+        // Finally link platforms, if not linked yet
+        $gOpt = array('outputFormat' => 'mapAccessByID');
+        $linked = (array)$platMgr->getLinkedToTestplan($tplan_id,$gOpt);
+        foreach ($idToLink as $plat_id) {
+          if (!isset($linked[$plat_id])) {
+            $p2link[$plat_id]=$plat_id;
+          }
+        }
+        if (count($p2link) >0){
+          $platMgr->linkToTestplan($p2link,$tplan_id);
+        }
+      }  
+
+      if ($op['status']) {
+        $op['message'] = 'ok';
+      }
+    } catch (Exception $e) {
+      $this->app->status(500);
+      $op['message'] = __METHOD__ . ' >> ' . $e->getMessage();   
+    }
+    echo json_encode($op);
+  }
+
+
+
 
   /**
    *

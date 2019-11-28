@@ -1794,29 +1794,28 @@ class tlTestPlanMetrics extends testplan
     $bi->idSet = $my['filters']['buildSet']; 
     $bi->inClause = '';
     $bi->infoSet = null;
+
     if (is_null($bi->idSet)) {
       $openStatus = $my['opt']['processClosedBuilds'] ? null : 1;
 
       $bi->infoSet = $this->get_builds($id,testplan::ACTIVE_BUILDS,
                                        $openStatus);
       if (!is_null($bi->infoSet)) {
-       $bi->idSet = array_keys();
+       $bi->idSet = array_keys($bi->infoSet);
       }
     }
     
-    // ==========================================================================
+    // =========================================================
     // Emergency Exit !!!
-    if( is_null($bi->idSet) )
-    {
+    if ( is_null($bi->idSet) ) {
         throw new Exception(__METHOD__ . " - Can not work with empty build set");
     }
-    // ==========================================================================
+    // =========================================================
     
     
     // Things seems to be OK
     $bi->inClause = implode(",",$bi->idSet);
-    if( $my['opt']['getOnlyAssigned'] )
-    {
+    if( $my['opt']['getOnlyAssigned'] ) {
       $sql['getAssignedFeatures']   =  " /* Get feature id with Tester Assignment */ " .
                                        " JOIN {$this->tables['user_assignments']} UA " .
                                        " ON UA.feature_id = TPTCV.id " .

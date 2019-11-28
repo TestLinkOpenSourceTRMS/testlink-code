@@ -2234,11 +2234,17 @@ class tlTestPlanMetrics extends testplan
     list($my,$builds,$sqlStm) = $this->helperGetExecCounters($id, $filters, $opt);
     
     // particular options
-    $my['opt'] = array_merge(array('output' => 'map'),$my['opt']);    
+    $options = array('output' => 'map', 
+                     'add2fields' => '');
+    $my['opt'] = array_merge($options,$my['opt']);    
     $safe_id = intval($id);  
 
     $fullEID = $this->helperConcatTCasePrefix($safe_id);
 
+    $addFields = '';
+    if ( '' != $my['opt']['add2fields']) {
+      $addFields = ',' . $my['opt']['add2fields'];
+    }
 
     $sqlLEBBP = $sqlStm['LEBBP'];
     $sql =  "/* {$debugMsg} executions with status WRITTEN on DB => not run is not present */" . 
@@ -2249,6 +2255,8 @@ class tlTestPlanMetrics extends testplan
             " TCV.version,TCV.tc_external_id AS external_id, " .
             " $fullEID AS full_external_id," .
             " (TPTCV.urgency * TCV.importance) AS urg_imp " .
+            $addFields .
+
             " FROM {$this->tables['testplan_tcversions']} TPTCV " .
             
             " /* GO FOR Absolute LATEST exec ID On BUILD,PLATFORM */ " .

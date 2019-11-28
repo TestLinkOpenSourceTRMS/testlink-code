@@ -3991,5 +3991,6 @@ $TLS_release_candidate = 'release candidate';
 $TLS_allowed_files = "Allowed files:";
 $TLS_allowed_filenames_regexp = "Filename must verify this regexp:";
 
+$TLS_info_xls_report_results_by_status = '!!Spreasheet Output includes the Test Case Summary';
 
 // ----- END ------------------------------------------------------------------

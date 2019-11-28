@@ -819,8 +819,7 @@ function getMetrics(&$dbh,&$args,&$gui)
   $statusCode = $resultsCfg['status_code'];
   $metricsMgr = new tlTestPlanMetrics($dbh);
 
-  if( $args->type == $statusCode['not_run'] )
-  {
+  if( $args->type == $statusCode['not_run'] ) {
     $opt = array('output' => 'array');
     $met = $metricsMgr->getNotRunWithTesterAssigned($args->tplan_id,null,$opt);
  
@@ -828,9 +827,7 @@ function getMetrics(&$dbh,&$args,&$gui)
     $gui->info_msg = $gui->labels['info_notrun_tc_report'];
     $gui->notesAccessKey = 'summary';
     $gui->userAccessKey = 'user_id';
-  }
-  else
-  {
+  } else {
     $opt = array('output' => 'mapByExecID', 'getOnlyAssigned' => true);
     $met = $metricsMgr->getExecutionsByStatus($args->tplan_id,$args->type,null,$opt);
 

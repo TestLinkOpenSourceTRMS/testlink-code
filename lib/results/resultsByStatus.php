@@ -8,7 +8,7 @@
  *
  * @filesource  resultsByStatus.php
  * @package     TestLink
- * @copyright   2007-2017, TestLink community 
+ * @copyright   2007-2019, TestLink community 
  * @link        http://www.testlink.org
  *
  * 
@@ -35,7 +35,6 @@ $args = init_args($db);
 $statusCode = $args->statusCode;
 
 $tplan_mgr = new testplan($db);
-
 $tcase_mgr = new testcase($db);
 
 $gui = initializeGui($db,$args,$tplan_mgr);
@@ -315,36 +314,28 @@ function init_args(&$dbHandler)
   R_PARAMS($iParams,$args);
 
   $args->getSpreadsheetBy = isset($_REQUEST['sendSpreadSheetByMail_x']) ? 'email' : null;
-  if( is_null($args->getSpreadsheetBy) )
-  {
+  if( is_null($args->getSpreadsheetBy) ) {
     $args->getSpreadsheetBy = isset($_REQUEST['exportSpreadSheet_x']) ? 'download' : null;
   }  
 
   $args->addOpAccess = true;
-  
-  if( !is_null($args->apikey) )
-  {
+  if( !is_null($args->apikey) ) {
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
     $cerbero->args->tplan_id = $args->tplan_id;
     
-    if(strlen($args->apikey) == 32)
-    {
+    if(strlen($args->apikey) == 32) {
       $cerbero->args->getAccessAttr = true;
       $cerbero->method = 'checkRights';
       $cerbero->redirect_target = "../../login.php?note=logout";
       setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
-    }
-    else
-    {
+    } else {
       $args->addOpAccess = false;
       $cerbero->method = null;
       setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
     }  
-  }
-  else
-  {
+  } else {
     testlinkInitPage($dbHandler,true,false,"checkRights");  
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }

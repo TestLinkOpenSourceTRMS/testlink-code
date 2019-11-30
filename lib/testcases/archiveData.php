@@ -104,6 +104,18 @@ function init_args(&$dbHandler) {
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
   $args->user = isset($_SESSION['currentUser']) ? $_SESSION['currentUser'] : null;
 
+  // ---------------------------
+  // whitelist
+  $wl = array_flip(array('testcase','testproject','testsuite'));
+  $args->edit = trim($args->edit);
+
+  if (!isset($wl[$args->edit])) {
+    tLog('Argument "edit" has invalid value: ' . $args->edit , 'ERROR');
+    trigger_error($_SESSION['currentUser']->login . 
+                  '> Argument "edit" has invalid value.', E_USER_ERROR);
+  }
+  // ---------------------------
+  
   $args->feature = $args->edit;
   $args->tcaseTestProject = null;
   $args->viewerArgs = null;

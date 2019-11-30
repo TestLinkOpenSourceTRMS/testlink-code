@@ -130,6 +130,13 @@ class testcaseCommands {
     $my['opt'] = array('accessByStepID' => true);
     $my['opt'] = array_merge($my['opt'],(array)$opt);
 
+    // Security
+    // https://cxsecurity.com/issue/WLB-2019110139
+    if (intval($argsObj->tcase_id) == 0 && 
+        intval($argsObj->tcversion_id) ==0) {
+      die("Error Processing Request:" . __METHOD__);
+    }
+
     $greenCard = array('tcase_id' => $argsObj->tcase_id, 'tcversion_id' => $argsObj->tcversion_id);
     
     if( $my['opt']['accessByStepID'] ) {  

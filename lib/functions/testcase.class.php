@@ -8631,11 +8631,20 @@ class testcase extends tlObjectWithAttachments {
     }
 
     $itemSet = $reqMgr->getGoodForTCVersion($source['version_id']);
-    
     if( !is_null($itemSet) ) {
 
+      //Ticket-8687 create LUT: in which subarray of $mappings can the $reqID be found?     
+      $lut=array();
+      foreach ($mappings as $key=>$value){
+        if (isset($value['req'])) {
+          foreach ($value['req'] as $rkey=>$rvalue){
+            $lut[$rkey]=$key;
+          }
+        }
+      }
+
       $reqSet = null;
-      $reqVerSet = null; 
+      $reqVerSet = null;
 
       $loop2do=count($itemSet);
       for($idx=0; $idx < $loop2do; $idx++) {
@@ -8643,15 +8652,17 @@ class testcase extends tlObjectWithAttachments {
         $reqID = $itemSet[$idx]['req_id'];
         $reqVerID = $itemSet[$idx]['req_version_id'];
 
-        if( isset($mappings['req'][$reqID]) ) {
-          $reqSet[$idx] = $mappings['req'][$reqID];
-          $reqVerSet[$idx] = $mappings['req_version'][$reqVerID];          
+        //Ticket-8687: check if $reqID is in LUT created above and make use of it in case       
+        if( isset($lut[$reqID]) ) {
+          $ind=$lut[$reqID];
+          $reqSet[$idx] = $mappings[$ind]['req'][$reqID];
+          $reqVerSet[$idx] = $mappings[$ind]['req_version'][$reqVerID];
         } else {
           $reqSet[$idx] = $reqID;
-          $reqVerSet[$idx] = $reqVerID;                    
+          $reqVerSet[$idx] = $reqVerID;
         }
 
-        $reqIdCard = array('id' => $reqSet[$idx], 
+        $reqIdCard = array('id' => $reqSet[$idx],
                            'version_id' => $reqVerSet[$idx]);
         $reqMgr->assignReqVerToTCVer($reqIdCard, $dest, $userID);
       }

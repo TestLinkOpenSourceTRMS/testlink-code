@@ -1412,6 +1412,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+  $gui->direct_link = '';  
   $gui->allIssueAttrOnScreen = 0;
   $gui->lexNotes = null;
   $gui->tcversionSet = null;

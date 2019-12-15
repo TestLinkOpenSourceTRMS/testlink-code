@@ -707,6 +707,7 @@ CREATE TABLE /*prefix*/testplan_platforms (
   id BIGSERIAL NOT NULL,
   testplan_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id) ON DELETE CASCADE,
   platform_id BIGINT NOT NULL DEFAULT '0',
+  active INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX /*prefix*/testplan_platforms_uidx1 ON /*prefix*/testplan_platforms (testplan_id,platform_id);

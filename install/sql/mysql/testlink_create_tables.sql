@@ -509,6 +509,7 @@ CREATE TABLE /*prefix*/testplan_platforms (
   id int(10) unsigned NOT NULL auto_increment,
   testplan_id int(10) unsigned NOT NULL,
   platform_id int(10) unsigned NOT NULL,
+  active tinyint(1) NOT NULL default '1',
   PRIMARY KEY (id),
   UNIQUE KEY /*prefix*/idx_testplan_platforms(testplan_id,platform_id)
 ) DEFAULT CHARSET=utf8 COMMENT='Connects a testplan with platforms';

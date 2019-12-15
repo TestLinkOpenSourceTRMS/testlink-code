@@ -10,6 +10,10 @@ ALTER TABLE /*prefix*/builds ADD COLUMN commit_id VARCHAR(64) NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN tag VARCHAR(64) NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN branch VARCHAR(64) NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN release_candidate VARCHAR(100) NULL;
+
+--
+ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active INT2 NOT NULL DEFAULT '1';
+
 --
 -- Table structure for table "testcase_platforms"
 --

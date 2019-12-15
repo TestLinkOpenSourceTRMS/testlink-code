@@ -17,6 +17,10 @@ ALTER TABLE /*prefix*/builds ADD COLUMN branch varchar(64) NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN release_candidate varchar(100) NULL;
 
 
+-- 
+ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active tinyint(1) NOT NULL default '1';
+
+
 CREATE TABLE /*prefix*/testcase_platforms (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   testcase_id int(10) unsigned NOT NULL DEFAULT '0',

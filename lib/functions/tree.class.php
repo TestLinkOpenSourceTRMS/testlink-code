@@ -408,9 +408,8 @@ class tree extends tlObject
   function get_path($node_id,$to_node_id = null,$format = 'full')  {
     $the_path = array();
     $this->_get_path($node_id,$the_path,$to_node_id,$format); 
-    
     if( !is_null($the_path) && count($the_path) > 0 ) {
-      $the_path=array_reverse($the_path);  
+      $the_path = array_reverse($the_path);  
     }
     return $the_path;
   }
@@ -470,28 +469,23 @@ class tree extends tlObject
            " FROM {$this->object_table} WHERE id = " . intval($node_id);
     
     $result = $this->db->exec_query($sql);
-    if( $this->db->num_rows($result) == 0 )
-    {
+    if( $this->db->num_rows($result) == 0 ) {
       $node_list=null;
       return;   
     }
     
-    while ( $row = $this->db->fetch_array($result) )
-    {
+    while ( $row = $this->db->fetch_array($result) ) {
       // check & abort
-      if($row['parent_id'] == $row['id'])
-      {
+      if ($row['parent_id'] == $row['id']) {
         throw new Exception("id = parent_id = " . $row['id'], 1);
       } 
 
       // only continue if this $node isn't the root node
       // (that's the node with no parent)
-      if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
-      {
+      if ($row['parent_id'] != '' && $row['id'] != $to_node_id) {
         // the last part of the path to $node, is the name
         // of the parent of $node
-        switch($format)
-        {
+        switch($format) {
           case 'full':
             $row['node_table'] = $this->node_tables_by['id'][$row['node_type_id']];
             $node_list[] = $row;
@@ -507,12 +501,9 @@ class tree extends tlObject
           break;    
 
           case 'simple_me':
-            if( is_null($node_list) )
-            {
+            if( is_null($node_list) ) {
               $node_list[$row['id']] = $row['id'];
-            }
-            else
-            {
+            } else {
               $node_list[$row['parent_id']] = $row['parent_id'];
             }            
           break;    

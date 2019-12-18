@@ -3979,8 +3979,8 @@ $TLS_info_neverRunByPP_report =
    Test cases <b>with and without tester assignment</b>
    are considered<br />";
 
-$TLS_neverRunByPP_title = "Test Cases Never Runned"; 
-$TLS_link_report_never_run = "Test Cases Never Runned";
+$TLS_neverRunByPP_title = "Test Cases Never Run"; 
+$TLS_link_report_never_run = "Test Cases Never Run";
 
 
 $TLS_commit_id = 'commit id';
@@ -3992,5 +3992,13 @@ $TLS_allowed_files = "Allowed files:";
 $TLS_allowed_filenames_regexp = "Filename must verify this regexp:";
 
 $TLS_info_xls_report_results_by_status = '!!Spreasheet Output includes the Test Case Summary';
+
+
+$TLS_link_report_test_absolute_latest_exec = "Absolute Latest Execution Matrix";
+$TLS_latest_execution = "Latest execution on Context";
+$TLS_resultsTCAbsoluteLatest = "Latest execution is computed over all builds";
+$TLS_info_resultsTCAbsoluteLatest_report = $TLS_resultsTCAbsoluteLatest;
+
+$TLS_resultsTCAbsoluteLatest_title = "Latest execution in Selected Platform  computed over all builds";
 
 // ----- END ------------------------------------------------------------------

@@ -123,6 +123,16 @@ $tlCfg->reports_list['results_flat'] = array(
 	'format' => 'format_html,format_mail_html'
 );
 
+/* 20191210 */
+$tlCfg->reports_list['abslatest_results_matrix'] = array( 
+	'title' => 'link_report_test_absolute_latest_exec',
+	'url' => 'lib/results/resultsTCAbsoluteLatest.php',
+	'enabled' => 'all', 
+	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&type=results_matrix',
+	'format' => 'format_html,format_pseudo_ods'
+);
+
+
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
 	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['failed'],

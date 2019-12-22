@@ -61,4 +61,24 @@ CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan_plat
 AS SELECT tcversion_id, testplan_id,platform_id,max(id) AS id
 FROM /*prefix*/executions 
 GROUP BY tcversion_id,testplan_id,platform_id;
+
+#
+CREATE OR REPLACE VIEW /*prefix*/tsuites_tree_depth_2
+AS SELECT TPRJ.prefix,
+NHTPRJ.name AS testproject_name,    
+NHTS_L1.name AS level1_name,
+NHTS_L2.name AS level2_name,
+NHTPRJ.id AS testproject_id, 
+NHTS_L1.id AS level1_id, 
+NHTS_L2.id AS level2_id, 
+FROM /*prefix*/testprojects TPRJ 
+JOIN /*prefix*/nodes_hierarchy NHTPRJ 
+ON TPRJ.id = NHTPRJ.id
+LEFT OUTER JOIN /*prefix*/nodes_hierarchy NHTS_L1 
+ON NHTS_L1.parent_id = NHTPRJ.id
+LEFT OUTER JOIN /*prefix*/nodes_hierarchy NHTS_L2
+ON NHTS_L2.parent_id = NHTS_L1.id 
+WHERE NHTPRJ.node_type_id = 1 
+AND NHTS_L1.node_type_id = 2
+AND NHTS_L2.node_type_id = 2;
 # END

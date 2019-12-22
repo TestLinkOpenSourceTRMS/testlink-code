@@ -337,7 +337,8 @@ abstract class tlObject implements iSerialization
                    'latest_tcase_version_number' => null,
                    'latest_req_version' => null,
                    'latest_req_version_id' => null,
-                   'latest_rspec_revision' => null); 
+                   'latest_rspec_revision' => null,
+                   'tsuites_tree_depth_2' => null); 
     
     foreach($items as $key => $value) {
       $items[$key] = DB_TABLE_PREFIX . $key;

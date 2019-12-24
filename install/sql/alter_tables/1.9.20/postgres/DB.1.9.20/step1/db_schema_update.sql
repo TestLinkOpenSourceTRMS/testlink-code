@@ -71,7 +71,7 @@ CREATE OR REPLACE VIEW /*prefix*/tsuites_tree_depth_2 AS
   NHTS_L2.name AS level2_name,
   NHTPRJ.id AS testproject_id, 
   NHTS_L1.id AS level1_id, 
-  NHTS_L2.id AS level2_id, 
+  NHTS_L2.id AS level2_id 
   FROM /*prefix*/testprojects TPRJ 
   JOIN /*prefix*/nodes_hierarchy NHTPRJ 
   ON TPRJ.id = NHTPRJ.id

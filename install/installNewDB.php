@@ -8,7 +8,7 @@
  * @filesource  installNewDB.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2008,2018 TestLink community
+ * @copyright   2008,2019 TestLink community
  * @copyright   inspired by Etomite Content Management System
  *              2003, 2004 Alexander Andrew Butter 
  *
@@ -38,8 +38,15 @@ if( !isset($_SESSION) ) {
 }
 
 // catch DB input data
-foreach($_POST as $key => $val) {
-  $_SESSION[$key] = $val;
+$validKeys = array("databasetype","databasehost",
+                   "databasename","tableprefix",
+                   "databaseloginname","databaseloginpassword",
+                   "tl_loginname","tl_loginpassword");
+foreach ($validKeys as $key) {
+  $_SESSION[$key] = '';
+  if( isset($_POST[$key]) ) {
+    $_SESSION[$key] = $_POST[$key];
+  }
 }
 
 //assure that no timeout happens for large data

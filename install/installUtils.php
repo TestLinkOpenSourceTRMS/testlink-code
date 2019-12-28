@@ -295,7 +295,8 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
         // Starting with MySQL 8 the following sentence is WRONG !!
         // " ... for MySQL creating the user and assign the rights
         //       is the same operation ..."
-        //
+        // But I've modified _mysql_make_user in order to create user
+        // and assign rights
         $op = _mysql_make_user($db,$the_host,$db_name,$login,$passwd);
         break;
 
@@ -506,6 +507,9 @@ function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
   if (!@$dbhandler->exec_query($stmt)) {
     $op->msg = "ko - " . $dbhandler->error_msg();
     $op->status_ok=false;
+  } else {
+    // Assign Grants!!
+    $op = _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd);
   }
        
   return $op; 

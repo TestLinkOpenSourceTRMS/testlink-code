@@ -418,12 +418,12 @@ public function get_by_id($id, $opt=null)
  */
 public function get_by_prefix($prefix, $addClause = null)
 {
-    $safe_prefix = $this->db->prepare_string($prefix);
+  $safe_prefix = $this->db->prepare_string($prefix);
   $condition = "testprojects.prefix='{$safe_prefix}'";
   $condition .= is_null($addClause) ? '' : " AND {$addClause} ";
 
-  $result = $this->getTestProject($condition);
-  return $result[0];
+  $rs = $this->getTestProject($condition);
+  return $rs != null ? $rs[0] : null;
 }
 
 
@@ -3141,7 +3141,7 @@ function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null) {
   $sql .= " ORDER BY NH.node_order,NH.id";
   
   // Approach Change - get all 
-  $rs = $this->db->fetchRowsIntoMap($sql,'id');
+  $rs = (array)$this->db->fetchRowsIntoMap($sql,'id');
   if( count($rs) == 0 ) {
     return $qnum;
   }

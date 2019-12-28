@@ -1062,22 +1062,22 @@ args:
 returns: -
 
 */
-function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj,$lbl)
+function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
 {
-    if(sizeof($argsObj->tcaseSet) > 0)
-    {
-        $status_ok = $treeMgr->change_parent($argsObj->tcaseSet,$argsObj->containerID);
-        $user_feedback= $status_ok ? '' : lang_get('move_testcases_failed');
+  $lbl = $argsObj->l10n;
+  if (sizeof($argsObj->tcaseSet) > 0) {
+    $status_ok = $treeMgr->change_parent($argsObj->tcaseSet,$argsObj->containerID);
+    $user_feedback= $status_ok ? '' : lang_get('move_testcases_failed');
 
-        // objectID - original container
-        $guiObj = new stdClass();
-        $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
-        $guiObj->id = $argsObj->objectID;
-        $guiObj->refreshTree = true;
-        $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
+    // objectID - original container
+    $guiObj = new stdClass();
+    $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+    $guiObj->id = $argsObj->objectID;
+    $guiObj->refreshTree = true;
+    $guiObj->btn_reorder_testcases = $lbl['btn_reorder_testcases'];
 
-        $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,$user_feedback);
-    }
+    $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,$user_feedback);
+  }
 }
 
 

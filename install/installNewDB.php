@@ -95,7 +95,9 @@ if (!$validator->isValid($dbHost)) {
   die();
 }
 
-$san = '/[^A-Za-z0-9\-]/';
+// Allows only certan kind of letters, numbers, minus, underscore
+$san = '/[^A-Za-z0-9\-_]/';
+
 $db_name = trim($_SESSION['databasename']);
 $db_name = preg_replace($san,'',$db_name);
 
@@ -113,6 +115,7 @@ $tl_db_passwd = trim($_SESSION['tl_loginpassword']);
 
 // will limit length to avoi some kind of injection
 // Choice: 32 
+// Allows only certan kind of letters, numbers, minus, underscore
 $tl_db_login = trim($_SESSION['tl_loginname']);
 $tl_db_login = substr(preg_replace($san,'',$tl_db_login),0,32);
 

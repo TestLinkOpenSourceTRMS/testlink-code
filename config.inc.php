@@ -901,6 +901,8 @@ $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 $tlCfg->reportsCfg->start_time = '00:00';
 
 // Result matrix (resultsTC.php)
+$tlCfg->resultMatrixReport = new stdClass();
+
 // Shows an extra column with the result of the latest execution on
 // the lastest CREATED build
 $tlCfg->resultMatrixReport->buildColumns['showExecutionResultLatestCreatedBuild'] = true;

@@ -95,7 +95,9 @@ if (!$validator->isValid($dbHost)) {
   die();
 }
 
-$san = '/[^A-Za-z0-9\-]/';
+// Allows only certan kind of letters, numbers, minus, underscore
+$san = '/[^A-Za-z0-9\-_]/';
+
 $db_name = trim($_SESSION['databasename']);
 $db_name = preg_replace($san,'',$db_name);
 
@@ -104,7 +106,9 @@ $db_table_prefix = preg_replace($san,'',$db_table_prefix);
 
 $db_type = trim($_SESSION['databasetype']);
 $db_type = preg_replace($san,'',$db_type);
+// --------------------------------------------------------------
 
+// Used AS IS
 $db_admin_pass = trim($_SESSION['databaseloginpassword']);
 $tl_db_passwd = trim($_SESSION['tl_loginpassword']);
 
@@ -113,9 +117,11 @@ $tl_db_passwd = trim($_SESSION['tl_loginpassword']);
 
 // will limit length to avoi some kind of injection
 // Choice: 32 
+// Allows only certan kind of letters, numbers, minus, underscore
 $tl_db_login = trim($_SESSION['tl_loginname']);
 $tl_db_login = substr(preg_replace($san,'',$tl_db_login),0,32);
 
+// Allows only certan kind of letters, numbers, minus, underscore
 $db_admin_name = trim($_SESSION['databaseloginname']);
 $db_admin_name = substr(preg_replace($san,'',$db_admin_name),0,32);
 

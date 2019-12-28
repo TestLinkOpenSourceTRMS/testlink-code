@@ -113,7 +113,6 @@ function getUserList(&$db,$db_type)
       // Returns an array containing the original sql statement in the first array element; 
       // the remaining elements of the array are driver dependent.
       //
-      // 20071104 - franciscom
       // Looking into adodb-mssql.inc.php, you will note that array[1] 
       // is a mssql stm object.
       // This info is very important, to use mssql_free_statement()
@@ -293,7 +292,10 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
         case 'mysql':
         case 'mysqli':
         default:
-        // for MySQL making the user and assign right is the same operation
+        // Starting with MySQL 8 the following sentence is WRONG !!
+        // " ... for MySQL creating the user and assign the rights
+        //       is the same operation ..."
+        //
         $op = _mysql_make_user($db,$the_host,$db_name,$login,$passwd);
         break;
 
@@ -303,8 +305,7 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
     {
       // just assign rights on the database
     	$msg = 'ok - user_exists';
-      switch($db_type)
-    	{
+      switch($db_type) {
         case 'mysql':
         case 'mysqli':
         $op = _mysql_assign_grants($db,$the_host,$db_name,$login,$passwd);
@@ -317,7 +318,6 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
         case 'mssql':
         $op = _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd);
         break;
-
       }  
       
     }
@@ -472,83 +472,98 @@ function check_db_loaded_extension($db_type) {
 
 
 
-// 20060514 - franciscom
-function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd)
-{
+/**
+ *
+ *
+ */
+function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
 
-$op = new stdclass();
+  $op = new stdclass();
 
-$op->status_ok=true;
-$op->msg = 'ok - new user';     
+  $op->status_ok = true;
+  $op->msg = 'ok - new user';     
 
-// Escaping following rules form:
-//
-// MySQL Manual
-// 9.2. Database, Table, Index, Column, and Alias Names
-//
-$stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-        "`" . $dbhandler->prepare_string($db_name) . "`" . ".* TO " . 
-        "'" . $dbhandler->prepare_string($login) . "'";
-        
-// 20070310 - $the_host -> $db_host        
-if (strlen(trim($db_host)) != 0)
-{
-  $stmt .= "@" . "'" . $dbhandler->prepare_string($db_host) . "'";
-}         
-$stmt .= " IDENTIFIED BY '" .  $passwd . "'";
+  // Escaping following rules form:
+  //
+  // MySQL Manual
+  // 9.2. Database, Table, Index, Column, and Alias Names
+  //
+  $safeDBHost = $dbhandler->prepare_string($db_host);
+  $safeDBName = $dbhandler->prepare_string($db_name);
+  $safeLogin = $dbhandler->prepare_string($login);
 
-      
-if (!@$dbhandler->exec_query($stmt)) 
-{
+  $stmt = " CREATE USER '$safeLogin' ";
+  if (strlen(trim($db_host)) != 0) {
+    $stmt .= "@" . "'$safeDBHost'";
+  }         
+
+  // To have compatibility with MySQL 5.x
+  // IDENTIFIED WITH mysql_native_password
+  $stmt .= 
+    " IDENTIFIED WITH mysql_native_password BY '$passwd' ";
+
+  echo $stmt;
+  if (!@$dbhandler->exec_query($stmt)) {
     $op->msg = "ko - " . $dbhandler->error_msg();
     $op->status_ok=false;
+  }
+       
+  return $op; 
 }
-else
-{
-  // 20051217 - fm
+
+
+/**
+ *
+ */
+function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd) {
+
+  $op->status_ok = true;
+  $op->msg = 'ok - new user';     
+
+  // Escaping following rules form:
+  //
+  // MySQL Manual
+  // 9.2. Database, Table, Index, Column, and Alias Names
+  //
+  $safeDBHost = $dbhandler->prepare_string($db_host);
+  $safeDBName = $dbhandler->prepare_string($db_name);
+  $safeLogin = $dbhandler->prepare_string($login);
+
+  $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON 
+           `$safeDBName`.* TO '$safeLogin'@'$safeDBHost' 
+            WITH GRANT OPTION ";
+
+  if ( !@$dbhandler->exec_query($stmt) ) {
+    $op->msg = "ko - " . $dbhandler->error_msg();
+    $op->status_ok=false;
+  }
+
   // found that you get access denied in this situation:
   // 1. you have create the user with grant for host.
   // 2. you are running your app on host.
-  // 3. you don't have GRANT for localhost.       	
+  // 3. you don't have GRANT for localhost.         
   // 
   // Then I've decide to grant always access from localhost
   // to avoid this kind of problem.
   // I hope this is not a security hole.
   //
   //
-  // 20070310 - $the_host -> $db_host        
-  if( strcasecmp('localhost',$db_host) != 0)
-  {
-    // 20060514 - franciscom - missing 
-    $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-             "`" . $dbhandler->prepare_string($db_name) . "`" . ".* TO " . 
-             "'" . $dbhandler->prepare_string($login) . "'@'localhost'" .
-            " IDENTIFIED BY '" .  $passwd . "'";
-    if ( !@$dbhandler->exec_query($stmt) ) 
-    {
+  if( strcasecmp('localhost',$db_host) != 0 ) {
+    $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON 
+            `$safeDBName`.* TO '$safeLogin'@'localhost' 
+            WITH GRANT OPTION ";
+
+    if ( !@$dbhandler->exec_query($stmt) ) {
       $op->msg = "ko - " . $dbhandler->error_msg();
       $op->status_ok=false;
     }
   }
-}
-     
-return ($op); 
-}
 
+  if( $op->status_ok) {
+    $op->msg = 'ok - grant assignment';
+  }     
 
-// 20060514 - franciscom
-// for MySQL just a wrapper
-function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd)
-{
-
-$op = _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd);
-
-if( $op->status_ok)
-{
-  $op->msg = 'ok - grant assignment';
-}     
-
-return ($op); 
+  return ($op); 
 }
 
 

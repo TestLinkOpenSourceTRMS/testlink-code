@@ -420,8 +420,8 @@ public function get_by_prefix($prefix, $addClause = null) {
   $condition = "testprojects.prefix='{$safe_prefix}'";
   $condition .= is_null($addClause) ? '' : " AND {$addClause} ";
 
-  $result = $this->getTestProject($condition);
-  return $result[0];
+  $rs = $this->getTestProject($condition);
+  return $rs != null ? $rs[0] : null;
 }
 
 

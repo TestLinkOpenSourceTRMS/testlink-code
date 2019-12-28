@@ -1488,7 +1488,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $type_selection = $this->args->{$type};
     
     // are there any keywords?
-    if (!is_null($keywords) && count($keywords)) {
+    $atLeastOneKW = !is_null($keywords) && count($keywords);
+    if ($atLeastOneKW) {
       $this->filters[$key] = array();
 
       if (!$selection || !$type_selection || $this->args->reset_filters) {
@@ -1513,14 +1514,19 @@ class tlTestCaseFilterControl extends tlFilterControl {
       $this->filters[$key][$type]['selected'] = $type_selection;
     }
     
-    // set the active value to filter
-    // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
-    if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
-      $this->active_filters[$key] = null;
+    if ($atLeastOneKW) {
+
+      // set the active value to filter
+      // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
+      if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
+        $this->active_filters[$key] = null;
+      } else {
+        $this->active_filters[$key] = $this->filters[$key]['selected'];
+      }
+      $this->active_filters[$type] = $selection ? $type_selection : null;
     } else {
-      $this->active_filters[$key] = $this->filters[$key]['selected'];
-    }
-    $this->active_filters[$type] = $selection ? $type_selection : null;
+        $this->active_filters[$key] = $this->filters[$key]['selected'];
+    }  
   } 
 
 

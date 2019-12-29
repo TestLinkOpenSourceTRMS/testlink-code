@@ -3,9 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	installUtils.php
- * @package 	  TestLink
- * @author 		  Francisco Mancardi
+ * @filesource  installUtils.php
+ * @package     TestLink
+ * @author      Francisco Mancardi
  * 
  * Functions for installation process
  *
@@ -20,14 +20,14 @@
 function getDirSqlFiles($dirPath, $add_dirpath=0)
 {
 $aFileSets=array(); 
-$my_dir_path = '';	
+$my_dir_path = '';  
 
 foreach( $dirPath as $the_dir)
 {
   if ( $add_dirpath )
   {
     $my_dir_path = $the_dir;
-  }    		           
+  }                  
 
   if ($handle = opendir($the_dir)) 
   {
@@ -147,12 +147,12 @@ function getUserList(&$db,$db_type)
       // b) mssql_init() errors
       //
       if( is_resource($stmt) ) {
-  	    if (function_exists('mssql_free_statement')) {
+        if (function_exists('mssql_free_statement')) {
             mssql_free_statement($stmt[1]);
-  	    }	  
-  	    else {      
+        }   
+        else {      
             sqlsrv_free_stmt($stmt[1]);
-  	    }
+        }
       }  
       break;
    
@@ -276,9 +276,9 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
     $user_exists=in_array($login_lc, $user_list);
     if (!$user_exists) 
     {
-    	$msg = '';
-    	switch($db_type)
-    	{
+      $msg = '';
+      switch($db_type)
+      {
         
         case 'mssql':
         $op = _mssql_make_user_with_grants($db,$the_host,$db_name,$login,$passwd);
@@ -351,13 +351,13 @@ return($msg);
 function close_html_and_exit()
 {
 echo "
-		</td>
+    </td>
       </tr>
     </table></td>
   </tr>" .
   '<tr class="fancyRow2">
-		<td class="border-top-bottom smallText">&nbsp;</td>
-		<td class="border-top-bottom smallText" align="right">&nbsp;</td>' .
+    <td class="border-top-bottom smallText">&nbsp;</td>
+    <td class="border-top-bottom smallText" align="right">&nbsp;</td>' .
   "</tr>
 </table>
 </body>
@@ -410,13 +410,13 @@ function check_db_loaded_extension($db_type) {
     $ext2search = 'mysqli';
   }
 
-	if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
+  if(PHP_OS == 'WINNT' || $isPHPGTE7 ) {
 
     // First Time:
     // 
-		// Faced this problem when testing XAMPP 1.7.7 on 
+    // Faced this problem when testing XAMPP 1.7.7 on 
     // Windows 7 with MSSQL 2008 Express
-		//
+    //
     // From PHP MANUAL - reganding mssql_* functions
     // These functions allow you to access MS SQL Server database.
     // This extension is not available anymore on Windows with 
@@ -434,15 +434,15 @@ function check_db_loaded_extension($db_type) {
     // but you will need to compile it on your own.
     //
     // 
-		// PHP_VERSION_ID is available as of PHP 5.2.7
-		if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300){
-			$dbType2PhpExtension['mssql'] = 'sqlsrv';
-		}			
+    // PHP_VERSION_ID is available as of PHP 5.2.7
+    if ( defined('PHP_VERSION_ID') && PHP_VERSION_ID >= 50300){
+      $dbType2PhpExtension['mssql'] = 'sqlsrv';
+    }     
 
     if ( $isPHPGTE7 ){
       $dbType2PhpExtension['mssql'] = 'sqlsrv';
     }     
-	}	
+  } 
     
   if( isset($dbType2PhpExtension[$db_type]) ) {
     $ext2search=$dbType2PhpExtension[$db_type];  
@@ -452,12 +452,12 @@ function check_db_loaded_extension($db_type) {
   $msg_ok = '<span class="ok">OK!</span>';
   $tt = array_flip(get_loaded_extensions());
     
-  $errors=0;	
+  $errors=0;  
   $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
     
   if( !isset($tt[$ext2search]) ) {
     $final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search} " .
-    	"without it is IMPOSSIBLE to use Testlink.</span>";
+      "without it is IMPOSSIBLE to use Testlink.</span>";
     $final_msg .= $msg_ko;
     $errors += 1;
   } else {
@@ -498,12 +498,44 @@ function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
     $stmt .= "@" . "'$safeDBHost'";
   }         
 
+  // to guess if we are using MariaDB or MySQL
+  // does not seems to be a reliable way to do this
+  //
+  $sql = "SHOW VARIABLES LIKE 'version%'";
+  $vg = array();
+  $rh = $dbhandler->exec_query($sql);
+  if ($rh) {
+    while($row = $dbhandler->fetch_array($rh)) {
+        $vg[$row['Variable_name']] = $row['Value'];
+    } 
+  }
+  
+  $isMariaDB = false;
+  $isMySQL = false;
+  foreach ($vg as $vn => $vv) {
+    if (strripos($vv,'MariaDB') !== FALSE) {
+       $isMariaDB = true;
+       break;
+    }
+    if (strripos($vv,'MySQL') !== FALSE) {
+       $isMySQL = true;
+       break;
+    }    
+  } 
+
   // To have compatibility with MySQL 5.x
   // IDENTIFIED WITH mysql_native_password
-  $stmt .= 
-    " IDENTIFIED WITH mysql_native_password BY '$passwd' ";
+  if ($isMySQL) {
+    $stmt .= 
+      " IDENTIFIED WITH mysql_native_password BY '$passwd' ";    
+  }
 
-  echo $stmt;
+  if ($isMariaDB) {
+    $stmt .= 
+      " IDENTIFIED  BY '$passwd' ";    
+  }
+  
+  echo 'Running..' . $stmt;
   if (!@$dbhandler->exec_query($stmt)) {
     $op->msg = "ko - " . $dbhandler->error_msg();
     $op->status_ok=false;
@@ -633,44 +665,44 @@ return ($op);
 */
 function _postgres_assign_grants(&$db,$db_host,$db_name,$login,$passwd)
 {
-	$op = new stdclass();
-	$op->status_ok=true;  
-	$op->msg = 'ok - grant assignment';     
-	
-	/*
-	if( $op->status_ok )
-	{
-	    $sql=" REVOKE ALL ON SCHEMA public FROM public ";
-	    if (!@$dbhandler->exec_query($sql)) 
-	    {
-	        $op->status_ok=false;  
-	        $op->msg = "ko - " . $dbhandler->error_msg();
-	    }
-	}
-	*/
-	
-	if( $op->status_ok )
-	{
-	    $sql = 'ALTER DATABASE "' . $db->prepare_string($db_name) . '" OWNER TO ' . 
-	                        '"' . $db->prepare_string($login) . '"';
-	    if (!@$db->exec_query($sql)) 
-	    {
-	        $op->status_ok=false;  
-	        $op->msg = "ko - " . $db->error_msg();
-	    }
-	}
-	
-	if( $op->status_ok )
-	{
-	    $sql = 'ALTER SCHEMA public OWNER TO ' .  '"' . $db->prepare_string($login) . '"';
-	    if (!@$db->exec_query($sql)) 
-	    {
-	        $op->status_ok=false;  
-	        $op->msg = "ko - " . $db->error_msg();
-	    }
-	}
-	
-	return ($op); 
+  $op = new stdclass();
+  $op->status_ok=true;  
+  $op->msg = 'ok - grant assignment';     
+  
+  /*
+  if( $op->status_ok )
+  {
+      $sql=" REVOKE ALL ON SCHEMA public FROM public ";
+      if (!@$dbhandler->exec_query($sql)) 
+      {
+          $op->status_ok=false;  
+          $op->msg = "ko - " . $dbhandler->error_msg();
+      }
+  }
+  */
+  
+  if( $op->status_ok )
+  {
+      $sql = 'ALTER DATABASE "' . $db->prepare_string($db_name) . '" OWNER TO ' . 
+                          '"' . $db->prepare_string($login) . '"';
+      if (!@$db->exec_query($sql)) 
+      {
+          $op->status_ok=false;  
+          $op->msg = "ko - " . $db->error_msg();
+      }
+  }
+  
+  if( $op->status_ok )
+  {
+      $sql = 'ALTER SCHEMA public OWNER TO ' .  '"' . $db->prepare_string($login) . '"';
+      if (!@$db->exec_query($sql)) 
+      {
+          $op->status_ok=false;  
+          $op->msg = "ko - " . $db->error_msg();
+      }
+  }
+  
+  return ($op); 
 }
 
 
@@ -904,7 +936,7 @@ function _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd)
   mssql_free_statement($stmt[1]);
   
 
-  $op = new stdClass();	  
+  $op = new stdClass();   
   $op->status_ok=true;  
   $op->msg = 'ok - grant assignment';     
   

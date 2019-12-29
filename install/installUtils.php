@@ -497,12 +497,44 @@ function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd) {
     $stmt .= "@" . "'$safeDBHost'";
   }         
 
+  // to guess if we are using MariaDB or MySQL
+  // does not seems to be a reliable way to do this
+  //
+  $sql = "SHOW VARIABLES LIKE 'version%'";
+  $vg = array();
+  $rh = $dbhandler->exec_query($sql);
+  if ($rh) {
+    while($row = $dbhandler->fetch_array($rh)) {
+        $vg[$row['Variable_name']] = $row['Value'];
+    } 
+  }
+  
+  $isMariaDB = false;
+  $isMySQL = false;
+  foreach ($vg as $vn => $vv) {
+    if (strripos($vv,'MariaDB') !== FALSE) {
+       $isMariaDB = true;
+       break;
+    }
+    if (strripos($vv,'MySQL') !== FALSE) {
+       $isMySQL = true;
+       break;
+    }    
+  } 
+
   // To have compatibility with MySQL 5.x
   // IDENTIFIED WITH mysql_native_password
-  $stmt .= 
-    " IDENTIFIED WITH mysql_native_password BY '$passwd' ";
+  if ($isMySQL) {
+    $stmt .= 
+      " IDENTIFIED WITH mysql_native_password BY '$passwd' ";    
+  }
 
-  echo $stmt;
+  if ($isMariaDB) {
+    $stmt .= 
+      " IDENTIFIED  BY '$passwd' ";    
+  }
+  
+  echo 'Running..' . $stmt;
   if (!@$dbhandler->exec_query($stmt)) {
     $op->msg = "ko - " . $dbhandler->error_msg();
     $op->status_ok=false;

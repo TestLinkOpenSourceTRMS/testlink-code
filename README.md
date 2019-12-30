@@ -25,12 +25,12 @@
 ## 1. Introduction
 
 TestLink is a web based test management and test execution system.
-It enables quality assurance teams to create and manage their test 
-cases as well as to organize them into test plans. These test plans 
-allow team members to execute test cases and track test results 
+It enables quality assurance teams to create and manage their test
+cases as well as to organize them into test plans. These test plans
+allow team members to execute test cases and track test results
 dynamically.
 
-TestLink is a GPL licensed open source project. All of the source code 
+TestLink is a GPL licensed open source project. All of the source code
 behind TestLink is freely available for download via [SourceForge][sou]
 or [GitHub][hub]. If you are interested in contributing to the TestLink
 effort feel free to contact us. There is no hidden fee - 100% free for
@@ -166,17 +166,17 @@ Server environment should consist of:
 Supported client web-browsers:
 - Firefox
 - Internet Explorer 9.x or greater
-- Chrome   
+- Chrome
 
 ATTENTION: we have not enough resources to test on all kind of browsers.
            Right now development is done using Chrome & Firefox.
 
 ## 4. Installation & SECURITY
 
-The following details the basic steps for installation on any system. 
+The following details the basic steps for installation on any system.
 Instructions may seem unix-centric but should work on Windows systems.
 
-Barring complications, it should take you about 10-20 minutes 
+Barring complications, it should take you about 10-20 minutes
 to install, configure, and start using TestLink.
 
 Short summary:
@@ -200,11 +200,11 @@ OR  (2 steps):
 	gunzip <filename.tar.gz>
 	tar xvf <filename.tar>
 
-Total Commander, Winzip, and other programs should also be able 
+Total Commander, Winzip, and other programs should also be able
 to handle decompression of the archive.
 
-At this point you may want to rename the directory to something 
-different to 'testlink'. 
+At this point you may want to rename the directory to something
+different to 'testlink'.
 
 ### SECURITY
 
@@ -228,7 +228,7 @@ template directories.
 
 3. Launch web based installer
 We will create the necessary database tables and a basic configuration
-file. From your web server, access http://yoursite/testlink/ 
+file. From your web server, access http://yoursite/testlink/
 or similar URL and follow instructions.
 
 Check Installation manual and TestLink forum if you meet a problem.
@@ -560,7 +560,7 @@ PLEASE: read these short hints before you write a topic:
   - code repository integration (to manage external scripts)
   - more features on requirements
     ... and more (read CHANGELOG file)
-  
+
 
 ### 1.9.16
   - issues on step are saved on TestLink DB wth step ID

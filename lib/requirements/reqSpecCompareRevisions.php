@@ -229,7 +229,8 @@ function init_args()
 	
 
 	$args = new stdClass();
-	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : 0;
+	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? 
+	                     intval($_REQUEST['req_spec_id']) : 0;
 	$args->doCompare = isset($_REQUEST['doCompare']) ? true : false;
 	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
 	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;

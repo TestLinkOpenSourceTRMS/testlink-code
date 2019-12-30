@@ -93,6 +93,9 @@ function init_args()
     
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
     
+    $args->tplan_id = intval($args->tplan_id);
+    $args->tproject_id = intval($args->tproject_id);
+
     $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
     $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
@@ -107,4 +110,3 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_planning');
 }
-?>

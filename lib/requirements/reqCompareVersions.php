@@ -247,7 +247,9 @@ function getCFDiff($cfields,&$reqMgr)
 function init_args() {
   $args = new stdClass();
 
-  $args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : 0;
+  $args->req_id = isset($_REQUEST['requirement_id']) ? 
+                  intval($_REQUEST['requirement_id']) : 0;
+                  
   $args->compare_selected_versions = isset($_REQUEST['compare_selected_versions']);
   $args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
   $args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;

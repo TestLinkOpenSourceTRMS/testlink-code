@@ -101,12 +101,13 @@ function initializeGui(&$dbHandler,$args)
  */
 function init_args(&$dbHandler)
 {
-    $_REQUEST=strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+  $args = new stdClass();
     
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	if($args->tproject_id >0)
-	{ 
+  $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+  $args->tproject_id = intval($args->tproject_id);
+	if ($args->tproject_id >0) { 
 		$tproject_mgr = new testproject($dbHandler);
 		$dummy = $tproject_mgr->get_by_id($args->tproject_id);
 		$args->tproject_name = $dummy['name'];
@@ -114,14 +115,14 @@ function init_args(&$dbHandler)
 		unset($tproject_mgr);
 	}
 	
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
+  $args->tplan_id = isset($_REQUEST['tplan_id']) ? 
+                    intval($_REQUEST['tplan_id']) : 0;
 
-    $args->user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : 0;
-    if( $args->user_id == 0)
-    {
-        $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-        $args->user_name = $_SESSION['currentUser']->login;
-    }	
+  $args->user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : 0;
+  if( $args->user_id == 0){
+      $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+      $args->user_name = $_SESSION['currentUser']->login;
+  }	
 
 	return $args;
 }

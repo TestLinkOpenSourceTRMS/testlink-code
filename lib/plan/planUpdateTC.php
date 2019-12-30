@@ -124,7 +124,7 @@ function init_args(&$tplanMgr)
     $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
 
-    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tproject_id = intval($_SESSION['testprojectID']);
     $args->tproject_name = $_SESSION['testprojectName'];
 
 	// For more information about the data accessed in session here, see the comment
@@ -137,8 +137,9 @@ function init_args(&$tplanMgr)
 	                ? $_SESSION[$mode][$form_token] : null;
 	
 	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
-	if($args->tplan_id == 0) 
-	{
+
+  $args->tplan_id = intval($args->tplan_id);
+	if($args->tplan_id == 0) {
 		$args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 		$args->tplan_name = $_SESSION['testplanName'];
 	} 

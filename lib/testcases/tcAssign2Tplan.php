@@ -178,6 +178,12 @@ function init_args()
   $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
   $args->tcase_id = isset($_REQUEST['tcase_id']) ? $_REQUEST['tcase_id'] : 0;
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? $_REQUEST['tcversion_id'] : 0;
+ 
+  $args->tplan_id = intval($args->tplan_id);
+  $args->tproject_id = intval($args->tproject_id);
+  $args->tcase_id = intval($args->tcase_id);
+  $args->tcversion_id = intval($args->tcversion_id);
+ 
   return $args; 
 }
 

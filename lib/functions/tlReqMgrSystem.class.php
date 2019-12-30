@@ -159,8 +159,7 @@ class tlReqMgrSystem extends tlObject
         $ret = array('status_ok' => 0, 'id' => 0, 'msg' => $this->db->error_msg());
       }
     }
-    $ctx = array('id' => $itemID);
-    event_signal('EVENT_TEST_REQUIREMENT_CREATE', $ctx);
+    
       return $ret;
   }
 

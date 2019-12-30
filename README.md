@@ -155,9 +155,15 @@ here:
 Server environment should consist of:
 - web-server: Apache 2.x
 - PHP > 5.5 It will be better if you use PHP 7.2.x
-- DBMS: MySQL 5.7.x / MariaDB 10.1.x, Postgres 9.x, MS-SQL 201x
+- DBMS
+  - MySQL 5.7.x
+    - The `log_bin_trust_function_creators` option must be enabled.
+  - MariaDB 10.1.x
+    - The `log_bin_trust_function_creators` option must be enabled.
+  - Postgres 9.x
+  - MS-SQL 201x
 
-Supported client web-browsers: 
+Supported client web-browsers:
 - Firefox
 - Internet Explorer 9.x or greater
 - Chrome   

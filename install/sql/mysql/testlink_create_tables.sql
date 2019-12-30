@@ -295,8 +295,8 @@ CREATE TABLE /*prefix*/keywords (
 CREATE TABLE /*prefix*/milestones (
   id int(10) unsigned NOT NULL auto_increment,
   testplan_id int(10) unsigned NOT NULL default '0',
-  target_date date NULL,
-  start_date date NOT NULL,
+  target_date date NOT NULL,
+  start_date date NULL,
   a tinyint(3) unsigned NOT NULL default '0',
   b tinyint(3) unsigned NOT NULL default '0',
   c tinyint(3) unsigned NOT NULL default '0',

@@ -813,9 +813,16 @@ class jirarestInterface extends issueTrackerInterface
         break;
 
         case 'radiobutton':
+          $dummy = array('value' => (string)$valueSet['value']);
+        break;
         case 'selectlist':
           // "customfield_10012": { "value": "red" }
-          $dummy = array('value' => (string)$valueSet['value']);
+          $dummy = array('id' => (string)$valueSet['value']);
+        break;
+
+        case 'userpicker':
+          // "customfield_10012": { "value": "admin" }
+          $dummy = array('name' => (string)$valueSet['value']);
         break;
 
         case 'labels':

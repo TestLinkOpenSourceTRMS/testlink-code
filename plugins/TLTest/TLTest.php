@@ -12,12 +12,12 @@
 require_once(TL_ABS_PATH . '/lib/functions/tlPlugin.class.php');
 
 /**
- * Sample Testlink Plugin class that registers itself with the system and provides 
- * UI hooks for 
+ * Sample Testlink Plugin class that registers itself with the system and provides
+ * UI hooks for
  * Left Top, Left Bottom, Right Top and Right Bottom screens.
- * 
- * This also listens to testsuite creation and echoes out for example. 
- * 
+ *
+ * This also listens to testsuite creation and echoes out for example.
+ *
  * Class TLTestPlugin
  */
 class TLTestPlugin extends TestlinkPlugin
@@ -53,6 +53,10 @@ class TLTestPlugin extends TestlinkPlugin
       'EVENT_TEST_SUITE_CREATE' => 'testsuite_create',
       'EVENT_TEST_PROJECT_CREATE' => 'testproject_create',
       'EVENT_TEST_PROJECT_UPDATE' => 'testproject_update',
+      'EVENT_TEST_CASE_UPDATE' => 'testcase_update',
+      'EVENT_TEST_REQUIREMENT_CREATE' => 'testrequirement_create',
+      'EVENT_TEST_REQUIREMENT_UPDATE' => 'testrequirement_update',
+      'EVENT_TEST_REQUIREMENT_DELETE' => 'testrequirement_delete',
       'EVENT_EXECUTE_TEST'  => 'testExecute',
       'EVENT_LEFTMENU_TOP' => 'top_link',
       'EVENT_LEFTMENU_BOTTOM' => 'bottom_link',
@@ -71,16 +75,40 @@ class TLTestPlugin extends TestlinkPlugin
     tLog("Im in testsuite create", "WARNING");
   }
 
-  function testproject_create() 
+  function testproject_create()
   {
     $arg = func_get_args();   // To get all the arguments
     tLog("In TestProject Create with id: " . $arg[1] . ", name: " . $arg[2] . ", prefix: " . $arg[3], "WARNING");
   }
 
-  function testproject_update() 
+  function testproject_update()
   {
     $arg = func_get_args();   // To get all the arguments
     tLog("In TestProject Update with id: " . $arg[1] . ", name: " . $arg[2] . ", prefix: " . $arg[3], "WARNING");
+  }
+
+  function testcase_update()
+  {
+      $arg = func_get_args();   // To get all the arguments
+      tLog("In TestCase Update with id: " . $arg[1] . ", planid: " . $arg[2] . ", title: " . $arg[3] . ", summary" . $arg[4], "WARNING");
+  }
+
+  function testrequirement_create()
+  {
+      $arg = func_get_args();   // To get all the arguments
+      tLog("In TestRequirement Create with id: " . $arg[1], "WARNING");
+  }
+
+  function testrequirement_update()
+  {
+      $arg = func_get_args();   // To get all the arguments
+      tLog("In TestRequirement Update with id: " . $arg[1], "WARNING");
+  }
+
+  function testrequirement_delete()
+  {
+      $arg = func_get_args();   // To get all the arguments
+      tLog("In TestRequirement Delete with id: " . $arg[1], "WARNING");
   }
 
   function testExecute() {

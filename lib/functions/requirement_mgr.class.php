@@ -396,8 +396,11 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 
     }  
   }
+  $ctx = array('id' => $result['id']);
+  event_signal('EVENT_TEST_REQUIREMENT_CREATE', $ctx);
+
   return $result;
-  
+
 } // function end
 
 
@@ -507,6 +510,9 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
       $result['status_ok']=$chk['status_ok'];
       $result['msg']=$chk['msg'];
     }
+
+    $ctx = array('id' => $id);
+    event_signal('EVENT_TEST_REQUIREMENT_UPDATE', $ctx);
     return $result;
   } //function end
 
@@ -714,6 +720,10 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     }
   
     $result = (!$result) ? lang_get('error_deleting_req') : 'ok';
+
+    $ctx = array('id' => $id);
+    event_signal('EVENT_TEST_REQUIREMENT_DELETE', $ctx);
+
     return $result;
   }
 

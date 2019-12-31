@@ -418,7 +418,12 @@ class jirarestInterface extends issueTrackerInterface
           $issue['fields']['issuetype'] = array('id' => $opt->issueType);
         }
         
-
+        // 海信 Jira 创建时，对自定义字段添加 testCase 显示名称
+        if(preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", $summary, $matches)) 
+        {
+          // 海信 Jira 的 Testcase 自定义字段为 customfield_10311
+          $issue['fields']['customfield_10311'] = $matches[1];
+        }
       }  
 
       $op = $this->APIClient->createIssue($issue);

@@ -120,6 +120,14 @@ if(count($gui->reqIDs) > 0)  {
       $pathCache[$req[0]['srs_id']] = htmlentities(implode("/", $path), ENT_QUOTES, $cfg->charset);
     }         
 
+
+    # get all cfield ids we have columns for in the req overview
+    $cfield_ids = array();
+    foreach ($gui->cfields4req as $cf){
+      $cfield_ids[] = $cf['id'];
+    }
+
+
     foreach($req as $version) {
       // get content for each row to display
       $result = array();
@@ -202,35 +210,19 @@ if(count($gui->reqIDs) > 0)  {
       
       #8792: append one item to $result for every displayed column (no content?: append empty string) 
       if($gui->processCF) {  
-        $linked_cfields = array();
+        $linkedCFWithContent = array();
         if ( isset($cfByReqVer[$version['version_id']])) {      
-          $linked_cfields = $cfByReqVer[$version['version_id']];
+          $linkedCFWithContent = $cfByReqVer[$version['version_id']];
         }
 
-        # get all cfield ids we have columns for in the req overview
-        $cfield_ids = array();
-        foreach ($gui->cfields4req as $cf){
-          $cfield_ids[] = $cf['id'];
-        }
-
-        # loop all cfield columns (not only the ones having content for this req)
-        $cfx = 0;
-        $goOnContinue = count($linked_cfields)-1;
         foreach ($cfield_ids as $cf_id) {
-          if (!is_array($linked_cfields) || ($cfx > $goOnContinue)) {
-            $result[] = '';
-            continue;
-          }
-          
-          $cf = $linked_cfields[$cfx];
-          if ($cf['id'] == $cf_id) {  
+          if (isset($linkedCFWithContent[$cf_id])) {
+            $cf = $linkedCFWithContent[$cf_id];
             $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
             $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
             if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 ) {
               $value = strftime( $cfg->$verbose_type . " ({$labels['week_short']} %W)" , $value);  #fix typo: missing 's' in labels
             }
-            # do it only if we used one linked_cfields item
-            $cfx += 1;
             $result[] = $value;
           }
           else {
@@ -244,9 +236,7 @@ if(count($gui->reqIDs) > 0)  {
     }
   }
     
-  // echo 'Elapsed Time since SCRIPT START to EXT-JS Phase START (sec) =' . round(microtime(true) - $chronoStart);
-  // die();
-  // -------------------------------------------------------------------------------------------------- 
+  // --------------------------------------------------------------------
   // Construction of EXT-JS table starts here    
   if(($gui->row_qty = count($rows)) > 0 ) {
     $version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];

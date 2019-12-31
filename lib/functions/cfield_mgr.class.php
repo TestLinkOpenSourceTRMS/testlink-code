@@ -534,7 +534,10 @@ class cfield_mgr extends tlObject
          " ORDER BY display_order,CF.id ";
 
     if ( $targetIsArray ) {
-      $map = $this->db->fetchArrayRowsIntoMap($sql,$access_key); 
+      // # 0008792: Tl 1.9.20 (dev) >> Requirement overview >> Custom field content displayed in wrong column
+      // 
+      // $map = $this->db->fetchArrayRowsIntoMap($sql,$access_key);
+      $map = $this->db->fetchMapRowsIntoMap($sql,$access_key,'id');
     } else {
       $map = $this->db->fetchRowsIntoMap($sql,$access_key); 
     }

@@ -200,7 +200,8 @@ if(count($gui->reqIDs) > 0)  {
         $result[] = "<!-- " . str_pad($rx,10,'0') . " -->" . $rx;
       }
       
-      if($gui->processCF) {  #Mantis-8792: append one item to $result for every displayed column (no content?: append empty string) 
+      #8792: append one item to $result for every displayed column (no content?: append empty string) 
+      if($gui->processCF) {  
         #get cfields set for this req      
         if ( isset($cfByReqVer[$version['version_id']])) {      
           $linked_cfields = $cfByReqVer[$version['version_id']];

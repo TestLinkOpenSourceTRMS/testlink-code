@@ -14,9 +14,8 @@
  * Class for handling users in TestLink
  * 
  * @package TestLink
- * @author   Andreas Morsing
- * @uses   config.inc.php
- * @since   1.7
+ * @author  Andreas Morsing
+ * @uses    config.inc.php
  */ 
 class tlUser extends tlDBObject {
   /**
@@ -532,11 +531,11 @@ class tlUser extends tlDBObject {
    */
   protected function encryptPassword($pwd,$authentication=null)
   {
-    if (self::isPasswordMgtExternal($authentication))
-    {  
+    if (self::isPasswordMgtExternal($authentication)) {  
       return self::S_PWDMGTEXTERNAL;
     }  
-    return md5($pwd);
+   
+    return password_hash($pwd,PASSWORD_DEFAULT);
   }
   
   /**
@@ -552,8 +551,7 @@ class tlUser extends tlDBObject {
       return self::S_PWDMGTEXTERNAL;
     }
     $pwd = trim($pwd);  
-    if ($pwd == "")
-    {
+    if ($pwd == "") {
       return self::E_PWDEMPTY;
     }
     $this->password = $this->encryptPassword($pwd,$authentication);
@@ -576,17 +574,32 @@ class tlUser extends tlDBObject {
    * @param string $pwd the password to compate with the password actually set 
    * @return integer returns tl::OK if the password's match, else errorcode
    */
-  public function comparePassword($pwd)
+  public function comparePassword(&$dbH,$pwd)
   {
-    if (self::isPasswordMgtExternal($this->authentication))
-    {  
+    if (self::isPasswordMgtExternal($this->authentication)) {  
       return self::S_PWDMGTEXTERNAL;
     }
 
-    if ($this->getPassword($pwd) == $this->encryptPassword($pwd,$this->authentication))
-    {  
+    // If we are here this means that we are using
+    // internal password management.
+    //  
+    // Manage migration from MD5
+    // MD5 hash check
+    // This is valid ONLY for internal password management
+    $encriptedPWD = $this->getPassword();
+    if (strlen($encriptedPWD) == 32) {
+      /* Update the old MD5 hash to the new bcrypt */
+      if ($encriptedPWD == md5($pwd)) {
+        $this->password = $this->encryptPassword($pwd,$this->authentication);
+        $this->writePasswordToDB($dbH);
+        return tl::OK;
+      } 
+    } 
+
+    if (password_verify($pwd,$encriptedPWD)) { 
       return tl::OK;
-    }
+    } 
+
     return self::E_PWDDONTMATCH;    
   }
 
@@ -654,12 +667,11 @@ class tlUser extends tlDBObject {
     $tprojects_role = $this->tprojectRoles;
     $tplans_role = $this->tplanRoles;
     $effective_role = $this->globalRole;
-    if(!is_null($tplans_role) && isset($tplans_role[$tplan_id]))
-    {
+
+    if(!is_null($tplans_role) && isset($tplans_role[$tplan_id])) {
       $effective_role = $tplans_role[$tplan_id];  
     }
-    else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
-    {
+    else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id])) {
       $effective_role = $tprojects_role[$tproject_id];  
     }
     return $effective_role;
@@ -784,37 +796,26 @@ class tlUser extends tlDBObject {
     global $g_propRights_global;
     global $g_propRights_product;
 
-    if (!is_null($tplanID))
-    {
+    $testprojectID = 0;
+    $testPlanID = 0;
+
+    if (!is_null($tplanID)) {
       $testPlanID = $tplanID;
     }
-    else
-    {
-      $testPlanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-    }
     
-    
-    if (!is_null($tprojectID))
-    {
+    if (!is_null($tprojectID)) {
       $testprojectID = $tprojectID;
     }
-    else
-    {
-      $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    }
-    
+
     $accessPublic = null;
-    if($getAccess)
-    {
-      if($testprojectID > 0)
-      {
+    if ($getAccess) {
+      if($testprojectID > 0) {
         $mgr = new testproject($db);
         $accessPublic['tproject'] = $mgr->getPublicAttr($testprojectID);
         unset($mgr);
       }  
 
-      if($testPlanID > 0)
-      {
+      if($testPlanID > 0) {
         $mgr = new testplan($db);
         $accessPublic['tplan'] = $mgr->getPublicAttr($testPlanID);
         unset($mgr);
@@ -822,33 +823,29 @@ class tlUser extends tlDBObject {
     }
     
     $userGlobalRights = (array)$this->globalRole->rights;
+
     $globalRights = array();
-    foreach($userGlobalRights as $right)
-    {
+    foreach($userGlobalRights as $right) {
       $globalRights[] = $right->name;
     }
     $allRights = $globalRights;
+
     $userTestProjectRoles = $this->tprojectRoles;
     $userTestPlanRoles = $this->tplanRoles;
     
-    if (isset($userTestProjectRoles[$testprojectID]))
-    {
+    if (isset($userTestProjectRoles[$testprojectID])) {
       $userTestProjectRights = (array)$userTestProjectRoles[$testprojectID]->rights;
 
       // Special situation => just one right
       $doMoreAnalysis = true;
-      if( count($userTestProjectRights) == 1)
-      {
+      if( count($userTestProjectRights) == 1) {
         $doMoreAnalysis = !is_null($userTestProjectRights[0]->dbID);
       }  
 
       $allRights = null;
-      if( $doMoreAnalysis )
-      {
-        //echo 'do more';
+      if( $doMoreAnalysis ) {
         $testProjectRights = array();
-        foreach($userTestProjectRights as $right)
-        {
+        foreach($userTestProjectRights as $right) {
           $testProjectRights[] = $right->name;
         }
 
@@ -856,29 +853,20 @@ class tlUser extends tlDBObject {
         $testProjectRights = array_diff($testProjectRights,array_keys($g_propRights_global));
         propagateRights($globalRights,$g_propRights_global,$testProjectRights);
         $allRights = $testProjectRights;
-      }  
-      else
-      {
+      } else {
         return false;
       }  
-
-    }
-    else
-    {
-      if(!is_null($accessPublic) && $accessPublic['tproject'] == 0)
-      {
+    } else {
+      if(!is_null($accessPublic) && $accessPublic['tproject'] == 0) {
         return false;      
       }  
     }
 
-    if( $testPlanID > 0)
-    {
-      if (isset($userTestPlanRoles[$testPlanID]))
-      {
+    if( $testPlanID > 0) {
+      if (isset($userTestPlanRoles[$testPlanID])) {
         $userTestPlanRights = (array) $userTestPlanRoles[$testPlanID]->rights;
         $testPlanRights = array();
-        foreach($userTestPlanRights as $right)
-        {
+        foreach($userTestPlanRights as $right) {
           $testPlanRights[] = $right->name;
         }
         
@@ -887,16 +875,16 @@ class tlUser extends tlDBObject {
         
         propagateRights($allRights,$g_propRights_product,$testPlanRights);
         $allRights = $testPlanRights;
-      }
-      else
-      {
-        if(!is_null($accessPublic) && $accessPublic['tplan'] == 0)
-        {
+      } else {
+        if(!is_null($accessPublic) && $accessPublic['tplan'] == 0) {
           return false;      
         }  
       }
     }
-    return checkForRights($allRights,$roleQuestion);
+
+    $what = checkForRights($allRights,$roleQuestion);
+    
+    return $what;
   }
 
   /**
@@ -1028,8 +1016,6 @@ class tlUser extends tlDBObject {
     
     $sql .= $joins . $where;
     
-    
-    // new dBug($sql);  
     $sql .= " ORDER BY name";
     $numericIndex = false;
     switch($my['options']['output']) {
@@ -1050,20 +1036,19 @@ class tlUser extends tlDBObject {
                                            
     // Admin exception
     $doReindex = false;
-    if ($this->globalRoleID != TL_ROLES_ADMIN 
-        && null != $testPlanSet && count($testPlanSet) > 0) {
-      foreach ($testPlanSet as $idx => $item) {
-        if ($item['is_public'] == 0 && $item['has_role'] == 0) {
+    if( $this->globalRoleID != TL_ROLES_ADMIN && null != $testPlanSet 
+        && count($testPlanSet) > 0 ) {
+      foreach($testPlanSet as $idx => $item) {
+        if( $item['is_public'] == 0 && $item['has_role'] == 0 ) {
           unset($testPlanSet[$idx]);
           $doReindex = true;
         }         
       }
     } 
     
-    if($my['options']['output'] == 'combo')
-    {
-      foreach($testPlanSet as $idx => $item)
-      {
+    if($my['options']['output'] == 'combo') {
+      $dummy = array();
+      foreach($testPlanSet as $idx => $item) {
         $dummy[$idx] = $item['name'];
       }
       $testPlanSet = $dummy;
@@ -1424,8 +1409,8 @@ class tlUser extends tlDBObject {
         }
       }
     }
-    if ($doExit)
-    {   
+    
+    if ($doExit){   
       redirect($_SESSION['basehref'],"top.location");
       exit();
     }

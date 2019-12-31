@@ -97,7 +97,7 @@ CREATE UNIQUE INDEX /*prefix*/roles_uidx1 ON /*prefix*/roles ("description");
 CREATE TABLE /*prefix*/users(  
   "id" BIGSERIAL NOT NULL ,
   "login" VARCHAR(100) NOT NULL DEFAULT '',
-  "password" VARCHAR(32) NOT NULL DEFAULT '',
+  "password" VARCHAR(255) NOT NULL DEFAULT '',
   "role_id" SMALLINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/roles (id),
   "email" VARCHAR(100) NOT NULL DEFAULT '',
   "first" VARCHAR(50) NOT NULL DEFAULT '',

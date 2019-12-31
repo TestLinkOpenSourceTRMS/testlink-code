@@ -7,7 +7,8 @@
  *
  * @filesource  doAuthorize.php
  * @package     TestLink
- * @copyright   2003-2019, TestLink community 
+ * @author      Chad Rosen, Martin Havlat,Francisco Mancardi
+ * @copyright   2003-2018, TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -53,7 +54,6 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
   $loginExpired = false;
   $doLogin = false;
 
-  // if( $doChecks && !is_null($pwd) && !is_null($login)) {
   if( $doChecks && !is_null($login)) {
     $user = new tlUser();
     $user->login = $login;
@@ -86,7 +86,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
       if ($isOauth) {
          $doLogin = $user->isActive;
       } else {
-        $password_check = auth_does_password_match($user,$pwd);
+        $password_check = auth_does_password_match($db,$user,$pwd);
         if(!$password_check->status_ok) {
            $result = array('status' => tl::ERROR, 'msg' => null);
         }
@@ -118,7 +118,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
     } else {
       if( $authCfg['ldap_automatic_user_creation'] ) {
         $user->authentication = 'LDAP';  // force for auth_does_password_match
-        $check = auth_does_password_match($user,$pwd);
+        $check = auth_does_password_match($db,$user,$pwd);
     
         if( $check->status_ok ) {
           $forceUserCreation = true;
@@ -266,7 +266,7 @@ function doSSOClientCertificate(&$dbHandler,$apache_mod_ssl_env,$authCfg=null)
  *         obj->status_ok = true/false
  *         obj->msg = message to explain what has happened to a human being.
  */
-function auth_does_password_match(&$userObj,$cleartext_password)
+function auth_does_password_match(&$db,&$userObj,$cleartext_password)
 {
   $authCfg = config_get('authentication');
   $ret = new stdClass();
@@ -274,8 +274,7 @@ function auth_does_password_match(&$userObj,$cleartext_password)
   $ret->msg = sprintf(lang_get('unknown_authentication_method'),$authCfg['method']);
   
   $authMethod = $userObj->authentication;
-  switch($userObj->authentication)
-  {
+  switch ($userObj->authentication) {
     case 'DB':
     case 'LDAP':
     break;
@@ -285,8 +284,7 @@ function auth_does_password_match(&$userObj,$cleartext_password)
     break;
   }
 
-  switch($authMethod)
-  {
+  switch($authMethod) {
     case 'LDAP':
       $msg[ERROR_LDAP_AUTH_FAILED] = lang_get('error_ldap_auth_failed');
       $msg[ERROR_LDAP_SERVER_CONNECT_FAILED] = lang_get('error_ldap_server_connect_failed');
@@ -304,7 +302,7 @@ function auth_does_password_match(&$userObj,$cleartext_password)
     case 'MD5':
     case 'DB':
     default:
-      $ret->status_ok = ($userObj->comparePassword($cleartext_password) == tl::OK);
+      $ret->status_ok = ($userObj->comparePassword($db,$cleartext_password) == tl::OK);
       $ret->msg = 'ok';
     break;
   }
@@ -419,7 +417,7 @@ function doSessionSetUp(&$dbHandler,&$userObj) {
 
   $ckObj = new stdClass();
   $ckObj->name = config_get('auth_cookie');
-  $ckObj->value = $userObj->getSecurityCookie();
+  $ckObj->value = $user->getSecurityCookie();
   $ckObj->expire = $expireOnBrowserClose = false;
   tlSetCookie($ckObj);
 

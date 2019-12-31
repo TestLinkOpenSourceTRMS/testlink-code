@@ -574,7 +574,7 @@ CREATE TABLE /*prefix*/user_assignments (
 CREATE TABLE /*prefix*/users (
   `id` int(10) unsigned NOT NULL auto_increment,
   `login` varchar(100) NOT NULL default '',
-  `password` varchar(32) NOT NULL default '',
+  `password` varchar(255) NOT NULL default '',
   `role_id` int(10) unsigned NOT NULL default '0',
   `email` varchar(100) NOT NULL default '',
   `first` varchar(50) NOT NULL default '',

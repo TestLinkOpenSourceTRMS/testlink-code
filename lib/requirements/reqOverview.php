@@ -202,41 +202,35 @@ if(count($gui->reqIDs) > 0)  {
       
       #8792: append one item to $result for every displayed column (no content?: append empty string) 
       if($gui->processCF) {  
-        #get cfields set for this req      
+        $linked_cfields = array();
         if ( isset($cfByReqVer[$version['version_id']])) {      
           $linked_cfields = $cfByReqVer[$version['version_id']];
         }
-        else {
-          $linked_cfields = array();
-        }
 
-        #get all cfield ids we have columns for in the req overview
+        # get all cfield ids we have columns for in the req overview
         $cfield_ids = array();
         foreach ($gui->cfields4req as $cf){
-        $cfield_ids[] = $cf['id'];
+          $cfield_ids[] = $cf['id'];
         }
 
-        #loop all cfield columns (not only the ones having content for this req)
-        $i = 0;
+        # loop all cfield columns (not only the ones having content for this req)
+        $cfx = 0;
+        $goOnContinue = count($linked_cfields)-1;
         foreach ($cfield_ids as $cf_id) {
-          #append empty string for each cfields column if there is no content for this cfield and req  
-          if (!is_array($linked_cfields)) {
+          if (!is_array($linked_cfields) || ($cfx > $goOnContinue)) {
             $result[] = '';
             continue;
           }
-          if ($i > count($linked_cfields)-1) {
-            $result[] = '';
-            continue;
-          }
-
-          $cf = $linked_cfields[$i];
-          if ($cf['id'] == $cf_id) {  #if we have content for this cfield, appends string with its content as before
+          
+          $cf = $linked_cfields[$cfx];
+          if ($cf['id'] == $cf_id) {  
             $verbose_type = $req_mgr->cfield_mgr->custom_field_types[$cf['type']];
             $value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $cfg->charset));
             if( ($verbose_type == 'date' || $verbose_type == 'datetime') && is_numeric($value) && $value != 0 ) {
               $value = strftime( $cfg->$verbose_type . " ({$labels['week_short']} %W)" , $value);  #fix typo: missing 's' in labels
             }
-            $i += 1;  #only inc linked_cfields index pointer if we used one linked_cfields item
+            # do it only if we used one linked_cfields item
+            $cfx += 1;
             $result[] = $value;
           }
           else {

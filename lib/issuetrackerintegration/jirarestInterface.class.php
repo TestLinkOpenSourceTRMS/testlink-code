@@ -9,9 +9,6 @@
  * @see https://developer.atlassian.com/jiradev/api-reference/jira-rest-apis/jira-rest-api-tutorials/
  *
  *
- * @internal revisions
- * @since 1.9.16
- *
 **/
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/RestRequest.php");
 require_once(TL_ABS_PATH . "/third_party/fayp-jira-rest/Jira.php");
@@ -396,32 +393,24 @@ class jirarestInterface extends issueTrackerInterface
           }  
         }
 
-        if(property_exists($opt, 'artifactVersion'))
-        {
+        if (property_exists($opt, 'artifactVersion')) {
           // YES is plural!!
           $issue['fields']['versions'] = array();
-          foreach( $opt->artifactVersion as $vv)
-          {
+          foreach ( $opt->artifactVersion as $vv) {
             $issue['fields']['versions'][] = array('id' => (string)$vv);
           }  
         }
 
 
-
-        if(property_exists($opt, 'reporter'))
-        {
+        if (property_exists($opt, 'reporter')) {
           $issue['fields']['reporter'] = array('name' => (string)$opt->reporter);
         }
 
-        if(property_exists($opt, 'issueType'))
-        {
+        if (property_exists($opt, 'issueType')) {
           $issue['fields']['issuetype'] = array('id' => $opt->issueType);
         }
         
-        // 海信 Jira 创建时，对自定义字段添加 testCase 显示名称
-        if(preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", $summary, $matches)) 
-        {
-          // 海信 Jira 的 Testcase 自定义字段为 customfield_10311
+        if (preg_grep("/(?:\/.*\/{1,})(.*) - Execution/", $summary, $matches)) {
           $issue['fields']['customfield_10311'] = $matches[1];
         }
       }  

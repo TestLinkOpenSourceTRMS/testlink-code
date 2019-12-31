@@ -1663,7 +1663,7 @@ $TLS_testproject_alt_delete = 'Delete the Test project and all related data.';
 // Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = 'Warning! This action deletes irrevocable all Test Project related ' .
                             'data (including test results, plans, etc.). ' .
-                            'You can also use to desactivate instead of delete.\\n' .
+                            'You can also use to deactivate instead of delete.\\n' .
                             'Recommendation: Execute a dump of database at first.\\n' .
                             'Are you sure to delete the Test Project?';
 $TLS_th_reqmgrsystem_short = 'Req. Mgmt. System';
@@ -1714,7 +1714,7 @@ $TLS_hint_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_can_not_edit_frozen_tc = "You can not edit this version because it has been frozen";
 $TLS_can_not_delete_relation_frozen_tc = "You can not delete this relation : testcase has been frozen";
-$TLS_deactivate_this_tcversion = "Desactivate this version";
+$TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_execution_type = 'Execution type';
 $TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";

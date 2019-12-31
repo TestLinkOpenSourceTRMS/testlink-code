@@ -92,7 +92,7 @@ function initEnv() {
 
     // some sanity checks
     // strpos ( string $haystack , mixed $needle
-    if (strpos($args->reqURI,'javascript') !== false) {
+    if (stripos($args->reqURI,'javascript') !== false) {
       $args->reqURI = null; 
     }
   }

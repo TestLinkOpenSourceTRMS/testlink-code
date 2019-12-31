@@ -145,27 +145,28 @@ function init_args(&$dbHandler)
     $argsObj = new stdClass();
 	$argsObj->doIt = false;
     $argsObj->showPlatforms = false;
-    $argsObj->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $argsObj->tproject_id = isset($_SESSION['testprojectID']) ?  
+                            intval($_SESSION['testprojectID']) : 0;
     $argsObj->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
     $argsObj->tplan_name = '';
     $argsObj->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-    if($argsObj->tplan_id == 0)
-    {
+
+    $argsObj->tplan_id = intval($argsObj->tplan_id);
+    if ($argsObj->tplan_id == 0) {
         $argsObj->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
     }
 
-    if($argsObj->tplan_id > 0)
-    {
+    if ($argsObj->tplan_id > 0) {
     	$tplan_mgr = new testplan($dbHandler);
-        $tplan_info = $tplan_mgr->get_by_id($argsObj->tplan_id);
-        $argsObj->tplan_name = $tplan_info['name'];
+      $tplan_info = $tplan_mgr->get_by_id($argsObj->tplan_id);
+      $argsObj->tplan_name = $tplan_info['name'];
 
-		$argsObj->doIt = $tplan_mgr->count_testcases($argsObj->tplan_id) > 0;
-		$argsObj->showPlatforms = $tplan_mgr->hasLinkedPlatforms($argsObj->tplan_id);
-		$getOpt = array('outputFormat' => 'map');
-		$argsObj->platforms = $tplan_mgr->getPlatforms($argsObj->tplan_id,$getOpt);
-		unset($tplan_mgr);
+		  $argsObj->doIt = $tplan_mgr->count_testcases($argsObj->tplan_id) > 0;
+		  $argsObj->showPlatforms = $tplan_mgr->hasLinkedPlatforms($argsObj->tplan_id);
+		  $getOpt = array('outputFormat' => 'map');
+		  $argsObj->platforms = $tplan_mgr->getPlatforms($argsObj->tplan_id,$getOpt);
+		  unset($tplan_mgr);
     }
 
     return $argsObj;

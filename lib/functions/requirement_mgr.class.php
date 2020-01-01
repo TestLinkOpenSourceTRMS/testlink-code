@@ -1577,19 +1577,16 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   {
     $check_in_tproject = $this->getByAttribute($target,$tproject_id,null,$getByAttributeOpt);
 
-    if(is_null($check_in_tproject))
-    {
-	  $importMode = 'creation';
+    if (is_null($check_in_tproject)) {
+	    $importMode = 'creation';
       $newReq = $this->create($parent_id,$req['docid'],$req['title'],$req['description'],
                          $author_id,$req['status'],$req['type'],$req['expected_coverage'],
                          $req['node_order'],$tproject_id,array('quickAndDirty' => true));
-	  $reqID = $newReq['id'];
-      if( ($status_ok = ($newReq['status_ok'] == 1)) )
-      {
+	    $reqID = $newReq['id'];
+      $fk_id = $newReq['version_id'];  // for attachments
+      if( ($status_ok = ($newReq['status_ok'] == 1)) ){
         $msgID = 'import_req_created';
-      }
-      else
-      {
+      } else {
         $msgID = 'import_req_skipped_plain';
         $result['msg'] = $newReq['msg'];  // done to use what2add logic far below
       }
@@ -1613,21 +1610,18 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $msgID = 'frozen_req_unable_to_import';
     $status_ok = false;
 
-    if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
-    {
-      switch($my['options']['actionOnHit'])
-      {
+    if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq']) {
+      switch ($my['options']['actionOnHit']) {
         case 'update_last_version':
-		  $importMode = 'update';
+		      $importMode = 'update';
           $result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
                                   $author_id,$req['status'],$req['type'],$req['expected_coverage'],
                                   $req['node_order']);
-          
+          $fk_id = $last_version['id']; // for attachment management
           $status_ok = ($result['status_ok'] == 1);
           if( $status_ok) {
             $msgID = 'import_req_updated';
-          }
-          else {
+          } else {
             $msgID = 'import_req_update_last_version_failed';
           }  
         break;
@@ -1642,7 +1636,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
           // Need to update ALL fields on new version then why do not use
           // update() ?
           $newReq['version_id'] = $newItem['id']; 
-          
+          $fk_id = $newReq['version_id']; // for attachment management
+
           // IMPORTANT NOTICE:
           // We have to DO NOT UPDATE REQDOCID with info received from USER
           // Because ALL VERSION HAS TO HAVE docid, or we need to improve our checks
@@ -1675,18 +1670,20 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
   $hasAttachments = array_key_exists('attachments',$req);
   // process attachements for creation and update
-  if($status_ok && $hasAttachments)
-  {
-	$addAttachmentsResponse = $this->processAttachments( $importMode, $reqID, $req['attachments'], $feedbackMsg );
+  if ($status_ok && $hasAttachments) {
+	$addAttachResp = $this->processAttachments( $importMode, $fk_id, $req['attachments'], $feedbackMsg );
   }
+
   // display only problems during attachments import
-  if( isset($addAttachmentsResponse) && !is_null($addAttachmentsResponse) )
-  {
-	foreach($addAttachmentsResponse as $att_name){
-	  $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'],
-							'import_status' => sprintf(lang_get('import_req_attachment_skipped'),$att_name));
-	}
+  if( isset($addAttachResp) && !is_null($addAttachResp) ) {
+  	foreach($addAttachResp as $att_name){
+  	  $user_feedback[] = 
+        array('doc_id' => $req['docid'],
+              'title' => $req['title'],
+  						'import_status' => sprintf(lang_get('import_req_attachment_skipped'),$att_name));
+  	}
   }
+  
   if( $status_ok && $doProcessCF && isset($req['custom_fields']) && !is_null($req['custom_fields']) )
   {
     $req_version_id = !is_null($newReq) ? $newReq['version_id'] : $last_version['id'];
@@ -1718,7 +1715,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   return $user_feedback;
 }
   
-/**
+  /**
 	 * processAttachments
 	 *
 	 * Analyze attachments info related to requirement to define if the the attachment has to be added.
@@ -1730,7 +1727,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
 	function processAttachments($importMode, $srs_id, $attachments, $feedbackMsg )
 	{
-		$tables = tlObjectWithDB::getDBTables(array('requirements','attachments'));
+		$tables = tlObjectWithDB::getDBTables(array('req_versions','attachments'));
 
 		$knownAttachments = array();
 		foreach( $attachments as $attachment )
@@ -1755,7 +1752,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 				$fileInfo = $attachRepo->createAttachmentTempFile( $attachment['content'] );	
 				$fileInfo['name'] = $attachment['name'];
 				$fileInfo['type'] = $attachment['file_type'];
-				$attachRepo->insertAttachment( $srs_id, $tables['requirements'], $attachment['title'], $fileInfo);
+				$attachRepo->insertAttachment( $srs_id, 
+          $tables['req_versions'], $attachment['title'], $fileInfo);
 			}
 		}
 		return $knownAttachments;

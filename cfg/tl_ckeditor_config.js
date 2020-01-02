@@ -16,7 +16,7 @@ CKEDITOR.editorConfig = function( config )
 	config.skin = 'moonocolor';
 	
 	// set css of ckeditor content to testlink.css
-	config.contentsCss = 'gui/themes/default/css/testlink.css';
+	config.contentsCss = fRoot + '/gui/themes/default/css/testlink.css';
 	
 	// do not check "Replace actual contents" checkbox as default
 	config.templates_replaceContent = false;

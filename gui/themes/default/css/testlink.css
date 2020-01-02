@@ -299,7 +299,7 @@ button {
    margin: 4px 0 0 0;
    font-size: 9pt;
    color: black;
-   -moz-border-radius: 3px;
+   -border-radius: 3px;
    -webkit-border-radius: 3px;
    border-radius: 3px;
 }

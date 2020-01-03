@@ -1361,10 +1361,12 @@ function getCfg() {
 */
 function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id) {
     $exec_cfg = config_get('exec_cfg');
+
+
+    $userERole = $userObj->getEffectiveRole($dbHandler,$tproject_id,$tplan_id);
+
     $grants = new stdClass();
-    
-    $grants->execute = $userObj->hasRight($dbHandler,"testplan_execute",$tproject_id,$tplan_id,true);
-    $grants->execute = $grants->execute=="yes" ? 1 : 0;
+    $grants->execute = $userERole->hasRight("testplan_execute");
     
     // IMPORTANT NOTICE - TICKET 5128
     // If is TRUE we will need also to analize, test case by test case
@@ -1382,18 +1384,18 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id) {
     // These checks can not be done here
     //
     // TICKET 5310: Execution Config - convert options into rights
-    $grants->delete_execution = $userObj->hasRight($dbHandler,"exec_delete",$tproject_id,$tplan_id,true);
+    $grants->delete_execution = $userERole->hasRight("exec_delete");
   
     
     // Important:
     // Execution right must be present to consider this configuration option.
     // $grants->edit_exec_notes = $grants->execute && $exec_cfg->edit_notes;
     $grants->edit_exec_notes = $grants->execute && 
-                               $userObj->hasRight($dbHandler,"exec_edit_notes",$tproject_id,$tplan_id);
+                               $userERole->hasRight("exec_edit_notes");
     
+    $grants->edit_testcase = $userERole->hasRight("mgt_modify_tc");
 
-    $grants->edit_testcase = $userObj->hasRight($dbHandler,"mgt_modify_tc",$tproject_id,$tplan_id);
-    $grants->edit_testcase = $grants->edit_testcase=="yes" ? 1 : 0;
+    
     return $grants;
 }
 

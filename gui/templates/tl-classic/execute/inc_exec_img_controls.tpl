@@ -18,7 +18,7 @@ Author : franciscom
       {/if}
 
       {if $gui->grants->execute}
-  		<table class="invisible" style="border: thick solid white">
+  		<table class="no-border" style="border: thick solid white">
   		<tr border='0'>
   			<td style="text-align: center;width:75%; border: 0px">
   				<div class="title">{$args_labels.test_exec_notes}</div>

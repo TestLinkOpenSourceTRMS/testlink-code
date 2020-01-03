@@ -67,6 +67,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
   static $cfield_mgr;
   static $tprojectMgr;
 
+  $uploadOp = null;
   if(is_null($docRepo)) {
     $docRepo = tlAttachmentRepository::create($db);
     $resultsCfg = config_get('results');
@@ -202,9 +203,12 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
       // Attachment @exec level
       // Available only in single test execution
       //
+      $uploadOp = new stdClass();
+      $uploadOp->tcLevel = null;
+      $uploadOp->stepLevel = null;
       if( isset($_FILES['uploadedFile']['name'][0]) && 
           !is_null($_FILES['uploadedFile']['name'][0])) {
-        addAttachmentsToExec($execution_id,$docRepo);
+        $uploadOp->tcLevel = addAttachmentsToExec($execution_id,$docRepo);
       }  
 
 
@@ -229,8 +233,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
 
             $status = strtolower(trim($exec_data['step_status'][$step_id]));
             $status = $status[0];
-            if( $status != $resultsCfg['status_code']['not_run'] )
-            {
+            if( $status != $resultsCfg['status_code']['not_run'] ) {
               $sql .= ",status";
               $values .= ",'" . $db->prepare_string($status) . "'";
             }  
@@ -245,53 +248,53 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
               $repOpt = array('allow_empty_title' => TRUE);
 
               // May be we have enabled MULTIPLE on file upload
-              if( is_array($_FILES['uploadedFile']['name'][$step_id])) 
-              {
+              if( is_array($_FILES['uploadedFile']['name'][$step_id])) {
                 $curly = count($_FILES['uploadedFile']['name'][$step_id]);
-                for($moe=0; $moe < $curly; $moe++)
-                {
+                for($moe=0; $moe < $curly; $moe++) {
                   $fSize = isset($_FILES['uploadedFile']['size'][$step_id][$moe]) ? 
-                           $_FILES['uploadedFile']['size'][$step_id][$moe] : 0;
+                  $_FILES['uploadedFile']['size'][$step_id][$moe] : 0;
 
                   $fTmpName = isset($_FILES['uploadedFile']['tmp_name'][$step_id][$moe]) ? 
                               $_FILES['uploadedFile']['tmp_name'][$step_id][$moe] : '';
 
-                  if ($fSize && $fTmpName != "")
-                  {
+                  if ($fSize && $fTmpName != "") {
                     $fk2loop = array_keys($_FILES['uploadedFile']);
-                    foreach($fk2loop as $tk)
-                    {
+                    foreach($fk2loop as $tk) {
                       $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id][$moe];
                     }  
-                    $uploaded = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo,$repOpt);
+
+                    $upx = $docRepo->insertAttachment(
+                      $execution_tcsteps_id,$target,'',$fInfo,$repOpt);
+                    if ($upx != null && $upx->statusOK == false 
+                        && $uploadOp->stepLevel == null) {
+                      $uploadOp->stepLevel = $upx;
+                    } 
                   }
                 }  
-              } 
-              else
-              {
+              } else {
                 $fSize = isset($_FILES['uploadedFile']['size'][$step_id]) ? $_FILES['uploadedFile']['size'][$step_id] : 0;
                 $fTmpName = isset($_FILES['uploadedFile']['tmp_name'][$step_id]) ? 
                             $_FILES['uploadedFile']['tmp_name'][$step_id] : '';
 
-                if ($fSize && $fTmpName != "")
-                {
+                if ($fSize && $fTmpName != "") {
                   $fk2loop = array_keys($_FILES['uploadedFile']);
-                  foreach($fk2loop as $tk)
-                  {
+                  foreach($fk2loop as $tk) {
                     $fInfo[$tk] = $_FILES['uploadedFile'][$tk][$step_id];
                   }  
-                  $uploaded = $docRepo->insertAttachment($execution_tcsteps_id,$target,'',$fInfo);
+                  $upx = $docRepo->insertAttachment($execution_tcsteps_id,
+                                                    $target,'',$fInfo);
+                  if ($upx != null && $upx->statusOK == false 
+                      && $uploadOp->stepLevel == null) {
+                    $uploadOp->stepLevel = $upx;
+                  } 
                 }
               } 
-              
             }
           }         
         }  
       }  
 
       // Copy attachments from latest execution ?
-
-
       $itCheckOK = !is_null($issueTracker) && 
                    method_exists($issueTracker,'addIssue');
       
@@ -339,7 +342,7 @@ function write_execution(&$db,&$execSign,&$exec_data,&$issueTracker) {
     }
   }
 
-  return array($execSet,$addIssueOp);
+  return array($execSet,$addIssueOp,$uploadOp);
 }
 
 /**
@@ -1001,6 +1004,7 @@ function addAttachmentsToExec($execID,&$docRepo) {
   }
 
   $curly = count($honeyPot);
+  $op = null;
   for($moe=0; $moe < $curly; $moe++) {
     $fSize = isset($honeyPot['size'][$moe]) ? 
              $honeyPot['size'][$moe] : 0;
@@ -1013,8 +1017,14 @@ function addAttachmentsToExec($execID,&$docRepo) {
       foreach($fk2loop as $tk) {
         $fInfo[$tk] = $honeyPot[$tk][$moe];
       }  
-      $uploaded = $docRepo->insertAttachment($execID,$tableRef,'',
+
+      $uploadOp = $docRepo->insertAttachment($execID,$tableRef,'',
                                                $fInfo,$repOpt);
+
+      if ($uploadOp->statusOK == false && $op == null) {
+        $op = $uploadOp;
+      }
     }
   } 
+  return $op;
 }

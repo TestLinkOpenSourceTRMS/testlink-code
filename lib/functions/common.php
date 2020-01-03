@@ -812,13 +812,11 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
  * @param array $fInfo an array used by uploading files ($_FILES)
  * @return string containing an error message (if any)
  */
-function getFileUploadErrorMessage($fInfo)
+function getFileUploadErrorMessage($fInfo,$tlInfo=null)
 {
   $msg = null;
-  if (isset($fInfo['error']))
-  {
-    switch($fInfo['error'])
-    {
+  if (isset($fInfo['error'])) {
+    switch($fInfo['error']) {
       case UPLOAD_ERR_INI_SIZE:
         $msg = lang_get('error_file_size_larger_than_maximum_size_check_php_ini');
       break;
@@ -832,6 +830,10 @@ function getFileUploadErrorMessage($fInfo)
         $msg = lang_get('error_file_upload');
       break;
     }
+  }
+
+  if (null == $msg && null != $tlInfo && $tlInfo->statusOK == false) {
+    $msg = lang_get('FILE_UPLOAD_' . $tlInfo->statusCode);
   }
   return $msg;
 }

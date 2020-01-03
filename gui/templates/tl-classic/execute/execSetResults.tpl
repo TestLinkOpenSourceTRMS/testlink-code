@@ -123,7 +123,7 @@ updateLinkToLatestTCVersion,
 version,
 warning,
 warning_delete_execution,
-warning_nothing_will_be_saved'}
+warning_nothing_will_be_saved,file_upload_ko'}
 
 
 
@@ -296,8 +296,9 @@ function jsCallDeleteFile(btn, text, o_id) {
   }
 }        
 </script>
-
-<script src="third_party/clipboard/clipboard.min.js"></script>
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/clipboard/clipboard.min.js"></script>
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
 </head>
 {*
 IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
@@ -322,6 +323,31 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               {if #ROUND_EXEC_HISTORY#}Nifty('div.exec_history');{/if}
               {if #ROUND_TC_TITLE#}Nifty('div.exec_tc_title');{/if}"
       onUnload="storeWindowSize('TCExecPopup')">
+
+
+{if $gui->uploadOp != null }
+  <script>
+  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var doAlert = false;
+  {if $gui->uploadOp->tcLevel != null 
+      && $gui->uploadOp->tcLevel->statusOK == false}
+    uplMsg += "{$gui->uploadOp->tcLevel->statusCode}<br>";
+    doAlert = true;
+  {/if}
+
+  {if $gui->uploadOp->stepLevel != null 
+      && $gui->uploadOp->stepLevel->statusOK == false}
+    uplMsg += "{$gui->uploadOp->stepLevel->statusCode}<br>";
+    if (doAlert == false) {
+      doAlert = true;
+    }
+  {/if}
+  if (doAlert) {
+    bootbox.alert(uplMsg);
+  }
+  </script>
+{/if}
+
 
 <h1 class="title">
 	{$labels.title_t_r_on_build} {$gui->build_name|escape}

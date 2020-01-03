@@ -118,30 +118,42 @@ class tlAttachmentRepository extends tlObjectWithDB
   **/
   public function insertAttachment($fkid,$fkTableName,$title,$fInfo,$opt=null)
   {
+    $op = new stdClass();
+    $op->statusOK = false;
+    $op->msg = '';
+    $op->statusCode = 0;
+
     $fName = isset($fInfo['name']) ? $fInfo['name'] : null;
     $fType = isset($fInfo['type']) ? $fInfo['type'] : '';
     $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
     $fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
 
     if (null == $fName || '' == $fType || 0 == $fSize) {
-      return false;
+      $op->statusCode = 'fNameORfTypeOrfSize';
+      return $op;
     }
 
     // Process filename against XSS
     // Thanks to http://owasp.org/index.php/Unrestricted_File_Upload
     $pattern = trim($this->attachmentCfg->allowed_filenames_regexp);
     if( '' != $pattern && !preg_match($pattern,$fName) ){
-      return false; 
+      $op->msg = 'allowed_filenames_regexp -> failed';
+      $op->statusCode = 'allowed_filenames_regexp';
+      return $op; 
     }
     
     $fExt = getFileExtension($fName,"");
     if( '' == $fExt ) {
-      return false; 
+      $op->msg = 'empty extension -> failed';
+      $op->statusCode = 'empty_extension';
+      return $op; 
     }
 
     $allowed = explode(',',$this->attachmentCfg->allowed_files);
     if (!in_array($fExt, $allowed)) {
-      return false; 
+      $op->msg = 'allowed_files -> failed';
+      $op->statusCode = 'allowed_files';
+      return $op; 
     }
 
     // Go ahead
@@ -151,27 +163,27 @@ class tlAttachmentRepository extends tlObjectWithDB
 
     if ($this->repositoryType == TL_REPOSITORY_TYPE_FS) {
       $destFPath = $this->buildRepositoryFilePath($destFName,$fkTableName,$fkid);
-      $fileUploaded = $this->storeFileInFSRepository($fTmpName,$destFPath);
+      $op->statusOK = $this->storeFileInFSRepository($fTmpName,$destFPath);
     } else {
       $fContents = $this->getFileContentsForDBRepository($fTmpName,$destFName);
-      $fileUploaded = sizeof($fContents);
-      if($fileUploaded) {
+      $op->statusOK = sizeof($fContents);
+      if($op->statusOK) {
         @unlink($fTmpName); 
       } 
     }
 
-    if ($fileUploaded) {
-      $fileUploaded = 
-      ($this->attmObj->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title,$opt) >= tl::OK);
+    if ($op->statusOK) {
+      $op->statusOK = 
+        ($this->attmObj->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title,$opt) >= tl::OK);
       
-      if ($fileUploaded) {
-        $fileUploaded = $this->attmObj->writeToDb($this->db);
+      if ($op->statusOK) {
+        $op->statusOK = $this->attmObj->writeToDb($this->db);
       } else { 
         @unlink($destFPath);
       }
     }
 
-    return $fileUploaded;
+    return $op;
   }
 
   /**

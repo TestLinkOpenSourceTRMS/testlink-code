@@ -6,7 +6,7 @@
  * @package     TestLink
  * @filesource  requirement_mgr.class.php
  * @author      Francisco Mancardi <francisco.mancardi@gmail.com>
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)

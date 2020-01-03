@@ -7,12 +7,9 @@
  *
  * @package     TestLink
  * @filesource  attachments.inc.php
- * @copyright   2007-2014, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @link        http://www.testlink.org
  *
- *
- * @internal revisions
- * @since 1.9.10
  **/
 
 /** core functions */
@@ -132,17 +129,18 @@ function fileUploadManagement(&$dbHandler,$id,$title,$table)
     $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
     $fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
 
-    if ($fSize && $fTmpName != "")
-    {
+    $uploadOp = null;
+    if ($fSize && $fTmpName != "") {
       $repo = tlAttachmentRepository::create($dbHandler);
-      $retVal->uploaded = $repo->insertAttachment($id,$table,$title,$fInfo);
-      if ($retVal->uploaded)
-      {
+      $uploadOp = $repo->insertAttachment($id,$table,$title,$fInfo);
+      $retVal->uploaded = $uploadOp->statusOK;
+
+      if ($retVal->uploaded) {
         logAuditEvent(TLS("audit_attachment_created",$title,$fInfo['name']),"CREATE",$id,"attachments");
-      } 
-    }
-    else
-    {
+      } else {
+        $retVal->msg  = getFileUploadErrorMessage($fInfo,$uploadOp);
+      }
+    } else {
       $retVal->msg  = getFileUploadErrorMessage($fInfo);
     } 
   }

@@ -158,7 +158,8 @@ if(!is_null($linked_tcversions)) {
         $tcase_mgr->deleteStepsPartialExec(array_keys($_REQUEST['step_notes']),$ctx);
       }
       
-      list($execSet,$gui->addIssueOp) = write_execution($db,$args,$_REQUEST,$its);
+      list($execSet,$gui->addIssueOp,$gui->uploadOp) = 
+        write_execution($db,$args,$_REQUEST,$its);
       
       // Copy Attachments from latest exec ?
       if($args->copyAttFromLEXEC && $cfg->exec_cfg->exec_mode->new_exec && 
@@ -1699,6 +1700,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$tcv,&$treeMgr,&$tca
   }
 
   $cf_map = null;
+  $guiObj->execution_time_cfields[$tcase_id] = null;
   if($guiObj->grants->execute) {
     if( $eid > 0 ) {
       // I'm getting the values saved on latest execution

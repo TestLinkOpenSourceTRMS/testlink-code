@@ -426,13 +426,13 @@ class tlRole extends tlDBObject
   {
     $roleRights = (array)$this->rights;
     $rights = array();
-    foreach($roleRights as $right)
-    {
-      $rights[] = $right->name;
+    $needle = trim($rightName);
+    foreach($roleRights as $right) {
+      if (strcasecmp(trim($right->name),$needle) == 0 ) {
+        return true;
+      }
     }
-    $status = in_array($rightName,$rights);
-    
-    return $status;
+    return false;
   }
   
   /** 

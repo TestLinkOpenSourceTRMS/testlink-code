@@ -1100,7 +1100,7 @@ returns: -
 */
 function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
 {
-  lbl = $argsObj->l10n; 
+  $lbl = $argsObj->l10n; 
   if (sizeof($argsObj->tcaseSet) > 0) {
     $status_ok = $treeMgr->change_parent($argsObj->tcaseSet,$argsObj->containerID);
     $user_feedback= $status_ok ? '' : lang_get('move_testcases_failed');

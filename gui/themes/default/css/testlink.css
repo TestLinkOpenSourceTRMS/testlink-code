@@ -486,7 +486,7 @@ span.unselected a, span.unselected a:visited {
 * "common" 		- often used for view arrays
 * "simple" 		- often used for forms
 * "smallGrey" 	- often used for options / filters
-* "invisible" 	- no borders
+* "no-border" 	- no border (former "invisible" but already used by bootstrap)
 * !!! Do not add new table kinds !!! (there is bunch of wild table definitions below)
 */
 
@@ -568,7 +568,7 @@ table.no-border {
 	width:			auto;
 }
 
-table.invisible {
+table.no-border {
 	border: 		0px none;
 	font-size:		90%;
 	margin:			5px 0px;

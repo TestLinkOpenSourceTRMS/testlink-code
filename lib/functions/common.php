@@ -209,7 +209,8 @@ function setSessionTestPlan($tplan_info) {
     $ckObj = new stdClass();
 
     $ckCfg = config_get('cookie');
-    $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' . 1;
+    $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' . 
+                   intval($_SESSION['userID']);
     $ckObj->value = $tplan_info['id'];
 
     tlSetCookie($ckObj);

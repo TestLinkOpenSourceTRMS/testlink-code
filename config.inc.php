@@ -148,8 +148,7 @@ $tlCfg->gui->ux = 'tl-classic';
  * @see $tlCfg->cookie->path
  * @global string $tlCfg->cookie->prefix
  */
-$tlCfg->cookie->prefix = 'TESTLINK197';
-
+$tlCfg->cookie->prefix = 'TESTLINK1920';
 
 /**
  * @link http://php.net/function.setcookie
@@ -159,6 +158,9 @@ $tlCfg->cookie->expire = (time()+60*60*24*30); // 30 days;
 $tlCfg->cookie->domain = '';
 $tlCfg->cookie->secure = false;
 $tlCfg->cookie->httponly = false;
+
+$tlCfg->cookie->testProjectMemory = $tlCfg->cookie->prefix . 
+                                    '_PROJ_ID_USER_ID_';
 
 /**
  * Copied from MantisBT
@@ -2004,10 +2006,11 @@ $tlCfg->enableTableExportButton = DISABLED;
 
 
 /**
- * Taken from Mantis to implement better login security, and solve
- * TICKET 4342
+ * Taken from Mantis to implement better login security
+ * and solve TICKET 4342.
  */
-$tlCfg->auth_cookie = "TESTLINK_USER_AUTH_COOKIE";
+$tlCfg->auth_cookie = $tlCfg->cookie->prefix . 
+                      "TESTLINK_USER_AUTH_COOKIE";
 
 /** 
 Used when creating a Test Suite using copy

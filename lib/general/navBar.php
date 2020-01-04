@@ -95,8 +95,8 @@ function initializeGui(&$db,&$args) {
     $ckCfg = config_get('cookie');
 
     // Try to get from Cookie
-    $ckObj->name = $ckCfg->prefix . 
-       "TL_user${_SESSION['userID']}_testProject";
+    $ckObj->name = $ckCfg->testProjectMemory . 
+                   intval($_SESSION['userID']);
 
     if( isset($_COOKIE[$ckObj->name]) ) {
       $gui->tproject_id = $gui->tprojectID = intval($_COOKIE[$ckObj->name]);
@@ -182,13 +182,13 @@ function initializeGui(&$db,&$args) {
   // using the onload HTML body attribute
   $gui->updateMainPage = 0;
   if ($args->testproject) {
+
     // set test project ID for the next session
     $gui->updateMainPage = is_null($args->caller);
 
     $ckCfg = config_get('cookie');    
     $ckObj = new stdClass();
-    $ckObj->name = $ckCfg->prefix . 'TL_lastTestProjectForUserID_'. 
-                   $args->user->dbID;
+    $ckObj->name = $ckCfg->testProjectMemory . $args->user->dbID;
     $ckObj->value = $args->testproject;
     tlSetCookie($ckObj);
   }

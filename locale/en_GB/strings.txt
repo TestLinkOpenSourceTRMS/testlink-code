@@ -4007,7 +4007,9 @@ $TLS_FILE_UPLOAD_empty_extension = 'Empty Extension is Forbidden';
 $TLS_FILE_UPLOAD_allowed_files = 'File does not pass allowed file type check';
 
 $TLS_file_upload_ko = 'File Upload Issue';
-
+$TLS_pleaseOpenTSuite = 'Test Suite Details contain CRITIC information for ' .
+                   'execution. <br>Please open the section and ' .
+                   'read it carefully.<br>Thanks!';
 
 
 // ----- END ------------------------------------------------------------------

@@ -79,6 +79,7 @@ $tlCfg->keywords->onDeleteCheckExecutedTCVersions = TRUE;
 //
 $tlCfg->keywords->byTestProject = array();
 
+$tlCfg->keywords->headsUpTSuiteOnExec = 'CMD_OPEN_ON_EXEC';
 
 $tlCfg->accessWithoutLogin = array();
 

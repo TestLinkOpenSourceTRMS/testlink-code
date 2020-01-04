@@ -123,8 +123,7 @@ updateLinkToLatestTCVersion,
 version,
 warning,
 warning_delete_execution,
-warning_nothing_will_be_saved,file_upload_ko'}
-
+warning_nothing_will_be_saved,file_upload_ko,pleaseOpenTSuite'}
 
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
@@ -345,6 +344,13 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   if (doAlert) {
     bootbox.alert(uplMsg);
   }
+  </script>
+{/if}
+
+{if $gui->headsUpTSuite }
+  <script>
+  var uplMsg = "{$labels.pleaseOpenTSuite}<br>";
+  bootbox.alert(uplMsg);
   </script>
 {/if}
 

@@ -1515,7 +1515,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
     
     if ($atLeastOneKW) {
-
       // set the active value to filter
       // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
       if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {
@@ -1525,7 +1524,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       }
       $this->active_filters[$type] = $selection ? $type_selection : null;
     } else {
-        $this->active_filters[$key] = $this->filters[$key]['selected'];
+      $this->active_filters[$key] = 0;
     }  
   } 
 

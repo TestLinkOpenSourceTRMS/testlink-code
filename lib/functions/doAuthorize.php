@@ -58,11 +58,7 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
     $user = new tlUser();
     $user->login = $login;
     $searchBy = tlUser::USER_O_SEARCH_BYLOGIN;
-    if( $isOauth ) {
-      $user->emailAddress = $login;
-      $searchBy = tlUser::USER_O_SEARCH_BYEMAIL;
-    }
-    $loginExists = ( $user->readFromDB( $db, $searchBy ) >= tl::OK ); 
+    $loginExists = ( $user->readFromDB( $db, $searchBy ) >= tl::OK );
   }
 
   if( $loginExists ) {
@@ -146,11 +142,6 @@ function doAuthorize(&$db,$login,$pwd,$options=null) {
     $user = new tlUser();
     $user->login = $login;
     $searchBy = tlUser::USER_O_SEARCH_BYLOGIN;
-    if( $isOauth ) {
-      $user->emailAddress = $login;
-      $user->login = null;
-      $searchBy = tlUser::USER_O_SEARCH_BYEMAIL;
-    }
     $user->readFromDB($db,$searchBy);
 
     // Need to do set COOKIE following Mantis model

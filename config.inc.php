@@ -535,7 +535,7 @@ $tlCfg->OAuthServers = array();
 // the domain you want to whitelist (email domains)
 // $tlCfg->OAuthServers[1]['oauth_domain'] = 'autsoft.hu'; 
 // $tlCfg->OAuthServers[1]['oauth_profile'] = 'https://login.microsoftonline.com/TENANTID/openid/userinfo';
-// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/mail.read https://graph.microsoft.com/user.read openid profile email';
+// $tlCfg->OAuthServers[1]['oauth_scope'] = 'https://graph.microsoft.com/user.read openid profile email';
 
 /**
  * Single Sign On authentication

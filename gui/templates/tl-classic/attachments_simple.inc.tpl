@@ -2,9 +2,6 @@
 Testlink Open Source Project - http://testlink.sourceforge.net/
 @filesource attachments.inc. tpl
 
-@internal revisions
-@since 1.9.10
-
 Generic attachment management
 
 Input:
@@ -24,8 +21,11 @@ $gsmarty_attachments
 *}
 
 {lang_get var='labels'
-          s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,attachment_title,
-             display_inline,local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,max_size_file_upload'}
+          s='title_upload_attachment,enter_attachment_title,btn_upload_file,
+             warning,attachment_title,
+             display_inline,local_file,attachment_upload_ok,
+             title_choose_local_file,btn_cancel,max_size_file_upload,
+             allowed_files,allowed_filenames_regexp'}
 
 {lang_get s='warning_delete_attachment' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -60,6 +60,17 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
   <div  style="text-align:left;margin:3px;background:#CDE;padding: 3px 3px 3px 3px;border-style: groove;border-width: thin;">
       <label for="uploadedFile_[{$attach_id}]" class="labelHolder">{$labels.local_file} </label>
       <img class="clickable" src="{$tlImages.activity}" title="{$labels.max_size_file_upload}: {$gui->import_limit} Bytes)">
+
+      {if $tlCfg->attachments->allowed_filenames_regexp != ''}
+        <img class="clickable" src="{$tlImages.activity}" 
+             title="{$labels.allowed_filenames_regexp}{$tlCfg->attachments->allowed_filenames_regexp}">      
+      {/if}
+      {if $tlCfg->attachments->allowed_files != ''}
+        <img class="clickable" src="{$tlImages.activity}" 
+             title="{$labels.allowed_files}{$tlCfg->attachments->allowed_files}">  
+      {/if}
+
+
         <input type="file" name="uploadedFile[{$attach_id}][]" id="uploadedFile_{$attach_id}" multiple 
                size="{#UPLOAD_FILENAME_SIZE#}" />
         &nbsp;&nbsp;&nbsp;&nbsp;

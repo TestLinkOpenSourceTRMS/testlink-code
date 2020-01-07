@@ -330,13 +330,13 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   var doAlert = false;
   {if $gui->uploadOp->tcLevel != null 
       && $gui->uploadOp->tcLevel->statusOK == false}
-    uplMsg += "{$gui->uploadOp->tcLevel->statusCode}<br>";
+    uplMsg += "{$gui->uploadOp->tcLevel->msg}<br>";
     doAlert = true;
   {/if}
 
   {if $gui->uploadOp->stepLevel != null 
       && $gui->uploadOp->stepLevel->statusOK == false}
-    uplMsg += "{$gui->uploadOp->stepLevel->statusCode}<br>";
+    uplMsg += "{$gui->uploadOp->stepLevel->msg}<br>";
     if (doAlert == false) {
       doAlert = true;
     }

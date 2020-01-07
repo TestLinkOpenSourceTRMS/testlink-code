@@ -124,19 +124,12 @@ class mantis {
   }
 
   /**
-   *
-   */
-  function getIssueURL($issueID) {
-    return "{$this->url}/c/{$issueID}";
-  }
-
-  /**
    * 
    *
    */
   function getIssue($issueID) {
     try {
-      $item = $this->_get("/cards/{$issueID}");    
+      $item = $this->_get("/api/rest/issues/{$issueID}");    
       $ret = is_object($item) ? $item : null;
       return $ret;
     }

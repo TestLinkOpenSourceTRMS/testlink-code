@@ -528,17 +528,13 @@ abstract class issueTrackerInterface
    **/
   public function setResolvedStatusCfg()
   {
-    if( property_exists($this->cfg,'resolvedstatus') )
-    {
+    if (property_exists($this->cfg,'resolvedstatus')) {
       $statusCfg = (array)$this->cfg->resolvedstatus;
-    }
-    else
-    {
+    } else {
       $statusCfg['status'] = $this->defaultResolvedStatus;
     }
     $this->resolvedStatus = new stdClass();
-    foreach($statusCfg['status'] as $cfx)
-    {
+    foreach ($statusCfg['status'] as $cfx) {
       $e = (array)$cfx;
       $this->resolvedStatus->byCode[$e['code']] = $e['verbose'];
     }

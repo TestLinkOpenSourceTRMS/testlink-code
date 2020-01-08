@@ -4011,5 +4011,6 @@ $TLS_pleaseOpenTSuite = 'Test Suite Details contain CRITIC information for ' .
                    'execution. <br>Please open the section and ' .
                    'read it carefully.<br>Thanks!';
 
-
+$TLS_delete_frozen_tcversion = "Delete Frozen TCVersion";
+$TLS_right_delete_frozen_tcversion = "Delete Frozen TCVersion";
 // ----- END ------------------------------------------------------------------

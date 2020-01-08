@@ -6995,6 +6995,11 @@ class testcase extends tlObjectWithAttachments {
       $goo->can_do->freeze = $grantsObj->$key;
     }
 
+    $key = 'delete_frozen_tcversion';
+    if(property_exists($grantsObj, $key)) {
+      $goo->can_do->delete_frozen_tcversion = $grantsObj->$key;
+    }
+
     $path2root = $this->tree_manager->get_path($id);
     $goo->tproject_id = $path2root[0]['parent_id'];
     $info = $this->tproject_mgr->get_by_id($goo->tproject_id);

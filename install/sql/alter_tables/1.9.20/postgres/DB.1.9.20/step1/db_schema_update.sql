@@ -5,6 +5,7 @@
 
 -- since 1.9.20
 INSERT INTO /*prefix*/rights (id,description) VALUES (55,'testproject_add_remove_keywords_executed_tcversions');
+INSERT INTO /*prefix*/rights (id,description) VALUES (56,'delete_frozen_tcversion');
 
 ALTER TABLE /*prefix*/builds ADD COLUMN commit_id VARCHAR(64) NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN tag VARCHAR(64) NULL;

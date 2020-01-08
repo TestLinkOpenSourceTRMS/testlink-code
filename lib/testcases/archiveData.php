@@ -220,7 +220,8 @@ function initializeEnv($dbHandler) {
           'keyword_assignment','req_tcase_link_management',
           'testproject_edit_executed_testcases',
           'testproject_delete_executed_testcases',
-          'testproject_add_remove_keywords_executed_tcversions');
+          'testproject_add_remove_keywords_executed_tcversions',
+          'delete_frozen_tcversion');
 
   $grants = new stdClass();
   foreach($grant2check as $right) {

@@ -52,7 +52,8 @@
     {$display_left_block_3=true}
 {/if}
 
-{if $gui->testprojectID && $gui->grants.view_tc == "yes"}
+{if $gui->testprojectID && 
+    ($gui->grants.view_tc == "yes" || $gui->grants.modify_tc == "yes") }
     {$display_left_block_4=true}
 {/if}
 

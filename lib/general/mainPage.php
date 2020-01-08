@@ -49,7 +49,7 @@ $currentUser = $_SESSION['currentUser'];
 $userID = $currentUser->dbID;
 
 $gui = new stdClass();
-$gui->grants = getGrants($db,$user,$userIsBlindFolded);
+$gui->grants = getGrants($db,$user,$testprojectID,$userIsBlindFolded);
 $gui->hasTestCases = false;
 
 if($gui->grants['view_tc']) { 
@@ -223,59 +223,58 @@ function getUserDocumentation()
 /**
  *
  */
-function getGrants($dbHandler,$user,$forceToNo=false)
+function getGrants($dbHandler,$user,$tproject_id,$forceToNo=false)
 {
   // User has test project rights
   // This talks about Default/Global
   //
   // key: more or less verbose
   // value: string present on rights table
-  $right2check = array('project_edit' => 'mgt_modify_product',
-                       'reqs_view' => "mgt_view_req", 
-                       'monitor_req' => "monitor_requirement", 
-                       'req_tcase_link_management' => "req_tcase_link_management",
-                       'reqs_edit' => "mgt_modify_req",
-                       'keywords_view' => "mgt_view_key",
-                       'keyword_assignment' => "keyword_assignment",
-                       'keywords_edit' => "mgt_modify_key",
-                       'platform_management' => "platform_management",
-                       'issuetracker_management' => "issuetracker_management",
-                       'issuetracker_view' => "issuetracker_view",
-                       'codetracker_management' => "codetracker_management",
-                       'codetracker_view' => "codetracker_view",
-                       'configuration' => "system_configuraton",
-                       'cfield_management' => 'cfield_management',
-                       'cfield_view' => 'cfield_view',
-                       'cfield_assignment' => 'cfield_assignment',
-                       'usergroups' => "mgt_view_usergroups",
-                       'view_tc' => "mgt_view_tc",
-                       'view_testcase_spec' => "mgt_view_tc",
-                       'project_inventory_view' => 'project_inventory_view',
-                       'project_inventory_management' => 'project_inventory_management',
-                       'modify_tc' => 'mgt_modify_tc',
-                       'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
-                       'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
-                       'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases',
-                       'exec_ro_access' => 'exec_ro_access');
- if($forceToNo)
- {
+  $right2check = 
+    array('project_edit' => 'mgt_modify_product',
+          'reqs_view' => "mgt_view_req", 
+          'monitor_req' => "monitor_requirement", 
+          'req_tcase_link_management' => "req_tcase_link_management",
+          'reqs_edit' => "mgt_modify_req",
+          'keywords_view' => "mgt_view_key",
+          'keyword_assignment' => "keyword_assignment",
+          'keywords_edit' => "mgt_modify_key",
+          'platform_management' => "platform_management",
+          'issuetracker_management' => "issuetracker_management",
+          'issuetracker_view' => "issuetracker_view",
+          'codetracker_management' => "codetracker_management",
+          'codetracker_view' => "codetracker_view",
+          'configuration' => "system_configuraton",
+          'cfield_management' => 'cfield_management',
+          'cfield_view' => 'cfield_view',
+          'cfield_assignment' => 'cfield_assignment',
+          'usergroups' => "mgt_view_usergroups",
+          'view_tc' => "mgt_view_tc",
+          'view_testcase_spec' => "mgt_view_tc",
+          'project_inventory_view' => 'project_inventory_view',
+          'project_inventory_management' => 'project_inventory_management',
+          'modify_tc' => 'mgt_modify_tc',
+          'exec_edit_notes' => 'exec_edit_notes', 'exec_delete' => 'exec_delete',
+          'testplan_unlink_executed_testcases' => 'testplan_unlink_executed_testcases',
+          'testproject_delete_executed_testcases' => 'testproject_delete_executed_testcases',
+          'exec_ro_access' => 'exec_ro_access');
+ if ($forceToNo) {
     $grants = array_fill_keys(array_keys($right2check), 'no');
     return $grants;      
  }  
   
   
- $grants['project_edit'] = $user->hasRight($dbHandler,$right2check['project_edit']); 
+ $grants['project_edit'] = $user->hasRight($dbHandler,$right2check['project_edit'],$tproject_id); 
 
   /** redirect admin to create testproject if not found */
-  if ($grants['project_edit'] && !isset($_SESSION['testprojectID']))
-  {
+  if ($grants['project_edit'] && !isset($_SESSION['testprojectID'])) {
 	  redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
 	  exit();
   }
   
-  foreach($right2check as $humankey => $right)
-  {
-    $grants[$humankey] = $user->hasRight($dbHandler,$right); 
+
+  foreach($right2check as $humankey => $right) {
+    $grants[$humankey] = $user->hasRight($dbHandler,$right,$tproject_id); 
   }
 
 
@@ -283,7 +282,7 @@ function getGrants($dbHandler,$user,$forceToNo=false)
   if($_SESSION['testprojectOptions']->inventoryEnabled) {
     $invr = array('project_inventory_view','project_inventory_management');
     foreach($invr as $r){
-      $grants[$r] = ($user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
+      $grants[$r] = ($user->hasRight($dbHandler,$r,$tproject_id) == 'yes') ? 1 : 0;
     }
   }
 

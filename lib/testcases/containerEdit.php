@@ -1265,8 +1265,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
       $guiObj->user_feedback = is_null($guiObj->user_feedback) ? lang_get('no_testcases_available') : $guiObj->user_feedback;
     }
 
-    if(!$argsObj->grants->delete_executed_testcases && $hasExecutedTC)
-    {
+    if (!$argsObj->grants->delete_executed_testcases && $hasExecutedTC) {
       $guiObj->system_message = lang_get('system_blocks_delete_executed_tc');
     }
 
@@ -1400,6 +1399,8 @@ function initializeGui(&$objMgr,$id,$argsObj,$lbl=null) {
                                   $guiObj->id,$argsObj->tprojectID);
   }  
 
+
+  $guiObj->modify_tc_rights = $argsObj->grants->testcase_mgmt;
   return $guiObj;
 }
 

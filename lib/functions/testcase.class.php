@@ -1881,14 +1881,19 @@ class testcase extends tlObjectWithAttachments {
   /*
     @internal revisions
   */
-  function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null) {
-    $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
-    $my['options'] = array('check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
+  function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null) 
+  {
+    $newTCObj = array('id' => -1, 'status_ok' => 0, 
+                      'msg' => 'ok', 'mappings' => null);
+    $my['options'] = array('check_duplicate_name' => 
+                             self::DONT_CHECK_DUPLICATE_NAME,
                            'action_on_duplicate_name' => 'generate_new',
                            'use_this_name' => null,
-                           'copy_also' => null, 'preserve_external_id' => false,
-                           'renderGhostSteps' => false, 'stepAsGhost' => false);
-
+                           'copy_also' => null, 
+                           'preserve_external_id' => false,
+                           'renderGhostSteps' => false, 
+                           'stepAsGhost' => false,
+                           'copyOnlyLatest' => false);
 
     // needed when Test Case is copied to a DIFFERENT Test Project,
     // added during Test Project COPY Feature implementation
@@ -1914,15 +1919,20 @@ class testcase extends tlObjectWithAttachments {
                       $my['options']['copy_also'][$uglyKey]);
     // ==================================================================
 
+    $useLatest = $my['options']['stepAsGhost'] 
+                 || $my['options']['copyOnlyLatest'];
 
-    $tcVersionID = $my['options']['stepAsGhost'] ? self::LATEST_VERSION : self::ALL_VERSIONS;
+    $tcVersionID = $useLatest ? self::LATEST_VERSION : self::ALL_VERSIONS;
     $tcase_info = $this->get_by_id($id,$tcVersionID);
     if ($tcase_info) {
-      $callme = !is_null($my['options']['use_this_name']) ? $my['options']['use_this_name'] : $tcase_info[0]['name'];
+      $callme = !is_null($my['options']['use_this_name']) ? 
+                $my['options']['use_this_name'] : $tcase_info[0]['name'];
       $callme = $this->trim_and_limit($callme);
 
-      $newTCObj = $this->create_tcase_only($parent_id,$callme,$tcase_info[0]['node_order'],self::AUTOMATIC_ID,
-                                           $my['options']);
+      $newTCObj = $this->create_tcase_only($parent_id,
+                    $callme,$tcase_info[0]['node_order'],
+                    self::AUTOMATIC_ID,$my['options']);
+
       $ix = new stdClass();
       $ix->authorID = $user_id;
       $ix->status = null;
@@ -1939,7 +1949,6 @@ class testcase extends tlObjectWithAttachments {
           $ix->externalID = $tcase_info[0]['tc_external_id'];
         }
 
-        
         foreach($tcase_info as $tcversion) {
 
           // IMPORTANT NOTICE:
@@ -1949,7 +1958,12 @@ class testcase extends tlObjectWithAttachments {
 
           $ix->executionType = $tcversion['execution_type'];
           $ix->importance = $tcversion['importance'];
+          
           $ix->version = $tcversion['version'];
+          if ($my['options']['copyOnlyLatest']) {
+            $ix->version = 1;
+          }
+
           $ix->status = $tcversion['status'];
           $ix->estimatedExecDuration = $tcversion['estimated_exec_duration'];
           $ix->is_open = $tcversion['is_open'];

@@ -4013,4 +4013,5 @@ $TLS_pleaseOpenTSuite = 'Test Suite Details contain CRITIC information for ' .
 
 $TLS_delete_frozen_tcversion = "Delete Frozen TCVersion";
 $TLS_right_delete_frozen_tcversion = "Delete Frozen TCVersion";
+$TLS_copy_only_latest_version = 'Copy ONLY the Latest Version AS Version 1';
 // ----- END ------------------------------------------------------------------

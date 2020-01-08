@@ -8,7 +8,7 @@
  * @filesource  tcEdit.php
  * @package     TestLink
  * @author      TestLink community
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @link        http://www.testlink.org/
  *
  *
@@ -191,9 +191,7 @@ if($args->delete_tc_version) {
   $smarty->assign('gui',$gui);
   $templateCfg = templateConfiguration('tcDelete');
   $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-}
-else if($args->move_copy_tc)
-{
+} else if($args->move_copy_tc) {
   // need to get the testproject for the test case
   $tproject_id = $tcase_mgr->get_testproject($args->tcase_id);
   $the_tc_node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
@@ -205,12 +203,11 @@ else if($args->move_copy_tc)
   
   $container_qty = count($the_xx);
   $gui->move_enabled = 1;
-  if($container_qty == 1)
-  {
+  if ($container_qty == 1) {
     // move operation is nonsense
     $gui->move_enabled = 0;
   }
-  
+
   $gui->top_checked = 'checked=checked';
   $gui->bottom_checked = '';
   
@@ -234,17 +231,19 @@ else if($args->do_move)
 
   $gui->refreshTree = $args->refreshTree;
   $tsuite_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->old_container_id);
-}
-else if($args->do_copy || $args->do_copy_ghost_zone)
-{
+} else if($args->do_copy || $args->do_copy_ghost_zone) {
   $args->stepAsGhost = $args->do_copy_ghost_zone;
   $user_feedback='';
   $msg = '';
   $action_result = 'copied';
-  $options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
-                   'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
-                   'copy_also' => $args->copy, 'stepAsGhost' => $args->do_copy_ghost_zone,
-                   'use_this_name' => $args->name);
+  $options = array('check_duplicate_name' => 
+                      config_get('check_names_for_duplicates'),
+                   'action_on_duplicate_name' => 
+                      config_get('action_on_duplicate_name'),
+                   'copy_also' => $args->copy, 
+                   'stepAsGhost' => $args->do_copy_ghost_zone,
+                   'use_this_name' => $args->name,
+                   'copyOnlyLatest' => $args->copyOnlyLatestVersion);
   
   $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$options);
   $msg = $result['msg'];
@@ -478,6 +477,9 @@ function init_args(&$cfgObj,$otName,&$tcaseMgr) {
   foreach ($k2c as $kv) {
     $args->$kv = isset($_REQUEST[$kv]) ? $_REQUEST[$kv] : null;
   }
+
+  $args->copyOnlyLatestVersion = 
+    isset($_REQUEST['copy_latest_version']) ? 1 : 0;
 
   $tcaseMgr->setTestProject($args->tproject_id);
 

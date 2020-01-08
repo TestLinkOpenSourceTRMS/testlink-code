@@ -777,27 +777,27 @@ function get_subtree($id,$filters=null,$opt=null)
 function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
   $gui = $guiObj;
-  $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
-  $gui->mgt_modify_product = has_rights($this->db,"mgt_modify_product");
 
   $gui->sqlResult = '';
   $gui->sqlAction = '';
-  if($sqlResult)
-  {
+  if ($sqlResult) {
     $gui->sqlResult = $sqlResult;
   }
 
   $p2ow = array('refreshTree' => false, 'user_feedback' => '');
-  foreach($p2ow as $prop => $value)
-  {
-    if( !property_exists($gui,$prop) )
-    {
+  foreach ($p2ow as $prop => $value) {
+    if (!property_exists($gui,$prop)) {
       $gui->$prop = $value;
     }
   }
 
   $safeID = intval($id);
   $gui->tproject_id = $safeID;
+  $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc",$safeID);
+  $gui->mgt_modify_product = has_rights($this->db,"mgt_modify_product");
+
+
+
   $gui->container_data = $this->get_by_id($safeID);
   $gui->moddedItem = $gui->container_data;
   $gui->level = 'testproject';

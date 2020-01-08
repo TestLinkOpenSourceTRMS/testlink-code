@@ -7,7 +7,7 @@
  * 
  * @filesource  treeMenu.inc.php
  * @package     TestLink
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @link        http://www.testlink.org
  * @uses        config.inc.php
  *
@@ -328,7 +328,9 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
                            'setAssignedTo' => false);
 
     // added importance here because of "undefined" error in event log
-    $my['filters'] = array('status' => null, 'assignedTo' => null, 'importance' => null, 'executionType' => null,
+    $my['filters'] = array('status' => null, 
+                           'assignedTo' => null, 
+                           'importance' => null, 'executionType' => null,
                            'filter_tc_id' => null);
     
     $my['options'] = array_merge($my['options'], (array)$options);
@@ -339,8 +341,12 @@ function prepareNode(&$db,&$node,&$map_node_tccount,$attr_map = null,
     $enabledFiltersOn['executionType'] = isset($my['filters']['filter_execution_type']);
     $enabledFiltersOn['importance'] = isset($my['filters']['filter_priority']);
     $enabledFiltersOn['custom_fields'] = isset($my['filters']['filter_custom_fields']);
+
+
     $enabledFiltersOn['keywords'] = 
-      (null != $attr_map && isset($attr_map['keywords']));
+      (null != $attr_map && isset($attr_map['keywords']) 
+       && null != $attr_map['keywords']
+       && count($attr_map['keywords']) > 0);
 
     $enabledFiltersOn['platforms'] = 
       (null != $attr_map && isset($attr_map['platforms']));
@@ -2464,13 +2470,12 @@ function getTestSpecTree($tprojectID,&$tprojectMgr,&$fObj) {
   $flt['keywords'] = null;
   $flt['platforms'] = null;
 
-  if( isset($fObj['filter_testcase_name']) && !is_null($fObj['filter_testcase_name']) )
-  {
+  if( isset($fObj['filter_testcase_name']) && !is_null($fObj['filter_testcase_name']) ) {
     if( ($dummy = trim($fObj['filter_testcase_name'])) != '' ) {
       $flt['testcase_name'] = $dummy;
     }
   }
-  
+
   if( isset($fObj['filter_tc_id']) && !is_null($fObj['filter_tc_id']) ) {
     $flt['testcase_id'] = intval($fObj['filter_tc_id']);
   }

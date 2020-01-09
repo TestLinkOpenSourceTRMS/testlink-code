@@ -84,4 +84,24 @@ ON NHTS_L2.parent_id = NHTS_L1.id
 WHERE NHTPRJ.node_type_id = 1 
 AND NHTS_L1.node_type_id = 2
 AND NHTS_L2.node_type_id = 2;
+
+##
+CREATE OR REPLACE VIEW /*prefix*/exec_by_date_time 
+AS (
+SELECT NHTPL.name AS testplan_name, 
+DATE_FORMAT(E.execution_ts, '%Y-%m-%d') AS yyyy_mm_dd,
+DATE_FORMAT(E.execution_ts, '%H') AS hh,
+DATE_FORMAT(E.execution_ts, '%k') AS hour,
+E.* FROM /*prefix*/executions E
+JOIN /*prefix*/testplans TPL on TPL.id=E.testplan_id
+JOIN /*prefix*/nodes_hierarchy NHTPL on NHTPL.id = TPL.id);
+
+##
+CREATE OR REPLACE VIEW /*prefix*/exec_daily_stats 
+AS (
+SELECT count(*) AS qty_executed, testplan_id, testplan_name, 
+yyyy_mm_dd, hh 
+FROM /*prefix*/exec_by_date_time
+GROUP BY testplan_id, testplan_name,YYYY_MM_DD, HH);  
+
 # END

@@ -5,7 +5,7 @@
  *
  * @filesource  object.class.php
  * @package     TestLink
- * @copyright   2007-2019, TestLink community 
+ * @copyright   2007-2020, TestLink community 
  * @link        http://www.testlink.org
  *
  **/
@@ -338,7 +338,9 @@ abstract class tlObject implements iSerialization
                    'latest_req_version' => null,
                    'latest_req_version_id' => null,
                    'latest_rspec_revision' => null,
-                   'tsuites_tree_depth_2' => null); 
+                   'tsuites_tree_depth_2' => null,
+                   'exec_by_date_time' => null,
+                   'exec_daily_stats' => null); 
     
     foreach($items as $key => $value) {
       $items[$key] = DB_TABLE_PREFIX . $key;

@@ -2958,7 +2958,8 @@ class tlTestPlanMetrics extends testplan
    * 
    *
    */
-  function getNeverRunByPlatform($tplanID,$platformSet=null) {
+  function getNeverRunByPlatform($tplanID,$platformSet=null) 
+  {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safeID = intval($tplanID);
@@ -3105,7 +3106,8 @@ class tlTestPlanMetrics extends testplan
    * 
    *
    */
-  function getNeverRunOnTestPlanWithoutPlatforms($tplanID) {
+  function getNeverRunOnTestPlanWithoutPlatforms($tplanID) 
+  {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safeID = intval($tplanID);
@@ -3165,7 +3167,8 @@ class tlTestPlanMetrics extends testplan
    * 
    *
    */
-  function getNeverRunOnSinglePlatform($tplanID,$platformID,$opt=null) {
+  function getNeverRunOnSinglePlatform($tplanID,$platformID,$opt=null) 
+  {
 
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $safeID = intval($tplanID);
@@ -3341,5 +3344,244 @@ class tlTestPlanMetrics extends testplan
     return array($my,$builds,$sqlStm,$union);
   }
 
+
+ /**
+  *
+  * getStatusTotalsTSuiteDepth2ForRender
+  *
+  */
+  function getStatusTotalsTSuiteDepth2ForRender($id,$filters=null,$opt=null)
+  {
+    list($rx,$staircase) = 
+      $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
+
+    // ??? $key2loop = array_keys($rx->info);
+    $template = array('type' => 'tsuite', 'name' => '',
+                      'total_tc' => 0,
+                      'percentage_completed' => 0, 
+                      'details' => array());  
+
+    foreach($this->statusCode as $verbose => $code) {
+      $template['details'][$verbose] = array('qty' => 0, 'percentage' => 0);
+    }
+    
+    $renderObj = new stdClass();
+    $renderObj->colDefinition = $rx->colDefinition;
+    
+    // collect qty
+    $execQty = null;
+    $execQtyL2 = null;
+
+    $key2loop = array_keys($staircase);
+    $wp = isset($opt['groupByPlatform']) && $opt['groupByPlatform'];
+
+    if( $wp ) {
+      $tsNameCache = array();
+      $plat2loop = array_keys($rx->info);
+
+      // In order to get SUM() for each Top (Level 1) Test Suite
+      // using the specific test suite we get the Level 1
+      // test suite of it's branch
+      //
+      foreach($key2loop as $tsuite_id) {
+        /* staircase
+          array(2) {
+            // ELEMENT #1
+            [33934]=>  (Test Suite -> Elenco agenda)
+            array(1) {
+              [0]=> string(5) "33933" (Test Project - Academy)
+            }
+            
+            // ELEMENT #2
+            [49238]=> (Test Suite -> SOTTO Elenco agenda)
+             array(2) {
+               [0]=> string(5) "33933" (Test Project - Academy)
+               [1]=> string(5) "33934" (Test Suite -> Elenco agenda)
+            }
+           }
+        */
+
+        $tsuiteDepth = count($staircase[$tsuite_id]);
+
+        $l2id = -1;
+        if ($tsuiteDepth > 1) {
+          // element at position 1 on starcaise 
+          // is a TOP LEVEL SUITE
+          $topSuiteID = $staircase[$tsuite_id][1];
+          $initName = false;
+          if ($tsuiteDepth > 2) {
+            $l2id = $staircase[$tsuite_id][2];
+            $initNameL2 = false;            
+          } else {
+            $l2id = $tsuite_id;
+            $initNameL2 = true;
+          }
+        } else {
+          $topSuiteID = $tsuite_id;
+          $initName = true;
+        }     
+    
+        // Over Platform
+        foreach( $plat2loop as $platId ) {
+          
+          // Level 1
+          if (!isset($renderObj->info[$platId][$topSuiteID])) {
+            $renderObj->info[$platId][$topSuiteID] = $template;
+            $execQty[$platId][$topSuiteID] = 0;
+            $initName = true;
+          }              
+
+          // Level 2
+          if ($l2id > 0 && !isset($renderObj->infoL2[$platId][$l2id])) {
+            $renderObj->infoL2[$platId][$l2id] = $template;
+            $execQtyL2[$platId][$l2id] = 0;
+            $initNameL2 = true;
+          }              
+
+
+          if ($initName) {
+            if (!isset($tsNameCache[$topSuiteID])) {
+              $dummy = $this->tree_manager->get_node_hierarchy_info($topSuiteID);
+              $tsNameCache[$topSuiteID] = $dummy['name'];
+              unset($dummy);
+            }
+            $renderObj->info[$platId][$topSuiteID]['name'] = 
+              $tsNameCache[$topSuiteID];
+          }  
+
+          if ($l2id > 0 && $initNameL2) {
+            if (!isset($tsNameCache[$l2id])) {
+              // , array('l2CutFirst' => 10)
+              // $dummy = $this->tree_manager->getNameL2($l2id);
+              $tsNameCache[$l2id] = 
+                $this->tree_manager->getNameL2($l2id);
+            }
+            $renderObj->infoL2[$platId][$l2id]['name'] = 
+              $tsNameCache[$l2id];
+          }  
+
+
+
+          // Loop to get executions counters
+          $r2d2 = &$rx->info[$platId][$tsuite_id];
+          if( null !== $r2d2 ) {
+            foreach($r2d2['details'] as $code => &$elem) {
+              $renderObj->info[$platId][$topSuiteID]['details'][$code]
+                ['qty'] += $elem['qty'];    
+              $renderObj->info[$platId][$topSuiteID]['total_tc'] += 
+                $elem['qty'];
+
+              if ($l2id > 0) {
+                $renderObj->infoL2[$platId][$l2id]['details'][$code]
+                  ['qty'] += $elem['qty'];    
+                $renderObj->infoL2[$platId][$l2id]['total_tc'] += 
+                  $elem['qty'];
+              }
+
+              if( $code != 'not_run' ) {
+                $execQty[$platId][$topSuiteID] += $elem['qty'];
+                if ($l2id > 0) {
+                 $execQtyL2[$platId][$l2id] += $elem['qty'];
+                } 
+              }
+            }
+          }  
+        }  
+      }
+
+      // Last step: get percentages
+      foreach($renderObj->info as $platID => &$tsuiteMetrics) {
+        foreach($tsuiteMetrics as $tsuite_id => &$elem) {
+          if( $execQty[$platID][$tsuite_id] > 0 ) {
+            $elem['percentage_completed'] = number_format( 100 * 
+              ($execQty[$platID][$tsuite_id] / $elem['total_tc']),1);
+          }  
+          if( $elem['total_tc'] > 0 ) {
+            foreach($elem['details'] as $code => &$yumyum) {
+              $yumyum['percentage'] = number_format( 100 * ($yumyum['qty'] / $elem['total_tc']),1);    
+            }
+          }
+        }
+      } 
+
+      // Level 2
+      foreach($renderObj->infoL2 as $platID => &$tsuiteMetrics) {
+        foreach($tsuiteMetrics as $tsuite_id => &$elem) {
+          if( $execQtyL2[$platID][$tsuite_id] > 0 ) {
+            $elem['percentage_completed'] = number_format( 100 * 
+              ($execQtyL2[$platID][$tsuite_id] / $elem['total_tc']),1);
+          }  
+          if( $elem['total_tc'] > 0 ) {
+            foreach($elem['details'] as $code => &$yumyum) {
+              $yumyum['percentage'] = number_format( 100 * ($yumyum['qty'] / $elem['total_tc']),1);    
+            }
+          }
+        }
+      } 
+
+
+
+    } 
+    return $renderObj;
+  }
+
+
+ /**
+  *
+  * getExecTimelineStats
+  *
+  */
+  function getExecTimelineStats($id,$filters=null,$opt=null)
+  {
+    $flt = array('yyyy_mm_dd' => null);
+    $flt = array_merge($flt,(array)$filters);
+    
+    // timeline
+    // day -> sum by date
+    // day_hour -> sum by date & hour
+    // month -> sum by month
+    //
+    $options = array('timeline' => 'day');
+    $options = array_merge($options,(array)$opt);
+
+    switch ($options['timeline']) {
+      case 'day_hour':
+        $fields = 'yyyy_mm_dd,hh';
+      break;
+
+      case 'month':
+        $fields = 'yyyy_mm';
+      break;
+
+      case 'day':
+      default:
+        $fields = 'yyyy_mm_dd';
+      break;
+    }
+
+    $safeID = intval($id);
+    $sql = " SELECT COUNT(0) as qty,{$fields}
+             FROM {$this->views['exec_by_date_time']} EBDT
+             WHERE EBDT.testplan_id = {$safeID}
+             GROUP BY {$fields}  
+             ORDER BY {$fields}";
+
+    switch ($options['timeline']) {
+      case 'day_hour':
+        $rs = $this->db->fetchMapRowsIntoMap($sql,'yyyy_mm_dd','hh');
+      break;
+
+      case 'month':
+        $rs = $this->db->fetchRowsIntoMap($sql,'yyyy_mm');
+      break;
+
+      case 'day':
+      default:
+        $rs = $this->db->fetchRowsIntoMap($sql,'yyyy_mm_dd');
+      break;
+    }
+
+    return $rs;
+  }
 
 }

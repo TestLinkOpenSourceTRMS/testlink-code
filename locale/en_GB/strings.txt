@@ -4014,4 +4014,12 @@ $TLS_pleaseOpenTSuite = 'Test Suite Details contain CRITIC information for ' .
 $TLS_delete_frozen_tcversion = "Delete Frozen TCVersion";
 $TLS_right_delete_frozen_tcversion = "Delete Frozen TCVersion";
 $TLS_copy_only_latest_version = 'Copy ONLY the Latest Version AS Version 1';
+$TLS_qty = 'Qty';
+$TLS_yyyy_mm = 'Year/Month';
+$TLS_yyyy_mm_dd = 'Date';
+$TLS_hh = 'Hour';
+$TLS_execTimelineStats_report = 'Execution By Date/Time Statistics';
+$TLS_link_report_exec_timeline = 'Execution By Date/Time';
+
+
 // ----- END ------------------------------------------------------------------

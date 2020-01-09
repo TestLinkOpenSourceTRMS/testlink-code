@@ -4020,6 +4020,5 @@ $TLS_yyyy_mm_dd = 'Date';
 $TLS_hh = 'Hour';
 $TLS_execTimelineStats_report = 'Execution By Date/Time Statistics';
 $TLS_link_report_exec_timeline = 'Execution By Date/Time';
-
-
+$TLS_qty_of_executions = 'Test Case Executions';
 // ----- END ------------------------------------------------------------------

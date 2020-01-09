@@ -238,11 +238,25 @@ viewer for test case in test specification
       				onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
       	{/if}
 
-      	{* new TC version *}
         {if ( isset($args_tcversion_operation_only_edit_button) 
           && $args_tcversion_operation_only_edit_button == "no") 
           || ($args_can_do->delete_frozen_tcversion == "yes")
           }
+
+          {* new TC version *}
+          {if $args_can_do->create_new_version == "yes" 
+             && $args_read_only != "yes"}
+             {if $gui->new_version_source == 'this'}
+               <input type="submit" name="do_create_new_version" 
+                 title="{$tcView_viewer_labels.hint_new_version}" 
+                 value="{$tcView_viewer_labels.btn_new_version}" />
+             {/if}
+             {if $gui->new_version_source == 'latest'}
+               <input type="submit" name="do_create_new_version_from_latest" 
+               title="{$tcView_viewer_labels.btn_new_version_from_latest}" 
+               value="{$tcView_viewer_labels.btn_new_version_from_latest}" />      
+             {/if}
+          {/if}
 
         	{* freeze/unfreeze TC version *}
         	{if 'editOnExec' != $gui->show_mode && $args_read_only != "yes" 

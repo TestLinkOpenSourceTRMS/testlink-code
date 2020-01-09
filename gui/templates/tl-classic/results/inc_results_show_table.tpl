@@ -18,10 +18,12 @@ $Id: inc_results_show_table.tpl
     {foreach item=the_column from=$args_column_definition}
         <th>{$the_column.qty}</th>
         {if $args_show_percentage}
-        <th>{$the_column.percentage}</th>
+          <th>{$the_column.percentage}</th>
         {/if}
     {/foreach}
-		<th>{lang_get s='trep_comp_perc'}</th>
+    {if $args_show_percentage}
+		  <th>{lang_get s='trep_comp_perc'}</th>
+    {/if}
 	</tr>
 
  {foreach item=res from=$args_column_data}

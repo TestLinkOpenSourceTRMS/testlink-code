@@ -1524,15 +1524,567 @@ function tlSetCookie($ckObj) {
             $stdCk->domain,$stdCk->secure,$stdCk->httponly);
 }
 
+
 /**
- * context is defined by:
- *  - test project id
- *  - test plan id
- * @return array 
- *         element 1 is an object with 
- *           tproject_id and tplan_id properties
- *         element 2 query string with the properties
- *                 
+ *
+ * $opt: skip map each element can be a map
+ *         tplanForInit 
+ *         tplanToGetEffectiveRole
+ */
+function initUserEnv(&$dbH, $context, $opt=null) {
+  $args = new stdClass();
+  $gui = new stdClass();
+
+  $optDeep = array('skip' => array('tplanForInit' => false,
+                                   'tplanToGetEffectiveRole' => false));
+  $options = array('forceCreateProj' => false,
+                   'initNavBarMenu' => false,
+                   'caller' => 'not provided');
+  if (null != $opt) {
+    if( isset($opt['skip']) ) {
+      $optDeep['skip'] = array_merge($optDeep['skip'],$opt['skip']);
+    }
+
+    foreach ($options as $key => $defa) {
+      if (isset($opt[$key])) {
+        $options[$key] = $opt[$key];
+      }
+    }
+  }
+
+  $args->user = $_SESSION['currentUser'];
+  $k2l = array( 'tproject_id' => 0, 
+                'current_tproject_id' => 0,
+                'tplan_id' => 0);
+
+  foreach($k2l as $pp => $vv) {
+    $args->$pp = $vv;  
+    if( isset($_REQUEST[$pp]) ) {
+      $args->$pp = intval($_REQUEST[$pp]);
+    } else if (null != $context && property_exists($context, $pp)) {
+      $args->$pp = intval($context->$pp);      
+    }
+  } 
+  $tprjMgr = new testproject($dbH);
+  $guiCfg = config_get("gui");
+  $opx = array('output' => 'map_name_with_inactive_mark',
+               'field_set' => $guiCfg->tprojects_combo_format,
+               'order_by' => $guiCfg->tprojects_combo_order_by);
+
+  $gui->prjSet = $tprjMgr->get_accessible_for_user($args->user->dbID, $opx);
+  $gui->prjQtyWholeSystem = $tprjMgr->getItemCount();
+  $gui->zeroTestProjects = ($gui->prjQtyWholeSystem == 0);
+  $args->zeroTestProjects = $gui->zeroTestProjects; 
+
+  $args->userIsBlindFolded = 
+    (is_null($gui->prjSet) || count($gui->prjSet) == 0) 
+    && $gui->prjQtyWholeSystem > 0;
+  if( $args->userIsBlindFolded ) {
+    $args->current_tproject_id = 0;
+    $args->tproject_id = 0;
+    $args->tplan_id = 0;
+  }
+
+
+  // It's ok to get testproject context if 
+  // we have the testplan id?
+  // Can this be a potential security issue?
+  // Can this create a non coherent situation on GUI?  
+  if( $args->tproject_id == 0 ) {
+    $args->tproject_id = key($gui->prjSet);
+  }
+
+  if( $args->current_tproject_id == 0 ) {
+    $args->current_tproject_id = $args->tproject_id;
+  }
+
+  $gui->caller = isset($_REQUEST['caller']) ? trim($_REQUEST['caller']) : '';
+  $gui->tproject_id = intval($args->tproject_id);
+  $gui->current_tproject_id = intval($args->current_tproject_id);
+  $gui->tplan_id = intval($args->tplan_id);
+
+  if( $gui->tproject_id > 0 ) {
+    // Force to avoid lot of processing
+    $gui->hasTestCases = $gui->hasKeywords = true;
+
+    $gui->num_active_tplans = $tprjMgr->getActiveTestPlansCount($args->tproject_id);
+
+    // get Test Plans available for the user 
+    // $gpOpt = array('output' => 'map');
+    $gpOpt = null;
+    $gui->tplanSet = (array)$args->user->getAccessibleTestPlans($dbH,$args->tproject_id,$gpOpt);
+    $gui->countPlans = count($gui->tplanSet);
+  
+    /* 20191212 - will remove because have created issues
+       with IVU, and I not sure anymore of usefulness 
+    if (false == $optDeep['skip']['tplanForInit'] || $args->tplan_id <= 0) {
+      $gui->tplan_id = $args->tplan_id = (int)doTestPlanSetup($gui);
+    }
+    */
+    if ($args->tplan_id <= 0) {
+      $gui->tplan_id = $args->tplan_id = (int)doTestPlanSetup($gui);
+    }
+  } 
+
+  $doInitUX = ($args->tproject_id > 0) || $options['forceCreateProj']; 
+  $gui->grants = null;
+  $gui->access = null;
+  $gui->showMenu = null;
+  $gui->activeMenu = setSystemWideActiveMenuOFF();
+
+  /*
+  if ($options['caller'] != 'not provided') {
+    echo '<br> 1509 - caller => ' . $options['caller'] . '<br>';  
+  }
+  */
+
+  if( $doInitUX ) {
+    // echo 'doInitUX<br>';
+    $gui->grants = getGrantSetWithExit($dbH,$args,$tprjMgr,$options);
+    $gui->access = getAccess($gui);
+    $gui->showMenu = getMenuVisibility($gui);
+
+  /*
+  if ($options['caller'] != 'not provided') {
+    echo '<br> 1509 - caller => ' . $options['caller'] . '<br>';  
+  }
+  */
+  }
+  
+  // Get Role Description to display.
+  // This means get Effective Role that has to be calculated
+  // using current test project & current test plan
+  //
+  // SKIP is useful if you want to consider role only
+  // at test project level.
+  //
+  $tplan_id = $gui->tplan_id;
+  if( $optDeep['skip']['tplanToGetEffectiveRole'] ) {
+    $tplan_id = null;      
+  } 
+
+  $eRoleObj = $args->user->getEffectiveRole($dbH,$gui->tproject_id,$tplan_id);
+  
+  $cfg = config_get('gui');
+  $gui->whoami = $args->user->getDisplayName() . ' ' . 
+                 $cfg->role_separator_open . 
+                 $eRoleObj->getDisplayName() . 
+                 $cfg->role_separator_close;
+
+  $gui->launcher = $_SESSION['basehref'] . 
+    'lib/general/frmWorkArea.php';
+
+  $gui->docs = config_get('userDocOnDesktop') ? getUserDocumentation() : null;
+
+  $secCfg = config_get('config_check_warning_frequence');
+  $gui->securityNotes = '';
+  if( (strcmp($secCfg, 'ALWAYS') == 0) || 
+        (strcmp($secCfg, 'ONCE_FOR_SESSION') == 0 && !isset($_SESSION['getSecurityNotesOnMainPageDone'])) ) {
+    $_SESSION['getSecurityNotesOnMainPageDone'] = 1;
+    $gui->securityNotes = getSecurityNotes($dbH);
+  }  
+  
+  $gui->tprojOpt = $tprjMgr->getOptions($args->tproject_id);
+  $gui->opt_requirements = 
+    isset($gui->tprojOpt->requirementsEnabled) ? 
+    $gui->tprojOpt->requirementsEnabled : null; 
+
+  getActions($gui,$_SESSION['basehref']);
+
+  if( $gui->current_tproject_id == null || 
+    trim($gui->current_tproject_id) == '' ) {
+  }
+
+  $gui->logo = $_SESSION['basehref'] . TL_THEME_IMG_DIR .
+               config_get('logo_navbar');
+        
+
+  $ft = 'form_token';             
+  $gui->$ft = isset($args->$ft) ? $args->$ft : 0;
+  if ($gui->$ft == 0 && isset($_REQUEST[$ft])) {
+    $gui->$ft = $_REQUEST[$ft];
+  }               
+  $gui->treeFormToken = $gui->form_token;
+
+  return array($args,$gui,$tprjMgr);
+}
+
+/**
+ *
+ * Actions for left side menu
+ *
+ */
+function getActions(&$gui,$baseURL) {
+  $bb = "{$baseURL}lib";
+
+  $tproject_id = 0;
+  if( property_exists($gui,'tproject_id')) {
+    $tproject_id = intval($gui->tproject_id);
+  }
+  $ctx = "tproject_id={$tproject_id}";
+
+  $tplan_id = 0;
+  if( property_exists($gui,'tplan_id')) {
+    $tplan_id = intval($gui->tplan_id);
+  }
+  $ctx .= "&tplan_id={$tplan_id}";
+
+  $actions = new stdClass();
+
+  $actions->events = "$bb/events/eventviewer.php?{$ctx}";
+  $actions->usersAssign = "$bb/usermanagement/usersAssign.php?{$ctx}&featureType=testproject&featureID=" . intval($gui->tproject_id);
+
+  $actions->userMgmt = "$bb/usermanagement/usersView.php?{$ctx}" . 
+                       intval($gui->tproject_id);
+
+  $actions->userInfo = "$bb/usermanagement/userInfo.php?{$ctx}";
+  $actions->projectView = "$bb/project/projectView.php?{$ctx}";
+
+  $actions->cfAssignment = "$bb/cfields/cfieldsTprojectAssign.php?{$ctx}";
+  $actions->cfieldsView = "$bb/cfields/cfieldsView.php?{$ctx}";  
+
+  $actions->keywordsView = "$bb/keywords/keywordsView.php?{$ctx}";
+  $actions->platformsView = "$bb/platforms/platformsView.php?{$ctx}";
+  $actions->issueTrackerView = "$bb/issuetrackers/issueTrackerView.php?{$ctx}";
+  $actions->codeTrackerView = "$bb/codetrackers/codeTrackerView.php?{$ctx}";
+  $actions->reqOverView = "$bb/requirements/reqOverview.php?{$ctx}";
+  $actions->reqMonOverView = "$bb/requirements/reqMonitorOverview.php?{$ctx}";
+  $actions->tcSearch = "$bb/testcases/tcSearch.php?doAction=userInput&{$ctx}";
+  $actions->tcCreatedUser = "$bb/results/tcCreatedPerUserOnTestProject.php?do_action=uinput&{$ctx}";
+  $actions->assignReq = "$bb/general/frmWorkArea.php?feature=assignReqs&{$ctx}";
+  $actions->inventoryView = "$bb/inventory/inventoryView.php?{$ctx}";
+
+  $actions->fullTextSearch = "$bb/search/searchMgmt.php?{$ctx}";
+
+  $actions->metrics_dashboard =  
+    "$bb/results/metricsDashboard.php?{$ctx}";
+
+
+  $pp = $bb . '/plan';
+  $actions->planView = "$pp/planView.php?{$ctx}";
+
+  $actions->buildView = null;
+  $actions->mileView = null;
+  $actions->platformAssign = null;
+  $actions->milestonesView = null;
+  $actions->testcase_assignments = null;
+  if ($tplan_id >0) {
+    $actions->buildView = "$pp/buildView.php?{$ctx}";
+    $actions->mileView = "$pp/planMilestonesView.php?{$ctx}";
+    $actions->platformAssign = "$bb/platforms/platformsAssign.php?{$ctx}";
+    $actions->milestonesView = "$bb/plan/planMilestonesView.php?{$ctx}";
+    $actions->testcase_assignments =  
+      "$bb/testcases/tcAssignedToUser.php?{$ctx}";
+  }
+
+  $launcher = $_SESSION['basehref'] . 
+    "lib/general/frmWorkArea.php?feature=";
+
+  $gui->workArea = new stdClass();
+  $gui->workArea->testSpec = "editTc&{$ctx}";
+  $gui->workArea->keywordsAssign = "keywordsAssign&{$ctx}";
+  
+  $gui->workArea->planAddTC = null;
+  $gui->workArea->executeTest = null;
+  $gui->workArea->setTestUrgency = null;
+  $gui->workArea->planUpdateTC = null;
+  $gui->workArea->showNewestTCV = null;
+  $gui->workArea->assignTCVExecution = null;
+  $gui->workArea->showMetrics = null;
+  
+  if ($tplan_id >0) {
+    $gui->workArea->planAddTC = "planAddTC&{$ctx}";
+    $gui->workArea->executeTest = "executeTest&{$ctx}";
+    $gui->workArea->setTestUrgency = "test_urgency&{$ctx}";
+    $gui->workArea->planUpdateTC = "planUpdateTC&{$ctx}";
+    $gui->workArea->showNewestTCV = "newest_tcversions&{$ctx}";
+    $gui->workArea->assignTCVExecution = "tc_exec_assignment&{$ctx}";
+    $gui->workArea->showMetrics = "showMetrics&{$ctx}";
+  }
+
+  $gui->workArea->reqSpecMgmt = "reqSpecMgmt&{$ctx}";
+  $gui->workArea->printReqSpec = "printReqSpec&{$ctx}";
+  $gui->workArea->searchReq = "searchReq&{$ctx}";
+  $gui->workArea->searchReqSpec = "searchReqSpec&{$ctx}";
+
+  $wprop = get_object_vars($gui->workArea);
+  foreach ($wprop as $wp => $wv) {
+    if (null != $gui->workArea->$wp) {
+      $gui->workArea->$wp = $launcher . $gui->workArea->$wp;
+    }
+    $actions->$wp = $gui->workArea->$wp;
+  }
+
+  $gui->uri = $actions;
+  $p2l = get_object_vars($actions);
+  foreach( $p2l as $pp => $val) {
+    $gui->$pp = $actions->$pp;
+  }
+}
+
+
+/**
+ *
+ */
+function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
+
+  /** redirect admin to create testproject if not found */
+  $options = array('forceCreateProj' => true);
+  $options = array_merge($options,(array)$opt);
+
+  if ($options['forceCreateProj'] && $argsObj->zeroTestProjects) {
+    if ($argsObj->user->hasRight($dbHandler,'mgt_modify_product')) {
+      redirect($_SESSION['basehref'] . 
+        'lib/project/projectEdit.php?doAction=create');
+      exit();
+    }
+  }
+
+  // User has test project rights
+  // This talks about Default/Global
+  //
+  // key: more or less verbose
+  // value: string present on rights table
+
+  $systemWideRights = 
+    array(
+      'project_edit' => 'mgt_modify_product',
+      'configuration' => "system_configuraton",
+      'usergroups' => "mgt_view_usergroups",
+      'event_viewer' => "events_mgt",
+      'user_mgmt' => "mgt_users"
+    );
+      
+  $r2cTranslate = 
+    array(
+      'reqs_view' => "mgt_view_req", 
+      'monitor_req' => "monitor_requirement", 
+      'reqs_edit' => "mgt_modify_req",
+      'keywords_view' => "mgt_view_key",
+      'keywords_edit' => "mgt_modify_key",
+      'view_tc' => "mgt_view_tc",
+      'view_testcase_spec' => "mgt_view_tc",
+      'modify_tc' => 'mgt_modify_tc',
+      'testplan_create' => 'mgt_testplan_create');
+
+  $r2cSame = array (
+    'req_tcase_link_management','keyword_assignment',
+    'issuetracker_management','issuetracker_view',
+    'codetracker_management','codetracker_view',
+    'platform_management','platform_view',
+    'cfield_management',
+    'cfield_view','cfield_assignment',
+    'project_inventory_view','project_inventory_management',
+    'testplan_unlink_executed_testcases',
+    'testproject_delete_executed_testcases',
+    'mgt_testplan_create',
+    'testplan_execute','testplan_create_build',
+    'testplan_metrics','testplan_planning',
+    'testplan_user_role_assignment',
+    'testplan_add_remove_platforms',
+    'testplan_update_linked_testcase_versions',
+    'testplan_set_urgent_testcases',
+    'testplan_show_testcases_newest_versions',
+    'testplan_milestone_overview',
+    'exec_edit_notes','exec_delete','exec_ro_access',
+    'exec_testcases_assigned_to_me','exec_assign_testcases');
+
+  if( ($forceToNo = $argsObj->userIsBlindFolded) ) {
+    $tr = array_merge($systemWideRights, $r2cTranslate);
+    $grants = array_fill_keys(array_keys($tr), 'no');
+
+    foreach($r2cSame as $rr) {
+      $grants[$rr] = 'no';
+    }
+    return (object)$grants;      
+  }  
+  
+  // Go ahead, continue with the analysis
+  // First get system wide rights
+  foreach ($systemWideRights as $humankey => $right) {
+    $grants[$humankey] = $argsObj->user->hasRight($dbHandler,$right); 
+  }
+
+  foreach ($r2cTranslate as $humankey => $right) {
+    $grants[$humankey] = 
+      $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id,$argsObj->tplan_id); 
+  }
+
+
+  foreach ($r2cSame as $right) {
+    $grants[$right] = 
+      $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id,$argsObj->tplan_id); 
+  }
+
+
+  // check right ONLY if option is enabled
+  $tprojOpt = $tprojMgr->getOptions($argsObj->tproject_id);
+  if($tprojOpt->inventoryEnabled) {
+    $invr = array('project_inventory_view','project_inventory_management');
+    foreach($invr as $r){
+      $grants[$r] = ($user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
+    }
+  }
+
+  $grants['tproject_user_role_assignment'] = "no";
+  if( $argsObj->user->hasRight($dbH,"testproject_user_role_assignment",
+    $argsObj->tproject_id,-1) == "yes" ||
+      $argsObj->user->hasRight($db,"user_role_assignment",null,-1) == "yes" ) {
+      $grants['tproject_user_role_assignment'] = "yes";
+  }
+  return (object)$grants;  
+}
+
+/**
+ *
+ */
+function getAccess(&$gui) {
+  $k2l = array('codetracker','issuetracker','platform');
+  foreach($k2l as $ak) {
+    $access[$ak] = 'no';
+    $p_m = $ak . '_management';
+    $p_v = $ak . '_view';
+    if( 'yes' == $gui->grants->$p_m || 
+        'yes' == $gui->grants->$p_v ) {
+      $access[$ak] = 'yes';
+    }
+  }
+  return $access;
+}
+
+
+/**
+ *
+ *
+ */
+function getMenuVisibility(&$gui) 
+{
+  $showMenu = getFirstLevelMenuStructure();
+
+  if($gui->tproject_id > 0  && 
+     (   $gui->grants->view_tc == "yes" 
+      || $gui->grants->reqs_view == "yes" 
+      || $gui->grants->reqs_edit == "yes") ) {
+    $showMenu['search'] = true;
+  }
+
+  //var_dump(__FUNCTION__,$gui->tproject_id,$gui->tplan_id); 
+  if($gui->tproject_id > 0  && 
+     ($gui->grants->cfield_assignment == "yes" ||
+      $gui->grants->cfield_management == "yes" || 
+      $gui->grants->issuetracker_management == "yes" || 
+      $gui->grants->codetracker_management == "yes" || 
+      $gui->grants->issuetracker_view == "yes" ||
+      $gui->grants->codetracker_view == "yes") ) {
+    $showMenu['system'] = true;
+  }
+
+  if($gui->tproject_id > 0  && 
+     ($gui->grants->project_edit == "yes" || 
+      $gui->grants->tproject_user_role_assignment == "yes" ||
+      $gui->grants->cfield_management == "yes" || 
+      $gui->grants->platform_management == "yes" || 
+      $gui->grants->keywords_view == "yes") ) {
+    $showMenu['projects'] = true;
+  }
+
+  if ( $gui->tproject_id > 0  && 
+       //$gui->opt_requirements == true && TO REACTIVATE
+       ($gui->grants->reqs_view == "yes" || 
+        $gui->grants->reqs_edit == "yes" ||
+        $gui->grants->monitor_req == "yes" || 
+        $gui->grants->req_tcase_link_management == "yes") ) {
+    $showMenu['requirements_design'] = true;
+  }
+
+  if($gui->tproject_id > 0  && 
+     ($gui->grants->view_tc == "yes") ) {
+    $showMenu['tests_design'] = true;
+  }
+
+  if($gui->tproject_id > 0  && 
+     ($gui->grants->testplan_planning == "yes" ||
+      $gui->grants->mgt_testplan_create == "yes" || 
+      $gui->grants->testplan_user_role_assignment == "yes" ||
+      $gui->grants->testplan_create_build == "yes") ) {
+    $showMenu['plans'] = true;
+  }
+
+  if ($gui->tproject_id > 0  
+      && $gui->tplan_id > 0 
+      && ($gui->grants->testplan_execute == "yes" || 
+          $gui->grants->exec_ro_access == "yes") ) {
+    $showMenu['execution'] = true;
+  }
+
+  if($gui->tproject_id > 0 && $gui->tplan_id > 0) { 
+    $showMenu['reports'] = true;
+  }
+
+  return $showMenu;
+}
+
+/**
+ *
+ */
+function setSystemWideActiveMenuOFF() 
+{
+  $items = getFirstLevelMenuStructure();
+  foreach( $items as $ky => $dm) {
+    $items[$ky] = '';
+  }
+  return $items;
+}
+
+/**
+ *
+ */
+function getFirstLevelMenuStructure() 
+{
+  return array('dashboard' => false,
+               'system'=> false,
+               'projects' => false,
+               'requirements_design' => false,
+               'tests_design' => false,
+               'plans' => false,
+               'execution' => false,
+               'reports' => false,
+              );
+}
+
+
+/**
+ *
+ *
+ */
+function doTestPlanSetup(&$gui) {
+  $loop2do = count($gui->tplanSet);
+  if( $loop2do == 0 ) {
+    return $gui->tplan_id;
+  }
+
+  $index = 0;
+  $found = 0;
+  for($idx = 0; $idx < $loop2do; $idx++) {
+    if( $gui->tplanSet[$idx]['id'] == $gui->tplan_id ) {
+      $found = 1;
+      $index = $idx;
+      break;
+    }
+  }
+
+  if( $found == 0 ) {
+    $index = 0;
+    $gui->tplan_id = $gui->tplanSet[$index]['id'];
+  } 
+
+  $gui->tplanSet[$index]['selected']=1;
+
+  return $gui->tplan_id;
+}
+
+/**
+ *
  */
 function initContext()
 {
@@ -1540,7 +2092,8 @@ function initContext()
   $context = new stdClass();
   $env = '';
   $k2ctx = array('tproject_id' => 0,
-                 'tplan_id' => 0);
+                 'tplan_id' => 0,
+                 'form_token' => 0);
   foreach ($k2ctx as $prop => $defa) {
     $context->$prop = isset($_REQUEST[$prop]) ? $_REQUEST[$prop] : $defa;
     if( is_numeric($defa) ) {

@@ -5,7 +5,7 @@
  * 
  * @filesource  testproject.class.php
  * @package     TestLink
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * 
  **/
@@ -4160,6 +4160,18 @@ function getTCLatestVersionFilteredByPlatforms($tproject_id, $platform_id=0) {
   return $hits;
 }
 
+  /**
+   *
+   */
+  static function getName(&$dbh,$id) {
+    $sch = tlDBObject::getDBTables(array('nodes_hierarchy','testprojects'));
+    $sql = "SELECT name FROM {$sch['nodes_hierarchy']} NH
+            JOIN {$sch['testprojects']} TPRJ 
+            ON TPRJ.id = NH.id
+            WHERE TPRJ.id=" . intval($id);
+    $rs = $dbh->get_recordset($sql);
+    return is_null($rs) ? $rs : $rs[0]['name'];
+  }
 
 
 } // end class

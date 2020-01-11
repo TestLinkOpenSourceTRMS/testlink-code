@@ -10,6 +10,96 @@ require_once('email_api.php');
 require_once('reports.cfg.php');
 
 /**
+ *
+ *
+ */
+function initArgsForReports(&$dbHandler) {
+  $tplanMgr = null;
+  $iParams = 
+    array("apikey" => array(tlInputParameter::STRING_N,32,64),
+          "tproject_id" => array(tlInputParameter::INT_N), 
+          "tplan_id" => array(tlInputParameter::INT_N),
+          "format" => array(tlInputParameter::INT_N),
+          "type" => array(tlInputParameter::STRING_N,0,1),
+          "sendByMail" => array(tlInputParameter::INT_N),
+          "spreadsheet" => array(tlInputParameter::INT_N),
+          "doAction" => array(tlInputParameter::STRING_N,5,10),
+          "platSet" => array(tlInputParameter::ARRAY_INT),
+          "build_set" => array(tlInputParameter::ARRAY_INT),
+          "buildListForExcel" => array(tlInputParameter::STRING_N,0,100));
+
+  $args = new stdClass();
+  R_PARAMS($iParams,$args);
+
+  $rCfg = config_get('results');
+  $args->statusCode = $rCfg['status_code'];
+
+  $args->spreadsheet = intval($args->spreadsheet);
+  $args->accessType = 'gui';
+  $args->addOpAccess = true;
+
+  $args->getSpreadsheetBy = 
+    isset($_REQUEST['sendSpreadSheetByMail_x']) ? 'email' : null;
+
+  if( is_null($args->getSpreadsheetBy) ) {
+    $args->getSpreadsheetBy = isset($_REQUEST['exportSpreadSheet_x']) ? 
+                              'download' : null;
+  }  
+
+  if( !is_null($args->apikey) ) {
+    $cerbero = new stdClass();
+    $cerbero->args = new stdClass();
+    $cerbero->args->tproject_id = $args->tproject_id;
+    $cerbero->args->tplan_id = $args->tplan_id;
+    
+    if(strlen($args->apikey) == 32) {
+      $cerbero->args->getAccessAttr = true;
+      $cerbero->method = 'checkRights';
+      $cerbero->redirect_target = "../../login.php?note=logout";
+      $args->accessType = 'remote';
+      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
+    } else {
+      $args->addOpAccess = false;
+      $cerbero->method = null;
+      $args->accessType = 'anonymous';
+      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
+    }  
+  } else {
+    testlinkInitPage($dbHandler,true,false,"checkRights");
+
+    $tplanMgr = new testplan($dbHandler);
+    $tplan = $tplanMgr->get_by_id($args->tplan_id);
+    $args->tproject_id = $tplan['testproject_id'];
+  }
+
+  if ($args->tproject_id <= 0) {
+    $msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
+    throw new Exception($msg);
+  }
+
+  if (is_null($args->format)) {
+    tlog("Parameter 'format' is not defined", 'ERROR');
+    exit();
+  }
+
+  switch ($args->format) {
+    case FORMAT_XLS:
+      if($args->buildListForExcel != '') {  
+        $args->build_set = explode(',',$args->buildListForExcel);
+      }  
+    break;
+  }  
+  
+  $args->format = $args->sendByMail ? FORMAT_MAIL_HTML : $args->format;
+
+  $args->user = $_SESSION['currentUser'];
+  $args->basehref = $_SESSION['basehref'];
+
+  return array($tplanMgr,$args);
+}
+
+
+/**
  * 
  *
  */

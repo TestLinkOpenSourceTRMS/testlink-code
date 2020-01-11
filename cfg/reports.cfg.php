@@ -233,12 +233,14 @@ $tlCfg->reports_list['free_tcases'] = array(
 'format' => 'format_html'
 );
 
-$tlCfg->reports_list['report_exec_timeline'] = array( 
+$report = 'report_exec_timeline';
+$tlCfg->reports_list[$report] = array( 
 	'title' => 'link_report_exec_timeline',
 	'url' => 'lib/results/execTimelineStats.php',
 	'enabled' => 'all', 
 	'directLink' => 
-	   '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=execTimelineStats',
+	   '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0' .
+	   '&type=' . $report,
 	'format' => 'format_html'
 );
 

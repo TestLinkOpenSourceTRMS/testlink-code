@@ -22,8 +22,7 @@ $templateCfg = templateConfiguration();
 
 $smarty = new TLSmarty;
 
-$args = init_args($db);
-
+list($tplan_mgr,$args) = initArgsForReports($db);
 $metricsMgr = new tlTestPlanMetrics($db);
 $tplan_mgr  = &$metricsMgr; 
 
@@ -108,79 +107,6 @@ $smarty->assign('gui',$gui);
 displayReport($templateCfg->template_dir . $tpl, $smarty, $args->format, 
               $gui->mailCfg,$renderHTML);
 
-/**
- * 
- *
- */
-function init_args(&$dbHandler)
-{
-  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
-                   "tproject_id" => array(tlInputParameter::INT_N), 
-                   "tplan_id" => array(tlInputParameter::INT_N),
-                   "do_action" => array(tlInputParameter::STRING_N,5,10),
-                   "build_set" => array(tlInputParameter::ARRAY_INT),
-                   "buildListForExcel" => array(tlInputParameter::STRING_N,0,100),
-                   "format" => array(tlInputParameter::INT_N));
-
-  $args = new stdClass();
-  R_PARAMS($iParams,$args);
-
-  $args->getSpreadsheetBy = isset($_REQUEST['sendSpreadSheetByMail_x']) ? 'email' : null;
-
-  if( is_null($args->getSpreadsheetBy) ) {
-    $args->getSpreadsheetBy = isset($_REQUEST['exportSpreadSheet_x']) ? 'download' : null;
-  }  
-
-
-  $args->addOpAccess = true;
-  if( !is_null($args->apikey) ) {
-    $cerbero = new stdClass();
-    $cerbero->args = new stdClass();
-    $cerbero->args->tproject_id = $args->tproject_id;
-    $cerbero->args->tplan_id = $args->tplan_id;
-
-    if(strlen($args->apikey) == 32)
-    {
-      $cerbero->args->getAccessAttr = true;
-      $cerbero->method = 'checkRights';
-      $cerbero->redirect_target = "../../login.php?note=logout";
-      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
-    }
-    else
-    {
-      $args->addOpAccess = false;
-      $cerbero->method = null;
-      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
-    }  
-  }
-  else
-  {
-    testlinkInitPage($dbHandler,false,false,"checkRights");  
-    $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-  }
-
-  if($args->tproject_id <= 0)
-  {
-    $msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
-    throw new Exception($msg);
-  }
-
-  switch($args->format)
-  {
-    case FORMAT_XLS:
-      if($args->buildListForExcel != '')
-      {  
-        $args->build_set = explode(',',$args->buildListForExcel);
-      }  
-    break;
-  }  
-  
-
-  $args->user = $_SESSION['currentUser'];
-  $args->basehref = $_SESSION['basehref'];
-  
-  return $args;
-}
 
 /**
  * 
@@ -188,8 +114,7 @@ function init_args(&$dbHandler)
  */
 function checkRights(&$db,&$user,$context = null)
 {
-  if(is_null($context))
-  {
+  if (is_null($context)) {
     $context = new stdClass();
     $context->tproject_id = $context->tplan_id = null;
     $context->getAccessAttr = false; 

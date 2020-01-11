@@ -116,6 +116,13 @@ switch($args->light) {
         $what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
       break;
       
+      case 'report_exec_timeline';
+        $param = "&tproject_id={$args->tproject_id}" .
+                 "&tplan_id={$args->tplan_id}" .
+                 "&format={$args->format}";
+        $what2launch = $cfg['url'] ."?apikey=$args->apikey{$param}";
+      break;
+
       default:
         $needle = 'list_tc_';
         $nl = strlen($needle);

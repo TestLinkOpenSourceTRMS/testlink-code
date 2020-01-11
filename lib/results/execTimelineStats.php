@@ -17,7 +17,10 @@ require_once('displayMgr.php');
 $timerOn = microtime(true);
 $tplCfg = templateConfiguration();
 
-list($tplan_mgr,$args) = init_args($db);
+testlinkInitPage($db,'init_project' == 'dont_init_project',
+                     'doNotCheckSession' == 'doNotCheckSession');
+
+list($tplan_mgr,$args) = initArgsForReports($db);
 if( null == $tplan_mgr ) {
   $tplan_mgr = new testplan($db);
 }
@@ -39,11 +42,7 @@ if ($stats != null) {
   $gui->do_report['status_ok'] = 1;
   $gui->do_report['msg'] = '';
   $gui->statistics->exec = $stats;
-  /*
-  echo '<pre>';
-  var_dump($gui->statistics->exec);
-  echo '</pre>';
-  */
+
   if( !is_null($gui->statistics->exec) ) {
     switch ($group) {
       case 'day':
@@ -73,90 +72,6 @@ $smarty->assign('gui', $gui);
 displayReport($tplCfg->tpl, $smarty, $args->format,$mailCfg);
 
 
-/*
-switch ($group) {
-  case 'day_hour':
-    // map of maps
-  breaK;
-
-  case 'day':
-  case 'month':
-    // map of array
-    foreach ($stats)
-  breaK;
-}
-
-echo '<pre>';
-foreach ($stats as $colKey => $elem) {  
-  echo $colKey . '<br>';
-  var_dump($elem);
-  echo '------- <br>';
-}
-echo '</pre>';
-
-echo '<hr><br>';
-echo 'FULL<br><pre>';
-var_dump($stats);
-echo '</pre>';
-*/
-
-/**
- *
- *
- */
-function init_args(&$dbHandler) {
-  $tplanMgr = null;
-  $iParams = array("apikey" => array(tlInputParameter::STRING_N,32,64),
-                   "tproject_id" => array(tlInputParameter::INT_N), 
-	                 "tplan_id" => array(tlInputParameter::INT_N),
-                   "format" => array(tlInputParameter::INT_N),
-                   "sendByMail" => array(tlInputParameter::INT_N),
-                   "spreadsheet" => array(tlInputParameter::INT_N));
-
-	$args = new stdClass();
-	$pParams = G_PARAMS($iParams,$args);
-
-  $args->spreadsheet = intval($args->spreadsheet);
-  if( !is_null($args->apikey) ) {
-    $cerbero = new stdClass();
-    $cerbero->args = new stdClass();
-    $cerbero->args->tproject_id = $args->tproject_id;
-    $cerbero->args->tplan_id = $args->tplan_id;
-    
-    if(strlen($args->apikey) == 32) {
-      $cerbero->args->getAccessAttr = true;
-      $cerbero->method = 'checkRights';
-      $cerbero->redirect_target = "../../login.php?note=logout";
-      setUpEnvForRemoteAccess($dbHandler,$args->apikey,$cerbero);
-    } else {
-      $args->addOpAccess = false;
-      $cerbero->method = null;
-      setUpEnvForAnonymousAccess($dbHandler,$args->apikey,$cerbero);
-    }  
-  } else {
-    testlinkInitPage($dbHandler,true,false,"checkRights");
-
-    $tplanMgr = new testplan($dbHandler);
-    $tplan = $tplanMgr->get_by_id($args->tplan_id);
-	  $args->tproject_id = $tplan['testproject_id'];
-  }
-
-  if($args->tproject_id <= 0) {
-  	$msg = __FILE__ . '::' . __FUNCTION__ . " :: Invalid Test Project ID ({$args->tproject_id})";
-  	throw new Exception($msg);
-  }
-
-  if (is_null($args->format)) {
-		tlog("Parameter 'format' is not defined", 'ERROR');
-		exit();
-	}
-	
-	$args->user = $_SESSION['currentUser'];
-  $args->format = $args->sendByMail ? FORMAT_MAIL_HTML : $args->format;
-
-  return array($tplanMgr,$args);
-}
-
 
 /**
  * 
@@ -180,8 +95,15 @@ function buildMailCfg(&$guiObj) {
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) 
 {
  
-  list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
+  $gui = new stdClass();
+  $gui->tproject_id = $argsObj->tproject_id;
+ 
+  if ($argsObj->accessType == 'gui') {
+    list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
+  } 
 
+  $gui->apikey = $argsObj->apikey;
+  $gui->accessType = $argsObj->accessType;
   $gui->fakePlatform = array('');
   $gui->title = lang_get('execTimelineStats_report');
   $gui->do_report = array();
@@ -200,7 +122,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr)
   $gui->buildMetricsFeedback = lang_get('buildMetricsFeedback');
 
   $gui->tproject_name = testproject::getName($dbHandler,$argsObj->tproject_id);
-
+ 
   $info = $tplanMgr->get_by_id($argsObj->tplan_id);
   $gui->tplan_name = $info['name'];
   $gui->tplan_id = intval($argsObj->tplan_id);

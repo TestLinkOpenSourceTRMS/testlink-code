@@ -35,22 +35,27 @@ Purpose: smarty template - show Test Results and Metrics
 <h1 class="{#TITLE_CLASS#}">{$gui->title}</h1>
 
 <div style="display: flex;">
-<form name="send_by_email_to_me" 
-      id="send_by_email_to_me"
-      action="{$gui->actionSendMail}" method="POST">
-  &nbsp;&nbsp;
-  <input hidden name="sendByEmail" value="1">
-  
-  <input type="image" name="reportByMail" id="reportByMail" 
-         src="{$tlImages.email}" title="{$labels.send_by_email_to_me}"
-         onclick="submit();">
-</form>
-
+{if $gui->accessType == 'gui'}
+  <form name="send_by_email_to_me" 
+        id="send_by_email_to_me"
+        action="{$gui->actionSendMail}" method="POST">
+    &nbsp;&nbsp;
+    <input hidden name="sendByEmail" value="1">
+    
+    <input type="image" name="reportByMail" id="reportByMail" 
+           src="{$tlImages.email}" title="{$labels.send_by_email_to_me}"
+           onclick="submit();">
+  </form>
+{/if}
 <form name="exportSpreadsheet" id="exportSpreadsheet" method="POST"
       action={$gui->actionSpreadsheet}>
   &nbsp;&nbsp;
   <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
          src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
+  
+  {if $gui->apikey != ''}
+    <input type="hidden" name="apikey" id="apikey" value="{$gui->apikey}">
+  {/if}
 </form>
 </div>
 

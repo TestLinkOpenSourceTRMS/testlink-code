@@ -315,6 +315,8 @@ $TLS_btn_apply_assign = "Apply Assign";
 $TLS_btn_save_assign = "Save Assignments";
 $TLS_btn_remove = "Remove";
 $TLS_btn_remove_assignments = "Remove Assignments";
+$TLS_btn_remove_current_assignments = "Remove All Assignments (if any exist)";
+
 
 
 // Status (used wide)
@@ -4021,4 +4023,6 @@ $TLS_hh = 'Hour';
 $TLS_execTimelineStats_report = 'Execution By Date/Time Statistics';
 $TLS_link_report_exec_timeline = 'Execution By Date/Time';
 $TLS_qty_of_executions = 'Test Case Executions';
+$TLS_assignOnlyToTestCasesInTestSuite = 'Assign ONLY to direct children of this test suite';
+$TLS_target_kword = "Target Keywords (Assign/Remove)";
 // ----- END ------------------------------------------------------------------

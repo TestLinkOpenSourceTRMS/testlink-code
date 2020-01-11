@@ -6,8 +6,6 @@
  * @filesource  reqSpecCommands.class.php
  * @author      Francisco Mancardi
  * 
- * @internal revisions
- * @since 1.9.15
  *
  */
 class reqSpecCommands
@@ -814,7 +812,7 @@ class reqSpecCommands
    */
   function fileUpload(&$argsObj,$request)
   {
-    fileUploadManagement($this->db,$argsObj->req_spec_id,$argsObj->fileTitle,$this->reqSpecMgr->getAttachmentTableName());
+    $argsObj->uploadOp = fileUploadManagement($this->db,$argsObj->req_spec_id,$argsObj->fileTitle,$this->reqSpecMgr->getAttachmentTableName());
     return $this->initGuiObjForAttachmentOperations($argsObj);
   }
 
@@ -840,6 +838,9 @@ class reqSpecCommands
     $guiObj->action_status_ok = true;
     $guiObj->req_spec_id = $argsObj->req_spec_id;
     $guiObj->template = "reqSpecView.php?refreshTree=0&req_spec_id={$argsObj->req_spec_id}";
+
+    $guiObj->uploadOp = $argsObj->uploadOp;
+
     return $guiObj;    
   }
 

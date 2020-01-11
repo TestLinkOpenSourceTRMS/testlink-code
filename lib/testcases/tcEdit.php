@@ -126,7 +126,7 @@ die();
   break;
 
   case "fileUpload":
-    fileUploadManagement($db,$args->tcversion_id,$args->fileTitle,$tcase_mgr->getAttachmentTableName());
+    $args->uploadOp = fileUploadManagement($db,$args->tcversion_id,$args->fileTitle,$tcase_mgr->getAttachmentTableName());
     $commandMgr->show($args,$_REQUEST,array('status_ok' => true),false);
   break;
 
@@ -597,6 +597,7 @@ function getGrants(&$dbHandler) {
  */
 function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr,&$tprojMgr) {
   $guiObj = new stdClass();
+  $guiObj->uploadOp = null;
   $guiObj->tplan_id = $argsObj->tplan_id;
   $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->editorType = $cfgObj->webEditorCfg['type'];

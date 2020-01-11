@@ -18,7 +18,7 @@ View test specification containers
              btn_gen_test_suite_spec,btn_gen_test_suite_spec_new_window,
              btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
              btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
-             testsuite_operations, testcase_operations,btn_create_from_issue_xml'}
+             testsuite_operations, testcase_operations,btn_create_from_issue_xml,file_upload_ko'}
 
 {$ft=''}
 {if isset($gui->form_token)}
@@ -74,6 +74,9 @@ function jsCallDeleteFile(btn, text, o_id)
   }
 }        
 </script> 
+
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
 </head>
 
 <body>
@@ -81,6 +84,20 @@ function jsCallDeleteFile(btn, text, o_id)
 <div class="workBack">
 {include file="inc_update.tpl" result=$gui->sqlResult item=$gui->level
          name=$gui->moddedItem.name refresh=$gui->refreshTree user_feedback=$gui->user_feedback}
+
+{if $gui->uploadOp != null }
+  <script>
+  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var doAlert = false;
+  {if $gui->uploadOp->statusOK == false}
+    uplMsg += "{$gui->uploadOp->statusCode}<br>";
+    doAlert = true;
+  {/if}
+  if (doAlert) {
+    bootbox.alert(uplMsg);
+  }
+  </script>
+{/if}
 
 {$bDownloadOnly=true}
 {$drawReorderButton=true}

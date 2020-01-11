@@ -7,7 +7,8 @@ Purpose: smarty template - view test case in test specification
 
 {config_load file="input_dimensions.conf"}
 {lang_get var='labels' 
-          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count,actions'}
+          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count,actions,
+             file_upload_ko'}
 
 {* Configure Actions *}
 {$showMode=$gui->show_mode}
@@ -37,19 +38,24 @@ function jsCallDeleteFile(btn, text, o_id) {
 
 {include file="inc_ext_js.tpl" css_only=1}
 
-{* need by refresh on upload logic used when this template is called while executing *}
+{* needed by refresh on upload logic used when this template is called while executing *}
 {if $gui->bodyOnLoad != ''}
-
   <script language="JavaScript">
   var urlP ='';
   {if '' != $gui->additionalURLPar}
     urlP = '{$gui->additionalURLPar}';
   {/if}
-  // alert('urlP->' + urlP);
-  var addStr = '&refreshTree=0' + urlP;
+  // alert('BodyOnLoad :: urlP->' + urlP);
+  var addStr = '&onTemplate=tcView&refreshTree=0' + urlP;
+  // alert(addStr);
   var {$gui->dialogName} = new std_dialog(addStr);
   </script>  
 {/if}
+
+
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/clipboard/clipboard.min.js"></script>
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
 </head>
 
 {$my_style=""}
@@ -60,6 +66,23 @@ function jsCallDeleteFile(btn, text, o_id) {
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
+
+
+{if $gui->uploadOp != null }
+  <script>
+  var uplMsg = "{$labels.file_upload_ko}<br>";
+  var doAlert = false;
+  {if $gui->uploadOp->statusOK == false}
+    uplMsg += "{$gui->uploadOp->statusCode}<br>";
+    doAlert = true;
+  {/if}
+  if (doAlert) {
+    bootbox.alert(uplMsg);
+  }
+  </script>
+{/if}
+
+
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
 <div class="workBack">

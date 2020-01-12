@@ -6,13 +6,10 @@
  * Manages test plans
  *
  * @package   TestLink
- * @copyright 2007-2014, TestLink community 
+ * @copyright 2007-2020, TestLink community 
  * @version   planEdit.php
  * @link      http://www.testlink.org/
  *
- *
- * @internal revisions
- * @since 1.9.13
  **/
 
 require_once('../../config.inc.php');
@@ -59,7 +56,7 @@ $gui->cfields = $tplan_mgr->html_table_of_custom_field_inputs($args->tplan_id,$a
 switch($args->do_action)
 {
   case 'fileUpload':
-    fileUploadManagement($db,$args->tplan_id,$args->fileTitle,$tplan_mgr->getAttachmentTableName());
+    $gui->uploadOp = fileUploadManagement($db,$args->tplan_id,$args->fileTitle,$tplan_mgr->getAttachmentTableName());
     getItemData($tplan_mgr,$gui,$of,$args->tplan_id,true);
   break;
 

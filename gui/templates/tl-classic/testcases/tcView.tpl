@@ -73,7 +73,7 @@ function jsCallDeleteFile(btn, text, o_id) {
   var uplMsg = "{$labels.file_upload_ko}<br>";
   var doAlert = false;
   {if $gui->uploadOp->statusOK == false}
-    uplMsg += "{$gui->uploadOp->statusCode}<br>";
+    uplMsg += "{$gui->uploadOp->msg}<br>";
     doAlert = true;
   {/if}
   if (doAlert) {

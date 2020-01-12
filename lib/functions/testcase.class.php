@@ -6,7 +6,7 @@
  * @filesource  testcase.class.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2019, TestLink community
+ * @copyright   2005-2020, TestLink community
  * @link        http://www.testlink.org/
  *
  */
@@ -6899,6 +6899,7 @@ class testcase extends tlObjectWithAttachments {
       $goo->closeMyWindow = 0;
     }
 
+    $goo->uploadOp = null;
     $goo->new_version_source = 'this';
 
     $goo->execution_types = $this->execution_types;

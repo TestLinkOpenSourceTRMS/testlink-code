@@ -118,33 +118,32 @@ function checkAttachmentID(&$db,$id,$attachmentInfo)
  *
  */
 function fileUploadManagement(&$dbHandler,$id,$title,$table)
-{
-  $retVal = new stdClass();
-  $retVal->uploaded = null;
-  $retVal->msg = null;
-  
+{  
+  $uploadOp = new stdClass();
+  $uploadOp->statusOK = false;
+  $uploadOp->statusCode = 0;
+  $uploadOp->msg = null;
+ 
   $fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
-  if ($fInfo && $id)
-  {
+  if ($fInfo && $id) {
     $fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
     $fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
-
-    $uploadOp = null;
+    
     if ($fSize && $fTmpName != "") {
       $repo = tlAttachmentRepository::create($dbHandler);
       $uploadOp = $repo->insertAttachment($id,$table,$title,$fInfo);
-      $retVal->uploaded = $uploadOp->statusOK;
+      $uploadOp->uploaded = $uploadOp->statusOK;
 
-      if ($retVal->uploaded) {
+      if ($uploadOp->statusOK) {
         logAuditEvent(TLS("audit_attachment_created",$title,$fInfo['name']),"CREATE",$id,"attachments");
       } else {
-        $retVal->msg  = getFileUploadErrorMessage($fInfo,$uploadOp);
+        $uploadOp->msg = getFileUploadErrorMessage($fInfo,$uploadOp);
       }
     } else {
-      $retVal->msg  = getFileUploadErrorMessage($fInfo);
+      $uploadOp->msg = getFileUploadErrorMessage($fInfo);
     } 
   }
-  return $retVal;
+  return $uploadOp;
 }
 
 /**

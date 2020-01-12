@@ -4,10 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource  reqSpecView.php
- * @author      Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
- *
  *
 **/
 require_once("../../config.inc.php");
@@ -33,7 +31,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
   $iParams = array("req_spec_id" => array(tlInputParameter::INT_N),
-                   "refreshTree" => array(tlInputParameter::INT_N) );
+                   "refreshTree" => array(tlInputParameter::INT_N),
+                   "uploadOPStatusCode" => array(tlInputParameter::STRING_N,0,30) );
   $args = new stdClass();
   R_PARAMS($iParams,$args);
   $args->refreshTree = intval($args->refreshTree);
@@ -109,6 +108,15 @@ function initialize_gui(&$dbHandler,&$argsObj)
     $gui->btn_import_req_spec = sprintf(lang_get('importViaAPI'),$reqMgrSystem['reqmgrsystem_name']);
     $gui->reqMgrSystemEnabled = 1;
   }
+
+  $gui->uploadOp = null;
+  if (trim($argsObj->uploadOPStatusCode) != '') {
+    $gui->uploadOp = new stdClass();
+    $gui->uploadOp->statusOK = false;
+    $gui->uploadOp->statusCode = $argsObj->uploadOPStatusCode;
+    $gui->uploadOp->msg = lang_get($argsObj->uploadOPStatusCode);
+  }
+  
   return $gui;
 }
 

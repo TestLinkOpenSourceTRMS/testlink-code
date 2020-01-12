@@ -228,13 +228,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
       $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
 
       $pos = strpos($tpl, '.php');
-      if($pos === false)
-      {
+      if($pos === false) {
         $tpl = $tplDir . $tpl;      
-      }
-      else
-      {
+      } else {
         $renderType = 'redirect';
+        if (null != $guiObj->uploadOp && $guiObj->uploadOp->statusOK == false) {
+          $tpl .= "&uploadOPStatusCode=" . $guiObj->uploadOp->statusCode;
+        }
       } 
     break;
   }

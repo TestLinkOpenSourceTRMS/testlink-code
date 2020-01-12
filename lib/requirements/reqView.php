@@ -36,7 +36,8 @@ function init_args( &$reqMgr ) {
                    "showReqSpecTitle" => array(tlInputParameter::INT_N),
                    "refreshTree" => array(tlInputParameter::INT_N),
                    "relation_add_result_msg" => array(tlInputParameter::STRING_N),
-                   "user_feedback" => array(tlInputParameter::STRING_N));
+                   "user_feedback" => array(tlInputParameter::STRING_N),
+                   "uploadOPStatusCode" => array(tlInputParameter::STRING_N,0,30));
 
   $args = new stdClass();
   R_PARAMS($iParams,$args);
@@ -220,6 +221,14 @@ function initialize_gui(&$dbHandler,$argsObj,&$tproject_mgr,&$req_mgr) {
     }
   }
 
+  $gui->uploadOp = null;
+  if (trim($argsObj->uploadOPStatusCode) != '') {
+    $gui->uploadOp = new stdClass();
+    $gui->uploadOp->statusOK = false;
+    $gui->uploadOp->statusCode = $argsObj->uploadOPStatusCode;
+    $gui->uploadOp->msg = lang_get($argsObj->uploadOPStatusCode);
+  }
+  
   return $gui;
 }
 

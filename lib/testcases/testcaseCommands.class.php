@@ -1126,8 +1126,11 @@ class testcaseCommands {
     $guiObj = $this->initGuiBean($argsObj);
     $identity = $this->buildIdentity($argsObj);
 
+    $guiObj->uploadOp = $argsObj->uploadOp;
+
     $guiObj->viewerArgs=array();
-    $guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
+    $guiObj->refreshTree = ($argsObj->refreshTree 
+      && $userFeedback['status_ok']) ? 1 : 0;
     $guiObj->has_been_executed = $argsObj->has_been_executed;
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     $guiObj->user_feedback = '';

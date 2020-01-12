@@ -6899,7 +6899,10 @@ class testcase extends tlObjectWithAttachments {
       $goo->closeMyWindow = 0;
     }
 
-    $goo->uploadOp = null;
+    if( !property_exists($goo, 'uploadOp') ) {
+      $goo->uploadOp = null;
+    }
+
     $goo->new_version_source = 'this';
 
     $goo->execution_types = $this->execution_types;

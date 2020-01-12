@@ -453,7 +453,7 @@ class reqSpecCommands
     $obj = $this->copyRequirements($argsObj, array( 'get_items' => false));
     $obj->req = null;
     $obj->req_spec_id = $argsObj->req_spec_id;
-    $obj->array_of_msg = '';
+    $obj->array_of_msg = array();
        
     $copyOptions = array('copy_also' => array('testcase_assignment' => $argsObj->copy_testcase_assignment));
         
@@ -552,7 +552,7 @@ class reqSpecCommands
     $obj->template = 'reqSpecCopy.tpl';
     $obj->containers = null;
     $obj->page2call = 'lib/requirements/reqSpecEdit.php';
-    $obj->array_of_msg = '';
+    $obj->array_of_msg = array();
     $obj->doActionButton = 'doCopy';
     $obj->req_spec_id = $argsObj->req_spec_id;
     $obj->top_checked = ' checked = "checked" ';

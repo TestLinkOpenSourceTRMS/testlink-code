@@ -4,7 +4,6 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource	reports.cfg.php
- * @author 		Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
@@ -83,6 +82,15 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 	'enabled' => 'all', 
 	'directLink' => '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=metrics_tp_general',
 	'format' => 'format_html,format_pseudo_ods'
+);
+
+$tlCfg->reports_list['report_by_tsuite'] = 
+  array('title' => 'link_report_by_tsuite',
+        'url' => 'lib/results/resultsByTSuite.php',
+        'enabled' => 'all',
+        'directLink' => 
+          '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0&type=report_by_tsuite',
+        'format' => 'format_html'
 );
 
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
@@ -243,6 +251,7 @@ $tlCfg->reports_list[$report] = array(
 	   '&type=' . $report,
 	'format' => 'format_html'
 );
+
 
 
 

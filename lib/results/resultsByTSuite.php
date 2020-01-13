@@ -57,6 +57,14 @@ if(is_null($tsInf)) {
     }    
   }
 
+  // Get First & Latest Execution
+  $execContext = array('testplan_id');
+  if ($gui->hasPlatforms) {
+    $execContext[] = 'platform_id';
+  }
+  $span = $metricsMgr->getExecTimeSpan($args->tplan_id,$execContext);
+  $gui->spanByPlatform = $span[$args->tplan_id];
+
   // reorder data according test suite name
   natcasesort($tsInf->idNameMap);
   $sortedKeys = array_keys($tsInf->idNameMap);
@@ -149,6 +157,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
 
   $gui->mailFeedBack = new stdClass();
   $gui->mailFeedBack->msg = '';
+
+  $gui->hasPlatforms = count($gui->platformSet) >= 1 && 
+                       !isset($gui->platformSet[0]);
+
   return $gui;
 }
 
@@ -197,9 +209,7 @@ function createSpreadsheet($gui,$args,&$tplanMgr) {
   $oneLevel = array();
 
   // NO PLATFORM => ID=0
-  $hasPlatforms = count($gui->platformSet) >= 1 && 
-                  !isset($gui->platformSet[0]);
-  if( $hasPlatforms ) {
+  if( $gui->hasPlatforms ) {
     $oneLevel[] = array('entity' => 'platform', 
                         'dimension' => 'testcase_qty',
                         'nameKey' => 'name', 'tcQtyKey' => 'total_tc',
@@ -276,7 +286,7 @@ function createSpreadsheet($gui,$args,&$tplanMgr) {
   // The first column will be the platform
   $twoLevels = array();
 
-  if( $hasPlatforms ) {
+  if( $gui->hasPlatforms ) {
     $twoLevels[] = 
       array('entity' => 'build', 'dimension' => 'testcase_qty',
             'nameKey' => 'build_name', 
@@ -316,7 +326,7 @@ function createSpreadsheet($gui,$args,&$tplanMgr) {
 
     // Just ONE HEADER ?
     $dataHeader = array($lbl['platform'],$lbl[$entity],$lbl[$dimension]);
-    if( $hasPlatforms == false ) {
+    if( $gui->hasPlatforms == false ) {
       array_shift($dataHeader);      
     }
 
@@ -349,7 +359,7 @@ function createSpreadsheet($gui,$args,&$tplanMgr) {
       foreach($infoSet as $itemID => $fieldSet) {
         $whatCell=0;
         
-        if( $hasPlatforms ) {
+        if( $gui->hasPlatforms ) {
           $cellID = $cellRange[$whatCell] . $startingRow; 
           $field = $platName;
           $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellID, $field);          

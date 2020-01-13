@@ -21,7 +21,8 @@ Purpose: smarty template - show Test Results and Metrics
          info_report_milestones_prio, info_report_milestones_no_prio, info_res_by_kw,send_test_report,
          info_gen_test_rep,title_res_by_kw_on_plat,title_res_by_prio_on_plat,test_suite,title_res_by_tl_testsuite_on_plat,title_res_by_prio,title_res_by_tl_testsuite,title_res_build,title_res_by_build_on_plat,
          export_as_spreadsheet,title_res_by_l1l2_testsuite,
-         metrics_by_l1l2_testsuite'}
+         metrics_by_l1l2_testsuite,firstExec,latestExec,
+         section_link_report_by_tsuite_on_plat,l1l2'}
 
 {include file="inc_head.tpl"}
 
@@ -81,18 +82,20 @@ Purpose: smarty template - show Test Results and Metrics
       {if isset($gui->statistics->testsuites[$platId]) }
         {$tit = ''}
         {if $pname != ''}
-          {$tit = $labels.title_res_by_tl_testsuite_on_plat}
+          {$tit = $labels.section_link_report_by_tsuite_on_plat}
           {$tit = "$tit $pname"}
         {/if}         
-        {include file="results/inc_results_show_table.tpl"
+        {include file="results/show_table_with_exec_span.inc.tpl"
            args_title=$tit
-           args_first_column_header=$labels.test_suite
+           args_first_column_header=$labels.l1l2
            args_first_column_key='name'
            args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->testsuites
            args_column_data=$gui->dataByPlatform->testsuites[$platId] 
         }
       {/if} 
+      <hr>
+      <p>
     {/foreach}
 
 	<p class="italic">{$labels.info_gen_test_rep}</p>

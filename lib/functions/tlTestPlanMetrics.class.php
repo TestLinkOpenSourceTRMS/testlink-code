@@ -3588,4 +3588,41 @@ class tlTestPlanMetrics extends testplan
     return $rs;
   }
 
+  /**
+   *  get execution time span for context:
+   *  Test Plan
+   *  Platform (if any)
+   *  Build
+   *  
+   *
+   */
+  function getExecTimeSpan($id,$context) {
+
+    $fieldList .= implode(',', $context);
+ 
+    $sql = "SELECT MIN(execution_ts) AS begin,
+            MAX(execution_ts) AS end, {$fieldList}
+            FROM {$this->tables['executions']}
+            WHERE testplan_id = $id 
+            GROUP BY {$fieldList}";
+   
+    $levels = count($context);
+    switch ($levels) {
+      case 1:
+        $rs = $this->db->fetchRowsIntoMap($sql,'testplan_id');
+      break;
+
+      case 2:
+        $rs = $this->db->fetchRowsIntoMap2l($sql,$context);
+      break;
+
+      case 3:
+        $rs = $this->db->fetchRowsIntoMap3l($sql,$context);
+      break;
+    }
+
+    return $rs;        
+  }
+
+
 }

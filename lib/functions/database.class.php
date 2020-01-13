@@ -883,6 +883,35 @@ class database {
     return $nullValue;
   }
 
+  /**
+   * Fetches all rows into a map of 2 levels
+   *
+   * @param string $sql the query to be executed
+   * @param array $keyCols, columns to used as access key
+   * @param boolean $cumulative
+   * @param integer $limit (optional) number of rows
+   * 
+   * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
+   * 
+   **/
+  function fetchRowsIntoMap2l($sql,$keyCols,$cumulative = 0,$limit = -1) {
+    $items = null;
+    $result = $this->exec_query($sql,$limit);
+    
+    // new dBug($result);
+    if ($result) {
+      while($row = $this->fetch_array($result)) {
+        if($cumulative) {
+          $items[$row[$keyCols[0]]][$row[$keyCols[1]]][] = $row;
+        } else {
+          $items[$row[$keyCols[0]]][$row[$keyCols[1]]] = $row;
+        } 
+      }
+    }
+
+    unset($result);
+    return $items;
+  }
 
   /**
    * Fetches all rows into a map of 3 levels
@@ -916,7 +945,7 @@ class database {
 
 
   /**
-   * Fetches all rows into a map of 3 levels
+   * Fetches all rows into a map of 4 levels
    *
    * @param string $sql the query to be executed
    * @param array $keyCols, columns to used as access key

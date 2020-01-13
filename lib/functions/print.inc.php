@@ -893,7 +893,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$options,$env,$context,$indentLe
 
 
   static $st;
-  
+  static $statusL10N;
   static $labels;
   static $tcase_prefix;
   static $userMap = array();

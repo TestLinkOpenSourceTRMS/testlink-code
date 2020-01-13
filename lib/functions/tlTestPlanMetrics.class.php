@@ -6,7 +6,7 @@
  * @filesource  tlTestPlanMetrics.class.php
  * @package     TestLink
  * @author      franciscom
- * @copyright   2004-2019, TestLink community 
+ * @copyright   2004-2020, TestLink community 
  * @link        http://testlink.sourceforge.net/
  * @uses        config.inc.php 
  * @uses        common.php 
@@ -3367,6 +3367,9 @@ class tlTestPlanMetrics extends testplan
     
     $renderObj = new stdClass();
     $renderObj->colDefinition = $rx->colDefinition;
+    $renderObj->info = array();
+    $renderObj->infoL2 = array();
+    $renderObj->idNameMap = array();
     
     // collect qty
     $execQty = null;
@@ -3458,6 +3461,7 @@ class tlTestPlanMetrics extends testplan
             }
             $renderObj->infoL2[$platId][$l2id]['name'] = 
               $tsNameCache[$l2id];
+            $renderObj->idNameMap[$l2id] = $tsNameCache[$l2id];
           }  
 
 

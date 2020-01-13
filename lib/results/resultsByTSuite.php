@@ -56,6 +56,17 @@ if(is_null($tsInf)) {
       }
     }    
   }
+
+  // reorder data according test suite name
+  natcasesort($tsInf->idNameMap);
+  $sortedKeys = array_keys($tsInf->idNameMap);
+  $gui->dataByPlatform = new stdClass();
+  $gui->dataByPlatform->testsuites = array();
+  foreach ($gui->statistics->testsuites as $platId => $elem) {
+    foreach($sortedKeys as $itemID) {
+      $gui->dataByPlatform->testsuites[$platId][$itemID] = $elem[$itemID];
+    }
+  }
 } 
 
 $timerOff = microtime(true);

@@ -90,7 +90,7 @@ Purpose: smarty template - show Test Results and Metrics
            args_first_column_key='name'
            args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->testsuites
-           args_column_data=$gui->statistics->testsuites[$platId] 
+           args_column_data=$gui->dataByPlatform->testsuites[$platId] 
         }
       {/if} 
     {/foreach}

@@ -1917,10 +1917,7 @@ $TLS_info_report_milestones_no_prio = "This Report shows milestones defined for 
 $TLS_info_res_by_kw = "This report shows results for each keyword. If a test case has multiple " .
                       "keywords assigned it will be count for each assigned keyword.";
 $TLS_info_gen_test_rep = "<b>General Information</b><br />" .
-                         "All reports only consider latest execution of each test case.<br />" .
-                         "You can sort tables by clicking the column header.";
-
-
+                         "All reports only consider latest execution of each test case.<br />";
 
 // ----- gui/templates/resultsMoreBuilds_query_form.tpl -----
 $TLS_results_latest = "Latest Results Only";
@@ -4025,4 +4022,7 @@ $TLS_link_report_exec_timeline = 'Execution By Date/Time';
 $TLS_qty_of_executions = 'Test Case Executions';
 $TLS_assignOnlyToTestCasesInTestSuite = 'Assign ONLY to direct children of this test suite';
 $TLS_target_kword = "Target Keywords (Assign/Remove)";
+$TLS_link_report_by_tsuite = "Metrics by Level 1 & Level 2 Test Suites";
+$TLS_metrics_by_l1l2_testsuite = "Metrics by Level 1 & Level 2 Test Suites";
+$TLS_you_can_sort = "You can sort tables by clicking the column header.";
 // ----- END ------------------------------------------------------------------

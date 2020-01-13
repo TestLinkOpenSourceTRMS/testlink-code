@@ -76,7 +76,7 @@ Purpose: smarty template - show Test Results and Metrics
 
   	{* ----- results by test suites ------------------- *}
   	{* by TestSuite *}
-    <h1 class="{#TITLE_CLASS#}">{$labels.title_res_by_l1l2_testsuite}</h1>
+    <h1 class="{#TITLE_CLASS#}">{$labels.metrics_by_l1l2_testsuite}</h1>
     {foreach from=$platforms key=platId item=pname}
       {if isset($gui->statistics->testsuites[$platId]) }
         {$tit = ''}
@@ -94,11 +94,6 @@ Purpose: smarty template - show Test Results and Metrics
         }
       {/if} 
     {/foreach}
-
-    {if $gui->columnsDefinition->testsuites != ""}
-  	  <p class="italic">{$labels.info_res_by_top_level_suites}</p>
-  	  <br />
-  	{/if}
 
 	<p class="italic">{$labels.info_gen_test_rep}</p>
 	<p>{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}</p>

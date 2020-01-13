@@ -6,7 +6,7 @@
  * @filesource  tree.class.php
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2005-2019, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @link        http://www.testlink.org/
  *
  */
@@ -1681,4 +1681,30 @@ class tree extends tlObject
     return null != $rs ? current($rs) : null;         
   }
   
+  /**
+   *
+   */
+  function getNameL2($node_id,$opt=null)
+  {
+    $options = array('l2CutFirst' => 0);
+
+    $options = array_merge($options,(array)$opt);
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+    $concat = " CONCAT(NHL1.name,':',NHL2.name) ";
+    if ($options['l2CutFirst'] > 0) {
+      $where2cut = $options['l2CutFirst'];
+      $concat = " CONCAT(NHL1.name,':'," .
+                " SUBSTRING(NHL2.name,{$where2cut}) )";
+    }
+    $sql = "SELECT $concat AS name
+            FROM {$this->tables['nodes_hierarchy']} NHL2
+            JOIN {$this->tables['nodes_hierarchy']} NHL1
+            ON NHL1.id = NHL2.parent_id
+            WHERE NHL2.id = " . intval($node_id);
+    $rs = $this->db->get_recordset($sql);
+    $result = !is_null($rs) ? $rs[0]['name'] : '';
+    return $result;
+  }
 }// end class

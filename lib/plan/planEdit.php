@@ -18,8 +18,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('testplan');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db,false,false,"checkRights");
-
+testlinkInitPage($db,false,false);
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
@@ -28,15 +27,24 @@ $smarty = new TLSmarty();
 $do_display=false;
 $template = null;
 $args = init_args($_REQUEST);
-if (!$args->tproject_id)
-{
+$gui = initializeGui($db,$args,$editorCfg,$tproject_mgr);
+
+if (!$args->tproject_id) {
   $smarty->assign('title', lang_get('fatal_page_title'));
   $smarty->assign('content', lang_get('error_no_testprojects_present'));
   $smarty->display('workAreaSimple.tpl');
   exit();
+} 
+
+if (!checkRights($db,$args->user,$args->tproject_id)) {
+  $smarty->assign('title', lang_get('fatal_page_title'));
+  $smarty->assign('content', lang_get('not_enough_rights'));
+  $smarty->display('workAreaSimple.tpl');
+  exit();
 }
 
-$gui = initializeGui($db,$args,$editorCfg,$tproject_mgr);
+
+
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('testplan_template', $of->InstanceName, $args->notes);
 
@@ -376,9 +384,9 @@ function init_args($request_hash)
  * checkRights
  *
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db,&$user,$tproject_id)
 {
-  return $user->hasRight($db,'mgt_testplan_create');
+  return $user->hasRight($db,'mgt_testplan_create',$tproject_id);
 }
 
 /**

@@ -4029,4 +4029,5 @@ $TLS_firstExec = 'First Execution on: ';
 $TLS_latestExec = 'Latest Execution on: ';
 $TLS_section_link_report_by_tsuite_on_plat = "Results on Platform: ";
 $TLS_l1l2 = 'Top : Child (Test Suites)';
+$TLS_not_enough_rights = 'Not Enough Rights To Access The Feature';
 // ----- END ------------------------------------------------------------------

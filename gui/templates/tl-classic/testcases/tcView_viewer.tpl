@@ -97,7 +97,7 @@ viewer for test case in test specification
 
 {$has_been_executed=0}
 {if $args_status_quo != null 
-  || $args_status_quo[$args_testcase.id].executed}
+  && $args_status_quo[$args_testcase.id].executed}
   {$has_been_executed=1}  
 {/if}
 

@@ -77,13 +77,47 @@ if(is_null($tsInf)) {
   }
 } 
 
+if ($args->doAction == 'saveForBaseline') {
+  foreach ($gui->dataByPlatform->testsuites as $platID => $elem) {
+    // Context
+    $span = $gui->spanByPlatform[$platID];
+    $tables = tlObject::getDBTables(array('baseline_l1l2_context',
+                                          'baseline_l1l2_details'));
+    $sql = "INSERT INTO {$tables['baseline_l1l2_context']}
+            (testplan_id,platform_id,begin_exec_ts,end_exec_ts)
+            VALUES({$span['testplan_id']},
+                   {$span['platform_id']}," .
+            "'" . $span['begin'] . "'," .
+            "'" . $span['end'] . "')";
+    $db->exec_query($sql);
+    $context_id = $db->insert_id($tables['baseline_l1l2_context']);
+
+    $cfg = config_get('results');
+    $verboseCode = $cfg['status_code'];
+
+    foreach ($elem as $l2_id => $info) {
+      foreach ($info['details'] as $verbose => $figures) {
+        $exec_status = "'" . $verboseCode[$verbose] . "'";
+
+        $sql = "INSERT INTO {$tables['baseline_l1l2_details']}
+                (context_id,top_tsuite_id,child_tsuite_id,
+                 status,qty,total_tc)
+                VALUES($context_id,{$info['parent_id']},$l2_id,
+                       $exec_status,{$figures['qty']},
+                       {$info['total_tc']})";
+        $db->exec_query($sql);
+      }
+    }
+  }
+  $gui->baselineSaved = true;
+}
+
 $timerOff = microtime(true);
 $gui->elapsed_time = round($timerOff - $timerOn,2);
 
-if( $args->spreadsheet ) {
+if ($args->spreadsheet) {
   createSpreadsheet($gui,$args,$tplan_mgr);
 }
-
 
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
@@ -113,6 +147,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
  
   list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
 
+  $gui->baselineSaved = false;
   $gui->fakePlatform = array('');
   $gui->title = lang_get('metrics_by_l1l2_testsuite');
   $gui->do_report = array();
@@ -144,16 +179,14 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
     natsort($gui->platformSet);
   }
 
+  $base = 'lib/results/resultsByTSuite.php';
   $gui->basehref = $_SESSION['basehref'];
-  $gui->actionSendMail = $gui->basehref . 
-          "lib/results/resultsGeneral.php?format=" . 
-          FORMAT_MAIL_HTML . "&tplan_id={$gui->tplan_id}" .
-          "&tproject_id={$gui->tproject_id}";
+  $common = $gui->basehref . $base . "?tplan_id={$gui->tplan_id}" .
+            "&tproject_id={$gui->tproject_id}&format=";
 
-  $gui->actionSpreadsheet = $gui->basehref . 
-          "lib/results/resultsGeneral.php?format=" . 
-          FORMAT_XLS . "&tplan_id={$gui->tplan_id}&spreadsheet=1".
-          "&tproject_id={$gui->tproject_id}";
+  $gui->actionSendMail = $common . FORMAT_MAIL_HTML;
+  $gui->actionSpreadsheet = $common . FORMAT_XLS . "&spreadsheet=1";
+  $gui->actionSaveForBaseline = $common . "fake" . "&doAction=saveForBaseline";
 
   $gui->mailFeedBack = new stdClass();
   $gui->mailFeedBack->msg = '';

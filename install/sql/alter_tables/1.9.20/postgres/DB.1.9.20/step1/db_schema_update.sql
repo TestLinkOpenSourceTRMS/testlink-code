@@ -31,6 +31,32 @@ CREATE TABLE /*prefix*/testcase_platforms(
 CREATE UNIQUE INDEX /*prefix*/idx01_testcase_platforms ON /*prefix*/testcase_platforms ("testcase_id","tcversion_id","platform_id");
 CREATE INDEX /*prefix*/idx02_testcase_platforms ON /*prefix*/testcase_platforms ("tcversion_id");
 
+CREATE TABLE /*prefix*/baseline_l1l2_context (
+  "id" BIGSERIAL NOT NULL , 
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+  "platform_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/platforms (id) ON DELETE CASCADE,
+  "being_exec_ts" timestamp NOT NULL,
+  "end_exec_ts" timestamp NOT NULL,
+  "creation_ts" timestamp NOT NULL DEFAULT now(),
+  PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/udx1 ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
+
+
+CREATE TABLE /*prefix*/baseline_l1l2_details (
+  "id" BIGSERIAL NOT NULL , 
+  "context_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/baseline_l1l2_context (id),
+  "top_tsuite_id" BIGINT NOT NULL DEFAULT '0'  REFERENCES  /*prefix*/testsuites (id),
+  "child_tsuite_id" BIGINT NOT NULL DEFAULT '0'  REFERENCES  /*prefix*/testsuites (id),
+  "status" char(1) DEFAULT NULL,
+  "qty" INT unsigned NOT NULL DEFAULT '0',
+  "total_tc" INT unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY ("id")
+) ;
+CREATE UNIQUE INDEX /*prefix*/udx1 
+ON /*prefix*/baseline_l1l2_details ("context_id","top_tsuite_id","child_tsuite_id","status");
+
+
 
 -- 
 --

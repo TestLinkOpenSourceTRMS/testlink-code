@@ -796,6 +796,31 @@ CREATE TABLE /*prefix*/testcase_platforms (
 ) DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE /*prefix*/baseline_l1l2_context (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  testplan_id int(10) unsigned NOT NULL DEFAULT '0',
+  platform_id int(10) unsigned NOT NULL DEFAULT '0',
+  being_exec_ts timestamp NOT NULL,
+  end_exec_ts timestamp NOT NULL,
+  creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts),
+) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/baseline_l1l2_details (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  context_id int(10) unsigned NOT NULL,
+  top_tsuite_id int(10) unsigned NOT NULL DEFAULT '0',
+  child_tsuite_id int(10) unsigned NOT NULL DEFAULT '0',
+  status char(1) DEFAULT NULL,
+  qty int(10) unsigned NOT NULL DEFAULT '0',
+  total_tc int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY udx1 (context_id,top_tsuite_id,child_tsuite_id,status)
+) DEFAULT CHARSET=utf8;
+
+
 
 # VIEWS
 #

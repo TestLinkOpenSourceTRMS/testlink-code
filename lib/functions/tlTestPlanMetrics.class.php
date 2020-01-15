@@ -3356,7 +3356,9 @@ class tlTestPlanMetrics extends testplan
       $this->getStatusTotalsByItemForRender($id,'tsuite',$filters,$opt);
 
     // ??? $key2loop = array_keys($rx->info);
-    $template = array('type' => 'tsuite', 'name' => '',
+    $template = array('type' => 'tsuite', 
+                      'name' => '',
+                      'parent_id' => 0,
                       'total_tc' => 0,
                       'percentage_completed' => 0, 
                       'details' => array());  
@@ -3437,6 +3439,7 @@ class tlTestPlanMetrics extends testplan
           // Level 2
           if ($l2id > 0 && !isset($renderObj->infoL2[$platId][$l2id])) {
             $renderObj->infoL2[$platId][$l2id] = $template;
+            $renderObj->infoL2[$platId][$l2id]['parent_id'] = $topSuiteID;
             $execQtyL2[$platId][$l2id] = 0;
             $initNameL2 = true;
           }              

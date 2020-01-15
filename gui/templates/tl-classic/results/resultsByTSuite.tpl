@@ -22,9 +22,14 @@ Purpose: smarty template - show Test Results and Metrics
          info_gen_test_rep,title_res_by_kw_on_plat,title_res_by_prio_on_plat,test_suite,title_res_by_tl_testsuite_on_plat,title_res_by_prio,title_res_by_tl_testsuite,title_res_build,title_res_by_build_on_plat,
          export_as_spreadsheet,title_res_by_l1l2_testsuite,
          metrics_by_l1l2_testsuite,firstExec,latestExec,
-         section_link_report_by_tsuite_on_plat,l1l2'}
+         section_link_report_by_tsuite_on_plat,l1l2,
+         saveForBaseline,baseline_saved_ok'}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead='yes'}
+
+{include file="bootstrap.inc.tpl"}
+<script src="{$basehref}third_party/bootbox/bootbox.all.min.js"></script>
+</head>
 
 {if $gui->showPlatforms}
   {$platforms = $gui->platformSet}
@@ -34,6 +39,15 @@ Purpose: smarty template - show Test Results and Metrics
 
 <body>
 <h1 class="{#TITLE_CLASS#}">{$gui->title}</h1>
+
+{if $gui->baselineSaved != null && $gui->baselineSaved == true}
+  <script>
+  var msg = "{$labels.baseline_saved_ok}<br>";
+  bootbox.alert(msg);
+  </script>
+{/if}
+
+
 
 <div style="display: flex;">
 <form name="send_by_email_to_me" 
@@ -53,6 +67,14 @@ Purpose: smarty template - show Test Results and Metrics
   <input type="image" name="exportSpreadSheet" id="exportSpreadSheet" 
          src="{$tlImages.export_excel}" title="{$labels.export_as_spreadsheet}">
 </form>
+
+<form name="save4Baseline" id="save4Baseline" method="POST"
+      action={$gui->actionSaveForBaseline}>
+  &nbsp;&nbsp;
+  <input type="image" name="doSaveForBaseline" id="doSaveForBaseline" 
+         src="{$tlImages.saveForBaseline}" title="{$labels.saveForBaseline}">
+</form>
+
 </div>
 
 {if null != $gui->mailFeedBack && $gui->mailFeedBack->msg != ""}

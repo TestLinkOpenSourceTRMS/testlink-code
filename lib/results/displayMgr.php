@@ -23,7 +23,7 @@ function initArgsForReports(&$dbHandler) {
           "type" => array(tlInputParameter::STRING_N,0,1),
           "sendByMail" => array(tlInputParameter::INT_N),
           "spreadsheet" => array(tlInputParameter::INT_N),
-          "doAction" => array(tlInputParameter::STRING_N,5,10),
+          "doAction" => array(tlInputParameter::STRING_N,5,15),
           "platSet" => array(tlInputParameter::ARRAY_INT),
           "build_set" => array(tlInputParameter::ARRAY_INT),
           "buildListForExcel" => array(tlInputParameter::STRING_N,0,100));

@@ -375,6 +375,11 @@ $tlCfg->results['status_code'] = array('failed' => 'f','blocked' => 'b',
                                        'not_available' => 'x','unknown' => 'u',
                                        'all' => 'a'); 
 
+/* for some reports */
+$tlCfg->results['status_order'] = array('not_run' => 'n',
+                                        'passed' => 'p',
+                                        'failed' => 'f',
+                                        'blocked' => 'b');
 
 /** 
  * Used to get localized string to show to users

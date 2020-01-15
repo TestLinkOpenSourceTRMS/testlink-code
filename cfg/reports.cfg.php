@@ -93,6 +93,17 @@ $tlCfg->reports_list['report_by_tsuite'] =
         'format' => 'format_html'
 );
 
+$tlCfg->reports_list['baseline_l1l2'] = 
+  array('title' => 'baseline_l1l2',
+        'url' => 'lib/results/baselinel1l2.php',
+        'enabled' => 'all',
+        'directLink' => 
+          '%slnl.php?apikey=%s&tproject_id=%s&tplan_id=%s&format=0' .
+          '&type=baseline_l1l2',
+        'format' => 'format_html'
+);
+
+
 $tlCfg->reports_list['results_by_tester_per_build'] = array( 
 	'title' => 'link_report_by_tester_per_build',
 	'url' => 'lib/results/resultsByTesterPerBuild.php',

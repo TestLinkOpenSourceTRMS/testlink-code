@@ -4032,4 +4032,6 @@ $TLS_l1l2 = 'Top : Child (Test Suites)';
 $TLS_not_enough_rights = 'Not Enough Rights To Access The Feature';
 $TLS_saveForBaseline = 'Save to create baseline';
 $TLS_baseline_saved_ok = 'Baseline saved';
+$TLS_baseline_l1l2 = 'Baselines Level 1 & Level 2 Test Suites';
+$TLS_baselineTimestamp = 'Baseline taken on:';
 // ----- END ------------------------------------------------------------------

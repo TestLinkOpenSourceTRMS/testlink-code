@@ -7,16 +7,30 @@ show_table_with_exec_span.inc.tpl
 {$args_first_column_header=$args_first_column_header|default:"first column"}
 {$args_show_percentage=$args_show_percentage|default:true}
 {$colForTotal=$args_column_for_total|default:"total_tc"} 
+{$args_span=$args_span|default:null}
+
 
 {if $args_column_definition != ""}
 
 <h2>{$args_title|escape}</h2>
-{if null != $gui->spanByPlatform}
-  {$labels.firstExec}
-  {$gui->spanByPlatform[$platId]['begin']|date_format:$gsmarty_timestamp_format}<br>
-  {$labels.latestExec}{$gui->spanByPlatform[$platId]['end']|date_format:$gsmarty_timestamp_format}<br>
-  <p>
+{if property_exists($gui,'spanByPlatform') 
+    && null != $gui->spanByPlatform}
+    {$labels.firstExec}
+    {$gui->spanByPlatform[$platId]['begin']|date_format:$gsmarty_timestamp_format}<br>
+    {$labels.latestExec}{$gui->spanByPlatform[$platId]['end']|date_format:$gsmarty_timestamp_format}<br>
+    <p>
+{else}
+  {if $args_span != null}
+    {$labels.baselineTimestamp}
+    {$args_span['baseline_ts']|date_format:$gsmarty_timestamp_format}<br>
+    {$labels.firstExec}
+    {$args_span['begin']|date_format:$gsmarty_timestamp_format}<br>
+    {$labels.latestExec}
+    {$args_span['end']|date_format:$gsmarty_timestamp_format}<br>
+    <p>    
+  {/if}
 {/if}
+
 <table class="simple_tableruler sortable" style="text-align: center; margin-left: 0px;">
 	<tr>
 		<th>{$args_first_column_header|escape}</th>

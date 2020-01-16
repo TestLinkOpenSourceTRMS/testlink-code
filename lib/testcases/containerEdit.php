@@ -689,6 +689,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
     $smartyObj->assign('objectID',$argsObj->testsuiteID);
     $smartyObj->assign('objectType','testsuite');
     $smartyObj->assign('objectName', $argsObj->tsuite_name);
+    $smartyObj->assign('containerType', $argsObj->containerType);    
     $smartyObj->assign('delete_msg',$map_msg['delete_msg']);
     $smartyObj->assign('warning', $map_msg['warning']);
     $smartyObj->assign('link_msg', $map_msg['link_msg']);

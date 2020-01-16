@@ -10,9 +10,9 @@ Purpose: smarty template - delete containers in test specification
 
 <body>
 <h1 class="title">{$page_title}{$smarty.const.TITLE_SEP}{$objectName|escape}</h1> 
-{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' refresh=$refreshTree}
 
 <div class="workBack">
+{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' refresh=$refreshTree}
 
 {if $sqlResult == '' && $objectID != ''}
   {if $warning != ""}
@@ -37,7 +37,7 @@ Purpose: smarty template - delete containers in test specification
     {/if}
   {/if}
   
-  <form method="post" action="{$basehref}lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}&objectType={$objectType}">
+  <form method="post" action="{$basehref}lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}&amp;objectType={$objectType}&amp;containerType={$containerType}">
     {if $can_delete}
       <p>{$labels.question_del_testsuite}</p>
       <input type="submit" name="delete_testsuite" value="{$labels.btn_yes_del_comp}" />

@@ -22,6 +22,8 @@ ALTER TABLE /*prefix*/users MODIFY password VARCHAR(255);
 
 -- 
 ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active tinyint(1) NOT NULL default '1';
+ALTER TABLE /*prefix*/platforms ADD COLUMN  enable_on_design tinyint(1) NOT NULL default '0',
+ALTER TABLE /*prefix*/platforms ADD COLUMN  enable_on_execution tinyint(1) NOT NULL default '1',
 
 
 CREATE TABLE /*prefix*/testcase_platforms (

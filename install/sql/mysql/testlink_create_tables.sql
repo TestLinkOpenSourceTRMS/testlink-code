@@ -331,6 +331,8 @@ CREATE TABLE /*prefix*/platforms (
   name varchar(100) NOT NULL,
   testproject_id int(10) UNSIGNED NOT NULL,
   notes text NOT NULL,
+  enable_on_design tinyint(1) unsigned NOT NULL default '0',
+  enable_on_execution tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY (id),
   UNIQUE KEY /*prefix*/idx_platforms (testproject_id,name)
 ) DEFAULT CHARSET=utf8;

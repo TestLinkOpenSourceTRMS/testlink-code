@@ -17,6 +17,8 @@ ALTER TABLE /*prefix*/users ALTER COLUMN password TYPE VARCHAR(255);
 
 --
 ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active INT2 NOT NULL DEFAULT '1';
+ALTER TABLE /*prefix*/platforms ADD COLUMN enable_on_design INT2 NOT NULL DEFAULT '0';
+ALTER TABLE /*prefix*/platforms ADD COLUMN enable_on_execution INT2 NOT NULL DEFAULT '1';
 
 --
 -- Table structure for table "testcase_platforms"

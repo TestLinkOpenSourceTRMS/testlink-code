@@ -1419,6 +1419,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr,&$is
   $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     
   $gui = new stdClass();
+  $gui->uploadOp = null;
   $gui->headsUpTSuite = false;
   $gui->direct_link = '';  
   $gui->allIssueAttrOnScreen = 0;

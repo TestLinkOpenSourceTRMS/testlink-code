@@ -7,7 +7,7 @@
  * Legacy code (party covered by classes now)
  *
  * @package     TestLink
- * @copyright   2005-2019, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @filesource  exec.inc.php
  * @link        http://www.testlink.org/
  *
@@ -998,7 +998,8 @@ function addAttachmentsToExec($execID,&$docRepo) {
   // May be we have enabled MULTIPLE on file upload
 
   $honeyPot = array('name' => null,'size' => null,
-                    'tmp_name' => null, 'type' => null);
+                    'tmp_name' => null, 'type' => null,
+                    'error' => null);
   foreach($honeyPot as $bee => $nuu) {
    $honeyPot[$bee] = (array)$_FILES['uploadedFile'][$bee][0];
   }

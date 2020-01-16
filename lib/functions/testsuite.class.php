@@ -468,6 +468,10 @@ class testsuite extends tlObjectWithAttachments
     $gui->sqlResult = '';
     $gui->sqlAction = '';
 
+    if (!property_exists($gui, 'uploadOp')) {
+      $gui->uploadOp = null;
+    } 
+
     $p2ow = array('refreshTree' => false, 'user_feedback' => '');
     foreach($p2ow as $prop => $value) {
       if( !property_exists($gui,$prop) ) {
@@ -2070,7 +2074,7 @@ class testsuite extends tlObjectWithAttachments
              WHERE fk_id IN ( {$idSet} ) 
              AND fk_table = 'nodes_hierarchy' 
              AND KW.keyword = {$safeKW}";
-    $rs = $this->db->get_recordset($sql);
+    $rs = (array)$this->db->get_recordset($sql);
 
     return (count($rs) == 1);
   } 

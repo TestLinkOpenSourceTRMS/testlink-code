@@ -256,16 +256,25 @@ class tlPlatform extends tlObjectWithDB
    */
   public function getAll($options = null) {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $default = array('include_linked_count' => false);
+    $default = array('include_linked_count' => false,
+                     'enable_on_design' => false,
+                     'enable_on_execution' => true);
     $options = array_merge($default, (array)$options);
     
     $tproject_filter = " WHERE PLAT.testproject_id = {$this->tproject_id} ";
+
+    $filterEnableOn = "";
+    $enaSet = array('enable_on_design','enable_on_execution');
+    foreach ($enaSet as $ena) {
+      if (is_bool($options[$ena]) || is_int($options[$ena])) {
+        $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
+      }                  
+    }
     
     $sql =  " SELECT {$this->stdFields} 
               FROM {$this->tables['platforms']} PLAT 
-              {$tproject_filter}
+              {$tproject_filter} {$filterEnableOn}
               ORDER BY name";
-    
     $rs = $this->db->get_recordset($sql);
     if (!is_null($rs) && $options['include_linked_count']) {
       // At least on MS SQL Server 2005 you can not do GROUP BY 

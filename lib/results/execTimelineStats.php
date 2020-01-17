@@ -30,9 +30,9 @@ $mailCfg = buildMailCfg($gui);
 $mgr = new tlTestPlanMetrics($db);
 
 $statsBy = array();
-$statsBy['month'] = array('timeline' => 'month');
-$statsBy['day'] = array('timeline' => 'day');
-$statsBy['day_hour'] = array('timeline' => 'day_hour');
+$statsBy['month'] = array('timeline' => 'month', 'workforce' => true);
+$statsBy['day'] = array('timeline' => 'day', 'workforce' => true);
+$statsBy['day_hour'] = array('timeline' => 'day_hour', 'workforce' => true);
 
 $gui->statsBy = $statsBy;
 $gui->group = $group = 'day';
@@ -41,7 +41,7 @@ $stats = $mgr->getExecTimelineStats($args->tplan_id,null,$statsBy[$group]);
 if ($stats != null) {
   $gui->do_report['status_ok'] = 1;
   $gui->do_report['msg'] = '';
-  $gui->statistics->exec = $stats;
+  $gui->statistics->exec = $stats[0];
 
   if( !is_null($gui->statistics->exec) ) {
     switch ($group) {
@@ -60,6 +60,10 @@ if ($stats != null) {
              array(lang_get('qty'),lang_get('yyyy_mm_dd'),lang_get('hh'));
       break;  
     } 
+
+    if ($statsBy[$group]['workforce']) {
+      $gui->columnsDefinition->exec[] = lang_get('testers_qty');
+    }
   }    
 }
 

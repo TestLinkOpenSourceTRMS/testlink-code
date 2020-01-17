@@ -3548,7 +3548,7 @@ class tlTestPlanMetrics extends testplan
     // day_hour -> sum by date & hour
     // month -> sum by month
     //
-    $options = array('timeline' => 'day');
+    $options = array('timeline' => 'day', 'workforce' => false);
     $options = array_merge($options,(array)$opt);
 
     switch ($options['timeline']) {
@@ -3567,11 +3567,12 @@ class tlTestPlanMetrics extends testplan
     }
 
     $safeID = intval($id);
-    $sql = " SELECT COUNT(0) as qty,{$fields}
-             FROM {$this->views['exec_by_date_time']} EBDT
-             WHERE EBDT.testplan_id = {$safeID}
-             GROUP BY {$fields}  
-             ORDER BY {$fields}";
+    $sqlX = " SELECT COUNT(0) as qty,{$fields},tester_id
+              FROM {$this->views['exec_by_date_time']} EBDT
+              WHERE EBDT.testplan_id = {$safeID}
+              GROUP BY {$fields},tester_id";
+    $sqlA = str_ireplace(',tester_id','', $sqlX);
+    $sql = $sqlA . " ORDER BY {$fields}";
 
     switch ($options['timeline']) {
       case 'day_hour':
@@ -3588,7 +3589,33 @@ class tlTestPlanMetrics extends testplan
       break;
     }
 
-    return $rs;
+    $rswf = null;
+    if ($options['workforce']) {
+      $sqlwf = " SELECT COUNT(0) AS testers, {$fields} 
+                 FROM ($sqlX) SQLBASE 
+                 GROUP BY {$fields}";
+
+      switch ($options['timeline']) {
+        case 'day_hour':
+          $rswf = $this->db->fetchMapRowsIntoMap($sqlwf,'yyyy_mm_dd','hh');
+        break;
+
+        case 'month':
+          $rswf = $this->db->fetchRowsIntoMap($sqlwf,'yyyy_mm');
+        break;
+
+        case 'day':
+        default:
+          $rswf = $this->db->fetchRowsIntoMap($sqlwf,'yyyy_mm_dd');
+        break;
+      }
+
+      foreach ($rswf as $rt => $elem) {
+        $rs[$rt]['testers'] = $elem['testers'];
+      }
+    }
+
+    return array($rs,$rswf);
   }
 
   /**

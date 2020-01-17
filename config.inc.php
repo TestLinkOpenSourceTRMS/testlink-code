@@ -1863,6 +1863,8 @@ $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_execution_type = ENABL
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_workflow_status = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->advanced_filter_mode_choice = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_platforms = ENABLED;
+
 
 $tlCfg->tree_filter_cfg->requirements->filter_doc_id = ENABLED;
 $tlCfg->tree_filter_cfg->requirements->filter_title = ENABLED;

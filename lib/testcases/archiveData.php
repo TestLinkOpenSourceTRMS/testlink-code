@@ -370,6 +370,8 @@ function processTestCase(&$dbHandler,$tplEngine,$args,&$gui,$grants,$cfg) {
       $gui->path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
     }
     $platform_mgr = new tlPlatform($dbHandler,$args->tproject_id);
+
+    $opx = array();
     $gui->platforms = $platform_mgr->getAllAsMap();
     $gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
 

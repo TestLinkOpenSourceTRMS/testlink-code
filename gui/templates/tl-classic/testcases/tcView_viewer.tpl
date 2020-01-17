@@ -479,7 +479,12 @@ viewer for test case in test specification
    {$kwRW = $args_frozen_version=="no" && $edit_enabled == 1 &&
             $has_been_executed == 0} 
    
-   {if $args_frozen_version=="no" && $has_been_executed == 1 }
+   {$platRW = 1}
+   {if $args_frozen_version=="yes"}
+     {$platRW = 0}
+   {/if}
+   {if $has_been_executed == 1 }
+      {$platRW = 0}
      {if $args_tcase_cfg->can_edit_executed == 1}
        {$platRW = 1}
      {/if}

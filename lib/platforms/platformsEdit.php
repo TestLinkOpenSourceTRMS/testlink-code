@@ -5,7 +5,7 @@
  *
  * @filesource  platformsEdit.php
  * @package     TestLink
- * @copyright   2009-2019, TestLink community 
+ * @copyright   2009-2020, TestLink community 
  * @link        http://www.teamst.org/index.php
  *
  * allows users to manage platforms. 
@@ -36,13 +36,12 @@ $of->Value = getItemTemplateContents('platform_template', $of->InstanceName, $ar
 
 
 
-$action = $args->doAction;
+$action = $args->action;
 switch ($action) {
   case "do_create":
   case "do_update":
   case "do_delete":
-    if (!$gui->canManage)
-    {
+    if (!$gui->canManage) {
       break;
     }
       
@@ -51,15 +50,23 @@ switch ($action) {
     $op = $action($args,$gui,$platform_mgr);
     $of->Value = $gui->notes;
   break;
+
+  case "disableDesign":
+  case "enableDesign":
+  case "disableExec":
+  case "enableExec":
+    $platform_mgr->$action($args->platform_id);
+    $op = new stdClass();
+    $op->status = 1;
+    $op->template = 'platformsView.tpl';
+  break;
+
 }
 
-if($op->status == 1)
-{
+if ($op->status == 1) {
   $default_template = $op->template;
   $gui->user_feedback['message'] = $op->user_feedback;
-}
-else
-{
+} else {
   $gui->user_feedback['message'] = getErrorMessage($op->status, $args->name);
   $gui->user_feedback['type'] = 'ERROR';
 }
@@ -68,7 +75,6 @@ $gui->notes = $of->CreateHTML();
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $default_template);
-
 
 
 /**
@@ -80,7 +86,7 @@ function initEnv(&$dbHandler) {
   $argsObj = init_args($dbHandler);
   checkPageAccess($dbHandler,$argsObj);  // Will exit if check failed
 
-  $platMgr = new tlPlatform($dbHandler, $argsObj->testproject_id);
+  $platMgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
 
   $guiObj = init_gui($dbHandler,$argsObj,$platMgr);
 
@@ -97,27 +103,23 @@ function init_args( &$dbH ) {
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
-  $source = sizeof($_POST) ? "POST" : "GET";
-  $iParams = array("doAction" => array($source,tlInputParameter::STRING_N,0,50),
-                   "id" => array($source, tlInputParameter::INT_N),
-                   "name" => array($source, tlInputParameter::STRING_N,0,100),
-                   "notes" => array($source, tlInputParameter::STRING_N));
+  $iParams = 
+    array("action" => array(tlInputParameter::STRING_N,0,50),
+          "id" => array(tlInputParameter::INT_N),
+          "platform_id" => array(tlInputParameter::INT_N),
+          "name" => array(tlInputParameter::STRING_N,0,100),
+          "notes" => array(tlInputParameter::STRING_N),
+          'testprojectID' => array(tlInputParameter::INT_N),
+          'tproject_id' => array(tlInputParameter::INT_N),
+          "enable_on_execution" => array(tlInputParameter::CB_BOOL),
+          "enable_on_design" => array(tlInputParameter::CB_BOOL));
     
-  $pParams = I_PARAMS($iParams);
+  R_PARAMS($iParams,$args);
 
-  $args->doAction = $pParams["doAction"];
-  $args->platform_id = $pParams["id"];
-  $args->name = $pParams["name"];
-  $args->notes = $pParams["notes"];
-
-  // why we need this logic ????
-  if ($args->doAction == "edit") {
-    $_SESSION['platform_id'] = $args->platform_id;
-  } else if($args->doAction == "do_update") {
-    $args->platform_id = $_SESSION['platform_id'];
+  if (null == $args->platform_id || $args->platform_id <= 0) {
+    $args->platform_id = $args->id;
   }
 
-  
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy','platforms'));
   
   if( 0 != $args->platform_id ) {
@@ -125,19 +127,20 @@ function init_args( &$dbH ) {
             WHERE id={$args->platform_id}";
     $info = $dbH->get_recordset($sql);
 
-    $args->testproject_id = $info[0]['testproject_id'];    
+    $args->tproject_id = $info[0]['testproject_id'];    
   } else {
-    $inputSource = $_REQUEST;
-    $args->testproject_id = isset($inputSource['testprojectID']) ? intval($inputSource['testprojectID']) : 0;    
+    if ($args->tproject_id == 0) {
+      $args->tproject_id = $args->testprojectID;
+    }
   }
     
-  if( 0 == $args->testproject_id ) {
+  if( 0 == $args->tproject_id ) {
     throw new Exception("Unable to Get Test Project ID, Aborting", 1);
   }
 
   $args->testproject_name = '';
   $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
-          WHERE id={$args->testproject_id}";
+          WHERE id={$args->tproject_id}";
   $info = $dbH->get_recordset($sql);
   if( null != $info ) {
     $args->testproject_name = $info[0]['name'];
@@ -145,7 +148,7 @@ function init_args( &$dbH ) {
 
   $args->currentUser = $_SESSION['currentUser'];
   
-  
+  var_dump($args->action);  
   return $args;
 }
 
@@ -192,10 +195,16 @@ function edit(&$args,&$gui,&$platform_mgr) {
   $platform = $platform_mgr->getById($args->platform_id);
   
   if ($platform) {
+    $args->enable_on_design = $platform['enable_on_design'];
+    $args->enable_on_execution = $platform['enable_on_execution'];
     $args->name = $platform['name'];
     $args->notes = $platform['notes'];
+
+    $gui->enable_on_design = $args->enable_on_design;
+    $gui->enable_on_execution = $args->enable_on_execution;
     $gui->name = $args->name;
     $gui->notes = $args->notes;
+
     $gui->action_descr .= TITLE_SEP . $platform['name'];
   }
   
@@ -253,7 +262,10 @@ function do_update(&$args,&$gui,&$platform_mgr) {
 
   $ret = new stdClass();
   $ret->template = 'platformsView.tpl';
-  $ret->status = $platform_mgr->update($args->platform_id,$args->name,$args->notes);
+  $ret->status = 
+    $platform_mgr->update($args->platform_id,$args->name,$args->notes,
+                          $args->enable_on_design,
+                          $args->enable_on_execution);
   $ret->user_feedback = sprintf(lang_get('platform_updated'), $args->name);
 
   return $ret;
@@ -330,7 +342,8 @@ function init_gui(&$db,&$args,&$platMgr) {
  */
 function checkPageAccess(&$db,&$argsObj) {
   $env['script'] = basename(__FILE__);
-  $env['tproject_id'] = isset($argsObj->testproject_id) ? $argsObj->testproject_id : 0;
+  $env['tproject_id'] = isset($argsObj->tproject_id) ? 
+                        $argsObj->tproject_id : 0;
   $env['tplan_id'] = isset($argsObj->tplan_id) ? $argsObj->tplan_id : 0;
   $argsObj->currentUser->checkGUISecurityClearance($db,$env,array('platform_management'),'and');
 }

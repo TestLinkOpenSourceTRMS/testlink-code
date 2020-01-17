@@ -6,8 +6,8 @@
  * @filesource  tlPlatform.class.php
  * @package     TestLink
  * @author      Erik Eloff
- * @copyright   2006-2019, TestLink community
- * @link        http://www.teamst.org/index.php
+ * @copyright   2006-2020, TestLink community
+ * @link        http://www.testlink.org
  *
  */
 
@@ -18,6 +18,7 @@
 class tlPlatform extends tlObjectWithDB
 {
   protected $tproject_id;
+  protected $stdFields;
 
   const E_NAMENOTALLOWED = -1;
   const E_NAMELENGTH = -2;
@@ -36,6 +37,8 @@ class tlPlatform extends tlObjectWithDB
   public function __construct(&$db, $tproject_id = null) {
     parent::__construct($db);
     $this->tproject_id = $tproject_id;
+    $this->stdFields = "id, name, notes, testproject_id,
+                        enable_on_design,enable_on_execution";
   }
 
   /**
@@ -76,15 +79,34 @@ class tlPlatform extends tlObjectWithDB
   }
 
   /**
-   * Gets all info of a platform
+   * Gets info by ID
    *
-   * @return array with keys id, name and notes
+   * @return array 
    */
-  public function getByID($id) {
-    $sql =  " SELECT id, name, notes,testproject_id " .
-            " FROM {$this->tables['platforms']} " .
-            " WHERE id = " . intval($id);
-    return $this->db->fetchFirstRow($sql);
+  public function getByID($id,$opt=null) {
+    $idSet = implode(',',(array)$id);
+    $options = array('fields' => $this->stdFields,
+                     'accessKey' => null);
+    $options = array_merge($options,(array)$opt);
+    
+    $sql =  " SELECT {$options['fields']}
+              FROM {$this->tables['platforms']} 
+              WHERE id IN ($idSet) ";
+    
+    switch ($options['accessKey']) {
+      case 'id':
+      case 'name':
+        $accessKey = $options['accessKey'];
+      break;
+
+      default:
+        if (count($idSet) == 1) {
+          return $this->db->fetchFirstRow($sql);
+        }
+        $accessKey = 'id';
+      break;
+    }          
+    return $this->db->fetchRowsIntoMap($sql,$accessKey);
   }
 
 
@@ -94,10 +116,12 @@ class tlPlatform extends tlObjectWithDB
   public function getByName($name)
   {
     $val = trim($name);
-    $sql =  " SELECT id, name, notes " .
-            " FROM {$this->tables['platforms']} " .
-            " WHERE name = '" . $this->db->prepare_string($val) . "'" .
+    $sql =  " SELECT {$this->stdFields} 
+              FROM {$this->tables['platforms']} 
+              WHERE name = '" . 
+              $this->db->prepare_string($val) . "'" .
             " AND testproject_id = " . intval($this->tproject_id);
+    
     $ret = $this->db->fetchFirstRow($sql);
     return is_array($ret) ? $ret : null;        
   }
@@ -122,13 +146,16 @@ class tlPlatform extends tlObjectWithDB
    *
    * @return tl::OK on success, otherwise E_DBERROR
    */
-  public function update($id, $name, $notes)
+  public function update($id, $name, $notes, $enable_on_design, $enable_on_execution)
   {
     $safeName = $this->throwIfEmptyName($name);
     $sql = " UPDATE {$this->tables['platforms']} " .
            " SET name = '" . $this->db->prepare_string($name) . "' " .
            ", notes =  '". $this->db->prepare_string($notes) . "' " .
-         " WHERE id = {$id}";
+           ", enable_on_design =  ". ($enable_on_design > 0 ? 1 : 0) .
+           ", enable_on_execution =  ". ($enable_on_execution > 0 ? 1 : 0) .
+           " WHERE id = {$id}";
+
     $result =  $this->db->exec_query($sql);
     return $result ? tl::OK : self::E_DBERROR;
   }
@@ -210,9 +237,9 @@ class tlPlatform extends tlObjectWithDB
    */
   public function getID($name)
   {
-    $sql = " SELECT id FROM {$this->tables['platforms']} " .
-         " WHERE name = '" . $this->db->prepare_string($name) . "'" .
-         " AND testproject_id = {$this->tproject_id} ";
+    $sql = " SELECT id FROM {$this->tables['platforms']} 
+             WHERE name = '" . $this->db->prepare_string($name) . "'" .
+           " AND testproject_id = {$this->tproject_id} ";
     return $this->db->fetchOneValue($sql);
   }
 
@@ -234,13 +261,15 @@ class tlPlatform extends tlObjectWithDB
     
     $tproject_filter = " WHERE PLAT.testproject_id = {$this->tproject_id} ";
     
-    $sql =  " SELECT id, name, notes  FROM {$this->tables['platforms']} PLAT {$tproject_filter} " .
-            " ORDER BY name";
-
+    $sql =  " SELECT {$this->stdFields} 
+              FROM {$this->tables['platforms']} PLAT 
+              {$tproject_filter}
+              ORDER BY name";
+    
     $rs = $this->db->get_recordset($sql);
-    if( !is_null($rs) && $options['include_linked_count'])
-    {
-      // At least on MS SQL Server 2005 you can not do GROUP BY fields of type TEXT
+    if (!is_null($rs) && $options['include_linked_count']) {
+      // At least on MS SQL Server 2005 you can not do GROUP BY 
+      // fields of type TEXT
       // notes is a TEXT field
       // $sql =  " SELECT PLAT.id,PLAT.name,PLAT.notes, " .
       //     " COUNT(TPLAT.testplan_id) AS linked_count " .
@@ -248,18 +277,18 @@ class tlPlatform extends tlObjectWithDB
       //     " LEFT JOIN {$this->tables['testplan_platforms']} TPLAT " .
       //     " ON TPLAT.platform_id = PLAT.id " . $tproject_filter .
       //     " GROUP BY PLAT.id, PLAT.name, PLAT.notes";
-      
-      $sql =  " SELECT PLAT.id, COUNT(TPLAT.testplan_id) AS linked_count " .
-          " FROM {$this->tables['platforms']} PLAT " .
-          " LEFT JOIN {$this->tables['testplan_platforms']} TPLAT " .
-          " ON TPLAT.platform_id = PLAT.id " . $tproject_filter .
-          " GROUP BY PLAT.id ";
+      //
+      $sql =  " SELECT PLAT.id, COUNT(TPLAT.testplan_id) AS linked_count 
+                FROM {$this->tables['platforms']} PLAT
+                LEFT JOIN {$this->tables['testplan_platforms']} TPLAT 
+                ON TPLAT.platform_id = PLAT.id {$tproject_filter}
+                GROUP BY PLAT.id ";
       $figures = $this->db->fetchRowsIntoMap($sql,'id');   
       
       $loop2do = count($rs);
-      for($idx=0; $idx < $loop2do; $idx++)
-      {
-        $rs[$idx]['linked_count'] = $figures[$rs[$idx]['id']]['linked_count'];        
+      for ($idx=0; $idx < $loop2do; $idx++) {
+        $rs[$idx]['linked_count'] = 
+          $figures[$rs[$idx]['id']]['linked_count'];        
       }          
     }
     
@@ -272,18 +301,39 @@ class tlPlatform extends tlObjectWithDB
    * @return array Returns 
    *               as array($platform_id => $platform_name)
    */
-  public function getAllAsMap($accessKey='id',$output='columns',$orderBy=' ORDER BY name ')
+  public function getAllAsMap($opt=null)
   {
-    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql =  "/* $debugMsg */  SELECT id, name " .
-        " FROM {$this->tables['platforms']} " .
-        " WHERE testproject_id = {$this->tproject_id} {$orderBy}";
-    if( $output == 'columns' )
-    {
-      $rs = $this->db->fetchColumnsIntoMap($sql, $accessKey, 'name');
+
+    $options = array('accessKey' => 'id',
+                     'output' => 'columns',
+                     'orderBy' => ' ORDER BY name ',
+                     'enable_on_design' => true,
+                     'enable_on_execution' => true);
+
+    $options = array_merge($options,(array)$opt);
+    $accessKey = $options['accessKey'];
+    $output = $options['output'];
+    $orderBy = $options['orderBy'];
+
+    $filterEnableOn = "";
+    $enaSet = array('enable_on_design','enable_on_execution');
+    foreach ($enaSet as $ena) {
+      if (is_bool($options[$ena]) || is_int($options[$ena])) {
+        $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
+      }                  
     }
-    else
-    {
+
+    
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $sql =  "/* $debugMsg */  
+             SELECT {$this->stdFields}
+             FROM {$this->tables['platforms']} 
+             WHERE testproject_id = {$this->tproject_id} 
+             {$filterEnableOn}
+             {$orderBy}";
+    if( $output == 'columns' ) {
+      $rs = $this->db->fetchColumnsIntoMap($sql, $accessKey, 'name');
+    } else {
       $rs = $this->db->fetchRowsIntoMap($sql, $accessKey);
     }  
     return $rs;
@@ -323,14 +373,17 @@ class tlPlatform extends tlObjectWithDB
     
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $rs = null;
-    $sql = "/* $debugMsg */ SELECT P.id, P.name, P.notes " .
-           " FROM {$this->tables['platforms']} P " .
-           " JOIN {$this->tables['testplan_platforms']} TP " .
-           " ON P.id = TP.platform_id " .
-           " WHERE  TP.testplan_id = {$testplanID} {$my['options']['orderBy']}";
+    $sql = "/* $debugMsg */ 
+            SELECT P.id, P.name, P.notes,
+                   P.enable_on_design,
+                   P.enable_on_execution
+            FROM {$this->tables['platforms']} P 
+            JOIN {$this->tables['testplan_platforms']} TP 
+            ON P.id = TP.platform_id 
+            WHERE  TP.testplan_id = {$testplanID} 
+                   {$my['options']['orderBy']}";
     
-    switch($my['options']['outputFormat'])
-    {
+    switch ($my['options']['outputFormat']) {
       case 'array':
         $rs = $this->db->get_recordset($sql);
       break;
@@ -352,14 +405,33 @@ class tlPlatform extends tlObjectWithDB
    * @return array Returns all platforms associated to a given testplan
    *               on the form $platform_id => $platform_name
    */
-  public function getLinkedToTestplanAsMap($testplanID,$orderBy=' ORDER BY name ')
+  public function getLinkedToTestplanAsMap($testplanID,$opt)
   {
+
+    $options = array('orderBy' => ' ORDER BY name ',
+                     'enable_on_design' => false,
+                     'enable_on_execution' => true);
+
+    $options = array_merge($options,(array)$opt);
+
+    $orderBy = $options['orderBy'];
+
+    $filterEnableOn = "";
+    $enaSet = array('enable_on_design','enable_on_execution');
+    foreach ($enaSet as $ena) {
+      if (is_bool($options[$ena]) || is_int($options[$ena])) {
+        $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
+      }                  
+    }
+
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql =  "/* $debugMsg */ SELECT P.id, P.name " .
             " FROM {$this->tables['platforms']} P " .
             " JOIN {$this->tables['testplan_platforms']} TP " .
             " ON P.id = TP.platform_id " .
-            " WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
+            " WHERE  TP.testplan_id = {$testplanID} 
+              {$filterEnableOn} {$orderBy}";
+
     return $this->db->fetchColumnsIntoMap($sql, 'id', 'name');
   }
 
@@ -468,6 +540,51 @@ class tlPlatform extends tlObjectWithDB
     }
 
     return $gaga;
+  }
+
+  /**
+   *
+   */
+  function enableDesign($id) 
+  {
+    $sql = "UPDATE {$this->tables['platforms']} 
+            SET enable_on_design = 1
+            WHERE id = $id";
+    $this->db->exec_query($sql);
+  }
+
+  /**
+   *
+   */
+  function disableDesign($id) 
+  {
+    $sql = "UPDATE {$this->tables['platforms']}
+            SET enable_on_design = 0
+            WHERE id = $id";
+    $this->db->exec_query($sql);
+  }
+
+
+  /**
+   *
+   */
+  function enableExec($id) 
+  {
+    $sql = "UPDATE {$this->tables['platforms']}
+            SET enable_on_execution = 1
+            WHERE id = $id";
+    $this->db->exec_query($sql);
+  }
+
+  /**
+   *
+   */
+  function disableExec($id) 
+  {
+    $sql = "UPDATE {$this->tables['platforms']}
+            SET enable_on_execution = 0
+            WHERE id = $id";
+    $this->db->exec_query($sql);
   }
 
 }

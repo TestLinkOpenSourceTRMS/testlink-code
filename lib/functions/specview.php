@@ -6,7 +6,7 @@
  * @filesource  specview.php
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2004-2019, TestLink community 
+ * @copyright   2004-2020, TestLink community 
  * @link        http://www.testlink.org
  *
  *
@@ -133,15 +133,16 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 
   $my = array();
-  $my['options'] = array('write_button_only_if_linked' => 0,'prune_unlinked_tcversions' => 0,
+  $my['options'] = array('write_button_only_if_linked' => 0,
+                         'prune_unlinked_tcversions' => 0,
                          'add_custom_fields' => 0) + (array)$options;
 
-  $my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 
-                         'importance' => null, 'cfields' => null);
-  foreach( $my as $key => $settings)
-  {
-    if( !is_null($$key) && is_array($$key) )
-    {
+  $my['filters'] = array('keywords' => 0, 'testcases' => null ,
+                         'exec_type' => null, 
+                         'importance' => null, 'cfields' => null,
+                         'platforms' => null);
+  foreach( $my as $key => $settings) {
+    if( !is_null($$key) && is_array($$key) ) {
       $my[$key] = array_merge($my[$key],$$key);
     }
   }              
@@ -150,8 +151,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
   $is_uncovered_view_type = ($spec_view_type == 'uncoveredtestcases') ? 1 : 0;
   
-  if( !$is_tplan_view_type && is_null($tproject_id) )
-  {
+  if (!$is_tplan_view_type && is_null($tproject_id)) {
     $tproject_id = $tobj_id;
   }
   
@@ -163,13 +163,13 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
   $hash_id_descr = array_flip($hash_descr_id);
 
   $key2map = array('keyword_id' => 'keywords', 'tcase_id' => 'testcases', 
-                   'execution_type' => 'exec_type', 'importance' => 'importance',
+                   'execution_type' => 'exec_type', 
+                   'importance' => 'importance',
                    'cfields' => 'cfields','tcase_name' => 'tcase_name',
                    'status' => 'workflow_status');
 
   $pfFilters = array('tcase_node_type_id' => $hash_descr_id['testcase']);
-  foreach($key2map as $tk => $fk)
-  {
+  foreach($key2map as $tk => $fk) {
     $pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
   }
   
@@ -701,7 +701,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     'tcase_name' => false, 'cfields' => false, 'status' => false);
 
   $zeroNullCheckFilter = array('execution_type' => false);
-  $useFilter = array('keyword_id' => false) + $nullCheckFilter + $zeroNullCheckFilter;
+  $useFilter = array('keyword_id' => false, 'platforms' => false) 
+               + $nullCheckFilter + $zeroNullCheckFilter;
 
   $applyFilters = false;
 
@@ -752,6 +753,24 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
     }
   }  
 
+  $tcpl_map = null;
+  if(($useFilter['platforms']=$filters['platforms'][0] > 0)) {
+    $applyFilters = true;
+    switch ($specViewType) {
+      case 'testplan':
+        $tobj_mgr = new testplan($dbHandler); 
+        $tcpl_map = $tobj_mgr->getPlatformsLinkedTCVersions($masterContainerId,
+                                $filters['platforms']);
+      break;
+
+      default:
+        $tcpl_map = $tobj_mgr->getPlatformsLatestTCV($masterContainerId,
+                                $filters['platforms']);
+      break;
+    }
+  }  
+
+
 
   if( $applyFilters ) {
     $key2loop = array_keys($test_spec);
@@ -767,11 +786,17 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 
     foreach($itemKeys as $key => $tspecKey) {
       // case insensitive search 
-      if( ($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) ||
-          ($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) ||
-          ($useFilter['tcase_name'] && (stripos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))       
-        ) 
-      {
+      if( ($useFilter['keyword_id'] 
+           && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) 
+
+          || ($useFilter['platforms'] 
+              && !isset($tcpl_map[$test_spec[$tspecKey]['id']]) ) 
+        
+          || ($useFilter['tcase_id'] 
+              && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) 
+          || ($useFilter['tcase_name'] 
+              && (stripos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))       
+        ) {
         $test_spec[$tspecKey]=null; 
         unset($itemSet[$key]);
       }

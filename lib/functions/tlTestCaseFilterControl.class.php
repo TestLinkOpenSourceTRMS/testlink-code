@@ -923,8 +923,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
       break;
       
       case 'edit_mode':
-        if ($gui->tree_drag_and_drop_enabled[$this->args->feature]) 
-        {
+        if ($gui->tree_drag_and_drop_enabled[$this->args->feature]) {
           $drag_and_drop->enabled = true;
           $drag_and_drop->BackEndUrl = $this->args->basehref . 
                                        'lib/ajax/dragdroptprojectnodes.php';
@@ -935,8 +934,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // -> store state for each feature and each project
         $cookie_prefix = $this->args->feature . "_tproject_id_" . $this->args->testproject_id ."_";
         
-        if ($this->do_filtering) 
-        {
+        if ($this->do_filtering) {
           // TICKET 4353: added active/inactive filter
           $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
           $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
@@ -958,9 +956,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
                            'ignore_inactive_testcases' => $ignore_inactive_testcases,
                            'ignore_active_testcases' => $ignore_active_testcases);
 
-          $forrest = generateTestSpecTree($this->db, $this->args->testproject_id,
-                                          $this->args->testproject_name,
-                                          $gui->menuUrl, $filters, $options);
+          $forrest = generateTestSpecTree($this->db, 
+                       $this->args->testproject_id,
+                       $this->args->testproject_name,
+                       $gui->menuUrl, $filters, $options);
           
 
           $this->set_testcases_to_show($forrest['leaves']);
@@ -996,7 +995,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
         // values in $filters->setting_xyz
         $cookie_prefix = "add_remove_tc_tplan_id_{$filters['setting_testplan']}_";
 
-		// get filter mode
+		    // get filter mode
         $key = 'setting_testsgroupby';
         $mode = $this->args->$key;
 
@@ -1026,13 +1025,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
       
 
           if ($mode == 'mode_test_suite') {
-         	 $tree_menu = generateTestSpecTree($this->db,
-                                            $this->args->testproject_id,
-                                            $this->args->testproject_name,
-                                            $gui->menuUrl,$filters,$options);
+         	  $tree_menu = generateTestSpecTree($this->db,
+                           $this->args->testproject_id,
+                           $this->args->testproject_name,
+                           $gui->menuUrl,$filters,$options);
           }
 
-		  $tree_menu = $tree_menu['menu']; 
+		      $tree_menu = $tree_menu['menu']; 
           $root_node = $tree_menu->rootnode;
           $children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
         } 
@@ -1275,6 +1274,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
    * 
    * Possibility to filter by Platform:
    * according mode we need to add [Any] option
+   * it's really a filter?
    *
    */
   private function init_setting_platform() {
@@ -1286,7 +1286,17 @@ class tlTestCaseFilterControl extends tlFilterControl {
     $session_key = $testplan_id . '_stored_setting_platform';
     $session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
     $key = 'setting_platform';
+
+    $optx = null;
+    switch ($this->mode) {
+      case 'edit_mode':
+      case 'plan_add_mode':
+      break;
+    }
+    
     $platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
+
+    var_dump($platformSet);
 
     if( is_null($platformSet) ) {
       // Brute force bye, bye !! >>--->
@@ -2133,10 +2143,22 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
 
     $this->platform_mgr->setTestProjectID($this->args->testproject_id);
-    $platformSet = $this->platform_mgr->getAllAsMap();
 
+
+    $opx = null;
+    switch ($this->mode) {
+      case 'edit_mode':
+      case 'plan_add_mode':
+        $opxy = array('enable_on_design' => true,
+                      'enable_on_execution' => false);
+      break;
+
+    }
+
+    $platformSet = $this->platform_mgr->getAllAsMap($opxy);
     $this->filters[$key] = array('items' => $platformSet,
                                  'selected' => $selection);
+
     // set the active value to filter
     // delete keyword filter if "any" (0) is part of the selection - regardless of filter mode
     if (is_array($this->filters[$key]['selected']) && in_array(0, $this->filters[$key]['selected'])) {

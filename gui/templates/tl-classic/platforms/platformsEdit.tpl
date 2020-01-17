@@ -12,7 +12,7 @@ Purpose: smarty template - Edit a platform
 
 {lang_get var="labels"
           s="warning,warning_empty_platform,show_event_history,
-             th_platform,th_notes,btn_cancel"}
+             th_platform,th_notes,btn_cancel,on_design,on_exec"}
 
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -53,6 +53,21 @@ Purpose: smarty template - Edit a platform
   			<th>{$labels.th_notes}</th>
   			<td>{$gui->notes}</td>
   		</tr>
+      <tr><th style="background:none;">{$labels.on_design}</th>
+          <td><input type="checkbox"  
+                name="enable_on_design" id="enable_on_design"  
+                {if $gui->enable_on_design eq 1} checked {/if} />
+          </td>
+      </tr>
+
+      <tr><th style="background:none;">{$labels.on_exec}</th>
+          <td><input type="checkbox"  
+                name="enable_on_execution" id="enable_on_execution"  
+                {if $gui->enable_on_execution eq 1} checked {/if} />
+          </td>
+      </tr>
+
+
   	</table>
   	<div class="groupBtn">	
 	  	<input type="hidden" id="doAction" name="doAction" value="" />

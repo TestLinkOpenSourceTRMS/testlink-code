@@ -1607,42 +1607,38 @@ class testcase extends tlObjectWithAttachments {
              " AND    NHB.id = TTC.testplan_id " .
              " AND    NH.parent_id = {$id}";
 
-            if(!is_null($tplan_id))
-            {
-                $sql .= " AND TTC.testplan_id = {$tplan_id} ";
+            if (!is_null($tplan_id)) {
+              $sql .= " AND TTC.testplan_id = {$tplan_id} ";
             }
 
-            if(!is_null($platform_id))
-            {
-                $sql .= " AND TTC.platform_id = {$platform_id} ";
+            if (!is_null($platform_id)) {
+              $sql .= " AND TTC.platform_id = {$platform_id} ";
             }
 
             $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
 
-        if( !is_null($recordset) )
-        {
+        if (!is_null($recordset)) {
           // changes third access key from sequential index to platform_id
-          foreach ($recordset as $accessKey => $testplan)
-          {
-            foreach ($testplan as $tplanKey => $testcases)
-            {
+          foreach ($recordset as $accessKey => $testplan) {
+            foreach ($testplan as $tplanKey => $testcases) {
               // Use a temporary array to avoid key collisions
               $newArray = array();
-              foreach ($testcases as $elemKey => $element)
-              {
+              foreach ($testcases as $elemKey => $element) {
                 $platform_id = $element['platform_id'];
                 $newArray[$platform_id] = $element;
               }
               $recordset[$accessKey][$tplanKey] = $newArray;
-              }
+            }
           }
         }
       break;
 
       case "EXECUTED":
       case "NOT_EXECUTED":
-        $getFilters = array('exec_status' => $exec_status,'active_status' => $active_status,
-                            'tplan_id' => $tplan_id, 'platform_id' => $platform_id);
+        $getFilters = array('exec_status' => $exec_status,
+                            'active_status' => $active_status,
+                            'tplan_id' => $tplan_id, 
+                            'platform_id' => $platform_id);
         $recordset=$this->get_exec_status($id,$getFilters);
       break;
     }
@@ -7038,7 +7034,10 @@ class testcase extends tlObjectWithAttachments {
 
 
     $platformMgr = new tlPlatform($this->db,$goo->tproject_id);
-    $goo->platforms = $platformMgr->getAllAsMap();
+
+    $opx = array('enable_on_design' => true,
+                 'enable_on_execution' => false);
+    $goo->platforms = $platformMgr->getAllAsMap($opx);
 
     $goo->tcasePrefix = $this->tproject_mgr->getTestCasePrefix($goo->tproject_id) . $this->cfg->testcase->glue_character;
 
@@ -9296,6 +9295,8 @@ class testcase extends tlObjectWithAttachments {
     $sql = " SELECT PL.id AS platform_id, PL.name AS platform
              FROM {$this->tables['platforms']} PL
              WHERE PL.testproject_id = {$tproject_id}
+             AND PL.enable_on_design = 1
+             AND PL.enable_on_execution = 0
              AND PL.id NOT IN 
              (
                SELECT TCPL.platform_id 

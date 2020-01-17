@@ -4034,4 +4034,8 @@ $TLS_saveForBaseline = 'Save to create baseline';
 $TLS_baseline_saved_ok = 'Baseline saved';
 $TLS_baseline_l1l2 = 'Baselines Level 1 & Level 2 Test Suites';
 $TLS_baselineTimestamp = 'Baseline taken on:';
+$TLS_on_design = 'On Design';
+$TLS_on_exec = 'On Execution';
+$TLS_note_platform_filter = 'Test Cases are filtered by following platforms';
+
 // ----- END ------------------------------------------------------------------

@@ -19,21 +19,23 @@ Purpose: smarty template - View all platforms
           s='th_notes,th_platform,th_delete,btn_import,btn_export,
              menu_manage_platforms,alt_delete_platform,warning_delete_platform,
              warning_cannot_delete_platform,delete,
-             menu_assign_kw_to_tc,btn_create'}
+             menu_assign_kw_to_tc,btn_create,
+             on_design,on_exec'}
 
 {lang_get s='warning_delete_platform' var="warning_msg" }
 {lang_get s='warning_cannot_delete_platform' var="warning_msg_cannot_del" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{$viewAction="lib/platforms/platformsView.php?tproject_id=$gui->tproject_id"}
-{$tpid=$gui->tproject_id}
+{$tprjid=$gui->tproject_id}
+{$managerURL="lib/platforms/platformsEdit.php?tproject_id=$tprjid"}
+{$viewAction="lib/platforms/platformsView.php?tproject_id=$tprjid"}
 {$dummy="lib/platforms/platformsImport.php?testprojectID="}
-{$importAction="$basehref$dummy$tpid"}
+{$importAction="$basehref$dummy$tprjid"}
 
 <script type="text/javascript">
 <!--
-	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-	var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+var del_action=fRoot+'{$managerURL}'+'&action=do_delete&id=';
 //-->
 </script>
  
@@ -44,11 +46,18 @@ Purpose: smarty template - View all platforms
 {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 <div class="page-content">
 {if $gui->platforms != ''}
+  <form method="post" id="platformsView" 
+        name="platformsView" action="{$managerURL}">
+    <input type="hidden" name="action" id="action" value="">
+    <input type="hidden" name="platform_id" id="platform_id" value="">
+    <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
 	<table class="table table-bordered sortable">
 		<thead class="thead-dark">
     		<tr>
     			<th width="30%">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_platform}</th>
     			<th>{$tlImages.sort_hint}{$labels.th_notes}</th>
+                <th>{$labels.on_design}</th>
+                <th>{$labels.on_exec}</th>
     			{if $gui->canManage != ""}
     				<th class="{$noSortableColumnClass}" width="10%">{$labels.th_delete}</th>
     			{/if}
@@ -56,30 +65,63 @@ Purpose: smarty template - View all platforms
 		</thead>
 {* 		<tbody> *}
 			{section name=platform loop=$gui->platforms}
+                {$oplat=$gui->platforms[platform]}
         		<tr>
         			<td>
-        				<span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$gui->platforms[platform].id}</span>
+        				<span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$oplat.id}</span>
         				{if $gui->canManage != ""}
-        					<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}">
+        					<a href="{$managerURL}&action=edit&id={$oplat.id}">
         				{/if}
-        				{$gui->platforms[platform].name|escape}
+        				{$oplat.name|escape}
         				{if $gui->canManage != ""}
         					</a>
         				{/if}
         			</td>
-    				{* when using rich webeditor strip_tags is needed - franciscom *}
-    			 	<td>{if $gui->editorType == 'none'}{$gui->platforms[platform].notes|nl2br}{else}{$gui->platforms[platform].notes|strip_tags|strip|truncate:#PLATFORM_NOTES_TRUNCATE_LEN#}{/if}</td>
+    				{* when using rich webeditor strip_tags is needed *}
+    			 	<td>{if $gui->editorType == 'none'}{$oplat.notes|nl2br}{else}{$oplat.notes|strip_tags|strip|truncate:#PLATFORM_NOTES_TRUNCATE_LEN#}{/if}</td>
+                    <td class="clickable_icon">
+                        {if $oplat.enable_on_design==1} 
+                            <input type="image" style="border:none"
+                                   id="disableDesign_{$oplat.id}"
+                                   name="disableDesign"
+                                   title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
+                                   onClick = "platform_id.value={$oplat.id};action.value='enableDesign';"
+                                   src="{$tlImages.on}"/>
+                          {else}
+                            <input type="image" style="border:none"
+                                 id="enableDesign_{$oplat.id}"
+                                 name="enableDesign"
+                                 title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
+                                 onClick = "action.value='enableDesign';platform_id.value={$oplat.id};"
+                                 src="{$tlImages.off}"/>
+                          {/if}
+                    </td>
+                    <td class="clickable_icon">
+                        {if $oplat.enable_on_execution==1} 
+                            <input type="image" style="border:none"
+                                   id="disableExec_{$oplat.id}"
+                                   title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
+                                   onClick = "action.value='disableExec';platform_id.value={$oplat.id};"
+                                   src="{$tlImages.on}"/>
+                          {else}
+                            <input type="image" style="border:none" 
+                                 id="enableExec_{$oplat.id}"
+                                 title="{$labels.inactive_click_to_change}" alt="{$labels.inactive_click_to_change}" 
+                                 onClick = "action.value='enableExec';platform_id.value={$oplat.id};"
+                                 src="{$tlImages.off}"/>
+                          {/if}
+                    </td>
     				{if $gui->canManage != ""}
     					<td class="clickable_icon">
-            				{if $gui->platforms[platform].linked_count eq 0}
+            				{if $oplat.linked_count eq 0}
             				<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"
             						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete}"
-            						onclick="delete_confirmation({$gui->platforms[platform].id},
-            							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" />
+            						onclick="delete_confirmation({$oplat.id},
+            							      '{$oplat.name|escape:'javascript'|escape}', '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" />
     						{else}
         					<img style="border:none;cursor: pointer;" 	alt="{$labels.alt_delete_platform}"
         						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete_disabled}"
-        						onclick="alert_message_html('{$del_msgbox_title|escape:'javascript'}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name|escape:'javascript'}');" />
+        						onclick="alert_message_html('{$del_msgbox_title|escape:'javascript'}','{$warning_msg_cannot_del|replace:'%s':$oplat.name|escape:'javascript'}');" />
     						{/if}
     					</td>
     				{/if}
@@ -91,5 +133,6 @@ Purpose: smarty template - View all platforms
 
 {include file="platforms/{$tplBN}Controls.inc.tpl" suffix="Bottom"} 
 </div>
+</form>
 </body>
 </html>

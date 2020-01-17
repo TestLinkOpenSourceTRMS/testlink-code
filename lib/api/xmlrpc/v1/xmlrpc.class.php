@@ -6084,7 +6084,11 @@ class TestlinkXMLRPCServer extends IXR_Server {
             }
             // lazy way
             $name = trim( $this->args[self::$platformNameParamName] );
-            $itemSet = $this->platformMgr->getAllAsMap( 'name', 'allinfo' );
+
+            $opx = array('accessKey' => 'name',
+                         'output' => 'allinfo');
+
+            $itemSet = $this->platformMgr->getAllAsMap($opx);
             if(isset( $itemSet[$name] )) {
                 $status_ok = false;
                 $msg = $msg_prefix . sprintf( PLATFORMNAME_ALREADY_EXISTS_STR, $name, $itemSet[$name]['id'] );

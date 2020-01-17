@@ -7,12 +7,10 @@
  * 
  * @package     TestLink
  * @author      eloff
- * @copyright   2005-2014, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @filesource  platformsAssign.php
  * @link        http://www.testlink.org
  *
- * @internal revisions
- * @since 1.9.11
  *
  **/
 require_once("../../config.inc.php");
@@ -26,8 +24,7 @@ $opt_cfg = opt_transf_empty_cfg();
 $opt_cfg->js_ot_name = 'ot';
 $args = init_args($opt_cfg);
 
-if ($args->edit == 'testproject')
-{
+if ($args->edit == 'testproject') {
   show_instructions('platformAssign');
   exit();
 }
@@ -106,11 +103,13 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
 {
-  $opt_cfg->from->map = $platform_mgr->getAllAsMap();
-  $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+  $opx = array('enable_on_design' => false, 'enable_on_execution' => true);
+  $opt_cfg->from->map = $platform_mgr->getAllAsMap($opx);
+
+  $optLTT = null;
+  $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id,$optLTT);
   $platform_count_js = "platform_count_map = new Array();\n";
-  if(!is_null($map))
-  {     
+  if (!is_null($map)) {     
     foreach ($map as $platform_id => &$platform_name) 
     {
       $count = $tplan_mgr->count_testcases($args->tplan_id,$platform_id);

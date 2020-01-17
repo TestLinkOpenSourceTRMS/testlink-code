@@ -5,7 +5,7 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2018, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @filesource  tc_exec_assignment.php
  * @link        http://www.testlink.org
  *
@@ -345,7 +345,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
   
   $tcase_cfg = config_get('testcase_cfg');
   $gui = new stdClass();
-  $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+
+  $optLTT = null;
+  $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id,$optLTT);
+  
   $gui->usePlatforms = $platform_mgr->platformsActiveForTestplan($argsObj->tplan_id);
   $gui->bulk_platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
   $gui->bulk_platforms[0] = lang_get("all_platforms");
@@ -431,8 +434,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 
   // Do we really have platforms?
   $pset = array_flip(array_keys($features));
-  if( $hasPlat = !isset($pset[0]) )
-  {
+  if ($hasPlat = !isset($pset[0])) {
     $platMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     $platSet = $platMgr->getAllAsMap();
   }  

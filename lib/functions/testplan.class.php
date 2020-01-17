@@ -646,7 +646,9 @@ class testplan extends tlObjectWithAttachments
     // Get human readeable info for audit
     $title_separator = config_get('gui_title_separator_1');
     $auditInfo=$this->tcversionInfoForAudit($id,$items_to_link['tcversion']);
-    $platformInfo = $this->platform_mgr->getLinkedToTestplanAsMap($id);
+
+    $optLTT = null;
+    $platformInfo = $this->platform_mgr->getLinkedToTestplanAsMap($id,$optLTT);
     $platformLabel = lang_get('platform');
     
     // Important: MySQL do not support default values on datetime columns that are functions
@@ -1397,6 +1399,41 @@ class testplan extends tlObjectWithAttachments
     return $keywords;
   } // end function
 
+  /**
+   * args :
+   *     [$platform_id]: can be an array
+   */
+  function getPlatformsLinkedTCVersions($id,$platform_id=0) {
+
+    $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $platforms = null;
+    $safeID = intval($id);
+
+    $platFilter= '' ;
+    if (is_array($platform_id) ) {
+      $platFilter = " AND platform_id IN (" . implode(',',$platform_id) . ")"; 
+    }
+    else if( $platform_id > 0 ) {
+      $platFilter = " AND $platform_id = {$platform_id} ";
+    }
+
+    $sql = " /* $debugMsg */ ";
+    $sql .= " SELECT TCPL.testcase_id,TCPL.platform_id,PL.name 
+              FROM {$this->tables['platforms']} PL
+              JOIN {$this->tables['testcase_platforms']} TCPL
+              ON PL.id = TCPL.platform_id
+              JOIN {$this->tables['testplan_tcversions']} TPTCV
+              ON TCPL.tcversion_id = TPTCV.tcversion_id
+              WHERE TPTCV.testplan_id = " . intval($id) . 
+            " {$platFilter} ORDER BY name ASC ";
+
+    // CUMULATIVE is needed to get all platforms assigned 
+    // to each testcase linked to testplan         
+    $platforms = 
+        $this->db->fetchRowsIntoMap($sql,'testcase_id',database::CUMULATIVE);
+
+    return $platforms;
+  } // end function
 
 
   /*

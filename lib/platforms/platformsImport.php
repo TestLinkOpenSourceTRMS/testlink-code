@@ -24,11 +24,10 @@ $templateCfg = templateConfiguration();
 $args = init_args($db);
 $gui = initializeGui($args);
 
-
 $resultMap = null;
 switch($args->doAction) {
   case 'doImport':
-    $gui->file_check = doImport($db,$args->testproject_id);
+    $gui->file_check = doImport($db,$args->tproject_id);
   break;  
     
   default:
@@ -46,22 +45,20 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args(&$dbH) {
 	$args = new stdClass();
-	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50));
+	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
+                   "tproject_id" => array(tlInputParameter::INT));
 		
 	R_PARAMS($iParams,$args);
 	$args->userID = $_SESSION['userID'];
 
-  $inputSource = $_REQUEST;
-  $args->testproject_id = isset($inputSource['testprojectID']) ? intval($inputSource['testprojectID']) : 0;
-
-  if( 0 == $args->testproject_id ) {
+  if( 0 == $args->tproject_id ) {
     throw new Exception("Unable to Get Test Project ID, Aborting", 1);
   }
 
   $args->testproject_name = '';
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
   $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
-          WHERE id={$args->testproject_id}";
+          WHERE id={$args->tproject_id}";
   $info = $dbH->get_recordset($sql);
   if( null != $info ) {
     $args->testproject_name = $info[0]['name'];
@@ -76,7 +73,7 @@ function init_args(&$dbH) {
 function initializeGui(&$argsObj) {
   $guiObj = new stdClass();
 
-  $guiObj->tproject_id = $argsObj->testproject_id;
+  $guiObj->tproject_id = $argsObj->tproject_id;
 
   $guiObj->goback_url = 
     $_SESSION['basehref'] . 'lib/platforms/platformsView.php?tproject_id=' .

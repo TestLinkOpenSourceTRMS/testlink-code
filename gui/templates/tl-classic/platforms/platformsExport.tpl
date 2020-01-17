@@ -36,7 +36,6 @@ function validateForm(f) {
   <form method="post" id="export_xml" enctype="multipart/form-data" 
         action="lib/platforms/platformsExport.php"
         onsubmit="javascript:return validateForm(this);">
-  
     <table>
 	    <tr>
 	    	<td>{$labels.export_filename}</td>
@@ -58,7 +57,9 @@ function validateForm(f) {
   	</table>
   	
   	<div class="groupBtn">
-      <input type="hidden" name="testprojectID" id="doAction" 
+      <input type="hidden" 
+             name="testprojectID" 
+             id="testprojectID" 
              value="{$gui->tproject_id}" />
   	  
       <input type="hidden" name="doAction" id="doAction" value="" />

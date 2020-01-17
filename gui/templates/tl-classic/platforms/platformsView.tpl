@@ -29,7 +29,7 @@ Purpose: smarty template - View all platforms
 {$tprjid=$gui->tproject_id}
 {$managerURL="lib/platforms/platformsEdit.php?tproject_id=$tprjid"}
 {$viewAction="lib/platforms/platformsView.php?tproject_id=$tprjid"}
-{$dummy="lib/platforms/platformsImport.php?testprojectID="}
+{$dummy="lib/platforms/platformsImport.php?tproject_id="}
 {$importAction="$basehref$dummy$tprjid"}
 
 <script type="text/javascript">

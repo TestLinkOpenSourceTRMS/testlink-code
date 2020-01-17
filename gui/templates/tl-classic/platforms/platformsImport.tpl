@@ -3,15 +3,13 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 @filesource platformsImport.tpl
 Purpose: smarty template - manage import of platforms
 
-@internal revisions
-@since 1.9.11
-
 *}
 
 {lang_get var="labels"
           s='file_type,view_file_format_doc,local_file,warning,
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
-             btn_goback,not_imported,warning_empty_filename,imported,btn_cancel'}
+             btn_goback,not_imported,warning_empty_filename,
+             imported,btn_cancel'}
 
 {$cfg_section=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -84,6 +82,7 @@ function validateForm(f)
       </table>
       <p>{$gui->max_size_import_file_msg}</p>
       <div class="groupBtn">
+        <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}" />
         <input type="hidden" name="doAction" id="doAction" value="doImport" />
         <input type="hidden" name="goback_url" value="{ $gui->goback_url|escape}" />
         <input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />

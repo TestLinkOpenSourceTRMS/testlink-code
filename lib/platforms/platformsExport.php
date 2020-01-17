@@ -7,9 +7,9 @@
  *
  * @package   TestLink
  * @author    Francisco Mancardi (francisco.mancardi@gmail.com)
- * @copyright   2005-2013, TestLink community 
+ * @copyright   2005-2020, TestLink community 
  * @filesource  platformsExport.php
- * @link    http://www.teamst.org/index.php
+ * @link    http://www.testlink.org
  * @uses    config.inc.php
  *
  */
@@ -21,7 +21,6 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args( $db );
 $gui = initializeGui($args);
-
 
 switch($args->doAction) {
   case 'doExport':
@@ -64,9 +63,6 @@ function init_args( &$dbH ) {
     $args->testproject_name = $info[0]['name'];
   }
 
-
-
-  
   if(is_null($args->export_filename)) {
     $args->export_filename = $args->testproject_name . "-platforms.xml";
   } 
@@ -101,15 +97,18 @@ function initializeGui(&$argsObj) {
   returns: -
 
 */
-function doExport(&$db,$filename,$testproject_id)
+function doExport(&$db,$filename,$tproject_id)
 {
   $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   $tables = tlObjectWithDB::getDBTables(array('platforms'));
   $adodbXML = new ADODB_XML("1.0", "UTF-8");
-    
-  $sql = "/* $debugMsg */ SELECT name,notes " .
-         " FROM {$tables['platforms']} PLAT " .
-         " WHERE PLAT.testproject_id=" . intval($testproject_id);
+
+  $platMgr = new tlPlatform($db,$tproject_id);    
+  $sql = "/* $debugMsg */ 
+          SELECT name,notes,enable_on_design,
+          enable_on_execution 
+          FROM {$tables['platforms']} PLAT 
+          WHERE PLAT.testproject_id=" . intval($tproject_id);
   
   $adodbXML->setRootTagName('platforms');
   $adodbXML->setRowTagName('platform');

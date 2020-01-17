@@ -105,7 +105,6 @@ function open_popup(page) {
                 "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no," +
                 "width=600,height=500";
   window.open(page, "_blank",windowCfg);
-  return true;
 }
 
 // test specification related functions

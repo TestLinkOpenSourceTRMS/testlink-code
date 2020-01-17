@@ -38,7 +38,7 @@ Purpose: smarty template - delete containers in test specification
   {/if}
   
   <form method="post" 
-    action="{$basehref}lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}&objectType={$objectType}&amp;containerType={$containerType">
+    action="{$basehref}lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}&objectType={$objectType}&amp;containerType={$containerType}">
     {if $can_delete}
       <p>{$labels.question_del_testsuite}</p>
       <input type="submit" name="delete_testsuite" value="{$labels.btn_yes_del_comp}" />

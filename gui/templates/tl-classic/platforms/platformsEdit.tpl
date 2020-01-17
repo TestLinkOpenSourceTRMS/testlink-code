@@ -71,7 +71,7 @@ Purpose: smarty template - Edit a platform
   	</table>
   	<div class="groupBtn">	
 	  	<input type="hidden" id="doAction" name="doAction" value="" />
-      <input type="hidden" name="testprojectID" value="{$gui->tproject_id}" />
+      <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 
 	    <input type="submit" id="submitButton" name="submitButton" value="{$gui->submit_button_label}"
 		         onclick="doAction.value='{$gui->submit_button_action}'" />

@@ -139,10 +139,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
       }
     }
 
-    echo '<pre>';
-    var_dump($attr_map['platforms']);
-    echo '</pre>';
-
     // Important: prepareNode() will make changes to 
     // $test_spec like filtering by test case 
     // keywords using $attr_map['keywords'];
@@ -2319,9 +2315,7 @@ function update_status_for_colors(&$dbHandler,&$items,$context,$statusCfg)
 
 
 /**
- * 
- * @internal revisions
- *  20121010 - asimon - TICKET 4353: added active/inactive filter
+ * Used when ['viewType'] == 'testSpecTree'
  */
 function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
@@ -2331,7 +2325,8 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   $my = array();
   
   $my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
-                         'tc_action_enabled' => 1, 'viewType' => 'testSpecTree');
+                         'tc_action_enabled' => 1, 
+                         'viewType' => 'testSpecTree');
   
 
   $my['filters'] = array('keywords' => null, 
@@ -2367,29 +2362,32 @@ function generateTestSpecTreeNew(&$db,$tproject_id, $tproject_name,$linkto,$filt
   $test_spec['id'] = $tproject_id;
   $test_spec['node_type_id'] = $hash_descr_id['testproject'];
 
-  
   $map_node_tccount=array();
   $tc2show = null;
 
   if($test_spec) {
-
-    if (isset($my['filters']['filter_custom_fields']) && isset($test_spec['childNodes'])) 
-    {
-      $test_spec['childNodes'] = filter_by_cf_values($db, $test_spec['childNodes'],
-                                                     $my['filters']['filter_custom_fields'],$hash_descr_id);
+    if (isset($my['filters']['filter_custom_fields']) 
+        && isset($test_spec['childNodes'])) {
+      $test_spec['childNodes'] = filter_by_cf_values($db, 
+        $test_spec['childNodes'],
+        $my['filters']['filter_custom_fields'],$hash_descr_id);
     }
     
     $pnFilters = array('keywords' => $my['filters']['filter_keywords'],
-                       'keywords_filter_type' => $my['filters']['filter_keywords_filter_type'],
+                       'keywords_filter_type' => 
+                         $my['filters']['filter_keywords_filter_type'],
                        'platforms' => $my['filters']['filter_platforms'],
                        );
 
     $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'],
-                       'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases'],
-                       'ignoreActiveTestCases' => $my['options']['ignore_active_testcases']);
+                       'ignoreInactiveTestCases' => 
+                         $my['options']['ignore_inactive_testcases'],
+                       'ignoreActiveTestCases' => 
+                         $my['options']['ignore_active_testcases']);
     
     // Important/CRITIC: 
-    // prepareTestSpecNode() will make changes to $test_spec like filtering by test case keywords.
+    // prepareTestSpecNode() will make changes 
+    // to $test_spec like filtering by test case keywords.
     $testcase_counters = prepareTestSpecNode($db, $tproject_mgr,$tproject_id,$test_spec,$map_node_tccount,$pnFilters,$pnOptions);
 
     if( is_null($test_spec) ) {
@@ -2554,7 +2552,8 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
 
   if (!$tables) {
     $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
-    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
+    $tables = tlObjectWithDB::getDBTables(
+              array('tcversions','nodes_hierarchy','testplan_tcversions'));
     $decoding_info = array('node_id_descr' => 
                            array_flip($tprojectMgr->tree_manager->get_available_node_types()));
     $my = array();
@@ -2564,14 +2563,14 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
     $my['options'] = array_merge($my['options'], (array)$options);
     $my['filters'] = array_merge($my['filters'], (array)$filters);
     
-    if( ($doFilterOn['keywords'] = !is_null($my['filters']['keywords'])) ) {
+    $doFilterOn['keywords'] = !is_null($my['filters']['keywords']) 
+                              && (intval($my['filters']['keywords']) > 0);
 
+    if ($doFilterOn['keywords']) {
       $tcFilterByKeywords = $tprojectMgr->getTCLatestVersionFilteredByKeywords(
                               $tprojectID,
                               $my['filters']['keywords'],
                               $my['filters']['keywords_filter_type']);
-
-
 
       if( is_null($tcFilterByKeywords) ) {
         // tree will be empty
@@ -2581,11 +2580,12 @@ function prepareTestSpecNode(&$db, &$tprojectMgr,$tprojectID,&$node,&$map_node_t
       }
     }
     
-    if( ($doFilterOn['platforms'] = !is_null($my['filters']['platforms'])) ) {
+    $doFilterOn['platforms'] = !is_null($my['filters']['platforms'])
+                               && (intval($my['filters']['platforms']) > 0);
+    if ($doFilterOn['platforms']) {
       $tcFilterByPlatforms = 
         $tprojectMgr->getTCLatestVersionFilteredByPlatforms(
-                              $tprojectID,
-                              $my['filters']['platforms']);
+                        $tprojectID,$my['filters']['platforms']);
 
       if( is_null($tcFilterByPlatforms) ) {
         // tree will be empty

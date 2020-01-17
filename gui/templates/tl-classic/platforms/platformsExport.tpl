@@ -58,8 +58,8 @@ function validateForm(f) {
   	
   	<div class="groupBtn">
       <input type="hidden" 
-             name="testprojectID" 
-             id="testprojectID" 
+             name="tproject_id" 
+             id="tproject_id" 
              value="{$gui->tproject_id}" />
   	  
       <input type="hidden" name="doAction" id="doAction" value="" />

@@ -32,7 +32,7 @@ if ($args->edit == 'testproject') {
 
 $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
-$platform_mgr = new tlPlatform($db, $args->testproject_id);
+$platform_mgr = new tlPlatform($db, $args->tproject_id);
 
 $gui = new stdClass();
 $gui->platform_assignment_subtitle = null;
@@ -41,8 +41,7 @@ $gui->can_do = isset($args->tplan_id);
 $gui->mainTitle = lang_get('add_remove_platforms');
 $gui->warning = '';
 
-if (isset($args->tplan_id))
-{
+if (isset($args->tplan_id)) {
   // do following check to give warning to user
   // if test plan has test case versions with platform_id=0
   // this means that right now there are not platforms linked to test plan.
@@ -148,10 +147,9 @@ function init_args(&$opt_cfg)
   $args->platformsToRemove = null;
   $args->edit = $pParams["edit"];
   $args->doAction = $pParams["doAction"];
-  $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   
-  if( $pParams[$added] != "" ) 
-  {
+  if ($pParams[$added] != "") {
      $args->platformsToAdd = explode(",", $pParams[$added]);
   }
   

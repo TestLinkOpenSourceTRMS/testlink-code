@@ -109,7 +109,6 @@ function init_args( &$dbH ) {
           "platform_id" => array(tlInputParameter::INT_N),
           "name" => array(tlInputParameter::STRING_N,0,100),
           "notes" => array(tlInputParameter::STRING_N),
-          'testprojectID' => array(tlInputParameter::INT_N),
           'tproject_id' => array(tlInputParameter::INT_N),
           "enable_on_execution" => array(tlInputParameter::CB_BOOL),
           "enable_on_design" => array(tlInputParameter::CB_BOOL));
@@ -128,11 +127,7 @@ function init_args( &$dbH ) {
     $info = $dbH->get_recordset($sql);
 
     $args->tproject_id = $info[0]['testproject_id'];    
-  } else {
-    if ($args->tproject_id == 0) {
-      $args->tproject_id = $args->testprojectID;
-    }
-  }
+  } 
     
   if( 0 == $args->tproject_id ) {
     throw new Exception("Unable to Get Test Project ID, Aborting", 1);
@@ -332,7 +327,7 @@ function init_gui(&$db,&$args,&$platMgr) {
   
   $gui->name = $args->name;
   $gui->notes = $args->notes;
-  $gui->platformID = $args->platform_id;
+  $gui->platform_id = $args->platform_id;
     
   return $gui;
 }

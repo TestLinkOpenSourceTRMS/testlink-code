@@ -6,7 +6,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <form style="float:left" name="platform_view" id="platform_view" 
           method="post" action="lib/platforms/platformsEdit.php">
       <input type="hidden" name="doAction" value="" />
-      <input type="hidden" name="testprojectID" value="{$gui->tproject_id}" />
+      <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
       {if '' != $gui->canManage}
         <input class="btn btn-primary" role="button"
           type="submit" 
@@ -19,7 +19,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
       <input type="hidden" name="goback_url" value="{$basehref|escape}{$viewAction|escape}"/>
 
-      <input type="hidden" name="testprojectID" value="{$gui->tproject_id}" />
+      <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 
       <input type="submit" name="export_platforms" id="export_platforms"
         class="btn btn-primary" role="button"

@@ -24,7 +24,7 @@ $gui = initializeGui($args);
 
 switch($args->doAction) {
   case 'doExport':
-    doExport($db,$gui->export_filename,$args->testproject_id);
+    doExport($db,$gui->export_filename,$args->tproject_id);
   break;  
     
   default:
@@ -41,23 +41,20 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args( &$dbH ) {
   $args = new stdClass();
-  $iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
-                   "export_filename" => array(tlInputParameter::STRING_N,0,255)
-                   );
+  $iParams = 
+    array("doAction" => array(tlInputParameter::STRING_N,0,50),
+          "export_filename" => array(tlInputParameter::STRING_N,0,255),
+          "tproject_id" => array(tlInputParameter::INT));
     
   R_PARAMS($iParams,$args);
-
-  $inputSource = $_REQUEST;
-  $args->testproject_id = isset($inputSource['testprojectID']) ? intval($inputSource['testprojectID']) : 0;
-
-  if( 0 == $args->testproject_id ) {
+  if (0 == $args->tproject_id) {
     throw new Exception("Unable to Get Test Project ID, Aborting", 1);
   }
 
   $args->testproject_name = '';
   $tables = tlDBObject::getDBTables(array('nodes_hierarchy'));
   $sql = "SELECT name FROM {$tables['nodes_hierarchy']}  
-          WHERE id={$args->testproject_id}";
+          WHERE id={$args->tproject_id}";
   $info = $dbH->get_recordset($sql);
   if( null != $info ) {
     $args->testproject_name = $info[0]['name'];
@@ -81,7 +78,7 @@ function initializeGui(&$argsObj) {
   $guiObj->nothing_todo_msg = '';
   $guiObj->exportTypes = array('XML' => 'XML');
 
-  $guiObj->tproject_id = $argsObj->testproject_id;
+  $guiObj->tproject_id = $argsObj->tproject_id;
   $guiObj->goback_url = $_SESSION['basehref'] . 
     'lib/platforms/platformsView.php?tproject_id=' . $guiObj->tproject_id; 
 
@@ -103,7 +100,6 @@ function doExport(&$db,$filename,$tproject_id)
   $tables = tlObjectWithDB::getDBTables(array('platforms'));
   $adodbXML = new ADODB_XML("1.0", "UTF-8");
 
-  $platMgr = new tlPlatform($db,$tproject_id);    
   $sql = "/* $debugMsg */ 
           SELECT name,notes,enable_on_design,
           enable_on_execution 

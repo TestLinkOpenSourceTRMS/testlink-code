@@ -938,10 +938,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
           // TICKET 4353: added active/inactive filter
           $ignore_inactive_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
           $ignore_active_testcases = DO_NOT_FILTER_INACTIVE_TESTCASES;
-          if(isset($filters['filter_active_inactive']))
-          {  
-            if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES)
-            {
+          if (isset($filters['filter_active_inactive'])) {  
+            if ($filters['filter_active_inactive'] == IGNORE_INACTIVE_TESTCASES) {
                 $ignore_inactive_testcases = IGNORE_INACTIVE_TESTCASES;
             }
             if ($filters['filter_active_inactive'] == IGNORE_ACTIVE_TESTCASES)
@@ -1295,8 +1293,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
     }
     
     $platformSet = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
-
-    var_dump($platformSet);
 
     if( is_null($platformSet) ) {
       // Brute force bye, bye !! >>--->

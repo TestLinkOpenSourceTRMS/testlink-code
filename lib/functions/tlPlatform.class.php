@@ -414,7 +414,7 @@ class tlPlatform extends tlObjectWithDB
    * @return array Returns all platforms associated to a given testplan
    *               on the form $platform_id => $platform_name
    */
-  public function getLinkedToTestplanAsMap($testplanID,$opt)
+  public function getLinkedToTestplanAsMap($testplanID,$opt=null)
   {
 
     $options = array('orderBy' => ' ORDER BY name ',

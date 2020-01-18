@@ -6,8 +6,84 @@ http://www.testlink.org
 http://forum.testlink.org
 https://twitter.com/TLOpenSource
 
-TestLink - 1.9.20 (2019 Q2) () 
+TestLink - 1.9.20 Raijing (2020 Q1) (Released 2020 Week 03) 
 ===================================================
+
+- 0008843: [Requirement Management] TL 1.9.20 (dev): PHP Fatal error: Uncaught Error on "Copy Requirements" 
+- 0008697: [General] Last used test project not persisted for next login 
+- 0008837: [User Interface General] By default show 'first' project 
+- 0008838: [Test Execute] Provide message to ask tester to read test suite contents when executing test cases 
+- 0008836: [Installer] Error installing - Creating default object from empty value in 
+- 0008629: [Database General] Multiple testlink instances configured to the same DB 
+- 0008728: [Test Plan (builds, milestones, test assign)] Build - add attributes specific for Versioning Systems 
+- 0008745: [Security - General] IDOR - Upload Files with Guest Privileges 
+- 0008746: [Security - General] IDOR - Upload Files with Guest Privileges 
+- 0008747: [Security - General] IDOR - Delete Project’s Attached Files with Guest Privileges 
+- 0008748: [Security - General] IDOR - Modify any Test Case of any projects with Guest Privileges 
+- 0008750: [Security - SQL Injection] SQL Injection at /lib/requirements/reqSearch.php 
+- 0008752: [Security - SQL Injection] SQL Injection at Assign Test Case Execution 
+- 0008749: [Security - General] IDOR - Modify any Test Suite of any projects with Guest Privileges 
+- 0008744: [Security - XSS] Stored XSS via File Upload 
+- 0008751: [Security - XSS] Stored XSS via Test Plan name 
+- 0008773: [Database MySQL] DB Access Error 
+- 0008779: [Security - General] User password storage method (MD5) is weak 
+- 0008832: [Users and Rights] Users/Roles menu not working 
+- 0008786: [Requirement Attachments] Import / export Requirements attachments in xml does not work 
+- 0008792: [Req Overview] Tl 1.9.20 (dev) >> Requirement overview >> Custom field content displayed in wrong column 
+- 0008693: [Database Postgres] postgresql db installation reports syntax error in testlink_create_udf0.sql - none standard comment sign 
+- 0008692: [Internal issue] (github code) - corrupt platform sql queries blocks gui with DB Access Error 
+- 0008835: [Security - General] Change password encryption method for DB managed password 
+- 0008808: [Security - XSS] TestLink v1.9.19.1 - Bypass security fix for XSS at index.php 
+- 0008829: [Security - SQL Injection] Multiple SQL Injection 
+- 0008670: [0 - User too Lazy to analize defined categories] Full text search - DB Access Error - Data too long for column 'Dirty' 
+- 0008834: [Event Signals] events for requirements missing 
+- 0008785: [Test Specification - Move/Copy Test Cases] PHP Fatal error: Uncaught ArgumentCountError: Too few arguments to function moveTestCases() 
+- 0008791: [Test Execute] Fatal error: Uncaught Error: Call to undefined method testcase::get_scripts_for_testcase() in C:\xampp\htdocs\testlink\lib\execu 
+- 0008761: [Req Overview] PRIVATE TICKET - Latencies when loading the page "Requirement Overview" 
+- 0008757: [API - XMLRPC] API - XMLRPC -Unable to update test case name with long UTF-8 string 
+- 0008754: [Event Signals] Warning in event "E_NOTICE Undefined variable: whereAdd" 
+- 0008741: [Bug Tracking System - JIRA Integration] Not able to add Bug from Testlink to JIRA 
+- 0008739: [Filters] Test Specification - Filter by Keyword - malfunction with parentheses 
+- 0008655: [Roles] new right to allow add/remove keywords from executed test case versions 
+- 0008667: [Test Execute] Possibility to use several different logic to compute test case exec status counters (present on tree) 
+- 0008556: [Test Spec / Test Suite HTML Report] ''DB Access Error'', when clicked on "Test Suite Document (HTML) on New Window'' 
+- 0008727: [Test Execute] Test Case Execution - config option for default value for Assign Task checkbox 
+- 0008502: [Test Cases Assigned to Me] Delete testcase version 
+- 0008696: [Localization] Fix a typo in the portuguese translation 
+- 0008694: [Localization] Wrong string concatenation operator 
+- 0008678: [Test Project Management] ERROR ON exec_query() when creating new test project from existing test project 
+- 0008676: [Test Specification] Possibility to use platforms during test case specification phase. 
+- 0008675: [Export/Import] Testsuite Operations Export does not export Requirements 
+- 0008681: [Requirement Management] [tlInlineImage] ghost string not working in requirement display 
+- 0008677: [Test Project Management] Keywords links not updated when creating new test project from existing one 
+- 0008674: [General] Configuration option to exclude use of UDFStripHTMLTags() 
+- 0008660: [API - XMLRPC] API-XMLRPC - PHP Fatal error, when calling getTestCaseAttachments with unknown testcaseid 
+- 0008673: [User Authentication Methods] https google oauth fails to login due to mismatch in redirect_uri 
+- 0008665: [Test Execute] Get Warning about the existence of a newer version (Version > N) when trying to execute Version N 
+- 0008645: [Bug Tracking System - Redmine Integration] I want to automatically insert summary, precondition, step, expected result contents into Bug Description 
+- 0008555: [Test Spec / Test Suite Pseudo Word Report] Error while Saving a Edited Test Suite 
+- 0008640: [Test Spec. - Keywords] Huge SQL expression used to filter test cases without keywords 
+- 0008642: [General] ajax support - gettprojectnodes.php refactoring to avoid object creation 
+- 0008649: [Bug Tracking Systems Integration] Dynamic Value on issue description while creating issue - link to execution with test case details 
+ - 0008651: [Bug Tracking Systems Integration] add Option when creating issue - link to execution with test case details 
+- 0008634: [Database Postgres] Syntax error on field type 
+- 0008635: [Test Spec. - Keywords] DB error when searching for Test Cases without keywords 
+- 0008614: [Test Plan - Add/Remove Test Cases] When I want to add a testcase, click the requirement - db access error is shown 
+- 0008606: [Test Specification Import] Test Suite Import - skip test case if name is empty 
+- 0008602: [Test Execute] Test Case Version Relations not displayed on Test Case Version Execution Feature 
+- 0008599: [Test Execute] Allow file attachment at same time exec result is saved 
+- 0008480: [Installer] Tables Prefix throws an SQL exception at installation 
+- 0008594: [Test Execute] Possibility to add a link to existent ISSUE to latest execution (Any Build) 
+- 0008586: [GUI] Save button not visible 
+- 0008574: [Security - SQL Injection] SQL Injection via dragdroprequirementnodes.php 
+- 0008573: [Security - XSS] XSS via dragdroprequirementnodes 
+- 0008575: [Reports] test report - attachment image 
+- 0008571: [Reports] Keywords missing in TestSpec Document (HTML and PseudoWord) 
+- 0008562: [Database MySQL] MySQL 8 Syntax Changes blocks installation 
+- 0008714: [Installer] At table creation for testlink database, an sql error is returned (For 1.9.20) (fman) - closed.
+- 0008611: [Test Execute] [For partial Test execution] Execution status of test steps is not retained on changing menu/logout (fman) - closed.
+
+
 
 TestLink - 1.9.19 (2019 Q1) (Released 2019 Week 04) 
 ===================================================

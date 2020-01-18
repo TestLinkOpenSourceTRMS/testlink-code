@@ -1,7 +1,5 @@
 # TestLink 1.9.20 Raijin - Read me
 
-[![](https://codescene.io/projects/5570/status.svg) Get more details at **codescene.io**.](https://codescene.io/projects/5570/jobs/latest-successful/results)
-
 ## Contents
  1. [Introduction](#1-introduction)
  2. [Release notes / Critical Configuration Notes](2-release-notes--critical-configuration-notes)
@@ -67,7 +65,7 @@ has been done and what still needs to be done.
 
 ## 2. Release notes / CRITICAL Configuration Notes
 
-This release contains bugfixes and enhancement for 1.9.18
+This release contains bugfixes and enhancement for 1.9.19
 See CHANGELOG file for detailed list of issues fixed.
 
 Give a look also to:
@@ -154,18 +152,19 @@ here:
 
 Server environment should consist of:
 - web-server: Apache 2.x
-- PHP > 5.5 It will be better if you use PHP 7.2.x
+- PHP > 5.5 It will be better if you use PHP 7.2.x 
+- PHP IMPORTANTE NOTICE: next TestLink Version will require minimum PHP 7.3.x
+-       
 - DBMS
   - MySQL 5.7.x
     - The `log_bin_trust_function_creators` option must be enabled.
   - MariaDB 10.1.x
     - The `log_bin_trust_function_creators` option must be enabled.
   - Postgres 9.x
-  - MS-SQL 201x
+  - MS-SQL 201x -> SUPPORT IS INCOMPLETE
 
-Supported client web-browsers:
+Tested on web-browsers:
 - Firefox
-- Internet Explorer 9.x or greater
 - Chrome
 
 ATTENTION: we have not enough resources to test on all kind of browsers.
@@ -238,7 +237,7 @@ Check Installation manual and TestLink forum if you meet a problem.
 When accessing Installer page you will find only the **new installation**
 option. The migration **has to be done manually** for these special cases:
 
-- Upgrade from 1.9.3 to 1.9.4/5/6/7/8/9/10/11/12/13/14/15/16/17
+- Upgrade from 1.9.3 to 1.9.4/5/6/7/../16/17/18/19
 - Upgrade from 1.9.4/5 to 1.9.7
 - Upgrade from 1.9.7 to 1.9.8
 - Migration from other releases than 1.9.3
@@ -415,7 +414,7 @@ than yours. Extreme example: migration from 1.7.4
     1.7.4 => 1.7.5 => 1.8.1 => 1.8.2 => 1.8.3 => 1.8.4 => 1.8.5 => 1.9.0
     1.9.0 => 1.9.1 => 1.9.2 => 1.9.3 => 1.9.4 => 1.9.5 => 1.9.6 => 1.9.7 =>
     1.9.8 => 1.9.9 => 1.9.10 => 1.9.11 => 1.9.12 => 1.9.13 => 1.9.14 =>
-    1.9.15 => 1.9.16 => 1.9.17 => 1.9.18 => 1.9.19
+    1.9.15 => 1.9.16 => 1.9.17 => 1.9.18 => 1.9.19 => 1.9.20
 
 You have to read carefully README and instructions (if any) provided by
 installer. Sometimes version changes do not require actions on DB structure
@@ -431,7 +430,7 @@ This list comprises people who have helped:
                          code reviewer (well, really the One Man Band ;) )
   * Asiel Brumfield - Infrastructure
 
-  * Netzuleando Development OpenSource (netzuleando@gmail.com)
+ 
 
 ### Contributors and developers active on older releases
 
@@ -443,7 +442,8 @@ This list comprises people who have helped:
   * Martin Havlat - Project lead, builds, infrastructure, developer
   * Andreas Morsing - core developer
   * Amit Khullar
-
+  * Netzuleando Development OpenSource (netzuleando@gmail.com)
+  
 ### TestLink - QA Team - for 1.9.4
 
   * Romoy Headly - QA Manager
@@ -542,7 +542,19 @@ PLEASE: read these short hints before you write a topic:
   - :!: Consider that some issues are related to Apache, browser or database
         instead of TestLink. Use Google first.
 
-## 10. Changes
+## 10. Changes (Just a glance)
+
+### 1.9.20
+  - DB Schema changes new views, tables.
+  - Platforms can be used during Test Case Design
+  - Security Fixes
+  - MD5 replaced with BCRYPT for DB stored password
+  - Roles issues fixed
+  - new right to allow add/remove keywords from executed test case versions
+  - Heads Ups on execution through use of special Keyword
+  - A couple of new reports
+ ... and more (read CHANGELOG file)
+
 
 ### 1.9.19
   - DB Schema changes new unique indexes.
@@ -622,6 +634,10 @@ If you are interested you can [get some info][free]:
 [free]: http://www.freetest.net.br
 
 ## 12. Security
+
+### 1.9.20
+  - Multiple XSS and Blind SQL Injection
+
 
 ### 1.9.15
   - Multiple XSS and Blind SQL Injection by

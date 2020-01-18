@@ -5,7 +5,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 
 @internal development hint:
 some smarty and javascript variables are created on the inc_*.tpl files.
-     
+
+*}
+
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -19,17 +21,7 @@ some smarty and javascript variables are created on the inc_*.tpl files.
 {$assignRolesAction="lib/usermanagement/usersAssign.php?featureType=testplan&featureID="}
 {$gotoExecuteAction="lib/general/frmWorkArea.php?feature=executeTest&tplan_id="}
 
-
-
-{lang_get var="labels" 
-          s='testplan_title_tp_management,testplan_txt_empty_list,sort_table_by_column,
-          testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
-          testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,public,
-          btn_testplan_create,th_id,error_no_testprojects_present,btn_export_import,
-          export_import,export,import,export_testplan_links,import_testplan_links,build_qty,
-          testcase_qty,platform_qty,active_click_to_change,inactive_click_to_change,
-          testcase_number_help,platform_number_help,build_number_help,assign_roles,execution'}
-
+{include file="plan/planView.labels.tpl"}
 
 {lang_get s='warning_delete_testplan' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
@@ -98,7 +90,7 @@ var del_action=fRoot+'{$deleteAction}';
     </thead>
     <tbody>
     {foreach item=testplan from=$gui->tplans}
-    <tr>
+    <tr data-qa-tplan-name="{$testplan.name|escape}">
       <td><a href="{$editAction}{$testplan.id}"> 
              {$testplan.name|escape}
              <span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
@@ -122,7 +114,7 @@ var del_action=fRoot+'{$deleteAction}';
         </td>
       {/if} 
 
-      <td class="clickable_icon">
+      <td class="clickable_icon" data-qa-active="{$testplan.active}">
         {if $testplan.active==1} 
             <input type="image" style="border:none" 
                    title="{$labels.active_click_to_change}" alt="{$labels.active_click_to_change}" 
@@ -135,7 +127,7 @@ var del_action=fRoot+'{$deleteAction}';
                  src="{$tlImages.off}"/>
           {/if}
       </td>
-      <td class="clickable_icon">
+      <td class="clickable_icon" data-qa-is_public="{$testplan.is_public}">
         {if $testplan.is_public eq 1} 
             <img style="border:none" title="{$labels.public}"  alt="{$labels.public}" src="{$tlImages.checked}"/>
           {else}

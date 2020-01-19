@@ -2973,14 +2973,8 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
       $sql = " /* $debugMsg */ " .
              " UPDATE {$this->tables['req_versions']} " .
              " SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'," .
-             " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL";
-              
-      $nullTS = $this->db->db_null_timestamp();
-      if(!is_null($nullTS))
-      {
-        $sql .= ",modification_ts = {$nullTS} ";
-      }  
-      
+             " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = {$user_id}, modification_ts = {$db_now}";
+
       $sql .=  " WHERE id = {$parent_id} ";
       $this->db->exec_query($sql);
       return $ret;

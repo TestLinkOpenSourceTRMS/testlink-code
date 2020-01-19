@@ -55,14 +55,14 @@ Purpose: smarty template - Edit a platform
   			<td>{$gui->notes}</td>
   		</tr>
       <tr><th style="background:none;">{$labels.on_design}</th>
-          <td><input type="checkbox"  
+          <td><input type="checkbox" value="1" 
                 name="enable_on_design" id="enable_on_design"  
                 {if $gui->enable_on_design eq 1} checked {/if} />
           </td>
       </tr>
 
       <tr><th style="background:none;">{$labels.on_exec}</th>
-          <td><input type="checkbox"  
+          <td><input type="checkbox" value="1" 
                 name="enable_on_execution" id="enable_on_execution"  
                 {if $gui->enable_on_execution eq 1} checked {/if} />
           </td>

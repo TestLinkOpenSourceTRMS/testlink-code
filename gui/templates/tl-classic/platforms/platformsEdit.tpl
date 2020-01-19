@@ -7,8 +7,9 @@ Purpose: smarty template - Edit a platform
 {$cfg_section=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{$url_args="lib/platforms/platformsEdit.php"}
-{$platform_edit_url="$basehref$url_args"}
+{$tproj=$gui->tproject_id}
+{$manageUrl="lib/platforms/platformsEdit.php?tproject_id=$tproj"}
+{$manageUrl="$basehref$manageUrl"}
 
 {lang_get var="labels"
           s="warning,warning_empty_platform,show_event_history,
@@ -39,7 +40,7 @@ Purpose: smarty template - Edit a platform
   </div><br />
 
   	<form id="addPlatform" name="addPlatform" method="post" 
-          action="{$platform_edit_url}">
+          action="{$manageUrl}">
 
   	<table class="common" style="width:50%">
   		<tr>
@@ -66,16 +67,18 @@ Purpose: smarty template - Edit a platform
                 {if $gui->enable_on_execution eq 1} checked {/if} />
           </td>
       </tr>
-
-
   	</table>
   	<div class="groupBtn">	
 	  	<input type="hidden" id="doAction" name="doAction" value="" />
-      <input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
-
-	    <input type="submit" id="submitButton" name="submitButton" value="{$gui->submit_button_label}"
+      <input type="hidden" id="platform_id" name="platform_id" 
+             value="{$gui->platform_id}" />
+	    <input type="submit" class="{#BUTTON_CLASS#}"
+             id="submitButton" name="submitButton" 
+             value="{$gui->submit_button_label}"
 		         onclick="doAction.value='{$gui->submit_button_action}'" />
-	  	<input type="button" id="cancelOp" value="{$labels.btn_cancel}"
+
+	  	<input type="button" class="{#BUTTON_CLASS#}"
+             id="cancelOp" value="{$labels.btn_cancel}"
 		         onclick="javascript:location.href=fRoot+'lib/platforms/platformsView.php?tproject_id={$gui->tproject_id}'" />
   	</div>
   	</form>

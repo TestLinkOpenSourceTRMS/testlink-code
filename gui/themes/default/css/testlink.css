@@ -285,10 +285,11 @@ div.menu_bubble h3{
  * Give buttons, submit, reset a gradient 3d look and other components
  * text/password-input, textarea and select a flat appearance.
  */
+
 input[type="button"],
+input[type="submit"],
 input[type="password"],
 input[type="reset"],
-input[type="submit"],
 input[type="text"],
 select,
 textarea,

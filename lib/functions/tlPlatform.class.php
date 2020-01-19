@@ -54,23 +54,27 @@ class tlPlatform extends tlObjectWithDB
    * Creates a new platform.
    * @return tl::OK on success otherwise E_DBERROR;
    */
-  public function create($name, $notes=null) {
+  public function create($platform) {
+
     $op = array('status' => self::E_DBERROR, 'id' => -1);
-    $safeName = $this->throwIfEmptyName($name);
-    $alreadyExists = $this->getID($name);
+    $safeName = $this->throwIfEmptyName($platform->name);
+    $alreadyExists = $this->getID($safeName);
+
     if ($alreadyExists) {
       $op = array('status' => self::E_NAMEALREADYEXISTS, 'id' => -1);
-    }
-    else
-    {
-      $sql = "INSERT INTO {$this->tables['platforms']} " .
-             "(name, testproject_id, notes) " .
-             " VALUES ('" . $this->db->prepare_string($safeName) . 
-             "', $this->tproject_id, '".$this->db->prepare_string($notes)."')";
+    } else {
+      $sql = "INSERT INTO {$this->tables['platforms']} 
+              (name, testproject_id, notes, 
+               enable_on_design,enable_on_execution) 
+              VALUES (" .
+              "'" . $this->db->prepare_string($safeName) . "'" .
+              "," . $this->tproject_id .
+              ",'" . $this->db->prepare_string($platform->notes) . "'" .
+              "," . ($platform->enable_on_design ? 1 : 0) . 
+              "," . ($platform->enable_on_execution ? 1 : 0) . ")";
       $result = $this->db->exec_query($sql);
 
-      if( $result )
-      {
+      if( $result ) {
         $op['status'] = tl::OK;
         $op['id'] = $this->db->insert_id($this->tables['platforms']);
       } 
@@ -266,6 +270,9 @@ class tlPlatform extends tlObjectWithDB
     $filterEnableOn = "";
     $enaSet = array('enable_on_design','enable_on_execution');
     foreach ($enaSet as $ena) {
+      if (null == $options[$ena]) {
+        continue;
+      }
       if (is_bool($options[$ena]) || is_int($options[$ena])) {
         $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
       }                  
@@ -275,6 +282,7 @@ class tlPlatform extends tlObjectWithDB
               FROM {$this->tables['platforms']} PLAT 
               {$tproject_filter} {$filterEnableOn}
               ORDER BY name";
+
     $rs = $this->db->get_recordset($sql);
     if (!is_null($rs) && $options['include_linked_count']) {
       // At least on MS SQL Server 2005 you can not do GROUP BY 
@@ -539,8 +547,17 @@ class tlPlatform extends tlObjectWithDB
     $gaga->user_feedback = null;
     $gaga->user_feedback = array('type' => 'INFO', 'message' => '');
 
-    $gaga->platforms = $this->getAll(array('include_linked_count' => true));
+    $opx = array('include_linked_count' => true,
+                 'enable_on_design' => null, 
+                 'enable_on_execution' => null);
+    $gaga->platforms = $this->getAll($opx);
 
+    /*
+    echo '<pre>';
+    var_dump($gaga->platforms);
+    echo '</pre>';
+    */
+    
     $rx = array('canManage' => 'platform_management', 
                 'mgt_view_events' => 'mgt_view_events');
     foreach($rx as $prop => $right) {

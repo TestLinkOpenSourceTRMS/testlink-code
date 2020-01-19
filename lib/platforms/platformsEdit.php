@@ -34,10 +34,8 @@ $op->status = 0;
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('platform_template', $of->InstanceName, $args->notes);
 
-
-
-$action = $args->action;
-switch ($action) {
+$method = $args->doAction;
+switch ($args->doAction) {
   case "do_create":
   case "do_update":
   case "do_delete":
@@ -47,7 +45,7 @@ switch ($action) {
       
   case "edit":
   case "create":
-    $op = $action($args,$gui,$platform_mgr);
+    $op = $method($args,$gui,$platform_mgr);
     $of->Value = $gui->notes;
   break;
 
@@ -55,12 +53,12 @@ switch ($action) {
   case "enableDesign":
   case "disableExec":
   case "enableExec":
-    $platform_mgr->$action($args->platform_id);
+    $platform_mgr->$method($args->platform_id);
+    
     $op = new stdClass();
     $op->status = 1;
     $op->template = 'platformsView.tpl';
   break;
-
 }
 
 if ($op->status == 1) {
@@ -70,12 +68,15 @@ if ($op->status == 1) {
   $gui->user_feedback['message'] = getErrorMessage($op->status, $args->name);
   $gui->user_feedback['type'] = 'ERROR';
 }
-$gui->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
+
+// refresh
+$guiX = $platform_mgr->initViewGui($args->currentUser);    
+$gui->platforms = $guiX->platforms;
+
 $gui->notes = $of->CreateHTML();
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $default_template);
-
 
 /**
  * 
@@ -99,12 +100,13 @@ function initEnv(&$dbHandler) {
  * 
  *
  */
-function init_args( &$dbH ) {
+function init_args( &$dbH ) 
+{
   $_REQUEST = strings_stripSlashes($_REQUEST);
 
   $args = new stdClass();
   $iParams = 
-    array("action" => array(tlInputParameter::STRING_N,0,50),
+    array("doAction" => array(tlInputParameter::STRING_N,0,50),
           "id" => array(tlInputParameter::INT_N),
           "platform_id" => array(tlInputParameter::INT_N),
           "name" => array(tlInputParameter::STRING_N,0,100),
@@ -114,7 +116,6 @@ function init_args( &$dbH ) {
           "enable_on_design" => array(tlInputParameter::CB_BOOL));
     
   R_PARAMS($iParams,$args);
-
   if (null == $args->platform_id || $args->platform_id <= 0) {
     $args->platform_id = $args->id;
   }
@@ -143,7 +144,13 @@ function init_args( &$dbH ) {
 
   $args->currentUser = $_SESSION['currentUser'];
   
-  var_dump($args->action);  
+  if (null == $args->enable_on_design) {
+    $args->enable_on_design = 0;
+  }
+
+  if (null == $args->enable_on_execution) {
+    $args->enable_on_execution = 1;
+  }
   return $args;
 }
 
@@ -227,22 +234,26 @@ function do_create(&$args,&$gui,&$platform_mgr) {
 
   $ret = new stdClass();
   $ret->template = 'platformsView.tpl';
-  $op = $platform_mgr->create($args->name,$args->notes);
+  $plat = new stdClass();
+  $plat->name = $args->name; 
+  $k2c = array('notes' => null,'enable_on_design' => 0,
+               'enable_on_execution' => 1);
+  foreach ($k2c as $prop => $defa) {
+    $plat->$prop = property_exists($args, $prop) ? $args->$prop : $defa;
+  }
+
+  $op = $platform_mgr->create($plat);
+
   $ret->status = $op['status']; 
   $ret->user_feedback = sprintf(lang_get('platform_created'), $args->name);
   
   return $ret;
 }
 
-/*
-  function: do_update
-            do operations on db
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ *
+ *
+ */
 function do_update(&$args,&$gui,&$platform_mgr) {
   $action_descr = lang_get('edit_platform');
   $platform = $platform_mgr->getPlatform($args->platform_id);

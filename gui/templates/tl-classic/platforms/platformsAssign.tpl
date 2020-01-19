@@ -3,9 +3,10 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 $Id: platformsAssign.tpl,v 1.7 2010/09/06 15:44:45 erikeloff Exp $
 Purpose: smarty template - assign platforms to testplans
 
-@internal Revisions:
-20100906 - eloff - BUGID 3738 - don't allow removing platform with linked TCs
 *}
+{$cfg_section=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {lang_get var="labels"
           s="title_platforms,menu_assign_platform_to_testplan,
              platform_unlink_warning_title,platform_unlink_warning_message,
@@ -83,7 +84,8 @@ Purpose: smarty template - assign platforms to testplans
 			  <input type="hidden" name="doAction" value="">
 				{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 				<br />
-				<input type="submit" name="doAssignPlatforms" value="{$labels.btn_save}" 
+				<input type="submit" class="{#BUTTON_CLASS#}"
+               name="doAssignPlatforms" value="{$labels.btn_save}" 
 				       onclick="doAction.value='doAssignPlatforms'"	/>
 			</form>
 		</div>

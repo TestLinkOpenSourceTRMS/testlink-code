@@ -2936,10 +2936,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   
   /**
    * 
-    *
-    * @internal revision
-    * 20110115 - franciscom - fixed insert of null on timestamp field
-    */
+   *
+   * @internal revision
+   * 20110115 - franciscom - fixed insert of null on timestamp field
+   */
   function create_new_revision($parent_id,$user_id,$tproject_id,$req = null,$log_msg = null)
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -2976,8 +2976,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
              " creation_ts = {$db_now} ,author_id = {$user_id}, modifier_id = NULL";
               
       $nullTS = $this->db->db_null_timestamp();
-      if(!is_null($nullTS))
-      {
+      if (!is_null($nullTS)) {
         $sql .= ",modification_ts = {$nullTS} ";
       }  
       
@@ -3114,8 +3113,10 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
           // MSSQL    NULL DATE - ???
           $key4date = 'creation_ts';
           $key4user = 'author_id';
-          if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
-          {
+          $nullTS = $this->db->db_null_timestamp();
+          if( ($rs[$ap]['modification_ts'] != $nullTS) 
+               && !is_null($rs[$ap]['modification_ts']) 
+               && !is_null($rs[$ap]['modifier_id'])) {
             $key4date = 'modification_ts';
             $key4user = 'modifier_id';
           }

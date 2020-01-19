@@ -2284,8 +2284,11 @@ function get_requirement_child_by_id_req($id){
 				// MSSQL    NULL DATE - ???
 				$key4date = 'creation_ts';
 				$key4user = 'author_id';
-				if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
-				{
+
+        $nullTS = $this->db->db_null_timestamp();
+				if( ($rs[$ap]['modification_ts'] != $nullTS) 
+             && !is_null($rs[$ap]['modification_ts']) 
+             && !is_null($rs[$ap]['modifier_id'])) {
 					$key4date = 'modification_ts';
 					$key4user = 'modifier_id';
 				}

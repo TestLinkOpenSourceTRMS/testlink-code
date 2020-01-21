@@ -5088,7 +5088,7 @@ class TestlinkXMLRPCServer extends IXR_Server {
             $uploadOp = $docRepo->insertAttachment( $fkId, $fkTable, $title, $fInfo );
             
 
-            if($uploaOp->statusOK == false) {
+            if($uploadOp->statusOK == false) {
               $msg = $msg_prefix . ATTACH_DB_WRITE_ERROR_STR;
               $this->errors[] = new IXR_ERROR( ATTACH_DB_WRITE_ERROR, $msg );
               $statusOK = false;

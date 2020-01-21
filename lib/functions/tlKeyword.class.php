@@ -280,6 +280,36 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
   }
 
   /**
+   * create a keyword by a given name
+   *
+   * @param resource $db [ref] the database connection
+   * @param string $name the name of the keyword
+   * @param integer $tprojectID the testprojectID
+   * @param integer $kwID an additional keyword id which is excluded in the search
+   * @return tlKeyword the created keyword on success, or null else
+   */
+  public function getByName(&$db, $name, $tprojectID, $kwID = null) {
+    $result = null;
+    $tables = tlObjectWithDB::getDBTables("keywords");
+
+    $name = $db->prepare_string(strtoupper($name));
+    $query = " SELECT id, notes FROM {$tables['keywords']}
+               WHERE UPPER(keyword) ='{$name}'
+               AND testproject_id = " . $tprojectID ;
+
+    if ($kwID) {
+      $query .= " AND id <> " .$kwID;
+    }
+
+    $kw = $db->fetchFirstRow($query);
+    if ($kw) {
+        $this->initialize($kw['id'], $tprojectID, $name, $kw['notes']);
+        $result = $this;
+    }
+    return $result;
+  }
+
+  /**
    * currently not implemented
    * 
    * @param resource $db 

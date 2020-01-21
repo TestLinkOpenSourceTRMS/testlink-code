@@ -37,7 +37,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   "id" BIGSERIAL NOT NULL , 
   "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   "platform_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/platforms (id) ON DELETE CASCADE,
-  "being_exec_ts" timestamp NOT NULL,
+  "begin_exec_ts" timestamp NOT NULL,
   "end_exec_ts" timestamp NOT NULL,
   "creation_ts" timestamp NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")

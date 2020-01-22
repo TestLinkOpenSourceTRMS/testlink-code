@@ -7984,6 +7984,7 @@ class testplan extends tlObjectWithAttachments
           COALESCE(E.status,'" . $notrun . "') AS exec_status 
           FROM {$this->tables['testplan_tcversions']} TPTCV                 
           JOIN $nht NH_TCV ON NH_TCV.id = TPTCV.tcversion_id 
+          JOIN {$this->tables['tcversions']} TCV ON TCV.id = NH_TCV.id
           JOIN $nht NH_TCASE ON NH_TCASE.id = NH_TCV.parent_id " .
           $my['join']['keywords'] .
           $my['join']['ua'] .

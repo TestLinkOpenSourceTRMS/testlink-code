@@ -63,7 +63,12 @@ if(is_null($tsInf)) {
     $execContext[] = 'platform_id';
   }
   $span = $metricsMgr->getExecTimeSpan($args->tplan_id,$execContext);
-  $gui->spanByPlatform = $span[$args->tplan_id];
+  
+  if ($gui->hasPlatforms) {
+    $gui->spanByPlatform = $span[$args->tplan_id];
+  } else {
+    $gui->spanByPlatform[0] = $span[$args->tplan_id];
+  }
 
   // reorder data according test suite name
   natcasesort($tsInf->idNameMap);
@@ -86,7 +91,7 @@ if ($args->doAction == 'saveForBaseline') {
     $sql = "INSERT INTO {$tables['baseline_l1l2_context']}
             (testplan_id,platform_id,begin_exec_ts,end_exec_ts)
             VALUES({$span['testplan_id']},
-                   {$span['platform_id']}," .
+                   {$platID}," .
             "'" . $span['begin'] . "'," .
             "'" . $span['end'] . "')";
     $db->exec_query($sql);

@@ -18,7 +18,8 @@ View test specification containers
              btn_gen_test_suite_spec,btn_gen_test_suite_spec_new_window,
              btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
              btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
-             testsuite_operations, testcase_operations,btn_create_from_issue_xml,file_upload_ko'}
+             testsuite_operations, testcase_operations,btn_create_from_issue_xml,file_upload_ko,
+             btn_report_test_automation,report_test_automation'}
 
 {$ft=''}
 {if isset($gui->form_token)}
@@ -52,6 +53,9 @@ View test specification containers
 
 {$tcMantisXMLAction="lib/testcases/tcCreateFromIssueMantisXML.php?containerID=$container_id"}
 {$createTCFromIssueMantisXMLAction="$basehref$tcMantisXMLAction"}
+
+{$dummy="lib/results/testAutomationSpec.php?tproject_id=$tproject_id&form_token=$ft"}
+{$reportTestAutomationAction = "$basehref$dummy"}
 
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -121,8 +125,6 @@ function jsCallDeleteFile(btn, text, o_id)
       {/if}
 
       <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
-
-      <input type="hidden" name="treeFormToken" id="treeFormToken" value="{$ft}" />
       <input type="hidden" name="doAction" id="doAction" value="" />
       <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
       <input type="hidden" name="containerType" id="containerType" value="{$gui->level}" />
@@ -146,6 +148,9 @@ function jsCallDeleteFile(btn, text, o_id)
       <img src="{$tlImages.report_word}" onclick="window.open('{$testSpecFullWordDocAction}')" 
            title="{$labels.btn_gen_test_spec_word}" />
 
+      <img src="{$tlImages.report_test_automation}"    
+           onclick="location='{$reportTestAutomationAction}'" 
+           title="{$labels.btn_report_test_automation}" />
     </form>
     </fieldset>
   </div>

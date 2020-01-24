@@ -320,7 +320,6 @@ class tlPlatform extends tlObjectWithDB
    */
   public function getAllAsMap($opt=null)
   {
-
     $options = array('accessKey' => 'id',
                      'output' => 'columns',
                      'orderBy' => ' ORDER BY name ',
@@ -335,6 +334,9 @@ class tlPlatform extends tlObjectWithDB
     $filterEnableOn = "";
     $enaSet = array('enable_on_design','enable_on_execution');
     foreach ($enaSet as $ena) {
+      if (null == $options[$ena]) {
+        continue;
+      }
       if (is_bool($options[$ena]) || is_int($options[$ena])) {
         $filterEnableOn .= " AND $ena = " . ($options[$ena] ? 1 : 0);
       }                  

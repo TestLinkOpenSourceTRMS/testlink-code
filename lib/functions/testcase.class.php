@@ -2202,6 +2202,8 @@ class testcase extends tlObjectWithAttachments {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $my['options'] = array( 'get_steps' => false, 'output' => 'full','active' => null);
     $my['options'] = array_merge($my['options'], (array)$options);
+
+
     $tcInfo = null;
     switch($my['options']['output']) {
 
@@ -9620,6 +9622,33 @@ class testcase extends tlObjectWithAttachments {
     return true;
   }
 
+  /**
+   *
+   */
+  function getLTCVInfo($tcaseID) {
+    $parentSet = (array)$tcaseID;
+    $sql = "SELECT 
+            NHTC.name, NHTCV.node_order,
+            NHTC.parent_id AS testsuite_id,
+            LTCV.tcversion_id, TCV.id, TCV.version, 
+            NHTCV.parent_id AS testcase_id,
+            TCV.active, TCV.tc_external_id,
+            TCV.execution_type, TCV.importance,
+            TCV.status
+            FROM {$this->views['latest_tcase_version_id']} LTCV
+            JOIN {$this->tables['tcversions']} TCV
+            ON TCV.id = LTCV.tcversion_id
+            JOIN {$this->tables['nodes_hierarchy']} NHTCV
+            ON NHTCV.id = TCV.id
+            JOIN {$this->tables['nodes_hierarchy']} NHTC
+            ON NHTC.id = NHTCV.parent_id
+            WHERE LTCV.testcase_id IN (" . 
+            implode(',',$parentSet) . ")";
+
+    // $rs = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+    $rs = $this->db->get_recordset($sql);
+    return $rs;
+  }
 
 
 

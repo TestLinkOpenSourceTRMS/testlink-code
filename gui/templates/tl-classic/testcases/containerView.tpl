@@ -55,7 +55,7 @@ View test specification containers
 {$createTCFromIssueMantisXMLAction="$basehref$tcMantisXMLAction"}
 
 {$dummy="lib/results/testAutomationSpec.php?tproject_id=$tproject_id&form_token=$ft"}
-{$reportTestAutomationAction = "$basehref$dummy"}
+{$reportTestAutomationAction = "$basehref$dummy&format=fake"}
 
 
 {include file="inc_head.tpl" openHead="yes"}

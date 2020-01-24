@@ -13,14 +13,12 @@ require_once('../../third_party/codeplex/PHPExcel.php');
 
 require_once('common.php');
 require_once('displayMgr.php');
+require_once("specview.php");
 
 $timerOn = microtime(true);
 $tplCfg = templateConfiguration();
 
 list($tplan_mgr,$args) = initArgsForReports($db);
-if( null == $tplan_mgr ) {
-  $tplan_mgr = new testplan($db);
-}
 
 $gui = initializeGui($db,$args,$tplan_mgr);
 $mailCfg = buildMailCfg($gui);
@@ -29,140 +27,41 @@ $mailCfg = buildMailCfg($gui);
 $gui->do_report['status_ok'] = 1;
 $gui->do_report['msg'] = '';
 
-
-
-
-
-
-
-
-$cfg = config_get('results');
-$codeToStatus = array_flip($cfg['status_code']);
-$statusToLabel = $cfg['status_label'];
-$statusDisplayOrder = $cfg['status_order'];
-$statusCols = array();
-$gui->columnsDefinition = array();
-
-foreach ($statusDisplayOrder as $x => $code) {
-  $statusCols[$code] = $statusToLabel[$codeToStatus[$code]];
-  $gui->columnsDefinition[$codeToStatus[$code]] =  
-          array('qty' => lang_get($statusCols[$code]), 
-                'percentage' => "[%]");
-
-  $data_tpl[$codeToStatus[$code]] = array('qty' => 0, 'percentage' => 0);
-}
-
-
-//foreach ($gui->platformSet as $plat_id => $plat_name) {
-  $sql = "SELECT context_id,BLDT.id AS detail_id, 
-          testplan_id,platform_id,
-          begin_exec_ts,end_exec_ts,creation_ts,
-          top_tsuite_id,child_tsuite_id,status,qty,total_tc,
-          TS_TOP.name AS top_name, TS_CHI.name AS child_name
-          FROM {$tables['baseline_l1l2_context']} BLC
-          JOIN  {$tables['baseline_l1l2_details']} BLDT
-          ON BLDT.context_id = BLC.id
-          JOIN {$tables['nodes_hierarchy']} AS TS_TOP 
-          ON TS_TOP.id = top_tsuite_id
-          JOIN {$tables['nodes_hierarchy']} AS TS_CHI 
-          ON TS_CHI.id = child_tsuite_id
-          WHERE BLC.testplan_id = $args->tplan_id
-          ORDER BY BLC.creation_ts DESC, top_name ASC,child_name ASC";
-
-
-  $keyCols = array('platform_id','context_id',
-                   'top_tsuite_id','child_tsuite_id');
-  $rsu = $db->fetchRowsIntoMap4l($sql,$keyCols,true);
-
-
-
-// Generate statistics for each platform
-// Platforms are ordered by name  
-foreach ($rsu as $plat_id => $dataByContext) {
-  $gui->statistics = array();
-
-  $gui->statistics[$plat_id] = array();
-  $gui->span[$plat_id] = array();
-  
-  $rx = 0;
-  foreach ($dataByContext as $context_id => $dataByTop) {
-    $gui->statistics[$plat_id][$rx] = array();
-    $gui->span[$plat_id][$rx] = null;
-
-    $rrr = current(current($dataByTop))[0];
-    reset($dataByTop);
-    $gui->span[$plat_id][$rx] = 
-      array('begin' => $rrr['begin_exec_ts'],
-            'end' => $rrr['end_exec_ts'],
-            'baseline_ts' => $rrr['creation_ts']);
-
-    foreach ($dataByTop as $top_id => $dataByChild) {
-      foreach ($dataByChild as $child_id => $dataX) {
-        $gui->statistics[$plat_id][$rx][$child_id] = array();
-        $hand = &$gui->statistics[$plat_id][$rx][$child_id];
-
-        $dfx = $dataX[0];
-        $hand['name'] = $dfx['top_name'] . ':' . $dfx['child_name'];
-        $hand['total_tc'] = $dfx['total_tc'];
-        $hand['percentage_completed'] = -1;
-        $hand['details'] = $data_tpl;
-        $hand['parent_id'] = $top_id;
-
-        foreach ($dataX as $xx => $xmen) {
-          $pp = ($hand['total_tc'] > 0) ? 
-                  (round(($xmen['qty']/$hand['total_tc']) * 100,1)) : 0;
-          $hand['details'][$codeToStatus[$xmen['status']]] = 
-                array('qty' => $xmen['qty'],'percentage' => $pp);
-        }
-
-        // Calculate percentage completed, using all exec status
-        // other than not run
-        if ($hand['total_tc'] > 0) {
-          $hand['percentage_completed'] =  
-            $hand['total_tc'] - $hand['details']['not_run']['qty'];
-          $hand['percentage_completed'] = 
-            round(($hand['percentage_completed']/$hand['total_tc']) * 100,1);
-        }
-      }
-    }
-    $rx++;
-  }
-}
-
+$ll = null;
+$filters = array('exec_type' => TESTCASE_EXECUTION_TYPE_AUTO);
 
 /*
-array(1) {
-  [187]=>
-  array(10) {
-    [33984]=>
-    array(6) {
-      ["type"]=> string(6) "tsuite"
-      ["name"]=>
-      string(55) "PT/08/TMS/Costing:PT/08.01/Price List & Rate Management"
-      ["parent_id"]=> string(5) "33953"
-      ["total_tc"]=> int(218)
-      ["percentage_completed"]=> string(4) "95.4"
-      ["details"]=>
-      array(4) {
-        ["not_run"]=> array(2) {["qty"]=>int(10)
-                                ["percentage"]=> string(3) "4.6"}
-        ["passed"]=>
-      }
-    }
+$out = gen_spec_view($db,'testproject',
+                     $args->tproject_id,$args->tproject_id,
+                     'name',$ll,0,$filters);
+
 */
+/*
+$out = genSpecViewFlat($dbHandler, 'testplan', 
+                         $argsObj->tplan_id, $argsObj->id, 
+                         $tsuite_data['name'],
+                         $tplan_linked_tcversions, null, 
+                         $genSpecFilters, $my['options']);
 
 
+function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
+                         $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
+*/
+$opt = array('onlyLatestTCV' => true);
+$out = genSpecViewFlat($db,'testproject',
+                      $args->tproject_id,$args->tproject_id,
+                      'name',$ll,0,$filters,$opt);
 
-$timerOff = microtime(true);
-$gui->elapsed_time = round($timerOff - $timerOn,2);
+$gui->items = $out['spec_view'];
 
-if ($args->spreadsheet) {
-  createSpreadsheet($gui,$args,$tplan_mgr);
-}
+// useful to avoid error messages on smarty template.
+$gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
+$gui->has_tc = $out['num_tc'] > 0 ? 1:0;
+$gui->support_array = array_keys($gui->items);
 
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-displayReport($tplCfg->tpl, $smarty, $args->format,$mailCfg);
+$smarty->display($tplCfg->tpl);
 
 
 /**
@@ -188,10 +87,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
  
   list($add2args,$gui) = initUserEnv($dbHandler,$argsObj);
 
-  $gui->fakePlatform = array('');
-  $gui->title = lang_get('baseline_l1l2');
+  $gui->title = lang_get('report_test_automation');
   $gui->do_report = array();
-  $gui->showPlatforms = true;
   $gui->columnsDefinition = new stdClass();
   $gui->statistics = new stdClass();
   $gui->elapsed_time = 0; 
@@ -199,21 +96,6 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr) {
   $gui->buildMetricsFeedback = lang_get('buildMetricsFeedback');
 
   $gui->tproject_name = testproject::getName($dbHandler,$argsObj->tproject_id);
-
-  $info = $tplanMgr->get_by_id($argsObj->tplan_id);
-  $gui->tplan_name = $info['name'];
-  $gui->tplan_id = intval($argsObj->tplan_id);
-
-  $gui->platformSet = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'map'));
-  if( is_null($gui->platformSet) ) {
-  	$gui->platformSet = array('');
-  	$gui->showPlatforms = false;
-  } else {
-    natsort($gui->platformSet);
-  }
-
-  $gui->hasPlatforms = count($gui->platformSet) >= 1 && 
-                       !isset($gui->platformSet[0]);
 
   return $gui;
 }

@@ -30,6 +30,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 	            {$table_counter=$table_counter+1}
               <table cellspacing="0" style="font-size:small;" width="100%"
                 id="the-table-{$table_counter}" class="tableruler">
+                <caption 
+                  style="text-align:left;font-size:x-small;background-color:#059; font-weight:bold; color:white">{$ts.testsuite.name|escape}</caption>
   			        <thead>
     			        <tr style="background-color:#059; font-weight:bold; color:white">
                     <th>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
@@ -40,7 +42,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
                   {foreach from=$ts.testcases item=tcase}
                     <tr>
                       {$version = current($tcase.tcversions)}
-                      <td> {$ts.testsuite.name|escape}{$tcase.name|escape}&nbsp;[{$version}]
+                      <td>{$tcase.name|escape}&nbsp;[{$version}]
                       </td>
                     </tr>
                   {/foreach}   

@@ -30,27 +30,10 @@ $gui->do_report['msg'] = '';
 $ll = null;
 $filters = array('exec_type' => TESTCASE_EXECUTION_TYPE_AUTO);
 
-/*
-$out = gen_spec_view($db,'testproject',
-                     $args->tproject_id,$args->tproject_id,
-                     'name',$ll,0,$filters);
-
-*/
-/*
-$out = genSpecViewFlat($dbHandler, 'testplan', 
-                         $argsObj->tplan_id, $argsObj->id, 
-                         $tsuite_data['name'],
-                         $tplan_linked_tcversions, null, 
-                         $genSpecFilters, $my['options']);
-
-
-function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
-                         $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
-*/
 $opt = array('onlyLatestTCV' => true);
 $out = genSpecViewFlat($db,'testproject',
                       $args->tproject_id,$args->tproject_id,
-                      'name',$ll,0,$filters,$opt);
+                      '',$ll,0,$filters,$opt);
 
 $gui->items = $out['spec_view'];
 

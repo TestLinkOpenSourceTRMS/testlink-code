@@ -67,9 +67,11 @@ function initArgsForReports(&$dbHandler) {
   } else {
     testlinkInitPage($dbHandler,true,false,"checkRights");
 
-    $tplanMgr = new testplan($dbHandler);
-    $tplan = $tplanMgr->get_by_id($args->tplan_id);
-    $args->tproject_id = $tplan['testproject_id'];
+    if ($args->tproject_id ==0) {
+      $tplanMgr = new testplan($dbHandler);
+      $tplan = $tplanMgr->get_by_id($args->tplan_id);
+      $args->tproject_id = $tplan['testproject_id'];      
+    }
   }
 
   if ($args->tproject_id <= 0) {

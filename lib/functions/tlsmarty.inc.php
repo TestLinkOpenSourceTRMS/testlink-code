@@ -414,6 +414,7 @@ class TLSmarty extends Smarty {
                    'remove' => $imgLoc . 'delete.png',
                    'reorder' => $imgLoc . 'arrow_switch.png',
                    'report' => $imgLoc . 'report.png',
+                   'report_test_automation' => $imgLoc . 'lightning.png',
                    'report_word' => $imgLoc . 'page_word.png',
                    'requirements' => $imgLoc . 'cart.png',
                    'resequence' => $imgLoc . 'control_equalizer.png',

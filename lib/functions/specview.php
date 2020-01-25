@@ -141,6 +141,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
                          'exec_type' => null, 
                          'importance' => null, 'cfields' => null,
                          'platforms' => null);
+
   foreach( $my as $key => $settings) {
     if( !is_null($$key) && is_array($$key) ) {
       $my[$key] = array_merge($my[$key],$$key);
@@ -850,6 +851,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
           $options = null;
           $doFilter = true;
           $allowedSet = null;
+          $emptySet = false;
 
           // a first clean will not be bad, ok may be we are going to do more 
           // loops that needed, but think logic will be more clear 
@@ -860,13 +862,15 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
             }
           }
 
-          if( $useFilter['execution_type'] ) {
+          if ($useFilter['execution_type']) {
             // Potential Performance ISSUE
             $allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['execution_type'],$options);
-            $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+
+             $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+             $emptySet = !$doFilter;
           }
 
-          if( $doFilter ) {
+          if ((false == $emptySet)  && $doFilter) {
             // Add another filter on cascade mode
             // @20130426 - seems we are applying TWICE the Custom Fields Filter
             // because we have applied it before on:
@@ -885,9 +889,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
                 unset($dummySet);
               }
             }
+            $doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+            $emptySet = !$doFilter;
           }
           
-          if( !is_null($allowedSet) &&  count($allowedSet) > 0 ) {
+          if( $doFilter && !is_null($allowedSet) &&  count($allowedSet) > 0 ) {
             $useAllowed = true;
             foreach($allowedSet as $key => $value) {
               $tspecKey = $itemSet[$value['testcase_id']];  
@@ -895,7 +901,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
             }
             reset($allowedSet);
           }
-             
+          
+          if ($emptySet) {
+            $test_spec = null;
+          }
+
           $setToRemove = array_diff_key($tcversionSet,$allowedSet);
           if( !is_null($setToRemove) &&  count($setToRemove) > 0 ) {
             foreach($setToRemove as $key => $value) {
@@ -907,7 +917,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
       }  // end switch
     }
   } // if apply filters
-  unset($tobj_mgr);
   return $test_spec;
 }
 
@@ -1249,8 +1258,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
     $tc_id = $testCase['testcase_id'];
     
     // Needed when having multiple platforms
-    if($pivot_id != $tc_id )
-    {
+    if ($pivot_id != $tc_id ) {
       $pivot_id = $tc_id;
       $result['num_tc']++;
     }
@@ -1263,10 +1271,9 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
     // also we need to explain !is_null($out[$parent_idx])
     //
     if($testCase['active'] == 1 && !isset($tcStatus2exclude[$testCase['status']]) && 
-       !is_null($out[$parent_idx]) )
-    {       
-      if( !isset($outRef['execution_order']) )
-      {
+       !is_null($out[$parent_idx]) ) {  
+
+      if( !isset($outRef['execution_order']) ){
         // Doing this I will set order for test cases that still are not linked.
         // But Because I loop over all versions (linked and not) if I always write, 
         // will overwrite right execution order of linked tcversion.
@@ -1282,24 +1289,19 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
       $outRef['importance'][$testCase['id']] = $testCase['importance'];
       $outRef['status'][$testCase['id']] = $testCase['status'];
       
-      if (!isset($outRef['tcversions_qty']))  
-      {
+      if (!isset($outRef['tcversions_qty'])) {
         $outRef['tcversions_qty']=0;
       }
       $outRef['tcversions_qty']++;
     }
     
-    if(!is_null($linked_items))
-    {
-      foreach($linked_items as $linked_testcase)
-      {
+    if (!is_null($linked_items)) {
+      foreach($linked_items as $linked_testcase) {
         $target = current($linked_testcase);
         if(($target['tc_id'] == $testCase['testcase_id']) &&
-           ($target['tcversion_id'] == $testCase['id']) )
-        {
+           ($target['tcversion_id'] == $testCase['id']) ) {
           // This can be written only once no matter platform qty
-          if( !isset($outRef['tcversions'][$testCase['id']]) )
-          {
+          if( !isset($outRef['tcversions'][$testCase['id']]) ) {
             $outRef['tcversions'][$testCase['id']] = $testCase['version'];
             $outRef['tcversions_active_status'][$testCase['id']] = 0;
             $outRef['external_id'] = $testCase['tc_external_id'];
@@ -1365,8 +1367,7 @@ function addLinkedVersionsInfo($testCaseVersionSet,$a_tsuite_idx,&$out,&$linked_
   } //foreach
   
   // Again DAMM 0!!
-  if( !is_null($out[$firstElemIDX]) )
-  {
+  if (!is_null($out[$firstElemIDX])) {
     $result['spec_view'] = $out;
   }
   return $result; 
@@ -1484,15 +1485,16 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
   $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 
   $my = array();
-  $my['options'] = array('write_button_only_if_linked' => 0,'prune_unlinked_tcversions' => 0,
+  $my['options'] = array('write_button_only_if_linked' => 0,
+                         'prune_unlinked_tcversions' => 0,
                          'add_custom_fields' => 0) + (array)$options;
 
-  $my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 
+  $my['filters'] = array('keywords' => 0, 'testcases' => null ,
+                         'exec_type' => null, 
                          'importance' => null, 'cfields' => null);
-  foreach( $my as $key => $settings)
-  {
-    if( !is_null($$key) && is_array($$key) )
-    {
+
+  foreach( $my as $key => $settings) {
+    if( !is_null($$key) && is_array($$key) ) {
       $my[$key] = array_merge($my[$key],$$key);
     }
   }              
@@ -1501,8 +1503,7 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
   $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
   $is_uncovered_view_type = ($spec_view_type == 'uncoveredtestcases') ? 1 : 0;
   
-  if( !$is_tplan_view_type && is_null($tproject_id) )
-  {
+  if( !$is_tplan_view_type && is_null($tproject_id) ) {
     $tproject_id = $tobj_id;
   }
   
@@ -1530,9 +1531,9 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
   $idx = 0;
   $a_tcid = array();
   $a_tsuite_idx = array();
-  if(count($test_spec))
-  {
-    $cfg = array('node_types' => $hash_id_descr, 'write_status' => $write_status,
+  if(count($test_spec)) {
+    $cfg = array('node_types' => $hash_id_descr, 
+                 'write_status' => $write_status,
                  'is_uncovered_view_type' => $is_uncovered_view_type);
                  
     // $a_tsuite_idx
@@ -1545,22 +1546,27 @@ function genSpecViewFlat(&$db, $spec_view_type='testproject', $tobj_id, $id, $na
   // Collect information related to linked testcase versions
   // DAMMED 0!!!!
   $firtsElemIDX = key($out);
-  if(!is_null($out) && count($out) > 0 && !is_null($out[$firtsElemIDX]) && count($a_tcid))
-  {
+  if(!is_null($out) && count($out) > 0 && !is_null($out[$firtsElemIDX]) && count($a_tcid)) {
     $optGBI = array('output' => 'full_without_users',
                     'order_by' => " ORDER BY NHTC.node_order, NHTC.name, TCV.version DESC ");
+    
+    if (isset($options['onlyLatestTCV']) 
+        && $options['onlyLatestTCV']) {
+      $whatSet = testcase::LATEST_VERSION;
+      $tcaseVersionSet = $tcase_mgr->getLTCVInfo($a_tcid);
+    } else {
+      $whatSet = testcase::ALL_VERSIONS;
+      $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,$whatSet,null,$optGBI);
+    } 
 
-    $tcaseVersionSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS,null,$optGBI);
     $result = addLinkedVersionsInfo($tcaseVersionSet,$a_tsuite_idx,$out,$linked_items,$options);
   }
 
-  if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields'])
-  {    
+  if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields']) {    
     addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
   }
-  // --------------------------------------------------------------------------------------------
-  unset($tcase_mgr);
-  
+
+  // ------------------------------------------------------------------  
   // with array_values() we reindex array to avoid "holes"
   $result['spec_view']= array_values($result['spec_view']);
   return $result;

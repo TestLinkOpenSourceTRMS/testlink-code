@@ -9298,7 +9298,6 @@ class testcase extends tlObjectWithAttachments {
              FROM {$this->tables['platforms']} PL
              WHERE PL.testproject_id = {$tproject_id}
              AND PL.enable_on_design = 1
-             AND PL.enable_on_execution = 0
              AND PL.id NOT IN 
              (
                SELECT TCPL.platform_id 

@@ -57,6 +57,8 @@ View test specification containers
 {$dummy="lib/results/testAutomationSpec.php?tproject_id=$tproject_id&form_token=$ft"}
 {$reportTestAutomationAction = "$basehref$dummy&format=fake"}
 
+{$dummy="lib/results/testAutomationScripts.php?tproject_id=$tproject_id&form_token=$ft"}
+{$reportTestAutomationScriptsAction = "$basehref$dummy&format=fake"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {$ext_location=$smarty.const.TL_EXTJS_RELATIVE_PATH}
@@ -148,9 +150,14 @@ function jsCallDeleteFile(btn, text, o_id)
       <img src="{$tlImages.report_word}" onclick="window.open('{$testSpecFullWordDocAction}')" 
            title="{$labels.btn_gen_test_spec_word}" />
 
-      <img src="{$tlImages.report_test_automation}"    
+      <img src="{$tlImages.report_test_automation_scripts}"    
            onclick="location='{$reportTestAutomationAction}'" 
            title="{$labels.btn_report_test_automation}" />
+
+      <img src="{$tlImages.report_test_automation}"    
+           onclick="location='{$reportTestAutomationScriptsAction}'" 
+           title="{$labels.btn_report_test_automation}" />
+
     </form>
     </fieldset>
   </div>

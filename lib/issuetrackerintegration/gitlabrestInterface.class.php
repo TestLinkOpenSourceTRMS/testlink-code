@@ -64,24 +64,18 @@ class gitlabrestInterface extends issueTrackerInterface
   function completeCfg()
   {
     $base = trim($this->cfg->uribase,"/") . '/'; // be sure no double // at end
-    if( property_exists($this->cfg,'attributes') )
-    {
+    if (property_exists($this->cfg,'attributes')) {
       $attr = get_object_vars($this->cfg->attributes);
-      foreach ($attr as $name => $elem) 
-      {
+      foreach ($attr as $name => $elem) {
         $name = (string)$name;
-        if( is_object($elem) )
-        {
+        if ( is_object($elem) ) {
            $elem = get_object_vars($elem);
            $cc = current($elem);
            $kk = key($elem); 
-           foreach($cc as $value)
-           {
-              $this->issueOtherAttr[$name][] = array($kk => (string)$value); 
+           foreach ($cc as $value) {
+             $this->issueOtherAttr[$name][] = array($kk => (string)$value); 
            }
-        } 
-        else
-        {
+        } else {
           $this->issueOtherAttr[$name] = (string)$elem;     
         } 
       }
@@ -92,20 +86,18 @@ class gitlabrestInterface extends issueTrackerInterface
     //
     // On Redmine 1 seems to be standard for Issues/Bugs
     $this->issueDefaults = array('trackerid' => 1); 
-    foreach($this->issueDefaults as $prop => $default)
-    {
-      if(!isset($this->issueAttr[$prop]))
-      {
+    foreach ($this->issueDefaults as $prop => $default) {
+      if (!isset($this->issueAttr[$prop])) {
         $this->issueAttr[$prop] = $default;
       } 
     }   
     
-    if( property_exists($this->cfg,'custom_fields') )
-    {
+    if (property_exists($this->cfg,'custom_fields')) {
       $cf = $this->cfg->custom_fields;
       $this->cfg->custom_fields = (string)$cf->asXML();
     }   
   }
+
 	/**
    * useful for testing 
    *
@@ -150,6 +142,7 @@ class gitlabrestInterface extends issueTrackerInterface
       $pxy->proxy = config_get('proxy');
       $this->APIClient = new gitlab($redUrl,$redAK,$projectId, $pxy);
 
+      //DEBUG var_dump($redUrl,$redAK,$projectId, $pxy);
       // to undestand if connection is OK, I will ask for projects.
       // I've tried to ask for users but get always ERROR from gitlab (not able to understand why).
       try
@@ -326,12 +319,20 @@ class gitlabrestInterface extends issueTrackerInterface
       throw new Exception("Error setting note", 1);
     }
     $ret = array('status_ok' => true, 'id' => (string)$op->iid, 
-                   'msg' => sprintf(lang_get('gitlab_bug_comment'),$op->body, $this->APIClient->projectId));
+                 'msg' => sprintf(lang_get('gitlab_bug_comment'),
+                 $op->body, $this->APIClient->projectId));
     return $ret;
   }
 
 
-
+  /**
+   *
+   * @author francisco.mancardi@gmail.com>
+   **/
+  function getCfg()
+  {
+    return $this->cfg;
+  }
 
   /**
    *

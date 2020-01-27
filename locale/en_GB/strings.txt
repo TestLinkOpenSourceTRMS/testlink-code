@@ -4041,4 +4041,10 @@ $TLS_testers_qty = 'Number of testers';
 
 $TLS_report_test_automation = 'Report Test Automation Spec';
 $TLS_btn_report_test_automation = 'Report Test Automation Spec';
+
+$TLS_report_test_automation_scripts = 'Report Test Automation Scripts';
+$TLS_btn_report_test_automation_scripts = 'Report Test Automation Scripts';
+$TLS_numOfScripts = 'scripts';
+$TLS_totalNumberOfScripts = 'Total Number of Scripts ';
+
 // ----- END ------------------------------------------------------------------

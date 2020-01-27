@@ -415,6 +415,8 @@ class TLSmarty extends Smarty {
                    'reorder' => $imgLoc . 'arrow_switch.png',
                    'report' => $imgLoc . 'report.png',
                    'report_test_automation' => $imgLoc . 'lightning.png',
+                   'report_test_automation_scripts' 
+                      => $imgLoc . 'brick_go.png',
                    'report_word' => $imgLoc . 'page_word.png',
                    'requirements' => $imgLoc . 'cart.png',
                    'resequence' => $imgLoc . 'control_equalizer.png',

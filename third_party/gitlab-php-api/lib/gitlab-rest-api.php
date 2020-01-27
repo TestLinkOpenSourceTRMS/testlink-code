@@ -8,8 +8,6 @@
  * @created  20170630
  * @link     https://docs.gitlab.com/ee/api/
  *
- * @internal revisions
- * @since 1.9.16
  */
 
 /**
@@ -45,7 +43,7 @@ class gitlab
   /**
    * Just supports api version 4 by now
    */
-  public $api = '/api/v4/';
+  public $api = 'api/v4';
 
   /**
    * Constructor
@@ -57,28 +55,22 @@ class gitlab
   {
     // if the values are not empty, we'll assign them to our matching properties
     $args = array('apiKey','url', 'projectId');
-    foreach ($args as $arg) 
-    {
-      if (!empty($$arg)) 
-      {
+    foreach ($args as $arg) {
+      if (!empty($$arg)) {
         $this->$arg = $$arg;
       }
     }
 
-    if(!is_null($cfg))
-    {
-      if(!is_null($cfg->proxy))
-      {
+    if (!is_null($cfg)) {
+      if (!is_null($cfg->proxy)) {
         $this->proxy = new stdClass();
         $this->proxy->port = null;
         $this->proxy->host = null;
         $this->proxy->login = null;
         $this->proxy->password = null;
 
-        foreach($cfg->proxy as $prop => $value)
-        {
-          if(isset($cfg->proxy->$prop))
-          {
+        foreach ($cfg->proxy as $prop => $value) {
+          if (isset($cfg->proxy->$prop)) {
             $this->proxy->$prop = $value; 
           }  
         }  
@@ -104,7 +96,7 @@ class gitlab
    */
   public function initCurl($cfg=null) 
   {
-    $agent = "TestLink 1.9.16";
+    $agent = "TestLink gitlab-rest-api";
     try
     {
       $this->curl = curl_init();
@@ -159,6 +151,9 @@ class gitlab
     curl_setopt_array($this->curl,$curlCfg);
   }
 
+  /**
+   *
+   */
   function getIssueURL($issueID)
   {
     $issue = $this->getIssue($issueID);
@@ -208,6 +203,7 @@ class gitlab
     $op = $this->_request_json('POST',$url);
     return $op;
   }
+
   /**
    *
    */
@@ -230,18 +226,92 @@ class gitlab
   /**
    *
    */
-  public function getIssueStatuses() 
+  public function getRepoFilesTreeFlat($params) 
   {                        
-    throw new exception(__METHOD__ . " Not implemented");
+    /*
+     List Repository Tree
+     GET /projects/:id/repository/tree
+     
+     Exists in both Community & Enterprise Editions   
+     https://docs.gitlab.com/ce/api/repositories.html
+     https://docs.gitlab.com/ee/api/repositories.html
+
+     Parameters:
+      id (required) 
+        - The ID or URL-encoded path of the project owned by 
+          the authenticated user
+
+      path (optional) 
+        - The path inside repository. 
+          Used to get content of subdirectories
+      
+      ref (optional) 
+        - The name of a repository branch or tag or 
+          if not given the default branch
+
+      recursive (optional) 
+        - Boolean value used to get a recursive tree (false by default)
+
+      per_page (optional) 
+        - Number of results to show per page. 
+        If not specified, defaults to 20
+
+    */
+    $id = intval($params['id']);
+
+    $uri = "/projects/{$id}/repository/tree";
+    $opt = ['recursive' => true, 
+            'per_page' => 10000,
+            'itemType' => 'blob'];
+
+    $opt = array_merge($opt,(array)$params);
+    unset($opt['id']);
+
+    $first = true;
+    foreach ($opt as $okey => $oval) {
+      if ($first) {
+        $first = false;
+        $uri .= "?";
+      } else {
+        $uri .= "&";
+      }
+      $uri .= "{$okey}={$oval}";
+    } 
+
+    $treeItems = $this->_get($uri);
+    /*echo '<pre> treeItems';
+    var_dump($treeItems);
+    echo '</pre>';
+    */
+
+    $items = [];
+    foreach ($treeItems as $elem) {
+      if ($elem->type == $opt['itemType']){
+        $items[] = $elem->path;
+      }
+    }
+   
+    /*
+    echo '<pre> items';
+    var_dump($items);
+    echo '</pre>';
+    */
     return $items;
   }                                                   
 
+  /**
+   *
+   */
 
 
 
-  /* -------------------------------------------------------------------------------------- */
-  /* General Methods used to build up communication process                                 */
-  /* -------------------------------------------------------------------------------------- */
+
+
+
+  /* -------------------------------------------------------- */
+  /* General Methods used to build up communication process   */
+  /* -------------------------------------------------------- */
+
 
   /** 
    *
@@ -255,7 +325,7 @@ class gitlab
 
 
 
-   /** 
+ /** 
   *
   * @internal notice
   * copied and adpated from work on YouTrack API interface by Jens Jahnke <jan0sch@gmx.net>
@@ -277,32 +347,39 @@ class gitlab
   **/
   protected function _request($method, $cmd, $body = NULL, $ignoreStatusCode = 0,$reporter = null) 
   {
-    // this can happens because if I save object on _SESSION PHP is not able to
-    // save resources.
-    if( !is_resource($this->curl) )
-    {
+    // this can happens because if I save object on _SESSION PHP 
+    // is not able to save resources.
+    if (!is_resource($this->curl)) {
       $this->initCurl();
     }  
     $url = $this->url . $this->api . $cmd;
 
+    /*
+    echo '<br>debug:<br>' . __FUNCTION__ . '<br>' . $url .'<br>';
+    */
+
     curl_setopt($this->curl, CURLOPT_URL, $url);
 
-    if(!isset($this->apiKey) || trim($this->apiKey) == '') 
-    {
+    if (!isset($this->apiKey) || trim($this->apiKey) == '') {
       throw new exception(__METHOD__ . " Can not work without gitlab apiKey");
     } 
 
     curl_setopt($this->curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
     curl_setopt($this->curl, CURLOPT_DNS_CACHE_TIMEOUT, 2 );
-  
+
+    /* sometime can be useful */
+    /*
+    curl_setopt($this->curl, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, 0);
+    */
+
     $header = array();
     $header[] = "PRIVATE-TOKEN: {$this->apiKey}";
 
     curl_setopt($this->curl, CURLOPT_HEADER, 0); 
     curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header); 
 
-    switch ($method) 
-    {
+    switch ($method) {
       case 'GET':
         curl_setopt($this->curl, CURLOPT_HTTPGET, TRUE);
       break;
@@ -311,8 +388,7 @@ class gitlab
         $handle = NULL;
         $size = 0;
         // Check if we got a file or just a string of data.
-        if (file_exists($body)) 
-        {
+        if (file_exists($body)) {
           $size = filesize($body);
           if (!$size) 
           {
@@ -347,15 +423,24 @@ class gitlab
     $response = curl_getinfo($this->curl);
     $curlError =  curl_error($this->curl);
     $httpCode = (int)$response['http_code'];
-    if ($httpCode != 200 && $httpCode != 201 && $httpCode != $ignoreStatusCode) 
-    {
+    if ($httpCode != 200 && $httpCode != 201 
+        && $httpCode != $ignoreStatusCode) {
       throw new exception(__METHOD__ . "url:$this->url - response:" .
                           json_encode($response) . ' - content: ' . json_encode($content) );
     }
     
-    $rr = array('content' => $content,'response' => $response,'curlError' => $curlError);
+    $rr = array('content' => $content,
+                'response' => $response,
+                'curlError' => $curlError);
+
+    /*
+    echo '<pre>';
+    echo '<br>' . __FUNCTION__;
+    var_dump($rr);
+    echo '</pre>';
+    */
+
     return $rr;
-  
   }
 
 

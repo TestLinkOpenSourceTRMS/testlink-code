@@ -150,13 +150,13 @@ function jsCallDeleteFile(btn, text, o_id)
       <img src="{$tlImages.report_word}" onclick="window.open('{$testSpecFullWordDocAction}')" 
            title="{$labels.btn_gen_test_spec_word}" />
 
-      <img src="{$tlImages.report_test_automation_scripts}"    
+      <img src="{$tlImages.report_test_automation}"    
            onclick="location='{$reportTestAutomationAction}'" 
            title="{$labels.btn_report_test_automation}" />
 
-      <img src="{$tlImages.report_test_automation}"    
+      <img src="{$tlImages.report_test_automation_scripts}"    
            onclick="location='{$reportTestAutomationScriptsAction}'" 
-           title="{$labels.btn_report_test_automation}" />
+           title="{$labels.btn_report_test_automation_scripts}" />
 
     </form>
     </fieldset>

@@ -8,7 +8,7 @@
  * For supporting a code tracking system this class has to be extended,
  * and all customization should be done in the subclass. 
  *
- * ============= Issue Entity properties on TestLink Context ===================
+ * ============= Entity properties on TestLink Context ===================
  *
  * IDHTMLString = string
  * statusCode = can be integer,string depending of CTS
@@ -20,8 +20,6 @@
  * other properties can be present depending on CTS.
  * =============================================================================
  *
- * @internal revisions
- * @since 1.9.14
  *
  *
 **/
@@ -57,17 +55,14 @@ abstract class codeTrackerInterface
     $this->guiCfg = array('use_decoration' => true); // add [] on summary and statusHTMLString
     $this->name = $name;
 
-    if( $this->setCfg($config) )
-    {     
+    if( $this->setCfg($config) ) {     
       // useful only for integration via DB
       if( !property_exists($this->cfg,'dbcharset') )
       {
         $this->cfg->dbcharset = $this->tlCharSet;
       }
       $this->connect();
-    }
-    else
-    {
+    } else {
       $this->connected = false;
     }
   }

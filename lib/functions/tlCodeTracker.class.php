@@ -25,7 +25,15 @@ class tlCodeTracker extends tlObject
   // array index is used AS CODE that will be written to DB
   // if you need to add a new item start on 200, to avoid crash with standard ID
   //  
-  var $systems = array( 1 =>  array('type' => 'stash', 'api' => 'rest', 'enabled' => true, 'order' => -1));
+  var $systems = array( 1 =>  
+                          array('type' => 'stash', 
+                                'api' => 'rest', 
+                                'enabled' => true, 'order' => -1),
+                        2 =>  
+                          array('type' => 'gitlabrepo', 
+                                'api' => 'rest', 
+                                'enabled' => true, 'order' => -1)
+                 );
   
     
   var $entitySpec = array('name' => 'string','cfg' => 'string','type' => 'int');
@@ -530,11 +538,8 @@ class tlCodeTracker extends tlObject
     $rs = $this->db->fetchRowsIntoMap($sql,'id');
 
     $lc = null;
-    if( !is_null($rs) )
-    {
-    
-      if( $my['options']['output'] == 'add_link_count' )
-      {
+    if (!is_null($rs)) {
+      if ($my['options']['output'] == 'add_link_count') {
         $sql = "/* debugMsg */ SELECT COUNT(0) AS lcount, CTD.id";
         $sql .= " FROM {$this->tables['codetrackers']} CTD " .
                 " JOIN {$this->tables['testproject_codetracker']} " .
@@ -544,16 +549,15 @@ class tlCodeTracker extends tlObject
       }
     
       
-      foreach($rs as &$item)
-      {
-        $item['verbose'] = $item['name'] . " ( {$this->types[$item['type']]} )" ;
+      foreach ($rs as &$item) {
+        $item['verbose'] = $item['name'] . 
+          " ( {$this->types[$item['type']]} )" ;
         $item['type_descr'] = $this->types[$item['type']];
         $item['env_check_ok'] = true;
         $item['env_check_msg'] = '';
         $item['connection_status'] = '';
          
-        if( $my['options']['checkEnv'] )
-        {
+        if ($my['options']['checkEnv']) {
            $impl = $this->getImplementationForType($item['type']);
            $dummy = $impl::checkEnv();
            $item['env_check_ok'] = $dummy['status'];

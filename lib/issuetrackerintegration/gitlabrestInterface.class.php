@@ -5,8 +5,6 @@
  * @filesource	gitlabrestInterface.class.php
  * @author jlguardi <jlguardi@gmail.com>
  *
- * @internal revisions
- * @since 1.9.16
  *
 **/
 require_once(TL_ABS_PATH . "/third_party/gitlab-php-api/lib/gitlab-rest-api.php");

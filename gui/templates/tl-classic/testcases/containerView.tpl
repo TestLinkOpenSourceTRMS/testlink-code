@@ -19,7 +19,8 @@ View test specification containers
              btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
              btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
              testsuite_operations, testcase_operations,btn_create_from_issue_xml,file_upload_ko,
-             btn_report_test_automation,report_test_automation'}
+             btn_report_test_automation,report_test_automation,
+             btn_report_test_automation_scripts,report_test_automation_scripts'}
 
 {$ft=''}
 {if isset($gui->form_token)}

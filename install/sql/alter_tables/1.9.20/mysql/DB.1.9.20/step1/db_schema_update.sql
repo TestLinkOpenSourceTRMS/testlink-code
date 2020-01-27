@@ -18,7 +18,7 @@ ALTER TABLE /*prefix*/builds ADD COLUMN branch varchar(64) NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN release_candidate varchar(100) NULL;
 
 --
-ALTER TABLE /*prefix*/users MODIFY password VARCHAR(255);
+ALTER TABLE /*prefix*/users MODIFY password VARCHAR(255) NOT NULL DEFAULT '';
 
 -- 
 ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active tinyint(1) NOT NULL default '1';

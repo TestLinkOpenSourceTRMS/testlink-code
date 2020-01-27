@@ -61,6 +61,26 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   UNIQUE KEY udx1 (context_id,top_tsuite_id,child_tsuite_id,status)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE /*prefix*/execution_tcsteps_wip (
+  id int(10) unsigned NOT NULL auto_increment,
+  tcstep_id int(10) unsigned NOT NULL default '0',
+  testplan_id int(10) unsigned NOT NULL default '0',
+  platform_id int(10) unsigned NOT NULL default '0',
+  build_id int(10) unsigned NOT NULL default '0',
+  tester_id int(10) unsigned default NULL,
+  creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  notes text,
+  status char(1) default NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY /*prefix*/execution_tcsteps_wip_idx1(`tcstep_id`,`testplan_id`,`platform_id`,`build_id`)
+) DEFAULT CHARSET=utf8;
+
+ALTER TABLE /*prefix*/milestones MODIFY target_date date NOT NULL;
+ALTER TABLE /*prefix*/milestones MODIFY start_date date DEFAULT NULL;
+
+ALTER TABLE /*prefix*/platforms MODIFY enable_on_design tinyint(1) unsigned NOT NULL default '0';
+ALTER TABLE /*prefix*/platforms MODIFY enable_on_execution tinyint(1) unsigned NOT NULL default '1';
+
 #
 CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_testplan 
 AS SELECT tcversion_id, testplan_id, MAX(id) AS id 

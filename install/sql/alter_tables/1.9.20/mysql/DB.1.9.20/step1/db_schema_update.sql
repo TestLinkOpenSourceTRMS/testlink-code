@@ -18,12 +18,34 @@ ALTER TABLE /*prefix*/builds ADD COLUMN branch varchar(64) NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN release_candidate varchar(100) NULL;
 
 --
-ALTER TABLE /*prefix*/users MODIFY password VARCHAR(255);
+ALTER TABLE /*prefix*/users MODIFY password VARCHAR(255) NOT NULL default '';
 
 -- 
 ALTER TABLE /*prefix*/testplan_platforms ADD COLUMN active tinyint(1) NOT NULL default '1';
 ALTER TABLE /*prefix*/platforms ADD COLUMN  enable_on_design tinyint(1) NOT NULL default '0';
 ALTER TABLE /*prefix*/platforms ADD COLUMN  enable_on_execution tinyint(1) NOT NULL default '1';
+
+--
+ALTER TABLE /*prefix*/nodes_hierarchy ADD INDEX /*prefix*/nodes_hierarchy_node_type_id (node_type_id);
+ALTER TABLE /*prefix*/testcase_keywords ADD INDEX /*prefix*/idx02_testcase_keywords (tcversion_id);
+
+ALTER TABLE /*prefix*/milestones MODIFY target_date date NOT NULL;
+ALTER TABLE /*prefix*/milestones MODIFY start_date date DEFAULT NULL;
+
+-- 
+CREATE TABLE /*prefix*/execution_tcsteps_wip (
+   id int(10) unsigned NOT NULL auto_increment,
+   tcstep_id int(10) unsigned NOT NULL default '0',
+   testplan_id int(10) unsigned NOT NULL default '0',
+   platform_id int(10) unsigned NOT NULL default '0',
+   build_id int(10) unsigned NOT NULL default '0',
+   tester_id int(10) unsigned default NULL,
+   creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   notes text,
+   status char(1) default NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY /*prefix*/execution_tcsteps_wip_idx1(`tcstep_id`,`testplan_id`,`platform_id`,`build_id`)
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE /*prefix*/testcase_platforms (
@@ -45,7 +67,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   end_exec_ts timestamp NOT NULL,
   creation_ts timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts),
+  UNIQUE KEY udx1 (testplan_id,platform_id,creation_ts)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -72,9 +94,6 @@ CREATE OR REPLACE VIEW /*prefix*/latest_exec_by_context
 AS SELECT tcversion_id, testplan_id,build_id,platform_id,max(id) AS id
 FROM /*prefix*/executions 
 GROUP BY tcversion_id,testplan_id,build_id,platform_id;
-
-ALTER TABLE /*prefix*/nodes_hierarchy ADD INDEX /*prefix*/nodes_hierarchy_node_type_id (node_type_id);
-ALTER TABLE /*prefix*/testcase_keywords ADD INDEX /*prefix*/idx02_testcase_keywords (tcversion_id);
 
 
 CREATE OR REPLACE VIEW /*prefix*/tcversions_without_platforms

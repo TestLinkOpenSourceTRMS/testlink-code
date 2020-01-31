@@ -375,8 +375,9 @@ class cfield_mgr extends tlObject
 
     extract($ctx);
 
-    return $this->get_linked_cfields_at_design($tproject_id,$enabled,$filters,
-                                        $node_type,$node_id,$access_key);
+    return $this->get_linked_cfields_at_design($tproject_id,
+                    $enabled,$filters,
+                    $node_type,$node_id,$access_key);
 
   }
 
@@ -440,9 +441,9 @@ class cfield_mgr extends tlObject
     rev :
 
   */
-  function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
-                                        $node_type=null,$node_id=null,
-                                        $access_key='id')
+  function get_linked_cfields_at_design($tproject_id,$enabled,
+             $filters=null,$node_type=null,$node_id=null,
+             $access_key='id')
   {
     $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   	
@@ -453,6 +454,7 @@ class cfield_mgr extends tlObject
     switch ($access_key) {
       case 'id':
       case 'node_id':
+      case 'name':
       break;
       
       default:

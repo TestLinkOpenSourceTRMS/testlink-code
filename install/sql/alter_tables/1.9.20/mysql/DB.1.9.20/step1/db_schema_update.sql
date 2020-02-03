@@ -32,6 +32,9 @@ ALTER TABLE /*prefix*/testcase_keywords ADD INDEX /*prefix*/idx02_testcase_keywo
 ALTER TABLE /*prefix*/milestones MODIFY target_date date NOT NULL;
 ALTER TABLE /*prefix*/milestones MODIFY start_date date DEFAULT NULL;
 
+ALTER TABLE /*prefix*/platforms MODIFY enable_on_design tinyint(1) unsigned NOT NULL default '0';
+ALTER TABLE /*prefix*/platforms MODIFY enable_on_execution tinyint(1) unsigned NOT NULL default '1';
+
 -- 
 CREATE TABLE /*prefix*/execution_tcsteps_wip (
    id int(10) unsigned NOT NULL auto_increment,

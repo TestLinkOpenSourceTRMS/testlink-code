@@ -21,6 +21,23 @@ ALTER TABLE /*prefix*/platforms ADD COLUMN enable_on_design INT2 NOT NULL DEFAUL
 ALTER TABLE /*prefix*/platforms ADD COLUMN enable_on_execution INT2 NOT NULL DEFAULT '1';
 
 --
+-- Table structure for table "execution_tcsteps_wip"
+--
+CREATE TABLE /*prefix*/execution_tcsteps_wip (
+    "id" BIGSERIAL NOT NULL ,
+    "tcstep_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcsteps (id),
+    "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+    "platform_id" INTEGER NOT NULL DEFAULT '0',
+    "build_id" INTEGER NOT NULL DEFAULT '0',
+    "tester_id" BIGINT NULL DEFAULT NULL,
+    "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+    "notes" TEXT NULL DEFAULT NULL,
+    "status" CHAR(1) NULL DEFAULT NULL,
+    PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX /*prefix*/execution_tcsteps_wip_uidx1 ON  /*prefix*/execution_tcsteps_wip ("tcstep_id","testplan_id","platform_id","build_id");
+
+--
 -- Table structure for table "testcase_platforms"
 --
 CREATE TABLE /*prefix*/testcase_platforms( 
@@ -42,7 +59,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_context (
   "creation_ts" timestamp NOT NULL DEFAULT now(),
   PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX /*prefix*/udx1 ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
+CREATE UNIQUE INDEX /*prefix*/udx1_baseline_l1l2_context ON /*prefix*/baseline_l1l2_context ("testplan_id","platform_id","creation_ts");
 
 
 CREATE TABLE /*prefix*/baseline_l1l2_details (
@@ -55,7 +72,7 @@ CREATE TABLE /*prefix*/baseline_l1l2_details (
   "total_tc" INT NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ) ;
-CREATE UNIQUE INDEX /*prefix*/udx1 
+CREATE UNIQUE INDEX /*prefix*/udx1_baseline_l1l2_details
 ON /*prefix*/baseline_l1l2_details ("context_id","top_tsuite_id","child_tsuite_id","status");
 
 

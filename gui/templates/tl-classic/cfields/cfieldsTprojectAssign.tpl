@@ -67,7 +67,8 @@ Purpose: management Custom fields assignment to a test project
       		           
       		<td>
       		{* location will NOT apply to EXEC only CF *}
-      		{if $cf.node_description == 'testcase' && $cf.enable_on_execution ==0}
+      		{if $cf.node_description == 'testcase' 
+              && $cf.enable_on_design == 1}
 			  	<select name="location[{$cf.id}]">
 			  	  {html_options options=$gui->locations selected=$cf.location}
 			  	</select>

@@ -537,18 +537,26 @@ class tree extends tlObject
   */
   function change_parent($node_id, $parent_id) 
   {
-    $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
-    if( is_array($node_id) )
-    {
-      $id_list = implode(",",$node_id);
+    $debugMsg = 'Class:' .__CLASS__ . ' - Method:' 
+                         . __FUNCTION__ . ' :: ';
+
+    if (is_array($node_id)) {
+      $safeSet = array_map('intval',$node_id);
+      $id_list = implode(",",$safeSet);
       $where_clause = " WHERE id IN ($id_list) ";
+    } else {    
+      $safe = intval($node_id);
+      if ($safe <= 0) {
+        throw new Exception("BAD node_id", 1);
+      }
+      $where_clause=" WHERE id = $safe";
     }
-    else
-    {
-      $where_clause=" WHERE id = {$node_id}";
-    }
-    $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
-           " SET parent_id = " . $this->db->prepare_int($parent_id) . " {$where_clause}";
+
+    $safeP = $this->db->prepare_int($parent_id);
+    $sql = "/* $debugMsg */ 
+            UPDATE {$this->object_table}
+            SET parent_id = $safeP 
+            $where_clause ";
     
     $result = $this->db->exec_query($sql);
     

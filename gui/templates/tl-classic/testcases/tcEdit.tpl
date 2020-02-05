@@ -56,17 +56,12 @@ function validateForm(the_form)
   var cfSet = [document.getElementById('cf_before_summary'),
                document.getElementById('cf_before_steps'),
                document.getElementById('cf_standard_location')];
-
-  alert('cfSet.length' + cfSet.length);
   for (ccx=0; ccx < cfSet.length; ccx++) {
     if (typeof cfSet[ccx] == 'undefined') {
       continue;
     }
-    alert('ccx'+ccx);
 
     var cf_designTime = cfSet[ccx];
-    alert(cf_designTime);
-
     if (cf_designTime) {
       var cfields_container =  
         cf_designTime.getElementsByTagName('input');

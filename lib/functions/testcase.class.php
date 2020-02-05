@@ -4859,17 +4859,22 @@ class testcase extends tlObjectWithAttachments {
   /**
    * Just a Wrapper to improve, sometimes code layout
    */
-  function htmlTableOfCFValues($id,$context,$filters=null,$formatOptions=null) {
+  function htmlTableOfCFValues($id,$context,$filters=null,
+                               $formatOptions=null) 
+  {
 
     // $context
     $ctx = array('scope' => 'design', 'execution_id' => null,
-                 'testplan_id' => null,'tproject_id' => null,'link_id' => null);
+                 'testplan_id' => null,'tproject_id' => null,
+                 'link_id' => null);
 
     $ctx = array_merge($ctx,$context);
     extract($ctx);
 
-    return $this->html_table_of_custom_field_values($id,$scope,$filters,$execution_id,
-              $testplan_id,$tproject_id,$formatOptions,$link_id);
+    return $this->html_table_of_custom_field_values($id,$scope,
+                    $filters,$execution_id,
+                    $testplan_id,$tproject_id,
+                    $formatOptions,$link_id);
 
   }  
 
@@ -4952,10 +4957,10 @@ class testcase extends tlObjectWithAttachments {
 
     $add_table=true;
     $table_style='';
-    if( !is_null($formatOptions) )
-    {
+    if (!is_null($formatOptions)) {
       $label_css_style = isset($formatOptions['label_css_style']) ?
                          $formatOptions['label_css_style'] : $label_css_style;
+
       $value_css_style = isset($formatOptions['value_css_style']) ?
                          $formatOptions['value_css_style'] : $value_css_style;
 
@@ -4965,22 +4970,21 @@ class testcase extends tlObjectWithAttachments {
 
     $cf_smarty = '';
 
-    $location=null; // no filter
+    $location = null; // no filter
     $filterKey='location';
-    if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
-    {
+    if( isset($filters[$filterKey]) 
+        && !is_null($filters[$filterKey]) ) {
       $location = $filters[$filterKey];
     }
 
-    switch($scope)
-    {
+    switch($scope) {
       case 'design':
         $cf_map = $this->get_linked_cfields_at_design($id,$link_id,null,$filters,$tproject_id);
       break;
 
       case 'testplan_design':
         $cf_map = $this->get_linked_cfields_at_testplan_design($id,null,$filters,$link_id,
-                                                               $testplan_id,$tproject_id);
+          $testplan_id,$tproject_id);
       break;
 
       case 'execution':
@@ -4989,14 +4993,11 @@ class testcase extends tlObjectWithAttachments {
       break;
     }
 
-    if(!is_null($cf_map))
-    {
-      foreach($cf_map as $cf_id => $cf_info)
-      {
+    if (!is_null($cf_map)) {
+      foreach ($cf_map as $cf_id => $cf_info) {
         // if user has assigned a value, then node_id is not null
         if(isset($cf_info['node_id']) ||
-           $this->cfg->cfield->show_custom_fields_without_value)
-        {
+           $this->cfg->cfield->show_custom_fields_without_value) {
           // true => do not create input in audit log
           $label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
 
@@ -5007,8 +5008,7 @@ class testcase extends tlObjectWithAttachments {
         }
       }
 
-      if( (trim($cf_smarty) != "") && $add_table)
-      {
+      if( (trim($cf_smarty) != "") && $add_table) {
         $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
       }
     }
@@ -5179,13 +5179,13 @@ class testcase extends tlObjectWithAttachments {
 
 
   /**
-   * returns map with key: verbose location (see custom field class $locations
-   *                  value: array with fixed key 'location'
-   *                         value: location code
+   * returns map with key: 
+   *   verbose location (see custom field class $locations)
+   *   value: array with fixed key 'location'
+   *          value: location code
    *
    */
-  function buildCFLocationMap()
-  {
+  function buildCFLocationMap() {
     $ret = $this->cfield_mgr->buildLocationMap('testcase');
     return $ret;
   }

@@ -63,8 +63,9 @@ var pF_delete_relation = delete_relation;
   <input type="hidden" name="relation_source_tcversion_id" 
          id="relation_source_tcversion_id" value="{$gui->tcversion_id}" />
              
-  <input type="hidden" name="tcase_id" id="tcase_id" value="{$gui->tcase_id}" />
-  <input type="hidden" name="tcversion_id" id="tcversion_id" value="{$gui->tcversion_id}" />
+  <input type="hidden" name="tcase_id" value="{$gui->tcase_id}" />
+  <input type="hidden" name="tcversion_id" 
+    value="{$gui->tcversion_id}" />
 
   {if property_exists($gui,'tplan_id') } 
     <input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />

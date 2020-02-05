@@ -2,8 +2,6 @@
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 @filesource tcEdit.tpl
 Purpose: smarty template - edit test specification: test case
-
-@internal revisions
 *}
 
 {lang_get var="labels"
@@ -43,41 +41,54 @@ function validateForm(the_form)
 {
   var status_ok = true;
   
-  if (isWhitespace(the_form.testcase_name.value))
-  {
+  if (isWhitespace(the_form.testcase_name.value)) {
     alert_message(alert_box_title,warning_empty_testcase_name);
     selectField(the_form,'testcase_name');
     return false;
   }
 
   var val2check = the_form.estimated_execution_duration.value;
-  if( isNaN(val2check) || /^\s+$/.test(val2check.trim()))
-  {
+  if( isNaN(val2check) || /^\s+$/.test(val2check.trim())) {
     alert_message(alert_box_title,warning_estimated_execution_duration_format);
     return false;
   }
 
-  var cf_designTime = document.getElementById('cfields_design_time');
-  if (cf_designTime)
-  {
-    var cfields_container = cf_designTime.getElementsByTagName('input');
-    var cfieldsChecks = validateCustomFields(cfields_container);
-    if(!cfieldsChecks.status_ok)
-    {
-      var warning_msg = cfMessages[cfieldsChecks.msg_id];
-      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-      return false;
-    }
+  var cfSet = [document.getElementById('cf_before_summary'),
+               document.getElementById('cf_before_steps'),
+               document.getElementById('cf_standard_location')];
 
-    cfields_container = cf_designTime.getElementsByTagName('textarea');
-    cfieldsChecks = validateCustomFields(cfields_container);
-    if(!cfieldsChecks.status_ok)
-    {
-      var warning_msg = cfMessages[cfieldsChecks.msg_id];
-      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-      return false;
+  alert('cfSet.length' + cfSet.length);
+  for (ccx=0; ccx < cfSet.length; ccx++) {
+    if (typeof cfSet[ccx] == 'undefined') {
+      continue;
+    }
+    alert('ccx'+ccx);
+
+    var cf_designTime = cfSet[ccx];
+    alert(cf_designTime);
+
+    if (cf_designTime) {
+      var cfields_container =  
+        cf_designTime.getElementsByTagName('input');
+      var cfieldsChecks = validateCustomFields(cfields_container);
+      if (!cfieldsChecks.status_ok) {
+        var warning_msg = cfMessages[cfieldsChecks.msg_id];
+        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+        return false;
+      }
+
+      cfields_container = 
+        cf_designTime.getElementsByTagName('textarea');
+      cfieldsChecks = validateCustomFields(cfields_container);
+      
+      if (!cfieldsChecks.status_ok) {
+        var warning_msg = cfMessages[cfieldsChecks.msg_id];
+        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+        return false;
+      }
     }
   }
+
   return Ext.ux.requireSessionAndSubmit(the_form);
 }
 </script>
@@ -103,7 +114,8 @@ function validateForm(the_form)
     <div class="messages" align="center">{$warning_edit_msg}</div>
 {/if}
 
-<form method="post" action="{$basehref}lib/testcases/tcEdit.php" name="tc_edit"
+<form method="post" action="{$basehref}lib/testcases/tcEdit.php"
+      name="tc_edit"
       onSubmit="return validateForm(this);">
 
   <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->tc.testsuite_id}" />

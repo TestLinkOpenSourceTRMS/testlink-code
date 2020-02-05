@@ -43,7 +43,15 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     	</td>
   </tr>
  {/if}
-	  <tr><td>&nbsp;</td></tr>
+  {if $inc_tcbody_cf.before_summary neq ''}
+    <tr>
+      <td colspan="{$inc_tcbody_tableColspan}">
+        {$inc_tcbody_cf.before_summary}
+      </td>
+    </tr>
+  {/if}
+    <tr><td>&nbsp;</td></tr>
+
 
 	<tr>
 	  <th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">{$inc_tcbody_labels.summary}</td>
@@ -52,20 +60,30 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 		<td colspan="{$inc_tcbody_tableColspan}">{if $inc_tcbody_editor_type == 'none'}{$tco.summary|nl2br}{else}{$tco.summary}{/if}<p></td>
 	</tr>
 
-	<tr>
-		<th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">{$inc_tcbody_labels.preconditions}</td>
-	</tr>
-	<tr>
-		<td colspan="{$inc_tcbody_tableColspan}">{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}<p></td>
-	</tr>
+  {if $tco.preconditions != ''}
+    {$emptyIcon = ''}
+  {/if}
+
+  	<tr>
+  		<th class="bold" colspan="{$inc_tcbody_tableColspan}" style="text-align:left;">{$inc_tcbody_labels.preconditions}</td>
+  	</tr>
+  	<tr>
+  		<td colspan="{$inc_tcbody_tableColspan}">{if $inc_tcbody_editor_type == 'none'}{$tco.preconditions|nl2br}{else}{$tco.preconditions}{/if}<p></td>
+  	</tr>
 
 	{if $inc_tcbody_cf.before_steps_results neq ''}
-	<tr>
-	  <td colspan="{$inc_tcbody_tableColspan}">
-        {$inc_tcbody_cf.before_steps_results}
-      </td>
-	</tr>
+    <tr>
+      <th class="bold" colspan="{$inc_tcbody_tableColspan}"
+          style="text-align:left;"><td>&nbsp;</td></th>
+    </tr>
+  	<tr>
+  	  <td colspan="{$inc_tcbody_tableColspan}">
+          {$inc_tcbody_cf.before_steps_results}
+        </td>
+  	</tr>
+    <tr><td>&nbsp;</td></tr>
 	{/if}
-{if $inc_tcbody_close_table}
-</table>
-{/if}
+  
+  {if $inc_tcbody_close_table}
+    </table>
+  {/if}

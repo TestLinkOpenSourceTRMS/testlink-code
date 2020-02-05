@@ -4041,4 +4041,5 @@ $TLS_testers_qty = 'Number of testers';
 
 $TLS_report_test_automation = 'Report Test Automation Spec';
 $TLS_btn_report_test_automation = 'Report Test Automation Spec';
-// ----- END ------------------------------------------------------------------
+$TLS_before_summary = "Before summary";
+// ----- END -----------------------------------------------------

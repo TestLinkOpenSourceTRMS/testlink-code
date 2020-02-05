@@ -132,8 +132,10 @@ class cfield_mgr extends tlObject
      * IMPORTANT: if you add a new key, this values are used as access keys in several properties of this object.
      *            then if you add one here, remember to update other properties.
      */
-    var $locations = array( 'testcase' => 
-                            array( 1 => 'standard_location', 2 => 'before_steps_results'));
+    var $locations = array('testcase' => 
+                       array( 1 => 'standard_location', 
+                              2 => 'before_steps_results',
+                              3 => 'before_summary') );
 
     // changes in configuration
     //
@@ -254,7 +256,7 @@ class cfield_mgr extends tlObject
    */
 	function getLocations()
 	{
-    return($this->locations);
+    return $this->locations;
   }
 
 
@@ -2601,16 +2603,15 @@ function get_linked_testprojects($id)
 function buildLocationMap($nodeType)
 {
 	$locationMap=null;
-    $dummy = $this->getLocations();
+  $dummy = $this->getLocations();
 	$verboseLocationCode = array_flip($dummy[$nodeType]);
-	if( !is_null($verboseLocationCode) && count($verboseLocationCode) > 0 )
-	{
-		foreach($verboseLocationCode as $key => $value)
-		{
+	if( !is_null($verboseLocationCode)
+      && count($verboseLocationCode) > 0 ) {
+		foreach($verboseLocationCode as $key => $value) {
 			$locationMap[$key]['location']=$value;
 		}
-	}	     
-    return $locationMap; 
+	}	 
+  return $locationMap; 
 }
 
 

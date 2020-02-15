@@ -1139,15 +1139,23 @@ $tlCfg->exec_cfg->steps_exec_notes_default = 'empty';
 // 'latest' => latest execution notes.
 $tlCfg->exec_cfg->steps_exec_status_default = 'empty';
 
-// Parameters to show notes/details when entering test execution feature
-// EXPAND: show expanded/open
-// COLLAPSE: show collapsed/closede
-// LAST_USER_CHOICE: get status from cookie that holds last user choice.[STANDARD BEHAVIOUR]
+// Parameters to show notes/details 
+// when entering test execution feature
+// 'EXPAND': show expanded/open
+// 'COLLAPSE': show collapsed/closed
+// 'LAST_USER_CHOICE': 
+//   get status from cookie that holds 
+//   latest user choice.
+//   This is the [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->expand_collapse = new stdClass();
-$tlCfg->exec_cfg->expand_collapse->testplan_notes = LAST_USER_CHOICE;
-$tlCfg->exec_cfg->expand_collapse->platform_description = LAST_USER_CHOICE;
-$tlCfg->exec_cfg->expand_collapse->build_description = LAST_USER_CHOICE;
-$tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
+$tlCfg->exec_cfg->expand_collapse
+                ->testplan_notes = 'LAST_USER_CHOICE';
+$tlCfg->exec_cfg->expand_collapse
+                ->platform_description = 'LAST_USER_CHOICE';
+$tlCfg->exec_cfg->expand_collapse
+                ->build_description = 'LAST_USER_CHOICE';
+$tlCfg->exec_cfg->expand_collapse
+                ->testsuite_details = 'LAST_USER_CHOICE';
 
 
 

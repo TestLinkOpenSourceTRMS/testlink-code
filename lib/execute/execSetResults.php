@@ -933,7 +933,7 @@ function smarty_assign_tsuite_info(&$smarty,&$tree_mgr,$tcase_id,$tproject_id,$c
         // First time we are entered here => 
         // we can need to understand how to proceed
         switch($exec_cfg->expand_collapse->testsuite_details) {
-          case LAST_USER_CHOICE:
+          case 'LAST_USER_CHOICE':
             if (isset($_COOKIE[$cookieKey]) ) {
               $expand_collapse = $_COOKIE[$cookieKey];
             }
@@ -2317,12 +2317,12 @@ function manageCookies(&$argsObj,$cfgObj)
     $cookieKey = $cookieExecPrefix . $key;
     if( !isset($_REQUEST[$key]) )
     {
-      // First time we are entered here => we can need to understand how to proceed
+      // First time we are entered here 
+      // => we can need to understand how to proceed
         switch($cfgObj->exec_cfg->expand_collapse->$cfgKey )
         {
-          case LAST_USER_CHOICE:
-          if (isset($_COOKIE[$cookieKey]) ) 
-          {
+          case 'LAST_USER_CHOICE':
+          if (isset($_COOKIE[$cookieKey])) {
             $key2loop[$key] = $_COOKIE[$cookieKey];
           }
           break;  

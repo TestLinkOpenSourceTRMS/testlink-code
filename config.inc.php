@@ -123,10 +123,11 @@ $tlCfg->custom_css = null;
 
 
 /** Include constants and magic numbers (users should not change it)*/
-require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
+$cfgPath = TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR;
+require_once($cfgPath . 'const.inc.php');
 
 
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------
 /** @var string used to have (when needed) a possibility to identify different TL instances
     @since 1.9.4 used on mail subject when mail logger is used
  */
@@ -2085,9 +2086,8 @@ if( !defined('TL_DATATABLES_DIR') )
 define('TL_BASE_HREF', get_home_url(array('force_https' => $tlCfg->force_https)));
 
 clearstatcache();
-if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
-{
-  require_once( TL_ABS_PATH . 'custom_config.inc.php' );
+if ( file_exists( $cfgPath . 'custom_config.inc.php' ) ) {
+  require_once( $cfgPath . 'custom_config.inc.php' );
 }
 
 

@@ -778,6 +778,10 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
 {
   $gui = $guiObj;
 
+  if (!property_exists($gui, 'uploadOp')) {
+    $gui->uploadOp = null;
+  } 
+
   $gui->sqlResult = '';
   $gui->sqlAction = '';
   if ($sqlResult) {

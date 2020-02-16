@@ -268,6 +268,7 @@ function cs_all_checkbox_in_div(div_id, cb_id_prefix,memory_id)
  * If platform_id=0 is called all platforms will be checked/unchecked.
  */
 var check_state = {};
+var how_many = 0;
 function cs_all_checkbox_in_div_with_platform(div_id, prefix, platform_id) {
 	var state = prefix + platform_id;
 	if (check_state[state] === undefined) {
@@ -280,8 +281,21 @@ function cs_all_checkbox_in_div_with_platform(div_id, prefix, platform_id) {
 			var check_platform_id = el.dom.name.match("([0-9]+)\]$")[1];
 			if (platform_id == 0 || check_platform_id == platform_id) {
 				el.dom.checked = check_state[state];
+        how_many++;
 			}
 		});
+  var userfeedback = js_cs_all_checkbox_deselected;  
+  if (check_state[state]) {
+    userfeedback =  js_cs_all_checkbox_selected;  
+  }  
+  // alert(userfeedback.replace('%s',how_many));        
+  
+  // http://bootboxjs.com/
+  // http://paynedigital.com/articles/2011/11/
+  //        bootbox-js-alert-confirm-dialogs-for-twitter-bootstrap
+  bootbox.alert(userfeedback.replace('%s',how_many));
+
+  how_many = 0;  
 	check_state[state] = !check_state[state];
 }
 

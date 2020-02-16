@@ -7,7 +7,7 @@
  *
  * @package     TestLink
  * @author      Francisco Mancardi
- * @copyright   2012,2018 TestLink community 
+ * @copyright   2012,2020 TestLink community 
  * @filesource  usersViewNew.php
  * @link        http://www.testlink.org/
  *
@@ -23,26 +23,22 @@ $smarty = new TLSmarty();
 
 list($args,$gui) = initEnv($db);
 
-switch($args->operation)
-{
+switch ($args->operation) {
 	case 'disable':
 		// user cannot disable => inactivate itself
-		if ($args->user_id != $args->currentUserID)
-		{
+		if ($args->user_id != $args->currentUserID) {
 			$user = new tlUser($args->user_id);
 			$gui->result = $user->readFromDB($db);
-			if ($gui->result >= tl::OK)
-			{
+			if ($gui->result >= tl::OK) {
 				$gui->result = $user->setActive($db,0);
-				if ($gui->result >= tl::OK)
-				{
+				if ($gui->result >= tl::OK) {
 					logAuditEvent(TLS("audit_user_disabled",$user->login),"DISABLE",$args->user_id,"users");
 					$gui->user_feedback = sprintf(lang_get('user_disabled'),$user->login);
 				}
 			}
 		}
-		if ($gui->result != tl::OK)
-		{
+
+		if ($gui->result != tl::OK) {
 			$gui->user_feedback = lang_get('error_user_not_disabled');
     }
 	break;
@@ -67,20 +63,13 @@ function initEnv(&$dbHandler)
 {
   $_REQUEST=strings_stripSlashes($_REQUEST);
 
-  // input from GET['HelloString3'], 
-  // type: string,  
-  // minLen: 1, 
-  // maxLen: 15,
-  // regular expression: null
-  // checkFunction: applys checks via checkFooOrBar() to ensure its either 'foo' or 'bar' 
-  // normalization: done via  normFunction() which replaces ',' with '.' 
-  // "HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,'checkFooOrBar','normFunction'),
-  //
-  $iParams = array("operation" => array(tlInputParameter::STRING_N,0,50),
+  $iParams = array("operation" => 
+                     array(tlInputParameter::STRING_N,0,50),
                    "user" => array(tlInputParameter::INT_N));
   
   $pParams = R_PARAMS($iParams);
-  $args = new stdClass();
+  list($args,$env) = initContext();
+
   $args->operation = $pParams["operation"];
   $args->user_id = $pParams['user'];
   
@@ -89,7 +78,7 @@ function initEnv(&$dbHandler)
   $args->basehref =  $_SESSION['basehref'];
   
 
-  $gui = new stdClass();
+  list($add2args,$gui) = initUserEnv($dbHandler,$args);
   $gui->grants = getGrantsForUserMgmt($dbHandler,$args->currentUser);
   $gui->main_title = lang_get('title_user_mgmt');
   $gui->result = null;

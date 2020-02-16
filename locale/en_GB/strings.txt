@@ -4038,4 +4038,22 @@ $TLS_on_design = 'On Design';
 $TLS_on_exec = 'On Execution';
 $TLS_note_platform_filter = 'Test Cases are filtered by following platforms';
 $TLS_testers_qty = 'Number of testers';
-// ----- END ------------------------------------------------------------------
+
+$TLS_search = "Search";
+$TLS_advanced_search = "Advanced search";
+$TLS_quick_search = "Quick search";
+$TLS_projects = 'Projects';
+$TLS_system = 'System';
+$TLS_tests_design = 'Test Case Design';
+$TLS_requirements_design = 'Requirements Design';
+$TLS_testcase_execution = 'Test Case Execution';
+
+$TLS_tc_monthly_creation_rate_on_tproj = 
+  'Monthly Test Case Growth on Test Project';
+$TLS_tc_monthly_creation_rate_on_tproj_hint =
+  '(based on latest test case version creation date)'; 
+
+$TLS_selected_cb = '%s checkboxes have been checked ';
+$TLS_deselected_cb = '%s checkboxes have been unchecked';
+$TLS_reload_main_view = "Reload Main View";
+// ----- END -----------------------------------------------------

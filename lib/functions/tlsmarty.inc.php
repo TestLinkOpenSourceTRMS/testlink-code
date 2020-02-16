@@ -82,6 +82,7 @@ function guard_header_smarty($file) {
  */
 class TLSmarty extends Smarty {
   private $tlImages;
+  private $tlIMGTags;
   var $tlTemplateCfg;
 	
   function __construct() {
@@ -91,23 +92,15 @@ class TLSmarty extends Smarty {
     parent::__construct();
   
     $this->template_dir = 
-      array('main' => TL_ABS_PATH . 'gui/templates/' . 
-                      $tlCfg->gui->ux . '/');
+      array('main' => TL_ABS_PATH . 'gui/templates/dashio/');
                           
     $this->config_dir = TL_ABS_PATH . 'gui/templates/conf';
     $this->compile_dir = TL_TEMP_PATH;
     
-
+    $tlCfg->dashio = "gui/templates/dashio";
 
     $testproject_coloring = $tlCfg->gui->testproject_coloring;
     $testprojectColor = $tlCfg->gui->background_color ; 
-    
-    if (isset($_SESSION['testprojectColor'])) {
-      $testprojectColor =  $_SESSION['testprojectColor'];
-      if ($testprojectColor == "") {
-          $testprojectColor = $tlCfg->gui->background_color;
-      }    
-    }
     $this->assign('testprojectColor', $testprojectColor);
     
     $my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
@@ -118,7 +111,7 @@ class TLSmarty extends Smarty {
       tLog("Smarty debug window = ON");
     }
     
-    // ----------------------------------------------------------------------
+    // -------------------------------------------------------------
     // Must be initialized to avoid log on TestLink Event Viewer due to undefined variable.
     // This means that optional/missing parameters on include can not be used.
     //
@@ -153,7 +146,7 @@ class TLSmarty extends Smarty {
             
     $this->assign('tplan_name',null);
     $this->assign('name',null);
-    // -----------------------------------------------------------------------------
+    // -------------------------------------------------------------
     
     $this->assign('basehref', $basehref);
     $this->assign('css', $basehref . TL_TESTLINK_CSS);
@@ -185,9 +178,9 @@ class TLSmarty extends Smarty {
     $stdTPLCfg['steps_vertical.inc'] = 'testcases/steps_vertical.inc.tpl';
 
     $stdTPLCfg['platforms.inc'] = 'testcases/platforms.inc.tpl';
+    $stdTPLCfg['aliens.inc'] = 'testcases/aliens.inc.tpl';
 
-
-    // -----------------------------------------------------------------------------
+    // --------------------------------------------------------------
     // load configuration
     $this->assign('session',isset($_SESSION) ? $_SESSION : null);
     $this->assign('tlCfg',$tlCfg);
@@ -263,6 +256,7 @@ class TLSmarty extends Smarty {
     // -----------------------------------------------------------------------------
     // Images
     $this->tlImages = tlSmarty::getImageSet();
+    $this->tlIMGTags = tlSmarty::getIMGTagsSet();
     
     $msg = lang_get('show_hide_api_info');
     $this->tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
@@ -294,6 +288,7 @@ class TLSmarty extends Smarty {
 
     // Do not move!!!
     $this->assign("tlImages",$this->tlImages);
+    $this->assign("tlIMGTags",$this->tlIMGTags);
     
     // Register functions
     $this->registerPlugin("function","lang_get", "lang_get_smarty");
@@ -429,6 +424,7 @@ class TLSmarty extends Smarty {
                    'test_specification' => $imgLoc . 'chart_organisation.png',
                    'toggle_all' => $imgLoc .'toggle_all.gif',
                    'user' => $imgLoc . 'user.png',
+                   'user_badge' => $imgLoc . 'employee-badge.png',
                    'upload' => $imgLoc . 'upload_16.png',
                    'upload_greyed' => $imgLoc . 'upload_16_greyed.png',
                    'warning' => $imgLoc . 'error_triangle.png',
@@ -448,5 +444,23 @@ class TLSmarty extends Smarty {
     }                 
     return $dummy;
 	}
+
+  /**
+   *
+   */
+  static function getIMGTagsSet() {
+    $burl = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
+    $imgLoc = $burl . TL_THEME_IMG_DIR;
+    // var_dump($imgLoc);
+ 
+
+    // $dummy = array('checked' => '<img src="' . $imgLoc . 'apply_f2_16.png">');
+    $dummy = array('displayOnExec' => '<i class="fa fa-desktop"></i>');
+
+    // var_dump($dummy);
+    return $dummy;
+  }
+
+
 
 } 

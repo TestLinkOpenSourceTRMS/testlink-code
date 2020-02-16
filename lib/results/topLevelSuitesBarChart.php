@@ -7,10 +7,6 @@
  *
  * @author      Francisco Mancardi
  *
- * @internal revisions
- * @since 1.9.10
- *
- *
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -29,7 +25,9 @@ $cfg->beginX = $chart_cfg['beginX'];
 $cfg->beginY = $chart_cfg['beginY'];
 $cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
 
+testlinkInitPage($db);
 $args = init_args($db);
+
 $info = getDataAndScale($db,$args);
 if( property_exists($args,'debug') )
 {
@@ -118,8 +116,15 @@ function init_args(&$dbHandler)
   $args = new stdClass();
   R_PARAMS($iParams,$args);
 
-  if( !is_null($args->apikey) )
-  {
+  if ($args->tproject_id == 0 && $args->tplan_id >0) {
+    $tplan = new testplan($dbHandler);
+    $nn = $tplan->get_by_id($args->tplan_id);
+    $args->tproject_id = $nn['testproject_id'];    
+  }
+
+
+
+  if( !is_null($args->apikey) ) {
     $cerbero = new stdClass();
     $cerbero->args = new stdClass();
     $cerbero->args->tproject_id = $args->tproject_id;
@@ -143,13 +148,12 @@ function init_args(&$dbHandler)
   else
   {
     testlinkInitPage($dbHandler,false,false,"checkRights");  
-    // $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
   }
 
-	if( isset($_REQUEST['debug']) )
-	{
+	if( isset($_REQUEST['debug']) ) {
 		$args->debug = 'yes';
 	}
+
 	return $args;
 }
 

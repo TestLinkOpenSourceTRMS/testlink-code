@@ -13,7 +13,7 @@
  * @filesource  common.php
  * @package     TestLink
  * @author      TestLink community
- * @Copyright   2005,2019 TestLink community 
+ * @Copyright   2005,2020 TestLink community 
  * @link        http://www.testlink.org
  *
  */
@@ -50,8 +50,7 @@ spl_autoload_register('tlAutoload');
 
 /** CSRF security functions. */
 /** TL_APICALL => TICKET 0007190 */
-if( !defined('TL_APICALL') )
-{
+if( !defined('TL_APICALL') ) {
   require_once("csrf.php");
 }  
 
@@ -195,43 +194,12 @@ function doDBConnect(&$db,$onErrorExit=false) {
 
 
 /**
- * Set session data related to the current test plan
- * and saves a cookie with current testplan id
- * 
- * @param array $tplan_info result of DB query
- */
-function setSessionTestPlan($tplan_info) {
-  if ($tplan_info) {
-    $_SESSION['testplanID'] = $tplan_info['id'];
-    $_SESSION['testplanName'] = $tplan_info['name'];
-
-    // Save testplan id for next session
-    $ckObj = new stdClass();
-
-    $ckCfg = config_get('cookie');
-    $ckObj->name = $ckCfg->prefix . 'TL_lastTestPlanForUserID_' . 
-                   intval($_SESSION['userID']);
-    $ckObj->value = $tplan_info['id'];
-
-    tlSetCookie($ckObj);
-
-    tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
-  }
-  else {
-    unset($_SESSION['testplanID']);
-    unset($_SESSION['testplanName']);
-  }
-}
-
-
-/**
  * Set home URL path
  * @internal revisions
  */
-function setPaths()
+function setPaths() 
 {
-  if (!isset($_SESSION['basehref']))
-  {
+  if (!isset($_SESSION['basehref'])) {
     $_SESSION['basehref'] = get_home_url(array('force_https' => config_get('force_https')));
   } 
 }
@@ -246,11 +214,9 @@ function setPaths()
 function checkSessionValid(&$db, $redirect=true)
 {
   $isValidSession = false;
-  if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
-  {
+  if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0) {
     $now = time();
-    if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60))
-    {
+    if (($now - $_SESSION['lastActivity']) <= (config_get("sessionInactivityTimeout") * 60)) {
       $_SESSION['lastActivity'] = $now;
       $user = new tlUser($_SESSION['userID']);
       $user->readFromDB($db);
@@ -258,15 +224,15 @@ function checkSessionValid(&$db, $redirect=true)
       $isValidSession = true;
     }
   }
-  if (!$isValidSession && $redirect)
-  {
-    tLog('Invalid session from ' . $_SERVER["REMOTE_ADDR"] . '. Redirected to login page.', 'INFO');
+
+  if (!$isValidSession && $redirect) {
+    tLog('Invalid session from ' . $_SERVER["REMOTE_ADDR"] . 
+         '. Redirected to login page.', 'INFO');
     
     $fName = "login.php";
     $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
         
-    while(!file_exists($baseDir . DIRECTORY_SEPARATOR . $fName))
-    {
+    while (!file_exists($baseDir . DIRECTORY_SEPARATOR . $fName)) {
       $fName = "../" . $fName;
     }
     $destination = "&destination=" . urlencode($_SERVER['REQUEST_URI']);
@@ -306,153 +272,75 @@ function doSessionStart($setPaths=false) {
  * Initialize structure of top menu for the user and the project.
  * 
  * @param integer $db DB connection identifier
- * @uses $_SESSION Requires initialized project, test plan and user data.
- * @since 1.9
- *
- * @internal revisions
+ * @param hash $context
  */
-function initTopMenu(&$db)
-{
-  $_SESSION['testprojectTopMenu'] = '';
-  $guiTopMenu = config_get('guiTopMenu');
+function initTopMenu(&$db,$context,$tprojOpt) {
 
-  $imageSet = TLSmarty::getImageSet();
+  $navBarMenu = '';
 
   // check if Project is available
-  if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
-  {
-    $idx = 1; 
-    foreach ($guiTopMenu as $element)
-    {
-      // check if Test Plan is available
-      if ((!isset($element['condition'])) || ($element['condition'] == '') ||
-        (($element['condition'] == 'TestPlanAvailable') && 
-          isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ||
-        (($element['condition'] == 'ReqMgmtEnabled') && 
-          isset($_SESSION['testprojectOptions']->requirementsEnabled) && 
-            $_SESSION['testprojectOptions']->requirementsEnabled))
-      {
-        // (is_null($element['right']) => no right needed => display always
+  if( $context->tproject_id > 0) {
+    $imageSet = TLSmarty::getImageSet();
+    
+    $tprojID = intval($context->tproject_id);
+    $tplanID = intval($context->tplan_id);
 
-        $addItem = is_null($element['right']);
-        if(!$addItem)
-        {
-          if( is_array($element['right']))
-          {
-            foreach($element['right'] as $rg)
-            {
-              if( $addItem = (has_rights($db,$rg) == "yes") )
-              {
+    $menuCfg = config_get('guiTopMenu');
+    $idx = 1; 
+    foreach ($menuCfg as $ele) {
+      // check if Test Plan is available
+
+      if ((!isset($ele['condition'])) || ($ele['condition'] == '') ||
+        (($ele['condition'] == 'TestPlanAvailable') && $tplanID > 0) ||
+        (($ele['condition'] == 'ReqMgmtEnabled') && 
+          isset($tprojOpt->requirementsEnabled) && 
+          $tprojOpt->requirementsEnabled)) {
+        // (is_null($ele['right']) => no right needed => display always
+
+        $addItem = is_null($ele['right']);
+        if(!$addItem) {
+          if( is_array($ele['right'])) {
+            foreach($ele['right'] as $rg) {
+              if( $addItem = (has_rights($db,$rg) == "yes") ) {
                 break;
               }   
             }  
-          } 
-          else
-          {
-            $addItem = (has_rights($db,$element['right']) == "yes");   
+          } else {
+            $addItem = (has_rights($db,$ele['right']) == "yes");   
           } 
         } 
 
-        if( $addItem )
-        {
-          $_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
-          "target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-          "tabindex=''" . $idx++ . "''>";
+        if( $addItem ) {
+          $url = $ele['url'];
+          if( strpos($url, '?') === false ) {
+            $url .= "?";  
+          } else {
+            $url .= "&";  
+          }
+          $url .= "tproject_id=$tprojID&tplan_id=$tplanID";
 
-          if( isset($element['imgKey']) )
-          {
-           $_SESSION['testprojectTopMenu'] .= '<img src="' . $imageSet[$element['imgKey']] . '"' .
-                                              ' title="' . lang_get($element['label']) . '">'; 
-          }  
-          else
-          {
-           $_SESSION['testprojectTopMenu'] .= lang_get($element['label']); 
+          $tg = $ele['target'];
+
+          $navBarMenu .= 
+            "<a href=\"$url\" target=\"$tg\" accesskey=\"{$ele['shortcut']}\"
+             tabindex=\"" . $idx++ . '">';
+
+          if( isset($ele['imgKey']) ) {
+            $navBarMenu .= '<img src="' . 
+              $imageSet[$ele['imgKey']] . '"' .
+              ' title="' . lang_get($ele['label']) . '">'; 
+          } else {
+            $navBarMenu .= lang_get($ele['label']); 
           }  
 
-          $_SESSION['testprojectTopMenu'] .= "</a>&nbsp;&nbsp;&nbsp;";
+          $navBarMenu .= "</a>&nbsp;&nbsp;&nbsp;";
         }
       }
     }
-    $_SESSION['testprojectTopMenu'] .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    $navBarMenu .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
   }
-}
 
-
-/**
- * Update Project and Test Plan data on Project change or startup
- * Data are stored in $_SESSION array
- * 
- * If we receive TestPlan ID in the _SESSION then do some checks and if everything OK
- * Update this value at Session Level, to set it available in other pieces of the application
- * 
- * @param integer $db DB connection identifier
- * @param array $hash_user_sel input data for the page ($_REQUEST)
- * 
- * @uses initMenu() 
- * @internal revisions
- **/
-function initProject(&$db,$hash_user_sel) {
-
-  $ckObj = new stdClass();
-  $ckCfg = config_get('cookie');
-  
-  $tproject = new testproject($db);
-  $user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
-  $user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
-  $user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
-
-  $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
-  // test project is Test Plan container, then we start checking the container
-  if( $user_sel["tproject_id"] != 0 ) {
-    $tproject_id = $user_sel["tproject_id"];
-  }
-  
-  // We need to do checks before updating the SESSION to cover the case that not defined but exists
-  if (!$tproject_id) {
-    $all_tprojects = $tproject->get_all();
-    if ($all_tprojects) {
-      $tproject_data = $all_tprojects[0];
-      $tproject_id = $tproject_data['id'];
-    }
-  }
-  $tproject->setSessionProject($tproject_id);
-  
-  // set a Test Plan
-  // Refresh test project id after call to setSessionProject
-  $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
-
-  // Now we need to validate the TestPlan
-  $ckObj->name = $ckCfg->prefix .  "TL_user${_SESSION['userID']}_proj${tproject_id}_testPlanId";
-
-  if($user_sel["tplan_id"] != 0)
-  {
-    $ckObj->value = $user_sel["tplan_id"];
-    $ckObj->expire = time()+60*60*24*90;
-    tlSetCookie($ckObj);
-  } 
-  elseif (isset($_COOKIE[$ckObj->name])) 
-  {
-    $tplan_id = intval($_COOKIE[$ckObj->name]);
-  }
-  
-  // check if the specific combination of testprojectid and testplanid is valid
-  $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,$tplan_id);
-  if(is_null($tplan_data))
-  {
-    // Need to get first accessible test plan for user, if any exists.
-    $tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
-  }
-  
-  if(!is_null($tplan_data) && is_array($tplan_data))
-  {
-    $tplan_data = $tplan_data[0];
-    setSessionTestPlan($tplan_data);
-  }
-  
-  // initialize structure of top menu for the user and the project
-  initTopMenu($db);   
+  return $navBarMenu;
 }
 
 
@@ -494,13 +382,6 @@ function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,
     checkUserRightsFor($db,$userRightsCheckFunction,$onFailureGoToLogin);
   }
    
-  // Init plugins
-  plugin_init_installed();
-   
-  // adjust Product and Test Plan to $_SESSION
-  if ($initProject) {
-    initProject($db,$_REQUEST);
-  }
    
   // used to disable the attachment feature if there are problems with repository path
   /** @TODO this check should not be done anytime but on login and using */
@@ -811,6 +692,7 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
  * Checks $_FILES for errors while uploading
  * 
  * @param array $fInfo an array used by uploading files ($_FILES)
+ * @param array $tlInfo testlink info regarding checks on upload
  * @return string containing an error message (if any)
  */
 function getFileUploadErrorMessage($fInfo,$tlInfo=null)
@@ -840,6 +722,7 @@ function getFileUploadErrorMessage($fInfo,$tlInfo=null)
 }
 
 
+
 /**
  * Redirect to a page with static html defined in locale/en_GB/texts.php
  * 
@@ -864,8 +747,7 @@ function templateConfiguration($template2get=null)
 {
   $custom_templates = config_get('tpl');
   $access_key = $template2get;
-  if( is_null($access_key) )
-  {
+  if( is_null($access_key) ) {
     $access_key = str_replace('.php','',basename($_SERVER['SCRIPT_NAME']));
   }
   
@@ -1407,34 +1289,29 @@ function checkAccess(&$dbHandler,&$userObj,$context,$rightsToCheck)
   $action = 'any';
   $env = array('tproject_id' => 0, 'tplan_id' => 0);
   $env = array_merge($env, $context);
-  foreach($env as $key => $val)
-  {
+  foreach ($env as $key => $val) {
     $env[$key] = intval($val);
   }  
   
-  if( $doExit = (is_null($env) || $env['tproject_id'] == 0) )
-  {
+  if( $doExit = (is_null($env) || $env['tproject_id'] == 0) ) {
     logAuditEvent(TLS("audit_security_no_environment",$script), $action,$userObj->dbID,"users");
   }
    
-  if( !$doExit )
-  {
-    foreach($rightsToCheck->items as $verboseRight)
-    {
+  if( !$doExit ) {
+    foreach($rightsToCheck->items as $verboseRight) {
       $status = $userObj->hasRight($dbHandler,$verboseRight,
                   $env['tproject_id'],$env['tplan_id'],true);
-      if( ($doExit = !$status) && ($rightsToCheck->mode == 'and'))
-      { 
+      if( ($doExit = !$status) && ($rightsToCheck->mode == 'and')) {
         $action = 'any';
-        logAuditEvent(TLS("audit_security_user_right_missing",$userObj->login,$script,$action),
-                  $action,$userObj->dbID,"users");
+        logAuditEvent(TLS("audit_security_user_right_missing",
+          $userObj->login,$script,$action),
+          $action,$userObj->dbID,"users");
         break;
       }
     }
   }
 
-  if ($doExit)
-  {   
+  if ($doExit) {   
     redirect($_SESSION['basehref'],"top.location");
     exit();
   }
@@ -1905,6 +1782,7 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
     $grants[$humankey] = $argsObj->user->hasRight($dbHandler,$right); 
   }
 
+   
   foreach ($r2cTranslate as $humankey => $right) {
     $grants[$humankey] = 
       $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id,$argsObj->tplan_id); 
@@ -1916,10 +1794,10 @@ function getGrantSetWithExit(&$dbHandler,&$argsObj,&$tprojMgr,$opt=null) {
       $argsObj->user->hasRight($dbHandler,$right,$argsObj->tproject_id,$argsObj->tplan_id); 
   }
 
-
   // check right ONLY if option is enabled
   $tprojOpt = $tprojMgr->getOptions($argsObj->tproject_id);
-  if($tprojOpt->inventoryEnabled) {
+  if( property_exists($tprojOpt, 'inventoryEnabled') 
+      && $tprojOpt->inventoryEnabled) {
     $invr = array('project_inventory_view','project_inventory_management');
     foreach($invr as $r){
       $grants[$r] = ($user->hasRight($dbHandler,$r) == 'yes') ? 1 : 0;
@@ -2042,6 +1920,7 @@ function setSystemWideActiveMenuOFF()
 function getFirstLevelMenuStructure() 
 {
   return array('dashboard' => false,
+               'search'=> false,    
                'system'=> false,
                'projects' => false,
                'requirements_design' => false,
@@ -2103,6 +1982,18 @@ function initContext()
       $env .= "&";
     }
     $env .= "$prop=" . $context->$prop;
+  }
+
+  // User is part of context, when _SESSION exists
+  $context->userID = 0; 
+  $context->user = null;
+
+  if (isset($_SESSION['userID'])) {
+    $context->userID = intval($_SESSION['userID']); 
+  }
+
+  if (isset($_SESSION['currentUser'])) {
+    $context->user = $_SESSION['currentUser'];
   }
 
   return array($context,$env);

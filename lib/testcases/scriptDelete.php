@@ -3,9 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource	scriptAdd.php
- * @internal revisions
- * @since 1.9.15
+ * @filesource	scriptDelete.php
  * 
  */
 require_once('../../config.inc.php');
@@ -15,29 +13,25 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 list($args,$gui,$cts,$codeT) = initEnv($db);
 
-if(!is_null($codeT) && $args->project_key != "" && $args->repository_name != "" && $args->code_path != "")
-{
-  $l18n = init_labels(array("error_code_does_not_exist_on_cts" => null));
+if(!is_null($codeT) && $args->project_key != "" 
+   && $args->repository_name != "" && $args->code_path != "") {
+  $l10n = init_labels(array("error_code_does_not_exist_on_cts" => null));
 
   $gui->msg = "";
-  $scriptDeleted = del_testcase_script($db,$args->tcversion_id, $args->project_key,
-                                       $args->repository_name, $args->code_path);
+  $scriptDeleted = del_testcase_script($db,$args->tcversion_id, 
+                     $args->project_key,
+                     $args->repository_name, $args->code_path);
   $auditMsg = "audit_testcasescript_deleted";
   $item_id = $args->tcversion_id;
   $objectType = "testcase_script_links";
   $args->direct_link = $cts->buildViewCodeURL($args->project_key,$args->repository_name,$args->code_path,$args->branch_name);
-  if ($scriptDeleted)
-  {
+  if ($scriptDeleted) {
     $gui->msg = lang_get("scriptdeleting_was_ok");
     logAuditEvent(TLS($auditMsg,$args->script_id),"DELETE",$item_id,$objectType);
-  }
-  else
-  {
-    $gui->msg = sprintf($l18n["error_code_does_not_exist_on_cts"],$args->direct_link);
+  } else {
+    $gui->msg = sprintf($l10n["error_code_does_not_exist_on_cts"],$args->direct_link);
   }  
-}
-else
-{
+} else {
   $gui->msg = lang_get("error_script_not_deleted"); 
 }
 $smarty = new TLSmarty();
@@ -58,25 +52,19 @@ function initEnv(&$dbHandler)
                    "repository_name" => null,
                    "code_path" => null);
 	
-  $args = new stdClass();
+  list($args,$env) = initContext();
   I_PARAMS($iParams,$args);
 
   $args->user = $_SESSION['currentUser'];
 
   $args->script_id = trim($args->script_id);
-  
   $scriptArray = explode("&&", $args->script_id);
-  if(count($scriptArray) > 0)
-  {
+  if (count($scriptArray) > 0) {
     $args->project_key = $scriptArray[0];
     $args->repository_name = $scriptArray[1];
     $args->code_path = $scriptArray[2];
   }
 
-  if (is_null($args->tproject_id))
-  {
-    $args->tproject_id = $_SESSION['testprojectID'];
-  }
   $gui = new stdClass();
   $gui->pageTitle = lang_get('title_delete_script');
 
@@ -87,7 +75,7 @@ function initEnv(&$dbHandler)
   $gui->repository_name = $args->repository_name;
   $gui->code_path = $args->code_path;
 
-  // -----------------------------------------------------------------------
+  // -------------------------------------------------------------
   // Special processing
   list($ctObj,$ctCfg) = getCodeTracker($dbHandler,$args,$gui);
 

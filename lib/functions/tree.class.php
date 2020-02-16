@@ -1188,8 +1188,9 @@ class tree extends tlObject
 
   /**
    * function: get_full_path_verbose
-   * when path can not be found instead of null, anyway a map will be returned, with key=itemID value=NULL
-   * @internal revisions
+   * when path can not be found instead of null, 
+   * anyway a map will be returned, with key=itemID value=NULL
+   * 
    **/
   function get_full_path_verbose(&$items,$options=null) {
       $debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
@@ -1199,20 +1200,18 @@ class tree extends tlObject
       $path_format = 'simple';
       $output_format = 'simple';
       
-      if( !is_null($options) )
-      {
+      if (!is_null($options)) {
         // not a good solution, but Quick & Dirty
         $path_format = isset($options['path_format']) ? $options['path_format'] : $path_format;
-        if(  !isset($options['path_format']) )
-        {
+        if(  !isset($options['path_format']) ) {
           $path_format = isset($options['include_starting_point']) ? 'points' : $path_format;
         }
         $output_format = isset($options['output_format']) ? $options['output_format'] : $output_format;
       }
       
-      // according to count($items) we will try to optimize, sorry for magic number
-      if( count((array)$items) > 200)
-      {
+      // according to count($items) we will try to optimize, 
+      // sorry for magic number
+      if (count((array)$items) > 200) {
         $xitems = array_flip((array)$items);
         $xsql = " SELECT parent_id,id " . 
                 " FROM {$this->tables['nodes_hierarchy']} " . 
@@ -1233,81 +1232,74 @@ class tree extends tlObject
           }
         }
         unset($xmen);
-      }
-      else
-      {
-        foreach((array)$items as $item_id)
-        {
+      } else {
+        foreach((array)$items as $item_id) {
+          $all_nodes[] = $item_id;
           $stairway2heaven[$item_id] = $this->get_path($item_id,$goto_root,$path_format);
+
           $path_to[$item_id]['name'] = $stairway2heaven[$item_id];
           $all_nodes = array_merge($all_nodes,(array)$path_to[$item_id]['name']);
         }
       }
       
       $status_ok = (!is_null($all_nodes) && count($all_nodes) > 0);
-      if( $status_ok )
-      { 
+      if ($status_ok) { 
         // get only different items, to get descriptions
-        $unique_nodes=implode(',',array_unique($all_nodes));
+        $unique_nodes = implode(',',array_unique($all_nodes));
 
         $sql="/* $debugMsg */ " . 
              " SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
-        $decode=$this->db->fetchRowsIntoMap($sql,'id');
-        
-        foreach($path_to as $key => $elem)
-        {
-          foreach($elem['name'] as $idx => $node_id)
-          {
-            $path_to[$key]['name'][$idx]=$decode[$node_id]['name'];
-             $path_to[$key]['node_id'][$idx]=$node_id;
+        $decode = $this->db->fetchRowsIntoMap($sql,'id');
+       
+        foreach ($path_to as $key => $elem) {
+          foreach($elem['name'] as $idx => $node_id) {
+            $path_to[$key]['name'][$idx] = $decode[$node_id]['name'];
+            $path_to[$key]['node_id'][$idx] = $node_id;
           }
         }
-        unset($decode);
-      }  
-      else
-      {
+      } else {
         $path_to=null;
       } 
         
-        if( !is_null($path_to) )
-        {
-          switch ($output_format)
-          {
-            case 'path_as_string':
-            case 'stairway2heaven':
-        $flat_path=null;
-        foreach($path_to as $item_id => $pieces)
-        {
-          // remove root node
-          unset($pieces['name'][0]);
-          $flat_path[$item_id]=implode('/',$pieces['name']);
-        }
-        if($output_format == 'path_as_string')
-        {
-          $path_to = $flat_path;
+      if (!is_null($path_to)) {
+        switch ($output_format) {
+          case 'path_as_string':
+          case 'stairway2heaven':
+            $flat_path=null;
+            foreach ($path_to as $item_id => $pieces) {
+              // remove root node
+              unset($pieces['name'][0]);
+              $flat_path[$item_id]=implode('/',$pieces['name']);
             }
-            else
-            {
+
+            if ($output_format == 'path_as_string') {
+              $path_to = $flat_path;
+            } else {
               $path_to = null;
+              $path_to['name'] = null;
               $path_to['flat'] = $flat_path;
               $path_to['staircase'] = $stairway2heaven;
+              if (isset($decode)) {
+                foreach ($decode as $kid => $kelem) {
+                  $path_to['name'][$kid] = $kelem['name'];  
+                }
+              } 
             }
-            break;
+          break;
             
-            case 'id_name':
-            break;
+          case 'id_name':
+          break;
             
-            case 'simple':  
-            default:
+          case 'simple':  
+          default:
             $keySet = array_keys($path_to);
-            foreach($keySet as $key)
-            {
+            foreach($keySet as $key) {
               $path_to[$key] = $path_to[$key]['name'];
             }
-            break;
-          }  
-        }
-        unset($stairway2heaven);
+          break;
+        }  
+      }
+      unset($stairway2heaven);
       return $path_to; 
   }
 

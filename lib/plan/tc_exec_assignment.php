@@ -36,8 +36,7 @@ $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 $keywordsFilter = new stdClass();
 $keywordsFilter->items = null;
 $keywordsFilter->type = null;
-if(is_array($args->keyword_id))
-{
+if (is_array($args->keyword_id)) {
   $keywordsFilter->items = $args->keyword_id;
   $keywordsFilter->type = $gui->keywordsFilterType;
 }
@@ -246,9 +245,14 @@ function init_args()
   $args->tproject_id = intval($_SESSION['testprojectID']);
   $args->tproject_name = $_SESSION['testprojectName'];
       
-  $key2loop = array('doActionButton' => null, 'doAction' => null,'level' => null , 'achecked_tc' => null, 
-                    'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
-                    'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
+  $key2loop = array('doActionButton' => null, 
+                    'doAction' => null,'level' => null , 
+                    'achecked_tc' => null, 
+                    'version_id' => 0, 
+                    'has_prev_assignment' => null, 
+                    'send_mail' => false,
+                    'tester_for_tcid' => null, 
+                    'feature_id' => null, 'id' => 0);
     
   foreach($key2loop as $key => $value)
   {
@@ -284,32 +288,30 @@ function init_args()
     
   $args->keyword_id = 0;
   $fk = 'filter_keywords';
-  if (isset($session_data[$fk])) 
-  {
+  if (isset($session_data[$fk])) {
     $args->keyword_id = $session_data[$fk];
-    if (is_array($args->keyword_id) && count($args->keyword_id) == 1) 
-    {
+    if (is_array($args->keyword_id) 
+        && count($args->keyword_id) == 1) {
       $args->keyword_id = $args->keyword_id[0];
     }
   }
   
   $args->keywordsFilterType = null;
   $fk = 'filter_keywords_filter_type';
-  if (isset($session_data[$fk])) 
-  {
+  if (isset($session_data[$fk])) {
     $args->keywordsFilterType = $session_data[$fk];
   }
   
   
   $args->testcases_to_show = null;
-  if (isset($session_data['testcases_to_show'])) 
-  {
+  if (isset($session_data['testcases_to_show'])) {
     $args->testcases_to_show = $session_data['testcases_to_show'];
   }
   
   $args->build_id = intval(isset($session_data['setting_build']) ? $session_data['setting_build'] : 0);
-  $args->platform_id = intval(isset($session_data['setting_platform']) ? 
-                       $session_data['setting_platform'] : 0);
+  $args->platform_id = 
+    intval(isset($session_data['setting_platform']) ? 
+           $session_data['setting_platform'] : 0);
   
   $args->tplan_id = intval(isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0);
   if ($args->tplan_id) 
@@ -327,6 +329,18 @@ function init_args()
   {
     $args->doAction = $key;
   }  
+
+
+  $args->alien_id = null;
+  $fk = 'filter_aliens';
+  if (isset($session_data[$fk])) {
+    $args->alien_id = $session_data[$fk];
+    if (is_array($args->alien_id) 
+        && count($args->alien_id) == 1) {
+      $args->alien_id = $args->alien_id[0];
+    }
+  }
+
 
   return $args;
 }

@@ -20,6 +20,7 @@ require_once('Zend/Validate/EmailAddress.php');
 
 testlinkInitPage($db,false,false,"checkRights");
 
+$objMgr = array();
 $objMgr['tree'] = new tree($db);
 $objMgr['tplan'] = new testplan($db);
 $objMgr['tcase'] = new testcase($db);
@@ -30,8 +31,7 @@ $tplan_mgr = &$objMgr['tplan'];
 $tcase_mgr = &$objMgr['tcase'];
 $assignment_mgr = &$objMgr['assign'];
 
-
-$args = init_args();
+$args = init_args($db,$tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 $keywordsFilter = new stdClass();
 $keywordsFilter->items = null;
@@ -144,8 +144,6 @@ switch($args->doAction)
       doBulkUserRemove($db,$args,$gui,$cfg,$objMgr);    
     }  
   break; 
-
-
 }
 
 
@@ -214,8 +212,7 @@ $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
 
-if ($_SESSION['testprojectOptions']->testPriorityEnabled) 
-{
+if ($gui->tprojOpt->testPriorityEnabled) {
   $cfg = config_get('priority');
   $gui->priority_labels = init_labels($cfg["code_label"]);
 }
@@ -229,104 +226,94 @@ $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($tpl);
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function init_args()
+/**
+ *
+ *
+ */
+function init_args(&$dbH,&$tplanMgr)
 {
   $_REQUEST = strings_stripSlashes($_REQUEST);
-  $args = new stdClass();
+  list($args,$env) = initContext();
+
   $args->user_id = intval($_SESSION['userID']);
-  $args->tproject_id = intval($_SESSION['testprojectID']);
-  $args->tproject_name = $_SESSION['testprojectName'];
+
+  // For more information about the data accessed in session here, 
+  // see the comment
+  // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
+  $mode = 'plan_mode';
+  $cache = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$args->form_token]) ? $_SESSION[$mode][$args->form_token] : null;
+  $args->control_panel = $cache;
+
+  $args->tplan_id = intval($cache['setting_testplan']);  
+  if (0==$args->tproject_id && $args->tplan_id > 0) {
+    $tplanInfo = $tplanMgr->get_by_id($args->tplan_id);
+    $args->tproject_id = intval($tplanInfo['testproject_id']);    
+    if ($args->tproject_id == 0) {
+      throw new Exception("Error Processing Test Project ID", 1);
+    }  
+  }
+  $args->tproject_name = testproject::getName($dbH,$args->tproject_id);
       
-  $key2loop = array('doActionButton' => null, 
-                    'doAction' => null,'level' => null , 
-                    'achecked_tc' => null, 
-                    'version_id' => 0, 
-                    'has_prev_assignment' => null, 
-                    'send_mail' => false,
-                    'tester_for_tcid' => null, 
-                    'feature_id' => null, 'id' => 0);
+  $key2loop = array('doActionButton' => null, 'doAction' => null,
+                    'level' => null , 'achecked_tc' => null, 
+                    'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
+                    'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
     
-  foreach($key2loop as $key => $value)
-  {
+  foreach($key2loop as $key => $value) {
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
   }
   
   $args->userSet = null;
-  $target = $_REQUEST['bulk_tester_div']; 
-  if(isset($target) && count($target) > 0) {
-    foreach($target as $uid) {
-      if($uid > 0) {
-        $args->userSet[$uid] = $uid;
+  if (isset($_REQUEST['bulk_tester_div'])) {
+    $target = $_REQUEST['bulk_tester_div']; 
+    if (isset($target) && count($target) > 0) {
+      foreach($target as $uid) {
+        if($uid > 0) {
+          $args->userSet[$uid] = $uid;
+        }  
       }  
-    }  
-  }  
+    }      
+  } 
 
-  // For more information about the data accessed in session here, see the comment
-  // in the file header of lib/functions/tlTestCaseFilterControl.class.php.
-  $form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-  $mode = 'plan_mode';
-  $session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
-
-  $args->control_panel = $session_data;
-    
-  $key2loop = array('refreshTree' => array('key' => 'setting_refresh_tree_on_action', 'value' => 0),
-                    'filter_assigned_to' => array('key' => 'filter_assigned_user', 'value' => null));
+  $key2loop = array('refreshTree' => 
+    array('key' => 'setting_refresh_tree_on_action', 'value' => 0),
+          'filter_assigned_to' => array('key' => 'filter_assigned_user', 'value' => null));
   
-  foreach($key2loop as $key => $info)
-  {
-    $args->$key = isset($session_data[$info['key']]) ? $session_data[$info['key']] : $info['value']; 
+  foreach ($key2loop as $key => $info) {
+    $args->$key = isset($cache[$info['key']]) ? $cache[$info['key']] : $info['value']; 
   }
   
     
   $args->keyword_id = 0;
   $fk = 'filter_keywords';
-  if (isset($session_data[$fk])) {
-    $args->keyword_id = $session_data[$fk];
-    if (is_array($args->keyword_id) 
-        && count($args->keyword_id) == 1) {
+  if (isset($cache[$fk])) {
+    $args->keyword_id = $cache[$fk];
+    if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
       $args->keyword_id = $args->keyword_id[0];
     }
   }
   
   $args->keywordsFilterType = null;
   $fk = 'filter_keywords_filter_type';
-  if (isset($session_data[$fk])) {
-    $args->keywordsFilterType = $session_data[$fk];
+  if (isset($cache[$fk])) {
+    $args->keywordsFilterType = $cache[$fk];
   }
   
   
   $args->testcases_to_show = null;
-  if (isset($session_data['testcases_to_show'])) {
-    $args->testcases_to_show = $session_data['testcases_to_show'];
+  if (isset($cache['testcases_to_show'])) {
+    $args->testcases_to_show = $cache['testcases_to_show'];
   }
   
-  $args->build_id = intval(isset($session_data['setting_build']) ? $session_data['setting_build'] : 0);
-  $args->platform_id = 
-    intval(isset($session_data['setting_platform']) ? 
-           $session_data['setting_platform'] : 0);
+  $args->build_id = intval(isset($cache['setting_build']) ? $cache['setting_build'] : 0);
+  $args->platform_id = intval(isset($cache['setting_platform']) ? 
+                       $cache['setting_platform'] : 0);
   
-  $args->tplan_id = intval(isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0);
-  if ($args->tplan_id) 
-  {
-    $args->tplan_id = intval(isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID']);
-  }
-    
-
   $args->targetFeature = intval(isset($_REQUEST['targetFeature']) ? $_REQUEST['targetFeature'] : 0);  
   $args->targetUser = intval(isset($_REQUEST['targetUser']) ? $_REQUEST['targetUser'] : 0);  
 
-
   $key = 'doRemoveAll';
-  if( ($args->$key = isset($_REQUEST[$key]) ? 1 : 0) )
-  {
+  if( ($args->$key = isset($_REQUEST[$key]) ? 1 : 0) ) {
     $args->doAction = $key;
   }  
 
@@ -345,20 +332,18 @@ function init_args()
   return $args;
 }
 
-/*
-  function: initializeGui
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ *
+ *
+ */
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
+  $tcase_cfg = config_get('testcase_cfg');
   $platform_mgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
   
-  $tcase_cfg = config_get('testcase_cfg');
   $gui = new stdClass();
+  $gui->tplan_id = $argsObj->tplan_id;
+  $gui->tproject_id = $argsObj->tproject_id;
 
   $optLTT = null;
   $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id,$optLTT);
@@ -370,15 +355,16 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     
   $gui->send_mail = $argsObj->send_mail;
   $gui->send_mail_checked = "";
-  if($gui->send_mail)
-  {
+  if($gui->send_mail) {
     $gui->send_mail_checked = ' checked="checked" ';
   }
     
   $gui->glueChar=$tcase_cfg->glue_character;
-    
-  if ($argsObj->level != 'testproject')
-  {
+  
+  $gui->tprojOpt = 
+    $tcaseMgr->tproject_mgr->getOptions($argsObj->tproject_id);
+
+  if ($argsObj->level != 'testproject') {
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
     $gui->keywordsFilterType = $argsObj->keywordsFilterType;
@@ -412,11 +398,14 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
  *
  * @return void
  */
-function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$features,$operation)
+function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,
+                              &$argsObj,$features,$operation)
 {
   $testers['new']=null;
   $testers['old']=null;
-  $lb = array('platform' => null, 'testplan' => null, 'testproject' => null, 
+  $lb = array('platform' => null, 
+              'testplan' => null, 
+              'testproject' => null, 
               'build' =>null);
   $lbl = init_labels($lb);
 
@@ -441,40 +430,37 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
   $email['exit_on_error'] = true;
   $email['htmlFormat'] = true;
 
-  $body_header = $lbl['testproject'] . ': ' . $argsObj->tproject_name . '<br />' .
-                 $lbl['testplan'] . ': ' . $guiObj->testPlanName .'<br />' .
-                 $lbl['build'] . ': ' . $guiObj->buildName .'<br /><br />';
+  $body_header = $lbl['testproject'] . ': '
+                 . $argsObj->tproject_name . '<br />' 
+                 . $lbl['testplan'] . ': ' 
+                 . $guiObj->testPlanName .'<br />' 
+                 . $lbl['build'] . ': ' . $guiObj->buildName 
+                 .'<br /><br />';
 
 
   // Do we really have platforms?
   $pset = array_flip(array_keys($features));
-  if ($hasPlat = !isset($pset[0])) {
+  if ($hasPlat = !isset($pset[0])){
     $platMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
     $platSet = $platMgr->getAllAsMap();
   }  
    
   // Get testers id & item set with test case & test case version                 
-  foreach($features as $platform_id => $items)
-  {
+  foreach ($features as $platform_id => $items) {
     $plat[$platform_id] = $platform_id;
-    foreach( $items as $feature_id => $value )
-    {
-      if( $use_testers['new'] || $use_testers['old'] )
-      {
-        if( $use_testers['new'] )
-        {
+    foreach ($items as $feature_id => $value) {
+      if ($use_testers['new'] || $use_testers['old']) {
+        if ($use_testers['new']) {
           $ty = (array)$value['user_id'];
           $accessKey = 'new';          
         }
           
-        if( $use_testers['old'] )
-        {
+        if( $use_testers['old'] ) {
           $ty = (array)$value['previous_user_id'];
           $accessKey = 'old';
         }
             
-        foreach( $ty as $user_id )
-        {
+        foreach( $ty as $user_id ) {
           $testers[$accessKey][$user_id][$platform_id][$feature_id]=$value['tcase_id'];
         }  
       }
@@ -485,70 +471,70 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
   }  
  
   $infoSet = $tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
-  foreach($infoSet as $value)
-  {
-    $tcnames[$value['testcase_id']] = $guiObj->testCasePrefix . $value['tc_external_id'] . ' ' . $value['name'];    
+  foreach($infoSet as $value) {
+    $tcnames[$value['testcase_id']] = $guiObj->testCasePrefix 
+      . $value['tc_external_id'] . ' ' . $value['name'];    
   }
     
   $path_info = $tcaseMgr->tree_manager->get_full_path_verbose($tcaseSet);
   $flat_path=null;
-  foreach($path_info as $tcase_id => $pieces)
-  {
-    $flat_path[$tcase_id]=implode('/',$pieces) . '/' . $tcnames[$tcase_id];  
+  foreach($path_info as $tcase_id => $pieces) {
+    $flat_path[$tcase_id] = implode('/',$pieces) 
+                            . '/' . $tcnames[$tcase_id];  
   }
 
   $validator = new Zend_Validate_EmailAddress();
-  foreach($testers as $tester_type => $tester_set)
-  {
-    if( !is_null($tester_set) )
-    {
-      $email['subject'] = $mail_subject[$tester_type] . ' ' . $guiObj->testPlanName;  
-      foreach($tester_set as $user_id => $set2work)
-      {
+  foreach($testers as $tester_type => $tester_set) {
+    if( !is_null($tester_set) ) {
+      $email['subject'] = $mail_subject[$tester_type] 
+                          . ' ' . $guiObj->testPlanName;  
+      foreach($tester_set as $user_id => $set2work) {
         // workaround till solution will be found
-        if($user_id <= 0)
-        {
+        if($user_id <= 0) {
           continue;
         }  
 
         $userObj=$guiObj->all_users[$user_id];
         $email['to_address'] = trim($userObj->emailAddress);
-        if($email['to_address'] == '' || !$validator->isValid($email['to_address']))
-        {
+        if($email['to_address'] == '' 
+           || !$validator->isValid($email['to_address'])) {
           continue;
         }  
 
         $email['body'] = $body_header;
         $email['body'] .= sprintf($mail_details[$tester_type],
-                          $userObj->firstName . ' ' .$userObj->lastName,$assigner);
+                                  $userObj->firstName . ' ' 
+                                  . $userObj->lastName,$assigner);
 
-        foreach ($set2work as $pid => $value) 
-        {
-          if( $pid != 0 )
-          {
+        foreach ($set2work as $pid => $value) {
+          if( $pid != 0 ) {
             $email['body'] .= $lbl['platform'] . ': ' . $platSet[$pid] . '<br />';  
           }  
   
-          foreach($value as $tcase_id)
-          {
+          $c4b = new stdClass();
+          $c4b->basehref = $argsObj->basehref;
+          $c4b->basehref = $argsObj->tproject_id;
+
+          foreach($value as $tcase_id) {
+            $c4b->id = $tcase_id;
             $email['body'] .= $flat_path[$tcase_id] . '<br />';  
-            $wl = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$tcase_id,
-                                                $argsObj->testproject_id);
+            $wl = $tcaseMgr->buildDirectWebLink($c4b);
            
             $email['body'] .= '<a href="' . $wl . '">' . 
                               'direct link to test case spec ' .
                               '</a>' .
                               '<br /><br />';
-
           }  
         }
 
-          
         $email['body'] .= '<br />' . date(DATE_RFC1123);
 
-        $email_op = email_send($email['from_address'], $email['to_address'], 
-                               $email['subject'], $email['body'], $email['cc'], 
-                               $email['attachment'],$email['exit_on_error'], 
+        $email_op = email_send($email['from_address'], 
+                               $email['to_address'], 
+                               $email['subject'], 
+                               $email['body'], $email['cc'], 
+                               $email['attachment'],
+                               $email['exit_on_error'], 
                                $email['htmlFormat']);
       } // foreach($tester_set as $user_id => $value)
     }                       

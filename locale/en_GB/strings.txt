@@ -4056,4 +4056,5 @@ $TLS_tc_monthly_creation_rate_on_tproj_hint =
 $TLS_selected_cb = '%s checkboxes have been checked ';
 $TLS_deselected_cb = '%s checkboxes have been unchecked';
 $TLS_reload_main_view = "Reload Main View";
+$TLS_toggle_navigation = "Toggle Navigation";
 // ----- END -----------------------------------------------------

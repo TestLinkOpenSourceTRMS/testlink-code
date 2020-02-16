@@ -34,7 +34,6 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
   tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
 
   $_SESSION['userID'] = $id;
-  $_SESSION['testprojectID'] = null;
   $_SESSION['s_lastAttachmentList'] = null;
 
   if (!is_null($locale)) {
@@ -46,32 +45,6 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 
   $gui_cfg = config_get('gui');
   $opt = array('output' => 'map_name_with_inactive_mark', 'order_by' => $gui_cfg->tprojects_combo_order_by);
-  $arrProducts = $tproject_mgr->get_accessible_for_user($id,$opt);
-
-  $tproject_cookie = config_get('cookie')->testProjectMemory . $id;
-  if (isset($_COOKIE[$tproject_cookie])) {
-    if (isset($arrProducts[$_COOKIE[$tproject_cookie]]) 
-        && $arrProducts[$_COOKIE[$tproject_cookie]]) {
-      $_SESSION['testprojectID'] = $_COOKIE[$tproject_cookie];
-      tLog('Cookie: {$tproject_cookie}='.$_SESSION['testprojectID']);
-    }
-  }
-  if (!$_SESSION['testprojectID']) {
-      $tpID = null;
-      if (sizeof($arrProducts))
-      {
-        $tpID = key($arrProducts);
-      } 
-      $_SESSION['testprojectID'] = $tpID;
-  }
-  // Validation is done in navBar.php
-  $tplan_cookie = 'TL_lastTestPlanForUserID_' . $id;
-  if (isset($_COOKIE[$tplan_cookie]))
-  {
-    $_SESSION['testplanID'] = $_COOKIE[$tplan_cookie];
-    tLog("Cookie: {$tplan_cookie}=".$_SESSION['testplanID']);
-  }
-
   return 1;
 }
 
@@ -454,14 +427,4 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=nu
   }
     
   return $grants;
-}
-
-
-/** 
- * just a wrapper
- *
- */
-function setUserSessionFromObj(&$db,$userObj) {
-  return setUserSession($db,$userObj->login,$userObj->dbID,
-                        $userObj->globalRoleID,$userObj->emailAddress);
 }

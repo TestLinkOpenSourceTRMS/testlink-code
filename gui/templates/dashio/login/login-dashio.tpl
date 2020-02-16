@@ -18,7 +18,8 @@
   <!-- Bootstrap core CSS -->
   <link href="gui/templates/dashio/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <!--external css-->
-  <link href="gui/templates/dashio/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+  <link href="gui/templates/dashio/lib/font-awesome/css/all.css" rel="stylesheet" />
+
   <!-- Custom styles for this template -->
   <link href="gui/templates/dashio/css/style.css" rel="stylesheet">
   <link href="gui/templates/dashio/css/style-responsive.css" rel="stylesheet">
@@ -67,7 +68,8 @@
 
             <label class="checkbox">&nbsp;</label>
 
-            <button class="btn btn-theme btn-block" type="submit">
+            <button name="tl_login_btn" id="tl_login_btn" 
+              class="btn btn-theme btn-block" type="submit">
               <i class="fa fa-lock"></i> {$labels.btn_login} </button>
             <hr>
             
@@ -111,10 +113,9 @@
   <!-- You can use an image of whatever size. This script will stretch to fit in any screen size.-->
   <script type="text/javascript" src="gui/templates/dashio/lib/jquery.backstretch.min.js"></script>
   <script>
-  var bg = "{$gui->loginBackgroundImg}";  
-  $.backstretch(bg, {
-    speed: 500
-  });
+    $.backstretch("gui/templates/dashio/img/wp-testing04.jpg", {
+      speed: 500
+    });
   </script>
 </body>
 

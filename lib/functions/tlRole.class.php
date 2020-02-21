@@ -4,12 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package     TestLink
- * @copyright   2004-2016, TestLink community 
+ * @copyright   2004-2020, TestLink community 
  * @filesource  tlRole.class.php
  * @link        http://www.teamst.org/index.php
  *
- * @internal revisions
- * 
  */
 
 /**
@@ -257,11 +255,13 @@ class tlRole extends tlDBObject
     return is_blank($name) ? self::E_NAMELENGTH : tl::OK;
   }
   
+  /**
+   *
+   */
   public function getDisplayName()
   {
     $displayName = $this->name;
-    if ($displayName{0} == "<")
-    {
+    if ($displayName[0] == "<") {
       $roleName = str_replace(" ","_",substr($displayName,1,-1));
       $displayName = "<".lang_get($roleName).">";
     }

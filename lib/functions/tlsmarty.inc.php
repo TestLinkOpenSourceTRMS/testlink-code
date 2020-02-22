@@ -84,34 +84,50 @@ class TLSmarty extends Smarty {
   private $tlImages;
   private $tlIMGTags;
   var $tlTemplateCfg;
-	
+	private $dashioHome;
+
   function __construct() {
     global $tlCfg;
     global $g_tpl;
     
+    $basehref = isset($_SESSION['basehref']) 
+                ? $_SESSION['basehref'] : TL_BASE_HREF;
+
+    $my_locale = isset($_SESSION['locale']) 
+                 ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+
     parent::__construct();
-  
+    
     $this->template_dir = 
       array('main' => TL_ABS_PATH . 'gui/templates/dashio/');
                           
     $this->config_dir = TL_ABS_PATH . 'gui/templates/conf';
     $this->compile_dir = TL_TEMP_PATH;
-    
-    $tlCfg->dashio = "gui/templates/dashio";
 
+    // 20200222
+    // Can not access $this->dashioHome in templates
+    // without doing the ->assign().
+    // I declare the variable anyway, to be able to access
+    // it from PHP code
+    //
+    $this->dashioHome = 'gui/templates/dashio/dashio-template/';
+    $this->assign('dashioHome', $this->dashioHome);
+
+    $this->assign('dashioHomeURL', $basehref . $this->dashioHome);
+
+    // ----------------------------------------------------------    
     $testproject_coloring = $tlCfg->gui->testproject_coloring;
     $testprojectColor = $tlCfg->gui->background_color ; 
     $this->assign('testprojectColor', $testprojectColor);
     
-    $my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
-    $basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
     
     if ($tlCfg->smarty_debug) {
       $this->debugging = true;
       tLog("Smarty debug window = ON");
     }
-    
-    // -------------------------------------------------------------
+
+
+    // --------------------------------------------------------------
     // Must be initialized to avoid log on TestLink Event Viewer due to undefined variable.
     // This means that optional/missing parameters on include can not be used.
     //
@@ -178,9 +194,9 @@ class TLSmarty extends Smarty {
     $stdTPLCfg['steps_vertical.inc'] = 'testcases/steps_vertical.inc.tpl';
 
     $stdTPLCfg['platforms.inc'] = 'testcases/platforms.inc.tpl';
-    $stdTPLCfg['aliens.inc'] = 'testcases/aliens.inc.tpl';
 
-    // --------------------------------------------------------------
+
+    // -----------------------------------------------------------------------------
     // load configuration
     $this->assign('session',isset($_SESSION) ? $_SESSION : null);
     $this->assign('tlCfg',$tlCfg);

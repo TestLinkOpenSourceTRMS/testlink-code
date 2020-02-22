@@ -17,14 +17,14 @@ title bar + menu
 
 {include file="inc_head.tpl" openHead="yes"}
 
-  <link href="gui/templates/dashio/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{$dashioHome}lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   
-  <link href="gui/templates/dashio/lib/font-awesome/css/all.css" rel="stylesheet" />
+  <link href="{$dashioHome}lib/font-awesome/css/all.css" rel="stylesheet" />
 
 
 
-  <link href="gui/templates/dashio/css/style.css" rel="stylesheet">
-  <link href="gui/templates/dashio/css/style-responsive.css" rel="stylesheet">
+  <link href="{$dashioHome}css/style.css" rel="stylesheet">
+  <link href="{$dashioHome}css/style-responsive.css" rel="stylesheet">
 </head>
 
 <!--
@@ -44,7 +44,7 @@ The _top value of the target attribute specifies that the URL should open in the
         </a>
       </div>
       <div class="sidebar-toggle-box">
-        <div class="fa fa-bars tooltips" data-placement="right" data-original-title="{$labels.toggle_navigation}"></div>
+        <div class="fa fa-bars tooltips" data-placement="right" data-original-title="$labels.toggle_navigation"></div>
       </div>
       <a class="logo" 
          href="index.php?tproject_id={$gui->tproject_id}&tplan_id={$gui->tplan_id}" target="{$topBrowsingContext}" title="{$labels.reload_main_view}">
@@ -104,17 +104,15 @@ The _top value of the target attribute specifies that the URL should open in the
     </header>
 
 
-  <script type="text/javascript" language="javascript"
-          src="{$basehref}{$smarty.const.TL_JQUERY}">
-  </script>
+  <script type="text/javascript" src="{$basehref}third_party/jquery/jquery-3.3.1.min.js" language="javascript"></script>
 
 
-  <script src="gui/templates/dashio/lib/bootstrap/js/bootstrap.min.js"></script>
-  <script src="gui/templates/dashio/lib/jquery.nicescroll.js" type="text/javascript"></script>
-  <script class="include" type="text/javascript" src="gui/templates/dashio/lib/jquery.dcjqaccordion.2.7.js"></script>
+  <script src="{$dashioHome}lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="{$dashioHome}lib/jquery.nicescroll.js" type="text/javascript"></script>
+  <script class="include" type="text/javascript" src="{$dashioHome}lib/jquery.dcjqaccordion.2.7.js"></script>
   
   <!--common script for all pages-->
-  <script src="gui/templates/dashio/lib/common-scripts.js"></script>
+  <script src="{$dashioHome}lib/common-scripts.js"></script>
 
 </body>
 </html>

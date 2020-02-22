@@ -22,7 +22,7 @@ editorType: used to understand if code for tinymce need to be loaded
 	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
 
 {$css = str_replace('default','dashio',$css)}
-{* ----- load CSS -------------------------------------------------- *} 
+{* ----- load CSS ----------------------------------------------- *} 
 	<style media="all" type="text/css">@import "{$css}";</style>
 
 	{if $use_custom_css}
@@ -51,12 +51,9 @@ editorType: used to understand if code for tinymce need to be loaded
 	{/if}
 
 
-  <link rel="stylesheet" 
-        href="{$basehref}third_party/chosen/chosen.css">
+  <link rel="stylesheet" href="{$basehref}third_party/chosen/chosen.css">
 
-	<script type="text/javascript" 
-          src="{$basehref}{$smarty.const.TL_JQUERY}" 
-          language="javascript"></script>
+	<script type="text/javascript" src="{$basehref}third_party/jquery/jquery-3.3.1.min.js" language="javascript"></script>
 
 	<script type="text/javascript" src="{$basehref}third_party/chosen/chosen.jquery.js"></script>
  
@@ -86,16 +83,16 @@ editorType: used to understand if code for tinymce need to be loaded
 	//-->
 	</script> 
 
-  <link href="{$basehref}gui/templates/dashio/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{$dashioHomeURL}lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-  <link href="{$basehref}gui/templates/dashio/lib/font-awesome/css/all.css" rel="stylesheet" />
+  <link href="{$dashioHomeURL}lib/font-awesome/css/all.css" rel="stylesheet" />
 
 
-  <link href="{$basehref}gui/templates/dashio/css/style.css" rel="stylesheet">
-  <link href="{$basehref}gui/templates/dashio/css/style-responsive.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="{$basehref}gui/themes/default/css/frame.css">  
+  <link href="{$dashioHomeURL}css/style.css" rel="stylesheet">
+  <link href="{$dashioHomeURL}css/style-responsive.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" 
+        href="{$basehref}gui/themes/default/css/frame.css">  
 
-	
 {if $openHead == "no"} {* 'no' is default defined in config *}
 </head>
 {/if}

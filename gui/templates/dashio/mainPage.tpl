@@ -18,32 +18,23 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
   <meta name="description" content="">
 
   <!-- Favicons -->
-  <link href="../../gui/templates/dashio/gui/templates/dashio/img/favicon.png" rel="icon">
-  <link href="../../gui/templates/dashio/gui/templates/dashio/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="{$dashioHomeURL}img/favicon.png" rel="icon">
+  <link href="{$dashioHomeURL}img/apple-touch-icon.png" 
+        rel="apple-touch-icon">
 
-  <link href="../../gui/templates/dashio/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{$dashioHomeURL}lib/bootstrap/css/bootstrap.min.css"
+        rel="stylesheet">
   
-  <link href="../../gui/templates/dashio/lib/font-awesome/css/all.css" rel="stylesheet" />
+  <link href="{$dashioHomeURL}lib/font-awesome/css/all.css"
+        rel="stylesheet" />
 
-
-  <link href="../../gui/templates/dashio/css/style.css" rel="stylesheet">
-  <link href="../../gui/templates/dashio/css/style-responsive.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="{$basehref}gui/themes/default/css/frame.css">  
+  <link href="{$dashioHomeURL}css/style.css" rel="stylesheet">
+  <link href="{$dashioHomeURL}css/style-responsive.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" 
+        href="{$basehref}gui/themes/default/css/frame.css">  
 </head>
-
-{$jan = '<div class="bar">
-                <div class="title">JAN</div>
-                <div class="value tooltips" data-original-title="8.500" data-toggle="tooltip" data-placement="top">85%</div>
-              </div>
-              <div class="bar ">
-                <div class="title">FEB</div>
-                <div class="value tooltips" data-original-title="5.000" data-toggle="tooltip" data-placement="top">50%</div>
-              </div>'}
-
-
 <body>
 {include file="aside.tpl"}
-
     <section id="main-content">
       <section class="wrapper">
         <div class="row">
@@ -91,22 +82,18 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
     <!--footer end-->
 
 
-  <!-- 
-  js placed at the end of the document so the pages load faster 
-  -->
-  <script type="text/javascript" language="javascript"
-          src="{$basehref}{$smarty.const.TL_JQUERY}">
-  </script>
+  <!-- js placed at the end of the document so the pages load faster -->
+  <script type="text/javascript" src="{$basehref}third_party/jquery/jquery-3.3.1.min.js" language="javascript"></script>
 
-  <script src="../../gui/templates/dashio/lib/bootstrap/js/bootstrap.min.js"></script>
-  <script class="include" type="text/javascript" src="../../gui/templates/dashio/lib/jquery.dcjqaccordion.2.7.js"></script>
+  <script src="{$dashioHomeURL}lib/bootstrap/js/bootstrap.min.js"></script>
+  <script class="include" type="text/javascript" src="{$dashioHomeURL}lib/jquery.dcjqaccordion.2.7.js"></script>
 
-  <script src="../../gui/templates/dashio/lib/jquery.scrollTo.min.js"></script>
+  <script src="{$dashioHomeURL}lib/jquery.scrollTo.min.js"></script>
 
-  <script src="../../gui/templates/dashio/lib/jquery.nicescroll.js" type="text/javascript"></script>  
+  <script src="{$dashioHomeURL}lib/jquery.nicescroll.js" type="text/javascript"></script>  
 
   <!--common script for all pages-->
-  <script src="../../gui/templates/dashio/lib/left-bar-scripts.js"></script>
+  <script src="{$dashioHomeURL}lib/left-bar-scripts.js"></script>
 
   <!--script for this page-->
 </body>

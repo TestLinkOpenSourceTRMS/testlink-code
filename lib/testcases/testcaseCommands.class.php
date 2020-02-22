@@ -8,8 +8,8 @@
  * @filesource  testcaseCommands.class.php
  * @package     TestLink
  * @author      Francisco Mancardi - francisco.mancardi@gmail.com
- * @copyright   2007-2019, TestLink community 
- * @link        http://testlink.sourceforge.net/
+ * @copyright   2007-2020, TestLink community 
+ * @link        http://www.testlink.org/
  *
  **/
 
@@ -98,6 +98,16 @@ class testcaseCommands {
     $obj->$p2check = '';
     if( property_exists($argsObj,$p2check) ) {
       $obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : ''; 
+
+      if ($obj->$p2check != '') {
+        if( property_exists($obj, 'tplan_id') ) {
+          $obj->$p2check .= "&tplan_id={$obj->tplan_id}";
+        }
+
+        if( property_exists($obj, 'tproject_id') ) {
+          $obj->$p2check .= "&tproject_id={$obj->tproject_id}";
+        }
+      }
     }
     
     $p2check = 'show_mode';
@@ -110,6 +120,10 @@ class testcaseCommands {
 
     if( property_exists($obj, 'tplan_id') ) {
       $obj->loadOnCancelURL .= "&tplan_id={$obj->tplan_id}";
+    }
+
+    if( property_exists($obj, 'tproject_id') ) {
+      $obj->loadOnCancelURL .= "&tproject_id={$obj->tproject_id}";
     }
 
     if( property_exists($obj, 'show_mode') ) {
@@ -217,7 +231,7 @@ class testcaseCommands {
     foreach($cfPlaces as $locationKey => $locationFilter) { 
       $guiObj->cf[$locationKey] = 
       $this->tcaseMgr->html_table_of_custom_field_inputs(null,null,'design','',null,null,
-                                                         $argsObj->testproject_id,$locationFilter, $_REQUEST);
+        $argsObj->testproject_id,$locationFilter, $_REQUEST);
     }  
 
     $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
@@ -225,6 +239,11 @@ class testcaseCommands {
 
     if( property_exists($guiObj, 'tplan_id') ) {
       $guiObj->cancelActionJS .= "&tplan_id={$guiObj->tplan_id}";
+    }
+
+    if( property_exists($argsObj, 'tproject_id') ) {
+      $guiObj->tproject_id = $argsObj->tproject_id;
+      $guiObj->cancelActionJS .= "&tproject_id={$argsObj->tproject_id}";
     }
 
     if( property_exists($guiObj, 'show_mode') ) {
@@ -353,6 +372,11 @@ class testcaseCommands {
       $guiObj->cancelActionJS .= "&tplan_id={$argsObj->tplan_id}";
     }
 
+    if( property_exists($argsObj, 'tproject_id') ) {
+      $guiObj->tproject_id = $argsObj->tproject_id;
+      $guiObj->cancelActionJS .= "&tproject_id={$argsObj->tproject_id}";
+    }
+
     if( property_exists($argsObj, 'show_mode') ) {
       $guiObj->cancelActionJS .= "&show_mode={$argsObj->show_mode}";
     }
@@ -383,7 +407,7 @@ class testcaseCommands {
                                    $argsObj->importance,$options);
 
     $this->show($argsObj,$request,$ret);
-    return;
+    return $guiObj;
   }  
 
 
@@ -503,8 +527,15 @@ class testcaseCommands {
     $guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
     
     $guiObj->cancelActionJS = 'location.href=fRoot+' . "'" . 
-      'lib/testcases/archiveData.php?version_id=undefined&' .
-      'edit=testcase&id=' . intval($guiObj->testcase_id) . "'";    
+      'lib/testcases/archiveData.php?version_id=undefined';
+
+    if( property_exists($argsObj, 'tproject_id') ) {
+      $guiObj->tproject_id = $argsObj->tproject_id;
+      $guiObj->cancelActionJS .= "&tproject_id={$argsObj->tproject_id}";
+    }
+
+    $guiObj->cancelActionJS .=
+      '&edit=testcase&id=' . intval($guiObj->testcase_id) . "'";    
 
 
     $templateCfg = templateConfiguration('tcDelete');
@@ -770,6 +801,13 @@ class testcaseCommands {
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
     $this->initTestCaseBasicInfo($argsObj,$guiObj);
 
+
+    /* DOUBTS
+    $guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
+                      "edit=testcase&id={$argsObj->tcase_id}&show_mode={$guiObj->show_mode}";
+    return $guiObj;
+    */
+    
     $argsObj->refreshTree = 0;
     $opt= array('updateCFOnDB' => !self::UPDATECFONDB);
     $this->show($argsObj,$request,array('status_ok' => true),$opt);
@@ -794,6 +832,9 @@ class testcaseCommands {
     $argsObj->tcversion_id = $step_node['parent_id'];
     $argsObj->tcase_id = $tcversion_node['parent_id'];
     
+    $guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
+                      "edit=testcase&id={$argsObj->tcase_id}&show_mode={$guiObj->show_mode}";
+
     $guiObj->user_feedback = '';
     $op = $this->tcaseMgr->delete_step_by_id($argsObj->step_id);
     $this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
@@ -804,6 +845,8 @@ class testcaseCommands {
     $opt= array('updateCFOnDB' => !self::UPDATECFONDB);
     $this->show($argsObj,$request,array('status_ok' => true),$opt);
     exit();
+
+    // DOUBTS return $guiObj;
   }
 
   /**
@@ -1127,18 +1170,15 @@ class testcaseCommands {
     $identity = $this->buildIdentity($argsObj);
 
     $guiObj->uploadOp = $argsObj->uploadOp;
-
     $guiObj->viewerArgs=array();
-    $guiObj->refreshTree = ($argsObj->refreshTree 
-      && $userFeedback['status_ok']) ? 1 : 0;
+    $guiObj->refreshTree = ($argsObj->refreshTree && $userFeedback['status_ok']) ? 1 : 0;
     $guiObj->has_been_executed = $argsObj->has_been_executed;
     $guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     $guiObj->user_feedback = '';
     
+
     $guiObj->direct_link = 
-      $this->tcaseMgr->buildDirectWebLink($_SESSION['basehref'],
-                                          $argsObj->tcase_id,
-                                          $argsObj->testproject_id);
+      $this->tcaseMgr->buildDirectWebLink($argsObj);
 
     if($userFeedback['status_ok']) {
       if( $options['updateTPlanLinkToTCV'] ) {
@@ -1400,10 +1440,8 @@ class testcaseCommands {
         $argsObj->itsCfg = $it_mgr->getLinkedTo($this->tproject_id);
         $its = $it_mgr->getInterfaceObject($this->tproject_id);
         if( method_exists($its,'addNote') ) {
-          $dl = sprintf(lang_get('dlToTCSpecPVCode'), $tcExternalID) . 
-                ' ' . lang_get('dlToTCSpecPV') . ' ' . 
-                $this->tcaseMgr->buildDirectWebLink($_SESSION['basehref'],
-                $argsObj->tcase_id,$argsObj->testproject_id);
+          $dl = sprintf(lang_get('dlToTCSpecPVCode'), $tcExternalID)    . ' ' . lang_get('dlToTCSpecPV') . ' ' 
+                . $this->tcaseMgr->buildDirectWebLink($argsObj);
 
           // Get keyword for human beins
           $tbl = tlObject::getDBTables(array('keywords'));

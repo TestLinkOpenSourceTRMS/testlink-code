@@ -158,21 +158,27 @@ viewer for test case in test specification
       		{* New TC sibling *}
       		{if $args_new_sibling == "yes" }
       			<input type="hidden" name="containerID" value="{$args_testcase.testsuite_id}" />
-      			<input type="submit" name="new_tc" title="{$tcView_viewer_labels.hint_new_sibling}"
-      				   onclick="doAction.value='create';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_new_sibling}" />
+      			<input class="{#BUTTON_CLASS#}" 
+              type="submit" name="new_tc" id="new_tc"
+              title="{$tcView_viewer_labels.hint_new_sibling}"
+      				onclick="doAction.value='create';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_new_sibling}" />
       		{/if}
 
       		{* Move Copy *}
-      		{if $args_can_do->copy == "yes" && $args_can_move_copy == "yes"}
-      			<input type="submit" name="move_copy_tc"
+      		{if $args_can_do->copy == "yes" 
+              && $args_can_move_copy == "yes"}
+      			<input class="{#BUTTON_CLASS#}" type="submit" 
+                   name="move_copy_tc" id="move_copy_tc"
                    value="{$tcView_viewer_labels.btn_mv_cp}" />
       		{/if}
       	  
       		{* Delete TC *}
-      		{if $delete_enabled && $args_can_do->delete_testcase == "yes" 
+      		{if $delete_enabled 
+              && $args_can_do->delete_testcase == "yes" 
               && $args_can_delete_testcase == "yes"}
-      		   <input type="submit" name="delete_tc"
-                  value="{$tcView_viewer_labels.btn_delete}" />
+      		   <input class="{#BUTTON_CLASS#}" type="submit" 
+                    name="delete_tc" id="delete_tc"
+                    value="{$tcView_viewer_labels.btn_delete}" />
       		{/if}
         </form> <!-- id="topControls" -->
       
@@ -181,7 +187,7 @@ viewer for test case in test specification
       	  <form style="display: inline;" id="tcbulkact" name="tcbulkact" 
       			method="post" action="{$bulkOpAction}" >
       		<input type="hidden" name="tcase_id" id="tcase_id" value="{$args_testcase.testcase_id}" />
-      		<input type="submit" name="bulk_op" value="{$tcView_viewer_labels.btn_bulk}" />
+      		<input class="{#BUTTON_CLASS#}" type="submit" name="bulk_op" value="{$tcView_viewer_labels.btn_bulk}" />
       	  </form>
       	{/if}
       	
@@ -192,7 +198,7 @@ viewer for test case in test specification
                   name="version_compare" method="post" 
                   action="{$basehref}lib/testcases/tcCompareVersions.php">
         		  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-        		  <input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
+        		  <input class="{#BUTTON_CLASS#}" type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
         		</form>
       	  {/if}
       	</span>
@@ -226,7 +232,7 @@ viewer for test case in test specification
 
       	{* Edit TC *}
       	{if $edit_enabled && $args_frozen_version=="no"}
-      		 <input type="submit" name="edit_tc" 
+      		 <input class="{#BUTTON_CLASS#}" type="submit" name="edit_tc" 
       				onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
       	{/if}
 
@@ -239,14 +245,17 @@ viewer for test case in test specification
           {if $args_can_do->create_new_version == "yes" 
              && $args_read_only != "yes"}
              {if $gui->new_version_source == 'this'}
-               <input type="submit" name="do_create_new_version" 
+               <input class="{#BUTTON_CLASS#}" type="submit" 
+                 name="do_create_new_version"
+                 id="do_create_new_version" 
                  title="{$tcView_viewer_labels.hint_new_version}" 
                  value="{$tcView_viewer_labels.btn_new_version}" />
              {/if}
              {if $gui->new_version_source == 'latest'}
-               <input type="submit" name="do_create_new_version_from_latest" 
-               title="{$tcView_viewer_labels.btn_new_version_from_latest}" 
-               value="{$tcView_viewer_labels.btn_new_version_from_latest}" />      
+               <input class="{#BUTTON_CLASS#}" type="submit" 
+                 name="do_create_new_version_from_latest" 
+                 title="{$tcView_viewer_labels.btn_new_version_from_latest}" 
+                 value="{$tcView_viewer_labels.btn_new_version_from_latest}" />      
              {/if}
           {/if}
 
@@ -263,7 +272,7 @@ viewer for test case in test specification
         			  {$version_title_class="freeze_version"}
         		  {/if}
 
-        		 <input type="submit" name="{$freeze_btn}" 
+        		 <input class="{#BUTTON_CLASS#}" type="submit" name="{$freeze_btn}" 
         				onclick="doAction.value='{$freeze_btn}';{$gui->submitCode}" value="{lang_get s=$freeze_value}" />
         	{/if}
 
@@ -272,7 +281,7 @@ viewer for test case in test specification
               || $args_can_do->delete_frozen_tcversion == "yes") 
               && $args_can_do->delete_version == "yes" 
               && $args_can_delete_version == "yes"}
-        	   <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
+        	   <input class="{#BUTTON_CLASS#}" type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
         	{/if}
         {/if}
       </form>
@@ -297,7 +306,7 @@ viewer for test case in test specification
       	  <form style="display: inline;" id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
       		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
       		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-      		<input type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
+      		<input class="{#BUTTON_CLASS#}" type="submit" name="export_tc" value="{$tcView_viewer_labels.btn_export}" />
       	  </form>
       	</span>
       {/if}
@@ -305,22 +314,27 @@ viewer for test case in test specification
     {* End TCV SECTION *}
 
 {/if} {* $args_can_do->edit -> user can edit *}
+
 {* Print TC version *}
+<fieldset class="groupBtn">
 <span>
-  <form style="display: inline;" id="tcprint" name="tcprint" method="post" action="" >
+  <form style="display: inline;" id="tcprint" 
+        name="tcprint" method="post" action="" >
     <input class="{#BUTTON_CLASS#}" type="button"
            name="tcPrinterFriendly" id="tcPrinterFriendly"
            value="{$tcView_viewer_labels.btn_print_view}" 
            onclick="javascript:openPrintPreview('tc',{$args_testcase.testcase_id},{$args_testcase.id},null,
-                                                '{$printTestCaseAction}');"/>
+           '{$printTestCaseAction}');"/>
   </form>
 </span>
 
-{if 1 == $gui->candidateToUpd && '' != $gui->tplan_id && 
-        'editOnExec' == $gui->show_mode && 
-        'yes' == $args_can_do->updTplanTCV } 
+{if 1 == $gui->candidateToUpd 
+    && '' != $gui->tplan_id 
+    && 'editOnExec' == $gui->show_mode 
+    && 'yes' == $args_can_do->updTplanTCV } 
   <span>
-    <form style="display: inline;" id="updTPlan" name="updTPlan" 
+    <form style="display: inline;" 
+          id="updTPlan" name="updTPlan" 
           method="post"
           action="{$basehref}lib/testcases/tcEdit.php">
         <input type="hidden" name="testcase_id" id="updTPlan_testcase_id" value="{$args_testcase.testcase_id}" />
@@ -339,11 +353,12 @@ viewer for test case in test specification
     </form>
   </span>
 {/if}
+</fieldset>
 
 {* End of TC version Section *}
 </div>
 
-{* --------------------------------------------------------------------- *}
+{* -------------------------------------------------------------- *}
   {if $args_testcase.active eq 0}
     <div class="messages" align="center">{$tcView_viewer_labels.tcversion_is_inactive_msg}</div>
   {/if}
